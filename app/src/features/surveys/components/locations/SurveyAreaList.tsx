@@ -13,6 +13,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { useState } from 'react';
 import TransitionGroup from 'react-transition-group/TransitionGroup';
 import { ISurveyLocation } from '../StudyAreaForm';
+import Stack from '@mui/material/Stack';
 
 export interface ISurveyAreaListProps {
   data: ISurveyLocation[];
@@ -71,14 +72,13 @@ export const SurveyAreaList = (props: ISurveyAreaListProps) => {
         </MenuItem>
       </Menu>
       <Box data-testid="study-area-list" display="flex" flexDirection="column" height="100%">
-        <TransitionGroup>
+        <Stack component={TransitionGroup} gap={1}>
           {data.map((item: ISurveyLocation, index: number) => {
             return (
               <Collapse key={`${item.name}-${item.description}`}>
                 <Card
                   variant="outlined"
                   sx={{
-                    mt: 1,
                     background: grey[100],
                     '& .MuiCardHeader-subheader': {
                       display: '-webkit-box',
@@ -88,9 +88,6 @@ export const SurveyAreaList = (props: ISurveyAreaListProps) => {
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       fontSize: '14px'
-                    },
-                    '& .MuiCardHeader-title': {
-                      mb: 0.5
                     }
                   }}>
                   <CardHeader
@@ -110,7 +107,7 @@ export const SurveyAreaList = (props: ISurveyAreaListProps) => {
               </Collapse>
             );
           })}
-        </TransitionGroup>
+        </Stack>
       </Box>
     </>
   );

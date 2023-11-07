@@ -13,6 +13,7 @@ import yup from 'utils/YupSchema';
 import { SurveyAreaList } from './locations/SurveyAreaList';
 import SurveyAreaLocationForm from './locations/SurveyAreaLocationForm';
 import { SurveyAreaMapControl } from './locations/SurveyAreaMapControl';
+import Stack from '@mui/material/Stack';
 
 export interface ISurveyLocation {
   survey_location_id?: number;
@@ -119,8 +120,8 @@ const StudyAreaForm = () => {
   return (
     <form onSubmit={handleSubmit}>
       <YesNoDialog
-        dialogTitle={`Delete all ${values.locations.length} Study Areas?`}
-        dialogText="Are you sure you want to remove these study areas? This action can be undone by exiting the survey page without saving"
+        dialogTitle={`Delete all study areas?`}
+        dialogText="Are you sure you want to remove all study areas? This action can be undone by exiting the survey page without saving"
         yesButtonProps={{ color: 'error' }}
         yesButtonLabel={'Delete'}
         noButtonProps={{ color: 'primary', variant: 'outlined' }}
@@ -165,33 +166,38 @@ const StudyAreaForm = () => {
         </Box>
       )}
 
-      {values.locations.length > 0 && (
-        <Box mt={2} display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
-          <Typography component="h4" variant="h4">
-            Study Areas &zwnj;
-            <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
-              ({values.locations.length})
-            </Typography>
-          </Typography>
-          <Button
-            color="primary"
-            variant="outlined"
-            data-testid="boundary_file-upload"
-            startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
-            onClick={() => setIsDeleteOpen(true)}>
-            Remove all study areas
-          </Button>
-        </Box>
-      )}
 
-      <SurveyAreaList
-        openEdit={(index) => {
-          setCurrentIndex(index);
-          onOpen();
-        }}
-        openDelete={onDelete}
-        data={values.locations}
-      />
+        {values.locations.length > 0 && (
+          <Box mb={1} display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
+            <Typography component="h4" variant="body1" sx={{fontWeight: 700}}>
+              Study Areas &zwnj;
+              <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
+                ({values.locations.length})
+              </Typography>
+            </Typography>
+            <Button
+              color="primary"
+              variant="outlined"
+              size="small"
+              data-testid="boundary_file-upload"
+              startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
+              onClick={() => setIsDeleteOpen(true)}
+              aria-label="Remove all study areas"
+              >
+              Remove All
+            </Button>
+          </Box>
+        )}
+
+        <SurveyAreaList
+          openEdit={(index) => {
+            setCurrentIndex(index);
+            onOpen();
+          }}
+          openDelete={onDelete}
+          data={values.locations}
+        />
+
     </form>
   );
 };
