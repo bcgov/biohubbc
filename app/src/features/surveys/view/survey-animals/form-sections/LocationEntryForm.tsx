@@ -218,7 +218,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
       {otherSecondaryFields ? (
         <Box>
           {otherSecondaryFields}
-          <Box mt={2}>{renderLocationFields(secondaryLocationFields)}</Box>
+          {renderLocationFields(secondaryLocationFields)}
         </Box>
       ) : null}
 

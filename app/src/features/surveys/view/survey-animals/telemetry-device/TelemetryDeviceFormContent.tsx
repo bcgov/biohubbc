@@ -56,7 +56,7 @@ const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
             <CustomTextField
               label="Device ID"
               name={`device.${index}.device_id`}
-              other={{ disabled: mode === ANIMAL_FORM_MODE.EDIT }}
+              other={{ disabled: mode === ANIMAL_FORM_MODE.EDIT, required: true }}
             />
           </Grid>
           <Grid item xs={6}>
@@ -101,7 +101,7 @@ const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
               name={`device.${index}.device_make`}
               id="manufacturer"
               fetchData={api.devices.getCollarVendors}
-              controlProps={{ disabled: mode === ANIMAL_FORM_MODE.EDIT }}
+              controlProps={{ disabled: mode === ANIMAL_FORM_MODE.EDIT, required: true }}
               handleBlur={handleBlur}
               validate={validateDeviceMake}
             />

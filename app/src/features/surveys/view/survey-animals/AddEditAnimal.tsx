@@ -195,7 +195,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
 
               {/* Not using EditDialog due to the parent component needing the formik state */}
               <Dialog
-                open={showDialog}
+                open={showDialog || isSubmitting}
                 fullScreen={fullScreen}
                 maxWidth="xl"
                 onTransitionExited={() => {
