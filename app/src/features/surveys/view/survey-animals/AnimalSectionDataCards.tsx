@@ -170,46 +170,44 @@ export const AnimalSectionDataCards = (props: AnimalSectionDataCardsProps) => {
   };
 
   return (
-    <>
-      <FieldArray name={ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName}>
-        {({ remove }: FieldArrayRenderProps) => {
-          return (
-            <TransitionGroup>
-              {sectionCardData.map((cardData, index) => {
-                const submitFormRemoveCard = () => {
-                  console.log('called');
-                  remove(index);
-                  submitForm();
-                };
-                const handleDelete = () => {
-                  showDeleteDialog(submitFormRemoveCard);
-                };
-                return (
-                  <Collapse
-                    key={cardData.key}
-                    addEndListener={() => {
+    <FieldArray name={ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName}>
+      {({ remove }: FieldArrayRenderProps) => {
+        return (
+          <TransitionGroup>
+            {sectionCardData.map((cardData, index) => {
+              const submitFormRemoveCard = () => {
+                console.log('called');
+                remove(index);
+                submitForm();
+              };
+              const handleDelete = () => {
+                showDeleteDialog(submitFormRemoveCard);
+              };
+              return (
+                <Collapse
+                  key={cardData.key}
+                  addEndListener={() => {
+                    setCanDisplaySnackbar(true);
+                  }}>
+                  <EditDeleteStubCard
+                    header={cardData.header}
+                    subHeader={cardData.subHeader}
+                    onClickEdit={() => {
                       setCanDisplaySnackbar(true);
-                    }}>
-                    <EditDeleteStubCard
-                      header={cardData.header}
-                      subHeader={cardData.subHeader}
-                      onClickEdit={() => {
-                        setCanDisplaySnackbar(true);
-                        onEditClick(index);
-                      }}
-                      onClickDelete={
-                        section === SurveyAnimalsI18N.animalGeneralTitle || section === 'Telemetry'
-                          ? undefined
-                          : handleDelete
-                      }
-                    />
-                  </Collapse>
-                );
-              })}
-            </TransitionGroup>
-          );
-        }}
-      </FieldArray>
-    </>
+                      onEditClick(index);
+                    }}
+                    onClickDelete={
+                      section === SurveyAnimalsI18N.animalGeneralTitle || section === 'Telemetry'
+                        ? undefined
+                        : handleDelete
+                    }
+                  />
+                </Collapse>
+              );
+            })}
+          </TransitionGroup>
+        );
+      }}
+    </FieldArray>
   );
 };

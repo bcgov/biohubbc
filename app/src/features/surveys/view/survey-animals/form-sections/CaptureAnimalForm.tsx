@@ -78,7 +78,7 @@ export const CaptureAnimalFormContent = ({ index }: CaptureAnimalFormContentProp
           <Box key="release-location" component="fieldset" mb={0}>
             <Typography component="legend">Release Location</Typography>
             <FormControlLabel
-              sx={{ mt: -1, ml: 0 }}
+              sx={!value?.show_release ? { mt: -1, ml: 0 } : { mt: -1, ml: 0, mb: 2 }}
               control={
                 <Checkbox
                   size="small"
