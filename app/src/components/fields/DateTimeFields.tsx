@@ -1,4 +1,3 @@
-import { mdiCalendarStart } from '@mdi/js';
 import Icon from '@mdi/react';
 import Grid from '@mui/material/Grid';
 import { DatePicker, renderTimeViewClock, TimePicker } from '@mui/x-date-pickers';
@@ -16,6 +15,7 @@ interface IDateTimeFieldsProps {
     dateId: string;
     dateRequired: boolean;
     dateHelperText?: string;
+    dateIcon: string;
   };
   time: {
     timeLabel: string;
@@ -23,20 +23,25 @@ interface IDateTimeFieldsProps {
     timeId: string;
     timeRequired: boolean;
     timeHelperText?: string;
+    timeIcon: string;
   };
   formikProps: any;
 }
 
-const CalendarStartIcon = () => {
-  return <Icon path={mdiCalendarStart} size={1} />;
-};
-
 export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
   const {
     formikProps: { values, errors, touched, setFieldValue },
-    date: { dateName, dateId, dateRequired, dateHelperText, dateLabel },
-    time: { timeLabel, timeName, timeId, timeRequired, timeHelperText }
+    date: { dateLabel, dateName, dateId, dateRequired, dateHelperText, dateIcon },
+    time: { timeLabel, timeName, timeId, timeRequired, timeHelperText, timeIcon }
   } = props;
+
+  const DateIcon = () => {
+    return <Icon path={dateIcon} size={1} />;
+  };
+
+  const TimeIcon = () => {
+    return <Icon path={timeIcon} size={1} />;
+  };
 
   const rawDateValue = get(values, dateName);
   const formattedDateValue =
@@ -58,7 +63,7 @@ export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
         <Grid item xs={6}>
           <DatePicker
             slots={{
-              openPickerIcon: dateIcon
+              openPickerIcon: DateIcon
             }}
             slotProps={{
               textField: {
@@ -97,7 +102,7 @@ export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
         <Grid item xs={6}>
           <TimePicker
             slots={{
-              openPickerIcon: timeIcon
+              openPickerIcon: TimeIcon
             }}
             slotProps={{
               textField: {
@@ -117,7 +122,7 @@ export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
               }
             }}
             label={timeLabel}
-            format={TIME_FORMAT.ShortTimeFormatAmPm}
+            format={TIME_FORMAT.LongTimeFormat24Hour}
             value={formattedTimeValue}
             onChange={(value: moment.Moment | null) => {
               if (!value || String(value.creationData().input) === 'Invalid Time') {
@@ -127,7 +132,7 @@ export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
                 return;
               }
 
-              setFieldValue(timeName, moment(value).format(TIME_FORMAT.ShortTimeFormatAmPm));
+              setFieldValue(timeName, moment(value).format(TIME_FORMAT.LongTimeFormat24Hour));
             }}
             viewRenderers={{
               hours: renderTimeViewClock,

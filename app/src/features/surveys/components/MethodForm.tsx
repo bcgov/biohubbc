@@ -1,6 +1,12 @@
-import { mdiCalendarStart, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import {
+  mdiCalendarEnd,
+  mdiCalendarStart,
+  mdiClockOutline,
+  mdiClockTimeOneOutline,
+  mdiPlus,
+  mdiTrashCanOutline
+} from '@mdi/js';
 import Icon from '@mdi/react';
-import { Grid } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -14,9 +20,6 @@ import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
-import { DatePicker, TimePicker } from '@mui/x-date-pickers';
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import CustomTextField from 'components/fields/CustomTextField';
 import { DateTimeFields } from 'components/fields/DateTimeFields';
 import { CodesContext } from 'contexts/codesContext';
@@ -169,28 +172,45 @@ const MethodForm = () => {
                           <Box width="100%" pt={1}>
                             <DateTimeFields
                               date={{
-                                dateLabel: '',
-                                dateName: '',
-                                dateId: '',
+                                dateLabel: 'Start Date',
+                                dateName: `periods[${index}].start_date`,
+                                dateId: String(index),
                                 dateRequired: true,
                                 dateHelperText: '',
-                                dateIcon: <Icon path={mdiCalendarStart} size={1} />
+                                dateIcon: mdiCalendarStart
+                              }}
+                              time={{
+                                timeLabel: 'Start Time',
+                                timeName: `periods[${index}].start_time`,
+                                timeId: String(index),
+                                timeRequired: false,
+                                timeHelperText: '',
+                                timeIcon: mdiClockTimeOneOutline
                               }}
                               formikProps={formikProps}
                             />
                           </Box>
 
                           <Box width="100%" pt={1}>
-                            <LocalizationProvider dateAdapter={AdapterMoment}>
-                              <Grid container item spacing={3}>
-                                <Grid item xs={6}>
-                                  <DatePicker />
-                                </Grid>
-                                <Grid item xs={6}>
-                                  <TimePicker />
-                                </Grid>
-                              </Grid>
-                            </LocalizationProvider>
+                            <DateTimeFields
+                              date={{
+                                dateLabel: 'End Date',
+                                dateName: `periods[${index}].end_date`,
+                                dateId: String(index),
+                                dateRequired: true,
+                                dateHelperText: '',
+                                dateIcon: mdiCalendarEnd
+                              }}
+                              time={{
+                                timeLabel: 'End Time',
+                                timeName: `periods[${index}].end_time`,
+                                timeId: String(index),
+                                timeRequired: false,
+                                timeHelperText: '',
+                                timeIcon: mdiClockOutline
+                              }}
+                              formikProps={formikProps}
+                            />
                           </Box>
                         </Box>
                         <ListItemSecondaryAction
