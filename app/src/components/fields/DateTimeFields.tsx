@@ -55,8 +55,8 @@ export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
   const rawTimeValue = get(values, timeName);
   const formattedTimeValue =
     (rawTimeValue &&
-      moment(rawTimeValue, TIME_FORMAT.ShortTimeFormatAmPm).isValid() &&
-      moment(rawTimeValue, TIME_FORMAT.ShortTimeFormatAmPm)) ||
+      moment(rawTimeValue, TIME_FORMAT.LongTimeFormat24Hour).isValid() &&
+      moment(rawTimeValue, TIME_FORMAT.LongTimeFormat24Hour)) ||
     null;
 
   return (

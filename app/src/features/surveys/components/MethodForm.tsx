@@ -89,20 +89,16 @@ export const SamplingSiteMethodYupSchema = yup.object({
         end_time: yup
           .string()
           .nullable()
-          .test(
-            'checkDatesAreSameAndEndTimeIsAfterStart',
-            'End Date and Time must be after Start Date and Time',
-            function (value) {
-              const { start_date, end_date, start_time } = this.parent;
-              if (start_date === end_date && start_time && value) {
-                const val = moment(`${start_date} ${start_time}`, 'YYYY-MM-DD HH:mm:ss').isBefore(
-                  moment(`${end_date} ${value}`, 'YYYY-MM-DD HH:mm:ss')
-                );
-                return val;
-              }
-              return true;
+          .test('checkDatesAreSameAndEndTimeIsAfterStart', 'End time must be after Start time', function (value) {
+            const { start_date, end_date, start_time } = this.parent;
+            if (start_date === end_date && start_time && value) {
+              const val = moment(`${start_date} ${start_time}`, 'YYYY-MM-DD HH:mm:ss').isBefore(
+                moment(`${end_date} ${value}`, 'YYYY-MM-DD HH:mm:ss')
+              );
+              return val;
             }
-          )
+            return true;
+          })
       })
     )
     .hasUniqueDateRanges('Periods cannot overlap', 'start_date', 'end_date')
