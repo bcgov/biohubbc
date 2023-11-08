@@ -1,4 +1,4 @@
-import { mdiTrayArrowUp } from '@mdi/js';
+import { mdiTrashCanOutline, mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -28,11 +28,12 @@ export interface ISurveyAreMapControlProps {
   formik_key: string;
   formik_props: FormikContextType<ISurveyLocationForm>;
   draw_controls_ref: React.RefObject<IDrawControlsRef>;
+  toggle_delete_dialog: (isOpen: boolean) => void;
 }
 
 export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
-  const { map_id, formik_key, formik_props, draw_controls_ref } = props;
-  const { setFieldValue, setFieldError, values } = formik_props;
+  const { map_id, formik_key, formik_props, draw_controls_ref, toggle_delete_dialog } = props;
+  const { setFieldValue, setFieldError, validateField, values } = formik_props;
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedRegion, setSelectedRegion] = useState<IRegionOption | null>(null);
@@ -72,7 +73,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
           }}>
           Study Areas
           <Typography component="span" color="textSecondary" sx={{ ml: 0.5, flex: '1 1 auto' }}>
-            (0)
+            ({values.locations.length})
           </Typography>
         </Typography>
         <Box display="flex">
@@ -93,6 +94,19 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
                 setSelectedRegion(data);
               }}
             />
+          </Box>
+          <Box ml={1}>
+            <Button
+              color="primary"
+              variant="outlined"
+              size="small"
+              data-testid="boundary_file-upload"
+              disabled={!(values.locations.length > 0)}
+              startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
+              onClick={() => toggle_delete_dialog(true)}
+              aria-label="Remove all study areas">
+              Remove All
+            </Button>
           </Box>
         </Box>
       </Toolbar>
@@ -134,6 +148,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
                 leaflet_id: id
               };
               setFieldValue(formik_key, [...values.locations, location]);
+              validateField('locations');
             }}
             onLayerEdit={(event: DrawEvents.Edited) => {
               event.layers.getLayers().forEach((item) => {

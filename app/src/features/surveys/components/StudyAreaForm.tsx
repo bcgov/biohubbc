@@ -1,12 +1,8 @@
-import { mdiTrashCanOutline } from '@mdi/js';
-import Icon from '@mdi/react';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 import EditDialog from 'components/dialog/EditDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { IDrawControlsRef } from 'components/map/components/DrawControls';
@@ -61,7 +57,7 @@ export const SurveyLocationYupSchema = yup.object({
  */
 const StudyAreaForm = () => {
   const formikProps = useFormikContext<ISurveyLocationForm>();
-  const { handleSubmit, values, setFieldValue, errors } = formikProps;
+  const { handleSubmit, values, setFieldValue, errors, validateField } = formikProps;
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<number | undefined>(undefined);
@@ -169,28 +165,8 @@ const StudyAreaForm = () => {
             formik_key="locations"
             formik_props={formikProps}
             draw_controls_ref={drawRef}
+            toggle_delete_dialog={setIsDeleteOpen}
           />
-
-          {values.locations.length > 0 && (
-            <Box mb={1} display={'none'} justifyContent={'space-between'} alignItems={'center'}>
-              <Typography component="h4" variant="body1" sx={{ fontWeight: 700 }}>
-                Study Areas &zwnj;
-                <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
-                  ({values.locations.length})
-                </Typography>
-              </Typography>
-              <Button
-                color="primary"
-                variant="outlined"
-                size="small"
-                data-testid="boundary_file-upload"
-                startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
-                onClick={() => setIsDeleteOpen(true)}
-                aria-label="Remove all study areas">
-                Remove All
-              </Button>
-            </Box>
-          )}
 
           <Box
             sx={{
