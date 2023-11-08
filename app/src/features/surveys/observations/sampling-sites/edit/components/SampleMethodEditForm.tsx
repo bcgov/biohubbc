@@ -1,4 +1,4 @@
-import { mdiCalendarRangeOutline, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiCalendarRangeOutline, mdiClockOutline, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Alert from '@mui/material/Alert';
@@ -68,9 +68,11 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
         onSubmit={(data) => {
           setFieldValue(`${name}[${values.sampleSite.methods.length}]`, data);
           validateField(`${name}`);
+          setAnchorEl(null);
           setIsCreateModalOpen(false);
         }}
         onClose={() => {
+          setAnchorEl(null);
           setIsCreateModalOpen(false);
         }}
       />
@@ -81,9 +83,11 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
         open={isEditModalOpen}
         onSubmit={(data, index) => {
           setFieldValue(`${name}[${index}]`, data);
+          setAnchorEl(null);
           setIsEditModalOpen(false);
         }}
         onClose={() => {
+          setAnchorEl(null);
           setIsEditModalOpen(false);
         }}
       />
@@ -100,7 +104,11 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
           vertical: 'top',
           horizontal: 'right'
         }}>
-        <MenuItem key={'edit-details'} onClick={() => setIsEditModalOpen(true)}>
+        <MenuItem
+          key={'edit-details'}
+          onClick={() => {
+            setIsEditModalOpen(true);
+          }}>
           <ListItemIcon>
             <Icon path={mdiPencilOutline} size={1} />
           </ListItemIcon>
@@ -195,7 +203,18 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                           <ListItemIcon>
                             <Icon path={mdiCalendarRangeOutline} size={1} />
                           </ListItemIcon>
+
                           <ListItemText primary={`${period.start_date} to ${period.end_date}`} />
+                          {period.start_time && (
+                            <>
+                              <ListItemIcon>
+                                <Icon path={mdiClockOutline} size={1} />
+                              </ListItemIcon>
+                              <ListItemText
+                                primary={`${period.start_time} ${(period.end_time && `to ${period.end_time}`) || ''}`}
+                              />
+                            </>
+                          )}
                         </ListItem>
                       ))}
                     </List>
