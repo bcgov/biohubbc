@@ -38,9 +38,8 @@ import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 import { MarkingAnimalFormContent } from './form-sections/MarkingAnimalForm';
 import MeasurementAnimalFormContent from './form-sections/MeasurementAnimalForm';
 import { MortalityAnimalFormContent } from './form-sections/MortalityAnimalForm';
-import { IAnimalDeployment } from './telemetry-device/device';
+import { IAnimalDeployment, IAnimalTelemetryDeviceFile } from './telemetry-device/device';
 import TelemetryDeviceFormContent from './telemetry-device/TelemetryDeviceFormContent';
-import { IAnimalTelemetryDeviceFile } from './TelemetryDeviceForm';
 
 interface AddEditAnimalProps {
   section: IAnimalSections;

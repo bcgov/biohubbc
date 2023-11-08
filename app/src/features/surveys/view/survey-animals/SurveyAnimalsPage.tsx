@@ -19,8 +19,12 @@ import { createCritterUpdatePayload, transformCritterbaseAPIResponseToForm } fro
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
 import AnimalList from './AnimalList';
 import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
-import { Device, IAnimalTelemetryDevice, IDeploymentTimespan } from './telemetry-device/device';
-import { IAnimalTelemetryDeviceFile } from './TelemetryDeviceForm';
+import {
+  Device,
+  IAnimalTelemetryDevice,
+  IAnimalTelemetryDeviceFile,
+  IDeploymentTimespan
+} from './telemetry-device/device';
 
 export const SurveyAnimalsPage = () => {
   const [selectedSection, setSelectedSection] = useState<IAnimalSections>(SurveyAnimalsI18N.animalGeneralTitle);
