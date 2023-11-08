@@ -32,7 +32,7 @@ const CalendarIcon = () => {
  *
  **/
 const SingleDateField: React.FC<IDateProps> = (props) => {
-  const { setFieldValue, values, handleBlur, setFieldTouched, touched, errors } = useFormikContext();
+  const { setFieldValue, values, handleBlur, touched, errors } = useFormikContext();
   const { name, other, helperText, required, label } = props;
 
   const rawDateValue = get(values, name);
@@ -46,10 +46,6 @@ const SingleDateField: React.FC<IDateProps> = (props) => {
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <DatePicker
-        onClose={() => {
-          setFieldTouched(name);
-          handleBlur(name);
-        }}
         slots={{
           openPickerIcon: CalendarIcon
         }}
