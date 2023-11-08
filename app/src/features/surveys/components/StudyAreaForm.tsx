@@ -119,10 +119,10 @@ const StudyAreaForm = () => {
   return (
     <form onSubmit={handleSubmit}>
       <YesNoDialog
-        dialogTitle={`Delete all study areas?`}
-        dialogText="Are you sure you want to remove all study areas? This action can be undone by exiting the survey page without saving"
+        dialogTitle={`Remove all study areas?`}
+        dialogText="Are you sure you want to remove all study areas?"
         yesButtonProps={{ color: 'error' }}
-        yesButtonLabel={'Delete'}
+        yesButtonLabel={'Remove All'}
         noButtonProps={{ color: 'primary', variant: 'outlined' }}
         noButtonLabel={'Cancel'}
         open={isDeleteOpen}
