@@ -53,38 +53,35 @@ interface AddEditAnimalProps {
 
 export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const { section, critterData, telemetrySaveAction, deploymentRemoveAction, formikArrayHelpers } = props;
-  const surveyContext = useContext(SurveyContext);
+
+  const theme = useTheme();
   const telemetryApi = useTelemetryApi();
+  const cbApi = useCritterbaseApi();
+  const surveyContext = useContext(SurveyContext);
+  const dialogContext = useContext(DialogContext);
+  const { cid: survey_critter_id } = useQuery();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const { submitForm, isValid, values, isSubmitting, initialValues, setFieldValue, isValidating, status } =
     useFormikContext<IAnimal>();
-  const dialogContext = useContext(DialogContext);
+
+  const { data: allFamilies, refresh: refreshFamilies } = useDataLoader(cbApi.family.getAllFamilies);
+  const { refresh: refreshDeviceDetails } = useDataLoader(telemetryApi.devices.getDeviceDetails);
+  const { data: measurements, refresh: refreshMeasurements } = useDataLoader(cbApi.lookup.getTaxonMeasurements);
 
   const [showDialog, setShowDialog] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [formMode, setFormMode] = useState<ANIMAL_FORM_MODE>(ANIMAL_FORM_MODE.EDIT);
-
-  const { cid: survey_critter_id } = useQuery();
-
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const dialogTitle =
     formMode === ANIMAL_FORM_MODE.ADD
       ? `Add ${ANIMAL_SECTIONS_FORM_MAP[section].dialogTitle}`
       : `Edit ${ANIMAL_SECTIONS_FORM_MAP[section].dialogTitle}`;
 
-  const cbApi = useCritterbaseApi();
-
-  const { data: allFamilies, refresh: refreshFamilies } = useDataLoader(cbApi.family.getAllFamilies);
-
-  const { refresh: refreshDeviceDetails } = useDataLoader(telemetryApi.devices.getDeviceDetails);
-
   useEffect(() => {
     refreshFamilies();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [critterData]);
 
-  const { data: measurements, refresh: refreshMeasurements } = useDataLoader(cbApi.lookup.getTaxonMeasurements);
   useEffect(() => {
     refreshMeasurements(values.general.taxon_id);
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -113,7 +113,6 @@ export const SurveyAnimalsPage = () => {
   };
 
   const handleCritterSave = async (currentFormValues: IAnimal, formMode: ANIMAL_FORM_MODE) => {
-    console.log('saving');
     const postCritterPayload = async () => {
       const critter = new Critter(currentFormValues);
       setOpenAddDialog(false);
@@ -269,7 +268,6 @@ export const SurveyAnimalsPage = () => {
         validateOnBlur={false}
         validateOnChange={true}
         onSubmit={async (values, actions) => {
-          console.log('submitting');
           const status = await handleCritterSave(values, ANIMAL_FORM_MODE.EDIT);
           if (status) {
             actions.setStatus(status);
