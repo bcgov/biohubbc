@@ -450,8 +450,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   }, [observationsContext.observationsDataLoader.data, observationsContext.observationsDataLoader.hasLoaded]);
 
   /**
-   * Runs when observation context data has changed. This does not occur when records are
-   * deleted; Only on initial page load, and whenever records are saved.
+   * Runs onces on initial page load.
    */
   useEffect(() => {
     if (taxonomyContext.isLoading || hasInitializedTaxonomyCache) {
