@@ -334,7 +334,12 @@ const SamplingSiteList = () => {
                                       <Icon path={mdiCalendarRange} size={1}></Icon>
                                     </ListItemIcon>
                                     <ListItemText
-                                      primary={`${samplePeriod.start_date} to ${samplePeriod.end_date}`}></ListItemText>
+                                      primary={samplePeriod.start_date}
+                                      secondary={samplePeriod.start_time || '\u00A0'}></ListItemText>
+
+                                    <ListItemText
+                                      primary={samplePeriod.end_date}
+                                      secondary={samplePeriod.end_time || '\u00A0'}></ListItemText>
                                   </ListItem>
                                 );
                               })}

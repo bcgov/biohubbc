@@ -397,6 +397,8 @@ export interface IGetSamplePeriodRecord {
   survey_sample_method_id: number;
   start_date: string;
   end_date: string;
+  start_time: string | null;
+  end_time: string | null;
   create_date: string;
   create_user: number;
   update_date: string | null;

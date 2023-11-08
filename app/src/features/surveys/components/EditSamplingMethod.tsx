@@ -1,8 +1,8 @@
 import EditDialog from 'components/dialog/EditDialog';
-import yup from 'utils/YupSchema';
 import MethodForm, {
   IEditSurveySampleMethodData,
   ISurveySampleMethodData,
+  SamplingSiteMethodYupSchema,
   SurveySampleMethodDataInitialValues
 } from './MethodForm';
 
@@ -12,24 +12,6 @@ interface IEditSamplingMethodProps {
   onSubmit: (data: ISurveySampleMethodData, index?: number) => void;
   onClose: () => void;
 }
-
-export const SamplingSiteMethodYupSchema = yup.object({
-  method_lookup_id: yup.number().required(),
-  description: yup.string(),
-  periods: yup
-    .array(
-      yup.object({
-        start_date: yup.string().isValidDateString().required('Start date is required'),
-        end_date: yup
-          .string()
-          .isValidDateString()
-          .isEndDateSameOrAfterStartDate('start_date')
-          .required('End date is required')
-      })
-    )
-    .hasUniqueDateRanges('Periods cannot overlap', 'start_date', 'end_date')
-    .min(1, 'At least one time period is required')
-});
 
 const EditSamplingMethod: React.FC<IEditSamplingMethodProps> = (props) => {
   const { open, initialData, onSubmit, onClose } = props;
