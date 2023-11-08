@@ -1,7 +1,11 @@
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import EditDialog from 'components/dialog/EditDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
@@ -13,10 +17,6 @@ import yup from 'utils/YupSchema';
 import { SurveyAreaList } from './locations/SurveyAreaList';
 import SurveyAreaLocationForm from './locations/SurveyAreaLocationForm';
 import { SurveyAreaMapControl } from './locations/SurveyAreaMapControl';
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
-import Stack from '@mui/material/Stack';
-import Paper from '@mui/material/Paper';
 
 export interface ISurveyLocation {
   survey_location_id?: number;
@@ -158,12 +158,12 @@ const StudyAreaForm = () => {
 
       <Stack gap={3}>
         {errors.locations && !Array.isArray(errors?.locations) && (
-          <Alert severity='error' variant="outlined">
+          <Alert severity="error" variant="outlined">
             <AlertTitle>Study Area Missing</AlertTitle>
             {errors.locations}
           </Alert>
         )}
-        <Paper variant="outlined" sx={{overflow: 'hidden'}}>
+        <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
           <SurveyAreaMapControl
             map_id={'study_area_map'}
             formik_key="locations"
@@ -173,7 +173,7 @@ const StudyAreaForm = () => {
 
           {values.locations.length > 0 && (
             <Box mb={1} display={'none'} justifyContent={'space-between'} alignItems={'center'}>
-              <Typography component="h4" variant="body1" sx={{fontWeight: 700}}>
+              <Typography component="h4" variant="body1" sx={{ fontWeight: 700 }}>
                 Study Areas &zwnj;
                 <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
                   ({values.locations.length})
@@ -186,8 +186,7 @@ const StudyAreaForm = () => {
                 data-testid="boundary_file-upload"
                 startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
                 onClick={() => setIsDeleteOpen(true)}
-                aria-label="Remove all study areas"
-                >
+                aria-label="Remove all study areas">
                 Remove All
               </Button>
             </Box>
@@ -197,8 +196,7 @@ const StudyAreaForm = () => {
             sx={{
               maxHeight: 400,
               overflowY: 'auto'
-            }}
-          >
+            }}>
             <SurveyAreaList
               openEdit={(index) => {
                 setCurrentIndex(index);
@@ -208,10 +206,8 @@ const StudyAreaForm = () => {
               data={values.locations}
             />
           </Box>
-
         </Paper>
       </Stack>
-
     </form>
   );
 };

@@ -2,7 +2,8 @@ import { mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Paper from '@mui/material/Paper';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
 import DrawControls, { IDrawControlsRef } from 'components/map/components/DrawControls';
@@ -21,8 +22,6 @@ import { useEffect, useState } from 'react';
 import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { ISurveyLocation, ISurveyLocationForm } from '../StudyAreaForm';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 
 export interface ISurveyAreMapControlProps {
   map_id: string;
@@ -65,13 +64,16 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
         }}
       />
       <Toolbar>
-        <Typography component="h4" fontWeight="700"
+        <Typography
+          component="h4"
+          fontWeight="700"
           sx={{
             flex: '1 1 auto'
-          }}
-        >
-          Study Areas 
-          <Typography component="span" color="textSecondary" sx={{ml: 0.5, flex: '1 1 auto'}}>(0)</Typography>
+          }}>
+          Study Areas
+          <Typography component="span" color="textSecondary" sx={{ ml: 0.5, flex: '1 1 auto' }}>
+            (0)
+          </Typography>
         </Typography>
         <Box display="flex">
           <Button
