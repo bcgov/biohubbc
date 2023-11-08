@@ -427,7 +427,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    * deleted; Only on initial page load, and whenever records are saved.
    */
   useEffect(() => {
-    if (!observationsContext.observationsDataLoader.data?.surveyObservations?.length) {
+    if (!observationsContext.observationsDataLoader.hasLoaded || !observationsContext.observationsDataLoader.data) {
       // Existing observation records have not yet loaded, or don't exist
       return;
     }
@@ -438,6 +438,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     );
 
     if (!rows.length) {
+      setHasLoadedTaxonomy(true);
       return;
     }
 
@@ -547,6 +548,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       observationCount
     ]
   );
+
+  console.log({ hasLoadedTaxonomy
+  })
 
   return (
     <ObservationsTableContext.Provider value={observationsTableContext}>
