@@ -2,8 +2,6 @@ import { mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
 import Collapse from '@mui/material/Collapse';
 import { grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
@@ -12,8 +10,7 @@ import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useState } from 'react';
 import TransitionGroup from 'react-transition-group/TransitionGroup';
-import { ISurveyLocation } from '../StudyAreaForm';
-import Stack from '@mui/material/Stack';
+import { ISurveyLocation } from '../StudyAreaForm'
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -98,6 +95,7 @@ export const SurveyAreaList = (props: ISurveyAreaListProps) => {
                     </IconButton>
                   }
                     sx={{
+                      py: 1.5,
                       pl: 3,
                       minHeight: '55px'
                     }}
