@@ -1,4 +1,5 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import useIsMounted from 'hooks/useIsMounted';
 import { ITaxonomy } from 'interfaces/useTaxonomy.interface';
 import { get as getProperty, has as hasProperty } from 'lodash';
 import { createContext, PropsWithChildren, useCallback, useMemo, useRef, useState } from 'react';
@@ -29,6 +30,8 @@ export const TaxonomyContext = createContext<ITaxonomyContext>({
 export const TaxonomyContextProvider = (props: PropsWithChildren) => {
   const biohubApi = useBiohubApi();
 
+  const isMounted = useIsMounted();
+
   const [_taxonomyCache, _setTaxonomyCache] = useState<Record<number, ITaxonomy | null>>({});
   const _dispatched = useRef<Record<number, Promise<void>>>({});
 
@@ -47,14 +50,22 @@ export const TaxonomyContextProvider = (props: PropsWithChildren) => {
             newTaxonomyItems[item.id] = item;
           }
 
+          if (!isMounted()) {
+            return;
+          }
+
           _setTaxonomyCache((previous) => ({ ...previous, ...newTaxonomyItems }));
         })
         .catch(() => {})
         .finally(() => {
+          if (!isMounted()) {
+            return;
+          }
+
           setIsLoading(false);
         });
     },
-    [biohubApi.taxonomy]
+    [biohubApi.taxonomy, isMounted]
   );
 
   const getCachedSpeciesTaxonomyById = useCallback(

@@ -155,8 +155,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   const [addedRowIds, setAddedRowIds] = useState<string[]>([]);
   // True if the rows are in the process of transitioning from edit to view mode
   const [_isStoppingEdit, _setIsStoppingEdit] = useState(false);
-  // True if the taxonomy cache has loaded
-  const [hasLoadedTaxonomy, setHasLoadedTaxonomy] = useState(false);
+  // True if the taxonomy cache has been initialized
+  const [hasInitializedTaxonomyCache, setHasInitializedTaxonomyCache] = useState(false);
   // True if the records are in the process of being saved to the server
   const [_isSaving, _setIsSaving] = useState(false);
   // Stores the current count of observations for this survey
@@ -415,8 +415,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   );
 
   const isLoading: boolean = useMemo(() => {
-    return !hasLoadedTaxonomy || observationsContext.observationsDataLoader.isLoading;
-  }, [hasLoadedTaxonomy, observationsContext.observationsDataLoader.isLoading]);
+    return !hasInitializedTaxonomyCache || observationsContext.observationsDataLoader.isLoading;
+  }, [hasInitializedTaxonomyCache, observationsContext.observationsDataLoader.isLoading]);
 
   const isSaving: boolean = useMemo(() => {
     return _isSaving || _isStoppingEdit;
@@ -427,8 +427,13 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    * deleted; Only on initial page load, and whenever records are saved.
    */
   useEffect(() => {
-    if (!observationsContext.observationsDataLoader.hasLoaded || !observationsContext.observationsDataLoader.data) {
-      // Existing observation records have not yet loaded, or don't exist
+    if (!observationsContext.observationsDataLoader.hasLoaded) {
+      // Existing observation records have not yet loaded
+      return;
+    }
+
+    if (!observationsContext.observationsDataLoader.data) {
+      // Existing observation data doesn't exist
       return;
     }
 
@@ -437,19 +442,28 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       (row: IObservationRecord) => ({ ...row, id: row.survey_observation_id })
     );
 
-    if (!rows.length) {
-      setHasLoadedTaxonomy(true);
-      return;
-    }
-
     // Set initial rows for the table context
     setRows(rows);
 
     // Set initial observations count
     setObservationCount(observationsContext.observationsDataLoader.data.supplementaryObservationData.observationCount);
+  }, [observationsContext.observationsDataLoader.data, observationsContext.observationsDataLoader.hasLoaded]);
 
-    if (taxonomyContext.isLoading || hasLoadedTaxonomy) {
-      // Taxonomy cache is currently loading, or has already loadedF
+  /**
+   * Runs when observation context data has changed. This does not occur when records are
+   * deleted; Only on initial page load, and whenever records are saved.
+   */
+  useEffect(() => {
+    if (taxonomyContext.isLoading || hasInitializedTaxonomyCache) {
+      // Taxonomy cache is currently loading, or has already loaded
+      return;
+    }
+
+    // Only attempt to initialize the cache once
+    setHasInitializedTaxonomyCache(true);
+
+    if (!observationsContext.observationsDataLoader.data?.surveyObservations.length) {
+      // No taxonomy records to fetch and cache
       return;
     }
 
@@ -464,14 +478,16 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     );
 
     // Fetch and cache all unique taxonomic IDs
+    taxonomyContext.cacheSpeciesTaxonomyByIds(uniqueTaxonomicIds).catch(() => {});
+  }, [
+    hasInitializedTaxonomyCache,
+    observationsContext.observationsDataLoader.data?.surveyObservations,
     taxonomyContext
-      .cacheSpeciesTaxonomyByIds(uniqueTaxonomicIds)
-      .catch(() => {})
-      .finally(() => {
-        setHasLoadedTaxonomy(true);
-      });
-  }, [hasLoadedTaxonomy, observationsContext.observationsDataLoader.data, taxonomyContext]);
+  ]);
 
+  /**
+   * Runs when row records are being saved and transitioned from Edit mode to View mode.
+   */
   useEffect(() => {
     if (!_muiDataGridApiRef?.current?.getRowModels) {
       // Data grid is not fully initialized
@@ -548,9 +564,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       observationCount
     ]
   );
-
-  console.log({ hasLoadedTaxonomy
-  })
 
   return (
     <ObservationsTableContext.Provider value={observationsTableContext}>
