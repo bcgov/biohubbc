@@ -135,13 +135,13 @@ const ObservationsMap = () => {
             layers={[
               {
                 layerName: 'Study Area',
-                features: studyAreaFeatures.map((feature) => ({ geoJSON: feature, tooltip: <>Study Area</> }))
+                features: studyAreaFeatures.map((feature) => ({ geoJSON: feature, tooltip: <span>Study Area</span> }))
               },
               {
                 layerName: 'Sample Sites',
                 features: sampleSiteFeatures.map((feature) => ({
                   geoJSON: feature,
-                  tooltip: <>Sample Site</>
+                  tooltip: <span>Sample Site</span>
                 }))
               }
             ]}
