@@ -101,7 +101,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
               variant="outlined"
               size="small"
               data-testid="boundary_file-upload"
-              disabled={!(values.locations.length > 0)}
+              disabled={values.locations.length <= 0}
               startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
               onClick={() => toggle_delete_dialog(true)}
               aria-label="Remove all study areas">
