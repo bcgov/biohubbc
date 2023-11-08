@@ -64,7 +64,12 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
           setFieldError(formik_key, message);
         }}
       />
-      <Toolbar>
+      <Toolbar
+        disableGutters
+        sx={{
+          px: 2
+        }}
+      >
         <Typography
           component="h4"
           fontWeight="700"
@@ -99,7 +104,6 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
             <Button
               color="primary"
               variant="outlined"
-              size="small"
               data-testid="boundary_file-upload"
               disabled={values.locations.length <= 0}
               startIcon={<Icon path={mdiTrashCanOutline} size={1} />}

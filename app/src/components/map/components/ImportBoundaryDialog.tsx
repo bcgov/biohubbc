@@ -2,7 +2,6 @@ import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
-import { ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
 import { Feature } from 'geojson';
 import { boundaryUploadHelper } from 'utils/mapBoundaryUploadHelpers';
 
@@ -19,7 +18,7 @@ const ImportBoundaryDialog = (props: IImportBoundaryDialogProps) => {
     <ComponentDialog open={isOpen} dialogTitle="Import Boundary" onClose={onClose}>
       <Box>
         <Box mb={3}>
-          <Alert severity="info">If importing a shapefile, it must be configured with a valid projection.</Alert>
+          <Alert severity="info">Shapefiles must be compressed into a single zip file. They can include one or more study area features.</Alert>
         </Box>
         <FileUpload
           uploadHandler={boundaryUploadHelper({
@@ -27,7 +26,9 @@ const ImportBoundaryDialog = (props: IImportBoundaryDialogProps) => {
             onFailure
           })}
           dropZoneProps={{
-            acceptedFileExtensions: ProjectSurveyAttachmentValidExtensions.SPATIAL
+            maxNumFiles: 1,
+            multiple: false,
+            acceptedFileExtensions: '.kml, .zip'
           }}
         />
       </Box>

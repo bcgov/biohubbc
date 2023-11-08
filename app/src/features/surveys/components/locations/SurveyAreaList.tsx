@@ -95,8 +95,6 @@ export const SurveyAreaList = (props: ISurveyAreaListProps) => {
                     </IconButton>
                   }
                   sx={{
-                    py: 1.5,
-                    pl: 3,
                     minHeight: '55px'
                   }}>
                   <ListItemText
