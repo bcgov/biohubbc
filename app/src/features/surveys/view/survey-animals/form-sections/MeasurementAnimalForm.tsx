@@ -9,6 +9,7 @@ import { has, startCase } from 'lodash-es';
 import { useEffect, useState } from 'react';
 import {
   AnimalMeasurementSchema,
+  ANIMAL_FORM_MODE,
   getAnimalFieldName,
   IAnimal,
   IAnimalMeasurement,
@@ -24,9 +25,11 @@ import {
 interface MeasurementFormContentProps {
   index: number;
   measurements?: IMeasurementStub[];
+  mode: ANIMAL_FORM_MODE;
 }
 
-export const MeasurementAnimalFormContent = ({ index, measurements }: MeasurementFormContentProps) => {
+export const MeasurementAnimalFormContent = (props: MeasurementFormContentProps) => {
+  const { index, measurements, mode } = props;
   const name: keyof IAnimal = 'measurements';
   const { values, handleChange, setFieldValue, handleBlur } = useFormikContext<IAnimal>();
   const taxonMeasurementId = values.measurements?.[index]?.taxon_measurement_id;
@@ -85,7 +88,7 @@ export const MeasurementAnimalFormContent = ({ index, measurements }: Measuremen
           onChange={handleMeasurementTypeChange}
           controlProps={{
             required: isRequiredInSchema(AnimalMeasurementSchema, 'taxon_measurement_id'),
-            disabled: !measurements?.length
+            disabled: !measurements?.length || mode === ANIMAL_FORM_MODE.EDIT
           }}>
           {measurements?.map((m) => (
             <MenuItem key={m.taxon_measurement_id} value={m.taxon_measurement_id}>
