@@ -61,7 +61,7 @@ export const surveyObservationsSupplementaryData: SchemaObject = {
       minimum: 0
     }
   }
-}
+};
 
 export const surveyObservationsResponseSchema: SchemaObject = {
   type: 'object',

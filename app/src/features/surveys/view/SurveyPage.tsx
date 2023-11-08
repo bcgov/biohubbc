@@ -1,9 +1,11 @@
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import { LinearProgress } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
+import Fade from '@mui/material/Fade';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -22,7 +24,6 @@ import SurveySummaryResults from './summary-results/SurveySummaryResults';
 import SurveyAnimals from './SurveyAnimals';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyHeader from './SurveyHeader';
-import { LinearProgress } from '@mui/material';
 
 //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
@@ -43,6 +44,10 @@ const SurveyPage: React.FC = () => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
+  useEffect(() => {
+    observationsContext.observationsDataLoader.refresh();
+  }, []);
+
   if (!codesContext.codesDataLoader.data || !surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
@@ -52,7 +57,7 @@ const SurveyPage: React.FC = () => {
       <SurveyHeader />
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper elevation={0} sx={{ overflow: 'hidden' }}>
-          <Toolbar>
+          <Toolbar sx={{ mb: -1 }}>
             <Typography
               component="h3"
               variant="h4"
@@ -74,7 +79,9 @@ const SurveyPage: React.FC = () => {
               Manage Observations
             </Button>
           </Toolbar>
-          <LinearProgress variant='indeterminate' sx={{ borderRadius: 0 }} />
+          <Fade in={observationsContext.observationsDataLoader.isLoading}>
+            <LinearProgress variant="indeterminate" sx={{ borderRadius: 0 }} />
+          </Fade>
           <ObservationsMap />
         </Paper>
 

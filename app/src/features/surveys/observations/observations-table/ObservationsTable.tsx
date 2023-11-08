@@ -89,6 +89,13 @@ const LoadingOverlay = () => {
       <SampleSiteSkeleton />
       <SampleSiteSkeleton />
       <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
     </Box>
   );
 };
@@ -108,13 +115,16 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       observationsContext.observationsDataLoader.isLoading && !observationsContext.observationsDataLoader.hasLoaded,
       props.isLoading,
       surveyContext.sampleSiteDataLoader.isLoading,
-      observationsTableContext.isLoading
+      observationsTableContext.isLoading,
+      observationsTableContext.isSaving
     ].some(Boolean);
   }, [
-    observationsContext.observationsDataLoader,
-    surveyContext.sampleSiteDataLoader,
+    observationsContext.observationsDataLoader.isLoading,
+    observationsContext.observationsDataLoader.hasLoaded,
     props.isLoading,
-    observationsTableContext.isLoading
+    surveyContext.sampleSiteDataLoader.isLoading,
+    observationsTableContext.isLoading,
+    observationsTableContext.isSaving
   ]);
 
   // Collect sample sites
@@ -469,7 +479,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       apiRef={apiRef}
       editMode="row"
       columns={observationColumns}
-      rows={isLoading ? [] : observationsTableContext.rows}
+      rows={observationsTableContext.rows}
       onRowEditStart={(params) => observationsTableContext.onRowEditStart(params.id)}
       onRowEditStop={(_params, event) => {
         event.defaultMuiPrevented = true;

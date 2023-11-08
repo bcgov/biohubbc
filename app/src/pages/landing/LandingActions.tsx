@@ -73,7 +73,7 @@ const LandingActions = () => {
   const userIdentifier = authStateContext.simsUserWrapper.userIdentifier ?? '';
 
   const hasPendingAccessRequest = authStateContext.simsUserWrapper.hasAccessRequest;
-  const isSystemUser = authStateContext.simsUserWrapper.systemUserId;
+  const isSystemUser = !!authStateContext.simsUserWrapper.systemUserId;
 
   const hasAdministrativeRole = hasAtLeastOneValidValue(
     [SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN],

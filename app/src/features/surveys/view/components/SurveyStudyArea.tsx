@@ -67,11 +67,9 @@ const SurveyStudyArea = () => {
   }, [biohubApi.spatial, surveyContext.surveyDataLoader.data?.surveyData?.locations]);
 
   return (
-    <>
-      <Box component="dl">
-        <InferredLocationDetails layers={inferredLayersInfo} />
-      </Box>
-    </>
+    <Box component="dl">
+      <InferredLocationDetails layers={inferredLayersInfo} />
+    </Box>
   );
 };
 

@@ -78,7 +78,7 @@ export function searchSpecies(): RequestHandler {
       const response = await taxonomyService.searchSpecies(term.toLowerCase());
 
       // Overwrite default cache-control header, allow caching up to 7 days
-      res.setHeader('Cache-Control', 'max-age=604800'); 
+      res.setHeader('Cache-Control', 'max-age=604800');
 
       res.status(200).json({ searchResponse: response });
     } catch (error) {

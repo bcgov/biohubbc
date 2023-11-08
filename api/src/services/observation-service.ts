@@ -115,11 +115,9 @@ export class ObservationService extends DBService {
    * @return {*}  {Promise<{ surveyObservations: ObservationRecord[]; supplementaryObservationData: ObservationSupplementaryData }>}
    * @memberof ObservationService
    */
-  async getSurveyObservationsSupplementaryData(
-    surveyId: number
-  ): Promise<ObservationSupplementaryData> {
+  async getSurveyObservationsSupplementaryData(surveyId: number): Promise<ObservationSupplementaryData> {
     const observationCount = await this.observationRepository.getSurveyObservationCount(surveyId);
-  
+
     return { observationCount };
   }
 

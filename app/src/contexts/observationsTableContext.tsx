@@ -154,11 +154,11 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   // New rows (regardless of mode)
   const [addedRowIds, setAddedRowIds] = useState<string[]>([]);
   // True if the rows are in the process of transitioning from edit to view mode
-  const [isStoppingEdit, setIsStoppingEdit] = useState(false);
+  const [_isStoppingEdit, _setIsStoppingEdit] = useState(false);
   // True if the taxonomy cache has loaded
   const [hasLoadedTaxonomy, setHasLoadedTaxonomy] = useState(false);
   // True if the records are in the process of being saved to the server
-  const [isSaving, setIsSaving] = useState(false);
+  const [_isSaving, _setIsSaving] = useState(false);
   // Stores the current count of observations for this survey
   const [observationCount, setObservationCount] = useState<number>(0);
 
@@ -316,12 +316,12 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    * Transition all editable rows from edit mode to view mode.
    */
   const saveObservationRecords = useCallback(() => {
-    if (isStoppingEdit) {
+    if (_isStoppingEdit) {
       // Stop edit mode already in progress
       return;
     }
 
-    setIsStoppingEdit(true);
+    _setIsStoppingEdit(true);
 
     // The ids of all rows in edit mode
     const allEditingIds = Object.keys(_muiDataGridApiRef.current.state.editRows);
@@ -331,7 +331,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     if (!editingIdsToSave.length) {
       // No rows in edit mode, nothing to stop or save
-      setIsStoppingEdit(false);
+      _setIsStoppingEdit(false);
       return;
     }
 
@@ -342,7 +342,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     // Store ids of rows that were in edit mode
     setModifiedRowIds(editingIdsToSave);
-  }, [_muiDataGridApiRef, isStoppingEdit, rows]);
+  }, [_muiDataGridApiRef, _isStoppingEdit, rows]);
 
   /**
    * Transition all rows tracked by `modifiedRowIds` to view mode.
@@ -408,7 +408,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
           open: true
         });
       } finally {
-        setIsSaving(false);
+        _setIsSaving(false);
       }
     },
     [biohubApi.observation, projectId, surveyId, dialogContext, refreshObservationRecords, _revertAllRowsEditMode]
@@ -417,6 +417,10 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   const isLoading: boolean = useMemo(() => {
     return !hasLoadedTaxonomy || observationsContext.observationsDataLoader.isLoading;
   }, [hasLoadedTaxonomy, observationsContext.observationsDataLoader.isLoading]);
+
+  const isSaving: boolean = useMemo(() => {
+    return _isSaving || _isStoppingEdit;
+  }, [_isSaving, _isStoppingEdit]);
 
   /**
    * Runs when observation context data has changed. This does not occur when records are
@@ -473,7 +477,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       return;
     }
 
-    if (!isStoppingEdit) {
+    if (!_isStoppingEdit) {
       // Stop edit mode not in progress, cannot save yet
       return;
     }
@@ -483,7 +487,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       return;
     }
 
-    if (isSaving) {
+    if (_isSaving) {
       // Saving already in progress
       return;
     }
@@ -494,16 +498,16 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     }
 
     // All rows have transitioned to view mode
-    setIsStoppingEdit(false);
+    _setIsStoppingEdit(false);
 
     // Start saving records
-    setIsSaving(true);
+    _setIsSaving(true);
 
     const rowModels = _muiDataGridApiRef.current.getRowModels();
     const rowValues = Array.from(rowModels, ([_, value]) => value);
 
     _saveRecords(rowValues);
-  }, [_muiDataGridApiRef, _saveRecords, isSaving, isStoppingEdit, modifiedRowIds]);
+  }, [_muiDataGridApiRef, _saveRecords, _isSaving, _isStoppingEdit, modifiedRowIds]);
 
   const observationsTableContext: IObservationsTableContext = useMemo(
     () => ({
