@@ -27,6 +27,32 @@ const tag =
 // const maxUploadNumFiles = 10;
 // const maxUploadFileSize = 52428800; // (bytes)
 
+/**
+ * Parses the npm cli command options and the git action context.
+ *
+ * @param {*} options
+ * @return {{
+ *   git: {
+ *     dir: '<string>',
+ *     branch: {
+ *       name: '<string>',
+ *       remote: '<string>',
+ *       merge: '<string>'
+ *     },
+ *     url: 'https://github.com/bcgov/biohubbc.git',
+ *     uri: 'https://github.com/bcgov/biohubbc',
+ *     http_url: 'https://github.com/bcgov/biohubbc.git',
+ *     owner: 'bcgov',
+ *     repository: 'biohubbc',
+ *     pull_request: '<pr_number>',
+ *     ref: '<string>',
+ *     branch_ref: '<string>'
+ *   },
+ *   pr: '<pr_number>',
+ *   config: {}, // JSON config map
+ *   type?: 'static'
+ * }}
+ */
 function processOptions(options) {
   const result = { ...options };
 
