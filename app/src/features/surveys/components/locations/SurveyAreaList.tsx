@@ -14,6 +14,9 @@ import { useState } from 'react';
 import TransitionGroup from 'react-transition-group/TransitionGroup';
 import { ISurveyLocation } from '../StudyAreaForm';
 import Stack from '@mui/material/Stack';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 
 export interface ISurveyAreaListProps {
   data: ISurveyLocation[];
@@ -72,42 +75,55 @@ export const SurveyAreaList = (props: ISurveyAreaListProps) => {
         </MenuItem>
       </Menu>
       <Box data-testid="study-area-list" display="flex" flexDirection="column" height="100%">
-        <Stack component={TransitionGroup} gap={1}>
+        <List component={TransitionGroup} disablePadding>
           {data.map((item: ISurveyLocation, index: number) => {
             return (
-              <Collapse key={`${item.name}-${item.description}`}>
-                <Card
-                  variant="outlined"
-                  sx={{
-                    background: grey[100],
-                    '& .MuiCardHeader-subheader': {
-                      display: '-webkit-box',
-                      WebkitLineClamp: '2',
-                      WebkitBoxOrient: 'vertical',
-                      maxWidth: '92ch',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      fontSize: '14px'
-                    }
-                  }}>
-                  <CardHeader
-                    title={item.name}
-                    subheader={item.description}
-                    action={
-                      <IconButton
-                        onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                          handleMenuClick(event, index)
-                        }
-                        aria-label="settings">
-                        <MoreVertIcon />
-                      </IconButton>
-                    }
+              <Collapse key={`${item.name}-${item.description}`}
+                className="study-area-list-item"  
+                sx={{
+                  '& + .study-area-list-item': {
+                    borderTop: '1px solid' + grey[300]
+                  }
+                }}
+              >
+                <ListItem
+                  component="div"
+                  secondaryAction={
+                    <IconButton
+                      onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
+                        handleMenuClick(event, index)
+                      }
+                      aria-label="settings">
+                      <MoreVertIcon />
+                    </IconButton>
+                  }
+                    sx={{
+                      pl: 3,
+                      minHeight: '55px'
+                    }}
+                  >
+                  <ListItemText
+                    sx={{
+                      '& .MuiListItemText-primary': {
+                        fontWeight: 700
+                      },
+                      '& .MuiListItemText-secondary': {
+                        display: '-webkit-box',
+                        WebkitLineClamp: '2',
+                        WebkitBoxOrient: 'vertical',
+                        maxWidth: '92ch',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }
+                    }}
+                    primary={item.name}
+                    secondary={item.description}
                   />
-                </Card>
+                </ListItem>
               </Collapse>
             );
           })}
-        </Stack>
+        </List>
       </Box>
     </>
   );

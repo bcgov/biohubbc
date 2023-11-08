@@ -195,7 +195,6 @@ const StudyAreaForm = () => {
 
           <Box
             sx={{
-              p: 1,
               maxHeight: 400,
               overflowY: 'auto'
             }}
