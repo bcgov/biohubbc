@@ -242,10 +242,10 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
               <Box component="fieldset">
                 <Typography component="legend">Define Survey Study Area</Typography>
                 <Stack gap={3}>
-                <Typography variant="body1" color="textSecondary">
-                  Import, draw or select a feature from an existing layer to define the study areas for this survey.
-                </Typography>
-                <StudyAreaForm />
+                  <Typography variant="body1" color="textSecondary">
+                    Import, draw or select a feature from an existing layer to define the study areas for this survey.
+                  </Typography>
+                  <StudyAreaForm />
                 </Stack>
               </Box>
             }

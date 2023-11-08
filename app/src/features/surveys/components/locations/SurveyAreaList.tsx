@@ -5,15 +5,15 @@ import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import { grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useState } from 'react';
 import TransitionGroup from 'react-transition-group/TransitionGroup';
-import { ISurveyLocation } from '../StudyAreaForm'
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
+import { ISurveyLocation } from '../StudyAreaForm';
 
 export interface ISurveyAreaListProps {
   data: ISurveyLocation[];
@@ -75,14 +75,14 @@ export const SurveyAreaList = (props: ISurveyAreaListProps) => {
         <List component={TransitionGroup} disablePadding>
           {data.map((item: ISurveyLocation, index: number) => {
             return (
-              <Collapse key={`${item.name}-${item.description}`}
-                className="study-area-list-item"  
+              <Collapse
+                key={`${item.name}-${item.description}`}
+                className="study-area-list-item"
                 sx={{
                   '& + .study-area-list-item': {
                     borderTop: '1px solid' + grey[300]
                   }
-                }}
-              >
+                }}>
                 <ListItem
                   component="div"
                   secondaryAction={
@@ -94,12 +94,11 @@ export const SurveyAreaList = (props: ISurveyAreaListProps) => {
                       <MoreVertIcon />
                     </IconButton>
                   }
-                    sx={{
-                      py: 1.5,
-                      pl: 3,
-                      minHeight: '55px'
-                    }}
-                  >
+                  sx={{
+                    py: 1.5,
+                    pl: 3,
+                    minHeight: '55px'
+                  }}>
                   <ListItemText
                     sx={{
                       '& .MuiListItemText-primary': {
@@ -111,7 +110,7 @@ export const SurveyAreaList = (props: ISurveyAreaListProps) => {
                         WebkitBoxOrient: 'vertical',
                         maxWidth: '92ch',
                         overflow: 'hidden',
-                        textOverflow: 'ellipsis',
+                        textOverflow: 'ellipsis'
                       }
                     }}
                     primary={item.name}
