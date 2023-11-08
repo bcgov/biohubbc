@@ -33,7 +33,7 @@ export interface ISurveyAreMapControlProps {
 
 export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
   const { map_id, formik_key, formik_props, draw_controls_ref, toggle_delete_dialog } = props;
-  const { setFieldValue, setFieldError, validateField, values } = formik_props;
+  const { setFieldValue, setFieldError, values } = formik_props;
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedRegion, setSelectedRegion] = useState<IRegionOption | null>(null);
@@ -68,9 +68,9 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
         disableGutters
         sx={{
           px: 2
-        }}
-      >
+        }}>
         <Typography
+          data-testid="map-control-title"
           component="h4"
           fontWeight="700"
           sx={{
@@ -104,7 +104,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
             <Button
               color="primary"
               variant="outlined"
-              data-testid="boundary_file-upload"
+              data-testid="boundary_remove-all"
               disabled={values.locations.length <= 0}
               startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
               onClick={() => toggle_delete_dialog(true)}
@@ -152,7 +152,6 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
                 leaflet_id: id
               };
               setFieldValue(formik_key, [...values.locations, location]);
-              validateField('locations');
             }}
             onLayerEdit={(event: DrawEvents.Edited) => {
               event.layers.getLayers().forEach((item) => {
