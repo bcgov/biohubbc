@@ -22,7 +22,7 @@ describe('Study Area Form', () => {
   });
 
   it('renders correctly with default values', async () => {
-    const { getByTestId, findByText } = render(
+    const { getByTestId } = render(
       <Formik
         initialValues={SurveyLocationInitialValues}
         validationSchema={SurveyLocationYupSchema}

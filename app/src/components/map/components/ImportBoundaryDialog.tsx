@@ -18,7 +18,9 @@ const ImportBoundaryDialog = (props: IImportBoundaryDialogProps) => {
     <ComponentDialog open={isOpen} dialogTitle="Import Boundary" onClose={onClose}>
       <Box>
         <Box mb={3}>
-          <Alert severity="info">Shapefiles must be compressed into a single zip file. They can include one or more study area features.</Alert>
+          <Alert severity="info">
+            Shapefiles must be compressed into a single zip file. They can include one or more study area features.
+          </Alert>
         </Box>
         <FileUpload
           uploadHandler={boundaryUploadHelper({
