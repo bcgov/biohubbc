@@ -269,8 +269,8 @@ export const SurveyAnimalsPage = () => {
         initialValues={critterAsFormikValues}
         enableReinitialize
         validationSchema={AnimalSchema}
-        validateOnBlur={false}
-        validateOnChange={true}
+        validateOnBlur={true}
+        validateOnChange={false}
         onSubmit={async (values, actions) => {
           const status = await handleCritterSave(values, ANIMAL_FORM_MODE.EDIT);
           if (status) {

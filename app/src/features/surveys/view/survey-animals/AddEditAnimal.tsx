@@ -60,7 +60,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const dialogContext = useContext(DialogContext);
   const { cid: survey_critter_id } = useQuery();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
-  const { submitForm, isValid, values, isSubmitting, initialValues, setFieldValue, isValidating, status } =
+  const { submitForm, isValid, values, isSubmitting, initialValues, isValidating, status } =
     useFormikContext<IAnimal>();
 
   const { data: allFamilies, refresh: refreshFamilies } = useDataLoader(cbApi.family.getAllFamilies);
@@ -212,10 +212,10 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                         submitForm();
                       }
                       setFormMode(ANIMAL_FORM_MODE.EDIT);
-                      setFieldValue(
+                      /* setFieldValue(
                         ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName,
                         values[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName]
-                      );
+                      ); */
                       setShowDialog(false);
                     }}
                     loading={isValidating || isSubmitting || !!status}>
