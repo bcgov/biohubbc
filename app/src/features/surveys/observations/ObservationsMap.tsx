@@ -139,6 +139,7 @@ const ObservationsMap = () => {
               },
               {
                 layerName: 'Sample Sites',
+                layerColors: { color: '#3C005A', fillColor: '#3C005A' },
                 features: sampleSiteFeatures.map((feature) => ({
                   geoJSON: feature,
                   tooltip: <span>Sample Site</span>
