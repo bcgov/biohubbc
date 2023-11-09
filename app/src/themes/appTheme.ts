@@ -216,6 +216,13 @@ const appTheme = createTheme({
         }
       }
     },
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          background: '#fff'
+        }
+      }
+    },
     MuiLink: {
       styleOverrides: {
         root: {

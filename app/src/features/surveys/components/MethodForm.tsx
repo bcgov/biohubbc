@@ -1,4 +1,5 @@
 import {
+  mdiArrowRight,
   mdiCalendarEnd,
   mdiCalendarStart,
   mdiClockOutline,
@@ -9,9 +10,11 @@ import {
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
 import CircularProgress from '@mui/material/CircularProgress';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
+import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import List from '@mui/material/List';
@@ -19,7 +22,9 @@ import ListItem from '@mui/material/ListItem';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import grey from '@mui/material/colors/grey';
 import CustomTextField from 'components/fields/CustomTextField';
 import { DateTimeFields } from 'components/fields/DateTimeFields';
 import { CodesContext } from 'contexts/codesContext';
@@ -168,21 +173,34 @@ const MethodForm = () => {
           <FieldArray
             name="periods"
             render={(arrayHelpers: FieldArrayRenderProps) => (
-              <>
-                <List disablePadding>
+              <Stack alignItems="flex-start">
+                
+                <Stack component={List} gap={1}
+                  sx={{
+                    mt: -1,
+                    p: 0
+                  }}
+                >
                   {values.periods.map((period, index) => {
                     return (
                       <ListItem
-                        alignItems="flex-start"
                         disableGutters
+                        divider
                         key={`sample_period_${period.start_date}-${period.end_date}`}
                         sx={{
-                          '& .MuiListItemSecondaryAction-root': {
-                            top: '36px'
-                          }
+                          pt: 1.5,
+                          pb: 2
                         }}>
-                        <Box width="100%">
-                          <Box width="100%" pt={1}>
+                        
+                        <Stack alignItems="flex-start" flexDirection="row" gap={1}>
+                          <Stack flexDirection="row" gap={1}
+                            sx={{
+                              '& .MuiFormHelperText-root': {
+                                mb: -0.75
+                              }
+                            }}
+                          >
+                          
                             <DateTimeFields
                               date={{
                                 dateLabel: 'Start Date',
@@ -193,18 +211,20 @@ const MethodForm = () => {
                                 dateIcon: mdiCalendarStart
                               }}
                               time={{
-                                timeLabel: 'Start Time',
+                                timeLabel: '',
                                 timeName: `periods[${index}].start_time`,
                                 timeId: String(index),
                                 timeRequired: false,
                                 timeHelperText: '',
-                                timeIcon: mdiClockTimeOneOutline
+                                timeIcon: mdiClockOutline
                               }}
                               formikProps={formikProps}
                             />
-                          </Box>
 
-                          <Box width="100%" pt={1}>
+                            <Box flex="0 0 auto" mt={2.25}>
+                              <Icon path={mdiArrowRight} size={0.8} />
+                            </Box>
+
                             <DateTimeFields
                               date={{
                                 dateLabel: 'End Date',
@@ -215,7 +235,7 @@ const MethodForm = () => {
                                 dateIcon: mdiCalendarEnd
                               }}
                               time={{
-                                timeLabel: 'End Time',
+                                timeLabel: '',
                                 timeName: `periods[${index}].end_time`,
                                 timeId: String(index),
                                 timeRequired: false,
@@ -224,23 +244,19 @@ const MethodForm = () => {
                               }}
                               formikProps={formikProps}
                             />
-                          </Box>
-                        </Box>
-                        <ListItemSecondaryAction
-                          sx={{
-                            flex: '0 0 auto'
-                          }}>
+                          </Stack>
                           <IconButton
+                            sx={{mt: 1 }}
                             data-testid="delete-icon"
                             aria-label="remove time period"
                             onClick={() => arrayHelpers.remove(index)}>
                             <Icon path={mdiTrashCanOutline} size={1} />
                           </IconButton>
-                        </ListItemSecondaryAction>
+                        </Stack>
                       </ListItem>
                     );
                   })}
-                </List>
+                </Stack>
                 {errors.periods && !Array.isArray(errors.periods) && (
                   <Box pt={2}>
                     <Typography variant="body2" color={'#f44336'}>
@@ -250,9 +266,7 @@ const MethodForm = () => {
                 )}
 
                 <Button
-                  sx={{
-                    mt: 1
-                  }}
+                  sx={{mt: 1}}
                   data-testid="sampling-period-add-button"
                   variant="outlined"
                   color="primary"
@@ -262,7 +276,8 @@ const MethodForm = () => {
                   onClick={() => arrayHelpers.push(SurveySampleMethodPeriodArrayItemInitialValues)}>
                   Add Time Period
                 </Button>
-              </>
+
+              </Stack>
             )}
           />
         </Box>

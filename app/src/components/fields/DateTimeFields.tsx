@@ -61,9 +61,15 @@ export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
-      <Grid container item spacing={3}>
+      <Grid container>
         <Grid item xs={6}>
           <DatePicker
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderTopRightRadius: 0,
+                borderBottomRightRadius: 0
+              }
+            }}
             slots={{
               openPickerIcon: DateIcon
             }}
@@ -103,6 +109,12 @@ export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
         </Grid>
         <Grid item xs={6}>
           <TimePicker
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderTopLeftRadius: 0,
+                borderBottomLeftRadius: 0
+              }
+            }}
             slots={{
               openPickerIcon: TimeIcon
             }}
@@ -115,12 +127,13 @@ export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
                 error: get(touched, timeName) && Boolean(get(errors, timeName)),
                 helperText: (get(touched, timeName) && get(errors, timeName)) || timeHelperText,
                 inputProps: {
-                  'data-testid': timeId
+                  'data-testid': timeId,
+                  'aria-label': 'Time (optional)'
                 },
                 InputLabelProps: {
-                  shrink: true
+                  shrink: true,
                 },
-                fullWidth: true
+                fullWidth: true,
               }
             }}
             label={timeLabel}

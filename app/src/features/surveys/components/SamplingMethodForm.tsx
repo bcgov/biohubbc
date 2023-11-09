@@ -191,13 +191,13 @@ const SamplingMethodForm = () => {
                       {item.periods.map((period) => (
                         <ListItem key={`sample_period_${period.start_date}-${period.end_date}`} divider>
                           <ListItemIcon>
-                            <Icon path={mdiCalendarRangeOutline} size={1} />
+                            <Icon path={mdiCalendarRangeOutline} size={0.75} />
                           </ListItemIcon>
                           <ListItemText primary={`${period.start_date} to ${period.end_date}`} />
                           {period.start_time && (
                             <>
                               <ListItemIcon>
-                                <Icon path={mdiClockOutline} size={1} />
+                                <Icon path={mdiClockOutline} size={0.75} />
                               </ListItemIcon>
                               <ListItemText
                                 primary={`${period.start_time} ${(period.end_time && `to ${period.end_time}`) || ''}`}
@@ -213,9 +213,6 @@ const SamplingMethodForm = () => {
             ))}
           </TransitionGroup>
           <Button
-            sx={{
-              mt: 1
-            }}
             data-testid="create-sample-method-add-button"
             variant="outlined"
             color="primary"
