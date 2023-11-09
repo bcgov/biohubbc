@@ -174,7 +174,7 @@ const MethodForm = () => {
             name="periods"
             render={(arrayHelpers: FieldArrayRenderProps) => (
               <Stack alignItems="flex-start">
-                
+
                 <Stack component={List} gap={1}
                   sx={{
                     mt: -1,
@@ -191,7 +191,7 @@ const MethodForm = () => {
                           pt: 1.5,
                           pb: 2
                         }}>
-                        
+
                         <Stack alignItems="flex-start" flexDirection="row" gap={1}>
                           <Stack flexDirection="row" gap={1}
                             sx={{
@@ -200,7 +200,7 @@ const MethodForm = () => {
                               }
                             }}
                           >
-                          
+
                             <DateTimeFields
                               date={{
                                 dateLabel: 'Start Date',
@@ -246,7 +246,7 @@ const MethodForm = () => {
                             />
                           </Stack>
                           <IconButton
-                            sx={{mt: 1 }}
+                            sx={{ mt: 1 }}
                             data-testid="delete-icon"
                             aria-label="remove time period"
                             onClick={() => arrayHelpers.remove(index)}>
@@ -266,7 +266,7 @@ const MethodForm = () => {
                 )}
 
                 <Button
-                  sx={{mt: 1}}
+                  sx={{ mt: 1 }}
                   data-testid="sampling-period-add-button"
                   variant="outlined"
                   color="primary"
