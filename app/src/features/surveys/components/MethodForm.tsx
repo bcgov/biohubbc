@@ -1,30 +1,24 @@
 import {
   mdiArrowRight,
-  mdiCalendarEnd,
-  mdiCalendarStart,
   mdiClockOutline,
-  mdiClockTimeOneOutline,
+  mdiCalendarMonthOutline,
   mdiPlus,
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
 import CircularProgress from '@mui/material/CircularProgress';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
-import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-import grey from '@mui/material/colors/grey';
+import Typography from '@mui/material/Typography'
 import CustomTextField from 'components/fields/CustomTextField';
 import { DateTimeFields } from 'components/fields/DateTimeFields';
 import { CodesContext } from 'contexts/codesContext';
@@ -208,7 +202,7 @@ const MethodForm = () => {
                                 dateId: String(index),
                                 dateRequired: true,
                                 dateHelperText: '',
-                                dateIcon: mdiCalendarStart
+                                dateIcon: mdiCalendarMonthOutline
                               }}
                               time={{
                                 timeLabel: '',
@@ -232,7 +226,7 @@ const MethodForm = () => {
                                 dateId: String(index),
                                 dateRequired: true,
                                 dateHelperText: '',
-                                dateIcon: mdiCalendarEnd
+                                dateIcon: mdiCalendarMonthOutline
                               }}
                               time={{
                                 timeLabel: '',
