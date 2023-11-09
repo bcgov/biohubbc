@@ -1,4 +1,4 @@
-import { mdiCalendarRangeOutline, mdiClockOutline, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiCalendarRangeOutline, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Alert from '@mui/material/Alert';
@@ -189,21 +189,16 @@ const SamplingMethodForm = () => {
                     </Typography>
                     <List dense disablePadding>
                       {item.periods.map((period) => (
-                        <ListItem key={`sample_period_${period.start_date}-${period.end_date}`} divider>
+                        <ListItem key={`sample_period_${period.survey_sample_period_id}`} divider>
                           <ListItemIcon>
-                            <Icon path={mdiCalendarRangeOutline} size={0.75} />
+                            <Icon path={mdiCalendarRangeOutline} size={1} />
                           </ListItemIcon>
-                          <ListItemText primary={`${period.start_date} to ${period.end_date}`} />
-                          {period.start_time && (
-                            <>
-                              <ListItemIcon>
-                                <Icon path={mdiClockOutline} size={0.75} />
-                              </ListItemIcon>
-                              <ListItemText
-                                primary={`${period.start_time} ${(period.end_time && `to ${period.end_time}`) || ''}`}
-                              />
-                            </>
-                          )}
+
+                          <ListItemText
+                            primary={`${period.start_date} ${period.start_time || ''} - ${period.end_date} ${
+                              period.end_time || ''
+                            }`}
+                          />
                         </ListItem>
                       ))}
                     </List>

@@ -131,9 +131,9 @@ export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
                   'aria-label': 'Time (optional)'
                 },
                 InputLabelProps: {
-                  shrink: true,
+                  shrink: true
                 },
-                fullWidth: true,
+                fullWidth: true
               }
             }}
             label={timeLabel}
@@ -150,6 +150,7 @@ export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
             }}
             views={['hours', 'minutes', 'seconds']}
             timeSteps={{ hours: 1, minutes: 1, seconds: 1 }}
+            ampm={false}
           />
         </Grid>
       </Grid>
