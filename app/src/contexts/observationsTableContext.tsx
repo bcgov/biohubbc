@@ -32,6 +32,10 @@ export interface IObservationTableRow extends Partial<IObservationRecord> {
   id: GridRowId;
 }
 
+export type RowValidationModel = Record<GridRowId, {
+  errors: string[];
+}>;
+
 /**
  * Context object that provides helper functions for working with a survey observations data grid.
  *
@@ -161,6 +165,15 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   const [_isSaving, _setIsSaving] = useState(false);
   // Stores the current count of observations for this survey
   const [observationCount, setObservationCount] = useState<number>(0);
+  // Stores the current validation state of the table
+  const [validationModel, setValidationModel] = useState<RowValidationModel>({});
+
+  /**
+   * Validates the given rows. Returns true if validation passes, false otherwise
+   */
+  const _validateRows = (rows: IObservationTableRow[]): boolean => {
+
+  }
 
   const _deleteRecords = useCallback(
     async (observationRecords: IObservationTableRow[]): Promise<void> => {
@@ -516,11 +529,13 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     // All rows have transitioned to view mode
     _setIsStoppingEdit(false);
 
+    // Validate rows
+    const rowModels = _muiDataGridApiRef.current.getRowModels();
+    const rowValues: IObservationTableRow[] = Array.from(rowModels, ([_, value]) => value) as IObservationTableRow[];
+    const result = _validateRows()
+
     // Start saving records
     _setIsSaving(true);
-
-    const rowModels = _muiDataGridApiRef.current.getRowModels();
-    const rowValues = Array.from(rowModels, ([_, value]) => value);
 
     _saveRecords(rowValues);
   }, [_muiDataGridApiRef, _saveRecords, _isSaving, _isStoppingEdit, modifiedRowIds]);
