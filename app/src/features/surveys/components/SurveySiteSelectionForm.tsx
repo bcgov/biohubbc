@@ -31,8 +31,8 @@ export const SurveySiteSelectionYupSchema = yup.object().shape({
   site_selection: yup.object().shape({
     strategies: yup
       .array()
-      .required('Must select a valid site selection strategy')
-      .min(1, 'Must select a valid site selection strategy')
+      .required('Site Selection Strategy is required')
+      .min(1, 'Site Selection Strategy is required')
       .of(yup.string())
       .when('stratums', (stratums: string[], schema: any) => {
         return stratums.length > 0

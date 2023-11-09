@@ -1,6 +1,8 @@
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
 import 'leaflet/dist/leaflet.css';
+// Custom CSS to fix/ tailor the leaflet map
+import './MapBase.scss';
 
 /**
  * This component exists to keep the leaflet map container css/ changes required for each map container to render properly.

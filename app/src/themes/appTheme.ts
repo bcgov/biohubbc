@@ -87,6 +87,13 @@ const appTheme = createTheme({
         }
       }
     },
+    MuiAlert: {
+      styleOverrides: {
+        outlinedError: {
+          background: 'rgb(251, 237, 238)'
+        }
+      }
+    },
     MuiAlertTitle: {
       styleOverrides: {
         root: {

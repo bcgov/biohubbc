@@ -5,8 +5,8 @@ import Box from '@mui/material/Box';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
 import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
-import { MapBaseCss } from 'components/map/components/MapBaseCss';
 import StaticLayers from 'components/map/components/StaticLayers';
+import { MapBaseCss } from 'components/map/styles/MapBaseCss';
 import { ALL_OF_BC_BOUNDARY, MAP_DEFAULT_CENTER } from 'constants/spatial';
 import { ObservationsContext } from 'contexts/observationsContext';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -135,11 +135,15 @@ const ObservationsMap = () => {
             layers={[
               {
                 layerName: 'Study Area',
-                features: studyAreaFeatures.map((feature) => ({ geoJSON: feature, tooltip: <>Study Area</> }))
+                features: studyAreaFeatures.map((feature) => ({ geoJSON: feature, tooltip: <span>Study Area</span> }))
               },
               {
                 layerName: 'Sample Sites',
-                features: sampleSiteFeatures.map((feature) => ({ geoJSON: feature, tooltip: <>Sample Site</> }))
+                layerColors: { color: '#3C005A', fillColor: '#3C005A' },
+                features: sampleSiteFeatures.map((feature) => ({
+                  geoJSON: feature,
+                  tooltip: <span>Sample Site</span>
+                }))
               }
             ]}
           />
