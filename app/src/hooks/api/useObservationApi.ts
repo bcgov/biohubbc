@@ -1,5 +1,9 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
-import { IObservationRecord, IObservationTableRow } from 'contexts/observationsTableContext';
+import {
+  IObservationRecord,
+  IObservationTableRow,
+  ISupplementaryObservationData
+} from 'contexts/observationsTableContext';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
 
 /**
@@ -109,10 +113,11 @@ const useObservationApi = (axios: AxiosInstance) => {
     projectId: number,
     surveyId: number,
     surveyObservationIds: (string | number)[]
-  ): Promise<number> => {
-    const { data } = await axios.post<number>(`/api/project/${projectId}/survey/${surveyId}/observations/delete`, {
-      surveyObservationIds
-    });
+  ): Promise<{ supplementaryObservationData: ISupplementaryObservationData }> => {
+    const { data } = await axios.post<{ supplementaryObservationData: ISupplementaryObservationData }>(
+      `/api/project/${projectId}/survey/${surveyId}/observations/delete`,
+      { surveyObservationIds }
+    );
 
     return data;
   };

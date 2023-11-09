@@ -9,6 +9,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { SurveyContext } from './surveyContext';
+import { TaxonomyContext } from './taxonomyContext';
 
 export interface IObservationRecord {
   survey_observation_id: number;
@@ -21,6 +22,10 @@ export interface IObservationRecord {
   observation_time: string;
   latitude: number | null;
   longitude: number | null;
+}
+
+export interface ISupplementaryObservationData {
+  observationCount: number;
 }
 
 export interface IObservationTableRow extends Partial<IObservationRecord> {
@@ -94,6 +99,18 @@ export type IObservationsTableContext = {
    * Indicates if the data is in the process of being persisted to the server.
    */
   isSaving: boolean;
+  /**
+   * Indicates whether or not content in the observations table is loading.
+   */
+  isLoading: boolean;
+  /**
+   * Reflects the count of total observations for the survey
+   */
+  observationCount: number;
+  /**
+   * Updates the total observation count for the survey
+   */
+  setObservationCount: (observationCount: number) => void;
 };
 
 export const ObservationsTableContext = createContext<IObservationsTableContext>({
@@ -111,7 +128,10 @@ export const ObservationsTableContext = createContext<IObservationsTableContext>
   onRowEditStart: () => {},
   rowSelectionModel: [],
   onRowSelectionModelChange: () => {},
-  isSaving: false
+  isSaving: false,
+  isLoading: false,
+  observationCount: 0,
+  setObservationCount: () => undefined
 });
 
 export const ObservationsTableContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
@@ -120,6 +140,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   const _muiDataGridApiRef = useGridApiRef();
 
   const observationsContext = useContext(ObservationsContext);
+  const taxonomyContext = useContext(TaxonomyContext);
   const dialogContext = useContext(DialogContext);
 
   const biohubApi = useBiohubApi();
@@ -133,9 +154,13 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   // New rows (regardless of mode)
   const [addedRowIds, setAddedRowIds] = useState<string[]>([]);
   // True if the rows are in the process of transitioning from edit to view mode
-  const [isStoppingEdit, setIsStoppingEdit] = useState(false);
+  const [_isStoppingEdit, _setIsStoppingEdit] = useState(false);
+  // True if the taxonomy cache has been initialized
+  const [hasInitializedTaxonomyCache, setHasInitializedTaxonomyCache] = useState(false);
   // True if the records are in the process of being saved to the server
-  const [isSaving, setIsSaving] = useState(false);
+  const [_isSaving, _setIsSaving] = useState(false);
+  // Stores the current count of observations for this survey
+  const [observationCount, setObservationCount] = useState<number>(0);
 
   const _deleteRecords = useCallback(
     async (observationRecords: IObservationTableRow[]): Promise<void> => {
@@ -153,7 +178,12 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
       try {
         if (modifiedRowIdsToDelete.length) {
-          await biohubApi.observation.deleteObservationRecords(projectId, surveyId, modifiedRowIdsToDelete);
+          const response = await biohubApi.observation.deleteObservationRecords(
+            projectId,
+            surveyId,
+            modifiedRowIdsToDelete
+          );
+          setObservationCount(response.supplementaryObservationData.observationCount);
         }
 
         // Update all rows, removing deleted rows
@@ -167,6 +197,18 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
         // Close yes-no dialog
         dialogContext.setYesNoDialog({ open: false });
+
+        // Show snackbar for successful deletion
+        dialogContext.setSnackbar({
+          snackbarMessage: (
+            <Typography variant="body2" component="div">
+              {observationRecords.length === 1
+                ? ObservationsTableI18N.deleteSingleRecordSuccessSnackbarMessage
+                : ObservationsTableI18N.deleteMultipleRecordSuccessSnackbarMessage(observationRecords.length)}
+            </Typography>
+          ),
+          open: true
+        });
       } catch {
         // Close yes-no dialog
         dialogContext.setYesNoDialog({ open: false });
@@ -204,7 +246,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         dialogTitle:
           observationRecords.length === 1
             ? ObservationsTableI18N.removeSingleRecordDialogTitle
-            : ObservationsTableI18N.removeMultipleRecordsDialogTitle,
+            : ObservationsTableI18N.removeMultipleRecordsDialogTitle(observationRecords.length),
         dialogText:
           observationRecords.length === 1
             ? ObservationsTableI18N.removeSingleRecordDialogText
@@ -274,12 +316,12 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    * Transition all editable rows from edit mode to view mode.
    */
   const saveObservationRecords = useCallback(() => {
-    if (isStoppingEdit) {
+    if (_isStoppingEdit) {
       // Stop edit mode already in progress
       return;
     }
 
-    setIsStoppingEdit(true);
+    _setIsStoppingEdit(true);
 
     // The ids of all rows in edit mode
     const allEditingIds = Object.keys(_muiDataGridApiRef.current.state.editRows);
@@ -289,7 +331,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     if (!editingIdsToSave.length) {
       // No rows in edit mode, nothing to stop or save
-      setIsStoppingEdit(false);
+      _setIsStoppingEdit(false);
       return;
     }
 
@@ -300,7 +342,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     // Store ids of rows that were in edit mode
     setModifiedRowIds(editingIdsToSave);
-  }, [_muiDataGridApiRef, isStoppingEdit, rows]);
+  }, [_muiDataGridApiRef, _isStoppingEdit, rows]);
 
   /**
    * Transition all rows tracked by `modifiedRowIds` to view mode.
@@ -347,7 +389,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         dialogContext.setSnackbar({
           snackbarMessage: (
             <Typography variant="body2" component="div">
-              Observations updated successfully.
+              {ObservationsTableI18N.saveRecordsSuccessSnackbarMessage}
             </Typography>
           ),
           open: true
@@ -366,35 +408,92 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
           open: true
         });
       } finally {
-        setIsSaving(false);
+        _setIsSaving(false);
       }
     },
     [biohubApi.observation, projectId, surveyId, dialogContext, refreshObservationRecords, _revertAllRowsEditMode]
   );
 
+  const isLoading: boolean = useMemo(() => {
+    return !hasInitializedTaxonomyCache || observationsContext.observationsDataLoader.isLoading;
+  }, [hasInitializedTaxonomyCache, observationsContext.observationsDataLoader.isLoading]);
+
+  const isSaving: boolean = useMemo(() => {
+    return _isSaving || _isStoppingEdit;
+  }, [_isSaving, _isStoppingEdit]);
+
+  /**
+   * Runs when observation context data has changed. This does not occur when records are
+   * deleted; Only on initial page load, and whenever records are saved.
+   */
   useEffect(() => {
-    if (!observationsContext.observationsDataLoader.data?.surveyObservations?.length) {
+    if (!observationsContext.observationsDataLoader.hasLoaded) {
+      // Existing observation records have not yet loaded
       return;
     }
 
+    if (!observationsContext.observationsDataLoader.data) {
+      // Existing observation data doesn't exist
+      return;
+    }
+
+    // Collect rows from the observations data loader
     const rows: IObservationTableRow[] = observationsContext.observationsDataLoader.data.surveyObservations.map(
       (row: IObservationRecord) => ({ ...row, id: row.survey_observation_id })
     );
 
-    if (!rows.length) {
+    // Set initial rows for the table context
+    setRows(rows);
+
+    // Set initial observations count
+    setObservationCount(observationsContext.observationsDataLoader.data.supplementaryObservationData.observationCount);
+  }, [observationsContext.observationsDataLoader.data, observationsContext.observationsDataLoader.hasLoaded]);
+
+  /**
+   * Runs onces on initial page load.
+   */
+  useEffect(() => {
+    if (taxonomyContext.isLoading || hasInitializedTaxonomyCache) {
+      // Taxonomy cache is currently loading, or has already loaded
       return;
     }
 
-    setRows(rows);
-  }, [observationsContext.observationsDataLoader.data]);
+    // Only attempt to initialize the cache once
+    setHasInitializedTaxonomyCache(true);
 
+    if (!observationsContext.observationsDataLoader.data?.surveyObservations.length) {
+      // No taxonomy records to fetch and cache
+      return;
+    }
+
+    const uniqueTaxonomicIds: number[] = Array.from(
+      observationsContext.observationsDataLoader.data.surveyObservations.reduce(
+        (acc: Set<number>, record: IObservationRecord) => {
+          acc.add(record.wldtaxonomic_units_id);
+          return acc;
+        },
+        new Set<number>([])
+      )
+    );
+
+    // Fetch and cache all unique taxonomic IDs
+    taxonomyContext.cacheSpeciesTaxonomyByIds(uniqueTaxonomicIds).catch(() => {});
+  }, [
+    hasInitializedTaxonomyCache,
+    observationsContext.observationsDataLoader.data?.surveyObservations,
+    taxonomyContext
+  ]);
+
+  /**
+   * Runs when row records are being saved and transitioned from Edit mode to View mode.
+   */
   useEffect(() => {
     if (!_muiDataGridApiRef?.current?.getRowModels) {
       // Data grid is not fully initialized
       return;
     }
 
-    if (!isStoppingEdit) {
+    if (!_isStoppingEdit) {
       // Stop edit mode not in progress, cannot save yet
       return;
     }
@@ -404,7 +503,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       return;
     }
 
-    if (isSaving) {
+    if (_isSaving) {
       // Saving already in progress
       return;
     }
@@ -415,16 +514,16 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     }
 
     // All rows have transitioned to view mode
-    setIsStoppingEdit(false);
+    _setIsStoppingEdit(false);
 
     // Start saving records
-    setIsSaving(true);
+    _setIsSaving(true);
 
     const rowModels = _muiDataGridApiRef.current.getRowModels();
     const rowValues = Array.from(rowModels, ([_, value]) => value);
 
     _saveRecords(rowValues);
-  }, [_muiDataGridApiRef, _saveRecords, isSaving, isStoppingEdit, modifiedRowIds]);
+  }, [_muiDataGridApiRef, _saveRecords, _isSaving, _isStoppingEdit, modifiedRowIds]);
 
   const observationsTableContext: IObservationsTableContext = useMemo(
     () => ({
@@ -442,7 +541,10 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       onRowEditStart,
       rowSelectionModel,
       onRowSelectionModelChange: setRowSelectionModel,
-      isSaving
+      isLoading,
+      isSaving,
+      observationCount,
+      setObservationCount
     }),
     [
       _muiDataGridApiRef,
@@ -452,11 +554,13 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       deleteObservationRecords,
       deleteSelectedObservationRecords,
       revertObservationRecords,
-      getSelectedObservationRecords,
       refreshObservationRecords,
+      getSelectedObservationRecords,
       hasUnsavedChanges,
       rowSelectionModel,
-      isSaving
+      isLoading,
+      isSaving,
+      observationCount
     ]
   );
 

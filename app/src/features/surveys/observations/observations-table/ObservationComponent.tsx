@@ -16,7 +16,6 @@ import YesNoDialog from 'components/dialog/YesNoDialog';
 import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
 import { ObservationsTableI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
-import { ObservationsContext } from 'contexts/observationsContext';
 import { ObservationsTableContext } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import ObservationsTable from 'features/surveys/observations/observations-table/ObservationsTable';
@@ -29,7 +28,6 @@ const ObservationComponent = () => {
   const [processingRecords, setProcessingRecords] = useState<boolean>(false);
   const [menuAnchorEl, setMenuAnchorEl] = useState<Element | null>(null);
   const [showConfirmRemoveAllDialog, setShowConfirmRemoveAllDialog] = useState<boolean>(false);
-  const observationsContext = useContext(ObservationsContext);
   const observationsTableContext = useContext(ObservationsTableContext);
   const surveyContext = useContext(SurveyContext);
   const biohubApi = useBiohubApi();
@@ -71,8 +69,6 @@ const ObservationComponent = () => {
 
   const hasUnsavedChanges = observationsTableContext.hasUnsavedChanges;
   const numSelectedRows = observationsTableContext.rowSelectionModel.length;
-  const observationCount =
-    observationsContext.observationsDataLoader?.data?.supplementaryObservationData?.observationCount ?? 0;
 
   return (
     <>
@@ -117,7 +113,7 @@ const ObservationComponent = () => {
             }}>
             Observations &zwnj;
             <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
-              ({observationCount})
+              ({observationsTableContext.observationCount})
             </Typography>
           </Typography>
 

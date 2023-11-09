@@ -148,7 +148,7 @@ describe('ObservationRepository', () => {
 
       const response = await repo.getSurveyObservationCount(1);
 
-      expect(response).to.eql({ observationCount: 1 });
+      expect(response).to.eql(1);
     });
   });
 
