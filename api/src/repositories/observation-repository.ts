@@ -218,7 +218,7 @@ export class ObservationRepository extends BaseRepository {
    * @return {*}  {Promise<{ observationCount: number }>}
    * @memberof ObservationRepository
    */
-  async getSurveyObservationCount(surveyId: number): Promise<{ observationCount: number }> {
+  async getSurveyObservationCount(surveyId: number): Promise<number> {
     const knex = getKnex();
     const sqlStatement = knex
       .queryBuilder()
@@ -227,8 +227,8 @@ export class ObservationRepository extends BaseRepository {
       .where('survey_id', surveyId);
 
     const response = await this.connection.knex(sqlStatement);
-    const observationCount = Number(response.rows[0].rowCount);
-    return { observationCount };
+
+    return Number(response.rows[0].rowCount);
   }
 
   /**

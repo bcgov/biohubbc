@@ -23,7 +23,7 @@ import {
   IGetSamplePeriodRecord
 } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router';
 import { getCodesName } from 'utils/Utils';
 
@@ -52,19 +52,31 @@ const SampleSiteSkeleton = () => (
   <Box
     sx={{
       display: 'flex',
-      gap: '16px',
-      alignItemx: 'center',
-      p: 1,
-      height: 58,
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      p: 1.75,
+      height: 60,
       background: '#fff',
-      borderBottom: '1px solid ' + grey[300]
+      borderBottom: '1px solid ' + grey[300],
+      '& * ': {
+        transform: 'none !important'
+      }
     }}>
-    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
-    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
-    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
-    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
-    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
-    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
+    <Skeleton height={22} width={22} />
+    <Box
+      sx={{
+        display: 'flex',
+        gap: '16px',
+        alignItems: 'center',
+        px: 4,
+        flex: '1'
+      }}>
+      <Skeleton height={22} sx={{ flex: '1' }} />
+      <Skeleton height={22} sx={{ flex: '2' }} />
+      <Skeleton height={22} sx={{ flex: '3' }} />
+      <Skeleton height={22} sx={{ flex: '1' }} />
+    </Box>
+    <Skeleton height={40} width={40} variant="circular" />
   </Box>
 );
 
@@ -75,20 +87,46 @@ const LoadingOverlay = () => {
       <SampleSiteSkeleton />
       <SampleSiteSkeleton />
       <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
     </Box>
   );
 };
 
 const ObservationsTable = (props: ISpeciesObservationTableProps) => {
   const location = useLocation();
-  const observationsContext = useContext(ObservationsContext);
   const observationsTableContext = useContext(ObservationsTableContext);
+  const observationsContext = useContext(ObservationsContext);
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
   const hasLoadedCodes = Boolean(codesContext.codesDataLoader.data);
 
-  const { observationsDataLoader } = observationsContext;
   const apiRef = observationsTableContext._muiDataGridApiRef;
+
+  const isLoading = useMemo(() => {
+    return [
+      observationsContext.observationsDataLoader.isLoading && !observationsContext.observationsDataLoader.hasLoaded,
+      props.isLoading,
+      surveyContext.sampleSiteDataLoader.isLoading,
+      observationsTableContext.isLoading,
+      observationsTableContext.isSaving
+    ].some(Boolean);
+  }, [
+    observationsContext.observationsDataLoader.isLoading,
+    observationsContext.observationsDataLoader.hasLoaded,
+    props.isLoading,
+    surveyContext.sampleSiteDataLoader.isLoading,
+    observationsTableContext.isLoading,
+    observationsTableContext.isSaving
+  ]);
 
   // Collect sample sites
   const surveySampleSites: IGetSampleLocationRecord[] = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
@@ -444,7 +482,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     <DataGrid
       checkboxSelection
       disableRowSelectionOnClick
-      loading={(observationsDataLoader.isLoading && !observationsDataLoader.hasLoaded) || props.isLoading}
+      loading={isLoading}
       rowHeight={56}
       apiRef={apiRef}
       editMode="row"

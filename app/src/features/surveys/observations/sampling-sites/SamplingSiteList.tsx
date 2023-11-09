@@ -221,6 +221,12 @@ const SamplingSiteList = () => {
                 <SampleSiteSkeleton />
                 <SampleSiteSkeleton />
                 <SampleSiteSkeleton />
+                <SampleSiteSkeleton />
+                <SampleSiteSkeleton />
+                <SampleSiteSkeleton />
+                <SampleSiteSkeleton />
+                <SampleSiteSkeleton />
+                <SampleSiteSkeleton />
               </Paper>
             </Box>
           </Fade>

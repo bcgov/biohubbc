@@ -72,9 +72,13 @@ export function searchSpecies(): RequestHandler {
     defaultLog.debug({ label: 'getSearchResults', message: 'request params', req_params: req.query.terms });
 
     const term = String(req.query.terms) || '';
+
     try {
       const taxonomyService = new TaxonomyService();
       const response = await taxonomyService.searchSpecies(term.toLowerCase());
+
+      // Overwrite default cache-control header, allow caching up to 7 days
+      res.setHeader('Cache-Control', 'max-age=604800');
 
       res.status(200).json({ searchResponse: response });
     } catch (error) {

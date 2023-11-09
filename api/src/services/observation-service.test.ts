@@ -160,7 +160,7 @@ describe('ObservationService', () => {
         .resolves(mockObservations);
 
       const getSurveyObservationSupplementaryDataStub = sinon
-        .stub(ObservationRepository.prototype, 'getSurveyObservationCount')
+        .stub(ObservationService.prototype, 'getSurveyObservationsSupplementaryData')
         .resolves(mockSupplementaryData);
 
       const surveyId = 1;
