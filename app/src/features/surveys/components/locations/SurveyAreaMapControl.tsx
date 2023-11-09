@@ -21,6 +21,7 @@ import L, { DrawEvents, LatLngBoundsExpression } from 'leaflet';
 import { useEffect, useState } from 'react';
 import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
+import { v4 } from 'uuid';
 import { ISurveyLocation, ISurveyLocationForm } from '../StudyAreaForm';
 
 export interface ISurveyAreMapControlProps {
@@ -149,7 +150,8 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
                 description: '',
                 geojson: [feature],
                 revision_count: 0,
-                leaflet_id: id
+                leaflet_id: id,
+                uuid: v4()
               };
               setFieldValue(formik_key, [...values.locations, location]);
             }}
@@ -190,7 +192,8 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
                 name: layerName,
                 description: '',
                 geojson: [geo],
-                revision_count: 0
+                revision_count: 0,
+                uuid: v4()
               };
               setFieldValue(formik_key, [...values.locations, region]);
             }}

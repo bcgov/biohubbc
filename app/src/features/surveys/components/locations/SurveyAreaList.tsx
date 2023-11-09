@@ -76,7 +76,7 @@ export const SurveyAreaList = (props: ISurveyAreaListProps) => {
           {data.map((item: ISurveyLocation, index: number) => {
             return (
               <Collapse
-                key={`${item.name}-${item.description}`}
+                key={item.uuid}
                 className="study-area-list-item"
                 sx={{
                   '& + .study-area-list-item': {
