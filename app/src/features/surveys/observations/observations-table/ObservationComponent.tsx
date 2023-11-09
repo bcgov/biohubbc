@@ -55,7 +55,7 @@ const ObservationComponent = () => {
           showSnackBar({
             snackbarMessage: (
               <Typography variant="body2" component="div">
-                Imported survey observations successfully.
+                Observations imported successfully.
               </Typography>
             )
           });

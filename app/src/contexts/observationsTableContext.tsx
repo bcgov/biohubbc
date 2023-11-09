@@ -347,7 +347,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         dialogContext.setSnackbar({
           snackbarMessage: (
             <Typography variant="body2" component="div">
-              Updated survey observations successfully.
+              Observations updated successfully.
             </Typography>
           ),
           open: true

@@ -52,7 +52,9 @@ describe('SamplePeriodRepository', () => {
         survey_sample_method_id: 1,
         survey_sample_period_id: 2,
         start_date: '2023-10-02',
-        end_date: '2023-01-02'
+        end_date: '2023-01-02',
+        start_time: '12:00:00',
+        end_time: '13:00:00'
       };
       const repo = new SamplePeriodRepository(dbConnectionObj);
       const response = await repo.updateSamplePeriod(samplePeriod);
@@ -69,7 +71,9 @@ describe('SamplePeriodRepository', () => {
         survey_sample_method_id: 1,
         survey_sample_period_id: 2,
         start_date: '2023-10-02',
-        end_date: '2023-01-02'
+        end_date: '2023-01-02',
+        start_time: '12:00:00',
+        end_time: '13:00:00'
       };
       const repo = new SamplePeriodRepository(dbConnectionObj);
 
@@ -91,7 +95,9 @@ describe('SamplePeriodRepository', () => {
       const samplePeriod: InsertSamplePeriodRecord = {
         survey_sample_method_id: 1,
         start_date: '2023-10-02',
-        end_date: '2023-01-02'
+        end_date: '2023-01-02',
+        start_time: '12:00:00',
+        end_time: '13:00:00'
       };
       const repo = new SamplePeriodRepository(dbConnectionObj);
       const response = await repo.insertSamplePeriod(samplePeriod);
@@ -107,7 +113,9 @@ describe('SamplePeriodRepository', () => {
       const samplePeriod: InsertSamplePeriodRecord = {
         survey_sample_method_id: 1,
         start_date: '2023-10-02',
-        end_date: '2023-01-02'
+        end_date: '2023-01-02',
+        start_time: '12:00:00',
+        end_time: '13:00:00'
       };
       const repo = new SamplePeriodRepository(dbConnectionObj);
 

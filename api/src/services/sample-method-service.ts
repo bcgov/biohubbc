@@ -70,7 +70,9 @@ export class SampleMethodService extends DBService {
       const samplePeriod = {
         survey_sample_method_id: record.survey_sample_method_id,
         start_date: item.start_date,
-        end_date: item.end_date
+        end_date: item.end_date,
+        start_time: item.start_time,
+        end_time: item.end_time
       };
       return samplePeriodService.insertSamplePeriod(samplePeriod);
     });
@@ -134,7 +136,9 @@ export class SampleMethodService extends DBService {
         const samplePeriod = {
           survey_sample_method_id: sampleMethod.survey_sample_method_id,
           start_date: item.start_date,
-          end_date: item.end_date
+          end_date: item.end_date,
+          start_time: item.start_time,
+          end_time: item.end_time
         };
         await samplePeriodService.insertSamplePeriod(samplePeriod);
       }

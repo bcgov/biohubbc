@@ -1,4 +1,11 @@
-import { mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import {
+  mdiCalendarEnd,
+  mdiCalendarStart,
+  mdiClockOutline,
+  mdiClockTimeOneOutline,
+  mdiPlus,
+  mdiTrashCanOutline
+} from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -14,10 +21,11 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
-import StartEndDateFields from 'components/fields/StartEndDateFields';
+import { DateTimeFields } from 'components/fields/DateTimeFields';
 import { CodesContext } from 'contexts/codesContext';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import get from 'lodash-es/get';
+import moment from 'moment';
 import { useContext, useEffect } from 'react';
 import yup from 'utils/YupSchema';
 
@@ -26,6 +34,8 @@ interface ISurveySampleMethodPeriodData {
   survey_sample_method_id: number | null;
   start_date: string;
   end_date: string;
+  start_time: string | null;
+  end_time: string | null;
 }
 
 export interface ISurveySampleMethodData {
@@ -45,7 +55,9 @@ export const SurveySampleMethodPeriodArrayItemInitialValues = {
   survey_sample_period_id: '' as unknown as null,
   survey_sample_method_id: '' as unknown as null,
   start_date: '',
-  end_date: ''
+  end_date: '',
+  start_time: '',
+  end_time: ''
 };
 
 export const SurveySampleMethodDataInitialValues = {
@@ -72,7 +84,21 @@ export const SamplingSiteMethodYupSchema = yup.object({
           .typeError('End Date is required')
           .isValidDateString()
           .required('End Date is required')
-          .isEndDateSameOrAfterStartDate('start_date')
+          .isEndDateSameOrAfterStartDate('start_date'),
+        start_time: yup.string().nullable(),
+        end_time: yup
+          .string()
+          .nullable()
+          .test('checkDatesAreSameAndEndTimeIsAfterStart', 'End time must be after Start time', function (value) {
+            const { start_date, end_date, start_time } = this.parent;
+            if (start_date === end_date && start_time && value) {
+              const val = moment(`${start_date} ${start_time}`, 'YYYY-MM-DD HH:mm:ss').isBefore(
+                moment(`${end_date} ${value}`, 'YYYY-MM-DD HH:mm:ss')
+              );
+              return val;
+            }
+            return true;
+          })
       })
     )
     .hasUniqueDateRanges('Periods cannot overlap', 'start_date', 'end_date')
@@ -156,17 +182,53 @@ const MethodForm = () => {
                           }
                         }}>
                         <Box width="100%">
-                          <StartEndDateFields
-                            formikProps={formikProps}
-                            startName={`periods[${index}].start_date`}
-                            endName={`periods[${index}].end_date`}
-                            startRequired={true}
-                            endRequired={true}
-                          />
+                          <Box width="100%" pt={1}>
+                            <DateTimeFields
+                              date={{
+                                dateLabel: 'Start Date',
+                                dateName: `periods[${index}].start_date`,
+                                dateId: String(index),
+                                dateRequired: true,
+                                dateHelperText: '',
+                                dateIcon: mdiCalendarStart
+                              }}
+                              time={{
+                                timeLabel: 'Start Time',
+                                timeName: `periods[${index}].start_time`,
+                                timeId: String(index),
+                                timeRequired: false,
+                                timeHelperText: '',
+                                timeIcon: mdiClockTimeOneOutline
+                              }}
+                              formikProps={formikProps}
+                            />
+                          </Box>
+
+                          <Box width="100%" pt={1}>
+                            <DateTimeFields
+                              date={{
+                                dateLabel: 'End Date',
+                                dateName: `periods[${index}].end_date`,
+                                dateId: String(index),
+                                dateRequired: true,
+                                dateHelperText: '',
+                                dateIcon: mdiCalendarEnd
+                              }}
+                              time={{
+                                timeLabel: 'End Time',
+                                timeName: `periods[${index}].end_time`,
+                                timeId: String(index),
+                                timeRequired: false,
+                                timeHelperText: '',
+                                timeIcon: mdiClockOutline
+                              }}
+                              formikProps={formikProps}
+                            />
+                          </Box>
                         </Box>
                         <ListItemSecondaryAction
                           sx={{
-                            top: '36px'
+                            flex: '0 0 auto'
                           }}>
                           <IconButton
                             data-testid="delete-icon"
