@@ -23,7 +23,7 @@ import { useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
 
-interface AnimalListProps {
+interface IAnimalListProps {
   isLoading?: boolean;
   critterData?: IDetailedCritterWithInternalId[];
   selectedSection: IAnimalSections;
@@ -31,7 +31,7 @@ interface AnimalListProps {
   onAddButton: () => void;
 }
 
-const SkeletonOrEmpty = (props: { displaySkeleton: boolean }) =>
+const ListPlaceholder = (props: { displaySkeleton: boolean }) =>
   props.displaySkeleton ? (
     <Box
       flexDirection="column"
@@ -51,7 +51,7 @@ const SkeletonOrEmpty = (props: { displaySkeleton: boolean }) =>
     </Box>
   );
 
-const AnimalList = (props: AnimalListProps) => {
+const AnimalList = (props: IAnimalListProps) => {
   const { isLoading, selectedSection, onSelectSection, critterData, onAddButton } = props;
   const { cid: survey_critter_id } = useQuery();
 
@@ -111,7 +111,7 @@ const AnimalList = (props: AnimalListProps) => {
             zIndex: 1000
           }}>
           {!sortedCritterData.length ? (
-            <SkeletonOrEmpty displaySkeleton={!!isLoading && !sortedCritterData?.length} />
+            <ListPlaceholder displaySkeleton={!!isLoading && !sortedCritterData?.length} />
           ) : (
             sortedCritterData.map((critter) => (
               <Accordion

@@ -12,6 +12,7 @@ import Permits from 'features/surveys/view/components/Permits';
 import SurveyParticipants from 'features/surveys/view/components/SurveyParticipants';
 import SurveyProprietaryData from 'features/surveys/view/components/SurveyProprietaryData';
 import SurveyPurposeAndMethodologyData from 'features/surveys/view/components/SurveyPurposeAndMethodologyData';
+import { PropsWithChildren } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import Partnerships from './components/Partnerships';
 import SamplingMethods from './components/SamplingMethods';
@@ -86,11 +87,7 @@ const SurveyDetails = () => {
   );
 };
 
-interface DetailsWrapperProps {
-  children: JSX.Element[] | JSX.Element;
-}
-
-export const DetailsWrapper = (props: DetailsWrapperProps) => (
+export const DetailsWrapper = (props: PropsWithChildren) => (
   <Stack
     divider={<Divider />}
     p={3}

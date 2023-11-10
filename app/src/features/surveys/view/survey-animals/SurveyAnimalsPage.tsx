@@ -208,7 +208,6 @@ export const SurveyAnimalsPage = () => {
     const formDevice = new Device({ collar_id: existingDevice?.collar_id, ...formValues });
     if (existingDevice && !_deepEquals(new Device(existingDevice), formDevice)) {
       try {
-        console.log(`Would upsert collar in edit mode: ${JSON.stringify(formDevice, null, 2)}`);
         await telemetryApi.devices.upsertCollar(formDevice);
       } catch (error) {
         throw new Error(`Failed to update collar ${formDevice.collar_id}`);
@@ -243,7 +242,9 @@ export const SurveyAnimalsPage = () => {
         await updateDevice(formValues);
         await updateDeployments(formValues.deployments ?? [], survey_critter_id);
       } catch (error) {
-        errors.push(`Device ${formValues.device_id} - ` + (error instanceof Error ? error.message : 'Unknown error'));
+        const deviceErr = `Device ${formValues.device_id}`;
+        const err = error instanceof Error ? `${deviceErr} ${error.message}` : `${deviceErr} unknown error`;
+        errors.push(err);
       }
     }
     errors.length

@@ -2,7 +2,7 @@ import { mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Card, CardHeader, IconButton } from '@mui/material';
 
-interface EditDeleteStubCardProps {
+interface IEditDeleteStubCardProps {
   /*
    * title of the card
    */
@@ -33,7 +33,7 @@ interface EditDeleteStubCardProps {
  *
  **/
 
-export const EditDeleteStubCard = (props: EditDeleteStubCardProps) => {
+export const EditDeleteStubCard = (props: IEditDeleteStubCardProps) => {
   const { header, subHeader, onClickEdit, onClickDelete } = props;
   return (
     <Card

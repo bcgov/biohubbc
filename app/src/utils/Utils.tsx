@@ -498,4 +498,4 @@ export const setMessageSnackbar = (message: string, context: IDialogContext) => 
       </Typography>
     )
   });
-}
+};

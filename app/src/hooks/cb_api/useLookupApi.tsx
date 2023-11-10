@@ -1,3 +1,4 @@
+import { GridSortDirection } from '@mui/x-data-grid/models';
 import { AxiosInstance } from 'axios';
 
 export type OrderBy = 'asc' | 'desc';
@@ -15,7 +16,7 @@ interface SelectOptionsProps {
   param?: string;
   query?: string;
   asSelect?: boolean;
-  orderBy?: OrderBy;
+  orderBy?: GridSortDirection;
 }
 
 export interface IMeasurementStub {

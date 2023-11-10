@@ -31,7 +31,6 @@ export type IAnimalSections =
   | 'Mortality Events'
   | 'Family'
   | 'Telemetry';
-//| 'Observations'
 
 interface IAnimalSectionsMap
   extends Record<

@@ -69,9 +69,9 @@ export const FamilyAnimalFormContent = ({ index, allFamilies }: IFamilyAnimalFor
             required: isRequiredInSchema(AnimalRelationshipSchema, 'family_id')
           }}>
           {[...(allFamilies ?? []), { family_id: newFamilyIdPlaceholder, family_label: newFamilyIdPlaceholder }]?.map(
-            (a) => (
-              <MenuItem disabled={!!disabledFamilyIds[a.family_id]} key={a.family_id} value={a.family_id}>
-                {a.family_label ? a.family_label : a.family_id}
+            (family) => (
+              <MenuItem disabled={!!disabledFamilyIds[a.family_id]} key={family.family_id} value={family.family_id}>
+                {family.family_label ? family.family_label : family.family_id}
               </MenuItem>
             )
           )}

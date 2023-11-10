@@ -129,7 +129,7 @@ export const DeploymentFormSection = (props: DeploymentFormSectionProps): JSX.El
       <YesNoDialog
         dialogTitle={'Remove deployment?'}
         dialogText={`Are you sure you want to remove this deployment?
-          If you would like to end a deployment / unattach a device, you should set the attachment end date instead.
+          If you would like to end a deployment or unattach a device, you should set the attachment end date instead.
           Please confirm that you wish to permanently erase this deployment.`}
         open={deploymentIDToDelete !== null}
         yesButtonLabel="Delete"

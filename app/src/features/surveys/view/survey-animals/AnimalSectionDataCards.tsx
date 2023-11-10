@@ -14,7 +14,7 @@ import GeneralAnimalSummary from './GeneralAnimalSummary';
 
 export type SubHeaderData = Record<string, string | number | null | undefined>;
 
-interface AnimalSectionDataCardsProps {
+interface IAnimalSectionDataCardsProps {
   /*
    * section selected from the vertical nav bar ie: 'General'
    */
@@ -40,7 +40,7 @@ interface AnimalSectionDataCardsProps {
  *
  **/
 
-export const AnimalSectionDataCards = (props: AnimalSectionDataCardsProps) => {
+export const AnimalSectionDataCards = (props: IAnimalSectionDataCardsProps) => {
   const { section, onEditClick, allFamilies } = props;
 
   const { submitForm, initialValues, isSubmitting, status } = useFormikContext<IAnimal>();

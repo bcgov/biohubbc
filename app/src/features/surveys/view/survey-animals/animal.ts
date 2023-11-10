@@ -496,7 +496,6 @@ export class Critter {
     const families: ICritterFamily[] = [];
     for (const fam of animal_family) {
       //If animal form had the newFamilyIdPlaceholder used at some point, make a real uuid for the new family and add it for creation.
-      console.log(`Comparing ${fam.family_id} to ${newFamilyIdPlaceholder}`);
       if (fam.family_id === newFamilyIdPlaceholder) {
         if (!newFamily) {
           newFamily = { family_id: v4(), family_label: this.name + '_family' };

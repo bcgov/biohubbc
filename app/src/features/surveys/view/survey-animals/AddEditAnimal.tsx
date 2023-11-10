@@ -41,7 +41,7 @@ import { MortalityAnimalFormContent } from './form-sections/MortalityAnimalForm'
 import { IAnimalDeployment, IAnimalTelemetryDeviceFile } from './telemetry-device/device';
 import TelemetryDeviceFormContent from './telemetry-device/TelemetryDeviceFormContent';
 
-interface AddEditAnimalProps {
+interface IAddEditAnimalProps {
   section: IAnimalSections;
   critterData?: IDetailedCritterWithInternalId[];
   deploymentData?: IAnimalDeployment[];
@@ -50,7 +50,7 @@ interface AddEditAnimalProps {
   formikArrayHelpers: FieldArrayRenderProps;
 }
 
-export const AddEditAnimal = (props: AddEditAnimalProps) => {
+export const AddEditAnimal = (props: IAddEditAnimalProps) => {
   const { section, critterData, telemetrySaveAction, deploymentRemoveAction, formikArrayHelpers } = props;
 
   const theme = useTheme();
@@ -212,10 +212,6 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                         submitForm();
                       }
                       setFormMode(ANIMAL_FORM_MODE.EDIT);
-                      /* setFieldValue(
-                        ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName,
-                        values[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName]
-                      ); */
                       setShowDialog(false);
                     }}
                     loading={isValidating || isSubmitting || !!status}>

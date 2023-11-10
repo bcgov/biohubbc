@@ -59,7 +59,7 @@ export const MeasurementAnimalFormContent = (props: MeasurementFormContentProps)
   const validateValue = async (val: '' | number) => {
     const min = currentMeasurement?.min_value ?? 0;
     const max = currentMeasurement?.max_value;
-    const unit = currentMeasurement?.unit ? ` ${currentMeasurement.unit}'s` : ``;
+    const unit = currentMeasurement?.unit ? currentMeasurement.unit : ``;
     if (val === '') {
       return;
     }
@@ -116,7 +116,7 @@ export const MeasurementAnimalFormContent = (props: MeasurementFormContentProps)
             as={CustomTextField}
             name={valueName}
             handleBlur={handleBlur}
-            label={currentMeasurement?.unit ? `Value [${currentMeasurement.unit}'s]` : `Value`}
+            label={currentMeasurement?.unit ? `Value [${currentMeasurement.unit}]` : `Value`}
             other={{
               required: true,
               disabled: !taxonMeasurementId
