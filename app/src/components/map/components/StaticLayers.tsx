@@ -25,6 +25,10 @@ export interface IStaticLayerFeature {
 
 export interface IStaticLayer {
   layerName: string;
+  layerColors?: {
+    color: string;
+    fillColor: string;
+  };
   features: IStaticLayerFeature[];
 }
 
@@ -43,6 +47,7 @@ const StaticLayers: React.FC<React.PropsWithChildren<IStaticLayersProps>> = (pro
     if (!layer.features?.length) {
       return;
     }
+    const layerColors = layer.layerColors || { color: '#3388ff', fillColor: '#3388ff' };
 
     layerControls.push(
       <LayersControl.Overlay checked={true} name={layer.layerName} key={`static-layer-${layer.layerName}`}>
@@ -53,6 +58,7 @@ const StaticLayers: React.FC<React.PropsWithChildren<IStaticLayersProps>> = (pro
             return (
               <GeoJSON
                 key={`static-feature-${id}`}
+                style={{ ...layerColors }}
                 pointToLayer={(feature, latlng) => {
                   if (feature.properties?.radius) {
                     return new L.Circle([latlng.lat, latlng.lng], feature.properties.radius);

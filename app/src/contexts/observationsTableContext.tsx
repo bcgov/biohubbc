@@ -139,6 +139,7 @@ export const ObservationsTableContext = createContext<IObservationsTableContext>
   observationCount: 0,
   setObservationCount: () => undefined,
   validationModel: {}
+  setObservationCount: () => undefined
 });
 
 export const ObservationsTableContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
@@ -571,12 +572,12 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     // All rows have transitioned to view mode
     _setIsStoppingEdit(false);
-    
+
     // Start saving records
+    _setIsSaving(true);
+
     const rowModels = _muiDataGridApiRef.current.getRowModels();
     const rowValues = Array.from(rowModels, ([_, value]) => value);
-
-    _setIsSaving(true);
 
     _saveRecords(rowValues);
   }, [_muiDataGridApiRef, _saveRecords, _isSaving, _isStoppingEdit, modifiedRowIds]);
