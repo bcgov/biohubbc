@@ -1,8 +1,10 @@
-import { Theme } from '@mui/material';
+import { Breadcrumbs, Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
+import { grey } from '@mui/material/colors';
 import Container from '@mui/material/Container';
+import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
@@ -20,6 +22,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { IEditSurveyRequest, SurveyUpdateObject } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
+import { Link as RouterLink } from 'react-router-dom';
 import EditSurveyForm from './EditSurveyForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -214,23 +217,61 @@ const EditSurveyPage = () => {
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
-      <Paper square={true} elevation={0}>
+      <Paper
+        elevation={0}
+        square={true}
+        id="editSurveyPageTitle"
+        sx={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 1002,
+          pt: 3,
+          pb: 3.75,
+          borderBottomStyle: 'solid',
+          borderBottomWidth: '1px',
+          borderBottomColor: grey[300]
+        }}>
         <Container maxWidth="xl">
-          <Box py={4}>
-            <Box display="flex" justifyContent="space-between">
-              <Box className={classes.pageTitleContainer}>
-                <Typography variant="h1" className={classes.pageTitle}>
-                  Edit Survey Details
-                </Typography>
-              </Box>
-              <Box flex="0 0 auto" className={classes.pageTitleActions}>
-                <Button color="primary" variant="contained" onClick={() => formikRef.current?.submitForm()}>
-                  Save and Exit
-                </Button>
-                <Button color="primary" variant="outlined" onClick={handleCancel}>
-                  Cancel
-                </Button>
-              </Box>
+          <Breadcrumbs>
+            <Link
+              component={RouterLink}
+              variant="body2"
+              underline="hover"
+              to={`/admin/projects/${projectData.project.project_id}/`}
+              aria-current="page">
+              {projectData.project.project_name}
+            </Link>
+            <Link
+              component={RouterLink}
+              variant="body2"
+              underline="hover"
+              to={`/admin/projects/${projectData.project.project_id}/surveys/${surveyId}/details`}
+              aria-current="page">
+              {surveyData && surveyData.survey_details && surveyData.survey_details.survey_name}
+            </Link>
+            <Typography variant="body2" component="span">
+              Edit
+            </Typography>
+          </Breadcrumbs>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            gap="1.5rem"
+            sx={{
+              flexDirection: { xs: 'column', lg: 'row' }
+            }}>
+            <Box className={classes.pageTitleContainer}>
+              <Typography variant="h1" className={classes.pageTitle}>
+                Edit Survey Details
+              </Typography>
+            </Box>
+            <Box flex="0 0 auto" display="flex" alignItems="flex-start" className={classes.pageTitleActions}>
+              <Button color="primary" variant="contained" onClick={() => formikRef.current?.submitForm()}>
+                Save and Exit
+              </Button>
+              <Button color="primary" variant="outlined" onClick={handleCancel}>
+                Cancel
+              </Button>
             </Box>
           </Box>
         </Container>

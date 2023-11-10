@@ -1,9 +1,11 @@
-import { Theme } from '@mui/material';
+import { Breadcrumbs, Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
+import { grey } from '@mui/material/colors';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
+import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
@@ -27,6 +29,7 @@ import { ICreateSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
+import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import AgreementsForm, { AgreementsInitialValues, AgreementsYupSchema } from './components/AgreementsForm';
@@ -272,9 +275,38 @@ const CreateSurveyPage = () => {
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
-      <Paper square={true} elevation={0}>
+      <Paper
+        elevation={0}
+        square={true}
+        id="createSurveyPageTitle"
+        sx={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 1002,
+          pt: 3,
+          pb: 3.75,
+          borderBottomStyle: 'solid',
+          borderBottomWidth: '1px',
+          borderBottomColor: grey[300]
+        }}>
         <Container maxWidth="xl">
-          <Box py={4}>
+          <Breadcrumbs>
+            <Link
+              component={RouterLink}
+              variant="body2"
+              underline="hover"
+              to={`/admin/projects/${projectData.project.project_id}/`}
+              aria-current="page">
+              {projectData.project.project_name}
+            </Link>
+            <Typography variant="body2" component="span">
+              Survey
+            </Typography>
+            <Typography variant="body2" component="span">
+              Create
+            </Typography>
+          </Breadcrumbs>
+          <Box>
             <Box display="flex" justifyContent="space-between">
               <Box className={classes.pageTitleContainer}>
                 <Typography variant="h1" className={classes.pageTitle}>
