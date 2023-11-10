@@ -45,6 +45,7 @@ describe('Study Area Form', () => {
           survey_location_id: 1,
           name: 'a study area name',
           description: 'a study area description',
+          uuid: '1',
           geojson: [
             {
               type: 'Feature',
