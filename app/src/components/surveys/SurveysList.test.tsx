@@ -1,8 +1,10 @@
+import { AuthStateContext } from 'contexts/authStateContext';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { createMemoryHistory } from 'history';
 import { DataLoader } from 'hooks/useDataLoader';
 import { Router } from 'react-router';
+import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { getSurveyForListResponse } from 'test-helpers/survey-helpers';
@@ -31,14 +33,18 @@ describe('SurveysList', () => {
       projectId: 1
     };
 
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
+
     const { getByText, queryByText } = render(
-      <Router history={history}>
-        <CodesContext.Provider value={mockCodesContext}>
-          <ProjectContext.Provider value={mockProjectContext}>
-            <SurveysList />
-          </ProjectContext.Provider>
-        </CodesContext.Provider>
-      </Router>
+      <AuthStateContext.Provider value={authState}>
+        <Router history={history}>
+          <CodesContext.Provider value={mockCodesContext}>
+            <ProjectContext.Provider value={mockProjectContext}>
+              <SurveysList />
+            </ProjectContext.Provider>
+          </CodesContext.Provider>
+        </Router>
+      </AuthStateContext.Provider>
     );
 
     expect(queryByText('No Surveys')).toBeNull();
@@ -61,14 +67,18 @@ describe('SurveysList', () => {
       projectId: 1
     };
 
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
+
     const { getByText } = render(
-      <Router history={history}>
-        <CodesContext.Provider value={mockCodesContext}>
-          <ProjectContext.Provider value={mockProjectContext}>
-            <SurveysList />
-          </ProjectContext.Provider>
-        </CodesContext.Provider>
-      </Router>
+      <AuthStateContext.Provider value={authState}>
+        <Router history={history}>
+          <CodesContext.Provider value={mockCodesContext}>
+            <ProjectContext.Provider value={mockProjectContext}>
+              <SurveysList />
+            </ProjectContext.Provider>
+          </CodesContext.Provider>
+        </Router>
+      </AuthStateContext.Provider>
     );
 
     expect(getByText('No Surveys')).toBeInTheDocument();

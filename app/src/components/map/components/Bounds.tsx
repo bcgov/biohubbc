@@ -1,5 +1,6 @@
 import { Feature, Polygon } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
+import { useEffect } from 'react';
 import { useMap, useMapEvents } from 'react-leaflet';
 import { getFeatureObjectFromLatLngBounds } from 'utils/Utils';
 
@@ -10,13 +11,16 @@ export interface ISetMapBoundsProps {
 
 export const SetMapBounds: React.FC<React.PropsWithChildren<ISetMapBoundsProps>> = (props) => {
   const map = useMap();
-  // Set bounds if provided, ignore zoom
-  if (props.bounds) {
-    map.fitBounds(props.bounds);
-  } else if (props.zoom) {
-    // Set zoom if provided
-    map.setZoom(props.zoom);
-  }
+
+  useEffect(() => {
+    // Set bounds if provided, ignore zoom
+    if (props.bounds) {
+      map.fitBounds(props.bounds);
+    } else if (props.zoom) {
+      // Set zoom if provided
+      map.setZoom(props.zoom);
+    }
+  }, [map, props.bounds, props.zoom]);
 
   return null;
 };

@@ -5,7 +5,7 @@ import AlertTitle from '@mui/material/AlertTitle';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import { SurveyContext } from 'contexts/surveyContext';
-import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
+import { IGetObservationSubmissionResponse } from 'interfaces/useDwcaApi.interface';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import { IGetSurveyAttachmentsResponse } from 'interfaces/useSurveyApi.interface';
 import { useContext, useState } from 'react';

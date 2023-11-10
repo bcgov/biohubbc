@@ -1,4 +1,4 @@
-import { mdiCalendarRangeOutline, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiCalendarRangeOutline, mdiClockOutline, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Alert from '@mui/material/Alert';
@@ -68,9 +68,11 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
         onSubmit={(data) => {
           setFieldValue(`${name}[${values.sampleSite.methods.length}]`, data);
           validateField(`${name}`);
+          setAnchorEl(null);
           setIsCreateModalOpen(false);
         }}
         onClose={() => {
+          setAnchorEl(null);
           setIsCreateModalOpen(false);
         }}
       />
@@ -81,9 +83,11 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
         open={isEditModalOpen}
         onSubmit={(data, index) => {
           setFieldValue(`${name}[${index}]`, data);
+          setAnchorEl(null);
           setIsEditModalOpen(false);
         }}
         onClose={() => {
+          setAnchorEl(null);
           setIsEditModalOpen(false);
         }}
       />
@@ -100,7 +104,11 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
           vertical: 'top',
           horizontal: 'right'
         }}>
-        <MenuItem key={'edit-details'} onClick={() => setIsEditModalOpen(true)}>
+        <MenuItem
+          key={'edit-details'}
+          onClick={() => {
+            setIsEditModalOpen(true);
+          }}>
           <ListItemIcon>
             <Icon path={mdiPencilOutline} size={1} />
           </ListItemIcon>
@@ -176,19 +184,37 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                   />
                   <CardContent
                     sx={{
-                      pt: 0,
-                      pb: '0 !important'
+                      pt: 1,
+                      pb: '12px !important'
                     }}>
-                    <Typography variant="body1" gutterBottom>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        m: 0,
+                        px: 2,
+                        py: 1,
+                        backgroundColor: grey[200]
+                      }}>
                       Time Periods
                     </Typography>
-                    <List>
+                    <List dense disablePadding>
                       {item.periods.map((period) => (
                         <ListItem key={`sample_period_${period.survey_sample_period_id}`} divider>
                           <ListItemIcon>
                             <Icon path={mdiCalendarRangeOutline} size={1} />
                           </ListItemIcon>
+
                           <ListItemText primary={`${period.start_date} to ${period.end_date}`} />
+                          {period.start_time && (
+                            <>
+                              <ListItemIcon>
+                                <Icon path={mdiClockOutline} size={1} />
+                              </ListItemIcon>
+                              <ListItemText
+                                primary={`${period.start_time} ${(period.end_time && `to ${period.end_time}`) || ''}`}
+                              />
+                            </>
+                          )}
                         </ListItem>
                       ))}
                     </List>
@@ -201,7 +227,7 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
             sx={{
               mt: 1
             }}
-            data-testid="sample-method-add-button"
+            data-testid="edit-sample-method-add-button"
             variant="outlined"
             color="primary"
             title="Add Sample Method"

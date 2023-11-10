@@ -27,7 +27,6 @@ export class ValidationRepository extends BaseRepository {
   async getTemplateMethodologySpeciesRecord(
     templateName: string,
     templateVersion: string,
-    surveyFieldMethodId: number,
     surveySpecies: number[]
   ): Promise<ITemplateMethodologyData> {
     const templateRow = await this.getTemplateNameVersionId(templateName, templateVersion);
@@ -50,11 +49,7 @@ export class ValidationRepository extends BaseRepository {
     const queryBuilder = getKnex()
       .select('template_methodology_species_id', 'wldtaxonomic_units_id', 'validation', 'transform')
       .from('template_methodology_species')
-      .where('template_id', templateRow.template_id)
-      .and.where(function (qb) {
-        qb.or.where('field_method_id', surveyFieldMethodId);
-        qb.or.where('field_method_id', null);
-      });
+      .where('template_id', templateRow.template_id);
 
     const response = await this.connection.knex<ITemplateMethodologyData>(queryBuilder);
 

@@ -273,7 +273,7 @@ const TelemetryDeviceForm = ({ mode, removeAction }: ITelemetryDeviceFormProps) 
               title={`Device ID: ${device.device_id}`}
               sx={{
                 background: grey[100],
-                borderBottom: '1px solid' + grey[300],
+                borderBottom: '1px solid ' + grey[300],
                 '& .MuiCardHeader-title': {
                   fontSize: '1.125rem'
                 }

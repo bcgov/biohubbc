@@ -1,7 +1,6 @@
+import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
-import { IConfig } from 'contexts/configContext';
-import { Feature, Polygon } from 'geojson';
-import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
+import { Feature, GeoJsonProperties, Geometry, Polygon } from 'geojson';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { LatLngBounds } from 'leaflet';
 import _ from 'lodash';
@@ -152,22 +151,6 @@ export const getFormattedAmount = (
   });
 
   return formatter.format(amount);
-};
-
-/**
- * Returns a url that when navigated to, will log the user out, redirecting them to the login page.
- *
- * @param {IConfig} config
- * @return {*}  {(string | undefined)}
- */
-export const getLogOutUrl = (config: IConfig): string | undefined => {
-  if (config?.KEYCLOAK_CONFIG.url && config?.KEYCLOAK_CONFIG.realm && config?.SITEMINDER_LOGOUT_URL) {
-    const localRedirectURL = `${window.location.origin}/`;
-
-    const keycloakLogoutRedirectURL = `${config.KEYCLOAK_CONFIG.url}/realms/${config.KEYCLOAK_CONFIG.realm}/protocol/openid-connect/logout?redirect_uri=${localRedirectURL}`;
-
-    return `${config.SITEMINDER_LOGOUT_URL}?returl=${keycloakLogoutRedirectURL}&retnow=1`;
-  }
 };
 
 export const getFormattedFileSize = (fileSize: number) => {
@@ -467,4 +450,30 @@ export const uuidToColor = (id: string): { fillColor: string; outlineColor: stri
   const hexOutlineColor = RGBToHex(rgbOutlineColor);
 
   return { fillColor: `#${hexFillColor}`, outlineColor: `#${hexOutlineColor}` };
+};
+
+/**
+ * Used to extract a name from specific fields that can occur in the properties of a shapefile.
+ *
+ * @param {Feature<Geometry, GeoJsonProperties>} geometry
+ * @returns {string}
+ */
+export const shapeFileFeatureName = (geometry: Feature<Geometry, GeoJsonProperties>): string | undefined => {
+  const nameKey = Object.keys(geometry.properties ?? {}).find(
+    (key) => key.toLowerCase() === 'name' || key.toLowerCase() === 'label'
+  );
+  return nameKey && geometry.properties ? geometry.properties[nameKey].substring(0, 50) : undefined;
+};
+
+/**
+ * Used to extract a description from specific fields that can occur in the properties of a shapefile.
+ *
+ * @param {Feature<Geometry, GeoJsonProperties>} geometry
+ * @returns {string}
+ */
+export const shapeFileFeatureDesc = (geometry: Feature<Geometry, GeoJsonProperties>): string | undefined => {
+  const descKey = Object.keys(geometry.properties ?? {}).find(
+    (key) => key.toLowerCase() === 'desc' || key.toLowerCase() === 'descr' || key.toLowerCase() === 'des'
+  );
+  return descKey && geometry.properties ? geometry.properties[descKey].substring(0, 250) : undefined;
 };

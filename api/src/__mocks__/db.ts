@@ -84,6 +84,13 @@ export class MockRes {
 
     return this;
   });
+
+  headerValue: any;
+  setHeader = sinon.fake((header: any) => {
+    this.headerValue = header;
+
+    return this;
+  });
 }
 
 /**

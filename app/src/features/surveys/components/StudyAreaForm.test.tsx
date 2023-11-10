@@ -1,5 +1,4 @@
 import { cleanup } from '@testing-library/react-hooks';
-import MapBoundary from 'components/boundary/MapBoundary';
 import StudyAreaForm, {
   ISurveyLocationForm,
   SurveyLocationInitialValues,
@@ -7,14 +6,15 @@ import StudyAreaForm, {
 } from 'features/surveys/components/StudyAreaForm';
 import { Formik } from 'formik';
 import { render, waitFor } from 'test-helpers/test-utils';
+import { SurveyAreaMapControl } from './locations/SurveyAreaMapControl';
 
-// Mock MapBoundary component
-jest.mock('../../../components/boundary/MapBoundary');
-const mockMapBoundary = MapBoundary as jest.Mock;
+// Mock Map Controller component
+jest.mock('./locations/SurveyAreaMapControl');
+const mockMap = SurveyAreaMapControl as jest.Mock;
 
 describe('Study Area Form', () => {
   beforeEach(() => {
-    mockMapBoundary.mockImplementation(() => <div />);
+    mockMap.mockImplementation(() => <div />);
   });
 
   afterEach(() => {
@@ -22,7 +22,7 @@ describe('Study Area Form', () => {
   });
 
   it('renders correctly with default values', async () => {
-    const { getByLabelText, getByTestId } = render(
+    const { getByTestId } = render(
       <Formik
         initialValues={SurveyLocationInitialValues}
         validationSchema={SurveyLocationYupSchema}
@@ -34,20 +34,7 @@ describe('Study Area Form', () => {
     );
 
     await waitFor(() => {
-      // Assert MapBoundary was rendered with the right propsF
-      expect(MapBoundary).toHaveBeenCalledWith(
-        {
-          name: 'locations[0].geojson',
-          title: 'Study Area Boundary',
-          mapId: 'study_area_form_map',
-          bounds: undefined,
-          formikProps: expect.objectContaining({ values: SurveyLocationInitialValues })
-        },
-        expect.anything()
-      );
-      // Assert survey area name field is visible and populated correctly
-      expect(getByLabelText('Survey Area Name', { exact: false })).toBeVisible();
-      expect(getByTestId('locations[0].name')).toHaveValue('');
+      expect(getByTestId('study-area-list')).toBeVisible();
     });
   });
 
@@ -55,6 +42,7 @@ describe('Study Area Form', () => {
     const existingFormValues: ISurveyLocationForm = {
       locations: [
         {
+          survey_location_id: 1,
           name: 'a study area name',
           description: 'a study area description',
           geojson: [
@@ -73,7 +61,7 @@ describe('Study Area Form', () => {
       ]
     };
 
-    const { getByLabelText, getByTestId } = render(
+    const { getByTestId, findByText } = render(
       <Formik
         initialValues={existingFormValues}
         validationSchema={SurveyLocationYupSchema}
@@ -84,21 +72,9 @@ describe('Study Area Form', () => {
       </Formik>
     );
 
-    await waitFor(() => {
-      // Assert MapBoundary was rendered with the right propsF
-      expect(MapBoundary).toHaveBeenCalledWith(
-        {
-          name: 'locations[0].geojson',
-          title: 'Study Area Boundary',
-          mapId: 'study_area_form_map',
-          bounds: undefined,
-          formikProps: expect.objectContaining({ values: existingFormValues })
-        },
-        expect.anything()
-      );
-      // Assert survey area name field is visible and populated correctly
-      expect(getByLabelText('Survey Area Name', { exact: false })).toBeVisible();
-      expect(getByTestId('locations[0].name')).toHaveValue('a study area name');
+    await waitFor(async () => {
+      expect(getByTestId('study-area-list')).toBeVisible();
+      expect(await findByText('a study area description')).toBeVisible();
     });
   });
 });

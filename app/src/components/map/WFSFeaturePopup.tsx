@@ -60,7 +60,7 @@ const WFSFeaturePopup: React.FC<IWFSFeaturePopupProps> = (props) => {
   return (
     <>
       <Tooltip direction="top">{popupContent.tooltip}</Tooltip>
-      <Popup ref={popupRef} key={`popup-${feature?.properties?.OBJECTID}`} keepInView={false} autoPan={false}>
+      <Popup ref={popupRef} key={`popup-${feature?.properties?.OBJECTID}`} keepInView={true} autoPan={true}>
         <Box p={1}>
           <Box pb={2}>{popupContent.content}</Box>
           {onSelectGeometry && (

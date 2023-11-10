@@ -1,5 +1,5 @@
-import { INonEditableGeometries } from 'components/map/MapContainer';
 import { Feature } from 'geojson';
+import { INonEditableGeometries } from './mapUtils';
 
 /**
  * Function to returns an array of `Features`.

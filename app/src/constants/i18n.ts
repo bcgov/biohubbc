@@ -392,9 +392,19 @@ export const CreateSamplingSiteI18N = {
 export const ObservationsTableI18N = {
   removeAllDialogTitle: 'Discard changes?',
   removeAllDialogText: 'Are you sure you want to discard all your changes? This action cannot be undone.',
-  removeRecordDialogTitle: 'Delete record?',
-  removeRecordDialogText: 'Are you sure you want to delete this record? This action cannot be undone.',
+  removeSingleRecordDialogTitle: 'Delete record?',
+  removeSingleRecordDialogText: 'Are you sure you want to delete this record? This action cannot be undone.',
+  removeSingleRecordButtonText: 'Delete Record',
+  removeMultipleRecordsDialogTitle: (count: number) => `Delete ${count} records?`,
+  removeMultipleRecordsDialogText: 'Are you sure you want to delete these records? This action cannot be undone.',
+  removeMultipleRecordsButtonText: 'Delete Records',
   submitRecordsErrorDialogTitle: 'Error Updating Observation Records',
   submitRecordsErrorDialogText:
-    'An error has occurred while attempting to update the observation records for this survey. Please try again. If the error persists, please contact your system administrator.'
+    'An error has occurred while attempting to update the observation records for this survey. Please try again. If the error persists, please contact your system administrator.',
+  removeRecordsErrorDialogTitle: 'Error Deleting Observation Record',
+  removeRecordsErrorDialogText:
+    'An error has occurred while attempting to delete observation records for this survey. Please try again. If the error persists, please contact your system administrator.',
+  saveRecordsSuccessSnackbarMessage: 'Observations updated successfully.',
+  deleteSingleRecordSuccessSnackbarMessage: 'Deleted observation record successfully.',
+  deleteMultipleRecordSuccessSnackbarMessage: (count: number) => `Deleted ${count} observation records successfully.`
 };

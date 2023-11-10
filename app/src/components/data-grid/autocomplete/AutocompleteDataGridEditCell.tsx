@@ -1,8 +1,10 @@
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
+import useEnhancedEffect from '@mui/material/utils/useEnhancedEffect';
 import { GridRenderCellParams, GridValidRowModel, useGridApiContext } from '@mui/x-data-grid';
 import { IAutocompleteDataGridOption } from 'components/data-grid/autocomplete/AutocompleteDataGrid.interface';
+import { useRef } from 'react';
 
 export interface IAutocompleteDataGridEditCellProps<
   DataGridType extends GridValidRowModel,
@@ -44,6 +46,14 @@ const AutocompleteDataGridEditCell = <DataGridType extends GridValidRowModel, Va
   const { dataGridProps, options, getOptionDisabled } = props;
 
   const apiRef = useGridApiContext();
+
+  const ref = useRef<HTMLInputElement>();
+
+  useEnhancedEffect(() => {
+    if (dataGridProps.hasFocus) {
+      ref.current?.focus();
+    }
+  }, [dataGridProps.hasFocus]);
 
   // The current data grid value
   const dataGridValue = dataGridProps.value;
@@ -98,8 +108,9 @@ const AutocompleteDataGridEditCell = <DataGridType extends GridValidRowModel, Va
       renderInput={(params) => (
         <TextField
           {...params}
+          inputRef={ref}
+          size="small"
           variant="outlined"
-          placeholder={'Type to filter...'}
           fullWidth
           InputProps={{
             ...params.InputProps

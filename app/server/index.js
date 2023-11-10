@@ -48,7 +48,7 @@ const request = require('request');
       REACT_APP_NODE_ENV: process.env.REACT_APP_NODE_ENV || 'dev',
       VERSION: `${process.env.VERSION || 'NA'}(build #${process.env.CHANGE_VERSION || 'NA'})`,
       KEYCLOAK_CONFIG: {
-        url: process.env.REACT_APP_KEYCLOAK_HOST,
+        authority: process.env.REACT_APP_KEYCLOAK_HOST,
         realm: process.env.REACT_APP_KEYCLOAK_REALM,
         clientId: process.env.REACT_APP_KEYCLOAK_CLIENT_ID
       },

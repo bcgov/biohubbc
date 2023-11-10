@@ -7,6 +7,7 @@ import {
   ObservationRepository,
   UpdateObservation
 } from '../repositories/observation-repository';
+import * as file_utils from '../utils/file-utils';
 import { getMockDBConnection } from '../__mocks__/db';
 import { ObservationService } from './observation-service';
 
@@ -107,11 +108,11 @@ describe('ObservationService', () => {
     });
   });
 
-  describe('getSurveyObservations', () => {
+  describe('getSurveyObservationsWithSupplementaryData', () => {
     it('Gets observations by survey id', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      const mockGetResponse: ObservationRecord[] = [
+      const mockObservations: ObservationRecord[] = [
         {
           survey_observation_id: 11,
           survey_id: 1,
@@ -149,18 +150,78 @@ describe('ObservationService', () => {
           survey_sample_period_id: 1
         }
       ];
+
+      const mockSupplementaryData = {
+        observationCount: 1
+      };
+
       const getSurveyObservationsStub = sinon
         .stub(ObservationRepository.prototype, 'getSurveyObservations')
-        .resolves(mockGetResponse);
+        .resolves(mockObservations);
+
+      const getSurveyObservationSupplementaryDataStub = sinon
+        .stub(ObservationService.prototype, 'getSurveyObservationsSupplementaryData')
+        .resolves(mockSupplementaryData);
 
       const surveyId = 1;
 
       const observationService = new ObservationService(mockDBConnection);
 
-      const response = await observationService.getSurveyObservations(surveyId);
+      const response = await observationService.getSurveyObservationsWithSupplementaryData(surveyId);
 
       expect(getSurveyObservationsStub).to.be.calledOnceWith(surveyId);
-      expect(response).to.eql(mockGetResponse);
+      expect(getSurveyObservationSupplementaryDataStub).to.be.calledOnceWith(surveyId);
+      expect(response).to.eql({
+        surveyObservations: mockObservations,
+        supplementaryObservationData: mockSupplementaryData
+      });
+    });
+  });
+
+  describe('insertSurveyObservationSubmission', () => {
+    it('Inserts a survey observation submission record into the database', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const submission_id = 1;
+      const key = 'key';
+      const survey_id = 1;
+      const original_filename = 'originalFilename';
+      const mockFile = { originalname: original_filename } as Express.Multer.File;
+      const projectId = 1;
+
+      const mockInsertResponse = {
+        submission_id,
+        key,
+        survey_id,
+        original_filename,
+        create_date: '2023-04-04',
+        create_user: 1,
+        update_date: null,
+        update_user: null
+      };
+      const getNextSubmissionIdStub = sinon
+        .stub(ObservationRepository.prototype, 'getNextSubmissionId')
+        .resolves(submission_id);
+      const generateS3FileKeyStub = sinon.stub(file_utils, 'generateS3FileKey').returns(key);
+      const insertSurveyObservationSubmissionStub = sinon
+        .stub(ObservationRepository.prototype, 'insertSurveyObservationSubmission')
+        .resolves(mockInsertResponse);
+
+      const observationService = new ObservationService(mockDBConnection);
+
+      const response = await observationService.insertSurveyObservationSubmission(mockFile, projectId, survey_id);
+
+      expect(getNextSubmissionIdStub).to.be.calledOnce;
+      expect(generateS3FileKeyStub).to.be.calledOnce;
+      expect(insertSurveyObservationSubmissionStub).to.be.calledOnceWith(
+        submission_id,
+        key,
+        survey_id,
+        original_filename
+      );
+      expect(response).to.eql({
+        submission_id,
+        key
+      });
     });
   });
 });

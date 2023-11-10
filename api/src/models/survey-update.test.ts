@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
+  PostSurveyLocationData,
   PutPartnershipsData,
   PutSurveyDetailsData,
-  PutSurveyLocationData,
   PutSurveyObject,
   PutSurveyPermitData,
   PutSurveyProprietorData,
@@ -333,19 +333,11 @@ describe('PutPurposeAndMethodologyData', () => {
     });
 
     it('sets intended_outcome_id', () => {
-      expect(data.intended_outcome_id).to.equal(null);
+      expect(data.intended_outcome_ids).to.eql([]);
     });
 
     it('sets additional_details', () => {
       expect(data.additional_details).to.equal(null);
-    });
-
-    it('sets field_method_id', () => {
-      expect(data.field_method_id).to.equal(null);
-    });
-
-    it('sets ecological_season_id', () => {
-      expect(data.ecological_season_id).to.equal(null);
     });
 
     it('sets vantage_code_ids', () => {
@@ -365,10 +357,8 @@ describe('PutPurposeAndMethodologyData', () => {
     let data: PutSurveyPurposeAndMethodologyData;
 
     const obj = {
-      intended_outcome_id: 1,
+      intended_outcome_ids: [1],
       additional_details: 'additional_detail',
-      field_method_id: 2,
-      ecological_season_id: 3,
       vantage_code_ids: [4, 5],
       surveyed_all_areas: 'true',
       revision_count: 0
@@ -379,19 +369,11 @@ describe('PutPurposeAndMethodologyData', () => {
     });
 
     it('sets intended_outcome_id', () => {
-      expect(data.intended_outcome_id).to.equal(obj.intended_outcome_id);
+      expect(data.intended_outcome_ids).to.equal(obj.intended_outcome_ids);
     });
 
     it('sets additional_details', () => {
       expect(data.additional_details).to.equal(obj.additional_details);
-    });
-
-    it('sets field_method_id', () => {
-      expect(data.field_method_id).to.equal(obj.field_method_id);
-    });
-
-    it('sets ecological_season_id', () => {
-      expect(data.ecological_season_id).to.equal(obj.ecological_season_id);
     });
 
     it('sets vantage_code_ids', () => {
@@ -410,10 +392,10 @@ describe('PutPurposeAndMethodologyData', () => {
 
 describe('PutLocationData', () => {
   describe('No values provided', () => {
-    let data: PutSurveyLocationData;
+    let data: PostSurveyLocationData;
 
     before(() => {
-      data = new PutSurveyLocationData(null);
+      data = new PostSurveyLocationData(null);
     });
 
     it('sets name', () => {
@@ -421,7 +403,7 @@ describe('PutLocationData', () => {
     });
 
     it('sets description', () => {
-      expect(data.description).to.equal(null);
+      expect(data.description).to.equal('');
     });
 
     it('sets geojson', () => {
@@ -434,7 +416,7 @@ describe('PutLocationData', () => {
   });
 
   describe('All values provided with first nations id', () => {
-    let data: PutSurveyLocationData;
+    let data: PostSurveyLocationData;
 
     const obj = {
       name: 'area name',
@@ -444,7 +426,7 @@ describe('PutLocationData', () => {
     };
 
     before(() => {
-      data = new PutSurveyLocationData(obj);
+      data = new PostSurveyLocationData(obj);
     });
 
     it('sets name', () => {

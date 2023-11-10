@@ -1,16 +1,22 @@
+import { AuthStateContext } from 'contexts/authStateContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { Router } from 'react-router';
+import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import ManageUsersPage from './ManageUsersPage';
 
 const history = createMemoryHistory();
 
 const renderContainer = () => {
+  const authState = getMockAuthState({ base: SystemAdminAuthState });
+
   return render(
-    <Router history={history}>
-      <ManageUsersPage />
-    </Router>
+    <AuthStateContext.Provider value={authState}>
+      <Router history={history}>
+        <ManageUsersPage />
+      </Router>
+    </AuthStateContext.Provider>
   );
 };
 

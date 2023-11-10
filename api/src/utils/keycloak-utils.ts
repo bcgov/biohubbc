@@ -7,7 +7,7 @@ import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 export const IdirUserInformation = z.object({
   idir_user_guid: z.string().toLowerCase(),
   identity_provider: z.literal(SYSTEM_IDENTITY_SOURCE.IDIR.toLowerCase()),
-  idir_username: z.string().toLowerCase(),
+  idir_username: z.string(),
   email_verified: z.boolean(),
   name: z.string(),
   preferred_username: z.string(),
@@ -24,7 +24,7 @@ export type IdirUserInformation = z.infer<typeof IdirUserInformation>;
 export const BceidBasicUserInformation = z.object({
   bceid_user_guid: z.string().toLowerCase(),
   identity_provider: z.literal(SYSTEM_IDENTITY_SOURCE.BCEID_BASIC.toLowerCase()),
-  bceid_username: z.string().toLowerCase(),
+  bceid_username: z.string(),
   email_verified: z.boolean(),
   name: z.string(),
   preferred_username: z.string(),
@@ -43,7 +43,7 @@ export const BceidBusinessUserInformation = z.object({
   bceid_business_name: z.string(),
   bceid_user_guid: z.string().toLowerCase(),
   identity_provider: z.literal(SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS.toLowerCase()),
-  bceid_username: z.string().toLowerCase(),
+  bceid_username: z.string(),
   email_verified: z.boolean(),
   name: z.string(),
   preferred_username: z.string(),

@@ -1,4 +1,4 @@
-import { mdiCalendarRangeOutline, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiCalendarRangeOutline, mdiClockOutline, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Alert from '@mui/material/Alert';
@@ -62,9 +62,11 @@ const SamplingMethodForm = () => {
         onSubmit={(data) => {
           setFieldValue(`methods[${values.methods.length}]`, data);
           validateField('methods');
+          setAnchorEl(null);
           setIsCreateModalOpen(false);
         }}
         onClose={() => {
+          setAnchorEl(null);
           setIsCreateModalOpen(false);
         }}
       />
@@ -75,9 +77,11 @@ const SamplingMethodForm = () => {
         open={isEditModalOpen}
         onSubmit={(data, index) => {
           setFieldValue(`methods[${index}]`, data);
+          setAnchorEl(null);
           setIsEditModalOpen(false);
         }}
         onClose={() => {
+          setAnchorEl(null);
           setIsEditModalOpen(false);
         }}
       />
@@ -170,19 +174,36 @@ const SamplingMethodForm = () => {
                   />
                   <CardContent
                     sx={{
-                      pt: 0,
-                      pb: '0 !important'
+                      pt: 1,
+                      pb: '12px !important'
                     }}>
-                    <Typography variant="body1" gutterBottom>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        m: 0,
+                        px: 2,
+                        py: 1,
+                        backgroundColor: grey[200]
+                      }}>
                       Time Periods
                     </Typography>
-                    <List>
+                    <List dense disablePadding>
                       {item.periods.map((period) => (
                         <ListItem key={`sample_period_${period.start_date}-${period.end_date}`} divider>
                           <ListItemIcon>
                             <Icon path={mdiCalendarRangeOutline} size={1} />
                           </ListItemIcon>
                           <ListItemText primary={`${period.start_date} to ${period.end_date}`} />
+                          {period.start_time && (
+                            <>
+                              <ListItemIcon>
+                                <Icon path={mdiClockOutline} size={1} />
+                              </ListItemIcon>
+                              <ListItemText
+                                primary={`${period.start_time} ${(period.end_time && `to ${period.end_time}`) || ''}`}
+                              />
+                            </>
+                          )}
                         </ListItem>
                       ))}
                     </List>
@@ -195,7 +216,7 @@ const SamplingMethodForm = () => {
             sx={{
               mt: 1
             }}
-            data-testid="sample-method-add-button"
+            data-testid="create-sample-method-add-button"
             variant="outlined"
             color="primary"
             title="Add Sample Method"
