@@ -11,6 +11,7 @@ interface ITelemetrySelectField {
   fetchData: () => Promise<(string | number)[]>;
   controlProps?: FormControlProps;
   handleBlur?: FormikContextType<any>['handleBlur'];
+  handleChange?: FormikContextType<any>['handleChange'];
 }
 
 interface ISelectOption {
@@ -20,7 +21,7 @@ interface ISelectOption {
 
 const TelemetrySelectField: React.FC<ITelemetrySelectField> = (props) => {
   const bctwLookupLoader = useDataLoader(() => props.fetchData());
-  const { values, touched, errors, handleChange } = useFormikContext<ISelectOption>();
+  const { values, touched, errors, handleChange, handleBlur } = useFormikContext<ISelectOption>();
 
   const err = get(touched, props.name) && get(errors, props.name);
 
@@ -38,8 +39,8 @@ const TelemetrySelectField: React.FC<ITelemetrySelectField> = (props) => {
         labelId="telemetry_select"
         label={props.label}
         value={value ?? ''}
-        onChange={handleChange}
-        onBlur={props.handleBlur}
+        onChange={props.handleChange ?? handleChange}
+        onBlur={props.handleBlur ?? handleBlur}
         displayEmpty>
         {bctwLookupLoader.data?.map((bctwValue: string | number) => {
           return (

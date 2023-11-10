@@ -195,6 +195,7 @@ export const SurveyAnimalsPage = () => {
       artifactDataLoader.refresh(projectId, surveyId);
     } catch (error: unknown) {
       if (error instanceof Error) {
+        console.log(`err: ${error}`);
         setMessageSnackbar('Failed to add deployment' + (error?.message ? `: ${error.message}` : '.'), dialogContext);
       } else {
         setMessageSnackbar('Failed to add deployment.', dialogContext);
@@ -269,8 +270,8 @@ export const SurveyAnimalsPage = () => {
         initialValues={critterAsFormikValues}
         enableReinitialize
         validationSchema={AnimalSchema}
-        validateOnBlur={true}
-        validateOnChange={false}
+        validateOnBlur={false}
+        validateOnChange={true}
         onSubmit={async (values, actions) => {
           const status = await handleCritterSave(values, ANIMAL_FORM_MODE.EDIT);
           if (status) {

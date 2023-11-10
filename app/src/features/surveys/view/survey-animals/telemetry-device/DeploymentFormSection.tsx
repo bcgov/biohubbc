@@ -54,7 +54,14 @@ export const DeploymentFormSection = (props: DeploymentFormSectionProps): JSX.El
   };
 
   const deploymentOverlapTest = (deployment: IDeploymentTimespan) => {
+    if (index === undefined) {
+      return;
+    }
     if (!deviceDetails) {
+      return;
+    }
+
+    if (!deployment.attachment_start) {
       return;
     }
     const existingDeployment = deviceDetails.deployments.find(

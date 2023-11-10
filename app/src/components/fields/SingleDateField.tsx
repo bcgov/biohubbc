@@ -52,7 +52,8 @@ const SingleDateField: React.FC<IDateProps> = (props) => {
         slotProps={{
           openPickerButton: { id: props.name },
           inputAdornment: {
-            id: props.name
+            id: props.name,
+            onBlur: handleBlur
           },
           textField: {
             id: 'date_field',
