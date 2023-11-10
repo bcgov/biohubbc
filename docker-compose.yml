@@ -101,6 +101,7 @@ services:
       # BCTW / Critterbase
       - BCTW_API_HOST=${BCTW_API_HOST}
       - CB_API_HOST=${CB_API_HOST}
+      - NODE_OPTIONS=${API_NODE_OPTIONS}
     volumes:
       - ./api:/opt/app-root/src
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
@@ -145,6 +146,7 @@ services:
       - REACT_APP_KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID}
       - OBJECT_STORE_URL=${OBJECT_STORE_URL}
       - OBJECT_STORE_BUCKET_NAME=${OBJECT_STORE_BUCKET_NAME}
+      - NODE_OPTIONS=${APP_NODE_OPTIONS}
     volumes:
       - ./app:/opt/app-root/src
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules

@@ -1,5 +1,6 @@
 import { mdiArrowRight, mdiCalendarMonthOutline, mdiClockOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -116,7 +117,7 @@ const MethodForm = () => {
 
   return (
     <form>
-      <Stack gap={3} maxWidth={900}>
+      <Stack gap={3} width={900}>
         <Stack component="fieldset" gap={3}>
           <Typography component="legend">Details</Typography>
           <FormControl
@@ -164,7 +165,13 @@ const MethodForm = () => {
             <FieldArray
               name="periods"
               render={(arrayHelpers: FieldArrayRenderProps) => (
-                <Stack alignItems="flex-start">
+                <Box>
+                  {errors.periods && typeof errors.periods === 'string' && (
+                    <Alert severity="error" sx={{mb: 2.5}}>
+                      {String(errors.periods)}
+                    </Alert>
+                  )}
+                  
                   <Stack
                     component={List}
                     gap={1}
@@ -218,7 +225,7 @@ const MethodForm = () => {
                                       variant="caption"
                                       color="error"
                                       sx={{
-                                        mt: '-4px',
+                                        mt: '3px',
                                         ml: '14px'
                                       }}>
                                       {String(errors.periods[index])}
@@ -257,7 +264,7 @@ const MethodForm = () => {
                                       variant="caption"
                                       color="error"
                                       sx={{
-                                        mt: '-4px',
+                                        mt: '3px',
                                         ml: '14px'
                                       }}>
                                       {String(errors.periods[index])}
@@ -276,21 +283,13 @@ const MethodForm = () => {
                         </ListItem>
                       );
                     })}
-
-                    {errors.periods && typeof errors.periods === 'string' && (
-                      <Typography
-                        variant="caption"
-                        color="error"
-                        sx={{
-                          mt: '-4px',
-                          ml: '14px'
-                        }}>
-                        {String(errors.periods)}
-                      </Typography>
-                    )}
                   </Stack>
 
                   <Button
+                    sx={{
+                      alignSelf: 'flex-start',
+                      mt: 1
+                    }}
                     data-testid="sampling-period-add-button"
                     variant="outlined"
                     color="primary"
@@ -300,7 +299,7 @@ const MethodForm = () => {
                     onClick={() => arrayHelpers.push(SurveySampleMethodPeriodArrayItemInitialValues)}>
                     Add Time Period
                   </Button>
-                </Stack>
+                </Box>
               )}
             />
           </Box>
