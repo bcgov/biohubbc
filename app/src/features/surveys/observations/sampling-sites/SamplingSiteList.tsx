@@ -300,7 +300,7 @@ const SamplingSiteList = () => {
                   <AccordionDetails
                     sx={{
                       pt: 0,
-                      px: 2
+                      px: 0
                     }}>
                     <List
                       disablePadding
@@ -312,8 +312,6 @@ const SamplingSiteList = () => {
                       {sampleSite.sample_methods?.map((sampleMethod) => {
                         return (
                           <ListItem
-                            divider
-                            disableGutters
                             key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}`}
                             sx={{
                               display: 'block',
@@ -332,12 +330,16 @@ const SamplingSiteList = () => {
                                     dense
                                     divider
                                     disableGutters
+                                    sx={{
+                                      px: 1.5,
+                                      color: 'text.secondary'
+                                    }}
                                     key={`${samplePeriod.survey_sample_method_id}-${samplePeriod.survey_sample_period_id}`}>
-                                    <ListItemIcon sx={{minWidth: '32px'}}>
+                                    <ListItemIcon sx={{minWidth: '32px'}} color="inherit">
                                       <Icon path={mdiCalendarRange} size={0.75}></Icon>
                                     </ListItemIcon>
                                     <ListItemText>
-                                      <Typography variant="body2" component="div">
+                                      <Typography variant="body2" component="div" color="inherit">
                                         {samplePeriod.start_date}, {samplePeriod.start_time} &rarr; {samplePeriod.end_date}, {samplePeriod.end_time}
                                       </Typography>
                                     </ListItemText>
