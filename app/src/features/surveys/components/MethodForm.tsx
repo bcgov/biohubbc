@@ -82,7 +82,7 @@ export const SamplingSiteMethodYupSchema = yup.object({
           start_time: yup.string().nullable(),
           end_time: yup.string().nullable()
         })
-        .test('ifEndTimeExistsThenStartTimeRequired', 'Start Time required if End Time present', function (value) {
+        .test('ifEndTimeExistsThenStartTimeRequired', 'Start Time is required', function (value) {
           const { start_time, end_time } = value;
 
           if (end_time && !start_time) {
@@ -90,7 +90,7 @@ export const SamplingSiteMethodYupSchema = yup.object({
           }
           return true;
         })
-        .test('checkDatesAreSameAndEndTimeIsAfterStart', 'End Time must come after Start Time', function (value) {
+        .test('checkDatesAreSameAndEndTimeIsAfterStart', 'Start and End dates must be different', function (value) {
           const { start_date, end_date, start_time, end_time } = value;
 
           if (start_date === end_date && start_time && end_time) {
@@ -120,163 +120,170 @@ const MethodForm = () => {
 
   return (
     <form>
-      <Box component={'fieldset'} mb={3}>
-        <FormControl
-          fullWidth
-          variant="outlined"
-          required={true}
-          error={get(touched, 'method_lookup_id') && Boolean(get(errors, 'method_lookup_id'))}
-          style={{ width: '100%' }}>
-          <InputLabel id={'method_lookup_id-label'}>Method Type</InputLabel>
-          <Select
-            name={'method_lookup_id'}
-            labelId={'method_lookup_id-label'}
-            label={'Method Type'}
-            value={values.method_lookup_id}
-            displayEmpty
-            inputProps={{ id: 'method_lookup_id', 'aria-label': 'Method Type' }}
-            onChange={handleChange}
-            sx={{ width: '100%', backgroundColor: '#fff' }}>
-            {codesContext.codesDataLoader.data.sample_methods.map((item) => (
-              <MenuItem key={item.id} value={item.id}>
-                {item.name}
-              </MenuItem>
-            ))}
-          </Select>
-          <FormHelperText>{get(touched, 'method_lookup_id') && get(errors, 'method_lookup_id')}</FormHelperText>
-        </FormControl>
-      </Box>
-      <Box mb={3}>
-        <CustomTextField
-          name="description"
-          label="Description"
-          maxLength={250}
-          other={{ multiline: true, placeholder: 'Maximum 250 characters', rows: 3 }}
-        />
-      </Box>
+      <Stack gap={3} maxWidth={900}>
+        <Stack component="fieldset" gap={3}>
+          <Typography component="legend">Details</Typography>
+          <FormControl
+            fullWidth
+            variant="outlined"
+            required={true}
+            error={get(touched, 'method_lookup_id') && Boolean(get(errors, 'method_lookup_id'))}
+            style={{ width: '100%' }}>
+            <InputLabel id={'method_lookup_id-label'}>Method Type</InputLabel>
+            <Select
+              name={'method_lookup_id'}
+              labelId={'method_lookup_id-label'}
+              label={'Method Type'}
+              value={values.method_lookup_id}
+              displayEmpty
+              inputProps={{ id: 'method_lookup_id', 'aria-label': 'Method Type' }}
+              onChange={handleChange}
+              sx={{ width: '100%', backgroundColor: '#fff' }}>
+              {codesContext.codesDataLoader.data.sample_methods.map((item) => (
+                <MenuItem key={item.id} value={item.id}>
+                  {item.name}
+                </MenuItem>
+              ))}
+            </Select>
+            <FormHelperText>{get(touched, 'method_lookup_id') && get(errors, 'method_lookup_id')}</FormHelperText>
+          </FormControl>
+          <CustomTextField
+            name="description"
+            label="Description"
+            maxLength={250}
+            other={{ multiline: true, placeholder: 'Maximum 250 characters', rows: 3 }}
+          />
+        </Stack>
 
-      <Box component="fieldset">
-        <Typography
-          component="legend"
-          id="time_periods"
-          sx={{
-            mb: 1
-          }}>
-          Time Periods
-        </Typography>
-        <Box>
-          <FieldArray
-            name="periods"
-            render={(arrayHelpers: FieldArrayRenderProps) => (
-              <Stack alignItems="flex-start">
-                <Stack
-                  component={List}
-                  gap={1}
-                  sx={{
-                    mt: -1,
-                    p: 0
-                  }}>
-                  {values.periods.map((period, index) => {
-                    return (
-                      <ListItem
-                        disableGutters
-                        divider
-                        key={`sample_period_${period.start_date}-${period.end_date}`}
-                        sx={{
-                          pt: 1.5,
-                          pb: 2
-                        }}>
-                        <Stack alignItems="flex-start" flexDirection="column" gap={1}>
-                          <Stack alignItems="flex-start" flexDirection="row" gap={1}>
-                            <Stack
-                              flexDirection="row"
-                              gap={1}
-                              sx={{
-                                '& .MuiFormHelperText-root': {
-                                  mb: -0.75
-                                }
-                              }}>
-                              <DateTimeFields
-                                date={{
-                                  dateLabel: 'Start Date',
-                                  dateName: `periods[${index}].start_date`,
-                                  dateId: `periods_${index}_.start_date`,
-                                  dateRequired: true,
-                                  dateHelperText: '',
-                                  dateIcon: mdiCalendarMonthOutline
-                                }}
-                                time={{
-                                  timeLabel: '',
-                                  timeName: `periods[${index}].start_time`,
-                                  timeId: `periods_${index}_.start_time`,
-                                  timeRequired: false,
-                                  timeErrorHelper: `periods[${index}]`,
-                                  timeIcon: mdiClockOutline
-                                }}
-                                formikProps={formikProps}
-                              />
+        <Box component="fieldset">
+          <Typography
+            component="legend"
+            id="time_periods"
+            sx={{
+              mb: 1
+            }}>
+            Time Periods
+          </Typography>
+          <Box>
+            <FieldArray
+              name="periods"
+              render={(arrayHelpers: FieldArrayRenderProps) => (
+                <Stack alignItems="flex-start">
+                  <Stack
+                    component={List}
+                    gap={1}
+                    sx={{
+                      mt: -1,
+                      p: 0
+                    }}>
+                    {values.periods.map((period, index) => {
+                      return (
+                        <ListItem
+                          disableGutters
+                          divider
+                          key={`sample_period_${period.start_date}-${period.end_date}`}
+                          sx={{
+                            pt: 1.5,
+                            pb: 2
+                          }}>
+                          <Stack alignItems="flex-start" flexDirection="column" gap={1}>
+                            <Stack alignItems="flex-start" flexDirection="row" gap={1}>
+                              <Stack
+                                flexDirection="row"
+                                gap={1}
+                                sx={{
+                                  '& .MuiFormHelperText-root': {
+                                    mb: -0.75
+                                  }
+                                }}>
+                                <DateTimeFields
+                                  date={{
+                                    dateLabel: 'Start Date',
+                                    dateName: `periods[${index}].start_date`,
+                                    dateId: `periods_${index}_.start_date`,
+                                    dateRequired: true,
+                                    dateHelperText: '',
+                                    dateIcon: mdiCalendarMonthOutline
+                                  }}
+                                  time={{
+                                    timeLabel: '',
+                                    timeName: `periods[${index}].start_time`,
+                                    timeId: `periods_${index}_.start_time`,
+                                    timeRequired: false,
+                                    timeErrorHelper: `periods[${index}]`,
+                                    timeIcon: mdiClockOutline
+                                  }}
+                                  formikProps={formikProps}
+                                />
 
-                              <Box flex="0 0 auto" mt={2.25}>
-                                <Icon path={mdiArrowRight} size={0.8} />
-                              </Box>
+                                <Box flex="0 0 auto" mt={2.25}>
+                                  <Icon path={mdiArrowRight} size={0.8} />
+                                </Box>
 
-                              <DateTimeFields
-                                date={{
-                                  dateLabel: 'End Date',
-                                  dateName: `periods[${index}].end_date`,
-                                  dateId: `periods_${index}_.end_date`,
-                                  dateRequired: true,
-                                  dateHelperText: '',
-                                  dateIcon: mdiCalendarMonthOutline
-                                }}
-                                time={{
-                                  timeLabel: '',
-                                  timeName: `periods[${index}].end_time`,
-                                  timeId: `periods_${index}_.end_time`,
-                                  timeRequired: false,
-                                  timeErrorHelper: `periods[${index}]`,
-                                  timeIcon: mdiClockOutline
-                                }}
-                                formikProps={formikProps}
-                              />
+                                <Stack>
+                                  <DateTimeFields
+                                    date={{
+                                      dateLabel: 'End Date',
+                                      dateName: `periods[${index}].end_date`,
+                                      dateId: `periods_${index}_.end_date`,
+                                      dateRequired: true,
+                                      dateHelperText: '',
+                                      dateIcon: mdiCalendarMonthOutline
+                                    }}
+                                    time={{
+                                      timeLabel: '',
+                                      timeName: `periods[${index}].end_time`,
+                                      timeId: `periods_${index}_.end_time`,
+                                      timeRequired: false,
+                                      timeErrorHelper: `periods[${index}]`,
+                                      timeIcon: mdiClockOutline
+                                    }}
+                                    formikProps={formikProps}
+                                  />
+                                  
+                                </Stack>
+                              </Stack>
+                              <IconButton
+                                sx={{ mt: 1 }}
+                                data-testid="delete-icon"
+                                aria-label="remove time period"
+                                onClick={() => arrayHelpers.remove(index)}>
+                                <Icon path={mdiTrashCanOutline} size={1} />
+                              </IconButton>
                             </Stack>
-                            <IconButton
-                              sx={{ mt: 1 }}
-                              data-testid="delete-icon"
-                              aria-label="remove time period"
-                              onClick={() => arrayHelpers.remove(index)}>
-                              <Icon path={mdiTrashCanOutline} size={1} />
-                            </IconButton>
-                          </Stack>
-                          {errors.periods && errors.periods[index] && typeof errors.periods[index] === 'string' && (
-                            <Box alignItems="flex-start" flexDirection="row">
-                              <Typography variant="body2" color={'#f44336'}>
+                            {errors.periods && errors.periods[index] && typeof errors.periods[index] === 'string' && (
+                              <Typography variant="caption" color="error"
+                                sx={{
+                                  mt: '-4px',
+                                  ml: '14px'
+                                }}
+                              >
                                 {String(errors.periods[index])}
                               </Typography>
-                            </Box>
-                          )}
-                        </Stack>
-                      </ListItem>
-                    );
-                  })}
-                </Stack>
+                            )}
+                          </Stack>
+                        </ListItem>
+                      );
+                    })}
+                  </Stack>
 
-                <Button
-                  sx={{ mt: 1 }}
-                  data-testid="sampling-period-add-button"
-                  variant="outlined"
-                  color="primary"
-                  title="Add Period"
-                  aria-label="Create Sample Period"
-                  startIcon={<Icon path={mdiPlus} size={1} />}
-                  onClick={() => arrayHelpers.push(SurveySampleMethodPeriodArrayItemInitialValues)}>
-                  Add Time Period
-                </Button>
-              </Stack>
-            )}
-          />
+                  <Button
+                    data-testid="sampling-period-add-button"
+                    variant="outlined"
+                    color="primary"
+                    title="Add Period"
+                    aria-label="Create Sample Period"
+                    startIcon={<Icon path={mdiPlus} size={1} />}
+                    onClick={() => arrayHelpers.push(SurveySampleMethodPeriodArrayItemInitialValues)}>
+                    Add Time Period
+                  </Button>
+                </Stack>
+              )}
+            />
+          </Box>
         </Box>
-      </Box>
+
+      </Stack>
     </form>
   );
 };

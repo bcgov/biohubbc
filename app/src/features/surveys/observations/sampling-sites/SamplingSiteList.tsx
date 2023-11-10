@@ -312,40 +312,35 @@ const SamplingSiteList = () => {
                       {sampleSite.sample_methods?.map((sampleMethod) => {
                         return (
                           <ListItem
+                            divider
                             disableGutters
                             key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}`}
                             sx={{
                               display: 'block',
-                              py: 0
                             }}>
                             <ListItemText
                               primary={getCodesName(
                                 codesContext.codesDataLoader.data,
                                 'sample_methods',
                                 sampleMethod.method_lookup_id
-                              )}
-                              sx={{
-                                m: 0,
-                                px: 2,
-                                py: 1.25,
-                                backgroundColor: grey[100]
-                              }}></ListItemText>
+                              )}>
+                            </ListItemText>
                             <List disablePadding>
                               {sampleMethod.sample_periods?.map((samplePeriod) => {
                                 return (
                                   <ListItem
+                                    dense
                                     divider
+                                    disableGutters
                                     key={`${samplePeriod.survey_sample_method_id}-${samplePeriod.survey_sample_period_id}`}>
-                                    <ListItemIcon>
-                                      <Icon path={mdiCalendarRange} size={1}></Icon>
+                                    <ListItemIcon sx={{minWidth: '32px'}}>
+                                      <Icon path={mdiCalendarRange} size={0.75}></Icon>
                                     </ListItemIcon>
-                                    <ListItemText
-                                      primary={samplePeriod.start_date}
-                                      secondary={samplePeriod.start_time || '\u00A0'}></ListItemText>
-
-                                    <ListItemText
-                                      primary={samplePeriod.end_date}
-                                      secondary={samplePeriod.end_time || '\u00A0'}></ListItemText>
+                                    <ListItemText>
+                                      <Typography variant="body2" component="div">
+                                        {samplePeriod.start_date}, {samplePeriod.start_time} &rarr; {samplePeriod.end_date}, {samplePeriod.end_time}
+                                      </Typography>
+                                    </ListItemText>
                                   </ListItem>
                                 );
                               })}
