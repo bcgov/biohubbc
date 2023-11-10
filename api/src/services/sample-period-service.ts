@@ -1,4 +1,5 @@
 import { IDBConnection } from '../database/db';
+import { HTTP400 } from '../errors/http-error';
 import {
   InsertSamplePeriodRecord,
   SamplePeriodRecord,
@@ -6,6 +7,7 @@ import {
   UpdateSamplePeriodRecord
 } from '../repositories/sample-period-repository';
 import { DBService } from './db-service';
+import { ObservationService } from './observation-service';
 
 /**
  * Sample Period Repository
@@ -97,9 +99,24 @@ export class SamplePeriodService extends DBService {
       );
     });
 
+    const observationService = new ObservationService(this.connection);
+
     // Delete any Periods not found in the passed in array
     if (existingPeriodToDelete.length > 0) {
-      const idsToDelete = existingPeriodToDelete.map((item) => item.survey_sample_period_id);
+      const idsToDelete = [];
+
+      // Check if any observations are associated with the periods to delete
+      for (const period of existingPeriodToDelete) {
+        if (
+          (await observationService.getObservationsCountBySampleMethodId(period.survey_sample_method_id))
+            .observationCount > 0
+        ) {
+          throw new HTTP400('Cannot delete a sample period that is associated with an observation');
+        }
+
+        idsToDelete.push(period.survey_sample_period_id);
+      }
+
       await this.deleteSamplePeriodRecords(idsToDelete);
     }
   }

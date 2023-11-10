@@ -28,6 +28,7 @@ interface IDateTimeFieldsProps {
     timeHelperText?: string;
     timeIcon: string;
   };
+  parentName: string;
   formikProps: FormikContextType<ISurveySampleMethodData>;
 }
 
@@ -35,7 +36,8 @@ export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
   const {
     formikProps: { values, errors, touched, setFieldValue },
     date: { dateLabel, dateName, dateId, dateRequired, dateHelperText, dateIcon },
-    time: { timeLabel, timeName, timeId, timeRequired, timeHelperText, timeIcon, timeErrorHelper }
+    time: { timeLabel, timeName, timeId, timeRequired, timeHelperText, timeIcon },
+    parentName
   } = props;
 
   const DateIcon = () => {
@@ -80,7 +82,9 @@ export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
                 name: dateName,
                 required: dateRequired,
                 variant: 'outlined',
-                error: get(touched, dateName) && Boolean(get(errors, dateName)),
+                error:
+                  (get(touched, dateName) && Boolean(get(errors, dateName))) ||
+                  typeof get(errors, parentName) === 'string',
                 helperText: (get(touched, dateName) && get(errors, dateName)) || dateHelperText,
                 inputProps: {
                   'data-testid': dateName
@@ -127,7 +131,7 @@ export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
                 variant: 'outlined',
                 error:
                   (get(touched, timeName) && Boolean(get(errors, timeName))) ||
-                  (timeErrorHelper && get(errors, timeErrorHelper) && Boolean(get(errors, timeErrorHelper))),
+                  typeof get(errors, parentName) === 'string',
                 helperText: (get(touched, timeName) && get(errors, timeName)) || timeHelperText,
                 inputProps: {
                   'data-testid': timeId,

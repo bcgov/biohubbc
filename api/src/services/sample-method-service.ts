@@ -1,4 +1,5 @@
 import { IDBConnection } from '../database/db';
+import { HTTP400 } from '../errors/http-error';
 import {
   InsertSampleMethodRecord,
   SampleMethodRecord,
@@ -6,6 +7,7 @@ import {
   UpdateSampleMethodRecord
 } from '../repositories/sample-method-repository';
 import { DBService } from './db-service';
+import { ObservationService } from './observation-service';
 import { SamplePeriodService } from './sample-period-service';
 
 /**
@@ -47,6 +49,7 @@ export class SampleMethodService extends DBService {
     // Collect list of periods to delete
     const existingSamplePeriods = await samplePeriodService.getSamplePeriodsForSurveyMethodId(surveySampleMethodId);
     const periodsToDelete = existingSamplePeriods.map((item) => item.survey_sample_period_id);
+
     // Delete all associated sample periods
     await samplePeriodService.deleteSamplePeriodRecords(periodsToDelete);
 
@@ -101,13 +104,23 @@ export class SampleMethodService extends DBService {
       );
     });
 
+    const observationService = new ObservationService(this.connection);
+
     // Delete any methods not found in the passed in array
     if (existingMethodsToDelete.length > 0) {
       const promises: Promise<any>[] = [];
 
-      existingMethodsToDelete.forEach((method: any) => {
+      // Check if any observations are associated with the methods to be deleted
+      for (const method of existingMethodsToDelete) {
+        if (
+          (await observationService.getObservationsCountBySampleMethodId(method.survey_sample_method_id))
+            .observationCount > 0
+        ) {
+          throw new HTTP400('Cannot delete a sample method that is associated with an observation');
+        }
+
         promises.push(this.deleteSampleMethodRecord(method.survey_sample_method_id));
-      });
+      }
 
       await Promise.all(promises);
     }

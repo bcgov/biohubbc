@@ -79,16 +79,12 @@ export const SamplingSiteMethodYupSchema = yup.object({
             .isValidDateString()
             .required('End Date is required')
             .isEndDateSameOrAfterStartDate('start_date'),
-          start_time: yup.string().nullable(),
+          start_time: yup.string().when('end_time', {
+            is: (val: string | null) => val && val !== null,
+            then: yup.string().typeError('Start Time is required').required('Start Time is required'),
+            otherwise: yup.string().nullable()
+          }),
           end_time: yup.string().nullable()
-        })
-        .test('ifEndTimeExistsThenStartTimeRequired', 'Start Time is required', function (value) {
-          const { start_time, end_time } = value;
-
-          if (end_time && !start_time) {
-            return false;
-          }
-          return true;
         })
         .test('checkDatesAreSameAndEndTimeIsAfterStart', 'Start and End dates must be different', function (value) {
           const { start_date, end_date, start_time, end_time } = value;
@@ -186,23 +182,22 @@ const MethodForm = () => {
                             pt: 1.5,
                             pb: 2
                           }}>
-                          <Stack alignItems="flex-start" flexDirection="column" gap={1}>
-                            <Stack alignItems="flex-start" flexDirection="row" gap={1}>
-                              <Stack
-                                flexDirection="row"
-                                gap={1}
-                                sx={{
-                                  '& .MuiFormHelperText-root': {
-                                    mb: -0.75
-                                  }
-                                }}>
+                          <Stack alignItems="flex-start" flexDirection="row" gap={1}>
+                            <Stack
+                              flexDirection="row"
+                              gap={1}
+                              sx={{
+                                '& .MuiFormHelperText-root': {
+                                  mb: -0.75
+                                }
+                              }}>
+                              <Stack>
                                 <DateTimeFields
                                   date={{
                                     dateLabel: 'Start Date',
                                     dateName: `periods[${index}].start_date`,
                                     dateId: `periods_${index}_.start_date`,
                                     dateRequired: true,
-                                    dateHelperText: '',
                                     dateIcon: mdiCalendarMonthOutline
                                   }}
                                   time={{
@@ -210,61 +205,89 @@ const MethodForm = () => {
                                     timeName: `periods[${index}].start_time`,
                                     timeId: `periods_${index}_.start_time`,
                                     timeRequired: false,
-                                    timeErrorHelper: `periods[${index}]`,
                                     timeIcon: mdiClockOutline
                                   }}
+                                  parentName={`periods[${index}]`}
                                   formikProps={formikProps}
                                 />
-
-                                <Box flex="0 0 auto" mt={2.25}>
-                                  <Icon path={mdiArrowRight} size={0.8} />
-                                </Box>
-
-                                <Stack>
-                                  <DateTimeFields
-                                    date={{
-                                      dateLabel: 'End Date',
-                                      dateName: `periods[${index}].end_date`,
-                                      dateId: `periods_${index}_.end_date`,
-                                      dateRequired: true,
-                                      dateHelperText: '',
-                                      dateIcon: mdiCalendarMonthOutline
-                                    }}
-                                    time={{
-                                      timeLabel: '',
-                                      timeName: `periods[${index}].end_time`,
-                                      timeId: `periods_${index}_.end_time`,
-                                      timeRequired: false,
-                                      timeErrorHelper: `periods[${index}]`,
-                                      timeIcon: mdiClockOutline
-                                    }}
-                                    formikProps={formikProps}
-                                  />
-                                  
-                                </Stack>
+                                {errors.periods &&
+                                  typeof errors.periods !== 'string' &&
+                                  errors.periods[index] &&
+                                  typeof errors.periods[index] === 'string' && (
+                                    <Typography
+                                      variant="caption"
+                                      color="error"
+                                      sx={{
+                                        mt: '-4px',
+                                        ml: '14px'
+                                      }}>
+                                      {String(errors.periods[index])}
+                                    </Typography>
+                                  )}
                               </Stack>
-                              <IconButton
-                                sx={{ mt: 1 }}
-                                data-testid="delete-icon"
-                                aria-label="remove time period"
-                                onClick={() => arrayHelpers.remove(index)}>
-                                <Icon path={mdiTrashCanOutline} size={1} />
-                              </IconButton>
+
+                              <Box flex="0 0 auto" mt={2.25}>
+                                <Icon path={mdiArrowRight} size={0.8} />
+                              </Box>
+
+                              <Stack>
+                                <DateTimeFields
+                                  date={{
+                                    dateLabel: 'End Date',
+                                    dateName: `periods[${index}].end_date`,
+                                    dateId: `periods_${index}_.end_date`,
+                                    dateRequired: true,
+                                    dateIcon: mdiCalendarMonthOutline
+                                  }}
+                                  time={{
+                                    timeLabel: '',
+                                    timeName: `periods[${index}].end_time`,
+                                    timeId: `periods_${index}_.end_time`,
+                                    timeRequired: false,
+                                    timeIcon: mdiClockOutline
+                                  }}
+                                  parentName={`periods[${index}]`}
+                                  formikProps={formikProps}
+                                />
+                                {errors.periods &&
+                                  typeof errors.periods !== 'string' &&
+                                  errors.periods[index] &&
+                                  typeof errors.periods[index] === 'string' && (
+                                    <Typography
+                                      variant="caption"
+                                      color="error"
+                                      sx={{
+                                        mt: '-4px',
+                                        ml: '14px'
+                                      }}>
+                                      {String(errors.periods[index])}
+                                    </Typography>
+                                  )}
+                              </Stack>
                             </Stack>
-                            {errors.periods && errors.periods[index] && typeof errors.periods[index] === 'string' && (
-                              <Typography variant="caption" color="error"
-                                sx={{
-                                  mt: '-4px',
-                                  ml: '14px'
-                                }}
-                              >
-                                {String(errors.periods[index])}
-                              </Typography>
-                            )}
+                            <IconButton
+                              sx={{ mt: 1 }}
+                              data-testid="delete-icon"
+                              aria-label="remove time period"
+                              onClick={() => arrayHelpers.remove(index)}>
+                              <Icon path={mdiTrashCanOutline} size={1} />
+                            </IconButton>
                           </Stack>
                         </ListItem>
                       );
                     })}
+
+                    {errors.periods && typeof errors.periods === 'string' && (
+                      <Typography
+                        variant="caption"
+                        color="error"
+                        sx={{
+                          mt: '-4px',
+                          ml: '14px'
+                        }}>
+                        {String(errors.periods)}
+                      </Typography>
+                    )}
                   </Stack>
 
                   <Button
@@ -282,7 +305,6 @@ const MethodForm = () => {
             />
           </Box>
         </Box>
-
       </Stack>
     </form>
   );

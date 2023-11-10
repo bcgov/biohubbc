@@ -314,15 +314,14 @@ const SamplingSiteList = () => {
                           <ListItem
                             key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}`}
                             sx={{
-                              display: 'block',
+                              display: 'block'
                             }}>
                             <ListItemText
                               primary={getCodesName(
                                 codesContext.codesDataLoader.data,
                                 'sample_methods',
                                 sampleMethod.method_lookup_id
-                              )}>
-                            </ListItemText>
+                              )}></ListItemText>
                             <List disablePadding>
                               {sampleMethod.sample_periods?.map((samplePeriod) => {
                                 return (
@@ -335,12 +334,14 @@ const SamplingSiteList = () => {
                                       color: 'text.secondary'
                                     }}
                                     key={`${samplePeriod.survey_sample_method_id}-${samplePeriod.survey_sample_period_id}`}>
-                                    <ListItemIcon sx={{minWidth: '32px'}} color="inherit">
+                                    <ListItemIcon sx={{ minWidth: '32px' }} color="inherit">
                                       <Icon path={mdiCalendarRange} size={0.75}></Icon>
                                     </ListItemIcon>
                                     <ListItemText>
                                       <Typography variant="body2" component="div" color="inherit">
-                                        {samplePeriod.start_date}, {samplePeriod.start_time} &rarr; {samplePeriod.end_date}, {samplePeriod.end_time}
+                                        {`${samplePeriod.start_date} ${samplePeriod.start_time || ''} - ${
+                                          samplePeriod.end_date
+                                        } ${samplePeriod.end_time || ''}`}
                                       </Typography>
                                     </ListItemText>
                                   </ListItem>
