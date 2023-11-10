@@ -70,7 +70,10 @@ export const FamilyAnimalFormContent = ({ index, allFamilies }: IFamilyAnimalFor
           }}>
           {[...(allFamilies ?? []), { family_id: newFamilyIdPlaceholder, family_label: newFamilyIdPlaceholder }]?.map(
             (family) => (
-              <MenuItem disabled={!!disabledFamilyIds[a.family_id]} key={family.family_id} value={family.family_id}>
+              <MenuItem
+                disabled={!!disabledFamilyIds[family.family_id]}
+                key={family.family_id}
+                value={family.family_id}>
                 {family.family_label ? family.family_label : family.family_id}
               </MenuItem>
             )
