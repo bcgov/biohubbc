@@ -2,16 +2,25 @@ import { mdiRefresh } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IconButton } from '@mui/material';
 import Box from '@mui/material/Box';
-import { square } from '@turf/turf';
-import MapContainer, { INonEditableGeometries } from 'components/map/MapContainer';
+import BaseLayerControls from 'components/map/components/BaseLayerControls';
+import { SetMapBounds } from 'components/map/components/Bounds';
+import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
+import StaticLayers from 'components/map/components/StaticLayers';
+import { MapBaseCss } from 'components/map/styles/MapBaseCss';
+import { ALL_OF_BC_BOUNDARY, MAP_DEFAULT_CENTER } from 'constants/spatial';
 import { ObservationsContext } from 'contexts/observationsContext';
-import { Position } from 'geojson';
+import { SurveyContext } from 'contexts/surveyContext';
+import { Feature, Position } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
-import { useCallback, useContext, useMemo, useState } from 'react';
-import { calculateFeatureBoundingBox, latLngBoundsFromBoundingBox } from 'utils/mapBoundaryUploadHelpers';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { GeoJSON, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
+import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
+import { coloredPoint, INonEditableGeometries } from 'utils/mapUtils';
+import { v4 as uuidv4 } from 'uuid';
 
 const ObservationsMap = () => {
   const observationsContext = useContext(ObservationsContext);
+  const surveyContext = useContext(SurveyContext);
 
   const surveyObservations: INonEditableGeometries[] = useMemo(() => {
     const observations = observationsContext.observationsDataLoader.data?.surveyObservations;
@@ -51,33 +60,96 @@ const ObservationsMap = () => {
       });
   }, [observationsContext.observationsDataLoader.data]);
 
-  const getDefaultMapBounds = useCallback((): LatLngBoundsExpression | undefined => {
-    const features = surveyObservations.map((observation) => observation.feature);
-    const boundingBox = calculateFeatureBoundingBox(features);
-
-    if (!boundingBox) {
-      return;
+  const studyAreaFeatures: Feature[] = useMemo(() => {
+    const locations = surveyContext.surveyDataLoader.data?.surveyData.locations;
+    if (!locations) {
+      return [];
     }
 
-    return latLngBoundsFromBoundingBox(square(boundingBox));
-  }, [surveyObservations]);
+    return locations.flatMap((item) => item.geojson);
+  }, [surveyContext.surveyDataLoader.data]);
 
-  const [bounds, setBounds] = useState<LatLngBoundsExpression | undefined>(getDefaultMapBounds());
+  const sampleSiteFeatures: Feature[] = useMemo(() => {
+    const sites = surveyContext.sampleSiteDataLoader.data?.sampleSites;
+    if (!sites) {
+      return [];
+    }
+
+    return sites.map((item) => item.geojson);
+  }, [surveyContext.sampleSiteDataLoader.data]);
+
+  const getDefaultMapBounds = useCallback((): LatLngBoundsExpression | undefined => {
+    const features = surveyObservations.map((observation) => observation.feature);
+    return calculateUpdatedMapBounds([...features, ...studyAreaFeatures, ...sampleSiteFeatures]);
+  }, [surveyObservations, studyAreaFeatures, sampleSiteFeatures]);
+
+  // set default bounds to encompass all of BC
+  const [bounds, setBounds] = useState<LatLngBoundsExpression | undefined>(
+    calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY])
+  );
 
   const zoomToBoundaryExtent = useCallback(() => {
     setBounds(getDefaultMapBounds());
-  }, [surveyObservations]);
+  }, [getDefaultMapBounds]);
+
+  useEffect(() => {
+    // Once all data loaders have finished loading it will zoom the map to include all features
+    if (
+      !surveyContext.surveyDataLoader.isLoading &&
+      !surveyContext.sampleSiteDataLoader.isLoading &&
+      !observationsContext.observationsDataLoader.isLoading
+    ) {
+      zoomToBoundaryExtent();
+    }
+  }, [
+    observationsContext.observationsDataLoader.isLoading,
+    surveyContext.sampleSiteDataLoader.isLoading,
+    surveyContext.surveyDataLoader.isLoading,
+    zoomToBoundaryExtent
+  ]);
 
   return (
-    <Box position="relative" height={600}>
-      <MapContainer
-        mapId="survey_observations_map"
-        bounds={bounds}
+    <Box position="relative">
+      <LeafletMapContainer
+        data-testid="leaflet-survey_observations_map"
+        id="survey_observations_map"
+        center={MAP_DEFAULT_CENTER}
         scrollWheelZoom={false}
-        nonEditableGeometries={surveyObservations}
-        zoom={6}
-      />
-      {surveyObservations.length > 0 && (
+        fullscreenControl={true}
+        style={{ height: 600 }}>
+        <MapBaseCss />
+        <FullScreenScrollingEventHandler bounds={bounds} scrollWheelZoom={false} />
+        <SetMapBounds bounds={bounds} />
+
+        {surveyObservations?.map((nonEditableGeo: INonEditableGeometries) => (
+          <GeoJSON
+            key={uuidv4()}
+            data={nonEditableGeo.feature}
+            pointToLayer={(_, latlng) => coloredPoint({ latlng, fillColor: '#F28C28' })}>
+            {nonEditableGeo.popupComponent}
+          </GeoJSON>
+        ))}
+        <LayersControl position="bottomright">
+          <BaseLayerControls />
+          <StaticLayers
+            layers={[
+              {
+                layerName: 'Study Area',
+                features: studyAreaFeatures.map((feature) => ({ geoJSON: feature, tooltip: <span>Study Area</span> }))
+              },
+              {
+                layerName: 'Sample Sites',
+                layerColors: { color: '#3C005A', fillColor: '#3C005A' },
+                features: sampleSiteFeatures.map((feature) => ({
+                  geoJSON: feature,
+                  tooltip: <span>Sample Site</span>
+                }))
+              }
+            ]}
+          />
+        </LayersControl>
+      </LeafletMapContainer>
+      {(surveyObservations.length > 0 || studyAreaFeatures.length > 0 || sampleSiteFeatures.length > 0) && (
         <Box position="absolute" top="126px" left="10px" zIndex="999">
           <IconButton
             sx={{

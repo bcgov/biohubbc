@@ -2,7 +2,12 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { AnimalSex, Critter, IAnimal } from 'features/surveys/view/survey-animals/animal';
 import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
-import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import {
+  ICreateSurveyRequest,
+  ICreateSurveyResponse,
+  IDetailedCritterWithInternalId,
+  IGetSurveyForListResponse
+} from 'interfaces/useSurveyApi.interface';
 import { v4 } from 'uuid';
 import useSurveyApi from './useSurveyApi';
 
@@ -20,6 +25,42 @@ describe('useSurveyApi', () => {
   const projectId = 1;
   const surveyId = 1;
   const critterId = 1;
+
+  describe('createSurvey', () => {
+    it('creates a survey', async () => {
+      const projectId = 1;
+      const survey = {} as unknown as ICreateSurveyRequest;
+
+      const res: ICreateSurveyResponse = {
+        id: 1
+      };
+
+      mock.onPost(`/api/project/${projectId}/survey/create`).reply(200, res);
+
+      const result = await useSurveyApi(axios).createSurvey(projectId, survey);
+
+      expect(result.id).toEqual(1);
+    });
+  });
+
+  describe('getSurveysBasicFieldsByProjectId', () => {
+    it('fetches an array of surveys', async () => {
+      const projectId = 1;
+
+      const res: IGetSurveyForListResponse[] = [
+        { surveyData: { survey_id: 1 }, surveySupplementaryData: {} } as IGetSurveyForListResponse,
+        { surveyData: { survey_id: 2 }, surveySupplementaryData: {} } as IGetSurveyForListResponse
+      ];
+
+      mock.onGet(`/api/project/${projectId}/survey`).reply(200, res);
+
+      const result = await useSurveyApi(axios).getSurveysBasicFieldsByProjectId(projectId);
+
+      expect(result.length).toEqual(2);
+      expect(result[0].surveyData.survey_id).toEqual(1);
+      expect(result[1].surveyData.survey_id).toEqual(2);
+    });
+  });
 
   describe('createCritterAndAddToSurvey', () => {
     it('creates a critter successfully', async () => {

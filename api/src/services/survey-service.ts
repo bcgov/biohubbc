@@ -27,6 +27,7 @@ import {
   IObservationSubmissionUpdateDetails,
   IOccurrenceSubmissionMessagesResponse,
   ISurveyProprietorModel,
+  SurveyBasicFields,
   SurveyRepository
 } from '../repositories/survey-repository';
 import { getLogger } from '../utils/logger';
@@ -339,6 +340,38 @@ export class SurveyService extends DBService {
   }
 
   /**
+   * Fetches a subset of survey fields for all surveys under a project.
+   *
+   * @param {number} projectId
+   * @return {*}  {Promise<SurveyBasicFields[]>}
+   * @memberof SurveyService
+   */
+  async getSurveysBasicFieldsByProjectId(projectId: number): Promise<SurveyBasicFields[]> {
+    const surveys = await this.surveyRepository.getSurveysBasicFieldsByProjectId(projectId);
+
+    // Build an array of all unique focal species ids from all surveys
+    const uniqueFocalSpeciesIds = Array.from(
+      new Set(surveys.reduce((ids: number[], survey) => ids.concat(survey.focal_species), []))
+    );
+
+    // Fetch focal species data for all species ids
+    const taxonomyService = new TaxonomyService();
+    const focalSpecies = await taxonomyService.getSpeciesFromIds(uniqueFocalSpeciesIds);
+
+    // Decorate the surveys response with their matching focal species labels
+    const decoratedSurveys: SurveyBasicFields[] = [];
+    for (const survey of surveys) {
+      const matchingFocalSpeciesNames = focalSpecies
+        .filter((item) => survey.focal_species.includes(Number(item.id)))
+        .map((item) => item.label);
+
+      decoratedSurveys.push({ ...survey, focal_species_names: matchingFocalSpeciesNames });
+    }
+
+    return decoratedSurveys;
+  }
+
+  /**
    * Creates a survey and uploads the affected metadata to BioHub
    *
    * @param {number} projectId
@@ -379,6 +412,11 @@ export class SurveyService extends DBService {
 
     // Handle survey types
     promises.push(this.insertSurveyTypes(postSurveyData.survey_details.survey_types, surveyId));
+
+    //Handle multiple intended outcomes
+    promises.push(
+      this.insertSurveyIntendedOutcomes(postSurveyData.purpose_and_methodology.intended_outcome_ids, surveyId)
+    );
 
     // Handle focal species associated to this survey
     promises.push(
@@ -620,6 +658,16 @@ export class SurveyService extends DBService {
   }
 
   /**
+   * Inserts multiple rows for intended outcomes of a survey.
+   *
+   * @param {number[]} intended_outcomes
+   * @param {number} surveyId
+   */
+  async insertSurveyIntendedOutcomes(intended_outcomes: number[], surveyId: number): Promise<void> {
+    return this.surveyRepository.insertManySurveyIntendedOutcomes(surveyId, intended_outcomes);
+  }
+
+  /**
    * Insert or update association of permit to a given survey
    *
    * @param {number} systemUserId
@@ -693,6 +741,7 @@ export class SurveyService extends DBService {
 
     if (putSurveyData?.purpose_and_methodology) {
       promises.push(this.updateSurveyVantageCodesData(surveyId, putSurveyData));
+      promises.push(this.updateSurveyIntendedOutcomes(surveyId, putSurveyData));
     }
 
     if (putSurveyData?.partnerships) {
@@ -919,6 +968,33 @@ export class SurveyService extends DBService {
     });
 
     await Promise.all(promises);
+  }
+
+  /**
+   * Updates the list of intended outcomes associated with this survey.
+   *
+   * @param {number} surveyId
+   * @param {PurSurveyObject} surveyData
+   */
+  async updateSurveyIntendedOutcomes(surveyId: number, surveyData: PutSurveyObject) {
+    const purposeMethodInfo = await this.getSurveyPurposeAndMethodology(surveyId);
+    const { intended_outcome_ids: currentOutcomeIds } = surveyData.purpose_and_methodology;
+    const existingOutcomeIds = purposeMethodInfo.intended_outcome_ids;
+    const rowsToInsert = currentOutcomeIds.reduce((acc: number[], curr: number) => {
+      if (!existingOutcomeIds.find((existingId) => existingId === curr)) {
+        return [...acc, curr];
+      }
+      return acc;
+    }, []);
+    const rowsToDelete = existingOutcomeIds.reduce((acc: number[], curr: number) => {
+      if (!currentOutcomeIds.find((existingId) => existingId === curr)) {
+        return [...acc, curr];
+      }
+      return acc;
+    }, []);
+
+    await this.surveyRepository.insertManySurveyIntendedOutcomes(surveyId, rowsToInsert);
+    await this.surveyRepository.deleteManySurveyIntendedOutcomes(surveyId, rowsToDelete);
   }
 
   /**

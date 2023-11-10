@@ -1,0 +1,83 @@
+# Clean out all deployment artifacts when a PR is merged against a non-standard base branch (aka: neither dev, test, or prod)
+# Standard branches (aka: dev, test, prod) have their own cleanup routine that runs as part of the deployStatic action.
+name: Clean Merged PR Artifacts
+
+on:
+  pull_request:
+    types: [closed]
+    branches-ignore:
+      - dev
+      - test
+      - prod
+
+jobs:
+  clean:
+    name: Clean Deployment Artifacts for API and App in Dev and Tools environment
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Only run if the PR was merged
+    if: ${{ github.event.pull_request.merged == true }}
+    env:
+      PR_NUMBER: ${{ github.event.number }}
+    steps:
+      # Install Node - for `node` and `npm` commands
+      # Note: This already uses actions/cache internally, so repeat calls in subsequent jobs are not a performance hit
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+
+      # Load repo from cache
+      - name: Cache repo
+        uses: actions/cache@v3
+        id: cache-repo
+        env:
+          cache-name: cache-repo
+        with:
+          path: ${{ github.workspace }}/*
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+
+      # Checkout the branch if not restored via cache
+      - name: Checkout Target Branch
+        if: steps.cache-repo.outputs.cache-hit != 'true'
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+
+      # Log in to OpenShift.
+      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
+      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
+      - name: Log in to OpenShift
+        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+
+      # Clean the app deployment artifacts
+      - name: Clean APP Deployment
+        working-directory: "app/.pipeline/"
+        run: |
+          npm ci
+          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
+          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
+
+      # Clean the database build/deployment artifacts
+      - name: Clean Database Artifacts
+        working-directory: "database/.pipeline/"
+        run: |
+          npm ci
+          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
+          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
+
+      # Clean the api deployment artifacts
+      - name: Clean API Deployment
+        working-directory: "api/.pipeline/"
+        run: |
+          npm ci
+          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
+          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
+
+      # Clean the reamaining build/deployment artifacts
+      - name: Clean remaining Artifacts
+        env:
+          POD_SELECTOR: biohubbc
+        run: |
+          oc --namespace af2668-dev   get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete --ignore-not-found " $1}' | bash
+          oc --namespace af2668-tools get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete --ignore-not-found " $1}' | bash

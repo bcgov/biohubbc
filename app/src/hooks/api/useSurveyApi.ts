@@ -72,13 +72,13 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get surveys list.
+   * Fetches a subset of survey fields for all surveys under a project.
    *
    * @param {number} projectId
    * @return {*}  {Promise<IGetSurveysListResponse[]>}
    */
-  const getSurveysList = async (projectId: number): Promise<IGetSurveyForListResponse[]> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/list`);
+  const getSurveysBasicFieldsByProjectId = async (projectId: number): Promise<IGetSurveyForListResponse[]> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey`);
 
     return data;
   };
@@ -648,7 +648,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
   return {
     createSurvey,
     getSurveyForView,
-    getSurveysList,
+    getSurveysBasicFieldsByProjectId,
     getSurveyForUpdate,
     updateSurvey,
     uploadSurveyAttachments,

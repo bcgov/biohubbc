@@ -54,8 +54,22 @@ describe('SampleMethodRepository', () => {
         method_lookup_id: 3,
         description: 'description',
         periods: [
-          { end_date: '2023-01-02', start_date: '2023-10-02', survey_sample_method_id: 1, survey_sample_period_id: 4 },
-          { end_date: '2023-10-03', start_date: '2023-11-05', survey_sample_method_id: 1, survey_sample_period_id: 5 }
+          {
+            end_date: '2023-01-02',
+            start_date: '2023-10-02',
+            start_time: '12:00:00',
+            end_time: '13:00:00',
+            survey_sample_method_id: 1,
+            survey_sample_period_id: 4
+          },
+          {
+            end_date: '2023-10-03',
+            start_date: '2023-11-05',
+            start_time: '12:00:00',
+            end_time: '13:00:00',
+            survey_sample_method_id: 1,
+            survey_sample_period_id: 5
+          }
         ]
       };
       const repo = new SampleMethodRepository(dbConnectionObj);
@@ -75,8 +89,22 @@ describe('SampleMethodRepository', () => {
         method_lookup_id: 3,
         description: 'description',
         periods: [
-          { end_date: '2023-01-02', start_date: '2023-10-02', survey_sample_method_id: 1, survey_sample_period_id: 4 },
-          { end_date: '2023-10-03', start_date: '2023-11-05', survey_sample_method_id: 1, survey_sample_period_id: 5 }
+          {
+            end_date: '2023-01-02',
+            start_date: '2023-10-02',
+            start_time: '12:00:00',
+            end_time: '13:00:00',
+            survey_sample_method_id: 1,
+            survey_sample_period_id: 4
+          },
+          {
+            end_date: '2023-10-03',
+            start_date: '2023-11-05',
+            start_time: '12:00:00',
+            end_time: '13:00:00',
+            survey_sample_method_id: 1,
+            survey_sample_period_id: 5
+          }
         ]
       };
       const repo = new SampleMethodRepository(dbConnectionObj);
@@ -101,8 +129,20 @@ describe('SampleMethodRepository', () => {
         method_lookup_id: 3,
         description: 'description',
         periods: [
-          { end_date: '2023-01-02', start_date: '2023-10-02', survey_sample_method_id: 1 },
-          { end_date: '2023-10-03', start_date: '2023-11-05', survey_sample_method_id: 1 }
+          {
+            end_date: '2023-01-02',
+            start_date: '2023-10-02',
+            start_time: '12:00:00',
+            end_time: '13:00:00',
+            survey_sample_method_id: 1
+          },
+          {
+            end_date: '2023-10-03',
+            start_date: '2023-11-05',
+            start_time: '12:00:00',
+            end_time: '13:00:00',
+            survey_sample_method_id: 1
+          }
         ]
       };
       const repo = new SampleMethodRepository(dbConnectionObj);
@@ -121,8 +161,20 @@ describe('SampleMethodRepository', () => {
         method_lookup_id: 3,
         description: 'description',
         periods: [
-          { end_date: '2023-01-02', start_date: '2023-10-02', survey_sample_method_id: 1 },
-          { end_date: '2023-10-03', start_date: '2023-11-05', survey_sample_method_id: 1 }
+          {
+            end_date: '2023-01-02',
+            start_date: '2023-10-02',
+            start_time: '12:00:00',
+            end_time: '13:00:00',
+            survey_sample_method_id: 1
+          },
+          {
+            end_date: '2023-10-03',
+            start_date: '2023-11-05',
+            start_time: '12:00:00',
+            end_time: '13:00:00',
+            survey_sample_method_id: 1
+          }
         ]
       };
       const repo = new SampleMethodRepository(dbConnectionObj);

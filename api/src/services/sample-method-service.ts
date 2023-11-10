@@ -44,9 +44,10 @@ export class SampleMethodService extends DBService {
   async deleteSampleMethodRecord(surveySampleMethodId: number): Promise<SampleMethodRecord> {
     const samplePeriodService = new SamplePeriodService(this.connection);
 
-    // Delete all associated sample periods
+    // Collect list of periods to delete
     const existingSamplePeriods = await samplePeriodService.getSamplePeriodsForSurveyMethodId(surveySampleMethodId);
     const periodsToDelete = existingSamplePeriods.map((item) => item.survey_sample_period_id);
+    // Delete all associated sample periods
     await samplePeriodService.deleteSamplePeriodRecords(periodsToDelete);
 
     return this.sampleMethodRepository.deleteSampleMethodRecord(surveySampleMethodId);
@@ -69,7 +70,9 @@ export class SampleMethodService extends DBService {
       const samplePeriod = {
         survey_sample_method_id: record.survey_sample_method_id,
         start_date: item.start_date,
-        end_date: item.end_date
+        end_date: item.end_date,
+        start_time: item.start_time,
+        end_time: item.end_time
       };
       return samplePeriodService.insertSamplePeriod(samplePeriod);
     });
@@ -133,7 +136,9 @@ export class SampleMethodService extends DBService {
         const samplePeriod = {
           survey_sample_method_id: sampleMethod.survey_sample_method_id,
           start_date: item.start_date,
-          end_date: item.end_date
+          end_date: item.end_date,
+          start_time: item.start_time,
+          end_time: item.end_time
         };
         await samplePeriodService.insertSamplePeriod(samplePeriod);
       }

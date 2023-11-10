@@ -466,9 +466,7 @@ describe('SurveyRepository', () => {
           survey_types: [1, 2]
         },
         purpose_and_methodology: {
-          field_method_id: 1,
           additional_details: '',
-          ecological_season_id: 1,
           intended_outcome_id: 1,
           surveyed_all_areas: 'Y'
         },
@@ -494,9 +492,7 @@ describe('SurveyRepository', () => {
           survey_types: [1, 2]
         },
         purpose_and_methodology: {
-          field_method_id: 1,
           additional_details: '',
-          ecological_season_id: 1,
           intended_outcome_id: 1,
           surveyed_all_areas: 'Y'
         },
@@ -522,9 +518,7 @@ describe('SurveyRepository', () => {
           survey_types: [1, 2]
         },
         purpose_and_methodology: {
-          field_method_id: 1,
           additional_details: '',
-          ecological_season_id: 1,
           intended_outcome_id: 1,
           surveyed_all_areas: 'Y'
         },
@@ -848,9 +842,7 @@ describe('SurveyRepository', () => {
           revision_count: 1
         },
         purpose_and_methodology: {
-          field_method_id: 1,
           additional_details: '',
-          ecological_season_id: 1,
           intended_outcome_id: 1,
           surveyed_all_areas: 'Y',
           revision_count: 1
@@ -877,9 +869,7 @@ describe('SurveyRepository', () => {
           revision_count: 1
         },
         purpose_and_methodology: {
-          field_method_id: 1,
           additional_details: '',
-          ecological_season_id: 1,
           intended_outcome_id: 1,
           surveyed_all_areas: 'Y',
           revision_count: 1
@@ -906,9 +896,7 @@ describe('SurveyRepository', () => {
           revision_count: 1
         },
         purpose_and_methodology: {
-          field_method_id: 1,
           additional_details: '',
-          ecological_season_id: 1,
           intended_outcome_id: 1,
           surveyed_all_areas: 'Y',
           revision_count: 1
@@ -1051,6 +1039,28 @@ describe('SurveyRepository', () => {
       } catch (error) {
         expect((error as Error).message).to.equal('Failed to delete survey occurrence submission');
       }
+    });
+  });
+
+  describe('insertManySurveyIntendedOutcomes', () => {
+    it('should insert intended outcome ids', async () => {
+      const mockResponse = ({ rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+      const repsonse = await repository.insertManySurveyIntendedOutcomes(1, [1, 2]);
+      expect(repsonse).to.be.undefined;
+    });
+  });
+
+  describe('deleteManySurveyIntendedOutcomes', () => {
+    it('should delete intended outcome ids', async () => {
+      const mockResponse = ({ rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+      const repsonse = await repository.deleteManySurveyIntendedOutcomes(1, [1, 2]);
+      expect(repsonse).to.be.undefined;
     });
   });
 });

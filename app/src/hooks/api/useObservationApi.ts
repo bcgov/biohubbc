@@ -1,5 +1,9 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
-import { IObservationRecord, IObservationTableRow } from 'contexts/observationsContext';
+import {
+  IObservationRecord,
+  IObservationTableRow,
+  ISupplementaryObservationData
+} from 'contexts/observationsTableContext';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
 
 /**
@@ -48,6 +52,16 @@ const useObservationApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Uploads an observation CSV for import.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {File} file
+   * @param {CancelTokenSource} [cancelTokenSource]
+   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @return {*}  {Promise<{ submissionId: number }>}
+   */
   const uploadCsvForImport = async (
     projectId: number,
     surveyId: number,
@@ -71,6 +85,14 @@ const useObservationApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Begins processing an uploaded observation CSV for import
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} submissionId
+   * @return {*}
+   */
   const processCsvSubmission = async (projectId: number, surveyId: number, submissionId: number) => {
     const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/observations/process`, {
       observation_submission_id: submissionId
@@ -79,9 +101,31 @@ const useObservationApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Deletes all of the observations having the given ID.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {((string | number)[])} surveyObservationIds
+   * @return {*}  {Promise<number>}
+   */
+  const deleteObservationRecords = async (
+    projectId: number,
+    surveyId: number,
+    surveyObservationIds: (string | number)[]
+  ): Promise<{ supplementaryObservationData: ISupplementaryObservationData }> => {
+    const { data } = await axios.post<{ supplementaryObservationData: ISupplementaryObservationData }>(
+      `/api/project/${projectId}/survey/${surveyId}/observations/delete`,
+      { surveyObservationIds }
+    );
+
+    return data;
+  };
+
   return {
     insertUpdateObservationRecords,
     getObservationRecords,
+    deleteObservationRecords,
     uploadCsvForImport,
     processCsvSubmission
   };

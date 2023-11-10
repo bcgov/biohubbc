@@ -10,17 +10,28 @@ import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import FileUpload from 'components/file-upload/FileUpload';
 import FileUploadItem from 'components/file-upload/FileUploadItem';
-import MapContainer from 'components/map/MapContainer';
+import BaseLayerControls from 'components/map/components/BaseLayerControls';
+import { SetMapBounds } from 'components/map/components/Bounds';
+import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
+import StaticLayers from 'components/map/components/StaticLayers';
+import { MapBaseCss } from 'components/map/styles/MapBaseCss';
+import { MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
+import { SurveyContext } from 'contexts/surveyContext';
 import SampleSiteFileUploadItemActionButton from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemActionButton';
 import SampleSiteFileUploadItemProgressBar from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemProgressBar';
 import SampleSiteFileUploadItemSubtext from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemSubtext';
 import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
+import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
+import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
+import 'leaflet/dist/leaflet.css';
 import get from 'lodash-es/get';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
+import { LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { boundaryUploadHelper, calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
-import { pluralize } from 'utils/Utils';
+import { pluralize, shapeFileFeatureDesc, shapeFileFeatureName } from 'utils/Utils';
+import { ISurveySampleSite } from '../SamplingSitePage';
 
 const useStyles = makeStyles(() => ({
   zoomToBoundaryExtentBtn: {
@@ -52,6 +63,8 @@ export interface ISamplingSiteMapControlProps {
 const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
   const classes = useStyles();
 
+  const surveyContext = useContext(SurveyContext);
+
   const { name, mapId, formikProps } = props;
 
   const { values, errors, setFieldValue, setFieldError } = formikProps;
@@ -63,7 +76,10 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
   };
 
   // Array of sampling site features
-  const samplingSiteGeoJsonFeatures: Feature[] = get(values, name);
+  const samplingSiteGeoJsonFeatures: Feature[] = useMemo(
+    () => get(values, name).map((site: ISurveySampleSite) => site.feature),
+    [name, values]
+  );
 
   useEffect(() => {
     setUpdatedBounds(calculateUpdatedMapBounds(samplingSiteGeoJsonFeatures));
@@ -86,7 +102,15 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
           <FileUpload
             uploadHandler={boundaryUploadHelper({
               onSuccess: (features: Feature[]) => {
-                setFieldValue(name, [...features]);
+                let numSites = surveyContext.sampleSiteDataLoader.data?.sampleSites.length ?? 0;
+                setFieldValue(
+                  name,
+                  features.map((feature) => ({
+                    name: shapeFileFeatureName(feature) ?? `Sample Site ${++numSites}`,
+                    description: shapeFileFeatureDesc(feature) ?? '',
+                    feature: feature
+                  }))
+                );
               },
               onFailure: (message: string) => {
                 setFieldError(name, message);
@@ -121,18 +145,34 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
           </Typography>
           <Paper variant="outlined">
             <Box position="relative" height={500}>
-              <MapContainer
-                scrollWheelZoom={false}
-                mapId={mapId}
-                staticLayers={[
-                  {
-                    layerName: 'Sampling Sites',
-                    features: samplingSiteGeoJsonFeatures.map((feature: Feature) => ({ geoJSON: feature }))
-                  }
-                ]}
-                onDrawChange={(newGeo: Feature[]) => setFieldValue(name, newGeo)}
-                bounds={updatedBounds}
-              />
+              <LeafletMapContainer
+                data-testid={`leaflet-${mapId}`}
+                style={{ height: 500 }}
+                id={mapId}
+                center={MAP_DEFAULT_CENTER}
+                zoom={MAP_DEFAULT_ZOOM}
+                maxZoom={17}
+                fullscreenControl={true}
+                scrollWheelZoom={false}>
+                <MapBaseCss />
+                {/* Allow scroll wheel zoom when in full screen mode */}
+                <FullScreenScrollingEventHandler bounds={updatedBounds} scrollWheelZoom={false} />
+
+                {/* Programmatically set map bounds */}
+                <SetMapBounds bounds={updatedBounds} />
+
+                <LayersControl position="bottomright">
+                  <StaticLayers
+                    layers={[
+                      {
+                        layerName: 'Sampling Sites',
+                        features: samplingSiteGeoJsonFeatures.map((feature: Feature) => ({ geoJSON: feature }))
+                      }
+                    ]}
+                  />
+                  <BaseLayerControls />
+                </LayersControl>
+              </LeafletMapContainer>
               {samplingSiteGeoJsonFeatures.length > 0 && (
                 <Box position="absolute" top="126px" left="10px" zIndex="999">
                   <IconButton

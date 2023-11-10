@@ -9,12 +9,16 @@ import { InsertSampleMethodRecord } from '../repositories/sample-method-reposito
 import { DBService } from './db-service';
 import { SampleMethodService } from './sample-method-service';
 
+interface SampleSite {
+  name: string;
+  description: string;
+  feature: Feature;
+}
+
 export interface PostSampleLocations {
   survey_sample_site_id: number | null;
   survey_id: number;
-  name: string;
-  description: string;
-  survey_sample_sites: Feature[];
+  survey_sample_sites: SampleSite[];
   methods: InsertSampleMethodRecord[];
 }
 
@@ -52,11 +56,26 @@ export class SampleLocationService extends DBService {
    * @memberof SampleLocationService
    */
   async deleteSampleLocationRecord(surveySampleSiteId: number): Promise<SampleLocationRecord> {
+    const sampleMethodService = new SampleMethodService(this.connection);
+
+    // Delete all methods associated with the sample location
+    const existingSampleMethods = await sampleMethodService.getSampleMethodsForSurveySampleSiteId(surveySampleSiteId);
+    for (const item of existingSampleMethods) {
+      await sampleMethodService.deleteSampleMethodRecord(item.survey_sample_method_id);
+    }
+
     return this.sampleLocationRepository.deleteSampleLocationRecord(surveySampleSiteId);
   }
 
   /**
    * Inserts survey Sample Locations.
+   *
+   * It is a business requirement to use strings from the properties field of provided geometry
+   * to determine the name and description of sampling locations when possible.
+   *
+   * If there is no string contained in the fields 'name', 'label' to be used in our db,
+   * the system will auto-generate a name of 'Sampling Site #x', where x is taken from the greatest value
+   * integer id + 1 in the db.
    *
    * @param {PostSampleLocations} sampleLocations
    * @return {*}  {Promise<SampleLocationRecord[]>}
@@ -64,14 +83,13 @@ export class SampleLocationService extends DBService {
    */
   async insertSampleLocations(sampleLocations: PostSampleLocations): Promise<SampleLocationRecord[]> {
     const methodService = new SampleMethodService(this.connection);
-
     // Create a sample location for each feature found
-    const promises = sampleLocations.survey_sample_sites.map((item, index) => {
+    const promises = sampleLocations.survey_sample_sites.map((item) => {
       const sampleLocation = {
         survey_id: sampleLocations.survey_id,
-        name: `Sample Site ${index + 1}`, // Business requirement to default the names to Sample Site # on creation
-        description: sampleLocations.description,
-        geojson: item
+        name: item.name,
+        description: item.description,
+        geojson: item.feature
       };
 
       return this.sampleLocationRepository.insertSampleLocation(sampleLocation);

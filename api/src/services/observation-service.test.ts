@@ -108,11 +108,11 @@ describe('ObservationService', () => {
     });
   });
 
-  describe('getSurveyObservations', () => {
+  describe('getSurveyObservationsWithSupplementaryData', () => {
     it('Gets observations by survey id', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      const mockGetResponse: ObservationRecord[] = [
+      const mockObservations: ObservationRecord[] = [
         {
           survey_observation_id: 11,
           survey_id: 1,
@@ -150,18 +150,31 @@ describe('ObservationService', () => {
           survey_sample_period_id: 1
         }
       ];
+
+      const mockSupplementaryData = {
+        observationCount: 1
+      };
+
       const getSurveyObservationsStub = sinon
         .stub(ObservationRepository.prototype, 'getSurveyObservations')
-        .resolves(mockGetResponse);
+        .resolves(mockObservations);
+
+      const getSurveyObservationSupplementaryDataStub = sinon
+        .stub(ObservationService.prototype, 'getSurveyObservationsSupplementaryData')
+        .resolves(mockSupplementaryData);
 
       const surveyId = 1;
 
       const observationService = new ObservationService(mockDBConnection);
 
-      const response = await observationService.getSurveyObservations(surveyId);
+      const response = await observationService.getSurveyObservationsWithSupplementaryData(surveyId);
 
       expect(getSurveyObservationsStub).to.be.calledOnceWith(surveyId);
-      expect(response).to.eql(mockGetResponse);
+      expect(getSurveyObservationSupplementaryDataStub).to.be.calledOnceWith(surveyId);
+      expect(response).to.eql({
+        surveyObservations: mockObservations,
+        supplementaryObservationData: mockSupplementaryData
+      });
     });
   });
 

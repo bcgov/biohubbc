@@ -1,4 +1,4 @@
-import { Theme, Typography } from '@mui/material';
+import { Stack, Theme, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
@@ -73,10 +73,8 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
     ...GeneralInformationInitialValues,
     ...{
       purpose_and_methodology: {
-        intended_outcome_id: '' as unknown as number,
+        intended_outcome_ids: [],
         additional_details: '',
-        field_method_id: '' as unknown as number,
-        ecological_season_id: '' as unknown as number,
         vantage_code_ids: []
       }
     },
@@ -188,16 +186,6 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
                     return { value: item.id, label: item.name, subText: item.description };
                   }) || []
                 }
-                field_methods={
-                  props.codes.field_methods.map((item) => {
-                    return { value: item.id, label: item.name, subText: item.description };
-                  }) || []
-                }
-                ecological_seasons={
-                  props.codes.ecological_seasons.map((item) => {
-                    return { value: item.id, label: item.name, subText: item.description };
-                  }) || []
-                }
                 vantage_codes={
                   props.codes.vantage_codes.map((item) => {
                     return { value: item.id, label: item.name };
@@ -253,10 +241,12 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
             component={
               <Box component="fieldset">
                 <Typography component="legend">Define Survey Study Area</Typography>
-                <Typography variant="body1" color="textSecondary">
-                  Import, draw or select a feature from an existing layer to define the study areas for this survey.
-                </Typography>
-                <StudyAreaForm />
+                <Stack gap={3}>
+                  <Typography variant="body1" color="textSecondary">
+                    Import, draw or select a feature from an existing layer to define the study areas for this survey.
+                  </Typography>
+                  <StudyAreaForm />
+                </Stack>
               </Box>
             }
           />

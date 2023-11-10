@@ -1,9 +1,10 @@
 import { GridRenderEditCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import AsyncAutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AsyncAutocompleteDataGridEditCell';
 import { IAutocompleteDataGridOption } from 'components/data-grid/autocomplete/AutocompleteDataGrid.interface';
+import { TaxonomyContext } from 'contexts/taxonomyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import debounce from 'lodash-es/debounce';
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 
 export interface ITaxonomyDataGridCellProps<DataGridType extends GridValidRowModel> {
   dataGridProps: GridRenderEditCellParams<DataGridType>;
@@ -22,6 +23,7 @@ const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel, ValueT
 ) => {
   const { dataGridProps } = props;
 
+  const taxonomyContext = useContext(TaxonomyContext);
   const biohubApi = useBiohubApi();
 
   const getCurrentOption = async (
@@ -37,13 +39,13 @@ const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel, ValueT
       return null;
     }
 
-    const response = await biohubApi.taxonomy.getSpeciesFromIds([id]);
+    const response = taxonomyContext.getCachedSpeciesTaxonomyById(id);
 
-    if (response.searchResponse.length !== 1) {
+    if (!response) {
       return null;
     }
 
-    return response.searchResponse.map((item) => ({ value: parseInt(item.id) as ValueType, label: item.label }))[0];
+    return { value: Number(response.id) as ValueType, label: response.label };
   };
 
   const getOptions = useMemo(

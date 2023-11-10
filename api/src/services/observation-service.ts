@@ -1,4 +1,5 @@
 import xlsx from 'xlsx';
+import { z } from 'zod';
 import { IDBConnection } from '../database/db';
 import {
   InsertObservation,
@@ -30,6 +31,13 @@ const observationCSVColumnValidator = {
   columnNames: ['SPECIES_TAXONOMIC_ID', 'COUNT', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
   columnTypes: ['number', 'number', 'date', 'string', 'number', 'number']
 };
+
+export const ObservationSupplementaryData = z.object({
+  observationCount: z.number()
+});
+
+export type ObservationSupplementaryData = z.infer<typeof ObservationSupplementaryData>;
+
 export class ObservationService extends DBService {
   observationRepository: ObservationRepository;
 
@@ -85,14 +93,32 @@ export class ObservationService extends DBService {
   }
 
   /**
-   * Retrieves all observation records for the given survey
+   * Retrieves all observation records for the given survey along with supplementary data
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<ObservationRecord[]>}
+   * @return {*}  {Promise<{ surveyObservations: ObservationRecord[]; supplementaryObservationData: ObservationSupplementaryData }>}
    * @memberof ObservationService
    */
-  async getSurveyObservations(surveyId: number): Promise<ObservationRecord[]> {
-    return this.observationRepository.getSurveyObservations(surveyId);
+  async getSurveyObservationsWithSupplementaryData(
+    surveyId: number
+  ): Promise<{ surveyObservations: ObservationRecord[]; supplementaryObservationData: ObservationSupplementaryData }> {
+    const surveyObservations = await this.observationRepository.getSurveyObservations(surveyId);
+    const supplementaryObservationData = await this.getSurveyObservationsSupplementaryData(surveyId);
+
+    return { surveyObservations, supplementaryObservationData };
+  }
+
+  /**
+   * Retrieves all supplementary data for the given survey's observations
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<{ surveyObservations: ObservationRecord[]; supplementaryObservationData: ObservationSupplementaryData }>}
+   * @memberof ObservationService
+   */
+  async getSurveyObservationsSupplementaryData(surveyId: number): Promise<ObservationSupplementaryData> {
+    const observationCount = await this.observationRepository.getSurveyObservationCount(surveyId);
+
+    return { observationCount };
   }
 
   /**
@@ -137,6 +163,21 @@ export class ObservationService extends DBService {
    */
   async getObservationSubmissionById(submissionId: number): Promise<ObservationSubmissionRecord> {
     return this.observationRepository.getObservationSubmissionById(submissionId);
+  }
+
+  /**
+   * Retrieves all observation records for the given survey and sample site ids
+   *
+   * @param {number} surveyId
+   * @param {number} sampleSiteId
+   * @return {*}  {Promise<{ observationCount: number }>}
+   * @memberof ObservationService
+   */
+  async getObservationsCountBySampleSiteId(
+    surveyId: number,
+    sampleSiteId: number
+  ): Promise<{ observationCount: number }> {
+    return this.observationRepository.getObservationsCountBySampleSiteId(surveyId, sampleSiteId);
   }
 
   /**
@@ -196,5 +237,16 @@ export class ObservationService extends DBService {
 
     // Step 6. Insert new rows and return them
     return this.observationRepository.insertUpdateSurveyObservations(surveyId, insertRows);
+  }
+
+  /**
+   * Deletes all of the given survey observations by ID.
+   *
+   * @param {number[]} observationIds
+   * @return {*}  {Promise<number>}
+   * @memberof ObservationRepository
+   */
+  async deleteObservationsByIds(observationIds: number[]): Promise<number> {
+    return this.observationRepository.deleteObservationsByIds(observationIds);
   }
 }

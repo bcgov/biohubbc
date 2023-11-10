@@ -8,11 +8,15 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
+import AdditionalLayers from 'components/map/components/AdditionalLayers';
+import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { MarkerIconColor, MarkerWithResizableRadius } from 'components/map/components/MarkerWithResizableRadius';
-import MapContainer from 'components/map/MapContainer';
+import { MapBaseCss } from 'components/map/styles/MapBaseCss';
+import { MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
 import { useFormikContext } from 'formik';
 import { LatLng } from 'leaflet';
 import { ChangeEvent, Fragment, useState } from 'react';
+import { LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { getLatLngAsUtm, getUtmAsLatLng } from 'utils/mapProjectionHelpers';
 import { coerceZero } from 'utils/Utils';
 import { getAnimalFieldName, IAnimal, ProjectionMode } from '../animal';
@@ -82,7 +86,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
   };
 
   const onProjectionModeSwitch = (e: ChangeEvent<HTMLInputElement>) => {
-    //This gets called everytime the toggle element fires. We need to do a projection each time so that the new fields that get shown
+    //This gets called every time the toggle element fires. We need to do a projection each time so that the new fields that get shown
     //will be in sync with the values from the ones that were just hidden.
     if (value?.projection_mode === 'wgs') {
       setLatLonFromUTM(primaryLocationFields);
@@ -269,14 +273,27 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
               ) : null}
             </ToggleButtonGroup>
           </Stack>
-          <MapContainer
-            mapId={`location-entry-${name}-${index}`}
-            scrollWheelZoom={false}
-            additionalLayers={[
-              renderResizableMarker(primaryLocationFields, markerEnabled === 'primary', 'blue'),
-              renderResizableMarker(secondaryLocationFields, markerEnabled === 'secondary', 'green')
-            ]}
-          />
+          <LeafletMapContainer
+            id={`location-entry-${name}-${index}`}
+            scrollWheelZoom={true}
+            style={{ height: 400 }}
+            center={MAP_DEFAULT_CENTER}
+            zoom={MAP_DEFAULT_ZOOM}>
+            <MapBaseCss />
+            <AdditionalLayers
+              layers={[
+                renderResizableMarker(primaryLocationFields, markerEnabled === 'primary', 'blue'),
+                secondaryLocationFields ? (
+                  renderResizableMarker(secondaryLocationFields, markerEnabled === 'secondary', 'green')
+                ) : (
+                  <></>
+                )
+              ]}
+            />
+            <LayersControl>
+              <BaseLayerControls />
+            </LayersControl>
+          </LeafletMapContainer>
         </Paper>
       </Box>
     </Stack>

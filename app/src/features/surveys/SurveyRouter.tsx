@@ -8,7 +8,7 @@ import { getTitle } from 'utils/Utils';
 import { SurveyLocationPage } from './components/locations/SurveyLocationPage';
 import { SurveySectionFullPageLayout } from './components/SurveySectionFullPageLayout';
 import EditSurveyPage from './edit/EditSurveyPage';
-import ObservationComponent from './observations/ObservationComponent';
+import ObservationComponent from './observations/observations-table/ObservationComponent';
 import SamplingSiteEditPage from './observations/sampling-sites/edit/SamplingSiteEditPage';
 import SamplingSiteList from './observations/sampling-sites/SamplingSiteList';
 import SamplingSitePage from './observations/sampling-sites/SamplingSitePage';

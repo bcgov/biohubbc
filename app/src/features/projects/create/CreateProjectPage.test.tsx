@@ -1,8 +1,8 @@
+import { AuthStateContext } from 'contexts/authStateContext';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { ProjectDetailsFormInitialValues } from 'features/projects/components/ProjectDetailsForm';
 import { ProjectIUCNFormInitialValues } from 'features/projects/components/ProjectIUCNForm';
-import { ProjectLocationFormInitialValues } from 'features/projects/components/ProjectLocationForm';
 import { ProjectObjectivesFormInitialValues } from 'features/projects/components/ProjectObjectivesForm';
 import CreateProjectPage from 'features/projects/create/CreateProjectPage';
 import { createMemoryHistory } from 'history';
@@ -14,6 +14,7 @@ import { IDraftResponse } from 'interfaces/useDraftApi.interface';
 import { ICreateProjectResponse } from 'interfaces/useProjectApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { MemoryRouter, Router } from 'react-router';
+import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { codes } from 'test-helpers/code-helpers';
 import {
   cleanup,
@@ -58,15 +59,19 @@ const mockCodesContext: ICodesContext = {
   } as DataLoader<any, any, any>
 };
 
+const authState = getMockAuthState({ base: SystemAdminAuthState });
+
 const renderContainer = () => {
   return render(
-    <CodesContext.Provider value={mockCodesContext}>
-      <DialogContextProvider>
-        <Router history={history}>
-          <CreateProjectPage />,
-        </Router>
-      </DialogContextProvider>
-    </CodesContext.Provider>
+    <AuthStateContext.Provider value={authState}>
+      <CodesContext.Provider value={mockCodesContext}>
+        <DialogContextProvider>
+          <Router history={history}>
+            <CreateProjectPage />,
+          </Router>
+        </DialogContextProvider>
+      </CodesContext.Provider>
+    </AuthStateContext.Provider>
   );
 };
 
@@ -101,9 +106,6 @@ describe('CreateProjectPage', () => {
       expect(getByText('Create New Project')).toBeVisible();
 
       expect(getByText('General Information')).toBeVisible();
-
-      // TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form temporarily, while its decided where exactly project/survey locations should be defined
-      // expect(getByText('Location and Boundary')).toBeVisible();
     });
   });
 
@@ -178,17 +180,18 @@ describe('CreateProjectPage', () => {
           data: {
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
-            location: ProjectLocationFormInitialValues.location,
             iucn: ProjectIUCNFormInitialValues.iucn
           }
         });
 
         const { queryAllByText } = render(
-          <CodesContext.Provider value={mockCodesContext}>
-            <MemoryRouter initialEntries={['?draftId=1']}>
-              <CreateProjectPage />
-            </MemoryRouter>
-          </CodesContext.Provider>
+          <AuthStateContext.Provider value={authState}>
+            <CodesContext.Provider value={mockCodesContext}>
+              <MemoryRouter initialEntries={['?draftId=1']}>
+                <CreateProjectPage />
+              </MemoryRouter>
+            </CodesContext.Provider>
+          </AuthStateContext.Provider>
         );
 
         await waitFor(() => {
@@ -203,17 +206,18 @@ describe('CreateProjectPage', () => {
           data: {
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
-            location: ProjectLocationFormInitialValues.location,
             iucn: ProjectIUCNFormInitialValues.iucn
           }
         });
 
         const { getByText, findAllByText } = render(
-          <CodesContext.Provider value={mockCodesContext}>
-            <MemoryRouter initialEntries={['?draftId=1']}>
-              <CreateProjectPage />
-            </MemoryRouter>
-          </CodesContext.Provider>
+          <AuthStateContext.Provider value={authState}>
+            <CodesContext.Provider value={mockCodesContext}>
+              <MemoryRouter initialEntries={['?draftId=1']}>
+                <CreateProjectPage />
+              </MemoryRouter>
+            </CodesContext.Provider>
+          </AuthStateContext.Provider>
         );
 
         const deleteButton = await findAllByText('Delete Draft', { exact: false });
@@ -236,17 +240,18 @@ describe('CreateProjectPage', () => {
           data: {
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
-            location: ProjectLocationFormInitialValues.location,
             iucn: ProjectIUCNFormInitialValues.iucn
           }
         });
 
         const { getByText, findAllByText, getByTestId, queryByText } = render(
-          <CodesContext.Provider value={mockCodesContext}>
-            <MemoryRouter initialEntries={['?draftId=1']}>
-              <CreateProjectPage />
-            </MemoryRouter>
-          </CodesContext.Provider>
+          <AuthStateContext.Provider value={authState}>
+            <CodesContext.Provider value={mockCodesContext}>
+              <MemoryRouter initialEntries={['?draftId=1']}>
+                <CreateProjectPage />
+              </MemoryRouter>
+            </CodesContext.Provider>
+          </AuthStateContext.Provider>
         );
 
         const deleteButton = await findAllByText('Delete Draft', { exact: false });
@@ -276,17 +281,18 @@ describe('CreateProjectPage', () => {
           data: {
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
-            location: ProjectLocationFormInitialValues.location,
             iucn: ProjectIUCNFormInitialValues.iucn
           }
         });
 
         const { getByText, findAllByText, getByTestId } = render(
-          <CodesContext.Provider value={mockCodesContext}>
-            <MemoryRouter initialEntries={['?draftId=1']}>
-              <CreateProjectPage />
-            </MemoryRouter>
-          </CodesContext.Provider>
+          <AuthStateContext.Provider value={authState}>
+            <CodesContext.Provider value={mockCodesContext}>
+              <MemoryRouter initialEntries={['?draftId=1']}>
+                <CreateProjectPage />
+              </MemoryRouter>
+            </CodesContext.Provider>
+          </AuthStateContext.Provider>
         );
 
         const deleteButton = await findAllByText('Delete Draft', { exact: false });
@@ -318,17 +324,18 @@ describe('CreateProjectPage', () => {
             project_name: 'Test name'
           },
           objectives: ProjectObjectivesFormInitialValues.objectives,
-          location: ProjectLocationFormInitialValues.location,
           iucn: ProjectIUCNFormInitialValues.iucn
         }
       });
 
       const { getByDisplayValue } = render(
-        <CodesContext.Provider value={mockCodesContext}>
-          <MemoryRouter initialEntries={['?draftId=1']}>
-            <CreateProjectPage />
-          </MemoryRouter>
-        </CodesContext.Provider>
+        <AuthStateContext.Provider value={authState}>
+          <CodesContext.Provider value={mockCodesContext}>
+            <MemoryRouter initialEntries={['?draftId=1']}>
+              <CreateProjectPage />
+            </MemoryRouter>
+          </CodesContext.Provider>
+        </AuthStateContext.Provider>
       );
 
       await waitFor(() => {
@@ -406,7 +413,6 @@ describe('CreateProjectPage', () => {
         data: {
           project: ProjectDetailsFormInitialValues.project,
           objectives: ProjectObjectivesFormInitialValues.objectives,
-          location: ProjectLocationFormInitialValues.location,
           iucn: ProjectIUCNFormInitialValues.iucn,
           participants: AddProjectParticipantsFormInitialValues.participants
         }
@@ -485,11 +491,15 @@ describe('CreateProjectPage', () => {
             end_date: ''
           },
           objectives: { objectives: 'Draft objectives' },
-          location: { location_description: '', geometry: [] },
           iucn: { classificationDetails: [] },
           participants: [
             {
-              project_role_names: ['Coordinator']
+              agency: 'agency',
+              display_name: 'admin-displayname',
+              email: 'admin@email.com',
+              identity_source: 'IDIR',
+              project_role_names: ['Coordinator'],
+              system_user_id: 1
             }
           ]
         });
@@ -507,7 +517,6 @@ describe('CreateProjectPage', () => {
         data: {
           project: ProjectDetailsFormInitialValues.project,
           objectives: ProjectObjectivesFormInitialValues.objectives,
-          location: ProjectLocationFormInitialValues.location,
           iucn: ProjectIUCNFormInitialValues.iucn,
           participants: AddProjectParticipantsFormInitialValues.participants
         }
@@ -550,7 +559,6 @@ describe('CreateProjectPage', () => {
             end_date: ''
           },
           objectives: { objectives: 'my new Draft objectives' },
-          location: { location_description: '', geometry: [] },
           iucn: { classificationDetails: [] },
           participants: [
             {

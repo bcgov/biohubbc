@@ -61,10 +61,8 @@ export interface IGetSurveyForViewResponseDetails {
 }
 
 export interface IGetSurveyForViewResponsePurposeAndMethodology {
-  intended_outcome_id: number;
+  intended_outcome_ids: number[];
   additional_details: string;
-  field_method_id: number;
-  ecological_season_id: number;
   vantage_code_ids: number[];
   surveyed_all_areas: StringBoolean;
 }
@@ -134,6 +132,15 @@ export interface SurveyViewObject {
   blocks: IGetSurveyBlock[];
 }
 
+export interface SurveyBasicFieldsObject {
+  survey_id: number;
+  name: string;
+  start_date: string;
+  end_date: string | null;
+  focal_species: number[];
+  focal_species_names: string[];
+}
+
 export interface SurveyUpdateObject extends ISurveyLocationForm {
   survey_details?: {
     survey_name: string;
@@ -162,10 +169,8 @@ export interface SurveyUpdateObject extends ISurveyLocationForm {
   ];
   partnerships?: IGetSurveyForUpdateResponsePartnerships;
   purpose_and_methodology?: {
-    intended_outcome_id: number;
+    intended_outcome_ids: number[];
     additional_details: string;
-    field_method_id: number;
-    ecological_season_id: number;
     vantage_code_ids: number[];
     surveyed_all_areas: StringBoolean;
     revision_count: number;
@@ -242,13 +247,13 @@ export interface ISurveySupplementaryData {
 }
 
 /**
- * Get Survey list response object.
+ * Get survey basic fields response object.
  *
  * @export
  * @interface IGetSurveyForListResponse
  */
 export interface IGetSurveyForListResponse {
-  surveyData: SurveyViewObject;
+  surveyData: SurveyBasicFieldsObject;
   surveySupplementaryData: ISurveySupplementaryData;
 }
 
@@ -392,6 +397,8 @@ export interface IGetSamplePeriodRecord {
   survey_sample_method_id: number;
   start_date: string;
   end_date: string;
+  start_time: string | null;
+  end_time: string | null;
   create_date: string;
   create_user: number;
   update_date: string | null;

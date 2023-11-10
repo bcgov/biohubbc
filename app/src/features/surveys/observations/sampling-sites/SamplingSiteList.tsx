@@ -21,11 +21,14 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
 import Skeleton from '@mui/material/Skeleton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { CodesContext } from 'contexts/codesContext';
+import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getCodesName } from 'utils/Utils';
@@ -38,6 +41,7 @@ const SampleSiteSkeleton = () => (
       py: 1.5,
       px: 2,
       height: '52px',
+      background: '#fff',
       borderBottom: '1px solid ' + grey[300]
     }}>
     <Skeleton sx={{ flex: '1 1 auto' }} />
@@ -47,6 +51,8 @@ const SampleSiteSkeleton = () => (
 const SamplingSiteList = () => {
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
+  const dialogContext = useContext(DialogContext);
+  const biohubApi = useBiohubApi();
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
@@ -63,6 +69,66 @@ const SamplingSiteList = () => {
     setAnchorEl(event.currentTarget);
     setSelectedSampleSiteId(sample_site_id);
   };
+
+  /**
+   * Handle the delete sampling site API call.
+   *
+   */
+  const handleDeleteSampleSite = async () => {
+    await biohubApi.samplingSite
+      .deleteSampleSite(surveyContext.projectId, surveyContext.surveyId, Number(selectedSampleSiteId))
+      .then(() => {
+        dialogContext.setYesNoDialog({ open: false });
+        setAnchorEl(null);
+        surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+      })
+      .catch((error: any) => {
+        dialogContext.setYesNoDialog({ open: false });
+        setAnchorEl(null);
+        dialogContext.setSnackbar({
+          snackbarMessage: (
+            <>
+              <Typography variant="body2" component="div">
+                <strong>Error Deleting Sampling Site</strong>
+              </Typography>
+              <Typography variant="body2" component="div">
+                {String(error)}
+              </Typography>
+            </>
+          ),
+          open: true
+        });
+      });
+  };
+
+  /**
+   * Display the delete sampling site dialog.
+   *
+   */
+  const deleteSampleSiteDialog = () => {
+    dialogContext.setYesNoDialog({
+      dialogTitle: 'Delete Sampling Site?',
+      dialogContent: (
+        <Typography variant="body1" component="div" color="textSecondary">
+          Are you sure you want to delete this sampling site?
+        </Typography>
+      ),
+      yesButtonLabel: 'Delete Sampling Site',
+      noButtonLabel: 'Cancel',
+      yesButtonProps: { color: 'error' },
+      onClose: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      onNo: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      open: true,
+      onYes: () => {
+        handleDeleteSampleSite();
+      }
+    });
+  };
+  const samplingSiteCount = surveyContext.sampleSiteDataLoader.data?.sampleSites.length ?? 0;
 
   return (
     <>
@@ -100,7 +166,7 @@ const SamplingSiteList = () => {
             <ListItemText>Edit Details</ListItemText>
           </RouterLink>
         </MenuItem>
-        <MenuItem onClick={() => console.log('DELETE THIS SAMPLING SITE')}>
+        <MenuItem onClick={deleteSampleSiteDialog}>
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />
           </ListItemIcon>
@@ -118,7 +184,10 @@ const SamplingSiteList = () => {
               fontSize: '1.125rem',
               fontWeight: 700
             }}>
-            Sampling Sites
+            Sampling Sites &zwnj;
+            <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
+              ({samplingSiteCount})
+            </Typography>
           </Typography>
           <Button
             sx={{
@@ -144,11 +213,19 @@ const SamplingSiteList = () => {
                 background: grey[100],
                 zIndex: 2
               }}>
-              <SampleSiteSkeleton />
-              <SampleSiteSkeleton />
-              <SampleSiteSkeleton />
-              <SampleSiteSkeleton />
-              <SampleSiteSkeleton />
+              <Paper elevation={0} sx={{ overflow: 'hidden' }}>
+                <SampleSiteSkeleton />
+                <SampleSiteSkeleton />
+                <SampleSiteSkeleton />
+                <SampleSiteSkeleton />
+                <SampleSiteSkeleton />
+                <SampleSiteSkeleton />
+                <SampleSiteSkeleton />
+                <SampleSiteSkeleton />
+                <SampleSiteSkeleton />
+                <SampleSiteSkeleton />
+                <SampleSiteSkeleton />
+              </Paper>
             </Box>
           </Fade>
 
@@ -261,7 +338,12 @@ const SamplingSiteList = () => {
                                       <Icon path={mdiCalendarRange} size={1}></Icon>
                                     </ListItemIcon>
                                     <ListItemText
-                                      primary={`${samplePeriod.start_date} to ${samplePeriod.end_date}`}></ListItemText>
+                                      primary={samplePeriod.start_date}
+                                      secondary={samplePeriod.start_time || '\u00A0'}></ListItemText>
+
+                                    <ListItemText
+                                      primary={samplePeriod.end_date}
+                                      secondary={samplePeriod.end_time || '\u00A0'}></ListItemText>
                                   </ListItem>
                                 );
                               })}

@@ -14,9 +14,9 @@ const useTaxonomyApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  const getSpeciesFromIds = async (value: number[]): Promise<ITaxonomySearchResult> => {
+  const getSpeciesFromIds = async (ids: number[]): Promise<ITaxonomySearchResult> => {
     const { data } = await axios.get<ITaxonomySearchResult>(`/api/taxonomy/species/list`, {
-      params: { ids: qs.stringify(value) },
+      params: { ids: qs.stringify(ids) },
       paramsSerializer: (params) => {
         return qs.stringify(params);
       }

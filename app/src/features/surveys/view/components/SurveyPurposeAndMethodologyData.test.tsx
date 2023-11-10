@@ -42,9 +42,7 @@ describe('SurveyPurposeAndMethodologyData', () => {
       </CodesContext.Provider>
     );
 
-    expect(getByTestId('survey_intended_outcome').textContent).toEqual('Intended Outcome 1');
-    expect(getByTestId('survey_field_method').textContent).toEqual('Recruitment');
-    expect(getByTestId('survey_ecological_season').textContent).toEqual('Season 1');
+    expect(getByTestId('intended_outcome_codes').textContent).toEqual('Intended Outcome 1');
     expect(getAllByTestId('survey_vantage_code').map((item) => item.textContent)).toEqual([
       'Vantage Code 1',
       'Vantage Code 2'
@@ -93,9 +91,7 @@ describe('SurveyPurposeAndMethodologyData', () => {
       </CodesContext.Provider>
     );
 
-    expect(getByTestId('survey_intended_outcome').textContent).toEqual('Intended Outcome 1');
-    expect(getByTestId('survey_field_method').textContent).toEqual('Recruitment');
-    expect(getByTestId('survey_ecological_season').textContent).toEqual('Season 1');
+    expect(getByTestId('intended_outcome_codes').textContent).toEqual('Intended Outcome 1');
     expect(getAllByTestId('survey_vantage_code').map((item) => item.textContent)).toEqual([
       'Vantage Code 1',
       'Vantage Code 2'

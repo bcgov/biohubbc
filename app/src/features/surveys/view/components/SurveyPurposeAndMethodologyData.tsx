@@ -25,13 +25,30 @@ const SurveyPurposeAndMethodologyData = () => {
   return (
     <Box component="dl">
       <Box className="row">
-        <Typography component="dt">Intended Outcome</Typography>
-        <Typography component="dd" variant="body1" data-testid="survey_intended_outcome">
-          {Boolean(surveyData.purpose_and_methodology.intended_outcome_id) &&
-            codes?.intended_outcomes?.find(
-              (item: any) => item.id === surveyData.purpose_and_methodology.intended_outcome_id
-            )?.name}
-        </Typography>
+        <Typography component="dt">Ecological Variables</Typography>
+        {surveyData.purpose_and_methodology.intended_outcome_ids?.map((outcomeId: number) => {
+          return (
+            <Typography
+              component="dd"
+              key={`key-outcome-${outcomeId}`}
+              sx={{
+                position: 'relative',
+                display: 'inline-block',
+                mr: 1.25,
+                '&::after': {
+                  content: `','`,
+                  position: 'absolute',
+                  top: 0
+                },
+                '&:last-child::after': {
+                  display: 'none'
+                }
+              }}
+              data-testid={`intended_outcome_codes`}>
+              {codes?.intended_outcomes?.find((item: any) => item.id === outcomeId)?.name}
+            </Typography>
+          );
+        })}
       </Box>
       {surveyData.purpose_and_methodology.additional_details && (
         <>
@@ -43,25 +60,6 @@ const SurveyPurposeAndMethodologyData = () => {
           </Box>
         </>
       )}
-
-      <Box className="row">
-        <Typography component="dt">Field Method</Typography>
-        <Typography component="dd" data-testid="survey_field_method">
-          {Boolean(surveyData.purpose_and_methodology.field_method_id) &&
-            codes?.field_methods?.find((item: any) => item.id === surveyData.purpose_and_methodology.field_method_id)
-              ?.name}
-        </Typography>
-      </Box>
-
-      <Box className="row">
-        <Typography component="dt">Ecological Season</Typography>
-        <Typography component="dd" data-testid="survey_ecological_season">
-          {Boolean(surveyData.purpose_and_methodology.ecological_season_id) &&
-            codes?.ecological_seasons?.find(
-              (item: any) => item.id === surveyData.purpose_and_methodology.ecological_season_id
-            )?.name}
-        </Typography>
-      </Box>
 
       <Box className="row">
         <Typography component="dt">Vantage Code(s)</Typography>
