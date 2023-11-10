@@ -82,7 +82,7 @@ export const SamplingSiteMethodYupSchema = yup.object({
           start_time: yup.string().nullable(),
           end_time: yup.string().nullable()
         })
-        .test('ifEndTimeExistsThenStartTimeRequired', 'Start Time required', function (value) {
+        .test('ifEndTimeExistsThenStartTimeRequired', 'Start Time required if End Time present', function (value) {
           const { start_time, end_time } = value;
 
           if (end_time && !start_time) {
@@ -90,7 +90,7 @@ export const SamplingSiteMethodYupSchema = yup.object({
           }
           return true;
         })
-        .test('checkDatesAreSameAndEndTimeIsAfterStart', 'End Time must be after Start Time', function (value) {
+        .test('checkDatesAreSameAndEndTimeIsAfterStart', 'End Time must come after Start Time', function (value) {
           const { start_date, end_date, start_time, end_time } = value;
 
           if (start_date === end_date && start_time && end_time) {
@@ -210,7 +210,7 @@ const MethodForm = () => {
                                   timeName: `periods[${index}].start_time`,
                                   timeId: `periods_${index}_.start_time`,
                                   timeRequired: false,
-                                  timeHelperText: '',
+                                  timeErrorHelper: `periods[${index}]`,
                                   timeIcon: mdiClockOutline
                                 }}
                                 formikProps={formikProps}
@@ -234,7 +234,7 @@ const MethodForm = () => {
                                   timeName: `periods[${index}].end_time`,
                                   timeId: `periods_${index}_.end_time`,
                                   timeRequired: false,
-                                  timeHelperText: '',
+                                  timeErrorHelper: `periods[${index}]`,
                                   timeIcon: mdiClockOutline
                                 }}
                                 formikProps={formikProps}
@@ -248,7 +248,7 @@ const MethodForm = () => {
                               <Icon path={mdiTrashCanOutline} size={1} />
                             </IconButton>
                           </Stack>
-                          {errors.periods && errors.periods[index] && (
+                          {errors.periods && errors.periods[index] && typeof errors.periods[index] === 'string' && (
                             <Box alignItems="flex-start" flexDirection="row">
                               <Typography variant="body2" color={'#f44336'}>
                                 {String(errors.periods[index])}
@@ -260,13 +260,6 @@ const MethodForm = () => {
                     );
                   })}
                 </Stack>
-                {errors.periods && !Array.isArray(errors.periods) && (
-                  <Box pt={2}>
-                    <Typography variant="body2" color={'#f44336'}>
-                      {errors.periods}
-                    </Typography>
-                  </Box>
-                )}
 
                 <Button
                   sx={{ mt: 1 }}

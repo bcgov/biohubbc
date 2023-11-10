@@ -24,6 +24,7 @@ interface IDateTimeFieldsProps {
     timeName: string;
     timeId: string;
     timeRequired: boolean;
+    timeErrorHelper?: string;
     timeHelperText?: string;
     timeIcon: string;
   };
@@ -34,7 +35,7 @@ export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
   const {
     formikProps: { values, errors, touched, setFieldValue },
     date: { dateLabel, dateName, dateId, dateRequired, dateHelperText, dateIcon },
-    time: { timeLabel, timeName, timeId, timeRequired, timeHelperText, timeIcon }
+    time: { timeLabel, timeName, timeId, timeRequired, timeHelperText, timeIcon, timeErrorHelper }
   } = props;
 
   const DateIcon = () => {
@@ -124,7 +125,9 @@ export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
                 name: timeName,
                 required: timeRequired,
                 variant: 'outlined',
-                error: get(touched, timeName) && Boolean(get(errors, timeName)),
+                error:
+                  (get(touched, timeName) && Boolean(get(errors, timeName))) ||
+                  (timeErrorHelper && get(errors, timeErrorHelper) && Boolean(get(errors, timeErrorHelper))),
                 helperText: (get(touched, timeName) && get(errors, timeName)) || timeHelperText,
                 inputProps: {
                   'data-testid': timeId,
