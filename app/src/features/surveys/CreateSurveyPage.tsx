@@ -2,7 +2,6 @@ import { Breadcrumbs, Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import { grey } from '@mui/material/colors';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
@@ -54,6 +53,7 @@ import SurveyFundingSourceForm, {
 } from './components/SurveyFundingSourceForm';
 import { SurveySiteSelectionInitialValues, SurveySiteSelectionYupSchema } from './components/SurveySiteSelectionForm';
 import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from './components/SurveyUserForm';
+import SurveyBaseHeader from './view/components/SurveyBaseHeader';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -272,24 +272,13 @@ const CreateSurveyPage = () => {
   if (!codes || !projectData) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
+
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
-      <Paper
-        elevation={0}
-        square={true}
-        id="createSurveyPageTitle"
-        sx={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 1002,
-          pt: 3,
-          pb: 3.75,
-          borderBottomStyle: 'solid',
-          borderBottomWidth: '1px',
-          borderBottomColor: grey[300]
-        }}>
-        <Container maxWidth="xl">
+      <SurveyBaseHeader
+        title="Create New Survey"
+        breadCrumb={
           <Breadcrumbs>
             <Link
               component={RouterLink}
@@ -306,25 +295,18 @@ const CreateSurveyPage = () => {
               Create
             </Typography>
           </Breadcrumbs>
-          <Box>
-            <Box display="flex" justifyContent="space-between">
-              <Box className={classes.pageTitleContainer}>
-                <Typography variant="h1" className={classes.pageTitle}>
-                  Create New Survey
-                </Typography>
-              </Box>
-              <Box flex="0 0 auto" className={classes.pageTitleActions}>
-                <Button color="primary" variant="contained" onClick={() => formikRef.current?.submitForm()}>
-                  Save and Exit
-                </Button>
-                <Button color="primary" variant="outlined" onClick={handleCancel}>
-                  Cancel
-                </Button>
-              </Box>
-            </Box>
-          </Box>
-        </Container>
-      </Paper>
+        }
+        buttonJSX={
+          <>
+            <Button color="primary" variant="contained" onClick={() => formikRef.current?.submitForm()}>
+              Save and Exit
+            </Button>
+            <Button color="primary" variant="outlined" onClick={handleCancel}>
+              Cancel
+            </Button>
+          </>
+        }
+      />
 
       <Box my={3}>
         <Container maxWidth="xl">
