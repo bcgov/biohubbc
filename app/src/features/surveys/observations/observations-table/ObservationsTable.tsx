@@ -1,10 +1,11 @@
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import { cyan, grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import Skeleton from '@mui/material/Skeleton';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRowId } from '@mui/x-data-grid';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
 import ConditionalAutocompleteDataGridEditCell from 'components/data-grid/conditional-autocomplete/ConditionalAutocompleteDataGridEditCell';
@@ -478,6 +479,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     }
   }, [location.hash, observationsTableContext]);
 
+  console.log(observationsTableContext.validationModel)
+
   return (
     <DataGrid
       checkboxSelection
@@ -497,11 +500,22 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       }}
       onRowSelectionModelChange={observationsTableContext.onRowSelectionModelChange}
       rowSelectionModel={observationsTableContext.rowSelectionModel}
+      getCellClassName={(params) => {
+        const rowId: GridRowId = params.row.id;
+        const columnName = params.field as keyof IObservationTableRow
+
+        if (observationsTableContext.validationModel[rowId]?.[columnName]?.errors?.length) {
+          // Cell contains errors
+          return '--error'
+        }
+
+        return '';
+      }}
       getRowHeight={() => 'auto'}
       slots={{
         loadingOverlay: LoadingOverlay
       }}
-      sx={{
+      sx={(theme: Theme) => ({
         background: grey[50],
         border: 'none',
         '& .pinnedColumn': {
@@ -546,6 +560,10 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
           '&.MuiDataGrid-cell--editing': {
             p: 0.5,
             backgroundColor: cyan[100]
+          },
+          '&.--error': {
+            outline: `1px solid ${theme.palette.error.main}`,
+            color: theme.palette.error.main
           }
         },
         '& .MuiDataGrid-row--editing': {
@@ -600,7 +618,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         '& .MuiDataGrid-footerContainer': {
           background: '#fff'
         }
-      }}
+      })}
     />
   );
 };
