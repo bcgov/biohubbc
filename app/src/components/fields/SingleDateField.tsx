@@ -79,6 +79,7 @@ const SingleDateField: React.FC<IDateProps> = (props) => {
         maxDate={moment(DATE_LIMIT.max)}
         value={formattedDateValue}
         onChange={(value) => {
+          other?.onChange?.(value);
           if (!value || String(value.creationData().input) === 'Invalid Date') {
             // The creation input value will be 'Invalid Date' when the date field is cleared (empty), and will
             // contain an actual date string value if the field is not empty but is invalid.

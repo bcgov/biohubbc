@@ -14,7 +14,7 @@ import { ANIMAL_SECTIONS_FORM_MAP } from '../animal-sections';
  */
 
 const GeneralAnimalForm = () => {
-  const { setFieldValue, handleBlur, values } = useFormikContext<IAnimal>();
+  const { setFieldValue, values } = useFormikContext<IAnimal>();
   const { animalKeyName } = ANIMAL_SECTIONS_FORM_MAP[SurveyAnimalsI18N.animalGeneralTitle];
   const handleTaxonName = (_value: string, label: string) => {
     setFieldValue(getAnimalFieldName<IAnimalGeneral>(animalKeyName, 'taxon_name'), label);
@@ -52,7 +52,6 @@ const GeneralAnimalForm = () => {
             other={{ required: isRequiredInSchema(AnimalGeneralSchema, 'animal_id') }}
             label="Alias"
             name={getAnimalFieldName<IAnimalGeneral>(animalKeyName, 'animal_id')}
-            handleBlur={handleBlur}
           />
         </HelpButtonTooltip>
       </Grid>
@@ -62,7 +61,6 @@ const GeneralAnimalForm = () => {
             other={{ required: isRequiredInSchema(AnimalGeneralSchema, 'wlh_id') }}
             label="Wildlife Health ID (Optional)"
             name={getAnimalFieldName<IAnimalGeneral>(animalKeyName, 'wlh_id')}
-            handleBlur={handleBlur}
           />
         </HelpButtonTooltip>
       </Grid>

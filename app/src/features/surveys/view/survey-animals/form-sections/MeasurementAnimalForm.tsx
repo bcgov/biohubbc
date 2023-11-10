@@ -142,7 +142,6 @@ export const MeasurementAnimalFormContent = (props: MeasurementFormContentProps)
           }}
           label="Comments"
           name={getAnimalFieldName<IAnimalMeasurement>(name, 'measurement_comment', index)}
-          handleBlur={handleBlur}
         />
       </Grid>
     </Grid>

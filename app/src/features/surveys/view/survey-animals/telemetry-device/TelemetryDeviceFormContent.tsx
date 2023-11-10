@@ -19,13 +19,13 @@ const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
   const { index, mode } = props;
 
   const api = useTelemetryApi();
-  const { values, handleBlur, validateField } = useFormikContext<IAnimal>();
+  const { values, validateField } = useFormikContext<IAnimal>();
 
   const device = values.device?.[index];
 
   const { data: deviceDetails, refresh } = useDataLoader(() => api.devices.getDeviceDetails(device.device_id));
 
-  const validateDeviceMake = (value: number | '') => {
+  const validateDeviceMake = async (value: number | '') => {
     const deviceMake = deviceDetails?.device?.device_make;
     if (device.device_id && deviceMake && deviceMake !== value && mode === ANIMAL_FORM_MODE.ADD) {
       return `The current make for this device is ${deviceMake}`;
@@ -103,7 +103,6 @@ const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
               id="manufacturer"
               fetchData={api.devices.getCollarVendors}
               controlProps={{ disabled: mode === ANIMAL_FORM_MODE.EDIT, required: true }}
-              handleBlur={handleBlur}
               validate={validateDeviceMake}
             />
           </Grid>

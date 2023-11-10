@@ -17,7 +17,7 @@ interface MortalityAnimalFormContentProps {
 export const MortalityAnimalFormContent = ({ index }: MortalityAnimalFormContentProps) => {
   const name: keyof IAnimal = 'mortality';
 
-  const { values, handleBlur } = useFormikContext<IAnimal>();
+  const { values } = useFormikContext<IAnimal>();
   const [pcodTaxonDisabled, setPcodTaxonDisabled] = useState(true); //Controls whether you can select taxons from the PCOD Taxon dropdown.
   const [ucodTaxonDisabled, setUcodTaxonDisabled] = useState(true); //Controls whether you can select taxons from the UCOD Taxon dropdown.
 
@@ -145,7 +145,6 @@ export const MortalityAnimalFormContent = ({ index }: MortalityAnimalFormContent
           }}
           label="Comments"
           name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_comment', index)}
-          handleBlur={handleBlur}
         />
       </Box>
     </Stack>

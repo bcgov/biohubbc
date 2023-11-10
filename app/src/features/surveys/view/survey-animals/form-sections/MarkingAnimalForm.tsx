@@ -67,7 +67,7 @@ interface IMarkingAnimalFormContentProps {
 export const MarkingAnimalFormContent = ({ index }: IMarkingAnimalFormContentProps) => {
   const name: keyof IAnimal = 'markings';
 
-  const { values, handleBlur, setFieldValue } = useFormikContext<IAnimal>();
+  const { values, setFieldValue } = useFormikContext<IAnimal>();
 
   const handlePrimaryColourName = (_value: string, label: string) => {
     setFieldValue(getAnimalFieldName<IAnimalMarking>(name, 'primary_colour', index), label);
@@ -145,7 +145,6 @@ export const MarkingAnimalFormContent = ({ index }: IMarkingAnimalFormContentPro
             minRows: 3,
             required: isRequiredInSchema(AnimalMarkingSchema, 'marking_comment')
           }}
-          handleBlur={handleBlur}
         />
       </Grid>
       <FormikDevDebugger />

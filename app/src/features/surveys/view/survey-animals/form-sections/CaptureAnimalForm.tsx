@@ -24,7 +24,7 @@ interface CaptureAnimalFormContentProps {
 export const CaptureAnimalFormContent = ({ index }: CaptureAnimalFormContentProps) => {
   const name: keyof IAnimal = 'captures';
 
-  const { values, handleBlur, handleChange } = useFormikContext<IAnimal>();
+  const { values, handleChange } = useFormikContext<IAnimal>();
 
   const value = values.captures?.[index];
 
@@ -104,7 +104,6 @@ export const CaptureAnimalFormContent = ({ index }: CaptureAnimalFormContentProp
           }}
           label="Comments"
           name={getAnimalFieldName<IAnimalCapture>(name, 'capture_comment', index)}
-          handleBlur={handleBlur}
         />
       </Box>
     </Stack>

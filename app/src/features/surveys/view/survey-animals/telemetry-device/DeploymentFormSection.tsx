@@ -27,7 +27,7 @@ export const DeploymentFormSection = (props: DeploymentFormSectionProps): JSX.El
 
   const bhApi = useBiohubApi();
   const { cid: survey_critter_id } = useQuery();
-  const { values } = useFormikContext<IAnimal>();
+  const { values, validateField } = useFormikContext<IAnimal>();
   const { surveyId, projectId } = useContext(SurveyContext);
   const dialogContext = useContext(DialogContext);
 
@@ -94,6 +94,7 @@ export const DeploymentFormSection = (props: DeploymentFormSectionProps): JSX.El
                   name={`device.${index}.deployments.${i}.attachment_start`}
                   required={true}
                   label={'Start Date'}
+                  other={{ onChange: () => validateField(`device.${index}.deployments.${i}.attachment_start`) }}
                   validate={() => deploymentOverlapTest(deploy)}
                 />
               </Grid>
@@ -102,6 +103,7 @@ export const DeploymentFormSection = (props: DeploymentFormSectionProps): JSX.El
                   as={SingleDateField}
                   name={`device.${index}.deployments.${i}.attachment_end`}
                   label={'End Date'}
+                  other={{ onChange: () => validateField(`device.${index}.deployments.${i}.attachment_end`) }}
                   validate={() => deploymentOverlapTest(deploy)}
                 />
               </Grid>

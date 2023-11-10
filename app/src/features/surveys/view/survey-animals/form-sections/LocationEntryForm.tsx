@@ -48,7 +48,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
   otherPrimaryFields,
   otherSecondaryFields
 }: LocationEntryFormProps<T>) => {
-  const { handleBlur, setFieldValue } = useFormikContext();
+  const { setFieldValue } = useFormikContext();
   const [markerEnabled, setMarkerEnabled] = useState<Marker>(null);
 
   const handleMarkerPlacement = (e: LatLng, fields: LocationEntryFields<T>) => {
@@ -123,7 +123,6 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
                 other={{ required: true, type: 'number' }}
                 label="Latitude"
                 name={getAnimalFieldName<T>(name, fields.latitude, index)}
-                handleBlur={handleBlur}
               />
             </Grid>
             <Grid item xs={12} sm={4}>
@@ -131,7 +130,6 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
                 other={{ required: true, type: 'number' }}
                 label="Longitude"
                 name={getAnimalFieldName<T>(name, fields.longitude, index)}
-                handleBlur={handleBlur}
               />
             </Grid>
           </Fragment>
@@ -142,7 +140,6 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
                 other={{ required: true, type: 'number' }}
                 label="Northing"
                 name={getAnimalFieldName<T>(name, fields.utm_northing, index)}
-                handleBlur={handleBlur}
               />
             </Grid>
             <Grid item xs={12} sm={4}>
@@ -150,7 +147,6 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
                 other={{ required: true, type: 'number' }}
                 label="Easting"
                 name={getAnimalFieldName<T>(name, fields.utm_easting, index)}
-                handleBlur={handleBlur}
               />
             </Grid>
           </Fragment>
@@ -164,7 +160,6 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
             }}
             label="Uncertainty (Meters)"
             name={getAnimalFieldName<T>(name, fields.coordinate_uncertainty, index)}
-            handleBlur={handleBlur}
           />
         </Grid>
       </Grid>
