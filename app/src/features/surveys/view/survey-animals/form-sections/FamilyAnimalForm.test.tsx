@@ -1,8 +1,7 @@
-import { SurveyAnimalsI18N } from 'constants/i18n';
 import { Formik } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
-import FamilyAnimalForm from './FamilyAnimalForm';
+import { render, waitFor } from 'test-helpers/test-utils';
+import FamilyAnimalFormContent from './FamilyAnimalForm';
 
 jest.mock('hooks/useCritterbaseApi');
 
@@ -23,20 +22,18 @@ describe('FamilyAnimalForm', () => {
     mockUseCritterbase.lookup.getSelectOptions.mockClear();
     mockUseCritterbase.family.getAllFamilies.mockClear();
   });
-  it('should display a new part of the form when add unit clicked', async () => {
+  it('should display both inputs for family form section', async () => {
     mockUseCritterbase.lookup.getSelectOptions.mockResolvedValueOnce([{ id: 'a', value: 'a', label: 'family_1' }]);
     mockUseCritterbase.family.getAllFamilies.mockResolvedValueOnce([{ family_id: 'a', family_label: 'family_1' }]);
     const { getByText } = render(
       <Formik
         initialValues={{ general: { taxon_id: 'a' }, family: [{ family_id: 'New Family', relationship: 'parent' }] }}
         onSubmit={() => {}}>
-        {() => <FamilyAnimalForm />}
+        {() => <FamilyAnimalFormContent index={0} />}
       </Formik>
     );
 
     await waitFor(() => {
-      fireEvent.click(getByText(SurveyAnimalsI18N.animalFamilyAddBtn));
-      expect(getByText(SurveyAnimalsI18N.animalFamilyTitle2)).toBeInTheDocument();
       expect(getByText('Family ID')).toBeInTheDocument();
       expect(getByText('Relationship')).toBeInTheDocument();
     });

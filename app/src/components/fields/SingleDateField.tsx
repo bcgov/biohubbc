@@ -50,10 +50,10 @@ const SingleDateField: React.FC<IDateProps> = (props) => {
           openPickerIcon: CalendarIcon
         }}
         slotProps={{
-          openPickerButton: { id: 'date_input_button' },
+          openPickerButton: { id: props.name },
           inputAdornment: {
-            onBlur: handleBlur,
-            id: 'date_input_adornment'
+            id: props.name,
+            onBlur: handleBlur
           },
           textField: {
             id: 'date_field',
@@ -79,6 +79,7 @@ const SingleDateField: React.FC<IDateProps> = (props) => {
         maxDate={moment(DATE_LIMIT.max)}
         value={formattedDateValue}
         onChange={(value) => {
+          other?.onChange?.(value);
           if (!value || String(value.creationData().input) === 'Invalid Date') {
             // The creation input value will be 'Invalid Date' when the date field is cleared (empty), and will
             // contain an actual date string value if the field is not empty but is invalid.

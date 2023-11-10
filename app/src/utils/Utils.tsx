@@ -1,3 +1,4 @@
+import { Typography } from '@mui/material';
 import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
 import { Feature, GeoJsonProperties, Geometry, Polygon } from 'geojson';
@@ -5,6 +6,7 @@ import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { LatLngBounds } from 'leaflet';
 import _ from 'lodash';
 import moment from 'moment';
+import { IDialogContext } from '../contexts/dialogContext';
 
 /**
  * Checks if a url string starts with an `http[s]://` protocol, and adds `https://` if it does not. If the url
@@ -298,11 +300,12 @@ export const formatLabel = (str: string): string => {
  * Checks if two dates are the same, but safe to use against nullish values.
  * By default moment(null).isSame(moment(null)) returns false, which is not always desirable.
  *
- * @param date1
- * @param date2
+ * @param {NullishDate}
+ * @param {NullishDate}
  * @returns boolean
  */
-export const datesSameNullable = (date1: string | null | undefined, date2: string | null | undefined): boolean => {
+type NullishDate = string | null | undefined;
+export const datesSameNullable = (date1: NullishDate, date2: NullishDate): boolean => {
   if (date1 == null && date2 == null) {
     //Note: intentionally loose equality
     return true;
@@ -477,3 +480,22 @@ export const shapeFileFeatureDesc = (geometry: Feature<Geometry, GeoJsonProperti
   );
   return descKey && geometry.properties ? geometry.properties[descKey].substring(0, 250) : undefined;
 };
+
+// JSX Functions //
+//
+/**
+ * Simple reusable method to make a snackbar appear with a string of your choice.
+ *
+ * @param message string to show
+ * @param context reference to current DialogContext
+ */
+export const setMessageSnackbar = (message: string, context: IDialogContext) => {
+  context.setSnackbar({
+    open: true,
+    snackbarMessage: (
+      <Typography variant="body2" component="div">
+        {message}
+      </Typography>
+    )
+  });
+}

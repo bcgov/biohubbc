@@ -4,7 +4,12 @@ import moment from 'moment';
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
 import { AnyObjectSchema, InferType, reach } from 'yup';
-import { AnimalTelemetryDeviceSchema } from './device';
+import { AnimalTelemetryDeviceSchema } from './telemetry-device/device';
+
+export enum ANIMAL_FORM_MODE {
+  ADD = 'add',
+  EDIT = 'edit'
+}
 
 export enum AnimalSex {
   MALE = 'Male',
@@ -28,13 +33,16 @@ export const getAnimalFieldName = <T>(animalKey: keyof IAnimal, fieldKey: keyof 
  */
 export const lastAnimalValueValid = (animalKey: keyof IAnimal, values: IAnimal) => {
   const section = values[animalKey];
-  const lastIndex = section.length - 1;
-  const lastValue = section[lastIndex];
-  if (!lastValue) {
-    return true;
+  if (Array.isArray(section)) {
+    const lastIndex = section?.length - 1;
+    const lastValue = section[lastIndex];
+    if (!lastValue) {
+      return true;
+    }
+    const schema = reach(AnimalSchema, `${animalKey}[${lastIndex}]`);
+    return schema.isValidSync(lastValue);
   }
-  const schema = reach(AnimalSchema, `${animalKey}[${lastIndex}]`);
-  return schema.isValidSync(lastValue);
+  return true;
 };
 
 /**
@@ -70,7 +78,6 @@ export const AnimalGeneralSchema = yup.object({}).shape({
 });
 
 export const AnimalCaptureSchema = yup.object({}).shape({
-  _id: yup.string().required(),
   capture_id: yup.string(),
   capture_location_id: yup.string(),
   release_location_id: yup.string(),
@@ -104,54 +111,69 @@ export const AnimalCaptureSchema = yup.object({}).shape({
   release_comment: yup.string().optional()
 });
 
-export const AnimalMarkingSchema = yup.object({}).shape({
-  _id: yup.string().required(),
+export const AnimalMarkingSchema = yup.object({
   marking_id: yup.string(),
-  marking_type_id: yup.string().required(req),
-  taxon_marking_body_location_id: yup.string().required(req),
+  marking_type_id: yup.string().required('Type is required'),
+  taxon_marking_body_location_id: yup.string().required('Location is required'),
   primary_colour_id: yup.string().optional(),
   secondary_colour_id: yup.string().optional(),
-  marking_comment: yup.string()
+  marking_comment: yup.string(),
+  primary_colour: yup.string().optional(),
+  marking_type: yup.string().optional(),
+  body_location: yup.string().optional()
 });
 
 export const AnimalCollectionUnitSchema = yup.object({}).shape({
-  _id: yup.string().required(),
-  collection_unit_id: yup.string().required(),
-  collection_category_id: yup.string().required(),
-  critter_collection_unit_id: yup.string()
+  collection_unit_id: yup.string().required('Name is required'),
+  collection_category_id: yup.string().required('Category is required'),
+  critter_collection_unit_id: yup.string(),
+  unit_name: yup.string().optional(),
+  category_name: yup.string().optional()
 });
 
 export const AnimalMeasurementSchema = yup.object({}).shape(
   {
-    _id: yup.string().required(),
     measurement_qualitative_id: yup.string(),
     measurement_quantitative_id: yup.string(),
-    taxon_measurement_id: yup.string().required(req),
+    taxon_measurement_id: yup.string().required('Type is required'),
     qualitative_option_id: yup.string().when('value', {
-      is: (value: '' | number) => value === 0 || !value,
-      then: yup.string().required(req),
+      is: (value: '' | number) => value === '' || value == null,
+      then: yup.string().required('Value is required'),
       otherwise: yup.string()
     }),
     value: numSchema.when('qualitative_option_id', {
       is: (qualitative_option_id: string) => !qualitative_option_id,
-      then: numSchema.required(req),
+      then: numSchema.required('Value is required'),
       otherwise: numSchema
     }),
-    measured_timestamp: dateSchema.required(req),
-    measurement_comment: yup.string()
+    measured_timestamp: dateSchema.required('Date is required'),
+    measurement_comment: yup.string(),
+    option_label: yup.string().optional(),
+    measurement_name: yup.string().optional()
   },
   [['value', 'qualitative_option_id']]
 );
 
 export const AnimalMortalitySchema = yup.object({}).shape({
-  _id: yup.string().required(),
   mortality_id: yup.string(),
   location_id: yup.string(),
-  mortality_longitude: lonSchema.when('projection_mode', { is: 'wgs', then: lonSchema.required(req) }),
-  mortality_latitude: latSchema.when('projection_mode', { is: 'wgs', then: latSchema.required(req) }),
-  mortality_utm_northing: numSchema.when('projection_mode', { is: 'utm', then: numSchema.required(req) }),
-  mortality_utm_easting: numSchema.when('projection_mode', { is: 'utm', then: numSchema.required(req) }),
-  mortality_timestamp: dateSchema.required(req),
+  mortality_longitude: lonSchema.when('projection_mode', {
+    is: 'wgs',
+    then: lonSchema.required('Longitude is required')
+  }),
+  mortality_latitude: latSchema.when('projection_mode', {
+    is: 'wgs',
+    then: latSchema.required('Latitude is required')
+  }),
+  mortality_utm_northing: numSchema.when('projection_mode', {
+    is: 'utm',
+    then: numSchema.required('UTM Northing is required')
+  }),
+  mortality_utm_easting: numSchema.when('projection_mode', {
+    is: 'utm',
+    then: numSchema.required('UTM Easting is required')
+  }),
+  mortality_timestamp: dateSchema.required('Mortality Date is required'),
   mortality_coordinate_uncertainty: numSchema,
   mortality_comment: yup.string(),
   proximate_cause_of_death_id: yup.string().uuid().required(req),
@@ -164,8 +186,6 @@ export const AnimalMortalitySchema = yup.object({}).shape({
 });
 
 export const AnimalRelationshipSchema = yup.object({}).shape({
-  _id: yup.string().required(),
-
   family_id: yup.string().required(req),
   relationship: yup.mixed().oneOf(['parent', 'child', 'sibling']).required(req)
 });
@@ -181,7 +201,7 @@ export const AnimalSchema = yup.object({}).shape({
   family: yup.array().of(AnimalRelationshipSchema).required(),
   images: yup.array().of(AnimalImageSchema).required(),
   collectionUnits: yup.array().of(AnimalCollectionUnitSchema).required(),
-  device: AnimalTelemetryDeviceSchema.default(undefined)
+  device: yup.array().of(AnimalTelemetryDeviceSchema).required()
 });
 
 export const LocationSchema = yup.object({}).shape({
@@ -250,11 +270,17 @@ type ICritterCapture = Omit<
 
 export type ICritterMarking = Omit<ICritterID & IAnimalMarking, '_id'>;
 
-export type ICritterCollection = Omit<ICritterID & IAnimalCollectionUnit, '_id' | 'collection_category_id'>;
+export type ICritterCollection = Omit<ICritterID & IAnimalCollectionUnit, 'collection_category_id'>;
 
-type ICritterQualitativeMeasurement = Omit<ICritterID & IAnimalMeasurement, 'value' | '_id'>;
+type ICritterQualitativeMeasurement = Omit<
+  ICritterID & IAnimalMeasurement,
+  'value' | '_id' | 'option_label' | 'measurement_name'
+>;
 
-type ICritterQuantitativeMeasurement = Omit<ICritterID & IAnimalMeasurement, 'qualitative_option_id' | '_id'>;
+type ICritterQuantitativeMeasurement = Omit<
+  ICritterID & IAnimalMeasurement,
+  'qualitative_option_id' | '_id' | 'option_label' | 'measurement_name'
+>;
 
 type ICapturesAndLocations = { captures: ICritterCapture[]; capture_locations: ICritterLocation[] };
 type IMortalityAndLocation = { mortalities: ICritterMortality[]; mortalities_locations: ICritterLocation[] };
@@ -379,8 +405,8 @@ export class Critter {
 
       const mortality_location = {
         latitude: Number(mortality.mortality_latitude),
-        longitude: Number(mortality.mortality_latitude),
-        coordinate_uncertainty: Number(mortality.mortality_latitude),
+        longitude: Number(mortality.mortality_longitude),
+        coordinate_uncertainty: Number(mortality.mortality_coordinate_uncertainty),
         coordinate_uncertainty_unit: 'm'
       };
 
@@ -421,7 +447,7 @@ export class Critter {
   _formatCritterCollectionUnits(animal_collections: IAnimalCollectionUnit[]): ICritterCollection[] {
     return animal_collections.map((collection) => ({
       critter_id: this.critter_id,
-      ...omit(collection, ['_id', 'collection_category_id'])
+      ...omit(collection, ['collection_category_id'])
     }));
   }
 
@@ -470,6 +496,7 @@ export class Critter {
     const families: ICritterFamily[] = [];
     for (const fam of animal_family) {
       //If animal form had the newFamilyIdPlaceholder used at some point, make a real uuid for the new family and add it for creation.
+      console.log(`Comparing ${fam.family_id} to ${newFamilyIdPlaceholder}`);
       if (fam.family_id === newFamilyIdPlaceholder) {
         if (!newFamily) {
           newFamily = { family_id: v4(), family_label: this.name + '_family' };

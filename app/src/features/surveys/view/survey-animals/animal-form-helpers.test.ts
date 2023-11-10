@@ -187,7 +187,6 @@ describe('animal form helpers', () => {
   describe('createCritterUpdatePayload', () => {
     it('should return an object containing two instances of Critter', () => {
       const capture: IAnimalCapture = {
-        _id: '',
         capture_id: '8b9281ea-fbe8-411c-9b50-70ffd08737cb',
         capture_location_id: undefined,
         release_location_id: undefined,
@@ -210,28 +209,30 @@ describe('animal form helpers', () => {
       };
 
       const marking: IAnimalMarking = {
-        _id: '',
         marking_id: undefined,
         marking_type_id: '845f27ac-f0b2-4128-9615-18980e5c8caa',
         taxon_marking_body_location_id: '46e6b939-3485-4c45-9f26-607489e50def',
         primary_colour_id: 'eaf6b7a0-c47c-4dba-83b4-88e9331ee097',
         secondary_colour_id: 'eaf6b7a0-c47c-4dba-83b4-88e9331ee097',
+        primary_colour: 'red',
+        body_location: 'Rear Leg',
+        marking_type: 'tag',
         marking_comment: ''
       };
 
       const measure: IAnimalMeasurement = {
-        _id: '',
         measurement_qualitative_id: 'eaf6b7a0-c47c-4dba-83b4-88e9331ee097',
         measurement_quantitative_id: undefined,
         taxon_measurement_id: 'eaf6b7a0-c47c-4dba-83b4-88e9331ee097',
         qualitative_option_id: 'eaf6b7a0-c47c-4dba-83b4-88e9331ee097',
         value: undefined,
         measured_timestamp: new Date(),
-        measurement_comment: 'a'
+        measurement_comment: 'a',
+        measurement_name: 'weight',
+        option_label: 'test'
       };
 
       const mortality: IAnimalMortality = {
-        _id: '',
         mortality_id: 'eaf6b7a0-c47c-4dba-83b4-88e9331ee097',
         location_id: 'eaf6b7a0-c47c-4dba-83b4-88e9331ee097',
         mortality_longitude: 0,
@@ -251,14 +252,14 @@ describe('animal form helpers', () => {
       };
 
       const collectionUnits: IAnimalCollectionUnit = {
-        _id: '',
         collection_unit_id: 'eaf6b7a0-c47c-4dba-83b4-88e9331ee097',
+        unit_name: 'Pop',
+        category_name: 'Population Unit',
         collection_category_id: 'eaf6b7a0-c47c-4dba-83b4-88e9331ee097',
         critter_collection_unit_id: 'eaf6b7a0-c47c-4dba-83b4-88e9331ee097'
       };
 
       const family: IAnimalRelationship = {
-        _id: '',
         family_id: 'eaf6b7a0-c47c-4dba-83b4-88e9331ee097',
         relationship: 'child'
       };
@@ -282,7 +283,7 @@ describe('animal form helpers', () => {
           collectionUnits,
           { ...collectionUnits, critter_collection_unit_id: '0ec88875-0219-4635-b7cf-8da8ba732fc1' }
         ],
-        device: undefined
+        device: []
       };
 
       const currentFormValues: IAnimal = {
@@ -301,7 +302,7 @@ describe('animal form helpers', () => {
         family: [],
         images: [],
         collectionUnits: [],
-        device: undefined
+        device: []
       };
 
       const { create, update } = createCritterUpdatePayload(initialFormValues, currentFormValues);
