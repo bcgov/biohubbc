@@ -312,6 +312,7 @@ const SamplingSiteList = () => {
                       {sampleSite.sample_methods?.map((sampleMethod) => {
                         return (
                           <ListItem
+                            disableGutters
                             key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}`}
                             sx={{
                               display: 'block'

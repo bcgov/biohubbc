@@ -49,7 +49,6 @@ export class SampleMethodService extends DBService {
     // Collect list of periods to delete
     const existingSamplePeriods = await samplePeriodService.getSamplePeriodsForSurveyMethodId(surveySampleMethodId);
     const periodsToDelete = existingSamplePeriods.map((item) => item.survey_sample_period_id);
-
     // Delete all associated sample periods
     await samplePeriodService.deleteSamplePeriodRecords(periodsToDelete);
 

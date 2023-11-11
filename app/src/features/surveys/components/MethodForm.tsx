@@ -167,11 +167,11 @@ const MethodForm = () => {
               render={(arrayHelpers: FieldArrayRenderProps) => (
                 <Box>
                   {errors.periods && typeof errors.periods === 'string' && (
-                    <Alert severity="error" sx={{mb: 2.5}}>
+                    <Alert severity="error" sx={{ mb: 2.5 }}>
                       {String(errors.periods)}
                     </Alert>
                   )}
-                  
+
                   <Stack
                     component={List}
                     gap={1}

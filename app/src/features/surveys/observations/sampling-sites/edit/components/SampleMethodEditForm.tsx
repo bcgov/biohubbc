@@ -1,4 +1,4 @@
-import { mdiCalendarRangeOutline, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiCalendarRangeOutline, mdiClockOutline, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Alert from '@mui/material/Alert';
@@ -196,8 +196,8 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                             Time Periods
                           </Typography>
                           <Divider component="div" sx={{mt: 1}}></Divider>
-                            <List 
-                              dense 
+                            <List
+                              dense
                               disablePadding
                             >
                               {item.periods.map((period) => (
