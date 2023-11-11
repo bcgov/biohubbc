@@ -28,6 +28,13 @@ export interface IConditionalAutocompleteDataGridEditCellProps<
    * @memberof IConditionalAutocompleteDataGridEditCellProps
    */
   optionsGetter: (row: DataGridType, allOptions: OptionsType[]) => IAutocompleteDataGridOption<ValueType>[];
+  /**
+   * Indicates if the control contains an error
+   *
+   * @type {boolean}
+   * @memberof IConditionalAutocompleteDataGridEditCellProps
+   */
+  error?: boolean;
 }
 
 /**
@@ -56,7 +63,7 @@ const ConditionalAutocompleteDataGridEditCell = <
     [allOptions, dataGridProps.row, optionsGetter]
   );
 
-  return <AutocompleteDataGridEditCell dataGridProps={dataGridProps} options={options} />;
+  return <AutocompleteDataGridEditCell dataGridProps={dataGridProps} options={options} error={props.error} />;
 };
 
 export default ConditionalAutocompleteDataGridEditCell;

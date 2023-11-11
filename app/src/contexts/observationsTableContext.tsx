@@ -32,8 +32,6 @@ export interface IObservationTableRow extends Partial<IObservationRecord> {
   id: GridRowId;
 }
 
-export type RowValidationModel = Record<GridRowId, Partial<Record<keyof IObservationTableRow, { errors: string[] }>>>;
-
 /**
  * Context object that provides helper functions for working with a survey observations data grid.
  *
@@ -113,10 +111,6 @@ export type IObservationsTableContext = {
    * Updates the total observation count for the survey
    */
   setObservationCount: (observationCount: number) => void;
-  /**
-   * Represents any validation errors present in the table
-   */
-  validationModel: RowValidationModel;
 };
 
 export const ObservationsTableContext = createContext<IObservationsTableContext>({
@@ -137,8 +131,7 @@ export const ObservationsTableContext = createContext<IObservationsTableContext>
   isSaving: false,
   isLoading: false,
   observationCount: 0,
-  setObservationCount: () => undefined,
-  validationModel: {}
+  setObservationCount: () => undefined
 });
 
 export const ObservationsTableContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
@@ -172,9 +165,10 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   const [validationModel, setValidationModel] = useState<RowValidationModel>({});
 
   /**
-   * Validates all rows belonging to the table. Returns true if validation passes, false otherwise
+   * Validates all rows belonging to the table. Returns null if validation passes, otherwise
+   * returns the validation model
    */
-  const _validateRows = (): boolean => {
+  const _validateRows = (): RowValidationModel | null => {
     const rowModels = _muiDataGridApiRef.current.getRowModels();
     const rowValues: IObservationTableRow[] = Array.from(rowModels, ([_, value]) => value) as IObservationTableRow[];
 
@@ -190,14 +184,12 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       'wldtaxonomic_units_id'
     ];
 
-    let isValid = true;
     const validation: RowValidationModel = rowValues.reduce((model: RowValidationModel, row: IObservationTableRow) => {
       const missingColumns = requiredColumns.filter((column) => {
         return !row[column];
       });
 
       if (missingColumns.length) {
-        isValid = false;
         model[row.id] = {};
         missingColumns.forEach((column: keyof IObservationTableRow) => {
           model[row.id][column] = {
@@ -210,7 +202,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     }, {});
 
     setValidationModel(validation);
-    return isValid;
+
+    return Object.keys(validation).length ? validation : null;
   }
 
   const _deleteRecords = useCallback(
@@ -372,15 +365,30 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       return;
     }
 
+<<<<<<< Updated upstream
+=======
+    // Collect the ids of all rows in edit mode
+    const allEditingIds = Object.keys(_muiDataGridApiRef.current.state.editRows);
+
     // Validate rows
-    if (!_validateRows()) {
+    const validationErrors = _validateRows();
+
+    if (validationErrors) {
+      /* // TODO uncomment this code
+      // Table contains some validation errors; Transition all errored rows into edit mode
+      Object
+        .keys(validationErrors)
+        .filter((id) => !allEditingIds.includes(id))
+        .forEach((id) => {
+          _muiDataGridApiRef.current.startRowEditMode({ id });
+        });
+
       return;
+      */
     }
 
+>>>>>>> Stashed changes
     _setIsStoppingEdit(true);
-
-    // The ids of all rows in edit mode
-    const allEditingIds = Object.keys(_muiDataGridApiRef.current.state.editRows);
 
     // Remove any row ids that the data grid might still be tracking, but which have been removed from local state
     const editingIdsToSave = allEditingIds.filter((id) => rows.find((row) => String(row.id) === id));
@@ -600,8 +608,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       isLoading,
       isSaving,
       observationCount,
-      setObservationCount,
-      validationModel
+      setObservationCount
     }),
     [
       _muiDataGridApiRef,
@@ -617,8 +624,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       rowSelectionModel,
       isLoading,
       isSaving,
-      observationCount,
-      validationModel
+      observationCount
     ]
   );
 
