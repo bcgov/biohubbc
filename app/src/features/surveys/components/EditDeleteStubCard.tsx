@@ -57,12 +57,12 @@ export const EditDeleteStubCard = (props: IEditDeleteStubCardProps) => {
         action={
           <>
             {onClickEdit && (
-              <IconButton aria-label="settings" onClick={onClickEdit}>
+              <IconButton data-testid="edit-icon" aria-label="edit" onClick={onClickEdit}>
                 <Icon path={mdiPencilOutline} size={1} />
               </IconButton>
             )}
             {onClickDelete && (
-              <IconButton aria-label="settings" onClick={onClickDelete}>
+              <IconButton data-testid="delete-icon" aria-label="delete" onClick={onClickDelete}>
                 <Icon path={mdiTrashCanOutline} size={1} />
               </IconButton>
             )}
