@@ -45,7 +45,7 @@ export const AnimalSectionDataCards = (props: IAnimalSectionDataCardsProps) => {
 
   const { submitForm, initialValues, isSubmitting, status } = useFormikContext<IAnimal>();
   const [canDisplaySnackbar, setCanDisplaySnackbar] = useState(false);
-  const statusRef = useRef<string | undefined>();
+  const statusRef = useRef<{ success: boolean; msg: string } | undefined>();
 
   const dialogContext = useContext(DialogContext);
   const formatDate = (dt: Date) => moment(dt).format('MMM Do[,] YYYY');
@@ -56,15 +56,16 @@ export const AnimalSectionDataCards = (props: IAnimalSectionDataCardsProps) => {
     // Manually setting when canDisplaySnackbar occurs ie: editing does not have animation
     if (statusRef.current && canDisplaySnackbar) {
       setTimeout(() => {
-        statusRef.current && setMessageSnackbar(statusRef.current, dialogContext);
+        statusRef.current && setMessageSnackbar(statusRef.current?.msg, dialogContext);
         statusRef.current = undefined;
         setCanDisplaySnackbar(false);
       }, 500);
     }
+
     if (status) {
       statusRef.current = status;
     }
-  }, [canDisplaySnackbar, status, dialogContext]);
+  }, [canDisplaySnackbar, status?.msg, status?.success, status, dialogContext]);
 
   const formatSubHeader = (subHeaderData: SubHeaderData) => {
     const formatArr: string[] = [];

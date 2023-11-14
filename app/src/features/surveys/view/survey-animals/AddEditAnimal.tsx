@@ -60,7 +60,7 @@ export const AddEditAnimal = (props: IAddEditAnimalProps) => {
   const dialogContext = useContext(DialogContext);
   const { cid: survey_critter_id } = useQuery();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
-  const { submitForm, isValid, values, isSubmitting, initialValues, isValidating, status } =
+  const { submitForm, isValid, resetForm, values, isSubmitting, initialValues, isValidating, status } =
     useFormikContext<IAnimal>();
 
   const { data: allFamilies, refresh: refreshFamilies } = useDataLoader(cbApi.family.getAllFamilies);
@@ -85,6 +85,13 @@ export const AddEditAnimal = (props: IAddEditAnimalProps) => {
     refreshMeasurements(values.general.taxon_id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values.general.taxon_id]);
+
+  useEffect(() => {
+    if (!status?.success && status?.msg) {
+      // if the status of the request fails reset the form
+      resetForm();
+    }
+  }, [initialValues, resetForm, status]);
 
   const renderSingleForm = useMemo(() => {
     const sectionMap: Partial<Record<IAnimalSections, JSX.Element>> = {

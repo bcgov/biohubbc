@@ -30,7 +30,7 @@ export const MortalityAnimalFormContent = ({ index }: MortalityAnimalFormContent
         <SingleDateField
           name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_timestamp', index)}
           required={isRequiredInSchema(AnimalMortalitySchema, 'mortality_timestamp')}
-          label={''}
+          label={'Mortality Date'}
           aria-label="Mortality Date"
         />
       </Box>

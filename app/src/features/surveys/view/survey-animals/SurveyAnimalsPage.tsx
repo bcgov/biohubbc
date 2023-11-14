@@ -146,20 +146,19 @@ export const SurveyAnimalsPage = () => {
       );
     };
     try {
-      let status: undefined | string;
       if (formMode === ANIMAL_FORM_MODE.ADD) {
         await postCritterPayload();
         //Manually setting the message snackbar at this point
         setMessageSnackbar('Animal added to survey', dialogContext);
       } else {
         await patchCritterPayload();
-        status = 'Successfully updated animal';
       }
       refreshDeployments();
       refreshCritters();
-      return status;
+      return { success: true, msg: 'Successfully updated animal' };
     } catch (err) {
       setMessageSnackbar(`Submmision failed ${(err as Error).message}`, dialogContext);
+      return { success: false, msg: `Submmision failed ${(err as Error).message}` };
     }
   };
 
@@ -275,9 +274,7 @@ export const SurveyAnimalsPage = () => {
         validateOnChange={true}
         onSubmit={async (values, actions) => {
           const status = await handleCritterSave(values, ANIMAL_FORM_MODE.EDIT);
-          if (status) {
-            actions.setStatus(status);
-          }
+          actions.setStatus(status);
         }}>
         <SurveySectionFullPageLayout
           pageTitle="Manage Animals"
