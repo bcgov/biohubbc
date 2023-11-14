@@ -18,12 +18,13 @@ export const SurveySectionFullPageLayout = (props: SurveySectionFullPageLayoutPr
   const surveyContext = useContext(SurveyContext);
 
   if (!surveyContext.surveyDataLoader.data) {
-    return <CircularProgress className="pageProgress" size={40} />;
+    return <CircularProgress data-testid="fullpage-spinner" className="pageProgress" size={40} />;
   }
 
   return (
     <Box display="flex" flexDirection="column" height="100%" overflow="hidden" position="relative">
       <SurveySectionHeader
+        data-testid="fullpage-section-header"
         project_id={surveyContext.projectId}
         survey_id={surveyContext.surveyId}
         survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
