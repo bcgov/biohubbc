@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import { cyan, grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import Skeleton from '@mui/material/Skeleton';
+import { Theme } from '@mui/material';
 import { DataGrid, GridCellParams, GridColDef } from '@mui/x-data-grid';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
@@ -361,9 +362,11 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         </Typography>
       ),
       renderEditCell: (params) => {
+        const error = hasError(params);
+
         return <DatePickerDataGrid
           dataGridProps={params}
-          dateFieldProps={{ slotProps: { textField: { error: hasError(params) } } }}
+          dateFieldProps={{ slotProps: { textField: { error, inputProps: { sx: (theme: Theme) => (error ? { color: theme.palette.error.main } : {}) } } } }}
         />;
       }
     },
@@ -402,9 +405,11 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         );
       },
       renderEditCell: (params) => {
+        const error = hasError(params);
+
         return <TimePickerDataGrid
           dataGridProps={params}
-          dateFieldProps={{ slotProps: { textField: { error: hasError(params) } } }}
+          dateFieldProps={{ slotProps: { textField: { error, inputProps: { sx: (theme: Theme) => (error ? { color: theme.palette.error.main } : {}) } } } }}
         />;
       }
     },
