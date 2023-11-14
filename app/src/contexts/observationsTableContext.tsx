@@ -178,7 +178,10 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   const _validateRows = (): RowValidationModel | null => {
     console.log('Validating rows...')
     const rowModels = _muiDataGridApiRef.current.getRowModels();
+    const editModels = []
     const rowValues: IObservationTableRow[] = Array.from(rowModels, ([_, value]) => value) as IObservationTableRow[];
+
+    console.log({ rowValues })
 
     const requiredColumns: (keyof IObservationTableRow)[] = [
       'count',
@@ -208,7 +211,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
       return model;
     }, {});
-
+    
+    console.log('results:', validation)
     setValidationModel(validation);
 
     return Object.keys(validation).length ? validation : null;
@@ -390,6 +394,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         });
 
       */
+      
+      
       return;
     }
 
