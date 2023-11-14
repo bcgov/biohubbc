@@ -184,7 +184,7 @@ const MethodForm = () => {
                         <ListItem
                           disableGutters
                           divider
-                          key={`sample_period_${period.start_date}-${period.end_date}`}
+                          key={`sample_period_${index}_${period.start_date}-${period.end_date}`}
                           sx={{
                             pt: 1.5,
                             pb: 2

@@ -1,4 +1,4 @@
-import { mdiCalendarRangeOutline, mdiClockOutline, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiCalendarRangeOutline, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Alert from '@mui/material/Alert';

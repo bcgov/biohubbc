@@ -108,7 +108,7 @@ export class SamplePeriodService extends DBService {
       // Check if any observations are associated with the periods to delete
       for (const period of existingPeriodToDelete) {
         if (
-          (await observationService.getObservationsCountBySampleMethodId(period.survey_sample_method_id))
+          (await observationService.getObservationsCountBySamplePeriodId(period.survey_sample_period_id))
             .observationCount > 0
         ) {
           throw new HTTP400('Cannot delete a sample period that is associated with an observation');
