@@ -8,6 +8,7 @@ import { useContext, useMemo } from 'react';
 
 export interface ITaxonomyDataGridCellProps<DataGridType extends GridValidRowModel> {
   dataGridProps: GridRenderEditCellParams<DataGridType>;
+  error?: boolean;
 }
 
 /**
@@ -77,6 +78,7 @@ const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel, ValueT
       dataGridProps={dataGridProps}
       getCurrentOption={getCurrentOption}
       getOptions={getOptions}
+      error={props.error}
     />
   );
 };

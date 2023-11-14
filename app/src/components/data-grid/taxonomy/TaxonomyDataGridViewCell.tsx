@@ -5,6 +5,7 @@ import { useContext } from 'react';
 
 export interface ITaxonomyDataGridViewCellProps<DataGridType extends GridValidRowModel> {
   dataGridProps: GridRenderCellParams<DataGridType>;
+  error?: boolean;
 }
 
 /**
@@ -35,7 +36,7 @@ const TaxonomyDataGridViewCell = <DataGridType extends GridValidRowModel>(
     <Typography
       variant="body2"
       component="div"
-      sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+      sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', color: props.error ? 'error' : undefined }}>
       {response.label}
     </Typography>
   );
