@@ -32,6 +32,8 @@ export interface IObservationTableRow extends Partial<IObservationRecord> {
   id: GridRowId;
 }
 
+export type RowValidationModel = Record<GridRowId, Partial<Record<keyof IObservationTableRow, { errors: string[] }>>>;
+
 /**
  * Context object that provides helper functions for working with a survey observations data grid.
  *
@@ -104,6 +106,10 @@ export type IObservationsTableContext = {
    */
   isLoading: boolean;
   /**
+   * The state of the validation model
+   */
+  validationModel: RowValidationModel;
+  /**
    * Reflects the count of total observations for the survey
    */
   observationCount: number;
@@ -130,6 +136,7 @@ export const ObservationsTableContext = createContext<IObservationsTableContext>
   onRowSelectionModelChange: () => {},
   isSaving: false,
   isLoading: false,
+  validationModel: {},
   observationCount: 0,
   setObservationCount: () => undefined
 });
@@ -169,6 +176,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    * returns the validation model
    */
   const _validateRows = (): RowValidationModel | null => {
+    console.log('Validating rows...')
     const rowModels = _muiDataGridApiRef.current.getRowModels();
     const rowValues: IObservationTableRow[] = Array.from(rowModels, ([_, value]) => value) as IObservationTableRow[];
 
@@ -365,8 +373,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       return;
     }
 
-<<<<<<< Updated upstream
-=======
     // Collect the ids of all rows in edit mode
     const allEditingIds = Object.keys(_muiDataGridApiRef.current.state.editRows);
 
@@ -374,7 +380,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     const validationErrors = _validateRows();
 
     if (validationErrors) {
-      /* // TODO uncomment this code
+      /*
       // Table contains some validation errors; Transition all errored rows into edit mode
       Object
         .keys(validationErrors)
@@ -383,11 +389,10 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
           _muiDataGridApiRef.current.startRowEditMode({ id });
         });
 
-      return;
       */
+      return;
     }
 
->>>>>>> Stashed changes
     _setIsStoppingEdit(true);
 
     // Remove any row ids that the data grid might still be tracking, but which have been removed from local state
@@ -607,6 +612,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       onRowSelectionModelChange: setRowSelectionModel,
       isLoading,
       isSaving,
+      validationModel,
       observationCount,
       setObservationCount
     }),
@@ -623,6 +629,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       hasUnsavedChanges,
       rowSelectionModel,
       isLoading,
+      validationModel,
       isSaving,
       observationCount
     ]
