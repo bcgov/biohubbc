@@ -173,12 +173,13 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   // Stores the current validation state of the table
   const [validationModel, setValidationModel] = useState<ObservationTableValidationModel>({});
 
-  const _getRows = (): IObservationTableRow[] => {
-    return Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values()) as IObservationTableRow[];
-  };
+  /**
+   * Gets all rows from the table, including values that have been edited in the table.
+   */
+  const _getRowsWithEditedValues = (): IObservationTableRow[] => {
+    const rowValues = Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values()) as IObservationTableRow[];
 
-  const _getActiveRecords = (): IObservationTableRow[] => {
-    return _getRows().map((row) => {
+    return rowValues.map((row) => {
       const editRow = _muiDataGridApiRef.current.state.editRows[row.id];
       if (!editRow) {
         return row;
@@ -196,16 +197,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    * returns the validation model
    */
   const _validateRows = (): ObservationTableValidationModel | null => {
-    console.log('Validating rows...')
-    
-    /*
-    const rowModels = _muiDataGridApiRef.current.getRowModels();
-    const editModels = []
-    const rowValues: IObservationTableRow[] = Array.from(rowModels, ([_, value]) => value) as IObservationTableRow[];
-    */
-
-    const rowValues = _getActiveRecords();
-    console.log({ rowValues })
+    const rowValues = _getRowsWithEditedValues();
 
     const requiredColumns: (keyof IObservationTableRow)[] = [
       'count',
@@ -218,8 +210,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       'survey_sample_period_id',
       'wldtaxonomic_units_id'
     ];
-
-    console.log('times:', rowValues.map((row => row.observation_time)))
 
     const validation = rowValues.reduce((tableModel: ObservationTableValidationModel, row: IObservationTableRow) => {
       const rowModel: ObservationRowValidationModel = {};
@@ -265,7 +255,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       return tableModel;
     }, {});
 
-    console.log('results:', validation)
     setValidationModel(validation);
 
     return Object.keys(validation).length > 0 ? validation : null;
