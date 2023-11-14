@@ -10,6 +10,7 @@ import { createContext, PropsWithChildren, useCallback, useContext, useEffect, u
 import { v4 as uuidv4 } from 'uuid';
 import { SurveyContext } from './surveyContext';
 import { TaxonomyContext } from './taxonomyContext';
+import moment from 'moment';
 
 export interface IObservationRecord {
   survey_observation_id: number;
@@ -32,7 +33,8 @@ export interface IObservationTableRow extends Partial<IObservationRecord> {
   id: GridRowId;
 }
 
-export type RowValidationModel = Record<GridRowId, Partial<Record<keyof IObservationTableRow, { errors: string[] }>>>;
+export type ObservationTableValidationModel = Record<GridRowId, ObservationRowValidationModel>;
+export type ObservationRowValidationModel = Partial<Record<keyof IObservationTableRow, { errors: string[] }>>;
 
 /**
  * Context object that provides helper functions for working with a survey observations data grid.
@@ -108,7 +110,7 @@ export type IObservationsTableContext = {
   /**
    * The state of the validation model
    */
-  validationModel: RowValidationModel;
+  validationModel: ObservationTableValidationModel;
   /**
    * Reflects the count of total observations for the survey
    */
@@ -169,7 +171,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   // Stores the current count of observations for this survey
   const [observationCount, setObservationCount] = useState<number>(0);
   // Stores the current validation state of the table
-  const [validationModel, setValidationModel] = useState<RowValidationModel>({});
+  const [validationModel, setValidationModel] = useState<ObservationTableValidationModel>({});
 
   const _getRows = (): IObservationTableRow[] => {
     return Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values()) as IObservationTableRow[];
@@ -193,7 +195,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    * Validates all rows belonging to the table. Returns null if validation passes, otherwise
    * returns the validation model
    */
-  const _validateRows = (): RowValidationModel | null => {
+  const _validateRows = (): ObservationTableValidationModel | null => {
     console.log('Validating rows...')
     
     /*
@@ -211,33 +213,62 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       'longitude',
       'observation_date',
       'observation_time',
+      'survey_sample_site_id',
       'survey_sample_method_id',
       'survey_sample_period_id',
-      'survey_sample_site_id',
       'wldtaxonomic_units_id'
     ];
 
-    const validation: RowValidationModel = rowValues.reduce((model: RowValidationModel, row: IObservationTableRow) => {
-      const missingColumns = requiredColumns.filter((column) => {
-        return !row[column];
-      });
+    console.log('times:', rowValues.map((row => row.observation_time)))
 
-      if (missingColumns.length) {
-        model[row.id] = {};
-        missingColumns.forEach((column: keyof IObservationTableRow) => {
-          model[row.id][column] = {
-            errors: [`Missing column: ${column}`]
-          }
-        })
+    const validation = rowValues.reduce((tableModel: ObservationTableValidationModel, row: IObservationTableRow) => {
+      const rowModel: ObservationRowValidationModel = {};
+
+      // Validate missing columns
+      const missingColumns: Set<keyof IObservationTableRow> = new Set(requiredColumns
+        .filter((column) => !row[column]));
+      
+      if (missingColumns.has('survey_sample_site_id')) {
+        missingColumns.add('survey_sample_method_id');
+      }
+  
+      if (missingColumns.has('survey_sample_method_id')) {
+        missingColumns.add('survey_sample_period_id');
+      }
+      
+      Array.from(missingColumns).forEach((column: keyof IObservationTableRow) => {
+          rowModel[column] = { errors: [`Missing column: ${column}`] }
+        });
+
+      // Validate date value
+      if (row.observation_date && !moment(row.observation_date).isValid()) {
+        if (!rowModel.observation_date) {
+          rowModel.observation_date = { errors: [] }
+        }
+
+        rowModel.observation_date.errors.push('Invalid date');
       }
 
-      return model;
+      // Validate time value
+      if (row.observation_time === 'Invalid date') {
+        if (!rowModel.observation_time) {
+          rowModel.observation_time = { errors: [] }
+        }
+
+        rowModel.observation_time.errors.push('Invalid time');
+      }
+
+      if (Object.keys(rowModel).length > 0) {
+        tableModel[row.id] = rowModel;
+      }
+
+      return tableModel;
     }, {});
-    
+
     console.log('results:', validation)
     setValidationModel(validation);
 
-    return Object.keys(validation).length ? validation : null;
+    return Object.keys(validation).length > 0 ? validation : null;
   }
 
   const _deleteRecords = useCallback(
