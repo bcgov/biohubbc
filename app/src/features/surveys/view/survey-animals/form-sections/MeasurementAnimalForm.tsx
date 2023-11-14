@@ -63,6 +63,9 @@ export const MeasurementAnimalFormContent = (props: MeasurementFormContentProps)
     if (val === '') {
       return;
     }
+    if (isNaN(val)) {
+      return `Must be a number`;
+    }
     if (val < min) {
       return `Measurement must be greater than ${min}${unit}`;
     }
