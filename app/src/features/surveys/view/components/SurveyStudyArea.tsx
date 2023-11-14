@@ -29,26 +29,30 @@ const SurveyStudyArea = () => {
     const locations = surveyContext.surveyDataLoader.data?.surveyData?.locations;
 
     const getRegions = async (features: Feature[]) => {
-      const regions = await biohubApi.spatial.getRegions(features);
+      try {
+        const regions = await biohubApi.spatial.getRegions(features);
 
-      if (!isMounted) {
-        return;
+        if (!isMounted) {
+          return;
+        }
+
+        setInferredLayersInfo({
+          parks: regions.regions
+            .filter((item) => item.sourceLayer === 'WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW')
+            .map((item) => item.regionName),
+          nrm: regions.regions
+            .filter((item) => item.sourceLayer === 'WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG')
+            .map((item) => item.regionName),
+          env: regions.regions
+            .filter((item) => item.sourceLayer === 'WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW')
+            .map((item) => item.regionName),
+          wmu: regions.regions
+            .filter((item) => item.sourceLayer === 'WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW')
+            .map((item) => item.regionName)
+        });
+      } catch (error) {
+        console.error(error);
       }
-
-      setInferredLayersInfo({
-        parks: regions.regions
-          .filter((item) => item.sourceLayer === 'WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW')
-          .map((item) => item.regionName),
-        nrm: regions.regions
-          .filter((item) => item.sourceLayer === 'WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG')
-          .map((item) => item.regionName),
-        env: regions.regions
-          .filter((item) => item.sourceLayer === 'WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW')
-          .map((item) => item.regionName),
-        wmu: regions.regions
-          .filter((item) => item.sourceLayer === 'WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW')
-          .map((item) => item.regionName)
-      });
     };
 
     if (locations) {

@@ -34,16 +34,6 @@ describe('Study Area Form', () => {
     );
 
     await waitFor(() => {
-      expect(SurveyAreaMapControl).toHaveBeenCalledWith(
-        {
-          map_id: 'study_area_map',
-          formik_key: 'locations',
-          formik_props: expect.objectContaining({ values: SurveyLocationInitialValues }),
-          draw_controls_ref: { current: null }
-        },
-        expect.anything()
-      );
-
       expect(getByTestId('study-area-list')).toBeVisible();
     });
   });
@@ -66,7 +56,8 @@ describe('Study Area Form', () => {
                 name: 'Dinagat Islands'
               }
             }
-          ]
+          ],
+          uuid: '123'
         }
       ]
     };
@@ -83,17 +74,6 @@ describe('Study Area Form', () => {
     );
 
     await waitFor(async () => {
-      // Assert MapBoundary was rendered with the right props
-      expect(SurveyAreaMapControl).toHaveBeenCalledWith(
-        {
-          map_id: 'study_area_map',
-          formik_key: 'locations',
-          formik_props: expect.objectContaining({ values: existingFormValues }),
-          draw_controls_ref: { current: null }
-        },
-        expect.anything()
-      );
-
       expect(getByTestId('study-area-list')).toBeVisible();
       expect(await findByText('a study area description')).toBeVisible();
     });

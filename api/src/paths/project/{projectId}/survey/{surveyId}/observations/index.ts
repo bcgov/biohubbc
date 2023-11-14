@@ -52,6 +52,17 @@ export const PUT: Operation = [
   insertUpdateDeleteSurveyObservations()
 ];
 
+export const surveyObservationsSupplementaryData: SchemaObject = {
+  type: 'object',
+  required: ['observationCount'],
+  properties: {
+    observationCount: {
+      type: 'integer',
+      minimum: 0
+    }
+  }
+};
+
 export const surveyObservationsResponseSchema: SchemaObject = {
   type: 'object',
   nullable: true,
@@ -163,16 +174,7 @@ GET.apiDoc = {
             required: ['surveyObservations', 'supplementaryObservationData'],
             properties: {
               ...surveyObservationsResponseSchema.properties,
-              supplementaryObservationData: {
-                type: 'object',
-                required: ['observationCount'],
-                properties: {
-                  observationCount: {
-                    type: 'integer',
-                    minimum: 0
-                  }
-                }
-              }
+              supplementaryObservationData: { ...surveyObservationsSupplementaryData }
             },
             title: 'Survey get response object, for view purposes'
           }
