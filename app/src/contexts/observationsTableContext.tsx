@@ -171,16 +171,38 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   // Stores the current validation state of the table
   const [validationModel, setValidationModel] = useState<RowValidationModel>({});
 
+  const _getRows = (): IObservationTableRow[] => {
+    return Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values()) as IObservationTableRow[];
+  };
+
+  const _getActiveRecords = (): IObservationTableRow[] => {
+    return _getRows().map((row) => {
+      const editRow = _muiDataGridApiRef.current.state.editRows[row.id];
+      if (!editRow) {
+        return row;
+      }
+
+      return Object.entries(editRow).reduce(
+        (newRow, entry) => ({ ...row, ...newRow, _isModified: true, [entry[0]]: entry[1].value }),
+        {}
+      );
+    }) as IObservationTableRow[];
+  };
+
   /**
    * Validates all rows belonging to the table. Returns null if validation passes, otherwise
    * returns the validation model
    */
   const _validateRows = (): RowValidationModel | null => {
     console.log('Validating rows...')
+    
+    /*
     const rowModels = _muiDataGridApiRef.current.getRowModels();
     const editModels = []
     const rowValues: IObservationTableRow[] = Array.from(rowModels, ([_, value]) => value) as IObservationTableRow[];
+    */
 
+    const rowValues = _getActiveRecords();
     console.log({ rowValues })
 
     const requiredColumns: (keyof IObservationTableRow)[] = [

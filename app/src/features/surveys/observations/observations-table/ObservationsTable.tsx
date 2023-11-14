@@ -432,6 +432,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         </Typography>
       ),
       renderEditCell: (params) => {
+        const error: boolean = hasError(params);
+
         return (
           <TextFieldDataGrid
             dataGridProps={params}
@@ -448,7 +450,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
                   value: event.target.value
                 });
               },
-              color: hasError(params) ? 'error' : undefined
+              error,
+              color: error ? 'error' : undefined
             }}
           />
         );
@@ -478,6 +481,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         </Typography>
       ),
       renderEditCell: (params) => {
+        const error: boolean = hasError(params);
+
         return (
           <TextFieldDataGrid
             dataGridProps={params}
@@ -493,7 +498,9 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
                   field: params.field,
                   value: event.target.value
                 });
-              }
+              },
+              error,
+              color: error ? 'error' : undefined
             }}
           />
         );
