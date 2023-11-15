@@ -6,11 +6,13 @@ import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import { grey } from '@mui/material/colors';
 import Container from '@mui/material/Container';
+import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PublishSurveyDialog from 'components/publish/PublishSurveyDialog';
@@ -139,8 +141,7 @@ const SurveyHeader = () => {
           position: 'sticky',
           top: 0,
           zIndex: 1002,
-          pt: 3,
-          pb: 3.75,
+          py: 3,
           borderBottomStyle: 'solid',
           borderBottomWidth: '1px',
           borderBottomColor: grey[300]
@@ -179,7 +180,16 @@ const SurveyHeader = () => {
                 }}>
                 {surveyWithDetails.surveyData.survey_details.survey_name}
               </Typography>
-              <Box display="flex" alignItems="center" flexWrap="wrap" mt={1}>
+              <Stack 
+                flexDirection="row"
+                alignItems="center" 
+                flexWrap="wrap" 
+                gap={1}
+                divider={<Divider flexItem orientation='vertical'></Divider>}
+                sx={{
+                  mt: 0.5
+                }}
+              >
                 <Typography
                   component="span"
                   variant="subtitle1"
@@ -191,22 +201,47 @@ const SurveyHeader = () => {
                       color: 'text.secondary'
                     }
                   }}>
-                  <Icon path={mdiCalendarRangeOutline} size={1} />
-                  <Typography component="span" sx={{ ml: 1.5 }}>
+                    Timeline: &nbsp;
                     {getFormattedDateRangeString(
                       DATE_FORMAT.ShortMediumDateFormat,
                       surveyWithDetails.surveyData.survey_details.start_date,
                       surveyWithDetails.surveyData.survey_details.end_date
                     )}
-                  </Typography>
                 </Typography>
-              </Box>
+                <Typography
+                  component="span"
+                  variant="subtitle1"
+                  color="textSecondary"
+                >
+                  Published: YYYY-MM-DD
+                </Typography>
+              </Stack>
             </Box>
             <Box display="flex" alignItems="flex-start" flex="0 0 auto">
+              <Stack flexDirection="row" gap={1}>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  startIcon={<Icon path={mdiPencilOutline} size={0.75} />}
+                  onClick={() => history.push('edit')}
+                >
+                  Edit
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{
+                    minWidth: '7rem'
+                  }}
+                >
+                  Publish
+                </Button>
+              </Stack>
               <ProjectRoleGuard
                 validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
                 validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                 <Button
+                  sx={{display: 'none'}}
                   id="survey_settings_button"
                   aria-label="Survey Settings"
                   aria-controls="surveySettingsMenu"

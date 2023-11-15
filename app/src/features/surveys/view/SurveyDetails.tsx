@@ -18,6 +18,7 @@ import SamplingMethods from './components/SamplingMethods';
 import SurveyFundingSources from './components/SurveyFundingSources';
 import SurveyGeneralInformation from './components/SurveyGeneralInformation';
 import SurveyStudyArea from './components/SurveyStudyArea';
+import Button from '@mui/material/Button';
 
 /**
  * Survey details content for a survey.
@@ -32,9 +33,16 @@ const SurveyDetails = () => {
         <Typography variant="h4" component="h2" sx={{ flex: '1 1 auto' }}>
           Survey Details
         </Typography>
-        <IconButton component={RouterLink} aria-label="Edit Details" to="edit">
-          <Icon path={mdiPencilOutline} size={1} />
-        </IconButton>
+        <Button
+          variant="outlined"
+          color="primary"
+          component={RouterLink} 
+          aria-label="Edit Details" 
+          to="edit"
+          startIcon={<Icon path={mdiPencilOutline} size={0.75} />}
+        >
+          Edit
+        </Button>
       </Toolbar>
 
       <Divider sx={{ m: 0 }}></Divider>

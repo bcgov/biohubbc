@@ -539,8 +539,8 @@ const SurveyAnimals: React.FC = () => {
         label="Marked or Known Animals"
         buttonLabel="Add Animal"
         buttonTitle="Add Animal"
-        buttonProps={{ variant: 'contained', color: 'primary' }}
-        buttonStartIcon={<Icon path={mdiPlus} size={1} />}
+        buttonProps={{ variant: 'outlined', color: 'primary' }}
+        buttonStartIcon={<Icon path={mdiPlus} size={0.75} />}
         buttonOnClick={toggleDialog}
       />
       <Divider></Divider>

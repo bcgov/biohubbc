@@ -1,4 +1,4 @@
-import { mdiPencilOutline } from '@mdi/js';
+import { mdiCogOutline, mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LinearProgress } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -71,12 +71,13 @@ const SurveyPage: React.FC = () => {
             </Typography>
             <Button
               component={RouterLink}
+              variant="outlined"
+              color="primary"
               to={'observations'}
               title="Submit Survey Data and Documents"
-              color="primary"
-              variant="contained"
-              startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
-              Manage Observations
+              startIcon={<Icon path={mdiCogOutline} size={0.75} />}
+              sx={{mr: -1}}>
+              Manage
             </Button>
           </Toolbar>
           <Fade in={observationsContext.observationsDataLoader.isLoading}>
