@@ -15,7 +15,7 @@ interface ISurveyHeader {
  *
  * @return {*}
  */
-const SurveyBaseHeader: React.FC<ISurveyHeader> = (props) => {
+const SurveyBaseHeader = (props: ISurveyHeader) => {
   const { title, subTitle, breadCrumb, buttonJSX } = props;
 
   return (
