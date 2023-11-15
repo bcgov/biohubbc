@@ -11,6 +11,7 @@ import { createContext, PropsWithChildren, useCallback, useContext, useEffect, u
 import { v4 as uuidv4 } from 'uuid';
 import { SurveyContext } from './surveyContext';
 import { TaxonomyContext } from './taxonomyContext';
+import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
 
 export interface IObservationRecord {
   survey_observation_id: number;
@@ -33,8 +34,8 @@ export interface IObservationTableRow extends Partial<IObservationRecord> {
   id: GridRowId;
 }
 
-export type ObservationTableValidationModel = Record<GridRowId, ObservationRowValidationModel>;
-export type ObservationRowValidationModel = Partial<Record<keyof IObservationTableRow, { errors: string[] }>>;
+export type ObservationTableValidationModel = TableValidationModel<IObservationTableRow>;
+export type ObservationRowValidationError = RowValidationError<IObservationTableRow>;
 
 /**
  * Context object that provides helper functions for working with a survey observations data grid.
@@ -211,8 +212,20 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       'wldtaxonomic_units_id'
     ];
 
+    const orderedRowNames: Array<Partial<Record<keyof IObservationTableRow, string>>> = [
+      { 'count': 'Count' },
+      { 'latitude': 'Latitude' },
+      { 'longitude': '' },
+      { 'observation_date': '' },
+      { 'observation_time': '' },
+      { 'survey_sample_site_id': '' },
+      { 'survey_sample_method_id': '' },
+      { 'survey_sample_period_id': '' },
+      { 'wldtaxonomic_units_id': '' },
+    ]
+
     const validation = rowValues.reduce((tableModel: ObservationTableValidationModel, row: IObservationTableRow) => {
-      const rowModel: ObservationRowValidationModel = {};
+      const rowErrors: ObservationRowValidationError[] = [];
 
       // Validate missing columns
       const missingColumns: Set<keyof IObservationTableRow> = new Set(requiredColumns.filter((column) => !row[column]));
@@ -226,28 +239,20 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       }
 
       Array.from(missingColumns).forEach((column: keyof IObservationTableRow) => {
-        rowModel[column] = { errors: [`Missing column: ${column}`] };
+        rowErrors.push({ column, error: `Missing column: ${column}` });
       });
 
       // Validate date value
       if (row.observation_date && !moment(row.observation_date).isValid()) {
-        if (!rowModel.observation_date) {
-          rowModel.observation_date = { errors: [] };
-        }
-
-        rowModel.observation_date.errors.push('Invalid date');
+        rowErrors.push({ column: 'observation_date', error: 'Invalid date' });
       }
 
       // Validate time value
       if (row.observation_time === 'Invalid date') {
-        if (!rowModel.observation_time) {
-          rowModel.observation_time = { errors: [] };
-        }
-
-        rowModel.observation_time.errors.push('Invalid time');
+        rowErrors.push({ column: 'observation_time', error: 'Invalid time' });
       }
 
-      if (Object.keys(rowModel).length > 0) {
+      if (rowErrors) {
         tableModel[row.id] = rowModel;
       }
 
