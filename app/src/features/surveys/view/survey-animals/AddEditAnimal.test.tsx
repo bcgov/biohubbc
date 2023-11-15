@@ -174,7 +174,7 @@ describe('AddEditAnimal', () => {
     await waitFor(() => {
       fireEvent.click(screen.getByRole('button', { name: 'Add Unit' }));
     });
-    expect(screen.getByRole('button', { name: 'Cancel' }));
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
   });
   it('should render the Markings section and open dialog', async () => {
     const screen = render(page('Markings'));
@@ -184,7 +184,7 @@ describe('AddEditAnimal', () => {
     await waitFor(() => {
       fireEvent.click(screen.getByRole('button', { name: 'Add Marking' }));
     });
-    expect(screen.getByRole('button', { name: 'Cancel' }));
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
   });
   it('should render the Measurements section and open dialog', async () => {
     const screen = render(page('Measurements'));
@@ -194,7 +194,7 @@ describe('AddEditAnimal', () => {
     await waitFor(() => {
       fireEvent.click(screen.getByRole('button', { name: 'Add Measurement' }));
     });
-    expect(screen.getByRole('button', { name: 'Cancel' }));
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
   });
   it('should render the Family section and open dialog', async () => {
     const screen = render(page('Family'));
@@ -204,6 +204,6 @@ describe('AddEditAnimal', () => {
     await waitFor(() => {
       fireEvent.click(screen.getByRole('button', { name: 'Add Relationship' }));
     });
-    expect(screen.getByRole('button', { name: 'Cancel' }));
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
   });
 });
