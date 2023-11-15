@@ -1,5 +1,5 @@
 import { GridColDef } from '@mui/x-data-grid';
-import { CustomDataGrid } from 'components/tables/CustomDataGrid';
+import { CustomDataGrid } from 'components/data-grid/CustomDataGrid';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
 import { IAnimalDeployment } from './device';
