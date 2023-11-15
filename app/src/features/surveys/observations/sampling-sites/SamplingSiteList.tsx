@@ -314,7 +314,11 @@ const SamplingSiteList = () => {
                           <ListItem
                             key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}`}
                             sx={{
-                              display: 'block'
+                              display: 'block',
+                              py: 0,
+                              '& + li': {
+                                mt: 1.5
+                              }
                             }}>
                             <ListItemText
                               primary={getCodesName(
