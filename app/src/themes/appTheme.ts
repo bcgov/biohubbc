@@ -227,8 +227,7 @@ const appTheme = createTheme({
       styleOverrides: {
         root: {
           background: '#fff',
-          '&.Mui-error': {
-          }
+          '&.Mui-error': {}
         }
       }
     },
