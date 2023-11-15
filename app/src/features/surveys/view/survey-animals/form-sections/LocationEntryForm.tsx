@@ -2,8 +2,8 @@ import { Box, FormControlLabel, FormGroup, Grid, Switch, Tab, Tabs } from '@mui/
 import CustomTextField from 'components/fields/CustomTextField';
 import AdditionalLayers from 'components/map/components/AdditionalLayers';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
+import { MapBaseCss } from 'components/map/components/MapBaseCss';
 import { MarkerIconColor, MarkerWithResizableRadius } from 'components/map/components/MarkerWithResizableRadius';
-import { MapBaseCss } from 'components/map/styles/MapBaseCss';
 import { MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
 import { useFormikContext } from 'formik';
 import { LatLng } from 'leaflet';

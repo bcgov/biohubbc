@@ -181,6 +181,28 @@ export class ObservationService extends DBService {
   }
 
   /**
+   * Retrieves observation records count for the given survey and sample method ids
+   *
+   * @param {number} sampleMethodId
+   * @return {*}  {Promise<{ observationCount: number }>}
+   * @memberof ObservationService
+   */
+  async getObservationsCountBySampleMethodId(sampleMethodId: number): Promise<{ observationCount: number }> {
+    return this.observationRepository.getObservationsCountBySampleMethodId(sampleMethodId);
+  }
+
+  /**
+   * Retrieves observation records count for the given survey and sample period ids
+   *
+   * @param {number} samplePeriodId
+   * @return {*}  {Promise<{ observationCount: number }>}
+   * @memberof ObservationService
+   */
+  async getObservationsCountBySamplePeriodId(samplePeriodId: number): Promise<{ observationCount: number }> {
+    return this.observationRepository.getObservationsCountBySamplePeriodId(samplePeriodId);
+  }
+
+  /**
    * Processes a observation upload submission. This method receives an ID belonging to an
    * observation submission, gets the CSV file associated with the submission, and appends
    * all of the records in the CSV file to the observations for the survey. If the CSV
