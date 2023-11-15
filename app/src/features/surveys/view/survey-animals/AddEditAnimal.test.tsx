@@ -186,7 +186,7 @@ describe('AddEditAnimal', () => {
     });
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
   });
-  it('should render the Measurements section and open dialog', async () => {
+  it('should render the Measurement section and open dialog', async () => {
     const screen = render(page('Measurements'));
     await waitFor(() => {
       expect(screen.getByRole('button', { name: 'Add Measurement' })).toBeInTheDocument();
