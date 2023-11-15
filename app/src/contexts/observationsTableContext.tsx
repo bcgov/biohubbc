@@ -212,18 +212,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       'wldtaxonomic_units_id'
     ];
 
-    const orderedRowNames: Array<Partial<Record<keyof IObservationTableRow, string>>> = [
-      { 'count': 'Count' },
-      { 'latitude': 'Latitude' },
-      { 'longitude': '' },
-      { 'observation_date': '' },
-      { 'observation_time': '' },
-      { 'survey_sample_site_id': '' },
-      { 'survey_sample_method_id': '' },
-      { 'survey_sample_period_id': '' },
-      { 'wldtaxonomic_units_id': '' },
-    ]
-
     const validation = rowValues.reduce((tableModel: ObservationTableValidationModel, row: IObservationTableRow) => {
       const rowErrors: ObservationRowValidationError[] = [];
 
@@ -252,8 +240,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         rowErrors.push({ column: 'observation_time', error: 'Invalid time' });
       }
 
-      if (rowErrors) {
-        tableModel[row.id] = rowModel;
+      if (rowErrors.length > 0) {
+        tableModel[row.id] = rowErrors;
       }
 
       return tableModel;

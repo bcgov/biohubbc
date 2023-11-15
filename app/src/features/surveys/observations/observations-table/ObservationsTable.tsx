@@ -115,12 +115,11 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
 
   const apiRef = observationsTableContext._muiDataGridApiRef;
 
-  const hasError = useCallback(
-    (params: GridCellParams): boolean => {
+  const hasError = useCallback((params: GridCellParams): boolean => {
       return Boolean(
-        (observationsTableContext.validationModel as { [key: string]: { [key: string]: { errors: string[] } } })[
-          params.row.id
-        ]?.[params.field]?.errors?.length
+        observationsTableContext.validationModel[params.row.id]?.some((error) => {
+          return error.column === params.field
+        })
       );
     },
     [observationsTableContext.validationModel]
