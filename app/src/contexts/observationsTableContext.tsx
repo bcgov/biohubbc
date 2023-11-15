@@ -177,7 +177,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    * Gets all rows from the table, including values that have been edited in the table.
    */
   const _getRowsWithEditedValues = (): IObservationTableRow[] => {
-    const rowValues = Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values()) as IObservationTableRow[];
+    const rowValues = Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values());
 
     return rowValues.map((row) => {
       const editRow = _muiDataGridApiRef.current.state.editRows[row.id];
@@ -425,17 +425,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     const validationErrors = _validateRows();
 
     if (validationErrors) {
-      /*
-      // Table contains some validation errors; Transition all errored rows into edit mode
-      Object
-        .keys(validationErrors)
-        .filter((id) => !allEditingIds.includes(id))
-        .forEach((id) => {
-          _muiDataGridApiRef.current.startRowEditMode({ id });
-        });
-
-      */
-
       return;
     }
 
