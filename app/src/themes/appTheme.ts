@@ -226,7 +226,19 @@ const appTheme = createTheme({
     MuiInputBase: {
       styleOverrides: {
         root: {
-          background: '#fff'
+          background: '#fff',
+          '&.Mui-error': {
+          }
+        }
+      }
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          '&.Mui-error .MuiOutlinedInput-notchedOutline': {
+            borderWidth: '2px',
+            top: '-4px'
+          }
         }
       }
     },
