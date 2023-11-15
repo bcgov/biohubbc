@@ -38,7 +38,7 @@ export interface IAsyncAutocompleteDataGridEditCell<
   >;
   /**
    * Indicates if there is an error with the control
-   * 
+   *
    * @memberof IAsyncAutocompleteDataGridEditCell
    */
   error?: boolean;

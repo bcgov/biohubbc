@@ -1,11 +1,10 @@
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Typography } from '@mui/material';
+import { Theme, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import { cyan, grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import Skeleton from '@mui/material/Skeleton';
-import { Theme } from '@mui/material';
 import { DataGrid, GridCellParams, GridColDef } from '@mui/x-data-grid';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
@@ -115,9 +114,16 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
 
   const apiRef = observationsTableContext._muiDataGridApiRef;
 
-  const hasError = useCallback((params: GridCellParams): boolean => {
-    return Boolean((observationsTableContext.validationModel as { [key: string]: { [key: string]: { errors: string[] }}})[params.row.id]?.[params.field]?.errors?.length);
-  }, [observationsTableContext.validationModel]);
+  const hasError = useCallback(
+    (params: GridCellParams): boolean => {
+      return Boolean(
+        (observationsTableContext.validationModel as { [key: string]: { [key: string]: { errors: string[] } } })[
+          params.row.id
+        ]?.[params.field]?.errors?.length
+      );
+    },
+    [observationsTableContext.validationModel]
+  );
 
   const isLoading = useMemo(() => {
     return [
@@ -207,7 +213,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
               label: item.sample_site_name,
               value: item.survey_sample_site_id
             }))}
-            error={hasError(params)}            
+            error={hasError(params)}
           />
         );
       },
@@ -316,7 +322,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       headerAlign: 'right',
       align: 'right',
       renderCell: (params) => (
-        <Typography variant='body2' sx={{ color: hasError(params) ? 'error' : undefined, fontSize: 'inherit'}}>
+        <Typography variant="body2" sx={{ color: hasError(params) ? 'error' : undefined, fontSize: 'inherit' }}>
           {params.value}
         </Typography>
       ),
@@ -340,7 +346,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
                 });
               },
               error,
-              color: error ? 'error' : undefined 
+              color: error ? 'error' : undefined
             }}
           />
         );
@@ -357,17 +363,26 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       headerAlign: 'left',
       align: 'left',
       renderCell: (params) => (
-        <Typography variant='body2' sx={{ color: hasError(params) ? 'error' : undefined, fontSize: 'inherit'}}>
+        <Typography variant="body2" sx={{ color: hasError(params) ? 'error' : undefined, fontSize: 'inherit' }}>
           {getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, params.value)}
         </Typography>
       ),
       renderEditCell: (params) => {
         const error = hasError(params);
 
-        return <DatePickerDataGrid
-          dataGridProps={params}
-          dateFieldProps={{ slotProps: { textField: { error, inputProps: { sx: (theme: Theme) => (error ? { color: theme.palette.error.main } : {}) } } } }}
-        />;
+        return (
+          <DatePickerDataGrid
+            dataGridProps={params}
+            dateFieldProps={{
+              slotProps: {
+                textField: {
+                  error,
+                  inputProps: { sx: (theme: Theme) => (error ? { color: theme.palette.error.main } : {}) }
+                }
+              }
+            }}
+          />
+        );
       }
     },
     {
@@ -399,7 +414,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         }
 
         return (
-          <Typography variant='body2' sx={{ color: hasError(params) ? 'error' : undefined, fontSize: 'inherit'}}>
+          <Typography variant="body2" sx={{ color: hasError(params) ? 'error' : undefined, fontSize: 'inherit' }}>
             {params.value}
           </Typography>
         );
@@ -407,10 +422,19 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       renderEditCell: (params) => {
         const error = hasError(params);
 
-        return <TimePickerDataGrid
-          dataGridProps={params}
-          dateFieldProps={{ slotProps: { textField: { error, inputProps: { sx: (theme: Theme) => (error ? { color: theme.palette.error.main } : {}) } } } }}
-        />;
+        return (
+          <TimePickerDataGrid
+            dataGridProps={params}
+            dateFieldProps={{
+              slotProps: {
+                textField: {
+                  error,
+                  inputProps: { sx: (theme: Theme) => (error ? { color: theme.palette.error.main } : {}) }
+                }
+              }
+            }}
+          />
+        );
       }
     },
     {
@@ -432,7 +456,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         return { ...params.row, longitude: isNaN(value) ? null : value };
       },
       renderCell: (params) => (
-        <Typography variant='body2' sx={{ color: hasError(params) ? 'error' : undefined, fontSize: 'inherit'}}>
+        <Typography variant="body2" sx={{ color: hasError(params) ? 'error' : undefined, fontSize: 'inherit' }}>
           {params.value}
         </Typography>
       ),
@@ -481,7 +505,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         return { ...params.row, longitude: isNaN(value) ? null : value };
       },
       renderCell: (params) => (
-        <Typography variant='body2' sx={{ color: hasError(params) ? 'error' : undefined, fontSize: 'inherit'}}>
+        <Typography variant="body2" sx={{ color: hasError(params) ? 'error' : undefined, fontSize: 'inherit' }}>
           {params.value}
         </Typography>
       ),

@@ -36,7 +36,7 @@ export interface IAutocompleteDataGridEditCellProps<
    * @type {boolean}
    * @memberof IAutocompleteDataGridEditCellProps
    */
-  error?: boolean
+  error?: boolean;
 }
 
 /**

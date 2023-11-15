@@ -6,11 +6,11 @@ import { DialogContext } from 'contexts/dialogContext';
 import { ObservationsContext } from 'contexts/observationsContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import moment from 'moment';
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { SurveyContext } from './surveyContext';
 import { TaxonomyContext } from './taxonomyContext';
-import moment from 'moment';
 
 export interface IObservationRecord {
   survey_observation_id: number;
@@ -215,25 +215,24 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       const rowModel: ObservationRowValidationModel = {};
 
       // Validate missing columns
-      const missingColumns: Set<keyof IObservationTableRow> = new Set(requiredColumns
-        .filter((column) => !row[column]));
-      
+      const missingColumns: Set<keyof IObservationTableRow> = new Set(requiredColumns.filter((column) => !row[column]));
+
       if (missingColumns.has('survey_sample_site_id')) {
         missingColumns.add('survey_sample_method_id');
       }
-  
+
       if (missingColumns.has('survey_sample_method_id')) {
         missingColumns.add('survey_sample_period_id');
       }
-      
+
       Array.from(missingColumns).forEach((column: keyof IObservationTableRow) => {
-          rowModel[column] = { errors: [`Missing column: ${column}`] }
-        });
+        rowModel[column] = { errors: [`Missing column: ${column}`] };
+      });
 
       // Validate date value
       if (row.observation_date && !moment(row.observation_date).isValid()) {
         if (!rowModel.observation_date) {
-          rowModel.observation_date = { errors: [] }
+          rowModel.observation_date = { errors: [] };
         }
 
         rowModel.observation_date.errors.push('Invalid date');
@@ -242,7 +241,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       // Validate time value
       if (row.observation_time === 'Invalid date') {
         if (!rowModel.observation_time) {
-          rowModel.observation_time = { errors: [] }
+          rowModel.observation_time = { errors: [] };
         }
 
         rowModel.observation_time.errors.push('Invalid time');
@@ -258,7 +257,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     setValidationModel(validation);
 
     return Object.keys(validation).length > 0 ? validation : null;
-  }
+  };
 
   const _deleteRecords = useCallback(
     async (observationRecords: IObservationTableRow[]): Promise<void> => {
@@ -436,8 +435,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         });
 
       */
-      
-      
+
       return;
     }
 

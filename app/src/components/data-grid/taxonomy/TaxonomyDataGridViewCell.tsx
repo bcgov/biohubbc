@@ -36,7 +36,12 @@ const TaxonomyDataGridViewCell = <DataGridType extends GridValidRowModel>(
     <Typography
       variant="body2"
       component="div"
-      sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', color: props.error ? 'error' : undefined }}>
+      sx={{
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
+        color: props.error ? 'error' : undefined
+      }}>
       {response.label}
     </Typography>
   );
