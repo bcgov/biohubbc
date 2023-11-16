@@ -24,7 +24,7 @@ module.exports = {
       new webpack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer']
       }),
-      new ForkTsCheckerWebpackPlugin({ typescript: { memoryLimit: 8192 } })
+      new ForkTsCheckerWebpackPlugin({ memoryLimit: 5000 })
     ]);
 
     // Hide sourcemap (development) warnings in app console log
