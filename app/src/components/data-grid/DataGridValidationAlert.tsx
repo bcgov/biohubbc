@@ -6,7 +6,7 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Icon from '@mdi/react';
 import Typography from '@mui/material/Typography';
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { mdiChevronDown, mdiChevronUp, mdiClose } from '@mdi/js';
 import { GridRowId } from '@mui/x-data-grid';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
@@ -57,7 +57,18 @@ const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataG
 
   const errorMessage = useMemo(() => {
     return sortedErrors[index]?.error
-  }, [sortedErrors, index])
+  }, [sortedErrors, index]);
+
+  useEffect(() => {
+    console.log('useEffect')
+    const currentError = sortedErrors[index];
+    if (!currentError) {
+      return;
+    }
+
+    console.log('setCellFocus()')
+    props.muiDataGridApiRef.setCellFocus(currentError.rowId, String(currentError.column))
+  }, [index]);
 
   return (
     <Collapse in={numErrors > 0}>
