@@ -7,7 +7,7 @@ import { grey } from '@mui/material/colors';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { SurveyContext } from 'contexts/surveyContext';
-import { useContext, useMemo } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import ManualTelemetryCard from './ManualTelemetryCard';
 
@@ -15,13 +15,16 @@ import ManualTelemetryCard from './ManualTelemetryCard';
 
 const ManualTelemetryList = () => {
   const surveyContext = useContext(SurveyContext);
-  surveyContext.deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+
+  useEffect(() => {
+    surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+  }, []);
   const deployments = useMemo(() => surveyContext.deploymentDataLoader.data, [surveyContext.deploymentDataLoader.data]);
 
   if (surveyContext.deploymentDataLoader.isLoading) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
-  console.log(deployments);
+
   return (
     <Box display="flex" flexDirection="column" height="100%">
       <Toolbar
