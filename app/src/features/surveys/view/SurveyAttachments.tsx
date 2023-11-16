@@ -93,7 +93,7 @@ const SurveyAttachments: React.FC = () => {
           buttonLabel="Upload"
           buttonTitle="Upload Documents"
           buttonProps={{ variant: 'outlined', disableElevation: true }}
-          buttonStartIcon={<Icon path={mdiTrayArrowUp} size={1} />}
+          buttonStartIcon={<Icon path={mdiTrayArrowUp} size={0.75} />}
           menuItems={[
             {
               menuLabel: 'Upload a Report',

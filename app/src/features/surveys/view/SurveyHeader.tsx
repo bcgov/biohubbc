@@ -1,4 +1,4 @@
-import { mdiCalendarRangeOutline, mdiChevronDown, mdiCogOutline, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiChevronDown, mdiCogOutline, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
@@ -218,41 +218,39 @@ const SurveyHeader = () => {
               </Stack>
             </Box>
             <Box display="flex" alignItems="flex-start" flex="0 0 auto">
-              <Stack flexDirection="row" gap={1}>
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  startIcon={<Icon path={mdiPencilOutline} size={0.75} />}
-                  onClick={() => history.push('edit')}
-                >
-                  Edit
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  sx={{
-                    minWidth: '7rem'
-                  }}
-                >
-                  Publish
-                </Button>
-              </Stack>
               <ProjectRoleGuard
                 validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
                 validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                <Button
-                  sx={{display: 'none'}}
-                  id="survey_settings_button"
-                  aria-label="Survey Settings"
-                  aria-controls="surveySettingsMenu"
-                  aria-haspopup="true"
-                  variant="outlined"
-                  color="primary"
-                  startIcon={<Icon path={mdiCogOutline} size={1} />}
-                  endIcon={<Icon path={mdiChevronDown} size={1} />}
-                  onClick={(event: React.MouseEvent<HTMLButtonElement>) => setMenuAnchorEl(event.currentTarget)}>
-                  Settings
-                </Button>
+                <Stack flexDirection="row" gap={1}>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    startIcon={<Icon path={mdiPencilOutline} size={0.75} />}
+                    onClick={() => history.push('edit')}>
+                    Edit
+                  </Button>
+                  <Button
+                    title="Submit Survey Data and Documents"
+                    color="primary"
+                    variant="contained"
+                    onClick={() => setPublishSurveyDialogOpen(true)}
+                    style={{ minWidth: '8rem' }}>
+                    Publish Survey
+                  </Button>
+                  <Button
+                    sx={{display: 'none'}}
+                    id="survey_settings_button"
+                    aria-label="Survey Settings"
+                    aria-controls="surveySettingsMenu"
+                    aria-haspopup="true"
+                    variant="outlined"
+                    color="primary"
+                    startIcon={<Icon path={mdiCogOutline} size={1} />}
+                    endIcon={<Icon path={mdiChevronDown} size={1} />}
+                    onClick={(event: React.MouseEvent<HTMLButtonElement>) => setMenuAnchorEl(event.currentTarget)}>
+                    Settings
+                  </Button>
+                </Stack>
               </ProjectRoleGuard>
               <Menu
                 id="surveySettingsMenu"

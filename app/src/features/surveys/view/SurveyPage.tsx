@@ -75,8 +75,7 @@ const SurveyPage: React.FC = () => {
               color="primary"
               to={'observations'}
               title="Submit Survey Data and Documents"
-              startIcon={<Icon path={mdiCogOutline} size={0.75} />}
-              sx={{mr: -1}}>
+              startIcon={<Icon path={mdiCogOutline} size={0.75} />}>
               Manage
             </Button>
           </Toolbar>
