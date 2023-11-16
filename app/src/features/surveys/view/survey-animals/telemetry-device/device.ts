@@ -1,3 +1,4 @@
+import { AttachmentType } from 'constants/attachments';
 import { FeatureCollection } from 'geojson';
 import yup from 'utils/YupSchema';
 import { InferType } from 'yup';
@@ -27,9 +28,9 @@ export const AnimalDeploymentTimespanSchema = yup.object({}).shape({
 export const AnimalTelemetryDeviceSchema = yup.object({}).shape({
   device_id: intSchema,
   device_make: yup.string().required(req),
-  frequency: numSchema,
+  frequency: numSchema.nullable(),
   frequency_unit: yup.string().nullable(),
-  device_model: yup.string(),
+  device_model: yup.string().nullable(),
   deployments: yup.array(AnimalDeploymentTimespanSchema)
 });
 
@@ -47,19 +48,24 @@ export const AnimalDeploymentSchema = yup.object({}).shape({
   frequency_unit: yup.string()
 });
 
+export interface IAnimalTelemetryDeviceFile extends IAnimalTelemetryDevice {
+  attachmentFile?: File;
+  attachmentType?: AttachmentType;
+}
+
 export class Device implements Omit<IAnimalTelemetryDevice, 'deployments'> {
   device_id: number;
   device_make: string;
-  device_model: string;
-  frequency: number;
-  frequency_unit: string;
+  device_model: string | null;
+  frequency: number | null;
+  frequency_unit: string | null;
   collar_id: string;
   constructor(obj: Record<string, unknown>) {
     this.device_id = Number(obj.device_id);
     this.device_make = String(obj.device_make);
-    this.device_model = String(obj.device_model);
-    this.frequency = Number(obj.frequency);
-    this.frequency_unit = String(obj.frequency_unit);
+    this.device_model = obj.device_model ? String(obj.device_model) : null;
+    this.frequency = obj.frequency ? Number(obj.frequency) : null;
+    this.frequency_unit = obj.frequency_unit ? String(obj.frequency_unit) : null;
     this.collar_id = String(obj.collar_id);
   }
 }
