@@ -1,3 +1,4 @@
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 /*
   Using react-app-rewired, this file allows you to modify the default webpack configuration that react-scripts produces
   internally, which are normally not exposed for modification.
@@ -21,16 +22,9 @@ module.exports = {
     config.plugins = (config.plugins || []).concat([
       new webpack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer']
-      })
+      }),
+      new ForkTsCheckerWebpackPlugin({ typescript: { memoryLimit: 8192 } })
     ]);
-
-    const forkTsCheckerWebpackPlugin = config.plugins.find(
-      (plugin) => plugin.constructor.name === 'ForkTsCheckerWebpackPlugin'
-    );
-
-    if (forkTsCheckerWebpackPlugin) {
-      forkTsCheckerWebpackPlugin.options.typescript.memoryLimit = 8192;
-    }
 
     // Hide sourcemap (development) warnings in app console log
     config.ignoreWarnings = [/Failed to parse source map/, /autoprefixer/];
