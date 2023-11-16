@@ -8,6 +8,7 @@ import {
   UpdateSamplePeriodRecord
 } from '../repositories/sample-period-repository';
 import { getMockDBConnection } from '../__mocks__/db';
+import { ObservationService } from './observation-service';
 import { SamplePeriodService } from './sample-period-service';
 
 chai.use(sinonChai);
@@ -199,6 +200,10 @@ describe('SamplePeriodService', () => {
         .stub(SamplePeriodService.prototype, 'deleteSamplePeriodRecords')
         .resolves();
 
+      const getObservationsCountBySamplePeriodIdStub = sinon
+        .stub(ObservationService.prototype, 'getObservationsCountBySamplePeriodId')
+        .resolves({ observationCount: 0 });
+
       const surveySampleMethodId = 1;
       const samplePeriodService = new SamplePeriodService(mockDBConnection);
       const response = await samplePeriodService.deleteSamplePeriodsNotInArray(surveySampleMethodId, [
@@ -208,6 +213,9 @@ describe('SamplePeriodService', () => {
       expect(getSamplePeriodsForSurveyMethodIdStub).to.be.calledOnceWith(surveySampleMethodId);
       expect(deleteSamplePeriodRecordsStub).to.be.calledOnceWith([mockSamplePeriodRecords[0].survey_sample_period_id]);
       expect(response).to.eql(undefined);
+      expect(getObservationsCountBySamplePeriodIdStub).to.be.calledOnceWith(
+        mockSamplePeriodRecords[0].survey_sample_period_id
+      );
     });
   });
 });

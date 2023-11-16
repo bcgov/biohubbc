@@ -7,7 +7,7 @@ import {
   IAnimalTelemetryDevice,
   IDeploymentTimespan,
   ITelemetryPointCollection
-} from 'features/surveys/view/survey-animals/device';
+} from 'features/surveys/view/survey-animals/telemetry-device/device';
 import {
   IGetAttachmentDetails,
   IGetReportDetails,
@@ -565,7 +565,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     body: IAnimalTelemetryDevice & { critter_id: string }
   ): Promise<number> => {
     body.device_id = Number(body.device_id); //Turn this into validation class soon
-    body.frequency = Number(body.frequency);
+    body.frequency = body.frequency != null ? Number(body.frequency) : undefined;
     body.frequency_unit = body.frequency_unit?.length ? body.frequency_unit : undefined;
     if (!body.deployments || body.deployments.length !== 1) {
       throw Error('Calling this with any amount other than 1 deployments currently unsupported.');

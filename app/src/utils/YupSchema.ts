@@ -123,7 +123,7 @@ yup.addMethod(
   function (
     startDateName: string,
     dateFormat: DATE_FORMAT = DATE_FORMAT.ShortDateFormat,
-    message = 'End date must be on or after start date'
+    message = 'Cannot precede start date'
   ) {
     return this.test('is-end-date-same-or-after-start-date', message, function (value) {
       if (!value) {

@@ -120,10 +120,11 @@ const appTheme = createTheme({
           maxWidth: '40ch',
           padding: '4px',
           whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
           '& a': {
-            fontSize: 'inherit'
+            display: 'block',
+            fontSize: 'inherit',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
           },
           '& span': {
             fontSize: 'inherit'
@@ -185,7 +186,7 @@ const appTheme = createTheme({
     MuiDialog: {
       styleOverrides: {
         paperWidthXl: {
-          width: '800px'
+          minWidth: '800px'
         }
       }
     },
@@ -219,6 +220,24 @@ const appTheme = createTheme({
           '&:focus': {
             outline: '3px solid #3B99FC',
             outlineOffset: '-3px'
+          }
+        }
+      }
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          background: '#fff',
+          '&.Mui-error': {}
+        }
+      }
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          '&.Mui-error .MuiOutlinedInput-notchedOutline': {
+            borderWidth: '2px',
+            top: '-4px'
           }
         }
       }
@@ -302,10 +321,17 @@ const appTheme = createTheme({
         }
       }
     },
+    MuiToggleButton: {
+      styleOverrides: {
+        root: {
+          background: '#fff'
+        }
+      }
+    },
     MuiToolbar: {
       styleOverrides: {
         root: {
-          '& h2': {
+          '& h2, h3': {
             fontSize: '1.125rem'
           }
         }
