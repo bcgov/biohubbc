@@ -20,7 +20,6 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Skeleton from '@mui/material/Skeleton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import SkeletonList from 'components/loading/SkeletonList';
@@ -31,21 +30,6 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getCodesName } from 'utils/Utils';
-
-const SampleSiteSkeleton = () => (
-  <Box
-    sx={{
-      display: 'flex',
-      gap: '16px',
-      py: 1.5,
-      px: 2,
-      height: '52px',
-      background: '#fff',
-      borderBottom: '1px solid ' + grey[300]
-    }}>
-    <Skeleton sx={{ flex: '1 1 auto' }} />
-  </Box>
-);
 
 const SamplingSiteList = () => {
   const surveyContext = useContext(SurveyContext);
