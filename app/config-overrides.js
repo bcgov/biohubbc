@@ -24,21 +24,17 @@ module.exports = {
       })
     ]);
 
+    const forkTsCheckerWebpackPlugin = config.plugins.find(
+      (plugin) => plugin.constructor.name === 'ForkTsCheckerWebpackPlugin'
+    );
+
+    if (forkTsCheckerWebpackPlugin) {
+      forkTsCheckerWebpackPlugin.options.typescript.memoryLimit = 8192;
+    }
+
     // Hide sourcemap (development) warnings in app console log
     config.ignoreWarnings = [/Failed to parse source map/, /autoprefixer/];
 
     return config;
   }
-};
-
-module.exports = function override(config) {
-  const forkTsCheckerWebpackPlugin = config.plugins.find(
-    (plugin) => plugin.constructor.name === 'ForkTsCheckerWebpackPlugin'
-  );
-
-  if (forkTsCheckerWebpackPlugin) {
-    forkTsCheckerWebpackPlugin.options.typescript.memoryLimit = 8192;
-  }
-
-  return config;
 };
