@@ -1,5 +1,5 @@
 /*
-  Using react-app-rewired, this file allows you to modify the default webpack configuration that react-scripts produces 
+  Using react-app-rewired, this file allows you to modify the default webpack configuration that react-scripts produces
   internally, which are normally not exposed for modification.
 
   https://www.npmjs.com/package/react-app-rewired
@@ -29,4 +29,16 @@ module.exports = {
 
     return config;
   }
+};
+
+module.exports = function override(config) {
+  const forkTsCheckerWebpackPlugin = config.plugins.find(
+    (plugin) => plugin.constructor.name === 'ForkTsCheckerWebpackPlugin'
+  );
+
+  if (forkTsCheckerWebpackPlugin) {
+    forkTsCheckerWebpackPlugin.options.typescript.memoryLimit = 8192;
+  }
+
+  return config;
 };
