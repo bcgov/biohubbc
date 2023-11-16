@@ -13,7 +13,6 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { grey } from '@mui/material/colors';
-import Fade from '@mui/material/Fade';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -21,10 +20,10 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Paper from '@mui/material/Paper';
 import Skeleton from '@mui/material/Skeleton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import SkeletonList from 'components/loading/SkeletonList';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -202,34 +201,10 @@ const SamplingSiteList = () => {
           </Button>
         </Toolbar>
         <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
-          {/* Display spinner if data loaders are still waiting for a response */}
-          <Fade
-            in={surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading}
-            timeout={1000}>
-            <Box
-              sx={{
-                position: 'absolute',
-                width: '100%',
-                height: '100%',
-                p: 1,
-                background: grey[100],
-                zIndex: 2
-              }}>
-              <Paper elevation={0} sx={{ overflow: 'hidden' }}>
-                <SampleSiteSkeleton />
-                <SampleSiteSkeleton />
-                <SampleSiteSkeleton />
-                <SampleSiteSkeleton />
-                <SampleSiteSkeleton />
-                <SampleSiteSkeleton />
-                <SampleSiteSkeleton />
-                <SampleSiteSkeleton />
-                <SampleSiteSkeleton />
-                <SampleSiteSkeleton />
-                <SampleSiteSkeleton />
-              </Paper>
-            </Box>
-          </Fade>
+          {/* Display list of skeleton components while waiting for a response */}
+          <SkeletonList
+            isLoading={surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading}
+          />
 
           <Box
             sx={{

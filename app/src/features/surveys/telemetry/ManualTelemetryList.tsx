@@ -2,10 +2,10 @@ import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
 import { grey } from '@mui/material/colors';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import ListFader from 'components/loading/SkeletonList';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext, useEffect, useMemo } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -21,10 +21,6 @@ const ManualTelemetryList = () => {
   }, []);
   const deployments = useMemo(() => surveyContext.deploymentDataLoader.data, [surveyContext.deploymentDataLoader.data]);
 
-  if (surveyContext.deploymentDataLoader.isLoading) {
-    return <CircularProgress className="pageProgress" size={40} />;
-  }
-
   return (
     <Box display="flex" flexDirection="column" height="100%">
       <Toolbar
@@ -37,7 +33,10 @@ const ManualTelemetryList = () => {
             fontSize: '1.125rem',
             fontWeight: 700
           }}>
-          Deployments
+          Deployments &zwnj;
+          <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
+            ({deployments?.length ?? 0})
+          </Typography>
         </Typography>
         <Button
           sx={{
@@ -52,6 +51,8 @@ const ManualTelemetryList = () => {
         </Button>
       </Toolbar>
       <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
+        {/* Display list of skeleton components while waiting for a response */}
+        <ListFader isLoading={surveyContext.deploymentDataLoader.isLoading} />
         <Box
           sx={{
             position: 'absolute',
