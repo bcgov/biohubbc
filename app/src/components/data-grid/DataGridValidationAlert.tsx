@@ -10,6 +10,7 @@ import { useState, useMemo, useCallback } from 'react';
 import { mdiChevronDown, mdiChevronUp, mdiClose } from '@mdi/js';
 import { GridRowId } from '@mui/x-data-grid';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
+import { Collapse } from '@mui/material';
 
 export type RowValidationError<T> = { column: keyof T, error: string };
 export type TableValidationModel<T> = Record<GridRowId, RowValidationError<T>[]>;
@@ -27,7 +28,7 @@ const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataG
   const [index, setIndex] = useState<number>(0);
 
   const sortedErrors: ITableValidationError<RowType>[] = useMemo(() => {
-    const sortedRowIds = props.muiDataGridApiRef.getSortedRowIds();
+    const sortedRowIds = props.muiDataGridApiRef?.getSortedRowIds?.() ?? [];
 
     return Object
       .keys(props.validationModel)
@@ -47,31 +48,41 @@ const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataG
   }, [numErrors]);
 
   const handleNext = useCallback(() => {
-    setIndex((prev) => prev >= numErrors ? 0 : prev + 1);
+    setIndex((prev) => prev === numErrors - 1 ? 0 : prev + 1);
   }, [numErrors]);
 
+  const indexCount = useMemo(() => {
+    return `${index + 1}/${numErrors}`;
+  }, [numErrors, index]);
+
+  const errorMessage = useMemo(() => {
+    return sortedErrors[index]?.error
+  }, [sortedErrors, index])
+
   return (
-    <Alert
-      variant='outlined'
-      severity='error'
-      action={
-        <Box display='flex' flexDirection='row' alignItems='center'>
-          <Typography>{index}/{numErrors}</Typography>
-          <Divider orientation='vertical' flexItem variant='middle' sx={{ ml: 2, mr: 1, borderColor: 'inherit' }} />
-          <Button color="inherit" startIcon={<Icon path={mdiChevronUp} size={1} />} onClick={() => handlePrev()}>
-            Prev
-          </Button>
-          <Button color="inherit" startIcon={<Icon path={mdiChevronDown} size={1} />} onClick={() => handleNext()}>
-            Next
-          </Button>
-          <IconButton color='inherit'>
-            <Icon path={mdiClose} size={1} />
-          </IconButton>
-        </Box>
-      }>
-      <AlertTitle>Could not save observations: Validation failed</AlertTitle>
-      <Typography variant='body2'><strong>Error {index}/{numErrors}</strong>: Missing required column: Sampling Period</Typography>
-    </Alert>
+    <Collapse in={numErrors > 0}>
+      <Alert
+        variant='outlined'
+        severity='error'
+        action={
+          <Box display='flex' flexDirection='row' alignItems='center'>
+            <Typography>{indexCount}</Typography>
+            <Divider orientation='vertical' flexItem variant='middle' sx={{ ml: 2, mr: 1, borderColor: 'inherit' }} />
+            <Button color="inherit" startIcon={<Icon path={mdiChevronUp} size={1} />} onClick={() => handlePrev()}>
+              Prev
+            </Button>
+            <Button color="inherit" startIcon={<Icon path={mdiChevronDown} size={1} />} onClick={() => handleNext()}>
+              Next
+            </Button>
+            <IconButton color='inherit'>
+              <Icon path={mdiClose} size={1} />
+            </IconButton>
+          </Box>
+        }>
+        <AlertTitle>Could not save observations: Validation failed</AlertTitle>
+        <Typography variant='body2'><strong>Error {indexCount}</strong>: {errorMessage}</Typography>
+      </Alert>
+    </Collapse>
   )
 }
 

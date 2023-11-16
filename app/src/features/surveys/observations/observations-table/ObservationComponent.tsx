@@ -198,6 +198,12 @@ const ObservationComponent = () => {
             </Box>
           </Toolbar>
         </Paper>
+        <Box mt={1}>
+            <DataGridValidationAlert
+              validationModel={validationModel}
+              muiDataGridApiRef={_muiDataGridApiRef.current}
+            />
+          </Box>
         <Box
           display="flex"
           flexDirection="column"
@@ -206,12 +212,7 @@ const ObservationComponent = () => {
           sx={{
             background: grey[100]
           }}>
-          <Box ml={1} mb={1}>
-            <DataGridValidationAlert
-              validationModel={validationModel}
-              muiDataGridApiRef={_muiDataGridApiRef.current}
-            />
-          </Box>
+         
           <Box position="absolute" width="100%" height="100%" p={1}>
             <ObservationsTable isLoading={processingRecords} />
           </Box>
