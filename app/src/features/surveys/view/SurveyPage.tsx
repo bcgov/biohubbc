@@ -1,4 +1,4 @@
-import { mdiCogOutline, mdiPencilOutline } from '@mdi/js';
+import { mdiCogOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LinearProgress } from '@mui/material';
 import Box from '@mui/material/Box';

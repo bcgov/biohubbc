@@ -1,4 +1,11 @@
+import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
+import Checkbox from '@mui/material/Checkbox';
+import Divider from '@mui/material/Divider';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import SubmitBiohubDialog from 'components/dialog/SubmitBiohubDialog';
 import { SubmitSurveyBiohubI18N } from 'constants/i18n';
@@ -9,20 +16,11 @@ import { ISurveyObservationData } from 'interfaces/useDwcaApi.interface';
 import { ISurveySubmitForm } from 'interfaces/usePublishApi.interface';
 import { ISurveySummaryData } from 'interfaces/useSummaryResultsApi.interface';
 import { IGetSurveyAttachment, IGetSurveyReportAttachment } from 'interfaces/useSurveyApi.interface';
+import * as React from 'react';
 import { useContext } from 'react';
 import yup from 'utils/YupSchema';
 // import SelectAllButton from './SelectAllButton';
 import SubmitSection from './SubmitSection';
-import Alert from '@mui/material/Alert';
-import Stack from '@mui/material/Stack';
-import TextField from '@mui/material/TextField';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import * as React from 'react';
-import FormGroup from '@mui/material/FormGroup';
-import { mdiCheckOutline, mdiCheckboxOutline } from '@mdi/js';
-import Icon from '@mdi/react';
-import Divider from '@mui/material/Divider';
 
 export interface ISubmitSurvey {
   unSubmittedObservation: ISurveyObservationData[];
@@ -91,21 +89,21 @@ const PublishSurveyDialog = (props: IPublishSurveyDialogProps) => {
 
   const hasSubmissionData = Boolean(
     unsubmittedObservations.length > 0 ||
-    unsubmittedSummaryResults.length > 0 ||
-    unsubmittedReports.length > 0 ||
-    unsubmittedAttachments.length > 0
+      unsubmittedSummaryResults.length > 0 ||
+      unsubmittedReports.length > 0 ||
+      unsubmittedAttachments.length > 0
   );
 
   const [state, setState] = React.useState({
     agreement1: false,
     agreement2: false,
-    agreement3: false,
+    agreement3: false
   });
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setState({
       ...state,
-      [event.target.name]: event.target.checked,
+      [event.target.name]: event.target.checked
     });
   };
 
@@ -145,15 +143,13 @@ const PublishSurveyDialog = (props: IPublishSurveyDialogProps) => {
           initialValues: surveySubmitFormInitialValues,
           validationSchema: surveySubmitFormYupSchema
         }}>
-
-        <Stack gap={4}
-          divider={<Divider flexItem></Divider>}
-        >
+        <Stack gap={4} divider={<Divider flexItem></Divider>}>
           {/* <Alert severity="info" sx={{fontSize: '1rem'}}>
             Published data may be secured according to the Species and Ecosystems Data and Information Security (SEDIS) Policy. <a href="https://www2.gov.bc.ca/gov/content/environment/natural-resource-stewardship/laws-policies-standards-guidance/data-information-security" target="_blank">Learn more</a>
           </Alert> */}
           <Typography variant="body1" color="textSecondary">
-            Published data from this survey may be secured according to the Species and Ecosystems Data and Information Security (SEDIS) Policy.
+            Published data from this survey may be secured according to the Species and Ecosystems Data and Information
+            Security (SEDIS) Policy.
           </Typography>
           {/* <Box component="fieldset"
             sx={{
@@ -170,7 +166,8 @@ const PublishSurveyDialog = (props: IPublishSurveyDialogProps) => {
           <Box component="fieldset">
             <Typography component="legend">Additional Information</Typography>
             <Typography variant="body1" color="textSecondary" sx={{ mt: -0.75 }}>
-              Provide any additional information about this survey that Data Stewards should be aware of, including reasons why the information for this survey should be secured.
+              Provide any additional information about this survey that Data Stewards should be aware of, including
+              reasons why the information for this survey should be secured.
             </Typography>
             <TextField
               fullWidth
@@ -185,7 +182,7 @@ const PublishSurveyDialog = (props: IPublishSurveyDialogProps) => {
           <Box component="fieldset">
             <Typography component="legend">Agreements</Typography>
             <FormGroup>
-              <Alert severity="error" sx={{display: 'none', mb: 2}}>
+              <Alert severity="error" sx={{ display: 'none', mb: 2 }}>
                 You must accept all the following agreements.
               </Alert>
               <FormControlLabel
@@ -195,13 +192,11 @@ const PublishSurveyDialog = (props: IPublishSurveyDialogProps) => {
                   mb: 1.5,
                   ml: '6px',
                   '& .MuiCheckbox-root': {
-                    mr: 0.5,
+                    mr: 0.5
                   }
                 }}
                 label="I am authorized to publish information and data for this survey."
-                control={
-                  <Checkbox checked={agreement1} onChange={handleChange} name="agreement1" />
-                }
+                control={<Checkbox checked={agreement1} onChange={handleChange} name="agreement1" />}
               />
               <FormControlLabel
                 sx={{
@@ -209,13 +204,14 @@ const PublishSurveyDialog = (props: IPublishSurveyDialogProps) => {
                   mb: 3,
                   alignItems: 'flex-start',
                   '& .MuiCheckbox-root': {
-                    mt: "-11px",
-                    mr: 0.5,
+                    mt: '-11px',
+                    mr: 0.5
                   }
                 }}
                 label={
                   <Typography variant="body2">
-                    I confirm that all published data for this survey meets or exceed the <a href="#">Freedom of Information and Protection of Privacy Act (FOIPPA)</a> requirements.
+                    I confirm that all published data for this survey meets or exceed the{' '}
+                    <a href="#">Freedom of Information and Protection of Privacy Act (FOIPPA)</a> requirements.
                   </Typography>
                 }
                 control={<Checkbox checked={agreement2} onChange={handleChange} name="agreement2" />}
@@ -225,13 +221,21 @@ const PublishSurveyDialog = (props: IPublishSurveyDialogProps) => {
                   ml: '6px',
                   alignItems: 'flex-start',
                   '& .MuiCheckbox-root': {
-                    mt: "-11px",
+                    mt: '-11px',
                     mr: 0.5
                   }
                 }}
                 label={
                   <Typography variant="body2">
-                    I confirm that all data and information for this survey has been collected legally, and in accordance with Section 1 of the <a href="https://www2.gov.bc.ca/gov/content/environment/natural-resource-stewardship/laws-policies-standards-guidance/data-information-security" target="_blank">Species and Ecosystems Data and Information Security (SEDIS)</a> procedures.</Typography>
+                    I confirm that all data and information for this survey has been collected legally, and in
+                    accordance with Section 1 of the{' '}
+                    <a
+                      href="https://www2.gov.bc.ca/gov/content/environment/natural-resource-stewardship/laws-policies-standards-guidance/data-information-security"
+                      target="_blank">
+                      Species and Ecosystems Data and Information Security (SEDIS)
+                    </a>{' '}
+                    procedures.
+                  </Typography>
                 }
                 control={<Checkbox checked={agreement3} onChange={handleChange} name="agreement3" />}
               />

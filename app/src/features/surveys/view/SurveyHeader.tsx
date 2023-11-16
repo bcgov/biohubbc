@@ -15,7 +15,7 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import PublishSurveyDialog from 'components/publish/PublishSurveyDialog';
+import PublishSurveyIdDialog from 'components/publish/PublishSurveyIdDialog';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteSurveyI18N } from 'constants/i18n';
@@ -180,16 +180,15 @@ const SurveyHeader = () => {
                 }}>
                 {surveyWithDetails.surveyData.survey_details.survey_name}
               </Typography>
-              <Stack 
+              <Stack
                 flexDirection="row"
-                alignItems="center" 
-                flexWrap="wrap" 
+                alignItems="center"
+                flexWrap="wrap"
                 gap={1}
-                divider={<Divider flexItem orientation='vertical'></Divider>}
+                divider={<Divider flexItem orientation="vertical"></Divider>}
                 sx={{
                   mt: 0.5
-                }}
-              >
+                }}>
                 <Typography
                   component="span"
                   variant="subtitle1"
@@ -201,18 +200,14 @@ const SurveyHeader = () => {
                       color: 'text.secondary'
                     }
                   }}>
-                    Timeline: &nbsp;
-                    {getFormattedDateRangeString(
-                      DATE_FORMAT.ShortMediumDateFormat,
-                      surveyWithDetails.surveyData.survey_details.start_date,
-                      surveyWithDetails.surveyData.survey_details.end_date
-                    )}
+                  Timeline: &nbsp;
+                  {getFormattedDateRangeString(
+                    DATE_FORMAT.ShortMediumDateFormat,
+                    surveyWithDetails.surveyData.survey_details.start_date,
+                    surveyWithDetails.surveyData.survey_details.end_date
+                  )}
                 </Typography>
-                <Typography
-                  component="span"
-                  variant="subtitle1"
-                  color="textSecondary"
-                >
+                <Typography component="span" variant="subtitle1" color="textSecondary">
                   Published: YYYY-MM-DD
                 </Typography>
               </Stack>
@@ -238,7 +233,7 @@ const SurveyHeader = () => {
                     Publish Survey
                   </Button>
                   <Button
-                    sx={{display: 'none'}}
+                    sx={{ display: 'none' }}
                     id="survey_settings_button"
                     aria-label="Survey Settings"
                     aria-controls="surveySettingsMenu"
@@ -291,7 +286,7 @@ const SurveyHeader = () => {
         </Container>
       </Paper>
 
-      <PublishSurveyDialog open={publishSurveyDialogOpen} onClose={() => setPublishSurveyDialogOpen(false)} />
+      <PublishSurveyIdDialog open={publishSurveyDialogOpen} onClose={() => setPublishSurveyDialogOpen(false)} />
     </>
   );
 };
