@@ -57,7 +57,8 @@ describe('Study Area Form', () => {
                 name: 'Dinagat Islands'
               }
             }
-          ]
+          ],
+          uuid: '1234-5678-9101-1121'
         }
       ]
     };

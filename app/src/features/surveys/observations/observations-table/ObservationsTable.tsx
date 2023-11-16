@@ -46,7 +46,6 @@ type ISamplePeriodOption = {
   survey_sample_period_id: number;
   survey_sample_method_id: number;
   sample_period_name: string;
-  sample_period_time: string;
 };
 export interface ISpeciesObservationTableProps {
   isLoading?: boolean;
@@ -172,8 +171,9 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     .map((samplePeriod: IGetSamplePeriodRecord) => ({
       survey_sample_period_id: samplePeriod.survey_sample_period_id,
       survey_sample_method_id: samplePeriod.survey_sample_method_id,
-      sample_period_name: `${samplePeriod.start_date} - ${samplePeriod.end_date}`,
-      sample_period_time: `${samplePeriod.start_time} - ${samplePeriod.end_time}`
+      sample_period_name: `${samplePeriod.start_date} ${samplePeriod.start_time || ''} - ${samplePeriod.end_date} ${
+        samplePeriod.end_time || ''
+      }`
     }));
 
   const observationColumns: GridColDef<IObservationTableRow>[] = [
@@ -285,7 +285,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
               return allOptions
                 .filter((item) => item.survey_sample_method_id === row.survey_sample_method_id)
                 .map((item) => ({
-                  label: `${item.sample_period_name} | ${item.sample_period_time}`,
+                  label: item.sample_period_name,
                   value: item.survey_sample_period_id
                 }));
             }}
@@ -302,7 +302,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
               return allOptions
                 .filter((item) => item.survey_sample_method_id === row.survey_sample_method_id)
                 .map((item) => ({
-                  label: `${item.sample_period_name} | ${item.sample_period_time}`,
+                  label: item.sample_period_name,
                   value: item.survey_sample_period_id
                 }));
             }}
