@@ -3,7 +3,7 @@ import { IFileHandler, UploadFileStatus } from 'components/file-upload/FileUploa
 import { AttachmentType, ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
 import { useFormikContext } from 'formik';
 import React from 'react';
-import { IAnimalTelemetryDeviceFile } from './TelemetryDeviceForm';
+import { IAnimalTelemetryDeviceFile } from './device';
 
 export const TelemetryFileUpload: React.FC<{ attachmentType: AttachmentType; index: number }> = (props) => {
   const { setFieldValue } = useFormikContext<{ formValues: IAnimalTelemetryDeviceFile[] }>();

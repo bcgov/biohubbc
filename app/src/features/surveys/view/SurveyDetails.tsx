@@ -12,6 +12,7 @@ import Permits from 'features/surveys/view/components/Permits';
 import SurveyParticipants from 'features/surveys/view/components/SurveyParticipants';
 import SurveyProprietaryData from 'features/surveys/view/components/SurveyProprietaryData';
 import SurveyPurposeAndMethodologyData from 'features/surveys/view/components/SurveyPurposeAndMethodologyData';
+import { PropsWithChildren } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import Partnerships from './components/Partnerships';
 import SamplingMethods from './components/SamplingMethods';
@@ -38,50 +39,7 @@ const SurveyDetails = () => {
       </Toolbar>
 
       <Divider sx={{ m: 0 }}></Divider>
-
-      <Stack
-        divider={<Divider />}
-        p={3}
-        sx={{
-          '& h3': {
-            mb: 2,
-            flex: '0 0 auto',
-            fontSize: '0.875rem',
-            fontWeight: 700,
-            textTransform: 'uppercase'
-          },
-          '& h4': {
-            width: { xs: '100%', md: '300px' },
-            flex: '0 0 auto',
-            color: 'text.secondary'
-          },
-          '& dl': {
-            flex: '1 1 auto',
-            m: 0
-          },
-          '& dt': {
-            flex: '0 0 auto',
-            width: { xs: '100%', md: '300px' },
-            typography: { xs: 'body2', md: 'body1' },
-            color: 'text.secondary'
-          },
-          '& dd': {
-            typography: 'body1',
-            color: 'text.primary'
-          },
-          '& .row': {
-            display: 'flex',
-            flexDirection: 'row',
-            flexWrap: { xs: 'wrap', md: 'nowrap' },
-            gap: { xs: 0, md: '24px' },
-            mt: 0,
-            py: 1,
-            borderTop: '1px solid ' + grey[300]
-          },
-          '& hr': {
-            my: 3
-          }
-        }}>
+      <DetailsWrapper>
         <Box component="section">
           <Typography component="h3">General Information</Typography>
           <SurveyGeneralInformation />
@@ -124,9 +82,57 @@ const SurveyDetails = () => {
           <Typography component="h3">Proprietary Information</Typography>
           <SurveyProprietaryData />
         </Box>
-      </Stack>
+      </DetailsWrapper>
     </Paper>
   );
 };
+
+export const DetailsWrapper = (props: PropsWithChildren) => (
+  <Stack
+    divider={<Divider />}
+    p={3}
+    sx={{
+      '& h3': {
+        mb: 2,
+        flex: '0 0 auto',
+        fontSize: '0.875rem',
+        fontWeight: 700,
+        textTransform: 'uppercase'
+      },
+      '& h4': {
+        width: { xs: '100%', md: '300px' },
+        flex: '0 0 auto',
+        color: 'text.secondary'
+      },
+      '& dl': {
+        flex: '1 1 auto',
+        m: 0
+      },
+      '& dt': {
+        flex: '0 0 auto',
+        width: { xs: '100%', md: '300px' },
+        typography: { xs: 'body2', md: 'body1' },
+        color: 'text.secondary'
+      },
+      '& dd': {
+        typography: 'body1',
+        color: 'text.primary'
+      },
+      '& .row': {
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: { xs: 'wrap', md: 'nowrap' },
+        gap: { xs: 0, md: '24px' },
+        mt: 0,
+        py: 1,
+        borderTop: '1px solid ' + grey[300]
+      },
+      '& hr': {
+        my: 3
+      }
+    }}>
+    {props.children}
+  </Stack>
+);
 
 export default SurveyDetails;

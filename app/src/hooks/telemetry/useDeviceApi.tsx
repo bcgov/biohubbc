@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { Device, IAnimalDeployment } from 'features/surveys/view/survey-animals/device';
+import { Device, IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 
 interface ICodeResponse {
   code_header_title: string;
@@ -9,6 +9,13 @@ interface ICodeResponse {
   description: string;
   long_description: string;
 }
+
+export interface IGetDeviceDetailsResponse {
+  device: Record<string, unknown> | undefined;
+  keyXStatus: boolean;
+  deployments: Omit<IAnimalDeployment, 'device_id'>[];
+}
+
 /**
  * Returns a set of functions for making device-related API calls.
  *
@@ -50,12 +57,6 @@ const useDeviceApi = (axios: AxiosInstance) => {
     }
     return [];
   };
-
-  interface IGetDeviceDetailsResponse {
-    device: Record<string, unknown> | undefined;
-    keyXStatus: boolean;
-    deployments: Omit<IAnimalDeployment, 'device_id'>[];
-  }
 
   /**
    * Returns details for a given device.
