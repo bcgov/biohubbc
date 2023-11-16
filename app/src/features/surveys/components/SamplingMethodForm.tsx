@@ -1,4 +1,4 @@
-import { mdiCalendarRangeOutline, mdiClockOutline, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiCalendarRangeOutline, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Alert from '@mui/material/Alert';
@@ -10,6 +10,7 @@ import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import Collapse from '@mui/material/Collapse';
 import { grey } from '@mui/material/colors';
+import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -17,6 +18,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { CodesContext } from 'contexts/codesContext';
 import { useFormikContext } from 'formik';
@@ -119,7 +121,7 @@ const SamplingMethodForm = () => {
             variant="body1"
             color="textSecondary"
             sx={{
-              mb: 2,
+              mb: 3,
               maxWidth: '92ch'
             }}>
             Methods added here will be applied to ALL sampling locations. These can be modified later if required.
@@ -134,26 +136,13 @@ const SamplingMethodForm = () => {
               {errors.methods}
             </Alert>
           )}
-          <TransitionGroup>
+          <Stack component={TransitionGroup} gap={1.5}>
             {values.methods.map((item, index) => (
               <Collapse key={`sample_method_${item.method_lookup_id}_${item.periods.length}`}>
                 <Card
                   variant="outlined"
                   sx={{
-                    mt: 1,
-                    background: grey[100],
-                    '& .MuiCardHeader-subheader': {
-                      display: '-webkit-box',
-                      WebkitLineClamp: '2',
-                      WebkitBoxOrient: 'vertical',
-                      maxWidth: '92ch',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      fontSize: '14px'
-                    },
-                    '& .MuiCardHeader-title': {
-                      mb: 0.5
-                    }
+                    background: grey[100]
                   }}>
                   <CardHeader
                     title={`${getCodesName(
@@ -161,7 +150,6 @@ const SamplingMethodForm = () => {
                       'sample_methods',
                       item.method_lookup_id || 0
                     )}`}
-                    subheader={item.description}
                     action={
                       <IconButton
                         onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
@@ -174,59 +162,70 @@ const SamplingMethodForm = () => {
                   />
                   <CardContent
                     sx={{
-                      pt: 1,
+                      pt: 0,
                       pb: '12px !important'
                     }}>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        m: 0,
-                        px: 2,
-                        py: 1,
-                        backgroundColor: grey[200]
-                      }}>
-                      Time Periods
-                    </Typography>
-                    <List dense disablePadding>
-                      {item.periods.map((period) => (
-                        <ListItem key={`sample_period_${period.start_date}-${period.end_date}`} divider>
-                          <ListItemIcon>
-                            <Icon path={mdiCalendarRangeOutline} size={1} />
-                          </ListItemIcon>
-                          <ListItemText primary={`${period.start_date} to ${period.end_date}`} />
-                          {period.start_time && (
-                            <>
-                              <ListItemIcon>
-                                <Icon path={mdiClockOutline} size={1} />
+                    <Stack gap={3}>
+                      {item.description && (
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          sx={{
+                            display: '-webkit-box',
+                            WebkitLineClamp: '2',
+                            WebkitBoxOrient: 'vertical',
+                            maxWidth: '92ch',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis'
+                          }}>
+                          {item.description}
+                        </Typography>
+                      )}
+                      <Box>
+                        <Typography variant="body1" fontWeight={700}>
+                          Time Periods
+                        </Typography>
+                        <Divider component="div" sx={{ mt: 1 }}></Divider>
+                        <List dense disablePadding>
+                          {item.periods.map((period) => (
+                            <ListItem
+                              key={`sample_period_${period.survey_sample_period_id}`}
+                              divider
+                              disableGutters
+                              sx={{ pl: 1.25 }}>
+                              <ListItemIcon sx={{ minWidth: '32px' }}>
+                                <Icon path={mdiCalendarRangeOutline} size={0.75} />
                               </ListItemIcon>
                               <ListItemText
-                                primary={`${period.start_time} ${(period.end_time && `to ${period.end_time}`) || ''}`}
+                                primary={`${period.start_date} ${period.start_time || ''} - ${period.end_date} ${
+                                  period.end_time || ''
+                                }`}
                               />
-                            </>
-                          )}
-                        </ListItem>
-                      ))}
-                    </List>
+                            </ListItem>
+                          ))}
+                        </List>
+                      </Box>
+                    </Stack>
                   </CardContent>
                 </Card>
               </Collapse>
             ))}
-          </TransitionGroup>
-          <Button
-            sx={{
-              mt: 1
-            }}
-            data-testid="create-sample-method-add-button"
-            variant="outlined"
-            color="primary"
-            title="Add Sample Method"
-            aria-label="Add Sample Method"
-            startIcon={<Icon path={mdiPlus} size={1} />}
-            onClick={() => {
-              setIsCreateModalOpen(true);
-            }}>
-            Add Method
-          </Button>
+            <Button
+              sx={{
+                alignSelf: 'flex-start'
+              }}
+              data-testid="create-sample-method-add-button"
+              variant="outlined"
+              color="primary"
+              title="Add Sample Method"
+              aria-label="Add Sample Method"
+              startIcon={<Icon path={mdiPlus} size={1} />}
+              onClick={() => {
+                setIsCreateModalOpen(true);
+              }}>
+              Add Method
+            </Button>
+          </Stack>
         </form>
       </Box>
     </>

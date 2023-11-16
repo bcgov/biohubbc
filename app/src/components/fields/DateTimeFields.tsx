@@ -24,9 +24,11 @@ interface IDateTimeFieldsProps {
     timeName: string;
     timeId: string;
     timeRequired: boolean;
+    timeErrorHelper?: string;
     timeHelperText?: string;
     timeIcon: string;
   };
+  parentName: string;
   formikProps: FormikContextType<ISurveySampleMethodData>;
 }
 
@@ -34,7 +36,8 @@ export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
   const {
     formikProps: { values, errors, touched, setFieldValue },
     date: { dateLabel, dateName, dateId, dateRequired, dateHelperText, dateIcon },
-    time: { timeLabel, timeName, timeId, timeRequired, timeHelperText, timeIcon }
+    time: { timeLabel, timeName, timeId, timeRequired, timeHelperText, timeIcon },
+    parentName
   } = props;
 
   const DateIcon = () => {
@@ -61,9 +64,15 @@ export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
-      <Grid container item spacing={3}>
+      <Grid container>
         <Grid item xs={6}>
           <DatePicker
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderTopRightRadius: 0,
+                borderBottomRightRadius: 0
+              }
+            }}
             slots={{
               openPickerIcon: DateIcon
             }}
@@ -73,7 +82,9 @@ export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
                 name: dateName,
                 required: dateRequired,
                 variant: 'outlined',
-                error: get(touched, dateName) && Boolean(get(errors, dateName)),
+                error:
+                  (get(touched, dateName) && Boolean(get(errors, dateName))) ||
+                  typeof get(errors, parentName) === 'string',
                 helperText: (get(touched, dateName) && get(errors, dateName)) || dateHelperText,
                 inputProps: {
                   'data-testid': dateName
@@ -103,6 +114,12 @@ export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
         </Grid>
         <Grid item xs={6}>
           <TimePicker
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderTopLeftRadius: 0,
+                borderBottomLeftRadius: 0
+              }
+            }}
             slots={{
               openPickerIcon: TimeIcon
             }}
@@ -112,10 +129,13 @@ export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
                 name: timeName,
                 required: timeRequired,
                 variant: 'outlined',
-                error: get(touched, timeName) && Boolean(get(errors, timeName)),
+                error:
+                  (get(touched, timeName) && Boolean(get(errors, timeName))) ||
+                  typeof get(errors, parentName) === 'string',
                 helperText: (get(touched, timeName) && get(errors, timeName)) || timeHelperText,
                 inputProps: {
-                  'data-testid': timeId
+                  'data-testid': timeId,
+                  'aria-label': 'Time (optional)'
                 },
                 InputLabelProps: {
                   shrink: true
@@ -137,6 +157,7 @@ export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
             }}
             views={['hours', 'minutes', 'seconds']}
             timeSteps={{ hours: 1, minutes: 1, seconds: 1 }}
+            ampm={false}
           />
         </Grid>
       </Grid>

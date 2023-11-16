@@ -11,6 +11,7 @@ import SamplingSiteEditPage from './observations/sampling-sites/edit/SamplingSit
 import SamplingSitePage from './observations/sampling-sites/SamplingSitePage';
 import { SurveyObservationPage } from './observations/SurveyObservationPage';
 import ManualTelemetryPage from './telemetry/ManualTelemetryPage';
+import { SurveyAnimalsPage } from './view/survey-animals/SurveyAnimalsPage';
 
 /**
  * Router for all `/admin/projects/:id/surveys/:survey_id/*` pages.
@@ -39,6 +40,9 @@ const SurveyRouter: React.FC = () => {
         path="/admin/projects/:id/surveys/:survey_id/telemetry"
         title={getTitle('Manual Telemetry')}>
         <ManualTelemetryPage />
+      </RouteWithTitle>
+      <RouteWithTitle exact path={'/admin/projects/:id/surveys/:survey_id/animals'} title={getTitle('Manage Animals')}>
+        <SurveyAnimalsPage />
       </RouteWithTitle>
 
       {/* Sample Site Routes */}

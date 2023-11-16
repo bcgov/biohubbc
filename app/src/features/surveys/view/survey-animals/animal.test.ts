@@ -22,7 +22,6 @@ const animal: IAnimal = {
   },
   captures: [
     {
-      _id: v4(),
       capture_id: v4(),
       capture_location_id: undefined,
       release_location_id: undefined,
@@ -46,23 +45,30 @@ const animal: IAnimal = {
   ],
   markings: [
     {
-      _id: v4(),
-
       marking_type_id: '274fe690-e253-4987-b11a-5b762d38adf3',
       taxon_marking_body_location_id: '372020d9-b9ee-4eb3-abdd-b476711bd1aa',
       primary_colour_id: '4aa3cce7-94d0-42d0-a183-078db5fbdd34',
       secondary_colour_id: '0b0dbfaa-fcc9-443f-8ac9-a22106663cba',
       marking_comment: 'asdf',
-      marking_id: v4()
+      marking_id: v4(),
+      marking_type: 'tag',
+      body_location: 'head',
+      primary_colour: 'blue'
     }
   ],
   mortality: [],
   measurements: [],
   family: [],
   images: [],
-  device: undefined,
+  device: [],
   collectionUnits: [
-    { collection_category_id: 'a', collection_unit_id: 'b', _id: v4(), critter_collection_unit_id: v4() }
+    {
+      collection_category_id: 'a',
+      collection_unit_id: 'b',
+      critter_collection_unit_id: v4(),
+      category_name: 'Population Unit',
+      unit_name: 'pop'
+    }
   ]
 };
 
@@ -96,7 +102,6 @@ describe('Animal', () => {
           ...animal,
           markings: [
             {
-              _id: 'test',
               marking_type_id: 'a',
               taxon_marking_body_location_id: 'b'
             } as IAnimalMarking
