@@ -1,3 +1,4 @@
+import { Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
@@ -105,22 +106,39 @@ const SamplingSiteEditPage = () => {
       };
 
       // send edit request
-      await biohubApi.samplingSite.editSampleSite(
-        surveyContext.projectId,
-        surveyContext.surveyId,
-        surveySampleSiteId,
-        editSampleSite
-      );
+      await biohubApi.samplingSite
+        .editSampleSite(surveyContext.projectId, surveyContext.surveyId, surveySampleSiteId, editSampleSite)
+        .then(() => {
+          // Disable cancel prompt so we can navigate away from the page after saving
+          setEnableCancelCheck(false);
+          setIsSubmitting(false);
 
-      // Disable cancel prompt so we can navigate away from the page after saving
-      setEnableCancelCheck(false);
+          // Refresh the context, so the next page loads with the latest data
+          surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
 
-      // Refresh the context, so the next page loads with the latest data
-      surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+          // create complete, navigate back to observations page
+          history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`);
+          surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+        })
+        .catch((error: any) => {
+          dialogContext.setYesNoDialog({ open: false });
+          dialogContext.setSnackbar({
+            snackbarMessage: (
+              <>
+                <Typography variant="body2" component="div">
+                  <strong>Error Submitting Sampling Site</strong>
+                </Typography>
+                <Typography variant="body2" component="div">
+                  {String(error)}
+                </Typography>
+              </>
+            ),
+            open: true
+          });
+          setIsSubmitting(false);
 
-      // create complete, navigate back to observations page
-      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`);
-      surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+          return;
+        });
     } catch (error) {
       showCreateErrorDialog({
         dialogTitle: CreateSamplingSiteI18N.createErrorTitle,
@@ -128,7 +146,6 @@ const SamplingSiteEditPage = () => {
         dialogError: (error as APIError).message,
         dialogErrorDetails: (error as APIError)?.errors
       });
-      setIsSubmitting(false);
     }
   };
 

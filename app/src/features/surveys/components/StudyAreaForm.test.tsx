@@ -57,7 +57,7 @@ describe('Study Area Form', () => {
               }
             }
           ],
-          uuid: '123'
+          uuid: '1234-5678-9101-1121'
         }
       ]
     };

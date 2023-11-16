@@ -9,6 +9,7 @@ import {
 } from '../repositories/sample-method-repository';
 import { SamplePeriodRecord } from '../repositories/sample-period-repository';
 import { getMockDBConnection } from '../__mocks__/db';
+import { ObservationService } from './observation-service';
 import { SampleMethodService } from './sample-method-service';
 import { SamplePeriodService } from './sample-period-service';
 
@@ -275,6 +276,10 @@ describe('SampleMethodService', () => {
         .stub(SampleMethodService.prototype, 'deleteSampleMethodRecord')
         .resolves();
 
+      const getObservationsCountBySampleMethodIdStub = sinon
+        .stub(ObservationService.prototype, 'getObservationsCountBySampleMethodId')
+        .resolves({ observationCount: 0 });
+
       const surveySampleSiteId = 1;
 
       const sampleMethodService = new SampleMethodService(mockDBConnection);
@@ -286,6 +291,7 @@ describe('SampleMethodService', () => {
       expect(getSampleMethodsForSurveySampleSiteIdStub).to.be.calledOnceWith(surveySampleSiteId);
 
       expect(deleteSampleMethodRecordStub).to.be.calledOnceWith(mockSampleMethodRecord.survey_sample_method_id);
+      expect(getObservationsCountBySampleMethodIdStub).to.be.calledOnceWith(survey_sample_method_id);
     });
   });
 });
