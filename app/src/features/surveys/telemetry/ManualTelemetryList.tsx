@@ -1,8 +1,5 @@
-import { mdiChevronDown, mdiPlus } from '@mdi/js';
+import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import Accordion from '@mui/material/Accordion';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -10,18 +7,21 @@ import { grey } from '@mui/material/colors';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { SurveyContext } from 'contexts/surveyContext';
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import ManualTelemetryCard from './ManualTelemetryCard';
 
-// export interface ManualTelemetryListProps {}
+// export interface ManualTelemetryListProps {
 
 const ManualTelemetryList = () => {
   const surveyContext = useContext(SurveyContext);
+  surveyContext.deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+  const deployments = useMemo(() => surveyContext.deploymentDataLoader.data, [surveyContext.deploymentDataLoader.data]);
 
-  if (!surveyContext.surveyDataLoader.data) {
+  if (surveyContext.deploymentDataLoader.isLoading) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
-
+  console.log(deployments);
   return (
     <Box display="flex" flexDirection="column" height="100%">
       <Toolbar
@@ -58,45 +58,13 @@ const ManualTelemetryList = () => {
             p: 1,
             background: grey[100]
           }}>
-          <Accordion
-            key={`butts`}
-            sx={{
-              boxShadow: 'none'
-            }}>
-            <AccordionSummary
-              expandIcon={<Icon path={mdiChevronDown} size={1} />}
-              sx={{
-                flex: '1 1 auto',
-                overflow: 'hidden',
-                py: 0.25,
-                pr: 1.5,
-                pl: 2,
-                gap: '24px',
-                '& .MuiAccordionSummary-content': {
-                  flex: '1 1 auto',
-                  overflow: 'hidden',
-                  whiteSpace: 'nowrap'
-                }
-              }}>
-              <Typography
-                sx={{
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  typography: 'body2',
-                  fontWeight: 700,
-                  fontSize: '0.9rem'
-                }}>
-                Deployment Name
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails
-              sx={{
-                pt: 0,
-                px: 2
-              }}>
-              Look at all these details son
-            </AccordionDetails>
-          </Accordion>
+          {deployments?.map((item) => (
+            <ManualTelemetryCard
+              key={item.assignment_id}
+              name={`${item.device_make}: ${item.device_model}`}
+              details={`Device ID: ${item.device_id}`}
+            />
+          ))}
         </Box>
       </Box>
     </Box>
