@@ -7,8 +7,6 @@
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const webpack = require('webpack');
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 module.exports = {
   webpack: function (config, env) {
@@ -23,8 +21,7 @@ module.exports = {
     config.plugins = (config.plugins || []).concat([
       new webpack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer']
-      }),
-      new ForkTsCheckerWebpackPlugin({ memoryLimit: 5000 })
+      })
     ]);
 
     // Hide sourcemap (development) warnings in app console log

@@ -1,10 +1,10 @@
-import TextField, { TextFieldProps } from '@mui/material/TextField';
+import TextField from '@mui/material/TextField';
 import { FormikContextType, useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 export interface ICustomTextField {
   label: string;
   name: string;
-  other?: TextFieldProps;
+  other?: any; //TODO: change to correct hard coded props. TextFieldProps causing issue
   //Additionally add a handlBlur if touced properties not updating correclty.
   handleBlur?: FormikContextType<any>['handleBlur'];
 

@@ -1,4 +1,4 @@
-import LoadingButton, { LoadingButtonProps } from '@mui/lab/LoadingButton';
+import LoadingButton from '@mui/lab/LoadingButton/LoadingButton';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -76,7 +76,7 @@ export interface IYesNoDialogProps {
    * @type {Partial<ButtonProps>}
    * @memberof IYesNoDialogProps
    */
-  yesButtonProps?: Partial<LoadingButtonProps>;
+  yesButtonProps?: any; //TODO: add correct hardcoded type. LoadButtonProps potentially causing issue
 
   /**
    * Optional no-button props
@@ -84,7 +84,7 @@ export interface IYesNoDialogProps {
    * @type {Partial<ButtonProps>}
    * @memberof IYesNoDialogProps
    */
-  noButtonProps?: Partial<LoadingButtonProps>;
+  noButtonProps?: any; //TODO: add correct hardcoded type. LoadButtonProps potentially causing issue
 
   /**
    * Optional Boolean to state if button should be loading
