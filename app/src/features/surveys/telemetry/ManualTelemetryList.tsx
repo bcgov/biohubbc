@@ -1,17 +1,19 @@
-import { mdiPlus } from '@mdi/js';
+import { mdiChevronDown, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
+import { grey } from '@mui/material/colors';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
-export interface ManualTelemetryListProps {}
+// export interface ManualTelemetryListProps {}
 
 const ManualTelemetryList = () => {
   const surveyContext = useContext(SurveyContext);
@@ -47,22 +49,55 @@ const ManualTelemetryList = () => {
         </Button>
       </Toolbar>
       <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
-        <List
-          disablePadding
+        <Box
           sx={{
-            '& .MuiListItemText-primary': {
-              fontSize: '0.9rem'
-            }
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            overflowY: 'auto',
+            p: 1,
+            background: grey[100]
           }}>
-          <ListItem
-            disableGutters
+          <Accordion
+            key={`butts`}
             sx={{
-              display: 'block',
-              py: 0
+              boxShadow: 'none'
             }}>
-            Woot
-          </ListItem>
-        </List>
+            <AccordionSummary
+              expandIcon={<Icon path={mdiChevronDown} size={1} />}
+              sx={{
+                flex: '1 1 auto',
+                overflow: 'hidden',
+                py: 0.25,
+                pr: 1.5,
+                pl: 2,
+                gap: '24px',
+                '& .MuiAccordionSummary-content': {
+                  flex: '1 1 auto',
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap'
+                }
+              }}>
+              <Typography
+                sx={{
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  typography: 'body2',
+                  fontWeight: 700,
+                  fontSize: '0.9rem'
+                }}>
+                Deployment Name
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails
+              sx={{
+                pt: 0,
+                px: 2
+              }}>
+              Look at all these details son
+            </AccordionDetails>
+          </Accordion>
+        </Box>
       </Box>
     </Box>
   );
