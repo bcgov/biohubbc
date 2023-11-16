@@ -18,6 +18,7 @@ import useSpatialApi from './api/useSpatialApi';
 import useSurveyApi from './api/useSurveyApi';
 import useTaxonomyApi from './api/useTaxonomyApi';
 import useUserApi from './api/useUserApi';
+import { useTelemetryApi } from './useTelemetryApi';
 
 /**
  * Returns a set of supported api methods.
@@ -60,6 +61,8 @@ export const useBiohubApi = () => {
 
   const samplingSite = useSamplingSiteApi(apiAxios);
 
+  const telemetry = useTelemetryApi(apiAxios);
+
   return useMemo(
     () => ({
       project,
@@ -77,7 +80,8 @@ export const useBiohubApi = () => {
       publish,
       spatial,
       funding,
-      samplingSite
+      samplingSite,
+      telemetry
     }),
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

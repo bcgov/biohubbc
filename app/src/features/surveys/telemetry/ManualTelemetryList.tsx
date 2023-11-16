@@ -17,9 +17,12 @@ const ManualTelemetryList = () => {
   const surveyContext = useContext(SurveyContext);
 
   useEffect(() => {
-    surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    surveyContext.critterDeploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
   }, []);
-  const deployments = useMemo(() => surveyContext.deploymentDataLoader.data, [surveyContext.deploymentDataLoader.data]);
+  const deployments = useMemo(
+    () => surveyContext.critterDeploymentDataLoader.data,
+    [surveyContext.critterDeploymentDataLoader.data]
+  );
 
   return (
     <Box display="flex" flexDirection="column" height="100%">
@@ -52,7 +55,7 @@ const ManualTelemetryList = () => {
       </Toolbar>
       <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
         {/* Display list of skeleton components while waiting for a response */}
-        <ListFader isLoading={surveyContext.deploymentDataLoader.isLoading} />
+        <ListFader isLoading={surveyContext.critterDeploymentDataLoader.isLoading} />
         <Box
           sx={{
             position: 'absolute',
@@ -63,11 +66,7 @@ const ManualTelemetryList = () => {
             background: grey[100]
           }}>
           {deployments?.map((item) => (
-            <ManualTelemetryCard
-              key={item.assignment_id}
-              name={`${item.device_make}: ${item.device_model}`}
-              details={`Device ID: ${item.device_id}`}
-            />
+            <ManualTelemetryCard key={item.critter_id} name={item.alias} details={`Device ID: ${item.device_id}`} />
           ))}
         </Box>
       </Box>

@@ -4,8 +4,8 @@ import TelemetrySelectField from 'components/fields/TelemetrySelectField';
 import FormikDevDebugger from 'components/formik/FormikDevDebugger';
 import { AttachmentType } from 'constants/attachments';
 import { Field, useFormikContext } from 'formik';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { useEffect } from 'react';
 import { ANIMAL_FORM_MODE, IAnimal } from '../animal';
 import { DeploymentFormSection } from './DeploymentFormSection';
@@ -18,12 +18,14 @@ interface TelemetryDeviceFormContentProps {
 const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
   const { index, mode } = props;
 
-  const api = useTelemetryApi();
+  const biohubApi = useBiohubApi();
   const { values, validateField } = useFormikContext<IAnimal>();
 
   const device = values.device?.[index];
 
-  const { data: deviceDetails, refresh } = useDataLoader(() => api.devices.getDeviceDetails(device.device_id));
+  const { data: deviceDetails, refresh } = useDataLoader(() =>
+    biohubApi.telemetry.devices.getDeviceDetails(device.device_id)
+  );
 
   const validateDeviceMake = async (value: number | '') => {
     const deviceMake = deviceDetails?.device?.device_make;
@@ -88,7 +90,7 @@ const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
                   name={`device.${index}.frequency_unit`}
                   id="frequency_unit"
                   fetchData={async () => {
-                    const codeVals = await api.devices.getCodeValues('frequency_unit');
+                    const codeVals = await biohubApi.telemetry.devices.getCodeValues('frequency_unit');
                     return codeVals.map((a) => a.description);
                   }}
                 />
@@ -101,7 +103,7 @@ const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
               label="Device Manufacturer"
               name={`device.${index}.device_make`}
               id="manufacturer"
-              fetchData={api.devices.getCollarVendors}
+              fetchData={biohubApi.telemetry.devices.getCollarVendors}
               controlProps={{ disabled: mode === ANIMAL_FORM_MODE.EDIT, required: true }}
               validate={validateDeviceMake}
             />
