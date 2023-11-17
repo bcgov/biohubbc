@@ -8,6 +8,7 @@ import React from 'react';
 import { AuthProvider, AuthProviderProps } from 'react-oidc-context';
 import { BrowserRouter } from 'react-router-dom';
 import appTheme from 'themes/appTheme';
+import ScrollToTop from 'utils/ScrollToTop';
 import { buildUrl } from 'utils/Utils';
 
 const App: React.FC = () => {
@@ -52,6 +53,7 @@ const App: React.FC = () => {
 
                       return (
                         <BrowserRouter>
+                          <ScrollToTop />
                           <AppRouter />
                         </BrowserRouter>
                       );
