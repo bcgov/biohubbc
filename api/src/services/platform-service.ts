@@ -113,6 +113,7 @@ const getBackboneApiHost = () => process.env.BACKBONE_API_HOST || '';
 const getBackboneArtifactIntakePath = () => process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '/api/artifact/intake';
 const getBackboneArtifactDeletePath = () => process.env.BACKBONE_ARTIFACT_DELETE_PATH || '/api/artifact/delete';
 const getBackboneIntakePath = () => process.env.BACKBONE_INTAKE_PATH || '/api/dwc/submission/queue';
+const getBackboneSurveyIntakePath = () => process.env.BACKBONE_SURVEY_INTAKE_PATH || '/api/survey/queue';
 
 export class PlatformService extends DBService {
   attachmentService: AttachmentService;
@@ -255,6 +256,56 @@ export class PlatformService extends DBService {
     }
 
     return { uuid: emlPackage.packageId };
+  }
+
+  /**
+   * Submit survey ID to BioHub.
+   *
+   * @param {number} surveyId
+   * @param {{ additionalInformation: string }} data
+   * @return {*}  {Promise<{ queue_id: number }>}
+   * @memberof PlatformService
+   */
+  async submitSurveyIdToBioHub(
+    surveyId: number,
+    data: { additionalInformation: string }
+  ): Promise<{ queue_id: number }> {
+    defaultLog.debug({ label: 'submitSurveyIdToBioHub', message: 'params', surveyId });
+
+    if (!getBackboneIntakeEnabled()) {
+      throw new ApiGeneralError('BioHub intake is not enabled');
+    }
+
+    const keycloakService = new KeycloakService();
+
+    const token = await keycloakService.getKeycloakServiceToken();
+
+    const backboneArtifactIntakeUrl = new URL(getBackboneSurveyIntakePath(), getBackboneApiHost()).href;
+
+    const response = await axios.post<{ queue_id: number }>(
+      backboneArtifactIntakeUrl,
+      {
+        surveyId: surveyId,
+        additionalInformation: data.additionalInformation
+      },
+      {
+        headers: {
+          authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    if (!response.data) {
+      throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to submit survey ID to Biohub');
+    }
+
+    // Insert publish history record
+    await this.historyPublishService.insertSurveyMetadataPublishRecord({
+      survey_id: surveyId,
+      queue_id: response.data.queue_id
+    });
+
+    return response.data;
   }
 
   /**

@@ -41,48 +41,51 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
-          required: ['projectId', 'surveyId', 'data'],
+          required: ['surveyId', 'data'],
           properties: {
-            projectId: {
-              type: 'number'
-            },
             surveyId: {
               type: 'number'
             },
             data: {
               description: 'All survey data to upload',
               type: 'object',
-              required: ['observations', 'summary', 'reports', 'attachments'],
+              required: ['additionalInformation'],
               properties: {
-                observations: {
-                  type: 'array',
-                  items: {
-                    type: 'object',
-                    properties: {}
-                  }
-                },
-                summary: {
-                  type: 'array',
-                  items: {
-                    type: 'object',
-                    properties: {}
-                  }
-                },
-                reports: {
-                  type: 'array',
-                  items: {
-                    type: 'object',
-                    properties: {}
-                  }
-                },
-                attachments: {
-                  type: 'array',
-                  items: {
-                    type: 'object',
-                    properties: {}
-                  }
+                additionalInformation: {
+                  type: 'string',
+                  description: 'Additional information to include in the upload'
                 }
               }
+              // required: ['observations', 'summary', 'reports', 'attachments'],
+              // properties: {
+              //   observations: {
+              //     type: 'array',
+              //     items: {
+              //       type: 'object',
+              //       properties: {}
+              //     }
+              //   },
+              //   summary: {
+              //     type: 'array',
+              //     items: {
+              //       type: 'object',
+              //       properties: {}
+              //     }
+              //   },
+              //   reports: {
+              //     type: 'array',
+              //     items: {
+              //       type: 'object',
+              //       properties: {}
+              //     }
+              //   },
+              //   attachments: {
+              //     type: 'array',
+              //     items: {
+              //       type: 'object',
+              //       properties: {}
+              //     }
+              //   }
             }
           }
         }
@@ -97,9 +100,8 @@ POST.apiDoc = {
           schema: {
             type: 'object',
             properties: {
-              uuid: {
-                type: 'string',
-                format: 'uuid'
+              queue_id: {
+                type: 'number'
               }
             }
           }
@@ -139,7 +141,7 @@ export function publishSurvey(): RequestHandler {
       await connection.open();
 
       const platformService = new PlatformService(connection);
-      const response = await platformService.submitSurveyDataToBioHub(surveyId, data);
+      const response = await platformService.submitSurveyIdToBioHub(surveyId, data);
 
       await connection.commit();
 

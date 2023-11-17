@@ -1,5 +1,6 @@
 import { AxiosInstance } from 'axios';
 import { IRemoveOrResubmitForm } from 'components/publish/components/RemoveOrResubmitForm';
+import { ISubmitSurvey } from 'components/publish/PublishSurveyIdDialog';
 import { IProjectSubmitForm, ISurveySubmitForm } from 'interfaces/usePublishApi.interface';
 
 /**
@@ -24,6 +25,25 @@ const usePublishApi = (axios: AxiosInstance) => {
   ): Promise<{ uuid: string }> => {
     const sendData = {
       projectId: projectId,
+      surveyId: surveyId,
+      data: dataSubmission
+    };
+
+    const { data } = await axios.post('/api/publish/survey', sendData);
+
+    return data;
+  };
+
+  /**
+   * Publish Survey Data
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {ISubmitSurvey} dataSubmission
+   * @return {*}  {Promise<{ queue_id: number }>}
+   */
+  const publishSurveyId = async (surveyId: number, dataSubmission: ISubmitSurvey): Promise<{ queue_id: number }> => {
+    const sendData = {
       surveyId: surveyId,
       data: dataSubmission
     };
@@ -84,6 +104,7 @@ const usePublishApi = (axios: AxiosInstance) => {
 
   return {
     publishSurvey,
+    publishSurveyId,
     publishProject,
     resubmitAttachment
   };

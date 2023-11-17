@@ -77,7 +77,7 @@ const PublishSurveyIdContent = () => {
             }}
             label={
               <Typography variant="body2">
-                I confirm that all published data for this survey meets or exceed the
+                I confirm that all published data for this survey meets or exceed the{' '}
                 {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                 <a href="#">Freedom of Information and Protection of Privacy Act (FOIPPA)</a> requirements.
               </Typography>
@@ -102,11 +102,12 @@ const PublishSurveyIdContent = () => {
             label={
               <Typography variant="body2">
                 I confirm that all data and information for this survey has been collected legally, and in accordance
-                with Section 1 of the
+                with Section 1 of the{' '}
                 <a
                   href="https://www2.gov.bc.ca/gov/content/environment/natural-resource-stewardship/laws-policies-standards-guidance/data-information-security"
                   target="_blank"
                   rel="noreferrer">
+                  {' '}
                   Species and Ecosystems Data and Information Security (SEDIS)
                 </a>
                 procedures.

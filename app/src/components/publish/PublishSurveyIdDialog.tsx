@@ -1,4 +1,5 @@
 import { LoadingButton } from '@mui/lab';
+import { DialogContentText } from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -6,10 +7,13 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import useTheme from '@mui/material/styles/useTheme';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import ComponentDialog from 'components/dialog/ComponentDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { SubmitBiohubI18N, SubmitSurveyBiohubI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
+import { SurveyContext } from 'contexts/surveyContext';
 import { Formik, FormikProps } from 'formik';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useRef, useState } from 'react';
 import yup from 'utils/YupSchema';
 import PublishSurveyIdContent from './components/PublishSurveyIdContent';
@@ -46,6 +50,9 @@ const surveySubmitFormYupSchema = yup.object().shape({
  * @return {*}
  */
 const PublishSurveyIdDialog = (props: IPublishSurveyIdDialogProps) => {
+  const biohubApi = useBiohubApi();
+  const surveyContext = useContext(SurveyContext);
+
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const dialogContext = useContext(DialogContext);
@@ -65,10 +72,9 @@ const PublishSurveyIdDialog = (props: IPublishSurveyIdDialogProps) => {
 
   const [formikRef] = useState(useRef<FormikProps<ISubmitSurvey>>(null));
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
   const handleSubmit = async (values: ISubmitSurvey) => {
-    console.log('values', values);
-
     if (values === surveySubmitFormInitialValues) {
       showErrorDialog({
         dialogTitle: SubmitBiohubI18N.noInformationDialogTitle,
@@ -78,13 +84,36 @@ const PublishSurveyIdDialog = (props: IPublishSurveyIdDialogProps) => {
     }
 
     setIsSubmitting(true);
-    props.onClose();
 
-    // return biohubApi.publish.publishSurvey(projectId, surveyId, values);
+    return biohubApi.publish
+      .publishSurveyId(surveyContext.surveyId, values)
+      .then(() => {
+        setShowSuccessDialog(true);
+      })
+      .catch(() => {
+        setShowSuccessDialog(false);
+        showErrorDialog({
+          dialogTitle: SubmitBiohubI18N.submitBiohubErrorTitle,
+          dialogText: SubmitBiohubI18N.submitBiohubErrorText
+        });
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+        props.onClose();
+      });
   };
 
   return (
     <>
+      <ComponentDialog
+        dialogTitle={SubmitSurveyBiohubI18N.submitSurveyBiohubSuccessDialogTitle}
+        open={showSuccessDialog}
+        onClose={() => setShowSuccessDialog(false)}>
+        <DialogContentText id="alert-dialog-description">
+          {SubmitSurveyBiohubI18N.submitSurveyBiohubSuccessDialogText}
+        </DialogContentText>
+      </ComponentDialog>
+
       <Dialog
         fullScreen={fullScreen}
         maxWidth="xl"
