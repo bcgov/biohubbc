@@ -73,18 +73,22 @@ export interface IYesNoDialogProps {
   /**
    * Optional yes-button props
    *
-   * @type {Partial<ButtonProps>}
-   * @memberof IYesNoDialogProps
+   * @type {any}
+   * TODO: Add correct hardcoded type.
+   * Note: LoadButtonProps causes build compile issue
+   * https://github.com/mui/material-ui/issues/30038
    */
-  yesButtonProps?: any; //TODO: add correct hardcoded type. LoadButtonProps potentially causing issue
+  yesButtonProps?: any;
 
   /**
    * Optional no-button props
    *
-   * @type {Partial<ButtonProps>}
-   * @memberof IYesNoDialogProps
+   * @type {any}
+   * TODO: Add correct hardcoded type.
+   * Note: LoadButtonProps causes build compile issue
+   * https://github.com/mui/material-ui/issues/30038
    */
-  noButtonProps?: any; //TODO: add correct hardcoded type. LoadButtonProps potentially causing issue
+  noButtonProps?: any;
 
   /**
    * Optional Boolean to state if button should be loading
