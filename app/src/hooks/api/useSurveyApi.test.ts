@@ -1,7 +1,7 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { AnimalSex, Critter, IAnimal } from 'features/surveys/view/survey-animals/animal';
-import { IAnimalDeployment } from 'features/surveys/view/survey-animals/device';
+import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
@@ -79,7 +79,7 @@ describe('useSurveyApi', () => {
         mortality: [],
         family: [],
         images: [],
-        device: undefined,
+        device: [],
         collectionUnits: []
       };
       const critter = new Critter(animal);

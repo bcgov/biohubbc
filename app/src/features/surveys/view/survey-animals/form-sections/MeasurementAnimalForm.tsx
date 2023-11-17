@@ -3,126 +3,68 @@ import CbSelectField from 'components/fields/CbSelectField';
 import { CbSelectWrapper } from 'components/fields/CbSelectFieldWrapper';
 import CustomTextField from 'components/fields/CustomTextField';
 import SingleDateField from 'components/fields/SingleDateField';
-import { SurveyAnimalsI18N } from 'constants/i18n';
-import { Field, FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
+import { Field, useFormikContext } from 'formik';
 import { IMeasurementStub } from 'hooks/cb_api/useLookupApi';
-import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-import useDataLoader from 'hooks/useDataLoader';
-import { has } from 'lodash-es';
-import { Fragment, useEffect, useState } from 'react';
-import { v4 } from 'uuid';
+import { has, startCase } from 'lodash-es';
+import { useEffect, useState } from 'react';
 import {
   AnimalMeasurementSchema,
+  ANIMAL_FORM_MODE,
   getAnimalFieldName,
   IAnimal,
   IAnimalMeasurement,
   isRequiredInSchema
 } from '../animal';
-import TextInputToggle from '../TextInputToggle';
-import FormSectionWrapper from './FormSectionWrapper';
-
-const NAME: keyof IAnimal = 'measurements';
 
 /**
- * Renders the Measurement section for the Individual Animal form
- *
- * Note a: Requesting the raw unformatted measurement data to allow easier lookups
- * Displays both qualitative / quantitative measurement options in one dropdown.
- * The value / option selector needs to change based on the chosen measurement in first select.
- *
- * Note b: Custom quantiative measurement validation based on min / max values in database.
+ * Renders the Measurement form inputs
  *
  * @return {*}
  */
 
-const MeasurementAnimalForm = () => {
-  const api = useCritterbaseApi();
-  const { values } = useFormikContext<IAnimal>();
-
-  const { data: measurements, refresh, load } = useDataLoader(api.lookup.getTaxonMeasurements);
-
-  if (values.general.taxon_id) {
-    load(values.general.taxon_id);
-  }
-
-  useEffect(() => {
-    refresh(values.general.taxon_id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [values.general.taxon_id]);
-
-  const newMeasurement: IAnimalMeasurement = {
-    _id: v4(),
-    measurement_qualitative_id: undefined,
-    measurement_quantitative_id: undefined,
-    taxon_measurement_id: '',
-    value: '' as unknown as number,
-    qualitative_option_id: '',
-    measured_timestamp: '' as unknown as Date,
-    measurement_comment: ''
-  };
-
-  const canAddMeasurement = () => {
-    const lastMeasurement = values.measurements[values.measurements.length - 1];
-    if (!lastMeasurement) {
-      return true;
-    }
-    const { value, qualitative_option_id, taxon_measurement_id, measured_timestamp } = lastMeasurement;
-    const hasValueOrOption = value || qualitative_option_id;
-    return taxon_measurement_id && measured_timestamp && hasValueOrOption;
-  };
-
-  return (
-    <FieldArray name={NAME}>
-      {({ remove, push }: FieldArrayRenderProps) => (
-        <>
-          <FormSectionWrapper
-            title={SurveyAnimalsI18N.animalMeasurementTitle}
-            addedSectionTitle={SurveyAnimalsI18N.animalMeasurementTitle2}
-            titleHelp={SurveyAnimalsI18N.animalMeasurementHelp}
-            btnLabel={SurveyAnimalsI18N.animalMeasurementAddBtn}
-            disableAddBtn={!canAddMeasurement()}
-            handleAddSection={() => push(newMeasurement)}
-            handleRemoveSection={remove}>
-            {values.measurements.map((measurement, index) => (
-              <MeasurementFormContent key={`${measurement._id}`} index={index} measurements={measurements} />
-            ))}
-          </FormSectionWrapper>
-        </>
-      )}
-    </FieldArray>
-  );
-};
-
 interface MeasurementFormContentProps {
   index: number;
   measurements?: IMeasurementStub[];
+  mode: ANIMAL_FORM_MODE;
 }
 
-const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentProps) => {
+export const MeasurementAnimalFormContent = (props: MeasurementFormContentProps) => {
+  const { index, measurements, mode } = props;
+  const name: keyof IAnimal = 'measurements';
   const { values, handleChange, setFieldValue, handleBlur } = useFormikContext<IAnimal>();
-  const [measurement, setMeasurement] = useState<IMeasurementStub>();
+  const taxonMeasurementId = values.measurements?.[index]?.taxon_measurement_id;
+  const [currentMeasurement, setCurrentMeasurement] = useState<IMeasurementStub | undefined>(
+    measurements?.find((lookup_measurement) => lookup_measurement.taxon_measurement_id === taxonMeasurementId)
+  );
+  const isQuantMeasurement = has(currentMeasurement, 'unit');
 
-  const taxonMeasurementId = values.measurements[index].taxon_measurement_id;
-  const isQuantMeasurement = has(measurement, 'unit');
+  const taxonMeasurementIDName = getAnimalFieldName<IAnimalMeasurement>(name, 'taxon_measurement_id', index);
+  const valueName = getAnimalFieldName<IAnimalMeasurement>(name, 'value', index);
+  const optionName = getAnimalFieldName<IAnimalMeasurement>(name, 'qualitative_option_id', index);
 
-  const tMeasurementIDName = getAnimalFieldName<IAnimalMeasurement>(NAME, 'taxon_measurement_id', index);
-  const valueName = getAnimalFieldName<IAnimalMeasurement>(NAME, 'value', index);
-  const optionName = getAnimalFieldName<IAnimalMeasurement>(NAME, 'qualitative_option_id', index);
+  useEffect(() => {
+    setCurrentMeasurement(measurements?.find((m) => m.taxon_measurement_id === taxonMeasurementId));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [measurements]); //Sometimes will not display the correct fields without this useEffect but could have side effects, may need to revisit.
 
   const handleMeasurementTypeChange = (event: SelectChangeEvent<unknown>) => {
     handleChange(event);
     setFieldValue(valueName, '');
     setFieldValue(optionName, '');
     const m = measurements?.find((m) => m.taxon_measurement_id === event.target.value);
-    setMeasurement(m);
+    setCurrentMeasurement(m);
+    handleMeasurementName('', m?.measurement_name ?? '');
   };
 
   const validateValue = async (val: '' | number) => {
-    const min = measurement?.min_value ?? 0;
-    const max = measurement?.max_value;
-    const unit = measurement?.unit ? ` ${measurement.unit}'s` : ``;
+    const min = currentMeasurement?.min_value ?? 0;
+    const max = currentMeasurement?.max_value;
+    const unit = currentMeasurement?.unit ? currentMeasurement.unit : ``;
     if (val === '') {
       return;
+    }
+    if (isNaN(val)) {
+      return `Must be a number`;
     }
     if (val < min) {
       return `Measurement must be greater than ${min}${unit}`;
@@ -132,26 +74,33 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
     }
   };
 
+  const handleMeasurementName = (_value: string, label: string) => {
+    setFieldValue(getAnimalFieldName<IAnimalMeasurement>('measurements', 'measurement_name', index), label);
+  };
+
+  const handleQualOptionName = (_value: string, label: string) => {
+    setFieldValue(getAnimalFieldName<IAnimalMeasurement>('measurements', 'option_label', index), label);
+  };
+
   return (
-    <Fragment>
-      <Grid item xs={4}>
+    <Grid container spacing={3}>
+      <Grid item xs={12}>
         <CbSelectWrapper
-          label="Measurement Type"
-          name={tMeasurementIDName}
+          label="Type"
+          name={taxonMeasurementIDName}
           onChange={handleMeasurementTypeChange}
           controlProps={{
-            size: 'small',
             required: isRequiredInSchema(AnimalMeasurementSchema, 'taxon_measurement_id'),
-            disabled: !measurements?.length
+            disabled: !measurements?.length || mode === ANIMAL_FORM_MODE.EDIT
           }}>
           {measurements?.map((m) => (
             <MenuItem key={m.taxon_measurement_id} value={m.taxon_measurement_id}>
-              {m.measurement_name}
+              {startCase(m.measurement_name)}
             </MenuItem>
           ))}
         </CbSelectWrapper>
       </Grid>
-      <Grid item xs={4}>
+      <Grid item xs={12}>
         {!isQuantMeasurement && taxonMeasurementId ? (
           <CbSelectField
             label="Value"
@@ -160,46 +109,46 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
             route="xref/taxon-qualitative-measurement-options"
             query={`taxon_measurement_id=${taxonMeasurementId}`}
             controlProps={{
-              size: 'small',
               required: true,
               disabled: !taxonMeasurementId
             }}
+            handleChangeSideEffect={handleQualOptionName}
           />
         ) : (
           <Field
             as={CustomTextField}
             name={valueName}
             handleBlur={handleBlur}
-            label={measurement?.unit ? `Value [${measurement.unit}'s]` : `Value`}
+            label={currentMeasurement?.unit ? `Value [${currentMeasurement.unit}]` : `Value`}
             other={{
               required: true,
-              size: 'small',
               disabled: !taxonMeasurementId
             }}
             validate={validateValue}
           />
         )}
       </Grid>
-      <Grid item xs={4}>
+      <Grid item xs={12}>
         <SingleDateField
-          name={getAnimalFieldName<IAnimalMeasurement>(NAME, 'measured_timestamp', index)}
+          name={getAnimalFieldName<IAnimalMeasurement>(name, 'measured_timestamp', index)}
           required={isRequiredInSchema(AnimalMeasurementSchema, 'measured_timestamp')}
-          label={'Measured Date'}
-          other={{ size: 'small' }}
+          label="Date Measurement Taken"
         />
       </Grid>
       <Grid item xs={12}>
-        <TextInputToggle label={SurveyAnimalsI18N.animalSectionComment('Measurement')}>
-          <CustomTextField
-            other={{ size: 'small', required: isRequiredInSchema(AnimalMeasurementSchema, 'measurement_comment') }}
-            label="Measurement Comment"
-            name={getAnimalFieldName<IAnimalMeasurement>(NAME, 'measurement_comment', index)}
-            handleBlur={handleBlur}
-          />
-        </TextInputToggle>
+        <CustomTextField
+          other={{
+            size: 'medium',
+            multiline: true,
+            minRows: 3,
+            required: isRequiredInSchema(AnimalMeasurementSchema, 'measurement_comment')
+          }}
+          label="Comments"
+          name={getAnimalFieldName<IAnimalMeasurement>(name, 'measurement_comment', index)}
+        />
       </Grid>
-    </Fragment>
+    </Grid>
   );
 };
 
-export default MeasurementAnimalForm;
+export default MeasurementAnimalFormContent;

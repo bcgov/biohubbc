@@ -305,28 +305,28 @@ export const SurveyAnimalsI18N = {
   animalSectionComment: (section: string) => `Add comment about this ${section}`,
   animalGeneralTitle: 'General',
   animalGeneralHelp: 'General information about this animal.',
-  animalCaptureTitle: 'Capture Information',
+  animalCaptureTitle: 'Capture Events',
   animalCaptureTitle2: 'Capture Event',
   animalCaptureHelp:
     'Capture Events are when animals have been deliberately handled or immobilized. All capture events should be reported by adding a Capture Event to a new or existing individual.',
   animalCaptureAddBtn: 'Add Capture Event',
-  animalCaptureReleaseRadio: 'This individual was released at a different location than where it was captured',
+  animalCaptureReleaseRadio: 'This individual was released at a different location',
   animalMarkingTitle: 'Markings',
   animalMarkingTitle2: 'Animal Marking',
   animalMarkingHelp:
-    'Markings are physical, chemical, or electronic tags or characteristics that uniquely identify individuals.',
+    'Physical or chemical characteristics of an animal, or electronic tags that uniquely identify an individual.',
   animalMarkingAddBtn: 'Add Marking',
   animalMeasurementTitle: 'Measurements',
   animalMeasurementTitle2: 'Animal Measurement',
   animalMeasurementHelp:
-    'Measurements are quantitative or categorical attributes, such as body mass or body condition, that describe an individual.',
+    'Quantitative or categorical attributes, such as body mass or body condition, that describe an individual.',
   animalMeasurementAddBtn: 'Add Measurement',
   animalFamilyTitle: 'Family',
   animalFamilyTitle2: 'Animal Relationship',
   animalFamilyHelp:
     'Family Relationships describe how multiple individuals are related to one another. You must add an individual before it can be referenced as a parent or child of another individual.',
   animalFamilyAddBtn: 'Add Relationship',
-  animalMortalityTitle: 'Mortality',
+  animalMortalityTitle: 'Mortality Events',
   animalMortalityTitle2: 'Mortality Event',
   animalMortalityHelp:
     "Mortality Events describe an individual's death, including the suspected location, date, and cause of death. An individual can only have one Mortality Event.",
@@ -334,15 +334,17 @@ export const SurveyAnimalsI18N = {
   animalCollectionUnitTitle: 'Ecological Units',
   animalCollectionUnitTitle2: 'Ecological Unit',
   animalCollectionUnitHelp:
-    'Ecological units are groups such as population units, herds, and packs. Different species may different units and unit names.',
+    'Ecological units are groups such as population units, herds, and packs. Different species may have different units and unit names.',
   animalCollectionUnitAddBtn: 'Add Unit',
   // Input help strings
   taxonHelp:
     'The species or taxon of the animal. If the species is unknown, select the lowest-ranking known taxon, such as the genus or family.',
   taxonLabelHelp: 'A unique name for you to recognize this individual.',
   wlhIdHelp: 'An ID used to identify animals in the BC Wildlife Health Program',
-  sexHelp: 'The sex of this critter. Leave as Unknown if unsure.'
-};
+  sexHelp: 'The sex of this critter. Leave as Unknown if unsure.',
+  telemetryDeviceHelp:
+    'Devices transmit telemetry data while they are attached to an animal during a deployment. Animals may have multiple devices and deployments, however a single device may not have overlapping deployments.'
+} as const;
 
 export const FundingSourceI18N = {
   cancelTitle: 'Discard changes and exit?',
