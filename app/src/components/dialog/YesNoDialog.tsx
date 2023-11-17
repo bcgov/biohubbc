@@ -130,9 +130,7 @@ const YesNoDialog: React.FC<IYesNoDialogProps> = (props) => {
           onClick={props.onYes}
           color="primary"
           variant="contained"
-          sx={{
-            fontWeight: 700
-          }}
+          fontWeight={700}
           {...props.yesButtonProps}>
           {props.yesButtonLabel ? props.yesButtonLabel : 'Yes'}
         </LoadingButton>
