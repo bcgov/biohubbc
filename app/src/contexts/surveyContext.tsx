@@ -4,6 +4,7 @@ import { ICritterDeploymentResponse, useTelemetryApi } from 'hooks/useTelemetryA
 import { IGetObservationSubmissionResponse } from 'interfaces/useDwcaApi.interface';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import {
+  IDetailedCritterWithInternalId,
   IGetSampleSiteResponse,
   IGetSurveyAttachmentsResponse,
   IGetSurveyForViewResponse
@@ -75,6 +76,14 @@ export interface ISurveyContext {
   >;
 
   /**
+   * The Data Loader used to load critters for a given survey
+   *
+   * @type {DataLoader<[project_id: number, survey_id: number], IDetailedCritterWithInternalId[], unknown>}
+   * @memberof ISurveyContext
+   */
+  critterDataLoader: DataLoader<[project_id: number, survey_id: number], IDetailedCritterWithInternalId[], unknown>;
+
+  /**
    * The project ID belonging to the current project
    *
    * @type {number}
@@ -106,6 +115,11 @@ export const SurveyContext = createContext<ISurveyContext>({
     ICritterDeploymentResponse[],
     unknown
   >,
+  critterDataLoader: {} as DataLoader<
+    [project_id: number, survey_id: number],
+    IDetailedCritterWithInternalId[],
+    unknown
+  >,
   projectId: -1,
   surveyId: -1
 });
@@ -119,6 +133,7 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
   const artifactDataLoader = useDataLoader(biohubApi.survey.getSurveyAttachments);
   const sampleSiteDataLoader = useDataLoader(biohubApi.samplingSite.getSampleSites);
   const critterDeploymentDataLoader = useDataLoader(telemetryApi.getCritterAndDeployments);
+  const critterDataLoader = useDataLoader(biohubApi.survey.getSurveyCritters);
 
   const urlParams: Record<string, string | number | undefined> = useParams();
 
@@ -143,6 +158,7 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
   artifactDataLoader.load(projectId, surveyId);
   sampleSiteDataLoader.load(projectId, surveyId);
   critterDeploymentDataLoader.load(projectId, surveyId);
+  critterDataLoader.load(projectId, surveyId);
 
   /**
    * Refreshes the current survey object whenever the current survey ID changes from the currently loaded survey.
@@ -172,6 +188,7 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
       artifactDataLoader,
       sampleSiteDataLoader,
       critterDeploymentDataLoader,
+      critterDataLoader,
       projectId,
       surveyId
     };
@@ -182,6 +199,7 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
     artifactDataLoader,
     sampleSiteDataLoader,
     critterDeploymentDataLoader,
+    critterDataLoader,
     projectId,
     surveyId
   ]);

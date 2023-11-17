@@ -36,14 +36,18 @@ const ManualTelemetryList = () => {
 
   const [showDialog, setShowDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [critterId, setCritterId] = useState<number | null>(null);
 
   useEffect(() => {
     surveyContext.critterDeploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
   }, []);
+
   const deployments = useMemo(
     () => surveyContext.critterDeploymentDataLoader.data,
     [surveyContext.critterDeploymentDataLoader.data]
   );
+  const critters = useMemo(() => surveyContext.critterDataLoader.data, [surveyContext.critterDataLoader.data]);
 
   return (
     <>
@@ -51,6 +55,7 @@ const ManualTelemetryList = () => {
         initialValues={{
           device: [
             {
+              survey_critter_id: null,
               deployments: [
                 {
                   deployment_id: '',
@@ -71,6 +76,8 @@ const ManualTelemetryList = () => {
         validateOnBlur={false}
         validateOnChange={true}
         onSubmit={async (values, actions) => {
+          console.log(values);
+          console.log(actions);
           console.log('THINGS ARE BEING SUBMITTED');
           setIsLoading(true);
           // handleCritterSave
@@ -86,15 +93,21 @@ const ManualTelemetryList = () => {
               // }
               // setFormMode(ANIMAL_FORM_MODE.EDIT);
             }}>
-            <DialogTitle>Butts</DialogTitle>
+            <DialogTitle>Critter Deployments</DialogTitle>
             <DialogContent>
               <>
-                <FormControl>
+                <FormControl sx={{ width: '100%', marginBottom: 2 }}>
                   <InputLabel id="select-critter">Critter</InputLabel>
-                  <Select labelId="select-critter" label={'Critter'}>
-                    <MenuItem>Moose</MenuItem>
-                    <MenuItem>Caribou</MenuItem>
-                    <MenuItem>Fish</MenuItem>
+                  <Select
+                    labelId="select-critter"
+                    label={'Critter'}
+                    value={critterId}
+                    onChange={(e) => {
+                      setCritterId(Number(e.target.value));
+                    }}>
+                    {critters?.map((item) => {
+                      return <MenuItem value={item.survey_critter_id}>{item.taxon}</MenuItem>;
+                    })}
                   </Select>
                 </FormControl>
                 <TelemetryDeviceFormContent index={0} mode={ANIMAL_FORM_MODE.ADD} />
@@ -115,6 +128,8 @@ const ManualTelemetryList = () => {
                 variant="outlined"
                 onClick={() => {
                   setShowDialog(false);
+                  formikProps.resetForm();
+                  setCritterId(null);
                 }}>
                 Cancel
               </Button>

@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { ConfigContext } from 'contexts/configContext';
 import { useContext } from 'react';
 import { v4 } from 'uuid';
@@ -19,7 +18,7 @@ export interface ICritterDeploymentResponse {
 export const useTelemetryApi = () => {
   const config = useContext(ConfigContext);
   const apiAxios = useAxios(config?.API_HOST);
-  const devices = useDeviceApi(axios);
+  const devices = useDeviceApi(apiAxios);
 
   const getCritterAndDeployments = (projectId: number, surveyId: number): Promise<ICritterDeploymentResponse[]> => {
     // This endpoint will fetch a list of critters and their deployments
