@@ -4,11 +4,14 @@ import get from 'lodash-es/get';
 export interface ICustomTextField {
   label: string;
   name: string;
-
-  other?: any; //TODO: change to correct hard coded props. TextFieldProps causing issue
+  /*
+   * TODO: Add correct hardcoded type
+   * Note: TextFieldProps causes build compile issue
+   * https://github.com/mui/material-ui/issues/30038
+   */
+  other?: any;
   //Additionally add a handlBlur if touced properties not updating correclty.
   handleBlur?: FormikContextType<any>['handleBlur'];
-
 
   maxLength?: number;
 }
