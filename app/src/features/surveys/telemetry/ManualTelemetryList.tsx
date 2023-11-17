@@ -1,7 +1,7 @@
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import LoadingButton from '@mui/lab/LoadingButton/LoadingButton';
-import { useMediaQuery, useTheme } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import { MenuItem, Select, useMediaQuery, useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { grey } from '@mui/material/colors';
@@ -9,6 +9,8 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import ListFader from 'components/loading/SkeletonList';
@@ -33,6 +35,7 @@ const ManualTelemetryList = () => {
   const surveyContext = useContext(SurveyContext);
 
   const [showDialog, setShowDialog] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     surveyContext.critterDeploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
@@ -68,46 +71,56 @@ const ManualTelemetryList = () => {
         validateOnBlur={false}
         validateOnChange={true}
         onSubmit={async (values, actions) => {
+          console.log('THINGS ARE BEING SUBMITTED');
+          setIsLoading(true);
           // handleCritterSave
         }}>
-        <Dialog
-          open={showDialog}
-          fullScreen={fullScreen}
-          maxWidth="xl"
-          onTransitionExited={() => {
-            // if (formMode === ANIMAL_FORM_MODE.ADD) {
-            //   formikArrayHelpers.remove(selectedIndex);
-            // }
-            // setFormMode(ANIMAL_FORM_MODE.EDIT);
-          }}>
-          <DialogTitle>Butts</DialogTitle>
-          <DialogContent>
-            <TelemetryDeviceFormContent index={0} mode={ANIMAL_FORM_MODE.ADD} />
-          </DialogContent>
-          <DialogActions>
-            <LoadingButton
-              color="primary"
-              variant="contained"
-              onClick={async () => {
-                // section is always going to be telemetry
-                // await handleSaveTelemetry(values);
-                // submitForm();
-                // setFormMode(ANIMAL_FORM_MODE.EDIT);
-                setShowDialog(false);
-              }}
-              loading={false}>
-              Save
-            </LoadingButton>
-            <Button
-              color="primary"
-              variant="outlined"
-              onClick={() => {
-                setShowDialog(false);
-              }}>
-              Cancel
-            </Button>
-          </DialogActions>
-        </Dialog>
+        {(formikProps) => (
+          <Dialog
+            open={showDialog}
+            fullScreen={fullScreen}
+            maxWidth="xl"
+            onTransitionExited={() => {
+              // if (formMode === ANIMAL_FORM_MODE.ADD) {
+              //   formikArrayHelpers.remove(selectedIndex);
+              // }
+              // setFormMode(ANIMAL_FORM_MODE.EDIT);
+            }}>
+            <DialogTitle>Butts</DialogTitle>
+            <DialogContent>
+              <>
+                <FormControl>
+                  <InputLabel id="select-critter">Critter</InputLabel>
+                  <Select labelId="select-critter" label={'Critter'}>
+                    <MenuItem>Moose</MenuItem>
+                    <MenuItem>Caribou</MenuItem>
+                    <MenuItem>Fish</MenuItem>
+                  </Select>
+                </FormControl>
+                <TelemetryDeviceFormContent index={0} mode={ANIMAL_FORM_MODE.ADD} />
+              </>
+            </DialogContent>
+            <DialogActions>
+              <LoadingButton
+                color="primary"
+                variant="contained"
+                loading={isLoading}
+                onClick={() => {
+                  formikProps.submitForm();
+                }}>
+                Save
+              </LoadingButton>
+              <Button
+                color="primary"
+                variant="outlined"
+                onClick={() => {
+                  setShowDialog(false);
+                }}>
+                Cancel
+              </Button>
+            </DialogActions>
+          </Dialog>
+        )}
       </Formik>
       <Box display="flex" flexDirection="column" height="100%">
         <Toolbar
