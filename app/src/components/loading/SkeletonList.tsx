@@ -3,6 +3,7 @@ import { grey } from '@mui/material/colors';
 import Fade from '@mui/material/Fade';
 import Paper from '@mui/material/Paper';
 import Skeleton from '@mui/material/Skeleton';
+import { v4 } from 'uuid';
 
 export interface ISkeletonListProps {
   isLoading: boolean;
@@ -28,6 +29,7 @@ const SkeletonList = (props: ISkeletonListProps) => {
             .fill(null)
             .map(() => (
               <Box
+                key={v4().toString()}
                 sx={{
                   display: 'flex',
                   gap: '16px',

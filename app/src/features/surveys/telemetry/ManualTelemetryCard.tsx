@@ -6,7 +6,6 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
 
 export interface ManualTelemetryCardProps {
-  key: string;
   name: string;
   details: string;
 }

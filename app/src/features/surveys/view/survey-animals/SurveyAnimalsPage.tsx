@@ -8,7 +8,6 @@ import { FieldArray, FieldArrayRenderProps, Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useQuery } from 'hooks/useQuery';
-import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual as _deepEquals, omitBy } from 'lodash';
 import { useContext, useMemo, useState } from 'react';
@@ -31,7 +30,6 @@ export const SurveyAnimalsPage = () => {
   const { cid: survey_critter_id } = useQuery();
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const bhApi = useBiohubApi();
-  const telemetryApi = useTelemetryApi();
   const dialogContext = useContext(DialogContext);
   const { surveyId, projectId, artifactDataLoader } = useContext(SurveyContext);
 
@@ -207,7 +205,7 @@ export const SurveyAnimalsPage = () => {
     const formDevice = new Device({ collar_id: existingDevice?.collar_id, ...formValues });
     if (existingDevice && !_deepEquals(new Device(existingDevice), formDevice)) {
       try {
-        await telemetryApi.devices.upsertCollar(formDevice);
+        await bhApi.telemetry.devices.upsertCollar(formDevice);
       } catch (error) {
         throw new Error(`Failed to update collar ${formDevice.collar_id}`);
       }

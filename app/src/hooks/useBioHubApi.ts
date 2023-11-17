@@ -61,6 +61,7 @@ export const useBiohubApi = () => {
 
   const samplingSite = useSamplingSiteApi(apiAxios);
 
+  // This needs to be undone as only 1 endpoint for telemetry currently exists, while everything else should be in it's own useApi setup
   const telemetry = useTelemetryApi(apiAxios);
 
   return useMemo(
