@@ -21,10 +21,10 @@ import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { FieldArrayRenderProps, useFormikContext } from 'formik';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useQuery } from 'hooks/useQuery';
+import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { setMessageSnackbar } from 'utils/Utils';
@@ -54,7 +54,7 @@ export const AddEditAnimal = (props: IAddEditAnimalProps) => {
   const { section, critterData, telemetrySaveAction, deploymentRemoveAction, formikArrayHelpers } = props;
 
   const theme = useTheme();
-  const biohubApi = useBiohubApi();
+  const telemetryApi = useTelemetryApi();
   const cbApi = useCritterbaseApi();
   const surveyContext = useContext(SurveyContext);
   const dialogContext = useContext(DialogContext);
@@ -64,7 +64,7 @@ export const AddEditAnimal = (props: IAddEditAnimalProps) => {
     useFormikContext<IAnimal>();
 
   const { data: allFamilies, refresh: refreshFamilies } = useDataLoader(cbApi.family.getAllFamilies);
-  const { refresh: refreshDeviceDetails } = useDataLoader(biohubApi.telemetry.devices.getDeviceDetails);
+  const { refresh: refreshDeviceDetails } = useDataLoader(telemetryApi.devices.getDeviceDetails);
   const { data: measurements, refresh: refreshMeasurements } = useDataLoader(cbApi.lookup.getTaxonMeasurements);
 
   const [showDialog, setShowDialog] = useState(false);

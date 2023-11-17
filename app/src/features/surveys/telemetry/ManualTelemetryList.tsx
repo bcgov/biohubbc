@@ -13,12 +13,19 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import ListFader from 'components/loading/SkeletonList';
 import { SurveyContext } from 'contexts/surveyContext';
+import { Formik } from 'formik';
 import { useContext, useEffect, useMemo, useState } from 'react';
+import yup from 'utils/YupSchema';
 import { ANIMAL_FORM_MODE } from '../view/survey-animals/animal';
+import { AnimalTelemetryDeviceSchema } from '../view/survey-animals/telemetry-device/device';
 import TelemetryDeviceFormContent from '../view/survey-animals/telemetry-device/TelemetryDeviceFormContent';
 import ManualTelemetryCard from './ManualTelemetryCard';
 
 // export interface ManualTelemetryListProps {
+
+const AnimalDeploymentSchema = yup.object().shape({
+  device: yup.array().of(AnimalTelemetryDeviceSchema).required()
+});
 
 const ManualTelemetryList = () => {
   const theme = useTheme();
@@ -37,44 +44,71 @@ const ManualTelemetryList = () => {
 
   return (
     <>
-      <Dialog
-        open={showDialog}
-        fullScreen={fullScreen}
-        maxWidth="xl"
-        onTransitionExited={() => {
-          // if (formMode === ANIMAL_FORM_MODE.ADD) {
-          //   formikArrayHelpers.remove(selectedIndex);
-          // }
-          // setFormMode(ANIMAL_FORM_MODE.EDIT);
+      <Formik
+        initialValues={{
+          device: [
+            {
+              deployments: [
+                {
+                  deployment_id: '',
+                  attachment_start: '',
+                  attachment_end: undefined
+                }
+              ],
+              device_id: '',
+              device_make: '',
+              device_model: '',
+              frequency: '',
+              frequency_unit: ''
+            }
+          ]
+        }}
+        enableReinitialize
+        validationSchema={AnimalDeploymentSchema}
+        validateOnBlur={false}
+        validateOnChange={true}
+        onSubmit={async (values, actions) => {
+          // handleCritterSave
         }}>
-        <DialogTitle>Butts</DialogTitle>
-        <DialogContent>
-          <TelemetryDeviceFormContent index={0} mode={ANIMAL_FORM_MODE.ADD} />
-        </DialogContent>
-        <DialogActions>
-          <LoadingButton
-            color="primary"
-            variant="contained"
-            onClick={async () => {
-              // section is always going to be telemetry
-              // await handleSaveTelemetry(values);
-              // submitForm();
-              // setFormMode(ANIMAL_FORM_MODE.EDIT);
-              setShowDialog(false);
-            }}
-            loading={false}>
-            Save
-          </LoadingButton>
-          <Button
-            color="primary"
-            variant="outlined"
-            onClick={() => {
-              setShowDialog(false);
-            }}>
-            Cancel
-          </Button>
-        </DialogActions>
-      </Dialog>
+        <Dialog
+          open={showDialog}
+          fullScreen={fullScreen}
+          maxWidth="xl"
+          onTransitionExited={() => {
+            // if (formMode === ANIMAL_FORM_MODE.ADD) {
+            //   formikArrayHelpers.remove(selectedIndex);
+            // }
+            // setFormMode(ANIMAL_FORM_MODE.EDIT);
+          }}>
+          <DialogTitle>Butts</DialogTitle>
+          <DialogContent>
+            <TelemetryDeviceFormContent index={0} mode={ANIMAL_FORM_MODE.ADD} />
+          </DialogContent>
+          <DialogActions>
+            <LoadingButton
+              color="primary"
+              variant="contained"
+              onClick={async () => {
+                // section is always going to be telemetry
+                // await handleSaveTelemetry(values);
+                // submitForm();
+                // setFormMode(ANIMAL_FORM_MODE.EDIT);
+                setShowDialog(false);
+              }}
+              loading={false}>
+              Save
+            </LoadingButton>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => {
+                setShowDialog(false);
+              }}>
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Formik>
       <Box display="flex" flexDirection="column" height="100%">
         <Toolbar
           sx={{

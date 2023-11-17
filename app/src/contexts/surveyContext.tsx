@@ -1,6 +1,6 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
-import { ICritterDeploymentResponse } from 'hooks/useTelemetryApi';
+import { ICritterDeploymentResponse, useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IGetObservationSubmissionResponse } from 'interfaces/useDwcaApi.interface';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import {
@@ -112,12 +112,13 @@ export const SurveyContext = createContext<ISurveyContext>({
 
 export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
   const biohubApi = useBiohubApi();
+  const telemetryApi = useTelemetryApi();
   const surveyDataLoader = useDataLoader(biohubApi.survey.getSurveyForView);
   const observationDataLoader = useDataLoader(biohubApi.dwca.getObservationSubmission);
   const summaryDataLoader = useDataLoader(biohubApi.survey.getSurveySummarySubmission);
   const artifactDataLoader = useDataLoader(biohubApi.survey.getSurveyAttachments);
   const sampleSiteDataLoader = useDataLoader(biohubApi.samplingSite.getSampleSites);
-  const critterDeploymentDataLoader = useDataLoader(biohubApi.telemetry.getCritterAndDeployments);
+  const critterDeploymentDataLoader = useDataLoader(telemetryApi.getCritterAndDeployments);
 
   const urlParams: Record<string, string | number | undefined> = useParams();
 

@@ -1,5 +1,8 @@
-import { AxiosInstance } from 'axios';
+import axios from 'axios';
+import { ConfigContext } from 'contexts/configContext';
+import { useContext } from 'react';
 import { v4 } from 'uuid';
+import useAxios from './api/useAxios';
 import { useDeviceApi } from './telemetry/useDeviceApi';
 
 export interface ICritterDeploymentResponse {
@@ -13,7 +16,9 @@ export interface ICritterDeploymentResponse {
   taxon: string;
 }
 
-export const useTelemetryApi = (axios: AxiosInstance) => {
+export const useTelemetryApi = () => {
+  const config = useContext(ConfigContext);
+  const apiAxios = useAxios(config?.API_HOST);
   const devices = useDeviceApi(axios);
 
   const getCritterAndDeployments = (projectId: number, surveyId: number): Promise<ICritterDeploymentResponse[]> => {
