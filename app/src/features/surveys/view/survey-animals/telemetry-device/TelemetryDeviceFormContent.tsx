@@ -19,8 +19,7 @@ const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
   const { index, mode } = props;
 
   const telemetryApi = useTelemetryApi();
-  const { values, validateField, errors } = useFormikContext<IAnimal>();
-  console.log(errors);
+  const { values, validateField } = useFormikContext<IAnimal>();
 
   const device = values.device?.[index];
   console.log(values.device);
