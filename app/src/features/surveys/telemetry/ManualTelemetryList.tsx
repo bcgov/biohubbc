@@ -10,12 +10,14 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
 import InputLabel from '@mui/material/InputLabel';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import ListFader from 'components/loading/SkeletonList';
 import { SurveyContext } from 'contexts/surveyContext';
 import { Formik } from 'formik';
+import { get } from 'lodash-es';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import yup from 'utils/YupSchema';
 import { ANIMAL_FORM_MODE } from '../view/survey-animals/animal';
@@ -26,7 +28,14 @@ import ManualTelemetryCard from './ManualTelemetryCard';
 // export interface ManualTelemetryListProps {
 
 const AnimalDeploymentSchema = yup.object().shape({
-  device: yup.array().of(AnimalTelemetryDeviceSchema).required()
+  device: yup
+    .array()
+    .of(
+      AnimalTelemetryDeviceSchema.shape({
+        survey_critter_id: yup.number().required('An animal selection is required') // add survey critter id to form
+      })
+    )
+    .required()
 });
 
 const ManualTelemetryList = () => {
@@ -36,7 +45,8 @@ const ManualTelemetryList = () => {
 
   const [showDialog, setShowDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [critterId, setCritterId] = useState<number | null>(null);
+  const [critterId, setCritterId] = useState<number | string>('');
+  const [deviceIndex, setDeviceIndex] = useState(0);
 
   useEffect(() => {
     surveyContext.critterDeploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
@@ -48,14 +58,28 @@ const ManualTelemetryList = () => {
     [surveyContext.critterDeploymentDataLoader.data]
   );
   const critters = useMemo(() => surveyContext.critterDataLoader.data, [surveyContext.critterDataLoader.data]);
-
+  const blankDevice = {
+    survey_critter_id: '',
+    deployments: [
+      {
+        deployment_id: '',
+        attachment_start: '',
+        attachment_end: undefined
+      }
+    ],
+    device_id: '',
+    device_make: '',
+    device_model: '',
+    frequency: '',
+    frequency_unit: ''
+  };
   return (
     <>
       <Formik
         initialValues={{
           device: [
             {
-              survey_critter_id: null,
+              survey_critter_id: '',
               deployments: [
                 {
                   deployment_id: '',
@@ -78,7 +102,7 @@ const ManualTelemetryList = () => {
         onSubmit={async (values, actions) => {
           console.log(values);
           console.log(actions);
-          console.log('THINGS ARE BEING SUBMITTED');
+
           setIsLoading(true);
           // handleCritterSave
         }}>
@@ -104,13 +128,25 @@ const ManualTelemetryList = () => {
                     value={critterId}
                     onChange={(e) => {
                       setCritterId(Number(e.target.value));
+                      formikProps.setFieldValue(`device[${deviceIndex}].survey_critter_id`, Number(e.target.value));
                     }}>
                     {critters?.map((item) => {
                       return <MenuItem value={item.survey_critter_id}>{item.taxon}</MenuItem>;
                     })}
                   </Select>
+                  <FormHelperText>
+                    <Typography
+                      variant="caption"
+                      color="error"
+                      sx={{
+                        mt: '3px',
+                        ml: '14px'
+                      }}>
+                      {get(formikProps.errors.device?.[deviceIndex], 'survey_critter_id')}
+                    </Typography>
+                  </FormHelperText>
                 </FormControl>
-                <TelemetryDeviceFormContent index={0} mode={ANIMAL_FORM_MODE.ADD} />
+                <TelemetryDeviceFormContent index={deviceIndex} mode={ANIMAL_FORM_MODE.ADD} />
               </>
             </DialogContent>
             <DialogActions>
@@ -127,9 +163,11 @@ const ManualTelemetryList = () => {
                 color="primary"
                 variant="outlined"
                 onClick={() => {
-                  setShowDialog(false);
-                  formikProps.resetForm();
-                  setCritterId(null);
+                  console.log('________');
+                  console.log(formikProps.errors);
+                  // setShowDialog(false);
+                  // formikProps.resetForm();
+                  // setCritterId('');
                 }}>
                 Cancel
               </Button>
@@ -162,6 +200,7 @@ const ManualTelemetryList = () => {
             startIcon={<Icon path={mdiPlus} size={1} />}
             onClick={() => {
               setShowDialog(true);
+              // AddEditAnimal: Line 244
             }}>
             Add
           </Button>
