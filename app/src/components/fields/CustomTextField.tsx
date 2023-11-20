@@ -5,7 +5,7 @@ export interface ICustomTextField {
   label: string;
   name: string;
   /*
-   * TODO: Add correct hardcoded type
+   * Needed fix: Add correct hardcoded type
    * Note: TextFieldProps causes build compile issue
    * https://github.com/mui/material-ui/issues/30038
    */

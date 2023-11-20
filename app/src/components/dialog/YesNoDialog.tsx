@@ -74,7 +74,7 @@ export interface IYesNoDialogProps {
    * Optional yes-button props
    *
    * @type {any}
-   * TODO: Add correct hardcoded type.
+   * Needed fix: Add correct hardcoded type.
    * Note: LoadButtonProps causes build compile issue
    * https://github.com/mui/material-ui/issues/30038
    */
@@ -84,7 +84,7 @@ export interface IYesNoDialogProps {
    * Optional no-button props
    *
    * @type {any}
-   * TODO: Add correct hardcoded type.
+   * Needed fix: Add correct hardcoded type.
    * Note: LoadButtonProps causes build compile issue
    * https://github.com/mui/material-ui/issues/30038
    */
