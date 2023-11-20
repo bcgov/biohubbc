@@ -1,8 +1,8 @@
-import { SurveyAnimalsI18N } from 'constants/i18n';
 import { Formik } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
-import CollectionUnitAnimalForm from './CollectionUnitAnimalForm';
+import { render, waitFor } from 'test-helpers/test-utils';
+import { ANIMAL_SECTIONS_FORM_MAP } from '../animal-sections';
+import CollectionUnitAnimalFormContent from './CollectionUnitAnimalForm';
 
 jest.mock('hooks/useCritterbaseApi');
 
@@ -14,27 +14,29 @@ const mockUseCritterbase = {
   }
 };
 
+const defaultCollectionUnit = ANIMAL_SECTIONS_FORM_MAP['Ecological Units'].defaultFormValue;
+
 describe('CollectionUnitAnimalForm', () => {
   beforeEach(() => {
     mockUseCritterbaseApi.mockImplementation(() => mockUseCritterbase);
     mockUseCritterbase.lookup.getSelectOptions.mockClear();
   });
-  it('should display a new part of the form when add unit clicked', async () => {
+  it('should display two form inputs for category and name', async () => {
     mockUseCritterbase.lookup.getSelectOptions.mockResolvedValueOnce([
       { id: 'a', value: 'a', label: 'category_label' }
     ]);
 
     const { getByText } = render(
-      <Formik initialValues={{ general: { taxon_id: 'a' }, collectionUnits: [] }} onSubmit={() => {}}>
-        {() => <CollectionUnitAnimalForm />}
+      <Formik
+        initialValues={{ general: { taxon_id: 'a' }, collectionUnits: [defaultCollectionUnit] }}
+        onSubmit={() => {}}>
+        {() => <CollectionUnitAnimalFormContent index={0} />}
       </Formik>
     );
 
     await waitFor(() => {
-      fireEvent.click(getByText(SurveyAnimalsI18N.animalCollectionUnitAddBtn));
-      expect(getByText(SurveyAnimalsI18N.animalCollectionUnitTitle2)).toBeInTheDocument();
-      expect(getByText('Unit Category')).toBeInTheDocument();
-      expect(getByText('Unit Name')).toBeInTheDocument();
+      expect(getByText('Category')).toBeInTheDocument();
+      expect(getByText('Name')).toBeInTheDocument();
     });
   });
 });

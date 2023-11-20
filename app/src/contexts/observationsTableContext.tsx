@@ -325,7 +325,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     }
 
     const rowValues = Array.from(_muiDataGridApiRef.current.getRowModels(), ([_, value]) => value);
-    return rowValues.filter((row): row is IObservationTableRow => rowSelectionModel.includes(row.id));
+    return rowValues.filter((row): row is IObservationTableRow =>
+      rowSelectionModel.includes((row as IObservationTableRow).id)
+    );
   }, [_muiDataGridApiRef, rowSelectionModel]);
 
   const deleteObservationRecords = useCallback(

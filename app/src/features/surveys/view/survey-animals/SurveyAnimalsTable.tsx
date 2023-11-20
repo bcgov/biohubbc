@@ -2,8 +2,8 @@ import { GridColDef } from '@mui/x-data-grid';
 import { CustomDataGrid } from 'components/data-grid/CustomDataGrid';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
-import { IAnimalDeployment } from './device';
 import SurveyAnimalsTableActions from './SurveyAnimalsTableActions';
+import { IAnimalDeployment } from './telemetry-device/device';
 
 interface ISurveyAnimalsTableEntry {
   survey_critter_id: number;
@@ -18,8 +18,6 @@ interface ISurveyAnimalsTableProps {
   deviceData?: IAnimalDeployment[];
   onMenuOpen: (critter_id: number) => void;
   onRemoveCritter: (critter_id: number) => void;
-  onAddDevice: (critter_id: number) => void;
-  onEditDevice: (device_id: number) => void;
   onEditCritter: (critter_id: number) => void;
   onMapOpen: () => void;
 }
@@ -29,13 +27,11 @@ export const SurveyAnimalsTable = ({
   deviceData,
   onMenuOpen,
   onRemoveCritter,
-  onAddDevice,
-  onEditDevice,
   onEditCritter,
   onMapOpen
 }: ISurveyAnimalsTableProps): JSX.Element => {
   const animalDeviceData: ISurveyAnimalsTableEntry[] = deviceData
-    ? animalData
+    ? [...animalData] // spreading this prevents this error "TypeError: Cannot assign to read only property '0' of object '[object Array]' in typescript"
         .sort((a, b) => new Date(a.create_timestamp).getTime() - new Date(b.create_timestamp).getTime()) //This sort needed to avoid arbitrary reordering of the table when it refreshes after adding or editing
         .map((animal) => {
           const deployments = deviceData.filter((device) => device.critter_id === animal.critter_id);
@@ -101,9 +97,7 @@ export const SurveyAnimalsTable = ({
           critter_id={params.row.survey_critter_id}
           devices={params.row?.deployments}
           onMenuOpen={onMenuOpen}
-          onAddDevice={onAddDevice}
           onEditCritter={onEditCritter}
-          onEditDevice={onEditDevice}
           onRemoveCritter={onRemoveCritter}
           onMapOpen={onMapOpen}
         />
