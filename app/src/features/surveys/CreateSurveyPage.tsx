@@ -1,9 +1,10 @@
-import { Theme } from '@mui/material';
+import { Breadcrumbs, Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
+import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
@@ -27,6 +28,7 @@ import { ICreateSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
+import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import AgreementsForm, { AgreementsInitialValues, AgreementsYupSchema } from './components/AgreementsForm';
@@ -51,6 +53,7 @@ import SurveyFundingSourceForm, {
 } from './components/SurveyFundingSourceForm';
 import { SurveySiteSelectionInitialValues, SurveySiteSelectionYupSchema } from './components/SurveySiteSelectionForm';
 import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from './components/SurveyUserForm';
+import SurveyBaseHeader from './view/components/SurveyBaseHeader';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -269,30 +272,41 @@ const CreateSurveyPage = () => {
   if (!codes || !projectData) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
+
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
-      <Paper square={true} elevation={0}>
-        <Container maxWidth="xl">
-          <Box py={4}>
-            <Box display="flex" justifyContent="space-between">
-              <Box className={classes.pageTitleContainer}>
-                <Typography variant="h1" className={classes.pageTitle}>
-                  Create New Survey
-                </Typography>
-              </Box>
-              <Box flex="0 0 auto" className={classes.pageTitleActions}>
-                <Button color="primary" variant="contained" onClick={() => formikRef.current?.submitForm()}>
-                  Save and Exit
-                </Button>
-                <Button color="primary" variant="outlined" onClick={handleCancel}>
-                  Cancel
-                </Button>
-              </Box>
-            </Box>
-          </Box>
-        </Container>
-      </Paper>
+      <SurveyBaseHeader
+        title="Create New Survey"
+        breadCrumb={
+          <Breadcrumbs>
+            <Link
+              component={RouterLink}
+              variant="body2"
+              underline="hover"
+              to={`/admin/projects/${projectData.project.project_id}/`}
+              aria-current="page">
+              {projectData.project.project_name}
+            </Link>
+            <Typography variant="body2" component="span">
+              Survey
+            </Typography>
+            <Typography variant="body2" component="span">
+              Create
+            </Typography>
+          </Breadcrumbs>
+        }
+        buttonJSX={
+          <>
+            <Button color="primary" variant="contained" onClick={() => formikRef.current?.submitForm()}>
+              Save and Exit
+            </Button>
+            <Button color="primary" variant="outlined" onClick={handleCancel}>
+              Cancel
+            </Button>
+          </>
+        }
+      />
 
       <Box my={3}>
         <Container maxWidth="xl">

@@ -343,11 +343,11 @@ const insertSurveyIntendedOutcome = (surveyId: number) => `
     INSERT into survey_intended_outcome
     (
       survey_id,
-      intended_outcome_id  
+      intended_outcome_id
     )
-    VALUES 
+    VALUES
     (
-      ${surveyId}, 
+      ${surveyId},
       (select intended_outcome_id from intended_outcome order by random() limit 1)
     );
 `;
@@ -522,7 +522,7 @@ const insertSurveySamplingMethodData = () =>
   method_lookup_id,
   description
  )
- VALUES 
+ VALUES
  (
     (SELECT survey_sample_site_id FROM survey_sample_site LIMIT 1),
     (SELECT method_lookup_id FROM method_lookup ORDER BY random() LIMIT 1),
@@ -542,7 +542,7 @@ const insertSurveySamplePeriodData = () =>
     start_date,
     end_date
   )
-  VALUES 
+  VALUES
   (
     (SELECT survey_sample_method_id FROM survey_sample_method LIMIT 1),
     $$${faker.date
@@ -559,7 +559,7 @@ const insertSurveySamplePeriodData = () =>
  *
  */
 const insertSurveyObservationData = (surveyId: number) => `
-  INSERT INTO survey_observation 
+  INSERT INTO survey_observation
   (
     survey_id,
     wldtaxonomic_units_id,
@@ -572,7 +572,7 @@ const insertSurveyObservationData = (surveyId: number) => `
     survey_sample_method_id,
     survey_sample_period_id
   )
-  VALUES 
+  VALUES
   (
     ${surveyId},
     $$${faker.number.int({ min: 30000, max: 32000 })}$$,
