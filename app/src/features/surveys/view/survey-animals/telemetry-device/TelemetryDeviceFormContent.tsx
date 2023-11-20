@@ -15,6 +15,7 @@ interface TelemetryDeviceFormContentProps {
   index: number;
   mode: ANIMAL_FORM_MODE;
 }
+//TODO: Is this component needed anymore? should all telemetry now be handled by the page/ table combo
 const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
   const { index, mode } = props;
 
@@ -22,7 +23,6 @@ const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
   const { values, validateField } = useFormikContext<IAnimal>();
 
   const device = values.device?.[index];
-  console.log(values.device);
 
   const { data: deviceDetails, refresh } = useDataLoader(() => telemetryApi.devices.getDeviceDetails(device.device_id));
 

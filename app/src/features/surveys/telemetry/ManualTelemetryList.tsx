@@ -16,8 +16,10 @@ import { MenuProps } from '@mui/material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import ListFader from 'components/loading/SkeletonList';
+import { AttachmentType } from 'constants/attachments';
 import { SurveyContext } from 'contexts/surveyContext';
 import { Formik } from 'formik';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { get } from 'lodash-es';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import yup from 'utils/YupSchema';
@@ -27,7 +29,10 @@ import TelemetryDeviceFormContent from '../view/survey-animals/telemetry-device/
 import ManualTelemetryCard from './ManualTelemetryCard';
 
 // export interface ManualTelemetryListProps {
-
+/*
+1. Create new type to handle device that flattens the deployment? (no we might want to setup multiple later)
+2. Create 
+*/
 const AnimalDeploymentSchema = yup.object().shape({
   device: yup
     .array()
@@ -43,6 +48,7 @@ const ManualTelemetryList = () => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const surveyContext = useContext(SurveyContext);
+  const biohubApi = useBiohubApi();
 
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
 
@@ -79,11 +85,36 @@ const ManualTelemetryList = () => {
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, device_id: number) => {
     setAnchorEl(event.currentTarget);
+    setDeviceIndex(Number(deployments?.findIndex((item) => item.device_id === device_id)));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async (survey_critter_id: number, data: any) => {
     console.log('HANDLE SUBMIT NEEDS TO DO STUFF');
+
+    await handleAddTelemetry(survey_critter_id, data);
+
+    if (data[deviceIndex].attachmentFile) {
+      await handleUploadFile(data[deviceIndex].attachmentFile, data[deviceIndex].attachmentType);
+    }
+    // ADD
   };
+
+  const handleAddTelemetry = async (survey_critter_id: number, data: any) => {
+    const critter = critters?.find((a) => a.survey_critter_id === survey_critter_id);
+    if (!critter) console.log('Did not find critter in addTelemetry!');
+
+    const device = data[deviceIndex];
+    device.critter_id = critter?.critter_id;
+    try {
+      await biohubApi.survey.addDeployment(surveyContext.projectId, surveyContext.surveyId, survey_critter_id, device);
+      surveyContext.critterDeploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+      // success snack bar
+    } catch (error) {
+      // error snack bar
+    }
+  };
+
+  const handleUploadFile = async (file?: File, attachmentType?: AttachmentType) => {};
   return (
     <>
       <Menu
@@ -98,9 +129,10 @@ const ManualTelemetryList = () => {
           vertical: 'top',
           horizontal: 'right'
         }}>
-        <MenuItem onClick={() => {
-          console.log("Edit clicked")
-        }}>
+        <MenuItem
+          onClick={() => {
+            console.log('Edit clicked');
+          }}>
           <ListItemIcon>
             <Icon path={mdiPencilOutline} size={1} />
           </ListItemIcon>
@@ -138,12 +170,12 @@ const ManualTelemetryList = () => {
         validateOnBlur={false}
         validateOnChange={true}
         onSubmit={async (values, actions) => {
-          console.log(values);
-          console.log(actions);
-
+          console.log('ON SUBMIT');
           setIsLoading(true);
-          handleSubmit();
-          // handleCritterSave
+          await handleSubmit(Number(values.device[deviceIndex].survey_critter_id), values.device);
+          setIsLoading(false);
+          setShowDialog(false);
+          actions.resetForm();
         }}>
         {(formikProps) => (
           <Dialog
@@ -194,7 +226,6 @@ const ManualTelemetryList = () => {
                 variant="contained"
                 loading={isLoading}
                 onClick={() => {
-                  console.log(formikProps.values);
                   formikProps.submitForm();
                 }}>
                 Save
@@ -237,6 +268,7 @@ const ManualTelemetryList = () => {
             color="primary"
             startIcon={<Icon path={mdiPlus} size={1} />}
             onClick={() => {
+              setDeviceIndex(Number(deployments?.length));
               setShowDialog(true);
               // AddEditAnimal: Line 244
             }}>
