@@ -27,8 +27,7 @@ const SurveyBaseHeader = (props: ISurveyHeader) => {
         position: 'sticky',
         top: 0,
         zIndex: 1002,
-        pt: 3,
-        pb: 3.75,
+        py: 3,
         borderBottomStyle: 'solid',
         borderBottomWidth: '1px',
         borderBottomColor: grey[300]
