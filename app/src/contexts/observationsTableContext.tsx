@@ -227,17 +227,17 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       }
 
       Array.from(missingColumns).forEach((column: keyof IObservationTableRow) => {
-        rowErrors.push({ column, error: `Missing column: ${column}` });
+        rowErrors.push({ column, message: `Missing column: ${column}` });
       });
 
       // Validate date value
       if (row.observation_date && !moment(row.observation_date).isValid()) {
-        rowErrors.push({ column: 'observation_date', error: 'Invalid date' });
+        rowErrors.push({ column: 'observation_date', message: 'Invalid date' });
       }
 
       // Validate time value
       if (row.observation_time === 'Invalid date') {
-        rowErrors.push({ column: 'observation_time', error: 'Invalid time' });
+        rowErrors.push({ column: 'observation_time', message: 'Invalid time' });
       }
 
       if (rowErrors.length > 0) {

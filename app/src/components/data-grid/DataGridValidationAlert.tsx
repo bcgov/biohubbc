@@ -12,7 +12,7 @@ import { GridRowId } from '@mui/x-data-grid';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import { Collapse } from '@mui/material';
 
-export type RowValidationError<T> = { column: keyof T, error: string };
+export type RowValidationError<T> = { column: keyof T, message: string };
 export type TableValidationModel<T> = Record<GridRowId, RowValidationError<T>[]>;
 
 interface ITableValidationError<T> extends RowValidationError<T> {
@@ -25,18 +25,31 @@ export interface IDataGridErrorViewerProps<RowType> {
 }
 
 const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataGridErrorViewerProps<RowType>) => {
+  const [hideAlert, setHideAlert] = useState<boolean>(false);
   const [index, setIndex] = useState<number>(0);
 
   const sortedErrors: ITableValidationError<RowType>[] = useMemo(() => {
     const sortedRowIds = props.muiDataGridApiRef?.getSortedRowIds?.() ?? [];
+    const sortedEditableColumnNames = (props.muiDataGridApiRef?.getAllColumns?.() ?? [])
+      .filter((column) => column.editable)
+      .map((column) => column.field);
 
     return Object
       .keys(props.validationModel)
       .sort((a: GridRowId, b: GridRowId) => {
-        return sortedRowIds.indexOf(b) - sortedRowIds.indexOf(a);
+        return sortedRowIds.indexOf(a) - sortedRowIds.indexOf(b);
       })
       .reduce((errors: ITableValidationError<RowType>[], rowId: GridRowId) => {
-        return errors.concat(props.validationModel[rowId].map((rowError) => ({ ...rowError, rowId })));
+        props.validationModel[rowId]
+          .map((rowError) => ({ ...rowError, rowId }))
+          .sort((a: ITableValidationError<RowType>, b: ITableValidationError<RowType>) => {
+            return sortedEditableColumnNames.indexOf(String(a.column)) - sortedEditableColumnNames.indexOf(String(b.column))
+          })
+          .forEach((error: ITableValidationError<RowType>) => {
+            errors.push(error);
+          });
+
+        return errors;
       }, []);
 
   }, [props.validationModel, props.muiDataGridApiRef.getSortedRowIds]);
@@ -55,23 +68,33 @@ const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataG
     return `${index + 1}/${numErrors}`;
   }, [numErrors, index]);
 
-  const errorMessage = useMemo(() => {
-    return sortedErrors[index]?.error
+  const currentError = useMemo(() => {
+    return sortedErrors[index];
   }, [sortedErrors, index]);
 
   useEffect(() => {
-    console.log('useEffect')
-    const currentError = sortedErrors[index];
     if (!currentError) {
       return;
     }
 
-    console.log('setCellFocus()')
-    props.muiDataGridApiRef.setCellFocus(currentError.rowId, String(currentError.column))
-  }, [index]);
+    console.log('validation Model:', props.validationModel)
+    console.log('row:', props.muiDataGridApiRef.getRow(currentError.rowId))
+    console.log({ sortedErrors })
+
+    const column = String(currentError.column)
+    console.log(`setCellFocus()`, currentError);
+    props.muiDataGridApiRef.setCellFocus(currentError.rowId, column)
+  }, [currentError]);
+
+
+  useEffect(() => {
+    if (Object.keys(props.validationModel).length > 0) {
+      setHideAlert(false);
+    }
+  }, [props.validationModel]);
 
   return (
-    <Collapse in={numErrors > 0}>
+    <Collapse in={numErrors > 0 && !hideAlert}>
       <Alert
         variant='outlined'
         severity='error'
@@ -85,13 +108,13 @@ const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataG
             <Button color="inherit" startIcon={<Icon path={mdiChevronDown} size={1} />} onClick={() => handleNext()}>
               Next
             </Button>
-            <IconButton color='inherit'>
+            <IconButton color='inherit' onClick={() => setHideAlert(true)}>
               <Icon path={mdiClose} size={1} />
             </IconButton>
           </Box>
         }>
         <AlertTitle>Could not save observations: Validation failed</AlertTitle>
-        <Typography variant='body2'><strong>Error {indexCount}</strong>: {errorMessage}</Typography>
+        <Typography variant='body2'><strong>Error {indexCount}</strong>{currentError && `: ${currentError.message}`}</Typography>
       </Alert>
     </Collapse>
   )
