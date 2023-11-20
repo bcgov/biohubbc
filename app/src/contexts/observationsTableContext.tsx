@@ -199,6 +199,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    */
   const _validateRows = (): ObservationTableValidationModel | null => {
     const rowValues = _getRowsWithEditedValues();
+    const tableColumns = _muiDataGridApiRef.current.getAllColumns();
 
     const requiredColumns: (keyof IObservationTableRow)[] = [
       'count',
@@ -226,18 +227,19 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         missingColumns.add('survey_sample_period_id');
       }
 
-      Array.from(missingColumns).forEach((column: keyof IObservationTableRow) => {
-        rowErrors.push({ column, message: `Missing column: ${column}` });
+      Array.from(missingColumns).forEach((field: keyof IObservationTableRow) => {
+        const columnName = tableColumns.find((column) => column.field === field)?.headerName ?? field;
+        rowErrors.push({ field, message: `Missing column: ${columnName}` });
       });
 
       // Validate date value
       if (row.observation_date && !moment(row.observation_date).isValid()) {
-        rowErrors.push({ column: 'observation_date', message: 'Invalid date' });
+        rowErrors.push({ field: 'observation_date', message: 'Invalid date' });
       }
 
       // Validate time value
       if (row.observation_time === 'Invalid date') {
-        rowErrors.push({ column: 'observation_time', message: 'Invalid time' });
+        rowErrors.push({ field: 'observation_time', message: 'Invalid time' });
       }
 
       if (rowErrors.length > 0) {

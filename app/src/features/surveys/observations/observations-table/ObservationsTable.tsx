@@ -117,7 +117,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
   const hasError = useCallback((params: GridCellParams): boolean => {
       return Boolean(
         observationsTableContext.validationModel[params.row.id]?.some((error) => {
-          return error.column === params.field
+          return error.field === params.field
         })
       );
     },

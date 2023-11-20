@@ -12,7 +12,7 @@ import { GridRowId } from '@mui/x-data-grid';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import { Collapse } from '@mui/material';
 
-export type RowValidationError<T> = { column: keyof T, message: string };
+export type RowValidationError<T> = { field: keyof T, message: string };
 export type TableValidationModel<T> = Record<GridRowId, RowValidationError<T>[]>;
 
 interface ITableValidationError<T> extends RowValidationError<T> {
@@ -32,6 +32,9 @@ const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataG
     const sortedRowIds = props.muiDataGridApiRef?.getSortedRowIds?.() ?? [];
     const sortedEditableColumnNames = (props.muiDataGridApiRef?.getAllColumns?.() ?? [])
       .filter((column) => column.editable)
+      .sort((a, b) => {
+        return props.muiDataGridApiRef.getColumnIndex(a.field) - props.muiDataGridApiRef.getColumnIndex(b.field)
+      })
       .map((column) => column.field);
 
     return Object
@@ -43,7 +46,7 @@ const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataG
         props.validationModel[rowId]
           .map((rowError) => ({ ...rowError, rowId }))
           .sort((a: ITableValidationError<RowType>, b: ITableValidationError<RowType>) => {
-            return sortedEditableColumnNames.indexOf(String(a.column)) - sortedEditableColumnNames.indexOf(String(b.column))
+            return sortedEditableColumnNames.indexOf(String(a.field)) - sortedEditableColumnNames.indexOf(String(b.field))
           })
           .forEach((error: ITableValidationError<RowType>) => {
             errors.push(error);
@@ -81,9 +84,9 @@ const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataG
     console.log('row:', props.muiDataGridApiRef.getRow(currentError.rowId))
     console.log({ sortedErrors })
 
-    const column = String(currentError.column)
+    const field = String(currentError.field)
     console.log(`setCellFocus()`, currentError);
-    props.muiDataGridApiRef.setCellFocus(currentError.rowId, column)
+    props.muiDataGridApiRef.setCellFocus(currentError.rowId, field)
   }, [currentError]);
 
 
