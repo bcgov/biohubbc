@@ -88,7 +88,7 @@ export const surveyObservationsResponseSchema: SchemaObject = {
         ],
         properties: {
           survey_observation_id: {
-            type: 'integer'
+            type: 'string'
           },
           wldtaxonomic_units_id: {
             type: 'integer'

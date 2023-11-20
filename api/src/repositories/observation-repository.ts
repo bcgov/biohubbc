@@ -9,7 +9,7 @@ import { BaseRepository } from './base-repository';
  * Interface reflecting survey observations retrieved from the database
  */
 export const ObservationRecord = z.object({
-  survey_observation_id: z.number(),
+  survey_observation_id: z.string(),
   survey_id: z.number(),
   wldtaxonomic_units_id: z.number(),
   survey_sample_site_id: z.number().nullable(),
@@ -92,7 +92,7 @@ export class ObservationRepository extends BaseRepository {
    * @return {*}  {Promise<number>}
    * @memberof ObservationRepository
    */
-  async deleteObservationsNotInArray(surveyId: number, retainedObservationIds: number[]): Promise<number> {
+  async deleteObservationsNotInArray(surveyId: number, retainedObservationIds: string[]): Promise<number> {
     const sqlStatement = SQL`
       DELETE FROM
         survey_observation
@@ -205,7 +205,11 @@ export class ObservationRepository extends BaseRepository {
    */
   async getSurveyObservations(surveyId: number): Promise<ObservationRecord[]> {
     const knex = getKnex();
-    const sqlStatement = knex.queryBuilder().select('*').from('survey_observation').where('survey_id', surveyId);
+    const sqlStatement = knex
+      .queryBuilder()
+      .select('*', knex.raw('CAST(survey_observation_id AS VARCHAR)'))
+      .from('survey_observation')
+      .where('survey_id', surveyId);
 
     const response = await this.connection.knex(sqlStatement, ObservationRecord);
     return response.rows;

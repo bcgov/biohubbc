@@ -14,7 +14,7 @@ import { TaxonomyContext } from './taxonomyContext';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
 
 export interface IObservationRecord {
-  survey_observation_id: number;
+  survey_observation_id: string;
   wldtaxonomic_units_id: number;
   survey_sample_site_id: number;
   survey_sample_method_id: number;
