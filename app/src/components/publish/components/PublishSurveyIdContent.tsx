@@ -19,7 +19,12 @@ const PublishSurveyIdContent = () => {
   const { values, setFieldValue } = useFormikContext<ISubmitSurvey>();
 
   return (
-    <Stack gap={4} divider={<Divider flexItem></Divider>}>
+    <Stack gap={4} 
+      divider={<Divider flexItem></Divider>}
+      sx={{
+        maxWidth: '800px'
+      }}
+      >
       <Typography variant="body1" color="textSecondary">
         Published data from this survey may be secured according to the Species and Ecosystems Data and Information
         Security (SEDIS) Policy.
@@ -27,8 +32,8 @@ const PublishSurveyIdContent = () => {
 
       <Box component="fieldset">
         <Typography component="legend">Additional Information</Typography>
-        <Typography variant="body1" color="textSecondary" sx={{ mt: -0.75 }}>
-          Provide any additional information about this survey that Data Stewards should be aware of, including reasons
+        <Typography variant="body1" color="textSecondary" sx={{ mt: -0.75, mb: 3 }}>
+          Provide any additional information about this survey that data stewards should be aware of, including reasons
           why the information for this survey should be secured.
         </Typography>
         <CustomTextField
@@ -36,18 +41,19 @@ const PublishSurveyIdContent = () => {
           label=""
           other={{
             placeholder: 'Additional information, security concerns, etc.',
-            rows: '3'
+            multiline: true,
+            rows: 3
           }}
         />
       </Box>
       <Box component="fieldset">
         <Typography component="legend">Agreements</Typography>
         <FormGroup>
-          <Alert severity="error" sx={{ display: 'none', mb: 2 }}>
-            You must accept all the following agreements.
+          <Alert severity="error" sx={{ mb: 2, alignItems: 'center' }}>
+            <Typography variant="body1">You must accept all the following agreements.</Typography>
           </Alert>
           <FormControlLabel
-            slotProps={{ typography: { variant: 'body2' } }}
+            slotProps={{ typography: { variant: 'body1' } }}
             sx={{
               mt: -0.5,
               mb: 1.5,
@@ -71,12 +77,12 @@ const PublishSurveyIdContent = () => {
               mb: 3,
               alignItems: 'flex-start',
               '& .MuiCheckbox-root': {
-                mt: '-11px',
+                mt: '-10px',
                 mr: 0.5
               }
             }}
             label={
-              <Typography variant="body2">
+              <Typography variant="body1">
                 I confirm that all published data for this survey meets or exceed the{' '}
                 {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                 <a href="#">Freedom of Information and Protection of Privacy Act (FOIPPA)</a> requirements.
@@ -95,12 +101,12 @@ const PublishSurveyIdContent = () => {
               ml: '6px',
               alignItems: 'flex-start',
               '& .MuiCheckbox-root': {
-                mt: '-11px',
+                mt: '-10px',
                 mr: 0.5
               }
             }}
             label={
-              <Typography variant="body2">
+              <Typography variant="body1">
                 I confirm that all data and information for this survey has been collected legally, and in accordance
                 with Section 1 of the{' '}
                 <a
