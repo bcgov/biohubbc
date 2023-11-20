@@ -540,7 +540,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     // Collect rows from the observations data loader
     const rows: IObservationTableRow[] = observationsContext.observationsDataLoader.data.surveyObservations.map(
-      (row: IObservationRecord) => ({ ...row, id: row.survey_observation_id })
+      (row: IObservationRecord) => ({ ...row, id: String(row.survey_observation_id) })
     );
 
     // Set initial rows for the table context

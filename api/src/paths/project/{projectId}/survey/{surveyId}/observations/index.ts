@@ -49,7 +49,7 @@ export const PUT: Operation = [
       ]
     };
   }),
-  insertUpdateDeleteSurveyObservations()
+  insertUpdateSurveyObservations()
 ];
 
 export const surveyObservationsSupplementaryData: SchemaObject = {
@@ -88,7 +88,7 @@ export const surveyObservationsResponseSchema: SchemaObject = {
         ],
         properties: {
           survey_observation_id: {
-            type: 'string'
+            type: 'integer'
           },
           wldtaxonomic_units_id: {
             type: 'integer'
@@ -327,16 +327,15 @@ export function getSurveyObservations(): RequestHandler {
 /**
  * Inserts new observation records.
  * Updates existing observation records.
- * Deletes missing observation records.
  *
  * @export
  * @return {*}  {RequestHandler}
  */
-export function insertUpdateDeleteSurveyObservations(): RequestHandler {
+export function insertUpdateSurveyObservations(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
 
-    defaultLog.debug({ label: 'insertUpdateDeleteSurveyObservations', surveyId });
+    defaultLog.debug({ label: 'insertUpdateSurveyObservations', surveyId });
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -361,13 +360,13 @@ export function insertUpdateDeleteSurveyObservations(): RequestHandler {
         } as InsertObservation | UpdateObservation;
       });
 
-      const surveyObservations = await observationService.insertUpdateDeleteSurveyObservations(surveyId, records);
+      const surveyObservations = await observationService.insertUpdateSurveyObservations(surveyId, records);
 
       await connection.commit();
 
       return res.status(200).json({ surveyObservations });
     } catch (error) {
-      defaultLog.error({ label: 'insertUpdateDeleteSurveyObservations', message: 'error', error });
+      defaultLog.error({ label: 'insertUpdateSurveyObservations', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

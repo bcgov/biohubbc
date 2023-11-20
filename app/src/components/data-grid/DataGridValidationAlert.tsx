@@ -86,7 +86,8 @@ const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataG
 
     const field = String(currentError.field)
     console.log(`setCellFocus()`, currentError);
-    props.muiDataGridApiRef.setCellFocus(currentError.rowId, field)
+    props.muiDataGridApiRef.setCellFocus(currentError.rowId, field);
+    // props.muiDataGridApiRef.scrollToIndexes()
   }, [currentError]);
 
 
