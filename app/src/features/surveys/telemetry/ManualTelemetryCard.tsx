@@ -7,9 +7,15 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
 
 export interface ManualTelemetryCardProps {
+  device_id: number;
   name: string;
   details: string;
+  // openMenu: () => void;
+  // onEdit: () => void;
+  // onDelete: () => void;
+  onMenu: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => void;
 }
+
 const ManualTelemetryCard = (props: ManualTelemetryCardProps) => {
   return (
     <Accordion
@@ -44,7 +50,7 @@ const ManualTelemetryCard = (props: ManualTelemetryCardProps) => {
           </Typography>
         </AccordionSummary>
         <IconButton
-          onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => console.log('Menu has been clicked')}
+          onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => props.onMenu(event, props.device_id)}
           aria-label="settings">
           <Icon path={mdiDotsVertical} size={1}></Icon>
         </IconButton>

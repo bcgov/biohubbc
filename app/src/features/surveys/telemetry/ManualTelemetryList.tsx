@@ -1,7 +1,7 @@
-import { mdiPlus } from '@mdi/js';
+import { mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
-import { MenuItem, Select, useMediaQuery, useTheme } from '@mui/material';
+import { ListItemIcon, Menu, MenuItem, Select, useMediaQuery, useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { grey } from '@mui/material/colors';
@@ -12,6 +12,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import InputLabel from '@mui/material/InputLabel';
+import { MenuProps } from '@mui/material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import ListFader from 'components/loading/SkeletonList';
@@ -43,6 +44,8 @@ const ManualTelemetryList = () => {
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const surveyContext = useContext(SurveyContext);
 
+  const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
+
   const [showDialog, setShowDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [critterId, setCritterId] = useState<number | string>('');
@@ -73,8 +76,43 @@ const ManualTelemetryList = () => {
     frequency: '',
     frequency_unit: ''
   };
+
+  const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, device_id: number) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleSubmit = () => {
+    console.log('HANDLE SUBMIT NEEDS TO DO STUFF');
+  };
   return (
     <>
+      <Menu
+        open={Boolean(anchorEl)}
+        onClose={() => setAnchorEl(null)}
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}>
+        <MenuItem onClick={() => {
+          console.log("Edit clicked")
+        }}>
+          <ListItemIcon>
+            <Icon path={mdiPencilOutline} size={1} />
+          </ListItemIcon>
+          Edit Details
+        </MenuItem>
+        <MenuItem>
+          <ListItemIcon>
+            <Icon path={mdiTrashCanOutline} size={1} />
+          </ListItemIcon>
+          Delete
+        </MenuItem>
+      </Menu>
       <Formik
         initialValues={{
           device: [
@@ -104,6 +142,7 @@ const ManualTelemetryList = () => {
           console.log(actions);
 
           setIsLoading(true);
+          handleSubmit();
           // handleCritterSave
         }}>
         {(formikProps) => (
@@ -155,6 +194,7 @@ const ManualTelemetryList = () => {
                 variant="contained"
                 loading={isLoading}
                 onClick={() => {
+                  console.log(formikProps.values);
                   formikProps.submitForm();
                 }}>
                 Save
@@ -163,11 +203,9 @@ const ManualTelemetryList = () => {
                 color="primary"
                 variant="outlined"
                 onClick={() => {
-                  console.log('________');
-                  console.log(formikProps.errors);
-                  // setShowDialog(false);
-                  // formikProps.resetForm();
-                  // setCritterId('');
+                  setShowDialog(false);
+                  formikProps.resetForm();
+                  setCritterId('');
                 }}>
                 Cancel
               </Button>
@@ -218,7 +256,14 @@ const ManualTelemetryList = () => {
               background: grey[100]
             }}>
             {deployments?.map((item) => (
-              <ManualTelemetryCard name={item.alias} details={`Device ID: ${item.device_id}`} />
+              <ManualTelemetryCard
+                device_id={item.device_id}
+                name={item.alias}
+                details={`Device ID: ${item.device_id}`}
+                onMenu={(event, id) => {
+                  handleMenuOpen(event, id);
+                }}
+              />
             ))}
           </Box>
         </Box>
