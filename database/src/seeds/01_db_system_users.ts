@@ -184,7 +184,7 @@ const getSystemUserSQL = (systemUser: SystemUserSeed) => `
   FROM
     system_user
   WHERE
-    user_identifier = '${systemUser.identifier}';
+    LOWER(user_identifier) = LOWER('${systemUser.identifier}');
 `;
 
 /**
@@ -207,7 +207,7 @@ const insertSystemUserSQL = (systemUser: SystemUserSeed) => `
   )
   SELECT
     user_identity_source_id,
-    '${systemUser.identifier}',
+    LOWER('${systemUser.identifier}'),
     '${systemUser.user_guid.toLowerCase()}',
     now(),
     now(),
@@ -234,7 +234,7 @@ const insertSystemUserRoleSQL = (systemUser: SystemUserSeed) => `
     system_user_id,
     system_role_id
   ) VALUES (
-    (SELECT system_user_id from system_user where user_identifier = '${systemUser.identifier}'),
+    (SELECT system_user_id from system_user where LOWER(user_identifier) = LOWER('${systemUser.identifier}')),
     (SELECT system_role_id from system_role where name = '${systemUser.role_name}')
   );
 `;
