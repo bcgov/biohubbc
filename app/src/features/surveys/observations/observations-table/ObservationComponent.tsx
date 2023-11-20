@@ -107,7 +107,7 @@ const ObservationComponent = () => {
           overflow: 'hidden',
           background: grey[100]
         }}>
-        <Paper square>
+        <Paper square elevation={0}>
           <Toolbar>
             <Typography
               sx={{
@@ -198,12 +198,10 @@ const ObservationComponent = () => {
             </Box>
           </Toolbar>
         </Paper>
-        <Box mt={1}>
-            <DataGridValidationAlert
-              validationModel={validationModel}
-              muiDataGridApiRef={_muiDataGridApiRef.current}
-            />
-          </Box>
+        <DataGridValidationAlert
+          validationModel={validationModel}
+          muiDataGridApiRef={_muiDataGridApiRef.current}
+        />
         <Box
           display="flex"
           flexDirection="column"

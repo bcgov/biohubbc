@@ -95,31 +95,37 @@ const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataG
     if (Object.keys(props.validationModel).length > 0) {
       setHideAlert(false);
     }
+
+    if (index >= numErrors) {
+      setIndex(numErrors - 1);
+    }
   }, [props.validationModel]);
 
   return (
     <Collapse in={numErrors > 0 && !hideAlert}>
-      <Alert
-        variant='outlined'
-        severity='error'
-        action={
-          <Box display='flex' flexDirection='row' alignItems='center'>
-            <Typography>{indexCount}</Typography>
-            <Divider orientation='vertical' flexItem variant='middle' sx={{ ml: 2, mr: 1, borderColor: 'inherit' }} />
-            <Button color="inherit" startIcon={<Icon path={mdiChevronUp} size={1} />} onClick={() => handlePrev()}>
-              Prev
-            </Button>
-            <Button color="inherit" startIcon={<Icon path={mdiChevronDown} size={1} />} onClick={() => handleNext()}>
-              Next
-            </Button>
-            <IconButton color='inherit' onClick={() => setHideAlert(true)}>
-              <Icon path={mdiClose} size={1} />
-            </IconButton>
-          </Box>
-        }>
-        <AlertTitle>Could not save observations: Validation failed</AlertTitle>
-        <Typography variant='body2'><strong>Error {indexCount}</strong>{currentError && `: ${currentError.message}`}</Typography>
-      </Alert>
+      <Box mt={2} mb={1} mx={1}>
+        <Alert
+          variant='outlined'
+          severity='error'
+          action={
+            <Box display='flex' flexDirection='row' alignItems='center'>
+              <Typography>{indexCount}</Typography>
+              <Divider orientation='vertical' flexItem variant='middle' sx={{ ml: 2, mr: 1, borderColor: 'inherit' }} />
+              <Button color="inherit" startIcon={<Icon path={mdiChevronUp} size={1} />} onClick={() => handlePrev()}>
+                Prev
+              </Button>
+              <Button color="inherit" startIcon={<Icon path={mdiChevronDown} size={1} />} onClick={() => handleNext()}>
+                Next
+              </Button>
+              <IconButton color='inherit' onClick={() => setHideAlert(true)}>
+                <Icon path={mdiClose} size={1} />
+              </IconButton>
+            </Box>
+          }>
+          <AlertTitle>Could not save observations: Validation failed</AlertTitle>
+          <Typography variant='body2'><strong>Error {indexCount}</strong>{currentError && `: ${currentError.message}`}</Typography>
+        </Alert>
+      </Box>
     </Collapse>
   )
 }
