@@ -63,9 +63,9 @@ const phases = {
     env: 'build',
     branch: branch,
     cpuRequest: '50m',
-    cpuLimit: '1000m',
+    cpuLimit: '2000m',
     memoryRequest: '100Mi',
-    memoryLimit: '5Gi'
+    memoryLimit: '6Gi'
   },
   dev: {
     namespace: 'af2668-dev',

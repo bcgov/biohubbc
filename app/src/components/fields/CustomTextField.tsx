@@ -1,10 +1,17 @@
-import TextField, { TextFieldProps } from '@mui/material/TextField';
-import { useFormikContext } from 'formik';
+import TextField from '@mui/material/TextField';
+import { FormikContextType, useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 export interface ICustomTextField {
   label: string;
   name: string;
-  other?: TextFieldProps;
+  /*
+   * Needed fix: Add correct hardcoded type
+   * Note: TextFieldProps causes build compile issue
+   * https://github.com/mui/material-ui/issues/30038
+   */
+  other?: any;
+  //Additionally add a handlBlur if touced properties not updating correclty.
+  handleBlur?: FormikContextType<any>['handleBlur'];
 
   maxLength?: number;
 }
