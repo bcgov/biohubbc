@@ -297,8 +297,7 @@ const SamplingSiteList = () => {
                   </Box>
                   <AccordionDetails
                     sx={{
-                      pt: 0,
-                      px: 0
+                      pt: 0
                     }}>
                     <List
                       disablePadding
