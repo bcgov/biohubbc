@@ -31,7 +31,6 @@ const appDeploy = async (settings) => {
         REACT_APP_MAX_UPLOAD_FILE_SIZE: phases[phase].maxUploadFileSize,
         // Node
         NODE_ENV: phases[phase].nodeEnv,
-        NODE_OPTIONS: phases[phase].nodeOptions,
         REACT_APP_NODE_ENV: phases[phase].nodeEnv,
         // Keycloak
         REACT_APP_KEYCLOAK_HOST: phases[phase].sso.host,
