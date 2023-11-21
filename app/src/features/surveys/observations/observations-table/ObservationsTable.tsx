@@ -114,10 +114,11 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
 
   const apiRef = observationsTableContext._muiDataGridApiRef;
 
-  const hasError = useCallback((params: GridCellParams): boolean => {
+  const hasError = useCallback(
+    (params: GridCellParams): boolean => {
       return Boolean(
         observationsTableContext.validationModel[params.row.id]?.some((error) => {
-          return error.field === params.field
+          return error.field === params.field;
         })
       );
     },
@@ -356,7 +357,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       field: 'observation_date',
       headerName: 'Date',
       editable: true,
-      type: 'date',
+      // type: 'date',
       minWidth: 150,
       valueGetter: (params) => (params.row.observation_date ? moment(params.row.observation_date).toDate() : null),
       disableColumnMenu: true,

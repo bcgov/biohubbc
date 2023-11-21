@@ -9,12 +9,12 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import moment from 'moment';
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
 import { SurveyContext } from './surveyContext';
 import { TaxonomyContext } from './taxonomyContext';
-import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
 
 export interface IObservationRecord {
-  survey_observation_id: string;
+  survey_observation_id: number;
   wldtaxonomic_units_id: number;
   survey_sample_site_id: number;
   survey_sample_method_id: number;
@@ -213,7 +213,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     const samplingRequiredColumns: (keyof IObservationTableRow)[] = [
       'survey_sample_site_id',
       'survey_sample_method_id',
-      'survey_sample_period_id',
+      'survey_sample_period_id'
     ];
 
     const validation = rowValues.reduce((tableModel: ObservationTableValidationModel, row: IObservationTableRow) => {
@@ -221,18 +221,20 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
       // Validate missing columns
       const missingColumns: Set<keyof IObservationTableRow> = new Set(requiredColumns.filter((column) => !row[column]));
-      const missingSamplingColumns: (keyof IObservationTableRow)[] = samplingRequiredColumns.filter((column) => !row[column]);
+      const missingSamplingColumns: (keyof IObservationTableRow)[] = samplingRequiredColumns.filter(
+        (column) => !row[column]
+      );
 
       // If an observation is not an incidental record, then all sampling columns are required.
       if (!missingSamplingColumns.includes('survey_sample_site_id')) {
         // Record is non-incidental, namely one or more of its sampling columns is non-empty.
         missingSamplingColumns.forEach((column) => missingColumns.add(column));
-        
+
         if (missingColumns.has('survey_sample_site_id')) {
           // If sampling site is missing, then a sampling method may not be selected
           missingColumns.add('survey_sample_method_id');
         }
-        
+
         if (missingColumns.has('survey_sample_method_id')) {
           // If sampling method is missing, then a sampling period may not be selected
           missingColumns.add('survey_sample_period_id');
@@ -427,9 +429,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       return;
     }
 
-    // Collect the ids of all rows in edit mode
-    const allEditingIds = Object.keys(_muiDataGridApiRef.current.state.editRows);
-
     // Validate rows
     const validationErrors = _validateRows();
 
@@ -438,6 +437,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     }
 
     _setIsStoppingEdit(true);
+
+    // Collect the ids of all rows in edit mode
+    const allEditingIds = Object.keys(_muiDataGridApiRef.current.state.editRows);
 
     // Remove any row ids that the data grid might still be tracking, but which have been removed from local state
     const editingIdsToSave = allEditingIds.filter((id) => rows.find((row) => String(row.id) === id));

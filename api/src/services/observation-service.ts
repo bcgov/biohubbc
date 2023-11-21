@@ -107,7 +107,7 @@ export class ObservationService extends DBService {
   ): Promise<ObservationRecord[]> {
     return this.observationRepository.insertUpdateSurveyObservations(surveyId, observations);
   }
-  
+
   /**
    * Retrieves all observation records for the given survey along with supplementary data
    *
