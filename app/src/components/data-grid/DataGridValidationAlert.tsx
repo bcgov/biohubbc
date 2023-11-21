@@ -10,6 +10,7 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { GridRowId } from '@mui/x-data-grid';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
+import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export type RowValidationError<T> = { field: keyof T; message: string };
@@ -27,9 +28,16 @@ export interface IDataGridErrorViewerProps<RowType> {
 const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataGridErrorViewerProps<RowType>) => {
   const [hideAlert, setHideAlert] = useState<boolean>(false);
   const [index, setIndex] = useState<number>(0);
+  // const [sortedErrors, setSortedErrors] = useState<ITableValidationError<RowType>[]>([]);
+
+  const sortedRowIds = useMemo(
+    () => props.muiDataGridApiRef?.getSortedRowIds?.() ?? [],
+    [props.muiDataGridApiRef.getSortedRowIds]
+  );
+
+  const numErrors = Object.values(props.validationModel).reduce((total, errors) => total + errors.length, 0);
 
   const sortedErrors: ITableValidationError<RowType>[] = useMemo(() => {
-    const sortedRowIds = props.muiDataGridApiRef?.getSortedRowIds?.() ?? [];
     const sortedEditableColumnNames = (props.muiDataGridApiRef?.getAllColumns?.() ?? [])
       .filter((column) => column.editable)
       .sort((a, b) => {
@@ -37,7 +45,7 @@ const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataG
       })
       .map((column) => column.field);
 
-    return Object.keys(props.validationModel)
+    const newSortedErrors = Object.keys(props.validationModel)
       .sort((a: GridRowId, b: GridRowId) => {
         // Sort row errors based on the current sorting of the rows
         return sortedRowIds.indexOf(a) - sortedRowIds.indexOf(b);
@@ -57,16 +65,24 @@ const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataG
 
         return errors;
       }, []);
-  }, [props.validationModel, props.muiDataGridApiRef.getSortedRowIds]);
 
-  const numErrors = useMemo(() => sortedErrors.length, [sortedErrors]);
+    return newSortedErrors;
+  }, [numErrors]);
 
   const handlePrev = useCallback(() => {
-    setIndex((prev) => (prev === 0 ? numErrors - 1 : prev - 1));
+    setIndex((prev) => {
+      const next = prev === 0 ? numErrors - 1 : prev - 1;
+      focusErrorAtIndex(next);
+      return next;
+    });
   }, [numErrors]);
 
   const handleNext = useCallback(() => {
-    setIndex((prev) => (prev === numErrors - 1 ? 0 : prev + 1));
+    setIndex((prev) => {
+      const next = prev === numErrors - 1 ? 0 : prev + 1;
+      focusErrorAtIndex(next);
+      return next;
+    });
   }, [numErrors]);
 
   const indexIndicator = useMemo(() => {
@@ -77,21 +93,23 @@ const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataG
     return sortedErrors[index];
   }, [sortedErrors, index]);
 
-  useEffect(() => {
-    if (!currentError) {
+  const focusErrorAtIndex = useCallback((errorIndex: number) => {
+    const focusedError = sortedErrors[errorIndex];
+    if (!focusedError) {
       return;
     }
 
-    const field = String(currentError.field);
-    const rowIndex = props.muiDataGridApiRef.getSortedRowIds().indexOf(currentError.rowId);
+    const field = String(focusedError.field);
+    const rowIndex = props.muiDataGridApiRef.getSortedRowIds().indexOf(focusedError.rowId);
     const colIndex = props.muiDataGridApiRef.getColumnIndex(field);
     const pageSize = props.muiDataGridApiRef.state.pagination.paginationModel.pageSize;
     const page = Math.floor((rowIndex + 1) / pageSize);
 
     props.muiDataGridApiRef.setPage(page);
-    props.muiDataGridApiRef.setCellFocus(currentError.rowId, field);
+    props.muiDataGridApiRef.setCellFocus(focusedError.rowId, field);
     props.muiDataGridApiRef.scrollToIndexes({ rowIndex, colIndex });
-  }, [currentError]);
+
+  }, [sortedErrors]);
 
   useEffect(() => {
     if (Object.keys(props.validationModel).length > 0) {

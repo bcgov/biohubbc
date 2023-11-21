@@ -292,6 +292,13 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
           setObservationCount(response.supplementaryObservationData.observationCount);
         }
 
+        // Remove row IDs from validation model
+        console.log('updating validationModel to delete:', allRowIdsToDelete)
+        setValidationModel((prevValidationModel) => allRowIdsToDelete.reduce((newValidationModel, rowId) => {
+          delete newValidationModel[rowId];
+          return newValidationModel;
+        }, prevValidationModel));
+
         // Update all rows, removing deleted rows
         setRows((current) => current.filter((item) => !allRowIdsToDelete.includes(String(item.id))));
 
@@ -639,6 +646,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     _saveRecords(rowValues);
   }, [_muiDataGridApiRef, _saveRecords, _isSaving, _isStoppingEdit, modifiedRowIds]);
+
+  console.log({ validationModel })
 
   const observationsTableContext: IObservationsTableContext = useMemo(
     () => ({
