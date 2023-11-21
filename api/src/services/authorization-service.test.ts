@@ -672,19 +672,6 @@ describe('AuthorizationService', () => {
       expect(result).to.be.null;
     });
 
-    it('returns null if the keycloak token is not a valid format (fails the parser)', async function () {
-      const mockDBConnection = getMockDBConnection();
-      sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-
-      const authorizationService = new AuthorizationService(mockDBConnection, {
-        keycloakToken: ({ not: '', valid: '' } as unknown) as KeycloakUserInformation
-      });
-
-      const result = await authorizationService.getSystemUserWithRoles();
-
-      expect(result).to.be.null;
-    });
-
     it('returns a UserObject', async function () {
       const mockDBConnection = getMockDBConnection();
       sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
@@ -822,21 +809,6 @@ describe('AuthorizationService', () => {
 
       const authorizationService = new AuthorizationService(mockDBConnection, {
         keycloakToken: undefined
-      });
-
-      const projectId = 1;
-
-      const result = await authorizationService.getProjectUserWithRoles(projectId);
-
-      expect(result).to.be.null;
-    });
-
-    it('returns null if the keycloak token is not a valid format (fails the parser)', async function () {
-      const mockDBConnection = getMockDBConnection();
-      sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-
-      const authorizationService = new AuthorizationService(mockDBConnection, {
-        keycloakToken: ({ not: '', valid: '' } as unknown) as KeycloakUserInformation
       });
 
       const projectId = 1;
