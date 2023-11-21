@@ -25,7 +25,7 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 import yup from 'utils/YupSchema';
 import { ANIMAL_FORM_MODE } from '../view/survey-animals/animal';
 import { AnimalTelemetryDeviceSchema } from '../view/survey-animals/telemetry-device/device';
-import TelemetryDeviceFormContent from '../view/survey-animals/telemetry-device/TelemetryDeviceFormContent';
+import TelemetryDeviceForm from '../view/survey-animals/telemetry-device/TelemetryDeviceForm';
 import ManualTelemetryCard from './ManualTelemetryCard';
 
 // export interface ManualTelemetryListProps {
@@ -33,15 +33,9 @@ import ManualTelemetryCard from './ManualTelemetryCard';
 1. Create new type to handle device that flattens the deployment? (no we might want to setup multiple later)
 2. Create 
 */
-const AnimalDeploymentSchema = yup.object().shape({
-  device: yup
-    .array()
-    .of(
-      AnimalTelemetryDeviceSchema.shape({
-        survey_critter_id: yup.number().required('An animal selection is required') // add survey critter id to form
-      })
-    )
-    .required()
+export const AnimalDeploymentSchema = AnimalTelemetryDeviceSchema.shape({
+  survey_critter_id: yup.number().required('An animal selection is required'), // add survey critter id to form
+  critter_id: yup.number().required()
 });
 
 const ManualTelemetryList = () => {
@@ -67,21 +61,6 @@ const ManualTelemetryList = () => {
     [surveyContext.critterDeploymentDataLoader.data]
   );
   const critters = useMemo(() => surveyContext.critterDataLoader.data, [surveyContext.critterDataLoader.data]);
-  const blankDevice = {
-    survey_critter_id: '',
-    deployments: [
-      {
-        deployment_id: '',
-        attachment_start: '',
-        attachment_end: undefined
-      }
-    ],
-    device_id: '',
-    device_make: '',
-    device_model: '',
-    frequency: '',
-    frequency_unit: ''
-  };
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, device_id: number) => {
     setAnchorEl(event.currentTarget);
@@ -89,14 +68,16 @@ const ManualTelemetryList = () => {
   };
 
   const handleSubmit = async (survey_critter_id: number, data: any) => {
-    console.log('HANDLE SUBMIT NEEDS TO DO STUFF');
-
+    // ADD NEW TELEMETRY
     await handleAddTelemetry(survey_critter_id, data);
 
+    // EDIT TELEMETRY
+    // TODO: add this
+
+    // UPLOAD ANY FILES
     if (data[deviceIndex].attachmentFile) {
       await handleUploadFile(data[deviceIndex].attachmentFile, data[deviceIndex].attachmentType);
     }
-    // ADD
   };
 
   const handleAddTelemetry = async (survey_critter_id: number, data: any) => {
@@ -147,23 +128,19 @@ const ManualTelemetryList = () => {
       </Menu>
       <Formik
         initialValues={{
-          device: [
+          survey_critter_id: '',
+          deployments: [
             {
-              survey_critter_id: '',
-              deployments: [
-                {
-                  deployment_id: '',
-                  attachment_start: '',
-                  attachment_end: undefined
-                }
-              ],
-              device_id: '',
-              device_make: '',
-              device_model: '',
-              frequency: '',
-              frequency_unit: ''
+              deployment_id: '',
+              attachment_start: '',
+              attachment_end: undefined
             }
-          ]
+          ],
+          device_id: '',
+          device_make: '',
+          device_model: '',
+          frequency: '',
+          frequency_unit: ''
         }}
         enableReinitialize
         validationSchema={AnimalDeploymentSchema}
@@ -172,134 +149,145 @@ const ManualTelemetryList = () => {
         onSubmit={async (values, actions) => {
           console.log('ON SUBMIT');
           setIsLoading(true);
-          await handleSubmit(Number(values.device[deviceIndex].survey_critter_id), values.device);
+          await handleSubmit(Number(values.survey_critter_id), values);
           setIsLoading(false);
           setShowDialog(false);
           actions.resetForm();
         }}>
         {(formikProps) => (
-          <Dialog
-            open={showDialog}
-            fullScreen={fullScreen}
-            maxWidth="xl"
-            onTransitionExited={() => {
-              // if (formMode === ANIMAL_FORM_MODE.ADD) {
-              //   formikArrayHelpers.remove(selectedIndex);
-              // }
-              // setFormMode(ANIMAL_FORM_MODE.EDIT);
-            }}>
-            <DialogTitle>Critter Deployments</DialogTitle>
-            <DialogContent>
-              <>
-                <FormControl sx={{ width: '100%', marginBottom: 2 }}>
-                  <InputLabel id="select-critter">Critter</InputLabel>
-                  <Select
-                    labelId="select-critter"
-                    label={'Critter'}
-                    value={critterId}
-                    onChange={(e) => {
-                      setCritterId(Number(e.target.value));
-                      formikProps.setFieldValue(`device[${deviceIndex}].survey_critter_id`, Number(e.target.value));
-                    }}>
-                    {critters?.map((item) => {
-                      return <MenuItem value={item.survey_critter_id}>{item.taxon}</MenuItem>;
-                    })}
-                  </Select>
-                  <FormHelperText>
-                    <Typography
-                      variant="caption"
-                      color="error"
-                      sx={{
-                        mt: '3px',
-                        ml: '14px'
+          <>
+            <Dialog
+              open={showDialog}
+              fullScreen={fullScreen}
+              maxWidth="xl"
+              onTransitionExited={() => {
+                // if (formMode === ANIMAL_FORM_MODE.ADD) {
+                //   formikArrayHelpers.remove(selectedIndex);
+                // }
+                // setFormMode(ANIMAL_FORM_MODE.EDIT);
+              }}>
+              <DialogTitle>Critter Deployments</DialogTitle>
+              <DialogContent>
+                <>
+                  <FormControl sx={{ width: '100%', marginBottom: 2 }}>
+                    <InputLabel id="select-critter">Critter</InputLabel>
+                    <Select
+                      labelId="select-critter"
+                      label={'Critter'}
+                      value={critterId}
+                      onChange={(e) => {
+                        setCritterId(Number(e.target.value));
+                        formikProps.setFieldValue(`survey_critter_id`, Number(e.target.value));
                       }}>
-                      {get(formikProps.errors.device?.[deviceIndex], 'survey_critter_id')}
-                    </Typography>
-                  </FormHelperText>
-                </FormControl>
-                <TelemetryDeviceFormContent index={deviceIndex} mode={ANIMAL_FORM_MODE.ADD} />
-              </>
-            </DialogContent>
-            <DialogActions>
-              <LoadingButton
-                color="primary"
-                variant="contained"
-                loading={isLoading}
-                onClick={() => {
-                  formikProps.submitForm();
+                      {critters?.map((item) => {
+                        return <MenuItem value={item.survey_critter_id}>{item.taxon}</MenuItem>;
+                      })}
+                    </Select>
+                    <FormHelperText>
+                      <Typography
+                        variant="caption"
+                        color="error"
+                        sx={{
+                          mt: '3px',
+                          ml: '14px'
+                        }}>
+                        {get(formikProps.errors, 'survey_critter_id')}
+                      </Typography>
+                    </FormHelperText>
+                  </FormControl>
+                  <TelemetryDeviceForm index={deviceIndex} mode={ANIMAL_FORM_MODE.ADD} />
+                </>
+              </DialogContent>
+              <DialogActions>
+                <LoadingButton
+                  color="primary"
+                  variant="contained"
+                  loading={isLoading}
+                  onClick={() => {
+                    formikProps.submitForm();
+                  }}>
+                  Save
+                </LoadingButton>
+                <Button
+                  color="primary"
+                  variant="outlined"
+                  onClick={() => {
+                    setShowDialog(false);
+                    formikProps.resetForm();
+                    setCritterId('');
+                  }}>
+                  Cancel
+                </Button>
+              </DialogActions>
+            </Dialog>
+
+            <Box display="flex" flexDirection="column" height="100%">
+              <Toolbar
+                sx={{
+                  flex: '0 0 auto'
                 }}>
-                Save
-              </LoadingButton>
-              <Button
-                color="primary"
-                variant="outlined"
-                onClick={() => {
-                  setShowDialog(false);
-                  formikProps.resetForm();
-                  setCritterId('');
-                }}>
-                Cancel
-              </Button>
-            </DialogActions>
-          </Dialog>
+                <Typography
+                  sx={{
+                    flexGrow: '1',
+                    fontSize: '1.125rem',
+                    fontWeight: 700
+                  }}>
+                  Deployments &zwnj;
+                  <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
+                    ({deployments?.length ?? 0})
+                  </Typography>
+                </Typography>
+                <Button
+                  sx={{
+                    mr: -1
+                  }}
+                  variant="contained"
+                  color="primary"
+                  startIcon={<Icon path={mdiPlus} size={1} />}
+                  onClick={() => {
+                    // TODO: this needs to change
+                    // need to use a new form
+                    // new form needs to look for existing values based on ID
+                    // form shouldn't really be based around index anymore
+                    // need to change a bunch of things to account for that
+                    // will also need to update the
+                    console.log(formikProps.values);
+                    // get the last index of the table
+                    setDeviceIndex(0);
+                    setShowDialog(true);
+                    // AddEditAnimal: Line 244
+                  }}>
+                  Add
+                </Button>
+              </Toolbar>
+              <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
+                {/* Display list of skeleton components while waiting for a response */}
+                <ListFader isLoading={surveyContext.critterDeploymentDataLoader.isLoading} />
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    width: '100%',
+                    height: '100%',
+                    overflowY: 'auto',
+                    p: 1,
+                    background: grey[100]
+                  }}>
+                  {deployments?.map((item) => (
+                    <ManualTelemetryCard
+                      device_id={item.device_id}
+                      name={item.alias}
+                      details={`Device ID: ${item.device_id}`}
+                      onMenu={(event, id) => {
+                        handleMenuOpen(event, id);
+                      }}
+                    />
+                  ))}
+                </Box>
+              </Box>
+            </Box>
+          </>
         )}
       </Formik>
-      <Box display="flex" flexDirection="column" height="100%">
-        <Toolbar
-          sx={{
-            flex: '0 0 auto'
-          }}>
-          <Typography
-            sx={{
-              flexGrow: '1',
-              fontSize: '1.125rem',
-              fontWeight: 700
-            }}>
-            Deployments &zwnj;
-            <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
-              ({deployments?.length ?? 0})
-            </Typography>
-          </Typography>
-          <Button
-            sx={{
-              mr: -1
-            }}
-            variant="contained"
-            color="primary"
-            startIcon={<Icon path={mdiPlus} size={1} />}
-            onClick={() => {
-              setDeviceIndex(Number(deployments?.length));
-              setShowDialog(true);
-              // AddEditAnimal: Line 244
-            }}>
-            Add
-          </Button>
-        </Toolbar>
-        <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
-          {/* Display list of skeleton components while waiting for a response */}
-          <ListFader isLoading={surveyContext.critterDeploymentDataLoader.isLoading} />
-          <Box
-            sx={{
-              position: 'absolute',
-              width: '100%',
-              height: '100%',
-              overflowY: 'auto',
-              p: 1,
-              background: grey[100]
-            }}>
-            {deployments?.map((item) => (
-              <ManualTelemetryCard
-                device_id={item.device_id}
-                name={item.alias}
-                details={`Device ID: ${item.device_id}`}
-                onMenu={(event, id) => {
-                  handleMenuOpen(event, id);
-                }}
-              />
-            ))}
-          </Box>
-        </Box>
-      </Box>
     </>
   );
 };

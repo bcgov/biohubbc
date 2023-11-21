@@ -53,6 +53,11 @@ export interface IAnimalTelemetryDeviceFile extends IAnimalTelemetryDevice {
   attachmentType?: AttachmentType;
 }
 
+// An interface used for creating a new Telemetry Device Deployment
+export interface IAnimalTelemetryDeviceFilePost extends IAnimalTelemetryDeviceFile {
+  critter_id?: string;
+}
+
 export class Device implements Omit<IAnimalTelemetryDevice, 'deployments'> {
   device_id: number;
   device_make: string;
