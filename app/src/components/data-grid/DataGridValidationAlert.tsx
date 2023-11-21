@@ -68,7 +68,7 @@ const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataG
   }, [numErrors]);
 
   const indexCount = useMemo(() => {
-    return `${index + 1}/${numErrors}`;
+    return numErrors > 0 ? `${index + 1}/${numErrors}` : '0/0';
   }, [numErrors, index]);
 
   const currentError = useMemo(() => {
@@ -80,14 +80,15 @@ const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataG
       return;
     }
 
-    console.log('validation Model:', props.validationModel)
-    console.log('row:', props.muiDataGridApiRef.getRow(currentError.rowId))
-    console.log({ sortedErrors })
+    const field = String(currentError.field);
+    const rowIndex = props.muiDataGridApiRef.getSortedRowIds().indexOf(currentError.rowId);
+    const colIndex = props.muiDataGridApiRef.getColumnIndex(field);
+    const pageSize = props.muiDataGridApiRef.state.pagination.paginationModel.pageSize
+    const page = Math.floor((rowIndex + 1) / pageSize);
 
-    const field = String(currentError.field)
-    console.log(`setCellFocus()`, currentError);
+    props.muiDataGridApiRef.setPage(page);
     props.muiDataGridApiRef.setCellFocus(currentError.rowId, field);
-    // props.muiDataGridApiRef.scrollToIndexes()
+    props.muiDataGridApiRef.scrollToIndexes({ rowIndex, colIndex })
   }, [currentError]);
 
 
@@ -97,7 +98,7 @@ const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataG
     }
 
     if (index >= numErrors) {
-      setIndex(numErrors - 1);
+      setIndex(numErrors > 0 ? numErrors - 1 : 0);
     }
   }, [props.validationModel]);
 

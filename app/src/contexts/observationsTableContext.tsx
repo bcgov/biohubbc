@@ -207,10 +207,13 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       'longitude',
       'observation_date',
       'observation_time',
+      'wldtaxonomic_units_id'
+    ];
+
+    const samplingRequiredColumns: (keyof IObservationTableRow)[] = [
       'survey_sample_site_id',
       'survey_sample_method_id',
       'survey_sample_period_id',
-      'wldtaxonomic_units_id'
     ];
 
     const validation = rowValues.reduce((tableModel: ObservationTableValidationModel, row: IObservationTableRow) => {
@@ -218,13 +221,22 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
       // Validate missing columns
       const missingColumns: Set<keyof IObservationTableRow> = new Set(requiredColumns.filter((column) => !row[column]));
+      const missingSamplingColumns: (keyof IObservationTableRow)[] = samplingRequiredColumns.filter((column) => !row[column]);
 
-      if (missingColumns.has('survey_sample_site_id')) {
-        missingColumns.add('survey_sample_method_id');
-      }
-
-      if (missingColumns.has('survey_sample_method_id')) {
-        missingColumns.add('survey_sample_period_id');
+      // If an observation is not an incidental record, then all sampling columns are required.
+      if (!missingSamplingColumns.includes('survey_sample_site_id')) {
+        // Record is non-incidental, namely one or more of its sampling columns is non-empty.
+        missingSamplingColumns.forEach((column) => missingColumns.add(column));
+        
+        if (missingColumns.has('survey_sample_site_id')) {
+          // If sampling site is missing, then a sampling method may not be selected
+          missingColumns.add('survey_sample_method_id');
+        }
+        
+        if (missingColumns.has('survey_sample_method_id')) {
+          // If sampling method is missing, then a sampling period may not be selected
+          missingColumns.add('survey_sample_period_id');
+        }
       }
 
       Array.from(missingColumns).forEach((field: keyof IObservationTableRow) => {
