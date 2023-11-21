@@ -129,7 +129,11 @@ const TelemetryDeviceForm = (props: ITelemetryDeviceFormProps) => {
                   mt: -1,
                   mb: 3
                 }}>{`Vectronic KeyX File (Optional)`}</Typography>
-              <TelemetryFileUpload attachmentType={AttachmentType.KEYX} index={index} />
+              <TelemetryFileUpload
+                attachmentType={AttachmentType.KEYX}
+                fileKey="attachmentFile"
+                typeKey="attachmentType"
+              />
             </>
           )}
           {device.device_make === 'Lotek' && (
@@ -141,7 +145,11 @@ const TelemetryDeviceForm = (props: ITelemetryDeviceFormProps) => {
                   mt: -1,
                   mb: 3
                 }}>{`Lotek Config File (Optional)`}</Typography>
-              <TelemetryFileUpload attachmentType={AttachmentType.OTHER} index={index} />
+              <TelemetryFileUpload
+                attachmentType={AttachmentType.OTHER}
+                fileKey="attachmentFile"
+                typeKey="attachmentType"
+              />
             </>
           )}
         </Box>

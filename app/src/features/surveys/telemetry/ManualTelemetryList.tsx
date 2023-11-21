@@ -23,19 +23,19 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { get } from 'lodash-es';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import yup from 'utils/YupSchema';
+import { InferType } from 'yup';
 import { ANIMAL_FORM_MODE } from '../view/survey-animals/animal';
-import { AnimalTelemetryDeviceSchema } from '../view/survey-animals/telemetry-device/device';
+import { AnimalTelemetryDeviceSchema, IAnimalTelemetryDevice } from '../view/survey-animals/telemetry-device/device';
 import TelemetryDeviceForm from '../view/survey-animals/telemetry-device/TelemetryDeviceForm';
 import ManualTelemetryCard from './ManualTelemetryCard';
 
-// export interface ManualTelemetryListProps {
-/*
-1. Create new type to handle device that flattens the deployment? (no we might want to setup multiple later)
-2. Create 
-*/
 export const AnimalDeploymentSchema = AnimalTelemetryDeviceSchema.shape({
-  survey_critter_id: yup.number().required('An animal selection is required') // add survey critter id to form
+  survey_critter_id: yup.mixed<string | number>().required('An animal selection is required'), // add survey critter id to form
+  critter_id: yup.string(),
+  attachmentFile: yup.mixed(),
+  attachmentType: yup.mixed<AttachmentType>().oneOf(Object.values(AttachmentType))
 });
+export type AnimalDeployment = InferType<typeof AnimalDeploymentSchema>;
 
 const ManualTelemetryList = () => {
   const theme = useTheme();
@@ -66,26 +66,32 @@ const ManualTelemetryList = () => {
     setDeviceIndex(Number(deployments?.findIndex((item) => item.device_id === device_id)));
   };
 
-  const handleSubmit = async (survey_critter_id: number, data: any) => {
+  const handleSubmit = async (data: AnimalDeployment) => {
     // ADD NEW TELEMETRY
-    await handleAddTelemetry(survey_critter_id, data);
+    await handleAddTelemetry(data);
 
     // EDIT TELEMETRY
     // TODO: add this
 
     // UPLOAD ANY FILES
-    if (data.attachmentFile) {
-      await handleUploadFile(data[deviceIndex].attachmentFile, data[deviceIndex].attachmentType);
+    if (data.attachmentFile && data.attachmentType) {
+      await handleUploadFile(data.attachmentFile, data.attachmentType);
     }
   };
 
-  const handleAddTelemetry = async (survey_critter_id: number, data: any) => {
-    const critter = critters?.find((a) => a.survey_critter_id === survey_critter_id);
+  const handleAddTelemetry = async (data: AnimalDeployment) => {
+    const critter = critters?.find((a) => a.survey_critter_id === data.survey_critter_id);
     if (!critter) console.log('Did not find critter in addTelemetry!');
 
     data.critter_id = critter?.critter_id;
+    const payload = data as IAnimalTelemetryDevice & { critter_id: string };
     try {
-      await biohubApi.survey.addDeployment(surveyContext.projectId, surveyContext.surveyId, survey_critter_id, data);
+      await biohubApi.survey.addDeployment(
+        surveyContext.projectId,
+        surveyContext.surveyId,
+        Number(data.survey_critter_id),
+        payload
+      );
       surveyContext.critterDeploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
       // success snack bar
     } catch (error) {
@@ -134,11 +140,14 @@ const ManualTelemetryList = () => {
               attachment_end: undefined
             }
           ],
-          device_id: '',
+          device_id: 0,
           device_make: '',
           device_model: '',
-          frequency: '',
-          frequency_unit: ''
+          frequency: undefined,
+          frequency_unit: undefined,
+          attachmentType: undefined,
+          attachmentFile: undefined,
+          critter_id: ''
         }}
         enableReinitialize
         validationSchema={AnimalDeploymentSchema}
@@ -148,7 +157,7 @@ const ManualTelemetryList = () => {
           console.log('ON SUBMIT');
           setIsLoading(true);
           console.log(values);
-          await handleSubmit(Number(values.survey_critter_id), values);
+          await handleSubmit(values);
           setIsLoading(false);
           setShowDialog(false);
           actions.resetForm();
