@@ -31,7 +31,7 @@ const getResourceByName = (resourceName, oc) => {
 const getResourceByRaw = (selector, type, settings, oc) => {
   const phases = settings.phases;
   const options = settings.options;
-  const phase = options.env;
+  const phase = options.phase;
 
   const result = oc.raw('get', [type], {
     selector: selector,

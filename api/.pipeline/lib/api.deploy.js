@@ -31,7 +31,9 @@ const apiDeploy = async (settings) => {
         HOST: phases[phase].host,
         APP_HOST: phases[phase].appHost,
         CHANGE_ID: phases.build.changeId || changeId,
+        // Node
         NODE_ENV: phases[phase].nodeEnv,
+        NODE_OPTIONS: phases[phase].nodeOptions,
         // BioHub Platform (aka: Backbone)
         BACKBONE_API_HOST: phases[phase].backboneApiHost,
         BACKBONE_INTAKE_PATH: phases[phase].backboneIntakePath,
@@ -65,8 +67,6 @@ const apiDeploy = async (settings) => {
         KEYCLOAK_API_ENVIRONMENT: phases[phase].sso.cssApi.cssApiEnvironment,
         // Log Level
         LOG_LEVEL: phases[phase].logLevel || 'info',
-        // Node Options
-        NODE_OPTIONS: phases[phase].nodeOptions,
         // Openshift Resources
         CPU_REQUEST: phases[phase].cpuRequest,
         CPU_LIMIT: phases[phase].cpuLimit,

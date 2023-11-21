@@ -14,7 +14,7 @@ const {
 const dbSetupDeploy = async (settings) => {
   const phases = settings.phases;
   const options = settings.options;
-  const phase = options.env;
+  const phase = options.phase;
 
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
 
@@ -66,7 +66,7 @@ const dbSetupDeploy = async (settings) => {
         SUFFIX: phases[phase].suffix,
         VERSION: phases[phase].tag,
         CHANGE_ID: changeId,
-        NODE_ENV: phases[phase].env,
+        NODE_ENV: phases[phase].nodeEnv,
         DB_SERVICE_NAME: dbName,
         DB_SCHEMA: 'biohub',
         DB_SCHEMA_DAPI_V1: 'biohub_dapi_v1',
