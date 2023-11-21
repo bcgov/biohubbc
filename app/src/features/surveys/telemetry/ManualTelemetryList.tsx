@@ -34,8 +34,7 @@ import ManualTelemetryCard from './ManualTelemetryCard';
 2. Create 
 */
 export const AnimalDeploymentSchema = AnimalTelemetryDeviceSchema.shape({
-  survey_critter_id: yup.number().required('An animal selection is required'), // add survey critter id to form
-  critter_id: yup.number().required()
+  survey_critter_id: yup.number().required('An animal selection is required') // add survey critter id to form
 });
 
 const ManualTelemetryList = () => {
@@ -75,7 +74,7 @@ const ManualTelemetryList = () => {
     // TODO: add this
 
     // UPLOAD ANY FILES
-    if (data[deviceIndex].attachmentFile) {
+    if (data.attachmentFile) {
       await handleUploadFile(data[deviceIndex].attachmentFile, data[deviceIndex].attachmentType);
     }
   };
@@ -84,10 +83,9 @@ const ManualTelemetryList = () => {
     const critter = critters?.find((a) => a.survey_critter_id === survey_critter_id);
     if (!critter) console.log('Did not find critter in addTelemetry!');
 
-    const device = data[deviceIndex];
-    device.critter_id = critter?.critter_id;
+    data.critter_id = critter?.critter_id;
     try {
-      await biohubApi.survey.addDeployment(surveyContext.projectId, surveyContext.surveyId, survey_critter_id, device);
+      await biohubApi.survey.addDeployment(surveyContext.projectId, surveyContext.surveyId, survey_critter_id, data);
       surveyContext.critterDeploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
       // success snack bar
     } catch (error) {
@@ -149,10 +147,12 @@ const ManualTelemetryList = () => {
         onSubmit={async (values, actions) => {
           console.log('ON SUBMIT');
           setIsLoading(true);
+          console.log(values);
           await handleSubmit(Number(values.survey_critter_id), values);
           setIsLoading(false);
           setShowDialog(false);
           actions.resetForm();
+          setCritterId('');
         }}>
         {(formikProps) => (
           <>
@@ -169,12 +169,17 @@ const ManualTelemetryList = () => {
               <DialogTitle>Critter Deployments</DialogTitle>
               <DialogContent>
                 <>
-                  <FormControl sx={{ width: '100%', marginBottom: 2 }}>
+                  <FormControl
+                    sx={{ width: '100%', marginBottom: 2 }}
+                    variant="outlined"
+                    fullWidth
+                    error={Boolean(get(formikProps.errors, 'survey_critter_id'))}>
                     <InputLabel id="select-critter">Critter</InputLabel>
                     <Select
                       labelId="select-critter"
                       label={'Critter'}
                       value={critterId}
+                      required
                       onChange={(e) => {
                         setCritterId(Number(e.target.value));
                         formikProps.setFieldValue(`survey_critter_id`, Number(e.target.value));

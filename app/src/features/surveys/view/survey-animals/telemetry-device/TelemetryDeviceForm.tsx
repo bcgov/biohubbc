@@ -16,8 +16,6 @@ export interface ITelemetryDeviceFormProps {
   index: number;
   mode: ANIMAL_FORM_MODE;
 }
-// ok so this just needs edit and manage a single thing
-// the index on the other form component will
 
 const TelemetryDeviceForm = (props: ITelemetryDeviceFormProps) => {
   const { index, mode } = props;
