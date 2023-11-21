@@ -16,6 +16,7 @@ import {
   AuthorizeRule
 } from '../services/authorization-service';
 import { UserService } from '../services/user-service';
+import { KeycloakUserInformation, ServiceClientUserInformation } from '../utils/keycloak-utils';
 import { getMockDBConnection } from '../__mocks__/db';
 import { ProjectParticipationService } from './project-participation-service';
 
@@ -312,7 +313,7 @@ describe('AuthorizationService', () => {
       sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
       const authorizationService = new AuthorizationService(mockDBConnection, {
-        keycloakToken: { preferred_username: '' }
+        keycloakToken: { preferred_username: '' } as KeycloakUserInformation
       });
 
       const authorizeByServiceClientData = ({
@@ -349,7 +350,7 @@ describe('AuthorizationService', () => {
       sinon.stub(AuthorizationService.prototype, 'getSystemUserObject').resolves(mockGetSystemUsersObjectResponse);
 
       const authorizationService = new AuthorizationService(mockDBConnection, {
-        keycloakToken: { clientId: SOURCE_SYSTEM['SIMS-SVC-4464'] }
+        keycloakToken: { clientId: SOURCE_SYSTEM['SIMS-SVC-4464'] } as ServiceClientUserInformation
       });
 
       const authorizeByServiceClientData = ({
@@ -676,7 +677,7 @@ describe('AuthorizationService', () => {
       sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
       const authorizationService = new AuthorizationService(mockDBConnection, {
-        keycloakToken: { not: '', valid: '' }
+        keycloakToken: ({ not: '', valid: '' } as unknown) as KeycloakUserInformation
       });
 
       const result = await authorizationService.getSystemUserWithRoles();
@@ -835,7 +836,7 @@ describe('AuthorizationService', () => {
       sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
       const authorizationService = new AuthorizationService(mockDBConnection, {
-        keycloakToken: { not: '', valid: '' }
+        keycloakToken: ({ not: '', valid: '' } as unknown) as KeycloakUserInformation
       });
 
       const projectId = 1;

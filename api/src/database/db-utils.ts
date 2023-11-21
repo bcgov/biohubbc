@@ -5,6 +5,7 @@ import {
   isBceidBusinessUserInformation,
   isDatabaseUserInformation,
   isIdirUserInformation,
+  isServiceClientUserInformation,
   KeycloakUserInformation
 } from '../utils/keycloak-utils';
 
@@ -115,8 +116,8 @@ export const getGenericizedKeycloakUserInformation = (
 ): GenericizedKeycloakUserInformation | null => {
   let data: GenericizedKeycloakUserInformation | null;
 
-  if (isDatabaseUserInformation(keycloakUserInformation)) {
-    // Don't patch internal database user records
+  if (isDatabaseUserInformation(keycloakUserInformation) || isServiceClientUserInformation(keycloakUserInformation)) {
+    // Don't patch internal database/service client user records
     return null;
   }
 
