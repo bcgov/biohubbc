@@ -178,7 +178,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    * Gets all rows from the table, including values that have been edited in the table.
    */
   const _getRowsWithEditedValues = (): IObservationTableRow[] => {
-    const rowValues = Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values());
+    const rowValues = Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values()) as IObservationTableRow[];
 
     return rowValues.map((row) => {
       const editRow = _muiDataGridApiRef.current.state.editRows[row.id];
