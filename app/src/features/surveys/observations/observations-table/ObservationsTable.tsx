@@ -357,9 +357,9 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       field: 'observation_date',
       headerName: 'Date',
       editable: true,
-      // type: 'date',
+      type: 'date',
       minWidth: 150,
-      valueGetter: (params) => (params.row.observation_date ? moment(params.row.observation_date).toDate() : null),
+      valueGetter: (params) => (params.value ? new Date(params.value) : null),
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
@@ -372,19 +372,28 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         const error = hasError(params);
 
         return (
-          <DatePickerDataGrid
+          <TextFieldDataGrid
             dataGridProps={params}
-            dateFieldProps={{
-              slotProps: {
-                textField: {
-                  error,
-                  inputProps: { sx: (theme: Theme) => (error ? { color: theme.palette.error.main } : {}) }
-                }
-              }
+            textFieldProps={{
+              type: 'date',
+              value: params.value ? moment(params.value).format('YYYY-MM-DD') : null,
+              onChange: (event) => {
+                const value = moment(event.target.value).toDate()
+                console.log('New value:', value)
+                apiRef?.current.setEditCellValue({
+                  id: params.id,
+                  field: params.field,
+                  value
+                });
+              },
+              
+              error,
+              color: error ? 'error' : undefined
             }}
           />
         );
       }
+      
     },
     {
       field: 'observation_time',
