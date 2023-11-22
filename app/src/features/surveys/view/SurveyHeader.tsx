@@ -153,6 +153,7 @@ const SurveyHeader = () => {
             sx={{
               display: 'flex',
               alignItems: 'center',
+              mt: 1,
               '& svg': {
                 color: 'text.secondary'
               }
