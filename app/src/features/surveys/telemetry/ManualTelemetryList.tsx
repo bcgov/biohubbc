@@ -157,6 +157,19 @@ const ManualTelemetryList = () => {
       const device = new Device({ ...data, collar_id: '' });
       telemetryApi.devices.upsertCollar(device);
     } catch (error) {}
+
+    for (const deployment of data.deployments || []) {
+      try {
+        biohubApi.survey.updateDeployment(
+          surveyContext.projectId,
+          surveyContext.surveyId,
+          data.survey_critter_id,
+          deployment
+        );
+      } catch (error) {
+        // error snack bar
+      }
+    }
   };
 
   const handleUploadFile = async (file?: File, attachmentType?: AttachmentType) => {};
