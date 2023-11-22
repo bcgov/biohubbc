@@ -1,3 +1,4 @@
+import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import { ICritterDeploymentResponse, useTelemetryApi } from 'hooks/useTelemetryApi';
@@ -66,7 +67,7 @@ export interface ISurveyContext {
   /**
    * The Data Loader used to load critter deployments for a given survey
    *
-   * @type {DataLoader<[project_id: number, survey_id: number], IGetSampleSiteResponse, unknown>}
+   * @type {DataLoader<[project_id: number, survey_id: number], ICritterDeploymentResponse, unknown>}
    * @memberof ISurveyContext
    */
   critterDeploymentDataLoader: DataLoader<
@@ -74,6 +75,8 @@ export interface ISurveyContext {
     ICritterDeploymentResponse[],
     unknown
   >;
+
+  deploymentDataLoader: DataLoader<[project_id: number, survey_id: number], IAnimalDeployment[], unknown>;
 
   /**
    * The Data Loader used to load critters for a given survey
@@ -115,6 +118,7 @@ export const SurveyContext = createContext<ISurveyContext>({
     ICritterDeploymentResponse[],
     unknown
   >,
+  deploymentDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IAnimalDeployment[], unknown>,
   critterDataLoader: {} as DataLoader<
     [project_id: number, survey_id: number],
     IDetailedCritterWithInternalId[],
@@ -133,6 +137,7 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
   const artifactDataLoader = useDataLoader(biohubApi.survey.getSurveyAttachments);
   const sampleSiteDataLoader = useDataLoader(biohubApi.samplingSite.getSampleSites);
   const critterDeploymentDataLoader = useDataLoader(telemetryApi.getCritterAndDeployments);
+  const deploymentDataLoader = useDataLoader(biohubApi.survey.getDeploymentsInSurvey);
   const critterDataLoader = useDataLoader(biohubApi.survey.getSurveyCritters);
 
   const urlParams: Record<string, string | number | undefined> = useParams();
@@ -158,6 +163,7 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
   artifactDataLoader.load(projectId, surveyId);
   sampleSiteDataLoader.load(projectId, surveyId);
   critterDeploymentDataLoader.load(projectId, surveyId);
+  deploymentDataLoader.load(projectId, surveyId);
   critterDataLoader.load(projectId, surveyId);
 
   /**
@@ -189,6 +195,7 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
       sampleSiteDataLoader,
       critterDeploymentDataLoader,
       critterDataLoader,
+      deploymentDataLoader,
       projectId,
       surveyId
     };
@@ -200,6 +207,7 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
     sampleSiteDataLoader,
     critterDeploymentDataLoader,
     critterDataLoader,
+    deploymentDataLoader,
     projectId,
     surveyId
   ]);

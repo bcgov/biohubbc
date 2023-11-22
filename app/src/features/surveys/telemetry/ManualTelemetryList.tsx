@@ -21,8 +21,10 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
+import { isEqual as _deepEquals } from 'lodash';
 import { get } from 'lodash-es';
 import { useContext, useEffect, useMemo, useState } from 'react';
+import { datesSameNullable } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import { InferType } from 'yup';
 import { ANIMAL_FORM_MODE } from '../view/survey-animals/animal';
@@ -76,14 +78,11 @@ const ManualTelemetryList = () => {
 
   useEffect(() => {
     surveyContext.critterDeploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-    biohubApi.survey.getDeploymentsInSurvey(surveyContext.projectId, surveyContext.surveyId);
+    surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
     surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
   }, []);
 
-  const deployments = useMemo(
-    () => surveyContext.critterDeploymentDataLoader.data,
-    [surveyContext.critterDeploymentDataLoader.data]
-  );
+  const deployments = useMemo(() => surveyContext.deploymentDataLoader.data, [surveyContext.deploymentDataLoader.data]);
   const critters = useMemo(() => surveyContext.critterDataLoader.data, [surveyContext.critterDataLoader.data]);
 
   const handleMenuOpen = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, device_id: number) => {
@@ -94,7 +93,7 @@ const ManualTelemetryList = () => {
     if (deployment) {
       const details = deviceDetails.deployments.find((item) => item.deployment_id === deployment.deployment_id);
       const editData: AnimalDeployment = {
-        survey_critter_id: Number(deployment.survey_critter_id),
+        survey_critter_id: 1, // need something more here...
         deployments: [
           {
             deployment_id: deployment.deployment_id,
@@ -123,7 +122,7 @@ const ManualTelemetryList = () => {
       // EDIT EXISTING DEPLOYMENT
       await handleEditDeployment(data);
     }
-    // UPLOAD ANY FILES
+    // UPLOAD/ REPLACE ANY FILES FOUND
     if (data.attachmentFile && data.attachmentType) {
       await handleUploadFile(data.attachmentFile, data.attachmentType);
     }
@@ -149,26 +148,45 @@ const ManualTelemetryList = () => {
     }
   };
 
-  const handleEditDeployment = async (data: AnimalDeployment) => {};
+  const handleEditDeployment = async (data: AnimalDeployment) => {
+    try {
+      await updateDeployments(data);
+      await updateDevice(data);
+    } catch (error) {
+      // error snack bar
+    }
+  };
+
+  const updateDeployments = async (data: AnimalDeployment) => {
+    for (const deployment of data.deployments || []) {
+      const existingDeployment = deployments?.find((item) => item.deployment_id === deployment.deployment_id);
+      if (
+        !datesSameNullable(deployment?.attachment_start, existingDeployment?.attachment_start) ||
+        !datesSameNullable(deployment?.attachment_end, existingDeployment?.attachment_end)
+      ) {
+        try {
+          biohubApi.survey.updateDeployment(
+            surveyContext.projectId,
+            surveyContext.surveyId,
+            data.survey_critter_id,
+            deployment
+          );
+        } catch (error) {
+          throw new Error(`Failed to update deployment ${deployment.deployment_id}`);
+        }
+      }
+    }
+  };
 
   const updateDevice = async (data: AnimalDeployment) => {
     const existingDevice = deployments?.find((item) => item.device_id === data.device_id);
+    const device = new Device({ ...data, collar_id: existingDevice?.collar_id });
     try {
-      const device = new Device({ ...data, collar_id: '' });
-      telemetryApi.devices.upsertCollar(device);
-    } catch (error) {}
-
-    for (const deployment of data.deployments || []) {
-      try {
-        biohubApi.survey.updateDeployment(
-          surveyContext.projectId,
-          surveyContext.surveyId,
-          data.survey_critter_id,
-          deployment
-        );
-      } catch (error) {
-        // error snack bar
+      if (existingDevice && !_deepEquals(new Device(existingDevice), device)) {
+        await telemetryApi.devices.upsertCollar(device);
       }
+    } catch (error) {
+      throw new Error(`Failed to update collar ${device.collar_id}`);
     }
   };
 
@@ -328,7 +346,7 @@ const ManualTelemetryList = () => {
                   {deployments?.map((item) => (
                     <ManualTelemetryCard
                       device_id={item.device_id}
-                      name={item.alias}
+                      name={'Animal'}
                       details={`Device ID: ${item.device_id}`}
                       onMenu={(event, id) => {
                         handleMenuOpen(event, id);
