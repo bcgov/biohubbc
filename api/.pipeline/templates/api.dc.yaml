@@ -222,7 +222,7 @@ objects:
                 - name: NODE_ENV
                   value: ${NODE_ENV}
                 - name: NODE_OPTIONS
-                  value: ${NODE_ENV}
+                  value: ${NODE_OPTIONS}
                 # BioHub Platform (aka: Backbone)
                 - name: BACKBONE_API_HOST
                   value: ${BACKBONE_API_HOST}
