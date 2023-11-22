@@ -33,13 +33,14 @@ export const TaxonomyContextProvider = (props: PropsWithChildren) => {
   const isMounted = useIsMounted();
 
   const [_taxonomyCache, _setTaxonomyCache] = useState<Record<number, ITaxonomy | null>>({});
-  const _dispatched = useRef<Record<number, Promise<void>>>({});
+  const _dispatchedIds = useRef<Set<number>>(new Set<number>([]));
 
   const [isLoading, setIsLoading] = useState(false);
 
   const cacheSpeciesTaxonomyByIds = useCallback(
     async (ids: number[]) => {
       setIsLoading(true);
+      ids.forEach((id) => _dispatchedIds.current.add(id));
 
       await biohubApi.taxonomy
         .getSpeciesFromIds(ids)
@@ -75,7 +76,7 @@ export const TaxonomyContextProvider = (props: PropsWithChildren) => {
         return getProperty(_taxonomyCache, id);
       }
 
-      if (hasProperty(_dispatched.current, id)) {
+      if (_dispatchedIds.current.has(id)) {
         // Request to fetch this taxon id is still pending
         return null;
       }

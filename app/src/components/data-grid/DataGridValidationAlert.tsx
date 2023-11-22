@@ -91,23 +91,25 @@ const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataG
     return sortedErrors[index];
   }, [sortedErrors, index]);
 
-  const focusErrorAtIndex = useCallback((errorIndex: number) => {
-    const focusedError = sortedErrors[errorIndex];
-    if (!focusedError) {
-      return;
-    }
+  const focusErrorAtIndex = useCallback(
+    (errorIndex: number) => {
+      const focusedError = sortedErrors[errorIndex];
+      if (!focusedError) {
+        return;
+      }
 
-    const field = String(focusedError.field);
-    const rowIndex = props.muiDataGridApiRef.getSortedRowIds().indexOf(focusedError.rowId);
-    const colIndex = props.muiDataGridApiRef.getColumnIndex(field);
-    const pageSize = props.muiDataGridApiRef.state.pagination.paginationModel.pageSize;
-    const page = Math.floor((rowIndex + 1) / pageSize);
+      const field = String(focusedError.field);
+      const rowIndex = props.muiDataGridApiRef.getSortedRowIds().indexOf(focusedError.rowId);
+      const colIndex = props.muiDataGridApiRef.getColumnIndex(field);
+      const pageSize = props.muiDataGridApiRef.state.pagination.paginationModel.pageSize;
+      const page = Math.floor((rowIndex + 1) / pageSize);
 
-    props.muiDataGridApiRef.setPage(page);
-    props.muiDataGridApiRef.setCellFocus(focusedError.rowId, field);
-    props.muiDataGridApiRef.scrollToIndexes({ rowIndex, colIndex });
-
-  }, [sortedErrors]);
+      props.muiDataGridApiRef.setPage(page);
+      props.muiDataGridApiRef.setCellFocus(focusedError.rowId, field);
+      props.muiDataGridApiRef.scrollToIndexes({ rowIndex, colIndex });
+    },
+    [sortedErrors]
+  );
 
   useEffect(() => {
     if (Object.keys(props.validationModel).length > 0) {

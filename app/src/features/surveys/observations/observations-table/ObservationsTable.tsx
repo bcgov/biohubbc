@@ -11,7 +11,6 @@ import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/Auto
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
 import ConditionalAutocompleteDataGridEditCell from 'components/data-grid/conditional-autocomplete/ConditionalAutocompleteDataGridEditCell';
 import ConditionalAutocompleteDataGridViewCell from 'components/data-grid/conditional-autocomplete/ConditionalAutocompleteDataGridViewCell';
-import DatePickerDataGrid from 'components/data-grid/DatePickerDataGrid';
 import TaxonomyDataGridEditCell from 'components/data-grid/taxonomy/TaxonomyDataGridEditCell';
 import TaxonomyDataGridViewCell from 'components/data-grid/taxonomy/TaxonomyDataGridViewCell';
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
@@ -359,7 +358,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       editable: true,
       type: 'date',
       minWidth: 150,
-      valueGetter: (params) => (params.value ? new Date(params.value) : null),
+      valueGetter: (params) => (params.row.observation_date ? moment(params.row.observation_date).toDate() : null),
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
@@ -378,22 +377,20 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
               type: 'date',
               value: params.value ? moment(params.value).format('YYYY-MM-DD') : null,
               onChange: (event) => {
-                const value = moment(event.target.value).toDate()
-                console.log('New value:', value)
+                const value = moment(event.target.value).toDate();
                 apiRef?.current.setEditCellValue({
                   id: params.id,
                   field: params.field,
                   value
                 });
               },
-              
+
               error,
               color: error ? 'error' : undefined
             }}
           />
         );
       }
-      
     },
     {
       field: 'observation_time',
