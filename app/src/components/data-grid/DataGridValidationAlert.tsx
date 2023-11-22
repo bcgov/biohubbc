@@ -10,7 +10,6 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { GridRowId } from '@mui/x-data-grid';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
-import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export type RowValidationError<T> = { field: keyof T; message: string };
@@ -28,14 +27,11 @@ export interface IDataGridErrorViewerProps<RowType> {
 const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataGridErrorViewerProps<RowType>) => {
   const [hideAlert, setHideAlert] = useState<boolean>(false);
   const [index, setIndex] = useState<number>(0);
-  // const [sortedErrors, setSortedErrors] = useState<ITableValidationError<RowType>[]>([]);
 
   const sortedRowIds = useMemo(
     () => props.muiDataGridApiRef?.getSortedRowIds?.() ?? [],
     [props.muiDataGridApiRef.getSortedRowIds]
   );
-
-  const numErrors = Object.values(props.validationModel).reduce((total, errors) => total + errors.length, 0);
 
   const sortedErrors: ITableValidationError<RowType>[] = useMemo(() => {
     const sortedEditableColumnNames = (props.muiDataGridApiRef?.getAllColumns?.() ?? [])
@@ -67,7 +63,9 @@ const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataG
       }, []);
 
     return newSortedErrors;
-  }, [numErrors]);
+  }, [JSON.stringify(props.validationModel)]);
+
+  const numErrors = sortedErrors.length;
 
   const handlePrev = useCallback(() => {
     setIndex((prev) => {
