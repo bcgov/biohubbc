@@ -10,6 +10,7 @@ import { geoJsonFeature } from './spatial-helpers';
 
 export const surveyObject: SurveyViewObject = {
   survey_details: {
+    uuid: 'uuid',
     id: 1,
     project_id: 1,
     survey_name: 'survey name',

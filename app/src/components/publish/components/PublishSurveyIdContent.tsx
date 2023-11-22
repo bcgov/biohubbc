@@ -23,12 +23,12 @@ const PublishSurveyIdContent = (props: IPublishSurveyIdContentProps) => {
   const { values, setFieldValue } = useFormikContext<ISubmitSurvey>();
 
   return (
-    <Stack gap={4}
+    <Stack
+      gap={4}
       divider={<Divider flexItem></Divider>}
       sx={{
         maxWidth: '800px'
-      }}
-      >
+      }}>
       <Typography variant="body1" color="textSecondary">
         Published data from this survey may be secured according to the Species and Ecosystems Data and Information
         Security (SEDIS) Policy.

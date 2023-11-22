@@ -1,9 +1,9 @@
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import { grey } from '@mui/material/colors';
 import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
@@ -19,7 +19,6 @@ import SamplingMethods from './components/SamplingMethods';
 import SurveyFundingSources from './components/SurveyFundingSources';
 import SurveyGeneralInformation from './components/SurveyGeneralInformation';
 import SurveyStudyArea from './components/SurveyStudyArea';
-import Button from '@mui/material/Button';
 
 /**
  * Survey details content for a survey.
@@ -37,11 +36,10 @@ const SurveyDetails = () => {
         <Button
           variant="outlined"
           color="primary"
-          component={RouterLink} 
-          aria-label="Edit Details" 
+          component={RouterLink}
+          aria-label="Edit Details"
           to="edit"
-          startIcon={<Icon path={mdiPencilOutline} size={0.75} />}
-        >
+          startIcon={<Icon path={mdiPencilOutline} size={0.75} />}>
           Edit
         </Button>
       </Toolbar>

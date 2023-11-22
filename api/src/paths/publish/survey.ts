@@ -41,8 +41,12 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
-          required: ['surveyId', 'data'],
+          required: ['surveyUUID', 'surveyId', 'data'],
           properties: {
+            surveyUUID: {
+              type: 'string',
+              description: 'Survey UUID'
+            },
             surveyId: {
               type: 'number'
             },
