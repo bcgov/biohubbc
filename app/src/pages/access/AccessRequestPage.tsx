@@ -174,17 +174,17 @@ export const AccessRequestPage: React.FC = () => {
                 <form onSubmit={handleSubmit}>
                   {requestForm}
                   <Box mt={4} display="flex" justifyContent="flex-end">
-                    <LoadingButton
-                      sx={{
-                        mr: 1
-                      }}
-                      loading={isSubmittingRequest}
-                      type="submit"
-                      variant="contained"
-                      color="primary"
-                      className={classes.actionButton}>
-                      Submit Request
-                    </LoadingButton>
+                    <Box sx={{ mr: 1 }}>
+                      {/* sx prop on LoadingButton causes typescript compilation issues */}
+                      <LoadingButton
+                        loading={isSubmittingRequest}
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        className={classes.actionButton}>
+                        Submit Request
+                      </LoadingButton>
+                    </Box>
                     <Button
                       variant="outlined"
                       color="primary"

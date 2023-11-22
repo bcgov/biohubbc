@@ -328,6 +328,21 @@ log-db-setup: ## Runs `docker logs <container> -f` for the database setup contai
 	@docker logs $(DOCKER_PROJECT_NAME)-db-setup-$(DOCKER_NAMESPACE)-container -f $(args)
 
 ## ------------------------------------------------------------------------------
+## Typescript Trace Commands
+## Runs ts-trace to find typescript compilation issues and hotspots
+## ------------------------------------------------------------------------------
+trace-app:
+	@echo "==============================================="
+	@echo "Typscript trace - searching App hotspots"
+	@echo "==============================================="
+	@cd app && tsc -p ./tsconfig.json --generateTrace ts-traces || npx @typescript/analyze-trace ts-traces
+
+trace-api:
+	@echo "==============================================="
+	@echo "Typscript trace - searching for Api hotspots"
+	@echo "==============================================="
+	@cd api && tsc -p ./tsconfig.json --generateTrace ts-traces || npx @typescript/analyze-trace ts-traces
+## ------------------------------------------------------------------------------
 ## Help
 ## ------------------------------------------------------------------------------
 

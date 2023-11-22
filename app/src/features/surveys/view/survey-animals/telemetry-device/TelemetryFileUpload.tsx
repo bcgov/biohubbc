@@ -5,16 +5,18 @@ import { useFormikContext } from 'formik';
 import React from 'react';
 import { IAnimalTelemetryDeviceFile } from './device';
 
-export const TelemetryFileUpload: React.FC<{ attachmentType: AttachmentType; index: number }> = (props) => {
+export const TelemetryFileUpload: React.FC<{ attachmentType: AttachmentType; fileKey: string; typeKey: string }> = (
+  props
+) => {
   const { setFieldValue } = useFormikContext<{ formValues: IAnimalTelemetryDeviceFile[] }>();
   const fileHandler: IFileHandler = (file) => {
-    setFieldValue(`${props.index}.attachmentFile`, file);
-    setFieldValue(`${props.index}.attachmentType`, props.attachmentType);
+    setFieldValue(props.fileKey, file);
+    setFieldValue(props.typeKey, props.attachmentType);
   };
 
   const replaceHandler: IReplaceHandler = () => {
-    setFieldValue(`${props.index}.attachmentFile`, null);
-    setFieldValue(`${props.index}.attachmentType`, props.attachmentType);
+    setFieldValue(props.fileKey, null);
+    setFieldValue(props.typeKey, props.attachmentType);
   };
 
   return (
