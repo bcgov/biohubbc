@@ -20,17 +20,22 @@ import { AttachmentType } from 'constants/attachments';
 import { SurveyContext } from 'contexts/surveyContext';
 import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { get } from 'lodash-es';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import yup from 'utils/YupSchema';
 import { InferType } from 'yup';
 import { ANIMAL_FORM_MODE } from '../view/survey-animals/animal';
-import { AnimalTelemetryDeviceSchema, IAnimalTelemetryDevice } from '../view/survey-animals/telemetry-device/device';
+import {
+  AnimalTelemetryDeviceSchema,
+  Device,
+  IAnimalTelemetryDevice
+} from '../view/survey-animals/telemetry-device/device';
 import TelemetryDeviceForm from '../view/survey-animals/telemetry-device/TelemetryDeviceForm';
 import ManualTelemetryCard from './ManualTelemetryCard';
 
 export const AnimalDeploymentSchema = AnimalTelemetryDeviceSchema.shape({
-  survey_critter_id: yup.mixed<string | number>().required('An animal selection is required'), // add survey critter id to form
+  survey_critter_id: yup.number().required('An animal selection is required'), // add survey critter id to form
   critter_id: yup.string(),
   attachmentFile: yup.mixed(),
   attachmentType: yup.mixed<AttachmentType>().oneOf(Object.values(AttachmentType))
@@ -42,16 +47,36 @@ const ManualTelemetryList = () => {
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const surveyContext = useContext(SurveyContext);
   const biohubApi = useBiohubApi();
+  const telemetryApi = useTelemetryApi();
 
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
 
   const [showDialog, setShowDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [formMode, setFormMode] = useState(ANIMAL_FORM_MODE.ADD);
   const [critterId, setCritterId] = useState<number | string>('');
-  const [deviceIndex, setDeviceIndex] = useState(0);
+  const [formData, setFormData] = useState<AnimalDeployment>({
+    survey_critter_id: '' as unknown as number, // form needs '' to display the no value text
+    deployments: [
+      {
+        deployment_id: '',
+        attachment_start: '',
+        attachment_end: undefined
+      }
+    ],
+    device_id: '' as unknown as number, // form needs '' to display the no value text
+    device_make: '',
+    device_model: '',
+    frequency: undefined,
+    frequency_unit: undefined,
+    attachmentType: undefined,
+    attachmentFile: undefined,
+    critter_id: ''
+  });
 
   useEffect(() => {
     surveyContext.critterDeploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    biohubApi.survey.getDeploymentsInSurvey(surveyContext.projectId, surveyContext.surveyId);
     surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
   }, []);
 
@@ -61,25 +86,50 @@ const ManualTelemetryList = () => {
   );
   const critters = useMemo(() => surveyContext.critterDataLoader.data, [surveyContext.critterDataLoader.data]);
 
-  const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, device_id: number) => {
+  const handleMenuOpen = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, device_id: number) => {
     setAnchorEl(event.currentTarget);
-    setDeviceIndex(Number(deployments?.findIndex((item) => item.device_id === device_id)));
+    const deployment = deployments?.find((item) => item.device_id === device_id);
+    const deviceDetails = await telemetryApi.devices.getDeviceDetails(device_id);
+    // need to map deployment back into object for initial values
+    if (deployment) {
+      const details = deviceDetails.deployments.find((item) => item.deployment_id === deployment.deployment_id);
+      const editData: AnimalDeployment = {
+        survey_critter_id: Number(deployment.survey_critter_id),
+        deployments: [
+          {
+            deployment_id: deployment.deployment_id,
+            attachment_start: deployment.attachment_start,
+            attachment_end: deployment.attachment_end
+          }
+        ],
+        device_id: deployment.device_id,
+        device_make: details?.device_make ?? '',
+        device_model: details?.device_model ?? '',
+        frequency: details?.frequency,
+        frequency_unit: details?.frequency_unit,
+        attachmentType: undefined,
+        attachmentFile: undefined,
+        critter_id: deployment.critter_id
+      };
+      setFormData(editData);
+    }
   };
 
   const handleSubmit = async (data: AnimalDeployment) => {
-    // ADD NEW TELEMETRY
-    await handleAddTelemetry(data);
-
-    // EDIT TELEMETRY
-    // TODO: add this
-
+    if (formMode === ANIMAL_FORM_MODE.ADD) {
+      // ADD NEW DEPLOYMENT
+      await handleAddDeployment(data);
+    } else {
+      // EDIT EXISTING DEPLOYMENT
+      await handleEditDeployment(data);
+    }
     // UPLOAD ANY FILES
     if (data.attachmentFile && data.attachmentType) {
       await handleUploadFile(data.attachmentFile, data.attachmentType);
     }
   };
 
-  const handleAddTelemetry = async (data: AnimalDeployment) => {
+  const handleAddDeployment = async (data: AnimalDeployment) => {
     const critter = critters?.find((a) => a.survey_critter_id === data.survey_critter_id);
     if (!critter) console.log('Did not find critter in addTelemetry!');
 
@@ -99,7 +149,31 @@ const ManualTelemetryList = () => {
     }
   };
 
+  const handleEditDeployment = async (data: AnimalDeployment) => {};
+
+  const updateDevice = async (data: AnimalDeployment) => {
+    const existingDevice = deployments?.find((item) => item.device_id === data.device_id);
+    try {
+      const device = new Device({ ...data, collar_id: '' });
+      telemetryApi.devices.upsertCollar(device);
+    } catch (error) {}
+
+    for (const deployment of data.deployments || []) {
+      try {
+        biohubApi.survey.updateDeployment(
+          surveyContext.projectId,
+          surveyContext.surveyId,
+          data.survey_critter_id,
+          deployment
+        );
+      } catch (error) {
+        // error snack bar
+      }
+    }
+  };
+
   const handleUploadFile = async (file?: File, attachmentType?: AttachmentType) => {};
+
   return (
     <>
       <Menu
@@ -116,7 +190,9 @@ const ManualTelemetryList = () => {
         }}>
         <MenuItem
           onClick={() => {
-            console.log('Edit clicked');
+            setFormMode(ANIMAL_FORM_MODE.EDIT);
+            setShowDialog(true);
+            setAnchorEl(null);
           }}>
           <ListItemIcon>
             <Icon path={mdiPencilOutline} size={1} />
@@ -131,32 +207,13 @@ const ManualTelemetryList = () => {
         </MenuItem>
       </Menu>
       <Formik
-        initialValues={{
-          survey_critter_id: '',
-          deployments: [
-            {
-              deployment_id: '',
-              attachment_start: '',
-              attachment_end: undefined
-            }
-          ],
-          device_id: 0,
-          device_make: '',
-          device_model: '',
-          frequency: undefined,
-          frequency_unit: undefined,
-          attachmentType: undefined,
-          attachmentFile: undefined,
-          critter_id: ''
-        }}
+        initialValues={formData}
         enableReinitialize
         validationSchema={AnimalDeploymentSchema}
         validateOnBlur={false}
         validateOnChange={true}
         onSubmit={async (values, actions) => {
-          console.log('ON SUBMIT');
           setIsLoading(true);
-          console.log(values);
           await handleSubmit(values);
           setIsLoading(false);
           setShowDialog(false);
@@ -165,16 +222,7 @@ const ManualTelemetryList = () => {
         }}>
         {(formikProps) => (
           <>
-            <Dialog
-              open={showDialog}
-              fullScreen={fullScreen}
-              maxWidth="xl"
-              onTransitionExited={() => {
-                // if (formMode === ANIMAL_FORM_MODE.ADD) {
-                //   formikArrayHelpers.remove(selectedIndex);
-                // }
-                // setFormMode(ANIMAL_FORM_MODE.EDIT);
-              }}>
+            <Dialog open={showDialog} fullScreen={fullScreen} maxWidth="xl">
               <DialogTitle>Critter Deployments</DialogTitle>
               <DialogContent>
                 <>
@@ -209,7 +257,7 @@ const ManualTelemetryList = () => {
                       </Typography>
                     </FormHelperText>
                   </FormControl>
-                  <TelemetryDeviceForm index={deviceIndex} mode={ANIMAL_FORM_MODE.ADD} />
+                  <TelemetryDeviceForm mode={formMode} />
                 </>
               </DialogContent>
               <DialogActions>
@@ -259,17 +307,8 @@ const ManualTelemetryList = () => {
                   color="primary"
                   startIcon={<Icon path={mdiPlus} size={1} />}
                   onClick={() => {
-                    // TODO: this needs to change
-                    // need to use a new form
-                    // new form needs to look for existing values based on ID
-                    // form shouldn't really be based around index anymore
-                    // need to change a bunch of things to account for that
-                    // will also need to update the
-                    console.log(formikProps.values);
-                    // get the last index of the table
-                    setDeviceIndex(0);
+                    setFormMode(ANIMAL_FORM_MODE.ADD);
                     setShowDialog(true);
-                    // AddEditAnimal: Line 244
                   }}>
                   Add
                 </Button>

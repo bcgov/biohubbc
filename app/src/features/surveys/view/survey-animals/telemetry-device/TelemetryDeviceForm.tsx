@@ -13,12 +13,11 @@ import { IAnimalTelemetryDevice } from './device';
 import TelemetryFileUpload from './TelemetryFileUpload';
 
 export interface ITelemetryDeviceFormProps {
-  index: number;
   mode: ANIMAL_FORM_MODE;
 }
 
 const TelemetryDeviceForm = (props: ITelemetryDeviceFormProps) => {
-  const { index, mode } = props;
+  const { mode } = props;
 
   const telemetryApi = useTelemetryApi();
   const { values, validateField } = useFormikContext<IAnimalTelemetryDevice>();
@@ -43,7 +42,7 @@ const TelemetryDeviceForm = (props: ITelemetryDeviceFormProps) => {
     refresh();
     validateField(`device_make`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [device.device_id, device.device_make, deviceDetails?.device?.device_make, index]);
+  }, [device.device_id, device.device_make, deviceDetails?.device?.device_make]);
 
   if (!device) {
     return <></>;
@@ -158,7 +157,7 @@ const TelemetryDeviceForm = (props: ITelemetryDeviceFormProps) => {
         <Typography component="legend" variant="body2">
           Deployments
         </Typography>
-        <DeploymentForm mode={mode} deviceDetails={deviceDetails} index={index} />
+        <DeploymentForm mode={mode} deviceDetails={deviceDetails} />
       </Box>
       <FormikDevDebugger />
     </>

@@ -225,7 +225,6 @@ export const SurveyAnimalsPage = () => {
         !datesSameNullable(formDeployment?.attachment_end, existingDeployment?.attachment_end)
       ) {
         try {
-          console.log(`Would update deployment in edit mode ${JSON.stringify(formDeployment, null, 2)}`);
           await bhApi.survey.updateDeployment(projectId, surveyId, survey_critter_id, formDeployment);
         } catch (error) {
           throw new Error(`Failed to update deployment ${formDeployment.deployment_id}`);
