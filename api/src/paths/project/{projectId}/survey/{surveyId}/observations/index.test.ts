@@ -443,7 +443,7 @@ describe('insertUpdateSurveyObservations', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     const insertUpdateSurveyObservationsStub = sinon
-      .stub(ObservationService.prototype, 'insertUpdateDeleteSurveyObservations')
+      .stub(ObservationService.prototype, 'insertUpdateSurveyObservations')
       .resolves(([{ survey_observation_id: 1 }, { survey_observation_id: 2 }] as unknown) as ObservationRecord[]);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -481,7 +481,7 @@ describe('insertUpdateSurveyObservations', () => {
       ]
     };
 
-    const requestHandler = observationRecords.insertUpdateDeleteSurveyObservations();
+    const requestHandler = observationRecords.insertUpdateSurveyObservations();
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(insertUpdateSurveyObservationsStub).to.have.been.calledOnceWith(2, [
@@ -521,7 +521,7 @@ describe('insertUpdateSurveyObservations', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(ObservationService.prototype, 'insertUpdateDeleteSurveyObservations').rejects(new Error('a test error'));
+    sinon.stub(ObservationService.prototype, 'insertUpdateSurveyObservations').rejects(new Error('a test error'));
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -545,7 +545,7 @@ describe('insertUpdateSurveyObservations', () => {
     };
 
     try {
-      const requestHandler = observationRecords.insertUpdateDeleteSurveyObservations();
+      const requestHandler = observationRecords.insertUpdateSurveyObservations();
 
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
