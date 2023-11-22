@@ -100,7 +100,7 @@ POST.apiDoc = {
           schema: {
             type: 'object',
             properties: {
-              queue_id: {
+              submission_id: {
                 type: 'number'
               }
             }
@@ -135,13 +135,13 @@ export function publishSurvey(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
-    const { surveyId, data } = req.body;
+    const { surveyUUID, surveyId, data } = req.body;
 
     try {
       await connection.open();
 
       const platformService = new PlatformService(connection);
-      const response = await platformService.submitSurveyIdToBioHub(surveyId, data);
+      const response = await platformService.submitSurveyIdToBioHub(surveyUUID, surveyId, data);
 
       await connection.commit();
 

@@ -1,5 +1,5 @@
 import { LoadingButton } from '@mui/lab';
-import { DialogContentText } from '@mui/material';
+import { CircularProgress, DialogContentText } from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -53,6 +53,8 @@ const PublishSurveyIdDialog = (props: IPublishSurveyIdDialogProps) => {
   const biohubApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
 
+  const surveyWithDetails = surveyContext.surveyDataLoader.data;
+
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const dialogContext = useContext(DialogContext);
@@ -86,7 +88,11 @@ const PublishSurveyIdDialog = (props: IPublishSurveyIdDialogProps) => {
     setIsSubmitting(true);
 
     return biohubApi.publish
-      .publishSurveyId(surveyContext.surveyId, values)
+      .publishSurveyId(
+        surveyContext.surveyDataLoader.data?.surveyData.survey_details.uuid || '',
+        surveyContext.surveyId,
+        values
+      )
       .then(() => {
         setShowSuccessDialog(true);
       })
@@ -98,10 +104,17 @@ const PublishSurveyIdDialog = (props: IPublishSurveyIdDialogProps) => {
         });
       })
       .finally(() => {
+        surveyContext.surveyDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
         setIsSubmitting(false);
         props.onClose();
       });
   };
+
+  if (!surveyWithDetails) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
+
+  const publishDate = surveyWithDetails.surveySupplementaryData.survey_metadata_publish?.event_timestamp.split(' ')[0];
 
   return (
     <>
@@ -133,7 +146,7 @@ const PublishSurveyIdDialog = (props: IPublishSurveyIdDialogProps) => {
                 {SubmitSurveyBiohubI18N.submitSurveyBiohubDialogTitle}
               </DialogTitle>
               <DialogContent>
-                <PublishSurveyIdContent />
+                <PublishSurveyIdContent publishDate={publishDate} />
               </DialogContent>
               <DialogActions>
                 <LoadingButton

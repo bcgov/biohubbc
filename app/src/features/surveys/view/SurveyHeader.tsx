@@ -3,7 +3,6 @@ import Icon from '@mdi/react';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
@@ -128,6 +127,8 @@ const SurveyHeader = () => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
+  const publishDate = surveyWithDetails.surveySupplementaryData.survey_metadata_publish?.event_timestamp.split(' ')[0];
+
   return (
     <>
       <SurveyBaseHeader
@@ -168,6 +169,9 @@ const SurveyHeader = () => {
                 surveyWithDetails.surveyData.survey_details.end_date
               )}
             </Typography>
+            <Typography component="span" variant="subtitle1" color="textSecondary">
+              Published: {publishDate ? publishDate : 'Not Published'}
+            </Typography>
           </Typography>
         }
         buttonJSX={
@@ -175,75 +179,73 @@ const SurveyHeader = () => {
             <ProjectRoleGuard
               validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
               validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                
-                <Stack flexDirection='row' gap={1}>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    startIcon={<Icon path={mdiPencilOutline} size={0.75} />}
-                    onClick={() => history.push('edit')}>
-                    Edit
-                  </Button>
-                  <Button
-                    title="Submit Survey Data and Documents"
-                    color="primary"
-                    variant="contained"
-                    onClick={() => setPublishSurveyDialogOpen(true)}
-                    style={{ minWidth: '8rem' }}>
-                    Publish Survey
-                  </Button>
-                </Stack>
-              
-                <Button sx={{display: 'none'}}
-                  id="survey_settings_button"
-                  aria-label="Survey Settings"
-                  aria-controls="surveySettingsMenu"
-                  aria-haspopup="true"
+              <Stack flexDirection="row" gap={1}>
+                <Button
                   variant="outlined"
                   color="primary"
-                  startIcon={<Icon path={mdiCogOutline} size={1} />}
-                  endIcon={<Icon path={mdiChevronDown} size={1} />}
-                  onClick={(event: React.MouseEvent<HTMLButtonElement>) => setMenuAnchorEl(event.currentTarget)}>
-                  Settings
+                  startIcon={<Icon path={mdiPencilOutline} size={0.75} />}
+                  onClick={() => history.push('edit')}>
+                  Edit
                 </Button>
+                <Button
+                  title="Submit Survey Data and Documents"
+                  color="primary"
+                  variant="contained"
+                  onClick={() => setPublishSurveyDialogOpen(true)}
+                  style={{ minWidth: '8rem' }}>
+                  Publish Survey
+                </Button>
+              </Stack>
 
-                <Menu
-                  id="surveySettingsMenu"
-                  aria-labelledby="survey_settings_button"
-                  style={{ marginTop: '8px' }}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right'
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right'
-                  }}
-                  keepMounted
-                  anchorEl={menuAnchorEl}
-                  open={Boolean(menuAnchorEl)}
-                  onClose={() => setMenuAnchorEl(null)}>
-                  <MenuItem onClick={() => history.push('edit')}>
+              <Button
+                sx={{ display: 'none' }}
+                id="survey_settings_button"
+                aria-label="Survey Settings"
+                aria-controls="surveySettingsMenu"
+                aria-haspopup="true"
+                variant="outlined"
+                color="primary"
+                startIcon={<Icon path={mdiCogOutline} size={1} />}
+                endIcon={<Icon path={mdiChevronDown} size={1} />}
+                onClick={(event: React.MouseEvent<HTMLButtonElement>) => setMenuAnchorEl(event.currentTarget)}>
+                Settings
+              </Button>
+
+              <Menu
+                id="surveySettingsMenu"
+                aria-labelledby="survey_settings_button"
+                style={{ marginTop: '8px' }}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right'
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right'
+                }}
+                keepMounted
+                anchorEl={menuAnchorEl}
+                open={Boolean(menuAnchorEl)}
+                onClose={() => setMenuAnchorEl(null)}>
+                <MenuItem onClick={() => history.push('edit')}>
+                  <ListItemIcon>
+                    <Icon path={mdiPencilOutline} size={1} />
+                  </ListItemIcon>
+                  <Typography variant="inherit">Edit Survey Details</Typography>
+                </MenuItem>
+                {enableDeleteSurveyButton && (
+                  <MenuItem
+                    data-testid="delete-survey-button"
+                    onClick={showDeleteSurveyDialog}
+                    disabled={!enableDeleteSurveyButton}>
                     <ListItemIcon>
-                      <Icon path={mdiPencilOutline} size={1} />
+                      <Icon path={mdiTrashCanOutline} size={1} />
                     </ListItemIcon>
-                    <Typography variant="inherit">Edit Survey Details</Typography>
+                    <Typography variant="inherit">Delete Survey</Typography>
                   </MenuItem>
-                  {enableDeleteSurveyButton && (
-                    <MenuItem
-                      data-testid="delete-survey-button"
-                      onClick={showDeleteSurveyDialog}
-                      disabled={!enableDeleteSurveyButton}>
-                      <ListItemIcon>
-                        <Icon path={mdiTrashCanOutline} size={1} />
-                      </ListItemIcon>
-                      <Typography variant="inherit">Delete Survey</Typography>
-                    </MenuItem>
-                  )}
-                </Menu>
-
+                )}
+              </Menu>
             </ProjectRoleGuard>
-              
           </>
         }
       />

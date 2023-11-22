@@ -261,15 +261,17 @@ export class PlatformService extends DBService {
   /**
    * Submit survey ID to BioHub.
    *
+   * @param {string} surveyUUID
    * @param {number} surveyId
    * @param {{ additionalInformation: string }} data
    * @return {*}  {Promise<{ queue_id: number }>}
    * @memberof PlatformService
    */
   async submitSurveyIdToBioHub(
+    surveyUUID: string,
     surveyId: number,
     data: { additionalInformation: string }
-  ): Promise<{ queue_id: number }> {
+  ): Promise<{ submission_id: number }> {
     defaultLog.debug({ label: 'submitSurveyIdToBioHub', message: 'params', surveyId });
 
     if (!getBackboneIntakeEnabled()) {
@@ -280,11 +282,12 @@ export class PlatformService extends DBService {
 
     const token = await keycloakService.getKeycloakServiceToken();
 
-    const backboneArtifactIntakeUrl = new URL(getBackboneSurveyIntakePath(), getBackboneApiHost()).href;
+    const backboneSurveyIntakeUrl = new URL(getBackboneSurveyIntakePath(), getBackboneApiHost()).href;
 
-    const response = await axios.post<{ queue_id: number }>(
-      backboneArtifactIntakeUrl,
+    const response = await axios.post<{ submission_id: number }>(
+      backboneSurveyIntakeUrl,
       {
+        uuid: surveyUUID,
         surveyId: surveyId,
         additionalInformation: data.additionalInformation
       },
@@ -300,9 +303,13 @@ export class PlatformService extends DBService {
     }
 
     // Insert publish history record
+
+    // NOTE: this is a temporary solution to get the queue_id into the publish history table
+    //      the queue_id is not returned from the survey intake endpoint, so we are using the submission_id
+    //      as a temporary solution
     await this.historyPublishService.insertSurveyMetadataPublishRecord({
       survey_id: surveyId,
-      queue_id: response.data.queue_id
+      queue_id: response.data.submission_id
     });
 
     return response.data;

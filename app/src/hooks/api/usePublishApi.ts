@@ -37,19 +37,23 @@ const usePublishApi = (axios: AxiosInstance) => {
   /**
    * Publish Survey Data
    *
-   * @param {number} projectId
+   * @param {string} surveyUUID
    * @param {number} surveyId
    * @param {ISubmitSurvey} dataSubmission
-   * @return {*}  {Promise<{ queue_id: number }>}
+   * @return {*}  {Promise<{ submission_id: number }>}
    */
-  const publishSurveyId = async (surveyId: number, dataSubmission: ISubmitSurvey): Promise<{ queue_id: number }> => {
+  const publishSurveyId = async (
+    surveyUUID: string,
+    surveyId: number,
+    dataSubmission: ISubmitSurvey
+  ): Promise<{ submission_id: number }> => {
     const sendData = {
+      surveyUUID: surveyUUID,
       surveyId: surveyId,
       data: dataSubmission
     };
 
     const { data } = await axios.post('/api/publish/survey', sendData);
-
     return data;
   };
 

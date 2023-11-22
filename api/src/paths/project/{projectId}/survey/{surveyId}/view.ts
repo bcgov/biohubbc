@@ -92,6 +92,9 @@ GET.apiDoc = {
                       survey_name: {
                         type: 'string'
                       },
+                      uuid: {
+                        type: 'string'
+                      },
                       start_date: {
                         oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
                         description: 'ISO 8601 date string for the funding end_date'

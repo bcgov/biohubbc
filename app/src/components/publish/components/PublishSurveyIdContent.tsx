@@ -10,16 +10,20 @@ import CustomTextField from 'components/fields/CustomTextField';
 import { useFormikContext } from 'formik';
 import { ISubmitSurvey } from '../PublishSurveyIdDialog';
 
+export interface IPublishSurveyIdContentProps {
+  publishDate: string | unknown;
+}
+
 /**
  * Survey Publish Content.
  *
  * @return {*}
  */
-const PublishSurveyIdContent = () => {
+const PublishSurveyIdContent = (props: IPublishSurveyIdContentProps) => {
   const { values, setFieldValue } = useFormikContext<ISubmitSurvey>();
 
   return (
-    <Stack gap={4} 
+    <Stack gap={4}
       divider={<Divider flexItem></Divider>}
       sx={{
         maxWidth: '800px'
@@ -28,8 +32,11 @@ const PublishSurveyIdContent = () => {
       <Typography variant="body1" color="textSecondary">
         Published data from this survey may be secured according to the Species and Ecosystems Data and Information
         Security (SEDIS) Policy.
+        <br />
+        {props.publishDate
+          ? `This survey has been published on ${props.publishDate}.`
+          : 'This survey has not been published.'}
       </Typography>
-
       <Box component="fieldset">
         <Typography component="legend">Additional Information</Typography>
         <Typography variant="body1" color="textSecondary" sx={{ mt: -0.75, mb: 3 }}>

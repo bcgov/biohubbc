@@ -290,6 +290,7 @@ export class HistoryPublishRepository extends BaseRepository {
         (survey_id, queue_id, event_timestamp)
       VALUES
         (${data.survey_id}, ${data.queue_id}, NOW())
+      ON CONFLICT (queue_id) DO UPDATE SET event_timestamp = NOW()
       RETURNING survey_metadata_publish_id;
     `;
     const response = await this.connection.sql(sqlStatement);
