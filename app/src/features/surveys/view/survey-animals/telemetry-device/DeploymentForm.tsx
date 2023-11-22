@@ -16,13 +16,12 @@ import { ANIMAL_FORM_MODE } from '../animal';
 import { IAnimalTelemetryDevice, IDeploymentTimespan } from './device';
 
 interface DeploymentFormSectionProps {
-  index: number;
   mode: ANIMAL_FORM_MODE;
   deviceDetails?: IGetDeviceDetailsResponse;
 }
 
 export const DeploymentForm = (props: DeploymentFormSectionProps): JSX.Element => {
-  const { index, mode, deviceDetails } = props;
+  const { mode, deviceDetails } = props;
 
   const bhApi = useBiohubApi();
   const { cid: survey_critter_id } = useQuery();
@@ -52,9 +51,6 @@ export const DeploymentForm = (props: DeploymentFormSectionProps): JSX.Element =
   };
 
   const deploymentOverlapTest = (deployment: IDeploymentTimespan) => {
-    if (index === undefined) {
-      return;
-    }
     if (!deviceDetails) {
       return;
     }

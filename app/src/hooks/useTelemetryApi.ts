@@ -26,9 +26,9 @@ export const useTelemetryApi = () => {
     // return data;
     return Promise.resolve([
       {
-        critter_id: v4().toString(),
+        critter_id: 'd3af091d-db6b-4f45-916d-d1896309ceed',
         device_id: 123,
-        deployment_id: v4().toString(),
+        deployment_id: '01abf20f-0354-4dad-a319-8d54035a28db',
         survey_critter_id: '',
         alias: 'Jingles the moose',
         attachment_start: '2023-01-01T08:00:00.000Z',

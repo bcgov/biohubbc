@@ -15,7 +15,6 @@ interface TelemetryDeviceFormContentProps {
   index: number;
   mode: ANIMAL_FORM_MODE;
 }
-//TODO: Is this component needed anymore? should all telemetry now be handled by the page/ table combo
 const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
   const { index, mode } = props;
 
