@@ -85,6 +85,16 @@ export const IKeyXDetails = z.object({
 
 export type IKeyXDetails = z.infer<typeof IKeyXDetails>;
 
+export const IManualTelemetry = z.object({
+  telemetry_manual_id: z.string().uuid(),
+  deployment_id: z.string().uuid(),
+  latitude: z.number(),
+  longitude: z.number(),
+  date: z.string()
+});
+
+export type IManualTelemetry = z.infer<typeof IManualTelemetry>;
+
 export const IBctwUser = z.object({
   keycloak_guid: z.string(),
   username: z.string()
@@ -119,6 +129,9 @@ export const UPLOAD_KEYX_ENDPOINT = '/import-xml';
 export const GET_KEYX_STATUS_ENDPOINT = '/get-collars-keyx';
 export const GET_TELEMETRY_POINTS_ENDPOINT = '/get-critters';
 export const GET_TELEMETRY_TRACKS_ENDPOINT = '/get-critter-tracks';
+export const GET_MANUAL_TELEMETRY = '/get-manual-telemetry';
+export const DELETE_MANUAL_TELEMETRY = '/delete-manual-telemetry';
+export const CREATE_MANUAL_TELEMETRY = '/create-manual-telemetry';
 
 export class BctwService {
   user: IBctwUser;
@@ -151,12 +164,14 @@ export class BctwService {
             new HTTP500('Connection to the BCTW API server was refused. Please try again later.', [error?.message])
           );
         }
+        const data = error.response?.data;
+        const errMsg = data?.error ?? data?.errors ?? data ?? 'Unknown error';
 
         return Promise.reject(
           new ApiError(
             ApiErrorType.UNKNOWN,
-            `API request failed with status code ${error?.response?.status}, ${error.response?.data}`,
-            error?.request?.data
+            `API request failed with status code ${error?.response?.status}, ${errMsg}`,
+            Array.isArray(errMsg) ? errMsg : [errMsg]
           )
         );
       }
@@ -418,5 +433,38 @@ export class BctwService {
       start: startDate.toISOString(),
       end: endDate.toISOString()
     });
+  }
+
+  /**
+   * Get all manual telemetry records
+   * This set of telemetry is mostly useful for testing purposes.
+   *
+   * @returns {*} IManualTelemetry
+   **/
+  async getManualTelemetry(): Promise<IManualTelemetry> {
+    return this._makeGetRequest(GET_MANUAL_TELEMETRY);
+  }
+
+  /**
+   * Delete manual telemetry records by telemetry_manual_id
+   * Note: This is a post request that accepts an array of ids
+   * @param {uuid[]} telemetry_manaual_ids
+   *
+   * @returns {*} IManualTelemetry
+   **/
+  async deleteManualTelemetry(telemetry_manual_ids: string[]): Promise<IManualTelemetry> {
+    const res = await this.axiosInstance.post(DELETE_MANUAL_TELEMETRY, telemetry_manual_ids);
+    return res.data;
+  }
+
+  /**
+   * Bulk create manual telemetry records
+   * @param {IManualTelemetry} payload
+   *
+   * @returns {*} IManualTelemetry
+   **/
+  async createManualTelemetry(payload: Omit<IManualTelemetry, 'telemetry_manual_id'>[]): Promise<IManualTelemetry> {
+    const res = await this.axiosInstance.post(CREATE_MANUAL_TELEMETRY, payload);
+    return res.data;
   }
 }
