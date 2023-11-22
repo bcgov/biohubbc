@@ -114,30 +114,25 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           title: 'Manual Telemetry create objects',
-          type: 'object',
-          properties: {
-            telemetry: {
-              type: 'array',
-              minItems: 1,
-              items: {
-                title: 'manual telemetry records',
-                type: 'object',
-                required: ['deployment_id', 'latitude', 'longitude', 'date'],
-                properties: {
-                  deployment_id: {
-                    type: 'string',
-                    format: 'uuid'
-                  },
-                  latitude: {
-                    type: 'number'
-                  },
-                  longitude: {
-                    type: 'number'
-                  },
-                  date: {
-                    type: 'string'
-                  }
-                }
+          type: 'array',
+          minItems: 1,
+          items: {
+            title: 'manual telemetry records',
+            type: 'object',
+            required: ['deployment_id', 'latitude', 'longitude', 'date'],
+            properties: {
+              deployment_id: {
+                type: 'string',
+                format: 'uuid'
+              },
+              latitude: {
+                type: 'number'
+              },
+              longitude: {
+                type: 'number'
+              },
+              date: {
+                type: 'string'
               }
             }
           }
@@ -155,7 +150,7 @@ export function createManualTelemetry(): RequestHandler {
     };
     const bctwService = new BctwService(user);
     try {
-      const result = await bctwService.createManualTelemetry(req.body.telemetry);
+      const result = await bctwService.createManualTelemetry(req.body);
       return res.status(201).json(result);
     } catch (error) {
       defaultLog.error({ label: 'createManualTelemetry', message: 'error', error });
