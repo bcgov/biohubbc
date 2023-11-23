@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
+import { Request } from 'express';
 import FormData from 'form-data';
 import { URLSearchParams } from 'url';
 import { z } from 'zod';
@@ -129,9 +130,13 @@ export const UPLOAD_KEYX_ENDPOINT = '/import-xml';
 export const GET_KEYX_STATUS_ENDPOINT = '/get-collars-keyx';
 export const GET_TELEMETRY_POINTS_ENDPOINT = '/get-critters';
 export const GET_TELEMETRY_TRACKS_ENDPOINT = '/get-critter-tracks';
-export const GET_MANUAL_TELEMETRY = '/get-manual-telemetry';
-export const DELETE_MANUAL_TELEMETRY = '/delete-manual-telemetry';
-export const CREATE_MANUAL_TELEMETRY = '/create-manual-telemetry';
+export const MANUAL_TELEMETRY = '/manual-telemetry';
+export const DELETE_MANUAL_TELEMETRY = '/manual-telemetry/delete';
+
+export const getBctwUser = (req: Request): IBctwUser => ({
+  keycloak_guid: req['system_user']?.user_guid,
+  username: req['system_user']?.user_identifier
+});
 
 export class BctwService {
   user: IBctwUser;
@@ -439,10 +444,10 @@ export class BctwService {
    * Get all manual telemetry records
    * This set of telemetry is mostly useful for testing purposes.
    *
-   * @returns {*} IManualTelemetry
+   * @returns {*} IManualTelemetry[]
    **/
-  async getManualTelemetry(): Promise<IManualTelemetry> {
-    return this._makeGetRequest(GET_MANUAL_TELEMETRY);
+  async getManualTelemetry(): Promise<IManualTelemetry[]> {
+    return this._makeGetRequest(MANUAL_TELEMETRY);
   }
 
   /**
@@ -450,21 +455,32 @@ export class BctwService {
    * Note: This is a post request that accepts an array of ids
    * @param {uuid[]} telemetry_manaual_ids
    *
-   * @returns {*} IManualTelemetry
+   * @returns {*} IManualTelemetry[]
    **/
-  async deleteManualTelemetry(telemetry_manual_ids: string[]): Promise<IManualTelemetry> {
+  async deleteManualTelemetry(telemetry_manual_ids: string[]): Promise<IManualTelemetry[]> {
     const res = await this.axiosInstance.post(DELETE_MANUAL_TELEMETRY, telemetry_manual_ids);
     return res.data;
   }
 
   /**
    * Bulk create manual telemetry records
+   * @param {Omit<IManualTelemetry, 'telemetry_manual_id'>} payload
+   *
+   * @returns {*} IManualTelemetry[]
+   **/
+  async createManualTelemetry(payload: Omit<IManualTelemetry, 'telemetry_manual_id'>[]): Promise<IManualTelemetry[]> {
+    const res = await this.axiosInstance.post(MANUAL_TELEMETRY, payload);
+    return res.data;
+  }
+
+  /**
+   * Bulk update manual telemetry records
    * @param {IManualTelemetry} payload
    *
-   * @returns {*} IManualTelemetry
+   * @returns {*} IManualTelemetry[]
    **/
-  async createManualTelemetry(payload: Omit<IManualTelemetry, 'telemetry_manual_id'>[]): Promise<IManualTelemetry> {
-    const res = await this.axiosInstance.post(CREATE_MANUAL_TELEMETRY, payload);
+  async updateManualTelemetry(payload: IManualTelemetry[]): Promise<IManualTelemetry[]> {
+    const res = await this.axiosInstance.patch(MANUAL_TELEMETRY, payload);
     return res.data;
   }
 }

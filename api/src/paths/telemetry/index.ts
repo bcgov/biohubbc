@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
-import { BctwService, IBctwUser } from '../../services/bctw-service';
+import { BctwService, getBctwUser } from '../../services/bctw-service';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/telemetry');
@@ -70,10 +70,7 @@ GET.apiDoc = {
 
 export function getManualTelemetry(): RequestHandler {
   return async (req, res) => {
-    const user: IBctwUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
-    };
+    const user = getBctwUser(req);
     const bctwService = new BctwService(user);
     try {
       const result = await bctwService.getManualTelemetry();
@@ -144,16 +141,89 @@ POST.apiDoc = {
 
 export function createManualTelemetry(): RequestHandler {
   return async (req, res) => {
-    const user: IBctwUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
-    };
+    const user = getBctwUser(req);
     const bctwService = new BctwService(user);
     try {
       const result = await bctwService.createManualTelemetry(req.body);
       return res.status(201).json(result);
     } catch (error) {
       defaultLog.error({ label: 'createManualTelemetry', message: 'error', error });
+      throw error;
+    }
+  };
+}
+
+export const PATCH: Operation = [
+  authorizeRequestHandler(() => {
+    return {
+      and: [
+        {
+          discriminator: 'SystemUser'
+        }
+      ]
+    };
+  }),
+  updateManualTelemetry()
+];
+
+PATCH.apiDoc = {
+  description: 'Bulk update Manual Telemetry',
+  tags: ['telemetry'],
+  security: [
+    {
+      Bearer: []
+    }
+  ],
+  responses: manual_telemetry_responses,
+  requestBody: {
+    description: 'Request body',
+    required: true,
+    content: {
+      'application/json': {
+        schema: {
+          title: 'Manual Telemetry update objects',
+          type: 'array',
+          minItems: 1,
+          items: {
+            title: 'manual telemetry records',
+            type: 'object',
+            required: ['telemetry_manual_id'],
+            minProperties: 2,
+            properties: {
+              telemetry_manual_id: {
+                type: 'string',
+                format: 'uuid'
+              },
+              deployment_id: {
+                type: 'string',
+                format: 'uuid'
+              },
+              latitude: {
+                type: 'number'
+              },
+              longitude: {
+                type: 'number'
+              },
+              date: {
+                type: 'string'
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+export function updateManualTelemetry(): RequestHandler {
+  return async (req, res) => {
+    const user = getBctwUser(req);
+    const bctwService = new BctwService(user);
+    try {
+      const result = await bctwService.updateManualTelemetry(req.body);
+      return res.status(201).json(result);
+    } catch (error) {
+      defaultLog.error({ label: 'updateManualTelemetry', message: 'error', error });
       throw error;
     }
   };
