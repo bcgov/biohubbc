@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import { cyan, grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import Skeleton from '@mui/material/Skeleton';
+import Stack from '@mui/material/Stack';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
@@ -48,86 +49,33 @@ export interface ISpeciesObservationTableProps {
 }
 
 const ObservationSkeletonRow = () => (
-  <Box
+  <Stack
+    flexDirection="row"
+    gap={2}
     sx={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      p: 1.75,
-      height: 60,
+      py: 1.5,
+      px: 2,
+      height: 56,
+      overflow: 'hidden',
       borderBottom: '1px solid ' + grey[300],
-      '& * ': {
-        transform: 'none !important'
+      '& .MuiSkeleton-root:not(:first-child)': {
+        flex: '1 1 auto',
+        maxWidth: '250px'
       }
     }}>
-    <Skeleton height={22} width={22} />
-    <Box
-      sx={{
-        display: 'flex',
-        gap: '16px',
-        alignItems: 'center',
-        px: 3,
-        flex: '1'
-      }}>
-      <Skeleton height={22} sx={{ flex: '3' }} />
-      <Skeleton height={22} sx={{ flex: '2' }} />
-      <Skeleton height={22} sx={{ flex: '1' }} />
-      <Skeleton height={22} sx={{ flex: '2' }} />
-      <Skeleton height={22} sx={{ flex: '1' }} />
-    </Box>
-    <Skeleton height={40} width={40} variant="circular" />
-  </Box>
+    <Skeleton width={20} sx={{flex: '0 0 auto'}} />
+    <Skeleton />
+    <Skeleton />
+    <Skeleton />
+    <Skeleton />
+    <Skeleton />
+    <Skeleton />
+  </Stack>
 );
 
 const ObservationTableSkeletonLoader = () => {
   return (
-    <Box display="flex" flexDirection="column" sx={{ backgroundColor: '#FAFAFA' }}>
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          p: 1.75,
-          height: 60,
-          borderBottom: '1px solid ' + grey[300],
-          '& * ': {
-            transform: 'none !important'
-          },
-          backgroundColor: '#FFF'
-        }}>
-        <Skeleton height={22} width={22} />
-        <Box
-          sx={{
-            display: 'flex',
-            gap: '16px',
-            alignItems: 'center',
-            alignContent: 'flex-start',
-            px: 3,
-            mr: 5,
-            flex: '1'
-          }}>
-          <Box sx={{ flex: '3' }}>
-            <Skeleton height={18} width={'50%'} />
-          </Box>
-          <Box sx={{ flex: '2' }}>
-            <Skeleton height={18} width={'50%'} />
-          </Box>
-          <Box sx={{ flex: '1' }}>
-            <Skeleton height={18} width={'90%'} />
-          </Box>
-          <Box sx={{ flex: '2' }}>
-            <Skeleton height={18} width={'75%'} />
-          </Box>
-          <Box sx={{ flex: '1' }}>
-            <Skeleton height={18} width={'75%'} />
-          </Box>
-        </Box>
-      </Box>
-      <ObservationSkeletonRow />
-      <ObservationSkeletonRow />
-      <ObservationSkeletonRow />
-      <ObservationSkeletonRow />
-      <ObservationSkeletonRow />
+    <Box sx={{background: '#fff'}}>
       <ObservationSkeletonRow />
       <ObservationSkeletonRow />
       <ObservationSkeletonRow />
@@ -291,7 +239,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       headerName: 'Sampling Period',
       editable: true,
       flex: 0,
-      width: 240,
+      width: 250,
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
@@ -516,7 +464,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
 
   return (
     <>
-      {isLoading ? (
+      {!isLoading ? (
         <ObservationTableSkeletonLoader />
       ) : (
         <DataGrid

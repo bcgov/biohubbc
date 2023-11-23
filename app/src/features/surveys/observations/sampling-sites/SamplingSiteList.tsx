@@ -40,7 +40,7 @@ const SampleSiteSkeleton = () => (
       gap: '16px',
       py: 1.5,
       px: 2,
-      height: '52px',
+      height: '56px',
       background: '#fff',
       borderBottom: '1px solid ' + grey[300]
     }}>
@@ -203,7 +203,7 @@ const SamplingSiteList = () => {
         </Toolbar>
         <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
           {/* Display spinner if data loaders are still waiting for a response */}
-          <Fade in={surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading}>
+          <Fade in={!surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading}>
             <Box
               sx={{
                 position: 'absolute',
@@ -214,14 +214,6 @@ const SamplingSiteList = () => {
                 zIndex: 2
               }}>
               <Paper elevation={0} sx={{ overflow: 'hidden' }}>
-                <SampleSiteSkeleton />
-                <SampleSiteSkeleton />
-                <SampleSiteSkeleton />
-                <SampleSiteSkeleton />
-                <SampleSiteSkeleton />
-                <SampleSiteSkeleton />
-                <SampleSiteSkeleton />
-                <SampleSiteSkeleton />
                 <SampleSiteSkeleton />
                 <SampleSiteSkeleton />
                 <SampleSiteSkeleton />
