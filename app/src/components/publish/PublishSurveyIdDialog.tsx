@@ -132,7 +132,9 @@ const PublishSurveyIdDialog = (props: IPublishSurveyIdDialogProps) => {
         maxWidth="xl"
         open={props.open}
         aria-labelledby="component-dialog-title"
-        aria-describedby="component-dialog-description">
+        aria-describedby="component-dialog-description"
+        scroll="body"
+        >
         <Formik<ISubmitSurvey>
           innerRef={formikRef}
           initialValues={surveySubmitFormInitialValues}
@@ -150,7 +152,7 @@ const PublishSurveyIdDialog = (props: IPublishSurveyIdDialogProps) => {
               </DialogContent>
               <DialogActions>
                 <Typography component="span" variant="subtitle2" fontWeight="700" sx={{mr: 2}}>
-                  Last Published: {publishDate}
+                  <Typography component="span" color="textSecondary" variant="inherit">Last Published:</Typography> {publishDate}
                 </Typography>
                 <LoadingButton
                   onClick={formikProps.submitForm}

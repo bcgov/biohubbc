@@ -71,12 +71,12 @@ const SurveyPage: React.FC = () => {
             </Typography>
             <Button
               component={RouterLink}
-              variant="outlined"
+              variant="contained"
               color="primary"
               to={'observations'}
-              title="Submit Survey Data and Documents"
+              title="Manage Observations"
               startIcon={<Icon path={mdiCogOutline} size={0.75} />}>
-              Manage
+              Manage Observations
             </Button>
           </Toolbar>
           <Fade in={observationsContext.observationsDataLoader.isLoading}>
