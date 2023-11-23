@@ -1,6 +1,5 @@
 import { ConfigContext } from 'contexts/configContext';
 import { useContext } from 'react';
-import { v4 } from 'uuid';
 import useAxios from './api/useAxios';
 import { useDeviceApi } from './telemetry/useDeviceApi';
 
@@ -20,45 +19,7 @@ export const useTelemetryApi = () => {
   const apiAxios = useAxios(config?.API_HOST);
   const devices = useDeviceApi(apiAxios);
 
-  const getCritterAndDeployments = (projectId: number, surveyId: number): Promise<ICritterDeploymentResponse[]> => {
-    // This endpoint will fetch a list of critters and their deployments
-    // const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/critters/deployments`);
-    // return data;
-    return Promise.resolve([
-      {
-        critter_id: 'd3af091d-db6b-4f45-916d-d1896309ceed',
-        device_id: 123,
-        deployment_id: '01abf20f-0354-4dad-a319-8d54035a28db',
-        survey_critter_id: '',
-        alias: 'Jingles the moose',
-        attachment_start: '2023-01-01T08:00:00.000Z',
-        attachment_end: undefined,
-        taxon: 'Moose'
-      },
-      {
-        critter_id: v4().toString(),
-        device_id: 12333,
-        deployment_id: v4().toString(),
-        survey_critter_id: '',
-        alias: 'Big Tom',
-        attachment_start: '2023-02-01T08:00:00.000Z',
-        attachment_end: undefined,
-        taxon: 'Moose'
-      },
-      {
-        critter_id: v4().toString(),
-        device_id: 5544,
-        deployment_id: v4().toString(),
-        survey_critter_id: '',
-        alias: 'Little Timmy',
-        attachment_start: '2023-02-015T08:00:00.000Z',
-        attachment_end: undefined,
-        taxon: 'Caribou'
-      }
-    ]);
-  };
-
-  return { devices, getCritterAndDeployments };
+  return { devices };
 };
 
 type TelemetryApiReturnType = ReturnType<typeof useTelemetryApi>;

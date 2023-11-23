@@ -195,7 +195,6 @@ export const SurveyAnimalsPage = () => {
       artifactDataLoader.refresh(projectId, surveyId);
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.log(`err: ${error}`);
         setMessageSnackbar('Failed to add deployment' + (error?.message ? `: ${error.message}` : '.'), dialogContext);
       } else {
         setMessageSnackbar('Failed to add deployment.', dialogContext);

@@ -41,6 +41,8 @@ describe('SurveyObservations', () => {
       surveyDataLoader: {} as unknown as DataLoader<any, any, any>,
       summaryDataLoader: {} as unknown as DataLoader<any, any, any>,
       sampleSiteDataLoader: {} as unknown as DataLoader<any, any, any>,
+      critterDataLoader: {} as unknown as DataLoader<any, any, any>,
+      deploymentDataLoader: {} as unknown as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1
     };
