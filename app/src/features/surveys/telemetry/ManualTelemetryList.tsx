@@ -57,6 +57,7 @@ const ManualTelemetryList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [formMode, setFormMode] = useState(ANIMAL_FORM_MODE.ADD);
   const [critterId, setCritterId] = useState<number | string>('');
+  const [deviceId, setDeviceId] = useState<number>(0);
   const [formData, setFormData] = useState<AnimalDeployment>({
     survey_critter_id: '' as unknown as number, // form needs '' to display the no value text
     deployments: [
@@ -86,6 +87,8 @@ const ManualTelemetryList = () => {
 
   const handleMenuOpen = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, device_id: number) => {
     setAnchorEl(event.currentTarget);
+    setDeviceId(device_id);
+    // almost all of this should get moved into the edit code....
     const deployment = deployments?.find((item) => item.device_id === device_id);
     const deviceDetails = await telemetryApi.devices.getDeviceDetails(device_id);
     const critter = critters?.find((item) => item.critter_id === deployment?.critter_id);
@@ -125,6 +128,31 @@ const ManualTelemetryList = () => {
     // UPLOAD/ REPLACE ANY FILES FOUND
     if (data.attachmentFile && data.attachmentType) {
       await handleUploadFile(data.attachmentFile, data.attachmentType);
+    }
+  };
+
+  const handleDeleteDeployment = async () => {
+    try {
+      const deployment = deployments?.find((item) => item.device_id === deviceId);
+      if (!deployment) {
+        // no deployment found, throw an error
+        return;
+      }
+      const critter = critters?.find((item) => item.critter_id === deployment?.critter_id);
+      if (!critter) {
+        // no critter set
+        // show a snack bar
+        return;
+      }
+      await biohubApi.survey.removeDeployment(
+        surveyContext.projectId,
+        surveyContext.surveyId,
+        critter.survey_critter_id,
+        deployment.deployment_id
+      );
+      surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    } catch (e) {
+      // failed to delete, show snack bar
     }
   };
 
@@ -217,7 +245,11 @@ const ManualTelemetryList = () => {
           </ListItemIcon>
           Edit Details
         </MenuItem>
-        <MenuItem>
+        <MenuItem
+          onClick={() => {
+            setAnchorEl(null);
+            handleDeleteDeployment();
+          }}>
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />
           </ListItemIcon>
