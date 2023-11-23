@@ -77,7 +77,6 @@ const ManualTelemetryList = () => {
   });
 
   useEffect(() => {
-    surveyContext.critterDeploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
     surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
     surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
   }, []);
@@ -89,11 +88,12 @@ const ManualTelemetryList = () => {
     setAnchorEl(event.currentTarget);
     const deployment = deployments?.find((item) => item.device_id === device_id);
     const deviceDetails = await telemetryApi.devices.getDeviceDetails(device_id);
+    const critter = critters?.find((item) => item.critter_id === deployment?.critter_id);
+
     // need to map deployment back into object for initial values
     if (deployment) {
-      const details = deviceDetails.deployments.find((item) => item.deployment_id === deployment.deployment_id);
       const editData: AnimalDeployment = {
-        survey_critter_id: 1, // need something more here...
+        survey_critter_id: Number(critter?.survey_critter_id),
         deployments: [
           {
             deployment_id: deployment.deployment_id,
@@ -102,10 +102,10 @@ const ManualTelemetryList = () => {
           }
         ],
         device_id: deployment.device_id,
-        device_make: details?.device_make ?? '',
-        device_model: details?.device_model ?? '',
-        frequency: details?.frequency,
-        frequency_unit: details?.frequency_unit,
+        device_make: deviceDetails.device?.device_make ? String(deviceDetails.device?.device_make) : '',
+        device_model: deviceDetails.device?.device_model ? String(deviceDetails.device?.device_model) : '',
+        frequency: deviceDetails.device?.frequency ? Number(deviceDetails.device?.frequency) : undefined,
+        frequency_unit: deviceDetails.device?.frequency_unit ? String(deviceDetails.device?.frequency_unit) : '',
         attachmentType: undefined,
         attachmentFile: undefined,
         critter_id: deployment.critter_id
@@ -141,7 +141,7 @@ const ManualTelemetryList = () => {
         Number(data.survey_critter_id),
         payload
       );
-      surveyContext.critterDeploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+      surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
       // success snack bar
     } catch (error) {
       // error snack bar
@@ -333,7 +333,7 @@ const ManualTelemetryList = () => {
               </Toolbar>
               <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
                 {/* Display list of skeleton components while waiting for a response */}
-                <ListFader isLoading={surveyContext.critterDeploymentDataLoader.isLoading} />
+                <ListFader isLoading={surveyContext.deploymentDataLoader.isLoading} />
                 <Box
                   sx={{
                     position: 'absolute',
