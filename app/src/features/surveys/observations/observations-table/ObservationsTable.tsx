@@ -482,7 +482,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     <DataGrid
       checkboxSelection
       disableRowSelectionOnClick
-      loading={isLoading}
+      loading={!isLoading}
       rowHeight={56}
       apiRef={apiRef}
       editMode="row"

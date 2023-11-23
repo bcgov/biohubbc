@@ -111,8 +111,8 @@ const appTheme = createTheme({
     MuiBreadcrumbs: {
       styleOverrides: {
         root: {
-          marginTop: '-4px',
-          marginBottom: '12px',
+          marginTop: '-6px',
+          marginBottom: '10px',
           marginLeft: '-4px',
           fontSize: '0.9rem'
         },
@@ -127,7 +127,10 @@ const appTheme = createTheme({
             textOverflow: 'ellipsis'
           },
           '& span': {
-            fontSize: 'inherit'
+            display: 'block',
+            fontSize: 'inherit',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
           }
         },
         separator: {

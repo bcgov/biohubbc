@@ -1,4 +1,4 @@
-import { mdiCalendarRangeOutline, mdiChevronDown, mdiCogOutline, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiChevronDown, mdiCogOutline, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
@@ -149,51 +149,61 @@ const SurveyHeader = () => {
           </Breadcrumbs>
         }
         subTitle={
-          <Typography
-            component="span"
-            variant="subtitle1"
-            color="textSecondary"
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              mt: 1,
-              '& svg': {
-                color: 'text.secondary'
-              }
-            }}>
-            <Icon path={mdiCalendarRangeOutline} size={1} />
-            <Typography component="span" sx={{ ml: 1.5 }}>
-              {getFormattedDateRangeString(
-                DATE_FORMAT.ShortMediumDateFormat,
-                surveyWithDetails.surveyData.survey_details.start_date,
-                surveyWithDetails.surveyData.survey_details.end_date
-              )}
-            </Typography>
-            <Typography component="span" variant="subtitle1" color="textSecondary">
-              Published: {publishDate ? publishDate : 'Not Published'}
-            </Typography>
-          </Typography>
+          <Stack flexDirection="row" alignItems="center" gap={0.25} mt={1} mb={0.25}>
+            <Stack flexDirection="row" alignItems="center">
+              <Typography component="span" color="textSecondary" sx={{mr: 1}}>
+                Timeline:
+              </Typography>
+              <Typography component="span">
+                {getFormattedDateRangeString(
+                  DATE_FORMAT.ShortMediumDateFormat,
+                  surveyWithDetails.surveyData.survey_details.start_date,
+                  surveyWithDetails.surveyData.survey_details.end_date
+                )}
+              </Typography>
+            </Stack>
+          </Stack>
         }
         buttonJSX={
           <>
             <ProjectRoleGuard
               validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
               validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-              <Stack flexDirection="row" gap={1}>
+              <Stack flexDirection="row" alignItems="center" gap={1}>
+                <Typography component="span" variant="subtitle2" fontSize="0.9rem" fontWeight="700"
+                  sx={{
+                    flex: '0 0 auto',
+                    mr: {sm: 0, md: 0.5},
+                    order: {sm: 3, md: 0}
+                  }}
+                >
+                  {publishDate ? (
+                    <>
+                      <Typography component="span" color="textSecondary" variant="inherit" sx={{mr: 0.5}}>
+                        Published:
+                      </Typography>
+                      <Typography component="span" variant="inherit">{publishDate}</Typography>
+                    </>
+                    ) : (
+                    <Typography component="span" color="textSecondary" variant="inherit" sx={{mr: 1}}>
+                      Never Published
+                    </Typography>
+                  )}
+                </Typography>
+                <Button
+                  title="Submit Survey Data and Documents"
+                  color="primary"
+                  variant="contained"
+                  onClick={() => setPublishSurveyDialogOpen(true)}
+                  style={{ minWidth: '7rem' }}>
+                  Publish
+                </Button>
                 <Button
                   variant="outlined"
                   color="primary"
                   startIcon={<Icon path={mdiPencilOutline} size={0.75} />}
                   onClick={() => history.push('edit')}>
                   Edit
-                </Button>
-                <Button
-                  title="Submit Survey Data and Documents"
-                  color="primary"
-                  variant="contained"
-                  onClick={() => setPublishSurveyDialogOpen(true)}
-                  style={{ minWidth: '8rem' }}>
-                  Publish Survey
                 </Button>
               </Stack>
 

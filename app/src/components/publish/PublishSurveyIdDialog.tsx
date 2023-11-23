@@ -1,5 +1,5 @@
 import { LoadingButton } from '@mui/lab';
-import { CircularProgress, DialogContentText } from '@mui/material';
+import { CircularProgress, DialogContentText, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -149,6 +149,9 @@ const PublishSurveyIdDialog = (props: IPublishSurveyIdDialogProps) => {
                 <PublishSurveyIdContent publishDate={publishDate} />
               </DialogContent>
               <DialogActions>
+                <Typography component="span" variant="subtitle2" fontWeight="700" sx={{mr: 2}}>
+                  Last Published: {publishDate}
+                </Typography>
                 <LoadingButton
                   onClick={formikProps.submitForm}
                   color="primary"
@@ -161,7 +164,7 @@ const PublishSurveyIdDialog = (props: IPublishSurveyIdDialogProps) => {
                     ) || isSubmitting
                   }
                   loading={isSubmitting}>
-                  Publish Survey
+                  Publish
                 </LoadingButton>
                 <Button onClick={props.onClose} color="primary" variant="outlined" disabled={isSubmitting}>
                   Cancel

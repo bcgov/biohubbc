@@ -1,4 +1,3 @@
-import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import Divider from '@mui/material/Divider';
@@ -56,9 +55,6 @@ const PublishSurveyIdContent = (props: IPublishSurveyIdContentProps) => {
       <Box component="fieldset">
         <Typography component="legend">Agreements</Typography>
         <FormGroup>
-          <Alert severity="error" sx={{ mb: 2, alignItems: 'center' }}>
-            <Typography variant="body1">You must accept all the following agreements.</Typography>
-          </Alert>
           <FormControlLabel
             slotProps={{ typography: { variant: 'body1' } }}
             sx={{
