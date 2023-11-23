@@ -61,7 +61,7 @@ const ObservationSkeletonRow = () => (
       '&:not(:last-of-type)': {
         borderBottom: '1px solid ' + grey[300],
       },
-      '& .MuiSkeleton-root:not(:first-child)': {
+      '& .MuiSkeleton-root:not(:first-of-type)': {
         flex: '1 1 auto',
       }
     }}>

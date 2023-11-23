@@ -157,7 +157,7 @@ const ObservationComponent = () => {
                 onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
                   setMenuAnchorEl(event.currentTarget);
                 }}
-                size="small"
+                edge="end"
                 disabled={numSelectedRows === 0}
                 aria-label="observation options">
                 <Icon size={1} path={mdiDotsVertical} />
