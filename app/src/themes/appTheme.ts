@@ -214,7 +214,7 @@ const appTheme = createTheme({
     MuiDialogActions: {
       styleOverrides: {
         root: {
-          padding: '20px 24px',
+          padding: '24px',
           '& button': {
             minWidth: '6rem'
           }

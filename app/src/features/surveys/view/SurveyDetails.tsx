@@ -1,4 +1,4 @@
-import { mdiPencilOutline } from '@mdi/js';
+import { mdiPencil} from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -39,7 +39,7 @@ const SurveyDetails = () => {
           component={RouterLink}
           aria-label="Edit Details"
           to="edit"
-          startIcon={<Icon path={mdiPencilOutline} size={0.75} />}>
+          startIcon={<Icon path={mdiPencil} size={0.75} />}>
           Edit
         </Button>
       </Toolbar>

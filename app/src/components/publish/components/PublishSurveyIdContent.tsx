@@ -23,7 +23,7 @@ const PublishSurveyIdContent = (props: IPublishSurveyIdContentProps) => {
 
   return (
     <Stack
-      gap={3}
+      gap={4}
       divider={<Divider flexItem></Divider>}
       sx={{
         maxWidth: '800px'

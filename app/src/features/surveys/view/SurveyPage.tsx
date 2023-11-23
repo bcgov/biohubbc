@@ -1,4 +1,4 @@
-import { mdiCogOutline } from '@mdi/js';
+import { mdiCog } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LinearProgress } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -75,7 +75,7 @@ const SurveyPage: React.FC = () => {
               color="primary"
               to={'observations'}
               title="Manage Observations"
-              startIcon={<Icon path={mdiCogOutline} size={0.75} />}>
+              startIcon={<Icon path={mdiCog} size={0.75} />}>
               Manage Observations
             </Button>
           </Toolbar>
