@@ -42,7 +42,9 @@ const SampleSiteSkeleton = () => (
       px: 2,
       height: '56px',
       background: '#fff',
-      borderBottom: '1px solid ' + grey[300]
+      '&:not(:last-of-type)': {
+        borderBottom: '1px solid ' + grey[300],
+      },
     }}>
     <Skeleton sx={{ flex: '1 1 auto' }} />
   </Box>
