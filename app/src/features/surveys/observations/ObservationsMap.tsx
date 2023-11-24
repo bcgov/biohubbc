@@ -109,14 +109,14 @@ const ObservationsMap = () => {
   ]);
 
   return (
-    <Box position="relative">
+    <>
       <LeafletMapContainer
         data-testid="leaflet-survey_observations_map"
         id="survey_observations_map"
         center={MAP_DEFAULT_CENTER}
         scrollWheelZoom={false}
         fullscreenControl={true}
-        style={{ height: 600 }}>
+        style={{ height: '100%' }}>
         <MapBaseCss />
         <FullScreenScrollingEventHandler bounds={bounds} scrollWheelZoom={false} />
         <SetMapBounds bounds={bounds} />
@@ -150,7 +150,7 @@ const ObservationsMap = () => {
         </LayersControl>
       </LeafletMapContainer>
       {(surveyObservations.length > 0 || studyAreaFeatures.length > 0 || sampleSiteFeatures.length > 0) && (
-        <Box position="absolute" top="126px" left="10px" zIndex="999">
+        <Box position="absolute" top="126px" left="10px" zIndex="999" display="none">
           <IconButton
             sx={{
               padding: '3px',
@@ -170,7 +170,7 @@ const ObservationsMap = () => {
           </IconButton>
         </Box>
       )}
-    </Box>
+    </>
   );
 };
 

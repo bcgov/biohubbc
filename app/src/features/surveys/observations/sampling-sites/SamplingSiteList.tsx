@@ -13,7 +13,6 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { grey } from '@mui/material/colors';
-import Fade from '@mui/material/Fade';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -204,8 +203,9 @@ const SamplingSiteList = () => {
           </Button>
         </Toolbar>
         <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
-          {/* Display spinner if data loaders are still waiting for a response */}
-          <Fade in={surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading}>
+
+          {/* Display skeleton loaders if data loaders are still waiting for a response */}
+          {surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading ? (
             <Box
               sx={{
                 position: 'absolute',
@@ -221,139 +221,140 @@ const SamplingSiteList = () => {
                 <SampleSiteSkeleton />
               </Paper>
             </Box>
-          </Fade>
+          ) : (
+            <Box
+              sx={{
+                position: 'absolute',
+                width: '100%',
+                height: '100%',
+                overflowY: 'auto',
+                p: 1,
+                background: grey[100]
+              }}>
 
-          <Box
-            sx={{
-              position: 'absolute',
-              width: '100%',
-              height: '100%',
-              overflowY: 'auto',
-              p: 1,
-              background: grey[100]
-            }}>
-            {/* Display text if the sample site data loader has no items in it */}
-            {!surveyContext.sampleSiteDataLoader.data?.sampleSites.length &&
-              !surveyContext.sampleSiteDataLoader.isLoading && (
-                <Box display="flex" flex="1 1 auto" height="100%" alignItems="center" justifyContent="center">
-                  <Typography variant="body2">No Sampling Sites</Typography>
-                </Box>
-              )}
+              {/* Display text if the sample site data loader has no items in it */}
+              {!surveyContext.sampleSiteDataLoader.data?.sampleSites.length &&
+                !surveyContext.sampleSiteDataLoader.isLoading && (
+                  <Box display="flex" flex="1 1 auto" height="100%" alignItems="center" justifyContent="center">
+                    <Typography variant="body2">No Sampling Sites</Typography>
+                  </Box>
+                )}
 
-            {surveyContext.sampleSiteDataLoader.data?.sampleSites.map((sampleSite, index) => {
-              return (
-                <Accordion
-                  key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}
-                  sx={{
-                    boxShadow: 'none'
-                  }}>
-                  <Box
-                    display="flex"
-                    overflow="hidden"
-                    alignItems="center"
-                    pr={1.5}
-                    height={55}
-                    className="sampleSiteHeader">
-                    <AccordionSummary
-                      expandIcon={<Icon path={mdiChevronDown} size={1} />}
-                      aria-controls="panel1bh-content"
-                      sx={{
-                        flex: '1 1 auto',
-                        overflow: 'hidden',
-                        py: 0.25,
-                        pr: 1.5,
-                        pl: 2,
-                        gap: '24px',
-                        '& .MuiAccordionSummary-content': {
+              {surveyContext.sampleSiteDataLoader.data?.sampleSites.map((sampleSite, index) => {
+                return (
+                  <Accordion
+                    key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}
+                    sx={{
+                      boxShadow: 'none'
+                    }}>
+                    <Box
+                      display="flex"
+                      overflow="hidden"
+                      alignItems="center"
+                      pr={1.5}
+                      height={55}
+                      className="sampleSiteHeader">
+                      <AccordionSummary
+                        expandIcon={<Icon path={mdiChevronDown} size={1} />}
+                        aria-controls="panel1bh-content"
+                        sx={{
                           flex: '1 1 auto',
                           overflow: 'hidden',
-                          whiteSpace: 'nowrap'
-                        }
-                      }}>
-                      <Typography
-                        sx={{
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          typography: 'body2',
-                          fontWeight: 700,
-                          fontSize: '0.9rem'
+                          py: 0.25,
+                          pr: 1.5,
+                          pl: 2,
+                          gap: '24px',
+                          '& .MuiAccordionSummary-content': {
+                            flex: '1 1 auto',
+                            overflow: 'hidden',
+                            whiteSpace: 'nowrap'
+                          }
                         }}>
-                        {sampleSite.name}
-                      </Typography>
-                    </AccordionSummary>
-                    <IconButton
-                      onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                        handleMenuClick(event, sampleSite.survey_sample_site_id)
-                      }
-                      aria-label="settings">
-                      <Icon path={mdiDotsVertical} size={1}></Icon>
-                    </IconButton>
-                  </Box>
-                  <AccordionDetails
-                    sx={{
-                      pt: 0,
-                      px: 0
-                    }}>
-                    <List
-                      disablePadding
-                      sx={{
-                        '& .MuiListItemText-primary': {
-                          fontSize: '0.9rem'
+                        <Typography
+                          sx={{
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            typography: 'body2',
+                            fontWeight: 700,
+                            fontSize: '0.9rem'
+                          }}>
+                          {sampleSite.name}
+                        </Typography>
+                      </AccordionSummary>
+                      <IconButton
+                        onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
+                          handleMenuClick(event, sampleSite.survey_sample_site_id)
                         }
+                        aria-label="settings">
+                        <Icon path={mdiDotsVertical} size={1}></Icon>
+                      </IconButton>
+                    </Box>
+                    <AccordionDetails
+                      sx={{
+                        pt: 0,
+                        px: 0
                       }}>
-                      {sampleSite.sample_methods?.map((sampleMethod) => {
-                        return (
-                          <ListItem
-                            disableGutters
-                            key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}`}
-                            sx={{
-                              display: 'block',
-                              py: 0,
-                              '& + li': {
-                                mt: 1.5
-                              }
-                            }}>
-                            <ListItemText
-                              primary={getCodesName(
-                                codesContext.codesDataLoader.data,
-                                'sample_methods',
-                                sampleMethod.method_lookup_id
-                              )}></ListItemText>
-                            <List disablePadding>
-                              {sampleMethod.sample_periods?.map((samplePeriod) => {
-                                return (
-                                  <ListItem
-                                    dense
-                                    divider
-                                    disableGutters
-                                    sx={{
-                                      px: 1.5,
-                                      color: 'text.secondary'
-                                    }}
-                                    key={`${samplePeriod.survey_sample_method_id}-${samplePeriod.survey_sample_period_id}`}>
-                                    <ListItemIcon sx={{ minWidth: '32px' }} color="inherit">
-                                      <Icon path={mdiCalendarRange} size={0.75}></Icon>
-                                    </ListItemIcon>
-                                    <ListItemText>
-                                      <Typography variant="body2" component="div" color="inherit">
-                                        {`${samplePeriod.start_date} ${samplePeriod.start_time || ''} - ${
-                                          samplePeriod.end_date
-                                        } ${samplePeriod.end_time || ''}`}
-                                      </Typography>
-                                    </ListItemText>
-                                  </ListItem>
-                                );
-                              })}
-                            </List>
-                          </ListItem>
-                        );
-                      })}
-                    </List>
-                  </AccordionDetails>
-                </Accordion>
-              );
-            })}
-          </Box>
+                      <List
+                        disablePadding
+                        sx={{
+                          '& .MuiListItemText-primary': {
+                            fontSize: '0.9rem'
+                          }
+                        }}>
+                        {sampleSite.sample_methods?.map((sampleMethod) => {
+                          return (
+                            <ListItem
+                              disableGutters
+                              key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}`}
+                              sx={{
+                                display: 'block',
+                                py: 0,
+                                '& + li': {
+                                  mt: 1.5
+                                }
+                              }}>
+                              <ListItemText
+                                primary={getCodesName(
+                                  codesContext.codesDataLoader.data,
+                                  'sample_methods',
+                                  sampleMethod.method_lookup_id
+                                )}></ListItemText>
+                              <List disablePadding>
+                                {sampleMethod.sample_periods?.map((samplePeriod) => {
+                                  return (
+                                    <ListItem
+                                      dense
+                                      divider
+                                      disableGutters
+                                      sx={{
+                                        px: 1.5,
+                                        color: 'text.secondary'
+                                      }}
+                                      key={`${samplePeriod.survey_sample_method_id}-${samplePeriod.survey_sample_period_id}`}>
+                                      <ListItemIcon sx={{ minWidth: '32px' }} color="inherit">
+                                        <Icon path={mdiCalendarRange} size={0.75}></Icon>
+                                      </ListItemIcon>
+                                      <ListItemText>
+                                        <Typography variant="body2" component="div" color="inherit">
+                                          {`${samplePeriod.start_date} ${samplePeriod.start_time || ''} - ${samplePeriod.end_date
+                                            } ${samplePeriod.end_time || ''}`}
+                                        </Typography>
+                                      </ListItemText>
+                                    </ListItem>
+                                  );
+                                })}
+                              </List>
+                            </ListItem>
+                          );
+                        })}
+                      </List>
+                    </AccordionDetails>
+                  </Accordion>
+                );
+              })}
+            </Box>
+          )}
+
         </Box>
       </Box>
     </>

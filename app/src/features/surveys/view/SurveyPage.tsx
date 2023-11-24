@@ -1,11 +1,9 @@
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { LinearProgress } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
-import Fade from '@mui/material/Fade';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -24,6 +22,7 @@ import SurveySummaryResults from './summary-results/SurveySummaryResults';
 import SurveyAnimals from './SurveyAnimals';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyHeader from './SurveyHeader';
+import Skeleton from '@mui/material/Skeleton';
 
 //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
@@ -57,7 +56,7 @@ const SurveyPage: React.FC = () => {
       <SurveyHeader />
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper elevation={0} sx={{ overflow: 'hidden' }}>
-          <Toolbar sx={{ mb: -1 }}>
+          <Toolbar>
             <Typography
               component="h3"
               variant="h4"
@@ -65,9 +64,13 @@ const SurveyPage: React.FC = () => {
                 flex: '1 1 auto'
               }}>
               Observations &zwnj;
-              <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
-                ({numObservations})
-              </Typography>
+              {!numObservations ? (
+                ' '
+              ) : (
+                <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
+                  ({numObservations})
+                </Typography>
+              )}
             </Typography>
             <Button
               component={RouterLink}
@@ -79,10 +82,20 @@ const SurveyPage: React.FC = () => {
               Manage Observations
             </Button>
           </Toolbar>
-          <Fade in={observationsContext.observationsDataLoader.isLoading}>
-            <LinearProgress variant="indeterminate" sx={{ borderRadius: 0 }} />
-          </Fade>
-          <ObservationsMap />
+          <Box position="relative" height={{sm: 400, md: 600}}>
+            {observationsContext.observationsDataLoader.isLoading && (
+              <Skeleton variant="rectangular"
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  bottom: 0,
+                  left: 0
+                }}
+             />
+            )}
+            <ObservationsMap />
+          </Box>
         </Paper>
 
         <Box mt={3}>

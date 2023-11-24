@@ -479,7 +479,11 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
 
   return (
     <>
-      <ObservationTableSkeletonLoader />
+
+      <Box display="none">
+        <ObservationTableSkeletonLoader />
+      </Box>
+
       <DataGrid
         checkboxSelection
         disableRowSelectionOnClick
