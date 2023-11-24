@@ -2,6 +2,7 @@ import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 interface ISurveyHeader {
@@ -27,42 +28,37 @@ const SurveyBaseHeader = (props: ISurveyHeader) => {
         position: 'sticky',
         top: 0,
         zIndex: 1002,
-        pt: 3,
-        pb: 3.75,
+        py: 3,
         borderBottomStyle: 'solid',
         borderBottomWidth: '1px',
         borderBottomColor: grey[300]
       }}>
       <Container maxWidth="xl">
         {breadCrumb}
-        <Box
-          display="flex"
+        <Stack
+          alignItems="flex-start"
+          flexDirection={{ xs: 'column', lg: 'row' }}
           justifyContent="space-between"
-          gap="1.5rem"
-          sx={{
-            flexDirection: { xs: 'column', lg: 'row' }
-          }}>
+          gap={3}>
           <Box>
             <Typography
               component="h1"
               variant="h2"
               sx={{
-                display: 'block',
+                ml: '-2px',
+                display: '-webkit-box',
+                WebkitLineClamp: '2',
+                WebkitBoxOrient: 'vertical',
+                maxWidth: '72ch',
                 overflow: 'hidden',
-                whiteSpace: 'nowrap',
-                textOverflow: 'ellipsis',
-                ml: '-2px'
+                textOverflow: 'ellipsis'
               }}>
               {title}
             </Typography>
-            <Box display="flex" alignItems="center" flexWrap="wrap" mt={1}>
-              {subTitle}
-            </Box>
+            {subTitle}
           </Box>
-          <Box display="flex" alignItems="flex-start" flex="0 0 auto">
-            {buttonJSX}
-          </Box>
-        </Box>
+          {buttonJSX}
+        </Stack>
       </Container>
     </Paper>
   );

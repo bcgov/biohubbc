@@ -157,6 +157,10 @@ const appTheme = createTheme({
           fontWeight: 700,
           letterSpacing: '0.02rem'
         },
+        containedError: {
+          fontWeight: 700,
+          letterSpacing: '0.02rem'
+        },
         outlinedPrimary: {
           fontWeight: 700,
           letterSpacing: '0.02rem'
