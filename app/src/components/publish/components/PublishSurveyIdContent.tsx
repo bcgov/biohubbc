@@ -41,7 +41,7 @@ const PublishSurveyIdContent = (props: IPublishSurveyIdContentProps) => {
         </Typography>
       </Box>
 
-      <Stack gap={3}>
+      <Stack gap={4}>
         <Box component="fieldset">
           <Typography component="legend">Additional Information</Typography>
           <Typography variant="body1" color="textSecondary" sx={{ mt: -0.75, mb: 3 }}>

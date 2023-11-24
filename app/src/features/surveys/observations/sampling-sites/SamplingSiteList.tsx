@@ -203,7 +203,7 @@ const SamplingSiteList = () => {
         </Toolbar>
         <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
           {/* Display spinner if data loaders are still waiting for a response */}
-          <Fade in={!surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading}>
+          <Fade in={surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading}>
             <Box
               sx={{
                 position: 'absolute',
