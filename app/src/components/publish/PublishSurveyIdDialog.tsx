@@ -88,11 +88,7 @@ const PublishSurveyIdDialog = (props: IPublishSurveyIdDialogProps) => {
     setIsSubmitting(true);
 
     return biohubApi.publish
-      .publishSurveyId(
-        surveyContext.surveyDataLoader.data?.surveyData.survey_details.uuid || '',
-        surveyContext.surveyId,
-        values
-      )
+      .publishSurveyData(surveyContext.surveyId, values)
       .then(() => {
         setShowSuccessDialog(true);
       })
@@ -133,8 +129,7 @@ const PublishSurveyIdDialog = (props: IPublishSurveyIdDialogProps) => {
         open={props.open}
         aria-labelledby="component-dialog-title"
         aria-describedby="component-dialog-description"
-        scroll="body"
-        >
+        scroll="body">
         <Formik<ISubmitSurvey>
           innerRef={formikRef}
           initialValues={surveySubmitFormInitialValues}
@@ -151,8 +146,11 @@ const PublishSurveyIdDialog = (props: IPublishSurveyIdDialogProps) => {
                 <PublishSurveyIdContent publishDate={publishDate} />
               </DialogContent>
               <DialogActions>
-                <Typography component="span" variant="subtitle2" fontWeight="700" sx={{mr: 2}}>
-                  <Typography component="span" color="textSecondary" variant="inherit">Last Published:</Typography> {publishDate}
+                <Typography component="span" variant="subtitle2" fontWeight="700" sx={{ mr: 2 }}>
+                  <Typography component="span" color="textSecondary" variant="inherit">
+                    Last Published:
+                  </Typography>{' '}
+                  {publishDate}
                 </Typography>
                 <LoadingButton
                   onClick={formikProps.submitForm}
