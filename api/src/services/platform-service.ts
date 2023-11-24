@@ -5,6 +5,7 @@ import { URL } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 import { IDBConnection } from '../database/db';
 import { ApiError, ApiErrorType, ApiGeneralError } from '../errors/api-error';
+import { PostSurveyToBiohubObject } from '../models/biohub-create';
 import {
   IProjectAttachment,
   IProjectReportAttachment,
@@ -108,27 +109,6 @@ export interface IGetSurveyAttachment {
 }
 
 export type IGetSurveyReportAttachment = IGetSurveyAttachment & { fileType: 'Report' };
-
-export interface IBiohubFeature {
-  id: string;
-  type: string;
-  properties: {
-    [key: string]: string | number | null;
-  };
-  features: IBiohubFeature[];
-}
-export interface ISubmitSurvey {
-  id: string;
-  type: string;
-  properties?: {
-    [key: string]: string | number | null;
-  };
-  features: IBiohubFeature[];
-}
-export enum BiohubFeatureType {
-  DATASET = 'dataset',
-  FEATURE = 'feature'
-}
 
 const getBackboneIntakeEnabled = () => process.env.BACKBONE_INTAKE_ENABLED === 'true' || false;
 const getBackboneApiHost = () => process.env.BACKBONE_API_HOST || '';
@@ -304,14 +284,9 @@ export class PlatformService extends DBService {
     const token = await keycloakService.getKeycloakServiceToken();
 
     const backboneSurveyIntakeUrl = new URL(getBackboneSurveyIntakePath(), getBackboneApiHost()).href;
-    console.log('backboneSurveyIntakeUrl', backboneSurveyIntakeUrl);
 
     const surveyDataPackage = await this.generateSurveyDataPackage(surveyId, data.additionalInformation);
-    console.log('surveyDataPackage', surveyDataPackage);
 
-    if (surveyDataPackage) {
-      return { submission_id: 1 };
-    }
     const response = await axios.post<{ submission_id: number }>(backboneSurveyIntakeUrl, surveyDataPackage, {
       headers: {
         authorization: `Bearer ${token}`
@@ -335,19 +310,6 @@ export class PlatformService extends DBService {
     return response.data;
   }
 
-  /*OBSERVATION DATA
-    'survey_id'
-  | 'wldtaxonomic_units_id'
-  | 'latitude'
-  | 'longitude'
-  | 'count'
-  | 'observation_date'
-  | 'observation_time'
-  | 'survey_sample_site_id'
-  | 'survey_sample_method_id'
-  | 'survey_sample_period_id'
-  */
-
   /**
    * Generate survey data package to submit to BioHub.
    *
@@ -356,36 +318,14 @@ export class PlatformService extends DBService {
    * @return {*}  {Promise<ISubmitSurvey>}
    * @memberof PlatformService
    */
-  async generateSurveyDataPackage(surveyId: number, additionalInformation: string): Promise<ISubmitSurvey> {
+  async generateSurveyDataPackage(surveyId: number, additionalInformation: string): Promise<PostSurveyToBiohubObject> {
     const observationService = new ObservationService(this.connection);
     const surveyService = new SurveyService(this.connection);
 
     const survey = await surveyService.getSurveyData(surveyId);
-    const {
-      surveyObservations,
-      supplementaryObservationData
-    } = await observationService.getSurveyObservationsWithSupplementaryData(surveyId);
-    console.log('surveyObservations', surveyObservations);
-    console.log('supplementaryObservationData', supplementaryObservationData);
+    const { surveyObservations } = await observationService.getSurveyObservationsWithSupplementaryData(surveyId);
 
-    const surveyDataPackage: ISubmitSurvey = {
-      id: survey.uuid,
-      type: BiohubFeatureType.DATASET,
-      properties: {
-        surveyName: survey.survey_name,
-        additionalInformation: additionalInformation
-      },
-      features: [
-        {
-          id: '1',
-          type: BiohubFeatureType.FEATURE,
-          properties: {
-            observationCount: supplementaryObservationData.observationCount
-          },
-          features: []
-        } as IBiohubFeature
-      ]
-    };
+    const surveyDataPackage = new PostSurveyToBiohubObject(survey, surveyObservations, additionalInformation);
 
     return surveyDataPackage;
   }
