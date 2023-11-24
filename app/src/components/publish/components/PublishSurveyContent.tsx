@@ -7,7 +7,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import { useFormikContext } from 'formik';
-import { ISubmitSurvey } from '../PublishSurveyIdDialog';
+import { ISubmitSurvey } from '../PublishSurveyDialog';
 
 export interface IPublishSurveyIdContentProps {
   publishDate: string | unknown;
@@ -18,7 +18,7 @@ export interface IPublishSurveyIdContentProps {
  *
  * @return {*}
  */
-const PublishSurveyIdContent = (props: IPublishSurveyIdContentProps) => {
+const PublishSurveyContent = (props: IPublishSurveyIdContentProps) => {
   const { values, setFieldValue } = useFormikContext<ISubmitSurvey>();
 
   return (
@@ -28,16 +28,19 @@ const PublishSurveyIdContent = (props: IPublishSurveyIdContentProps) => {
       sx={{
         maxWidth: '800px'
       }}>
-
-
-      <Box component="section" 
+      <Box
+        component="section"
         sx={{
           '& p + p': {
             marginTop: 2
           }
         }}>
-        <Typography variant="body1" color="textSecondary">Published data submitted as part of this survey may be secured according to the <a href="https://www2.gov.bc.ca/gov/content/environment/natural-resource-stewardship/laws-policies-standards-guidance/data-information-security" target="_blank">Species and Ecosystems Data and Information
-          Security (SEDIS) Policy</a>.
+        <Typography variant="body1" color="textSecondary">
+          Published data submitted as part of this survey may be secured according to the{' '}
+          <a href="https://www2.gov.bc.ca/gov/content/environment/natural-resource-stewardship/laws-policies-standards-guidance/data-information-security">
+            Species and Ecosystems Data and Information Security (SEDIS) Policy
+          </a>
+          .
         </Typography>
       </Box>
 
@@ -45,8 +48,8 @@ const PublishSurveyIdContent = (props: IPublishSurveyIdContentProps) => {
         <Box component="fieldset">
           <Typography component="legend">Additional Information</Typography>
           <Typography variant="body1" color="textSecondary" sx={{ mt: -0.75, mb: 3 }}>
-            Information about this survey that data stewards should be aware of, including any reasons
-            why this survey should be secured.
+            Information about this survey that data stewards should be aware of, including any reasons why this survey
+            should be secured.
           </Typography>
           <CustomTextField
             name="additionalInformation"
@@ -116,8 +119,8 @@ const PublishSurveyIdContent = (props: IPublishSurveyIdContentProps) => {
               }}
               label={
                 <Typography variant="body1">
-                  All data and information for this survey has been collected legally, and in accordance
-                  with Section 1 of the{' '}
+                  All data and information for this survey has been collected legally, and in accordance with Section 1
+                  of the{' '}
                   <a
                     href="https://www2.gov.bc.ca/gov/content/environment/natural-resource-stewardship/laws-policies-standards-guidance/data-information-security"
                     target="_blank"
@@ -143,4 +146,4 @@ const PublishSurveyIdContent = (props: IPublishSurveyIdContentProps) => {
   );
 };
 
-export default PublishSurveyIdContent;
+export default PublishSurveyContent;

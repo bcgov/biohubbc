@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios';
 import { IRemoveOrResubmitForm } from 'components/publish/components/RemoveOrResubmitForm';
-import { ISubmitSurvey } from 'components/publish/PublishSurveyIdDialog';
+import { ISubmitSurvey } from 'components/publish/PublishSurveyDialog';
 import { IProjectSubmitForm, ISurveySubmitForm } from 'interfaces/usePublishApi.interface';
 
 /**

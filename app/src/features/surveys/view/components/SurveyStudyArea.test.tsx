@@ -238,7 +238,6 @@ describe.skip('SurveyStudyArea', () => {
       surveyData: {
         ...surveyObject,
         survey_details: {
-          uuid: '1',
           id: 1,
           project_id: 1,
           survey_name: 'survey name is this',

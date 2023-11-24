@@ -10,7 +10,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import PublishSurveyIdDialog from 'components/publish/PublishSurveyIdDialog';
+import PublishSurveyIdDialog from 'components/publish/PublishSurveyDialog';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteSurveyI18N } from 'constants/i18n';

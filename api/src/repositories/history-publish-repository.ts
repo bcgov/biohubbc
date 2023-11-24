@@ -293,6 +293,10 @@ export class HistoryPublishRepository extends BaseRepository {
       ON CONFLICT (queue_id) DO UPDATE SET event_timestamp = NOW()
       RETURNING survey_metadata_publish_id;
     `;
+
+    // NOTE: ON CONFLICT is used to update the timestamp if the same queue_id is used
+    //      to publish the same survey multiple times
+
     const response = await this.connection.sql(sqlStatement);
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert Survey Metadata Publish record', [

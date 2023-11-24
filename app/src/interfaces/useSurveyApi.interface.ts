@@ -53,7 +53,6 @@ export interface IParticipantsJobForm {
 export interface IGetSurveyForViewResponseDetails {
   id: number;
   project_id: number;
-  uuid: string;
   survey_name: string;
   start_date: string;
   end_date: string;
