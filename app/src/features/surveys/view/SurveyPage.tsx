@@ -1,4 +1,4 @@
-import { mdiPencilOutline } from '@mdi/js';
+import { mdiMapSearchOutline, mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -23,6 +23,7 @@ import SurveyAnimals from './SurveyAnimals';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyHeader from './SurveyHeader';
 import Skeleton from '@mui/material/Skeleton';
+import grey from '@mui/material/colors/grey';
 
 //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
@@ -84,15 +85,33 @@ const SurveyPage: React.FC = () => {
           </Toolbar>
           <Box position="relative" height={{sm: 400, md: 600}}>
             {observationsContext.observationsDataLoader.isLoading && (
-              <Skeleton variant="rectangular"
+              <Box 
                 sx={{
                   position: 'absolute',
                   top: 0,
                   right: 0,
                   bottom: 0,
-                  left: 0
-                }}
-             />
+                  left: 0,
+                  zIndex: 1002,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: '#fff',
+                  '& svg': {
+                    color: grey[300]
+                  }
+                }}>
+                <Skeleton variant="rectangular" width="100%" height="100%"
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    left: 0
+                  }}
+                />
+                <Icon path={mdiMapSearchOutline} size={2} />
+              </Box>
             )}
             <ObservationsMap />
           </Box>
