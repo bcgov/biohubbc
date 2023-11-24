@@ -20,7 +20,7 @@ export class PostSurveyObservationToBiohubObject {
     defaultLog.debug({ label: 'PostSurveyObservationToBiohubObject', message: 'params', obj });
 
     this.id = String(obj.survey_observation_id);
-    this.type = BiohubFeatureType.FEATURE;
+    this.type = BiohubFeatureType.OBSERVATION;
     this.properties = {
       surveyId: obj.survey_id,
       wldtaxonomic_units_id: obj.wldtaxonomic_units_id,
@@ -70,5 +70,5 @@ export class PostSurveyToBiohubObject {
 
 export enum BiohubFeatureType {
   DATASET = 'dataset',
-  FEATURE = 'feature'
+  OBSERVATION = 'observation'
 }
