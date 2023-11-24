@@ -21,6 +21,7 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
+import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual as _deepEquals } from 'lodash';
 import { get } from 'lodash-es';
 import { useContext, useEffect, useMemo, useState } from 'react';
@@ -31,6 +32,7 @@ import { ANIMAL_FORM_MODE } from '../view/survey-animals/animal';
 import {
   AnimalTelemetryDeviceSchema,
   Device,
+  IAnimalDeployment,
   IAnimalTelemetryDevice
 } from '../view/survey-animals/telemetry-device/device';
 import TelemetryDeviceForm from '../view/survey-animals/telemetry-device/TelemetryDeviceForm';
@@ -44,6 +46,11 @@ export const AnimalDeploymentSchema = AnimalTelemetryDeviceSchema.shape({
 });
 export type AnimalDeployment = InferType<typeof AnimalDeploymentSchema>;
 
+export interface ICritterDeployment {
+  critter: IDetailedCritterWithInternalId;
+  deployment: IAnimalDeployment;
+}
+
 const ManualTelemetryList = () => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -51,14 +58,7 @@ const ManualTelemetryList = () => {
   const biohubApi = useBiohubApi();
   const telemetryApi = useTelemetryApi();
 
-  const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
-
-  const [showDialog, setShowDialog] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [formMode, setFormMode] = useState(ANIMAL_FORM_MODE.ADD);
-  const [critterId, setCritterId] = useState<number | string>('');
-  const [deviceId, setDeviceId] = useState<number>(0);
-  const [formData, setFormData] = useState<AnimalDeployment>({
+  const defaultFormValues = {
     survey_critter_id: '' as unknown as number, // form needs '' to display the no value text
     deployments: [
       {
@@ -75,7 +75,16 @@ const ManualTelemetryList = () => {
     attachmentType: undefined,
     attachmentFile: undefined,
     critter_id: ''
-  });
+  };
+
+  const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
+
+  const [showDialog, setShowDialog] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formMode, setFormMode] = useState(ANIMAL_FORM_MODE.ADD);
+  const [critterId, setCritterId] = useState<number | string>('');
+  const [deviceId, setDeviceId] = useState<number>(0);
+  const [formData, setFormData] = useState<AnimalDeployment>(defaultFormValues);
 
   useEffect(() => {
     surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
@@ -85,34 +94,50 @@ const ManualTelemetryList = () => {
   const deployments = useMemo(() => surveyContext.deploymentDataLoader.data, [surveyContext.deploymentDataLoader.data]);
   const critters = useMemo(() => surveyContext.critterDataLoader.data, [surveyContext.critterDataLoader.data]);
 
+  const critterDeployments: ICritterDeployment[] = useMemo(() => {
+    const data: ICritterDeployment[] = [];
+    // combine all critter and deployments into a flat list
+    surveyContext.deploymentDataLoader.data?.forEach((deployment) => {
+      const critter = surveyContext.critterDataLoader.data?.find(
+        (critter) => critter.critter_id === deployment.critter_id
+      );
+      if (critter) {
+        data.push({ critter, deployment });
+      }
+    });
+    return data;
+  }, [surveyContext.critterDataLoader.data, surveyContext.deploymentDataLoader.data]);
+
+  console.log(critterDeployments);
+
   const handleMenuOpen = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, device_id: number) => {
     setAnchorEl(event.currentTarget);
     setDeviceId(device_id);
-    // almost all of this should get moved into the edit code....
-    const deployment = deployments?.find((item) => item.device_id === device_id);
+
+    const critterDeployment = critterDeployments.find((item) => item.deployment.device_id === device_id);
     const deviceDetails = await telemetryApi.devices.getDeviceDetails(device_id);
-    const critter = critters?.find((item) => item.critter_id === deployment?.critter_id);
 
     // need to map deployment back into object for initial values
-    if (deployment) {
+    if (critterDeployment) {
       const editData: AnimalDeployment = {
-        survey_critter_id: Number(critter?.survey_critter_id),
+        survey_critter_id: Number(critterDeployment.critter?.survey_critter_id),
         deployments: [
           {
-            deployment_id: deployment.deployment_id,
-            attachment_start: deployment.attachment_start,
-            attachment_end: deployment.attachment_end
+            deployment_id: critterDeployment.deployment.deployment_id,
+            attachment_start: critterDeployment.deployment.attachment_start,
+            attachment_end: critterDeployment.deployment.attachment_end
           }
         ],
-        device_id: deployment.device_id,
+        device_id: critterDeployment.deployment.device_id,
         device_make: deviceDetails.device?.device_make ? String(deviceDetails.device?.device_make) : '',
         device_model: deviceDetails.device?.device_model ? String(deviceDetails.device?.device_model) : '',
         frequency: deviceDetails.device?.frequency ? Number(deviceDetails.device?.frequency) : undefined,
         frequency_unit: deviceDetails.device?.frequency_unit ? String(deviceDetails.device?.frequency_unit) : '',
         attachmentType: undefined,
         attachmentFile: undefined,
-        critter_id: deployment.critter_id
+        critter_id: critterDeployment.deployment.critter_id
       };
+      setCritterId(critterDeployment.critter?.survey_critter_id);
       setFormData(editData);
     }
   };
@@ -207,10 +232,10 @@ const ManualTelemetryList = () => {
   };
 
   const updateDevice = async (data: AnimalDeployment) => {
-    const existingDevice = deployments?.find((item) => item.device_id === data.device_id);
-    const device = new Device({ ...data, collar_id: existingDevice?.collar_id });
+    const existingDevice = critterDeployments.find((item) => item.deployment.device_id === data.device_id);
+    const device = new Device({ ...data, collar_id: existingDevice?.deployment.collar_id });
     try {
-      if (existingDevice && !_deepEquals(new Device(existingDevice), device)) {
+      if (existingDevice && !_deepEquals(new Device(existingDevice.deployment), device)) {
         await telemetryApi.devices.upsertCollar(device);
       }
     } catch (error) {
@@ -224,7 +249,11 @@ const ManualTelemetryList = () => {
     <>
       <Menu
         open={Boolean(anchorEl)}
-        onClose={() => setAnchorEl(null)}
+        onClose={() => {
+          setAnchorEl(null);
+          setCritterId('');
+          setDeviceId(0);
+        }}
         anchorEl={anchorEl}
         anchorOrigin={{
           vertical: 'top',
@@ -327,6 +356,8 @@ const ManualTelemetryList = () => {
                     setShowDialog(false);
                     formikProps.resetForm();
                     setCritterId('');
+                    setDeviceId(0);
+                    setFormData(defaultFormValues);
                   }}>
                   Cancel
                 </Button>
@@ -346,7 +377,7 @@ const ManualTelemetryList = () => {
                   }}>
                   Deployments &zwnj;
                   <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
-                    ({deployments?.length ?? 0})
+                    ({critterDeployments?.length ?? 0})
                   </Typography>
                 </Typography>
                 <Button
@@ -375,11 +406,11 @@ const ManualTelemetryList = () => {
                     p: 1,
                     background: grey[100]
                   }}>
-                  {deployments?.map((item) => (
+                  {critterDeployments?.map((item) => (
                     <ManualTelemetryCard
-                      device_id={item.device_id}
-                      name={'Animal'}
-                      details={`Device ID: ${item.device_id}`}
+                      device_id={item.deployment.device_id}
+                      name={String(item.critter.animal_id || item.critter.taxon)}
+                      details={`Device ID: ${item.deployment.device_id}`}
                       onMenu={(event, id) => {
                         handleMenuOpen(event, id);
                       }}
