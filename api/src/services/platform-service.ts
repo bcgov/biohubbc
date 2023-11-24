@@ -20,6 +20,7 @@ import { DBService } from './db-service';
 import { EmlPackage, EmlService } from './eml-service';
 import { HistoryPublishService } from './history-publish-service';
 import { KeycloakService } from './keycloak-service';
+import { ObservationService } from './observation-service';
 import { SummaryService } from './summary-service';
 import { SurveyService } from './survey-service';
 
@@ -107,6 +108,27 @@ export interface IGetSurveyAttachment {
 }
 
 export type IGetSurveyReportAttachment = IGetSurveyAttachment & { fileType: 'Report' };
+
+export interface IBiohubFeature {
+  id: string;
+  type: string;
+  properties: {
+    [key: string]: string | number | null;
+  };
+  features: IBiohubFeature[];
+}
+export interface ISubmitSurvey {
+  id: string;
+  type: string;
+  properties?: {
+    [key: string]: string | number | null;
+  };
+  features: IBiohubFeature[];
+}
+export enum BiohubFeatureType {
+  DATASET = 'dataset',
+  FEATURE = 'feature'
+}
 
 const getBackboneIntakeEnabled = () => process.env.BACKBONE_INTAKE_ENABLED === 'true' || false;
 const getBackboneApiHost = () => process.env.BACKBONE_API_HOST || '';
@@ -267,12 +289,11 @@ export class PlatformService extends DBService {
    * @return {*}  {Promise<{ queue_id: number }>}
    * @memberof PlatformService
    */
-  async submitSurveyIdToBioHub(
-    surveyUUID: string,
+  async submitSurveyToBioHub(
     surveyId: number,
     data: { additionalInformation: string }
   ): Promise<{ submission_id: number }> {
-    defaultLog.debug({ label: 'submitSurveyIdToBioHub', message: 'params', surveyId });
+    defaultLog.debug({ label: 'submitSurveyToBioHub', message: 'params', surveyId });
 
     if (!getBackboneIntakeEnabled()) {
       throw new ApiGeneralError('BioHub intake is not enabled');
@@ -283,20 +304,19 @@ export class PlatformService extends DBService {
     const token = await keycloakService.getKeycloakServiceToken();
 
     const backboneSurveyIntakeUrl = new URL(getBackboneSurveyIntakePath(), getBackboneApiHost()).href;
+    console.log('backboneSurveyIntakeUrl', backboneSurveyIntakeUrl);
 
-    const response = await axios.post<{ submission_id: number }>(
-      backboneSurveyIntakeUrl,
-      {
-        uuid: surveyUUID,
-        surveyId: surveyId,
-        additionalInformation: data.additionalInformation
-      },
-      {
-        headers: {
-          authorization: `Bearer ${token}`
-        }
+    const surveyDataPackage = await this.generateSurveyDataPackage(surveyId, data.additionalInformation);
+    console.log('surveyDataPackage', surveyDataPackage);
+
+    if (surveyDataPackage) {
+      return { submission_id: 1 };
+    }
+    const response = await axios.post<{ submission_id: number }>(backboneSurveyIntakeUrl, surveyDataPackage, {
+      headers: {
+        authorization: `Bearer ${token}`
       }
-    );
+    });
 
     if (!response.data) {
       throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to submit survey ID to Biohub');
@@ -313,6 +333,61 @@ export class PlatformService extends DBService {
     });
 
     return response.data;
+  }
+
+  /*OBSERVATION DATA
+    'survey_id'
+  | 'wldtaxonomic_units_id'
+  | 'latitude'
+  | 'longitude'
+  | 'count'
+  | 'observation_date'
+  | 'observation_time'
+  | 'survey_sample_site_id'
+  | 'survey_sample_method_id'
+  | 'survey_sample_period_id'
+  */
+
+  /**
+   * Generate survey data package to submit to BioHub.
+   *
+   * @param {number} surveyId
+   * @param {string} additionalInformation
+   * @return {*}  {Promise<ISubmitSurvey>}
+   * @memberof PlatformService
+   */
+  async generateSurveyDataPackage(surveyId: number, additionalInformation: string): Promise<ISubmitSurvey> {
+    const observationService = new ObservationService(this.connection);
+    const surveyService = new SurveyService(this.connection);
+
+    const survey = await surveyService.getSurveyData(surveyId);
+    const {
+      surveyObservations,
+      supplementaryObservationData
+    } = await observationService.getSurveyObservationsWithSupplementaryData(surveyId);
+    console.log('surveyObservations', surveyObservations);
+    console.log('supplementaryObservationData', supplementaryObservationData);
+
+    const surveyDataPackage: ISubmitSurvey = {
+      id: survey.uuid,
+      type: BiohubFeatureType.DATASET,
+      properties: {
+        surveyName: survey.survey_name,
+        additionalInformation: additionalInformation
+      },
+      features: [
+        {
+          id: '1',
+          type: BiohubFeatureType.FEATURE,
+          properties: {
+            observationCount: supplementaryObservationData.observationCount
+          },
+          features: []
+        } as IBiohubFeature
+      ]
+    };
+
+    return surveyDataPackage;
   }
 
   /**

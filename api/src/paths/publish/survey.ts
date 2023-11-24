@@ -29,7 +29,7 @@ export const POST: Operation = [
 
 POST.apiDoc = {
   description: 'Publish Survey data to Biohub.',
-  tags: ['survey', 'dwca', 'biohub'],
+  tags: ['survey', 'biohub'],
   security: [
     {
       Bearer: []
@@ -41,12 +41,8 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
-          required: ['surveyUUID', 'surveyId', 'data'],
+          required: ['surveyId', 'data'],
           properties: {
-            surveyUUID: {
-              type: 'string',
-              description: 'Survey UUID'
-            },
             surveyId: {
               type: 'number'
             },
@@ -60,36 +56,6 @@ POST.apiDoc = {
                   description: 'Additional information to include in the upload'
                 }
               }
-              // required: ['observations', 'summary', 'reports', 'attachments'],
-              // properties: {
-              //   observations: {
-              //     type: 'array',
-              //     items: {
-              //       type: 'object',
-              //       properties: {}
-              //     }
-              //   },
-              //   summary: {
-              //     type: 'array',
-              //     items: {
-              //       type: 'object',
-              //       properties: {}
-              //     }
-              //   },
-              //   reports: {
-              //     type: 'array',
-              //     items: {
-              //       type: 'object',
-              //       properties: {}
-              //     }
-              //   },
-              //   attachments: {
-              //     type: 'array',
-              //     items: {
-              //       type: 'object',
-              //       properties: {}
-              //     }
-              //   }
             }
           }
         }
@@ -139,13 +105,13 @@ export function publishSurvey(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
-    const { surveyUUID, surveyId, data } = req.body;
+    const { surveyId, data } = req.body;
 
     try {
       await connection.open();
 
       const platformService = new PlatformService(connection);
-      const response = await platformService.submitSurveyIdToBioHub(surveyUUID, surveyId, data);
+      const response = await platformService.submitSurveyToBioHub(surveyId, data);
 
       await connection.commit();
 

@@ -42,13 +42,11 @@ const usePublishApi = (axios: AxiosInstance) => {
    * @param {ISubmitSurvey} dataSubmission
    * @return {*}  {Promise<{ submission_id: number }>}
    */
-  const publishSurveyId = async (
-    surveyUUID: string,
+  const publishSurveyData = async (
     surveyId: number,
     dataSubmission: ISubmitSurvey
   ): Promise<{ submission_id: number }> => {
     const sendData = {
-      surveyUUID: surveyUUID,
       surveyId: surveyId,
       data: dataSubmission
     };
@@ -108,7 +106,7 @@ const usePublishApi = (axios: AxiosInstance) => {
 
   return {
     publishSurvey,
-    publishSurveyId,
+    publishSurveyData,
     publishProject,
     resubmitAttachment
   };
