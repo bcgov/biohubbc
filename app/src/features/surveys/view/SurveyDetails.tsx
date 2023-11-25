@@ -1,4 +1,4 @@
-import { mdiPencil} from '@mdi/js';
+import { mdiPencil } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';

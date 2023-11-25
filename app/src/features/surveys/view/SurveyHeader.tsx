@@ -151,7 +151,7 @@ const SurveyHeader = () => {
         subTitle={
           <Stack flexDirection="row" alignItems="center" gap={0.25} mt={1} mb={0.25}>
             <Stack flexDirection="row" alignItems="center">
-              <Typography component="span" color="textSecondary" sx={{mr: 1}}>
+              <Typography component="span" color="textSecondary" sx={{ mr: 1 }}>
                 Timeline:
               </Typography>
               <Typography component="span">
@@ -170,22 +170,27 @@ const SurveyHeader = () => {
               validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
               validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
               <Stack flexDirection="row" alignItems="center" gap={1}>
-                <Typography component="span" variant="subtitle2" fontSize="0.9rem" fontWeight="700"
+                <Typography
+                  component="span"
+                  variant="subtitle2"
+                  fontSize="0.9rem"
+                  fontWeight="700"
                   sx={{
                     flex: '0 0 auto',
-                    mr: {sm: 0, md: 0.5},
-                    order: {sm: 3, md: 0}
-                  }}
-                >
+                    mr: { sm: 0, md: 0.5 },
+                    order: { sm: 3, md: 0 }
+                  }}>
                   {publishDate ? (
                     <>
-                      <Typography component="span" color="textSecondary" variant="inherit" sx={{mr: 0.5}}>
+                      <Typography component="span" color="textSecondary" variant="inherit" sx={{ mr: 0.5 }}>
                         Published:
                       </Typography>
-                      <Typography component="span" variant="inherit">{publishDate}</Typography>
+                      <Typography component="span" variant="inherit">
+                        {publishDate}
+                      </Typography>
                     </>
-                    ) : (
-                    <Typography component="span" color="textSecondary" variant="inherit" sx={{mr: 1}}>
+                  ) : (
+                    <Typography component="span" color="textSecondary" variant="inherit" sx={{ mr: 1 }}>
                       Never Published
                     </Typography>
                   )}

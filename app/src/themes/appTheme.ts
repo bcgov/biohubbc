@@ -82,7 +82,7 @@ const appTheme = createTheme({
           '&.MuiTypography-root': {
             marginBottom: '15px',
             padding: 0,
-            fontWeight: 700,
+            fontWeight: 700
           }
         }
       }

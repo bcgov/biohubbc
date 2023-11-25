@@ -125,7 +125,7 @@ const ObservationsMap = () => {
           <GeoJSON
             key={uuidv4()}
             data={nonEditableGeo.feature}
-            pointToLayer={(_, latlng) => coloredPoint({ latlng, fillColor: '#1f7dff', borderColor: '#ffffff', })}>
+            pointToLayer={(_, latlng) => coloredPoint({ latlng, fillColor: '#1f7dff', borderColor: '#ffffff' })}>
             {nonEditableGeo.popupComponent}
           </GeoJSON>
         ))}
