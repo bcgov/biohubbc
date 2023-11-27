@@ -50,7 +50,7 @@ const ManualTelemetryCard = (props: ManualTelemetryCardProps) => {
               {props.name}
             </Typography>
             <Typography variant="subtitle2" color="textSecondary">
-              {props.device_id}
+              Device ID: {props.device_id}
             </Typography>
           </Box>
         </AccordionSummary>
