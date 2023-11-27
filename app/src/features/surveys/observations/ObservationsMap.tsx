@@ -150,7 +150,7 @@ const ObservationsMap = () => {
         </LayersControl>
       </LeafletMapContainer>
       {(surveyObservations.length > 0 || studyAreaFeatures.length > 0 || sampleSiteFeatures.length > 0) && (
-        <Box position="absolute" top="126px" left="10px" zIndex="999" display="none">
+        <Box position="absolute" top="126px" left="10px" zIndex="1000" display="none">
           <IconButton
             sx={{
               padding: '3px',
