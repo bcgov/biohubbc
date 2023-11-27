@@ -19,7 +19,16 @@ export const useTelemetryApi = () => {
   const apiAxios = useAxios(config?.API_HOST);
   const devices = useDeviceApi(apiAxios);
 
-  return { devices };
+  const getManualTelemetry = async () => {
+    try {
+      const { data } = await apiAxios.get('/api/telemetry');
+      return data;
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  return { devices, getManualTelemetry };
 };
 
 type TelemetryApiReturnType = ReturnType<typeof useTelemetryApi>;

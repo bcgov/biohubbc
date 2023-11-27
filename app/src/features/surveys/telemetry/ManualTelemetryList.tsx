@@ -321,7 +321,25 @@ const ManualTelemetryList = () => {
                         formikProps.setFieldValue(`survey_critter_id`, Number(e.target.value));
                       }}>
                       {critters?.map((item) => {
-                        return <MenuItem value={item.survey_critter_id}>{item.taxon}</MenuItem>;
+                        return (
+                          <MenuItem value={item.survey_critter_id}>
+                            <Box>
+                              <Typography
+                                sx={{
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  typography: 'body2',
+                                  fontWeight: 700,
+                                  fontSize: '0.9rem'
+                                }}>
+                                {item.animal_id}
+                              </Typography>
+                              <Typography variant="subtitle2" color="textSecondary">
+                                {item.taxon} - {item.sex}
+                              </Typography>
+                            </Box>
+                          </MenuItem>
+                        );
                       })}
                     </Select>
                     <FormHelperText>

@@ -57,7 +57,7 @@ const ManualTelemetryCard = (props: ManualTelemetryCardProps) => {
         <IconButton
           onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => props.onMenu(event, props.device_id)}
           aria-label="settings">
-          <Icon path={mdiDotsVertical} size={1}></Icon>
+          <Icon path={mdiDotsVertical} size={1} />
         </IconButton>
       </Box>
       <AccordionDetails
