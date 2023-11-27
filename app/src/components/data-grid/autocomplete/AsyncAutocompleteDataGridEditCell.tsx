@@ -6,7 +6,7 @@ import useEnhancedEffect from '@mui/material/utils/useEnhancedEffect';
 import { GridRenderCellParams, GridValidRowModel, useGridApiContext } from '@mui/x-data-grid';
 import { IAutocompleteDataGridOption } from 'components/data-grid/autocomplete/AutocompleteDataGrid.interface';
 import { DebouncedFunc } from 'lodash-es';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export interface IAsyncAutocompleteDataGridEditCell<
   DataGridType extends GridValidRowModel,
@@ -36,6 +36,12 @@ export interface IAsyncAutocompleteDataGridEditCell<
       onSearchResults: (searchResults: IAutocompleteDataGridOption<ValueType>[]) => void
     ) => Promise<void>
   >;
+  /**
+   * Indicates if there is an error with the control
+   *
+   * @memberof IAsyncAutocompleteDataGridEditCell
+   */
+  error?: boolean;
 }
 
 /**
@@ -142,7 +148,7 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
 
   return (
     <Autocomplete
-      id={String(dataGridProps.id)}
+      id={`${dataGridProps.id}[${dataGridProps.field}]`}
       noOptionsText="No matching options"
       autoHighlight
       fullWidth
@@ -180,7 +186,9 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
           size="small"
           variant="outlined"
           fullWidth
+          error={props.error}
           InputProps={{
+            color: props.error ? 'error' : undefined,
             ...params.InputProps,
             endAdornment: (
               <>
