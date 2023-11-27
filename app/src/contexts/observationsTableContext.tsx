@@ -416,7 +416,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       observation_date: null as unknown as Date,
       observation_time: '',
       latitude: null as unknown as number,
-      longitude: null as unknown as number,
+      longitude: null as unknown as number
     };
 
     // Append new record to initial rows

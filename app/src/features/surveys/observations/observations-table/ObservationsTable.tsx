@@ -371,10 +371,10 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
 
         return (
           <TextFieldDataGrid
-          dataGridProps={params}
-          textFieldProps={{
-            name: params.field,
-            type: 'date',
+            dataGridProps={params}
+            textFieldProps={{
+              name: params.field,
+              type: 'date',
               value: params.value ? moment(params.value).format('YYYY-MM-DD') : null,
               onChange: (event) => {
                 const value = moment(event.target.value).toDate();
