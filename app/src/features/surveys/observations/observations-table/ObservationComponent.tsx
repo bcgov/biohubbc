@@ -117,7 +117,7 @@ const ObservationComponent = () => {
             </Typography>
           </Typography>
 
-          <Box display="flex" overflow="hidden" gap={1} whiteSpace="nowrap">
+          <Box display="flex" gap={1} whiteSpace="nowrap">
             <Button
               variant="contained"
               color="primary"
