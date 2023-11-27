@@ -16,9 +16,9 @@ import { TaxonomyContext } from './taxonomyContext';
 export interface IObservationRecord {
   survey_observation_id: number;
   wldtaxonomic_units_id: number;
-  survey_sample_site_id: number;
-  survey_sample_method_id: number;
-  survey_sample_period_id: number;
+  survey_sample_site_id: number | null;
+  survey_sample_method_id: number | null;
+  survey_sample_period_id: number | null;
   count: number | null;
   observation_date: Date;
   observation_time: string;
@@ -407,16 +407,16 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     const newRecord: IObservationTableRow = {
       id,
-      survey_observation_id: undefined,
-      wldtaxonomic_units_id: undefined,
-      survey_sample_site_id: undefined,
-      survey_sample_method_id: undefined,
-      survey_sample_period_id: undefined,
-      count: undefined,
-      observation_date: undefined,
-      observation_time: undefined,
-      latitude: undefined,
-      longitude: undefined
+      survey_observation_id: null as unknown as number,
+      wldtaxonomic_units_id: null as unknown as number,
+      survey_sample_site_id: null as unknown as number,
+      survey_sample_method_id: null as unknown as number,
+      survey_sample_period_id: null,
+      count: null as unknown as number,
+      observation_date: null as unknown as Date,
+      observation_time: '',
+      latitude: null as unknown as number,
+      longitude: null as unknown as number,
     };
 
     // Append new record to initial rows

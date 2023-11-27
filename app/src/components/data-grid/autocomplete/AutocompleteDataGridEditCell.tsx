@@ -87,7 +87,7 @@ const AutocompleteDataGridEditCell = <DataGridType extends GridValidRowModel, Va
 
   return (
     <Autocomplete
-      id={String(dataGridProps.id)}
+      id={`${dataGridProps.id}[${dataGridProps.field}]`}
       noOptionsText="No matching options"
       autoHighlight={true}
       fullWidth

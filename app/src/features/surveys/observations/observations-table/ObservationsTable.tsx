@@ -332,6 +332,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
           <TextFieldDataGrid
             dataGridProps={params}
             textFieldProps={{
+              name: params.field,
               onChange: (event) => {
                 if (!/^\d{0,7}$/.test(event.target.value)) {
                   // If the value is not a number, return
@@ -370,9 +371,10 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
 
         return (
           <TextFieldDataGrid
-            dataGridProps={params}
-            textFieldProps={{
-              type: 'date',
+          dataGridProps={params}
+          textFieldProps={{
+            name: params.field,
+            type: 'date',
               value: params.value ? moment(params.value).format('YYYY-MM-DD') : null,
               onChange: (event) => {
                 const value = moment(event.target.value).toDate();
@@ -432,7 +434,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             dateFieldProps={{
               slotProps: {
                 textField: {
-                  error
+                  error,
+                  name: params.field
                 }
               }
             }}
@@ -470,6 +473,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
           <TextFieldDataGrid
             dataGridProps={params}
             textFieldProps={{
+              name: params.field,
               onChange: (event) => {
                 if (!/^-?\d{0,3}(?:\.\d{0,12})?$/.test(event.target.value)) {
                   // If the value is not a subset of a legal latitude value, prevent the value from being applied
@@ -518,6 +522,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
           <TextFieldDataGrid
             dataGridProps={params}
             textFieldProps={{
+              name: params.field,
               onChange: (event) => {
                 if (!/^-?\d{0,3}(?:\.\d{0,12})?$/.test(event.target.value)) {
                   // If the value is not a subset of a legal longitude value, prevent the value from being applied

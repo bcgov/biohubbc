@@ -148,7 +148,7 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
 
   return (
     <Autocomplete
-      id={String(dataGridProps.id)}
+      id={`${dataGridProps.id}[${dataGridProps.field}]`}
       noOptionsText="No matching options"
       autoHighlight
       fullWidth
