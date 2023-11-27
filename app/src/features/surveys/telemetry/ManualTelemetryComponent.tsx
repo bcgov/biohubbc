@@ -1,9 +1,19 @@
 import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
 import Toolbar from '@mui/material/Toolbar';
+import { useTelemetryApi } from 'hooks/useTelemetryApi';
+import { useEffect } from 'react';
 import ManualTelemetryTable from './ManualTelemetryTable';
 
 const ManualTelemetryComponent = () => {
+  const api = useTelemetryApi();
+  useEffect(() => {
+    const fetchData = async () => {
+      const temp = await api.getManualTelemetry();
+      console.log(temp);
+    };
+    fetchData();
+  }, []);
   return (
     <>
       <Box

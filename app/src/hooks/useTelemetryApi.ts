@@ -14,18 +14,26 @@ export interface ICritterDeploymentResponse {
   taxon: string;
 }
 
+export interface IManualTelemetry {
+  deployment_id: string;
+  latitude: number;
+  longitude: number;
+  date: string;
+}
+
 export const useTelemetryApi = () => {
   const config = useContext(ConfigContext);
   const apiAxios = useAxios(config?.API_HOST);
   const devices = useDeviceApi(apiAxios);
 
-  const getManualTelemetry = async () => {
-    try {
-      const { data } = await apiAxios.get('/api/telemetry');
-      return data;
-    } catch (e) {
-      console.log(e);
-    }
+  const getManualTelemetry = async (): Promise<IManualTelemetry[]> => {
+    const { data } = await apiAxios.get<IManualTelemetry[]>('/api/telemetry');
+    return data;
+  };
+
+  const createManualTelemetry = async (postData: IManualTelemetry): Promise<IManualTelemetry[]> => {
+    const { data } = await apiAxios.post<IManualTelemetry[]>('/api/telemetry');
+    return data;
   };
 
   return { devices, getManualTelemetry };
