@@ -410,7 +410,9 @@ const ManualTelemetryList = () => {
                     <ManualTelemetryCard
                       device_id={item.deployment.device_id}
                       name={String(item.critter.animal_id || item.critter.taxon)}
-                      details={`Device ID: ${item.deployment.device_id}`}
+                      taxon={item.critter.taxon}
+                      start_date={item.deployment.attachment_start}
+                      end_date={item.deployment.attachment_end}
                       onMenu={(event, id) => {
                         handleMenuOpen(event, id);
                       }}

@@ -1,18 +1,18 @@
-import { mdiChevronDown, mdiDotsVertical } from '@mdi/js';
+import { mdiCalendarRange, mdiChevronDown, mdiDotsVertical } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, IconButton } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
-
+import moment from 'moment';
 export interface ManualTelemetryCardProps {
   device_id: number;
-  name: string;
-  details: string;
-  // openMenu: () => void;
-  // onEdit: () => void;
-  // onDelete: () => void;
+  name: string; // should be animal alias
+  taxon: string;
+  start_date: string;
+  end_date?: string;
+
   onMenu: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => void;
 }
 
@@ -38,16 +38,21 @@ const ManualTelemetryCard = (props: ManualTelemetryCardProps) => {
               whiteSpace: 'nowrap'
             }
           }}>
-          <Typography
-            sx={{
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              typography: 'body2',
-              fontWeight: 700,
-              fontSize: '0.9rem'
-            }}>
-            {props.name}
-          </Typography>
+          <Box>
+            <Typography
+              sx={{
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                typography: 'body2',
+                fontWeight: 700,
+                fontSize: '0.9rem'
+              }}>
+              {props.name}
+            </Typography>
+            <Typography variant="subtitle2" color="textSecondary">
+              {props.device_id}
+            </Typography>
+          </Box>
         </AccordionSummary>
         <IconButton
           onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => props.onMenu(event, props.device_id)}
@@ -60,7 +65,13 @@ const ManualTelemetryCard = (props: ManualTelemetryCardProps) => {
           pt: 0,
           px: 2
         }}>
-        {props.details}
+        <Box display={'flex'}>
+          <Icon path={mdiCalendarRange} size={0.75} />
+          <Typography ml={1} variant="body2" component={'div'} color={'inherit'}>
+            {moment(props.start_date).format('YYYY-MM-DD')}{' '}
+            {props.end_date ? '- ' + moment(props.end_date).format('YYYY-MM-DD') : ''}
+          </Typography>
+        </Box>
       </AccordionDetails>
     </Accordion>
   );

@@ -5,6 +5,7 @@ import Paper from '@mui/material/Paper';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
 import SurveyObservationHeader from '../observations/SurveyObservationHeader';
+import ManualTelemetryComponent from './ManualTelemetryComponent';
 import ManualTelemetryList from './ManualTelemetryList';
 
 const ManualTelemetryPage = () => {
@@ -38,7 +39,7 @@ const ManualTelemetryPage = () => {
           <ManualTelemetryList />
         </Box>
         <Box flex="1 1 auto" overflow="hidden">
-          <>Table goes here</>
+          <ManualTelemetryComponent />
         </Box>
       </Paper>
     </Box>
