@@ -6,17 +6,19 @@ import { DialogContext } from 'contexts/dialogContext';
 import { ObservationsContext } from 'contexts/observationsContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import moment from 'moment';
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
 import { SurveyContext } from './surveyContext';
 import { TaxonomyContext } from './taxonomyContext';
 
 export interface IObservationRecord {
   survey_observation_id: number;
   wldtaxonomic_units_id: number;
-  survey_sample_site_id: number;
-  survey_sample_method_id: number;
-  survey_sample_period_id: number;
+  survey_sample_site_id: number | null;
+  survey_sample_method_id: number | null;
+  survey_sample_period_id: number | null;
   count: number | null;
   observation_date: Date;
   observation_time: string;
@@ -31,6 +33,9 @@ export interface ISupplementaryObservationData {
 export interface IObservationTableRow extends Partial<IObservationRecord> {
   id: GridRowId;
 }
+
+export type ObservationTableValidationModel = TableValidationModel<IObservationTableRow>;
+export type ObservationRowValidationError = RowValidationError<IObservationTableRow>;
 
 /**
  * Context object that provides helper functions for working with a survey observations data grid.
@@ -104,6 +109,10 @@ export type IObservationsTableContext = {
    */
   isLoading: boolean;
   /**
+   * The state of the validation model
+   */
+  validationModel: ObservationTableValidationModel;
+  /**
    * Reflects the count of total observations for the survey
    */
   observationCount: number;
@@ -130,6 +139,7 @@ export const ObservationsTableContext = createContext<IObservationsTableContext>
   onRowSelectionModelChange: () => {},
   isSaving: false,
   isLoading: false,
+  validationModel: {},
   observationCount: 0,
   setObservationCount: () => undefined
 });
@@ -161,6 +171,102 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   const [_isSaving, _setIsSaving] = useState(false);
   // Stores the current count of observations for this survey
   const [observationCount, setObservationCount] = useState<number>(0);
+  // Stores the current validation state of the table
+  const [validationModel, setValidationModel] = useState<ObservationTableValidationModel>({});
+
+  /**
+   * Gets all rows from the table, including values that have been edited in the table.
+   */
+  const _getRowsWithEditedValues = (): IObservationTableRow[] => {
+    const rowValues = Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values()) as IObservationTableRow[];
+
+    return rowValues.map((row) => {
+      const editRow = _muiDataGridApiRef.current.state.editRows[row.id];
+      if (!editRow) {
+        return row;
+      }
+
+      return Object.entries(editRow).reduce(
+        (newRow, entry) => ({ ...row, ...newRow, _isModified: true, [entry[0]]: entry[1].value }),
+        {}
+      );
+    }) as IObservationTableRow[];
+  };
+
+  /**
+   * Validates all rows belonging to the table. Returns null if validation passes, otherwise
+   * returns the validation model
+   */
+  const _validateRows = (): ObservationTableValidationModel | null => {
+    const rowValues = _getRowsWithEditedValues();
+    const tableColumns = _muiDataGridApiRef.current.getAllColumns();
+
+    const requiredColumns: (keyof IObservationTableRow)[] = [
+      'count',
+      'latitude',
+      'longitude',
+      'observation_date',
+      'observation_time',
+      'wldtaxonomic_units_id'
+    ];
+
+    const samplingRequiredColumns: (keyof IObservationTableRow)[] = [
+      'survey_sample_site_id',
+      'survey_sample_method_id',
+      'survey_sample_period_id'
+    ];
+
+    const validation = rowValues.reduce((tableModel: ObservationTableValidationModel, row: IObservationTableRow) => {
+      const rowErrors: ObservationRowValidationError[] = [];
+
+      // Validate missing columns
+      const missingColumns: Set<keyof IObservationTableRow> = new Set(requiredColumns.filter((column) => !row[column]));
+      const missingSamplingColumns: (keyof IObservationTableRow)[] = samplingRequiredColumns.filter(
+        (column) => !row[column]
+      );
+
+      // If an observation is not an incidental record, then all sampling columns are required.
+      if (!missingSamplingColumns.includes('survey_sample_site_id')) {
+        // Record is non-incidental, namely one or more of its sampling columns is non-empty.
+        missingSamplingColumns.forEach((column) => missingColumns.add(column));
+
+        if (missingColumns.has('survey_sample_site_id')) {
+          // If sampling site is missing, then a sampling method may not be selected
+          missingColumns.add('survey_sample_method_id');
+        }
+
+        if (missingColumns.has('survey_sample_method_id')) {
+          // If sampling method is missing, then a sampling period may not be selected
+          missingColumns.add('survey_sample_period_id');
+        }
+      }
+
+      Array.from(missingColumns).forEach((field: keyof IObservationTableRow) => {
+        const columnName = tableColumns.find((column) => column.field === field)?.headerName ?? field;
+        rowErrors.push({ field, message: `Missing column: ${columnName}` });
+      });
+
+      // Validate date value
+      if (row.observation_date && !moment(row.observation_date).isValid()) {
+        rowErrors.push({ field: 'observation_date', message: 'Invalid date' });
+      }
+
+      // Validate time value
+      if (row.observation_time === 'Invalid date') {
+        rowErrors.push({ field: 'observation_time', message: 'Invalid time' });
+      }
+
+      if (rowErrors.length > 0) {
+        tableModel[row.id] = rowErrors;
+      }
+
+      return tableModel;
+    }, {});
+
+    setValidationModel(validation);
+
+    return Object.keys(validation).length > 0 ? validation : null;
+  };
 
   const _deleteRecords = useCallback(
     async (observationRecords: IObservationTableRow[]): Promise<void> => {
@@ -185,6 +291,14 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
           );
           setObservationCount(response.supplementaryObservationData.observationCount);
         }
+
+        // Remove row IDs from validation model
+        setValidationModel((prevValidationModel) =>
+          allRowIdsToDelete.reduce((newValidationModel, rowId) => {
+            delete newValidationModel[rowId];
+            return newValidationModel;
+          }, prevValidationModel)
+        );
 
         // Update all rows, removing deleted rows
         setRows((current) => current.filter((item) => !allRowIdsToDelete.includes(String(item.id))));
@@ -293,16 +407,16 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     const newRecord: IObservationTableRow = {
       id,
-      survey_observation_id: undefined,
-      wldtaxonomic_units_id: undefined,
-      survey_sample_site_id: undefined,
-      survey_sample_method_id: undefined,
-      survey_sample_period_id: undefined,
-      count: undefined,
-      observation_date: undefined,
-      observation_time: undefined,
-      latitude: undefined,
-      longitude: undefined
+      survey_observation_id: null as unknown as number,
+      wldtaxonomic_units_id: null as unknown as number,
+      survey_sample_site_id: null as unknown as number,
+      survey_sample_method_id: null as unknown as number,
+      survey_sample_period_id: null,
+      count: null as unknown as number,
+      observation_date: null as unknown as Date,
+      observation_time: '',
+      latitude: null as unknown as number,
+      longitude: null as unknown as number
     };
 
     // Append new record to initial rows
@@ -323,9 +437,16 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       return;
     }
 
+    // Validate rows
+    const validationErrors = _validateRows();
+
+    if (validationErrors) {
+      return;
+    }
+
     _setIsStoppingEdit(true);
 
-    // The ids of all rows in edit mode
+    // Collect the ids of all rows in edit mode
     const allEditingIds = Object.keys(_muiDataGridApiRef.current.state.editRows);
 
     // Remove any row ids that the data grid might still be tracking, but which have been removed from local state
@@ -441,7 +562,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     // Collect rows from the observations data loader
     const rows: IObservationTableRow[] = observationsContext.observationsDataLoader.data.surveyObservations.map(
-      (row: IObservationRecord) => ({ ...row, id: row.survey_observation_id })
+      (row: IObservationRecord) => ({ ...row, id: String(row.survey_observation_id) })
     );
 
     // Set initial rows for the table context
@@ -545,6 +666,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       onRowSelectionModelChange: setRowSelectionModel,
       isLoading,
       isSaving,
+      validationModel,
       observationCount,
       setObservationCount
     }),
@@ -561,6 +683,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       hasUnsavedChanges,
       rowSelectionModel,
       isLoading,
+      validationModel,
       isSaving,
       observationCount
     ]

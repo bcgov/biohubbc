@@ -20,6 +20,13 @@ export interface IAutocompleteDataGridViewCellProps<
    * @memberof AutocompleteDataGridViewCell
    */
   options: IAutocompleteDataGridOption<ValueType>[];
+  /**
+   * Indicates if the control contains an error
+   *
+   * @type {boolean}
+   * @memberof IAutocompleteDataGridViewCellProps
+   */
+  error?: boolean;
 }
 
 /**
@@ -38,6 +45,7 @@ const AutocompleteDataGridViewCell = <DataGridType extends GridValidRowModel, Va
     <Typography
       variant="body2"
       component="div"
+      color={props.error ? 'error' : undefined}
       sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
       {options.find((item) => item.value === dataGridProps.value)?.label ?? ''}
     </Typography>
