@@ -22,7 +22,7 @@ import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import SkeletonList from 'components/loading/SkeletonList';
+import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';

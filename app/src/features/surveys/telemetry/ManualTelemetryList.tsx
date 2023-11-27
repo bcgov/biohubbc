@@ -15,7 +15,7 @@ import InputLabel from '@mui/material/InputLabel';
 import { MenuProps } from '@mui/material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import ListFader from 'components/loading/SkeletonList';
+import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { AttachmentType } from 'constants/attachments';
 import { SurveyContext } from 'contexts/surveyContext';
 import { Formik } from 'formik';
@@ -396,7 +396,7 @@ const ManualTelemetryList = () => {
               </Toolbar>
               <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
                 {/* Display list of skeleton components while waiting for a response */}
-                <ListFader isLoading={surveyContext.deploymentDataLoader.isLoading} />
+                <SkeletonList isLoading={surveyContext.deploymentDataLoader.isLoading} />
                 <Box
                   sx={{
                     position: 'absolute',
