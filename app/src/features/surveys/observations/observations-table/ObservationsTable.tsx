@@ -110,7 +110,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
 
   const isLoading = useMemo(() => {
     return [
-      // true,
       observationsContext.observationsDataLoader.isLoading && !observationsContext.observationsDataLoader.hasLoaded,
       props.isLoading,
       surveyContext.sampleSiteDataLoader.isLoading,
@@ -479,8 +478,9 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
 
   return (
     <>
-
-      <ObservationTableSkeletonLoader />
+      {isLoading && (
+        <ObservationTableSkeletonLoader />
+      )}
 
       <DataGrid
         checkboxSelection
