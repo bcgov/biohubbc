@@ -453,7 +453,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       width: 70,
       disableColumnMenu: true,
       resizable: false,
-      headerClassName: 'pinnedColumn',
       cellClassName: 'pinnedColumn',
       getActions: (params) => [
         <IconButton
@@ -503,6 +502,15 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         sx={{
           background: grey[50],
           border: 'none',
+          '&:after': {
+            content: '" "',
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            width: 100,
+            height: 55,
+            background: 'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 50%)'
+          },
           '& .pinnedColumn': {
             position: 'sticky',
             right: 0,
@@ -511,24 +519,11 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
           },
           '& .MuiDataGrid-columnHeaders': {
             background: '#fff',
-            position: 'relative',
-            '&:after': {
-              content: "''",
-              position: 'absolute',
-              top: '0',
-              right: 0,
-              width: '70px',
-              height: '60px',
-              background: '#fff',
-              borderLeft: '1px solid' + grey[300]
-            }
+            position: 'relative'
           },
-          '& .MuiDataGrid-columnHeader': {
-            // px: 3,
-            py: 1,
-            '&:focus': {
-              outline: 'none'
-            }
+          '& .MuiDataGrid-columnHeader:focus-within': {
+            outline: 'none',
+            background: grey[200]
           },
           '& .MuiDataGrid-columnHeaderTitle': {
             fontWeight: 700,
@@ -536,8 +531,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             color: 'text.secondary'
           },
           '& .MuiDataGrid-cell': {
-            // px: 3,
-            py: 1,
+            py: 0.75,
             background: '#fff',
             '&.MuiDataGrid-cell--editing:focus-within': {
               outline: 'none'
