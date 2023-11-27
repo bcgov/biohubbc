@@ -1,6 +1,5 @@
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import { cyan, grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
@@ -322,7 +321,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       headerAlign: 'right',
       align: 'right',
       renderCell: (params) => (
-        <Typography variant="body2" sx={{ color: hasError(params) ? 'error' : undefined, fontSize: 'inherit' }}>
+        <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
           {params.value}
         </Typography>
       ),
@@ -345,8 +344,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
                   value: event.target.value
                 });
               },
-              error,
-              color: error ? 'error' : undefined
+              error
             }}
           />
         );
@@ -363,7 +361,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       headerAlign: 'left',
       align: 'left',
       renderCell: (params) => (
-        <Typography variant="body2" sx={{ color: hasError(params) ? 'error' : undefined, fontSize: 'inherit' }}>
+        <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
           {getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, params.value)}
         </Typography>
       ),
@@ -385,8 +383,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
                 });
               },
 
-              error,
-              color: error ? 'error' : undefined
+              error
             }}
           />
         );
@@ -421,7 +418,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         }
 
         return (
-          <Typography variant="body2" sx={{ color: hasError(params) ? 'error' : undefined, fontSize: 'inherit' }}>
+          <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
             {params.value}
           </Typography>
         );
@@ -435,8 +432,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             dateFieldProps={{
               slotProps: {
                 textField: {
-                  error,
-                  inputProps: { sx: (theme: Theme) => (error ? { color: theme.palette.error.main } : {}) }
+                  error
                 }
               }
             }}
@@ -463,7 +459,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         return { ...params.row, longitude: isNaN(value) ? null : value };
       },
       renderCell: (params) => (
-        <Typography variant="body2" sx={{ color: hasError(params) ? 'error' : undefined, fontSize: 'inherit' }}>
+        <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
           {params.value}
         </Typography>
       ),
@@ -486,8 +482,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
                   value: event.target.value
                 });
               },
-              error,
-              color: error ? 'error' : undefined
+              error
             }}
           />
         );
@@ -512,7 +507,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         return { ...params.row, longitude: isNaN(value) ? null : value };
       },
       renderCell: (params) => (
-        <Typography variant="body2" sx={{ color: hasError(params) ? 'error' : undefined, fontSize: 'inherit' }}>
+        <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
           {params.value}
         </Typography>
       ),
@@ -535,8 +530,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
                   value: event.target.value
                 });
               },
-              error,
-              color: error ? 'error' : undefined
+              error
             }}
           />
         );
