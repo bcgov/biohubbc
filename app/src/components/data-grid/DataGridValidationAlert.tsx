@@ -1,11 +1,10 @@
-import { mdiChevronDown, mdiChevronUp, mdiClose } from '@mdi/js';
+import { mdiChevronLeft, mdiChevronRight, mdiClose } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Collapse } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { GridRowId } from '@mui/x-data-grid';
@@ -123,32 +122,39 @@ const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataG
 
   return (
     <Collapse in={numErrors > 0 && !hideAlert}>
-      <Box mt={2} mb={1} mx={1}>
-        <Alert
-          variant="outlined"
-          severity="error"
-          action={
-            <Box display="flex" flexDirection="row" alignItems="center">
-              <Typography>{indexIndicator}</Typography>
-              <Divider orientation="vertical" flexItem variant="middle" sx={{ ml: 2, mr: 1, borderColor: 'inherit' }} />
-              <Button color="inherit" startIcon={<Icon path={mdiChevronUp} size={1} />} onClick={() => handlePrev()}>
-                Prev
-              </Button>
-              <Button color="inherit" startIcon={<Icon path={mdiChevronDown} size={1} />} onClick={() => handleNext()}>
-                Next
-              </Button>
-              <IconButton color="inherit" onClick={() => setHideAlert(true)}>
-                <Icon path={mdiClose} size={1} />
-              </IconButton>
-            </Box>
-          }>
-          <AlertTitle>Could not save observations: Validation failed</AlertTitle>
-          <Typography variant="body2">
-            <strong>Error {indexIndicator}</strong>
-            {currentError && `: ${currentError.message}`}
-          </Typography>
-        </Alert>
-      </Box>
+      <Alert
+        square
+        severity="error"
+        sx={{
+          mx: 1,
+          mb: 1,
+          py: 1.5,
+        }}
+        action={
+          <Box display="flex" flexDirection="row" alignItems="center"
+            sx={{
+              '& button': {
+                fontWeight: 700
+              }
+            }}
+          >
+            <Button color="inherit" startIcon={<Icon path={mdiChevronLeft} size={1} />} onClick={() => handlePrev()}>
+              Prev
+            </Button>
+            <Button color="inherit" endIcon={<Icon path={mdiChevronRight} size={1} />} onClick={() => handleNext()}>
+              Next
+            </Button>
+            <IconButton onClick={() => setHideAlert(true)} sx={{ml: 2}}>
+              <Icon path={mdiClose} size={1} />
+            </IconButton>
+          </Box>
+        }>
+        <AlertTitle>Missing required fields</AlertTitle>
+        <Typography variant="body2">
+          <strong>Error {indexIndicator}</strong>
+          {currentError && `: ${currentError.message}`}
+        </Typography>
+      </Alert>
     </Collapse>
   );
 };

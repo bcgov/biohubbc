@@ -90,7 +90,7 @@ const ObservationTableSkeletonLoader = () => {
         left: 0,
         zIndex: '999',
         p: 1,
-        background: grey[100]
+        background: '#fff'
       }}>
       <Paper elevation={0}>
         <ObservationSkeletonRow />
@@ -595,8 +595,10 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         getRowHeight={() => 'auto'}
         getRowClassName={(params) => has(observationsTableContext.validationModel, params.row.id) ? 'error' : ''}
         sx={{
-          background: grey[50],
+          background: '#fff',
           border: 'none',
+          borderTop: '1px solid ' + grey[300],
+          borderRadius: 0,
           '&:after': {
             content: '" "',
             position: 'absolute',
@@ -613,7 +615,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             borderLeft: '1px solid' + grey[300]
           },
           '& .MuiDataGrid-columnHeaders': {
-            background: '#fff',
             position: 'relative'
           },
           '& .MuiDataGrid-columnHeader:focus-within': {
@@ -633,14 +634,20 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             },
             '&.MuiDataGrid-cell--editing': {
               p: 0.5,
-              backgroundColor: cyan[100]
+              backgroundColor: cyan[100],
             }
+
           },
           '& .MuiDataGrid-row--editing': {
             boxShadow: 'none',
             backgroundColor: cyan[50],
             '& .MuiDataGrid-cell': {
               backgroundColor: cyan[50]
+            },
+            '&.error': {
+              '& .MuiDataGrid-cell, .MuiDataGrid-cell--editing': {
+                backgroundColor: 'rgb(251, 237, 238)'
+              }
             }
           },
           '& .MuiDataGrid-editInputCell': {
@@ -683,7 +690,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             }
           },
           '& .MuiDataGrid-virtualScrollerContent': {
-            background: grey[100]
+            background: '#fff'
           },
           '& .MuiDataGrid-footerContainer': {
             background: '#fff'

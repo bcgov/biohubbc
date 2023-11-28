@@ -41,9 +41,7 @@ const SampleSiteSkeleton = () => (
       px: 2,
       height: '56px',
       background: '#fff',
-      '&:not(:last-of-type)': {
-        borderBottom: '1px solid ' + grey[300]
-      }
+      borderTop: '1px solid ' + grey[300]
     }}>
     <Skeleton sx={{ flex: '1 1 auto' }} />
   </Box>
@@ -211,7 +209,8 @@ const SamplingSiteList = () => {
                 width: '100%',
                 height: '100%',
                 p: 1,
-                background: grey[100],
+                pt: 0,
+                background: '#fff',
                 zIndex: 2
               }}>
               <Paper elevation={0} sx={{ overflow: 'hidden' }}>
@@ -228,7 +227,7 @@ const SamplingSiteList = () => {
                 height: '100%',
                 overflowY: 'auto',
                 p: 1,
-                background: grey[100]
+                pt: 0
               }}>
               {/* Display text if the sample site data loader has no items in it */}
               {!surveyContext.sampleSiteDataLoader.data?.sampleSites.length &&
@@ -241,9 +240,15 @@ const SamplingSiteList = () => {
               {surveyContext.sampleSiteDataLoader.data?.sampleSites.map((sampleSite, index) => {
                 return (
                   <Accordion
+                    disableGutters
+                    square
                     key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}
                     sx={{
-                      boxShadow: 'none'
+                      boxShadow: 'none',
+                      borderTop: '1px solid #ccc',
+                      '&:before': {
+                        display: 'none'
+                      }
                     }}>
                     <Box
                       display="flex"
