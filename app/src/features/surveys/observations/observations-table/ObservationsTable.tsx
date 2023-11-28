@@ -26,6 +26,7 @@ import {
   IGetSampleMethodRecord,
   IGetSamplePeriodRecord
 } from 'interfaces/useSurveyApi.interface';
+import { has } from 'lodash-es';
 import moment from 'moment';
 import { useCallback, useContext, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router';
@@ -592,6 +593,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         onRowSelectionModelChange={observationsTableContext.onRowSelectionModelChange}
         rowSelectionModel={observationsTableContext.rowSelectionModel}
         getRowHeight={() => 'auto'}
+        getRowClassName={(params) => has(observationsTableContext.validationModel, params.row.id) ? 'error' : ''}
         sx={{
           background: grey[50],
           border: 'none',
