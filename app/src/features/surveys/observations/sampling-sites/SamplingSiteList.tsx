@@ -294,7 +294,8 @@ const SamplingSiteList = () => {
                     </Box>
                     <AccordionDetails
                       sx={{
-                        pt: 0
+                        pt: 0,
+                        px: 1
                       }}>
                       <List
                         disablePadding
@@ -310,12 +311,17 @@ const SamplingSiteList = () => {
                               key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}`}
                               sx={{
                                 display: 'block',
-                                py: 0,
+                                p: 0,
                                 '& + li': {
                                   mt: 1.5
                                 }
                               }}>
                               <ListItemText
+                                sx={{
+                                  px: 2,
+                                  py: 1,
+                                  background: grey[100]
+                                }}
                                 title="Sampling Method"
                                 primary={getCodesName(
                                   codesContext.codesDataLoader.data,
