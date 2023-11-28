@@ -30,6 +30,13 @@ export interface IAutocompleteDataGridEditCellProps<
    * @memberof IAutocompleteDataGridEditCellProps
    */
   getOptionDisabled?: (option: IAutocompleteDataGridOption<ValueType>) => boolean;
+  /**
+   * Indicates if the control contains an error
+   *
+   * @type {boolean}
+   * @memberof IAutocompleteDataGridEditCellProps
+   */
+  error?: boolean;
 }
 
 /**
@@ -80,7 +87,7 @@ const AutocompleteDataGridEditCell = <DataGridType extends GridValidRowModel, Va
 
   return (
     <Autocomplete
-      id={String(dataGridProps.id)}
+      id={`${dataGridProps.id}[${dataGridProps.field}]`}
       noOptionsText="No matching options"
       autoHighlight={true}
       fullWidth
@@ -113,8 +120,10 @@ const AutocompleteDataGridEditCell = <DataGridType extends GridValidRowModel, Va
           variant="outlined"
           fullWidth
           InputProps={{
+            color: props.error ? 'error' : undefined,
             ...params.InputProps
           }}
+          error={props.error}
         />
       )}
       renderOption={(renderProps, renderOption) => {

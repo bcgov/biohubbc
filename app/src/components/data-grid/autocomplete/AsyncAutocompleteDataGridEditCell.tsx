@@ -36,6 +36,12 @@ export interface IAsyncAutocompleteDataGridEditCell<
       onSearchResults: (searchResults: IAutocompleteDataGridOption<ValueType>[]) => void
     ) => Promise<void>
   >;
+  /**
+   * Indicates if there is an error with the control
+   *
+   * @memberof IAsyncAutocompleteDataGridEditCell
+   */
+  error?: boolean;
 }
 
 /**
@@ -142,7 +148,7 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
 
   return (
     <Autocomplete
-      id={String(dataGridProps.id)}
+      id={`${dataGridProps.id}[${dataGridProps.field}]`}
       noOptionsText="No matching options"
       autoHighlight
       fullWidth
@@ -180,7 +186,9 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
           size="small"
           variant="outlined"
           fullWidth
+          error={props.error}
           InputProps={{
+            color: props.error ? 'error' : undefined,
             ...params.InputProps,
             endAdornment: (
               <>
