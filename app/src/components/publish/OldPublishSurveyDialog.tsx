@@ -19,7 +19,7 @@ import { IGetSurveyAttachment, IGetSurveyReportAttachment } from 'interfaces/use
 import * as React from 'react';
 import { useContext } from 'react';
 import yup from 'utils/YupSchema';
-// import SelectAllButton from './SelectAllButton';
+import SelectAllButton from './SelectAllButton';
 import SubmitSection from './SubmitSection';
 
 export interface ISubmitSurvey {
@@ -108,7 +108,6 @@ const OldPublishSurveyDialog = (props: IPublishSurveyDialogProps) => {
   };
 
   const { agreement1, agreement2, agreement3 } = state;
-  // const error = [gilad, jason, antoine].filter((v) => v).length !== 2;
 
   return (
     <>
@@ -144,25 +143,31 @@ const OldPublishSurveyDialog = (props: IPublishSurveyDialogProps) => {
           validationSchema: surveySubmitFormYupSchema
         }}>
         <Stack gap={4} divider={<Divider flexItem></Divider>}>
-          {/* <Alert severity="info" sx={{fontSize: '1rem'}}>
-            Published data may be secured according to the Species and Ecosystems Data and Information Security (SEDIS) Policy. <a href="https://www2.gov.bc.ca/gov/content/environment/natural-resource-stewardship/laws-policies-standards-guidance/data-information-security" target="_blank">Learn more</a>
-          </Alert> */}
+          <Alert severity="info" sx={{ fontSize: '1rem' }}>
+            Published data may be secured according to the Species and Ecosystems Data and Information Security (SEDIS)
+            Policy.{' '}
+            <a href="https://www2.gov.bc.ca/gov/content/environment/natural-resource-stewardship/laws-policies-standards-guidance/data-information-security">
+              Learn more
+            </a>
+          </Alert>
           <Typography variant="body1" color="textSecondary">
             Published data from this survey may be secured according to the Species and Ecosystems Data and Information
             Security (SEDIS) Policy.
           </Typography>
-          {/* <Box component="fieldset"
+          <Box
+            component="fieldset"
             sx={{
               '& p + p': {
                 mt: 2
               }
-            }}
-          >
+            }}>
             <Typography component="legend">What information is going to be published?</Typography>
-            <Typography variant="body1" color="textSecondary" sx={{mt: -0.75}}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            <Typography variant="body1" color="textSecondary" sx={{ mt: -0.75 }}>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+              dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
+              ea commodo consequat.
             </Typography>
-          </Box> */}
+          </Box>
           <Box component="fieldset">
             <Typography component="legend">Additional Information</Typography>
             <Typography variant="body1" color="textSecondary" sx={{ mt: -0.75 }}>
@@ -211,6 +216,7 @@ const OldPublishSurveyDialog = (props: IPublishSurveyDialogProps) => {
                 label={
                   <Typography variant="body2">
                     I confirm that all published data for this survey meets or exceed the{' '}
+                    {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                     <a href="#">Freedom of Information and Protection of Privacy Act (FOIPPA)</a> requirements.
                   </Typography>
                 }
@@ -244,7 +250,7 @@ const OldPublishSurveyDialog = (props: IPublishSurveyDialogProps) => {
           </Box>
         </Stack>
 
-        {/* <SelectAllButton
+        <SelectAllButton
           formikData={[
             {
               key: 'observations',
@@ -263,7 +269,7 @@ const OldPublishSurveyDialog = (props: IPublishSurveyDialogProps) => {
               value: unsubmittedAttachments
             }
           ]}
-        /> */}
+        />
 
         {unsubmittedObservations.length !== 0 && (
           <SubmitSection

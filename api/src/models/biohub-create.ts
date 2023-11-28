@@ -16,22 +16,22 @@ export class PostSurveyObservationToBiohubObject {
   properties: object;
   // features: ObservationRecord[];
 
-  constructor(obj: ObservationRecord) {
-    defaultLog.debug({ label: 'PostSurveyObservationToBiohubObject', message: 'params', obj });
+  constructor(observationRecord: ObservationRecord) {
+    defaultLog.debug({ label: 'PostSurveyObservationToBiohubObject', message: 'params', observationRecord });
 
-    this.id = String(obj.survey_observation_id);
+    this.id = String(observationRecord.survey_observation_id);
     this.type = BiohubFeatureType.OBSERVATION;
     this.properties = {
-      surveyId: obj.survey_id,
-      wldtaxonomic_units_id: obj.wldtaxonomic_units_id,
-      survey_sample_site_id: obj?.survey_sample_site_id || null,
-      survey_sample_method_id: obj?.survey_sample_method_id || null,
-      survey_sample_period_id: obj?.survey_sample_period_id || null,
-      latitude: obj.latitude,
-      longitude: obj.longitude,
-      count: obj.count,
-      observation_time: obj.observation_time,
-      observation_date: obj.observation_date
+      surveyId: observationRecord.survey_id,
+      wldtaxonomic_units_id: observationRecord.wldtaxonomic_units_id,
+      survey_sample_site_id: observationRecord?.survey_sample_site_id || null,
+      survey_sample_method_id: observationRecord?.survey_sample_method_id || null,
+      survey_sample_period_id: observationRecord?.survey_sample_period_id || null,
+      latitude: observationRecord.latitude,
+      longitude: observationRecord.longitude,
+      count: observationRecord.count,
+      observation_time: observationRecord.observation_time,
+      observation_date: observationRecord.observation_date
     };
   }
 }
@@ -48,23 +48,23 @@ export class PostSurveyToBiohubObject {
   properties: object;
   features: PostSurveyObservationToBiohubObject[];
 
-  constructor(obj: GetSurveyData, obj2: ObservationRecord[], additionalInformation?: string) {
-    defaultLog.debug({ label: 'PostSurveyToBiohubObject', message: 'params', obj });
+  constructor(surveyData: GetSurveyData, observationRecords: ObservationRecord[], additionalInformation?: string) {
+    defaultLog.debug({ label: 'PostSurveyToBiohubObject', message: 'params', surveyData });
 
-    this.id = obj.uuid;
+    this.id = surveyData.uuid;
     this.type = BiohubFeatureType.DATASET;
     this.properties = {
       additionalInformation: additionalInformation || null,
-      surveyId: obj.id,
-      projectId: obj.project_id,
-      name: obj.survey_name,
-      startDate: obj.start_date,
-      endDate: obj.end_date,
-      surveyTypes: obj.survey_types,
-      revisionCount: obj.revision_count,
-      geometry: obj.geometry
+      surveyId: surveyData.id,
+      projectId: surveyData.project_id,
+      name: surveyData.survey_name,
+      startDate: surveyData.start_date,
+      endDate: surveyData.end_date,
+      surveyTypes: surveyData.survey_types,
+      revisionCount: surveyData.revision_count,
+      geometry: surveyData.geometry
     };
-    this.features = obj2.map((observation) => new PostSurveyObservationToBiohubObject(observation));
+    this.features = observationRecords.map((observation) => new PostSurveyObservationToBiohubObject(observation));
   }
 }
 

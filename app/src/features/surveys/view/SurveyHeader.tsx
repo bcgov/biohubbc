@@ -129,6 +129,11 @@ const SurveyHeader = () => {
 
   const publishDate = surveyWithDetails.surveySupplementaryData.survey_metadata_publish?.event_timestamp.split(' ')[0];
 
+  const BIOHUB_ENV_FLAG = Boolean(process.env.BIOHUB_ENV_FLAG) || false;
+  console.log('process.env.BIOHUB_ENV_FLAG', process.env.BIOHUB_ENV_FLAG);
+  console.log('process.env', process.env);
+  console.log('BIOHUB_ENV_FLAG', BIOHUB_ENV_FLAG);
+
   return (
     <>
       <SurveyBaseHeader
@@ -170,39 +175,43 @@ const SurveyHeader = () => {
               validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
               validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
               <Stack flexDirection="row" alignItems="center" gap={1}>
-                <Typography
-                  component="span"
-                  variant="subtitle2"
-                  fontSize="0.9rem"
-                  fontWeight="700"
-                  sx={{
-                    flex: '0 0 auto',
-                    mr: { sm: 0, md: 0.5 },
-                    order: { sm: 3, md: 0 }
-                  }}>
-                  {publishDate ? (
-                    <>
-                      <Typography component="span" color="textSecondary" variant="inherit" sx={{ mr: 0.5 }}>
-                        Published:
-                      </Typography>
-                      <Typography component="span" variant="inherit">
-                        {publishDate}
-                      </Typography>
-                    </>
-                  ) : (
-                    <Typography component="span" color="textSecondary" variant="inherit" sx={{ mr: 1 }}>
-                      Never Published
+                {BIOHUB_ENV_FLAG && (
+                  <>
+                    <Typography
+                      component="span"
+                      variant="subtitle2"
+                      fontSize="0.9rem"
+                      fontWeight="700"
+                      sx={{
+                        flex: '0 0 auto',
+                        mr: { sm: 0, md: 0.5 },
+                        order: { sm: 3, md: 0 }
+                      }}>
+                      {publishDate ? (
+                        <>
+                          <Typography component="span" color="textSecondary" variant="inherit" sx={{ mr: 0.5 }}>
+                            Published:
+                          </Typography>
+                          <Typography component="span" variant="inherit">
+                            {publishDate}
+                          </Typography>
+                        </>
+                      ) : (
+                        <Typography component="span" color="textSecondary" variant="inherit" sx={{ mr: 1 }}>
+                          Never Published
+                        </Typography>
+                      )}
                     </Typography>
-                  )}
-                </Typography>
-                <Button
-                  title="Submit Survey Data and Documents"
-                  color="primary"
-                  variant="contained"
-                  onClick={() => setPublishSurveyDialogOpen(true)}
-                  style={{ minWidth: '7rem' }}>
-                  Publish
-                </Button>
+                    <Button
+                      title="Submit Survey Data and Documents"
+                      color="primary"
+                      variant="contained"
+                      onClick={() => setPublishSurveyDialogOpen(true)}
+                      style={{ minWidth: '7rem' }}>
+                      Publish
+                    </Button>
+                  </>
+                )}
                 <Button
                   variant="outlined"
                   color="primary"
@@ -220,6 +229,7 @@ const SurveyHeader = () => {
                 aria-haspopup="true"
                 variant="outlined"
                 color="primary"
+                data-testid="settings-survey-button"
                 startIcon={<Icon path={mdiCog} size={1} />}
                 endIcon={<Icon path={mdiChevronDown} size={1} />}
                 onClick={(event: React.MouseEvent<HTMLButtonElement>) => setMenuAnchorEl(event.currentTarget)}>
