@@ -316,6 +316,7 @@ const SamplingSiteList = () => {
                                 }
                               }}>
                               <ListItemText
+                                title="Sampling Method"
                                 primary={getCodesName(
                                   codesContext.codesDataLoader.data,
                                   'sample_methods',
@@ -332,6 +333,7 @@ const SamplingSiteList = () => {
                                         px: 1.5,
                                         color: 'text.secondary'
                                       }}
+                                      title="Sampling Period"
                                       key={`${samplePeriod.survey_sample_method_id}-${samplePeriod.survey_sample_period_id}`}>
                                       <ListItemIcon sx={{ minWidth: '32px' }} color="inherit">
                                         <Icon path={mdiCalendarRange} size={0.75}></Icon>
