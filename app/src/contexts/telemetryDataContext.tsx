@@ -4,10 +4,12 @@ import { createContext, PropsWithChildren } from 'react';
 
 export type ITelemetryContext = {
   telemetryDataLoader: DataLoader<[], IManualTelemetry[], unknown>;
+  vendorTelemetryDataLoader: DataLoader<[], IManualTelemetry[], unknown>;
 };
 
-export const TelemetryContext = createContext<ITelemetryContext>({
-  telemetryDataLoader: {} as DataLoader<never, IManualTelemetry[], unknown>
+export const TelemetryDataContext = createContext<ITelemetryContext>({
+  telemetryDataLoader: {} as DataLoader<never, IManualTelemetry[], unknown>,
+  vendorTelemetryDataLoader: {} as DataLoader<never, IManualTelemetry[], unknown>
 });
 
 export const TelemetryContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
@@ -15,12 +17,14 @@ export const TelemetryContextProvider = (props: PropsWithChildren<Record<never, 
   const telemetryApi = useTelemetryApi();
 
   const telemetryDataLoader = useDataLoader(() => telemetryApi.getManualTelemetry());
+  const vendorTelemetryDataLoader = useDataLoader(() => telemetryApi.getVendorTelemetry());
 
   telemetryDataLoader.load();
 
   const telemetryContext: ITelemetryContext = {
-    telemetryDataLoader
+    telemetryDataLoader,
+    vendorTelemetryDataLoader
   };
 
-  return <TelemetryContext.Provider value={telemetryContext}>{props.children}</TelemetryContext.Provider>;
+  return <TelemetryDataContext.Provider value={telemetryContext}>{props.children}</TelemetryDataContext.Provider>;
 };
