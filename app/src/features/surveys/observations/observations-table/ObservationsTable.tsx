@@ -4,7 +4,8 @@ import Box from '@mui/material/Box';
 import { cyan, grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import Skeleton from '@mui/material/Skeleton';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import Typography from '@mui/material/Typography';
+import { DataGrid, GridCellParams, GridColDef } from '@mui/x-data-grid';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
 import ConditionalAutocompleteDataGridEditCell from 'components/data-grid/conditional-autocomplete/ConditionalAutocompleteDataGridEditCell';
@@ -13,6 +14,7 @@ import TaxonomyDataGridEditCell from 'components/data-grid/taxonomy/TaxonomyData
 import TaxonomyDataGridViewCell from 'components/data-grid/taxonomy/TaxonomyDataGridViewCell';
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
 import TimePickerDataGrid from 'components/data-grid/TimePickerDataGrid';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { CodesContext } from 'contexts/codesContext';
 import { ObservationsContext } from 'contexts/observationsContext';
 import { IObservationTableRow, ObservationsTableContext } from 'contexts/observationsTableContext';
@@ -23,9 +25,9 @@ import {
   IGetSamplePeriodRecord
 } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
-import { useContext, useEffect, useMemo } from 'react';
+import { useCallback, useContext, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router';
-import { getCodesName } from 'utils/Utils';
+import { getCodesName, getFormattedDate } from 'utils/Utils';
 
 type ISampleSiteOption = {
   survey_sample_site_id: number;
@@ -110,6 +112,17 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
 
   const apiRef = observationsTableContext._muiDataGridApiRef;
 
+  const hasError = useCallback(
+    (params: GridCellParams): boolean => {
+      return Boolean(
+        observationsTableContext.validationModel[params.row.id]?.some((error) => {
+          return error.field === params.field;
+        })
+      );
+    },
+    [observationsTableContext.validationModel]
+  );
+
   const isLoading = useMemo(() => {
     return [
       observationsContext.observationsDataLoader.isLoading && !observationsContext.observationsDataLoader.hasLoaded,
@@ -176,10 +189,10 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         return { ...params.row, wldtaxonomic_units_id: Number(params.value) };
       },
       renderCell: (params) => {
-        return <TaxonomyDataGridViewCell dataGridProps={params} />;
+        return <TaxonomyDataGridViewCell dataGridProps={params} error={hasError(params)} />;
       },
       renderEditCell: (params) => {
-        return <TaxonomyDataGridEditCell dataGridProps={params} />;
+        return <TaxonomyDataGridEditCell dataGridProps={params} error={hasError(params)} />;
       }
     },
     {
@@ -199,6 +212,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
               label: item.sample_site_name,
               value: item.survey_sample_site_id
             }))}
+            error={hasError(params)}
           />
         );
       },
@@ -210,6 +224,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
               label: item.sample_site_name,
               value: item.survey_sample_site_id
             }))}
+            error={hasError(params)}
           />
         );
       }
@@ -233,6 +248,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
                 .map((item) => ({ label: item.sample_method_name, value: item.survey_sample_method_id }));
             }}
             allOptions={sampleMethodOptions}
+            error={hasError(params)}
           />
         );
       },
@@ -246,6 +262,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
                 .map((item) => ({ label: item.sample_method_name, value: item.survey_sample_method_id }));
             }}
             allOptions={sampleMethodOptions}
+            error={hasError(params)}
           />
         );
       }
@@ -272,6 +289,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
                 }));
             }}
             allOptions={samplePeriodOptions}
+            error={hasError(params)}
           />
         );
       },
@@ -288,6 +306,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
                 }));
             }}
             allOptions={samplePeriodOptions}
+            error={hasError(params)}
           />
         );
       }
@@ -301,11 +320,19 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       disableColumnMenu: true,
       headerAlign: 'right',
       align: 'right',
+      renderCell: (params) => (
+        <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
+          {params.value}
+        </Typography>
+      ),
       renderEditCell: (params) => {
+        const error: boolean = hasError(params);
+
         return (
           <TextFieldDataGrid
             dataGridProps={params}
             textFieldProps={{
+              name: params.field,
               onChange: (event) => {
                 if (!/^\d{0,7}$/.test(event.target.value)) {
                   // If the value is not a number, return
@@ -317,7 +344,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
                   field: params.field,
                   value: event.target.value
                 });
-              }
+              },
+              error
             }}
           />
         );
@@ -332,7 +360,36 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       valueGetter: (params) => (params.row.observation_date ? moment(params.row.observation_date).toDate() : null),
       disableColumnMenu: true,
       headerAlign: 'left',
-      align: 'left'
+      align: 'left',
+      renderCell: (params) => (
+        <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
+          {getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, params.value)}
+        </Typography>
+      ),
+      renderEditCell: (params) => {
+        const error = hasError(params);
+
+        return (
+          <TextFieldDataGrid
+            dataGridProps={params}
+            textFieldProps={{
+              name: params.field,
+              type: 'date',
+              value: params.value ? moment(params.value).format('YYYY-MM-DD') : null,
+              onChange: (event) => {
+                const value = moment(event.target.value).toDate();
+                apiRef?.current.setEditCellValue({
+                  id: params.id,
+                  field: params.field,
+                  value
+                });
+              },
+
+              error
+            }}
+          />
+        );
+      }
     },
     {
       field: 'observation_time',
@@ -362,10 +419,28 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
           return null;
         }
 
-        return <>{params.value}</>;
+        return (
+          <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
+            {params.value}
+          </Typography>
+        );
       },
       renderEditCell: (params) => {
-        return <TimePickerDataGrid dataGridProps={params} />;
+        const error = hasError(params);
+
+        return (
+          <TimePickerDataGrid
+            dataGridProps={params}
+            dateFieldProps={{
+              slotProps: {
+                textField: {
+                  error,
+                  name: params.field
+                }
+              }
+            }}
+          />
+        );
       }
     },
     {
@@ -386,11 +461,19 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         const value = parseFloat(params.value);
         return { ...params.row, longitude: isNaN(value) ? null : value };
       },
+      renderCell: (params) => (
+        <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
+          {params.value}
+        </Typography>
+      ),
       renderEditCell: (params) => {
+        const error: boolean = hasError(params);
+
         return (
           <TextFieldDataGrid
             dataGridProps={params}
             textFieldProps={{
+              name: params.field,
               onChange: (event) => {
                 if (!/^-?\d{0,3}(?:\.\d{0,12})?$/.test(event.target.value)) {
                   // If the value is not a subset of a legal latitude value, prevent the value from being applied
@@ -402,7 +485,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
                   field: params.field,
                   value: event.target.value
                 });
-              }
+              },
+              error
             }}
           />
         );
@@ -426,11 +510,19 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         const value = parseFloat(params.value);
         return { ...params.row, longitude: isNaN(value) ? null : value };
       },
+      renderCell: (params) => (
+        <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
+          {params.value}
+        </Typography>
+      ),
       renderEditCell: (params) => {
+        const error: boolean = hasError(params);
+
         return (
           <TextFieldDataGrid
             dataGridProps={params}
             textFieldProps={{
+              name: params.field,
               onChange: (event) => {
                 if (!/^-?\d{0,3}(?:\.\d{0,12})?$/.test(event.target.value)) {
                   // If the value is not a subset of a legal longitude value, prevent the value from being applied
@@ -442,7 +534,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
                   field: params.field,
                   value: event.target.value
                 });
-              }
+              },
+              error
             }}
           />
         );

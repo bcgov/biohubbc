@@ -93,6 +93,22 @@ export class ObservationService extends DBService {
   }
 
   /**
+   * Performs an upsert for all observation records belonging to the given survey, then
+   * returns the updated rows.
+   *
+   * @param {number} surveyId
+   * @param {((Observation | ObservationRecord)[])} observations
+   * @return {*}  {Promise<ObservationRecord[]>}
+   * @memberof ObservationService
+   */
+  async insertUpdateSurveyObservations(
+    surveyId: number,
+    observations: (InsertObservation | UpdateObservation)[]
+  ): Promise<ObservationRecord[]> {
+    return this.observationRepository.insertUpdateSurveyObservations(surveyId, observations);
+  }
+
+  /**
    * Retrieves all observation records for the given survey along with supplementary data
    *
    * @param {number} surveyId
