@@ -4,7 +4,7 @@ import { DialogContext } from 'contexts/dialogContext';
 import { createContext, PropsWithChildren, useContext, useState } from 'react';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
 import { SurveyContext } from './surveyContext';
-import { TelemetryContext } from './telemetryContext';
+import { TelemetryContext } from './telemetryDataContext';
 
 export interface IManualTelemetryRecord {
   alias: string;
