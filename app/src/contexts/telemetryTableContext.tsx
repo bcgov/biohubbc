@@ -4,7 +4,7 @@ import { DialogContext } from 'contexts/dialogContext';
 import { createContext, PropsWithChildren, useContext, useState } from 'react';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
 import { SurveyContext } from './surveyContext';
-import { TelemetryContext as TelemetryDataContext } from './telemetryDataContext';
+import { TelemetryDataContext } from './telemetryDataContext';
 import Typography from '@mui/material/Typography';
 import moment from 'moment';
 import { useCallback, useEffect, useMemo } from 'react';
