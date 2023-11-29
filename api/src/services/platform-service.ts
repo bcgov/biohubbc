@@ -115,7 +115,7 @@ const getBackboneApiHost = () => process.env.BACKBONE_API_HOST || '';
 const getBackboneArtifactIntakePath = () => process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '/api/artifact/intake';
 const getBackboneArtifactDeletePath = () => process.env.BACKBONE_ARTIFACT_DELETE_PATH || '/api/artifact/delete';
 const getBackboneIntakePath = () => process.env.BACKBONE_INTAKE_PATH || '/api/dwc/submission/queue';
-const getBackboneSurveyIntakePath = () => process.env.BACKBONE_SURVEY_INTAKE_PATH || '/api/survey/queue';
+const getBackboneSurveyIntakePath = () => process.env.BACKBONE_DATASET_INTAKE_PATH || '/api/dataset/intake';
 
 export class PlatformService extends DBService {
   attachmentService: AttachmentService;

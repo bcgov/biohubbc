@@ -129,7 +129,7 @@ const SurveyHeader = () => {
 
   const publishDate = surveyWithDetails.surveySupplementaryData.survey_metadata_publish?.event_timestamp.split(' ')[0];
 
-  const BIOHUB_ENV_FLAG = Boolean(process.env.BIOHUB_ENV_FLAG) || false;
+  const BIOHUB_ENV_FLAG = Boolean(process.env.BIOHUB_ENV_FLAG) || true;
   console.log('process.env.BIOHUB_ENV_FLAG', process.env.BIOHUB_ENV_FLAG);
   console.log('process.env', process.env);
   console.log('BIOHUB_ENV_FLAG', BIOHUB_ENV_FLAG);
