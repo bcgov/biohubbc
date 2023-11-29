@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { BctwService, IManualTelemetry } from '../../services/bctw-service';
-import { getRequestHandlerMocks } from '../../__mocks__/db';
+import { BctwService, IManualTelemetry } from '../../../services/bctw-service';
+import { getRequestHandlerMocks } from '../../../__mocks__/db';
 import { deleteManualTelemetry } from './delete';
 
 const mockTelemetry = ([

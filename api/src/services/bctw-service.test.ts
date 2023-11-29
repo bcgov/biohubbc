@@ -23,7 +23,8 @@ import {
   IDeploymentUpdate,
   MANUAL_TELEMETRY,
   UPDATE_DEPLOYMENT_ENDPOINT,
-  UPSERT_DEVICE_ENDPOINT
+  UPSERT_DEVICE_ENDPOINT,
+  VENDOR_TELEMETRY
 } from './bctw-service';
 import { KeycloakService } from './keycloak-service';
 
@@ -365,6 +366,30 @@ describe('BctwService', () => {
         const ret = await bctwService.updateManualTelemetry(payload);
 
         expect(mockAxios).to.have.been.calledOnceWith(MANUAL_TELEMETRY, payload);
+        expect(ret).to.be.true;
+      });
+    });
+
+    describe('getManualTelemetryByDeploymentIds', () => {
+      it('should sent a post request', async () => {
+        const mockAxios = sinon.stub(bctwService.axiosInstance, 'post').resolves({ data: true });
+
+        const payload: any = { key: 'value' };
+        const ret = await bctwService.getManualTelemetryByDeploymentIds(payload);
+
+        expect(mockAxios).to.have.been.calledOnceWith(`${MANUAL_TELEMETRY}/deployments`, payload);
+        expect(ret).to.be.true;
+      });
+    });
+
+    describe('getVendorTelemetryByDeploymentIds', () => {
+      it('should sent a post request', async () => {
+        const mockAxios = sinon.stub(bctwService.axiosInstance, 'post').resolves({ data: true });
+
+        const payload: any = { key: 'value' };
+        const ret = await bctwService.getVendorTelemetryByDeploymentIds(payload);
+
+        expect(mockAxios).to.have.been.calledOnceWith(`${VENDOR_TELEMETRY}/deployments`, payload);
         expect(ret).to.be.true;
       });
     });

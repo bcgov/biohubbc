@@ -1,10 +1,10 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
-import { BctwService, getBctwUser } from '../../services/bctw-service';
-import { getLogger } from '../../utils/logger';
+import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
+import { BctwService, getBctwUser } from '../../../services/bctw-service';
+import { getLogger } from '../../../utils/logger';
 
-const defaultLog = getLogger('paths/telemetry');
+const defaultLog = getLogger('paths/telemetry/manual');
 
 export const manual_telemetry_responses = {
   200: {
@@ -20,7 +20,7 @@ export const manual_telemetry_responses = {
               deployment_id: { type: 'string' },
               latitude: { type: 'number' },
               longitude: { type: 'number' },
-              date: { type: 'string' }
+              acquisition_date: { type: 'string' }
             }
           }
         }
@@ -116,7 +116,7 @@ POST.apiDoc = {
           items: {
             title: 'manual telemetry records',
             type: 'object',
-            required: ['deployment_id', 'latitude', 'longitude', 'date'],
+            required: ['deployment_id', 'latitude', 'longitude', 'acquisition_date'],
             properties: {
               deployment_id: {
                 type: 'string',
@@ -128,7 +128,7 @@ POST.apiDoc = {
               longitude: {
                 type: 'number'
               },
-              date: {
+              acquisition_date: {
                 type: 'string'
               }
             }
@@ -204,7 +204,7 @@ PATCH.apiDoc = {
               longitude: {
                 type: 'number'
               },
-              date: {
+              acquisition_date: {
                 type: 'string'
               }
             }

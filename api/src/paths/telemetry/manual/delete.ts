@@ -1,10 +1,10 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { manual_telemetry_responses } from '.';
-import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
-import { BctwService, IBctwUser } from '../../services/bctw-service';
-import { getLogger } from '../../utils/logger';
-const defaultLog = getLogger('paths/telemetry/delete');
+import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
+import { BctwService, IBctwUser } from '../../../services/bctw-service';
+import { getLogger } from '../../../utils/logger';
+const defaultLog = getLogger('paths/telemetry/manual/delete');
 
 export const POST: Operation = [
   authorizeRequestHandler(() => {
@@ -33,19 +33,13 @@ POST.apiDoc = {
     content: {
       'application/json': {
         schema: {
-          title: 'Manual Telemetry delete request object',
-          type: 'object',
-          required: ['telemetry_manual_ids'],
-          properties: {
-            telemetry_manual_ids: {
-              type: 'array',
-              minItems: 1,
-              items: {
-                title: 'telemetry_manual_ids',
-                type: 'string',
-                format: 'uuid'
-              }
-            }
+          title: 'Manual Telemetry ids to delete',
+          type: 'array',
+          minItems: 1,
+          items: {
+            title: 'telemetry manual ids',
+            type: 'string',
+            format: 'uuid'
           }
         }
       }

@@ -2,8 +2,8 @@ import Ajv from 'ajv';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { createManualTelemetry, GET, getManualTelemetry, PATCH, POST, updateManualTelemetry } from '.';
-import { BctwService, IManualTelemetry } from '../../services/bctw-service';
-import { getRequestHandlerMocks } from '../../__mocks__/db';
+import { BctwService, IManualTelemetry } from '../../../services/bctw-service';
+import { getRequestHandlerMocks } from '../../../__mocks__/db';
 
 const mockTelemetry = ([
   {
