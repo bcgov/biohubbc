@@ -1,20 +1,8 @@
 import { cyan, grey } from '@mui/material/colors';
-import { DataGrid, GridColDef, GridRowId, useGridApiRef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, useGridApiRef } from '@mui/x-data-grid';
 import { GridTableRowSkeleton } from 'components/loading/SkeletonLoaders';
+import { IManualTelemetryTableRow } from 'contexts/telemetryTableContext';
 import { v4 as uuidv4 } from 'uuid';
-
-export interface IManualTelemetryRecord {
-  alias: string;
-  device_id: number;
-  latitude: number;
-  longitude: number;
-  date: string;
-  time: string;
-}
-
-export interface IManualTelemetryTableRow extends Partial<IManualTelemetryRecord> {
-  id: GridRowId;
-}
 
 const ManualTelemetryTable = () => {
   const tableColumns: GridColDef<IManualTelemetryTableRow>[] = [
