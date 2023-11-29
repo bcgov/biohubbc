@@ -1,13 +1,13 @@
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
-import { useTelemetryApi } from 'hooks/useTelemetryApi';
+import { IManualTelemetry, useTelemetryApi } from 'hooks/useTelemetryApi';
 import { createContext, PropsWithChildren } from 'react';
 
 export type ITelemetryContext = {
-  telemetryDataLoader: DataLoader<[], {}, unknown>;
+  telemetryDataLoader: DataLoader<[], IManualTelemetry[], unknown>;
 };
 
 export const TelemetryContext = createContext<ITelemetryContext>({
-  telemetryDataLoader: {} as DataLoader<never, {}, unknown>
+  telemetryDataLoader: {} as DataLoader<never, IManualTelemetry[], unknown>
 });
 
 export const TelemetryContextProvider = (props: PropsWithChildren<Record<never, any>>) => {

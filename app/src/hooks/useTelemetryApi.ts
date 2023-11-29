@@ -14,11 +14,15 @@ export interface ICritterDeploymentResponse {
   taxon: string;
 }
 
-export interface IManualTelemetry {
+export interface ICreateManualTelemetry {
   deployment_id: string;
   latitude: number;
   longitude: number;
   date: string;
+}
+
+export interface IManualTelemetry extends ICreateManualTelemetry {
+  telemetry_manual_id: string;
 }
 
 export const useTelemetryApi = () => {
@@ -26,17 +30,27 @@ export const useTelemetryApi = () => {
   const apiAxios = useAxios(config?.API_HOST);
   const devices = useDeviceApi(apiAxios);
 
+  const getVendorTelemetry = async (): Promise<IManualTelemetry[]> => {
+    // const { data } = await apiAxios.get<IManualTelemetry[]>('/api/telemetry');
+    return [];
+  };
+
   const getManualTelemetry = async (): Promise<IManualTelemetry[]> => {
     const { data } = await apiAxios.get<IManualTelemetry[]>('/api/telemetry');
     return data;
   };
 
-  const createManualTelemetry = async (postData: IManualTelemetry): Promise<IManualTelemetry[]> => {
-    const { data } = await apiAxios.post<IManualTelemetry[]>('/api/telemetry');
+  const createManualTelemetry = async (postData: ICreateManualTelemetry[]): Promise<ICreateManualTelemetry[]> => {
+    const { data } = await apiAxios.post<IManualTelemetry[]>('/api/telemetry', postData);
     return data;
   };
 
-  return { devices, getManualTelemetry };
+  const updateManualTelemetry = async (updateData: IManualTelemetry[]) => {
+    const { data } = await apiAxios.patch<IManualTelemetry[]>('/api/telemetry', updateData);
+    return data;
+  };
+
+  return { devices, getManualTelemetry, createManualTelemetry, updateManualTelemetry, getVendorTelemetry };
 };
 
 type TelemetryApiReturnType = ReturnType<typeof useTelemetryApi>;
