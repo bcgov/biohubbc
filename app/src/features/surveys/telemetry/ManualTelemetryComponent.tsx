@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
+import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { useEffect } from 'react';
@@ -24,6 +25,14 @@ const ManualTelemetryComponent = () => {
         sx={{
           overflow: 'hidden'
         }}>
+        <Paper
+          elevation={0}
+          sx={{
+            display: 'flex',
+            flex: '1 1 auto',
+            overflow: 'hidden',
+            m: 1
+          }}></Paper>
         <Toolbar></Toolbar>
         <Box
           display="flex"

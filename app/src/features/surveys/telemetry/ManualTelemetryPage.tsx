@@ -3,6 +3,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { grey } from '@mui/material/colors';
 import Paper from '@mui/material/Paper';
 import { SurveyContext } from 'contexts/surveyContext';
+import { TelemetryContextProvider } from 'contexts/telemetryDataContext';
 import { useContext } from 'react';
 import SurveyObservationHeader from '../observations/SurveyObservationHeader';
 import ManualTelemetryComponent from './ManualTelemetryComponent';
@@ -39,7 +40,9 @@ const ManualTelemetryPage = () => {
           <ManualTelemetryList />
         </Box>
         <Box flex="1 1 auto" overflow="hidden">
-          <ManualTelemetryComponent />
+          <TelemetryContextProvider>
+            <ManualTelemetryComponent />
+          </TelemetryContextProvider>
         </Box>
       </Paper>
     </Box>
