@@ -204,7 +204,7 @@ const ManualTelemetryComponent = () => {
             background: grey[100]
           }}>
           <Box position="absolute" width="100%" height="100%" p={1}>
-            <ManualTelemetryTable />
+            <ManualTelemetryTable isLoading={processingRecords} />
           </Box>
         </Box>
       </Box>

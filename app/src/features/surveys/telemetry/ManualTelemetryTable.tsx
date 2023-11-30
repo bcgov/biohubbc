@@ -1,10 +1,34 @@
+import { mdiTrashCanOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 import { cyan, grey } from '@mui/material/colors';
-import { DataGrid, GridColDef, useGridApiRef } from '@mui/x-data-grid';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import { DataGrid, GridCellParams, GridColDef } from '@mui/x-data-grid';
+import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
+import TimePickerDataGrid from 'components/data-grid/TimePickerDataGrid';
 import { GridTableRowSkeleton } from 'components/loading/SkeletonLoaders';
-import { IManualTelemetryTableRow } from 'contexts/telemetryTableContext';
-import { v4 as uuidv4 } from 'uuid';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import { IManualTelemetryTableRow, TelemetryTableContext } from 'contexts/telemetryTableContext';
+import moment from 'moment';
+import { useCallback, useContext } from 'react';
+import { getFormattedDate } from 'utils/Utils';
+interface IManualTelemetryTableProps {
+  isLoading: boolean;
+}
+const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
+  const telemetryTableContext = useContext(TelemetryTableContext);
+  const { _muiDataGridApiRef } = telemetryTableContext;
+  const hasError = useCallback(
+    (params: GridCellParams): boolean => {
+      return Boolean(
+        telemetryTableContext.validationModel[params.row.id]?.some((error: any) => {
+          return error.field === params.field;
+        })
+      );
+    },
+    [telemetryTableContext.validationModel]
+  );
 
-const ManualTelemetryTable = () => {
   const tableColumns: GridColDef<IManualTelemetryTableRow>[] = [
     {
       field: 'alias',
@@ -17,13 +41,32 @@ const ManualTelemetryTable = () => {
       headerAlign: 'left',
       align: 'left',
       valueSetter: (params) => {
-        return { ...params.row };
+        return { ...params.row, alias: String(params.value) };
       },
-      renderCell: (params) => {
-        return <></>;
-      },
+      renderCell: (params) => (
+        <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
+          {params.value}
+        </Typography>
+      ),
       renderEditCell: (params) => {
-        return <></>;
+        const error: boolean = hasError(params);
+
+        return (
+          <TextFieldDataGrid
+            dataGridProps={params}
+            textFieldProps={{
+              name: params.field,
+              onChange: (event) => {
+                _muiDataGridApiRef?.current.setEditCellValue({
+                  id: params.id,
+                  field: params.field,
+                  value: event.target.value
+                });
+              },
+              error
+            }}
+          />
+        );
       }
     },
     {
@@ -37,13 +80,37 @@ const ManualTelemetryTable = () => {
       headerAlign: 'left',
       align: 'left',
       valueSetter: (params) => {
-        return { ...params.row };
+        return { ...params.row, device_id: Number(params.value) };
       },
-      renderCell: (params) => {
-        return <></>;
-      },
+      renderCell: (params) => (
+        <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
+          {params.value}
+        </Typography>
+      ),
       renderEditCell: (params) => {
-        return <></>;
+        const error: boolean = hasError(params);
+
+        return (
+          <TextFieldDataGrid
+            dataGridProps={params}
+            textFieldProps={{
+              name: params.field,
+              onChange: (event) => {
+                if (!/^\d{0,7}$/.test(event.target.value)) {
+                  // If the value is not a number, return
+                  return;
+                }
+
+                _muiDataGridApiRef?.current.setEditCellValue({
+                  id: params.id,
+                  field: params.field,
+                  value: event.target.value
+                });
+              },
+              error
+            }}
+          />
+        );
       }
     },
     {
@@ -56,13 +123,44 @@ const ManualTelemetryTable = () => {
       headerAlign: 'left',
       align: 'left',
       valueSetter: (params) => {
-        return { ...params.row };
+        if (/^-?\d{1,3}(?:\.\d{0,12})?$/.test(params.value)) {
+          // If the value is a legal latitude value
+          // Valid entries: `-1`, `-1.1`, `-123.456789` `1`, `1.1, `123.456789`
+          return { ...params.row, latitude: Number(params.value) };
+        }
+
+        const value = parseFloat(params.value);
+        return { ...params.row, latitude: value };
       },
-      renderCell: (params) => {
-        return <></>;
-      },
+      renderCell: (params) => (
+        <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
+          {params.value}
+        </Typography>
+      ),
       renderEditCell: (params) => {
-        return <></>;
+        const error: boolean = hasError(params);
+
+        return (
+          <TextFieldDataGrid
+            dataGridProps={params}
+            textFieldProps={{
+              name: params.field,
+              onChange: (event) => {
+                if (!/^-?\d{0,3}(?:\.\d{0,12})?$/.test(event.target.value)) {
+                  // If the value is not a subset of a legal latitude value, prevent the value from being applied
+                  return;
+                }
+
+                _muiDataGridApiRef?.current.setEditCellValue({
+                  id: params.id,
+                  field: params.field,
+                  value: event.target.value
+                });
+              },
+              error
+            }}
+          />
+        );
       }
     },
     {
@@ -75,13 +173,44 @@ const ManualTelemetryTable = () => {
       headerAlign: 'left',
       align: 'left',
       valueSetter: (params) => {
-        return { ...params.row };
+        if (/^-?\d{1,3}(?:\.\d{0,12})?$/.test(params.value)) {
+          // If the value is a legal longitude value
+          // Valid entries: `-1`, `-1.1`, `-123.456789` `1`, `1.1, `123.456789`
+          return { ...params.row, longitude: Number(params.value) };
+        }
+
+        const value = parseFloat(params.value);
+        return { ...params.row, longitude: value };
       },
-      renderCell: (params) => {
-        return <></>;
-      },
+      renderCell: (params) => (
+        <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
+          {params.value}
+        </Typography>
+      ),
       renderEditCell: (params) => {
-        return <></>;
+        const error: boolean = hasError(params);
+
+        return (
+          <TextFieldDataGrid
+            dataGridProps={params}
+            textFieldProps={{
+              name: params.field,
+              onChange: (event) => {
+                if (!/^-?\d{0,3}(?:\.\d{0,12})?$/.test(event.target.value)) {
+                  // If the value is not a subset of a legal longitude value, prevent the value from being applied
+                  return;
+                }
+
+                _muiDataGridApiRef?.current.setEditCellValue({
+                  id: params.id,
+                  field: params.field,
+                  value: event.target.value
+                });
+              },
+              error
+            }}
+          />
+        );
       }
     },
     {
@@ -94,14 +223,35 @@ const ManualTelemetryTable = () => {
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
-      valueSetter: (params) => {
-        return { ...params.row };
-      },
-      renderCell: (params) => {
-        return <></>;
-      },
+      valueGetter: (params) => (params.row.date ? moment(params.row.date).toDate() : null),
+      renderCell: (params) => (
+        <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
+          {getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, params.value)}
+        </Typography>
+      ),
       renderEditCell: (params) => {
-        return <></>;
+        const error = hasError(params);
+
+        return (
+          <TextFieldDataGrid
+            dataGridProps={params}
+            textFieldProps={{
+              name: params.field,
+              type: 'date',
+              value: params.value ? moment(params.value).format('YYYY-MM-DD') : null,
+              onChange: (event) => {
+                const value = moment(event.target.value).toDate();
+                _muiDataGridApiRef?.current.setEditCellValue({
+                  id: params.id,
+                  field: params.field,
+                  value
+                });
+              },
+
+              error
+            }}
+          />
+        );
       }
     },
     {
@@ -115,14 +265,65 @@ const ManualTelemetryTable = () => {
       headerAlign: 'left',
       align: 'left',
       valueSetter: (params) => {
-        return { ...params.row };
+        return { ...params.row, time: params.value };
+      },
+      valueParser: (value) => {
+        if (!value) {
+          return null;
+        }
+
+        if (moment.isMoment(value)) {
+          return value.format('HH:mm:ss');
+        }
+
+        return moment(value, 'HH:mm:ss').format('HH:mm:ss');
       },
       renderCell: (params) => {
-        return <></>;
+        if (!params.value) {
+          return null;
+        }
+
+        return (
+          <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
+            {params.value}
+          </Typography>
+        );
       },
       renderEditCell: (params) => {
-        return <></>;
+        const error = hasError(params);
+
+        return (
+          <TimePickerDataGrid
+            dataGridProps={params}
+            dateFieldProps={{
+              slotProps: {
+                textField: {
+                  error,
+                  name: params.field
+                }
+              }
+            }}
+          />
+        );
       }
+    },
+    {
+      field: 'actions',
+      headerName: '',
+      type: 'actions',
+      width: 70,
+      disableColumnMenu: true,
+      resizable: false,
+      headerClassName: 'pinnedColumn',
+      cellClassName: 'pinnedColumn',
+      getActions: (params) => [
+        <IconButton
+          onClick={() => telemetryTableContext.deleteRecords([params.row])}
+          disabled={telemetryTableContext.isSaving}
+          key={`actions[${params.id}].handleDeleteRow`}>
+          <Icon path={mdiTrashCanOutline} size={1} />
+        </IconButton>
+      ]
     }
   ];
 
@@ -130,58 +331,21 @@ const ManualTelemetryTable = () => {
     <DataGrid
       checkboxSelection
       disableRowSelectionOnClick
-      loading={false}
+      loading={props.isLoading}
       rowHeight={56}
-      apiRef={useGridApiRef()}
+      apiRef={_muiDataGridApiRef}
       editMode="row"
       columns={tableColumns}
-      rows={[
-        {
-          id: uuidv4(),
-          alias: 'Moose',
-          device_id: 1,
-          latitude: 1,
-          longitude: 1,
-          date: '',
-          time: ''
-        },
-        {
-          id: uuidv4(),
-          alias: 'Mouse',
-          device_id: 123,
-          latitude: 1,
-          longitude: 1,
-          date: '',
-          time: ''
-        },
-        {
-          id: uuidv4(),
-          alias: '',
-          device_id: 13322,
-          latitude: 1,
-          longitude: 1,
-          date: '',
-          time: ''
-        },
-        {
-          id: uuidv4(),
-          alias: '',
-          device_id: 12211,
-          latitude: 1,
-          longitude: 1,
-          date: '',
-          time: ''
-        }
-      ]}
-      onRowEditStart={(params) => {}}
+      rows={telemetryTableContext.rows}
+      onRowEditStart={(params) => telemetryTableContext.onRowEditStart(params.id)}
       onRowEditStop={(_params, event) => {
         event.defaultMuiPrevented = true;
       }}
       localeText={{
         noRowsLabel: 'No Records'
       }}
-      onRowSelectionModelChange={() => {}}
-      rowSelectionModel={undefined}
+      onRowSelectionModelChange={telemetryTableContext.onRowSelectionModelChange}
+      rowSelectionModel={telemetryTableContext.rowSelectionModel}
       getRowHeight={() => 'auto'}
       slots={{
         loadingOverlay: GridTableRowSkeleton
