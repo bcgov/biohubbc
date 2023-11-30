@@ -1,3 +1,4 @@
+import { CancelTokenSource } from 'axios';
 import { ConfigContext } from 'contexts/configContext';
 import { useContext } from 'react';
 import useAxios from './api/useAxios';
@@ -31,31 +32,70 @@ export interface IVendorTelemetry extends ICreateManualTelemetry {
 
 export const useTelemetryApi = () => {
   const config = useContext(ConfigContext);
-  const apiAxios = useAxios(config?.API_HOST);
-  const devices = useDeviceApi(apiAxios);
+  const axios = useAxios(config?.API_HOST);
+  const devices = useDeviceApi(axios);
 
   const getVendorTelemetry = async (ids: string[]): Promise<IVendorTelemetry[]> => {
-    const { data } = await apiAxios.post<IVendorTelemetry[]>('/api/telemetry/vendor/deployments', ids);
+    const { data } = await axios.post<IVendorTelemetry[]>('/api/telemetry/vendor/deployments', ids);
     return data;
   };
 
   const getManualTelemetry = async (ids: string[]): Promise<IManualTelemetry[]> => {
-    const { data } = await apiAxios.post<IManualTelemetry[]>('/api/telemetry/manual/deployments', ids);
+    const { data } = await axios.post<IManualTelemetry[]>('/api/telemetry/manual/deployments', ids);
     return data;
   };
 
   const createManualTelemetry = async (postData: ICreateManualTelemetry[]): Promise<ICreateManualTelemetry[]> => {
-    const { data } = await apiAxios.post<IManualTelemetry[]>('/api/telemetry/manual', postData);
+    const { data } = await axios.post<IManualTelemetry[]>('/api/telemetry/manual', postData);
     return data;
   };
 
   const updateManualTelemetry = async (updateData: IManualTelemetry[]) => {
-    const { data } = await apiAxios.patch<IManualTelemetry[]>('/api/telemetry/manual', updateData);
+    const { data } = await axios.patch<IManualTelemetry[]>('/api/telemetry/manual', updateData);
     return data;
   };
 
   const deleteManualTelemetry = async (ids: string[]) => {
-    const { data } = await apiAxios.post<IManualTelemetry[]>('/api/telemetry/manual/delete', ids);
+    const { data } = await axios.post<IManualTelemetry[]>('/api/telemetry/manual/delete', ids);
+    return data;
+  };
+
+  /**
+   * Uploads a telemetry CSV for import.
+   *
+   * @param {File} file
+   * @param {CancelTokenSource} [cancelTokenSource]
+   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @return {*}  {Promise<{ submissionId: number }>}
+   */
+  const uploadCsvForImport = async (
+    file: File,
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: ProgressEvent) => void
+  ): Promise<{ submissionId: number }> => {
+    const formData = new FormData();
+
+    formData.append('media', file);
+
+    const { data } = await axios.post<{ submissionId: number }>(`/api/telemetry/manual/upload`, formData, {
+      cancelToken: cancelTokenSource?.token,
+      onUploadProgress: onProgress
+    });
+
+    return data;
+  };
+
+  /**
+   * Begins processing an uploaded telemetry CSV for import
+   *
+   * @param {number} submissionId
+   * @return {*}
+   */
+  const processTelemetryCsvSubmission = async (submissionId: number) => {
+    const { data } = await axios.post(`/api/telemetry/manual/process`, {
+      observation_submission_id: submissionId
+    });
+
     return data;
   };
 
@@ -65,7 +105,9 @@ export const useTelemetryApi = () => {
     createManualTelemetry,
     updateManualTelemetry,
     getVendorTelemetry,
-    deleteManualTelemetry
+    deleteManualTelemetry,
+    uploadCsvForImport,
+    processTelemetryCsvSubmission
   };
 };
 

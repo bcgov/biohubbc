@@ -1,17 +1,16 @@
+import Typography from '@mui/material/Typography';
 import { GridRowId, GridRowSelectionModel, GridValidRowModel, useGridApiRef } from '@mui/x-data-grid';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
+import { TelemetryTableI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
-import { createContext, PropsWithChildren, useContext, useState } from 'react';
+import { APIError } from 'hooks/api/useAxios';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import moment from 'moment';
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
 import { SurveyContext } from './surveyContext';
 import { TelemetryDataContext } from './telemetryDataContext';
-import Typography from '@mui/material/Typography';
-import moment from 'moment';
-import { useCallback, useEffect, useMemo } from 'react';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import { TelemetryTableI18N } from 'constants/i18n';
-import { APIError } from 'hooks/api/useAxios';
-import { v4 as uuidv4 } from 'uuid';
 
 export interface IManualTelemetryRecord {
   alias: string;
@@ -132,7 +131,7 @@ export const TelemetryTableContext = createContext<ITelemetryTableContext>({
 
 export const TelemetryTableContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
   const _muiDataGridApiRef = useGridApiRef();
-  
+
   const biohubApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
 
@@ -175,7 +174,6 @@ export const TelemetryTableContextProvider = (props: PropsWithChildren<Record<ne
     }) as IManualTelemetryTableRow[];
   };
 
-  
   /**
    * Validates all rows belonging to the table. Returns null if validation passes, otherwise
    * returns the validation model
@@ -197,7 +195,9 @@ export const TelemetryTableContextProvider = (props: PropsWithChildren<Record<ne
       const rowErrors: TelemetryRowValidationError[] = [];
 
       // Validate missing columns
-      const missingColumns: Set<keyof IManualTelemetryTableRow> = new Set(requiredColumns.filter((column) => !row[column]));
+      const missingColumns: Set<keyof IManualTelemetryTableRow> = new Set(
+        requiredColumns.filter((column) => !row[column])
+      );
 
       Array.from(missingColumns).forEach((field: keyof IManualTelemetryTableRow) => {
         const columnName = tableColumns.find((column) => column.field === field)?.headerName ?? field;
@@ -242,7 +242,6 @@ export const TelemetryTableContextProvider = (props: PropsWithChildren<Record<ne
 
       try {
         if (modifiedRowIdsToDelete.length) {
-          
           /** TODO
           const response = await biohubApi.observation.deleteObservationRecords(
             projectId,
@@ -299,7 +298,7 @@ export const TelemetryTableContextProvider = (props: PropsWithChildren<Record<ne
         });
       }
     },
-    [addedRowIds, dialogContext, /* biohubApi.observation, projectId, surveyId */] // TODO
+    [addedRowIds, dialogContext /* biohubApi.observation, projectId, surveyId */] // TODO
   );
 
   const getSelectedRecords: () => IManualTelemetryTableRow[] = useCallback(() => {
@@ -446,8 +445,8 @@ export const TelemetryTableContextProvider = (props: PropsWithChildren<Record<ne
   }, [_muiDataGridApiRef, addedRowIds, rows]);
 
   const refreshRecords = useCallback(async () => {
-    return telemetryDataContext.telemetryDataLoader.refresh();
-  }, [ telemetryDataContext.telemetryDataLoader ]);
+    return telemetryDataContext.telemetryDataLoader.refresh([]);
+  }, [telemetryDataContext.telemetryDataLoader]);
 
   // True if the data grid contains at least 1 unsaved record
   const hasUnsavedChanges = modifiedRowIds.length > 0 || addedRowIds.length > 0;
@@ -458,14 +457,13 @@ export const TelemetryTableContextProvider = (props: PropsWithChildren<Record<ne
   const _saveRecords = useCallback(
     async (rowsToSave: GridValidRowModel[]) => {
       try {
-
         /** TODO
         await biohubApi.observation.insertUpdateObservationRecords(
           projectId,
           surveyId,
           rowsToSave as IObservationTableRow[]
         );
-        */ 
+        */
 
         setModifiedRowIds([]);
         setAddedRowIds([]);
@@ -529,14 +527,13 @@ export const TelemetryTableContextProvider = (props: PropsWithChildren<Record<ne
     );
     */
 
-    const rows: IManualTelemetryTableRow[] = [] // TODO placeholder; see above
+    const rows: IManualTelemetryTableRow[] = []; // TODO placeholder; see above
 
     // Set initial rows for the table context
     setRows(rows);
 
     // Set initial record count
     // setRecordCount(observationsContext.observationsDataLoader.data.supplementaryObservationData.observationCount); // TODO
-
   }, [telemetryDataContext.telemetryDataLoader.data, telemetryDataContext.telemetryDataLoader.hasLoaded]);
 
   /**
@@ -622,8 +619,57 @@ export const TelemetryTableContextProvider = (props: PropsWithChildren<Record<ne
   );
 
   return (
-    <TelemetryTableContext.Provider value={telemetryTableContext}>
-      {props.children}
-    </TelemetryTableContext.Provider>
+    <TelemetryTableContext.Provider value={telemetryTableContext}>{props.children}</TelemetryTableContext.Provider>
   );
 };
+
+/*
+
+ const api = useTelemetryApi();
+  const api2 = useBiohubApi();
+  useEffect(() => {
+    const fetchData = async () => {
+      console.log('__________________________');
+      const critters = await api2.survey.getSurveyCritters(1, 1);
+      const deployments = await api2.survey.getDeploymentsInSurvey(1, 1);
+
+      const telemetry = await api.getManualTelemetry(['9f0e9eb5-bd6b-417e-a81d-58ac53198e79']);
+      const vendor = await api.getVendorTelemetry(['194bbe78-1997-4867-ab0e-c2f1b42dddd0']);
+      const data: (IManualTelemetry | IVendorTelemetry)[] = [...telemetry, ...vendor];
+      const critterDeployment: ICritterDeployment[] = [];
+      deployments.forEach((deployment) => {
+        const critter = critters.find((critter) => critter.critter_id === deployment.critter_id);
+        if (critter) {
+          critterDeployment.push({ critter, deployment });
+        }
+      });
+
+      const finalData: IManualTelemetryTableRow[] = [];
+      data.forEach((item) => {
+        const found = critterDeployment.find((cd) => cd.deployment.deployment_id === item.deployment_id);
+        if (found) {
+          let id = '';
+          if ('telemetry_manual_id' in item) {
+            id = item.telemetry_manual_id;
+          }
+          if ('telemetry_id' in item) {
+            id = item.telemetry_id;
+          }
+          finalData.push({
+            id,
+            alias: String(found.critter.animal_id),
+            device_id: found.deployment.device_id,
+            latitude: item.latitude,
+            longitude: item.longitude,
+            date: moment(item.acquisition_date).format('YYYY-MM-DD'),
+            time: moment(item.acquisition_date).format('HH:mm:ss')
+          });
+        }
+      });
+      console.log('_______');
+      console.log(finalData);
+    };
+    fetchData();
+  }, []);
+
+*/
