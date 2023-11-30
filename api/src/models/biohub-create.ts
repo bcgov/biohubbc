@@ -14,7 +14,6 @@ export class PostSurveyObservationToBiohubObject {
   id: string;
   type: string;
   properties: object;
-  // features: ObservationRecord[];
 
   constructor(observationRecord: ObservationRecord) {
     defaultLog.debug({ label: 'PostSurveyObservationToBiohubObject', message: 'params', observationRecord });

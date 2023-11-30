@@ -17,6 +17,7 @@ export interface IConfig {
   MAX_UPLOAD_NUM_FILES: number;
   MAX_UPLOAD_FILE_SIZE: number;
   S3_PUBLIC_HOST_URL: string;
+  BIOHUB_FEATURE_FLAG: boolean;
 }
 
 export const ConfigContext = React.createContext<IConfig | undefined>({
@@ -33,7 +34,8 @@ export const ConfigContext = React.createContext<IConfig | undefined>({
   SITEMINDER_LOGOUT_URL: '',
   MAX_UPLOAD_NUM_FILES: 10,
   MAX_UPLOAD_FILE_SIZE: 52428800,
-  S3_PUBLIC_HOST_URL: ''
+  S3_PUBLIC_HOST_URL: '',
+  BIOHUB_FEATURE_FLAG: false
 });
 
 /**
@@ -63,7 +65,8 @@ const getLocalConfig = (): IConfig => {
     SITEMINDER_LOGOUT_URL: process.env.REACT_APP_SITEMINDER_LOGOUT_URL || '',
     MAX_UPLOAD_NUM_FILES: Number(process.env.REACT_APP_MAX_UPLOAD_NUM_FILES) || 10,
     MAX_UPLOAD_FILE_SIZE: Number(process.env.REACT_APP_MAX_UPLOAD_FILE_SIZE) || 52428800,
-    S3_PUBLIC_HOST_URL: ensureProtocol(`${OBJECT_STORE_URL}/${OBJECT_STORE_BUCKET_NAME}`, 'https://')
+    S3_PUBLIC_HOST_URL: ensureProtocol(`${OBJECT_STORE_URL}/${OBJECT_STORE_BUCKET_NAME}`, 'https://'),
+    BIOHUB_FEATURE_FLAG: process.env.REACT_APP_BIOHUB_FEATURE_FLAG === 'true'
   };
 };
 

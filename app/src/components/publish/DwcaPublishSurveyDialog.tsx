@@ -53,11 +53,14 @@ const excludesArtifactRevisionId = (item: IGetSurveyReportAttachment | IGetSurve
 };
 
 /**
- * Survey Publish button.
+ * Publish survey dialog for publishing a survey to Biohub.
+ *
+ * NOTE: This is a deprecated component and is no longer used in the application.
+ * maintaining this file for reference purposes only.
  *
  * @return {*}
  */
-const OldPublishSurveyDialog = (props: IPublishSurveyDialogProps) => {
+const DwcaPublishSurveyDialog = (props: IPublishSurveyDialogProps) => {
   const biohubApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
 
@@ -319,4 +322,4 @@ const OldPublishSurveyDialog = (props: IPublishSurveyDialogProps) => {
   );
 };
 
-export default OldPublishSurveyDialog;
+export default DwcaPublishSurveyDialog;

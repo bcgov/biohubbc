@@ -114,7 +114,7 @@ const getBackboneIntakeEnabled = () => process.env.BACKBONE_INTAKE_ENABLED === '
 const getBackboneApiHost = () => process.env.BACKBONE_API_HOST || '';
 const getBackboneArtifactIntakePath = () => process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '/api/artifact/intake';
 const getBackboneArtifactDeletePath = () => process.env.BACKBONE_ARTIFACT_DELETE_PATH || '/api/artifact/delete';
-const getBackboneIntakePath = () => process.env.BACKBONE_INTAKE_PATH || '/api/dwc/submission/queue';
+const getBackboneDwcIntakePath = () => process.env.BACKBONE_INTAKE_PATH || '/api/dwc/submission/queue';
 const getBackboneSurveyIntakePath = () => process.env.BACKBONE_DATASET_INTAKE_PATH || '/api/dataset/intake';
 
 export class PlatformService extends DBService {
@@ -492,7 +492,7 @@ export class PlatformService extends DBService {
       formData.append('security_request[disa_required]', `${dwcaDataset.securityRequest.disa_required}`);
     }
 
-    const backboneIntakeUrl = new URL(getBackboneIntakePath(), getBackboneApiHost()).href;
+    const backboneIntakeUrl = new URL(getBackboneDwcIntakePath(), getBackboneApiHost()).href;
 
     const { data } = await axios.post<{ queue_id: number }>(backboneIntakeUrl, formData.getBuffer(), {
       headers: {

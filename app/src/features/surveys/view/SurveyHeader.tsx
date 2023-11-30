@@ -15,6 +15,7 @@ import { ProjectRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteSurveyI18N } from 'constants/i18n';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { ConfigContext } from 'contexts/configContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -36,6 +37,7 @@ import SurveyBaseHeader from './components/SurveyBaseHeader';
 const SurveyHeader = () => {
   const surveyContext = useContext(SurveyContext);
   const projectContext = useContext(ProjectContext);
+  const configContext = useContext(ConfigContext);
 
   const surveyWithDetails = surveyContext.surveyDataLoader.data;
   const projectWithDetails = projectContext.projectDataLoader.data;
@@ -129,7 +131,7 @@ const SurveyHeader = () => {
 
   const publishDate = surveyWithDetails.surveySupplementaryData.survey_metadata_publish?.event_timestamp.split(' ')[0];
 
-  const REACT_APP_BIOHUB_FEATURE_FLAG = Boolean(process.env.REACT_APP_BIOHUB_FEATURE_FLAG) || false;
+  const BIOHUB_FEATURE_FLAG = configContext?.BIOHUB_FEATURE_FLAG;
 
   return (
     <>
@@ -172,7 +174,7 @@ const SurveyHeader = () => {
               validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
               validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
               <Stack flexDirection="row" alignItems="center" gap={1}>
-                {REACT_APP_BIOHUB_FEATURE_FLAG && (
+                {BIOHUB_FEATURE_FLAG && (
                   <>
                     <Typography
                       component="span"
@@ -210,10 +212,11 @@ const SurveyHeader = () => {
                   </>
                 )}
                 <Button
+                  component={RouterLink}
+                  to={`/admin/projects/${projectContext.projectId}/surveys/${surveyContext.surveyId}/edit`}
                   variant="outlined"
                   color="primary"
-                  startIcon={<Icon path={mdiPencil} size={0.75} />}
-                  onClick={() => history.push('edit')}>
+                  startIcon={<Icon path={mdiPencil} size={0.75} />}>
                   Edit
                 </Button>
               </Stack>
