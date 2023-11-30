@@ -108,8 +108,6 @@ const ManualTelemetryList = () => {
     return data;
   }, [surveyContext.critterDataLoader.data, surveyContext.deploymentDataLoader.data]);
 
-  console.log(critterDeployments);
-
   const handleMenuOpen = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, device_id: number) => {
     setAnchorEl(event.currentTarget);
     setDeviceId(device_id);
