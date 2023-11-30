@@ -129,10 +129,7 @@ const SurveyHeader = () => {
 
   const publishDate = surveyWithDetails.surveySupplementaryData.survey_metadata_publish?.event_timestamp.split(' ')[0];
 
-  const BIOHUB_ENV_FLAG = Boolean(process.env.BIOHUB_ENV_FLAG) || true;
-  console.log('process.env.BIOHUB_ENV_FLAG', process.env.BIOHUB_ENV_FLAG);
-  console.log('process.env', process.env);
-  console.log('BIOHUB_ENV_FLAG', BIOHUB_ENV_FLAG);
+  const REACT_APP_BIOHUB_FEATURE_FLAG = Boolean(process.env.REACT_APP_BIOHUB_FEATURE_FLAG) || false;
 
   return (
     <>
@@ -175,7 +172,7 @@ const SurveyHeader = () => {
               validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
               validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
               <Stack flexDirection="row" alignItems="center" gap={1}>
-                {BIOHUB_ENV_FLAG && (
+                {REACT_APP_BIOHUB_FEATURE_FLAG && (
                   <>
                     <Typography
                       component="span"

@@ -39,7 +39,7 @@ const appDeploy = async (settings) => {
         MEMORY_LIMIT: phases[phase].memoryLimit,
         REPLICAS: phases[phase].replicas,
         REPLICAS_MAX: phases[phase].replicasMax,
-        BIOHUB_ENV_FLAG: phases[phase].biohubEnvFlag
+        REACT_APP_BIOHUB_FEATURE_FLAG: phases[phase].biohubFeatureFlag
       }
     })
   );
