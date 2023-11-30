@@ -459,7 +459,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         }
 
         const value = parseFloat(params.value);
-        return { ...params.row, longitude: isNaN(value) ? null : value };
+        return { ...params.row, latitude: isNaN(value) ? null : value };
       },
       renderCell: (params) => (
         <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
