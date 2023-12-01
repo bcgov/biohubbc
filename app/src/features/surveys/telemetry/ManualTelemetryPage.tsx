@@ -12,7 +12,7 @@ import ManualTelemetryList from './ManualTelemetryList';
 
 const ManualTelemetryPage = () => {
   const surveyContext = useContext(SurveyContext);
-
+  const deploymentIds = surveyContext.deploymentDataLoader.data?.map((item) => item.deployment_id);
   if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
@@ -42,7 +42,7 @@ const ManualTelemetryPage = () => {
         </Box>
         <Box flex="1 1 auto" overflow="hidden">
           <TelemetryDataContextProvider>
-            <TelemetryTableContextProvider>
+            <TelemetryTableContextProvider deployment_ids={deploymentIds || []}>
               <ManualTelemetryComponent />
             </TelemetryTableContextProvider>
           </TelemetryDataContextProvider>
