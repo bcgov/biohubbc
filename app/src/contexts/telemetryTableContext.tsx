@@ -4,7 +4,7 @@ import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import { TelemetryTableI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
-import { ICreateManualTelemetry, useTelemetryApi } from 'hooks/useTelemetryApi';
+import { ICreateManualTelemetry, IUpdateManualTelemetry, useTelemetryApi } from 'hooks/useTelemetryApi';
 import moment from 'moment';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
@@ -454,17 +454,44 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
   const _saveRecords = useCallback(
     async (rowsToSave: GridValidRowModel[]) => {
       try {
-        const createData: ICreateManualTelemetry[] = (rowsToSave as IManualTelemetryTableRow[]).map((item) => {
-          return {
-            deployment_id: String(item.deployment_id),
-            latitude: Number(item.latitude),
-            longitude: Number(item.longitude),
-            acquisition_date: moment(moment(item.date).format('YYYY-MM-DD') + ' ' + item.time).format(
-              'YYYY-MM-DD HH:mm:ss'
-            )
-          };
+        const createData: ICreateManualTelemetry[] = [];
+        const updateData: IUpdateManualTelemetry[] = [];
+
+        // loop through records and decide based on initial data loaded if a record should be created or updated
+        (rowsToSave as IManualTelemetryTableRow[]).forEach((item) => {
+          const found = telemetryDataContext.telemetryDataLoader.data?.filter(
+            (search) => search.telemetry_manual_id === item.id
+          );
+          if (found) {
+            // existing ID found, update record
+            updateData.push({
+              telemetry_manual_id: String(item.id),
+              latitude: Number(item.latitude),
+              longitude: Number(item.longitude),
+              acquisition_date: moment(moment(item.date).format('YYYY-MM-DD') + ' ' + item.time).format(
+                'YYYY-MM-DD HH:mm:ss'
+              )
+            });
+          } else {
+            // nothing found, create a new record
+            createData.push({
+              deployment_id: String(item.deployment_id),
+              latitude: Number(item.latitude),
+              longitude: Number(item.longitude),
+              acquisition_date: moment(moment(item.date).format('YYYY-MM-DD') + ' ' + item.time).format(
+                'YYYY-MM-DD HH:mm:ss'
+              )
+            });
+          }
         });
-        await telemetryApi.createManualTelemetry(createData);
+
+        if (createData.length) {
+          await telemetryApi.createManualTelemetry(createData);
+        }
+
+        if (updateData.length) {
+          await telemetryApi.updateManualTelemetry(updateData);
+        }
 
         setModifiedRowIds([]);
         setAddedRowIds([]);

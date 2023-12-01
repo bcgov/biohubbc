@@ -15,6 +15,12 @@ export interface ICritterDeploymentResponse {
   taxon: string;
 }
 
+export interface IUpdateManualTelemetry {
+  telemetry_manual_id: string;
+  latitude: number;
+  longitude: number;
+  acquisition_date: string;
+}
 export interface ICreateManualTelemetry {
   deployment_id: string;
   latitude: number;
@@ -50,7 +56,7 @@ export const useTelemetryApi = () => {
     return data;
   };
 
-  const updateManualTelemetry = async (updateData: IManualTelemetry[]) => {
+  const updateManualTelemetry = async (updateData: IUpdateManualTelemetry[]) => {
     const { data } = await axios.patch<IManualTelemetry[]>('/api/telemetry/manual', updateData);
     return data;
   };
