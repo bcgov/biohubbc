@@ -4,6 +4,7 @@ import { cyan, grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { DataGrid, GridCellParams, GridColDef } from '@mui/x-data-grid';
+import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
 import TimePickerDataGrid from 'components/data-grid/TimePickerDataGrid';
@@ -38,7 +39,6 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
         data.push({ critter, deployment });
       }
     });
-    console.log(data);
     return data;
   }, [surveyContext.critterDataLoader.data, surveyContext.deploymentDataLoader.data]);
   const { _muiDataGridApiRef } = telemetryTableContext;
@@ -60,10 +60,10 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
       editable: true,
       flex: 1,
       minWidth: 250,
-      type: 'string',
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
+      type: 'string',
       renderCell: (params) => {
         return (
           <AutocompleteDataGridViewCell<IManualTelemetryTableRow, string>
@@ -78,96 +78,13 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
       },
       renderEditCell: (params) => {
         return (
-          <AutocompleteDataGridViewCell<IManualTelemetryTableRow, string>
+          <AutocompleteDataGridEditCell<IManualTelemetryTableRow, string>
             dataGridProps={params}
             options={critterDeployments.map((item) => ({
               label: `${item.critter.animal_id}: ${item.deployment.device_id}`,
               value: item.deployment.deployment_id
             }))}
             error={hasError(params)}
-          />
-        );
-      }
-    },
-    {
-      field: 'alias',
-      headerName: 'Alias',
-      editable: true,
-      flex: 1,
-      minWidth: 250,
-      type: 'string',
-      disableColumnMenu: true,
-      headerAlign: 'left',
-      align: 'left',
-      valueSetter: (params) => {
-        return { ...params.row, alias: String(params.value) };
-      },
-      renderCell: (params) => (
-        <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
-          {params.value}
-        </Typography>
-      ),
-      renderEditCell: (params) => {
-        const error: boolean = hasError(params);
-
-        return (
-          <TextFieldDataGrid
-            dataGridProps={params}
-            textFieldProps={{
-              name: params.field,
-              onChange: (event) => {
-                _muiDataGridApiRef?.current.setEditCellValue({
-                  id: params.id,
-                  field: params.field,
-                  value: event.target.value
-                });
-              },
-              error
-            }}
-          />
-        );
-      }
-    },
-    {
-      field: 'device_id',
-      headerName: 'Device ID',
-      editable: true,
-      flex: 1,
-      minWidth: 250,
-      type: 'number',
-      disableColumnMenu: true,
-      headerAlign: 'left',
-      align: 'left',
-      valueSetter: (params) => {
-        return { ...params.row, device_id: Number(params.value) };
-      },
-      renderCell: (params) => (
-        <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
-          {params.value}
-        </Typography>
-      ),
-      renderEditCell: (params) => {
-        const error: boolean = hasError(params);
-
-        return (
-          <TextFieldDataGrid
-            dataGridProps={params}
-            textFieldProps={{
-              name: params.field,
-              onChange: (event) => {
-                if (!/^\d{0,7}$/.test(event.target.value)) {
-                  // If the value is not a number, return
-                  return;
-                }
-
-                _muiDataGridApiRef?.current.setEditCellValue({
-                  id: params.id,
-                  field: params.field,
-                  value: event.target.value
-                });
-              },
-              error
-            }}
           />
         );
       }

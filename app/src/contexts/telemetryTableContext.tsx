@@ -4,7 +4,7 @@ import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import { TelemetryTableI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
-import { useTelemetryApi } from 'hooks/useTelemetryApi';
+import { ICreateManualTelemetry, useTelemetryApi } from 'hooks/useTelemetryApi';
 import moment from 'moment';
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
@@ -12,9 +12,7 @@ import { RowValidationError, TableValidationModel } from '../components/data-gri
 import { TelemetryDataContext } from './telemetryDataContext';
 
 export interface IManualTelemetryRecord {
-  alias: string;
   deployment_id: string;
-  device_id: number;
   latitude: number;
   longitude: number;
   date: string;
@@ -182,12 +180,11 @@ export const TelemetryTableContextProvider = (props: PropsWithChildren<Record<ne
     const tableColumns = _muiDataGridApiRef.current.getAllColumns();
 
     const requiredColumns: (keyof IManualTelemetryTableRow)[] = [
-      'alias',
+      'deployment_id',
       'latitude',
       'longitude',
       'date',
-      'time',
-      'device_id'
+      'time'
     ];
 
     const validation = rowValues.reduce((tableModel: TelemetryTableValidationModel, row: IManualTelemetryTableRow) => {
@@ -361,8 +358,7 @@ export const TelemetryTableContextProvider = (props: PropsWithChildren<Record<ne
 
     const newRecord: IManualTelemetryTableRow = {
       id,
-      alias: '',
-      device_id: null as unknown as number,
+      deployment_id: '',
       latitude: null as unknown as number,
       longitude: null as unknown as number,
       date: '',
@@ -450,14 +446,19 @@ export const TelemetryTableContextProvider = (props: PropsWithChildren<Record<ne
   const _saveRecords = useCallback(
     async (rowsToSave: GridValidRowModel[]) => {
       try {
-        /** TODO
-        await biohubApi.observation.insertUpdateObservationRecords(
-          projectId,
-          surveyId,
-          rowsToSave as IObservationTableRow[]
-        );
-        */
-
+        const createData: ICreateManualTelemetry[] = (rowsToSave as IManualTelemetryTableRow[]).map((item) => {
+          return {
+            deployment_id: String(item.deployment_id),
+            latitude: Number(item.latitude),
+            longitude: Number(item.longitude),
+            acquisition_date: moment(moment(item.date).format('YYYY-MM-DD') + ' ' + item.time).format(
+              'YYYY-MM-DD HH:mm:ss'
+            )
+          };
+        });
+        console.log(createData);
+        const response = await telemetryApi.createManualTelemetry(createData);
+        console.log(response);
         setModifiedRowIds([]);
         setAddedRowIds([]);
 
