@@ -4,24 +4,48 @@ import { cyan, grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { DataGrid, GridCellParams, GridColDef } from '@mui/x-data-grid';
+import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
 import TimePickerDataGrid from 'components/data-grid/TimePickerDataGrid';
 import { GridTableRowSkeleton } from 'components/loading/SkeletonLoaders';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import { SurveyContext } from 'contexts/surveyContext';
 import { IManualTelemetryTableRow, TelemetryTableContext } from 'contexts/telemetryTableContext';
 import moment from 'moment';
-import { useCallback, useContext } from 'react';
+import { useCallback, useContext, useEffect, useMemo } from 'react';
 import { getFormattedDate } from 'utils/Utils';
+import { ICritterDeployment } from './ManualTelemetryList';
 interface IManualTelemetryTableProps {
   isLoading: boolean;
 }
 const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
   const telemetryTableContext = useContext(TelemetryTableContext);
+  const surveyContext = useContext(SurveyContext);
+
+  useEffect(() => {
+    surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+  }, []);
+
+  const critterDeployments: ICritterDeployment[] = useMemo(() => {
+    const data: ICritterDeployment[] = [];
+    // combine all critter and deployments into a flat list
+    surveyContext.deploymentDataLoader.data?.forEach((deployment) => {
+      const critter = surveyContext.critterDataLoader.data?.find(
+        (critter) => critter.critter_id === deployment.critter_id
+      );
+      if (critter) {
+        data.push({ critter, deployment });
+      }
+    });
+    console.log(data);
+    return data;
+  }, [surveyContext.critterDataLoader.data, surveyContext.deploymentDataLoader.data]);
   const { _muiDataGridApiRef } = telemetryTableContext;
   const hasError = useCallback(
     (params: GridCellParams): boolean => {
       return Boolean(
-        telemetryTableContext.validationModel[params.row.id]?.some((error: any) => {
+        telemetryTableContext.validationModel[params.row.id]?.some((error) => {
           return error.field === params.field;
         })
       );
@@ -30,6 +54,41 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
   );
 
   const tableColumns: GridColDef<IManualTelemetryTableRow>[] = [
+    {
+      field: 'deployment_id',
+      headerName: 'Deployment',
+      editable: true,
+      flex: 1,
+      minWidth: 250,
+      type: 'string',
+      disableColumnMenu: true,
+      headerAlign: 'left',
+      align: 'left',
+      renderCell: (params) => {
+        return (
+          <AutocompleteDataGridViewCell<IManualTelemetryTableRow, string>
+            dataGridProps={params}
+            options={critterDeployments.map((item) => ({
+              label: `${item.critter.animal_id}: ${item.deployment.device_id}`,
+              value: item.deployment.deployment_id
+            }))}
+            error={hasError(params)}
+          />
+        );
+      },
+      renderEditCell: (params) => {
+        return (
+          <AutocompleteDataGridViewCell<IManualTelemetryTableRow, string>
+            dataGridProps={params}
+            options={critterDeployments.map((item) => ({
+              label: `${item.critter.animal_id}: ${item.deployment.device_id}`,
+              value: item.deployment.deployment_id
+            }))}
+            error={hasError(params)}
+          />
+        );
+      }
+    },
     {
       field: 'alias',
       headerName: 'Alias',

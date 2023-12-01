@@ -4,16 +4,16 @@ import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import { TelemetryTableI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import moment from 'moment';
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
-import { SurveyContext } from './surveyContext';
 import { TelemetryDataContext } from './telemetryDataContext';
 
 export interface IManualTelemetryRecord {
   alias: string;
+  deployment_id: string;
   device_id: number;
   latitude: number;
   longitude: number;
@@ -96,7 +96,7 @@ export type ITelemetryTableContext = {
   /**
    * The state of the validation model
    */
-  validationModel: any;
+  validationModel: TelemetryTableValidationModel;
   /**
    * Reflects the total count of telemetry records for the survey
    */
@@ -132,8 +132,7 @@ export const TelemetryTableContext = createContext<ITelemetryTableContext>({
 export const TelemetryTableContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
   const _muiDataGridApiRef = useGridApiRef();
 
-  const biohubApi = useBiohubApi();
-  const surveyContext = useContext(SurveyContext);
+  const telemetryApi = useTelemetryApi();
 
   const telemetryDataContext = useContext(TelemetryDataContext);
   const dialogContext = useContext(DialogContext);
@@ -242,15 +241,9 @@ export const TelemetryTableContextProvider = (props: PropsWithChildren<Record<ne
 
       try {
         if (modifiedRowIdsToDelete.length) {
-          /** TODO
-          const response = await biohubApi.observation.deleteObservationRecords(
-            projectId,
-            surveyId,
-            modifiedRowIdsToDelete
-          );
-          
-          setTelemetryCount(response.supplementaryObservationData.observationCount);
-          */
+          await telemetryApi.deleteManualTelemetry(modifiedRowIds);
+          // this will need
+          setRecordCount(0);
         }
 
         // Remove row IDs from validation model
