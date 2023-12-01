@@ -5,14 +5,17 @@ import Paper from '@mui/material/Paper';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TelemetryDataContextProvider } from 'contexts/telemetryDataContext';
 import { TelemetryTableContextProvider } from 'contexts/telemetryTableContext';
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import SurveyObservationHeader from '../observations/SurveyObservationHeader';
 import ManualTelemetryComponent from './ManualTelemetryComponent';
 import ManualTelemetryList from './ManualTelemetryList';
 
 const ManualTelemetryPage = () => {
   const surveyContext = useContext(SurveyContext);
-  const deploymentIds = surveyContext.deploymentDataLoader.data?.map((item) => item.deployment_id);
+  const deploymentIds = useMemo(() => {
+    return surveyContext.deploymentDataLoader.data?.map((item) => item.deployment_id);
+  }, [surveyContext.deploymentDataLoader.data]);
+
   if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
