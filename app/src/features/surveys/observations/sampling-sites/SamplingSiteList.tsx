@@ -201,7 +201,6 @@ const SamplingSiteList = () => {
           </Button>
         </Toolbar>
         <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
-
           {surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading ? (
             <Box
               sx={{
@@ -346,8 +345,9 @@ const SamplingSiteList = () => {
                                       </ListItemIcon>
                                       <ListItemText>
                                         <Typography variant="body2" component="div" color="inherit">
-                                          {`${samplePeriod.start_date} ${samplePeriod.start_time || ''} - ${samplePeriod.end_date
-                                            } ${samplePeriod.end_time || ''}`}
+                                          {`${samplePeriod.start_date} ${samplePeriod.start_time || ''} - ${
+                                            samplePeriod.end_date
+                                          } ${samplePeriod.end_time || ''}`}
                                         </Typography>
                                       </ListItemText>
                                     </ListItem>
@@ -364,7 +364,6 @@ const SamplingSiteList = () => {
               })}
             </Box>
           )}
-
         </Box>
       </Box>
     </>

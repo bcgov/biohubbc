@@ -3,8 +3,10 @@ import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
+import grey from '@mui/material/colors/grey';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
+import Skeleton from '@mui/material/Skeleton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import SurveySubmissionAlertBar from 'components/publish/SurveySubmissionAlertBar';
@@ -22,8 +24,6 @@ import SurveySummaryResults from './summary-results/SurveySummaryResults';
 import SurveyAnimals from './SurveyAnimals';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyHeader from './SurveyHeader';
-import Skeleton from '@mui/material/Skeleton';
-import grey from '@mui/material/colors/grey';
 
 //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
@@ -83,9 +83,9 @@ const SurveyPage: React.FC = () => {
               Manage Observations
             </Button>
           </Toolbar>
-          <Box position="relative" height={{sm: 400, md: 600}}>
+          <Box position="relative" height={{ sm: 400, md: 600 }}>
             {observationsContext.observationsDataLoader.isLoading && (
-              <Box 
+              <Box
                 sx={{
                   position: 'absolute',
                   top: 0,
@@ -101,7 +101,10 @@ const SurveyPage: React.FC = () => {
                     color: grey[300]
                   }
                 }}>
-                <Skeleton variant="rectangular" width="100%" height="100%"
+                <Skeleton
+                  variant="rectangular"
+                  width="100%"
+                  height="100%"
                   sx={{
                     position: 'absolute',
                     top: 0,

@@ -62,13 +62,13 @@ const ObservationSkeletonRow = () => (
       height: 56,
       overflow: 'hidden',
       '&:not(:last-of-type)': {
-        borderBottom: '1px solid ' + grey[300],
+        borderBottom: '1px solid ' + grey[300]
       },
       '& .MuiSkeleton-root:not(:first-of-type)': {
-        flex: '1 1 auto',
+        flex: '1 1 auto'
       }
     }}>
-    <Skeleton width={20} sx={{flex: '0 0 auto'}} />
+    <Skeleton width={20} sx={{ flex: '0 0 auto' }} />
     <Skeleton />
     <Skeleton />
     <Skeleton />
@@ -81,7 +81,7 @@ const ObservationSkeletonRow = () => (
 
 const ObservationTableSkeletonLoader = () => {
   return (
-    <Box 
+    <Box
       sx={{
         position: 'absolute',
         top: 0,
@@ -571,9 +571,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
 
   return (
     <>
-      {isLoading && (
-        <ObservationTableSkeletonLoader />
-      )}
+      {isLoading && <ObservationTableSkeletonLoader />}
 
       <DataGrid
         checkboxSelection
@@ -593,7 +591,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         onRowSelectionModelChange={observationsTableContext.onRowSelectionModelChange}
         rowSelectionModel={observationsTableContext.rowSelectionModel}
         getRowHeight={() => 'auto'}
-        getRowClassName={(params) => has(observationsTableContext.validationModel, params.row.id) ? 'error' : ''}
+        getRowClassName={(params) => (has(observationsTableContext.validationModel, params.row.id) ? 'error' : '')}
         sx={{
           background: '#fff',
           border: 'none',
@@ -634,9 +632,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             },
             '&.MuiDataGrid-cell--editing': {
               p: 0.5,
-              backgroundColor: cyan[100],
+              backgroundColor: cyan[100]
             }
-
           },
           '& .MuiDataGrid-row--editing': {
             boxShadow: 'none',

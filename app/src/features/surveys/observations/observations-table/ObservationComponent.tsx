@@ -2,13 +2,13 @@ import { mdiDotsVertical, mdiImport, mdiPlus, mdiTrashCanOutline } from '@mdi/js
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
 import { ListItemIcon } from '@mui/material';
-import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
@@ -103,9 +103,8 @@ const ObservationComponent = () => {
         flex="1 1 auto"
         height="100%"
         sx={{
-          overflow: 'hidden',
+          overflow: 'hidden'
         }}>
-
         <Toolbar>
           <Typography
             sx={{
@@ -165,34 +164,32 @@ const ObservationComponent = () => {
                 <Icon size={1} path={mdiDotsVertical} />
               </IconButton>
               <Menu
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right'
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right'
-              }}
-              id="survey-observations-table-actions-menu"
-              anchorEl={menuAnchorEl}
-              open={Boolean(menuAnchorEl)}
-              onClose={handleCloseMenu}
-              MenuListProps={{
-                'aria-labelledby': 'basic-button'
-              }}>
-
-
-              <MenuItem
-                onClick={() => {
-                  observationsTableContext.deleteSelectedObservationRecords();
-                  handleCloseMenu();
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right'
                 }}
-                disabled={observationsTableContext.isSaving}>
-                <ListItemIcon>
-                  <Icon path={mdiTrashCanOutline} size={1} />
-                </ListItemIcon>
-                <Typography variant="inherit">Delete {p(numSelectedRows, 'Observation')}</Typography>
-              </MenuItem>
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right'
+                }}
+                id="survey-observations-table-actions-menu"
+                anchorEl={menuAnchorEl}
+                open={Boolean(menuAnchorEl)}
+                onClose={handleCloseMenu}
+                MenuListProps={{
+                  'aria-labelledby': 'basic-button'
+                }}>
+                <MenuItem
+                  onClick={() => {
+                    observationsTableContext.deleteSelectedObservationRecords();
+                    handleCloseMenu();
+                  }}
+                  disabled={observationsTableContext.isSaving}>
+                  <ListItemIcon>
+                    <Icon path={mdiTrashCanOutline} size={1} />
+                  </ListItemIcon>
+                  <Typography variant="inherit">Delete {p(numSelectedRows, 'Observation')}</Typography>
+                </MenuItem>
               </Menu>
             </Box>
           </Stack>
@@ -200,11 +197,7 @@ const ObservationComponent = () => {
 
         <DataGridValidationAlert validationModel={validationModel} muiDataGridApiRef={_muiDataGridApiRef.current} />
 
-        <Box
-          display="flex"
-          flexDirection="column"
-          flex="1 1 auto"
-          position="relative">
+        <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
           <Box position="absolute" width="100%" height="100%" px={1}>
             <ObservationsTable isLoading={processingRecords} />
           </Box>

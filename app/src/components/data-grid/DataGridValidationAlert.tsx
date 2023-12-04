@@ -128,23 +128,25 @@ const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataG
         sx={{
           mx: 1,
           mb: 1,
-          py: 1.5,
+          py: 1.5
         }}
         action={
-          <Box display="flex" flexDirection="row" alignItems="center"
+          <Box
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
             sx={{
               '& button': {
                 fontWeight: 700
               }
-            }}
-          >
+            }}>
             <Button color="inherit" startIcon={<Icon path={mdiChevronLeft} size={1} />} onClick={() => handlePrev()}>
               Prev
             </Button>
             <Button color="inherit" endIcon={<Icon path={mdiChevronRight} size={1} />} onClick={() => handleNext()}>
               Next
             </Button>
-            <IconButton onClick={() => setHideAlert(true)} sx={{ml: 2}}>
+            <IconButton onClick={() => setHideAlert(true)} sx={{ ml: 2 }}>
               <Icon path={mdiClose} size={1} />
             </IconButton>
           </Box>
