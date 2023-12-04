@@ -583,7 +583,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
     setRows(rows);
 
     // Set initial record count
-    // setRecordCount(observationsContext.observationsDataLoader.data.supplementaryObservationData.observationCount); // TODO
+    setRecordCount(rows.length);
   }, [
     telemetryDataContext.telemetryDataLoader.data,
     telemetryDataContext.telemetryDataLoader.hasLoaded,

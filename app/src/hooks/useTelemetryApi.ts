@@ -69,24 +69,32 @@ export const useTelemetryApi = () => {
   /**
    * Uploads a telemetry CSV for import.
    *
+   * @param {number} projectId
+   * @param {number} surveyId
    * @param {File} file
    * @param {CancelTokenSource} [cancelTokenSource]
    * @param {(progressEvent: ProgressEvent) => void} [onProgress]
-   * @return {*}  {Promise<{ submissionId: number }>}
+   * @return {*}  {Promise<{ submission_id: number }>}
    */
   const uploadCsvForImport = async (
+    projectId: number,
+    surveyId: number,
     file: File,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: ProgressEvent) => void
-  ): Promise<{ submissionId: number }> => {
+  ): Promise<{ submission_id: number }> => {
     const formData = new FormData();
 
     formData.append('media', file);
 
-    const { data } = await axios.post<{ submissionId: number }>(`/api/telemetry/manual/upload`, formData, {
-      cancelToken: cancelTokenSource?.token,
-      onUploadProgress: onProgress
-    });
+    const { data } = await axios.post<{ submission_id: number }>(
+      `/api/project/${projectId}/survey/${surveyId}/telemetry/upload`,
+      formData,
+      {
+        cancelToken: cancelTokenSource?.token,
+        onUploadProgress: onProgress
+      }
+    );
 
     return data;
   };
@@ -99,7 +107,7 @@ export const useTelemetryApi = () => {
    */
   const processTelemetryCsvSubmission = async (submissionId: number) => {
     const { data } = await axios.post(`/api/telemetry/manual/process`, {
-      observation_submission_id: submissionId
+      submission_id: submissionId
     });
 
     return data;
