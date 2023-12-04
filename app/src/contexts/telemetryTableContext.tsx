@@ -461,14 +461,14 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
       try {
         const createData: ICreateManualTelemetry[] = [];
         const updateData: IUpdateManualTelemetry[] = [];
-
         // loop through records and decide based on initial data loaded if a record should be created or updated
         (rowsToSave as IManualTelemetryTableRow[]).forEach((item) => {
-          const found = telemetryDataContext.telemetryDataLoader.data?.filter(
+          // TODO: this will need to trim out any vendor specific data before hand
+          // TODO: so the array coming back from the api endpoint will then have to have a flag just saying if it's vendor or not
+          const found = telemetryDataContext.telemetryDataLoader.data?.find(
             (search) => search.telemetry_manual_id === item.id
           );
           if (found) {
-            console.log('Found an existing Record, this needs to update');
             // existing ID found, update record
             updateData.push({
               telemetry_manual_id: String(item.id),

@@ -1,7 +1,14 @@
 import { IDBConnection } from '../database/db';
-import { TelemetryRepository } from '../repositories/telemetry-repository';
-import { generateS3FileKey } from '../utils/file-utils';
+import { TelemetryRepository, TelemetrySubmissionRecord } from '../repositories/telemetry-repository';
+import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
+import { parseS3File } from '../utils/media/media-utils';
+import { constructWorksheets, constructXLSXWorkbook, validateCsvFile } from '../utils/xlsx-utils/worksheet-utils';
 import { DBService } from './db-service';
+
+const telemetryCSVColumnValidator = {
+  columnNames: ['DEVICE_ID', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
+  columnTypes: ['number', 'date', 'string', 'number', 'number']
+};
 
 export class TelemetryService extends DBService {
   repository: TelemetryRepository;
@@ -37,16 +44,43 @@ export class TelemetryService extends DBService {
   }
 
   async processTelemetryCsvSubmission(submissionId: number): Promise<any[]> {
-    // step 1 get record
+    // step 1 get submission record
+    const submission = await this.getTelemetrySubmissionById(submissionId);
+
     // step 2 get s3 record for given key
+    const s3Object = await getFileFromS3(submission.key);
+
     // step 3 parse the file
+    const mediaFile = parseS3File(s3Object);
+
     // step 4 validate csv
+    if (mediaFile.mimetype !== 'text/csv') {
+      throw new Error(
+        'Failed to process file for importing telemetry. Incorrect file type. Expected CSV received ' +
+          mediaFile.mimetype
+      );
+    }
+
     // step 5 construct workbook/ setup
+    // Construct the XLSX workbook
+    const xlsxWorkBook = constructXLSXWorkbook(mediaFile);
+
+    // Construct the worksheets
+    const xlsxWorksheets = constructWorksheets(xlsxWorkBook);
+
     // step 6 validate columns
+    if (validateCsvFile(xlsxWorksheets, telemetryCSVColumnValidator)) {
+      throw new Error('Failed to process file for importing telemetry. Invalid CSV file.');
+    }
+
     // step 7 fetch survey deployments
     // step 8 create dictionary of deployments (alias-device_id)
     // step 9 map data from csv/ dictionary into telemetry records
     // step 10 send to telemetry service api
     return [];
+  }
+
+  async getTelemetrySubmissionById(submissionId: number): Promise<TelemetrySubmissionRecord> {
+    return this.repository.getTelemetrySubmissionById(submissionId);
   }
 }
