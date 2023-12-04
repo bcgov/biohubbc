@@ -441,8 +441,13 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
   }, [_muiDataGridApiRef, addedRowIds, rows]);
 
   const refreshRecords = useCallback(async () => {
-    telemetryDataContext.telemetryDataLoader.refresh(deployment_ids);
-    telemetryDataContext.vendorTelemetryDataLoader.refresh(deployment_ids);
+    if (telemetryDataContext.telemetryDataLoader.isReady) {
+      telemetryDataContext.telemetryDataLoader.refresh(deployment_ids);
+    }
+
+    if (telemetryDataContext.vendorTelemetryDataLoader.isReady) {
+      telemetryDataContext.vendorTelemetryDataLoader.refresh(deployment_ids);
+    }
   }, [telemetryDataContext.telemetryDataLoader, telemetryDataContext.vendorTelemetryDataLoader]);
 
   // True if the data grid contains at least 1 unsaved record
@@ -463,6 +468,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
             (search) => search.telemetry_manual_id === item.id
           );
           if (found) {
+            console.log('Found an existing Record, this needs to update');
             // existing ID found, update record
             updateData.push({
               telemetry_manual_id: String(item.id),
@@ -533,7 +539,11 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
   }, [_isSaving, _isStoppingEdit]);
 
   useEffect(() => {
-    refreshRecords();
+    // Begin fetching telemetry once we have deployments ids
+    if (deployment_ids.length) {
+      telemetryDataContext.telemetryDataLoader.load(deployment_ids);
+      telemetryDataContext.vendorTelemetryDataLoader.load(deployment_ids);
+    }
   }, [deployment_ids]);
 
   /**
@@ -542,21 +552,16 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
    */
   useEffect(() => {
     if (
-      !telemetryDataContext.telemetryDataLoader.hasLoaded ||
-      !telemetryDataContext.vendorTelemetryDataLoader.hasLoaded
+      telemetryDataContext.telemetryDataLoader.isLoading ||
+      telemetryDataContext.vendorTelemetryDataLoader.isLoading
     ) {
       // Existing telemetry records have not yet loaded
       return;
     }
 
-    if (!telemetryDataContext.telemetryDataLoader.data || !telemetryDataContext.vendorTelemetryDataLoader.data) {
-      // Existing telemetry data doesn't exist
-      return;
-    }
-
     // Collect rows from the telemetry data loader
-    const telemetry = telemetryDataContext.telemetryDataLoader.data;
-    const vendorTelemetry = telemetryDataContext.vendorTelemetryDataLoader.data;
+    const telemetry = telemetryDataContext.telemetryDataLoader.data || [];
+    const vendorTelemetry = telemetryDataContext.vendorTelemetryDataLoader.data || [];
     const totalTelemetry = [...telemetry, ...vendorTelemetry];
 
     const rows: IManualTelemetryTableRow[] = totalTelemetry.map((item) => {
@@ -584,12 +589,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
 
     // Set initial record count
     setRecordCount(rows.length);
-  }, [
-    telemetryDataContext.telemetryDataLoader.data,
-    telemetryDataContext.telemetryDataLoader.hasLoaded,
-    telemetryDataContext.vendorTelemetryDataLoader.data,
-    telemetryDataContext.vendorTelemetryDataLoader.hasLoaded
-  ]);
+  }, [telemetryDataContext.telemetryDataLoader.isLoading, telemetryDataContext.vendorTelemetryDataLoader.isLoading]);
 
   /**
    * Runs when row records are being saved and transitioned from Edit mode to View mode.
