@@ -18,6 +18,7 @@ import YesNoDialog from 'components/dialog/YesNoDialog';
 import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
 import { TelemetryTableI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
+import { SurveyContext } from 'contexts/surveyContext';
 import { TelemetryTableContext } from 'contexts/telemetryTableContext';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { useContext, useState } from 'react';
@@ -31,6 +32,7 @@ const ManualTelemetryComponent = () => {
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
   const dialogContext = useContext(DialogContext);
   const telemetryTableContext = useContext(TelemetryTableContext);
+  const surveyContext = useContext(SurveyContext);
   const telemetryApi = useTelemetryApi();
   const { hasUnsavedChanges, validationModel, _muiDataGridApiRef } = telemetryTableContext;
 
@@ -42,12 +44,13 @@ const ManualTelemetryComponent = () => {
     setAnchorEl(null);
   };
 
+  const { projectId, surveyId } = surveyContext;
   const handleFileImport = async (file: File) => {
-    telemetryApi.uploadCsvForImport(file).then((response) => {
+    telemetryApi.uploadCsvForImport(projectId, surveyId, file).then((response) => {
       setShowImportDialog(false);
       setProcessingRecords(true);
       telemetryApi
-        .processTelemetryCsvSubmission(response.submissionId)
+        .processTelemetryCsvSubmission(response.submission_id)
         .then(() => {
           showSnackBar({
             snackbarMessage: (
@@ -71,7 +74,7 @@ const ManualTelemetryComponent = () => {
     <>
       <FileUploadDialog
         open={showImportDialog}
-        dialogTitle="Import Observation CSV"
+        dialogTitle="Import Telemetry CSV"
         onClose={() => setShowImportDialog(false)}
         onUpload={handleFileImport}
         FileUploadProps={{
@@ -111,7 +114,7 @@ const ManualTelemetryComponent = () => {
                 fontSize: '1.125rem',
                 fontWeight: 700
               }}>
-              Observations &zwnj;
+              Telemetry &zwnj;
               <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
                 ({0})
               </Typography>
@@ -159,7 +162,7 @@ const ManualTelemetryComponent = () => {
                   }}
                   size="small"
                   disabled={numSelectedRows === 0}
-                  aria-label="observation options">
+                  aria-label="telemetry options">
                   <Icon size={1} path={mdiDotsVertical} />
                 </IconButton>
                 <Menu
@@ -171,7 +174,7 @@ const ManualTelemetryComponent = () => {
                     vertical: 'top',
                     horizontal: 'right'
                   }}
-                  id="survey-observations-table-actions-menu"
+                  id="manual-telemetry-table-actions-menu"
                   anchorEl={anchorEl}
                   open={Boolean(anchorEl)}
                   onClose={handleCloseMenu}
@@ -187,7 +190,7 @@ const ManualTelemetryComponent = () => {
                     <ListItemIcon>
                       <Icon path={mdiTrashCanOutline} size={1} />
                     </ListItemIcon>
-                    <Typography variant="inherit">Delete {p(numSelectedRows, 'Observation')}</Typography>
+                    <Typography variant="inherit">Delete {p(numSelectedRows, 'Telemetr', 'y', 'ies')}</Typography>
                   </MenuItem>
                 </Menu>
               </Box>
