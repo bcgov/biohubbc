@@ -280,7 +280,7 @@ export interface IXLSXCSVValidator {
 export function validateCsvFile(
   xlsxWorksheets: xlsx.WorkSheet,
   columnValidator: IXLSXCSVValidator,
-  sheet: string = 'Sheet1'
+  sheet = 'Sheet1'
 ): boolean {
   // Validate the worksheet headers
   if (!validateWorksheetHeaders(xlsxWorksheets[sheet], columnValidator.columnNames)) {

@@ -1,4 +1,4 @@
-import { pluralize as p } from "utils/Utils";
+import { pluralize as p } from 'utils/Utils';
 
 export const CreateProjectI18N = {
   cancelTitle: 'Discard changes and exit?',
@@ -410,7 +410,8 @@ export const ObservationsTableI18N = {
     'An error has occurred while attempting to delete observation records for this survey. Please try again. If the error persists, please contact your system administrator.',
   saveRecordsSuccessSnackbarMessage: 'Observations updated successfully.',
   deleteSingleRecordSuccessSnackbarMessage: 'Deleted observation record successfully.',
-  deleteMultipleRecordSuccessSnackbarMessage: (count: number) => `Deleted ${count} ${p(count, 'observation record')} successfully.`
+  deleteMultipleRecordSuccessSnackbarMessage: (count: number) =>
+    `Deleted ${count} ${p(count, 'observation record')} successfully.`
 };
 
 export const TelemetryTableI18N = {
@@ -430,5 +431,6 @@ export const TelemetryTableI18N = {
     'An error has occurred while attempting to delete telemetry records for this survey. Please try again. If the error persists, please contact your system administrator.',
   saveRecordsSuccessSnackbarMessage: 'Telemetry updated successfully.',
   deleteSingleRecordSuccessSnackbarMessage: 'Deleted telemetry record successfully.',
-  deleteMultipleRecordSuccessSnackbarMessage: (count: number) => `Deleted ${count} ${p(count, 'telemetry record')} successfully.`
+  deleteMultipleRecordSuccessSnackbarMessage: (count: number) =>
+    `Deleted ${count} ${p(count, 'telemetry record')} successfully.`
 };
