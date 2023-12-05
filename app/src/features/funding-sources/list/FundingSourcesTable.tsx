@@ -1,5 +1,5 @@
 import { GridColDef } from '@mui/x-data-grid';
-import { CustomDataGrid } from 'components/tables/CustomDataGrid';
+import { CustomDataGrid } from 'components/data-grid/CustomDataGrid';
 import { IGetFundingSourcesResponse } from 'interfaces/useFundingSourceApi.interface';
 import { getFormattedAmount } from 'utils/Utils';
 import TableActionsMenu from './FundingSourcesTableActionsMenu';

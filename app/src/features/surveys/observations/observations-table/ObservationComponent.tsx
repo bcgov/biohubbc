@@ -5,12 +5,13 @@ import { ListItemIcon } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
-import { grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
 import FileUploadDialog from 'components/dialog/FileUploadDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
@@ -67,7 +68,7 @@ const ObservationComponent = () => {
     });
   };
 
-  const hasUnsavedChanges = observationsTableContext.hasUnsavedChanges;
+  const { hasUnsavedChanges, validationModel, _muiDataGridApiRef } = observationsTableContext;
   const numSelectedRows = observationsTableContext.rowSelectionModel.length;
 
   return (
@@ -117,7 +118,7 @@ const ObservationComponent = () => {
             </Typography>
           </Typography>
 
-          <Box display="flex" overflow="hidden" gap={1} whiteSpace="nowrap">
+          <Stack flexDirection="row" alignItems="center" gap={1} whiteSpace="nowrap">
             <Button
               variant="contained"
               color="primary"
@@ -157,7 +158,7 @@ const ObservationComponent = () => {
                 onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
                   setMenuAnchorEl(event.currentTarget);
                 }}
-                size="small"
+                edge="end"
                 disabled={numSelectedRows === 0}
                 aria-label="observation options">
                 <Icon size={1} path={mdiDotsVertical} />
@@ -191,17 +192,13 @@ const ObservationComponent = () => {
                 </MenuItem>
               </Menu>
             </Box>
-          </Box>
+          </Stack>
         </Toolbar>
-        <Box
-          display="flex"
-          flexDirection="column"
-          flex="1 1 auto"
-          position="relative"
-          sx={{
-            background: grey[100]
-          }}>
-          <Box position="absolute" width="100%" height="100%" p={1}>
+
+        <DataGridValidationAlert validationModel={validationModel} muiDataGridApiRef={_muiDataGridApiRef.current} />
+
+        <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
+          <Box position="absolute" width="100%" height="100%" px={1}>
             <ObservationsTable isLoading={processingRecords} />
           </Box>
         </Box>

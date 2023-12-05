@@ -1,12 +1,12 @@
-import { mdiPencilOutline } from '@mdi/js';
+import { mdiMapSearchOutline, mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { LinearProgress } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
+import grey from '@mui/material/colors/grey';
 import Container from '@mui/material/Container';
-import Fade from '@mui/material/Fade';
 import Paper from '@mui/material/Paper';
+import Skeleton from '@mui/material/Skeleton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import SurveySubmissionAlertBar from 'components/publish/SurveySubmissionAlertBar';
@@ -57,7 +57,7 @@ const SurveyPage: React.FC = () => {
       <SurveyHeader />
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper elevation={0} sx={{ overflow: 'hidden' }}>
-          <Toolbar sx={{ mb: -1 }}>
+          <Toolbar>
             <Typography
               component="h3"
               variant="h4"
@@ -65,9 +65,13 @@ const SurveyPage: React.FC = () => {
                 flex: '1 1 auto'
               }}>
               Observations &zwnj;
-              <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
-                ({numObservations})
-              </Typography>
+              {!numObservations ? (
+                ' '
+              ) : (
+                <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
+                  ({numObservations})
+                </Typography>
+              )}
             </Typography>
             <Button
               component={RouterLink}
@@ -79,10 +83,41 @@ const SurveyPage: React.FC = () => {
               Manage Observations
             </Button>
           </Toolbar>
-          <Fade in={observationsContext.observationsDataLoader.isLoading}>
-            <LinearProgress variant="indeterminate" sx={{ borderRadius: 0 }} />
-          </Fade>
-          <ObservationsMap />
+          <Box position="relative" height={{ sm: 400, md: 600 }}>
+            {observationsContext.observationsDataLoader.isLoading && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  bottom: 0,
+                  left: 0,
+                  zIndex: 1002,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: '#fff',
+                  '& svg': {
+                    color: grey[300]
+                  }
+                }}>
+                <Skeleton
+                  variant="rectangular"
+                  width="100%"
+                  height="100%"
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    left: 0
+                  }}
+                />
+                <Icon path={mdiMapSearchOutline} size={2} />
+              </Box>
+            )}
+            <ObservationsMap />
+          </Box>
         </Paper>
 
         <Box mt={3}>
