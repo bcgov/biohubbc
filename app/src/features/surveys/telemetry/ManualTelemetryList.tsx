@@ -17,7 +17,9 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { AttachmentType } from 'constants/attachments';
+import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import { TelemetryDataContext } from 'contexts/telemetryDataContext';
 import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
@@ -55,6 +57,8 @@ const ManualTelemetryList = () => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const surveyContext = useContext(SurveyContext);
+  const telemetryContext = useContext(TelemetryDataContext);
+  const dialogContext = useContext(DialogContext);
   const biohubApi = useBiohubApi();
   const telemetryApi = useTelemetryApi();
 
@@ -158,25 +162,69 @@ const ManualTelemetryList = () => {
     try {
       const deployment = deployments?.find((item) => item.device_id === deviceId);
       if (!deployment) {
-        // no deployment found, throw an error
-        return;
+        throw new Error('Invalid Deployment Data');
       }
       const critter = critters?.find((item) => item.critter_id === deployment?.critter_id);
       if (!critter) {
-        // no critter set
-        // show a snack bar
-        return;
+        throw new Error('Invalid Critter Data');
       }
-      await biohubApi.survey.removeDeployment(
-        surveyContext.projectId,
-        surveyContext.surveyId,
-        critter.survey_critter_id,
-        deployment.deployment_id
+
+      const found = telemetryContext.telemetryDataLoader.data?.find(
+        (item) => item.deployment_id === deployment.deployment_id
       );
-      surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+      if (!found) {
+        await biohubApi.survey.removeDeployment(
+          surveyContext.projectId,
+          surveyContext.surveyId,
+          critter.survey_critter_id,
+          deployment.deployment_id
+        );
+        dialogContext.setYesNoDialog({ open: false });
+        surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+      } else {
+        dialogContext.setYesNoDialog({ open: false });
+        // Deployment is used in telemetry, do not delete until it is scrubbed
+        throw new Error('Deployment is used in telemetry');
+      }
     } catch (e) {
-      // failed to delete, show snack bar
+      dialogContext.setSnackbar({
+        snackbarMessage: (
+          <>
+            <Typography variant="body2" component="div">
+              <strong>Error Deleting Deployment</strong>
+            </Typography>
+            <Typography variant="body2" component="div">
+              {String(e)}
+            </Typography>
+          </>
+        ),
+        open: true
+      });
     }
+  };
+
+  const deleteDeploymentDialog = () => {
+    dialogContext.setYesNoDialog({
+      dialogTitle: 'Delete Deployment?',
+      dialogContent: (
+        <Typography variant="body1" component="div" color="textSecondary">
+          Are you sure you want to delete this deployment?
+        </Typography>
+      ),
+      yesButtonLabel: 'Delete Deployment',
+      noButtonLabel: 'Cancel',
+      yesButtonProps: { color: 'error' },
+      onClose: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      onNo: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      open: true,
+      onYes: () => {
+        handleDeleteDeployment();
+      }
+    });
   };
 
   const handleAddDeployment = async (data: AnimalDeployment) => {
@@ -241,7 +289,9 @@ const ManualTelemetryList = () => {
     }
   };
 
-  const handleUploadFile = async (file?: File, attachmentType?: AttachmentType) => {};
+  const handleUploadFile = async (file?: File, attachmentType?: AttachmentType) => {
+    //TODO: just copy exactly what was there before and pretend like it makes sense
+  };
 
   return (
     <>
@@ -275,7 +325,7 @@ const ManualTelemetryList = () => {
         <MenuItem
           onClick={() => {
             setAnchorEl(null);
-            handleDeleteDeployment();
+            deleteDeploymentDialog();
           }}>
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />

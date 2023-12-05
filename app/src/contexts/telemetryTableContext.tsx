@@ -295,7 +295,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
         });
       }
     },
-    [addedRowIds, dialogContext /* biohubApi.observation, projectId, surveyId */] // TODO
+    [addedRowIds, dialogContext] // TODO
   );
 
   const getSelectedRecords: () => IManualTelemetryTableRow[] = useCallback(() => {

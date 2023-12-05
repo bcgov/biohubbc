@@ -35,21 +35,21 @@ const ManualTelemetryPage = () => {
           overflow: 'hidden',
           m: 1
         }}>
-        <Box
-          flex="0 0 auto"
-          width="400px"
-          sx={{
-            borderRight: '1px solid ' + grey[300]
-          }}>
-          <ManualTelemetryList />
-        </Box>
-        <Box flex="1 1 auto" overflow="hidden">
-          <TelemetryDataContextProvider>
+        <TelemetryDataContextProvider>
+          <Box
+            flex="0 0 auto"
+            width="400px"
+            sx={{
+              borderRight: '1px solid ' + grey[300]
+            }}>
+            <ManualTelemetryList />
+          </Box>
+          <Box flex="1 1 auto" overflow="hidden">
             <TelemetryTableContextProvider deployment_ids={deploymentIds || []}>
               <ManualTelemetryComponent />
             </TelemetryTableContextProvider>
-          </TelemetryDataContextProvider>
-        </Box>
+          </Box>
+        </TelemetryDataContextProvider>
       </Paper>
     </Box>
   );
