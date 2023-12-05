@@ -334,7 +334,15 @@ const ManualTelemetryList = () => {
   };
 
   const handleUploadFile = async (file?: File, attachmentType?: AttachmentType) => {
-    //TODO: just copy exactly what was there before and pretend like it makes sense
+    try {
+      if (file && attachmentType === AttachmentType.KEYX) {
+        await biohubApi.survey.uploadSurveyKeyx(surveyContext.projectId, surveyContext.surveyId, file);
+      } else if (file && attachmentType === AttachmentType.OTHER) {
+        await biohubApi.survey.uploadSurveyAttachments(surveyContext.projectId, surveyContext.surveyId, file);
+      }
+    } catch (error) {
+      throw new Error(`Failed to upload attachment ${file?.name}`);
+    }
   };
 
   return (
