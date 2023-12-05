@@ -348,14 +348,14 @@ describe('PlatformService', () => {
         id: '1',
         type: 'dataset',
         properties: {
-          additionalInformation: 'test',
-          surveyId: undefined,
-          projectId: undefined,
+          additional_information: 'test',
+          survey_id: undefined,
+          project_id: undefined,
           name: undefined,
-          startDate: undefined,
-          endDate: undefined,
-          surveyTypes: undefined,
-          revisionCount: undefined,
+          start_date: undefined,
+          end_date: undefined,
+          survey_types: undefined,
+          revision_count: undefined,
           geometry: undefined
         },
         features: [
@@ -363,8 +363,8 @@ describe('PlatformService', () => {
             id: '2',
             type: 'observation',
             properties: {
-              surveyId: undefined,
-              wldtaxonomic_units_id: undefined,
+              survey_id: undefined,
+              taxonomy: undefined,
               survey_sample_site_id: null,
               survey_sample_method_id: null,
               survey_sample_period_id: null,
@@ -373,7 +373,8 @@ describe('PlatformService', () => {
               count: undefined,
               observation_time: undefined,
               observation_date: undefined
-            }
+            },
+            features: []
           }
         ]
       });

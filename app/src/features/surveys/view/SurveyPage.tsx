@@ -46,6 +46,7 @@ const SurveyPage: React.FC = () => {
 
   useEffect(() => {
     observationsContext.observationsDataLoader.refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!codesContext.codesDataLoader.data || !surveyContext.surveyDataLoader.data) {

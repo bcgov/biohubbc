@@ -41,8 +41,8 @@ describe('PostSurveyObservationToBiohubObject', () => {
 
     it('sets properties', () => {
       expect(data.properties).to.eql({
-        surveyId: 1,
-        wldtaxonomic_units_id: 1,
+        survey_id: 1,
+        taxonomy: 1,
         survey_sample_site_id: 1,
         survey_sample_method_id: 1,
         survey_sample_period_id: 1,
@@ -109,14 +109,14 @@ describe('PostSurveyToBiohubObject', () => {
 
     it('sets properties', () => {
       expect(data.properties).to.eql({
-        additionalInformation: 'additionalInformation',
-        surveyId: 1,
-        projectId: 1,
+        additional_information: 'additionalInformation',
+        survey_id: 1,
+        project_id: 1,
         name: 'survey_name',
-        startDate: 'start_date',
-        endDate: 'end_date',
-        surveyTypes: [9],
-        revisionCount: 1,
+        start_date: 'start_date',
+        end_date: 'end_date',
+        survey_types: [9],
+        revision_count: 1,
         geometry: []
       });
     });
@@ -127,8 +127,8 @@ describe('PostSurveyToBiohubObject', () => {
           id: '1',
           type: 'observation',
           properties: {
-            surveyId: 1,
-            wldtaxonomic_units_id: 1,
+            survey_id: 1,
+            taxonomy: 1,
             survey_sample_site_id: 1,
             survey_sample_method_id: 1,
             survey_sample_period_id: 1,
@@ -137,7 +137,8 @@ describe('PostSurveyToBiohubObject', () => {
             count: 1,
             observation_time: 'observation_time',
             observation_date: 'observation_date'
-          }
+          },
+          features: []
         }
       ]);
     });

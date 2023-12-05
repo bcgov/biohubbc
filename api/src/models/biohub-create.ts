@@ -22,7 +22,7 @@ export class PostSurveyObservationToBiohubObject {
     this.id = String(observationRecord.survey_observation_id);
     this.type = BiohubFeatureType.OBSERVATION;
     this.properties = {
-      surveyId: observationRecord.survey_id,
+      survey_id: observationRecord.survey_id,
       taxonomy: observationRecord.wldtaxonomic_units_id,
       survey_sample_site_id: observationRecord?.survey_sample_site_id || null,
       survey_sample_method_id: observationRecord?.survey_sample_method_id || null,
