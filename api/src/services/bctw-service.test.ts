@@ -21,6 +21,7 @@ import {
   HEALTH_ENDPOINT,
   IDeployDevice,
   IDeploymentUpdate,
+  MANUAL_AND_VENDOR_TELEMETRY,
   MANUAL_TELEMETRY,
   UPDATE_DEPLOYMENT_ENDPOINT,
   UPSERT_DEVICE_ENDPOINT,
@@ -390,6 +391,18 @@ describe('BctwService', () => {
         const ret = await bctwService.getVendorTelemetryByDeploymentIds(payload);
 
         expect(mockAxios).to.have.been.calledOnceWith(`${VENDOR_TELEMETRY}/deployments`, payload);
+        expect(ret).to.be.true;
+      });
+    });
+
+    describe('getAllTelemetryByDeploymentIds', () => {
+      it('should sent a post request', async () => {
+        const mockAxios = sinon.stub(bctwService.axiosInstance, 'post').resolves({ data: true });
+
+        const payload: any = { key: 'value' };
+        const ret = await bctwService.getAllTelemetryByDeploymentIds(payload);
+
+        expect(mockAxios).to.have.been.calledOnceWith(`${MANUAL_AND_VENDOR_TELEMETRY}/deployments`, payload);
         expect(ret).to.be.true;
       });
     });
