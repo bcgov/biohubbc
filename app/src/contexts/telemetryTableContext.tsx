@@ -164,7 +164,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
    * Gets all rows from the table, including values that have been edited in the table.
    */
   const _getRowsWithEditedValues = (): IManualTelemetryTableRow[] => {
-    const rowValues = Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values()) as IManualTelemetryTableRow[];
+    const rowValues = Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values());
 
     return rowValues.map((row) => {
       const editRow = _muiDataGridApiRef.current.state.editRows[row.id];
