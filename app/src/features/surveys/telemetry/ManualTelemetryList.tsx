@@ -403,7 +403,6 @@ const ManualTelemetryList = () => {
           setCritterId('');
         }}>
         {(formikProps) => {
-          console.log(formikProps.values);
           return (
             <>
               <Dialog open={showDialog} fullScreen={fullScreen} maxWidth="xl">

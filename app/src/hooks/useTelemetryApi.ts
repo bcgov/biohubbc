@@ -36,10 +36,26 @@ export interface IVendorTelemetry extends ICreateManualTelemetry {
   telemetry_id: string;
 }
 
+export interface ITelemetry {
+  id: string;
+  deployment_id: string;
+  telemetry_manual_id: string;
+  telemetry_id: number | null;
+  latitude: number;
+  longitude: number;
+  acquisition_date: string;
+  telemetry_type: string;
+}
+
 export const useTelemetryApi = () => {
   const config = useContext(ConfigContext);
   const axios = useAxios(config?.API_HOST);
   const devices = useDeviceApi(axios);
+
+  const getAllTelemetry = async (ids: string[]): Promise<ITelemetry[]> => {
+    const { data } = await axios.post<ITelemetry[]>('/api/telemetry/deployments', ids);
+    return data;
+  };
 
   const getVendorTelemetry = async (ids: string[]): Promise<IVendorTelemetry[]> => {
     const { data } = await axios.post<IVendorTelemetry[]>('/api/telemetry/vendor/deployments', ids);
@@ -115,6 +131,7 @@ export const useTelemetryApi = () => {
 
   return {
     devices,
+    getAllTelemetry,
     getManualTelemetry,
     createManualTelemetry,
     updateManualTelemetry,
