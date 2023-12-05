@@ -245,8 +245,8 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
 
       try {
         if (modifiedRowIdsToDelete.length) {
-          await telemetryApi.deleteManualTelemetry(modifiedRowIds);
-          // this will need
+          await telemetryApi.deleteManualTelemetry(modifiedRowIdsToDelete);
+          // TODO: this will be fixed once the endpoints have been updated
           setRecordCount(0);
         }
 
@@ -527,7 +527,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
         _setIsSaving(false);
       }
     },
-    [/* biohubApi.observation, projectId, surveyId,*/ dialogContext, refreshRecords, _revertAllRowsEditMode] // TODO
+    [dialogContext, refreshRecords, _revertAllRowsEditMode] // TODO
   );
 
   const isLoading: boolean = useMemo(() => {
