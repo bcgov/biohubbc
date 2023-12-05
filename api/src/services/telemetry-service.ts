@@ -62,10 +62,7 @@ export class TelemetryService extends DBService {
     }
 
     // step 5 construct workbook/ setup
-    // Construct the XLSX workbook
     const xlsxWorkBook = constructXLSXWorkbook(mediaFile);
-
-    // Construct the worksheets
     const xlsxWorksheets = constructWorksheets(xlsxWorkBook);
 
     // step 6 validate columns
@@ -74,6 +71,8 @@ export class TelemetryService extends DBService {
     }
 
     // step 7 fetch survey deployments
+    // const bctwService = new  BctwService()
+
     // step 8 create dictionary of deployments (alias-device_id)
     // step 9 map data from csv/ dictionary into telemetry records
     // step 10 send to telemetry service api
