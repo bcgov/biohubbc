@@ -133,6 +133,7 @@ export const GET_TELEMETRY_TRACKS_ENDPOINT = '/get-critter-tracks';
 export const MANUAL_TELEMETRY = '/manual-telemetry';
 export const VENDOR_TELEMETRY = '/vendor-telemetry';
 export const DELETE_MANUAL_TELEMETRY = '/manual-telemetry/delete';
+export const MANUAL_AND_VENDOR_TELEMETRY = '/all-telemetry';
 
 export const getBctwUser = (req: Request): IBctwUser => ({
   keycloak_guid: req['system_user']?.user_guid,
@@ -455,7 +456,7 @@ export class BctwService {
    * retrieves manual telemetry from list of deployment ids
    *
    * @async
-   * @param {string[]} deployment_ids - bctw deployment_id
+   * @param {string[]} deployment_ids - bctw deployments
    * @returns {*} IManualTelemetry[]
    */
   async getManualTelemetryByDeploymentIds(deployment_ids: string[]): Promise<IManualTelemetry[]> {
@@ -467,11 +468,23 @@ export class BctwService {
    * retrieves manual telemetry from list of deployment ids
    *
    * @async
-   * @param {string[]} deployment_ids - bctw deployment_id
+   * @param {string[]} deployment_ids - bctw deployments
    * @returns {*} IManualTelemetry[]
    */
   async getVendorTelemetryByDeploymentIds(deployment_ids: string[]): Promise<IManualTelemetry[]> {
     const res = await this.axiosInstance.post(`${VENDOR_TELEMETRY}/deployments`, deployment_ids);
+    return res.data;
+  }
+
+  /**
+   * retrieves manual and vendor telemetry from list of deployment ids
+   *
+   * @async
+   * @param {string[]} deployment_ids - bctw deployments
+   * @returns {*} IManualTelemetry[]
+   */
+  async getAllTelemetryByDeploymentIds(deployment_ids: string[]): Promise<IManualTelemetry[]> {
+    const res = await this.axiosInstance.post(`${MANUAL_AND_VENDOR_TELEMETRY}/deployments`, deployment_ids);
     return res.data;
   }
 
