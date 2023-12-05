@@ -230,6 +230,10 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
     return Object.keys(validation).length > 0 ? validation : null;
   };
 
+  useEffect(() => {
+    setRecordCount(rows.length);
+  }, [rows]);
+
   const _commitDeleteRecords = useCallback(
     async (telemetryRecords: IManualTelemetryTableRow[]): Promise<void> => {
       if (!telemetryRecords.length) {
@@ -370,7 +374,8 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
       latitude: null as unknown as number,
       longitude: null as unknown as number,
       date: '',
-      time: ''
+      time: '',
+      telemetry_type: 'MANUAL'
     };
 
     // Append new record to initial rows

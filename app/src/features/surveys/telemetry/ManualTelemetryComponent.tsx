@@ -116,7 +116,7 @@ const ManualTelemetryComponent = () => {
               }}>
               Telemetry &zwnj;
               <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
-                ({0})
+                ({telemetryTableContext.recordCount})
               </Typography>
             </Typography>
 
