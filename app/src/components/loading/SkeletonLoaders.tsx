@@ -56,6 +56,7 @@ const GridTableRowSkeleton = (props: IMultipleSkeletonProps) => {
           .fill(null)
           .map(() => (
             <Box
+              key={v4().toString()}
               sx={{
                 display: 'flex',
                 alignItems: 'center',

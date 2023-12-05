@@ -152,9 +152,9 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
   // New rows (regardless of mode)
   const [addedRowIds, setAddedRowIds] = useState<string[]>([]);
   // True if the rows are in the process of transitioning from edit to view mode
-  const [_isStoppingEdit, _setIsStoppingEdit] = useState(false);
+  const [isStoppingEdit, setIsStoppingEdit] = useState(false);
   // True if the records are in the process of being saved to the server
-  const [_isSaving, _setIsSaving] = useState(false);
+  const [isCurrentltSaving, setIsCurrentlySaving] = useState(false);
   // Stores the current count of telemetry records for this survey
   const [recordCount, setRecordCount] = useState<number>(0);
   // Stores the current validation state of the table
@@ -247,8 +247,6 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
       try {
         if (modifiedRowIdsToDelete.length) {
           await telemetryApi.deleteManualTelemetry(modifiedRowIdsToDelete);
-          // TODO: this will be fixed once the endpoints have been updated
-          setRecordCount(0);
         }
 
         // Remove row IDs from validation model
@@ -296,7 +294,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
         });
       }
     },
-    [addedRowIds, dialogContext] // TODO
+    [addedRowIds, dialogContext]
   );
 
   const getSelectedRecords: () => IManualTelemetryTableRow[] = useCallback(() => {
@@ -337,7 +335,9 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
         noButtonProps: { color: 'primary', variant: 'outlined', disabled: false },
         noButtonLabel: 'Cancel',
         open: true,
-        onYes: () => _commitDeleteRecords(telemetryRecords),
+        onYes: () => {
+          _commitDeleteRecords(telemetryRecords);
+        },
         onClose: () => dialogContext.setYesNoDialog({ open: false }),
         onNo: () => dialogContext.setYesNoDialog({ open: false })
       });
@@ -386,7 +386,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
    * Transition all editable rows from edit mode to view mode.
    */
   const saveRecords = useCallback(() => {
-    if (_isStoppingEdit) {
+    if (isStoppingEdit) {
       // Stop edit mode already in progress
       return;
     }
@@ -398,7 +398,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
       return;
     }
 
-    _setIsStoppingEdit(true);
+    setIsStoppingEdit(true);
 
     // Collect the ids of all rows in edit mode
     const allEditingIds = Object.keys(_muiDataGridApiRef.current.state.editRows);
@@ -408,7 +408,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
 
     if (!editingIdsToSave.length) {
       // No rows in edit mode, nothing to stop or save
-      _setIsStoppingEdit(false);
+      setIsStoppingEdit(false);
       return;
     }
 
@@ -419,7 +419,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
 
     // Store ids of rows that were in edit mode
     setModifiedRowIds(editingIdsToSave);
-  }, [_muiDataGridApiRef, _isStoppingEdit, rows]);
+  }, [_muiDataGridApiRef, isStoppingEdit, rows]);
 
   /**
    * Transition all rows tracked by `modifiedRowIds` to view mode.
@@ -460,31 +460,31 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
         const updateData: IUpdateManualTelemetry[] = [];
         // loop through records and decide based on initial data loaded if a record should be created or updated
         (rowsToSave as IManualTelemetryTableRow[]).forEach((item) => {
-          // TODO: this will need to trim out any vendor specific data before hand
-          // TODO: so the array coming back from the api endpoint will then have to have a flag just saying if it's vendor or not
-          const found = telemetryDataContext.telemetryDataLoader.data?.find(
-            (search) => search.telemetry_manual_id === item.id
-          );
-          if (found) {
-            // existing ID found, update record
-            updateData.push({
-              telemetry_manual_id: String(item.id),
-              latitude: Number(item.latitude),
-              longitude: Number(item.longitude),
-              acquisition_date: moment(moment(item.date).format('YYYY-MM-DD') + ' ' + item.time).format(
-                'YYYY-MM-DD HH:mm:ss'
-              )
-            });
-          } else {
-            // nothing found, create a new record
-            createData.push({
-              deployment_id: String(item.deployment_id),
-              latitude: Number(item.latitude),
-              longitude: Number(item.longitude),
-              acquisition_date: moment(moment(item.date).format('YYYY-MM-DD') + ' ' + item.time).format(
-                'YYYY-MM-DD HH:mm:ss'
-              )
-            });
+          if (item.telemetry_type === 'MANUAL') {
+            const found = telemetryDataContext.telemetryDataLoader.data?.find(
+              (search) => search.telemetry_manual_id === item.id
+            );
+            if (found) {
+              // existing ID found, update record
+              updateData.push({
+                telemetry_manual_id: String(item.id),
+                latitude: Number(item.latitude),
+                longitude: Number(item.longitude),
+                acquisition_date: moment(moment(item.date).format('YYYY-MM-DD') + ' ' + item.time).format(
+                  'YYYY-MM-DD HH:mm:ss'
+                )
+              });
+            } else {
+              // nothing found, create a new record
+              createData.push({
+                deployment_id: String(item.deployment_id),
+                latitude: Number(item.latitude),
+                longitude: Number(item.longitude),
+                acquisition_date: moment(moment(item.date).format('YYYY-MM-DD') + ' ' + item.time).format(
+                  'YYYY-MM-DD HH:mm:ss'
+                )
+              });
+            }
           }
         });
 
@@ -521,10 +521,10 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
           open: true
         });
       } finally {
-        _setIsSaving(false);
+        setIsCurrentlySaving(false);
       }
     },
-    [dialogContext, refreshRecords, _revertAllRowsEditMode] // TODO
+    [dialogContext, refreshRecords, _revertAllRowsEditMode]
   );
 
   const isLoading: boolean = useMemo(() => {
@@ -532,8 +532,8 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
   }, [telemetryDataContext.telemetryDataLoader.isLoading]);
 
   const isSaving: boolean = useMemo(() => {
-    return _isSaving || _isStoppingEdit;
-  }, [_isSaving, _isStoppingEdit]);
+    return isCurrentltSaving || isStoppingEdit;
+  }, [isCurrentltSaving, isStoppingEdit]);
 
   useEffect(() => {
     // Begin fetching telemetry once we have deployments ids
@@ -553,7 +553,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
     }
 
     // Collect rows from the telemetry data loader
-    const totalTelemetry = telemetryDataContext.telemetryDataLoader.data || [];
+    const totalTelemetry = telemetryDataContext.telemetryDataLoader.data ?? [];
 
     const rows: IManualTelemetryTableRow[] = totalTelemetry.map((item) => {
       return {
@@ -583,7 +583,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
       return;
     }
 
-    if (!_isStoppingEdit) {
+    if (!isStoppingEdit) {
       // Stop edit mode not in progress, cannot save yet
       return;
     }
@@ -593,7 +593,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
       return;
     }
 
-    if (_isSaving) {
+    if (isCurrentltSaving) {
       // Saving already in progress
       return;
     }
@@ -604,16 +604,16 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
     }
 
     // All rows have transitioned to view mode
-    _setIsStoppingEdit(false);
+    setIsStoppingEdit(false);
 
     // Start saving records
-    _setIsSaving(true);
+    setIsCurrentlySaving(true);
 
     const rowModels = _muiDataGridApiRef.current.getRowModels();
     const rowValues = Array.from(rowModels, ([_, value]) => value);
 
     _saveRecords(rowValues);
-  }, [_muiDataGridApiRef, _saveRecords, _isSaving, _isStoppingEdit, modifiedRowIds]);
+  }, [_muiDataGridApiRef, _saveRecords, isCurrentltSaving, isStoppingEdit, modifiedRowIds]);
 
   const telemetryTableContext: ITelemetryTableContext = useMemo(
     () => ({

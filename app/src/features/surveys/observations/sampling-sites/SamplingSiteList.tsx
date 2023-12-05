@@ -327,9 +327,9 @@ const SamplingSiteList = () => {
                                       </ListItemIcon>
                                       <ListItemText>
                                         <Typography variant="body2" component="div" color="inherit">
-                                          {`${samplePeriod.start_date} ${samplePeriod.start_time || ''} - ${
+                                          {`${samplePeriod.start_date} ${samplePeriod.start_time ?? ''} - ${
                                             samplePeriod.end_date
-                                          } ${samplePeriod.end_time || ''}`}
+                                          } ${samplePeriod.end_time ?? ''}`}
                                         </Typography>
                                       </ListItemText>
                                     </ListItem>
