@@ -5,11 +5,10 @@ import { ListItemIcon } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
-import { grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
@@ -104,110 +103,102 @@ const ObservationComponent = () => {
         flex="1 1 auto"
         height="100%"
         sx={{
-          overflow: 'hidden',
-          background: grey[100]
+          overflow: 'hidden'
         }}>
-        <Paper square elevation={0}>
-          <Toolbar>
-            <Typography
-              sx={{
-                flexGrow: '1',
-                fontSize: '1.125rem',
-                fontWeight: 700
-              }}>
-              Observations &zwnj;
-              <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
-                ({observationsTableContext.observationCount})
-              </Typography>
+        <Toolbar>
+          <Typography
+            sx={{
+              flexGrow: '1',
+              fontSize: '1.125rem',
+              fontWeight: 700
+            }}>
+            Observations &zwnj;
+            <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
+              ({observationsTableContext.observationCount})
             </Typography>
+          </Typography>
 
-            <Box display="flex" overflow="hidden" gap={1} whiteSpace="nowrap">
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<Icon path={mdiImport} size={1} />}
-                onClick={() => setShowImportDiaolog(true)}>
-                Import
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<Icon path={mdiPlus} size={1} />}
-                onClick={() => observationsTableContext.addObservationRecord()}
-                disabled={observationsTableContext.isSaving}>
-                Add Record
-              </Button>
-              <Collapse in={hasUnsavedChanges} orientation="horizontal" sx={{ mr: -1 }}>
-                <Box whiteSpace="nowrap" display="flex" sx={{ gap: 1, pr: 1 }}>
-                  <LoadingButton
-                    loading={observationsTableContext.isSaving}
-                    variant="contained"
-                    color="primary"
-                    onClick={() => observationsTableContext.saveObservationRecords()}
-                    disabled={observationsTableContext.isSaving}>
-                    Save
-                  </LoadingButton>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={() => setShowConfirmRemoveAllDialog(true)}
-                    disabled={observationsTableContext.isSaving}>
-                    Discard Changes
-                  </Button>
-                </Box>
-              </Collapse>
-              <Box>
-                <IconButton
-                  onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-                    setMenuAnchorEl(event.currentTarget);
-                  }}
-                  size="small"
-                  disabled={numSelectedRows === 0}
-                  aria-label="observation options">
-                  <Icon size={1} path={mdiDotsVertical} />
-                </IconButton>
-                <Menu
-                  anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right'
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right'
-                  }}
-                  id="survey-observations-table-actions-menu"
-                  anchorEl={menuAnchorEl}
-                  open={Boolean(menuAnchorEl)}
-                  onClose={handleCloseMenu}
-                  MenuListProps={{
-                    'aria-labelledby': 'basic-button'
-                  }}>
-                  <MenuItem
-                    onClick={() => {
-                      observationsTableContext.deleteSelectedObservationRecords();
-                      handleCloseMenu();
-                    }}
-                    disabled={observationsTableContext.isSaving}>
-                    <ListItemIcon>
-                      <Icon path={mdiTrashCanOutline} size={1} />
-                    </ListItemIcon>
-                    <Typography variant="inherit">Delete {p(numSelectedRows, 'Observation')}</Typography>
-                  </MenuItem>
-                </Menu>
+          <Stack flexDirection="row" alignItems="center" gap={1} whiteSpace="nowrap">
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Icon path={mdiImport} size={1} />}
+              onClick={() => setShowImportDiaolog(true)}>
+              Import
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Icon path={mdiPlus} size={1} />}
+              onClick={() => observationsTableContext.addObservationRecord()}
+              disabled={observationsTableContext.isSaving}>
+              Add Record
+            </Button>
+            <Collapse in={hasUnsavedChanges} orientation="horizontal" sx={{ mr: -1 }}>
+              <Box whiteSpace="nowrap" display="flex" sx={{ gap: 1, pr: 1 }}>
+                <LoadingButton
+                  loading={observationsTableContext.isSaving}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => observationsTableContext.saveObservationRecords()}
+                  disabled={observationsTableContext.isSaving}>
+                  Save
+                </LoadingButton>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => setShowConfirmRemoveAllDialog(true)}
+                  disabled={observationsTableContext.isSaving}>
+                  Discard Changes
+                </Button>
               </Box>
+            </Collapse>
+            <Box>
+              <IconButton
+                onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                  setMenuAnchorEl(event.currentTarget);
+                }}
+                edge="end"
+                disabled={numSelectedRows === 0}
+                aria-label="observation options">
+                <Icon size={1} path={mdiDotsVertical} />
+              </IconButton>
+              <Menu
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right'
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right'
+                }}
+                id="survey-observations-table-actions-menu"
+                anchorEl={menuAnchorEl}
+                open={Boolean(menuAnchorEl)}
+                onClose={handleCloseMenu}
+                MenuListProps={{
+                  'aria-labelledby': 'basic-button'
+                }}>
+                <MenuItem
+                  onClick={() => {
+                    observationsTableContext.deleteSelectedObservationRecords();
+                    handleCloseMenu();
+                  }}
+                  disabled={observationsTableContext.isSaving}>
+                  <ListItemIcon>
+                    <Icon path={mdiTrashCanOutline} size={1} />
+                  </ListItemIcon>
+                  <Typography variant="inherit">Delete {p(numSelectedRows, 'Observation')}</Typography>
+                </MenuItem>
+              </Menu>
             </Box>
-          </Toolbar>
-        </Paper>
+          </Stack>
+        </Toolbar>
+
         <DataGridValidationAlert validationModel={validationModel} muiDataGridApiRef={_muiDataGridApiRef.current} />
-        <Box
-          display="flex"
-          flexDirection="column"
-          flex="1 1 auto"
-          position="relative"
-          sx={{
-            background: grey[100]
-          }}>
-          <Box position="absolute" width="100%" height="100%" p={1}>
+
+        <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
+          <Box position="absolute" width="100%" height="100%" px={1}>
             <ObservationsTable isLoading={processingRecords} />
           </Box>
         </Box>
