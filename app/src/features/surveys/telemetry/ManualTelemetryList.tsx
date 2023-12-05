@@ -242,8 +242,30 @@ const ManualTelemetryList = () => {
       );
       surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
       // success snack bar
+      dialogContext.setSnackbar({
+        snackbarMessage: (
+          <>
+            <Typography variant="body2" component="div">
+              Deployment Added
+            </Typography>
+          </>
+        ),
+        open: true
+      });
     } catch (error) {
-      // error snack bar
+      dialogContext.setSnackbar({
+        snackbarMessage: (
+          <>
+            <Typography variant="body2" component="div">
+              <strong>Error adding Deployment</strong>
+            </Typography>
+            <Typography variant="body2" component="div">
+              {String(error)}
+            </Typography>
+          </>
+        ),
+        open: true
+      });
     }
   };
 
@@ -251,8 +273,30 @@ const ManualTelemetryList = () => {
     try {
       await updateDeployments(data);
       await updateDevice(data);
+      dialogContext.setSnackbar({
+        snackbarMessage: (
+          <>
+            <Typography variant="body2" component="div">
+              Deployment Updated
+            </Typography>
+          </>
+        ),
+        open: true
+      });
     } catch (error) {
-      // error snack bar
+      dialogContext.setSnackbar({
+        snackbarMessage: (
+          <>
+            <Typography variant="body2" component="div">
+              <strong>Error Deleting Sampling Site</strong>
+            </Typography>
+            <Typography variant="body2" component="div">
+              {String(error)}
+            </Typography>
+          </>
+        ),
+        open: true
+      });
     }
   };
 
