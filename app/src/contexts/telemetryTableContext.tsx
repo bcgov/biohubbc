@@ -154,7 +154,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
   // True if the rows are in the process of transitioning from edit to view mode
   const [isStoppingEdit, setIsStoppingEdit] = useState(false);
   // True if the records are in the process of being saved to the server
-  const [isCurrentltSaving, setIsCurrentlySaving] = useState(false);
+  const [isCurrentlySaving, setIsCurrentlySaving] = useState(false);
   // Stores the current count of telemetry records for this survey
   const [recordCount, setRecordCount] = useState<number>(0);
   // Stores the current validation state of the table
@@ -532,8 +532,8 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
   }, [telemetryDataContext.telemetryDataLoader.isLoading]);
 
   const isSaving: boolean = useMemo(() => {
-    return isCurrentltSaving || isStoppingEdit;
-  }, [isCurrentltSaving, isStoppingEdit]);
+    return isCurrentlySaving || isStoppingEdit;
+  }, [isCurrentlySaving, isStoppingEdit]);
 
   useEffect(() => {
     // Begin fetching telemetry once we have deployments ids
@@ -593,7 +593,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
       return;
     }
 
-    if (isCurrentltSaving) {
+    if (isCurrentlySaving) {
       // Saving already in progress
       return;
     }
@@ -613,7 +613,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
     const rowValues = Array.from(rowModels, ([_, value]) => value);
 
     _saveRecords(rowValues);
-  }, [_muiDataGridApiRef, _saveRecords, isCurrentltSaving, isStoppingEdit, modifiedRowIds]);
+  }, [_muiDataGridApiRef, _saveRecords, isCurrentlySaving, isStoppingEdit, modifiedRowIds]);
 
   const telemetryTableContext: ITelemetryTableContext = useMemo(
     () => ({

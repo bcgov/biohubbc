@@ -9,7 +9,6 @@ import moment from 'moment';
 export interface ManualTelemetryCardProps {
   device_id: number;
   name: string; // should be animal alias
-  taxon: string;
   start_date: string;
   end_date?: string;
 

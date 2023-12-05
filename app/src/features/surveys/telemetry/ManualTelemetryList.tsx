@@ -247,11 +247,9 @@ const ManualTelemetryList = () => {
       // success snack bar
       dialogContext.setSnackbar({
         snackbarMessage: (
-          <>
-            <Typography variant="body2" component="div">
-              Deployment Added
-            </Typography>
-          </>
+          <Typography variant="body2" component="div">
+            Deployment Added
+          </Typography>
         ),
         open: true
       });
@@ -278,11 +276,9 @@ const ManualTelemetryList = () => {
       await updateDevice(data);
       dialogContext.setSnackbar({
         snackbarMessage: (
-          <>
-            <Typography variant="body2" component="div">
-              Deployment Updated
-            </Typography>
-          </>
+          <Typography variant="body2" component="div">
+            Deployment Updated
+          </Typography>
         ),
         open: true
       });
@@ -304,14 +300,14 @@ const ManualTelemetryList = () => {
   };
 
   const updateDeployments = async (data: AnimalDeployment) => {
-    for (const deployment of data.deployments || []) {
+    for (const deployment of data.deployments ?? []) {
       const existingDeployment = deployments?.find((item) => item.deployment_id === deployment.deployment_id);
       if (
         !datesSameNullable(deployment?.attachment_start, existingDeployment?.attachment_start) ||
         !datesSameNullable(deployment?.attachment_end, existingDeployment?.attachment_end)
       ) {
         try {
-          biohubApi.survey.updateDeployment(
+          await biohubApi.survey.updateDeployment(
             surveyContext.projectId,
             surveyContext.surveyId,
             data.survey_critter_id,
@@ -426,7 +422,7 @@ const ManualTelemetryList = () => {
                         }}>
                         {critters?.map((item) => {
                           return (
-                            <MenuItem value={item.survey_critter_id}>
+                            <MenuItem key={item.survey_critter_id} value={item.survey_critter_id}>
                               <Box>
                                 <Typography
                                   sx={{
@@ -530,9 +526,9 @@ const ManualTelemetryList = () => {
                     }}>
                     {critterDeployments?.map((item) => (
                       <ManualTelemetryCard
+                        key={`${item.deployment.device_id}:${item.deployment.attachment_start}`}
                         device_id={item.deployment.device_id}
-                        name={String(item.critter.animal_id || item.critter.taxon)}
-                        taxon={item.critter.taxon}
+                        name={String(item.critter.animal_id ?? item.critter.taxon)}
                         start_date={item.deployment.attachment_start}
                         end_date={item.deployment.attachment_end}
                         onMenu={(event, id) => {
