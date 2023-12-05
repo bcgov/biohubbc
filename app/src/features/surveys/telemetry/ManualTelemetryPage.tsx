@@ -3,14 +3,18 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { grey } from '@mui/material/colors';
 import Paper from '@mui/material/Paper';
 import { SurveyContext } from 'contexts/surveyContext';
-import { TelemetryContextProvider } from 'contexts/telemetryDataContext';
-import { useContext } from 'react';
-import SurveyObservationHeader from '../observations/SurveyObservationHeader';
+import { TelemetryDataContextProvider } from 'contexts/telemetryDataContext';
+import { TelemetryTableContextProvider } from 'contexts/telemetryTableContext';
+import { useContext, useMemo } from 'react';
 import ManualTelemetryComponent from './ManualTelemetryComponent';
+import ManualTelemetryHeader from './ManualTelemetryHeader';
 import ManualTelemetryList from './ManualTelemetryList';
 
 const ManualTelemetryPage = () => {
   const surveyContext = useContext(SurveyContext);
+  const deploymentIds = useMemo(() => {
+    return surveyContext.deploymentDataLoader.data?.map((item) => item.deployment_id);
+  }, [surveyContext.deploymentDataLoader.data]);
 
   if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -18,7 +22,7 @@ const ManualTelemetryPage = () => {
 
   return (
     <Box display="flex" flexDirection="column" height="100%" overflow="hidden" position="relative">
-      <SurveyObservationHeader
+      <ManualTelemetryHeader
         project_id={surveyContext.projectId}
         survey_id={surveyContext.surveyId}
         survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
@@ -31,19 +35,21 @@ const ManualTelemetryPage = () => {
           overflow: 'hidden',
           m: 1
         }}>
-        <Box
-          flex="0 0 auto"
-          width="400px"
-          sx={{
-            borderRight: '1px solid ' + grey[300]
-          }}>
-          <ManualTelemetryList />
-        </Box>
-        <Box flex="1 1 auto" overflow="hidden">
-          <TelemetryContextProvider>
-            <ManualTelemetryComponent />
-          </TelemetryContextProvider>
-        </Box>
+        <TelemetryDataContextProvider>
+          <Box
+            flex="0 0 auto"
+            width="400px"
+            sx={{
+              borderRight: '1px solid ' + grey[300]
+            }}>
+            <ManualTelemetryList />
+          </Box>
+          <Box flex="1 1 auto" overflow="hidden">
+            <TelemetryTableContextProvider deployment_ids={deploymentIds || []}>
+              <ManualTelemetryComponent />
+            </TelemetryTableContextProvider>
+          </Box>
+        </TelemetryDataContextProvider>
       </Paper>
     </Box>
   );

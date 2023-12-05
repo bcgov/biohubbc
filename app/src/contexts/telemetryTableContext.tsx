@@ -1,21 +1,18 @@
+import Typography from '@mui/material/Typography';
 import { GridRowId, GridRowSelectionModel, GridValidRowModel, useGridApiRef } from '@mui/x-data-grid';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
-import { DialogContext } from 'contexts/dialogContext';
-import { createContext, PropsWithChildren, useContext, useState } from 'react';
-import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
-import { SurveyContext } from './surveyContext';
-import { TelemetryDataContext } from './telemetryDataContext';
-import Typography from '@mui/material/Typography';
-import moment from 'moment';
-import { useCallback, useEffect, useMemo } from 'react';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 import { TelemetryTableI18N } from 'constants/i18n';
+import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
+import { ICreateManualTelemetry, IUpdateManualTelemetry, useTelemetryApi } from 'hooks/useTelemetryApi';
+import moment from 'moment';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
+import { TelemetryDataContext } from './telemetryDataContext';
 
 export interface IManualTelemetryRecord {
-  alias: string;
-  device_id: number;
+  deployment_id: string;
   latitude: number;
   longitude: number;
   date: string;
@@ -97,7 +94,7 @@ export type ITelemetryTableContext = {
   /**
    * The state of the validation model
    */
-  validationModel: any;
+  validationModel: TelemetryTableValidationModel;
   /**
    * Reflects the total count of telemetry records for the survey
    */
@@ -130,11 +127,17 @@ export const TelemetryTableContext = createContext<ITelemetryTableContext>({
   setRecordCount: () => undefined
 });
 
-export const TelemetryTableContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
+interface ITelemetryTableContextProviderProps {
+  deployment_ids: string[];
+  children?: React.ReactNode;
+}
+
+export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProviderProps> = (props) => {
+  const { children, deployment_ids } = props;
+
   const _muiDataGridApiRef = useGridApiRef();
-  
-  const biohubApi = useBiohubApi();
-  const surveyContext = useContext(SurveyContext);
+
+  const telemetryApi = useTelemetryApi();
 
   const telemetryDataContext = useContext(TelemetryDataContext);
   const dialogContext = useContext(DialogContext);
@@ -175,7 +178,6 @@ export const TelemetryTableContextProvider = (props: PropsWithChildren<Record<ne
     }) as IManualTelemetryTableRow[];
   };
 
-  
   /**
    * Validates all rows belonging to the table. Returns null if validation passes, otherwise
    * returns the validation model
@@ -185,19 +187,20 @@ export const TelemetryTableContextProvider = (props: PropsWithChildren<Record<ne
     const tableColumns = _muiDataGridApiRef.current.getAllColumns();
 
     const requiredColumns: (keyof IManualTelemetryTableRow)[] = [
-      'alias',
+      'deployment_id',
       'latitude',
       'longitude',
       'date',
-      'time',
-      'device_id'
+      'time'
     ];
 
     const validation = rowValues.reduce((tableModel: TelemetryTableValidationModel, row: IManualTelemetryTableRow) => {
       const rowErrors: TelemetryRowValidationError[] = [];
 
       // Validate missing columns
-      const missingColumns: Set<keyof IManualTelemetryTableRow> = new Set(requiredColumns.filter((column) => !row[column]));
+      const missingColumns: Set<keyof IManualTelemetryTableRow> = new Set(
+        requiredColumns.filter((column) => !row[column])
+      );
 
       Array.from(missingColumns).forEach((field: keyof IManualTelemetryTableRow) => {
         const columnName = tableColumns.find((column) => column.field === field)?.headerName ?? field;
@@ -242,16 +245,9 @@ export const TelemetryTableContextProvider = (props: PropsWithChildren<Record<ne
 
       try {
         if (modifiedRowIdsToDelete.length) {
-          
-          /** TODO
-          const response = await biohubApi.observation.deleteObservationRecords(
-            projectId,
-            surveyId,
-            modifiedRowIdsToDelete
-          );
-          
-          setTelemetryCount(response.supplementaryObservationData.observationCount);
-          */
+          await telemetryApi.deleteManualTelemetry(modifiedRowIdsToDelete);
+          // TODO: this will be fixed once the endpoints have been updated
+          setRecordCount(0);
         }
 
         // Remove row IDs from validation model
@@ -299,7 +295,7 @@ export const TelemetryTableContextProvider = (props: PropsWithChildren<Record<ne
         });
       }
     },
-    [addedRowIds, dialogContext, /* biohubApi.observation, projectId, surveyId */] // TODO
+    [addedRowIds, dialogContext] // TODO
   );
 
   const getSelectedRecords: () => IManualTelemetryTableRow[] = useCallback(() => {
@@ -369,8 +365,7 @@ export const TelemetryTableContextProvider = (props: PropsWithChildren<Record<ne
 
     const newRecord: IManualTelemetryTableRow = {
       id,
-      alias: '',
-      device_id: null as unknown as number,
+      deployment_id: '',
       latitude: null as unknown as number,
       longitude: null as unknown as number,
       date: '',
@@ -446,8 +441,14 @@ export const TelemetryTableContextProvider = (props: PropsWithChildren<Record<ne
   }, [_muiDataGridApiRef, addedRowIds, rows]);
 
   const refreshRecords = useCallback(async () => {
-    return telemetryDataContext.telemetryDataLoader.refresh();
-  }, [ telemetryDataContext.telemetryDataLoader ]);
+    if (telemetryDataContext.telemetryDataLoader.isReady) {
+      telemetryDataContext.telemetryDataLoader.refresh(deployment_ids);
+    }
+
+    if (telemetryDataContext.vendorTelemetryDataLoader.isReady) {
+      telemetryDataContext.vendorTelemetryDataLoader.refresh(deployment_ids);
+    }
+  }, [telemetryDataContext.telemetryDataLoader, telemetryDataContext.vendorTelemetryDataLoader]);
 
   // True if the data grid contains at least 1 unsaved record
   const hasUnsavedChanges = modifiedRowIds.length > 0 || addedRowIds.length > 0;
@@ -458,14 +459,45 @@ export const TelemetryTableContextProvider = (props: PropsWithChildren<Record<ne
   const _saveRecords = useCallback(
     async (rowsToSave: GridValidRowModel[]) => {
       try {
+        const createData: ICreateManualTelemetry[] = [];
+        const updateData: IUpdateManualTelemetry[] = [];
+        // loop through records and decide based on initial data loaded if a record should be created or updated
+        (rowsToSave as IManualTelemetryTableRow[]).forEach((item) => {
+          // TODO: this will need to trim out any vendor specific data before hand
+          // TODO: so the array coming back from the api endpoint will then have to have a flag just saying if it's vendor or not
+          const found = telemetryDataContext.telemetryDataLoader.data?.find(
+            (search) => search.telemetry_manual_id === item.id
+          );
+          if (found) {
+            // existing ID found, update record
+            updateData.push({
+              telemetry_manual_id: String(item.id),
+              latitude: Number(item.latitude),
+              longitude: Number(item.longitude),
+              acquisition_date: moment(moment(item.date).format('YYYY-MM-DD') + ' ' + item.time).format(
+                'YYYY-MM-DD HH:mm:ss'
+              )
+            });
+          } else {
+            // nothing found, create a new record
+            createData.push({
+              deployment_id: String(item.deployment_id),
+              latitude: Number(item.latitude),
+              longitude: Number(item.longitude),
+              acquisition_date: moment(moment(item.date).format('YYYY-MM-DD') + ' ' + item.time).format(
+                'YYYY-MM-DD HH:mm:ss'
+              )
+            });
+          }
+        });
 
-        /** TODO
-        await biohubApi.observation.insertUpdateObservationRecords(
-          projectId,
-          surveyId,
-          rowsToSave as IObservationTableRow[]
-        );
-        */ 
+        if (createData.length) {
+          await telemetryApi.createManualTelemetry(createData);
+        }
+
+        if (updateData.length) {
+          await telemetryApi.updateManualTelemetry(updateData);
+        }
 
         setModifiedRowIds([]);
         setAddedRowIds([]);
@@ -495,7 +527,7 @@ export const TelemetryTableContextProvider = (props: PropsWithChildren<Record<ne
         _setIsSaving(false);
       }
     },
-    [/* biohubApi.observation, projectId, surveyId,*/ dialogContext, refreshRecords, _revertAllRowsEditMode] // TODO
+    [dialogContext, refreshRecords, _revertAllRowsEditMode] // TODO
   );
 
   const isLoading: boolean = useMemo(() => {
@@ -506,38 +538,58 @@ export const TelemetryTableContextProvider = (props: PropsWithChildren<Record<ne
     return _isSaving || _isStoppingEdit;
   }, [_isSaving, _isStoppingEdit]);
 
+  useEffect(() => {
+    // Begin fetching telemetry once we have deployments ids
+    if (deployment_ids.length) {
+      telemetryDataContext.telemetryDataLoader.load(deployment_ids);
+      telemetryDataContext.vendorTelemetryDataLoader.load(deployment_ids);
+    }
+  }, [deployment_ids]);
+
   /**
    * Runs when telemetry context data has changed. This does not occur when records are
    * deleted; Only on initial page load, and whenever records are saved.
    */
   useEffect(() => {
-    if (!telemetryDataContext.telemetryDataLoader.hasLoaded) {
+    if (
+      telemetryDataContext.telemetryDataLoader.isLoading ||
+      telemetryDataContext.vendorTelemetryDataLoader.isLoading
+    ) {
       // Existing telemetry records have not yet loaded
       return;
     }
 
-    if (!telemetryDataContext.telemetryDataLoader.data) {
-      // Existing telemetry data doesn't exist
-      return;
-    }
-
     // Collect rows from the telemetry data loader
+    const telemetry = telemetryDataContext.telemetryDataLoader.data || [];
+    const vendorTelemetry = telemetryDataContext.vendorTelemetryDataLoader.data || [];
+    const totalTelemetry = [...telemetry, ...vendorTelemetry];
 
-    /** TODO
-    const rows: IManualTelemetryTableRow[] = telemetryDataContext.telemetryDataLoader.data.surveyObservations.map(
-      (row: IObservationRecord) => ({ ...row, id: String(row.survey_observation_id) })
-    );
-    */
+    const rows: IManualTelemetryTableRow[] = totalTelemetry.map((item) => {
+      let id = '';
+      if ('telemetry_manual_id' in item) {
+        id = item.telemetry_manual_id;
+      }
 
-    const rows: IManualTelemetryTableRow[] = [] // TODO placeholder; see above
+      if ('telemetry_id' in item) {
+        id = item.telemetry_id;
+      }
+
+      return {
+        id,
+        deployment_id: item.deployment_id,
+        latitude: item.latitude,
+        longitude: item.longitude,
+        date: moment(item.acquisition_date).format('YYYY-MM-DD'),
+        time: moment(item.acquisition_date).format('HH:mm:ss')
+      };
+    });
 
     // Set initial rows for the table context
     setRows(rows);
 
     // Set initial record count
-    // setRecordCount(observationsContext.observationsDataLoader.data.supplementaryObservationData.observationCount); // TODO
-
-  }, [telemetryDataContext.telemetryDataLoader.data, telemetryDataContext.telemetryDataLoader.hasLoaded]);
+    setRecordCount(rows.length);
+  }, [telemetryDataContext.telemetryDataLoader.isLoading, telemetryDataContext.vendorTelemetryDataLoader.isLoading]);
 
   /**
    * Runs when row records are being saved and transitioned from Edit mode to View mode.
@@ -621,9 +673,5 @@ export const TelemetryTableContextProvider = (props: PropsWithChildren<Record<ne
     ]
   );
 
-  return (
-    <TelemetryTableContext.Provider value={telemetryTableContext}>
-      {props.children}
-    </TelemetryTableContext.Provider>
-  );
+  return <TelemetryTableContext.Provider value={telemetryTableContext}>{children}</TelemetryTableContext.Provider>;
 };

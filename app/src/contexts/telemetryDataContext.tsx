@@ -1,25 +1,25 @@
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
-import { IManualTelemetry, useTelemetryApi } from 'hooks/useTelemetryApi';
+import { IManualTelemetry, IVendorTelemetry, useTelemetryApi } from 'hooks/useTelemetryApi';
 import { createContext, PropsWithChildren } from 'react';
 
 export type ITelemetryDataContext = {
-  telemetryDataLoader: DataLoader<[], IManualTelemetry[], unknown>;
-  vendorTelemetryDataLoader: DataLoader<[], IManualTelemetry[], unknown>;
+  telemetryDataLoader: DataLoader<[ids: string[]], IManualTelemetry[], unknown>;
+  vendorTelemetryDataLoader: DataLoader<[ids: string[]], IVendorTelemetry[], unknown>;
 };
 
 export const TelemetryDataContext = createContext<ITelemetryDataContext>({
-  telemetryDataLoader: {} as DataLoader<never, IManualTelemetry[], unknown>,
-  vendorTelemetryDataLoader: {} as DataLoader<never, IManualTelemetry[], unknown>
+  telemetryDataLoader: {} as DataLoader<[ids: string[]], IManualTelemetry[], unknown>,
+  vendorTelemetryDataLoader: {} as DataLoader<[ids: string[]], IVendorTelemetry[], unknown>
 });
 
 export const TelemetryDataContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
   // const { projectId, surveyId } = useContext(SurveyContext);
   const telemetryApi = useTelemetryApi();
 
-  const telemetryDataLoader = useDataLoader(() => telemetryApi.getManualTelemetry());
-  const vendorTelemetryDataLoader = useDataLoader(() => telemetryApi.getVendorTelemetry());
+  const telemetryDataLoader = useDataLoader(telemetryApi.getManualTelemetry);
+  const vendorTelemetryDataLoader = useDataLoader(telemetryApi.getVendorTelemetry);
 
-  telemetryDataLoader.load();
+  // telemetryDataLoader.load();
 
   const telemetryDataContext: ITelemetryDataContext = {
     telemetryDataLoader,

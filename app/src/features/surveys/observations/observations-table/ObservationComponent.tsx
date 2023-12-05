@@ -26,7 +26,7 @@ import { useContext, useState } from 'react';
 import { pluralize as p } from 'utils/Utils';
 
 const ObservationComponent = () => {
-  const [showImportDiaolog, setShowImportDiaolog] = useState<boolean>(false);
+  const [showImportDialog, setShowImportDialog] = useState<boolean>(false);
   const [processingRecords, setProcessingRecords] = useState<boolean>(false);
   const [menuAnchorEl, setMenuAnchorEl] = useState<Element | null>(null);
   const [showConfirmRemoveAllDialog, setShowConfirmRemoveAllDialog] = useState<boolean>(false);
@@ -47,7 +47,7 @@ const ObservationComponent = () => {
 
   const handleImportObservations = async (file: File) => {
     return biohubApi.observation.uploadCsvForImport(projectId, surveyId, file).then((response) => {
-      setShowImportDiaolog(false);
+      setShowImportDialog(false);
       setProcessingRecords(true);
       biohubApi.observation
         .processCsvSubmission(projectId, surveyId, response.submissionId)
@@ -75,9 +75,9 @@ const ObservationComponent = () => {
   return (
     <>
       <FileUploadDialog
-        open={showImportDiaolog}
+        open={showImportDialog}
         dialogTitle="Import Observation CSV"
-        onClose={() => setShowImportDiaolog(false)}
+        onClose={() => setShowImportDialog(false)}
         onUpload={handleImportObservations}
         FileUploadProps={{
           dropZoneProps: { maxNumFiles: 1, acceptedFileExtensions: '.csv' },
@@ -126,7 +126,7 @@ const ObservationComponent = () => {
                 variant="contained"
                 color="primary"
                 startIcon={<Icon path={mdiImport} size={1} />}
-                onClick={() => setShowImportDiaolog(true)}>
+                onClick={() => setShowImportDialog(true)}>
                 Import
               </Button>
               <Button
