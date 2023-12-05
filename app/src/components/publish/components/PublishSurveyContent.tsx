@@ -9,16 +9,12 @@ import CustomTextField from 'components/fields/CustomTextField';
 import { useFormikContext } from 'formik';
 import { ISubmitSurvey } from '../PublishSurveyDialog';
 
-export interface IPublishSurveyIdContentProps {
-  publishDate: string | unknown;
-}
-
 /**
  * Survey Publish Content.
  *
  * @return {*}
  */
-const PublishSurveyContent = (props: IPublishSurveyIdContentProps) => {
+const PublishSurveyContent = () => {
   const { values, setFieldValue } = useFormikContext<ISubmitSurvey>();
 
   return (
@@ -41,9 +37,8 @@ const PublishSurveyContent = (props: IPublishSurveyIdContentProps) => {
           <a
             href="https://www2.gov.bc.ca/gov/content/environment/natural-resource-stewardship/laws-policies-standards-guidance/data-information-security"
             target="_blank">
-            Species and Ecosystems Data and Information Security (SEDIS) Policy
+            Species and Ecosystems Data and Information Security (SEDIS) Policy.
           </a>
-          .
         </Typography>
       </Box>
 

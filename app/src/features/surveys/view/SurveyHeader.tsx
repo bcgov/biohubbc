@@ -169,109 +169,107 @@ const SurveyHeader = () => {
           </Stack>
         }
         buttonJSX={
-          <>
-            <ProjectRoleGuard
-              validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-              validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-              <Stack flexDirection="row" alignItems="center" gap={1}>
-                {BIOHUB_FEATURE_FLAG && (
-                  <>
-                    <Typography
-                      component="span"
-                      variant="subtitle2"
-                      fontSize="0.9rem"
-                      fontWeight="700"
-                      sx={{
-                        flex: '0 0 auto',
-                        mr: { sm: 0, md: 0.5 },
-                        order: { sm: 3, md: 0 }
-                      }}>
-                      {publishDate ? (
-                        <>
-                          <Typography component="span" color="textSecondary" variant="inherit" sx={{ mr: 0.5 }}>
-                            Published:
-                          </Typography>
-                          <Typography component="span" variant="inherit">
-                            {publishDate}
-                          </Typography>
-                        </>
-                      ) : (
-                        <Typography component="span" color="textSecondary" variant="inherit" sx={{ mr: 1 }}>
-                          Never Published
+          <ProjectRoleGuard
+            validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+            <Stack flexDirection="row" alignItems="center" gap={1}>
+              {BIOHUB_FEATURE_FLAG && (
+                <>
+                  <Typography
+                    component="span"
+                    variant="subtitle2"
+                    fontSize="0.9rem"
+                    fontWeight="700"
+                    sx={{
+                      flex: '0 0 auto',
+                      mr: { sm: 0, md: 0.5 },
+                      order: { sm: 3, md: 0 }
+                    }}>
+                    {publishDate ? (
+                      <>
+                        <Typography component="span" color="textSecondary" variant="inherit" sx={{ mr: 0.5 }}>
+                          Published:
                         </Typography>
-                      )}
-                    </Typography>
-                    <Button
-                      title="Submit Survey Data and Documents"
-                      color="primary"
-                      variant="contained"
-                      onClick={() => setPublishSurveyDialogOpen(true)}
-                      style={{ minWidth: '7rem' }}>
-                      Publish
-                    </Button>
-                  </>
-                )}
-                <Button
-                  component={RouterLink}
-                  to={`/admin/projects/${projectContext.projectId}/surveys/${surveyContext.surveyId}/edit`}
-                  variant="outlined"
-                  color="primary"
-                  startIcon={<Icon path={mdiPencil} size={0.75} />}>
-                  Edit
-                </Button>
-              </Stack>
-
+                        <Typography component="span" variant="inherit">
+                          {publishDate}
+                        </Typography>
+                      </>
+                    ) : (
+                      <Typography component="span" color="textSecondary" variant="inherit" sx={{ mr: 1 }}>
+                        Never Published
+                      </Typography>
+                    )}
+                  </Typography>
+                  <Button
+                    title="Submit Survey Data and Documents"
+                    color="primary"
+                    variant="contained"
+                    onClick={() => setPublishSurveyDialogOpen(true)}
+                    style={{ minWidth: '7rem' }}>
+                    Publish
+                  </Button>
+                </>
+              )}
               <Button
-                sx={{ display: 'none' }}
-                id="survey_settings_button"
-                aria-label="Survey Settings"
-                aria-controls="surveySettingsMenu"
-                aria-haspopup="true"
+                component={RouterLink}
+                to={`/admin/projects/${projectContext.projectId}/surveys/${surveyContext.surveyId}/edit`}
                 variant="outlined"
                 color="primary"
-                data-testid="settings-survey-button"
-                startIcon={<Icon path={mdiCog} size={1} />}
-                endIcon={<Icon path={mdiChevronDown} size={1} />}
-                onClick={(event: React.MouseEvent<HTMLButtonElement>) => setMenuAnchorEl(event.currentTarget)}>
-                Settings
+                startIcon={<Icon path={mdiPencil} size={0.75} />}>
+                Edit
               </Button>
+            </Stack>
 
-              <Menu
-                id="surveySettingsMenu"
-                aria-labelledby="survey_settings_button"
-                style={{ marginTop: '8px' }}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right'
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right'
-                }}
-                keepMounted
-                anchorEl={menuAnchorEl}
-                open={Boolean(menuAnchorEl)}
-                onClose={() => setMenuAnchorEl(null)}>
-                <MenuItem onClick={() => history.push('edit')}>
+            <Button
+              sx={{ display: 'none' }}
+              id="survey_settings_button"
+              aria-label="Survey Settings"
+              aria-controls="surveySettingsMenu"
+              aria-haspopup="true"
+              variant="outlined"
+              color="primary"
+              data-testid="settings-survey-button"
+              startIcon={<Icon path={mdiCog} size={1} />}
+              endIcon={<Icon path={mdiChevronDown} size={1} />}
+              onClick={(event: React.MouseEvent<HTMLButtonElement>) => setMenuAnchorEl(event.currentTarget)}>
+              Settings
+            </Button>
+
+            <Menu
+              id="surveySettingsMenu"
+              aria-labelledby="survey_settings_button"
+              style={{ marginTop: '8px' }}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right'
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right'
+              }}
+              keepMounted
+              anchorEl={menuAnchorEl}
+              open={Boolean(menuAnchorEl)}
+              onClose={() => setMenuAnchorEl(null)}>
+              <MenuItem onClick={() => history.push('edit')}>
+                <ListItemIcon>
+                  <Icon path={mdiPencil} size={1} />
+                </ListItemIcon>
+                <Typography variant="inherit">Edit Survey Details</Typography>
+              </MenuItem>
+              {enableDeleteSurveyButton && (
+                <MenuItem
+                  data-testid="delete-survey-button"
+                  onClick={showDeleteSurveyDialog}
+                  disabled={!enableDeleteSurveyButton}>
                   <ListItemIcon>
-                    <Icon path={mdiPencil} size={1} />
+                    <Icon path={mdiTrashCanOutline} size={1} />
                   </ListItemIcon>
-                  <Typography variant="inherit">Edit Survey Details</Typography>
+                  <Typography variant="inherit">Delete Survey</Typography>
                 </MenuItem>
-                {enableDeleteSurveyButton && (
-                  <MenuItem
-                    data-testid="delete-survey-button"
-                    onClick={showDeleteSurveyDialog}
-                    disabled={!enableDeleteSurveyButton}>
-                    <ListItemIcon>
-                      <Icon path={mdiTrashCanOutline} size={1} />
-                    </ListItemIcon>
-                    <Typography variant="inherit">Delete Survey</Typography>
-                  </MenuItem>
-                )}
-              </Menu>
-            </ProjectRoleGuard>
-          </>
+              )}
+            </Menu>
+          </ProjectRoleGuard>
         }
       />
 

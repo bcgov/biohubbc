@@ -72,7 +72,7 @@ const PublishSurveyDialog = (props: IPublishSurveyIdDialogProps) => {
     dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
   };
 
-  const [formikRef] = useState(useRef<FormikProps<ISubmitSurvey>>(null));
+  const formikRef = useRef<FormikProps<ISubmitSurvey>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
@@ -143,7 +143,7 @@ const PublishSurveyDialog = (props: IPublishSurveyIdDialogProps) => {
                 {SubmitSurveyBiohubI18N.submitSurveyBiohubDialogTitle}
               </DialogTitle>
               <DialogContent>
-                <PublishSurveyIdContent publishDate={publishDate} />
+                <PublishSurveyIdContent />
               </DialogContent>
               <DialogActions>
                 <Typography component="span" variant="subtitle2" fontWeight="700" sx={{ mr: 2 }}>

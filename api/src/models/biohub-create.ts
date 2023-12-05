@@ -55,7 +55,7 @@ export class PostSurveyToBiohubObject {
     this.id = surveyData.uuid;
     this.type = BiohubFeatureType.DATASET;
     this.properties = {
-      additional_information: additionalInformation || null,
+      additional_information: additionalInformation ?? null,
       survey_id: surveyData.id,
       project_id: surveyData.project_id,
       name: surveyData.survey_name,
