@@ -45,7 +45,7 @@ const ManualTelemetryPage = () => {
             <ManualTelemetryList />
           </Box>
           <Box flex="1 1 auto" overflow="hidden">
-            <TelemetryTableContextProvider deployment_ids={deploymentIds || []}>
+            <TelemetryTableContextProvider deployment_ids={deploymentIds ?? []}>
               <ManualTelemetryComponent />
             </TelemetryTableContextProvider>
           </Box>

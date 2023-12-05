@@ -54,6 +54,7 @@ export const useTelemetryApi = () => {
 
   const getAllTelemetry = async (ids: string[]): Promise<ITelemetry[]> => {
     const { data } = await axios.post<ITelemetry[]>('/api/telemetry/deployments', ids);
+    console.log('API ENDPOINT FINISHED', data.length);
     return data;
   };
 
