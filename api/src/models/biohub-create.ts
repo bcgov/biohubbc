@@ -14,6 +14,7 @@ export class PostSurveyObservationToBiohubObject {
   id: string;
   type: string;
   properties: object;
+  features: [];
 
   constructor(observationRecord: ObservationRecord) {
     defaultLog.debug({ label: 'PostSurveyObservationToBiohubObject', message: 'params', observationRecord });
@@ -22,7 +23,7 @@ export class PostSurveyObservationToBiohubObject {
     this.type = BiohubFeatureType.OBSERVATION;
     this.properties = {
       surveyId: observationRecord.survey_id,
-      wldtaxonomic_units_id: observationRecord.wldtaxonomic_units_id,
+      taxonomy: observationRecord.wldtaxonomic_units_id,
       survey_sample_site_id: observationRecord?.survey_sample_site_id || null,
       survey_sample_method_id: observationRecord?.survey_sample_method_id || null,
       survey_sample_period_id: observationRecord?.survey_sample_period_id || null,
@@ -32,6 +33,7 @@ export class PostSurveyObservationToBiohubObject {
       observation_time: observationRecord.observation_time,
       observation_date: observationRecord.observation_date
     };
+    this.features = [];
   }
 }
 
@@ -53,14 +55,14 @@ export class PostSurveyToBiohubObject {
     this.id = surveyData.uuid;
     this.type = BiohubFeatureType.DATASET;
     this.properties = {
-      additionalInformation: additionalInformation || null,
-      surveyId: surveyData.id,
-      projectId: surveyData.project_id,
+      additional_information: additionalInformation || null,
+      survey_id: surveyData.id,
+      project_id: surveyData.project_id,
       name: surveyData.survey_name,
-      startDate: surveyData.start_date,
-      endDate: surveyData.end_date,
-      surveyTypes: surveyData.survey_types,
-      revisionCount: surveyData.revision_count,
+      start_date: surveyData.start_date,
+      end_date: surveyData.end_date,
+      survey_types: surveyData.survey_types,
+      revision_count: surveyData.revision_count,
       geometry: surveyData.geometry
     };
     this.features = observationRecords.map((observation) => new PostSurveyObservationToBiohubObject(observation));
