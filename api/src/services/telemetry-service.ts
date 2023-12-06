@@ -9,7 +9,7 @@ import {
   validateCsvFile
 } from '../utils/xlsx-utils/worksheet-utils';
 import { BctwService } from './bctw-service';
-import { CritterbaseService, ICritterbaseUser } from './critterbase-service';
+import { ICritterbaseUser } from './critterbase-service';
 import { DBService } from './db-service';
 import { SurveyCritterService } from './survey-critter-service';
 
@@ -82,22 +82,14 @@ export class TelemetryService extends DBService {
 
     // step 7 fetch survey deployments
     const bctwService = new BctwService(user);
-    const critterbaseService = new CritterbaseService(user);
     const critterService = new SurveyCritterService(this.connection);
 
     const critters = await critterService.getCrittersInSurvey(submission.survey_id);
     const critterIds = critters.map((item) => item.critterbase_critter_id);
-    const result = await critterbaseService.filterCritters(
-      { critter_ids: { body: critterIds, negate: false } },
-      'detailed'
-    );
-    const critterDictionary: { [key: string]: string } = {};
-
-    result.forEach((item: any) => {
-      critterDictionary[item.critter_id] = item.animal_id;
-    });
 
     const deployments = await bctwService.getDeploymentsByCritterId(critterIds);
+
+    await bctwService.createManualTelemetry([]);
 
     // step 8 create dictionary of deployments (alias-device_id)
     // step 9 map data from csv/ dictionary into telemetry records
