@@ -1,4 +1,4 @@
-import { mdiCalendarRangeOutline, mdiChevronDown, mdiCogOutline, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiChevronDown, mdiCog, mdiPencil, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
@@ -7,13 +7,15 @@ import Link from '@mui/material/Link';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import PublishSurveyDialog from 'components/publish/PublishSurveyDialog';
+import PublishSurveyIdDialog from 'components/publish/PublishSurveyDialog';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteSurveyI18N } from 'constants/i18n';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { ConfigContext } from 'contexts/configContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -35,6 +37,7 @@ import SurveyBaseHeader from './components/SurveyBaseHeader';
 const SurveyHeader = () => {
   const surveyContext = useContext(SurveyContext);
   const projectContext = useContext(ProjectContext);
+  const configContext = useContext(ConfigContext);
 
   const surveyWithDetails = surveyContext.surveyDataLoader.data;
   const projectWithDetails = projectContext.projectDataLoader.data;
@@ -126,6 +129,10 @@ const SurveyHeader = () => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
+  const publishDate = surveyWithDetails.surveySupplementaryData.survey_metadata_publish?.event_timestamp.split(' ')[0];
+
+  const BIOHUB_FEATURE_FLAG = configContext?.BIOHUB_FEATURE_FLAG;
+
   return (
     <>
       <SurveyBaseHeader
@@ -146,46 +153,88 @@ const SurveyHeader = () => {
           </Breadcrumbs>
         }
         subTitle={
-          <Typography
-            component="span"
-            variant="subtitle1"
-            color="textSecondary"
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              mt: 1,
-              '& svg': {
-                color: 'text.secondary'
-              }
-            }}>
-            <Icon path={mdiCalendarRangeOutline} size={1} />
-            <Typography component="span" sx={{ ml: 1.5 }}>
-              {getFormattedDateRangeString(
-                DATE_FORMAT.ShortMediumDateFormat,
-                surveyWithDetails.surveyData.survey_details.start_date,
-                surveyWithDetails.surveyData.survey_details.end_date
-              )}
-            </Typography>
-          </Typography>
+          <Stack flexDirection="row" alignItems="center" gap={0.25} mt={1} mb={0.25}>
+            <Stack flexDirection="row" alignItems="center">
+              <Typography component="span" color="textSecondary" sx={{ mr: 1 }}>
+                Timeline:
+              </Typography>
+              <Typography component="span">
+                {getFormattedDateRangeString(
+                  DATE_FORMAT.ShortMediumDateFormat,
+                  surveyWithDetails.surveyData.survey_details.start_date,
+                  surveyWithDetails.surveyData.survey_details.end_date
+                )}
+              </Typography>
+            </Stack>
+          </Stack>
         }
         buttonJSX={
-          <>
-            <ProjectRoleGuard
-              validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-              validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <ProjectRoleGuard
+            validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+            <Stack flexDirection="row" alignItems="center" gap={1}>
+              {BIOHUB_FEATURE_FLAG && (
+                <>
+                  <Typography
+                    component="span"
+                    variant="subtitle2"
+                    fontSize="0.9rem"
+                    fontWeight="700"
+                    sx={{
+                      flex: '0 0 auto',
+                      mr: { sm: 0, md: 0.5 },
+                      order: { sm: 3, md: 0 }
+                    }}>
+                    {publishDate ? (
+                      <>
+                        <Typography component="span" color="textSecondary" variant="inherit" sx={{ mr: 0.5 }}>
+                          Published:
+                        </Typography>
+                        <Typography component="span" variant="inherit">
+                          {publishDate}
+                        </Typography>
+                      </>
+                    ) : (
+                      <Typography component="span" color="textSecondary" variant="inherit" sx={{ mr: 1 }}>
+                        Never Published
+                      </Typography>
+                    )}
+                  </Typography>
+                  <Button
+                    title="Submit Survey Data and Documents"
+                    color="primary"
+                    variant="contained"
+                    onClick={() => setPublishSurveyDialogOpen(true)}
+                    style={{ minWidth: '7rem' }}>
+                    Publish
+                  </Button>
+                </>
+              )}
               <Button
-                id="survey_settings_button"
-                aria-label="Survey Settings"
-                aria-controls="surveySettingsMenu"
-                aria-haspopup="true"
+                component={RouterLink}
+                to={`/admin/projects/${projectContext.projectId}/surveys/${surveyContext.surveyId}/edit`}
                 variant="outlined"
                 color="primary"
-                startIcon={<Icon path={mdiCogOutline} size={1} />}
-                endIcon={<Icon path={mdiChevronDown} size={1} />}
-                onClick={(event: React.MouseEvent<HTMLButtonElement>) => setMenuAnchorEl(event.currentTarget)}>
-                Settings
+                startIcon={<Icon path={mdiPencil} size={0.75} />}>
+                Edit
               </Button>
-            </ProjectRoleGuard>
+            </Stack>
+
+            <Button
+              sx={{ display: 'none' }}
+              id="survey_settings_button"
+              aria-label="Survey Settings"
+              aria-controls="surveySettingsMenu"
+              aria-haspopup="true"
+              variant="outlined"
+              color="primary"
+              data-testid="settings-survey-button"
+              startIcon={<Icon path={mdiCog} size={1} />}
+              endIcon={<Icon path={mdiChevronDown} size={1} />}
+              onClick={(event: React.MouseEvent<HTMLButtonElement>) => setMenuAnchorEl(event.currentTarget)}>
+              Settings
+            </Button>
+
             <Menu
               id="surveySettingsMenu"
               aria-labelledby="survey_settings_button"
@@ -204,7 +253,7 @@ const SurveyHeader = () => {
               onClose={() => setMenuAnchorEl(null)}>
               <MenuItem onClick={() => history.push('edit')}>
                 <ListItemIcon>
-                  <Icon path={mdiPencilOutline} size={1} />
+                  <Icon path={mdiPencil} size={1} />
                 </ListItemIcon>
                 <Typography variant="inherit">Edit Survey Details</Typography>
               </MenuItem>
@@ -220,11 +269,11 @@ const SurveyHeader = () => {
                 </MenuItem>
               )}
             </Menu>
-          </>
+          </ProjectRoleGuard>
         }
       />
 
-      <PublishSurveyDialog open={publishSurveyDialogOpen} onClose={() => setPublishSurveyDialogOpen(false)} />
+      <PublishSurveyIdDialog open={publishSurveyDialogOpen} onClose={() => setPublishSurveyDialogOpen(false)} />
     </>
   );
 };

@@ -14,6 +14,9 @@ parameters:
   - name: HOST
   - name: CHANGE_ID
     value: '0'
+  - name: REACT_APP_BIOHUB_FEATURE_FLAG
+    description: Flag to indicate if the application has biohub specific features enabled
+    value: 'false'
   - name: REACT_APP_API_HOST
     description: API host for application backend
     value: ''
@@ -135,6 +138,8 @@ objects:
                       name: ${OBJECT_STORE_SECRETS}
                 - name: NODE_ENV
                   value: ${NODE_ENV}
+                - name: REACT_APP_BIOHUB_FEATURE_FLAG
+                  value: ${REACT_APP_BIOHUB_FEATURE_FLAG}
                 - name: REACT_APP_NODE_ENV
                   value: ${REACT_APP_NODE_ENV}
                 - name: VERSION

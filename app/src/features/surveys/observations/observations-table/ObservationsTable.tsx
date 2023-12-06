@@ -1,11 +1,7 @@
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import Box from '@mui/material/Box';
 import { cyan, grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
-import Paper from '@mui/material/Paper';
-import Skeleton from '@mui/material/Skeleton';
-import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DataGrid, GridCellParams, GridColDef } from '@mui/x-data-grid';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
@@ -16,6 +12,7 @@ import TaxonomyDataGridEditCell from 'components/data-grid/taxonomy/TaxonomyData
 import TaxonomyDataGridViewCell from 'components/data-grid/taxonomy/TaxonomyDataGridViewCell';
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
 import TimePickerDataGrid from 'components/data-grid/TimePickerDataGrid';
+import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { CodesContext } from 'contexts/codesContext';
 import { ObservationsContext } from 'contexts/observationsContext';
@@ -51,55 +48,6 @@ type ISamplePeriodOption = {
 export interface ISpeciesObservationTableProps {
   isLoading?: boolean;
 }
-
-const ObservationSkeletonRow = () => (
-  <Stack
-    flexDirection="row"
-    gap={2}
-    sx={{
-      py: 1.5,
-      px: 2,
-      height: 56,
-      overflow: 'hidden',
-      '&:not(:last-of-type)': {
-        borderBottom: '1px solid ' + grey[300]
-      },
-      '& .MuiSkeleton-root:not(:first-of-type)': {
-        flex: '1 1 auto'
-      }
-    }}>
-    <Skeleton width={20} sx={{ flex: '0 0 auto' }} />
-    <Skeleton />
-    <Skeleton />
-    <Skeleton />
-    <Skeleton />
-    <Skeleton />
-    <Skeleton />
-    <Skeleton />
-  </Stack>
-);
-
-const ObservationTableSkeletonLoader = () => {
-  return (
-    <Box
-      sx={{
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0,
-        zIndex: '999',
-        p: 1,
-        background: '#fff'
-      }}>
-      <Paper elevation={0}>
-        <ObservationSkeletonRow />
-        <ObservationSkeletonRow />
-        <ObservationSkeletonRow />
-      </Paper>
-    </Box>
-  );
-};
 
 const ObservationsTable = (props: ISpeciesObservationTableProps) => {
   const location = useLocation();
@@ -571,7 +519,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
 
   return (
     <>
-      {isLoading && <ObservationTableSkeletonLoader />}
+      {isLoading && <SkeletonTable />}
 
       <DataGrid
         checkboxSelection

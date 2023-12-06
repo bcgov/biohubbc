@@ -47,7 +47,7 @@ const StaticLayers: React.FC<React.PropsWithChildren<IStaticLayersProps>> = (pro
     if (!layer.features?.length) {
       return;
     }
-    const layerColors = layer.layerColors || { color: '#3388ff', fillColor: '#3388ff' };
+    const layerColors = layer.layerColors || { color: '#1f7dff', fillColor: '#1f7dff' };
 
     layerControls.push(
       <LayersControl.Overlay checked={true} name={layer.layerName} key={`static-layer-${layer.layerName}`}>

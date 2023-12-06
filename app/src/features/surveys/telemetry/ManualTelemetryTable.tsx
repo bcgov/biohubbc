@@ -8,7 +8,7 @@ import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/Auto
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
 import TimePickerDataGrid from 'components/data-grid/TimePickerDataGrid';
-import { GridTableRowSkeleton } from 'components/loading/SkeletonLoaders';
+import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SurveyContext } from 'contexts/surveyContext';
 import { IManualTelemetryTableRow, TelemetryTableContext } from 'contexts/telemetryTableContext';
@@ -324,7 +324,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
       rowSelectionModel={telemetryTableContext.rowSelectionModel}
       getRowHeight={() => 'auto'}
       slots={{
-        loadingOverlay: GridTableRowSkeleton
+        loadingOverlay: SkeletonTable
       }}
       sx={{
         background: grey[50],

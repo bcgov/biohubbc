@@ -292,9 +292,9 @@ export const SubmitProjectBiohubI18N = {
 };
 
 export const SubmitSurveyBiohubI18N = {
-  submitSurveyBiohubDialogTitle: 'Submit Survey Information',
-  submitSurveyBiohubSuccessDialogTitle: 'Survey data submitted',
-  submitSurveyBiohubSuccessDialogText: 'Thank you for submitting your survey data to Biohub.',
+  submitSurveyBiohubDialogTitle: 'Publish Survey to BioHub BC',
+  submitSurveyBiohubSuccessDialogTitle: 'Survey published',
+  submitSurveyBiohubSuccessDialogText: 'Your survey has successfully been published to BioHub BC.',
   submitSurveyBiohubNoSubmissionDataDialogTitle: 'No survey data to submit',
   submitSurveyBiohubNoSubmissionDataDialogText: 'No new data or information has been added to this survey to submit.'
 };
@@ -399,7 +399,7 @@ export const ObservationsTableI18N = {
   removeSingleRecordDialogTitle: 'Delete record?',
   removeSingleRecordDialogText: 'Are you sure you want to delete this record? This action cannot be undone.',
   removeSingleRecordButtonText: 'Delete Record',
-  removeMultipleRecordsDialogTitle: (count: number) => `Delete ${count} records?`,
+  removeMultipleRecordsDialogTitle: (count: number) => `Delete ${count} ${p(count, 'record')}?`,
   removeMultipleRecordsDialogText: 'Are you sure you want to delete these records? This action cannot be undone.',
   removeMultipleRecordsButtonText: 'Delete Records',
   submitRecordsErrorDialogTitle: 'Error Updating Observation Records',
@@ -411,7 +411,7 @@ export const ObservationsTableI18N = {
   saveRecordsSuccessSnackbarMessage: 'Observations updated successfully.',
   deleteSingleRecordSuccessSnackbarMessage: 'Deleted observation record successfully.',
   deleteMultipleRecordSuccessSnackbarMessage: (count: number) =>
-    `Deleted ${count} ${p(count, 'observation record')} successfully.`
+    `Deleted ${count} observation ${p(count, 'record')} successfully.`
 };
 
 export const TelemetryTableI18N = {
@@ -420,7 +420,7 @@ export const TelemetryTableI18N = {
   removeSingleRecordDialogTitle: 'Delete record?',
   removeSingleRecordDialogText: 'Are you sure you want to delete this record? This action cannot be undone.',
   removeSingleRecordButtonText: 'Delete Record',
-  removeMultipleRecordsDialogTitle: (count: number) => `Delete ${count} records?`,
+  removeMultipleRecordsDialogTitle: (count: number) => `Delete ${count} ${p(count, 'record')}?`,
   removeMultipleRecordsDialogText: 'Are you sure you want to delete these records? This action cannot be undone.',
   removeMultipleRecordsButtonText: 'Delete Records',
   submitRecordsErrorDialogTitle: 'Error Updating Telemetry Records',
@@ -432,5 +432,5 @@ export const TelemetryTableI18N = {
   saveRecordsSuccessSnackbarMessage: 'Telemetry updated successfully.',
   deleteSingleRecordSuccessSnackbarMessage: 'Deleted telemetry record successfully.',
   deleteMultipleRecordSuccessSnackbarMessage: (count: number) =>
-    `Deleted ${count} ${p(count, 'telemetry record')} successfully.`
+    `Deleted ${count} telemetry ${p(count, 'record')} successfully.`
 };

@@ -1,4 +1,4 @@
-import { mdiPencilOutline } from '@mdi/js';
+import { mdiCog } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, Button, Divider, Toolbar, Typography } from '@mui/material';
 import ComponentDialog from 'components/dialog/ComponentDialog';
@@ -122,7 +122,7 @@ const SurveyAnimals: React.FC = () => {
           title="Manage Marked and Known Animals"
           color="primary"
           variant="contained"
-          startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
+          startIcon={<Icon path={mdiCog} size={0.75} />}>
           Manage Animals
         </Button>
       </Toolbar>

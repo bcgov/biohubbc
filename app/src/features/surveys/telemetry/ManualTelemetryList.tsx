@@ -514,7 +514,7 @@ const ManualTelemetryList = () => {
                 </Toolbar>
                 <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
                   {/* Display list of skeleton components while waiting for a response */}
-                  <SkeletonList isLoading={surveyContext.deploymentDataLoader.isLoading} />
+                  {surveyContext.deploymentDataLoader.isLoading && <SkeletonList />}
                   <Box
                     sx={{
                       position: 'absolute',

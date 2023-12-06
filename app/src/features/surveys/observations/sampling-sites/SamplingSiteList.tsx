@@ -7,6 +7,7 @@ import {
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Paper } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -43,6 +44,7 @@ const SamplingSiteList = () => {
 
   useEffect(() => {
     surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
@@ -196,9 +198,9 @@ const SamplingSiteList = () => {
                 background: '#fff',
                 zIndex: 2
               }}>
-              <SkeletonList
-                isLoading={surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading}
-              />
+              <Paper elevation={0} sx={{ overflow: 'hidden' }}>
+                <SkeletonList />
+              </Paper>
             </Box>
           ) : (
             <Box
