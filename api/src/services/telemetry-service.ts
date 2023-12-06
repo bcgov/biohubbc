@@ -56,8 +56,7 @@ export class TelemetryService extends DBService {
     // step 4 validate csv
     if (mediaFile.mimetype !== 'text/csv') {
       throw new Error(
-        'Failed to process file for importing telemetry. Incorrect file type. Expected CSV received ' +
-          mediaFile.mimetype
+        `Failed to process file for importing telemetry. Incorrect file type. Expected CSV received ${mediaFile.mimetype}`
       );
     }
 
