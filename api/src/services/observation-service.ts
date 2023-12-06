@@ -27,8 +27,8 @@ const observationCSVColumnValidator = {
   columnNames: ['SPECIES_TAXONOMIC_ID', 'COUNT', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
   columnTypes: ['number', 'number', 'date', 'string', 'number', 'number'],
   aliases: {
-    'LATITUDE': ['lat'],
-    'LONGITUDE': ['lon', 'long', 'lng']
+    'LATITUDE': ['LAT'],
+    'LONGITUDE': ['LON', 'LONG', 'LNG']
   }
 };
 
@@ -266,8 +266,8 @@ export class ObservationService extends DBService {
       survey_sample_site_id: null,
       survey_sample_method_id: null,
       survey_sample_period_id: null,
-      latitude: row['LATITUDE'],
-      longitude: row['LONGITUDE'],
+      latitude: row['LATITUDE'] ?? row['LAT'],
+      longitude: row['LONGITUDE'] ?? row['LON'] ?? row['LONG'] ?? row['LNG'],
       count: row['COUNT'],
       observation_time: row['TIME'],
       observation_date: row['DATE']
