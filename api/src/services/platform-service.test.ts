@@ -340,10 +340,15 @@ describe('PlatformService', () => {
         .stub(ObservationService.prototype, 'getSurveyObservationsWithSupplementaryData')
         .resolves({ surveyObservations: [{ survey_observation_id: 2 } as any], supplementaryData: [] } as any);
 
+      const getSurveyLocationsDataStub = sinon
+        .stub(SurveyService.prototype, 'getSurveyLocationsData')
+        .resolves([] as any);
+
       const response = await platformService.generateSurveyDataPackage(1, 'test');
 
       expect(getSurveyDataStub).to.have.been.calledOnceWith(1);
       expect(getSurveyObservationsWithSupplementaryDataStub).to.have.been.calledOnceWith(1);
+      expect(getSurveyLocationsDataStub).to.have.been.calledOnceWith(1);
       expect(response).to.eql({
         id: '1',
         type: 'dataset',
@@ -356,7 +361,10 @@ describe('PlatformService', () => {
           end_date: undefined,
           survey_types: undefined,
           revision_count: undefined,
-          geometry: undefined
+          geometry: {
+            type: 'FeatureCollection',
+            features: []
+          }
         },
         features: [
           {

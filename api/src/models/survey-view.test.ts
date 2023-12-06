@@ -32,10 +32,6 @@ describe('GetSurveyData', () => {
     it('sets start_date', () => {
       expect(data.start_date).to.equal(null);
     });
-
-    it('sets geojson', () => {
-      expect(data.geometry).to.eql([]);
-    });
   });
 
   describe('All values provided', () => {
@@ -63,10 +59,6 @@ describe('GetSurveyData', () => {
 
     it('sets start_date', () => {
       expect(data.start_date).to.equal(obj.start_date);
-    });
-
-    it('sets geojson', () => {
-      expect(data.geometry).to.equal(obj.geojson);
     });
 
     it('sets revision_count', function () {

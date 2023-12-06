@@ -1,6 +1,7 @@
 import AdmZip from 'adm-zip';
 import axios from 'axios';
 import FormData from 'form-data';
+import { Feature } from 'geojson';
 import { URL } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 import { IDBConnection } from '../database/db';
@@ -324,8 +325,19 @@ export class PlatformService extends DBService {
 
     const survey = await surveyService.getSurveyData(surveyId);
     const { surveyObservations } = await observationService.getSurveyObservationsWithSupplementaryData(surveyId);
+    const surveyLocation = await surveyService.getSurveyLocationsData(surveyId);
 
-    const surveyDataPackage = new PostSurveyToBiohubObject(survey, surveyObservations, additionalInformation);
+    const geometryFeatureCollection = {
+      type: 'FeatureCollection',
+      features: surveyLocation.flatMap((location) => (location.geojson as unknown) as Feature)
+    } as GeoJSON.FeatureCollection;
+
+    const surveyDataPackage = new PostSurveyToBiohubObject(
+      survey,
+      surveyObservations,
+      geometryFeatureCollection,
+      additionalInformation
+    );
 
     return surveyDataPackage;
   }

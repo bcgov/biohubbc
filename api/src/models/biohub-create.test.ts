@@ -96,7 +96,12 @@ describe('PostSurveyToBiohubObject', () => {
     } as GetSurveyData;
 
     before(() => {
-      data = new PostSurveyToBiohubObject(survey_obj, [observation_obj], 'additionalInformation');
+      data = new PostSurveyToBiohubObject(
+        survey_obj,
+        [observation_obj],
+        { type: 'FeatureCollection', features: [] },
+        'additionalInformation'
+      );
     });
 
     it('sets id', () => {
@@ -117,7 +122,7 @@ describe('PostSurveyToBiohubObject', () => {
         end_date: 'end_date',
         survey_types: [9],
         revision_count: 1,
-        geometry: []
+        geometry: { type: 'FeatureCollection', features: [] }
       });
     });
 
