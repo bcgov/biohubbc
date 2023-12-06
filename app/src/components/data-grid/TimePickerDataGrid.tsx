@@ -21,9 +21,19 @@ const TimePickerDataGrid = <DataGridType extends GridValidRowModel>({
       ref.current?.focus();
     }
   }, [dataGridProps.hasFocus]);
+
+  const { slotProps, ...rest } = dateFieldProps ?? {}
+
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <TimePicker
+        slotProps={{
+          ...slotProps,
+          textField: {
+            fullWidth: true,
+            ...slotProps?.textField
+          }
+        }}
         inputRef={ref}
         value={(dataGridProps.value && moment(dataGridProps.value, 'HH:mm:ss')) || null}
         onChange={(value) => {
@@ -39,7 +49,7 @@ const TimePickerDataGrid = <DataGridType extends GridValidRowModel>({
         views={['hours', 'minutes', 'seconds']}
         timeSteps={{ hours: 1, minutes: 1, seconds: 1 }}
         ampm={false}
-        {...dateFieldProps}
+        {...rest}
       />
     </LocalizationProvider>
   );
