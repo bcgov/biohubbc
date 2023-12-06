@@ -4,6 +4,12 @@ import { MediaFile } from '../media/media-file';
 import { safeToLowerCase, safeTrim } from '../string-utils';
 import { replaceCellDates, trimCellWhitespace } from './cell-utils';
 
+export interface IXLSXCSVValidator {
+  columnNames: string[];
+  columnTypes: string[];
+  columnAliases?: Record<string, string[]>
+}
+
 /**
  * Returns true if the given cell is a date type cell.
  *
@@ -165,17 +171,21 @@ export function getWorksheetRowObjects(worksheet: xlsx.WorkSheet): Record<string
  *
  * @export
  * @param {xlsx.WorkSheet} worksheet
- * @param {string[]} expectedHeaders
+ * @param {IXLSXCSVValidator} columnValidator
  * @return {*}  {boolean}
  */
-export function validateWorksheetHeaders(worksheet: xlsx.WorkSheet, expectedHeaders: string[]): boolean {
+export function validateWorksheetHeaders(worksheet: xlsx.WorkSheet, columnValidator: IXLSXCSVValidator): boolean {
+  const { columnNames, columnAliases } = columnValidator;
+
   const worksheetHeaders = getWorksheetHeaders(worksheet);
 
-  if (worksheetHeaders.length !== expectedHeaders.length) {
+  if (worksheetHeaders.length !== columnNames.length) {
     return false;
   }
 
-  return expectedHeaders.every((header) => worksheetHeaders.includes(header));
+  return columnNames.every((expectedHeader) => {
+    return columnAliases?.[expectedHeader]?.some((alias) => worksheetHeaders.includes(alias)) || worksheetHeaders.includes(expectedHeader);
+  });
 }
 
 /**
@@ -186,7 +196,8 @@ export function validateWorksheetHeaders(worksheet: xlsx.WorkSheet, expectedHead
  * @param {string[]} rowValueTypes
  * @return {*}  {boolean}
  */
-export function validateWorksheetColumnTypes(worksheet: xlsx.WorkSheet, rowValueTypes: string[]): boolean {
+export function validateWorksheetColumnTypes(worksheet: xlsx.WorkSheet, columnValidator: IXLSXCSVValidator): boolean {
+  const rowValueTypes: string[] = columnValidator.columnTypes;
   const worksheetRows = getWorksheetRows(worksheet);
 
   return worksheetRows.every((row) => {

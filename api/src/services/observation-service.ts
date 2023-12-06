@@ -12,6 +12,7 @@ import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { parseS3File } from '../utils/media/media-utils';
 import {
+  IXLSXCSVValidator,
   constructWorksheets,
   constructXLSXWorkbook,
   getWorksheetRowObjects,
@@ -22,14 +23,13 @@ import { DBService } from './db-service';
 
 const defaultLog = getLogger('services/observation-service');
 
-export interface IXLSXCSVValidator {
-  columnNames: string[];
-  columnTypes: string[];
-}
-
 const observationCSVColumnValidator = {
   columnNames: ['SPECIES_TAXONOMIC_ID', 'COUNT', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
-  columnTypes: ['number', 'number', 'date', 'string', 'number', 'number']
+  columnTypes: ['number', 'number', 'date', 'string', 'number', 'number'],
+  aliases: {
+    'LATITUDE': ['lat'],
+    'LONGITUDE': ['lon', 'long', 'lng']
+  }
 };
 
 export const ObservationSupplementaryData = z.object({
@@ -55,12 +55,12 @@ export class ObservationService extends DBService {
    */
   validateCsvFile(xlsxWorksheets: xlsx.WorkSheet, columnValidator: IXLSXCSVValidator): boolean {
     // Validate the worksheet headers
-    if (!validateWorksheetHeaders(xlsxWorksheets['Sheet1'], columnValidator.columnNames)) {
+    if (!validateWorksheetHeaders(xlsxWorksheets['Sheet1'], columnValidator)) {
       return false;
     }
 
     // Validate the worksheet column types
-    if (!validateWorksheetColumnTypes(xlsxWorksheets['Sheet1'], columnValidator.columnTypes)) {
+    if (!validateWorksheetColumnTypes(xlsxWorksheets['Sheet1'], columnValidator)) {
       return false;
     }
 
