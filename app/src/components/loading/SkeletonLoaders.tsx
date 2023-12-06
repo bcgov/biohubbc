@@ -15,6 +15,7 @@ const SkeletonList = (props: IMultipleSkeletonProps) => (
       .fill(null)
       .map(() => (
         <Box
+          key={v4()}
           sx={{
             display: 'flex',
             gap: '16px',
