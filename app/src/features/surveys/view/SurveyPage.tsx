@@ -1,4 +1,4 @@
-import { mdiMapSearchOutline, mdiPencilOutline } from '@mdi/js';
+import { mdiCog, mdiMapSearchOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -47,6 +47,7 @@ const SurveyPage: React.FC = () => {
 
   useEffect(() => {
     observationsContext.observationsDataLoader.refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!codesContext.codesDataLoader.data || !surveyContext.surveyDataLoader.data) {
@@ -76,11 +77,11 @@ const SurveyPage: React.FC = () => {
             </Typography>
             <Button
               component={RouterLink}
-              to={'observations'}
-              title="Submit Survey Data and Documents"
-              color="primary"
               variant="contained"
-              startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
+              color="primary"
+              to={'observations'}
+              title="Manage Observations"
+              startIcon={<Icon path={mdiCog} size={0.75} />}>
               Manage Observations
             </Button>
           </Toolbar>

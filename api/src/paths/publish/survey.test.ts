@@ -30,18 +30,14 @@ describe('survey', () => {
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      sinon.stub(PlatformService.prototype, 'submitSurveyDataToBioHub').resolves({ uuid: 'test-uuid' });
+      sinon.stub(PlatformService.prototype, 'submitSurveyToBioHub').resolves({ submission_id: 1 });
 
       const sampleReq = {
         keycloak_token: {},
         body: {
-          projectId: 1,
           surveyId: 1,
           data: {
-            observations: [],
-            summary: [],
-            reports: [],
-            attachments: []
+            additionalInformation: 'test'
           }
         },
         params: {}
@@ -64,7 +60,7 @@ describe('survey', () => {
 
       await requestHandler(sampleReq, (sampleRes as unknown) as any, mockNext);
 
-      expect(actualResult).to.eql({ uuid: 'test-uuid' });
+      expect(actualResult).to.eql({ submission_id: 1 });
     });
 
     it('catches error, calls rollback, and re-throws error', async () => {
@@ -72,7 +68,7 @@ describe('survey', () => {
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      sinon.stub(PlatformService.prototype, 'submitSurveyDataToBioHub').rejects(new Error('a test error'));
+      sinon.stub(PlatformService.prototype, 'submitSurveyToBioHub').rejects(new Error('a test error'));
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 

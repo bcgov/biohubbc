@@ -38,7 +38,8 @@ const appDeploy = async (settings) => {
         MEMORY_REQUEST: phases[phase].memoryRequest,
         MEMORY_LIMIT: phases[phase].memoryLimit,
         REPLICAS: phases[phase].replicas,
-        REPLICAS_MAX: phases[phase].replicasMax
+        REPLICAS_MAX: phases[phase].replicasMax,
+        REACT_APP_BIOHUB_FEATURE_FLAG: phases[phase].biohubFeatureFlag
       }
     })
   );

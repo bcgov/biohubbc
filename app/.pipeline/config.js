@@ -89,7 +89,8 @@ const phases = {
     memoryRequest: '100Mi',
     memoryLimit: '333Mi',
     replicas: (isStaticDeployment && '1') || '1',
-    replicasMax: (isStaticDeployment && '2') || '1'
+    replicasMax: (isStaticDeployment && '2') || '1',
+    biohubFeatureFlag: 'true'
   },
   test: {
     namespace: 'af2668-test',
@@ -112,7 +113,8 @@ const phases = {
     memoryRequest: '100Mi',
     memoryLimit: '500Mi',
     replicas: '2',
-    replicasMax: '3'
+    replicasMax: '3',
+    biohubFeatureFlag: 'false'
   },
   prod: {
     namespace: 'af2668-prod',
@@ -135,7 +137,8 @@ const phases = {
     memoryRequest: '100Mi',
     memoryLimit: '500Mi',
     replicas: '2',
-    replicasMax: '3'
+    replicasMax: '3',
+    biohubFeatureFlag: 'false'
   }
 };
 

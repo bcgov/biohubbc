@@ -292,9 +292,9 @@ export const SubmitProjectBiohubI18N = {
 };
 
 export const SubmitSurveyBiohubI18N = {
-  submitSurveyBiohubDialogTitle: 'Submit Survey Information',
-  submitSurveyBiohubSuccessDialogTitle: 'Survey data submitted',
-  submitSurveyBiohubSuccessDialogText: 'Thank you for submitting your survey data to Biohub.',
+  submitSurveyBiohubDialogTitle: 'Publish Survey to BioHub BC',
+  submitSurveyBiohubSuccessDialogTitle: 'Survey published',
+  submitSurveyBiohubSuccessDialogText: 'Your survey has successfully been published to BioHub BC.',
   submitSurveyBiohubNoSubmissionDataDialogTitle: 'No survey data to submit',
   submitSurveyBiohubNoSubmissionDataDialogText: 'No new data or information has been added to this survey to submit.'
 };

@@ -43,6 +43,7 @@ const SamplingSiteList = () => {
 
   useEffect(() => {
     surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
