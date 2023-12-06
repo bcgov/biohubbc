@@ -2,8 +2,16 @@ import { IDBConnection } from '../database/db';
 import { TelemetryRepository, TelemetrySubmissionRecord } from '../repositories/telemetry-repository';
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { parseS3File } from '../utils/media/media-utils';
-import { constructWorksheets, constructXLSXWorkbook, validateCsvFile } from '../utils/xlsx-utils/worksheet-utils';
+import {
+  constructWorksheets,
+  constructXLSXWorkbook,
+  getWorksheetRowObjects,
+  validateCsvFile
+} from '../utils/xlsx-utils/worksheet-utils';
+import { BctwService } from './bctw-service';
+import { CritterbaseService, ICritterbaseUser } from './critterbase-service';
 import { DBService } from './db-service';
+import { SurveyCritterService } from './survey-critter-service';
 
 const telemetryCSVColumnValidator = {
   columnNames: ['DEVICE_ID', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
@@ -43,7 +51,7 @@ export class TelemetryService extends DBService {
     return { submission_id: result.submission_id, key };
   }
 
-  async processTelemetryCsvSubmission(submissionId: number): Promise<any[]> {
+  async processTelemetryCsvSubmission(submissionId: number, user: ICritterbaseUser): Promise<any[]> {
     // step 1 get submission record
     const submission = await this.getTelemetrySubmissionById(submissionId);
 
@@ -70,8 +78,26 @@ export class TelemetryService extends DBService {
       throw new Error('Failed to process file for importing telemetry. Invalid CSV file.');
     }
 
+    const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheets['Sheet1']);
+
     // step 7 fetch survey deployments
-    // const bctwService = new  BctwService()
+    const bctwService = new BctwService(user);
+    const critterbaseService = new CritterbaseService(user);
+    const critterService = new SurveyCritterService(this.connection);
+
+    const critters = await critterService.getCrittersInSurvey(submission.survey_id);
+    const critterIds = critters.map((item) => item.critterbase_critter_id);
+    const result = await critterbaseService.filterCritters(
+      { critter_ids: { body: critterIds, negate: false } },
+      'detailed'
+    );
+    const critterDictionary: { [key: string]: string } = {};
+
+    result.forEach((item: any) => {
+      critterDictionary[item.critter_id] = item.animal_id;
+    });
+
+    const deployments = await bctwService.getDeploymentsByCritterId(critterIds);
 
     // step 8 create dictionary of deployments (alias-device_id)
     // step 9 map data from csv/ dictionary into telemetry records

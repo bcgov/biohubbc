@@ -3,6 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
+import { ICritterbaseUser } from '../../../services/critterbase-service';
 import { TelemetryService } from '../../../services/telemetry-service';
 import { getLogger } from '../../../utils/logger';
 
@@ -102,14 +103,17 @@ POST.apiDoc = {
 export function processFile(): RequestHandler {
   return async (req, res) => {
     const submissionId = req.body.submission_id;
-
+    const user: ICritterbaseUser = {
+      keycloak_guid: req['system_user']?.user_guid,
+      username: req['system_user']?.user_identifier
+    };
     const connection = getDBConnection(req['keycloak_token']);
     try {
       await connection.open();
 
       const service = new TelemetryService(connection);
 
-      await service.processTelemetryCsvSubmission(submissionId);
+      await service.processTelemetryCsvSubmission(submissionId, user);
 
       res.status(200).json({ success: true });
 

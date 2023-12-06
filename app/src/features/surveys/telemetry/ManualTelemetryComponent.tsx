@@ -121,15 +121,13 @@ const ManualTelemetryComponent = () => {
             </Typography>
 
             <Box display={'flex'} overflow={'hidden'} gap={1} whiteSpace={'nowrap'}>
-              {false && (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  startIcon={<Icon path={mdiImport} size={1} />}
-                  onClick={() => setShowImportDialog(true)}>
-                  Import
-                </Button>
-              )}
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<Icon path={mdiImport} size={1} />}
+                onClick={() => setShowImportDialog(true)}>
+                Import
+              </Button>
               <Button
                 variant="contained"
                 color="primary"
