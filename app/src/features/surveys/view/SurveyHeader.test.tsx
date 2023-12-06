@@ -1,5 +1,6 @@
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
+import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import SurveyHeader from 'features/surveys/view/SurveyHeader';
@@ -60,6 +61,15 @@ const mockProjectContext: IProjectContext = {
   projectId: 1
 };
 
+const mockProjectAuthStateContext: IProjectAuthStateContext = {
+  getProjectParticipant: () => null,
+  hasProjectRole: () => true,
+  hasProjectPermission: () => true,
+  hasSystemRole: () => true,
+  getProjectId: () => 1,
+  hasLoadedParticipantInfo: true
+};
+
 const surveyForView = getSurveyForViewResponse;
 
 describe('SurveyHeader', () => {
@@ -79,9 +89,11 @@ describe('SurveyHeader', () => {
         <ProjectContext.Provider value={mockProjectContext}>
           <SurveyContext.Provider value={mockSurveyContext}>
             <AuthStateContext.Provider value={authState}>
-              <DialogContextProvider>
-                <SurveyHeader />
-              </DialogContextProvider>
+              <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+                <DialogContextProvider>
+                  <SurveyHeader />
+                </DialogContextProvider>
+              </ProjectAuthStateContext.Provider>
             </AuthStateContext.Provider>
           </SurveyContext.Provider>
         </ProjectContext.Provider>
@@ -98,6 +110,12 @@ describe('SurveyHeader', () => {
 
     const surveyHeaderText = await findByText('survey name', { selector: 'span' });
     expect(surveyHeaderText).toBeVisible();
+
+    fireEvent.click(getByTestId('settings-survey-button'));
+
+    await waitFor(() => {
+      expect(getByText('Delete Survey')).toBeInTheDocument();
+    });
 
     fireEvent.click(getByTestId('delete-survey-button'));
 

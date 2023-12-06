@@ -125,7 +125,7 @@ const ObservationsMap = () => {
           <GeoJSON
             key={uuidv4()}
             data={nonEditableGeo.feature}
-            pointToLayer={(_, latlng) => coloredPoint({ latlng, fillColor: '#F28C28' })}>
+            pointToLayer={(_, latlng) => coloredPoint({ latlng, fillColor: '#1f7dff', borderColor: '#ffffff' })}>
             {nonEditableGeo.popupComponent}
           </GeoJSON>
         ))}
@@ -139,7 +139,7 @@ const ObservationsMap = () => {
               },
               {
                 layerName: 'Sample Sites',
-                layerColors: { color: '#3C005A', fillColor: '#3C005A' },
+                layerColors: { color: '#1f7dff', fillColor: '#1f7dff' },
                 features: sampleSiteFeatures.map((feature) => ({
                   geoJSON: feature,
                   tooltip: <span>Sample Site</span>

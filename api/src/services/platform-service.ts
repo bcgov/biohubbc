@@ -5,6 +5,7 @@ import { URL } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 import { IDBConnection } from '../database/db';
 import { ApiError, ApiErrorType, ApiGeneralError } from '../errors/api-error';
+import { PostSurveyToBiohubObject } from '../models/biohub-create';
 import {
   IProjectAttachment,
   IProjectReportAttachment,
@@ -20,6 +21,7 @@ import { DBService } from './db-service';
 import { EmlPackage, EmlService } from './eml-service';
 import { HistoryPublishService } from './history-publish-service';
 import { KeycloakService } from './keycloak-service';
+import { ObservationService } from './observation-service';
 import { SummaryService } from './summary-service';
 import { SurveyService } from './survey-service';
 
@@ -112,7 +114,8 @@ const getBackboneIntakeEnabled = () => process.env.BACKBONE_INTAKE_ENABLED === '
 const getBackboneApiHost = () => process.env.BACKBONE_API_HOST || '';
 const getBackboneArtifactIntakePath = () => process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '/api/artifact/intake';
 const getBackboneArtifactDeletePath = () => process.env.BACKBONE_ARTIFACT_DELETE_PATH || '/api/artifact/delete';
-const getBackboneIntakePath = () => process.env.BACKBONE_INTAKE_PATH || '/api/dwc/submission/queue';
+const getBackboneDwcIntakePath = () => process.env.BACKBONE_INTAKE_PATH || '/api/dwc/submission/queue';
+const getBackboneSurveyIntakePath = () => process.env.BACKBONE_DATASET_INTAKE_PATH || '/api/dataset/intake';
 
 export class PlatformService extends DBService {
   attachmentService: AttachmentService;
@@ -255,6 +258,76 @@ export class PlatformService extends DBService {
     }
 
     return { uuid: emlPackage.packageId };
+  }
+
+  /**
+   * Submit survey ID to BioHub.
+   *
+   * @param {string} surveyUUID
+   * @param {number} surveyId
+   * @param {{ additionalInformation: string }} data
+   * @return {*}  {Promise<{ queue_id: number }>}
+   * @memberof PlatformService
+   */
+  async submitSurveyToBioHub(
+    surveyId: number,
+    data: { additionalInformation: string }
+  ): Promise<{ submission_id: number }> {
+    defaultLog.debug({ label: 'submitSurveyToBioHub', message: 'params', surveyId });
+
+    if (!getBackboneIntakeEnabled()) {
+      throw new ApiGeneralError('BioHub intake is not enabled');
+    }
+
+    const keycloakService = new KeycloakService();
+
+    const token = await keycloakService.getKeycloakServiceToken();
+
+    const backboneSurveyIntakeUrl = new URL(getBackboneSurveyIntakePath(), getBackboneApiHost()).href;
+
+    const surveyDataPackage = await this.generateSurveyDataPackage(surveyId, data.additionalInformation);
+
+    const response = await axios.post<{ submission_id: number }>(backboneSurveyIntakeUrl, surveyDataPackage, {
+      headers: {
+        authorization: `Bearer ${token}`
+      }
+    });
+
+    if (!response.data) {
+      throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to submit survey ID to Biohub');
+    }
+
+    // Insert publish history record
+
+    // NOTE: this is a temporary solution to get the queue_id into the publish history table
+    //      the queue_id is not returned from the survey intake endpoint, so we are using the submission_id
+    //      as a temporary solution
+    await this.historyPublishService.insertSurveyMetadataPublishRecord({
+      survey_id: surveyId,
+      queue_id: response.data.submission_id
+    });
+
+    return response.data;
+  }
+
+  /**
+   * Generate survey data package to submit to BioHub.
+   *
+   * @param {number} surveyId
+   * @param {string} additionalInformation
+   * @return {*}  {Promise<ISubmitSurvey>}
+   * @memberof PlatformService
+   */
+  async generateSurveyDataPackage(surveyId: number, additionalInformation: string): Promise<PostSurveyToBiohubObject> {
+    const observationService = new ObservationService(this.connection);
+    const surveyService = new SurveyService(this.connection);
+
+    const survey = await surveyService.getSurveyData(surveyId);
+    const { surveyObservations } = await observationService.getSurveyObservationsWithSupplementaryData(surveyId);
+
+    const surveyDataPackage = new PostSurveyToBiohubObject(survey, surveyObservations, additionalInformation);
+
+    return surveyDataPackage;
   }
 
   /**
@@ -419,7 +492,7 @@ export class PlatformService extends DBService {
       formData.append('security_request[disa_required]', `${dwcaDataset.securityRequest.disa_required}`);
     }
 
-    const backboneIntakeUrl = new URL(getBackboneIntakePath(), getBackboneApiHost()).href;
+    const backboneIntakeUrl = new URL(getBackboneDwcIntakePath(), getBackboneApiHost()).href;
 
     const { data } = await axios.post<{ queue_id: number }>(backboneIntakeUrl, formData.getBuffer(), {
       headers: {

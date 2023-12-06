@@ -167,7 +167,7 @@ const SubmitBiohubDialog = <Values extends FormikValues>(
                   variant="contained"
                   disabled={formikProps.values === initialValues || isSubmitting}
                   loading={isSubmitting}>
-                  <strong>Submit</strong>
+                  Publish Survey
                 </LoadingButton>
                 <Button onClick={props.onClose} color="primary" variant="outlined" disabled={isSubmitting}>
                   Cancel
