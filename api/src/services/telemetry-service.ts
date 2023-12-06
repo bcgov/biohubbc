@@ -89,6 +89,18 @@ export class TelemetryService extends DBService {
 
     const deployments = await bctwService.getDeploymentsByCritterId(critterIds);
 
+    worksheetRowObjects.map((row) => {
+      const deviceId = Number(row['DEVICE_ID']);
+      const start = row['DATE'];
+      const time = row['TIME'];
+
+      return {
+        deployment_id: '', // search for this
+        latitude: row['LATITUDE'],
+        longitude: row['LONGITUDE']
+      };
+    });
+
     await bctwService.createManualTelemetry([]);
 
     // step 8 create dictionary of deployments (alias-device_id)
