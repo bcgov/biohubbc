@@ -22,7 +22,7 @@ const TimePickerDataGrid = <DataGridType extends GridValidRowModel>({
     }
   }, [dataGridProps.hasFocus]);
 
-  const { slotProps, ...rest } = dateFieldProps ?? {}
+  const { slotProps, ...rest } = dateFieldProps ?? {};
 
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
