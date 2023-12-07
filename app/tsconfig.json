@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "module": "esnext",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "baseUrl": "src",
     "outDir": "dist",
     "jsx": "react-jsx",
@@ -27,11 +23,7 @@
     "noFallthroughCasesInSwitch": true,
     "noEmit": true,
     "strict": true,
-    "typeRoots": [
-      "node_modules/@types"
-    ]
+    "typeRoots": ["node_modules/@types", "src/types"]
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }

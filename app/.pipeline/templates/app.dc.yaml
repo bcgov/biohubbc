@@ -31,10 +31,10 @@ parameters:
     value: '52428800'
   - name: NODE_ENV
     description: NODE_ENV specification variable
-    value: 'dev'
+    value: 'development'
   - name: REACT_APP_NODE_ENV
     description: NODE_ENV specification variable for React app
-    value: 'dev'
+    value: 'development'
   - name: OBJECT_STORE_SECRETS
     description: Secrets used to read and write to the S3 storage
     value: 'biohubbc-object-store'
@@ -115,7 +115,8 @@ objects:
             role: app
         spec:
           containers:
-            - env:
+            - name: app
+              env:
                 - name: CHANGE_VERSION
                   value: ${CHANGE_ID}
                 - name: REACT_APP_API_HOST
@@ -152,7 +153,6 @@ objects:
                   value: ${REACT_APP_KEYCLOAK_CLIENT_ID}
               image: ' '
               imagePullPolicy: Always
-              name: app
               ports:
                 - containerPort: ${{APP_PORT_DEFAULT}}
                   protocol: TCP

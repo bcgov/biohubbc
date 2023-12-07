@@ -6,6 +6,7 @@ import SQL from 'sql-template-strings';
 import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { HTTPError } from '../errors/http-error';
+import { DatabaseUserInformation, IdirUserInformation, KeycloakUserInformation } from '../utils/keycloak-utils';
 import * as db from './db';
 import {
   getAPIUserDBConnection,
@@ -42,7 +43,7 @@ describe('db', () => {
   describe('getDBConnection', () => {
     it('throws an error if keycloak token is undefined', () => {
       try {
-        getDBConnection((null as unknown) as object);
+        getDBConnection((null as unknown) as KeycloakUserInformation);
 
         expect.fail();
       } catch (actualError) {
@@ -51,7 +52,7 @@ describe('db', () => {
     });
 
     it('returns a database connection instance', () => {
-      const connection = getDBConnection({});
+      const connection = getDBConnection({} as DatabaseUserInformation);
 
       expect(connection).not.to.be.null;
     });
@@ -59,7 +60,7 @@ describe('db', () => {
     describe('DBConnection', () => {
       const sinonSandbox = Sinon.createSandbox();
 
-      const mockKeycloakToken = {
+      const mockKeycloakToken: IdirUserInformation = {
         idir_user_guid: 'testguid',
         identity_provider: 'idir',
         idir_username: 'testuser',
