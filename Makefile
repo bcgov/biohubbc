@@ -330,21 +330,22 @@ log-db-setup: ## Runs `docker logs <container> -f` for the database setup contai
 ## ------------------------------------------------------------------------------
 ## Typescript Trace Commands
 ## Runs ts-trace to find typescript compilation issues and hotspots
+## Docs: https://github.com/microsoft/typescript-analyze-trace
 ## ------------------------------------------------------------------------------
 trace-app:
 	@echo "==============================================="
 	@echo "Typscript trace - searching App hotspots"
 	@echo "==============================================="
-	@cd app && tsc -p ./tsconfig.json --generateTrace ts-traces || npx @typescript/analyze-trace ts-traces
+	@cd app && npx tsc -p ./tsconfig.json --generateTrace ts-traces || npx @typescript/analyze-trace --skipMillis 100 --forceMillis 300 --expandTypes ts-traces
 
 trace-api:
 	@echo "==============================================="
 	@echo "Typscript trace - searching for Api hotspots"
 	@echo "==============================================="
-	@cd api && tsc -p ./tsconfig.json --generateTrace ts-traces || npx @typescript/analyze-trace ts-traces
+	@cd api && npx tsc -p ./tsconfig.json --generateTrace ts-traces || npx @typescript/analyze-trace --skipMillis 100 --forceMillis 300 --expandTypes ts-traces
+
 ## ------------------------------------------------------------------------------
 ## Help
 ## ------------------------------------------------------------------------------
-
-help:	## Display this help screen.
+help: ## Display this help screen.
 	@grep -h -E '^[0-9a-zA-Z_-]+:.*?##.*$$|^##.*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[33m%-20s\033[0m %s\n", $$1, $$2}' | awk 'BEGIN {FS = "## "}; {printf "\033[36m%-1s\033[0m %s\n", $$2, $$1}'

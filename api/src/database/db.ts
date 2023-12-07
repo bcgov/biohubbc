@@ -3,10 +3,9 @@ import * as pg from 'pg';
 import SQL, { SQLStatement } from 'sql-template-strings';
 import { z } from 'zod';
 import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../constants/database';
-import { ApiExecuteSQLError, ApiGeneralError } from '../errors/api-error';
+import { ApiExecuteSQLError } from '../errors/api-error';
 import {
   DatabaseUserInformation,
-  getKeycloakUserInformationFromKeycloakToken,
   getUserGuid,
   getUserIdentitySource,
   KeycloakUserInformation,
@@ -212,7 +211,7 @@ export interface IDBConnection {
  * @param {object} keycloakToken
  * @return {*} {IDBConnection}
  */
-export const getDBConnection = function (keycloakToken: object): IDBConnection {
+export const getDBConnection = function (keycloakToken: KeycloakUserInformation): IDBConnection {
   if (!keycloakToken) {
     throw Error('Keycloak token is undefined');
   }
@@ -335,14 +334,32 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     sqlStatement: SQLStatement,
     zodSchema?: z.Schema<T, any, any>
   ): Promise<pg.QueryResult<T>> => {
-    const response = await _query(sqlStatement.text, sqlStatement.values);
-
-    if (zodSchema) {
-      // Validate the response against the zod schema
-      return getZodQueryResult(zodSchema).parseAsync(response);
+    if (process.env.NODE_ENV === 'production') {
+      // Don't run timers or zod schemas in production
+      return _query(sqlStatement.text, sqlStatement.values);
     }
 
-    return response;
+    const queryStart = Date.now();
+    const response = await _query(sqlStatement.text, sqlStatement.values);
+    const queryEnd = Date.now();
+
+    if (!zodSchema) {
+      defaultLog.silly({ label: '_sql', message: sqlStatement.text, queryExecutionTime: queryEnd - queryStart });
+      return response;
+    }
+
+    // Validate the response against the zod schema
+    const zodStart = Date.now();
+    const validatedResponse = getZodQueryResult(zodSchema).parseAsync(response);
+    const zodEnd = Date.now();
+
+    defaultLog.silly({
+      label: '_sq + zod',
+      message: sqlStatement.text,
+      queryExecutionTime: queryEnd - queryStart,
+      zodExecutionTime: zodEnd - zodStart
+    });
+    return validatedResponse;
   };
 
   /**
@@ -360,14 +377,32 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
   ) => {
     const { sql, bindings } = queryBuilder.toSQL().toNative();
 
-    const response = await _query(sql, bindings as any[]);
-
-    if (zodSchema) {
-      // Validate the response against the zod schema
-      return getZodQueryResult(zodSchema).parseAsync(response);
+    if (process.env.NODE_ENV === 'production') {
+      // Don't run timers or zod schemas in production
+      return _query(sql, bindings as any[]);
     }
 
-    return response;
+    const queryStart = Date.now();
+    const response = await _query(sql, bindings as any[]);
+    const queryEnd = Date.now();
+
+    if (!zodSchema) {
+      defaultLog.silly({ label: '_knex', message: sql, queryExecutionTime: queryEnd - queryStart });
+      return response;
+    }
+
+    // Validate the response against the zod schema
+    const zodStart = Date.now();
+    const validatedResponse = getZodQueryResult(zodSchema).parseAsync(response);
+    const zodEnd = Date.now();
+
+    defaultLog.silly({
+      label: '_knex + zod',
+      message: sql,
+      queryExecutionTime: queryEnd - queryStart,
+      zodExecutionTime: zodEnd - zodStart
+    });
+    return validatedResponse;
   };
 
   /**
@@ -378,24 +413,15 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
    * @return {*}  {Promise<void>}
    */
   const _setUserContext = async (): Promise<void> => {
-    const keycloakUserInformation = getKeycloakUserInformationFromKeycloakToken(_token);
-
-    if (!keycloakUserInformation) {
-      throw new ApiGeneralError('Failed to identify authenticated user');
-    }
-
-    defaultLog.debug({ label: '_setUserContext', keycloakUserInformation });
+    defaultLog.debug({ label: '_setUserContext', _token });
 
     // Update the logged in user with their latest information from Keycloak (if it has changed)
-    await _updateSystemUserInformation(keycloakUserInformation);
+    await _updateSystemUserInformation(_token);
 
     try {
       // Set the user context in the database, so database queries are aware of the calling user when writing to audit
       // tables, etc.
-      _systemUserId = await _setSystemUserContext(
-        getUserGuid(keycloakUserInformation),
-        getUserIdentitySource(keycloakUserInformation)
-      );
+      _systemUserId = await _setSystemUserContext(getUserGuid(_token), getUserIdentitySource(_token));
     } catch (error) {
       throw new ApiExecuteSQLError('Failed to set user context', [error as object]);
     }
@@ -443,7 +469,7 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
    */
   const _setSystemUserContext = async (userGuid: string, userIdentitySource: SYSTEM_IDENTITY_SOURCE) => {
     const setSystemUserContextSQLStatement = SQL`
-      SELECT api_set_context(${userGuid}, ${userIdentitySource});
+      SELECT api_set_context(LOWER(${userGuid}), ${userIdentitySource});
     `;
 
     const response = await _client.query(

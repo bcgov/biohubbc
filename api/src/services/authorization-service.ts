@@ -3,7 +3,7 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../constants/roles';
 import { IDBConnection } from '../database/db';
 import { ProjectUser } from '../repositories/project-participation-repository';
 import { SystemUser } from '../repositories/user-repository';
-import { getKeycloakSource, getKeycloakUserInformationFromKeycloakToken, getUserGuid } from '../utils/keycloak-utils';
+import { getKeycloakSource, getUserGuid, KeycloakUserInformation } from '../utils/keycloak-utils';
 import { DBService } from './db-service';
 import { ProjectParticipationService } from './project-participation-service';
 import { UserService } from './user-service';
@@ -76,11 +76,11 @@ export class AuthorizationService extends DBService {
   _projectParticipationService = new ProjectParticipationService(this.connection);
   _systemUser: SystemUser | undefined = undefined;
   _projectUser: (ProjectUser & SystemUser) | undefined = undefined;
-  _keycloakToken: object | undefined = undefined;
+  _keycloakToken: KeycloakUserInformation | undefined = undefined;
 
   constructor(
     connection: IDBConnection,
-    init?: { systemUser?: SystemUser; projectUser?: ProjectUser & SystemUser; keycloakToken?: object }
+    init?: { systemUser?: SystemUser; projectUser?: ProjectUser & SystemUser; keycloakToken?: KeycloakUserInformation }
   ) {
     super(connection);
 
@@ -324,13 +324,7 @@ export class AuthorizationService extends DBService {
       return null;
     }
 
-    const keycloakUserInformation = getKeycloakUserInformationFromKeycloakToken(this._keycloakToken);
-
-    if (!keycloakUserInformation) {
-      return null;
-    }
-
-    const userGuid = getUserGuid(keycloakUserInformation);
+    const userGuid = getUserGuid(this._keycloakToken);
 
     return this._userService.getUserByGuid(userGuid);
   }
@@ -368,13 +362,7 @@ export class AuthorizationService extends DBService {
       return null;
     }
 
-    const keycloakUserInformation = getKeycloakUserInformationFromKeycloakToken(this._keycloakToken);
-
-    if (!keycloakUserInformation) {
-      return null;
-    }
-
-    const userGuid = getUserGuid(keycloakUserInformation);
+    const userGuid = getUserGuid(this._keycloakToken);
 
     return this._projectParticipationService.getProjectParticipantByUserGuid(projectId, userGuid);
   }
