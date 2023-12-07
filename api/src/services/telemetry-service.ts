@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { IDBConnection } from '../database/db';
 import { TelemetryRepository, TelemetrySubmissionRecord } from '../repositories/telemetry-repository';
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
@@ -8,7 +9,7 @@ import {
   getWorksheetRowObjects,
   validateCsvFile
 } from '../utils/xlsx-utils/worksheet-utils';
-import { BctwService } from './bctw-service';
+import { BctwService, IManualTelemetry } from './bctw-service';
 import { ICritterbaseUser } from './critterbase-service';
 import { DBService } from './db-service';
 import { SurveyCritterService } from './survey-critter-service';
@@ -88,23 +89,49 @@ export class TelemetryService extends DBService {
 
     const deployments = await bctwService.getDeploymentsByCritterId(critterIds);
 
-    worksheetRowObjects.map((row) => {
+    // step 8 parse file data and find deployment ids based on device id and attachment dates
+    const itemsToAdd: Omit<IManualTelemetry, 'telemetry_manual_id'>[] = [];
+    worksheetRowObjects.forEach((row) => {
       const deviceId = Number(row['DEVICE_ID']);
       const start = row['DATE'];
       const time = row['TIME'];
+      const dateTime = moment(`${start} ${time}`);
 
-      return {
-        deployment_id: '', // search for this
-        latitude: row['LATITUDE'],
-        longitude: row['LONGITUDE']
-      };
+      const foundDeployment = deployments.find((item) => {
+        // check the device ids match
+        if (item.device_id === deviceId) {
+          // check the date is same or after the device deployment start date
+          if (dateTime.isSameOrAfter(moment(item.attachment_start))) {
+            if (item.attachment_end) {
+              // check if the date is same or before the device was removed
+              if (dateTime.isSameOrBefore(moment(item.attachment_end))) {
+                return true;
+              }
+            } else {
+              // no attachment end date means the device is still active and is a match
+              return true;
+            }
+          }
+        }
+        return false;
+      });
+
+      if (foundDeployment) {
+        itemsToAdd.push({
+          deployment_id: foundDeployment.deployment_id,
+          date: dateTime.format('YYYY-MM-DD HH:mm:ss'),
+          latitude: row['LATITUDE'],
+          longitude: row['LONGITUDE']
+        });
+      }
+      // nothing was found, should we respond with the row number that was ignored?
     });
 
-    await bctwService.createManualTelemetry([]);
+    // step 9 create telemetries
+    if (itemsToAdd.length > 0) {
+      return await bctwService.createManualTelemetry(itemsToAdd);
+    }
 
-    // step 8 create dictionary of deployments (alias-device_id)
-    // step 9 map data from csv/ dictionary into telemetry records
-    // step 10 send to telemetry service api
     return [];
   }
 
