@@ -23,10 +23,10 @@ import { DBService } from './db-service';
 
 const defaultLog = getLogger('services/observation-service');
 
-const observationCSVColumnValidator = {
+const observationCSVColumnValidator: IXLSXCSVValidator = {
   columnNames: ['SPECIES_TAXONOMIC_ID', 'COUNT', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
   columnTypes: ['number', 'number', 'date', 'string', 'number', 'number'],
-  aliases: {
+  columnAliases: {
     'LATITUDE': ['LAT'],
     'LONGITUDE': ['LON', 'LONG', 'LNG']
   }

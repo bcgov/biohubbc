@@ -1,7 +1,7 @@
 import moment from 'moment';
 import xlsx, { CellObject } from 'xlsx';
 import { MediaFile } from '../media/media-file';
-import { safeToLowerCase, safeTrim } from '../string-utils';
+import { safeToLowerCase } from '../string-utils';
 import { replaceCellDates, trimCellWhitespace } from './cell-utils';
 
 export interface IXLSXCSVValidator {
@@ -40,7 +40,7 @@ export function constructWorksheets(workbook: xlsx.WorkBook): xlsx.WorkSheet {
 }
 
 /**
- * Get the headers for the given worksheet.
+ * Get the headers for the given worksheet, then transforms them to uppercase.
  *
  * @export
  * @param {xlsx.WorkSheet} worksheet
@@ -60,11 +60,14 @@ export function getWorksheetHeaders(worksheet: xlsx.WorkSheet): string[] {
     range: customRange
   });
 
-  let headers = [];
+  let headers: string[] = [];
 
   if (aoaHeaders.length > 0) {
     // Parse the headers array from the array of arrays produced by calling `xlsx.utils.sheet_to_json`
-    headers = aoaHeaders[0].map(safeTrim);
+    headers = aoaHeaders[0]
+      .map(String)
+      .filter(Boolean)
+      .map((header) => header.trim().toUpperCase());
   }
 
   return headers;
