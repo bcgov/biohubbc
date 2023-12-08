@@ -99,7 +99,7 @@ export const SurveyAnimalsPage = () => {
       deployments = [];
     }
     animal.device = deployments;
-    console.log(animal);
+
     return animal;
   }, [critterData, deploymentData, survey_critter_id, defaultFormValues]);
 

@@ -340,7 +340,19 @@ const ManualTelemetryList = () => {
         await biohubApi.survey.uploadSurveyAttachments(surveyContext.projectId, surveyContext.surveyId, file);
       }
     } catch (error) {
-      throw new Error(`Failed to upload attachment ${file?.name}`);
+      dialogContext.setSnackbar({
+        snackbarMessage: (
+          <>
+            <Typography variant="body2" component="div">
+              <strong>Error Uploading File</strong>
+            </Typography>
+            <Typography variant="body2" component="div">
+              {`Failed to upload attachment ${file?.name}`}
+            </Typography>
+          </>
+        ),
+        open: true
+      });
     }
   };
 
