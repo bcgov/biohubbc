@@ -469,7 +469,7 @@ export const getDBConnection = function (keycloakToken: KeycloakUserInformation)
    */
   const _setSystemUserContext = async (userGuid: string, userIdentitySource: SYSTEM_IDENTITY_SOURCE) => {
     const setSystemUserContextSQLStatement = SQL`
-      SELECT api_set_context(LOWER(${userGuid}), ${userIdentitySource});
+      SELECT api_set_context(${userGuid}, ${userIdentitySource});
     `;
 
     const response = await _client.query(
