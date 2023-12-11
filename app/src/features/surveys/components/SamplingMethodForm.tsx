@@ -138,7 +138,7 @@ const SamplingMethodForm = () => {
           )}
           <Stack component={TransitionGroup} gap={1.5}>
             {values.methods.map((item, index) => (
-              <Collapse key={`sample_method_${item.method_lookup_id}_${item.periods.length}`}>
+              <Collapse key={`sample_method_${item.method_lookup_id || Math.random()}`}>
                 <Card
                   variant="outlined"
                   sx={{
@@ -189,7 +189,7 @@ const SamplingMethodForm = () => {
                         <List dense disablePadding>
                           {item.periods.map((period) => (
                             <ListItem
-                              key={`sample_period_${period.survey_sample_period_id}`}
+                              key={`sample_period_${period.survey_sample_period_id || Math.random()}`}
                               divider
                               disableGutters
                               sx={{ pl: 1.25 }}>
