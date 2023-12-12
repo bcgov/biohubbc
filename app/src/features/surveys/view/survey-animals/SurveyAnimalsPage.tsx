@@ -99,6 +99,7 @@ export const SurveyAnimalsPage = () => {
       deployments = [];
     }
     animal.device = deployments;
+
     return animal;
   }, [critterData, deploymentData, survey_critter_id, defaultFormValues]);
 
@@ -194,7 +195,6 @@ export const SurveyAnimalsPage = () => {
       artifactDataLoader.refresh(projectId, surveyId);
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.log(`err: ${error}`);
         setMessageSnackbar('Failed to add deployment' + (error?.message ? `: ${error.message}` : '.'), dialogContext);
       } else {
         setMessageSnackbar('Failed to add deployment.', dialogContext);
@@ -224,7 +224,6 @@ export const SurveyAnimalsPage = () => {
         !datesSameNullable(formDeployment?.attachment_end, existingDeployment?.attachment_end)
       ) {
         try {
-          console.log(`Would update deployment in edit mode ${JSON.stringify(formDeployment, null, 2)}`);
           await bhApi.survey.updateDeployment(projectId, surveyId, survey_critter_id, formDeployment);
         } catch (error) {
           throw new Error(`Failed to update deployment ${formDeployment.deployment_id}`);

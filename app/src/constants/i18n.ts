@@ -1,3 +1,5 @@
+import { pluralize as p } from 'utils/Utils';
+
 export const CreateProjectI18N = {
   cancelTitle: 'Discard changes and exit?',
   cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
@@ -397,16 +399,38 @@ export const ObservationsTableI18N = {
   removeSingleRecordDialogTitle: 'Delete record?',
   removeSingleRecordDialogText: 'Are you sure you want to delete this record? This action cannot be undone.',
   removeSingleRecordButtonText: 'Delete Record',
-  removeMultipleRecordsDialogTitle: (count: number) => `Delete ${count} records?`,
+  removeMultipleRecordsDialogTitle: (count: number) => `Delete ${count} ${p(count, 'record')}?`,
   removeMultipleRecordsDialogText: 'Are you sure you want to delete these records? This action cannot be undone.',
   removeMultipleRecordsButtonText: 'Delete Records',
   submitRecordsErrorDialogTitle: 'Error Updating Observation Records',
   submitRecordsErrorDialogText:
     'An error has occurred while attempting to update the observation records for this survey. Please try again. If the error persists, please contact your system administrator.',
-  removeRecordsErrorDialogTitle: 'Error Deleting Observation Record',
+  removeRecordsErrorDialogTitle: 'Error Deleting Observation Records',
   removeRecordsErrorDialogText:
     'An error has occurred while attempting to delete observation records for this survey. Please try again. If the error persists, please contact your system administrator.',
   saveRecordsSuccessSnackbarMessage: 'Observations updated successfully.',
   deleteSingleRecordSuccessSnackbarMessage: 'Deleted observation record successfully.',
-  deleteMultipleRecordSuccessSnackbarMessage: (count: number) => `Deleted ${count} observation records successfully.`
+  deleteMultipleRecordSuccessSnackbarMessage: (count: number) =>
+    `Deleted ${count} observation ${p(count, 'record')} successfully.`
+};
+
+export const TelemetryTableI18N = {
+  removeAllDialogTitle: 'Discard changes?',
+  removeAllDialogText: 'Are you sure you want to discard all your changes? This action cannot be undone.',
+  removeSingleRecordDialogTitle: 'Delete record?',
+  removeSingleRecordDialogText: 'Are you sure you want to delete this record? This action cannot be undone.',
+  removeSingleRecordButtonText: 'Delete Record',
+  removeMultipleRecordsDialogTitle: (count: number) => `Delete ${count} ${p(count, 'record')}?`,
+  removeMultipleRecordsDialogText: 'Are you sure you want to delete these records? This action cannot be undone.',
+  removeMultipleRecordsButtonText: 'Delete Records',
+  submitRecordsErrorDialogTitle: 'Error Updating Telemetry Records',
+  submitRecordsErrorDialogText:
+    'An error has occurred while attempting to update the telemetry records for this survey. Please try again. If the error persists, please contact your system administrator.',
+  removeRecordsErrorDialogTitle: 'Error Deleting Telemetry Records',
+  removeRecordsErrorDialogText:
+    'An error has occurred while attempting to delete telemetry records for this survey. Please try again. If the error persists, please contact your system administrator.',
+  saveRecordsSuccessSnackbarMessage: 'Telemetry updated successfully.',
+  deleteSingleRecordSuccessSnackbarMessage: 'Deleted telemetry record successfully.',
+  deleteMultipleRecordSuccessSnackbarMessage: (count: number) =>
+    `Deleted ${count} telemetry ${p(count, 'record')} successfully.`
 };

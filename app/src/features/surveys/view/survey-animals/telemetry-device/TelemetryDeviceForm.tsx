@@ -7,35 +7,26 @@ import { Field, useFormikContext } from 'formik';
 import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { useEffect } from 'react';
-import { ANIMAL_FORM_MODE, IAnimal } from '../animal';
-import { DeploymentFormSection } from './DeploymentFormSection';
+import { ANIMAL_FORM_MODE } from '../animal';
+import { DeploymentForm } from './DeploymentForm';
+import { IAnimalTelemetryDevice } from './device';
 import TelemetryFileUpload from './TelemetryFileUpload';
 
-interface TelemetryDeviceFormContentProps {
-  index: number;
+export interface ITelemetryDeviceFormProps {
   mode: ANIMAL_FORM_MODE;
 }
-const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
-  const { index, mode } = props;
+
+const TelemetryDeviceForm = (props: ITelemetryDeviceFormProps) => {
+  const { mode } = props;
 
   const telemetryApi = useTelemetryApi();
-  const { values, validateField } = useFormikContext<IAnimal>();
-  let device: any;
-  if (values.device?.[index]) {
-    device = values.device?.[index];
-  } else {
-    device = {
-      survey_critter_id: '',
-      deployments: [],
-      device_id: '',
-      device_make: '',
-      device_model: '',
-      frequency: '',
-      frequency_unit: ''
-    };
-  }
+  const { values, validateField } = useFormikContext<IAnimalTelemetryDevice>();
 
-  const { data: deviceDetails, refresh } = useDataLoader(() => telemetryApi.devices.getDeviceDetails(device.device_id));
+  const device = values;
+
+  const { data: deviceDetails, refresh } = useDataLoader(() =>
+    telemetryApi.devices.getDeviceDetails(Number(device.device_id))
+  );
 
   const validateDeviceMake = async (value: number | '') => {
     const deviceMake = deviceDetails?.device?.device_make;
@@ -49,9 +40,9 @@ const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
       return;
     }
     refresh();
-    validateField(`device.${index}.device_make`);
+    validateField(`device_make`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [device.device_id, device.device_make, deviceDetails?.device?.device_make, index]);
+  }, [device.device_id, device.device_make, deviceDetails?.device?.device_make]);
 
   if (!device) {
     return <></>;
@@ -68,7 +59,7 @@ const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
             <Field
               as={CustomTextField}
               label="Device ID"
-              name={`device.${index}.device_id`}
+              name={`device_id`}
               other={{ disabled: mode === ANIMAL_FORM_MODE.EDIT, required: true }}
             />
           </Grid>
@@ -83,7 +74,7 @@ const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
                     borderBottomRightRadius: 0
                   }
                 }}>
-                <CustomTextField label="Frequency (Optional)" name={`device.${index}.frequency`} />
+                <CustomTextField label="Frequency (Optional)" name={`frequency`} />
               </Grid>
               <Grid
                 item
@@ -97,7 +88,7 @@ const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
                 }}>
                 <TelemetrySelectField
                   label="Units"
-                  name={`device.${index}.frequency_unit`}
+                  name={`frequency_unit`}
                   id="frequency_unit"
                   fetchData={async () => {
                     const codeVals = await telemetryApi.devices.getCodeValues('frequency_unit');
@@ -111,7 +102,7 @@ const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
             <Field
               as={TelemetrySelectField}
               label="Device Manufacturer"
-              name={`device.${index}.device_make`}
+              name={`device_make`}
               id="manufacturer"
               fetchData={telemetryApi.devices.getCollarVendors}
               controlProps={{ disabled: mode === ANIMAL_FORM_MODE.EDIT, required: true }}
@@ -119,7 +110,7 @@ const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
             />
           </Grid>
           <Grid item xs={6}>
-            <CustomTextField label="Device Model (Optional)" name={`device.${index}.device_model`} />
+            <CustomTextField label="Device Model (Optional)" name={`device_model`} />
           </Grid>
         </Grid>
       </Box>
@@ -139,8 +130,8 @@ const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
                 }}>{`Vectronic KeyX File (Optional)`}</Typography>
               <TelemetryFileUpload
                 attachmentType={AttachmentType.KEYX}
-                fileKey={`${props.index}.attachmentFile`}
-                typeKey={`${props.index}.attachmentType`}
+                fileKey="attachmentFile"
+                typeKey="attachmentType"
               />
             </>
           )}
@@ -155,8 +146,8 @@ const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
                 }}>{`Lotek Config File (Optional)`}</Typography>
               <TelemetryFileUpload
                 attachmentType={AttachmentType.OTHER}
-                fileKey={`${props.index}.attachmentFile`}
-                typeKey={`${props.index}.attachmentType`}
+                fileKey="attachmentFile"
+                typeKey="attachmentType"
               />
             </>
           )}
@@ -166,11 +157,11 @@ const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
         <Typography component="legend" variant="body2">
           Deployments
         </Typography>
-        <DeploymentFormSection mode={mode} deviceDetails={deviceDetails} index={index} />
+        <DeploymentForm mode={mode} deviceDetails={deviceDetails} />
       </Box>
       <FormikDevDebugger />
     </>
   );
 };
 
-export default TelemetryDeviceFormContent;
+export default TelemetryDeviceForm;
