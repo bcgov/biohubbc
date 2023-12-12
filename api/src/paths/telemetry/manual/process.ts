@@ -14,7 +14,7 @@ export const POST: Operation = [
       and: [
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
-          discriminator: 'SystemUser'
+          discriminator: 'SystemRole'
         }
       ]
     };
