@@ -34,7 +34,6 @@ const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
       frequency_unit: ''
     };
   }
-  console.log(device);
 
   const { data: deviceDetails, refresh } = useDataLoader(() => telemetryApi.devices.getDeviceDetails(device.device_id));
 

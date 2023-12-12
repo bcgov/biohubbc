@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../constants/roles';
+import { SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { TelemetryService } from '../../../services/telemetry-service';
@@ -9,17 +9,12 @@ import { getLogger } from '../../../utils/logger';
 const defaultLog = getLogger('/api/telemetry/manual/process');
 
 export const POST: Operation = [
-  authorizeRequestHandler((req) => {
+  authorizeRequestHandler(() => {
     return {
-      or: [
-        {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
-          projectId: Number(req.body.project_id),
-          discriminator: 'ProjectPermission'
-        },
+      and: [
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
-          discriminator: 'SystemRole'
+          discriminator: 'SystemUser'
         }
       ]
     };
