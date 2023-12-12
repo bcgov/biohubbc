@@ -9,6 +9,8 @@ import { Knex } from 'knex';
  */
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
+    SET search_path = 'biohub';
+
     DROP FUNCTION IF EXISTS api_set_context;
 
     CREATE OR REPLACE FUNCTION api_set_context(p_system_user_guid system_user.user_guid%type, p_user_identity_source_name user_identity_source.name%type) RETURNS system_user.system_user_id%type
