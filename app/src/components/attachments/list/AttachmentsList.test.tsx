@@ -1,9 +1,11 @@
+import { AuthStateContext } from 'contexts/authStateContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import { createMemoryHistory } from 'history';
 import { DataLoader } from 'hooks/useDataLoader';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import { Router } from 'react-router';
+import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { AttachmentType } from '../../../constants/attachments';
 import AttachmentsList from './AttachmentsList';
@@ -63,20 +65,24 @@ describe('AttachmentsList', () => {
       } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
+
     const { getByText } = render(
-      <Router history={history}>
-        <ProjectContext.Provider value={mockProjectContext}>
-          <SurveyContext.Provider value={mockSurveyContext}>
-            <AttachmentsList
-              attachments={[]}
-              handleDownload={jest.fn()}
-              handleDelete={jest.fn()}
-              handleViewDetails={jest.fn()}
-              handleRemoveOrResubmit={jest.fn()}
-            />
-          </SurveyContext.Provider>
-        </ProjectContext.Provider>
-      </Router>
+      <AuthStateContext.Provider value={authState}>
+        <Router history={history}>
+          <ProjectContext.Provider value={mockProjectContext}>
+            <SurveyContext.Provider value={mockSurveyContext}>
+              <AttachmentsList
+                attachments={[]}
+                handleDownload={jest.fn()}
+                handleDelete={jest.fn()}
+                handleViewDetails={jest.fn()}
+                handleRemoveOrResubmit={jest.fn()}
+              />
+            </SurveyContext.Provider>
+          </ProjectContext.Provider>
+        </Router>
+      </AuthStateContext.Provider>
     );
 
     expect(getByText('No Documents')).toBeInTheDocument();
@@ -99,20 +105,24 @@ describe('AttachmentsList', () => {
       } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
+
     const { getByText } = render(
-      <Router history={history}>
-        <ProjectContext.Provider value={mockProjectContext}>
-          <SurveyContext.Provider value={mockSurveyContext}>
-            <AttachmentsList
-              attachments={attachmentsList}
-              handleDownload={jest.fn()}
-              handleDelete={jest.fn()}
-              handleViewDetails={jest.fn()}
-              handleRemoveOrResubmit={jest.fn()}
-            />
-          </SurveyContext.Provider>
-        </ProjectContext.Provider>
-      </Router>
+      <AuthStateContext.Provider value={authState}>
+        <Router history={history}>
+          <ProjectContext.Provider value={mockProjectContext}>
+            <SurveyContext.Provider value={mockSurveyContext}>
+              <AttachmentsList
+                attachments={attachmentsList}
+                handleDownload={jest.fn()}
+                handleDelete={jest.fn()}
+                handleViewDetails={jest.fn()}
+                handleRemoveOrResubmit={jest.fn()}
+              />
+            </SurveyContext.Provider>
+          </ProjectContext.Provider>
+        </Router>
+      </AuthStateContext.Provider>
     );
 
     expect(getByText('filename.test')).toBeInTheDocument();
@@ -140,20 +150,25 @@ describe('AttachmentsList', () => {
     } as unknown as IProjectContext;
 
     const handleDownload = jest.fn();
+
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
+
     const { getByText } = render(
-      <Router history={history}>
-        <ProjectContext.Provider value={mockProjectContext}>
-          <SurveyContext.Provider value={mockSurveyContext}>
-            <AttachmentsList
-              attachments={attachmentsList}
-              handleDownload={handleDownload}
-              handleDelete={jest.fn()}
-              handleViewDetails={jest.fn()}
-              handleRemoveOrResubmit={jest.fn()}
-            />
-          </SurveyContext.Provider>
-        </ProjectContext.Provider>
-      </Router>
+      <AuthStateContext.Provider value={authState}>
+        <Router history={history}>
+          <ProjectContext.Provider value={mockProjectContext}>
+            <SurveyContext.Provider value={mockSurveyContext}>
+              <AttachmentsList
+                attachments={attachmentsList}
+                handleDownload={handleDownload}
+                handleDelete={jest.fn()}
+                handleViewDetails={jest.fn()}
+                handleRemoveOrResubmit={jest.fn()}
+              />
+            </SurveyContext.Provider>
+          </ProjectContext.Provider>
+        </Router>
+      </AuthStateContext.Provider>
     );
 
     expect(getByText('filename.test')).toBeInTheDocument();
@@ -183,21 +198,27 @@ describe('AttachmentsList', () => {
     } as unknown as IProjectContext;
 
     window.open = jest.fn();
+
     const handleDownload = jest.fn();
+
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
+
     const { getByText } = render(
-      <Router history={history}>
-        <ProjectContext.Provider value={mockProjectContext}>
-          <SurveyContext.Provider value={mockSurveyContext}>
-            <AttachmentsList
-              attachments={attachmentsList}
-              handleDownload={handleDownload}
-              handleDelete={jest.fn()}
-              handleViewDetails={jest.fn()}
-              handleRemoveOrResubmit={jest.fn()}
-            />
-          </SurveyContext.Provider>
-        </ProjectContext.Provider>
-      </Router>
+      <AuthStateContext.Provider value={authState}>
+        <Router history={history}>
+          <ProjectContext.Provider value={mockProjectContext}>
+            <SurveyContext.Provider value={mockSurveyContext}>
+              <AttachmentsList
+                attachments={attachmentsList}
+                handleDownload={handleDownload}
+                handleDelete={jest.fn()}
+                handleViewDetails={jest.fn()}
+                handleRemoveOrResubmit={jest.fn()}
+              />
+            </SurveyContext.Provider>
+          </ProjectContext.Provider>
+        </Router>
+      </AuthStateContext.Provider>
     );
 
     expect(getByText('filename.test')).toBeInTheDocument();

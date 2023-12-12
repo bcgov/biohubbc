@@ -4,7 +4,7 @@ import DatasetPopup from 'components/map/DatasetPopup';
 import FeaturePopup, { BoundaryCentroidFeature, BoundaryFeature, OccurrenceFeature } from 'components/map/FeaturePopup';
 import { LAYER_NAME, SPATIAL_COMPONENT_TYPE } from 'constants/spatial';
 import { Feature } from 'geojson';
-import { EmptyObject, ISpatialData, ITaxaData } from 'interfaces/useObservationApi.interface';
+import { EmptyObject, ISpatialData, ITaxaData } from 'interfaces/useDwcaApi.interface';
 import { LatLngTuple } from 'leaflet';
 import { isObject } from 'lodash-es';
 
@@ -85,12 +85,10 @@ const getSubmissionSpatialComponentIds = (spatialRecord: ISpatialData): number[]
 };
 
 /**
- * Takes a geographic point, an array of taxonomy data, and a Record denoting dataset visibility,
- * and produces an IMarker whose FeaturePopup contains submission spatial component IDs
- * commensurate with the given dataset visibility.
+ * Takes a geographic point and an array of taxonomy data, and produces an IMarker whose
+ * FeaturePopup contains submission spatial component ID.
  * @param latLng The geograhic point of the marker
  * @param taxaData The taxonomic data for the point (namely submission_spatial_component_ids)
- * @param datasetVisibility The dataset visiblity record
  * @returns An IMarker
  */
 const occurrenceMarkerSetup = (latLng: LatLngTuple, taxaData: ITaxaData[]): IMarker | null => {
@@ -109,10 +107,8 @@ const occurrenceMarkerSetup = (latLng: LatLngTuple, taxaData: ITaxaData[]): IMar
 };
 
 /**
- * Takes an array of ISpatialData and maps it to an IDataResult array denoting visibility based
- * on the given datasetVisibility Record.
+ * Takes an array of ISpatialData and maps it to an IDataResult array
  * @param data The array of spatial data
- * @param datasetVisibility a Record denoting dataset visiblity
  * @returns an array of type IDataResult
  */
 export const parseBoundaryCentroidResults = (data: ISpatialData[]): IDataResult[] => {

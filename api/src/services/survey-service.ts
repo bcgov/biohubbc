@@ -1,8 +1,8 @@
 import { Feature } from 'geojson';
 import { MESSAGE_CLASS_NAME, SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
-import { PostLocationData, PostProprietorData, PostSurveyObject } from '../models/survey-create';
-import { PutPartnershipsData, PutSurveyLocationData, PutSurveyObject } from '../models/survey-update';
+import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
+import { PostSurveyLocationData, PutPartnershipsData, PutSurveyObject } from '../models/survey-update';
 import {
   GetAncillarySpeciesData,
   GetAttachmentsData,
@@ -27,6 +27,7 @@ import {
   IObservationSubmissionUpdateDetails,
   IOccurrenceSubmissionMessagesResponse,
   ISurveyProprietorModel,
+  SurveyBasicFields,
   SurveyRepository
 } from '../repositories/survey-repository';
 import { getLogger } from '../utils/logger';
@@ -339,6 +340,38 @@ export class SurveyService extends DBService {
   }
 
   /**
+   * Fetches a subset of survey fields for all surveys under a project.
+   *
+   * @param {number} projectId
+   * @return {*}  {Promise<SurveyBasicFields[]>}
+   * @memberof SurveyService
+   */
+  async getSurveysBasicFieldsByProjectId(projectId: number): Promise<SurveyBasicFields[]> {
+    const surveys = await this.surveyRepository.getSurveysBasicFieldsByProjectId(projectId);
+
+    // Build an array of all unique focal species ids from all surveys
+    const uniqueFocalSpeciesIds = Array.from(
+      new Set(surveys.reduce((ids: number[], survey) => ids.concat(survey.focal_species), []))
+    );
+
+    // Fetch focal species data for all species ids
+    const taxonomyService = new TaxonomyService();
+    const focalSpecies = await taxonomyService.getSpeciesFromIds(uniqueFocalSpeciesIds);
+
+    // Decorate the surveys response with their matching focal species labels
+    const decoratedSurveys: SurveyBasicFields[] = [];
+    for (const survey of surveys) {
+      const matchingFocalSpeciesNames = focalSpecies
+        .filter((item) => survey.focal_species.includes(Number(item.id)))
+        .map((item) => item.label);
+
+      decoratedSurveys.push({ ...survey, focal_species_names: matchingFocalSpeciesNames });
+    }
+
+    return decoratedSurveys;
+  }
+
+  /**
    * Creates a survey and uploads the affected metadata to BioHub
    *
    * @param {number} projectId
@@ -379,6 +412,11 @@ export class SurveyService extends DBService {
 
     // Handle survey types
     promises.push(this.insertSurveyTypes(postSurveyData.survey_details.survey_types, surveyId));
+
+    //Handle multiple intended outcomes
+    promises.push(
+      this.insertSurveyIntendedOutcomes(postSurveyData.purpose_and_methodology.intended_outcome_ids, surveyId)
+    );
 
     // Handle focal species associated to this survey
     promises.push(
@@ -494,7 +532,7 @@ export class SurveyService extends DBService {
    * @return {*}  {Promise<void>}
    * @memberof SurveyService
    */
-  async insertSurveyLocations(surveyId: number, data: PostLocationData): Promise<void> {
+  async insertSurveyLocations(surveyId: number, data: PostSurveyLocationData): Promise<void> {
     const service = new SurveyLocationService(this.connection);
     return service.insertSurveyLocation(surveyId, data);
   }
@@ -620,6 +658,16 @@ export class SurveyService extends DBService {
   }
 
   /**
+   * Inserts multiple rows for intended outcomes of a survey.
+   *
+   * @param {number[]} intended_outcomes
+   * @param {number} surveyId
+   */
+  async insertSurveyIntendedOutcomes(intended_outcomes: number[], surveyId: number): Promise<void> {
+    return this.surveyRepository.insertManySurveyIntendedOutcomes(surveyId, intended_outcomes);
+  }
+
+  /**
    * Insert or update association of permit to a given survey
    *
    * @param {number} systemUserId
@@ -693,6 +741,7 @@ export class SurveyService extends DBService {
 
     if (putSurveyData?.purpose_and_methodology) {
       promises.push(this.updateSurveyVantageCodesData(surveyId, putSurveyData));
+      promises.push(this.updateSurveyIntendedOutcomes(surveyId, putSurveyData));
     }
 
     if (putSurveyData?.partnerships) {
@@ -714,8 +763,8 @@ export class SurveyService extends DBService {
       promises.push(this.updateSurveyProprietorData(surveyId, putSurveyData));
     }
 
-    if (putSurveyData?.locations) {
-      promises.push(Promise.all(putSurveyData.locations.map((item) => this.updateSurveyLocation(item))));
+    if (putSurveyData?.locations.length) {
+      promises.push(this.insertUpdateDeleteSurveyLocation(surveyId, putSurveyData.locations));
     }
 
     if (putSurveyData?.participants.length) {
@@ -750,7 +799,51 @@ export class SurveyService extends DBService {
     await Promise.all(promises);
   }
 
-  async updateSurveyLocation(data: PutSurveyLocationData): Promise<void> {
+  /**
+   * Handles the create, update and deletion of survey locations based on the given data.
+   *
+   * @param {number} surveyId
+   * @param {PostSurveyLocationData} data
+   * @returns {*} {Promise<any[]>}
+   */
+  async insertUpdateDeleteSurveyLocation(surveyId: number, data: PostSurveyLocationData[]): Promise<any[]> {
+    const existingLocations = await this.getSurveyLocationsData(surveyId);
+    // compare existing locations with passed in locations
+    // any locations not found in both arrays will be deleted
+    const deletes = existingLocations.filter(
+      (existing) => !data.find((incoming) => incoming?.survey_location_id === existing.survey_location_id)
+    );
+    const deletePromises = deletes.map((item) => this.deleteSurveyLocation(item.survey_location_id));
+
+    const inserts = data.filter((item) => !item.survey_location_id);
+    const insertPromises = inserts.map((item) => this.insertSurveyLocations(surveyId, item));
+
+    const updates = data.filter((item) => item.survey_location_id);
+    const updatePromises = updates.map((item) => this.updateSurveyLocation(item));
+
+    return Promise.all([insertPromises, updatePromises, deletePromises]);
+  }
+
+  /**
+   * Deletes a survey location for the given id. Returns the deleted record
+   *
+   * @param {number} surveyLocationId Id of the record to delete
+   * @returns {*} {Promise<SurveyLocationRecord>} The deleted record
+   * @memberof SurveyService
+   */
+  async deleteSurveyLocation(surveyLocationId: number): Promise<SurveyLocationRecord> {
+    const surveyLocationService = new SurveyLocationService(this.connection);
+    return surveyLocationService.deleteSurveyLocation(surveyLocationId);
+  }
+
+  /**
+   * Updates Survey Locations based on the data provided
+   *
+   * @param {PostSurveyLocationData} data
+   * @returns {*} {Promise<void>}
+   * @memberof SurveyService
+   */
+  async updateSurveyLocation(data: PostSurveyLocationData): Promise<void> {
     const surveyLocationService = new SurveyLocationService(this.connection);
     return surveyLocationService.updateSurveyLocation(data);
   }
@@ -875,6 +968,33 @@ export class SurveyService extends DBService {
     });
 
     await Promise.all(promises);
+  }
+
+  /**
+   * Updates the list of intended outcomes associated with this survey.
+   *
+   * @param {number} surveyId
+   * @param {PurSurveyObject} surveyData
+   */
+  async updateSurveyIntendedOutcomes(surveyId: number, surveyData: PutSurveyObject) {
+    const purposeMethodInfo = await this.getSurveyPurposeAndMethodology(surveyId);
+    const { intended_outcome_ids: currentOutcomeIds } = surveyData.purpose_and_methodology;
+    const existingOutcomeIds = purposeMethodInfo.intended_outcome_ids;
+    const rowsToInsert = currentOutcomeIds.reduce((acc: number[], curr: number) => {
+      if (!existingOutcomeIds.find((existingId) => existingId === curr)) {
+        return [...acc, curr];
+      }
+      return acc;
+    }, []);
+    const rowsToDelete = existingOutcomeIds.reduce((acc: number[], curr: number) => {
+      if (!currentOutcomeIds.find((existingId) => existingId === curr)) {
+        return [...acc, curr];
+      }
+      return acc;
+    }, []);
+
+    await this.surveyRepository.insertManySurveyIntendedOutcomes(surveyId, rowsToInsert);
+    await this.surveyRepository.deleteManySurveyIntendedOutcomes(surveyId, rowsToDelete);
   }
 
   /**

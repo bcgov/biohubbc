@@ -25,7 +25,8 @@ parameters:
   - name: NODE_ENV
     description: Application Environment type variable
     required: true
-    value: 'dev'
+    value: 'development'
+  - name: NODE_OPTIONS
   - name: API_PORT_DEFAULT
     value: '6100'
   - name: API_PORT_DEFAULT_NAME
@@ -206,7 +207,8 @@ objects:
             role: api
         spec:
           containers:
-            - env:
+            - name: api
+              env:
                 - name: API_HOST
                   value: ${HOST}
                 - name: API_PORT
@@ -219,6 +221,8 @@ objects:
                   value: ${CHANGE_ID}
                 - name: NODE_ENV
                   value: ${NODE_ENV}
+                - name: NODE_OPTIONS
+                  value: ${NODE_OPTIONS}
                 # BioHub Platform (aka: Backbone)
                 - name: BACKBONE_API_HOST
                   value: ${BACKBONE_API_HOST}
@@ -342,7 +346,6 @@ objects:
                   value: ${GCNOTIFY_SMS_URL}
               image: ' '
               imagePullPolicy: Always
-              name: api
               ports:
                 - containerPort: ${{API_PORT_DEFAULT}}
                   protocol: TCP

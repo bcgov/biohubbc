@@ -210,32 +210,23 @@ PUT.apiDoc = {
             },
             purpose_and_methodology: {
               type: 'object',
-              required: [
-                'intended_outcome_id',
-                'additional_details',
-                'field_method_id',
-                'vantage_code_ids',
-                'ecological_season_id',
-                'revision_count'
-              ],
+              required: ['intended_outcome_ids', 'additional_details', 'vantage_code_ids', 'revision_count'],
               properties: {
-                intended_outcome_id: {
-                  type: 'number'
+                intended_outcome_ids: {
+                  type: 'array',
+                  minItems: 1,
+                  items: {
+                    type: 'integer'
+                  }
                 },
                 additional_details: {
                   type: 'string'
-                },
-                field_method_id: {
-                  type: 'number'
                 },
                 vantage_code_ids: {
                   type: 'array',
                   items: {
                     type: 'number'
                   }
-                },
-                ecological_season_id: {
-                  type: 'number'
                 },
                 revision_count: {
                   type: 'number'
@@ -245,6 +236,7 @@ PUT.apiDoc = {
             locations: {
               description: 'Survey location data',
               type: 'array',
+              minItems: 1,
               items: {
                 type: 'object',
                 required: ['name', 'description', 'geojson'],
@@ -280,6 +272,7 @@ PUT.apiDoc = {
               properties: {
                 strategies: {
                   type: 'array',
+                  minItems: 1,
                   items: {
                     type: 'string'
                   }

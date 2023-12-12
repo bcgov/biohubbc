@@ -61,10 +61,8 @@ export interface IGetSurveyForViewResponseDetails {
 }
 
 export interface IGetSurveyForViewResponsePurposeAndMethodology {
-  intended_outcome_id: number;
+  intended_outcome_ids: number[];
   additional_details: string;
-  field_method_id: number;
-  ecological_season_id: number;
   vantage_code_ids: number[];
   surveyed_all_areas: StringBoolean;
 }
@@ -109,6 +107,17 @@ export interface IGetSurveyLocation {
   revision_count: number;
 }
 
+export interface IGetSurveyBlock {
+  survey_block_id: number;
+  name: string;
+  description: string;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
+}
+
 export interface SurveyViewObject {
   survey_details: IGetSurveyForViewResponseDetails;
   species: IGetSpecies;
@@ -120,6 +129,16 @@ export interface SurveyViewObject {
   participants: IGetSurveyParticipant[];
   partnerships: IGetSurveyForViewResponsePartnerships;
   locations: IGetSurveyLocation[];
+  blocks: IGetSurveyBlock[];
+}
+
+export interface SurveyBasicFieldsObject {
+  survey_id: number;
+  name: string;
+  start_date: string;
+  end_date: string | null;
+  focal_species: number[];
+  focal_species_names: string[];
 }
 
 export interface SurveyUpdateObject extends ISurveyLocationForm {
@@ -150,10 +169,8 @@ export interface SurveyUpdateObject extends ISurveyLocationForm {
   ];
   partnerships?: IGetSurveyForUpdateResponsePartnerships;
   purpose_and_methodology?: {
-    intended_outcome_id: number;
+    intended_outcome_ids: number[];
     additional_details: string;
-    field_method_id: number;
-    ecological_season_id: number;
     vantage_code_ids: number[];
     surveyed_all_areas: StringBoolean;
     revision_count: number;
@@ -230,13 +247,13 @@ export interface ISurveySupplementaryData {
 }
 
 /**
- * Get Survey list response object.
+ * Get survey basic fields response object.
  *
  * @export
  * @interface IGetSurveyForListResponse
  */
 export interface IGetSurveyForListResponse {
-  surveyData: SurveyViewObject;
+  surveyData: SurveyBasicFieldsObject;
   surveySupplementaryData: ISurveySupplementaryData;
 }
 
@@ -315,7 +332,7 @@ export interface IGetSurveyAttachmentsResponse {
 
 export interface ISurveyPermits {
   permits: {
-    id: number;
+    permit_id: number;
     permit_number: string;
     permit_type: string;
   }[];
@@ -380,6 +397,8 @@ export interface IGetSamplePeriodRecord {
   survey_sample_method_id: number;
   start_date: string;
   end_date: string;
+  start_time: string | null;
+  end_time: string | null;
   create_date: string;
   create_user: number;
   update_date: string | null;

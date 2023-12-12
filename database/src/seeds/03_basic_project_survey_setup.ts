@@ -64,6 +64,12 @@ export async function seed(knex: Knex): Promise<void> {
       ${insertSurveyVantageData(surveyId)}
       ${insertSurveyParticipationData(surveyId)}
       ${insertSurveyLocationData(surveyId)}
+      ${insertSurveySiteStrategy(surveyId)}
+      ${insertSurveyIntendedOutcome(surveyId)}
+      ${insertSurveySamplingSiteData(surveyId)}
+      ${insertSurveySamplingMethodData()}
+      ${insertSurveySamplePeriodData()}
+      ${insertSurveyObservationData(surveyId)}
     `);
   }
 }
@@ -80,6 +86,18 @@ const checkAnyProjectExists = () => `
     project_id
   FROM
     project;
+`;
+
+const insertSurveySiteStrategy = (surveyId: number) => `
+  INSERT into survey_site_strategy
+    (
+      survey_id,
+      site_strategy_id
+    )
+  VALUES (
+    ${surveyId},
+    (select site_strategy_id  from site_strategy ss order by random() limit 1)
+  );
 `;
 
 /**
@@ -303,28 +321,35 @@ const insertSurveyData = (projectId: number) => `
     (
       project_id,
       name,
-      field_method_id,
       additional_details,
       start_date,
       end_date,
       lead_first_name,
-      lead_last_name,
-      ecological_season_id,
-      intended_outcome_id
+      lead_last_name
     )
   VALUES (
     ${projectId},
     'Seed Survey',
-    (select field_method_id from field_method order by random() limit 1),
     $$${faker.lorem.sentences(2)}$$,
     $$${faker.date.between({ from: '2010-01-01T00:00:00-08:00', to: '2015-01-01T00:00:00-08:00' }).toISOString()}$$,
     $$${faker.date.between({ from: '2020-01-01T00:00:00-08:00', to: '2025-01-01T00:00:00-08:00' }).toISOString()}$$,
     $$${faker.person.firstName()}$$,
-    $$${faker.person.lastName()}$$,
-    (select ecological_season_id from ecological_season order by random() limit 1),
-    (select intended_outcome_id from intended_outcome order by random() limit 1)
+    $$${faker.person.lastName()}$$
   )
   RETURNING survey_id;
+`;
+
+const insertSurveyIntendedOutcome = (surveyId: number) => `
+    INSERT into survey_intended_outcome
+    (
+      survey_id,
+      intended_outcome_id
+    )
+    VALUES
+    (
+      ${surveyId},
+      (select intended_outcome_id from intended_outcome order by random() limit 1)
+    );
 `;
 
 /**
@@ -426,6 +451,176 @@ const insertSurveyStakeholderData = (surveyId: number) => `
       (select name from agency order by random() limit 1)
     )
   ;
+`;
+
+/**
+ * SQL to insert survey sampling site data.
+ *
+ */
+const insertSurveySamplingSiteData = (surveyId: number) =>
+  `INSERT INTO survey_sample_site
+  (
+    survey_id,
+    name,
+    description,
+    geojson,
+    geography
+  ) VALUES (
+    ${surveyId},
+    'Seed Sampling Site',
+    $$${faker.lorem.sentences(2)}$$,
+    '
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-121,    51],
+            [-121,    51.7],
+            [-120.5,  51.7],
+            [-120.5,  51],
+            [-121,    51]
+          ]
+        ]
+      },
+      "properties": {}
+    }
+  ',
+    public.geography(
+      public.ST_Force2D(
+        public.ST_SetSRID(
+          public.ST_Force2D(public.ST_GeomFromGeoJSON('
+            {
+                "type": "Polygon",
+                "coordinates": [
+                  [
+                    [-121,    51],
+                    [-121,    51.7],
+                    [-120.5,  51.7],
+                    [-120.5,  51],
+                    [-121,    51]
+                  ]
+                ]
+              }
+          ')
+          ), 4326
+        )
+      )
+    )
+  );`;
+
+/**
+ * SQL to insert survey sampling method data. Requires sampling site.
+ *
+ */
+const insertSurveySamplingMethodData = () =>
+  `
+ INSERT INTO survey_sample_method
+ (
+  survey_sample_site_id,
+  method_lookup_id,
+  description
+ )
+ VALUES
+ (
+    (SELECT survey_sample_site_id FROM survey_sample_site LIMIT 1),
+    (SELECT method_lookup_id FROM method_lookup ORDER BY random() LIMIT 1),
+    $$${faker.lorem.sentences(2)}$$
+ );
+`;
+
+/**
+ * SQL to insert survey sampling period data. Requires sampling method.
+ *
+ */
+const insertSurveySamplePeriodData = () =>
+  `
+  INSERT INTO survey_sample_period
+  (
+    survey_sample_method_id,
+    start_date,
+    end_date
+  )
+  VALUES
+  (
+    (SELECT survey_sample_method_id FROM survey_sample_method LIMIT 1),
+    $$${faker.date
+      .between({ from: '2000-01-01T00:00:00-08:00', to: '2001-01-01T00:00:00-08:00' })
+      .toISOString()}$$::date,
+    $$${faker.date
+      .between({ from: '2002-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
+      .toISOString()}$$::date
+  );
+`;
+
+/**
+ * SQL to insert survey observation data. Requires sampling site, method, period.
+ *
+ */
+const insertSurveyObservationData = (surveyId: number) => `
+  INSERT INTO survey_observation
+  (
+    survey_id,
+    wldtaxonomic_units_id,
+    latitude,
+    longitude,
+    count,
+    observation_date,
+    observation_time,
+    survey_sample_site_id,
+    survey_sample_method_id,
+    survey_sample_period_id
+  )
+  VALUES
+  (
+    ${surveyId},
+    $$${faker.number.int({ min: 30000, max: 32000 })}$$,
+    $$${faker.number.int({ min: 48, max: 60 })}$$,
+    $$${faker.number.int({ min: -132, max: -116 })}$$,
+    $$${faker.number.int({ min: 1, max: 20 })}$$,
+    $$${faker.date
+      .between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
+      .toISOString()}$$::date,
+    timestamp $$${faker.date
+      .between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
+      .toISOString()}$$::time,
+    (SELECT survey_sample_site_id FROM survey_sample_site LIMIT 1),
+    (SELECT survey_sample_method_id FROM survey_sample_method LIMIT 1),
+    (SELECT survey_sample_period_id FROM survey_sample_period LIMIT 1)
+  ),
+  (
+    ${surveyId},
+    $$${faker.number.int({ min: 30000, max: 32000 })}$$,
+    $$${faker.number.int({ min: 48, max: 60 })}$$,
+    $$${faker.number.int({ min: -132, max: -116 })}$$,
+    $$${faker.number.int({ min: 1, max: 20 })}$$,
+    $$${faker.date
+      .between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
+      .toISOString()}$$::date,
+    timestamp $$${faker.date
+      .between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
+      .toISOString()}$$::time,
+    (SELECT survey_sample_site_id FROM survey_sample_site LIMIT 1),
+    (SELECT survey_sample_method_id FROM survey_sample_method LIMIT 1),
+    (SELECT survey_sample_period_id FROM survey_sample_period LIMIT 1)
+  ),
+  (
+    ${surveyId},
+    $$${faker.number.int({ min: 30000, max: 32000 })}$$,
+    $$${faker.number.int({ min: 48, max: 60 })}$$,
+    $$${faker.number.int({ min: -132, max: -116 })}$$,
+    $$${faker.number.int({ min: 1, max: 20 })}$$,
+    $$${faker.date
+      .between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
+      .toISOString()}$$::date,
+    timestamp $$${faker.date
+      .between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
+      .toISOString()}$$::time,
+    (SELECT survey_sample_site_id FROM survey_sample_site LIMIT 1),
+    (SELECT survey_sample_method_id FROM survey_sample_method LIMIT 1),
+    (SELECT survey_sample_period_id FROM survey_sample_period LIMIT 1)
+  )
 `;
 
 /**

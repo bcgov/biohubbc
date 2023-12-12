@@ -31,7 +31,9 @@ export const SurveySiteSelectionYupSchema = yup.object().shape({
   site_selection: yup.object().shape({
     strategies: yup
       .array()
-      .of(yup.string() /* .required('Must select a valid site selection strategy') */)
+      .required('Site Selection Strategy is required')
+      .min(1, 'Site Selection Strategy is required')
+      .of(yup.string())
       .when('stratums', (stratums: string[], schema: any) => {
         return stratums.length > 0
           ? schema.test(
@@ -130,8 +132,8 @@ const SurveySiteSelectionForm = (props: ISurveySiteSelectionFormProps) => {
         label="Site Selection Strategies"
         options={siteStrategies}
         selectedOptions={selectedSiteStrategies}
-        required={false}
-        onChange={(event, selectedOptions, reason) => {
+        required={true}
+        onChange={(_, selectedOptions, reason) => {
           // If the user clicks to remove the 'Stratified' option and there are Stratums already defined, then show
           // a warning dialogue asking the user if they are sure they want to remove the option and delete the Stratums
           if (

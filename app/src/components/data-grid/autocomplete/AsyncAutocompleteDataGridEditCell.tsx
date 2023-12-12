@@ -1,13 +1,12 @@
-import { mdiMagnify } from '@mdi/js';
-import Icon from '@mdi/react';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
+import useEnhancedEffect from '@mui/material/utils/useEnhancedEffect';
 import { GridRenderCellParams, GridValidRowModel, useGridApiContext } from '@mui/x-data-grid';
 import { IAutocompleteDataGridOption } from 'components/data-grid/autocomplete/AutocompleteDataGrid.interface';
 import { DebouncedFunc } from 'lodash-es';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export interface IAsyncAutocompleteDataGridEditCell<
   DataGridType extends GridValidRowModel,
@@ -37,6 +36,12 @@ export interface IAsyncAutocompleteDataGridEditCell<
       onSearchResults: (searchResults: IAutocompleteDataGridOption<ValueType>[]) => void
     ) => Promise<void>
   >;
+  /**
+   * Indicates if there is an error with the control
+   *
+   * @memberof IAsyncAutocompleteDataGridEditCell
+   */
+  error?: boolean;
 }
 
 /**
@@ -54,6 +59,13 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
 
   const apiRef = useGridApiContext();
 
+  const ref = useRef<HTMLInputElement>();
+
+  useEnhancedEffect(() => {
+    if (dataGridProps.hasFocus) {
+      ref.current?.focus();
+    }
+  }, [dataGridProps.hasFocus]);
   // The current data grid value
   const dataGridValue = dataGridProps.value;
   // The input field value
@@ -136,7 +148,7 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
 
   return (
     <Autocomplete
-      id={String(dataGridProps.id)}
+      id={`${dataGridProps.id}[${dataGridProps.field}]`}
       noOptionsText="No matching options"
       autoHighlight
       fullWidth
@@ -170,16 +182,14 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
       renderInput={(params) => (
         <TextField
           {...params}
+          inputRef={ref}
+          size="small"
           variant="outlined"
-          placeholder={'Type to search...'}
           fullWidth
+          error={props.error}
           InputProps={{
+            color: props.error ? 'error' : undefined,
             ...params.InputProps,
-            startAdornment: (
-              <Box mt="6px">
-                <Icon path={mdiMagnify} size={1}></Icon>
-              </Box>
-            ),
             endAdornment: (
               <>
                 {isLoading ? <CircularProgress color="inherit" size={20} /> : null}

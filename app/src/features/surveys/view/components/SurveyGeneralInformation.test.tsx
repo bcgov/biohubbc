@@ -1,7 +1,7 @@
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { DataLoader } from 'hooks/useDataLoader';
-import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
+import { IGetObservationSubmissionResponse } from 'interfaces/useDwcaApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import { codes } from 'test-helpers/code-helpers';
 import { getObservationSubmissionResponse, getSurveyForViewResponse } from 'test-helpers/survey-helpers';
@@ -30,6 +30,8 @@ describe('SurveyGeneralInformation', () => {
     >;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
+    const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
 
     const { getByTestId } = render(
       <CodesContext.Provider value={mockCodesContext}>
@@ -41,14 +43,16 @@ describe('SurveyGeneralInformation', () => {
             artifactDataLoader: mockArtifactDataLoader,
             observationDataLoader: mockObservationDataLoader,
             summaryDataLoader: mockSummaryDataLoader,
-            sampleSiteDataLoader: mockSampleSiteDataLoader
+            sampleSiteDataLoader: mockSampleSiteDataLoader,
+            critterDataLoader: mockCritterDataLoader,
+            deploymentDataLoader: mockDeploymentDataLoader
           }}>
           <SurveyGeneralInformation />
         </SurveyContext.Provider>
       </CodesContext.Provider>
     );
 
-    expect(getByTestId('survey_timeline').textContent).toEqual('Oct 10, 1998 - Feb 26, 2021');
+    expect(getByTestId('survey_timeline').textContent).toEqual('October 10, 1998 - February 26, 2021');
   });
 
   it('renders correctly with null end date', () => {
@@ -72,6 +76,8 @@ describe('SurveyGeneralInformation', () => {
     >;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
+    const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
 
     const { getByTestId } = render(
       <CodesContext.Provider value={mockCodesContext}>
@@ -83,7 +89,9 @@ describe('SurveyGeneralInformation', () => {
             artifactDataLoader: mockArtifactDataLoader,
             observationDataLoader: mockObservationDataLoader,
             summaryDataLoader: mockSummaryDataLoader,
-            sampleSiteDataLoader: mockSampleSiteDataLoader
+            sampleSiteDataLoader: mockSampleSiteDataLoader,
+            critterDataLoader: mockCritterDataLoader,
+            deploymentDataLoader: mockDeploymentDataLoader
           }}>
           <SurveyGeneralInformation />
         </SurveyContext.Provider>
@@ -104,6 +112,9 @@ describe('SurveyGeneralInformation', () => {
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
 
+    const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
+    const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
+
     const { container } = render(
       <CodesContext.Provider value={mockCodesContext}>
         <SurveyContext.Provider
@@ -114,7 +125,9 @@ describe('SurveyGeneralInformation', () => {
             artifactDataLoader: mockArtifactDataLoader,
             observationDataLoader: mockObservationDataLoader,
             summaryDataLoader: mockSummaryDataLoader,
-            sampleSiteDataLoader: mockSampleSiteDataLoader
+            sampleSiteDataLoader: mockSampleSiteDataLoader,
+            critterDataLoader: mockCritterDataLoader,
+            deploymentDataLoader: mockDeploymentDataLoader
           }}>
           <SurveyGeneralInformation />
         </SurveyContext.Provider>

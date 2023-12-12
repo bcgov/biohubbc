@@ -1,13 +1,13 @@
-import Button from '@mui/material/Button';
+import { LoadingButton } from '@mui/lab';
 import Dialog, { DialogProps } from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import useTheme from '@mui/material/styles/useTheme';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 
-export interface IComponentDialogProps {
+export type IComponentDialogProps = PropsWithChildren<{
   /**
    * The dialog window title text.
    *
@@ -43,7 +43,12 @@ export interface IComponentDialogProps {
    * @memberof IComponentDialogProps
    */
   dialogProps?: Partial<DialogProps>;
-}
+
+  /**
+   * A boolean tracking if work is being done and a loading spinner needs to be displayed
+   */
+  isLoading?: boolean;
+}>;
 
 /**
  * A dialog to wrap any component(s) that need to be displayed as a modal.
@@ -53,7 +58,7 @@ export interface IComponentDialogProps {
  * @param {*} props
  * @return {*}
  */
-const ComponentDialog: React.FC<PropsWithChildren<IComponentDialogProps>> = (props) => {
+const ComponentDialog = (props: IComponentDialogProps) => {
   const theme = useTheme();
 
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -73,9 +78,9 @@ const ComponentDialog: React.FC<PropsWithChildren<IComponentDialogProps>> = (pro
       <DialogTitle id="component-dialog-title">{props.dialogTitle}</DialogTitle>
       <DialogContent>{props.children}</DialogContent>
       <DialogActions>
-        <Button onClick={props.onClose} color="primary" variant="contained" autoFocus>
+        <LoadingButton loading={props.isLoading} onClick={props.onClose} color="primary" variant="contained" autoFocus>
           {props.closeButtonLabel ? props.closeButtonLabel : 'Ok'}
-        </Button>
+        </LoadingButton>
       </DialogActions>
     </Dialog>
   );

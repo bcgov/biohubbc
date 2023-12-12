@@ -1,5 +1,5 @@
 import { Feature } from 'geojson';
-import * as L from 'leaflet';
+import L from 'leaflet';
 import React, { ReactElement } from 'react';
 import {
   FeatureGroup,
@@ -11,6 +11,7 @@ import {
   Tooltip,
   TooltipProps
 } from 'react-leaflet';
+import { coloredPoint } from 'utils/mapUtils';
 
 export interface IStaticLayerFeature {
   geoJSON: Feature;
@@ -24,6 +25,10 @@ export interface IStaticLayerFeature {
 
 export interface IStaticLayer {
   layerName: string;
+  layerColors?: {
+    color: string;
+    fillColor: string;
+  };
   features: IStaticLayerFeature[];
 }
 
@@ -38,10 +43,11 @@ const StaticLayers: React.FC<React.PropsWithChildren<IStaticLayersProps>> = (pro
 
   const layerControls: ReactElement[] = [];
 
-  props.layers.forEach((layer, index) => {
+  props.layers.forEach((layer) => {
     if (!layer.features?.length) {
       return;
     }
+    const layerColors = layer.layerColors || { color: '#1f7dff', fillColor: '#1f7dff' };
 
     layerControls.push(
       <LayersControl.Overlay checked={true} name={layer.layerName} key={`static-layer-${layer.layerName}`}>
@@ -52,17 +58,18 @@ const StaticLayers: React.FC<React.PropsWithChildren<IStaticLayersProps>> = (pro
             return (
               <GeoJSON
                 key={`static-feature-${id}`}
+                style={{ ...layerColors }}
                 pointToLayer={(feature, latlng) => {
                   if (feature.properties?.radius) {
                     return new L.Circle([latlng.lat, latlng.lng], feature.properties.radius);
                   }
 
-                  return new L.Marker([latlng.lat, latlng.lng]);
+                  return coloredPoint({ latlng });
                 }}
                 data={item.geoJSON}
                 {...item.GeoJSONProps}>
                 {item.tooltip && (
-                  <Tooltip key={`static-feature-tooltip-${id}`} direction="top" {...item.TooltipProps}>
+                  <Tooltip key={`static-feature-tooltip-${id}`} direction="top" sticky={true} {...item.TooltipProps}>
                     {item.tooltip}
                   </Tooltip>
                 )}

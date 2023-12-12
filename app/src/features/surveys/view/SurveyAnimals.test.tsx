@@ -5,6 +5,7 @@ import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
+import { BrowserRouter } from 'react-router-dom';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import SurveyAnimals from './SurveyAnimals';
@@ -87,7 +88,9 @@ describe('SurveyAnimals', () => {
         <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
           <ProjectContext.Provider value={mockProjectContext}>
             <SurveyContext.Provider value={mockSurveyContext}>
-              <SurveyAnimals />
+              <BrowserRouter>
+                <SurveyAnimals />
+              </BrowserRouter>
             </SurveyContext.Provider>
           </ProjectContext.Provider>
         </ProjectAuthStateContext.Provider>
@@ -104,7 +107,7 @@ describe('SurveyAnimals', () => {
       {
         critter_id: 'critter_uuid',
         survey_critter_id: 1,
-        animal_id: 'a',
+        animal_id: 'animal_alias',
         taxon: 'a',
         created_at: 'a',
         wlh_id: '123-45'
@@ -119,7 +122,9 @@ describe('SurveyAnimals', () => {
         <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
           <ProjectContext.Provider value={mockProjectContext}>
             <SurveyContext.Provider value={mockSurveyContext}>
-              <SurveyAnimals />
+              <BrowserRouter>
+                <SurveyAnimals />
+              </BrowserRouter>
             </SurveyContext.Provider>
           </ProjectContext.Provider>
         </ProjectAuthStateContext.Provider>
@@ -130,11 +135,11 @@ describe('SurveyAnimals', () => {
       expect(getByText('123-45')).toBeInTheDocument();
       expect(getByTestId('survey-animal-table')).toBeInTheDocument();
       fireEvent.click(getByTestId('animal actions'));
-      fireEvent.click(getByTestId('animal-table-row-edit-timespan'));
-      fireEvent.click(getByText('Save'));
-      fireEvent.click(getByTestId('animal actions'));
-      fireEvent.click(getByTestId('animal-table-row-add-device'));
-      fireEvent.click(getByText('Save'));
+      fireEvent.click(getByTestId('animal-table-row-edit-critter'));
+    });
+    await waitFor(() => {
+      expect(getByText('Manage Animals')).toBeInTheDocument();
+      expect(getByText('animal_alias')).toBeInTheDocument();
     });
   });
 });

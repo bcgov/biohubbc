@@ -65,14 +65,19 @@ describe('AccessRequestPage', () => {
   describe('Log Out', () => {
     const history = createMemoryHistory();
 
-    it('should redirect to `/logout`', async () => {
+    it('should call the auth signoutRedirect function', async () => {
       mockUseApi.codes.getAllCodeSets.mockResolvedValue({
         system_roles: [{ id: 1, name: 'Creator' }]
       });
 
-      const authState = getMockAuthState({ base: SystemAdminAuthState });
+      const signoutRedirectStub = jest.fn();
 
-      const { getByText } = render(
+      const authState = getMockAuthState({
+        base: SystemAdminAuthState,
+        overrides: { auth: { signoutRedirect: signoutRedirectStub } }
+      });
+
+      const { getByTestId } = render(
         <ThemeProvider theme={appTheme}>
           <AuthStateContext.Provider value={authState}>
             <Router history={history}>
@@ -82,10 +87,16 @@ describe('AccessRequestPage', () => {
         </ThemeProvider>
       );
 
-      fireEvent.click(getByText('Log out'));
+      const logoutButton = getByTestId('access-request-logout-button');
 
-      waitFor(() => {
-        expect(history.location.pathname).toEqual('/logout');
+      await waitFor(() => {
+        expect(logoutButton).toBeVisible();
+      });
+
+      fireEvent.click(logoutButton);
+
+      await waitFor(() => {
+        expect(signoutRedirectStub).toHaveBeenCalledTimes(1);
       });
     });
   });

@@ -7,7 +7,7 @@ import {
   IAnimalTelemetryDevice,
   IDeploymentTimespan,
   ITelemetryPointCollection
-} from 'features/surveys/view/survey-animals/device';
+} from 'features/surveys/view/survey-animals/telemetry-device/device';
 import {
   IGetAttachmentDetails,
   IGetReportDetails,
@@ -72,13 +72,13 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get surveys list.
+   * Fetches a subset of survey fields for all surveys under a project.
    *
    * @param {number} projectId
    * @return {*}  {Promise<IGetSurveysListResponse[]>}
    */
-  const getSurveysList = async (projectId: number): Promise<IGetSurveyForListResponse[]> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/list`);
+  const getSurveysBasicFieldsByProjectId = async (projectId: number): Promise<IGetSurveyForListResponse[]> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey`);
 
     return data;
   };
@@ -565,7 +565,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     body: IAnimalTelemetryDevice & { critter_id: string }
   ): Promise<number> => {
     body.device_id = Number(body.device_id); //Turn this into validation class soon
-    body.frequency = Number(body.frequency);
+    body.frequency = body.frequency != null ? Number(body.frequency) : undefined;
     body.frequency_unit = body.frequency_unit?.length ? body.frequency_unit : undefined;
     if (!body.deployments || body.deployments.length !== 1) {
       throw Error('Calling this with any amount other than 1 deployments currently unsupported.');
@@ -579,7 +579,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Update a deployment with a new timespan.
+   * Update a deployment with a new time span.
    *
    * @param {number} projectId
    * @param {number} surveyId
@@ -648,7 +648,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
   return {
     createSurvey,
     getSurveyForView,
-    getSurveysList,
+    getSurveysBasicFieldsByProjectId,
     getSurveyForUpdate,
     updateSurvey,
     uploadSurveyAttachments,

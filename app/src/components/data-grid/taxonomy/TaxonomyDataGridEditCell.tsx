@@ -1,12 +1,14 @@
 import { GridRenderEditCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import AsyncAutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AsyncAutocompleteDataGridEditCell';
 import { IAutocompleteDataGridOption } from 'components/data-grid/autocomplete/AutocompleteDataGrid.interface';
+import { TaxonomyContext } from 'contexts/taxonomyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import debounce from 'lodash-es/debounce';
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 
 export interface ITaxonomyDataGridCellProps<DataGridType extends GridValidRowModel> {
   dataGridProps: GridRenderEditCellParams<DataGridType>;
+  error?: boolean;
 }
 
 /**
@@ -22,18 +24,29 @@ const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel, ValueT
 ) => {
   const { dataGridProps } = props;
 
+  const taxonomyContext = useContext(TaxonomyContext);
   const biohubApi = useBiohubApi();
 
   const getCurrentOption = async (
     speciesId: string | number
   ): Promise<IAutocompleteDataGridOption<ValueType> | null> => {
-    const response = await biohubApi.taxonomy.getSpeciesFromIds([Number(speciesId)]);
-
-    if (response.searchResponse.length !== 1) {
+    if (!speciesId) {
       return null;
     }
 
-    return response.searchResponse.map((item) => ({ value: parseInt(item.id) as ValueType, label: item.label }))[0];
+    const id = Number(speciesId);
+
+    if (isNaN(id)) {
+      return null;
+    }
+
+    const response = taxonomyContext.getCachedSpeciesTaxonomyById(id);
+
+    if (!response) {
+      return null;
+    }
+
+    return { value: Number(response.id) as ValueType, label: response.label };
   };
 
   const getOptions = useMemo(
@@ -43,6 +56,11 @@ const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel, ValueT
           searchTerm: string,
           onSearchResults: (searchedValues: IAutocompleteDataGridOption<ValueType>[]) => void
         ) => {
+          if (!searchTerm) {
+            onSearchResults([]);
+            return;
+          }
+
           const response = await biohubApi.taxonomy.searchSpecies(searchTerm);
           const options = response.searchResponse.map((item) => ({
             value: parseInt(item.id) as ValueType,
@@ -60,6 +78,7 @@ const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel, ValueT
       dataGridProps={dataGridProps}
       getCurrentOption={getCurrentOption}
       getOptions={getOptions}
+      error={props.error}
     />
   );
 };

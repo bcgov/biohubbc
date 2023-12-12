@@ -4,7 +4,7 @@ const process = require('process');
 const { appDeploy } = require('../lib/app.deploy.js');
 const config = require('../config.js');
 
-const settings = { ...config, phase: config.options.env };
+const settings = { ...config, phase: config.options.phase };
 
 process.on('unhandledRejection', (reason, promise) => {
   console.log('app deploy - unhandled rejection:', promise, 'reason:', reason);

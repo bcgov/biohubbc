@@ -1,9 +1,11 @@
+import Typography from '@mui/material/Typography';
 import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import useDataLoader from 'hooks/useDataLoader';
+import { TaxonomyContext } from 'contexts/taxonomyContext';
+import { useContext } from 'react';
 
 export interface ITaxonomyDataGridViewCellProps<DataGridType extends GridValidRowModel> {
   dataGridProps: GridRenderCellParams<DataGridType>;
+  error?: boolean;
 }
 
 /**
@@ -18,21 +20,31 @@ const TaxonomyDataGridViewCell = <DataGridType extends GridValidRowModel>(
 ) => {
   const { dataGridProps } = props;
 
-  const biohubApi = useBiohubApi();
+  const taxonomyContext = useContext(TaxonomyContext);
 
-  const taxonomyDataLoader = useDataLoader(() => biohubApi.taxonomy.getSpeciesFromIds([Number(dataGridProps.value)]));
-
-  taxonomyDataLoader.load();
-
-  if (!taxonomyDataLoader.isReady) {
+  if (!dataGridProps.value) {
     return null;
   }
 
-  if (taxonomyDataLoader.data?.searchResponse?.length !== 1) {
+  const response = taxonomyContext.getCachedSpeciesTaxonomyById(dataGridProps.value);
+
+  if (!response) {
     return null;
   }
 
-  return <>{taxonomyDataLoader.data?.searchResponse[0].label}</>;
+  return (
+    <Typography
+      variant="body2"
+      component="div"
+      sx={{
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
+        color: props.error ? 'error' : undefined
+      }}>
+      {response.label}
+    </Typography>
+  );
 };
 
 export default TaxonomyDataGridViewCell;

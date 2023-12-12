@@ -24,7 +24,6 @@ describe('ValidationRepository', () => {
 
       const templateName = 'template Name';
       const templateVersion = '1';
-      const fieldMethodId = 10;
       const surveySpecies = [10];
 
       const mockResponse = ({
@@ -43,12 +42,7 @@ describe('ValidationRepository', () => {
       });
 
       const repo = new ValidationRepository(dbConnection);
-      const response = await repo.getTemplateMethodologySpeciesRecord(
-        templateName,
-        templateVersion,
-        fieldMethodId,
-        surveySpecies
-      );
+      const response = await repo.getTemplateMethodologySpeciesRecord(templateName, templateVersion, surveySpecies);
       expect(response.template_methodology_species_id).to.be.eql(1);
       expect(response.validation).to.be.eql('{}');
       expect(response.transform).to.be.eql('{}');
@@ -65,7 +59,7 @@ describe('ValidationRepository', () => {
       const repo = new ValidationRepository(dbConnection);
 
       try {
-        await repo.getTemplateMethodologySpeciesRecord('name', 'version', 1, [1]);
+        await repo.getTemplateMethodologySpeciesRecord('name', 'version', [1]);
         expect.fail();
       } catch (error) {
         expect((error as HTTP400).message).to.be.eql('Failed to query template methodology species table');

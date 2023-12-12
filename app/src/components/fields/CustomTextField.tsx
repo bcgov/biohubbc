@@ -1,10 +1,15 @@
-import TextField, { TextFieldProps } from '@mui/material/TextField';
+import TextField from '@mui/material/TextField';
 import { FormikContextType, useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 export interface ICustomTextField {
   label: string;
   name: string;
-  other?: TextFieldProps;
+  /*
+   * Needed fix: Add correct hardcoded type
+   * Note: TextFieldProps causes build compile issue
+   * https://github.com/mui/material-ui/issues/30038
+   */
+  other?: any;
   //Additionally add a handlBlur if touced properties not updating correclty.
   handleBlur?: FormikContextType<any>['handleBlur'];
 
@@ -12,9 +17,9 @@ export interface ICustomTextField {
 }
 
 const CustomTextField: React.FC<React.PropsWithChildren<ICustomTextField>> = (props) => {
-  const { touched, errors, values, handleChange } = useFormikContext<any>();
+  const { touched, errors, values, handleChange, handleBlur } = useFormikContext<any>();
 
-  const { name, label, other, handleBlur } = props;
+  const { name, label, other } = props;
 
   return (
     <TextField
@@ -25,7 +30,7 @@ const CustomTextField: React.FC<React.PropsWithChildren<ICustomTextField>> = (pr
       onChange={handleChange}
       onBlur={handleBlur}
       variant="outlined"
-      value={get(values, name)}
+      value={get(values, name) ?? ''}
       fullWidth={true}
       error={get(touched, name) && Boolean(get(errors, name))}
       helperText={get(touched, name) && (get(errors, name) as string)}

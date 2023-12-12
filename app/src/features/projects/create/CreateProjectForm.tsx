@@ -5,18 +5,17 @@ import { makeStyles } from '@mui/styles';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { ScrollToFormikError } from 'components/formik/ScrollToFormikError';
 import { PROJECT_ROLE } from 'constants/roles';
-import { AuthStateContext } from 'contexts/authStateContext';
 import { Formik, FormikProps } from 'formik';
+import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ICreateProjectRequest, IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
-import React, { useContext } from 'react';
+import React from 'react';
 import { alphabetizeObjects } from 'utils/Utils';
 import ProjectDetailsForm, {
   ProjectDetailsFormInitialValues,
   ProjectDetailsFormYupSchema
 } from '../components/ProjectDetailsForm';
 import { ProjectIUCNFormInitialValues } from '../components/ProjectIUCNForm';
-import { ProjectLocationFormInitialValues } from '../components/ProjectLocationForm';
 import ProjectObjectivesForm, {
   ProjectObjectivesFormInitialValues,
   ProjectObjectivesFormYupSchema
@@ -44,15 +43,12 @@ export interface ICreateProjectForm {
 export const initialProjectFieldData: ICreateProjectRequest = {
   ...ProjectDetailsFormInitialValues,
   ...ProjectObjectivesFormInitialValues,
-  ...ProjectLocationFormInitialValues,
   ...ProjectIUCNFormInitialValues,
   ...ProjectUserRoleFormInitialValues
 };
 
 export const validationProjectYupSchema =
   ProjectDetailsFormYupSchema.concat(ProjectObjectivesFormYupSchema).concat(ProjectUserRoleYupSchema);
-// TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form (yup schema) temporarily, while its decided where exactly project/survey locations should be defined
-// .concat(ProjectLocationFormYupSchema)
 // TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-162) Commenting out IUCN form (yup schema) temporarily, while its decided if IUCN information is desired
 // .concat(ProjectIUCNFormYupSchema)
 
@@ -76,7 +72,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
     props.handleSubmit(formikData);
   };
 
-  const { keycloakWrapper } = useContext(AuthStateContext);
+  const authStateContext = useAuthStateContext();
 
   const getProjectParticipants = (): IGetProjectParticipant[] => {
     let participants: IGetProjectParticipant[] = [];
@@ -86,14 +82,13 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
       participants = props.initialValues?.participants as IGetProjectParticipant[];
     } else {
       // this is a fresh form and the logged in user needs to be added as a participant
-      const loggedInUser = keycloakWrapper?.user;
       participants = [
         {
-          system_user_id: loggedInUser?.system_user_id,
-          display_name: loggedInUser?.display_name,
-          email: loggedInUser?.email,
-          agency: loggedInUser?.agency,
-          identity_source: loggedInUser?.identity_source,
+          system_user_id: authStateContext.simsUserWrapper?.systemUserId,
+          display_name: authStateContext.simsUserWrapper?.displayName,
+          email: authStateContext.simsUserWrapper?.email,
+          agency: authStateContext.simsUserWrapper?.agency,
+          identity_source: authStateContext.simsUserWrapper?.identitySource,
           project_role_names: [PROJECT_ROLE.COORDINATOR]
         } as IGetProjectParticipant
       ];
@@ -168,15 +163,6 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
           summary="Specify team members and their associated role for this project."
           component={<ProjectUserForm users={getProjectParticipants()} roles={codes.project_roles} />}
         />
-
-        {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form temporarily, while its decided where exactly project/survey locations should be defined */}
-        {/* <Divider className={classes.sectionDivider} />
-
-        <HorizontalSplitFormComponent
-          title="Location and Boundary"
-          summary="Provide details about the project's location and define the project spatial boundary"
-          component={<ProjectLocationForm />}></HorizontalSplitFormComponent> */}
-
         <Divider className={classes.sectionDivider} />
       </>
     </Formik>

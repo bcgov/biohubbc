@@ -5,6 +5,7 @@ import useAdminApi from './api/useAdminApi';
 import useAxios from './api/useAxios';
 import useCodesApi from './api/useCodesApi';
 import useDraftApi from './api/useDraftApi';
+import useDwcaApi from './api/useDwcaApi';
 import useExternalApi from './api/useExternalApi';
 import useFundingSourceApi from './api/useFundingSourceApi';
 import useObservationApi from './api/useObservationApi';
@@ -13,7 +14,6 @@ import useProjectParticipationApi from './api/useProjectParticipationApi';
 import usePublishApi from './api/usePublishApi';
 import useResourcesApi from './api/useResourcesApi';
 import useSamplingSiteApi from './api/useSamplingSiteApi';
-import useSearchApi from './api/useSearchApi';
 import useSpatialApi from './api/useSpatialApi';
 import useSurveyApi from './api/useSurveyApi';
 import useTaxonomyApi from './api/useTaxonomyApi';
@@ -32,8 +32,6 @@ export const useBiohubApi = () => {
 
   const projectParticipants = useProjectParticipationApi(apiAxios);
 
-  const search = useSearchApi(apiAxios);
-
   const taxonomy = useTaxonomyApi(apiAxios);
 
   const survey = useSurveyApi(apiAxios);
@@ -47,6 +45,8 @@ export const useBiohubApi = () => {
   const admin = useAdminApi(apiAxios);
 
   const observation = useObservationApi(apiAxios);
+
+  const dwca = useDwcaApi(apiAxios);
 
   const resources = useResourcesApi(apiAxios);
 
@@ -64,10 +64,10 @@ export const useBiohubApi = () => {
     () => ({
       project,
       projectParticipants,
-      search,
       taxonomy,
       survey,
       observation,
+      dwca,
       resources,
       codes,
       draft,

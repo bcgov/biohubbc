@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
@@ -23,47 +22,33 @@ const SurveyProprietaryData = () => {
 
   return (
     <>
-      <Box>
-        <dl>
-          {!proprietor && (
-            <Grid container spacing={1}>
-              <Grid item>
-                <Typography data-testid="survey_not_proprietary">
-                  The data captured in this survey is not proprietary.
-                </Typography>
-              </Grid>
-            </Grid>
-          )}
-          {proprietor && (
-            <Grid container spacing={1}>
-              <Grid item xs={12} sm={6}>
-                <Typography component="dt" variant="subtitle2" color="textSecondary">
-                  Proprietor Name
-                </Typography>
-                <Typography component="dd" variant="body1" data-testid="survey_proprietor_name">
-                  {proprietor.proprietor_name}
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Typography component="dt" variant="subtitle2" color="textSecondary">
-                  Data Category
-                </Typography>
-                <Typography component="dd" variant="body1" data-testid="survey_proprietor_type_name">
-                  {proprietor.proprietor_type_name}
-                </Typography>
-              </Grid>
-              <Grid item>
-                <Typography component="dt" variant="subtitle2" color="textSecondary">
-                  Category Rationale
-                </Typography>
-                <Typography style={{ wordBreak: 'break-all' }} data-testid="survey_category_rationale">
-                  {proprietor.category_rationale}
-                </Typography>
-              </Grid>
-            </Grid>
-          )}
-        </dl>
-      </Box>
+      {!proprietor && (
+        <Box className="row">
+          <Typography color="textSecondary" data-testid="survey_not_proprietary">
+            The data captured in this survey is not proprietary.
+          </Typography>
+        </Box>
+      )}
+      {proprietor && (
+        <Box component="dl">
+          <Box className="row">
+            <Typography component="dt">Proprietor Name</Typography>
+            <Typography component="dd" data-testid="survey_proprietor_name">
+              {proprietor.proprietor_name}
+            </Typography>
+          </Box>
+          <Box className="row">
+            <Typography component="dt">Data Category</Typography>
+            <Typography component="dd" data-testid="survey_proprietor_type_name">
+              {proprietor.proprietor_type_name}
+            </Typography>
+          </Box>
+          <Box className="row">
+            <Typography component="dt">Category Rationale</Typography>
+            <Typography data-testid="survey_category_rationale">{proprietor.category_rationale}</Typography>
+          </Box>
+        </Box>
+      )}
     </>
   );
 };

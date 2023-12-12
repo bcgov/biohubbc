@@ -11,7 +11,6 @@ import assert from 'assert';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
-import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
 import React, { useContext, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -19,14 +18,11 @@ import { Link as RouterLink } from 'react-router-dom';
 //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
 const SurveysList: React.FC = () => {
-  const codesContext = useContext(CodesContext);
   const projectContext = useContext(ProjectContext);
 
   const surveys = projectContext.surveysListDataLoader.data || [];
-  const codes = codesContext.codesDataLoader.data;
 
   assert(projectContext.surveysListDataLoader.data);
-  assert(codesContext.codesDataLoader.data);
 
   const [rowsPerPage] = useState(30);
   const [page] = useState(0);
@@ -50,7 +46,6 @@ const SurveysList: React.FC = () => {
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Focal Species</TableCell>
-              <TableCell>Purpose</TableCell>
               <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
                 <TableCell width="200">Status</TableCell>
               </SystemRoleGuard>
@@ -64,18 +59,12 @@ const SurveysList: React.FC = () => {
                     <Link
                       style={{ fontWeight: 'bold' }}
                       underline="always"
-                      to={`/admin/projects/${projectContext.projectId}/surveys/${row.surveyData.survey_details.id}/details`}
+                      to={`/admin/projects/${projectContext.projectId}/surveys/${row.surveyData.survey_id}/details`}
                       component={RouterLink}>
-                      {row.surveyData.survey_details.survey_name}
+                      {row.surveyData.name}
                     </Link>
                   </TableCell>
-                  <TableCell>{row.surveyData.species.focal_species_names.join('; ')}</TableCell>
-                  <TableCell>
-                    {row.surveyData.purpose_and_methodology.intended_outcome_id &&
-                      codes?.intended_outcomes?.find(
-                        (item: any) => item.id === row.surveyData.purpose_and_methodology.intended_outcome_id
-                      )?.name}
-                  </TableCell>
+                  <TableCell>{row.surveyData.focal_species_names.join('; ')}</TableCell>
                   <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
                     <TableCell>
                       <SubmitStatusChip status={row.surveySupplementaryData.publishStatus} />

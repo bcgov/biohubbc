@@ -1,6 +1,6 @@
+import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import AccessRequestList from 'features/admin/users/AccessRequestList';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import { IAccessRequestDataObject, IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { codes } from 'test-helpers/code-helpers';

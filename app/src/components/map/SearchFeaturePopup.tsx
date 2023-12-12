@@ -1,14 +1,13 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { AuthStateContext } from 'contexts/authStateContext';
-import React, { useContext } from 'react';
+import { useAuthStateContext } from 'hooks/useAuthStateContext';
+import React from 'react';
 import { Popup } from 'react-leaflet';
 import { useHistory } from 'react-router';
-import { isAuthenticated } from 'utils/authUtils';
 
 export const SearchFeaturePopup: React.FC<{ featureData: any }> = (props) => {
-  const { keycloakWrapper } = useContext(AuthStateContext);
+  const authStateContext = useAuthStateContext();
   const history = useHistory();
 
   const { featureData } = props;
@@ -22,7 +21,7 @@ export const SearchFeaturePopup: React.FC<{ featureData: any }> = (props) => {
         variant="contained"
         color="primary"
         onClick={() => {
-          if (isAuthenticated(keycloakWrapper)) {
+          if (!authStateContext.auth.isAuthenticated || authStateContext.simsUserWrapper.isLoading) {
             history.push(`/admin/projects/${featureData.id}`);
           } else {
             history.push(`/projects/${featureData.id}`);

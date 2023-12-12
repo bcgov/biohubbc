@@ -5,7 +5,7 @@ import {
   ADMINISTRATIVE_ACTIVITY_TYPE
 } from '../constants/administrative-activity';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { jsonSchema } from '../zod-schema/json';
+import { shallowJsonSchema } from '../zod-schema/json';
 import { BaseRepository } from './base-repository';
 
 export const IAdministrativeActivityStanding = z.object({
@@ -22,7 +22,7 @@ export const IAdministrativeActivity = z.object({
   status: z.number(),
   status_name: z.string(),
   description: z.string().nullable(),
-  data: jsonSchema,
+  data: shallowJsonSchema,
   notes: z.string().nullable(),
   create_date: z.string()
 });
@@ -199,7 +199,7 @@ export class AdministrativeActivityRepository extends BaseRepository {
         ON
           aa.administrative_activity_status_type_id = aast.administrative_activity_status_type_id
         WHERE
-            (aa.data -> 'userGuid')::text =  '"' || ${userGUID} || '"'
+            LOWER(aa.data ->> 'userGuid') =  LOWER(${userGUID})
         AND
           aast.name = 'Pending'
       ),
@@ -217,7 +217,7 @@ export class AdministrativeActivityRepository extends BaseRepository {
         ON
           pp.system_user_id = su.system_user_id 
         WHERE
-          su.user_guid = ${userGUID}
+          LOWER(su.user_guid) = LOWER(${userGUID})
       ) SELECT
         *
       FROM

@@ -21,24 +21,26 @@ describe('SampleLocationService', () => {
       const mockData: PostSampleLocations = {
         survey_sample_site_id: null,
         survey_id: 1,
-        name: `Sample Site 1`,
-        description: ``,
         survey_sample_sites: [
           {
-            type: 'Feature',
-            geometry: {
-              type: 'Polygon',
-              coordinates: [
-                [
-                  [-121.904297, 50.930738],
-                  [-121.904297, 51.971346],
-                  [-120.19043, 51.971346],
-                  [-120.19043, 50.930738],
-                  [-121.904297, 50.930738]
+            name: `Sample Site 1`,
+            description: ``,
+            feature: {
+              type: 'Feature',
+              geometry: {
+                type: 'Polygon',
+                coordinates: [
+                  [
+                    [-121.904297, 50.930738],
+                    [-121.904297, 51.971346],
+                    [-120.19043, 51.971346],
+                    [-120.19043, 50.930738],
+                    [-121.904297, 50.930738]
+                  ]
                 ]
-              ]
-            },
-            properties: {}
+              },
+              properties: {}
+            }
           }
         ],
         methods: [
@@ -50,7 +52,9 @@ describe('SampleLocationService', () => {
               {
                 survey_sample_method_id: 1,
                 start_date: '2023-01-01',
-                end_date: '2023-01-03'
+                end_date: '2023-01-03',
+                start_time: '12:00:00',
+                end_time: '13:00:00'
               }
             ]
           }
@@ -116,6 +120,14 @@ describe('SampleLocationService', () => {
       const mockDBConnection = getMockDBConnection();
       const service = new SampleLocationService(mockDBConnection);
 
+      const getSampleMethodsForSurveySampleSiteIdStub = sinon
+        .stub(SampleMethodService.prototype, 'getSampleMethodsForSurveySampleSiteId')
+        .resolves([{ survey_sample_method_id: 1 } as any]);
+
+      const deleteSampleMethodRecordStub = sinon
+        .stub(SampleMethodService.prototype, 'deleteSampleMethodRecord')
+        .resolves();
+
       sinon.stub(SampleLocationRepository.prototype, 'deleteSampleLocationRecord').resolves({
         survey_sample_site_id: 1,
         survey_id: 1,
@@ -134,6 +146,8 @@ describe('SampleLocationService', () => {
       const { survey_sample_site_id } = await service.deleteSampleLocationRecord(1);
 
       expect(survey_sample_site_id).to.be.eq(1);
+      expect(getSampleMethodsForSurveySampleSiteIdStub).to.be.calledOnceWith(1);
+      expect(deleteSampleMethodRecordStub).to.be.calledOnceWith(1);
     });
   });
 

@@ -1,18 +1,21 @@
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
+import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import SurveyHeader from 'features/surveys/view/SurveyHeader';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState, SystemUserAuthState } from 'test-helpers/auth-helpers';
+import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 
-const history = createMemoryHistory({ initialEntries: ['/admin/projects/1/surveys/1'] });
+const history = createMemoryHistory({ initialEntries: ['/admin/projects/1/surveys/2'] });
 
 jest.mock('../../../hooks/useBioHubApi');
 const mockBiohubApi = useBiohubApi as jest.Mock;
@@ -40,8 +43,37 @@ const mockSurveyContext: ISurveyContext = {
   sampleSiteDataLoader: {
     data: null
   } as DataLoader<any, any, any>,
+  critterDataLoader: {
+    data: null
+  } as DataLoader<any, any, any>,
+  deploymentDataLoader: {
+    data: null
+  } as DataLoader<any, any, any>,
   surveyId: 1,
   projectId: 1
+};
+
+const mockProjectContext: IProjectContext = {
+  projectDataLoader: {
+    data: getProjectForViewResponse
+  } as DataLoader<[project_id: number], IGetProjectForViewResponse, unknown>,
+  artifactDataLoader: {
+    data: null
+  } as DataLoader<any, any, any>,
+  surveysListDataLoader: {
+    data: null,
+    refresh: () => {}
+  } as DataLoader<any, any, any>,
+  projectId: 1
+};
+
+const mockProjectAuthStateContext: IProjectAuthStateContext = {
+  getProjectParticipant: () => null,
+  hasProjectRole: () => true,
+  hasProjectPermission: () => true,
+  hasSystemRole: () => true,
+  getProjectId: () => 1,
+  hasLoadedParticipantInfo: true
 };
 
 const surveyForView = getSurveyForViewResponse;
@@ -49,6 +81,8 @@ const surveyForView = getSurveyForViewResponse;
 describe('SurveyHeader', () => {
   beforeEach(() => {
     mockBiohubApi.mockImplementation(() => mockUseApi);
+
+    mockUseApi.survey.deleteSurvey.mockResolvedValue(true);
   });
 
   afterEach(() => {
@@ -57,23 +91,19 @@ describe('SurveyHeader', () => {
 
   const renderComponent = (authState: IAuthState) => {
     return render(
-      <ProjectContext.Provider
-        value={
-          {
-            projectId: 1,
-            surveysListDataLoader: { refresh: jest.fn() } as unknown as DataLoader<any, any, any>
-          } as unknown as IProjectContext
-        }>
-        <SurveyContext.Provider value={mockSurveyContext}>
-          <AuthStateContext.Provider value={authState}>
-            <DialogContextProvider>
-              <Router history={history}>
-                <SurveyHeader />
-              </Router>
-            </DialogContextProvider>
-          </AuthStateContext.Provider>
-        </SurveyContext.Provider>
-      </ProjectContext.Provider>
+      <Router history={history}>
+        <ProjectContext.Provider value={mockProjectContext}>
+          <SurveyContext.Provider value={mockSurveyContext}>
+            <AuthStateContext.Provider value={authState}>
+              <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+                <DialogContextProvider>
+                  <SurveyHeader />
+                </DialogContextProvider>
+              </ProjectAuthStateContext.Provider>
+            </AuthStateContext.Provider>
+          </SurveyContext.Provider>
+        </ProjectContext.Provider>
+      </Router>
     );
   };
 
@@ -84,8 +114,14 @@ describe('SurveyHeader', () => {
 
     const { getByTestId, findByText, getByText } = renderComponent(authState);
 
-    const surveyHeaderText = await findByText('survey name', { selector: 'h1 span' });
+    const surveyHeaderText = await findByText('survey name', { selector: 'span' });
     expect(surveyHeaderText).toBeVisible();
+
+    fireEvent.click(getByTestId('settings-survey-button'));
+
+    await waitFor(() => {
+      expect(getByText('Delete Survey')).toBeInTheDocument();
+    });
 
     fireEvent.click(getByTestId('delete-survey-button'));
 
@@ -98,7 +134,9 @@ describe('SurveyHeader', () => {
     fireEvent.click(getByTestId('yes-button'));
 
     await waitFor(() => {
-      expect(history.location.pathname).toEqual(`/admin/projects/${surveyForView.surveyData.survey_details.id}`);
+      expect(history.location.pathname).toEqual(
+        `/admin/projects/${surveyForView.surveyData.survey_details.project_id}`
+      );
     });
   });
 
@@ -107,7 +145,7 @@ describe('SurveyHeader', () => {
 
     const { queryByTestId, findByText } = renderComponent(authState);
 
-    const surveyHeaderText = await findByText('survey name', { selector: 'h1 span' });
+    const surveyHeaderText = await findByText('survey name', { selector: 'span' });
     expect(surveyHeaderText).toBeVisible();
 
     expect(queryByTestId('delete-survey-button')).toBeNull();

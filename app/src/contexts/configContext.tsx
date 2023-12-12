@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { KeycloakConfig } from 'keycloak-js';
 import React, { useEffect, useState } from 'react';
 import { ensureProtocol } from 'utils/Utils';
 
@@ -9,11 +8,16 @@ export interface IConfig {
   NODE_ENV: string;
   REACT_APP_NODE_ENV: string;
   VERSION: string;
-  KEYCLOAK_CONFIG: KeycloakConfig;
+  KEYCLOAK_CONFIG: {
+    authority: string;
+    realm: string;
+    clientId: string;
+  };
   SITEMINDER_LOGOUT_URL: string;
   MAX_UPLOAD_NUM_FILES: number;
   MAX_UPLOAD_FILE_SIZE: number;
   S3_PUBLIC_HOST_URL: string;
+  BIOHUB_FEATURE_FLAG: boolean;
 }
 
 export const ConfigContext = React.createContext<IConfig | undefined>({
@@ -23,14 +27,15 @@ export const ConfigContext = React.createContext<IConfig | undefined>({
   REACT_APP_NODE_ENV: '',
   VERSION: '',
   KEYCLOAK_CONFIG: {
-    url: '',
+    authority: '',
     realm: '',
     clientId: ''
   },
   SITEMINDER_LOGOUT_URL: '',
   MAX_UPLOAD_NUM_FILES: 10,
   MAX_UPLOAD_FILE_SIZE: 52428800,
-  S3_PUBLIC_HOST_URL: ''
+  S3_PUBLIC_HOST_URL: '',
+  BIOHUB_FEATURE_FLAG: false
 });
 
 /**
@@ -53,14 +58,15 @@ const getLocalConfig = (): IConfig => {
     REACT_APP_NODE_ENV: process.env.REACT_APP_NODE_ENV || 'dev',
     VERSION: `${process.env.VERSION || 'NA'}(build #${process.env.CHANGE_VERSION || 'NA'})`,
     KEYCLOAK_CONFIG: {
-      url: process.env.REACT_APP_KEYCLOAK_HOST || '',
+      authority: process.env.REACT_APP_KEYCLOAK_HOST || '',
       realm: process.env.REACT_APP_KEYCLOAK_REALM || '',
       clientId: process.env.REACT_APP_KEYCLOAK_CLIENT_ID || ''
     },
     SITEMINDER_LOGOUT_URL: process.env.REACT_APP_SITEMINDER_LOGOUT_URL || '',
     MAX_UPLOAD_NUM_FILES: Number(process.env.REACT_APP_MAX_UPLOAD_NUM_FILES) || 10,
     MAX_UPLOAD_FILE_SIZE: Number(process.env.REACT_APP_MAX_UPLOAD_FILE_SIZE) || 52428800,
-    S3_PUBLIC_HOST_URL: ensureProtocol(`${OBJECT_STORE_URL}/${OBJECT_STORE_BUCKET_NAME}`, 'https://')
+    S3_PUBLIC_HOST_URL: ensureProtocol(`${OBJECT_STORE_URL}/${OBJECT_STORE_BUCKET_NAME}`, 'https://'),
+    BIOHUB_FEATURE_FLAG: process.env.REACT_APP_BIOHUB_FEATURE_FLAG === 'true'
   };
 };
 

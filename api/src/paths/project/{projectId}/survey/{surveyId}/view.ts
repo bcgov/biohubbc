@@ -230,29 +230,17 @@ GET.apiDoc = {
                   purpose_and_methodology: {
                     description: 'Survey Details',
                     type: 'object',
-                    required: [
-                      'field_method_id',
-                      'additional_details',
-                      'intended_outcome_id',
-                      'ecological_season_id',
-                      'vantage_code_ids',
-                      'revision_count'
-                    ],
+                    required: ['additional_details', 'intended_outcome_ids', 'vantage_code_ids', 'revision_count'],
                     properties: {
-                      field_method_id: {
-                        type: 'number'
-                      },
                       additional_details: {
                         type: 'string',
                         nullable: true
                       },
-                      intended_outcome_id: {
-                        type: 'number',
-                        nullable: true
-                      },
-                      ecological_season_id: {
-                        type: 'number',
-                        nullable: true
+                      intended_outcome_ids: {
+                        type: 'array',
+                        items: {
+                          type: 'number'
+                        }
                       },
                       vantage_code_ids: {
                         type: 'array',

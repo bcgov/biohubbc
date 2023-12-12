@@ -1,8 +1,10 @@
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
+import useEnhancedEffect from '@mui/material/utils/useEnhancedEffect';
 import { GridRenderCellParams, GridValidRowModel, useGridApiContext } from '@mui/x-data-grid';
 import { IAutocompleteDataGridOption } from 'components/data-grid/autocomplete/AutocompleteDataGrid.interface';
+import { useRef } from 'react';
 
 export interface IAutocompleteDataGridEditCellProps<
   DataGridType extends GridValidRowModel,
@@ -28,6 +30,13 @@ export interface IAutocompleteDataGridEditCellProps<
    * @memberof IAutocompleteDataGridEditCellProps
    */
   getOptionDisabled?: (option: IAutocompleteDataGridOption<ValueType>) => boolean;
+  /**
+   * Indicates if the control contains an error
+   *
+   * @type {boolean}
+   * @memberof IAutocompleteDataGridEditCellProps
+   */
+  error?: boolean;
 }
 
 /**
@@ -44,6 +53,14 @@ const AutocompleteDataGridEditCell = <DataGridType extends GridValidRowModel, Va
   const { dataGridProps, options, getOptionDisabled } = props;
 
   const apiRef = useGridApiContext();
+
+  const ref = useRef<HTMLInputElement>();
+
+  useEnhancedEffect(() => {
+    if (dataGridProps.hasFocus) {
+      ref.current?.focus();
+    }
+  }, [dataGridProps.hasFocus]);
 
   // The current data grid value
   const dataGridValue = dataGridProps.value;
@@ -70,7 +87,7 @@ const AutocompleteDataGridEditCell = <DataGridType extends GridValidRowModel, Va
 
   return (
     <Autocomplete
-      id={String(dataGridProps.id)}
+      id={`${dataGridProps.id}[${dataGridProps.field}]`}
       noOptionsText="No matching options"
       autoHighlight={true}
       fullWidth
@@ -98,12 +115,15 @@ const AutocompleteDataGridEditCell = <DataGridType extends GridValidRowModel, Va
       renderInput={(params) => (
         <TextField
           {...params}
+          inputRef={ref}
+          size="small"
           variant="outlined"
-          placeholder={'Type to filter...'}
           fullWidth
           InputProps={{
+            color: props.error ? 'error' : undefined,
             ...params.InputProps
           }}
+          error={props.error}
         />
       )}
       renderOption={(renderProps, renderOption) => {

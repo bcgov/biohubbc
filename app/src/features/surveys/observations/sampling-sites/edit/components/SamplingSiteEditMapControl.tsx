@@ -9,9 +9,13 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import FileUpload from 'components/file-upload/FileUpload';
-import FileUploadItem, { IUploadHandler } from 'components/file-upload/FileUploadItem';
-import { IStaticLayer } from 'components/map/components/StaticLayers';
-import MapContainer from 'components/map/MapContainer';
+import FileUploadItem from 'components/file-upload/FileUploadItem';
+import BaseLayerControls from 'components/map/components/BaseLayerControls';
+import { SetMapBounds } from 'components/map/components/Bounds';
+import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
+import StaticLayers, { IStaticLayer } from 'components/map/components/StaticLayers';
+import { MapBaseCss } from 'components/map/styles/MapBaseCss';
+import { MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
 import { SurveyContext } from 'contexts/surveyContext';
 import SampleSiteFileUploadItemActionButton from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemActionButton';
 import SampleSiteFileUploadItemProgressBar from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemProgressBar';
@@ -21,13 +25,9 @@ import { Feature } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
 import get from 'lodash-es/get';
 import { useContext, useEffect, useState } from 'react';
+import { LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { useParams } from 'react-router';
-import {
-  calculateUpdatedMapBounds,
-  handleGPXUpload,
-  handleKMLUpload,
-  handleShapeFileUpload
-} from 'utils/mapBoundaryUploadHelpers';
+import { boundaryUploadHelper, calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { pluralize } from 'utils/Utils';
 
 const useStyles = makeStyles(() => ({
@@ -73,18 +73,6 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
   const [staticLayers, setStaticLayers] = useState<IStaticLayer[]>([]);
 
-  const boundaryUploadHandler = (): IUploadHandler => {
-    return async (file) => {
-      if (file?.type.includes('zip') || file?.name.includes('.zip')) {
-        await handleShapeFileUpload(file, name, formikProps);
-      } else if (file?.type.includes('gpx') || file?.name.includes('.gpx')) {
-        await handleGPXUpload(file, name, formikProps);
-      } else if (file?.type.includes('kml') || file?.name.includes('.kml')) {
-        await handleKMLUpload(file, name, formikProps);
-      }
-    };
-  };
-
   const removeFile = () => {
     setFieldValue(name, sampleSiteData?.geojson ? [sampleSiteData?.geojson] : []);
     setFieldError(name, undefined);
@@ -110,7 +98,14 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
     <Grid item xs={12}>
       <Box my={3}>
         <FileUpload
-          uploadHandler={boundaryUploadHandler()}
+          uploadHandler={boundaryUploadHelper({
+            onSuccess: (features: Feature[]) => {
+              setFieldValue(name, [...features]);
+            },
+            onFailure: (message: string) => {
+              setFieldError(name, message);
+            }
+          })}
           onRemove={removeFile}
           dropZoneProps={{
             maxNumFiles: 1,
@@ -150,12 +145,23 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
         )}
         <Paper variant="outlined">
           <Box position="relative" height={500}>
-            <MapContainer
-              mapId={mapId}
-              staticLayers={staticLayers}
-              onDrawChange={(newGeo: Feature[]) => setFieldValue(name, newGeo)}
-              bounds={updatedBounds}
-            />
+            <LeafletMapContainer
+              id={mapId}
+              data-testid={`leaflet-${mapId}`}
+              style={{ height: 500 }}
+              center={MAP_DEFAULT_CENTER}
+              zoom={MAP_DEFAULT_ZOOM}
+              maxZoom={17}
+              fullscreenControl={true}
+              scrollWheelZoom={false}>
+              <MapBaseCss />
+              <LayersControl position="bottomright">
+                <FullScreenScrollingEventHandler bounds={updatedBounds} scrollWheelZoom={false} />
+                <SetMapBounds bounds={updatedBounds} />
+                <StaticLayers layers={staticLayers} />
+                <BaseLayerControls />
+              </LayersControl>
+            </LeafletMapContainer>
             {samplingSiteGeoJsonFeatures.length > 0 && (
               <Box position="absolute" top="126px" left="10px" zIndex="999">
                 <IconButton

@@ -1,11 +1,11 @@
-import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
-import Paper from '@mui/material/Paper';
+import Link from '@mui/material/Link';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditSurveyI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
@@ -20,41 +20,9 @@ import useDataLoader from 'hooks/useDataLoader';
 import { IEditSurveyRequest, SurveyUpdateObject } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
+import { Link as RouterLink } from 'react-router-dom';
+import SurveyBaseHeader from '../view/components/SurveyBaseHeader';
 import EditSurveyForm from './EditSurveyForm';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  actionButton: {
-    minWidth: '6rem',
-    '& + button': {
-      marginLeft: '0.5rem'
-    }
-  },
-  sectionDivider: {
-    height: '1px',
-    marginTop: theme.spacing(5),
-    marginBottom: theme.spacing(5)
-  },
-  pageTitleContainer: {
-    maxWidth: '170ch',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis'
-  },
-  pageTitle: {
-    display: '-webkit-box',
-    '-webkit-line-clamp': 2,
-    '-webkit-box-orient': 'vertical',
-    paddingTop: theme.spacing(0.5),
-    paddingBottom: theme.spacing(0.5),
-    overflow: 'hidden'
-  },
-  pageTitleActions: {
-    paddingTop: theme.spacing(0.75),
-    paddingBottom: theme.spacing(0.75),
-    '& button': {
-      marginLeft: theme.spacing(1)
-    }
-  }
-}));
 
 /**
  * Page to create a survey.
@@ -62,7 +30,6 @@ const useStyles = makeStyles((theme: Theme) => ({
  * @return {*}
  */
 const EditSurveyPage = () => {
-  const classes = useStyles();
   const biohubApi = useBiohubApi();
   const history = useHistory();
   const urlParams: Record<string, string | number | undefined> = useParams();
@@ -214,27 +181,43 @@ const EditSurveyPage = () => {
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
-      <Paper square={true} elevation={0}>
-        <Container maxWidth="xl">
-          <Box py={4}>
-            <Box display="flex" justifyContent="space-between">
-              <Box className={classes.pageTitleContainer}>
-                <Typography variant="h1" className={classes.pageTitle}>
-                  Edit Survey Details
-                </Typography>
-              </Box>
-              <Box flex="0 0 auto" className={classes.pageTitleActions}>
-                <Button color="primary" variant="contained" onClick={() => formikRef.current?.submitForm()}>
-                  Save and Exit
-                </Button>
-                <Button color="primary" variant="outlined" onClick={handleCancel}>
-                  Cancel
-                </Button>
-              </Box>
-            </Box>
-          </Box>
-        </Container>
-      </Paper>
+      <SurveyBaseHeader
+        title="Edit Survey Details"
+        breadCrumb={
+          <Breadcrumbs>
+            <Link
+              component={RouterLink}
+              variant="body2"
+              underline="hover"
+              to={`/admin/projects/${projectData.project.project_id}/`}
+              aria-current="page">
+              {projectData.project.project_name}
+            </Link>
+            <Link
+              component={RouterLink}
+              variant="body2"
+              underline="hover"
+              to={`/admin/projects/${projectData.project.project_id}/surveys/${surveyId}/details`}
+              aria-current="page">
+              {surveyData && surveyData.survey_details && surveyData.survey_details.survey_name}
+            </Link>
+            <Typography variant="body2" component="span">
+              Edit Survey Details
+            </Typography>
+          </Breadcrumbs>
+        }
+        buttonJSX={
+          <Stack flexDirection="row" gap={1}>
+            <Button color="primary" variant="contained" onClick={() => formikRef.current?.submitForm()}>
+              Save and Exit
+            </Button>
+            <Button color="primary" variant="outlined" onClick={handleCancel}>
+              Cancel
+            </Button>
+          </Stack>
+        }
+      />
+
       <Box my={3}>
         <Container maxWidth="xl">
           <EditSurveyForm

@@ -1,6 +1,6 @@
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { v4 } from 'uuid';
-import { AnimalSex, Critter, IAnimal } from './animal';
+import { AnimalSex, Critter, IAnimal, newFamilyIdPlaceholder } from './animal';
 
 /**
  * Takes the 'detailed' format response from the Critterbase DB and transforms the response into an object that is usable
@@ -10,7 +10,7 @@ import { AnimalSex, Critter, IAnimal } from './animal';
  * @param existingCritter The critter as seen from the Critterbase DB
  * @returns {*} IAnimal
  */
-export const transformCritterbaseAPIResponseToForm = (existingCritter: IDetailedCritterWithInternalId) => {
+export const transformCritterbaseAPIResponseToForm = (existingCritter: IDetailedCritterWithInternalId): IAnimal => {
   //This is a pretty long albeit straightforward function, which is why it's been lifted out of the main TSX file.
   //Perhaps some of this could be automated by iterating through each object entries, but I don't think
   //it's necessarily a bad thing to have it this explicit when so many parts need to be handled in particular ways.
@@ -40,7 +40,6 @@ export const transformCritterbaseAPIResponseToForm = (existingCritter: IDetailed
       release_utm_easting: 0,
       release_utm_northing: 0,
       projection_mode: 'wgs',
-      _id: v4(),
       show_release: !!cap.release_location,
       capture_location_id: cap.capture_location_id ?? undefined,
       release_location_id: cap.release_location_id ?? undefined
@@ -50,11 +49,12 @@ export const transformCritterbaseAPIResponseToForm = (existingCritter: IDetailed
       primary_colour_id: mark.primary_colour_id ?? '',
       secondary_colour_id: mark.secondary_colour_id ?? '',
       marking_comment: mark.comment ?? '',
-      _id: v4()
+      primary_colour: mark.primary_colour ?? undefined,
+      marking_type: mark.marking_type ?? undefined,
+      body_location: mark.body_location ?? undefined
     })),
     mortality: existingCritter?.mortality.map((mor) => ({
       ...mor,
-      _id: v4(),
       mortality_comment: mor.mortality_comment ?? '',
       mortality_timestamp: new Date(mor.mortality_timestamp),
       mortality_latitude: mor.location.latitude,
@@ -72,41 +72,40 @@ export const transformCritterbaseAPIResponseToForm = (existingCritter: IDetailed
       location_id: mor.location_id ?? undefined
     })),
     collectionUnits: existingCritter.collection_units.map((a) => ({
-      ...a,
-      _id: v4()
+      ...a
     })),
     measurements: [
       ...existingCritter.measurement.qualitative.map((meas) => ({
         ...meas,
         measurement_quantitative_id: undefined,
-        _id: v4(),
         value: undefined,
         measured_timestamp: meas.measured_timestamp ? new Date(meas.measured_timestamp) : ('' as unknown as Date),
-        measurement_comment: meas.measurement_comment ?? ''
+        measurement_comment: meas.measurement_comment ?? '',
+        measurement_name: meas.measurement_name ?? undefined,
+        option_label: meas.option_label
       })),
       ...existingCritter.measurement.quantitative.map((meas) => ({
         ...meas,
-        _id: v4(),
         measurement_qualitative_id: undefined,
         qualitative_option_id: undefined,
         measured_timestamp: meas.measured_timestamp ? new Date(meas.measured_timestamp) : ('' as unknown as Date),
-        measurement_comment: meas.measurement_comment ?? ''
+        measurement_comment: meas.measurement_comment ?? '',
+        measurement_name: meas.measurement_name ?? undefined,
+        option_label: undefined
       }))
     ],
     family: [
       ...existingCritter.family_child.map((ch) => ({
-        _id: v4(),
         family_id: ch.family_id,
         relationship: 'child'
       })),
       ...existingCritter.family_parent.map((par) => ({
-        _id: v4(),
         family_id: par.family_id,
         relationship: 'parent'
       }))
     ],
     images: [],
-    device: undefined
+    device: []
   };
 };
 
@@ -204,13 +203,21 @@ export const createCritterUpdatePayload = (
         (prevFam) => currFam.family_id === prevFam.family_id && currFam.relationship === prevFam.relationship
       )
     ) {
+      let familyId = currFam.family_id;
+      if (currFam.family_id === newFamilyIdPlaceholder) {
+        familyId = v4();
+        createCritter.families.families.push({
+          family_id: familyId,
+          family_label: `${currentFormValues.general.animal_id}-${currentFormValues.general.taxon_name}_family`
+        });
+      }
       currFam.relationship === 'parent'
         ? createCritter.families.parents.push({
-            family_id: currFam.family_id,
+            family_id: familyId,
             parent_critter_id: initialCritter.critter_id
           })
         : createCritter.families.children.push({
-            family_id: currFam.family_id,
+            family_id: familyId,
             child_critter_id: initialCritter.critter_id
           });
     }

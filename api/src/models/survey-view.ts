@@ -65,7 +65,7 @@ export class GetSurveyFundingSourceData {
     this.survey_funding_source_id = obj?.survey_funding_source_id || null;
     this.funding_source_id = obj?.funding_source_id || null;
     this.survey_id = obj?.survey_id || null;
-    this.amount = obj?.amount || null;
+    this.amount = obj?.amount ?? null;
     this.revision_count = obj?.revision_count || 0;
     this.funding_source_name = obj?.funding_source_name || null;
     this.start_date = obj?.start_date || null;
@@ -123,18 +123,14 @@ export class GetPermitData {
 }
 
 export class GetSurveyPurposeAndMethodologyData {
-  intended_outcome_id: number;
+  intended_outcome_ids: number[];
   additional_details: string;
-  field_method_id: number;
-  ecological_season_id: number;
   revision_count: number;
   vantage_code_ids: number[];
 
   constructor(obj?: any) {
-    this.intended_outcome_id = obj?.intended_outcome_id || null;
+    this.intended_outcome_ids = (obj?.intended_outcome_ids?.length && obj?.intended_outcome_ids) || [];
     this.additional_details = obj?.additional_details || '';
-    this.field_method_id = obj?.field_method_id || null;
-    this.ecological_season_id = obj?.ecological_season_id || null;
     this.vantage_code_ids = (obj?.vantage_ids?.length && obj.vantage_ids) || [];
     this.revision_count = obj?.revision_count ?? 0;
   }

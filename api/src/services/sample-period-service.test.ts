@@ -8,6 +8,7 @@ import {
   UpdateSamplePeriodRecord
 } from '../repositories/sample-period-repository';
 import { getMockDBConnection } from '../__mocks__/db';
+import { ObservationService } from './observation-service';
 import { SamplePeriodService } from './sample-period-service';
 
 chai.use(sinonChai);
@@ -35,6 +36,8 @@ describe('SamplePeriodService', () => {
           survey_sample_method_id: 2,
           start_date: '2023-10-02',
           end_date: '2023-01-02',
+          start_time: '12:00:00',
+          end_time: '13:00:00',
           create_date: '2023-05-06',
           create_user: 1,
           update_date: null,
@@ -68,6 +71,8 @@ describe('SamplePeriodService', () => {
         survey_sample_method_id: 2,
         start_date: '2023-10-02',
         end_date: '2023-01-02',
+        start_time: '12:00:00',
+        end_time: '13:00:00',
         create_date: '2023-05-06',
         create_user: 1,
         update_date: null,
@@ -100,6 +105,8 @@ describe('SamplePeriodService', () => {
         survey_sample_method_id: 2,
         start_date: '2023-10-02',
         end_date: '2023-01-02',
+        start_time: '12:00:00',
+        end_time: '13:00:00',
         create_date: '2023-05-06',
         create_user: 1,
         update_date: null,
@@ -113,7 +120,9 @@ describe('SamplePeriodService', () => {
       const samplePeriod: InsertSamplePeriodRecord = {
         survey_sample_method_id: 1,
         start_date: '2023-10-02',
-        end_date: '2023-01-02'
+        end_date: '2023-01-02',
+        start_time: '12:00:00',
+        end_time: '13:00:00'
       };
       const samplePeriodService = new SamplePeriodService(mockDBConnection);
       const response = await samplePeriodService.insertSamplePeriod(samplePeriod);
@@ -136,6 +145,8 @@ describe('SamplePeriodService', () => {
         survey_sample_method_id: 2,
         start_date: '2023-10-02',
         end_date: '2023-01-02',
+        start_time: '12:00:00',
+        end_time: '13:00:00',
         create_date: '2023-05-06',
         create_user: 1,
         update_date: null,
@@ -150,7 +161,9 @@ describe('SamplePeriodService', () => {
         survey_sample_method_id: 1,
         survey_sample_period_id: 2,
         start_date: '2023-10-02',
-        end_date: '2023-01-02'
+        end_date: '2023-01-02',
+        start_time: '12:00:00',
+        end_time: '13:00:00'
       };
       const samplePeriodService = new SamplePeriodService(mockDBConnection);
       const response = await samplePeriodService.updateSamplePeriod(samplePeriod);
@@ -170,6 +183,8 @@ describe('SamplePeriodService', () => {
           survey_sample_method_id: 2,
           start_date: '2023-10-02',
           end_date: '2023-01-02',
+          start_time: '12:00:00',
+          end_time: '13:00:00',
           create_date: '2023-05-06',
           create_user: 1,
           update_date: null,
@@ -185,6 +200,10 @@ describe('SamplePeriodService', () => {
         .stub(SamplePeriodService.prototype, 'deleteSamplePeriodRecords')
         .resolves();
 
+      const getObservationsCountBySamplePeriodIdStub = sinon
+        .stub(ObservationService.prototype, 'getObservationsCountBySamplePeriodId')
+        .resolves({ observationCount: 0 });
+
       const surveySampleMethodId = 1;
       const samplePeriodService = new SamplePeriodService(mockDBConnection);
       const response = await samplePeriodService.deleteSamplePeriodsNotInArray(surveySampleMethodId, [
@@ -194,6 +213,9 @@ describe('SamplePeriodService', () => {
       expect(getSamplePeriodsForSurveyMethodIdStub).to.be.calledOnceWith(surveySampleMethodId);
       expect(deleteSamplePeriodRecordsStub).to.be.calledOnceWith([mockSamplePeriodRecords[0].survey_sample_period_id]);
       expect(response).to.eql(undefined);
+      expect(getObservationsCountBySamplePeriodIdStub).to.be.calledOnceWith(
+        mockSamplePeriodRecords[0].survey_sample_period_id
+      );
     });
   });
 });

@@ -1,3 +1,4 @@
+import { AuthStateContext } from 'contexts/authStateContext';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
@@ -5,6 +6,7 @@ import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import { Router } from 'react-router';
+import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { getSurveyForListResponse } from 'test-helpers/survey-helpers';
@@ -18,14 +20,14 @@ const mockBiohubApi = useBiohubApi as jest.Mock;
 
 const mockUseApi = {
   survey: {
-    getSurveysList: jest.fn()
+    getSurveysBasicFieldsByProjectId: jest.fn()
   }
 };
 
 describe('SurveysListPage', () => {
   beforeEach(() => {
     mockBiohubApi.mockImplementation(() => mockUseApi);
-    mockUseApi.survey.getSurveysList.mockClear();
+    mockUseApi.survey.getSurveysBasicFieldsByProjectId.mockClear();
   });
 
   afterEach(() => {
@@ -56,18 +58,22 @@ describe('SurveysListPage', () => {
       hasLoadedParticipantInfo: true
     };
 
-    mockUseApi.survey.getSurveysList.mockResolvedValue([]);
+    mockUseApi.survey.getSurveysBasicFieldsByProjectId.mockResolvedValue([]);
+
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     const { getByText } = render(
-      <Router history={history}>
-        <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
-          <CodesContext.Provider value={mockCodesContext}>
-            <ProjectContext.Provider value={mockProjectContext}>
-              <SurveysListPage />
-            </ProjectContext.Provider>
-          </CodesContext.Provider>
-        </ProjectAuthStateContext.Provider>
-      </Router>
+      <AuthStateContext.Provider value={authState}>
+        <Router history={history}>
+          <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+            <CodesContext.Provider value={mockCodesContext}>
+              <ProjectContext.Provider value={mockProjectContext}>
+                <SurveysListPage />
+              </ProjectContext.Provider>
+            </CodesContext.Provider>
+          </ProjectAuthStateContext.Provider>
+        </Router>
+      </AuthStateContext.Provider>
     );
 
     await waitFor(() => {
@@ -102,16 +108,20 @@ describe('SurveysListPage', () => {
       projectId: 1
     };
 
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
+
     const { getByText } = render(
-      <Router history={history}>
-        <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
-          <CodesContext.Provider value={mockCodesContext}>
-            <ProjectContext.Provider value={mockProjectContext}>
-              <SurveysListPage />
-            </ProjectContext.Provider>
-          </CodesContext.Provider>
-        </ProjectAuthStateContext.Provider>
-      </Router>
+      <AuthStateContext.Provider value={authState}>
+        <Router history={history}>
+          <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+            <CodesContext.Provider value={mockCodesContext}>
+              <ProjectContext.Provider value={mockProjectContext}>
+                <SurveysListPage />
+              </ProjectContext.Provider>
+            </CodesContext.Provider>
+          </ProjectAuthStateContext.Provider>
+        </Router>
+      </AuthStateContext.Provider>
     );
 
     await waitFor(() => {

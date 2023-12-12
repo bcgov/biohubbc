@@ -10,9 +10,9 @@ import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
 import { AuthGuard, UnAuthGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
-import { AuthStateContext } from 'contexts/authStateContext';
-import { useContext, useMemo } from 'react';
+import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { Link } from 'react-router-dom';
+import { hasAtLeastOneValidValue } from 'utils/authUtils';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionsContainer: {
@@ -66,21 +66,24 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const LandingActions = () => {
-  const { keycloakWrapper } = useContext(AuthStateContext);
   const classes = useStyles();
 
-  const loginUrl = useMemo(() => keycloakWrapper?.getLoginUrl(), [keycloakWrapper]);
-  const userIdentifier = keycloakWrapper?.getUserIdentifier() || '';
+  const authStateContext = useAuthStateContext();
 
-  const hasPendingAccessRequest = keycloakWrapper?.hasAccessRequest;
-  const isSystemUser = keycloakWrapper?.isSystemUser();
-  const hasAdministrativeRole = keycloakWrapper?.hasSystemRole([
-    SYSTEM_ROLE.DATA_ADMINISTRATOR,
-    SYSTEM_ROLE.SYSTEM_ADMIN
-  ]);
+  const userIdentifier = authStateContext.simsUserWrapper.userIdentifier ?? '';
 
-  const mayBelongToOneOrMoreProjects = isSystemUser || keycloakWrapper?.hasOneOrMoreProjectRoles;
-  const hasProjectCreationRole = hasAdministrativeRole || keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.PROJECT_CREATOR]);
+  const hasPendingAccessRequest = authStateContext.simsUserWrapper.hasAccessRequest;
+  const isSystemUser = !!authStateContext.simsUserWrapper.systemUserId;
+
+  const hasAdministrativeRole = hasAtLeastOneValidValue(
+    [SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN],
+    authStateContext.simsUserWrapper.roleNames
+  );
+
+  const mayBelongToOneOrMoreProjects = isSystemUser ?? authStateContext.simsUserWrapper.hasOneOrMoreProjectRoles;
+  const hasProjectCreationRole =
+    hasAdministrativeRole ||
+    hasAtLeastOneValidValue([SYSTEM_ROLE.PROJECT_CREATOR], authStateContext.simsUserWrapper.roleNames);
   const isReturningUser = isSystemUser || hasPendingAccessRequest || mayBelongToOneOrMoreProjects;
   const mayViewProjects = isSystemUser || mayBelongToOneOrMoreProjects;
   const mayMakeAccessRequest = !mayViewProjects && !hasPendingAccessRequest;
@@ -96,7 +99,7 @@ const LandingActions = () => {
           <Box className={classes.heroActions}>
             <Button
               component="a"
-              href={loginUrl}
+              onClick={() => authStateContext.auth.signinRedirect()}
               variant="contained"
               className={clsx(classes.heroButton, classes.heroButton)}
               size="large"

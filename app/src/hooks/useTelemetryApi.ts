@@ -1,13 +1,145 @@
+import { CancelTokenSource } from 'axios';
 import { ConfigContext } from 'contexts/configContext';
 import { useContext } from 'react';
 import useAxios from './api/useAxios';
 import { useDeviceApi } from './telemetry/useDeviceApi';
 
+export interface ICritterDeploymentResponse {
+  critter_id: string;
+  device_id: number;
+  deployment_id: string;
+  survey_critter_id: string;
+  alias: string;
+  attachment_start: string;
+  attachment_end?: string;
+  taxon: string;
+}
+
+export interface IUpdateManualTelemetry {
+  telemetry_manual_id: string;
+  latitude: number;
+  longitude: number;
+  acquisition_date: string;
+}
+export interface ICreateManualTelemetry {
+  deployment_id: string;
+  latitude: number;
+  longitude: number;
+  acquisition_date: string;
+}
+
+export interface IManualTelemetry extends ICreateManualTelemetry {
+  telemetry_manual_id: string;
+}
+
+export interface IVendorTelemetry extends ICreateManualTelemetry {
+  telemetry_id: string;
+}
+
+export interface ITelemetry {
+  id: string;
+  deployment_id: string;
+  telemetry_manual_id: string;
+  telemetry_id: number | null;
+  latitude: number;
+  longitude: number;
+  acquisition_date: string;
+  telemetry_type: string;
+}
+
 export const useTelemetryApi = () => {
   const config = useContext(ConfigContext);
-  const apiAxios = useAxios(config?.API_HOST);
-  const devices = useDeviceApi(apiAxios);
-  return { devices };
+  const axios = useAxios(config?.API_HOST);
+  const devices = useDeviceApi(axios);
+
+  const getAllTelemetry = async (ids: string[]): Promise<ITelemetry[]> => {
+    const { data } = await axios.post<ITelemetry[]>('/api/telemetry/deployments', ids);
+    return data;
+  };
+
+  const getVendorTelemetry = async (ids: string[]): Promise<IVendorTelemetry[]> => {
+    const { data } = await axios.post<IVendorTelemetry[]>('/api/telemetry/vendor/deployments', ids);
+    return data;
+  };
+
+  const getManualTelemetry = async (ids: string[]): Promise<IManualTelemetry[]> => {
+    const { data } = await axios.post<IManualTelemetry[]>('/api/telemetry/manual/deployments', ids);
+    return data;
+  };
+
+  const createManualTelemetry = async (postData: ICreateManualTelemetry[]): Promise<ICreateManualTelemetry[]> => {
+    const { data } = await axios.post<IManualTelemetry[]>('/api/telemetry/manual', postData);
+    return data;
+  };
+
+  const updateManualTelemetry = async (updateData: IUpdateManualTelemetry[]) => {
+    const { data } = await axios.patch<IManualTelemetry[]>('/api/telemetry/manual', updateData);
+    return data;
+  };
+
+  const deleteManualTelemetry = async (ids: string[]) => {
+    const { data } = await axios.post<IManualTelemetry[]>('/api/telemetry/manual/delete', ids);
+    return data;
+  };
+
+  /**
+   * Uploads a telemetry CSV for import.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {File} file
+   * @param {CancelTokenSource} [cancelTokenSource]
+   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @return {*}  {Promise<{ submission_id: number }>}
+   */
+  const uploadCsvForImport = async (
+    projectId: number,
+    surveyId: number,
+    file: File,
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: ProgressEvent) => void
+  ): Promise<{ submission_id: number }> => {
+    const formData = new FormData();
+
+    formData.append('media', file);
+
+    const { data } = await axios.post<{ submission_id: number }>(
+      `/api/project/${projectId}/survey/${surveyId}/telemetry/upload`,
+      formData,
+      {
+        cancelToken: cancelTokenSource?.token,
+        onUploadProgress: onProgress
+      }
+    );
+
+    return data;
+  };
+
+  /**
+   * Begins processing an uploaded telemetry CSV for import
+   *
+   * @param {number} submissionId
+   * @return {*}
+   */
+  const processTelemetryCsvSubmission = async (submissionId: number) => {
+    const { data } = await axios.post(`/api/telemetry/manual/process`, {
+      submission_id: submissionId
+    });
+
+    return data;
+  };
+
+  return {
+    devices,
+    getAllTelemetry,
+    getManualTelemetry,
+    createManualTelemetry,
+    updateManualTelemetry,
+    getVendorTelemetry,
+    deleteManualTelemetry,
+    uploadCsvForImport,
+    processTelemetryCsvSubmission
+  };
 };
 
 type TelemetryApiReturnType = ReturnType<typeof useTelemetryApi>;
