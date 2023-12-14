@@ -224,7 +224,7 @@ export class ObservationService extends DBService {
     // Construct the worksheets
     const xlsxWorksheets = constructWorksheets(xlsxWorkBook);
 
-    if (validateCsvFile(xlsxWorksheets, observationCSVColumnValidator)) {
+    if (!validateCsvFile(xlsxWorksheets, observationCSVColumnValidator)) {
       throw new Error('Failed to process file for importing observations. Invalid CSV file.');
     }
 
