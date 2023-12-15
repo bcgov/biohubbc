@@ -35,7 +35,6 @@ export class GetSurveyData {
   end_date: string;
   survey_types: number[];
   revision_count: number;
-  geometry: Feature[];
 
   constructor(obj?: any) {
     this.id = obj?.survey_id || null;
@@ -44,7 +43,6 @@ export class GetSurveyData {
     this.survey_name = obj?.name || '';
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
-    this.geometry = (obj?.geojson?.length && obj.geojson) || [];
     this.survey_types = (obj?.survey_types?.length && obj.survey_types) || [];
     this.revision_count = obj?.revision_count || 0;
   }
