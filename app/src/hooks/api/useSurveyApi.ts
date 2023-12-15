@@ -579,7 +579,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Update a deployment with a new timespan.
+   * Update a deployment with a new time span.
    *
    * @param {number} projectId
    * @param {number} surveyId

@@ -7,6 +7,7 @@ import {
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Paper } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -20,10 +21,9 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Paper from '@mui/material/Paper';
-import Skeleton from '@mui/material/Skeleton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -31,21 +31,6 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getCodesName } from 'utils/Utils';
-
-const SampleSiteSkeleton = () => (
-  <Box
-    sx={{
-      display: 'flex',
-      gap: '16px',
-      py: 1.5,
-      px: 2,
-      height: '56px',
-      background: '#fff',
-      borderTop: '1px solid ' + grey[300]
-    }}>
-    <Skeleton sx={{ flex: '1 1 auto' }} />
-  </Box>
-);
 
 const SamplingSiteList = () => {
   const surveyContext = useContext(SurveyContext);
@@ -214,9 +199,7 @@ const SamplingSiteList = () => {
                 zIndex: 2
               }}>
               <Paper elevation={0} sx={{ overflow: 'hidden' }}>
-                <SampleSiteSkeleton />
-                <SampleSiteSkeleton />
-                <SampleSiteSkeleton />
+                <SkeletonList />
               </Paper>
             </Box>
           ) : (
@@ -346,9 +329,9 @@ const SamplingSiteList = () => {
                                       </ListItemIcon>
                                       <ListItemText>
                                         <Typography variant="body2" component="div" color="inherit">
-                                          {`${samplePeriod.start_date} ${samplePeriod.start_time || ''} - ${
+                                          {`${samplePeriod.start_date} ${samplePeriod.start_time ?? ''} - ${
                                             samplePeriod.end_date
-                                          } ${samplePeriod.end_time || ''}`}
+                                          } ${samplePeriod.end_time ?? ''}`}
                                         </Typography>
                                       </ListItemText>
                                     </ListItem>

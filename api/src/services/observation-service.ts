@@ -1,4 +1,3 @@
-import xlsx from 'xlsx';
 import { z } from 'zod';
 import { IDBConnection } from '../database/db';
 import {
@@ -15,17 +14,11 @@ import {
   constructWorksheets,
   constructXLSXWorkbook,
   getWorksheetRowObjects,
-  validateWorksheetColumnTypes,
-  validateWorksheetHeaders
+  validateCsvFile
 } from '../utils/xlsx-utils/worksheet-utils';
 import { DBService } from './db-service';
 
 const defaultLog = getLogger('services/observation-service');
-
-export interface IXLSXCSVValidator {
-  columnNames: string[];
-  columnTypes: string[];
-}
 
 const observationCSVColumnValidator = {
   columnNames: ['SPECIES_TAXONOMIC_ID', 'COUNT', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
@@ -44,27 +37,6 @@ export class ObservationService extends DBService {
   constructor(connection: IDBConnection) {
     super(connection);
     this.observationRepository = new ObservationRepository(connection);
-  }
-
-  /**
-   * Validates the given CSV file against the given column validator
-   *
-   * @param {MediaFile} file
-   * @return {*}  {boolean}
-   * @memberof ObservationService
-   */
-  validateCsvFile(xlsxWorksheets: xlsx.WorkSheet, columnValidator: IXLSXCSVValidator): boolean {
-    // Validate the worksheet headers
-    if (!validateWorksheetHeaders(xlsxWorksheets['Sheet1'], columnValidator.columnNames)) {
-      return false;
-    }
-
-    // Validate the worksheet column types
-    if (!validateWorksheetColumnTypes(xlsxWorksheets['Sheet1'], columnValidator.columnTypes)) {
-      return false;
-    }
-
-    return true;
   }
 
   /**
@@ -252,7 +224,7 @@ export class ObservationService extends DBService {
     // Construct the worksheets
     const xlsxWorksheets = constructWorksheets(xlsxWorkBook);
 
-    if (!this.validateCsvFile(xlsxWorksheets, observationCSVColumnValidator)) {
+    if (!validateCsvFile(xlsxWorksheets, observationCSVColumnValidator)) {
       throw new Error('Failed to process file for importing observations. Invalid CSV file.');
     }
 

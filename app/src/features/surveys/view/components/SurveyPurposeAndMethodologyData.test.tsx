@@ -24,6 +24,8 @@ describe('SurveyPurposeAndMethodologyData', () => {
     const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
+    const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
 
     const { getByTestId, getAllByTestId } = render(
       <CodesContext.Provider value={mockCodesContext}>
@@ -35,7 +37,9 @@ describe('SurveyPurposeAndMethodologyData', () => {
             artifactDataLoader: mockArtifactDataLoader,
             observationDataLoader: mockObservationsDataLoader,
             summaryDataLoader: mockSummaryDataLoader,
-            sampleSiteDataLoader: mockSampleSiteDataLoader
+            sampleSiteDataLoader: mockSampleSiteDataLoader,
+            critterDataLoader: mockCritterDataLoader,
+            deploymentDataLoader: mockDeploymentDataLoader
           }}>
           <SurveyPurposeAndMethodologyData />
         </SurveyContext.Provider>
@@ -73,6 +77,8 @@ describe('SurveyPurposeAndMethodologyData', () => {
     const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
+    const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
 
     const { getByTestId, getAllByTestId, queryByTestId } = render(
       <CodesContext.Provider value={mockCodesContext}>
@@ -84,7 +90,9 @@ describe('SurveyPurposeAndMethodologyData', () => {
             artifactDataLoader: mockArtifactDataLoader,
             observationDataLoader: mockObservationsDataLoader,
             summaryDataLoader: mockSummaryDataLoader,
-            sampleSiteDataLoader: mockSampleSiteDataLoader
+            sampleSiteDataLoader: mockSampleSiteDataLoader,
+            critterDataLoader: mockCritterDataLoader,
+            deploymentDataLoader: mockDeploymentDataLoader
           }}>
           <SurveyPurposeAndMethodologyData />
         </SurveyContext.Provider>
