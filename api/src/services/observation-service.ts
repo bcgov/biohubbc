@@ -12,10 +12,10 @@ import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { parseS3File } from '../utils/media/media-utils';
 import {
-  IXLSXCSVValidator,
   constructWorksheets,
   constructXLSXWorkbook,
   getWorksheetRowObjects,
+  IXLSXCSVValidator,
   validateWorksheetColumnTypes,
   validateWorksheetHeaders
 } from '../utils/xlsx-utils/worksheet-utils';
@@ -27,8 +27,8 @@ const observationCSVColumnValidator: IXLSXCSVValidator = {
   columnNames: ['SPECIES_TAXONOMIC_ID', 'COUNT', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
   columnTypes: ['number', 'number', 'date', 'string', 'number', 'number'],
   columnAliases: {
-    'LATITUDE': ['LAT'],
-    'LONGITUDE': ['LON', 'LONG', 'LNG']
+    LATITUDE: ['LAT'],
+    LONGITUDE: ['LON', 'LONG', 'LNG']
   }
 };
 
