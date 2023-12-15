@@ -19,6 +19,7 @@ import SurveyDetails from 'features/surveys/view/SurveyDetails';
 import React, { useContext, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import ObservationsMap from '../observations/ObservationsMap';
+import ManualTelemetrySection from '../telemetry/ManualTelemetrySection';
 import SurveyStudyArea from './components/SurveyStudyArea';
 import SurveySummaryResults from './summary-results/SurveySummaryResults';
 import SurveyAnimals from './SurveyAnimals';
@@ -120,6 +121,12 @@ const SurveyPage: React.FC = () => {
             <ObservationsMap />
           </Box>
         </Paper>
+
+        <Box mt={3}>
+          <Paper elevation={0}>
+            <ManualTelemetrySection />
+          </Paper>
+        </Box>
 
         <Box mt={3}>
           <Paper elevation={0}>

@@ -20,6 +20,7 @@ const TextFieldDataGrid = <DataGridType extends GridValidRowModel>({
   }, [dataGridProps.hasFocus]);
   return (
     <TextField
+      fullWidth
       inputRef={ref}
       value={dataGridProps.value ?? ''}
       variant="outlined"

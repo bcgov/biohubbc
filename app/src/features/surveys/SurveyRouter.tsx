@@ -10,6 +10,7 @@ import EditSurveyPage from './edit/EditSurveyPage';
 import SamplingSiteEditPage from './observations/sampling-sites/edit/SamplingSiteEditPage';
 import SamplingSitePage from './observations/sampling-sites/SamplingSitePage';
 import { SurveyObservationPage } from './observations/SurveyObservationPage';
+import ManualTelemetryPage from './telemetry/ManualTelemetryPage';
 import { SurveyAnimalsPage } from './view/survey-animals/SurveyAnimalsPage';
 
 /**
@@ -34,6 +35,12 @@ const SurveyRouter: React.FC = () => {
         <SurveyObservationPage />
       </RouteWithTitle>
 
+      <RouteWithTitle
+        exact
+        path="/admin/projects/:id/surveys/:survey_id/telemetry"
+        title={getTitle('Manual Telemetry')}>
+        <ManualTelemetryPage />
+      </RouteWithTitle>
       <RouteWithTitle exact path={'/admin/projects/:id/surveys/:survey_id/animals'} title={getTitle('Manage Animals')}>
         <SurveyAnimalsPage />
       </RouteWithTitle>

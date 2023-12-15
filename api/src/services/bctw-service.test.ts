@@ -21,8 +21,11 @@ import {
   HEALTH_ENDPOINT,
   IDeployDevice,
   IDeploymentUpdate,
+  MANUAL_AND_VENDOR_TELEMETRY,
+  MANUAL_TELEMETRY,
   UPDATE_DEPLOYMENT_ENDPOINT,
-  UPSERT_DEVICE_ENDPOINT
+  UPSERT_DEVICE_ENDPOINT,
+  VENDOR_TELEMETRY
 } from './bctw-service';
 import { KeycloakService } from './keycloak-service';
 
@@ -318,6 +321,89 @@ describe('BctwService', () => {
         await bctwService.deleteDeployment('asdf');
 
         expect(mockAxios).to.have.been.calledOnceWith(`${DELETE_DEPLOYMENT_ENDPOINT}/asdf`);
+      });
+    });
+
+    describe('getManualTelemetry', () => {
+      it('should sent a post request', async () => {
+        const mockAxios = sinon.stub(bctwService.axiosInstance, 'get').resolves({ data: true });
+
+        const ret = await bctwService.getManualTelemetry();
+
+        expect(mockAxios).to.have.been.calledOnceWith(MANUAL_TELEMETRY);
+        expect(ret).to.be.true;
+      });
+    });
+
+    describe('deleteManualTelemetry', () => {
+      it('should sent a post request', async () => {
+        const mockAxios = sinon.stub(bctwService.axiosInstance, 'post').resolves({ data: true });
+
+        const ids = ['a', 'b'];
+        const ret = await bctwService.deleteManualTelemetry(ids);
+
+        expect(mockAxios).to.have.been.calledOnceWith(`${MANUAL_TELEMETRY}/delete`, ids);
+        expect(ret).to.be.true;
+      });
+    });
+
+    describe('createManualTelemetry', () => {
+      it('should sent a post request', async () => {
+        const mockAxios = sinon.stub(bctwService.axiosInstance, 'post').resolves({ data: true });
+
+        const payload: any = { key: 'value' };
+        const ret = await bctwService.createManualTelemetry(payload);
+
+        expect(mockAxios).to.have.been.calledOnceWith(MANUAL_TELEMETRY, payload);
+        expect(ret).to.be.true;
+      });
+    });
+
+    describe('updateManualTelemetry', () => {
+      it('should sent a patch request', async () => {
+        const mockAxios = sinon.stub(bctwService.axiosInstance, 'patch').resolves({ data: true });
+
+        const payload: any = { key: 'value' };
+        const ret = await bctwService.updateManualTelemetry(payload);
+
+        expect(mockAxios).to.have.been.calledOnceWith(MANUAL_TELEMETRY, payload);
+        expect(ret).to.be.true;
+      });
+    });
+
+    describe('getManualTelemetryByDeploymentIds', () => {
+      it('should sent a post request', async () => {
+        const mockAxios = sinon.stub(bctwService.axiosInstance, 'post').resolves({ data: true });
+
+        const payload: any = { key: 'value' };
+        const ret = await bctwService.getManualTelemetryByDeploymentIds(payload);
+
+        expect(mockAxios).to.have.been.calledOnceWith(`${MANUAL_TELEMETRY}/deployments`, payload);
+        expect(ret).to.be.true;
+      });
+    });
+
+    describe('getVendorTelemetryByDeploymentIds', () => {
+      it('should sent a post request', async () => {
+        const mockAxios = sinon.stub(bctwService.axiosInstance, 'post').resolves({ data: true });
+
+        const payload: any = { key: 'value' };
+        const ret = await bctwService.getVendorTelemetryByDeploymentIds(payload);
+
+        expect(mockAxios).to.have.been.calledOnceWith(`${VENDOR_TELEMETRY}/deployments`, payload);
+        expect(ret).to.be.true;
+      });
+    });
+
+    describe('getAllTelemetryByDeploymentIds', () => {
+      it('should sent a post request', async () => {
+        const mockAxios = sinon.stub(bctwService.axiosInstance, 'post').resolves({ data: true });
+
+        const payload: any = { key: 'value' };
+        const ret = await bctwService.getAllTelemetryByDeploymentIds(payload);
+
+        expect(mockAxios).to.have.been.calledOnceWith(`${MANUAL_AND_VENDOR_TELEMETRY}/deployments`, payload);
+        expect(ret).to.be.true;
       });
     });
   });
