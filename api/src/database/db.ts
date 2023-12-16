@@ -354,7 +354,7 @@ export const getDBConnection = function (keycloakToken: KeycloakUserInformation)
     const zodEnd = Date.now();
 
     defaultLog.silly({
-      label: '_sq + zod',
+      label: '_sql + zod',
       message: sqlStatement.text,
       queryExecutionTime: queryEnd - queryStart,
       zodExecutionTime: zodEnd - zodStart

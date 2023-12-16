@@ -5,17 +5,25 @@ import { GetSurveyData } from './survey-view';
 
 const defaultLog = getLogger('models/biohub-create');
 
+export interface BioHubSubmissionFeature {
+  id: string;
+  type: string;
+  properties: Record<string, any>;
+  features: BioHubSubmissionFeature[];
+}
+
 /**
  * Object to be sent to Biohub API for creating an observation.
  *
  * @export
  * @class PostSurveyObservationToBiohubObject
+ * @implements {BioHubSubmissionFeature}
  */
-export class PostSurveyObservationToBiohubObject {
+export class PostSurveyObservationToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: object;
-  features: [];
+  properties: Record<string, any>;
+  features: BioHubSubmissionFeature[];
 
   constructor(observationRecord: ObservationRecord) {
     defaultLog.debug({ label: 'PostSurveyObservationToBiohubObject', message: 'params', observationRecord });
@@ -43,11 +51,12 @@ export class PostSurveyObservationToBiohubObject {
  *
  * @export
  * @class PostSurveyToBiohubObject
+ * @implements {BioHubSubmissionFeature}
  */
-export class PostSurveyToBiohubObject {
+export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: object;
+  properties: Record<string, any>;
   features: PostSurveyObservationToBiohubObject[];
 
   constructor(
@@ -72,6 +81,29 @@ export class PostSurveyToBiohubObject {
       geometry: surveyGeometry
     };
     this.features = observationRecords.map((observation) => new PostSurveyObservationToBiohubObject(observation));
+  }
+}
+
+export class PostSurveySubmissionToBioHubObject {
+  id: string;
+  name: string;
+  description: string;
+  features: BioHubSubmissionFeature[];
+
+  constructor(
+    surveyData: GetSurveyData,
+    observationRecords: ObservationRecord[],
+    surveyGeometry: FeatureCollection,
+    additionalInformation?: string
+  ) {
+    defaultLog.debug({ label: 'PostSurveySubmissionToBioHubObject' });
+
+    this.id = surveyData.uuid;
+    this.name = surveyData.survey_name;
+    this.description = 'A Temp Description'; // TODO replace with data entered in survey publish dialog
+    this.features = [
+      new PostSurveyToBiohubObject(surveyData, observationRecords, surveyGeometry, additionalInformation)
+    ];
   }
 }
 
