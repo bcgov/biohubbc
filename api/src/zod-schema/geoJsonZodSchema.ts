@@ -38,20 +38,20 @@ export const GeoJSONMultiPolygonZodSchema = z.object({
 
 export const GeoJSONGeometryCollectionZodSchema = z.object({
   type: z.enum(['GeometryCollection']),
-  geometries: z.array(z.object({})),
+  geometries: z.array(z.record(z.string(), z.any())),
   bbox: z.array(z.number()).min(4).optional()
 });
 
 export const GeoJSONFeatureZodSchema = z.object({
   type: z.enum(['Feature']),
   id: z.union([z.number(), z.string()]).optional(),
-  properties: z.object({}),
-  geometry: z.object({}),
+  properties: z.record(z.string(), z.any()),
+  geometry: z.record(z.string(), z.any()),
   bbox: z.array(z.number()).min(4).optional()
 });
 
 export const GeoJSONFeatureCollectionZodSchema = z.object({
   type: z.enum(['FeatureCollection']),
-  features: z.array(z.object({})),
+  features: z.array(z.record(z.string(), z.any())),
   bbox: z.array(z.number()).min(4).optional()
 });

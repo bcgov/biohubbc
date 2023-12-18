@@ -344,45 +344,52 @@ describe('PlatformService', () => {
         .stub(SurveyService.prototype, 'getSurveyLocationsData')
         .resolves([] as any);
 
-      const response = await platformService.generateSurveyDataPackage(1, 'test');
+      const response = await platformService.generateSurveyDataPackage(1, 'additional information');
 
       expect(getSurveyDataStub).to.have.been.calledOnceWith(1);
       expect(getSurveyObservationsWithSupplementaryDataStub).to.have.been.calledOnceWith(1);
       expect(getSurveyLocationsDataStub).to.have.been.calledOnceWith(1);
       expect(response).to.eql({
         id: '1',
-        type: 'dataset',
-        properties: {
-          additional_information: 'test',
-          survey_id: undefined,
-          project_id: undefined,
-          name: undefined,
-          start_date: undefined,
-          end_date: undefined,
-          survey_types: undefined,
-          revision_count: undefined,
-          geometry: {
-            type: 'FeatureCollection',
-            features: []
-          }
-        },
+        name: undefined,
+        description: 'additional information',
         features: [
           {
-            id: '2',
-            type: 'observation',
+            id: '1',
+            type: 'dataset',
             properties: {
               survey_id: undefined,
-              taxonomy: undefined,
-              survey_sample_site_id: null,
-              survey_sample_method_id: null,
-              survey_sample_period_id: null,
-              latitude: undefined,
-              longitude: undefined,
-              count: undefined,
-              observation_time: undefined,
-              observation_date: undefined
+              project_id: undefined,
+              name: undefined,
+              start_date: undefined,
+              end_date: undefined,
+              survey_types: undefined,
+              revision_count: undefined,
+              geometry: {
+                type: 'FeatureCollection',
+                features: []
+              }
             },
-            features: []
+            features: [
+              {
+                id: '2',
+                type: 'observation',
+                properties: {
+                  survey_id: undefined,
+                  taxonomy: undefined,
+                  survey_sample_site_id: null,
+                  survey_sample_method_id: null,
+                  survey_sample_period_id: null,
+                  latitude: undefined,
+                  longitude: undefined,
+                  count: undefined,
+                  observation_time: undefined,
+                  observation_date: undefined,
+                  geometry: { type: 'FeatureCollection', features: [] }
+                },
+                features: []
+              }
+            ]
           }
         ]
       });

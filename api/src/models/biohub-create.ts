@@ -5,17 +5,25 @@ import { GetSurveyData } from './survey-view';
 
 const defaultLog = getLogger('models/biohub-create');
 
+export interface BioHubSubmissionFeature {
+  id: string;
+  type: string;
+  properties: Record<string, any>;
+  features: BioHubSubmissionFeature[];
+}
+
 /**
  * Object to be sent to Biohub API for creating an observation.
  *
  * @export
  * @class PostSurveyObservationToBiohubObject
+ * @implements {BioHubSubmissionFeature}
  */
-export class PostSurveyObservationToBiohubObject {
+export class PostSurveyObservationToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: object;
-  features: [];
+  properties: Record<string, any>;
+  features: BioHubSubmissionFeature[];
 
   constructor(observationRecord: ObservationRecord) {
     defaultLog.debug({ label: 'PostSurveyObservationToBiohubObject', message: 'params', observationRecord });
@@ -32,7 +40,23 @@ export class PostSurveyObservationToBiohubObject {
       longitude: observationRecord.longitude,
       count: observationRecord.count,
       observation_time: observationRecord.observation_time,
-      observation_date: observationRecord.observation_date
+      observation_date: observationRecord.observation_date,
+      geometry: {
+        type: 'FeatureCollection',
+        features:
+          observationRecord.longitude && observationRecord.latitude
+            ? [
+                {
+                  type: 'Feature',
+                  geometry: {
+                    type: 'Point',
+                    coordinates: [observationRecord.longitude, observationRecord.latitude]
+                  },
+                  properties: {}
+                }
+              ]
+            : []
+      }
     };
     this.features = [];
   }
@@ -43,25 +67,20 @@ export class PostSurveyObservationToBiohubObject {
  *
  * @export
  * @class PostSurveyToBiohubObject
+ * @implements {BioHubSubmissionFeature}
  */
-export class PostSurveyToBiohubObject {
+export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: object;
+  properties: Record<string, any>;
   features: PostSurveyObservationToBiohubObject[];
 
-  constructor(
-    surveyData: GetSurveyData,
-    observationRecords: ObservationRecord[],
-    surveyGeometry: FeatureCollection,
-    additionalInformation?: string
-  ) {
+  constructor(surveyData: GetSurveyData, observationRecords: ObservationRecord[], surveyGeometry: FeatureCollection) {
     defaultLog.debug({ label: 'PostSurveyToBiohubObject', message: 'params', surveyData });
 
     this.id = surveyData.uuid;
     this.type = BiohubFeatureType.DATASET;
     this.properties = {
-      additional_information: additionalInformation ?? null,
       survey_id: surveyData.id,
       project_id: surveyData.project_id,
       name: surveyData.survey_name,
@@ -72,6 +91,27 @@ export class PostSurveyToBiohubObject {
       geometry: surveyGeometry
     };
     this.features = observationRecords.map((observation) => new PostSurveyObservationToBiohubObject(observation));
+  }
+}
+
+export class PostSurveySubmissionToBioHubObject {
+  id: string;
+  name: string;
+  description: string;
+  features: BioHubSubmissionFeature[];
+
+  constructor(
+    surveyData: GetSurveyData,
+    observationRecords: ObservationRecord[],
+    surveyGeometry: FeatureCollection,
+    additionalInformation: string
+  ) {
+    defaultLog.debug({ label: 'PostSurveySubmissionToBioHubObject' });
+
+    this.id = surveyData.uuid;
+    this.name = surveyData.survey_name;
+    this.description = additionalInformation;
+    this.features = [new PostSurveyToBiohubObject(surveyData, observationRecords, surveyGeometry)];
   }
 }
 
