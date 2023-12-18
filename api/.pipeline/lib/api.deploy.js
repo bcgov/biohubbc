@@ -12,7 +12,7 @@ const path = require('path');
 const apiDeploy = async (settings) => {
   const phases = settings.phases;
   const options = settings.options;
-  const phase = options.env;
+  const phase = settings.options.env;
 
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
 
@@ -31,7 +31,9 @@ const apiDeploy = async (settings) => {
         HOST: phases[phase].host,
         APP_HOST: phases[phase].appHost,
         CHANGE_ID: phases.build.changeId || changeId,
-        NODE_ENV: phases[phase].env,
+        // Node
+        NODE_ENV: phases[phase].nodeEnv,
+        NODE_OPTIONS: phases[phase].nodeOptions,
         // BioHub Platform (aka: Backbone)
         BACKBONE_API_HOST: phases[phase].backboneApiHost,
         BACKBONE_INTAKE_PATH: phases[phase].backboneIntakePath,

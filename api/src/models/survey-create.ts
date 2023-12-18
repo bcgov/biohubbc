@@ -67,7 +67,7 @@ export class PostFundingSourceData {
 
   constructor(obj?: any) {
     this.funding_source_id = obj?.funding_source_id || null;
-    this.amount = obj?.amount || null;
+    this.amount = obj?.amount ?? null;
   }
 }
 

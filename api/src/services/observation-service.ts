@@ -1,5 +1,5 @@
-import xlsx from 'xlsx';
 import { z } from 'zod';
+import xlsx from 'xlsx';
 import { IDBConnection } from '../database/db';
 import {
   InsertObservation,
@@ -17,7 +17,8 @@ import {
   getWorksheetRowObjects,
   IXLSXCSVValidator,
   validateWorksheetColumnTypes,
-  validateWorksheetHeaders
+  validateWorksheetHeaders,
+  validateCsvFile
 } from '../utils/xlsx-utils/worksheet-utils';
 import { DBService } from './db-service';
 
@@ -252,7 +253,7 @@ export class ObservationService extends DBService {
     // Construct the worksheets
     const xlsxWorksheets = constructWorksheets(xlsxWorkBook);
 
-    if (!this.validateCsvFile(xlsxWorksheets, observationCSVColumnValidator)) {
+    if (!validateCsvFile(xlsxWorksheets, observationCSVColumnValidator)) {
       throw new Error('Failed to process file for importing observations. Invalid CSV file.');
     }
 

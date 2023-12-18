@@ -11,7 +11,7 @@ const path = require('path');
 const apiBuild = (settings) => {
   const phases = settings.phases;
   const options = settings.options;
-  const phase = 'build';
+  const phase = settings.phase;
 
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
 

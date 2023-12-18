@@ -285,3 +285,28 @@ export const prepareWorksheetCells = (worksheet: xlsx.WorkSheet) => {
     }
   }
 };
+
+/**
+ * Validates the given CSV file against the given column validator
+ *
+ * @param {MediaFile} file
+ * @return {*}  {boolean}
+ * @memberof ObservationService
+ */
+export function validateCsvFile(
+  xlsxWorksheets: xlsx.WorkSheet,
+  columnValidator: IXLSXCSVValidator,
+  sheet = 'Sheet1'
+): boolean {
+  // Validate the worksheet headers
+  if (!validateWorksheetHeaders(xlsxWorksheets[sheet], columnValidator)) {
+    return false;
+  }
+
+  // Validate the worksheet column types
+  if (!validateWorksheetColumnTypes(xlsxWorksheets[sheet], columnValidator)) {
+    return false;
+  }
+
+  return true;
+}

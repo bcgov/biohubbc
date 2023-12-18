@@ -18,12 +18,24 @@ interface TelemetryDeviceFormContentProps {
 const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
   const { index, mode } = props;
 
-  const api = useTelemetryApi();
+  const telemetryApi = useTelemetryApi();
   const { values, validateField } = useFormikContext<IAnimal>();
+  let device: any;
+  if (values.device?.[index]) {
+    device = values.device?.[index];
+  } else {
+    device = {
+      survey_critter_id: '',
+      deployments: [],
+      device_id: '',
+      device_make: '',
+      device_model: '',
+      frequency: '',
+      frequency_unit: ''
+    };
+  }
 
-  const device = values.device?.[index];
-
-  const { data: deviceDetails, refresh } = useDataLoader(() => api.devices.getDeviceDetails(device.device_id));
+  const { data: deviceDetails, refresh } = useDataLoader(() => telemetryApi.devices.getDeviceDetails(device.device_id));
 
   const validateDeviceMake = async (value: number | '') => {
     const deviceMake = deviceDetails?.device?.device_make;
@@ -88,7 +100,7 @@ const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
                   name={`device.${index}.frequency_unit`}
                   id="frequency_unit"
                   fetchData={async () => {
-                    const codeVals = await api.devices.getCodeValues('frequency_unit');
+                    const codeVals = await telemetryApi.devices.getCodeValues('frequency_unit');
                     return codeVals.map((a) => a.description);
                   }}
                 />
@@ -101,7 +113,7 @@ const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
               label="Device Manufacturer"
               name={`device.${index}.device_make`}
               id="manufacturer"
-              fetchData={api.devices.getCollarVendors}
+              fetchData={telemetryApi.devices.getCollarVendors}
               controlProps={{ disabled: mode === ANIMAL_FORM_MODE.EDIT, required: true }}
               validate={validateDeviceMake}
             />
@@ -125,7 +137,11 @@ const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
                   mt: -1,
                   mb: 3
                 }}>{`Vectronic KeyX File (Optional)`}</Typography>
-              <TelemetryFileUpload attachmentType={AttachmentType.KEYX} index={index} />
+              <TelemetryFileUpload
+                attachmentType={AttachmentType.KEYX}
+                fileKey={`${props.index}.attachmentFile`}
+                typeKey={`${props.index}.attachmentType`}
+              />
             </>
           )}
           {device.device_make === 'Lotek' && (
@@ -137,7 +153,11 @@ const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
                   mt: -1,
                   mb: 3
                 }}>{`Lotek Config File (Optional)`}</Typography>
-              <TelemetryFileUpload attachmentType={AttachmentType.OTHER} index={index} />
+              <TelemetryFileUpload
+                attachmentType={AttachmentType.OTHER}
+                fileKey={`${props.index}.attachmentFile`}
+                typeKey={`${props.index}.attachmentType`}
+              />
             </>
           )}
         </Box>

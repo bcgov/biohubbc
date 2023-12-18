@@ -1,3 +1,4 @@
+import { FeatureCollection } from 'geojson';
 import { ObservationRecord } from '../repositories/observation-repository';
 import { getLogger } from '../utils/logger';
 import { GetSurveyData } from './survey-view';
@@ -49,7 +50,12 @@ export class PostSurveyToBiohubObject {
   properties: object;
   features: PostSurveyObservationToBiohubObject[];
 
-  constructor(surveyData: GetSurveyData, observationRecords: ObservationRecord[], additionalInformation?: string) {
+  constructor(
+    surveyData: GetSurveyData,
+    observationRecords: ObservationRecord[],
+    surveyGeometry: FeatureCollection,
+    additionalInformation?: string
+  ) {
     defaultLog.debug({ label: 'PostSurveyToBiohubObject', message: 'params', surveyData });
 
     this.id = surveyData.uuid;
@@ -63,7 +69,7 @@ export class PostSurveyToBiohubObject {
       end_date: surveyData.end_date,
       survey_types: surveyData.survey_types,
       revision_count: surveyData.revision_count,
-      geometry: surveyData.geometry
+      geometry: surveyGeometry
     };
     this.features = observationRecords.map((observation) => new PostSurveyObservationToBiohubObject(observation));
   }
