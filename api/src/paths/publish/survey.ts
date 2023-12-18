@@ -44,10 +44,11 @@ POST.apiDoc = {
           required: ['surveyId', 'data'],
           properties: {
             surveyId: {
-              type: 'number'
+              type: 'integer',
+              minimum: 1
             },
             data: {
-              description: 'All survey data to upload',
+              description: 'Additional data to include in the submission to BioHub',
               type: 'object',
               required: ['additionalInformation'],
               properties: {
