@@ -6,7 +6,7 @@ import { URL } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 import { IDBConnection } from '../database/db';
 import { ApiError, ApiErrorType, ApiGeneralError } from '../errors/api-error';
-import { PostSurveyToBiohubObject } from '../models/biohub-create';
+import { PostSurveySubmissionToBioHubObject } from '../models/biohub-create';
 import {
   IProjectAttachment,
   IProjectReportAttachment,
@@ -264,10 +264,9 @@ export class PlatformService extends DBService {
   /**
    * Submit survey ID to BioHub.
    *
-   * @param {string} surveyUUID
    * @param {number} surveyId
    * @param {{ additionalInformation: string }} data
-   * @return {*}  {Promise<{ queue_id: number }>}
+   * @return {*}  {Promise<{ submission_id: number }>}
    * @memberof PlatformService
    */
   async submitSurveyToBioHub(
@@ -316,10 +315,13 @@ export class PlatformService extends DBService {
    *
    * @param {number} surveyId
    * @param {string} additionalInformation
-   * @return {*}  {Promise<ISubmitSurvey>}
+   * @return {*}  {Promise<PostSurveySubmissionToBioHubObject>}
    * @memberof PlatformService
    */
-  async generateSurveyDataPackage(surveyId: number, additionalInformation: string): Promise<PostSurveyToBiohubObject> {
+  async generateSurveyDataPackage(
+    surveyId: number,
+    additionalInformation: string
+  ): Promise<PostSurveySubmissionToBioHubObject> {
     const observationService = new ObservationService(this.connection);
     const surveyService = new SurveyService(this.connection);
 
@@ -329,10 +331,10 @@ export class PlatformService extends DBService {
 
     const geometryFeatureCollection: FeatureCollection = {
       type: 'FeatureCollection',
-      features: surveyLocation.flatMap((location) => location.geojson as Feature)
+      features: surveyLocation.flatMap((location) => location.geojson as Feature[])
     };
 
-    const surveyDataPackage = new PostSurveyToBiohubObject(
+    const surveyDataPackage = new PostSurveySubmissionToBioHubObject(
       survey,
       surveyObservations,
       geometryFeatureCollection,
