@@ -74,7 +74,7 @@ export class TelemetryService extends DBService {
     const xlsxWorksheets = constructWorksheets(xlsxWorkBook);
 
     // step 6 validate columns
-    if (validateCsvFile(xlsxWorksheets, telemetryCSVColumnValidator)) {
+    if (!validateCsvFile(xlsxWorksheets, telemetryCSVColumnValidator)) {
       throw new Error('Failed to process file for importing telemetry. Invalid CSV file.');
     }
 
@@ -96,6 +96,11 @@ export class TelemetryService extends DBService {
       const start = row['DATE'];
       const time = row['TIME'];
       const dateTime = moment(`${start} ${time}`);
+      console.log('___');
+      console.log('___');
+      console.log('___');
+      console.log(`DateTime: ${start} ${time}`);
+      console.log(`Moment DateTime: ${dateTime}`);
 
       const foundDeployment = deployments.find((item) => {
         // check the device ids match
@@ -129,7 +134,11 @@ export class TelemetryService extends DBService {
 
     // step 9 create telemetries
     if (itemsToAdd.length > 0) {
-      return await bctwService.createManualTelemetry(itemsToAdd);
+      console.log('___________');
+      console.log('___________');
+      console.log('___________');
+      console.log(`Telemetry to add: ${itemsToAdd.length}`);
+      // return await bctwService.createManualTelemetry(itemsToAdd);
     }
 
     return [];

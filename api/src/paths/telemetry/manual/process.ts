@@ -36,18 +36,6 @@ POST.apiDoc = {
       Bearer: []
     }
   ],
-  parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      required: true
-    },
-    {
-      in: 'path',
-      name: 'surveyId',
-      required: true
-    }
-  ],
   requestBody: {
     description: 'Request body',
     content: {

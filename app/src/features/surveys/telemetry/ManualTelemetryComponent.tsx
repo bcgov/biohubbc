@@ -49,6 +49,7 @@ const ManualTelemetryComponent = () => {
     telemetryApi.uploadCsvForImport(projectId, surveyId, file).then((response) => {
       setShowImportDialog(false);
       setProcessingRecords(true);
+      console.log(`SUBMISSION ID: ${response.submission_id}`);
       telemetryApi
         .processTelemetryCsvSubmission(response.submission_id)
         .then(() => {

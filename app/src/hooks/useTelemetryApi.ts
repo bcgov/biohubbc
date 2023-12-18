@@ -111,7 +111,6 @@ export const useTelemetryApi = () => {
         onUploadProgress: onProgress
       }
     );
-
     return data;
   };
 
