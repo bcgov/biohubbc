@@ -49,7 +49,7 @@ export class TelemetryService extends DBService {
       surveyId,
       file.originalname
     );
-    return { submission_id: result.submission_id, key };
+    return { submission_id: result.survey_telemetry_submission_id, key };
   }
 
   async processTelemetryCsvSubmission(submissionId: number, user: ICritterbaseUser): Promise<any[]> {

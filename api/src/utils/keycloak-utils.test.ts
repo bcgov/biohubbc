@@ -13,8 +13,7 @@ import {
   isBceidBasicUserInformation,
   isBceidBusinessUserInformation,
   isDatabaseUserInformation,
-  isIdirUserInformation,
-  ServiceClientUserInformation
+  isIdirUserInformation
 } from './keycloak-utils';
 
 describe('keycloakUtils', () => {
@@ -261,91 +260,6 @@ describe('keycloakUtils', () => {
     it('should coerce database user identity to DATABASE', () => {
       const response = coerceUserIdentitySource('database');
       expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.DATABASE);
-    });
-  });
-
-  describe('getKeycloakUserInformationFromKeycloakToken', () => {
-    it('returns valid idir token information', () => {
-      const keycloakUserInformation: IdirUserInformation = {
-        idir_user_guid: '123456789',
-        identity_provider: 'idir',
-        idir_username: 'tname',
-        name: 'Test Name',
-        preferred_username: '123456789@idir',
-        display_name: 'Test Name',
-        email: 'email@email.com',
-        email_verified: false,
-        given_name: 'Test',
-        family_name: ''
-      };
-
-      const response = getUserIdentitySource(keycloakUserInformation);
-
-      expect(response).not.to.be.null;
-    });
-
-    it('returns valid bceid basic token information', () => {
-      const keycloakUserInformation: BceidBasicUserInformation = {
-        bceid_user_guid: '123456789',
-        identity_provider: 'bceidbasic',
-        bceid_username: 'tname',
-        name: 'Test Name',
-        preferred_username: '123456789@bceidbasic',
-        display_name: 'Test Name',
-        email: 'email@email.com',
-        email_verified: false,
-        given_name: 'Test',
-        family_name: ''
-      };
-
-      const response = getUserIdentitySource(keycloakUserInformation);
-
-      expect(response).not.to.be.null;
-    });
-
-    it('returns valid bceid business token information', () => {
-      const keycloakUserInformation: BceidBusinessUserInformation = {
-        bceid_business_guid: '1122334455',
-        bceid_business_name: 'Business Name',
-        bceid_user_guid: '123456789',
-        identity_provider: 'bceidbusiness',
-        bceid_username: 'tname',
-        name: 'Test Name',
-        preferred_username: '123456789@bceidbusiness',
-        display_name: 'Test Name',
-        email: 'email@email.com',
-        email_verified: false,
-        given_name: 'Test',
-        family_name: ''
-      };
-
-      const response = getUserIdentitySource(keycloakUserInformation);
-
-      expect(response).not.to.be.null;
-    });
-
-    it('returns valid database token information', () => {
-      const keycloakUserInformation: DatabaseUserInformation = {
-        database_user_guid: '123456789',
-        identity_provider: 'database',
-        username: 'biohub_dapi_v1'
-      };
-
-      const response = getUserIdentitySource(keycloakUserInformation);
-
-      expect(response).not.to.be.null;
-    });
-
-    it('returns valid system token information', () => {
-      const keycloakUserInformation: ServiceClientUserInformation = {
-        database_user_guid: '123456789',
-        identity_provider: 'database',
-        username: 'biohub_dapi_v1'
-      };
-
-      const response = getUserIdentitySource(keycloakUserInformation);
-
-      expect(response).not.to.be.null;
     });
   });
 

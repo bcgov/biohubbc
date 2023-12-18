@@ -14,7 +14,7 @@ export async function up(knex: Knex): Promise<void> {
   ----------------------------------------------------------------------------------------
   set search_path=biohub;
   CREATE TABLE survey_telemetry_submission(
-    submission_id                           integer           NOT NULL,
+    survey_telemetry_submission_id          integer           NOT NULL,
     key                                     varchar(255)      NOT NULL,
     survey_id                               integer           NOT NULL,
     original_filename                       varchar(255)      NOT NULL,
@@ -22,10 +22,10 @@ export async function up(knex: Knex): Promise<void> {
     create_user                             integer           NOT NULL,
     update_date                             timestamptz(6),
     update_user                             integer,
-    CONSTRAINT survey_telemetry_submission_pk PRIMARY KEY (submission_id)
+    CONSTRAINT survey_telemetry_submission_pk PRIMARY KEY (survey_telemetry_submission_id)
   );
   
-  COMMENT ON COLUMN survey_telemetry_submission.submission_id                   IS 'System generated surrogate primary key identifier.';
+  COMMENT ON COLUMN survey_telemetry_submission.survey_telemetry_submission_id                   IS 'System generated surrogate primary key identifier.';
   COMMENT ON COLUMN survey_telemetry_submission.key                             IS 'The key of the survey telemetry submission.';
   COMMENT ON COLUMN survey_telemetry_submission.survey_id                       IS 'The survey id of the survey telemetry submission.';
   COMMENT ON COLUMN survey_telemetry_submission.original_filename               IS 'The original filename of the survey telemetry submission.';

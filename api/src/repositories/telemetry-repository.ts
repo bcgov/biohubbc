@@ -11,7 +11,7 @@ const defaultLog = getLogger('repositories/telemetry-repository');
  * Interface reflecting survey telemetry retrieved from the database
  */
 export const TelemetrySubmissionRecord = z.object({
-  submission_id: z.number(),
+  survey_telemetry_submission_id: z.number(),
   survey_id: z.number(),
   key: z.string(),
   original_filename: z.string(),
@@ -34,7 +34,7 @@ export class TelemetryRepository extends BaseRepository {
     const sqlStatement = SQL`
       INSERT INTO
         survey_telemetry_submission
-        (submission_id, key, survey_id, original_filename)
+        (survey_telemetry_submission_id, key, survey_id, original_filename)
       VALUES
         (${submission_id}, ${key}, ${survey_id}, ${original_filename})
       RETURNING *;`;
@@ -52,10 +52,10 @@ export class TelemetryRepository extends BaseRepository {
    */
   async getNextSubmissionId(): Promise<number> {
     const sqlStatement = SQL`
-      SELECT nextval('biohub.survey_telemetry_submission_id_seq')::integer as submission_id;
+      SELECT nextval('biohub.survey_telemetry_submission_id_seq')::integer as survey_telemetry_submission;
     `;
-    const response = await this.connection.sql<{ submission_id: number }>(sqlStatement);
-    return response.rows[0].submission_id;
+    const response = await this.connection.sql<{ survey_telemetry_submission: number }>(sqlStatement);
+    return response.rows[0].survey_telemetry_submission;
   }
 
   /**
@@ -70,7 +70,7 @@ export class TelemetryRepository extends BaseRepository {
       .queryBuilder()
       .select('*')
       .from('survey_telemetry_submission')
-      .where('submission_id', submissionId);
+      .where('survey_telemetry_submission_id', submissionId);
 
     const response = await this.connection.knex(queryBuilder, TelemetrySubmissionRecord);
 

@@ -475,7 +475,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
                 telemetry_manual_id: String(item.id),
                 latitude: Number(item.latitude),
                 longitude: Number(item.longitude),
-                acquisition_date: moment(moment(item.date).format('YYYY-MM-DD') + ' ' + item.time).format(
+                acquisition_date: moment(`${moment(item.date).format('YYYY-MM-DD')} ${item.time}`).format(
                   'YYYY-MM-DD HH:mm:ss'
                 )
               });
@@ -485,7 +485,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
                 deployment_id: String(item.deployment_id),
                 latitude: Number(item.latitude),
                 longitude: Number(item.longitude),
-                acquisition_date: moment(moment(item.date).format('YYYY-MM-DD') + ' ' + item.time).format(
+                acquisition_date: moment(`${moment(item.date).format('YYYY-MM-DD')} ${item.time}`).format(
                   'YYYY-MM-DD HH:mm:ss'
                 )
               });

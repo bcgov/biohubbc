@@ -231,12 +231,14 @@ const ManualTelemetryList = () => {
   };
 
   const handleAddDeployment = async (data: AnimalDeployment) => {
-    const critter = critters?.find((a) => a.survey_critter_id === data.survey_critter_id);
-    if (!critter) console.log('Did not find critter in addTelemetry!');
-
-    data.critter_id = critter?.critter_id;
     const payload = data as IAnimalTelemetryDevice & { critter_id: string };
     try {
+      const critter = critters?.find((a) => a.survey_critter_id === data.survey_critter_id);
+
+      if (!critter) {
+        throw new Error('Invalid critter data');
+      }
+      data.critter_id = critter?.critter_id;
       await biohubApi.survey.addDeployment(
         surveyContext.projectId,
         surveyContext.surveyId,
@@ -340,7 +342,19 @@ const ManualTelemetryList = () => {
         await biohubApi.survey.uploadSurveyAttachments(surveyContext.projectId, surveyContext.surveyId, file);
       }
     } catch (error) {
-      throw new Error(`Failed to upload attachment ${file?.name}`);
+      dialogContext.setSnackbar({
+        snackbarMessage: (
+          <>
+            <Typography variant="body2" component="div">
+              <strong>Error Uploading File</strong>
+            </Typography>
+            <Typography variant="body2" component="div">
+              {`Failed to upload attachment ${file?.name}`}
+            </Typography>
+          </>
+        ),
+        open: true
+      });
     }
   };
 

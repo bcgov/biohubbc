@@ -20,7 +20,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noFallthroughCasesInSwitch": true,
-    "strict": true
+    "strict": true,
+    "typeRoots": ["node_modules/@types", "src/types"]
   },
   "include": ["src"],
   "ts-node": {

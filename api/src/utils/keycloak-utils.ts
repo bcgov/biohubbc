@@ -1,93 +1,84 @@
-import { z } from 'zod';
 import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 
 /**
  * User information from a verified IDIR Keycloak token.
  */
-export const IdirUserInformation = z.object({
-  idir_user_guid: z.string().toLowerCase(),
-  identity_provider: z.literal(SYSTEM_IDENTITY_SOURCE.IDIR.toLowerCase()),
-  idir_username: z.string(),
-  email_verified: z.boolean(),
-  name: z.string(),
-  preferred_username: z.string(),
-  display_name: z.string(),
-  given_name: z.string(),
-  family_name: z.string(),
-  email: z.string()
-});
-export type IdirUserInformation = z.infer<typeof IdirUserInformation>;
+export type IdirUserInformation = {
+  idir_user_guid: string;
+  identity_provider: 'idir';
+  idir_username: string;
+  email_verified: boolean;
+  name: string;
+  preferred_username: string;
+  display_name: string;
+  given_name: string;
+  family_name: string;
+  email: string;
+};
 
 /**
  * User information from a verified BCeID Basic Keycloak token.
  */
-export const BceidBasicUserInformation = z.object({
-  bceid_user_guid: z.string().toLowerCase(),
-  identity_provider: z.literal(SYSTEM_IDENTITY_SOURCE.BCEID_BASIC.toLowerCase()),
-  bceid_username: z.string(),
-  email_verified: z.boolean(),
-  name: z.string(),
-  preferred_username: z.string(),
-  display_name: z.string(),
-  given_name: z.string(),
-  family_name: z.string(),
-  email: z.string()
-});
-export type BceidBasicUserInformation = z.infer<typeof BceidBasicUserInformation>;
+export type BceidBasicUserInformation = {
+  bceid_user_guid: string;
+  identity_provider: 'bceidbasic';
+  bceid_username: string;
+  email_verified: boolean;
+  name: string;
+  preferred_username: string;
+  display_name: string;
+  given_name: string;
+  family_name: string;
+  email: string;
+};
 
 /**
  * User information from a verified BCeID Keycloak token.
  */
-export const BceidBusinessUserInformation = z.object({
-  bceid_business_guid: z.string().toLowerCase(),
-  bceid_business_name: z.string(),
-  bceid_user_guid: z.string().toLowerCase(),
-  identity_provider: z.literal(SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS.toLowerCase()),
-  bceid_username: z.string(),
-  email_verified: z.boolean(),
-  name: z.string(),
-  preferred_username: z.string(),
-  display_name: z.string(),
-  given_name: z.string(),
-  family_name: z.string(),
-  email: z.string()
-});
-export type BceidBusinessUserInformation = z.infer<typeof BceidBusinessUserInformation>;
+export type BceidBusinessUserInformation = {
+  bceid_business_guid: string;
+  bceid_business_name: string;
+  bceid_user_guid: string;
+  identity_provider: 'bceidbusiness';
+  bceid_username: string;
+  email_verified: boolean;
+  name: string;
+  preferred_username: string;
+  display_name: string;
+  given_name: string;
+  family_name: string;
+  email: string;
+};
 
 /**
  * User information for a keycloak service client userF.
  */
-export const ServiceClientUserInformation = z.object({
-  database_user_guid: z.string(),
-  identity_provider: z.literal(SYSTEM_IDENTITY_SOURCE.SYSTEM.toLowerCase()),
-  username: z.string()
-});
+export type ServiceClientUserInformation = {
+  database_user_guid: string;
+  identity_provider: 'system';
+  username: string;
+  clientId?: string;
+  azp?: string;
+};
 
 /**
  * User information for an internal database user.
  */
-export const DatabaseUserInformation = z.object({
-  database_user_guid: z.string(),
-  identity_provider: z.literal(SYSTEM_IDENTITY_SOURCE.DATABASE.toLowerCase()),
-  username: z.string()
-});
-
-export type DatabaseUserInformation = z.infer<typeof DatabaseUserInformation>;
-
-export type ServiceClientUserInformation = z.infer<typeof ServiceClientUserInformation>;
+export type DatabaseUserInformation = {
+  database_user_guid: string;
+  identity_provider: 'database';
+  username: string;
+};
 
 /**
  * User information from either an IDIR or BCeID Basic or BCeID Business Keycloak token.
  */
-export const KeycloakUserInformation = z.discriminatedUnion('identity_provider', [
-  IdirUserInformation,
-  BceidBasicUserInformation,
-  BceidBusinessUserInformation,
-  ServiceClientUserInformation,
-  DatabaseUserInformation
-]);
-
-export type KeycloakUserInformation = z.infer<typeof KeycloakUserInformation>;
+export type KeycloakUserInformation =
+  | IdirUserInformation
+  | BceidBasicUserInformation
+  | BceidBusinessUserInformation
+  | ServiceClientUserInformation
+  | DatabaseUserInformation;
 
 /**
  * Returns the user information guid.
@@ -173,24 +164,6 @@ export const getUserIdentifier = (keycloakUserInformation: KeycloakUserInformati
   return keycloakUserInformation.username;
 };
 
-/**
- * Get a `KeycloakUserInformation` object from a Keycloak Bearer Token (IDIR or BCeID Basic or BCeID Business token).
- *
- * @param {Record<string, any>} keycloakToken
- * @return {*}  {(KeycloakUserInformation | null)}
- */
-export const getKeycloakUserInformationFromKeycloakToken = (
-  keycloakToken: Record<string, any>
-): KeycloakUserInformation | null => {
-  const result = KeycloakUserInformation.safeParse(keycloakToken);
-
-  if (!result.success) {
-    return null;
-  }
-
-  return result.data;
-};
-
 export const isIdirUserInformation = (
   keycloakUserInformation: KeycloakUserInformation
 ): keycloakUserInformation is IdirUserInformation => {
@@ -213,6 +186,12 @@ export const isDatabaseUserInformation = (
   keycloakUserInformation: KeycloakUserInformation
 ): keycloakUserInformation is DatabaseUserInformation => {
   return keycloakUserInformation.identity_provider === SYSTEM_IDENTITY_SOURCE.DATABASE.toLowerCase();
+};
+
+export const isServiceClientUserInformation = (
+  keycloakUserInformation: KeycloakUserInformation
+): keycloakUserInformation is ServiceClientUserInformation => {
+  return keycloakUserInformation.identity_provider === SYSTEM_IDENTITY_SOURCE.SYSTEM.toLowerCase();
 };
 
 /**

@@ -6,7 +6,7 @@ const { checkAndClean } = require('../utils/utils');
 const clean = async (settings) => {
   const phases = settings.phases;
   const options = settings.options;
-  const target_phase = options.env;
+  const target_phase = options.phase;
 
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases.build.namespace }, options));
 
