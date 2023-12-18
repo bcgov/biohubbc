@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import xlsx from 'xlsx';
+import { z } from 'zod';
 import { IDBConnection } from '../database/db';
 import {
   InsertObservation,
@@ -16,9 +16,9 @@ import {
   constructXLSXWorkbook,
   getWorksheetRowObjects,
   IXLSXCSVValidator,
+  validateCsvFile,
   validateWorksheetColumnTypes,
-  validateWorksheetHeaders,
-  validateCsvFile
+  validateWorksheetHeaders
 } from '../utils/xlsx-utils/worksheet-utils';
 import { DBService } from './db-service';
 
