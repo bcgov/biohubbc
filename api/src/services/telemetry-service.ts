@@ -9,7 +9,7 @@ import {
   getWorksheetRowObjects,
   validateCsvFile
 } from '../utils/xlsx-utils/worksheet-utils';
-import { BctwService, IManualTelemetry } from './bctw-service';
+import { BctwService, ICreateManualTelemetry } from './bctw-service';
 import { ICritterbaseUser } from './critterbase-service';
 import { DBService } from './db-service';
 import { SurveyCritterService } from './survey-critter-service';
@@ -90,17 +90,12 @@ export class TelemetryService extends DBService {
     const deployments = await bctwService.getDeploymentsByCritterId(critterIds);
 
     // step 8 parse file data and find deployment ids based on device id and attachment dates
-    const itemsToAdd: Omit<IManualTelemetry, 'telemetry_manual_id'>[] = [];
+    const itemsToAdd: ICreateManualTelemetry[] = [];
     worksheetRowObjects.forEach((row) => {
       const deviceId = Number(row['DEVICE_ID']);
       const start = row['DATE'];
       const time = row['TIME'];
       const dateTime = moment(`${start} ${time}`);
-      console.log('___');
-      console.log('___');
-      console.log('___');
-      console.log(`DateTime: ${start} ${time}`);
-      console.log(`Moment DateTime: ${dateTime}`);
 
       const foundDeployment = deployments.find((item) => {
         // check the device ids match
@@ -124,7 +119,7 @@ export class TelemetryService extends DBService {
       if (foundDeployment) {
         itemsToAdd.push({
           deployment_id: foundDeployment.deployment_id,
-          date: dateTime.format('YYYY-MM-DD HH:mm:ss'),
+          acquisition_date: dateTime.format('YYYY-MM-DD HH:mm:ss'),
           latitude: row['LATITUDE'],
           longitude: row['LONGITUDE']
         });
@@ -134,11 +129,11 @@ export class TelemetryService extends DBService {
 
     // step 9 create telemetries
     if (itemsToAdd.length > 0) {
-      console.log('___________');
-      console.log('___________');
-      console.log('___________');
-      console.log(`Telemetry to add: ${itemsToAdd.length}`);
-      // return await bctwService.createManualTelemetry(itemsToAdd);
+      try {
+        return await bctwService.createManualTelemetry(itemsToAdd);
+      } catch (error) {
+        throw new Error('Error adding Manual Telemetry');
+      }
     }
 
     return [];
