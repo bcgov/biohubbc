@@ -344,7 +344,7 @@ describe('PlatformService', () => {
         .stub(SurveyService.prototype, 'getSurveyLocationsData')
         .resolves([] as any);
 
-      const response = await platformService.generateSurveyDataPackage(1, 'test');
+      const response = await platformService.generateSurveyDataPackage(1, 'additional information');
 
       expect(getSurveyDataStub).to.have.been.calledOnceWith(1);
       expect(getSurveyObservationsWithSupplementaryDataStub).to.have.been.calledOnceWith(1);
@@ -352,13 +352,12 @@ describe('PlatformService', () => {
       expect(response).to.eql({
         id: '1',
         name: undefined,
-        description: 'A Temp Description',
+        description: 'additional information',
         features: [
           {
             id: '1',
             type: 'dataset',
             properties: {
-              additional_information: 'test',
               survey_id: undefined,
               project_id: undefined,
               name: undefined,
@@ -385,7 +384,8 @@ describe('PlatformService', () => {
                   longitude: undefined,
                   count: undefined,
                   observation_time: undefined,
-                  observation_date: undefined
+                  observation_date: undefined,
+                  geometry: { type: 'FeatureCollection', features: [] }
                 },
                 features: []
               }

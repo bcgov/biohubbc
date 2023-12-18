@@ -55,7 +55,20 @@ describe('PostSurveyObservationToBiohubObject', () => {
         longitude: 1,
         count: 1,
         observation_time: 'observation_time',
-        observation_date: 'observation_date'
+        observation_date: 'observation_date',
+        geometry: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [1, 1]
+              },
+              properties: {}
+            }
+          ]
+        }
       });
     });
   });
@@ -101,12 +114,7 @@ describe('PostSurveyToBiohubObject', () => {
     } as GetSurveyData;
 
     before(() => {
-      data = new PostSurveyToBiohubObject(
-        survey_obj,
-        [observation_obj],
-        { type: 'FeatureCollection', features: [] },
-        'additionalInformation'
-      );
+      data = new PostSurveyToBiohubObject(survey_obj, [observation_obj], { type: 'FeatureCollection', features: [] });
     });
 
     it('sets id', () => {
@@ -119,7 +127,6 @@ describe('PostSurveyToBiohubObject', () => {
 
     it('sets properties', () => {
       expect(data.properties).to.eql({
-        additional_information: 'additionalInformation',
         survey_id: 1,
         project_id: 1,
         name: 'survey_name',
@@ -178,8 +185,15 @@ describe('PostSurveySubmissionToBioHubObject', () => {
       features: []
     };
 
+    const additionalInformation = 'A description of the submission';
+
     before(() => {
-      data = new PostSurveySubmissionToBioHubObject(survey_obj, observation_obj, survey_geometry);
+      data = new PostSurveySubmissionToBioHubObject(
+        survey_obj,
+        observation_obj,
+        survey_geometry,
+        additionalInformation
+      );
     });
 
     it('sets id', () => {
@@ -191,7 +205,7 @@ describe('PostSurveySubmissionToBioHubObject', () => {
     });
 
     it('sets description', () => {
-      expect(data.description).to.equal('A Temp Description');
+      expect(data.description).to.equal('A description of the submission');
     });
 
     it('sets features', () => {
