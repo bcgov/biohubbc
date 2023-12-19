@@ -1,3 +1,4 @@
+import xlsx from 'xlsx';
 import { z } from 'zod';
 import { IDBConnection } from '../database/db';
 import {
@@ -14,15 +15,22 @@ import {
   constructWorksheets,
   constructXLSXWorkbook,
   getWorksheetRowObjects,
-  validateCsvFile
+  IXLSXCSVValidator,
+  validateCsvFile,
+  validateWorksheetColumnTypes,
+  validateWorksheetHeaders
 } from '../utils/xlsx-utils/worksheet-utils';
 import { DBService } from './db-service';
 
 const defaultLog = getLogger('services/observation-service');
 
-const observationCSVColumnValidator = {
+const observationCSVColumnValidator: IXLSXCSVValidator = {
   columnNames: ['SPECIES_TAXONOMIC_ID', 'COUNT', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
-  columnTypes: ['number', 'number', 'date', 'string', 'number', 'number']
+  columnTypes: ['number', 'number', 'date', 'string', 'number', 'number'],
+  columnAliases: {
+    LATITUDE: ['LAT'],
+    LONGITUDE: ['LON', 'LONG', 'LNG']
+  }
 };
 
 export const ObservationSupplementaryData = z.object({
@@ -37,6 +45,27 @@ export class ObservationService extends DBService {
   constructor(connection: IDBConnection) {
     super(connection);
     this.observationRepository = new ObservationRepository(connection);
+  }
+
+  /**
+   * Validates the given CSV file against the given column validator
+   *
+   * @param {MediaFile} file
+   * @return {*}  {boolean}
+   * @memberof ObservationService
+   */
+  validateCsvFile(xlsxWorksheets: xlsx.WorkSheet, columnValidator: IXLSXCSVValidator): boolean {
+    // Validate the worksheet headers
+    if (!validateWorksheetHeaders(xlsxWorksheets['Sheet1'], columnValidator)) {
+      return false;
+    }
+
+    // Validate the worksheet column types
+    if (!validateWorksheetColumnTypes(xlsxWorksheets['Sheet1'], columnValidator)) {
+      return false;
+    }
+
+    return true;
   }
 
   /**
@@ -238,8 +267,8 @@ export class ObservationService extends DBService {
       survey_sample_site_id: null,
       survey_sample_method_id: null,
       survey_sample_period_id: null,
-      latitude: row['LATITUDE'],
-      longitude: row['LONGITUDE'],
+      latitude: row['LATITUDE'] ?? row['LAT'],
+      longitude: row['LONGITUDE'] ?? row['LON'] ?? row['LONG'] ?? row['LNG'],
       count: row['COUNT'],
       observation_time: row['TIME'],
       observation_date: row['DATE']

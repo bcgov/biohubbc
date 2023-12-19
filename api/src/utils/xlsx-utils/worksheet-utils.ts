@@ -1,8 +1,14 @@
 import moment from 'moment';
 import xlsx, { CellObject } from 'xlsx';
 import { MediaFile } from '../media/media-file';
-import { safeToLowerCase, safeTrim } from '../string-utils';
+import { safeToLowerCase } from '../string-utils';
 import { replaceCellDates, trimCellWhitespace } from './cell-utils';
+
+export interface IXLSXCSVValidator {
+  columnNames: string[];
+  columnTypes: string[];
+  columnAliases?: Record<string, string[]>;
+}
 
 /**
  * Returns true if the given cell is a date type cell.
@@ -12,9 +18,9 @@ import { replaceCellDates, trimCellWhitespace } from './cell-utils';
  * @param {xlsx.ParsingOptions} [options]
  * @return {*}  {xlsx.WorkBook}
  */
-export function constructXLSXWorkbook(file: MediaFile, options?: xlsx.ParsingOptions): xlsx.WorkBook {
+export const constructXLSXWorkbook = (file: MediaFile, options?: xlsx.ParsingOptions): xlsx.WorkBook => {
   return xlsx.read(file.buffer, { cellDates: true, cellNF: true, cellHTML: false, ...options });
-}
+};
 
 /**
  * Constructs a CSVWorksheets from the given workbook
@@ -23,7 +29,7 @@ export function constructXLSXWorkbook(file: MediaFile, options?: xlsx.ParsingOpt
  * @param {xlsx.WorkBook} workbook
  * @return {*}  {CSVWorksheets}
  */
-export function constructWorksheets(workbook: xlsx.WorkBook): xlsx.WorkSheet {
+export const constructWorksheets = (workbook: xlsx.WorkBook): xlsx.WorkSheet => {
   const worksheets: xlsx.WorkSheet = {};
 
   Object.entries(workbook.Sheets).forEach(([key, value]) => {
@@ -31,16 +37,16 @@ export function constructWorksheets(workbook: xlsx.WorkBook): xlsx.WorkSheet {
   });
 
   return worksheets;
-}
+};
 
 /**
- * Get the headers for the given worksheet.
+ * Get the headers for the given worksheet, then transforms them to uppercase.
  *
  * @export
  * @param {xlsx.WorkSheet} worksheet
  * @return {*}  {string[]}
  */
-export function getWorksheetHeaders(worksheet: xlsx.WorkSheet): string[] {
+export const getWorksheetHeaders = (worksheet: xlsx.WorkSheet): string[] => {
   const originalRange = getWorksheetRange(worksheet);
 
   if (!originalRange) {
@@ -54,15 +60,18 @@ export function getWorksheetHeaders(worksheet: xlsx.WorkSheet): string[] {
     range: customRange
   });
 
-  let headers = [];
+  let headers: string[] = [];
 
   if (aoaHeaders.length > 0) {
     // Parse the headers array from the array of arrays produced by calling `xlsx.utils.sheet_to_json`
-    headers = aoaHeaders[0].map(safeTrim);
+    headers = aoaHeaders[0]
+      .map(String)
+      .filter(Boolean)
+      .map((header) => header.trim().toUpperCase());
   }
 
   return headers;
-}
+};
 
 /**
  * Get the headers for the given worksheet, with all values converted to lowercase.
@@ -71,9 +80,9 @@ export function getWorksheetHeaders(worksheet: xlsx.WorkSheet): string[] {
  * @param {xlsx.WorkSheet} worksheet
  * @return {*}  {string[]}
  */
-export function getHeadersLowerCase(worksheet: xlsx.WorkSheet): string[] {
+export const getHeadersLowerCase = (worksheet: xlsx.WorkSheet): string[] => {
   return getWorksheetHeaders(worksheet).map(safeToLowerCase);
-}
+};
 
 /**
  * Get the index of the given header name.
@@ -83,9 +92,9 @@ export function getHeadersLowerCase(worksheet: xlsx.WorkSheet): string[] {
  * @param {string} headerName
  * @return {*}  {number}
  */
-export function getHeaderIndex(worksheet: xlsx.WorkSheet, headerName: string): number {
+export const getHeaderIndex = (worksheet: xlsx.WorkSheet, headerName: string): number => {
   return getWorksheetHeaders(worksheet).indexOf(headerName);
-}
+};
 
 /**
  * Return an array of row value arrays.
@@ -94,7 +103,7 @@ export function getHeaderIndex(worksheet: xlsx.WorkSheet, headerName: string): n
  * @param {xlsx.WorkSheet} worksheet
  * @return {*}  {string[][]}
  */
-export function getWorksheetRows(worksheet: xlsx.WorkSheet): string[][] {
+export const getWorksheetRows = (worksheet: xlsx.WorkSheet): string[][] => {
   const originalRange = getWorksheetRange(worksheet);
 
   if (!originalRange) {
@@ -127,7 +136,7 @@ export function getWorksheetRows(worksheet: xlsx.WorkSheet): string[][] {
   }
 
   return rowsToReturn;
-}
+};
 
 /**
  * Return an array of row value arrays.
@@ -136,7 +145,7 @@ export function getWorksheetRows(worksheet: xlsx.WorkSheet): string[][] {
  * @param {xlsx.WorkSheet} worksheet
  * @return {*}  {Record<string, any>[]}
  */
-export function getWorksheetRowObjects(worksheet: xlsx.WorkSheet): Record<string, any>[] {
+export const getWorksheetRowObjects = (worksheet: xlsx.WorkSheet): Record<string, any>[] => {
   const ref = worksheet['!ref'];
 
   if (!ref) {
@@ -158,25 +167,32 @@ export function getWorksheetRowObjects(worksheet: xlsx.WorkSheet): Record<string
   });
 
   return rowObjectsArray;
-}
+};
 
 /**
  * Return boolean indicating whether the worksheet has the expected headers.
  *
  * @export
  * @param {xlsx.WorkSheet} worksheet
- * @param {string[]} expectedHeaders
+ * @param {IXLSXCSVValidator} columnValidator
  * @return {*}  {boolean}
  */
-export function validateWorksheetHeaders(worksheet: xlsx.WorkSheet, expectedHeaders: string[]): boolean {
+export const validateWorksheetHeaders = (worksheet: xlsx.WorkSheet, columnValidator: IXLSXCSVValidator): boolean => {
+  const { columnNames, columnAliases } = columnValidator;
+
   const worksheetHeaders = getWorksheetHeaders(worksheet);
 
-  if (worksheetHeaders.length !== expectedHeaders.length) {
+  if (worksheetHeaders.length !== columnNames.length) {
     return false;
   }
 
-  return expectedHeaders.every((header) => worksheetHeaders.includes(header));
-}
+  return columnNames.every((expectedHeader) => {
+    return (
+      columnAliases?.[expectedHeader]?.some((alias) => worksheetHeaders.includes(alias)) ||
+      worksheetHeaders.includes(expectedHeader)
+    );
+  });
+};
 
 /**
  * Return boolean indicating whether the worksheet has correct column types.
@@ -186,7 +202,11 @@ export function validateWorksheetHeaders(worksheet: xlsx.WorkSheet, expectedHead
  * @param {string[]} rowValueTypes
  * @return {*}  {boolean}
  */
-export function validateWorksheetColumnTypes(worksheet: xlsx.WorkSheet, rowValueTypes: string[]): boolean {
+export const validateWorksheetColumnTypes = (
+  worksheet: xlsx.WorkSheet,
+  columnValidator: IXLSXCSVValidator
+): boolean => {
+  const rowValueTypes: string[] = columnValidator.columnTypes;
   const worksheetRows = getWorksheetRows(worksheet);
 
   return worksheetRows.every((row) => {
@@ -204,7 +224,7 @@ export function validateWorksheetColumnTypes(worksheet: xlsx.WorkSheet, rowValue
       return rowValueTypes[index] === type;
     });
   });
-}
+};
 
 /**
  * Get a worksheet by name.
@@ -214,9 +234,9 @@ export function validateWorksheetColumnTypes(worksheet: xlsx.WorkSheet, rowValue
  * @param {string} sheetName
  * @return {*}  {xlsx.WorkSheet}
  */
-export function getWorksheetByName(workbook: xlsx.WorkBook, sheetName: string): xlsx.WorkSheet {
+export const getWorksheetByName = (workbook: xlsx.WorkBook, sheetName: string): xlsx.WorkSheet => {
   return workbook.Sheets[sheetName];
-}
+};
 
 /**
  * Get a worksheets decoded range object, or return undefined if the worksheet is missing range information.
@@ -225,7 +245,7 @@ export function getWorksheetByName(workbook: xlsx.WorkBook, sheetName: string): 
  * @param {xlsx.WorkSheet} worksheet
  * @return {*}  {(xlsx.Range | undefined)}
  */
-export function getWorksheetRange(worksheet: xlsx.WorkSheet): xlsx.Range | undefined {
+export const getWorksheetRange = (worksheet: xlsx.WorkSheet): xlsx.Range | undefined => {
   const ref = worksheet['!ref'];
 
   if (!ref) {
@@ -233,7 +253,7 @@ export function getWorksheetRange(worksheet: xlsx.WorkSheet): xlsx.Range | undef
   }
 
   return xlsx.utils.decode_range(ref);
-}
+};
 /**
  * Iterates over the cells in the worksheet and:
  * - Trims whitespace from cell values.
@@ -242,7 +262,7 @@ export function getWorksheetRange(worksheet: xlsx.WorkSheet): xlsx.Range | undef
  * https://stackoverflow.com/questions/61789174/how-can-i-remove-all-the-spaces-in-the-cells-of-excelsheet-using-nodejs-code
  * @param worksheet
  */
-export function prepareWorksheetCells(worksheet: xlsx.WorkSheet) {
+export const prepareWorksheetCells = (worksheet: xlsx.WorkSheet) => {
   const range = getWorksheetRange(worksheet);
 
   if (!range) {
@@ -264,12 +284,8 @@ export function prepareWorksheetCells(worksheet: xlsx.WorkSheet) {
       cell = trimCellWhitespace(cell);
     }
   }
-}
+};
 
-export interface IXLSXCSVValidator {
-  columnNames: string[];
-  columnTypes: string[];
-}
 /**
  * Validates the given CSV file against the given column validator
  *
@@ -283,12 +299,12 @@ export function validateCsvFile(
   sheet = 'Sheet1'
 ): boolean {
   // Validate the worksheet headers
-  if (!validateWorksheetHeaders(xlsxWorksheets[sheet], columnValidator.columnNames)) {
+  if (!validateWorksheetHeaders(xlsxWorksheets[sheet], columnValidator)) {
     return false;
   }
 
   // Validate the worksheet column types
-  if (!validateWorksheetColumnTypes(xlsxWorksheets[sheet], columnValidator.columnTypes)) {
+  if (!validateWorksheetColumnTypes(xlsxWorksheets[sheet], columnValidator)) {
     return false;
   }
 
