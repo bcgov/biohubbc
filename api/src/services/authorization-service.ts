@@ -47,11 +47,23 @@ export interface AuthorizeByServiceClient {
   discriminator: 'ServiceClient';
 }
 
-export interface AuthorizeByProjectPermission {
+type AuthorizeByProjectPermissionByProjectId = {
   validProjectPermissions: PROJECT_PERMISSION[];
   projectId: number;
+  surveyId?: number;
   discriminator: 'ProjectPermission';
-}
+};
+
+type AuthorizeByProjectPermissionBySurveyId = {
+  validProjectPermissions: PROJECT_PERMISSION[];
+  projectId?: number;
+  surveyId: number;
+  discriminator: 'ProjectPermission';
+};
+
+export type AuthorizeByProjectPermission =
+  | AuthorizeByProjectPermissionByProjectId
+  | AuthorizeByProjectPermissionBySurveyId;
 
 export type AuthorizeRule =
   | AuthorizeBySystemRoles
@@ -133,27 +145,34 @@ export class AuthorizationService extends DBService {
   }
 
   async authorizeByProjectPermission(authorizeProjectPermission: AuthorizeByProjectPermission): Promise<boolean> {
-    if (!authorizeProjectPermission) {
+    if (
+      !authorizeProjectPermission ||
+      (!authorizeProjectPermission.projectId && !authorizeProjectPermission.surveyId)
+    ) {
       // Cannot verify user permissions
       return false;
     }
 
-    if (this._projectUser?.project_id !== authorizeProjectPermission.projectId) {
-      // A projectUser was previously cached, but for a different project
-      this._projectUser = undefined;
+    let projectUserObject;
+
+    if (this.isAuthorizeByProjectRolesByProjectId(authorizeProjectPermission)) {
+      projectUserObject =
+        this._projectUser || (await this.getProjectUserObjectByProjectId(authorizeProjectPermission.projectId));
+    } else {
+      projectUserObject =
+        this._projectUser || (await this.getProjectUserObjectBySurveyId(authorizeProjectPermission.surveyId));
     }
 
-    const projectUserObject =
-      this._projectUser || (await this.getProjectUserObject(authorizeProjectPermission.projectId));
     if (!projectUserObject) {
       // Cannot verify user roles
       return false;
     }
 
-    // Cache the _systemUser for future use, if needed
+    // Cache the _projectUser for future use, if needed
     this._projectUser = projectUserObject;
+
     if (projectUserObject.record_end_date) {
-      //system user has an expired record
+      // system user has an expired record
       return false;
     }
 
@@ -207,7 +226,7 @@ export class AuthorizationService extends DBService {
     this._systemUser = systemUserObject;
 
     if (systemUserObject.record_end_date) {
-      //system user has an expired record
+      // system user has an expired record
       return false;
     }
 
@@ -335,11 +354,11 @@ export class AuthorizationService extends DBService {
    * @param {number} projectId
    * @return {*}  {(Promise<(ProjectUser & SystemUser) | null>)}
    */
-  async getProjectUserObject(projectId: number): Promise<(ProjectUser & SystemUser) | null> {
+  async getProjectUserObjectByProjectId(projectId: number): Promise<(ProjectUser & SystemUser) | null> {
     let projectUserWithRoles;
 
     try {
-      projectUserWithRoles = await this.getProjectUserWithRoles(projectId);
+      projectUserWithRoles = await this.getProjectUserWithRolesByProjectId(projectId);
     } catch {
       return null;
     }
@@ -357,13 +376,63 @@ export class AuthorizationService extends DBService {
    * @param {number} projectId
    * @return {*}  {(Promise<(ProjectUser & SystemUser) | null>)}
    */
-  async getProjectUserWithRoles(projectId: number): Promise<(ProjectUser & SystemUser) | null> {
+  async getProjectUserWithRolesByProjectId(projectId: number): Promise<(ProjectUser & SystemUser) | null> {
     if (!this._keycloakToken) {
       return null;
     }
 
     const userGuid = getUserGuid(this._keycloakToken);
 
-    return this._projectParticipationService.getProjectParticipantByUserGuid(projectId, userGuid);
+    return this._projectParticipationService.getProjectParticipantByProjectIdAndUserGuid(projectId, userGuid);
   }
+
+  /**
+   * Fetch the user's project user object.
+   *
+   * @param {number} projectId
+   * @return {*}  {(Promise<(ProjectUser & SystemUser) | null>)}
+   */
+  async getProjectUserObjectBySurveyId(surveyId: number): Promise<(ProjectUser & SystemUser) | null> {
+    let projectUserWithRoles;
+
+    try {
+      projectUserWithRoles = await this.getProjectUserWithRolesBySurveyId(surveyId);
+    } catch {
+      return null;
+    }
+
+    if (!projectUserWithRoles) {
+      return null;
+    }
+
+    return projectUserWithRoles;
+  }
+
+  /**
+   * Finds a single project user based on their keycloak token information.
+   *
+   * @param {number} surveyId
+   * @return {*}  {(Promise<(ProjectUser & SystemUser) | null>)}
+   */
+  async getProjectUserWithRolesBySurveyId(surveyId: number): Promise<(ProjectUser & SystemUser) | null> {
+    if (!this._keycloakToken) {
+      return null;
+    }
+
+    const userGuid = getUserGuid(this._keycloakToken);
+
+    return this._projectParticipationService.getProjectParticipantBySurveyIdAndUserGuid(surveyId, userGuid);
+  }
+
+  /**
+   * Given a `AuthorizeByProjectPermission`, determine which of its possible subtypes it is.
+   *
+   * @param {AuthorizeByProjectPermission} value
+   * @memberof AuthorizationService
+   */
+  isAuthorizeByProjectRolesByProjectId = (
+    value: AuthorizeByProjectPermission
+  ): value is AuthorizeByProjectPermissionByProjectId => {
+    return value.projectId !== undefined && value.surveyId === undefined;
+  };
 }

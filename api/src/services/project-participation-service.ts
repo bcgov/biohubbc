@@ -101,7 +101,7 @@ export class ProjectParticipationService extends DBService {
   }
 
   /**
-   * Get the project participant for the given project and system user.
+   * Get the project participant for the given project id and system user.
    *
    * @param {number} projectId
    * @param {number} systemUserId
@@ -120,11 +120,26 @@ export class ProjectParticipationService extends DBService {
    * @return {*}  {(Promise<(ProjectUser & SystemUser) | null>)}
    * @memberof ProjectParticipationService
    */
-  async getProjectParticipantByUserGuid(
+  async getProjectParticipantByProjectIdAndUserGuid(
     projectId: number,
     userGuid: string
   ): Promise<(ProjectUser & SystemUser) | null> {
-    return this.projectParticipationRepository.getProjectParticipantByUserGuid(projectId, userGuid);
+    return this.projectParticipationRepository.getProjectParticipantByProjectIdAndUserGuid(projectId, userGuid);
+  }
+
+  /**
+   * Get the project participant for the given survey id and user guid.
+   *
+   * @param {number} surveyId
+   * @param {number} userGuid
+   * @return {*}  {(Promise<(ProjectUser & SystemUser) | null>)}
+   * @memberof ProjectParticipationService
+   */
+  async getProjectParticipantBySurveyIdAndUserGuid(
+    surveyId: number,
+    userGuid: string
+  ): Promise<(ProjectUser & SystemUser) | null> {
+    return this.projectParticipationRepository.getProjectParticipantBySurveyIdAndUserGuid(surveyId, userGuid);
   }
 
   /**
