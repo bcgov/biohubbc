@@ -7,6 +7,7 @@ import {
   constructWorksheets,
   constructXLSXWorkbook,
   getWorksheetRowObjects,
+  IXLSXCSVValidator,
   validateCsvFile
 } from '../utils/xlsx-utils/worksheet-utils';
 import { BctwService, ICreateManualTelemetry } from './bctw-service';
@@ -14,9 +15,13 @@ import { ICritterbaseUser } from './critterbase-service';
 import { DBService } from './db-service';
 import { SurveyCritterService } from './survey-critter-service';
 
-const telemetryCSVColumnValidator = {
+const telemetryCSVColumnValidator: IXLSXCSVValidator = {
   columnNames: ['DEVICE_ID', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
-  columnTypes: ['number', 'date', 'string', 'number', 'number']
+  columnTypes: ['number', 'date', 'string', 'number', 'number'],
+  columnAliases: {
+    LATITUDE: ['LAT'],
+    LONGITUDE: ['LON', 'LONG', 'LNG']
+  }
 };
 
 export class TelemetryService extends DBService {
