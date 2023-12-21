@@ -128,8 +128,13 @@ export class TelemetryService extends DBService {
           latitude: row['LATITUDE'],
           longitude: row['LONGITUDE']
         });
+      } else {
+        throw new Error(
+          `Error adding Manual Telemetry, no deployment was found for device: ${deviceId} on: ${dateTime.format(
+            'YYYY-MM-DD HH:mm:ss'
+          )}`
+        );
       }
-      // nothing was found, should we respond with the row number that was ignored?
     });
 
     // step 9 create telemetries
