@@ -41,6 +41,7 @@ services:
       - ${API_PORT}:${API_PORT}
     environment:
       - NODE_ENV=${NODE_ENV}
+      - NODE_OPTIONS=${API_NODE_OPTIONS}
       - API_HOST=${API_HOST}
       - API_PORT=${API_PORT}
       # Elastic Search
@@ -133,6 +134,7 @@ services:
       - ${APP_PORT}:${APP_PORT}
     environment:
       - NODE_ENV=${NODE_ENV}
+      - NODE_OPTIONS=${APP_NODE_OPTIONS}
       - REACT_APP_NODE_ENV=${NODE_ENV}
       - PORT=${APP_PORT}
       - REACT_APP_API_HOST=${API_HOST}
