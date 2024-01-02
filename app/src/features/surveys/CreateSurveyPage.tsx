@@ -16,6 +16,7 @@ import { CreateSurveyI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
+import { default as dayjs } from 'dayjs';
 import SurveyPartnershipsForm, {
   SurveyPartnershipsFormInitialValues,
   SurveyPartnershipsFormYupSchema
@@ -25,7 +26,6 @@ import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ICreateSurveyRequest } from 'interfaces/useSurveyApi.interface';
-import moment from 'moment';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
@@ -126,7 +126,7 @@ const CreateSurveyPage = () => {
         }`
       )
       .isAfterDate(
-        moment(DATE_LIMIT.min).toISOString(),
+        dayjs(DATE_LIMIT.min).toISOString(),
         DATE_FORMAT.ShortDateFormat,
         `Survey start date cannot be before ${getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, DATE_LIMIT.min)}`
       )
@@ -143,7 +143,7 @@ const CreateSurveyPage = () => {
         }`
       )
       .isBeforeDate(
-        moment(DATE_LIMIT.max).toISOString(),
+        dayjs(DATE_LIMIT.max).toISOString(),
         DATE_FORMAT.ShortDateFormat,
         `Survey end date cannot be after ${getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, DATE_LIMIT.max)}`
       )

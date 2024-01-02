@@ -4,9 +4,9 @@ import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import { ObservationsTableI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { ObservationsContext } from 'contexts/observationsContext';
+import { default as dayjs } from 'dayjs';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import moment from 'moment';
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
@@ -247,7 +247,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       });
 
       // Validate date value
-      if (row.observation_date && !moment(row.observation_date).isValid()) {
+      if (row.observation_date && !dayjs(row.observation_date).isValid()) {
         rowErrors.push({ field: 'observation_date', message: 'Invalid date' });
       }
 

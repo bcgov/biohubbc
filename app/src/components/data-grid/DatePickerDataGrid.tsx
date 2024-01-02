@@ -1,8 +1,8 @@
 import useEnhancedEffect from '@mui/material/utils/useEnhancedEffect';
 import { GridRenderEditCellParams, GridValidRowModel, useGridApiContext } from '@mui/x-data-grid';
 import { DatePicker, DatePickerProps, LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
-import moment from 'moment';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { default as dayjs } from 'dayjs';
 import { useRef } from 'react';
 
 interface IDatePickerDataGridProps<DataGridType extends GridValidRowModel> {
@@ -22,10 +22,10 @@ const DatePickerDataGrid = <DataGridType extends GridValidRowModel>({
     }
   }, [dataGridProps.hasFocus]);
   return (
-    <LocalizationProvider dateAdapter={AdapterMoment}>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
         inputRef={ref}
-        value={(dataGridProps.value && moment(dataGridProps.value, 'HH:mm:ss')) || null}
+        value={(dataGridProps.value && dayjs(dataGridProps.value, 'HH:mm:ss')) || null}
         onChange={(value) => {
           apiRef?.current.setEditCellValue({ id: dataGridProps.id, field: dataGridProps.field, value: value });
         }}
