@@ -106,12 +106,12 @@ describe('getFormattedAmount', () => {
 
 describe('getFormattedDate', () => {
   beforeAll(() => {
-    // ignore warning about invalid date string being passed to moment
+    // ignore warning about invalid date string being passed to dayjs
     jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   it('returns empty string if invalid date is provided', async () => {
-    const date = '12312312312312312';
+    const date = 'INVALID DATE STRING';
     const formattedDateString = getFormattedDate(DATE_FORMAT.MediumDateFormat, date);
     expect(formattedDateString).toEqual('');
   });
@@ -125,19 +125,19 @@ describe('getFormattedDate', () => {
 
 describe('getFormattedDateRangeString', () => {
   beforeAll(() => {
-    // ignore warning about invalid date string being passed to moment
+    // ignore warning about invalid date string being passed to dayjs
     jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   it('returns empty string if invalid startDate is provided', async () => {
-    const startDate = '12312312312312312';
+    const startDate = 'INVALID DATE STRING';
     const formattedDateString = getFormattedDateRangeString(DATE_FORMAT.MediumDateFormat, startDate);
     expect(formattedDateString).toEqual('');
   });
 
   it('returns empty string if invalid endDate is provided', async () => {
     const startDate = '2021-03-04T22:44:55.478682';
-    const endDate = '12312312312312312';
+    const endDate = 'INVALID DATE STRING';
     const formattedDateString = getFormattedDateRangeString(DATE_FORMAT.MediumDateFormat, startDate, endDate);
     expect(formattedDateString).toEqual('');
   });
