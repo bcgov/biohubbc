@@ -12,7 +12,7 @@ import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SurveyContext } from 'contexts/surveyContext';
 import { IManualTelemetryTableRow, TelemetryTableContext } from 'contexts/telemetryTableContext';
-import dayjs from 'dayjs';
+import { default as dayjs } from 'dayjs';
 import { useCallback, useContext, useEffect, useMemo } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import { ICritterDeployment } from './ManualTelemetryList';

@@ -3,7 +3,7 @@ import { GridRowId, GridRowSelectionModel, GridValidRowModel, useGridApiRef } fr
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import { TelemetryTableI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
-import dayjs from 'dayjs';
+import { default as dayjs } from 'dayjs';
 import { APIError } from 'hooks/api/useAxios';
 import { ICreateManualTelemetry, IUpdateManualTelemetry, useTelemetryApi } from 'hooks/useTelemetryApi';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';

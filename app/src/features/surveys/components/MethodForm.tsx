@@ -17,7 +17,7 @@ import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import { DateTimeFields } from 'components/fields/DateTimeFields';
 import { CodesContext } from 'contexts/codesContext';
-import dayjs from 'dayjs';
+import { default as dayjs } from 'dayjs';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 import { useContext, useEffect } from 'react';
