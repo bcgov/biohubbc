@@ -98,14 +98,14 @@ export const getFormattedDateRangeString = (
  * @return {string} formatted date string, or an empty string if unable to parse the date
  */
 export const getFormattedDate = (dateFormat: DATE_FORMAT, date: string): string => {
-  const dateMoment = dayjs(date);
+  const dateJs = dayjs(date);
 
-  if (!dateMoment.isValid()) {
+  if (!dateJs.isValid()) {
     //date was invalid
     return '';
   }
 
-  return dateMoment.format(dateFormat);
+  return dateJs.format(dateFormat);
 };
 
 /**
@@ -116,14 +116,14 @@ export const getFormattedDate = (dateFormat: DATE_FORMAT, date: string): string 
  * @return {string} formatted time string, or an empty string if unable to parse the date
  */
 export const getFormattedTime = (timeFormat: TIME_FORMAT, date: string): string => {
-  const dateMoment = dayjs(date);
+  const dateJs = dayjs(date);
 
-  if (!dateMoment.isValid()) {
+  if (!dateJs.isValid()) {
     //date was invalid
     return '';
   }
 
-  return dateMoment.format(timeFormat);
+  return dateJs.format(timeFormat);
 };
 
 /**
@@ -298,7 +298,6 @@ export const formatLabel = (str: string): string => {
 
 /**
  * Checks if two dates are the same, but safe to use against nullish values.
- * By default moment(null).isSame(moment(null)) returns false, which is not always desirable.
  *
  * @param {NullishDate}
  * @param {NullishDate}
