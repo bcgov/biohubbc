@@ -12,7 +12,7 @@ import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SurveyContext } from 'contexts/surveyContext';
 import { IManualTelemetryTableRow, TelemetryTableContext } from 'contexts/telemetryTableContext';
-import moment from 'moment';
+import { default as dayjs } from 'dayjs';
 import { useCallback, useContext, useEffect, useMemo } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import { ICritterDeployment } from './ManualTelemetryList';
@@ -199,7 +199,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
-      valueGetter: (params) => (params.row.date ? moment(params.row.date).toDate() : null),
+      valueGetter: (params) => (params.row.date ? dayjs(params.row.date).toDate() : null),
       renderCell: (params) => (
         <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
           {getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, params.value)}
@@ -214,9 +214,9 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
             textFieldProps={{
               name: params.field,
               type: 'date',
-              value: params.value ? moment(params.value).format('YYYY-MM-DD') : null,
+              value: params.value ? dayjs(params.value).format('YYYY-MM-DD') : null,
               onChange: (event) => {
-                const value = moment(event.target.value).toDate();
+                const value = dayjs(event.target.value).toDate();
                 _muiDataGridApiRef?.current.setEditCellValue({
                   id: params.id,
                   field: params.field,
@@ -248,11 +248,11 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
           return null;
         }
 
-        if (moment.isMoment(value)) {
+        if (dayjs.isDayjs(value)) {
           return value.format('HH:mm:ss');
         }
 
-        return moment(value, 'HH:mm:ss').format('HH:mm:ss');
+        return dayjs(value, 'HH:mm:ss').format('HH:mm:ss');
       },
       renderCell: (params) => {
         if (!params.value) {

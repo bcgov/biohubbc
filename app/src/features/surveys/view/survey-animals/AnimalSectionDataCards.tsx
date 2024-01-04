@@ -1,10 +1,10 @@
 import Collapse from '@mui/material/Collapse';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
+import { default as dayjs } from 'dayjs';
 import { EditDeleteStubCard } from 'features/surveys/components/EditDeleteStubCard';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { IFamily } from 'hooks/cb_api/useFamilyApi';
-import moment from 'moment';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { setMessageSnackbar } from 'utils/Utils';
@@ -48,7 +48,7 @@ export const AnimalSectionDataCards = (props: IAnimalSectionDataCardsProps) => {
   const statusRef = useRef<{ success: boolean; msg: string } | undefined>();
 
   const dialogContext = useContext(DialogContext);
-  const formatDate = (dt: Date) => moment(dt).format('MMM Do[,] YYYY');
+  const formatDate = (dt: Date) => dayjs(dt).format('MMM Do[,] YYYY');
 
   useEffect(() => {
     // This delays the snackbar from entering until the card has finished animating

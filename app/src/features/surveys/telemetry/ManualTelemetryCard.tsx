@@ -5,7 +5,7 @@ import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
-import moment from 'moment';
+import { default as dayjs } from 'dayjs';
 export interface ManualTelemetryCardProps {
   device_id: number;
   name: string; // should be animal alias
@@ -67,8 +67,8 @@ const ManualTelemetryCard = (props: ManualTelemetryCardProps) => {
         <Box display={'flex'}>
           <Icon path={mdiCalendarRange} size={0.75} />
           <Typography ml={1} variant="body2" component={'div'} color={'inherit'}>
-            {moment(props.start_date).format('YYYY-MM-DD')}{' '}
-            {props.end_date ? '- ' + moment(props.end_date).format('YYYY-MM-DD') : ''}
+            {dayjs(props.start_date).format('YYYY-MM-DD')}{' '}
+            {props.end_date ? '- ' + dayjs(props.end_date).format('YYYY-MM-DD') : ''}
           </Typography>
         </Box>
       </AccordionDetails>

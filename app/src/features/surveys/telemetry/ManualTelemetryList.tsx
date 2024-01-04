@@ -20,13 +20,13 @@ import { AttachmentType } from 'constants/attachments';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TelemetryDataContext } from 'contexts/telemetryDataContext';
+import { default as dayjs } from 'dayjs';
 import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual as _deepEquals } from 'lodash';
 import { get } from 'lodash-es';
-import moment from 'moment';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { datesSameNullable } from 'utils/Utils';
 import yup from 'utils/YupSchema';
@@ -127,9 +127,9 @@ const ManualTelemetryList = () => {
         deployments: [
           {
             deployment_id: critterDeployment.deployment.deployment_id,
-            attachment_start: moment(critterDeployment.deployment.attachment_start).format('YYYY-MM-DD'),
+            attachment_start: dayjs(critterDeployment.deployment.attachment_start).format('YYYY-MM-DD'),
             attachment_end: critterDeployment.deployment.attachment_end
-              ? moment(critterDeployment.deployment.attachment_end).format('YYYY-MM-DD')
+              ? dayjs(critterDeployment.deployment.attachment_end).format('YYYY-MM-DD')
               : null
           }
         ],

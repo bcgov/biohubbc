@@ -18,13 +18,13 @@ import { CodesContext } from 'contexts/codesContext';
 import { ObservationsContext } from 'contexts/observationsContext';
 import { IObservationTableRow, ObservationsTableContext } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import { default as dayjs } from 'dayjs';
 import {
   IGetSampleLocationRecord,
   IGetSampleMethodRecord,
   IGetSamplePeriodRecord
 } from 'interfaces/useSurveyApi.interface';
 import { has } from 'lodash-es';
-import moment from 'moment';
 import { useCallback, useContext, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router';
 import { getCodesName, getFormattedDate } from 'utils/Utils';
@@ -304,7 +304,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       editable: true,
       type: 'date',
       minWidth: 150,
-      valueGetter: (params) => (params.row.observation_date ? moment(params.row.observation_date).toDate() : null),
+      valueGetter: (params) => (params.row.observation_date ? dayjs(params.row.observation_date).toDate() : null),
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
@@ -322,9 +322,9 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             textFieldProps={{
               name: params.field,
               type: 'date',
-              value: params.value ? moment(params.value).format('YYYY-MM-DD') : null,
+              value: params.value ? dayjs(params.value).format('YYYY-MM-DD') : null,
               onChange: (event) => {
-                const value = moment(event.target.value).toDate();
+                const value = dayjs(event.target.value).toDate();
                 apiRef?.current.setEditCellValue({
                   id: params.id,
                   field: params.field,
@@ -355,11 +355,11 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
           return null;
         }
 
-        if (moment.isMoment(value)) {
+        if (dayjs.isDayjs(value)) {
           return value.format('HH:mm:ss');
         }
 
-        return moment(value, 'HH:mm:ss').format('HH:mm:ss');
+        return dayjs(value, 'HH:mm:ss').format('HH:mm:ss');
       },
       renderCell: (params) => {
         if (!params.value) {
