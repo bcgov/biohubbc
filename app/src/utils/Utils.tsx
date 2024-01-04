@@ -1,11 +1,11 @@
 import { Typography } from '@mui/material';
 import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
+import { default as dayjs } from 'dayjs';
 import { Feature, GeoJsonProperties, Geometry, Polygon } from 'geojson';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { LatLngBounds } from 'leaflet';
 import _ from 'lodash';
-import moment from 'moment';
 import { IDialogContext } from '../contexts/dialogContext';
 
 /**
@@ -98,14 +98,14 @@ export const getFormattedDateRangeString = (
  * @return {string} formatted date string, or an empty string if unable to parse the date
  */
 export const getFormattedDate = (dateFormat: DATE_FORMAT, date: string): string => {
-  const dateMoment = moment(date);
+  const dateJs = dayjs(date);
 
-  if (!dateMoment.isValid()) {
+  if (!dateJs.isValid()) {
     //date was invalid
     return '';
   }
 
-  return dateMoment.format(dateFormat);
+  return dateJs.format(dateFormat);
 };
 
 /**
@@ -116,14 +116,14 @@ export const getFormattedDate = (dateFormat: DATE_FORMAT, date: string): string 
  * @return {string} formatted time string, or an empty string if unable to parse the date
  */
 export const getFormattedTime = (timeFormat: TIME_FORMAT, date: string): string => {
-  const dateMoment = moment(date);
+  const dateJs = dayjs(date);
 
-  if (!dateMoment.isValid()) {
+  if (!dateJs.isValid()) {
     //date was invalid
     return '';
   }
 
-  return dateMoment.format(timeFormat);
+  return dateJs.format(timeFormat);
 };
 
 /**
@@ -298,7 +298,6 @@ export const formatLabel = (str: string): string => {
 
 /**
  * Checks if two dates are the same, but safe to use against nullish values.
- * By default moment(null).isSame(moment(null)) returns false, which is not always desirable.
  *
  * @param {NullishDate}
  * @param {NullishDate}
@@ -310,7 +309,7 @@ export const datesSameNullable = (date1: NullishDate, date2: NullishDate): boole
     //Note: intentionally loose equality
     return true;
   } else {
-    return moment(date1).isSame(moment(date2));
+    return dayjs(date1).isSame(dayjs(date2));
   }
 };
 
@@ -352,13 +351,13 @@ export const dateRangesOverlap = (
   startDateB: string,
   endDateB: string | null | undefined
 ): boolean => {
-  const startA = moment(startDateA);
-  const startB = moment(startDateB);
+  const startA = dayjs(startDateA);
+  const startB = dayjs(startDateB);
 
-  const endA = endDateA ? moment(endDateA) : moment('2300-01-01');
-  const endB = endDateB ? moment(endDateB) : moment('2300-01-01');
+  const endA = endDateA ? dayjs(endDateA) : dayjs('2300-01-01');
+  const endB = endDateB ? dayjs(endDateB) : dayjs('2300-01-01');
 
-  return startA.isSameOrBefore(endB) && endA.isSameOrAfter(startB);
+  return (startA.isSame(endB) || startA.isBefore(endB)) && (endA.isSame(startB) || endA.isAfter(startB));
 };
 
 /**

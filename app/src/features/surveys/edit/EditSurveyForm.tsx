@@ -7,6 +7,7 @@ import { makeStyles } from '@mui/styles';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { ScrollToFormikError } from 'components/formik/ScrollToFormikError';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
+import { default as dayjs } from 'dayjs';
 import SamplingStrategyForm from 'features/surveys/components/SamplingStrategyForm';
 import SurveyPartnershipsForm, {
   SurveyPartnershipsFormInitialValues,
@@ -16,7 +17,6 @@ import { Formik, FormikProps } from 'formik';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ProjectViewObject } from 'interfaces/useProjectApi.interface';
 import { IEditSurveyRequest, SurveyUpdateObject } from 'interfaces/useSurveyApi.interface';
-import moment from 'moment';
 import React, { useState } from 'react';
 import { StringBoolean } from 'types/misc';
 import { getFormattedDate } from 'utils/Utils';
@@ -115,7 +115,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
         }`
       )
       .isAfterDate(
-        moment(DATE_LIMIT.min).toISOString(),
+        dayjs(DATE_LIMIT.min).toISOString(),
         DATE_FORMAT.ShortDateFormat,
         `Survey start date cannot be before ${getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, DATE_LIMIT.min)}`
       )
@@ -132,7 +132,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
         }`
       )
       .isBeforeDate(
-        moment(DATE_LIMIT.max).toISOString(),
+        dayjs(DATE_LIMIT.max).toISOString(),
         DATE_FORMAT.ShortDateFormat,
         `Survey end date cannot be after ${getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, DATE_LIMIT.max)}`
       )

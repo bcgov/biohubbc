@@ -1,5 +1,5 @@
+import { default as dayjs } from 'dayjs';
 import { Feature } from 'geojson';
-import moment from 'moment';
 import { COMPLETION_STATUS } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/http-error';
@@ -63,7 +63,7 @@ export class ProjectService extends DBService {
       start_date: row.start_date,
       end_date: row.end_date,
       completion_status:
-        (row.end_date && moment(row.end_date).endOf('day').isBefore(moment()) && COMPLETION_STATUS.COMPLETED) ||
+        (row.end_date && dayjs(row.end_date).endOf('day').isBefore(dayjs()) && COMPLETION_STATUS.COMPLETED) ||
         COMPLETION_STATUS.ACTIVE,
       project_programs: row.project_programs,
       regions: row.regions

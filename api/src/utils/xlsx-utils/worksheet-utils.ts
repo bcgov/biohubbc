@@ -1,4 +1,4 @@
-import moment from 'moment';
+import { default as dayjs } from 'dayjs';
 import xlsx, { CellObject } from 'xlsx';
 import { MediaFile } from '../media/media-file';
 import { safeToLowerCase } from '../string-utils';
@@ -218,7 +218,7 @@ export const validateWorksheetColumnTypes = (
       const type = typeof value;
 
       if (rowValueTypes[index] === 'date') {
-        return moment(value).isValid();
+        return dayjs(value).isValid();
       }
 
       return rowValueTypes[index] === type;

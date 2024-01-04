@@ -17,9 +17,9 @@ import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import { DateTimeFields } from 'components/fields/DateTimeFields';
 import { CodesContext } from 'contexts/codesContext';
+import { default as dayjs } from 'dayjs';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import get from 'lodash-es/get';
-import moment from 'moment';
 import { useContext, useEffect } from 'react';
 import yup from 'utils/YupSchema';
 
@@ -91,8 +91,8 @@ export const SamplingSiteMethodYupSchema = yup.object({
           const { start_date, end_date, start_time, end_time } = value;
 
           if (start_date === end_date && start_time && end_time) {
-            return moment(`${start_date} ${start_time}`, 'YYYY-MM-DD HH:mm:ss').isBefore(
-              moment(`${end_date} ${end_time}`, 'YYYY-MM-DD HH:mm:ss')
+            return dayjs(`${start_date} ${start_time}`, 'YYYY-MM-DD HH:mm:ss').isBefore(
+              dayjs(`${end_date} ${end_time}`, 'YYYY-MM-DD HH:mm:ss')
             );
           }
           return true;
