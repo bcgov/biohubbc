@@ -1,4 +1,4 @@
-import moment from 'moment';
+import { default as dayjs } from 'dayjs';
 import { IDBConnection } from '../database/db';
 import { TelemetryRepository, TelemetrySubmissionRecord } from '../repositories/telemetry-repository';
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
@@ -100,16 +100,18 @@ export class TelemetryService extends DBService {
       const deviceId = Number(row['DEVICE_ID']);
       const start = row['DATE'];
       const time = row['TIME'];
-      const dateTime = moment(`${start} ${time}`);
+      const dateTime = dayjs(`${start} ${time}`);
 
       const foundDeployment = deployments.find((item) => {
+        const currentStart = dayjs(item.attachment_start);
+        const currentEnd = dayjs(item.attachment_end);
         // check the device ids match
         if (item.device_id === deviceId) {
           // check the date is same or after the device deployment start date
-          if (dateTime.isSameOrAfter(moment(item.attachment_start))) {
+          if (dateTime.isAfter(currentStart) || dateTime.isSame(currentStart)) {
             if (item.attachment_end) {
               // check if the date is same or before the device was removed
-              if (dateTime.isSameOrBefore(moment(item.attachment_end))) {
+              if (dateTime.isBefore(currentEnd) || dateTime.isSame(currentEnd)) {
                 return true;
               }
             } else {
