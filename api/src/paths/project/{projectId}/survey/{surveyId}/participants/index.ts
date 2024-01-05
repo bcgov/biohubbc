@@ -16,7 +16,7 @@ export const GET: Operation = [
       or: [
         {
           validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
-          projectId: Number(req.params.projectId),
+          surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
         {
@@ -151,7 +151,7 @@ export const POST: Operation = [
       or: [
         {
           validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
-          projectId: Number(req.params.projectId),
+          surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
         {

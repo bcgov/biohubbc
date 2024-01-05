@@ -1,7 +1,7 @@
 import { GridColDef } from '@mui/x-data-grid';
 import { CustomDataGrid } from 'components/data-grid/CustomDataGrid';
+import { default as dayjs } from 'dayjs';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
-import moment from 'moment';
 import SurveyAnimalsTableActions from './SurveyAnimalsTableActions';
 import { IAnimalDeployment } from './telemetry-device/device';
 
@@ -65,7 +65,7 @@ export const SurveyAnimalsTable = ({
       flex: 1,
       valueGetter: (params) => {
         const currentDeploys = params.row.deployments?.filter(
-          (device: IAnimalDeployment) => !device.attachment_end || moment(device.attachment_end).isAfter(moment())
+          (device: IAnimalDeployment) => !device.attachment_end || dayjs(device.attachment_end).isAfter(dayjs())
         );
         return currentDeploys?.length
           ? currentDeploys.map((device: IAnimalDeployment) => device.device_id).join(', ')
@@ -78,7 +78,7 @@ export const SurveyAnimalsTable = ({
       flex: 1,
       valueGetter: (params) => {
         const previousDeploys = params.row.deployments?.filter(
-          (device: IAnimalDeployment) => device.attachment_end && moment(device.attachment_end).isBefore(moment())
+          (device: IAnimalDeployment) => device.attachment_end && dayjs(device.attachment_end).isBefore(dayjs())
         );
         return previousDeploys?.length
           ? previousDeploys.map((device: IAnimalDeployment) => device.device_id).join(', ')

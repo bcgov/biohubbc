@@ -19,7 +19,7 @@ export const GET: Operation = [
             PROJECT_PERMISSION.COLLABORATOR,
             PROJECT_PERMISSION.OBSERVER
           ],
-          projectId: Number(req.params.projectId),
+          surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
         {

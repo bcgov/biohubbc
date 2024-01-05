@@ -1,6 +1,6 @@
 import { DATE_LIMIT } from 'constants/dateTimeFormats';
+import { default as dayjs } from 'dayjs';
 import { isEqual as deepEquals, omit, omitBy } from 'lodash-es';
-import moment from 'moment';
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
 import { AnyObjectSchema, InferType, reach } from 'yup';
@@ -62,8 +62,8 @@ const latSchema = yup.number().min(-90, glt(-90)).max(90, glt(90, false)).typeEr
 const lonSchema = yup.number().min(-180, glt(-180)).max(180, glt(180, false)).typeError(mustBeNum);
 const dateSchema = yup
   .date()
-  .min(moment(DATE_LIMIT.min), `Must be after ${DATE_LIMIT.min}`)
-  .max(moment(DATE_LIMIT.max), `Must be before ${DATE_LIMIT.max}`)
+  .min(dayjs(DATE_LIMIT.min), `Must be after ${DATE_LIMIT.min}`)
+  .max(dayjs(DATE_LIMIT.max), `Must be before ${DATE_LIMIT.max}`)
   .typeError('Invalid date format');
 
 export type ProjectionMode = 'wgs' | 'utm';

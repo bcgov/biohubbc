@@ -3,9 +3,9 @@ import { GridRowId, GridRowSelectionModel, GridValidRowModel, useGridApiRef } fr
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import { TelemetryTableI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
+import { default as dayjs } from 'dayjs';
 import { APIError } from 'hooks/api/useAxios';
 import { ICreateManualTelemetry, IUpdateManualTelemetry, useTelemetryApi } from 'hooks/useTelemetryApi';
-import moment from 'moment';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
@@ -209,7 +209,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
       });
 
       // Validate date value
-      if (row.date && !moment(row.date).isValid()) {
+      if (row.date && !dayjs(row.date).isValid()) {
         rowErrors.push({ field: 'date', message: 'Invalid date' });
       }
 
@@ -475,7 +475,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
                 telemetry_manual_id: String(item.id),
                 latitude: Number(item.latitude),
                 longitude: Number(item.longitude),
-                acquisition_date: moment(`${moment(item.date).format('YYYY-MM-DD')} ${item.time}`).format(
+                acquisition_date: dayjs(`${dayjs(item.date).format('YYYY-MM-DD')} ${item.time}`).format(
                   'YYYY-MM-DD HH:mm:ss'
                 )
               });
@@ -485,7 +485,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
                 deployment_id: String(item.deployment_id),
                 latitude: Number(item.latitude),
                 longitude: Number(item.longitude),
-                acquisition_date: moment(`${moment(item.date).format('YYYY-MM-DD')} ${item.time}`).format(
+                acquisition_date: dayjs(`${dayjs(item.date).format('YYYY-MM-DD')} ${item.time}`).format(
                   'YYYY-MM-DD HH:mm:ss'
                 )
               });
@@ -566,8 +566,8 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
         deployment_id: item.deployment_id,
         latitude: item.latitude,
         longitude: item.longitude,
-        date: moment(item.acquisition_date).format('YYYY-MM-DD'),
-        time: moment(item.acquisition_date).format('HH:mm:ss'),
+        date: dayjs(item.acquisition_date).format('YYYY-MM-DD'),
+        time: dayjs(item.acquisition_date).format('HH:mm:ss'),
         telemetry_type: item.telemetry_type
       };
     });
