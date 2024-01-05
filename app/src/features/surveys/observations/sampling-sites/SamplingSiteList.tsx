@@ -329,7 +329,10 @@ const SamplingSiteList = () => {
                         <Box display="flex" alignItems="center">
                           <Checkbox
                             checked={checked.includes(sampleSite.survey_sample_site_id)}
-                            onChange={() => handleCheckboxChange(sampleSite.survey_sample_site_id)}
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              handleCheckboxChange(sampleSite.survey_sample_site_id);
+                            }}
                             inputProps={{ 'aria-label': 'controlled' }}
                           />
                           <Typography
