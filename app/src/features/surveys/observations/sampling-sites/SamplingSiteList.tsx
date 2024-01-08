@@ -49,7 +49,7 @@ const SamplingSiteList = () => {
 
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [selectedSampleSiteId, setSelectedSampleSiteId] = useState<number | undefined>();
-  const [checked, setChecked] = useState<number[]>([]);
+  const [checkboxSelectedIds, setCheckboxSelectedIds] = useState<number[]>([]);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, sample_site_id: number) => {
     setAnchorEl(event.currentTarget);
@@ -116,7 +116,7 @@ const SamplingSiteList = () => {
   };
 
   const handleCheckboxChange = (sampleSiteId: number) => {
-    setChecked((prev) => {
+    setCheckboxSelectedIds((prev) => {
       if (prev.includes(sampleSiteId)) {
         return prev.filter((item) => item !== sampleSiteId);
       } else {
@@ -127,15 +127,15 @@ const SamplingSiteList = () => {
 
   const handleBulkDeleteSampleSites = async () => {
     await biohubApi.samplingSite
-      .deleteSampleSites(surveyContext.projectId, surveyContext.surveyId, checked)
+      .deleteSampleSites(surveyContext.projectId, surveyContext.surveyId, checkboxSelectedIds)
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
-        setChecked([]);
+        setCheckboxSelectedIds([]);
         surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
       })
       .catch((error: any) => {
         dialogContext.setYesNoDialog({ open: false });
-        setChecked([]);
+        setCheckboxSelectedIds([]);
         dialogContext.setSnackbar({
           snackbarMessage: (
             <>
@@ -152,7 +152,7 @@ const SamplingSiteList = () => {
       });
   };
 
-  const handleBulkDelete = () => {
+  const handlePromptConfirmBulkDelete = () => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Delete Sampling Sites?',
       dialogContent: (
@@ -251,8 +251,8 @@ const SamplingSiteList = () => {
               mr: -1
             }}
             aria-label="bulk delete"
-            disabled={!checked.length}
-            onClick={handleBulkDelete}>
+            disabled={!checkboxSelectedIds.length}
+            onClick={handlePromptConfirmBulkDelete}>
             <Icon path={mdiTrashCanOutline} size={1} />
           </IconButton>
         </Toolbar>
@@ -328,7 +328,7 @@ const SamplingSiteList = () => {
                         }}>
                         <Box display="flex" alignItems="center">
                           <Checkbox
-                            checked={checked.includes(sampleSite.survey_sample_site_id)}
+                            checked={checkboxSelectedIds.includes(sampleSite.survey_sample_site_id)}
                             onClick={(event) => {
                               event.stopPropagation();
                               handleCheckboxChange(sampleSite.survey_sample_site_id);

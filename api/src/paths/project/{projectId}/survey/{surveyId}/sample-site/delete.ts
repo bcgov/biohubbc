@@ -115,29 +115,17 @@ export function deleteSurveySampleSiteRecords(): RequestHandler {
       const observationService = new ObservationService(connection);
       const sampleLocationService = new SampleLocationService(connection);
 
-      const sampleLocations = await sampleLocationService.getSampleLocationsForSurveyId(surveyId);
+      const observationCount = await observationService.getObservationsCountBySampleSiteIds(
+        surveyId,
+        surveySampleSiteIds
+      );
 
-      const unableToDelete: number[] = [];
+      if (observationCount.observationCount > 0) {
+        throw new HTTP500(`Cannot delete a sample sites that is associated with an observation`);
+      }
 
-      const deleteSampleSites = surveySampleSiteIds.map(async (surveySampleSiteId) => {
-        if (
-          (await observationService.getObservationsCountBySampleSiteId(surveyId, surveySampleSiteId)).observationCount >
-          0
-        ) {
-          unableToDelete.push(surveySampleSiteId);
-        } else {
-          await sampleLocationService.deleteSampleLocationRecord(surveySampleSiteId);
-        }
-      });
-
-      await Promise.all(deleteSampleSites);
-
-      const notDeleted = sampleLocations.filter((item) => unableToDelete.includes(item.survey_sample_site_id));
-
-      if (notDeleted.length > 0) {
-        throw new HTTP500(
-          `Cannot delete a sample sites [${notDeleted.map((item) => item.name)}] that is associated with an observation`
-        );
+      for (const surveySampleSiteId of surveySampleSiteIds) {
+        await sampleLocationService.deleteSampleLocationRecord(surveySampleSiteId);
       }
 
       await connection.commit();
