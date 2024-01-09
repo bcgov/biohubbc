@@ -76,6 +76,21 @@ export interface IArtifact {
   };
 }
 
+export interface IFeatureArtifact {
+  /**
+   * An artifact zip file.
+   */
+  archiveFile: IArchiveFile;
+  /**
+   * UUID that uniquely identifies the submission feature artifact is contained in
+   */
+  surveyUUID: string;
+  metadata: IArtifactMetadata & {
+    file_name: string;
+    file_size: string;
+  };
+}
+
 export interface IGetObservationSubmissionResponse {
   id: number;
   inputFileName: string;
@@ -285,7 +300,13 @@ export class PlatformService extends DBService {
 
     const backboneSurveyIntakeUrl = new URL(getBackboneSurveyIntakePath(), getBackboneApiHost()).href;
 
-    const surveyDataPackage = await this.generateSurveyDataPackage(surveyId, data.additionalInformation);
+    const surveyAttachments = await this.attachmentService.getSurveyAttachments(surveyId);
+
+    const surveyDataPackage = await this.generateSurveyDataPackage(
+      surveyId,
+      surveyAttachments,
+      data.additionalInformation
+    );
 
     const response = await axios.post<{ submission_id: number }>(backboneSurveyIntakeUrl, surveyDataPackage, {
       headers: {
@@ -296,6 +317,10 @@ export class PlatformService extends DBService {
     if (!response.data) {
       throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to submit survey ID to Biohub');
     }
+
+    // Submit survey attachments to BioHub
+    const submitSurveyAttachment = await this._submitSurveyAttachmentsToBioHub(surveyDataPackage.id, surveyAttachments);
+    console.log('submitSurveyAttachment', submitSurveyAttachment);
 
     // Insert publish history record
 
@@ -314,12 +339,14 @@ export class PlatformService extends DBService {
    * Generate survey data package to submit to BioHub.
    *
    * @param {number} surveyId
+   * @param {ISurveyAttachment[]} surveyAttachments
    * @param {string} additionalInformation
    * @return {*}  {Promise<PostSurveySubmissionToBioHubObject>}
    * @memberof PlatformService
    */
   async generateSurveyDataPackage(
     surveyId: number,
+    surveyAttachments: ISurveyAttachment[],
     additionalInformation: string
   ): Promise<PostSurveySubmissionToBioHubObject> {
     const observationService = new ObservationService(this.connection);
@@ -338,10 +365,122 @@ export class PlatformService extends DBService {
       survey,
       surveyObservations,
       geometryFeatureCollection,
+      surveyAttachments,
       additionalInformation
     );
 
     return surveyDataPackage;
+  }
+
+  /**
+   * Submit survey attachments submission to BioHub.
+   *
+   * @param {string} surveyUUID
+   * @param {ISurveyAttachment[]} surveyAttachments
+   * @return {*}  {Promise<{ survey_attachment_publish_id: number }[]>}
+   * @memberof PlatformService
+   */
+  async _submitSurveyAttachmentsToBioHub(
+    surveyUUID: string,
+    surveyAttachments: ISurveyAttachment[]
+  ): Promise<{ survey_attachment_publish_id: number }[]> {
+    const attachmentArtifactPublishRecords = await Promise.all(
+      surveyAttachments.map(async (attachment) => {
+        // Build artifact object
+        const artifact = await this._makeArtifactFromAttachmentFeature({
+          surveyUUID,
+          attachment
+        });
+
+        // Submit artifact to BioHub
+        const { artifact_id } = await this._submitArtifactFeatureToBioHub(artifact);
+
+        // Insert publish history record
+        return this.historyPublishService.insertSurveyAttachmentPublishRecord({
+          artifact_id,
+          survey_attachment_id: attachment.survey_attachment_id
+        });
+      })
+    );
+
+    return attachmentArtifactPublishRecords;
+  }
+
+  /**
+   * Create artifact object from survey attachment.
+   *
+   * @param {{
+   *     surveyUUID: string;
+   *     attachment: ISurveyAttachment;
+   *   }} data
+   * @return {*}  {Promise<IFeatureArtifact>}
+   * @memberof PlatformService
+   */
+  async _makeArtifactFromAttachmentFeature(data: {
+    surveyUUID: string;
+    attachment: ISurveyAttachment;
+  }): Promise<IFeatureArtifact> {
+    const { surveyUUID, attachment } = data;
+    const s3File = await getFileFromS3(attachment.key);
+    const artifactZip = new AdmZip();
+    artifactZip.addFile(attachment.file_name, s3File.Body as Buffer);
+
+    return {
+      surveyUUID,
+      archiveFile: {
+        data: artifactZip.toBuffer(),
+        fileName: `${attachment.uuid}.zip`,
+        mimeType: 'application/zip'
+      },
+      metadata: {
+        file_name: attachment.file_name,
+        file_size: attachment.file_size,
+        file_type: attachment.file_type,
+        title: attachment.title,
+        description: attachment.description
+      }
+    };
+  }
+
+  /**
+   * Submit survey Artifact Feature to BioHub.
+   *
+   * @param {IFeatureArtifact} artifact
+   * @return {*}  {Promise<{ artifact_id: number }>}
+   * @memberof PlatformService
+   */
+  async _submitArtifactFeatureToBioHub(artifact: IFeatureArtifact): Promise<{ artifact_id: number }> {
+    defaultLog.debug({ label: '_submitArtifactToBioHub', metadata: artifact.metadata });
+
+    const keycloakService = new KeycloakService();
+
+    const token = await keycloakService.getKeycloakServiceToken();
+
+    const formData = new FormData();
+
+    formData.append('media', artifact.archiveFile.data, {
+      filename: artifact.archiveFile.fileName,
+      contentType: artifact.archiveFile.mimeType
+    });
+
+    formData.append('data_package_id', artifact.surveyUUID);
+
+    Object.entries(artifact.metadata).forEach(([metadataKey, metadataValue]) => {
+      if (metadataValue !== undefined && metadataValue !== null) {
+        formData.append(`metadata[${metadataKey}]`, metadataValue);
+      }
+    });
+
+    const backboneArtifactIntakeUrl = new URL(getBackboneArtifactIntakePath(), getBackboneApiHost()).href;
+
+    const { data } = await axios.post<{ artifact_id: number }>(backboneArtifactIntakeUrl, formData.getBuffer(), {
+      headers: {
+        authorization: `Bearer ${token}`,
+        ...formData.getHeaders()
+      }
+    });
+
+    return data;
   }
 
   /**
