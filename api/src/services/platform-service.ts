@@ -293,8 +293,6 @@ export class PlatformService extends DBService {
       }
     });
 
-    await this.submitSurveyAttachmentsToBioHub_v2(surveyDataPackage.id, surveyId);
-
     if (!response.data) {
       throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to submit survey ID to Biohub');
     }
@@ -344,44 +342,6 @@ export class PlatformService extends DBService {
     );
 
     return surveyDataPackage;
-  }
-
-  /**
-   * Uploads the given survey attachments to BioHub.
-   *
-   * @param {string} uuid The uuid for the artifact submission
-   * @param {number} surveyId The ID of the survey
-   * @return {*}  {Promise<{ survey_attachment_publish_id: number }[]>} The IDs of all the artifact records in BioHub
-   *
-   * @memberof PlatformService
-   */
-  async submitSurveyAttachmentsToBioHub_v2(
-    uuid: string,
-    surveyId: number
-  ): Promise<{ survey_attachment_publish_id: number }[]> {
-    const attachments = await this.attachmentService.getSurveyAttachments(surveyId);
-
-    const attachmentArtifactPublishRecords = await Promise.all(
-      attachments.map(async (attachment) => {
-        // Build artifact object
-        const artifact = await this._makeArtifactFromAttachmentOrReport({
-          dataPackageId: uuid,
-          attachment,
-          file_type: attachment.file_type || 'Other'
-        });
-
-        // Submit artifact to BioHub
-        const { artifact_id } = await this._submitArtifactToBioHub(artifact);
-
-        // Insert publish history record
-        return this.historyPublishService.insertSurveyAttachmentPublishRecord({
-          artifact_id,
-          survey_attachment_id: attachment.survey_attachment_id
-        });
-      })
-    );
-
-    return attachmentArtifactPublishRecords;
   }
 
   /**
