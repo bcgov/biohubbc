@@ -255,13 +255,13 @@ export class PlatformService extends DBService {
   /**
    * Submit survey attachments submission to BioHub.
    *
-   * @param {string} surveyUUID
+   * @param {string} submissionUUID
    * @param {ISurveyAttachment[]} surveyAttachments
    * @return {*}  {Promise<{ survey_attachment_publish_id: number }[]>}
    * @memberof PlatformService
    */
   async _submitSurveyAttachmentsToBioHub(
-    surveyUUID: string,
+    submissionUUID: string,
     surveyAttachments: ISurveyAttachment[],
     artifact_ids: { artifact_filename: string; artifact_upload_key: number }[]
   ): Promise<{ survey_attachment_publish_id: number }[]> {
@@ -272,6 +272,7 @@ export class PlatformService extends DBService {
         // Get artifact_upload_key for attachment
         const artifactUploadKey = artifact_ids.find((artifact) => artifact.artifact_filename === attachment.file_name)
           ?.artifact_upload_key;
+        console.log('artifactUploadKey', artifactUploadKey);
 
         // Throw error if artifact_upload_key is not found
         if (!artifactUploadKey) {
@@ -279,10 +280,12 @@ export class PlatformService extends DBService {
         }
 
         // Build artifact object
-        const artifact = await this._makeArtifactFromSurveyAttachment(surveyUUID, artifactUploadKey, attachment);
+        const artifact = await this._makeArtifactFromSurveyAttachment(submissionUUID, artifactUploadKey, attachment);
+        console.log('artifact', artifact);
 
         // Submit artifact to BioHub
         const { artifact_id } = await this._submitArtifactFeatureToBioHub(artifact);
+        console.log('artifact_id', artifact_id);
 
         // Insert publish history record
         return this.historyPublishService.insertSurveyAttachmentPublishRecord({
@@ -299,14 +302,14 @@ export class PlatformService extends DBService {
    * Create artifact object from survey attachment.
    *
    * @param {{
-   *     surveyUUID: string;
+   *     submissionUUID: string;
    *     attachment: ISurveyAttachment;
    *   }} data
    * @return {*}  {Promise<IFeatureArtifact>}
    * @memberof PlatformService
    */
   async _makeArtifactFromSurveyAttachment(
-    surveyUUID: string,
+    submissionUUID: string,
     artifactUploadKey: number,
     attachment: ISurveyAttachment
   ): Promise<IFeatureArtifact> {
@@ -318,7 +321,7 @@ export class PlatformService extends DBService {
 
     // Build artifact object
     return {
-      submission_uuid: surveyUUID,
+      submission_uuid: submissionUUID,
       artifact_upload_key: artifactUploadKey,
       archiveFile: {
         data: artifactZip.toBuffer(),
