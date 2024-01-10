@@ -63,11 +63,12 @@ const ManualTelemetryComponent = () => {
             setProcessingRecords(false);
           });
         })
-        .catch(() => {
+        .catch((error) => {
+          console.log(error);
           showSnackBar({
             snackbarMessage: (
               <Typography variant="body2" component="div">
-                Telemetry failed to import.
+                {error.message}
               </Typography>
             )
           });

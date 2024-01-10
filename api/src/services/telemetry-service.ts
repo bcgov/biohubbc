@@ -1,5 +1,6 @@
 import { default as dayjs } from 'dayjs';
 import { IDBConnection } from '../database/db';
+import { ApiGeneralError } from '../errors/api-error';
 import { TelemetryRepository, TelemetrySubmissionRecord } from '../repositories/telemetry-repository';
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { parseS3File } from '../utils/media/media-utils';
@@ -69,7 +70,7 @@ export class TelemetryService extends DBService {
 
     // step 4 validate csv
     if (mediaFile.mimetype !== 'text/csv') {
-      throw new Error(
+      throw new ApiGeneralError(
         `Failed to process file for importing telemetry. Incorrect file type. Expected CSV received ${mediaFile.mimetype}`
       );
     }
@@ -80,7 +81,7 @@ export class TelemetryService extends DBService {
 
     // step 6 validate columns
     if (!validateCsvFile(xlsxWorksheets, telemetryCSVColumnValidator)) {
-      throw new Error('Failed to process file for importing telemetry. Invalid CSV file.');
+      throw new ApiGeneralError('Failed to process file for importing telemetry. Invalid CSV file.');
     }
 
     const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheets['Sheet1']);
@@ -131,10 +132,8 @@ export class TelemetryService extends DBService {
           longitude: row['LONGITUDE']
         });
       } else {
-        throw new Error(
-          `Error adding Manual Telemetry, no deployment was found for device: ${deviceId} on: ${dateTime.format(
-            'YYYY-MM-DD HH:mm:ss'
-          )}`
+        throw new ApiGeneralError(
+          `No deployment was found for device: ${deviceId} on: ${dateTime.format('YYYY-MM-DD HH:mm:ss')}`
         );
       }
     });
@@ -144,7 +143,7 @@ export class TelemetryService extends DBService {
       try {
         return await bctwService.createManualTelemetry(itemsToAdd);
       } catch (error) {
-        throw new Error('Error adding Manual Telemetry');
+        throw new ApiGeneralError('Error adding Manual Telemetry');
       }
     }
 

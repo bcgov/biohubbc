@@ -106,7 +106,7 @@ export function processFile(): RequestHandler {
       res.status(200).json({ success: true });
 
       await connection.commit();
-    } catch (error) {
+    } catch (error: any) {
       defaultLog.error({ label: 'processFile', message: 'error', error });
       await connection.rollback();
       throw error;
