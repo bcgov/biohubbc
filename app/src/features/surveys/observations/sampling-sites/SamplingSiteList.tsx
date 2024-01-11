@@ -7,7 +7,7 @@ import {
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Paper } from '@mui/material';
+import { Checkbox, Paper } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -49,6 +49,7 @@ const SamplingSiteList = () => {
 
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [selectedSampleSiteId, setSelectedSampleSiteId] = useState<number | undefined>();
+  const [checkboxSelectedIds, setCheckboxSelectedIds] = useState<number[]>([]);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, sample_site_id: number) => {
     setAnchorEl(event.currentTarget);
@@ -113,6 +114,68 @@ const SamplingSiteList = () => {
       }
     });
   };
+
+  const handleCheckboxChange = (sampleSiteId: number) => {
+    setCheckboxSelectedIds((prev) => {
+      if (prev.includes(sampleSiteId)) {
+        return prev.filter((item) => item !== sampleSiteId);
+      } else {
+        return [...prev, sampleSiteId];
+      }
+    });
+  };
+
+  const handleBulkDeleteSampleSites = async () => {
+    await biohubApi.samplingSite
+      .deleteSampleSites(surveyContext.projectId, surveyContext.surveyId, checkboxSelectedIds)
+      .then(() => {
+        dialogContext.setYesNoDialog({ open: false });
+        setCheckboxSelectedIds([]);
+        surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+      })
+      .catch((error: any) => {
+        dialogContext.setYesNoDialog({ open: false });
+        setCheckboxSelectedIds([]);
+        dialogContext.setSnackbar({
+          snackbarMessage: (
+            <>
+              <Typography variant="body2" component="div">
+                <strong>Error Deleting Sampling Sites</strong>
+              </Typography>
+              <Typography variant="body2" component="div">
+                {String(error)}
+              </Typography>
+            </>
+          ),
+          open: true
+        });
+      });
+  };
+
+  const handlePromptConfirmBulkDelete = () => {
+    dialogContext.setYesNoDialog({
+      dialogTitle: 'Delete Sampling Sites?',
+      dialogContent: (
+        <Typography variant="body1" component="div" color="textSecondary">
+          Are you sure you want to delete the selected sampling sites?
+        </Typography>
+      ),
+      yesButtonLabel: 'Delete Sampling Sites',
+      noButtonLabel: 'Cancel',
+      yesButtonProps: { color: 'error' },
+      onClose: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      onNo: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      open: true,
+      onYes: () => {
+        handleBulkDeleteSampleSites();
+      }
+    });
+  };
+
   const samplingSiteCount = surveyContext.sampleSiteDataLoader.data?.sampleSites.length ?? 0;
 
   return (
@@ -175,9 +238,6 @@ const SamplingSiteList = () => {
             </Typography>
           </Typography>
           <Button
-            sx={{
-              mr: -1
-            }}
             variant="contained"
             color="primary"
             component={RouterLink}
@@ -185,6 +245,16 @@ const SamplingSiteList = () => {
             startIcon={<Icon path={mdiPlus} size={1} />}>
             Add
           </Button>
+          <IconButton
+            sx={{
+              ml: 1,
+              mr: -1
+            }}
+            aria-label="bulk delete"
+            disabled={!checkboxSelectedIds.length}
+            onClick={handlePromptConfirmBulkDelete}>
+            <Icon path={mdiTrashCanOutline} size={1} />
+          </IconButton>
         </Toolbar>
         <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
           {surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading ? (
@@ -256,16 +326,26 @@ const SamplingSiteList = () => {
                             whiteSpace: 'nowrap'
                           }
                         }}>
-                        <Typography
-                          sx={{
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            typography: 'body2',
-                            fontWeight: 700,
-                            fontSize: '0.9rem'
-                          }}>
-                          {sampleSite.name}
-                        </Typography>
+                        <Box display="flex" alignItems="center">
+                          <Checkbox
+                            checked={checkboxSelectedIds.includes(sampleSite.survey_sample_site_id)}
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              handleCheckboxChange(sampleSite.survey_sample_site_id);
+                            }}
+                            inputProps={{ 'aria-label': 'controlled' }}
+                          />
+                          <Typography
+                            sx={{
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              typography: 'body2',
+                              fontWeight: 700,
+                              fontSize: '0.9rem'
+                            }}>
+                            {sampleSite.name}
+                          </Typography>
+                        </Box>
                       </AccordionSummary>
                       <IconButton
                         onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
@@ -310,7 +390,8 @@ const SamplingSiteList = () => {
                                   codesContext.codesDataLoader.data,
                                   'sample_methods',
                                   sampleMethod.method_lookup_id
-                                )}></ListItemText>
+                                )}
+                              />
                               <List disablePadding>
                                 {sampleMethod.sample_periods?.map((samplePeriod) => {
                                   return (
