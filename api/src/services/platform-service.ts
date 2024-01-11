@@ -124,8 +124,7 @@ const getBackboneIntakeEnabled = () => process.env.BACKBONE_INTAKE_ENABLED === '
 const getBackboneApiHost = () => process.env.BACKBONE_API_HOST || '';
 const getBackboneArtifactIntakePath = () => process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '/api/artifact/intake';
 const getBackboneArtifactDeletePath = () => process.env.BACKBONE_ARTIFACT_DELETE_PATH || '/api/artifact/delete';
-// const getBackboneDwcIntakePath = () => process.env.BACKBONE_INTAKE_PATH || '/api/dwc/submission/queue';
-const getBackboneSurveyIntakePath = () => process.env.BACKBONE_DATASET_INTAKE_PATH || '/api/dataset/intake';
+const getBackboneSurveyIntakePath = () => process.env.BACKBONE_DATASET_INTAKE_PATH || '/api/submission/intake';
 
 export class PlatformService extends DBService {
   attachmentService: AttachmentService;
@@ -179,12 +178,14 @@ export class PlatformService extends DBService {
     // Submit survey data package to BioHub
     const response = await axios.post<{
       submission_uuid: number;
-      artifact_ids: { artifact_filename: string; artifact_upload_key: number }[];
+      artifact_upload_keys: { artifact_filename: string; artifact_upload_key: number }[];
     }>(backboneSurveyIntakeUrl, surveyDataPackage, {
       headers: {
         authorization: `Bearer ${token}`
       }
     });
+    console.log('response', response);
+    console.log('response.data', response.data);
 
     // Check for response data
     if (!response.data) {
@@ -195,7 +196,7 @@ export class PlatformService extends DBService {
     const submitSurveyAttachment = await this._submitSurveyAttachmentsToBioHub(
       surveyDataPackage.id,
       surveyAttachments,
-      response.data.artifact_ids
+      response.data.artifact_upload_keys
     );
 
     console.log('submitSurveyAttachment', submitSurveyAttachment);
@@ -205,10 +206,10 @@ export class PlatformService extends DBService {
     // NOTE: this is a temporary solution to get the queue_id into the publish history table
     //      the queue_id is not returned from the survey intake endpoint, so we are using the submission_uuid
     //      as a temporary solution
-    await this.historyPublishService.insertSurveyMetadataPublishRecord({
-      survey_id: surveyId,
-      queue_id: response.data.submission_uuid
-    });
+    // await this.historyPublishService.insertSurveyMetadataPublishRecord({
+    //   survey_id: surveyId,
+    //   queue_id: response.data.submission_uuid
+    // });
 
     return { submission_uuid: response.data.submission_uuid };
   }
@@ -263,15 +264,20 @@ export class PlatformService extends DBService {
   async _submitSurveyAttachmentsToBioHub(
     submissionUUID: string,
     surveyAttachments: ISurveyAttachment[],
-    artifact_ids: { artifact_filename: string; artifact_upload_key: number }[]
+    artifact_upload_keys: { artifact_filename: string; artifact_upload_key: number }[]
   ): Promise<{ survey_attachment_publish_id: number }[]> {
+    console.log('submissionUUID', submissionUUID);
+    console.log('surveyAttachments', surveyAttachments);
+    console.log('artifact_upload_keys', artifact_upload_keys);
     // Submit survey attachments to BioHub
     const attachmentArtifactPublishRecords = await Promise.all(
       // Loop through survey attachments
       surveyAttachments.map(async (attachment) => {
+        console.log('attachment', attachment);
         // Get artifact_upload_key for attachment
-        const artifactUploadKey = artifact_ids.find((artifact) => artifact.artifact_filename === attachment.file_name)
-          ?.artifact_upload_key;
+        const artifactUploadKey = artifact_upload_keys.find(
+          (artifact) => artifact.artifact_filename === attachment.file_name
+        )?.artifact_upload_key;
         console.log('artifactUploadKey', artifactUploadKey);
 
         // Throw error if artifact_upload_key is not found

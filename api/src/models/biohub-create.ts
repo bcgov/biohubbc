@@ -82,7 +82,7 @@ export class PostSurveyArtifactsToBiohubObject implements BioHubSubmissionFeatur
     this.id = String(attachmentRecord.survey_attachment_id);
     this.type = BiohubFeatureType.ARTIFACT;
     this.properties = {
-      file_name: attachmentRecord.file_name,
+      filename: attachmentRecord.file_name,
       file_type: attachmentRecord.file_type,
       file_size: attachmentRecord?.file_size,
       uuid: attachmentRecord?.uuid,
