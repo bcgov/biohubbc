@@ -1,6 +1,5 @@
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -9,7 +8,6 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import { FundingSourceI18N } from 'constants/i18n';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -21,29 +19,8 @@ import DeleteFundingSource from '../components/DeleteFundingSource';
 import EditFundingSource from '../components/EditFundingSource';
 import FundingSourcePage from '../details/FundingSourcePage';
 import FundingSourcesTable from './FundingSourcesTable';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  pageTitleContainer: {
-    maxWidth: '170ch',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis'
-  },
-  pageTitle: {
-    display: '-webkit-box',
-    '-webkit-line-clamp': 2,
-    '-webkit-box-orient': 'vertical',
-    paddingTop: theme.spacing(0.5),
-    paddingBottom: theme.spacing(0.5),
-    overflow: 'hidden'
-  },
-  pageTitleActions: {
-    paddingTop: theme.spacing(0.75),
-    paddingBottom: theme.spacing(0.75)
-  },
-  toolbarCount: {
-    fontWeight: 400
-  }
-}));
+import grey from '@mui/material/colors/grey';
+import Stack from '@mui/material/Stack';
 
 /**
  * Page to display a list of funding sources.
@@ -58,7 +35,6 @@ const FundingSourcesListPage: React.FC = () => {
 
   const [fundingSourceId, setFundingSourceId] = useState<number | null>();
 
-  const classes = useStyles();
   const biohubApi = useBiohubApi();
 
   const fundingSourceDataLoader = useDataLoader(() => biohubApi.funding.getAllFundingSources());
@@ -119,28 +95,36 @@ const FundingSourcesListPage: React.FC = () => {
           openViewModal={openViewModal}
         />
       )}
-      <Paper square={true} elevation={0}>
-        <Container maxWidth="xl">
-          <Box py={4}>
-            <Box display="flex" justifyContent="space-between">
-              <Box className={classes.pageTitleContainer}>
-                <Typography variant="h1" className={classes.pageTitle}>
-                  Funding Sources
-                </Typography>
-              </Box>
-              <Box flex="0 0 auto" className={classes.pageTitleActions}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  aria-label="Create Funding Source"
-                  startIcon={<Icon path={mdiPlus} size={1} />}
-                  onClick={() => setIsCreateModalOpen(true)}
-                  data-testid="funding-source-list-create-button">
-                  Create Funding Source
-                </Button>
-              </Box>
-            </Box>
-          </Box>
+      <Paper
+        square
+        elevation={0}
+        sx={{
+          borderBottom: '1px solid' + grey[300]
+        }}
+      >
+        <Container maxWidth="xl" sx={{ py: {xs: 2, sm: 3,  lg: 4}}}>
+          <Stack
+            alignItems="flex-start"
+            flexDirection={{ xs: 'column', md: 'row' }}
+            justifyContent="space-between"
+            gap={3}>
+            <Typography
+              variant="h1"
+              sx={{
+                ml: '-2px',
+              }}>
+              Funding Sources
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              aria-label="Create Funding Source"
+              startIcon={<Icon path={mdiPlus} size={1} />}
+              onClick={() => setIsCreateModalOpen(true)}
+              data-testid="funding-source-list-create-button">
+              Create Funding Source
+            </Button>
+          </Stack>
         </Container>
       </Paper>
       <Container maxWidth="xl">
@@ -149,7 +133,7 @@ const FundingSourcesListPage: React.FC = () => {
             <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
               <Typography variant="h4" component="h2" data-testid="funding-source-list-found">
                 Records Found &zwnj;
-                <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">
+                <Typography component="span" color="textSecondary" lineHeight="inherit" fontSize="inherit" fontWeight={400}>
                   ({fundingSourceDataLoader.data?.length || 0})
                 </Typography>
               </Typography>

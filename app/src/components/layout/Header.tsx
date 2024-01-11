@@ -196,7 +196,7 @@ const Header: React.FC = () => {
         }}>
         <Toolbar
           sx={{
-            height: { xs: '60px', lg: '80px' }
+            height: 70
           }}>
           {/* Responsive Menu */}
           <Box display={{ sm: 'flex', lg: 'none' }} justifyContent="space-between" alignItems="center" flex="1 1 auto">
@@ -265,9 +265,6 @@ const Header: React.FC = () => {
                     Projects
                   </MenuItem>
                 </AuthGuard>
-                <MenuItem component="button" onClick={showSupportDialog} sx={{ width: '100%' }}>
-                  Support
-                </MenuItem>
                 <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <MenuItem id="menu_admin_users" component={RouterLink} to="/admin/users" onClick={hideMobileMenu}>
                     Manage Users
@@ -280,6 +277,9 @@ const Header: React.FC = () => {
                     Funding Sources
                   </MenuItem>
                 </SystemRoleGuard>
+                <MenuItem component="button" onClick={showSupportDialog} sx={{ width: '100%' }}>
+                  Support
+                </MenuItem>
                 <AuthGuard>
                   <LoggedInUser />
                 </AuthGuard>
@@ -339,6 +339,16 @@ const Header: React.FC = () => {
                     Projects
                   </RouterLink>
                 </AuthGuard>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <RouterLink to="/admin/users" id="menu_admin_users">
+                    Manage Users
+                  </RouterLink>
+                </SystemRoleGuard>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <RouterLink to="/admin/funding-sources" id="menu_admin_funding_sources">
+                    Funding Sources
+                  </RouterLink>
+                </SystemRoleGuard>
                 <Button
                   color="inherit"
                   variant="text"
@@ -350,16 +360,6 @@ const Header: React.FC = () => {
                   }}>
                   Support
                 </Button>
-                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <RouterLink to="/admin/users" id="menu_admin_users">
-                    Manage Users
-                  </RouterLink>
-                </SystemRoleGuard>
-                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <RouterLink to="/admin/funding-sources" id="menu_admin_funding_sources">
-                    Funding Sources
-                  </RouterLink>
-                </SystemRoleGuard>
               </Box>
             </Box>
             <Box flex="0 0 auto">

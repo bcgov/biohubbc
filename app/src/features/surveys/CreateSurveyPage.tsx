@@ -244,16 +244,19 @@ const CreateSurveyPage = () => {
       <SurveyBaseHeader
         title="Create New Survey"
         breadCrumb={
-          <Breadcrumbs>
+          <Breadcrumbs aria-label="breadcrumb"
+            sx={{
+              typography: 'body2'
+            }}
+          >
             <Link
               component={RouterLink}
-              variant="body2"
               underline="hover"
               to={`/admin/projects/${projectData.project.project_id}/`}
               aria-current="page">
               {projectData.project.project_name}
             </Link>
-            <Typography variant="body2" component="span">
+            <Typography variant="body2" component="span" color="textSecondary">
               Create New Survey
             </Typography>
           </Breadcrumbs>

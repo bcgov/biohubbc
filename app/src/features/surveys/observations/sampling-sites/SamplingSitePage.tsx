@@ -2,7 +2,6 @@ import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import { grey } from '@mui/material/colors';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import { Theme } from '@mui/material/styles';
@@ -171,24 +170,14 @@ const SamplingSitePage = () => {
         validateOnChange={false}
         onSubmit={handleSubmit}>
         <Box display="flex" flexDirection="column" height="100%">
-          <Box
-            position="sticky"
-            top="0"
-            zIndex={1001}
-            sx={{
-              borderBottomStyle: 'solid',
-              borderBottomWidth: '1px',
-              borderBottomColor: grey[300]
-            }}>
-            <SamplingSiteHeader
-              project_id={surveyContext.projectId}
-              survey_id={surveyContext.surveyId}
-              survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
-              is_submitting={isSubmitting}
-              title="Add Sampling Site"
-              breadcrumb="Add Sampling Sites"
-            />
-          </Box>
+          <SamplingSiteHeader
+            project_id={surveyContext.projectId}
+            survey_id={surveyContext.surveyId}
+            survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
+            is_submitting={isSubmitting}
+            title="Add Sampling Site"
+            breadcrumb="Add Sampling Sites"
+          />
           <Box display="flex" flex="1 1 auto">
             <Container maxWidth="xl">
               <Box py={3}>

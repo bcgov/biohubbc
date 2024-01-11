@@ -1,6 +1,5 @@
 import { mdiFilterOutline, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -9,7 +8,6 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import ProjectsSubmissionAlertBar from 'components/publish/ProjectListSubmissionAlertBar';
 import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
 import { SystemRoleGuard } from 'components/security/Guards';
@@ -21,38 +19,10 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import ProjectsListFilterForm from './ProjectsListFilterForm';
 import ProjectsListTable from './ProjectsListTable';
+import grey from '@mui/material/colors/grey';
+import Stack from '@mui/material/Stack';
 
 //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-
-const useStyles = makeStyles((theme: Theme) => ({
-  pageTitleContainer: {
-    maxWidth: '170ch',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis'
-  },
-  pageTitle: {
-    display: '-webkit-box',
-    '-webkit-line-clamp': 2,
-    '-webkit-box-orient': 'vertical',
-    paddingTop: theme.spacing(0.5),
-    paddingBottom: theme.spacing(0.5),
-    overflow: 'hidden'
-  },
-  pageTitleActions: {
-    paddingTop: theme.spacing(0.75),
-    paddingBottom: theme.spacing(0.75)
-  },
-  actionButton: {
-    marginLeft: theme.spacing(1),
-    minWidth: '6rem'
-  },
-  toolbarCount: {
-    fontWeight: 400
-  },
-  filtersBox: {
-    background: '#f7f8fa'
-  }
-}));
 
 /**
  * Page to display a list of projects.
@@ -60,7 +30,6 @@ const useStyles = makeStyles((theme: Theme) => ({
  * @return {*}
  */
 const ProjectsListPage: React.FC = () => {
-  const classes = useStyles();
   const biohubApi = useBiohubApi();
 
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
@@ -98,36 +67,47 @@ const ProjectsListPage: React.FC = () => {
    */
   return (
     <>
-      <Paper square={true} elevation={0}>
-        <Container maxWidth="xl">
-          <Box py={4}>
-            <Box display="flex" justifyContent="space-between">
-              <Box className={classes.pageTitleContainer}>
-                <Typography variant="h1" className={classes.pageTitle}>
-                  Projects
-                </Typography>
-              </Box>
-              <Box flex="0 0 auto" className={classes.pageTitleActions}>
-                <SystemRoleGuard
-                  validSystemRoles={[
-                    SYSTEM_ROLE.SYSTEM_ADMIN,
-                    SYSTEM_ROLE.PROJECT_CREATOR,
-                    SYSTEM_ROLE.DATA_ADMINISTRATOR
-                  ]}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<Icon path={mdiPlus} size={1} />}
-                    component={RouterLink}
-                    to={'/admin/projects/create'}>
-                    Create Project
-                  </Button>
-                </SystemRoleGuard>
-              </Box>
-            </Box>
-          </Box>
+      <Paper
+        square
+        elevation={0}
+        sx={{
+          borderBottom: '1px solid' + grey[300]
+        }}
+      >
+        <Container maxWidth="xl" sx={{ py: {xs: 2, sm: 3,  lg: 4}}}>
+          <Stack
+            alignItems="flex-start"
+            flexDirection={{ xs: 'column', sm: 'row' }}
+            justifyContent="space-between"
+            gap={1}>
+            <Typography
+              variant="h1"
+              sx={{
+                ml: '-2px',
+              }}>
+              Projects
+            </Typography>
+            <Stack flexDirection="row" alignItems="center" gap={1}>
+              <SystemRoleGuard
+                validSystemRoles={[
+                  SYSTEM_ROLE.SYSTEM_ADMIN,
+                  SYSTEM_ROLE.PROJECT_CREATOR,
+                  SYSTEM_ROLE.DATA_ADMINISTRATOR
+                ]}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<Icon path={mdiPlus} size={1} />}
+                  component={RouterLink}
+                  to={'/admin/projects/create'}>
+                  Create Project
+                </Button>
+              </SystemRoleGuard>
+            </Stack>
+          </Stack>
         </Container>
       </Paper>
+
       <Container maxWidth="xl">
         <Box py={3}>
           <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
@@ -137,7 +117,7 @@ const ProjectsListPage: React.FC = () => {
             <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
               <Typography variant="h4" component="h2">
                 Records Found &zwnj;
-                <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">
+                <Typography component="span" color="textSecondary" lineHeight="inherit" fontSize="inherit" fontWeight={400}>
                   ({projectsDataLoader.data?.length || 0})
                 </Typography>
               </Typography>

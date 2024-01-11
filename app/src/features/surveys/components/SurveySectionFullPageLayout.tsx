@@ -31,8 +31,6 @@ export const SurveySectionFullPageLayout = (props: SurveySectionFullPageLayoutPr
         title={pageTitle}
       />
 
-      <Divider flexItem></Divider>
-
       <Paper
         component={Stack}
         direction="row"

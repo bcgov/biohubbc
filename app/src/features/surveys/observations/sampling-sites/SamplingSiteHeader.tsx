@@ -1,5 +1,4 @@
 import { LoadingButton } from '@mui/lab';
-import Box from '@mui/material/Box';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
 import { grey } from '@mui/material/colors';
@@ -11,6 +10,7 @@ import { useFormikContext } from 'formik';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { ICreateSamplingSiteRequest } from './SamplingSitePage';
+import Stack from '@mui/material/Stack';
 
 export interface ISamplingSiteHeaderProps {
   project_id: number;
@@ -34,46 +34,38 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
           position: 'sticky',
           top: 0,
           zIndex: 1002,
-          pt: 3,
-          pb: 3.75,
-          borderBottomStyle: 'solid',
-          borderBottomWidth: '1px',
-          borderBottomColor: grey[300]
-        }}>
-        <Container maxWidth="xl">
-          <Breadcrumbs aria-label="breadcrumb">
+          borderBottom: '1px solid' + grey[300]
+        }}
+      >
+        <Container maxWidth="xl" sx={{ py: {xs: 2, sm: 3}}}>
+          <Breadcrumbs aria-label="breadcrumb"
+            sx={{
+              typography: 'body2'
+            }}
+          >
             <Link
               component={RouterLink}
               to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}
               underline="none">
-              <Typography component="span">{survey_name}</Typography>
+              {survey_name}
             </Link>
             <Link
               component={RouterLink}
               to={`/admin/projects/${project_id}/surveys/${survey_id}/observations`}
               underline="none">
-              <Typography component="span">Manage Survey Observations</Typography>
+              Manage Survey Observations
             </Link>
-            <Typography component="span">{breadcrumb}</Typography>
+            <Typography component="span" variant="body2" color="textSecondary">{breadcrumb}</Typography>
           </Breadcrumbs>
-          <Box display="flex" alignItems="center" justifyContent="space-between">
-            <Typography
-              component="h1"
-              variant="h2"
-              sx={{
-                ml: '-2px'
-              }}>
+          <Stack
+            alignItems="flex-start"
+            flexDirection={{ xs: 'column', lg: 'row' }}
+            justifyContent="space-between"
+            gap={3}>
+            <Typography variant="h1" sx={{ ml: '-2px'}}>
               {title}
             </Typography>
-            <Box
-              sx={{
-                '& button': {
-                  minWidth: '6rem'
-                },
-                '& button + button': {
-                  ml: 1
-                }
-              }}>
+            <Stack flexDirection="row" alignItems="center" gap={1}>
               <LoadingButton
                 type="submit"
                 variant="contained"
@@ -92,8 +84,8 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
                 }}>
                 Cancel
               </Button>
-            </Box>
-          </Box>
+            </Stack>
+          </Stack>
         </Container>
       </Paper>
     </>

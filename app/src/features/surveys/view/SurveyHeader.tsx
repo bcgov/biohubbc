@@ -1,4 +1,4 @@
-import { mdiChevronDown, mdiCog, mdiPencil, mdiTrashCanOutline } from '@mdi/js';
+import { mdiCalendarRangeOutline, mdiChevronDown, mdiCog, mdiPencil, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
@@ -138,34 +138,38 @@ const SurveyHeader = () => {
       <SurveyBaseHeader
         title={surveyWithDetails.surveyData.survey_details.survey_name}
         breadCrumb={
-          <Breadcrumbs>
+          <Breadcrumbs aria-label="breadcrumb"
+            sx={{
+              typography: 'body2'
+            }}
+          >
             <Link
               component={RouterLink}
-              variant="body2"
               underline="hover"
               to={`/admin/projects/${projectWithDetails?.projectData.project.project_id}`}
               aria-current="page">
               {projectWithDetails?.projectData.project.project_name}
             </Link>
-            <Typography variant="body2" component="span">
+            <Typography component="span" variant="inherit" color="textSecondary">
               {surveyWithDetails.surveyData.survey_details.survey_name}
             </Typography>
           </Breadcrumbs>
         }
         subTitle={
-          <Stack flexDirection="row" alignItems="center" gap={0.25} mt={1} mb={0.25}>
-            <Stack flexDirection="row" alignItems="center">
-              <Typography component="span" color="textSecondary" sx={{ mr: 1 }}>
-                Timeline:
-              </Typography>
-              <Typography component="span">
-                {getFormattedDateRangeString(
-                  DATE_FORMAT.ShortMediumDateFormat,
-                  surveyWithDetails.surveyData.survey_details.start_date,
-                  surveyWithDetails.surveyData.survey_details.end_date
-                )}
+          <Stack flexDirection="row" alignItems="center" gap={1} mt={1} mb={0.25}>
+            <Stack flexDirection="row" alignItems="center" gap={0.75}>
+              <Icon path={mdiCalendarRangeOutline} size={0.75} />
+              <Typography component="span" color="textSecondary">
+                Survey Timeline:
               </Typography>
             </Stack>
+            <Typography component="span">
+              {getFormattedDateRangeString(
+                DATE_FORMAT.ShortMediumDateFormat,
+                surveyWithDetails.surveyData.survey_details.start_date,
+                surveyWithDetails.surveyData.survey_details.end_date
+              )}
+            </Typography>
           </Stack>
         }
         buttonJSX={

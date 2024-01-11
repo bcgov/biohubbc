@@ -34,7 +34,7 @@ const ProjectsRouter: React.FC = () => {
 
       <Redirect exact from="/admin/projects/:id" to="/admin/projects/:id/details" />
 
-      <RouteWithTitle path="/admin/projects/:id" title={getTitle('Projects')}>
+      <RouteWithTitle path="/admin/projects/:id" title={getTitle('Project Details')}>
         <ProjectAuthStateContextProvider>
           <ProjectContextProvider>
             <RouteWithTitle exact path="/admin/projects/:id/details" title={getTitle('Projects')}>
