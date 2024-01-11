@@ -183,7 +183,7 @@ export class ObservationService extends DBService {
   }
 
   /**
-   * Retrieves all observation records for the given survey and sample site ids
+   * Retrieves all observation records for the given survey and sample site id
    *
    * @param {number} surveyId
    * @param {number} sampleSiteId
@@ -195,6 +195,21 @@ export class ObservationService extends DBService {
     sampleSiteId: number
   ): Promise<{ observationCount: number }> {
     return this.observationRepository.getObservationsCountBySampleSiteId(surveyId, sampleSiteId);
+  }
+
+  /**
+   * Retrieves observation records count for the given survey and sample site ids
+   *
+   * @param {number} surveyId
+   * @param {number[]} sampleSiteIds
+   * @return {*}  {Promise<{ observationCount: number }>}
+   * @memberof ObservationService
+   */
+  async getObservationsCountBySampleSiteIds(
+    surveyId: number,
+    sampleSiteIds: number[]
+  ): Promise<{ observationCount: number }> {
+    return this.observationRepository.getObservationsCountBySampleSiteIds(surveyId, sampleSiteIds);
   }
 
   /**

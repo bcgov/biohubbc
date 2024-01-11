@@ -224,4 +224,28 @@ describe('ObservationService', () => {
       });
     });
   });
+
+  describe('getObservationsCountBySampleSiteIds', () => {
+    it('Gets the number of observations by sample site ids', async () => {
+      const mockDBConnection = getMockDBConnection();
+
+      const mockObservationCount = {
+        observationCount: 1
+      };
+
+      const getObservationsCountBySampleSiteIdsStub = sinon
+        .stub(ObservationRepository.prototype, 'getObservationsCountBySampleSiteIds')
+        .resolves(mockObservationCount);
+
+      const surveyId = 1;
+      const surveySampleSiteIds = [1];
+
+      const observationService = new ObservationService(mockDBConnection);
+
+      const response = await observationService.getObservationsCountBySampleSiteIds(surveyId, surveySampleSiteIds);
+
+      expect(getObservationsCountBySampleSiteIdsStub).to.be.calledOnceWith(surveyId, surveySampleSiteIds);
+      expect(response).to.eql(mockObservationCount);
+    });
+  });
 });

@@ -329,7 +329,7 @@ export class ObservationRepository extends BaseRepository {
   }
 
   /**
-   * Retrieves observation records count for the given survey and sample site ids
+   * Retrieves observation records count for the given survey and sample site id
    *
    * @param {number} surveyId
    * @param {number} sampleSiteId
@@ -347,6 +347,31 @@ export class ObservationRepository extends BaseRepository {
       .from('survey_observation')
       .where('survey_id', surveyId)
       .where('survey_sample_site_id', sampleSiteId);
+
+    const response = await this.connection.knex(sqlStatement);
+    const observationCount = Number(response.rows[0].rowCount);
+    return { observationCount };
+  }
+
+  /**
+   * Retrieves observation records count for the given survey and sample site ids
+   *
+   * @param {number} surveyId
+   * @param {number[]} sampleSiteIds
+   * @return {*}  {Promise<{ observationCount: number }>}
+   * @memberof ObservationRepository
+   */
+  async getObservationsCountBySampleSiteIds(
+    surveyId: number,
+    sampleSiteIds: number[]
+  ): Promise<{ observationCount: number }> {
+    const knex = getKnex();
+    const sqlStatement = knex
+      .queryBuilder()
+      .count('survey_observation_id as rowCount')
+      .from('survey_observation')
+      .where('survey_id', surveyId)
+      .whereIn('survey_sample_site_id', sampleSiteIds);
 
     const response = await this.connection.knex(sqlStatement);
     const observationCount = Number(response.rows[0].rowCount);
