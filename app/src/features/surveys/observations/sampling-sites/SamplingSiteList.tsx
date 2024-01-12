@@ -300,7 +300,7 @@ const SamplingSiteList = () => {
           className="sampleSiteHeader">
           <Checkbox
             checked={checkboxSelectedIds.length === samplingSiteCount}
-            indeterminate={checkboxSelectedIds.length > 1 && checkboxSelectedIds.length < samplingSiteCount}
+            indeterminate={checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < samplingSiteCount}
             onClick={() => {
               if (checkboxSelectedIds.length === samplingSiteCount) {
                 setCheckboxSelectedIds([]);
