@@ -36,7 +36,7 @@ export interface IProjectReportPublish {
 
 export interface ISurveyAttachmentPublish {
   survey_attachment_id: number;
-  artifact_id: number;
+  artifact_uuid: number;
 }
 
 export interface ISurveyReportPublish {
@@ -432,7 +432,7 @@ export class HistoryPublishRepository extends BaseRepository {
       INSERT INTO survey_attachment_publish
         (survey_attachment_id, artifact_revision_id, event_timestamp)
       VALUES
-        (${data.survey_attachment_id}, ${data.artifact_id}, NOW())
+        (${data.survey_attachment_id}, ${data.artifact_uuid}, NOW())
       RETURNING survey_attachment_publish_id;
     `;
     const response = await this.connection.sql(sqlStatement);

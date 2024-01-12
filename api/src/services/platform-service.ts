@@ -265,12 +265,12 @@ export class PlatformService extends DBService {
     submissionUUID: string,
     surveyAttachments: ISurveyAttachment[],
     artifact_upload_keys: { artifact_filename: string; artifact_upload_key: number }[]
-  ): Promise<{ survey_attachment_publish_id: number }[]> {
+  ): Promise<void> {
     console.log('submissionUUID', submissionUUID);
     console.log('surveyAttachments', surveyAttachments);
     console.log('artifact_upload_keys', artifact_upload_keys);
     // Submit survey attachments to BioHub
-    const attachmentArtifactPublishRecords = await Promise.all(
+    await Promise.all(
       // Loop through survey attachments
       surveyAttachments.map(async (attachment) => {
         console.log('attachment', attachment);
@@ -290,18 +290,18 @@ export class PlatformService extends DBService {
         console.log('artifact', artifact);
 
         // Submit artifact to BioHub
-        const { artifact_id } = await this._submitArtifactFeatureToBioHub(artifact);
-        console.log('artifact_id', artifact_id);
+        const { artifact_uuid } = await this._submitArtifactFeatureToBioHub(artifact);
+        console.log('artifact_uuid', artifact_uuid);
 
         // Insert publish history record
-        return this.historyPublishService.insertSurveyAttachmentPublishRecord({
-          artifact_id,
-          survey_attachment_id: attachment.survey_attachment_id
-        });
+        // return this.historyPublishService.insertSurveyAttachmentPublishRecord({
+        //   artifact_uuid,
+        //   survey_attachment_id: attachment.survey_attachment_id
+        // });
       })
     );
 
-    return attachmentArtifactPublishRecords;
+    // return attachmentArtifactPublishRecords;
   }
 
   /**
@@ -348,10 +348,10 @@ export class PlatformService extends DBService {
    * Submit survey Artifact Feature to BioHub.
    *
    * @param {IFeatureArtifact} artifact
-   * @return {*}  {Promise<{ artifact_id: number }>}
+   * @return {*}  {Promise<{ artifact_uuid: number }>}
    * @memberof PlatformService
    */
-  async _submitArtifactFeatureToBioHub(artifact: IFeatureArtifact): Promise<{ artifact_id: number }> {
+  async _submitArtifactFeatureToBioHub(artifact: IFeatureArtifact): Promise<{ artifact_uuid: number }> {
     defaultLog.debug({ label: '_submitArtifactToBioHub', metadata: artifact.metadata });
 
     const keycloakService = new KeycloakService();
@@ -368,20 +368,15 @@ export class PlatformService extends DBService {
     formData.append('submission_uuid', artifact.submission_uuid);
     formData.append('artifact_upload_key', String(artifact.artifact_upload_key));
 
-    Object.entries(artifact.metadata).forEach(([metadataKey, metadataValue]) => {
-      if (metadataValue !== undefined && metadataValue !== null) {
-        formData.append(`metadata[${metadataKey}]`, metadataValue);
-      }
-    });
-
     const backboneArtifactIntakeUrl = new URL(getBackboneArtifactIntakePath(), getBackboneApiHost()).href;
 
-    const { data } = await axios.post<{ artifact_id: number }>(backboneArtifactIntakeUrl, formData.getBuffer(), {
+    const { data } = await axios.post<{ artifact_uuid: number }>(backboneArtifactIntakeUrl, formData.getBuffer(), {
       headers: {
         authorization: `Bearer ${token}`,
         ...formData.getHeaders()
       }
     });
+    console.log('data', data);
 
     return data;
   }
