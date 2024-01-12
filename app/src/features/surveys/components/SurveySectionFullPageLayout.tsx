@@ -40,6 +40,7 @@ export const SurveySectionFullPageLayout = (props: SurveySectionFullPageLayoutPr
           m: 1,
           overflow: 'hidden'
         }}>
+  
         <Box
           sx={{
             flex: '0 0 auto',

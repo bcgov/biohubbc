@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import { grey } from '@mui/material/colors';
 import Paper from '@mui/material/Paper';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TelemetryDataContextProvider } from 'contexts/telemetryDataContext';
@@ -9,6 +8,8 @@ import { useContext, useMemo } from 'react';
 import ManualTelemetryComponent from './ManualTelemetryComponent';
 import ManualTelemetryHeader from './ManualTelemetryHeader';
 import ManualTelemetryList from './ManualTelemetryList';
+import Stack from '@mui/material/Stack';
+import Divider from '@mui/material/Divider';
 
 const ManualTelemetryPage = () => {
   const surveyContext = useContext(SurveyContext);
@@ -27,30 +28,31 @@ const ManualTelemetryPage = () => {
         survey_id={surveyContext.surveyId}
         survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
       />
-      <Paper
-        elevation={0}
-        sx={{
-          display: 'flex',
-          flex: '1 1 auto',
-          overflow: 'hidden',
-          m: 1
-        }}>
-        <TelemetryDataContextProvider>
-          <Box
-            flex="0 0 auto"
-            width="400px"
-            sx={{
-              borderRight: '1px solid ' + grey[300]
-            }}>
-            <ManualTelemetryList />
-          </Box>
-          <Box flex="1 1 auto" overflow="hidden">
-            <TelemetryTableContextProvider deployment_ids={deploymentIds ?? []}>
-              <ManualTelemetryComponent />
-            </TelemetryTableContextProvider>
-          </Box>
-        </TelemetryDataContextProvider>
-      </Paper>
+
+    <TelemetryDataContextProvider>
+        <Paper
+          component={Stack}
+          direction="row"
+          divider={<Divider orientation="vertical" flexItem />}
+          sx={{
+            flex: '1 1 auto',
+            m: 1,
+            overflow: 'hidden'
+          }}>
+            {/* Manual Telematry List */}
+            <Box
+              flex="0 0 auto"
+              width="400px">
+              <ManualTelemetryList />
+            </Box>
+            {/* Manual Telemetry Component */}
+            <Box flex="1 1 auto" overflow="hidden">
+              <TelemetryTableContextProvider deployment_ids={deploymentIds ?? []}>
+                <ManualTelemetryComponent />
+              </TelemetryTableContextProvider>
+            </Box>
+        </Paper>
+      </TelemetryDataContextProvider>
     </Box>
   );
 };
