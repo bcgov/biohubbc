@@ -65,6 +65,7 @@ const SamplingSiteList = () => {
   const handleHeaderMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setHeaderAnchorEl(event.currentTarget);
   };
+
   /**
    * Handle the delete sampling site API call.
    *
@@ -299,14 +300,14 @@ const SamplingSiteList = () => {
           className="sampleSiteHeader">
           <Checkbox
             checked={checkboxSelectedIds.length === samplingSiteCount}
+            indeterminate={checkboxSelectedIds.length > 1 && checkboxSelectedIds.length < samplingSiteCount}
             onClick={() => {
-              const sampleSiteIds = sampleSites.map((sampleSite) => sampleSite.survey_sample_site_id);
-
               if (checkboxSelectedIds.length === samplingSiteCount) {
                 setCheckboxSelectedIds([]);
                 return;
               }
 
+              const sampleSiteIds = sampleSites.map((sampleSite) => sampleSite.survey_sample_site_id);
               setCheckboxSelectedIds(sampleSiteIds);
             }}
             inputProps={{ 'aria-label': 'controlled' }}
