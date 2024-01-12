@@ -86,7 +86,7 @@ const phases = {
     cpuRequest: '50m',
     cpuLimit: '300m',
     memoryRequest: '100Mi',
-    memoryLimit: '1Gi',
+    memoryLimit: '500Mi',
     replicas: (isStaticDeployment && '1') || '1',
     replicasMax: (isStaticDeployment && '2') || '1',
     biohubFeatureFlag: 'true'
