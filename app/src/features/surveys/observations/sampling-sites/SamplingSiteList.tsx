@@ -7,7 +7,7 @@ import {
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Checkbox, Paper } from '@mui/material';
+import { Checkbox, Divider, Paper } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -47,13 +47,23 @@ const SamplingSiteList = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
+  const [sampleSiteAnchorEl, setSampleSiteAnchorEl] = useState<MenuProps['anchorEl']>(null);
+  const [headerAnchorEl, setHeaderAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [selectedSampleSiteId, setSelectedSampleSiteId] = useState<number | undefined>();
   const [checkboxSelectedIds, setCheckboxSelectedIds] = useState<number[]>([]);
 
-  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, sample_site_id: number) => {
-    setAnchorEl(event.currentTarget);
+  const sampleSites = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
+
+  const handleSampleSiteMenuClick = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    sample_site_id: number
+  ) => {
+    setSampleSiteAnchorEl(event.currentTarget);
     setSelectedSampleSiteId(sample_site_id);
+  };
+
+  const handleHeaderMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    setHeaderAnchorEl(event.currentTarget);
   };
 
   /**
@@ -65,12 +75,12 @@ const SamplingSiteList = () => {
       .deleteSampleSite(surveyContext.projectId, surveyContext.surveyId, Number(selectedSampleSiteId))
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
-        setAnchorEl(null);
+        setSampleSiteAnchorEl(null);
         surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
       })
       .catch((error: any) => {
         dialogContext.setYesNoDialog({ open: false });
-        setAnchorEl(null);
+        setSampleSiteAnchorEl(null);
         dialogContext.setSnackbar({
           snackbarMessage: (
             <>
@@ -131,11 +141,13 @@ const SamplingSiteList = () => {
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
         setCheckboxSelectedIds([]);
+        setHeaderAnchorEl(null);
         surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
       })
       .catch((error: any) => {
         dialogContext.setYesNoDialog({ open: false });
         setCheckboxSelectedIds([]);
+        setHeaderAnchorEl(null);
         dialogContext.setSnackbar({
           snackbarMessage: (
             <>
@@ -176,14 +188,14 @@ const SamplingSiteList = () => {
     });
   };
 
-  const samplingSiteCount = surveyContext.sampleSiteDataLoader.data?.sampleSites.length ?? 0;
+  const samplingSiteCount = sampleSites.length ?? 0;
 
   return (
     <>
       <Menu
-        open={Boolean(anchorEl)}
-        onClose={() => setAnchorEl(null)}
-        anchorEl={anchorEl}
+        open={Boolean(sampleSiteAnchorEl)}
+        onClose={() => setSampleSiteAnchorEl(null)}
+        anchorEl={sampleSiteAnchorEl}
         anchorOrigin={{
           vertical: 'top',
           horizontal: 'right'
@@ -221,6 +233,27 @@ const SamplingSiteList = () => {
           <ListItemText>Delete</ListItemText>
         </MenuItem>
       </Menu>
+
+      <Menu
+        open={Boolean(headerAnchorEl)}
+        onClose={() => setHeaderAnchorEl(null)}
+        anchorEl={headerAnchorEl}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}>
+        <MenuItem onClick={handlePromptConfirmBulkDelete}>
+          <ListItemIcon>
+            <Icon path={mdiTrashCanOutline} size={1} />
+          </ListItemIcon>
+          <ListItemText>Delete</ListItemText>
+        </MenuItem>
+      </Menu>
+
       <Box display="flex" flexDirection="column" height="100%">
         <Toolbar
           sx={{
@@ -250,12 +283,43 @@ const SamplingSiteList = () => {
               ml: 1,
               mr: -1
             }}
-            aria-label="bulk delete"
+            aria-label="header-settings"
             disabled={!checkboxSelectedIds.length}
-            onClick={handlePromptConfirmBulkDelete}>
-            <Icon path={mdiTrashCanOutline} size={1} />
+            onClick={handleHeaderMenuClick}>
+            <Icon path={mdiDotsVertical} size={1} />
           </IconButton>
         </Toolbar>
+        <Divider />
+        <Box
+          display="flex"
+          overflow="hidden"
+          alignItems="center"
+          pl={3}
+          pr={2.5}
+          height={55}
+          className="sampleSiteHeader">
+          <Checkbox
+            checked={checkboxSelectedIds.length === samplingSiteCount}
+            indeterminate={checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < samplingSiteCount}
+            onClick={() => {
+              if (checkboxSelectedIds.length === samplingSiteCount) {
+                setCheckboxSelectedIds([]);
+                return;
+              }
+
+              const sampleSiteIds = sampleSites.map((sampleSite) => sampleSite.survey_sample_site_id);
+              setCheckboxSelectedIds(sampleSiteIds);
+            }}
+            inputProps={{ 'aria-label': 'controlled' }}
+          />
+          <Typography
+            variant="body2"
+            component="div"
+            color="textSecondary"
+            sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+            <strong>NAME</strong>
+          </Typography>
+        </Box>
         <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
           {surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading ? (
             <Box
@@ -349,9 +413,9 @@ const SamplingSiteList = () => {
                       </AccordionSummary>
                       <IconButton
                         onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                          handleMenuClick(event, sampleSite.survey_sample_site_id)
+                          handleSampleSiteMenuClick(event, sampleSite.survey_sample_site_id)
                         }
-                        aria-label="settings">
+                        aria-label="sample-site-settings">
                         <Icon path={mdiDotsVertical} size={1}></Icon>
                       </IconButton>
                     </Box>
