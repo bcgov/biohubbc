@@ -78,9 +78,9 @@ const phases = {
     dbSetupDockerfilePath: dbSetupDockerfilePath,
     volumeCapacity: (isStaticDeployment && '3Gi') || '500Mi',
     cpuRequest: '50m',
-    cpuLimit: '400m',
+    cpuLimit: '600m',
     memoryRequest: '100Mi',
-    memoryLimit: '2Gi',
+    memoryLimit: '3Gi',
     replicas: '1'
   },
   test: {

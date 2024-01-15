@@ -84,9 +84,9 @@ const phases = {
     nodeEnv: 'development',
     sso: config.sso.dev,
     cpuRequest: '50m',
-    cpuLimit: '200m',
+    cpuLimit: '300m',
     memoryRequest: '100Mi',
-    memoryLimit: '333Mi',
+    memoryLimit: '500Mi',
     replicas: (isStaticDeployment && '1') || '1',
     replicasMax: (isStaticDeployment && '2') || '1',
     biohubFeatureFlag: 'true'
