@@ -9,6 +9,7 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
+  Paper,
   Toolbar,
   Typography,
   useMediaQuery,
@@ -139,32 +140,24 @@ export const AddEditAnimal = (props: IAddEditAnimalProps) => {
   };
 
   return (
-    <Stack
-      sx={{
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        left: 0,
-        bottom: 0
-      }}>
+    <Paper
+      component={Stack}
+      position="absolute"
+      top={0}
+      right={0}
+      bottom={0}
+      left={0}
+    >
       <Toolbar
+        disableGutters
         sx={{
-          position: 'sticky',
-          top: 0,
-          '& button': {
-            minWidth: '6rem'
-          },
-          '& button + button': {
-            ml: 1
-          }
-        }}>
+          px: 2
+        }}
+      >
         <Typography
+          variant="h3"
           component="h2"
-          variant="h5"
-          sx={{
-            flexGrow: '1',
-            fontWeight: 700
-          }}>
+        >
           {values?.general?.animal_id ? `Animal Details > ${values.general.animal_id}` : 'No animal selected'}
         </Typography>
       </Toolbar>
@@ -177,7 +170,7 @@ export const AddEditAnimal = (props: IAddEditAnimalProps) => {
           p={5}
           sx={{
             overflowY: 'auto',
-            background: grey[100]
+            background: grey[50]
           }}>
           <Box
             sx={{
@@ -283,14 +276,14 @@ export const AddEditAnimal = (props: IAddEditAnimalProps) => {
           flex="1 1 auto"
           p={3}
           sx={{
-            overflowY: 'scroll',
-            background: grey[100]
+            overflowY: 'auto',
+            background: grey[50]
           }}>
           <Typography component="span" variant="body2">
             No Animal Selected
           </Typography>
         </Box>
       )}
-    </Stack>
+    </Paper>
   );
 };

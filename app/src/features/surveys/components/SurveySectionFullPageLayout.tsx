@@ -1,7 +1,5 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import Divider from '@mui/material/Divider';
-import Paper from '@mui/material/Paper';
 import Stack from '@mui/system/Stack';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
@@ -22,7 +20,12 @@ export const SurveySectionFullPageLayout = (props: SurveySectionFullPageLayoutPr
   }
 
   return (
-    <Box display="flex" flexDirection="column" height="100%" overflow="hidden" position="relative">
+    <Stack 
+      flexDirection="column"
+      position="relative" 
+      height="100%" 
+      overflow="hidden"
+    >
       <SurveySectionHeader
         data-testid="fullpage-section-header"
         project_id={surveyContext.projectId}
@@ -31,13 +34,12 @@ export const SurveySectionFullPageLayout = (props: SurveySectionFullPageLayoutPr
         title={pageTitle}
       />
 
-      <Paper
-        component={Stack}
-        direction="row"
-        divider={<Divider orientation="vertical" flexItem />}
+      <Stack
+        flexDirection="row"
+        gap={1}
         sx={{
           flex: '1 1 auto',
-          m: 1,
+          p: 1,
           overflow: 'hidden'
         }}>
   
@@ -57,7 +59,7 @@ export const SurveySectionFullPageLayout = (props: SurveySectionFullPageLayoutPr
           }}>
           {mainComponent}
         </Box>
-      </Paper>
-    </Box>
+      </Stack>
+    </Stack>
   );
 };

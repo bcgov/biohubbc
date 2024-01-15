@@ -271,15 +271,14 @@ const SamplingSiteList = () => {
           disableGutters
           sx={{
             flex: '0 0 auto',
-            pl: 2,
-            pr: 3
+            pr: 3,
+            pl: 2
           }}>
           <Typography
-            sx={{
-              flexGrow: '1',
-              fontSize: '1.125rem',
-              fontWeight: 700
-            }}>
+            variant="h3"
+            component="h2"
+            flexGrow={1}
+          >
             Sampling Sites &zwnj;
             <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
               ({samplingSiteCount})
@@ -353,10 +352,9 @@ const SamplingSiteList = () => {
                 </Box>
                 <Divider flexItem></Divider>
                 <Box
-                  sx={{
-                    flex: '1 1 auto',
-                    overflowY: 'auto',
-                  }}>
+                  flex="1 1 auto"
+                  overflow="hidden"
+                >
                   {/* Display text if the sample site data loader has no items in it */}
                   {!surveyContext.sampleSiteDataLoader.data?.sampleSites.length &&
                     !surveyContext.sampleSiteDataLoader.isLoading && (
@@ -364,16 +362,13 @@ const SamplingSiteList = () => {
                         display="flex"
                         alignItems="center" 
                         justifyContent="center" 
-                        flex="1 1 auto" 
-                        height="100%"
-                        sx={{
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          bottom: 0,
-                          background: grey[50]
-                        }}>
+                        flex="1 1 auto"
+                        position="absolute"
+                        top={0}
+                        right={0}
+                        left={0}
+                        bottom={0}
+                        height="100%">
                         <Typography variant="body2">No Sampling Sites</Typography>
                       </Stack>
                     )}

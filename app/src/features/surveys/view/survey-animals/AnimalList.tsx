@@ -10,7 +10,9 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Paper,
   Skeleton,
+  Stack,
   Toolbar,
   Typography
 } from '@mui/material';
@@ -33,22 +35,38 @@ interface IAnimalListProps {
 
 const ListPlaceholder = (props: { displaySkeleton: boolean }) =>
   props.displaySkeleton ? (
-    <Box
+    <Stack
       flexDirection="column"
+      px={2}
+      py={1.2}
+      height={70}
       sx={{
-        px: 2,
-        py: 1.2,
-        height: '70px',
+        background: '#fff',
         borderBottom: '1px solid ' + grey[300],
-        background: '#fff'
+        '& *': {
+          fontSize: '0.875rem'
+        }
       }}>
-      <Skeleton variant="text" sx={{ fontSize: '1.125rem' }} />
-      <Skeleton variant="text" sx={{ fontSize: '0.875rem' }} width="50%" />
-    </Box>
+      <Skeleton variant="text" />
+      <Skeleton variant="text" width="50%" />
+    </Stack>
   ) : (
-    <Box display="flex" flex="1 1 auto" height="100%" alignItems="center" justifyContent="center">
+    <Stack
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      flex="1 1 auto"
+      position="absolute"
+      top={0}
+      right={0}
+      left={0}
+      bottom={0}
+      height="100%"
+      sx={{
+        background: grey[50]
+      }}>
       <Typography variant="body2">No Animals</Typography>
-    </Box>
+    </Stack>
   );
 
 const AnimalList = (props: IAnimalListProps) => {
@@ -73,17 +91,23 @@ const AnimalList = (props: IAnimalListProps) => {
   };
 
   return (
-    <Box display="flex" flexDirection="column" height="100%">
+    <Paper
+      component={Stack}
+      flexDirection="column"
+      height="100%"
+      overflow="hidden"
+    >
       <Toolbar
+        disableGutters
         sx={{
-          flex: '0 0 auto'
+          flex: '0 0 auto',
+          pr: 3,
+          pl: 2
         }}>
         <Typography
+          variant="h3"
           component="h2"
-          variant="h5"
-          sx={{
-            flexGrow: '1'
-          }}>
+          flexGrow={1}>
           Animals
         </Typography>
         <Button
@@ -98,18 +122,9 @@ const AnimalList = (props: IAnimalListProps) => {
           Add
         </Button>
       </Toolbar>
-
       <Divider flexItem></Divider>
-      <Box flex="1 1 auto" sx={{ position: 'relative', background: grey[100] }}>
-        <Box
-          sx={{
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            p: 1,
-            overflowY: 'auto',
-            zIndex: 1000
-          }}>
+      <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
+        <Box position="absolute" top="0" right="0" bottom="0" left="0">
           {!sortedCritterData.length ? (
             <ListPlaceholder displaySkeleton={!!isLoading && !sortedCritterData?.length} />
           ) : (
@@ -118,8 +133,9 @@ const AnimalList = (props: IAnimalListProps) => {
                 disableGutters
                 sx={{
                   boxShadow: 'none',
-                  '&.Mui-expanded::before': {
-                    opacity: 1
+                  borderBottom: '1px solid' + grey[300],
+                  '&:before': {
+                    display: 'none'
                   }
                 }}
                 key={critter.critter_id}
@@ -142,11 +158,11 @@ const AnimalList = (props: IAnimalListProps) => {
                       }
                     }}>
                     <Box>
-                      <Typography fontWeight="bold" sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <Typography variant="body2" fontWeight="bold" sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {critter.animal_id}
                       </Typography>
-                      <Typography variant="subtitle2" color="textSecondary">
-                        {critter.taxon} • {critter.sex}
+                      <Typography variant="body2" color="textSecondary">
+                        {critter.taxon}  |  {critter.sex}
                       </Typography>
                     </Box>
                   </AccordionSummary>
@@ -165,10 +181,13 @@ const AnimalList = (props: IAnimalListProps) => {
                     {(Object.keys(ANIMAL_SECTIONS_FORM_MAP) as IAnimalSections[]).map((section) => (
                       <ListItemButton
                         sx={{
-                          px: 3
+                          px: 2,
+                          borderTop: '1px solid' + grey[300],
+                          '&:last-of-type': {
+                            border: 'none'
+                          }
                         }}
                         key={section}
-                        divider
                         selected={section === selectedSection}
                         onClick={() => {
                           onSelectSection(section);
@@ -186,7 +205,7 @@ const AnimalList = (props: IAnimalListProps) => {
           )}
         </Box>
       </Box>
-    </Box>
+    </Paper>
   );
 };
 
