@@ -91,11 +91,11 @@ const phases = {
     tz: config.timezone.api,
     sso: config.sso.dev,
     logLevel: 'silly',
-    nodeOptions: '--max_old_space_size=1500', // 75% of memoryLimit (bytes)
+    nodeOptions: '--max_old_space_size=2250', // 75% of memoryLimit (bytes)
     cpuRequest: '50m',
-    cpuLimit: '400m',
+    cpuLimit: '600m',
     memoryRequest: '100Mi',
-    memoryLimit: '2Gi',
+    memoryLimit: '3Gi',
     replicas: (isStaticDeployment && '1') || '1',
     replicasMax: (isStaticDeployment && '2') || '1'
   },
