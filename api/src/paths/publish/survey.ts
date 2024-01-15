@@ -71,8 +71,9 @@ POST.apiDoc = {
           schema: {
             type: 'object',
             properties: {
-              submission_id: {
-                type: 'number'
+              submission_uuid: {
+                type: 'string',
+                description: 'The UUID of the submission'
               }
             }
           }

@@ -114,7 +114,12 @@ describe('PostSurveyToBiohubObject', () => {
     } as GetSurveyData;
 
     before(() => {
-      data = new PostSurveyToBiohubObject(survey_obj, [observation_obj], { type: 'FeatureCollection', features: [] });
+      data = new PostSurveyToBiohubObject(
+        survey_obj,
+        [observation_obj],
+        { type: 'FeatureCollection', features: [] },
+        []
+      );
     });
 
     it('sets id', () => {
@@ -192,6 +197,7 @@ describe('PostSurveySubmissionToBioHubObject', () => {
         survey_obj,
         observation_obj,
         survey_geometry,
+        [],
         additionalInformation
       );
     });
@@ -209,7 +215,7 @@ describe('PostSurveySubmissionToBioHubObject', () => {
     });
 
     it('sets features', () => {
-      expect(data.features).to.eql([new PostSurveyToBiohubObject(survey_obj, observation_obj, survey_geometry)]);
+      expect(data.features).to.eql([new PostSurveyToBiohubObject(survey_obj, observation_obj, survey_geometry, [])]);
     });
   });
 });

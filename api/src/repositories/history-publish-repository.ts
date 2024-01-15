@@ -6,7 +6,7 @@ import { BaseRepository } from './base-repository';
 
 export interface IProjectMetadataPublish {
   project_id: number;
-  submission_uuid: number;
+  submission_uuid: string;
 }
 
 export interface ISurveyMetadataPublish {
@@ -16,22 +16,22 @@ export interface ISurveyMetadataPublish {
 
 export interface IOccurrenceSubmissionPublish {
   occurrence_submission_id: number;
-  submission_uuid: number;
+  submission_uuid: string;
 }
 
 export interface ISummarySubmissionPublish {
   survey_summary_submission_id: number;
-  artifact_id: number;
+  artifact_uuid: string;
 }
 
 export interface IProjectAttachmentPublish {
   project_attachment_id: number;
-  artifact_id: number;
+  artifact_uuid: string;
 }
 
 export interface IProjectReportPublish {
   project_report_attachment_id: number;
-  artifact_id: number;
+  artifact_uuid: string;
 }
 
 export interface ISurveyAttachmentPublish {
@@ -41,7 +41,7 @@ export interface ISurveyAttachmentPublish {
 
 export interface ISurveyReportPublish {
   survey_report_attachment_id: number;
-  artifact_id: number;
+  artifact_uuid: string;
 }
 
 export const ProjectMetadataPublish = z.object({
@@ -349,7 +349,7 @@ export class HistoryPublishRepository extends BaseRepository {
     INSERT INTO survey_summary_submission_publish
     (survey_summary_submission_id, artifact_revision_id, event_timestamp)
     VALUES
-    (${data.survey_summary_submission_id}, ${data.artifact_id}, NOW())
+    (${data.survey_summary_submission_id}, ${data.artifact_uuid}, NOW())
     RETURNING survey_summary_submission_publish_id;
     `;
 
@@ -378,7 +378,7 @@ export class HistoryPublishRepository extends BaseRepository {
       INSERT INTO project_attachment_publish
         (project_attachment_id, artifact_revision_id, event_timestamp)
       VALUES
-        (${data.project_attachment_id}, ${data.artifact_id}, NOW())
+        (${data.project_attachment_id}, ${data.artifact_uuid}, NOW())
       RETURNING project_attachment_publish_id;
     `;
     const response = await this.connection.sql(sqlStatement);
@@ -404,7 +404,7 @@ export class HistoryPublishRepository extends BaseRepository {
       INSERT INTO project_report_publish
         (project_report_attachment_id, artifact_revision_id, event_timestamp)
       VALUES
-        (${data.project_report_attachment_id}, ${data.artifact_id}, NOW())
+        (${data.project_report_attachment_id}, ${data.artifact_uuid}, NOW())
       RETURNING project_report_publish_id;
     `;
     const response = await this.connection.sql(sqlStatement);
@@ -458,7 +458,7 @@ export class HistoryPublishRepository extends BaseRepository {
       INSERT INTO survey_report_publish
         (survey_report_attachment_id, artifact_revision_id, event_timestamp)
       VALUES
-        (${data.survey_report_attachment_id}, ${data.artifact_id}, NOW())
+        (${data.survey_report_attachment_id}, ${data.artifact_uuid}, NOW())
       RETURNING survey_report_publish_id;
     `;
     const response = await this.connection.sql(sqlStatement);
