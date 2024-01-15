@@ -7,7 +7,6 @@ import { IDBConnection } from '../database/db';
 import { ApiError, ApiErrorType, ApiGeneralError } from '../errors/api-error';
 import { PostSurveySubmissionToBioHubObject } from '../models/biohub-create';
 import { ISurveyAttachment } from '../repositories/attachment-repository';
-import { ISurveyProprietorModel } from '../repositories/survey-repository';
 import { getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { AttachmentService } from './attachment-service';
@@ -32,18 +31,6 @@ export interface IArchiveFile {
    * The mime type, should be `application/zip` or similar.
    */
   mimeType: string;
-}
-
-export interface IDwCADataset {
-  /**
-   * A Darwin Core Archive (DwCA) zip file.
-   */
-  archiveFile: IArchiveFile;
-  /**
-   * A UUID that uniquely identifies this DwCA dataset.
-   */
-  dataPackageId: string;
-  securityRequest?: ISurveyProprietorModel;
 }
 
 export interface IArtifactMetadata {
@@ -85,41 +72,6 @@ export interface IFeatureArtifact {
   };
 }
 
-export interface IGetObservationSubmissionResponse {
-  id: number;
-  inputFileName: string;
-  status?: string;
-  isValidating: boolean;
-  messageTypes: {
-    severityLabel: 'Notice' | 'Error' | 'Warning';
-    messageTypeLabel: string;
-    messageStatus: string;
-    messages: { id: number; message: string }[];
-  }[];
-}
-
-export interface IGetSummaryResultsResponse {
-  id: number;
-  fileName: string;
-  messages: {
-    id: number;
-    class: string;
-    type: string;
-    message: string;
-  }[];
-}
-
-export interface IGetSurveyAttachment {
-  id: number;
-  fileName: string;
-  fileType: string;
-  lastModified: string;
-  size: number;
-  revisionCount: number;
-}
-
-export type IGetSurveyReportAttachment = IGetSurveyAttachment & { fileType: 'Report' };
-
 const getBackboneIntakeEnabled = () => process.env.BACKBONE_INTAKE_ENABLED === 'true' || false;
 const getBackboneApiHost = () => process.env.BACKBONE_API_HOST || '';
 const getBackboneArtifactIntakePath = () => process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '/api/artifact/intake';
@@ -148,7 +100,7 @@ export class PlatformService extends DBService {
   async submitSurveyToBioHub(
     surveyId: number,
     data: { additionalInformation: string }
-  ): Promise<{ submission_uuid: number }> {
+  ): Promise<{ submission_uuid: string }> {
     defaultLog.debug({ label: 'submitSurveyToBioHub', message: 'params', surveyId });
 
     if (!getBackboneIntakeEnabled()) {
@@ -173,19 +125,15 @@ export class PlatformService extends DBService {
       data.additionalInformation
     );
 
-    console.log('surveyDataPackage', surveyDataPackage);
-
     // Submit survey data package to BioHub
     const response = await axios.post<{
-      submission_uuid: number;
+      submission_uuid: string;
       artifact_upload_keys: { artifact_filename: string; artifact_upload_key: number }[];
     }>(backboneSurveyIntakeUrl, surveyDataPackage, {
       headers: {
         authorization: `Bearer ${token}`
       }
     });
-    console.log('response', response);
-    console.log('response.data', response.data);
 
     // Check for response data
     if (!response.data) {
@@ -193,23 +141,21 @@ export class PlatformService extends DBService {
     }
 
     // Submit survey attachments to BioHub
-    const submitSurveyAttachment = await this._submitSurveyAttachmentsToBioHub(
+    await this._submitSurveyAttachmentsToBioHub(
       surveyDataPackage.id,
       surveyAttachments,
       response.data.artifact_upload_keys
     );
 
-    console.log('submitSurveyAttachment', submitSurveyAttachment);
-
     // Insert publish history record
 
-    // NOTE: this is a temporary solution to get the queue_id into the publish history table
-    //      the queue_id is not returned from the survey intake endpoint, so we are using the submission_uuid
+    // NOTE: this is a temporary solution to get the submission_uuid into the publish history table
+    //      the submission_uuid is not returned from the survey intake endpoint, so we are using the submission_uuid
     //      as a temporary solution
-    // await this.historyPublishService.insertSurveyMetadataPublishRecord({
-    //   survey_id: surveyId,
-    //   queue_id: response.data.submission_uuid
-    // });
+    await this.historyPublishService.insertSurveyMetadataPublishRecord({
+      survey_id: surveyId,
+      submission_uuid: response.data.submission_uuid
+    });
 
     return { submission_uuid: response.data.submission_uuid };
   }
@@ -266,19 +212,14 @@ export class PlatformService extends DBService {
     surveyAttachments: ISurveyAttachment[],
     artifact_upload_keys: { artifact_filename: string; artifact_upload_key: number }[]
   ): Promise<void> {
-    console.log('submissionUUID', submissionUUID);
-    console.log('surveyAttachments', surveyAttachments);
-    console.log('artifact_upload_keys', artifact_upload_keys);
     // Submit survey attachments to BioHub
     await Promise.all(
       // Loop through survey attachments
       surveyAttachments.map(async (attachment) => {
-        console.log('attachment', attachment);
         // Get artifact_upload_key for attachment
         const artifactUploadKey = artifact_upload_keys.find(
           (artifact) => artifact.artifact_filename === attachment.file_name
         )?.artifact_upload_key;
-        console.log('artifactUploadKey', artifactUploadKey);
 
         // Throw error if artifact_upload_key is not found
         if (!artifactUploadKey) {
@@ -287,17 +228,15 @@ export class PlatformService extends DBService {
 
         // Build artifact object
         const artifact = await this._makeArtifactFromSurveyAttachment(submissionUUID, artifactUploadKey, attachment);
-        console.log('artifact', artifact);
 
         // Submit artifact to BioHub
         const { artifact_uuid } = await this._submitArtifactFeatureToBioHub(artifact);
-        console.log('artifact_uuid', artifact_uuid);
 
         // Insert publish history record
-        // return this.historyPublishService.insertSurveyAttachmentPublishRecord({
-        //   artifact_uuid,
-        //   survey_attachment_id: attachment.survey_attachment_id
-        // });
+        return this.historyPublishService.insertSurveyAttachmentPublishRecord({
+          artifact_uuid,
+          survey_attachment_id: attachment.survey_attachment_id
+        });
       })
     );
 
@@ -351,7 +290,7 @@ export class PlatformService extends DBService {
    * @return {*}  {Promise<{ artifact_uuid: number }>}
    * @memberof PlatformService
    */
-  async _submitArtifactFeatureToBioHub(artifact: IFeatureArtifact): Promise<{ artifact_uuid: number }> {
+  async _submitArtifactFeatureToBioHub(artifact: IFeatureArtifact): Promise<{ artifact_uuid: string }> {
     defaultLog.debug({ label: '_submitArtifactToBioHub', metadata: artifact.metadata });
 
     const keycloakService = new KeycloakService();
@@ -370,13 +309,12 @@ export class PlatformService extends DBService {
 
     const backboneArtifactIntakeUrl = new URL(getBackboneArtifactIntakePath(), getBackboneApiHost()).href;
 
-    const { data } = await axios.post<{ artifact_uuid: number }>(backboneArtifactIntakeUrl, formData.getBuffer(), {
+    const { data } = await axios.post<{ artifact_uuid: string }>(backboneArtifactIntakeUrl, formData.getBuffer(), {
       headers: {
         authorization: `Bearer ${token}`,
         ...formData.getHeaders()
       }
     });
-    console.log('data', data);
 
     return data;
   }

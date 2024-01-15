@@ -61,7 +61,7 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
       project_metadata_publish_id: 1,
       project_id: 1,
       event_timestamp: '2023-03-15',
-      queue_id: 1,
+      submission_uuid: '123-456-789',
       create_date: '2023-03-15',
       create_user: 1,
       update_date: '2023-03-15',
