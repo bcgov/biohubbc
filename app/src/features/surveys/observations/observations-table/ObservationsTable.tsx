@@ -541,9 +541,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         getRowHeight={() => 'auto'}
         getRowClassName={(params) => (has(observationsTableContext.validationModel, params.row.id) ? 'error' : '')}
         sx={{
-          background: '#fff',
           border: 'none',
-          borderTop: '1px solid ' + grey[300],
           borderRadius: 0,
           '&:after': {
             content: '" "',
@@ -637,9 +635,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
           '& .MuiDataGrid-virtualScrollerContent': {
             background: '#fff'
           },
-          '& .MuiDataGrid-footerContainer': {
-            background: '#fff'
-          }
         }}
       />
     </>

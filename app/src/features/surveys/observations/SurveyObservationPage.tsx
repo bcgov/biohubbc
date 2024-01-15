@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import Paper from '@mui/material/Paper';
+// import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import { ObservationsTableContext, ObservationsTableContextProvider } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -9,7 +9,7 @@ import { useContext } from 'react';
 import ObservationComponent from './observations-table/ObservationComponent';
 import SamplingSiteList from './sampling-sites/SamplingSiteList';
 import SurveyObservationHeader from './SurveyObservationHeader';
-import Divider from '@mui/material/Divider';
+// import Divider from '@mui/material/Divider';
 
 export const SurveyObservationPage = () => {
   const surveyContext = useContext(SurveyContext);
@@ -26,14 +26,13 @@ export const SurveyObservationPage = () => {
         survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
       />
 
-      <Paper
-        component={Stack}
+      <Stack
         direction="row"
-        divider={<Divider orientation="vertical" flexItem />}
+        gap={1}
+        // divider={<Divider orientation="vertical" flexItem />}
         sx={{
           flex: '1 1 auto',
-          m: 1,
-          overflow: 'hidden'
+          p: 1
         }}>
           
         {/* Sampling Site List */}
@@ -44,7 +43,7 @@ export const SurveyObservationPage = () => {
         </Box>
 
         {/* Observations Component */}
-        <Box flex="1 1 auto" overflow="hidden">
+        <Box flex="1 1 auto">
           <TaxonomyContextProvider>
             <ObservationsTableContextProvider>
               <ObservationsTableContext.Consumer>
@@ -59,7 +58,7 @@ export const SurveyObservationPage = () => {
             </ObservationsTableContextProvider>
           </TaxonomyContextProvider>
         </Box>
-      </Paper>
+      </Stack>
     </Box>
   );
 };
