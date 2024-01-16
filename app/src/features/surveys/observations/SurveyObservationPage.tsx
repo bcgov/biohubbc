@@ -34,11 +34,8 @@ export const SurveyObservationPage = () => {
           flex: '1 1 auto',
           p: 1
         }}>
-          
         {/* Sampling Site List */}
-        <Box
-          flex="0 0 auto"
-          width="400px">
+        <Box flex="0 0 auto" width="400px">
           <SamplingSiteList />
         </Box>
 

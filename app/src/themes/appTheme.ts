@@ -123,7 +123,7 @@ const appTheme = createTheme({
         root: {
           marginTop: '-8px',
           marginBottom: '8px',
-          marginLeft: '-4px',
+          marginLeft: '-4px'
         },
         li: {
           maxWidth: '40ch',

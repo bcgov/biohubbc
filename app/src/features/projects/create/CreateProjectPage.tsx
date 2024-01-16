@@ -1,10 +1,11 @@
 import { LoadingButton } from '@mui/lab';
-import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
+import grey from '@mui/material/colors/grey';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
@@ -27,7 +28,6 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Prompt } from 'react-router-dom';
 import CreateProjectForm from './CreateProjectForm';
-import grey from '@mui/material/colors/grey';
 
 /**
  * Page for creating a new project.
@@ -287,8 +287,7 @@ const CreateProjectPage: React.FC = () => {
         sx={{
           py: 3,
           borderBottom: '1px solid' + grey[300]
-        }}
-      >
+        }}>
         <Container maxWidth="xl">
           <Stack
             alignItems="flex-start"
@@ -299,12 +298,11 @@ const CreateProjectPage: React.FC = () => {
               component="h1"
               variant="h2"
               sx={{
-                ml: '-2px',
+                ml: '-2px'
               }}>
               Create New Project
             </Typography>
             <Stack flexDirection="row" alignItems="center" gap={1}>
-              
               {/* TODO: DEPRICATE DRAFT FUNCTIONALITY */}
               {/* <Button color="primary" variant="contained" onClick={() => setOpenDraftDialog(true)}>
                 Save Draft
@@ -334,12 +332,11 @@ const CreateProjectPage: React.FC = () => {
 
       <Container maxWidth="xl">
         <Box py={3}>
-          <Paper elevation={0}
+          <Paper
+            elevation={0}
             sx={{
               p: 5
-            }}
-          >
-
+            }}>
             <CreateProjectForm
               handleSubmit={createProject}
               codes={codes}
@@ -377,7 +374,6 @@ const CreateProjectPage: React.FC = () => {
                 Cancel
               </Button>
             </Stack>
-
           </Paper>
         </Box>
       </Container>

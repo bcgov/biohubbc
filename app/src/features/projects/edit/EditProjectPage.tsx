@@ -1,8 +1,10 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
+import grey from '@mui/material/colors/grey';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditProjectI18N } from 'constants/i18n';
@@ -17,8 +19,6 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Prompt } from 'react-router-dom';
 import EditProjectForm from './EditProjectForm';
-import Stack from '@mui/material/Stack';
-import grey from '@mui/material/colors/grey';
 
 /**
  * Page for creating a new project.
@@ -166,8 +166,7 @@ const EditProjectPage: React.FC = (props) => {
         sx={{
           py: 3,
           borderBottom: '1px solid' + grey[300]
-        }}
-      >
+        }}>
         <Container maxWidth="xl">
           <Stack
             alignItems="flex-start"
@@ -178,7 +177,7 @@ const EditProjectPage: React.FC = (props) => {
               component="h1"
               variant="h2"
               sx={{
-                ml: '-2px',
+                ml: '-2px'
               }}>
               Edit Project Details
             </Typography>

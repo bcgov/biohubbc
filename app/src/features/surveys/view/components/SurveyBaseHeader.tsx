@@ -30,7 +30,7 @@ const SurveyBaseHeader = (props: ISurveyHeader) => {
         zIndex: 1002,
         borderBottom: '1px solid' + grey[300]
       }}>
-      <Container maxWidth="xl" sx={{ py: {xs: 2, sm: 3}}}>
+      <Container maxWidth="xl" sx={{ py: { xs: 2, sm: 3 } }}>
         {breadCrumb}
         <Stack
           alignItems="flex-start"
@@ -38,9 +38,7 @@ const SurveyBaseHeader = (props: ISurveyHeader) => {
           justifyContent="space-between"
           gap={3}>
           <Box>
-            <Typography variant="h1">
-              {title}
-            </Typography>
+            <Typography variant="h1">{title}</Typography>
             {subTitle}
           </Box>
           {buttonJSX}

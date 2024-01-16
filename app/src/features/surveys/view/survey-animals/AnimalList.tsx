@@ -37,6 +37,7 @@ const ListPlaceholder = (props: { displaySkeleton: boolean }) =>
   props.displaySkeleton ? (
     <Stack
       flexDirection="column"
+      justifyContent="center"
       px={2}
       py={1.2}
       height={70}
@@ -91,12 +92,7 @@ const AnimalList = (props: IAnimalListProps) => {
   };
 
   return (
-    <Paper
-      component={Stack}
-      flexDirection="column"
-      height="100%"
-      overflow="hidden"
-    >
+    <Paper component={Stack} flexDirection="column" height="100%" overflow="hidden">
       <Toolbar
         disableGutters
         sx={{
@@ -104,10 +100,7 @@ const AnimalList = (props: IAnimalListProps) => {
           pr: 3,
           pl: 2
         }}>
-        <Typography
-          variant="h3"
-          component="h2"
-          flexGrow={1}>
+        <Typography variant="h3" component="h2" flexGrow={1}>
           Animals
         </Typography>
         <Button
@@ -158,11 +151,14 @@ const AnimalList = (props: IAnimalListProps) => {
                       }
                     }}>
                     <Box>
-                      <Typography variant="body2" fontWeight="bold" sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <Typography
+                        variant="body2"
+                        fontWeight="bold"
+                        sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {critter.animal_id}
                       </Typography>
                       <Typography variant="body2" color="textSecondary">
-                        {critter.taxon}  |  {critter.sex}
+                        {critter.taxon} | {critter.sex}
                       </Typography>
                     </Box>
                   </AccordionSummary>

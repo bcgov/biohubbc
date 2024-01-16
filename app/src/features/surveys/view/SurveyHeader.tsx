@@ -138,11 +138,11 @@ const SurveyHeader = () => {
       <SurveyBaseHeader
         title={surveyWithDetails.surveyData.survey_details.survey_name}
         breadCrumb={
-          <Breadcrumbs aria-label="breadcrumb"
+          <Breadcrumbs
+            aria-label="breadcrumb"
             sx={{
               typography: 'body2'
-            }}
-          >
+            }}>
             <Link
               component={RouterLink}
               underline="hover"

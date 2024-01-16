@@ -4,9 +4,9 @@ import { Box, IconButton } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
+import { grey } from '@mui/material/colors';
 import Typography from '@mui/material/Typography';
 import { default as dayjs } from 'dayjs';
-import { grey } from '@mui/material/colors';
 export interface ManualTelemetryCardProps {
   device_id: number;
   name: string; // should be animal alias
@@ -28,10 +28,7 @@ const ManualTelemetryCard = (props: ManualTelemetryCardProps) => {
           display: 'none'
         }
       }}>
-      <Box 
-        display="flex"
-        alignItems="center"
-        overflow="hidden">
+      <Box display="flex" alignItems="center" overflow="hidden">
         <AccordionSummary
           expandIcon={<Icon path={mdiChevronDown} size={1} />}
           sx={{
@@ -46,7 +43,7 @@ const ManualTelemetryCard = (props: ManualTelemetryCardProps) => {
               py: 0,
               pl: 0,
               overflow: 'hidden',
-              whiteSpace: 'nowrap',
+              whiteSpace: 'nowrap'
             }
           }}>
           <Box>

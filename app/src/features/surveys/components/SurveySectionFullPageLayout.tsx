@@ -20,12 +20,7 @@ export const SurveySectionFullPageLayout = (props: SurveySectionFullPageLayoutPr
   }
 
   return (
-    <Stack 
-      flexDirection="column"
-      position="relative" 
-      height="100%" 
-      overflow="hidden"
-    >
+    <Stack flexDirection="column" position="relative" height="100%" overflow="hidden">
       <SurveySectionHeader
         data-testid="fullpage-section-header"
         project_id={surveyContext.projectId}
@@ -42,7 +37,6 @@ export const SurveySectionFullPageLayout = (props: SurveySectionFullPageLayoutPr
           p: 1,
           overflow: 'hidden'
         }}>
-  
         <Box
           sx={{
             flex: '0 0 auto',

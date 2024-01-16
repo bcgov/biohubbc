@@ -18,14 +18,14 @@ const SurveyObservationHeader: React.FC<SurveyObservationHeaderProps> = (props) 
       square
       elevation={0}
       sx={{
-        p: {xs: 2, sm: 3},
+        p: { xs: 2, sm: 3 },
         borderBottom: '1px solid' + grey[300]
       }}>
-      <Breadcrumbs aria-label="breadcrumb"
+      <Breadcrumbs
+        aria-label="breadcrumb"
         sx={{
           typography: 'body2'
-        }}
-      >
+        }}>
         <Link
           component={RouterLink}
           underline="hover"
@@ -36,9 +36,7 @@ const SurveyObservationHeader: React.FC<SurveyObservationHeaderProps> = (props) 
           Manage Observations
         </Typography>
       </Breadcrumbs>
-      <Typography variant="h1">
-        Manage Observations
-      </Typography>
+      <Typography variant="h1">Manage Observations</Typography>
     </Paper>
   );
 };

@@ -1,14 +1,15 @@
 import { mdiDotsVertical, mdiImport, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
-import Divider from '@mui/material/Divider';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
+import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -24,7 +25,6 @@ import ObservationsTable from 'features/surveys/observations/observations-table/
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useState } from 'react';
 import { pluralize as p } from 'utils/Utils';
-import Paper from '@mui/material/Paper';
 
 const ObservationComponent = () => {
   const [showImportDialog, setShowImportDialog] = useState<boolean>(false);
@@ -99,18 +99,13 @@ const ObservationComponent = () => {
         onClose={() => setShowConfirmRemoveAllDialog(false)}
         onNo={() => setShowConfirmRemoveAllDialog(false)}
       />
-      <Paper
-        component={Stack}
-        flexDirection="column"
-        flex="1 1 auto"
-        height="100%">
+      <Paper component={Stack} flexDirection="column" flex="1 1 auto" height="100%">
         <Toolbar
           disableGutters
           sx={{
             pl: 2,
             pr: 3
-          }}
-        >
+          }}>
           <Typography
             sx={{
               flexGrow: '1',

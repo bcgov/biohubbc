@@ -495,12 +495,7 @@ const ManualTelemetryList = () => {
                 </DialogActions>
               </Dialog>
 
-              <Paper
-                component={Stack}
-                flexDirection="column"
-                height="100%"
-                overflow="hidden"
-              >
+              <Paper component={Stack} flexDirection="column" height="100%" overflow="hidden">
                 <Toolbar
                   disableGutters
                   sx={{
@@ -508,10 +503,7 @@ const ManualTelemetryList = () => {
                     pr: 3,
                     pl: 2
                   }}>
-                  <Typography
-                    variant="h3"
-                    component="h2"
-                    flexGrow={1}>
+                  <Typography variant="h3" component="h2" flexGrow={1}>
                     Deployments &zwnj;
                     <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
                       ({critterDeployments?.length ?? 0})
@@ -534,10 +526,9 @@ const ManualTelemetryList = () => {
                 <Divider flexItem></Divider>
                 <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
                   <Box position="absolute" top="0" right="0" bottom="0" left="0">
-                    
                     {/* Display list of skeleton components while waiting for a response */}
                     {surveyContext.deploymentDataLoader.isLoading && <SkeletonListStack />}
-                    
+
                     {critterDeployments?.map((item) => (
                       <ManualTelemetryCard
                         key={`${item.deployment.device_id}:${item.deployment.attachment_start}`}
@@ -550,7 +541,6 @@ const ManualTelemetryList = () => {
                         }}
                       />
                     ))}
-
                   </Box>
                 </Box>
               </Paper>

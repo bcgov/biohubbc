@@ -184,11 +184,11 @@ const EditSurveyPage = () => {
       <SurveyBaseHeader
         title="Edit Survey Details"
         breadCrumb={
-          <Breadcrumbs aria-label="breadcrumb"
+          <Breadcrumbs
+            aria-label="breadcrumb"
             sx={{
               typography: 'body2'
-            }}
-          >
+            }}>
             <Link
               component={RouterLink}
               underline="hover"

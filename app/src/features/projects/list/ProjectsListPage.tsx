@@ -3,9 +3,11 @@ import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
+import grey from '@mui/material/colors/grey';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import ProjectsSubmissionAlertBar from 'components/publish/ProjectListSubmissionAlertBar';
@@ -19,8 +21,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import ProjectsListFilterForm from './ProjectsListFilterForm';
 import ProjectsListTable from './ProjectsListTable';
-import grey from '@mui/material/colors/grey';
-import Stack from '@mui/material/Stack';
 
 //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
@@ -72,9 +72,8 @@ const ProjectsListPage: React.FC = () => {
         elevation={0}
         sx={{
           borderBottom: '1px solid' + grey[300]
-        }}
-      >
-        <Container maxWidth="xl" sx={{ py: {xs: 2, sm: 3,  lg: 4}}}>
+        }}>
+        <Container maxWidth="xl" sx={{ py: { xs: 2, sm: 3, lg: 4 } }}>
           <Stack
             alignItems="flex-start"
             flexDirection={{ xs: 'column', sm: 'row' }}
@@ -83,7 +82,7 @@ const ProjectsListPage: React.FC = () => {
             <Typography
               variant="h1"
               sx={{
-                ml: '-2px',
+                ml: '-2px'
               }}>
               Projects
             </Typography>
@@ -117,7 +116,12 @@ const ProjectsListPage: React.FC = () => {
             <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
               <Typography variant="h4" component="h2">
                 Records Found &zwnj;
-                <Typography component="span" color="textSecondary" lineHeight="inherit" fontSize="inherit" fontWeight={400}>
+                <Typography
+                  component="span"
+                  color="textSecondary"
+                  lineHeight="inherit"
+                  fontSize="inherit"
+                  fontWeight={400}>
                   ({projectsDataLoader.data?.length || 0})
                 </Typography>
               </Typography>

@@ -18,14 +18,14 @@ const ManualTelemetryHeader: React.FC<ManualTelemetryHeaderProps> = (props) => {
       square
       elevation={0}
       sx={{
-        p: {xs: 2, sm: 3},
+        p: { xs: 2, sm: 3 },
         borderBottom: '1px solid' + grey[300]
       }}>
-      <Breadcrumbs aria-label="breadcrumb"
+      <Breadcrumbs
+        aria-label="breadcrumb"
         sx={{
           typography: 'body2'
-        }}
-      >
+        }}>
         <Link
           component={RouterLink}
           underline="hover"
@@ -36,9 +36,7 @@ const ManualTelemetryHeader: React.FC<ManualTelemetryHeaderProps> = (props) => {
           Manage Telemetry
         </Typography>
       </Breadcrumbs>
-      <Typography variant="h1">
-        Manage Telemetry
-      </Typography>
+      <Typography variant="h1">Manage Telemetry</Typography>
     </Paper>
   );
 };

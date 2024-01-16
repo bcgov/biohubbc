@@ -9,13 +9,14 @@ import {
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+import grey from '@mui/material/colors/grey';
 import Container from '@mui/material/Container';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import assert from 'assert';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
@@ -31,7 +32,6 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
 import { getFormattedDateRangeString } from 'utils/Utils';
-import grey from '@mui/material/colors/grey';
 
 /**
  * Project header for a single-project view.
@@ -112,9 +112,8 @@ const ProjectHeader = () => {
         elevation={0}
         sx={{
           borderBottom: '1px solid' + grey[300]
-        }}
-      >
-        <Container maxWidth="xl" sx={{ py: {xs: 2, sm: 3 }}}>
+        }}>
+        <Container maxWidth="xl" sx={{ py: { xs: 2, sm: 3 } }}>
           <Stack
             alignItems="flex-start"
             flexDirection={{ xs: 'column', md: 'row' }}
@@ -225,7 +224,6 @@ const ProjectHeader = () => {
             </Stack>
           </Stack>
         </Container>
-
       </Paper>
 
       <PublishProjectDialog open={publishProjectDialogOpen} onClose={() => setPublishProjectDialogOpen(false)} />

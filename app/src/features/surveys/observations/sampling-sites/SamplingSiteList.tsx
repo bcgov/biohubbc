@@ -7,14 +7,16 @@ import {
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
-import Checkbox from '@mui/material/Checkbox';
-import Divider from '@mui/material/Divider';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
 import { grey } from '@mui/material/colors';
+import Divider from '@mui/material/Divider';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -22,6 +24,8 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
@@ -32,10 +36,6 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getCodesName } from 'utils/Utils';
-import Stack from '@mui/material/Stack';
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Paper from '@mui/material/Paper';
 
 const SamplingSiteList = () => {
   const surveyContext = useContext(SurveyContext);
@@ -259,14 +259,13 @@ const SamplingSiteList = () => {
         </MenuItem>
       </Menu>
 
-      <Paper 
+      <Paper
         component={Stack}
-        flexDirection="column" 
+        flexDirection="column"
         height="100%"
         sx={{
           overflow: 'hidden'
-        }}
-      >
+        }}>
         <Toolbar
           disableGutters
           sx={{
@@ -274,11 +273,7 @@ const SamplingSiteList = () => {
             pr: 3,
             pl: 2
           }}>
-          <Typography
-            variant="h3"
-            component="h2"
-            flexGrow={1}
-          >
+          <Typography variant="h3" component="h2" flexGrow={1}>
             Sampling Sites &zwnj;
             <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
               ({samplingSiteCount})
@@ -295,7 +290,7 @@ const SamplingSiteList = () => {
           <IconButton
             edge="end"
             sx={{
-              ml: 1,
+              ml: 1
             }}
             aria-label="header-settings"
             disabled={!checkboxSelectedIds.length}
@@ -309,32 +304,24 @@ const SamplingSiteList = () => {
             {surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading ? (
               <SkeletonList />
             ) : (
-              <Stack height="100%"  position="relative">
-                <Box
-                  flex="0 0 auto"
-                  display="flex"
-                  alignItems="center"
-                  px={2}
-                  height={55}>
+              <Stack height="100%" position="relative">
+                <Box flex="0 0 auto" display="flex" alignItems="center" px={2} height={55}>
                   <FormGroup>
                     <FormControlLabel
                       label={
-                        <Typography 
-                          variant='body2' 
-                          component="span" 
-                          color="textSecondary"
-                          fontWeight={700}
-                        >
+                        <Typography variant="body2" component="span" color="textSecondary" fontWeight={700}>
                           SELECT ALL
                         </Typography>
                       }
                       control={
                         <Checkbox
                           sx={{
-                            mr: 0.75,
+                            mr: 0.75
                           }}
                           checked={checkboxSelectedIds.length === samplingSiteCount}
-                          indeterminate={checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < samplingSiteCount}
+                          indeterminate={
+                            checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < samplingSiteCount
+                          }
                           onClick={() => {
                             if (checkboxSelectedIds.length === samplingSiteCount) {
                               setCheckboxSelectedIds([]);
@@ -351,17 +338,14 @@ const SamplingSiteList = () => {
                   </FormGroup>
                 </Box>
                 <Divider flexItem></Divider>
-                <Box
-                  flex="1 1 auto"
-                  overflow="hidden"
-                >
+                <Box flex="1 1 auto" overflow="hidden">
                   {/* Display text if the sample site data loader has no items in it */}
                   {!surveyContext.sampleSiteDataLoader.data?.sampleSites.length &&
                     !surveyContext.sampleSiteDataLoader.isLoading && (
-                      <Stack 
+                      <Stack
                         display="flex"
-                        alignItems="center" 
-                        justifyContent="center" 
+                        alignItems="center"
+                        justifyContent="center"
                         flex="1 1 auto"
                         position="absolute"
                         top={0}
@@ -386,10 +370,7 @@ const SamplingSiteList = () => {
                             display: 'none'
                           }
                         }}>
-                        <Box
-                          display="flex"
-                          alignItems="center"
-                          overflow="hidden">
+                        <Box display="flex" alignItems="center" overflow="hidden">
                           <AccordionSummary
                             expandIcon={<Icon path={mdiChevronDown} size={1} />}
                             aria-controls="panel1bh-content"
@@ -405,17 +386,18 @@ const SamplingSiteList = () => {
                                 py: 0,
                                 pl: 0,
                                 overflow: 'hidden',
-                                whiteSpace: 'nowrap',
+                                whiteSpace: 'nowrap'
                               }
                             }}>
-                            <Stack flexDirection="row" alignItems="center"
+                            <Stack
+                              flexDirection="row"
+                              alignItems="center"
                               sx={{
                                 gap: 0.75,
                                 pl: 2,
                                 pr: 2,
-                                overflow: "hidden"
-                              }}
-                            >
+                                overflow: 'hidden'
+                              }}>
                               <Checkbox
                                 edge="start"
                                 checked={checkboxSelectedIds.includes(sampleSite.survey_sample_site_id)}
@@ -426,7 +408,9 @@ const SamplingSiteList = () => {
                                 inputProps={{ 'aria-label': 'controlled' }}
                               />
 
-                              <Typography variant="body2" component='div'
+                              <Typography
+                                variant="body2"
+                                component="div"
                                 sx={{
                                   flex: '1 1 auto',
                                   fontWeight: 700,
@@ -435,7 +419,6 @@ const SamplingSiteList = () => {
                                 }}>
                                 {sampleSite.name}
                               </Typography>
-
                             </Stack>
                           </AccordionSummary>
                           <IconButton
@@ -503,8 +486,9 @@ const SamplingSiteList = () => {
                                           </ListItemIcon>
                                           <ListItemText>
                                             <Typography variant="body2" component="div" color="inherit">
-                                              {`${samplePeriod.start_date} ${samplePeriod.start_time ?? ''} - ${samplePeriod.end_date
-                                                } ${samplePeriod.end_time ?? ''}`}
+                                              {`${samplePeriod.start_date} ${samplePeriod.start_time ?? ''} - ${
+                                                samplePeriod.end_date
+                                              } ${samplePeriod.end_time ?? ''}`}
                                             </Typography>
                                           </ListItemText>
                                         </ListItem>

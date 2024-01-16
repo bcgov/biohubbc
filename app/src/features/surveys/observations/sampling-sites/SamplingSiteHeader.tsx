@@ -5,12 +5,12 @@ import { grey } from '@mui/material/colors';
 import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useFormikContext } from 'formik';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { ICreateSamplingSiteRequest } from './SamplingSitePage';
-import Stack from '@mui/material/Stack';
 
 export interface ISamplingSiteHeaderProps {
   project_id: number;
@@ -35,14 +35,13 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
           top: 0,
           zIndex: 1002,
           borderBottom: '1px solid' + grey[300]
-        }}
-      >
-        <Container maxWidth="xl" sx={{ py: {xs: 2, sm: 3}}}>
-          <Breadcrumbs aria-label="breadcrumb"
+        }}>
+        <Container maxWidth="xl" sx={{ py: { xs: 2, sm: 3 } }}>
+          <Breadcrumbs
+            aria-label="breadcrumb"
             sx={{
               typography: 'body2'
-            }}
-          >
+            }}>
             <Link
               component={RouterLink}
               to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}
@@ -55,14 +54,16 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
               underline="none">
               Manage Survey Observations
             </Link>
-            <Typography component="span" variant="body2" color="textSecondary">{breadcrumb}</Typography>
+            <Typography component="span" variant="body2" color="textSecondary">
+              {breadcrumb}
+            </Typography>
           </Breadcrumbs>
           <Stack
             alignItems="flex-start"
             flexDirection={{ xs: 'column', lg: 'row' }}
             justifyContent="space-between"
             gap={3}>
-            <Typography variant="h1" sx={{ ml: '-2px'}}>
+            <Typography variant="h1" sx={{ ml: '-2px' }}>
               {title}
             </Typography>
             <Stack flexDirection="row" alignItems="center" gap={1}>

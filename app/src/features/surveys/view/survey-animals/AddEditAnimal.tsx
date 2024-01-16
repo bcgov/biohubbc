@@ -140,25 +140,13 @@ export const AddEditAnimal = (props: IAddEditAnimalProps) => {
   };
 
   return (
-    <Paper
-      component={Stack}
-      position="absolute"
-      top={0}
-      right={0}
-      bottom={0}
-      left={0}
-      overflow="hidden"
-    >
+    <Paper component={Stack} position="absolute" top={0} right={0} bottom={0} left={0} overflow="hidden">
       <Toolbar
         disableGutters
         sx={{
           px: 2
-        }}
-      >
-        <Typography
-          variant="h3"
-          component="h2"
-        >
+        }}>
+        <Typography variant="h3" component="h2">
           {values?.general?.animal_id ? `Animal Details > ${values.general.animal_id}` : 'No animal selected'}
         </Typography>
       </Toolbar>

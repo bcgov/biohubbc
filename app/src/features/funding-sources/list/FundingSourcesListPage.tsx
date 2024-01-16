@@ -3,9 +3,11 @@ import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
+import grey from '@mui/material/colors/grey';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { FundingSourceI18N } from 'constants/i18n';
@@ -19,8 +21,6 @@ import DeleteFundingSource from '../components/DeleteFundingSource';
 import EditFundingSource from '../components/EditFundingSource';
 import FundingSourcePage from '../details/FundingSourcePage';
 import FundingSourcesTable from './FundingSourcesTable';
-import grey from '@mui/material/colors/grey';
-import Stack from '@mui/material/Stack';
 
 /**
  * Page to display a list of funding sources.
@@ -100,9 +100,8 @@ const FundingSourcesListPage: React.FC = () => {
         elevation={0}
         sx={{
           borderBottom: '1px solid' + grey[300]
-        }}
-      >
-        <Container maxWidth="xl" sx={{ py: {xs: 2, sm: 3,  lg: 4}}}>
+        }}>
+        <Container maxWidth="xl" sx={{ py: { xs: 2, sm: 3, lg: 4 } }}>
           <Stack
             alignItems="flex-start"
             flexDirection={{ xs: 'column', md: 'row' }}
@@ -111,7 +110,7 @@ const FundingSourcesListPage: React.FC = () => {
             <Typography
               variant="h1"
               sx={{
-                ml: '-2px',
+                ml: '-2px'
               }}>
               Funding Sources
             </Typography>
@@ -133,7 +132,12 @@ const FundingSourcesListPage: React.FC = () => {
             <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
               <Typography variant="h4" component="h2" data-testid="funding-source-list-found">
                 Records Found &zwnj;
-                <Typography component="span" color="textSecondary" lineHeight="inherit" fontSize="inherit" fontWeight={400}>
+                <Typography
+                  component="span"
+                  color="textSecondary"
+                  lineHeight="inherit"
+                  fontSize="inherit"
+                  fontWeight={400}>
                   ({fundingSourceDataLoader.data?.length || 0})
                 </Typography>
               </Typography>
