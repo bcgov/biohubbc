@@ -86,7 +86,7 @@ export class PostSurveyArtifactsToBiohubObject implements BioHubSubmissionFeatur
       file_type: attachmentRecord.file_type,
       file_size: attachmentRecord?.file_size,
       uuid: attachmentRecord?.uuid,
-      key: attachmentRecord.key,
+      s3_key: attachmentRecord.key,
       title: attachmentRecord?.title || null,
       description: attachmentRecord?.description || null
     };
