@@ -114,6 +114,13 @@ export type CritterTelemetryResponse = z.infer<typeof GeoJSONFeatureCollectionZo
 
 export type IBctwUser = z.infer<typeof IBctwUser>;
 
+export interface ICreateManualTelemetry {
+  deployment_id: string;
+  latitude: number;
+  longitude: number;
+  acquisition_date: string;
+}
+
 export const BCTW_API_HOST = process.env.BCTW_API_HOST || '';
 export const DEPLOY_DEVICE_ENDPOINT = '/deploy-device';
 export const UPSERT_DEVICE_ENDPOINT = '/upsert-collar';
@@ -502,11 +509,11 @@ export class BctwService {
 
   /**
    * Bulk create manual telemetry records
-   * @param {Omit<IManualTelemetry, 'telemetry_manual_id'>} payload
+   * @param {ICreateManualTelemetry[]} payload
    *
    * @returns {*} IManualTelemetry[]
    **/
-  async createManualTelemetry(payload: Omit<IManualTelemetry, 'telemetry_manual_id'>[]): Promise<IManualTelemetry[]> {
+  async createManualTelemetry(payload: ICreateManualTelemetry[]): Promise<IManualTelemetry[]> {
     const res = await this.axiosInstance.post(MANUAL_TELEMETRY, payload);
     return res.data;
   }
