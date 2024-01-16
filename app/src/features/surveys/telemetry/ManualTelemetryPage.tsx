@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import { grey } from '@mui/material/colors';
-import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TelemetryDataContextProvider } from 'contexts/telemetryDataContext';
 import { TelemetryTableContextProvider } from 'contexts/telemetryTableContext';
@@ -27,30 +26,21 @@ const ManualTelemetryPage = () => {
         survey_id={surveyContext.surveyId}
         survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
       />
-      <Paper
-        elevation={0}
-        sx={{
-          display: 'flex',
-          flex: '1 1 auto',
-          overflow: 'hidden',
-          m: 1
-        }}>
-        <TelemetryDataContextProvider>
-          <Box
-            flex="0 0 auto"
-            width="400px"
-            sx={{
-              borderRight: '1px solid ' + grey[300]
-            }}>
+
+      <TelemetryDataContextProvider>
+        <Stack flex="1 1 auto" direction="row" gap={1} p={1} overflow="hidden">
+          {/* Manual Telematry List */}
+          <Box flex="0 0 auto" position="relative" width="400px">
             <ManualTelemetryList />
           </Box>
-          <Box flex="1 1 auto" overflow="hidden">
+          {/* Manual Telemetry Component */}
+          <Box flex="1 1 auto" position="relative" overflow="hidden">
             <TelemetryTableContextProvider deployment_ids={deploymentIds ?? []}>
               <ManualTelemetryComponent />
             </TelemetryTableContextProvider>
           </Box>
-        </TelemetryDataContextProvider>
-      </Paper>
+        </Stack>
+      </TelemetryDataContextProvider>
     </Box>
   );
 };

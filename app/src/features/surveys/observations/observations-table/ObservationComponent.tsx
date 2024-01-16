@@ -1,13 +1,15 @@
 import { mdiDotsVertical, mdiImport, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
-import { ListItemIcon } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
+import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -97,15 +99,13 @@ const ObservationComponent = () => {
         onClose={() => setShowConfirmRemoveAllDialog(false)}
         onNo={() => setShowConfirmRemoveAllDialog(false)}
       />
-      <Box
-        display="flex"
-        flexDirection="column"
-        flex="1 1 auto"
-        height="100%"
-        sx={{
-          overflow: 'hidden'
-        }}>
-        <Toolbar>
+      <Paper component={Stack} flexDirection="column" flex="1 1 auto" height="100%">
+        <Toolbar
+          disableGutters
+          sx={{
+            pl: 2,
+            pr: 3
+          }}>
           <Typography
             sx={{
               flexGrow: '1',
@@ -195,14 +195,16 @@ const ObservationComponent = () => {
           </Stack>
         </Toolbar>
 
+        <Divider flexItem></Divider>
+
         <DataGridValidationAlert validationModel={validationModel} muiDataGridApiRef={_muiDataGridApiRef.current} />
 
         <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
-          <Box position="absolute" width="100%" height="100%" px={1}>
+          <Box position="absolute" width="100%" height="100%">
             <ObservationsTable isLoading={processingRecords} />
           </Box>
         </Box>
-      </Box>
+      </Paper>
     </>
   );
 };

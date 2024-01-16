@@ -11,22 +11,55 @@ export interface IMultipleSkeletonProps {
 
 const SkeletonList = (props: IMultipleSkeletonProps) => (
   <>
-    {Array(props.numberOfLines ?? 4)
+    {Array(props.numberOfLines ?? 3)
       .fill(null)
       .map(() => (
-        <Box
+        <Stack
           key={v4()}
+          flexDirection="row"
+          alignItems="center"
+          gap={2}
           sx={{
-            display: 'flex',
-            gap: '16px',
-            py: 1.5,
             px: 2,
             height: '56px',
             background: '#fff',
-            borderTop: '1px solid ' + grey[300]
+            borderBottom: '1px solid ' + grey[300],
+            '& .MuiSkeleton-root:not(:first-of-type)': {
+              flex: '1 1 auto'
+            },
+            '& *': {
+              fontSize: '0.875rem'
+            }
           }}>
-          <Skeleton sx={{ flex: '1 1 auto' }} />
-        </Box>
+          <Skeleton variant="text" width={20} height={20} />
+          <Skeleton variant="text" />
+        </Stack>
+      ))}
+  </>
+);
+
+const SkeletonListStack = (props: IMultipleSkeletonProps) => (
+  <>
+    {Array(props.numberOfLines ?? 3)
+      .fill(null)
+      .map(() => (
+        <Stack
+          key={v4()}
+          flexDirection="column"
+          justifyContent="center"
+          px={2}
+          py={1.2}
+          height={70}
+          sx={{
+            background: '#fff',
+            borderBottom: '1px solid ' + grey[300],
+            '& *': {
+              fontSize: '0.875rem'
+            }
+          }}>
+          <Skeleton variant="text" />
+          <Skeleton variant="text" width="50%" />
+        </Stack>
       ))}
   </>
 );
@@ -40,11 +73,11 @@ const SkeletonTable = (props: IMultipleSkeletonProps) => (
       bottom: 0,
       left: 0,
       zIndex: '999',
-      p: 1,
-      background: '#fff'
+      background: '#fff',
+      borderRadius: '4px'
     }}>
     <Paper elevation={0}>
-      {Array(props.numberOfLines ?? 4)
+      {Array(props.numberOfLines ?? 3)
         .fill(null)
         .map(() => (
           <SkeletonRow key={v4()} />
@@ -56,28 +89,29 @@ const SkeletonTable = (props: IMultipleSkeletonProps) => (
 const SkeletonRow = () => (
   <Stack
     flexDirection="row"
+    alignItems="center"
     gap={2}
     sx={{
-      py: 1.5,
       px: 2,
-      height: 56,
+      height: '56px',
       overflow: 'hidden',
-      '&:not(:last-of-type)': {
-        borderBottom: '1px solid ' + grey[300]
-      },
+      borderBottom: '1px solid ' + grey[300],
       '& .MuiSkeleton-root:not(:first-of-type)': {
         flex: '1 1 auto'
+      },
+      '& *': {
+        fontSize: '0.875rem'
       }
     }}>
-    <Skeleton width={20} sx={{ flex: '0 0 auto' }} />
-    <Skeleton />
-    <Skeleton />
-    <Skeleton />
-    <Skeleton />
-    <Skeleton />
-    <Skeleton />
-    <Skeleton />
+    <Skeleton variant="text" width={20} height={20} />
+    <Skeleton variant="text" />
+    <Skeleton variant="text" />
+    <Skeleton variant="text" />
+    <Skeleton variant="text" />
+    <Skeleton variant="text" />
+    <Skeleton variant="text" />
+    <Skeleton variant="text" />
   </Stack>
 );
 
-export { SkeletonList, SkeletonRow, SkeletonTable };
+export { SkeletonList, SkeletonListStack, SkeletonRow, SkeletonTable };

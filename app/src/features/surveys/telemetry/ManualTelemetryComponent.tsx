@@ -1,15 +1,16 @@
 import { mdiDotsVertical, mdiImport, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
-import { ListItemIcon } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
-import { grey } from '@mui/material/colors';
+import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
@@ -105,120 +106,108 @@ const ManualTelemetryComponent = () => {
         onClose={() => setShowConfirmRemoveAllDialog(false)}
         onNo={() => setShowConfirmRemoveAllDialog(false)}
       />
-      <Box
-        display="flex"
-        flexDirection="column"
-        flex="1 1 auto"
-        height="100%"
-        sx={{
-          overflow: 'hidden',
-          background: grey[100]
-        }}>
-        <Paper square elevation={0}>
-          <Toolbar>
-            <Typography
-              sx={{
-                flexGrow: '1',
-                fontSize: '1.125rem',
-                fontWeight: 700
-              }}>
-              Telemetry &zwnj;
-              <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
-                ({telemetryTableContext.recordCount})
-              </Typography>
-            </Typography>
-
-            <Box display={'flex'} overflow={'hidden'} gap={1} whiteSpace={'nowrap'}>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<Icon path={mdiImport} size={1} />}
-                onClick={() => setShowImportDialog(true)}>
-                Import
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<Icon path={mdiPlus} size={1} />}
-                onClick={() => telemetryTableContext.addRecord()}
-                disabled={telemetryTableContext.isSaving}>
-                Add Record
-              </Button>
-              <Collapse in={hasUnsavedChanges} orientation="horizontal" sx={{ mr: -1 }}>
-                <Box whiteSpace="nowrap" display="flex" sx={{ gap: 1, pr: 1 }}>
-                  <LoadingButton
-                    loading={telemetryTableContext.isSaving}
-                    variant="contained"
-                    color="primary"
-                    onClick={() => telemetryTableContext.saveRecords()}
-                    disabled={telemetryTableContext.isSaving}>
-                    Save
-                  </LoadingButton>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={() => setShowConfirmRemoveAllDialog(true)}
-                    disabled={telemetryTableContext.isSaving}>
-                    Discard Changes
-                  </Button>
-                </Box>
-              </Collapse>
-              <Box>
-                <IconButton
-                  onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-                    setAnchorEl(event.currentTarget);
-                  }}
-                  size="small"
-                  disabled={numSelectedRows === 0}
-                  aria-label="telemetry options">
-                  <Icon size={1} path={mdiDotsVertical} />
-                </IconButton>
-                <Menu
-                  anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right'
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right'
-                  }}
-                  id="manual-telemetry-table-actions-menu"
-                  anchorEl={anchorEl}
-                  open={Boolean(anchorEl)}
-                  onClose={handleCloseMenu}
-                  MenuListProps={{
-                    'aria-labelledby': 'basic-button'
-                  }}>
-                  <MenuItem
-                    onClick={() => {
-                      telemetryTableContext.deleteSelectedRecords();
-                      handleCloseMenu();
-                    }}
-                    disabled={telemetryTableContext.isSaving}>
-                    <ListItemIcon>
-                      <Icon path={mdiTrashCanOutline} size={1} />
-                    </ListItemIcon>
-                    <Typography variant="inherit">Delete {p(numSelectedRows, 'Telemetr', 'y', 'ies')}</Typography>
-                  </MenuItem>
-                </Menu>
-              </Box>
-            </Box>
-          </Toolbar>
-        </Paper>
-        <DataGridValidationAlert validationModel={validationModel} muiDataGridApiRef={_muiDataGridApiRef.current} />
-        <Box
-          display="flex"
-          flexDirection="column"
-          flex="1 1 auto"
-          position="relative"
+      <Paper component={Stack} flexDirection="column" flex="1 1 auto" height="100%" overflow="hidden">
+        <Toolbar
+          disableGutters
           sx={{
-            background: grey[100]
+            flex: '0 0 auto',
+            pr: 3,
+            pl: 2
           }}>
-          <Box position="absolute" width="100%" height="100%" p={1}>
+          <Typography variant="h3" component="h2" flexGrow={1}>
+            Telemetry &zwnj;
+            <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
+              ({telemetryTableContext.recordCount})
+            </Typography>
+          </Typography>
+
+          <Box display={'flex'} overflow={'hidden'} gap={1} whiteSpace={'nowrap'}>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Icon path={mdiImport} size={1} />}
+              onClick={() => setShowImportDialog(true)}>
+              Import
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Icon path={mdiPlus} size={1} />}
+              onClick={() => telemetryTableContext.addRecord()}
+              disabled={telemetryTableContext.isSaving}>
+              Add Record
+            </Button>
+            <Collapse in={hasUnsavedChanges} orientation="horizontal" sx={{ mr: -1 }}>
+              <Box whiteSpace="nowrap" display="flex" sx={{ gap: 1, pr: 1 }}>
+                <LoadingButton
+                  loading={telemetryTableContext.isSaving}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => telemetryTableContext.saveRecords()}
+                  disabled={telemetryTableContext.isSaving}>
+                  Save
+                </LoadingButton>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => setShowConfirmRemoveAllDialog(true)}
+                  disabled={telemetryTableContext.isSaving}>
+                  Discard Changes
+                </Button>
+              </Box>
+            </Collapse>
+            <Box>
+              <IconButton
+                onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                  setAnchorEl(event.currentTarget);
+                }}
+                size="small"
+                disabled={numSelectedRows === 0}
+                aria-label="telemetry options">
+                <Icon size={1} path={mdiDotsVertical} />
+              </IconButton>
+              <Menu
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right'
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right'
+                }}
+                id="manual-telemetry-table-actions-menu"
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleCloseMenu}
+                MenuListProps={{
+                  'aria-labelledby': 'basic-button'
+                }}>
+                <MenuItem
+                  onClick={() => {
+                    telemetryTableContext.deleteSelectedRecords();
+                    handleCloseMenu();
+                  }}
+                  disabled={telemetryTableContext.isSaving}>
+                  <ListItemIcon>
+                    <Icon path={mdiTrashCanOutline} size={1} />
+                  </ListItemIcon>
+                  <Typography variant="inherit">Delete {p(numSelectedRows, 'Telemetr', 'y', 'ies')}</Typography>
+                </MenuItem>
+              </Menu>
+            </Box>
+          </Box>
+        </Toolbar>
+
+        <Divider flexItem></Divider>
+
+        <DataGridValidationAlert validationModel={validationModel} muiDataGridApiRef={_muiDataGridApiRef.current} />
+
+        <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
+          <Box position="absolute" width="100%" height="100%">
             <ManualTelemetryTable isLoading={processingRecords} />
           </Box>
         </Box>
-      </Box>
+      </Paper>
     </>
   );
 };

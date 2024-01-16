@@ -184,10 +184,13 @@ const EditSurveyPage = () => {
       <SurveyBaseHeader
         title="Edit Survey Details"
         breadCrumb={
-          <Breadcrumbs>
+          <Breadcrumbs
+            aria-label="breadcrumb"
+            sx={{
+              typography: 'body2'
+            }}>
             <Link
               component={RouterLink}
-              variant="body2"
               underline="hover"
               to={`/admin/projects/${projectData.project.project_id}/`}
               aria-current="page">
@@ -195,13 +198,12 @@ const EditSurveyPage = () => {
             </Link>
             <Link
               component={RouterLink}
-              variant="body2"
               underline="hover"
               to={`/admin/projects/${projectData.project.project_id}/surveys/${surveyId}/details`}
               aria-current="page">
               {surveyData && surveyData.survey_details && surveyData.survey_details.survey_name}
             </Link>
-            <Typography variant="body2" component="span">
+            <Typography variant="body2" component="span" color="textSecondary">
               Edit Survey Details
             </Typography>
           </Breadcrumbs>
