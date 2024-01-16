@@ -1,10 +1,11 @@
 import { mdiCalendarRange, mdiChevronDown, mdiDotsVertical } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, IconButton } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
-import { grey } from '@mui/material/colors';
+import Box from '@mui/material/Box';
+import grey from '@mui/material/colors/grey';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { default as dayjs } from 'dayjs';
 export interface ManualTelemetryCardProps {

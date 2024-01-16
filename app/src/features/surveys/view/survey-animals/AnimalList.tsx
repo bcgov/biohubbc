@@ -1,23 +1,21 @@
 import { mdiChevronDown, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Button,
-  Divider,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Paper,
-  Skeleton,
-  Stack,
-  Toolbar,
-  Typography
-} from '@mui/material';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import grey from '@mui/material/colors/grey';
-import { Box } from '@mui/system';
+import Divider from '@mui/material/Divider';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Paper from '@mui/material/Paper';
+import Skeleton from '@mui/material/Skeleton';
+import Stack from '@mui/material/Stack';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { useQuery } from 'hooks/useQuery';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
