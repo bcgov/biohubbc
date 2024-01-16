@@ -1,9 +1,6 @@
 import { AuthStateContext } from 'contexts/authStateContext';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
-import { ProjectDetailsFormInitialValues } from 'features/projects/components/ProjectDetailsForm';
-import { ProjectIUCNFormInitialValues } from 'features/projects/components/ProjectIUCNForm';
-import { ProjectObjectivesFormInitialValues } from 'features/projects/components/ProjectObjectivesForm';
 import CreateProjectPage from 'features/projects/create/CreateProjectPage';
 import { createMemoryHistory } from 'history';
 import { GetRegionsResponse } from 'hooks/api/useSpatialApi';
@@ -13,18 +10,10 @@ import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IDraftResponse } from 'interfaces/useDraftApi.interface';
 import { ICreateProjectResponse } from 'interfaces/useProjectApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
-import { MemoryRouter, Router } from 'react-router';
+import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { codes } from 'test-helpers/code-helpers';
-import {
-  cleanup,
-  findByText as rawFindByText,
-  fireEvent,
-  getByText as rawGetByText,
-  render,
-  waitFor
-} from 'test-helpers/test-utils';
-import { AddProjectParticipantsFormInitialValues } from '../participants/AddProjectParticipantsForm';
+import { cleanup, findByText as rawFindByText, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 
 const history = createMemoryHistory();
 
