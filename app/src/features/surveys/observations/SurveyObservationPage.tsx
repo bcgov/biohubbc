@@ -9,7 +9,6 @@ import { useContext } from 'react';
 import ObservationComponent from './observations-table/ObservationComponent';
 import SamplingSiteList from './sampling-sites/SamplingSiteList';
 import SurveyObservationHeader from './SurveyObservationHeader';
-// import Divider from '@mui/material/Divider';
 
 export const SurveyObservationPage = () => {
   const surveyContext = useContext(SurveyContext);
@@ -29,7 +28,6 @@ export const SurveyObservationPage = () => {
       <Stack
         direction="row"
         gap={1}
-        // divider={<Divider orientation="vertical" flexItem />}
         sx={{
           flex: '1 1 auto',
           p: 1
