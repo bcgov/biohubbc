@@ -214,7 +214,8 @@ GET.apiDoc = {
                         description: 'ISO 8601 date string for the project start date'
                       },
                       submission_uuid: {
-                        type: 'string'
+                        type: 'string',
+                        format: 'uuid'
                       },
                       create_date: {
                         oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],

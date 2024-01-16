@@ -48,7 +48,7 @@ export const ProjectMetadataPublish = z.object({
   project_metadata_publish_id: z.number(),
   project_id: z.number(),
   event_timestamp: z.string(),
-  submission_uuid: z.string(),
+  submission_uuid: z.string().uuid(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),
@@ -62,7 +62,7 @@ export const SurveyMetadataPublish = z.object({
   survey_metadata_publish_id: z.number(),
   survey_id: z.number(),
   event_timestamp: z.string(),
-  submission_uuid: z.string(),
+  submission_uuid: z.string().uuid(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),
@@ -76,7 +76,7 @@ export const OccurrenceSubmissionPublish = z.object({
   occurrence_submission_publish_id: z.number(),
   occurrence_submission_id: z.number(),
   event_timestamp: z.string(),
-  submission_uuid: z.string(),
+  submission_uuid: z.string().uuid(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),
@@ -171,7 +171,7 @@ export const SurveyAttachmentWithPublishData = z.object({
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number(),
-  uuid: z.string(),
+  uuid: z.string().uuid(),
   event_timestamp: z.string(),
   artifact_revision_id: z.string()
 });
@@ -193,7 +193,7 @@ export const SurveyReportWithPublishData = z.object({
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number(),
-  uuid: z.string(),
+  uuid: z.string().uuid(),
   event_timestamp: z.string(),
   artifact_revision_id: z.string()
 });
@@ -215,7 +215,7 @@ export const ProjectAttachmentWithPublishData = z.object({
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number(),
-  uuid: z.string(),
+  uuid: z.string().uuid(),
   event_timestamp: z.string(),
   artifact_revision_id: z.string()
 });
@@ -237,7 +237,7 @@ export const ProjectReportWithPublishData = z.object({
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number(),
-  uuid: z.string(),
+  uuid: z.string().uuid(),
   event_timestamp: z.string(),
   artifact_revision_id: z.string()
 });

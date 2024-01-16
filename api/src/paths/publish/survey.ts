@@ -73,6 +73,7 @@ POST.apiDoc = {
             properties: {
               submission_uuid: {
                 type: 'string',
+                format: 'uuid',
                 description: 'The UUID of the submission'
               }
             }
