@@ -113,8 +113,7 @@ const AnimalList = (props: IAnimalListProps) => {
         <Button
           variant="contained"
           sx={{
-            mr: -1,
-            fontWeight: 700
+            mr: -1
           }}
           color="primary"
           startIcon={<Icon path={mdiPlus} size={1} />}
@@ -131,6 +130,7 @@ const AnimalList = (props: IAnimalListProps) => {
             sortedCritterData.map((critter) => (
               <Accordion
                 disableGutters
+                square
                 sx={{
                   boxShadow: 'none',
                   borderBottom: '1px solid' + grey[300],

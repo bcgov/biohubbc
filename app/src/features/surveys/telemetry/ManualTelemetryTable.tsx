@@ -327,34 +327,14 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
         loadingOverlay: SkeletonTable
       }}
       sx={{
-        background: grey[50],
         border: 'none',
-        '& .pinnedColumn': {
-          position: 'sticky',
-          right: 0,
-          top: 0,
-          borderLeft: '1px solid' + grey[300]
-        },
+        borderRadius: 0,
         '& .MuiDataGrid-columnHeaders': {
-          background: '#fff',
-          position: 'relative',
-          '&:after': {
-            content: "''",
-            position: 'absolute',
-            top: '0',
-            right: 0,
-            width: '70px',
-            height: '60px',
-            background: '#fff',
-            borderLeft: '1px solid' + grey[300]
-          }
+          position: 'relative'
         },
-        '& .MuiDataGrid-columnHeader': {
-          // px: 3,
-          py: 1,
-          '&:focus': {
-            outline: 'none'
-          }
+        '& .MuiDataGrid-columnHeader:focus-within': {
+          outline: 'none',
+          background: grey[200]
         },
         '& .MuiDataGrid-columnHeaderTitle': {
           fontWeight: 700,
@@ -362,8 +342,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
           color: 'text.secondary'
         },
         '& .MuiDataGrid-cell': {
-          // px: 3,
-          py: 1,
+          py: 0.75,
           background: '#fff',
           '&.MuiDataGrid-cell--editing:focus-within': {
             outline: 'none'
@@ -378,6 +357,11 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
           backgroundColor: cyan[50],
           '& .MuiDataGrid-cell': {
             backgroundColor: cyan[50]
+          },
+          '&.error': {
+            '& .MuiDataGrid-cell, .MuiDataGrid-cell--editing': {
+              backgroundColor: 'rgb(251, 237, 238)'
+            }
           }
         },
         '& .MuiDataGrid-editInputCell': {
@@ -420,9 +404,6 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
           }
         },
         '& .MuiDataGrid-virtualScrollerContent': {
-          background: grey[100]
-        },
-        '& .MuiDataGrid-footerContainer': {
           background: '#fff'
         }
       }}

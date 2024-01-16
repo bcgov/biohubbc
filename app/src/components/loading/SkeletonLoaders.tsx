@@ -38,6 +38,32 @@ const SkeletonList = (props: IMultipleSkeletonProps) => (
   </>
 );
 
+const SkeletonListStack = (props: IMultipleSkeletonProps) => (
+  <>
+    {Array(props.numberOfLines ?? 3)
+      .fill(null)
+      .map(() => (
+        <Stack
+          key={v4()}
+          flexDirection="column"
+          justifyContent="center"
+          px={2}
+          py={1.2}
+          height={70}
+          sx={{
+            background: '#fff',
+            borderBottom: '1px solid ' + grey[300],
+            '& *': {
+              fontSize: '0.875rem'
+            }
+          }}>
+          <Skeleton variant="text" />
+          <Skeleton variant="text" width="50%" />
+        </Stack>
+      ))}
+  </>
+);
+
 const SkeletonTable = (props: IMultipleSkeletonProps) => (
   <Box
     sx={{
@@ -88,4 +114,4 @@ const SkeletonRow = () => (
   </Stack>
 );
 
-export { SkeletonList, SkeletonRow, SkeletonTable };
+export { SkeletonList, SkeletonListStack, SkeletonRow, SkeletonTable };

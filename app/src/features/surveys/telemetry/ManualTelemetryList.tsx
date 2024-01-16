@@ -1,10 +1,9 @@
 import { mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
-import { ListItemIcon, Menu, MenuItem, Select, useMediaQuery, useTheme } from '@mui/material';
+import { Divider, ListItemIcon, Menu, MenuItem, Paper, Select, Stack, useMediaQuery, useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import { grey } from '@mui/material/colors';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -15,7 +14,7 @@ import InputLabel from '@mui/material/InputLabel';
 import { MenuProps } from '@mui/material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { SkeletonList } from 'components/loading/SkeletonLoaders';
+import { SkeletonListStack } from 'components/loading/SkeletonLoaders';
 import { AttachmentType } from 'constants/attachments';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -496,17 +495,23 @@ const ManualTelemetryList = () => {
                 </DialogActions>
               </Dialog>
 
-              <Box display="flex" flexDirection="column" height="100%">
+              <Paper
+                component={Stack}
+                flexDirection="column"
+                height="100%"
+                overflow="hidden"
+              >
                 <Toolbar
+                  disableGutters
                   sx={{
-                    flex: '0 0 auto'
+                    flex: '0 0 auto',
+                    pr: 3,
+                    pl: 2
                   }}>
                   <Typography
-                    sx={{
-                      flexGrow: '1',
-                      fontSize: '1.125rem',
-                      fontWeight: 700
-                    }}>
+                    variant="h3"
+                    component="h2"
+                    flexGrow={1}>
                     Deployments &zwnj;
                     <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
                       ({critterDeployments?.length ?? 0})
@@ -526,18 +531,13 @@ const ManualTelemetryList = () => {
                     Add
                   </Button>
                 </Toolbar>
+                <Divider flexItem></Divider>
                 <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
-                  {/* Display list of skeleton components while waiting for a response */}
-                  {surveyContext.deploymentDataLoader.isLoading && <SkeletonList />}
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      width: '100%',
-                      height: '100%',
-                      overflowY: 'auto',
-                      p: 1,
-                      background: grey[100]
-                    }}>
+                  <Box position="absolute" top="0" right="0" bottom="0" left="0">
+                    
+                    {/* Display list of skeleton components while waiting for a response */}
+                    {surveyContext.deploymentDataLoader.isLoading && <SkeletonListStack />}
+                    
                     {critterDeployments?.map((item) => (
                       <ManualTelemetryCard
                         key={`${item.deployment.device_id}:${item.deployment.attachment_start}`}
@@ -550,9 +550,10 @@ const ManualTelemetryList = () => {
                         }}
                       />
                     ))}
+
                   </Box>
                 </Box>
-              </Box>
+              </Paper>
             </>
           );
         }}

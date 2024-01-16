@@ -634,7 +634,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
           },
           '& .MuiDataGrid-virtualScrollerContent': {
             background: '#fff'
-          },
+          }
         }}
       />
     </>

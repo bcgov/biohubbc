@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import Paper from '@mui/material/Paper';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TelemetryDataContextProvider } from 'contexts/telemetryDataContext';
 import { TelemetryTableContextProvider } from 'contexts/telemetryTableContext';
@@ -9,7 +8,6 @@ import ManualTelemetryComponent from './ManualTelemetryComponent';
 import ManualTelemetryHeader from './ManualTelemetryHeader';
 import ManualTelemetryList from './ManualTelemetryList';
 import Stack from '@mui/material/Stack';
-import Divider from '@mui/material/Divider';
 
 const ManualTelemetryPage = () => {
   const surveyContext = useContext(SurveyContext);
@@ -30,28 +28,29 @@ const ManualTelemetryPage = () => {
       />
 
     <TelemetryDataContextProvider>
-        <Paper
-          component={Stack}
+        <Stack
+          flex="1 1 auto"
           direction="row"
-          divider={<Divider orientation="vertical" flexItem />}
-          sx={{
-            flex: '1 1 auto',
-            m: 1,
-            overflow: 'hidden'
-          }}>
+          gap={1}
+          p={1}
+          overflow="hidden">
             {/* Manual Telematry List */}
-            <Box
+            <Box 
               flex="0 0 auto"
+              position="relative" 
               width="400px">
               <ManualTelemetryList />
             </Box>
             {/* Manual Telemetry Component */}
-            <Box flex="1 1 auto" overflow="hidden">
+            <Box 
+              flex="1 1 auto"
+              position="relative"
+              overflow="hidden">
               <TelemetryTableContextProvider deployment_ids={deploymentIds ?? []}>
                 <ManualTelemetryComponent />
               </TelemetryTableContextProvider>
             </Box>
-        </Paper>
+        </Stack>
       </TelemetryDataContextProvider>
     </Box>
   );

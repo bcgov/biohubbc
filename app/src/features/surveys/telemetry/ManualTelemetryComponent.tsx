@@ -1,11 +1,10 @@
 import { mdiDotsVertical, mdiImport, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
-import { ListItemIcon } from '@mui/material';
+import { Divider, ListItemIcon, Stack } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
-import { grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -97,23 +96,25 @@ const ManualTelemetryComponent = () => {
         onClose={() => setShowConfirmRemoveAllDialog(false)}
         onNo={() => setShowConfirmRemoveAllDialog(false)}
       />
-      <Box
-        display="flex"
+      <Paper
+        component={Stack}
         flexDirection="column"
         flex="1 1 auto"
         height="100%"
-        sx={{
-          overflow: 'hidden',
-          background: grey[100]
-        }}>
-        <Paper square elevation={0}>
-          <Toolbar>
+        overflow="hidden">
+
+          <Toolbar
+            disableGutters
+            sx={{
+              flex: '0 0 auto',
+              pr: 3,
+              pl: 2
+            }}
+          >
             <Typography
-              sx={{
-                flexGrow: '1',
-                fontSize: '1.125rem',
-                fontWeight: 700
-              }}>
+              variant="h3"
+              component="h2"
+              flexGrow={1}>
               Telemetry &zwnj;
               <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
                 ({telemetryTableContext.recordCount})
@@ -198,21 +199,21 @@ const ManualTelemetryComponent = () => {
               </Box>
             </Box>
           </Toolbar>
-        </Paper>
+
+        <Divider flexItem></Divider>
+
         <DataGridValidationAlert validationModel={validationModel} muiDataGridApiRef={_muiDataGridApiRef.current} />
+        
         <Box
           display="flex"
           flexDirection="column"
           flex="1 1 auto"
-          position="relative"
-          sx={{
-            background: grey[100]
-          }}>
-          <Box position="absolute" width="100%" height="100%" p={1}>
+          position="relative">
+          <Box position="absolute" width="100%" height="100%">
             <ManualTelemetryTable isLoading={processingRecords} />
           </Box>
         </Box>
-      </Box>
+      </Paper>
     </>
   );
 };

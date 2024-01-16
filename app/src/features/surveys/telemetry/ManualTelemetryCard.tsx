@@ -6,6 +6,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
 import { default as dayjs } from 'dayjs';
+import { grey } from '@mui/material/colors';
 export interface ManualTelemetryCardProps {
   device_id: number;
   name: string; // should be animal alias
@@ -18,42 +19,48 @@ export interface ManualTelemetryCardProps {
 const ManualTelemetryCard = (props: ManualTelemetryCardProps) => {
   return (
     <Accordion
+      disableGutters
+      square
       sx={{
-        boxShadow: 'none'
+        boxShadow: 'none',
+        borderBottom: '1px solid' + grey[300],
+        '&:before': {
+          display: 'none'
+        }
       }}>
-      <Box display="flex" overflow="hidden" alignItems="center" pr={1.5} height={55}>
+      <Box 
+        display="flex"
+        alignItems="center"
+        overflow="hidden">
         <AccordionSummary
           expandIcon={<Icon path={mdiChevronDown} size={1} />}
           sx={{
             flex: '1 1 auto',
-            overflow: 'hidden',
-            py: 0.25,
-            pr: 1.5,
+            py: 0,
+            pr: 8.5,
             pl: 2,
-            gap: '24px',
+            height: 70,
+            overflow: 'hidden',
             '& .MuiAccordionSummary-content': {
               flex: '1 1 auto',
+              py: 0,
+              pl: 0,
               overflow: 'hidden',
-              whiteSpace: 'nowrap'
+              whiteSpace: 'nowrap',
             }
           }}>
           <Box>
-            <Typography
-              sx={{
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                typography: 'body2',
-                fontWeight: 700,
-                fontSize: '0.9rem'
-              }}>
+            <Typography variant="body2" fontWeight="bold" sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {props.name}
             </Typography>
-            <Typography variant="subtitle2" color="textSecondary">
+            <Typography variant="body2" color="textSecondary">
               Device ID: {props.device_id}
             </Typography>
           </Box>
         </AccordionSummary>
         <IconButton
+          sx={{ position: 'absolute', right: '24px' }}
+          edge="end"
           onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => props.onMenu(event, props.device_id)}
           aria-label="settings">
           <Icon path={mdiDotsVertical} size={1} />
