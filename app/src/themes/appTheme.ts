@@ -38,19 +38,29 @@ const appTheme = createTheme({
   typography: {
     fontFamily: ['BCSans', 'Verdana', 'Arial', 'sans-serif'].join(','),
     h1: {
-      fontSize: '2.25rem',
-      fontWeight: 700
+      fontSize: '1.875rem',
+      fontWeight: 700,
+      marginTop: '-4px',
+      marginBottom: '-4px',
+      paddingTop: '4px',
+      paddingBottom: '4px',
+      display: '-webkit-box',
+      WebkitLineClamp: '2',
+      WebkitBoxOrient: 'vertical',
+      maxWidth: '72ch',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis'
     },
     h2: {
-      fontSize: '1.875rem',
-      fontWeight: 700
-    },
-    h3: {
       fontSize: '1.5rem',
       fontWeight: 700
     },
-    h4: {
+    h3: {
       fontSize: '1.25rem',
+      fontWeight: 700
+    },
+    h4: {
+      fontSize: '1.125rem',
       fontWeight: 700
     },
     h5: {
@@ -111,10 +121,9 @@ const appTheme = createTheme({
     MuiBreadcrumbs: {
       styleOverrides: {
         root: {
-          marginTop: '-6px',
-          marginBottom: '10px',
-          marginLeft: '-4px',
-          fontSize: '0.9rem'
+          marginTop: '-8px',
+          marginBottom: '8px',
+          marginLeft: '-4px'
         },
         li: {
           maxWidth: '40ch',

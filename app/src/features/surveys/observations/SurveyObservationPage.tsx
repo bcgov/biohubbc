@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import { grey } from '@mui/material/colors';
-import Paper from '@mui/material/Paper';
+// import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import { ObservationsTableContext, ObservationsTableContextProvider } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
@@ -25,26 +25,20 @@ export const SurveyObservationPage = () => {
         survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
       />
 
-      <Paper
-        elevation={0}
+      <Stack
+        direction="row"
+        gap={1}
         sx={{
-          display: 'flex',
           flex: '1 1 auto',
-          overflow: 'hidden',
-          m: 1
+          p: 1
         }}>
         {/* Sampling Site List */}
-        <Box
-          flex="0 0 auto"
-          width="400px"
-          sx={{
-            borderRight: '1px solid ' + grey[300]
-          }}>
+        <Box flex="0 0 auto" width="400px">
           <SamplingSiteList />
         </Box>
 
         {/* Observations Component */}
-        <Box flex="1 1 auto" overflow="hidden">
+        <Box flex="1 1 auto">
           <TaxonomyContextProvider>
             <ObservationsTableContextProvider>
               <ObservationsTableContext.Consumer>
@@ -59,7 +53,7 @@ export const SurveyObservationPage = () => {
             </ObservationsTableContextProvider>
           </TaxonomyContextProvider>
         </Box>
-      </Paper>
+      </Stack>
     </Box>
   );
 };

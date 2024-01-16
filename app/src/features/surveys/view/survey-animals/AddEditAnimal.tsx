@@ -1,22 +1,21 @@
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import LoadingButton from '@mui/lab/LoadingButton/LoadingButton';
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  Toolbar,
-  Typography,
-  useMediaQuery,
-  useTheme
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import grey from '@mui/material/colors/grey';
-import Stack from '@mui/system/Stack';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Divider from '@mui/material/Divider';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
+import { useTheme } from '@mui/material/styles';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -139,32 +138,13 @@ export const AddEditAnimal = (props: IAddEditAnimalProps) => {
   };
 
   return (
-    <Stack
-      sx={{
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        left: 0,
-        bottom: 0
-      }}>
+    <Paper component={Stack} position="absolute" top={0} right={0} bottom={0} left={0} overflow="hidden">
       <Toolbar
+        disableGutters
         sx={{
-          position: 'sticky',
-          top: 0,
-          '& button': {
-            minWidth: '6rem'
-          },
-          '& button + button': {
-            ml: 1
-          }
+          px: 2
         }}>
-        <Typography
-          component="h2"
-          variant="h5"
-          sx={{
-            flexGrow: '1',
-            fontWeight: 700
-          }}>
+        <Typography variant="h3" component="h2">
           {values?.general?.animal_id ? `Animal Details > ${values.general.animal_id}` : 'No animal selected'}
         </Typography>
       </Toolbar>
@@ -177,7 +157,7 @@ export const AddEditAnimal = (props: IAddEditAnimalProps) => {
           p={5}
           sx={{
             overflowY: 'auto',
-            background: grey[100]
+            background: grey[50]
           }}>
           <Box
             sx={{
@@ -283,14 +263,14 @@ export const AddEditAnimal = (props: IAddEditAnimalProps) => {
           flex="1 1 auto"
           p={3}
           sx={{
-            overflowY: 'scroll',
-            background: grey[100]
+            overflowY: 'auto',
+            background: grey[50]
           }}>
           <Typography component="span" variant="body2">
             No Animal Selected
           </Typography>
         </Box>
       )}
-    </Stack>
+    </Paper>
   );
 };

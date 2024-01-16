@@ -1,11 +1,11 @@
-import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
+import grey from '@mui/material/colors/grey';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditProjectI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
@@ -20,37 +20,12 @@ import { useHistory } from 'react-router';
 import { Prompt } from 'react-router-dom';
 import EditProjectForm from './EditProjectForm';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  pageTitleContainer: {
-    maxWidth: '170ch',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis'
-  },
-  pageTitle: {
-    display: '-webkit-box',
-    '-webkit-line-clamp': 2,
-    '-webkit-box-orient': 'vertical',
-    paddingTop: theme.spacing(0.5),
-    paddingBottom: theme.spacing(0.5),
-    overflow: 'hidden'
-  },
-  pageTitleActions: {
-    paddingTop: theme.spacing(0.75),
-    paddingBottom: theme.spacing(0.75),
-    '& button': {
-      marginLeft: theme.spacing(1)
-    }
-  }
-}));
-
 /**
  * Page for creating a new project.
  *
  * @return {*}
  */
 const EditProjectPage: React.FC = (props) => {
-  const classes = useStyles();
-
   const history = useHistory();
 
   const biohubApi = useBiohubApi();
@@ -185,23 +160,36 @@ const EditProjectPage: React.FC = (props) => {
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
 
-      <Paper square={true} elevation={0}>
+      <Paper
+        square
+        elevation={0}
+        sx={{
+          py: 3,
+          borderBottom: '1px solid' + grey[300]
+        }}>
         <Container maxWidth="xl">
-          <Box py={4} display="flex" justifyContent="space-between">
-            <Box className={classes.pageTitleContainer}>
-              <Typography variant="h1" className={classes.pageTitle}>
-                Edit Project Details
-              </Typography>
-            </Box>
-            <Box flex="0 0 auto" className={classes.pageTitleActions}>
+          <Stack
+            alignItems="flex-start"
+            flexDirection={{ xs: 'column', lg: 'row' }}
+            justifyContent="space-between"
+            gap={3}>
+            <Typography
+              component="h1"
+              variant="h2"
+              sx={{
+                ml: '-2px'
+              }}>
+              Edit Project Details
+            </Typography>
+            <Stack flexDirection="row" alignItems="center" gap={1}>
               <Button color="primary" variant="contained" onClick={() => formikRef.current?.submitForm()}>
                 Save Project
               </Button>
               <Button color="primary" variant="outlined" onClick={handleCancel}>
                 Cancel
               </Button>
-            </Box>
-          </Box>
+            </Stack>
+          </Stack>
         </Container>
       </Paper>
 
