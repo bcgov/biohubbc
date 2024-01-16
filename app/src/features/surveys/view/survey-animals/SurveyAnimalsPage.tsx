@@ -99,7 +99,6 @@ export const SurveyAnimalsPage = () => {
       deployments = [];
     }
     animal.device = deployments;
-
     return animal;
   }, [critterData, deploymentData, survey_critter_id, defaultFormValues]);
 

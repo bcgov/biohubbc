@@ -63,7 +63,15 @@ const ManualTelemetryComponent = () => {
             setProcessingRecords(false);
           });
         })
-        .catch(() => {
+        .catch((error) => {
+          console.log(error);
+          showSnackBar({
+            snackbarMessage: (
+              <Typography variant="body2" component="div">
+                {error.message}
+              </Typography>
+            )
+          });
           setProcessingRecords(false);
         });
     });
@@ -121,15 +129,13 @@ const ManualTelemetryComponent = () => {
             </Typography>
 
             <Box display={'flex'} overflow={'hidden'} gap={1} whiteSpace={'nowrap'}>
-              {false && (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  startIcon={<Icon path={mdiImport} size={1} />}
-                  onClick={() => setShowImportDialog(true)}>
-                  Import
-                </Button>
-              )}
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<Icon path={mdiImport} size={1} />}
+                onClick={() => setShowImportDialog(true)}>
+                Import
+              </Button>
               <Button
                 variant="contained"
                 color="primary"

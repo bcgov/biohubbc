@@ -74,7 +74,7 @@ POST.apiDoc = {
           schema: {
             type: 'object',
             properties: {
-              submissionId: {
+              submission_id: {
                 type: 'number'
               }
             }
@@ -158,7 +158,7 @@ export function uploadMedia(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).json({ submissionId });
+      return res.status(200).json({ submission_id: submissionId });
     } catch (error) {
       defaultLog.error({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();
