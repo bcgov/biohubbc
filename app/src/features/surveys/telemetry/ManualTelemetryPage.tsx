@@ -28,13 +28,13 @@ const ManualTelemetryPage = () => {
       />
 
       <TelemetryDataContextProvider>
-        <Stack flex="1 1 auto" direction="row" gap={1} p={1} overflow="hidden">
-          {/* Manual Telematry List */}
+        <Stack flex="1 1 auto" direction="row" gap={1} p={1}>
+          {/* Telematry List */}
           <Box flex="0 0 auto" position="relative" width="400px">
             <ManualTelemetryList />
           </Box>
-          {/* Manual Telemetry Component */}
-          <Box flex="1 1 auto" position="relative" overflow="hidden">
+          {/* Telemetry Component */}
+          <Box flex="1 1 auto" position="relative">
             <TelemetryTableContextProvider deployment_ids={deploymentIds ?? []}>
               <ManualTelemetryComponent />
             </TelemetryTableContextProvider>

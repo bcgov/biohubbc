@@ -11,7 +11,7 @@ const ManualTelemetrySection = () => {
     <Box>
       <Toolbar>
         <Typography variant="h4" component="h2" sx={{ flex: '1 1 auto' }}>
-          Manual Telemetry
+          Telemetry
         </Typography>
         <Button
           component={RouterLink}
