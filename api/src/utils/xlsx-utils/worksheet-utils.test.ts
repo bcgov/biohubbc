@@ -16,7 +16,8 @@ describe('worksheet utils', () => {
         columnTypes: ['number', 'number', 'date', 'string', 'number', 'number'],
         columnAliases: {
           LATITUDE: ['LAT'],
-          LONGITUDE: ['LON', 'LONG', 'LNG']
+          LONGITUDE: ['LON', 'LONG', 'LNG'],
+          SPECIES: ['TAXON']
         }
       };
 
@@ -24,7 +25,7 @@ describe('worksheet utils', () => {
 
       const getWorksheetHeaderssStub = sinon
         .stub(worksheet_utils, 'getWorksheetHeaders')
-        .callsFake(() => ['SPECIES', 'COUNT', 'DATE', 'TIME', 'LAT', 'LON']);
+        .callsFake(() => ['TAXON', 'COUNT', 'DATE', 'TIME', 'LAT', 'LON']);
 
       const result = worksheet_utils.validateWorksheetHeaders(mockWorksheet, observationCSVColumnValidator);
 
