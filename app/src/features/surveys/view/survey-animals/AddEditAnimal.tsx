@@ -157,7 +157,7 @@ export const AddEditAnimal = (props: IAddEditAnimalProps) => {
           p={5}
           sx={{
             overflowY: 'auto',
-            background: grey[50]
+            background: grey[100]
           }}>
           <Box
             sx={{
@@ -264,7 +264,7 @@ export const AddEditAnimal = (props: IAddEditAnimalProps) => {
           p={3}
           sx={{
             overflowY: 'auto',
-            background: grey[50]
+            background: grey[100]
           }}>
           <Typography component="span" variant="body2">
             No Animal Selected

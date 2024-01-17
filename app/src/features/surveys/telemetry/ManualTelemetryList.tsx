@@ -39,6 +39,7 @@ import {
 } from '../view/survey-animals/telemetry-device/device';
 import TelemetryDeviceForm from '../view/survey-animals/telemetry-device/TelemetryDeviceForm';
 import ManualTelemetryCard from './ManualTelemetryCard';
+import grey from '@mui/material/colors/grey';
 
 export const AnimalDeploymentSchema = AnimalTelemetryDeviceSchema.shape({
   survey_critter_id: yup.number().required('An animal selection is required'), // add survey critter id to form
@@ -525,7 +526,11 @@ const ManualTelemetryList = () => {
                 </Toolbar>
                 <Divider flexItem></Divider>
                 <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
-                  <Box position="absolute" top="0" right="0" bottom="0" left="0">
+                  <Box position="absolute" top="0" right="0" bottom="0" left="0"
+                    sx={{
+                      background: grey[100]
+                    }}
+                  >
                     {/* Display list of skeleton components while waiting for a response */}
                     {surveyContext.deploymentDataLoader.isLoading && <SkeletonListStack />}
 
