@@ -106,7 +106,7 @@ const ManualTelemetryComponent = () => {
         onClose={() => setShowConfirmRemoveAllDialog(false)}
         onNo={() => setShowConfirmRemoveAllDialog(false)}
       />
-      <Paper component={Stack} flexDirection="column" flex="1 1 auto" height="100%" overflow="hidden">
+      <Paper component={Stack} flexDirection="column" flex="1 1 auto" height="100%">
         <Toolbar
           disableGutters
           sx={{
