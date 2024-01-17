@@ -338,11 +338,12 @@ const SamplingSiteList = () => {
                   </FormGroup>
                 </Box>
                 <Divider flexItem></Divider>
-                <Box flex="1 1 auto" overflow="hidden"
+                <Box
+                  flex="1 1 auto"
+                  overflow="hidden"
                   sx={{
                     background: grey[100]
-                  }}
-                >
+                  }}>
                   {/* Display text if the sample site data loader has no items in it */}
                   {!surveyContext.sampleSiteDataLoader.data?.sampleSites.length &&
                     !surveyContext.sampleSiteDataLoader.isLoading && (

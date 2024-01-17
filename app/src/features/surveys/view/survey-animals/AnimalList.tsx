@@ -114,11 +114,15 @@ const AnimalList = (props: IAnimalListProps) => {
       </Toolbar>
       <Divider flexItem></Divider>
       <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
-        <Box position="absolute" top="0" right="0" bottom="0" left="0"
+        <Box
+          position="absolute"
+          top="0"
+          right="0"
+          bottom="0"
+          left="0"
           sx={{
             background: grey[100]
-          }}
-        >
+          }}>
           {!sortedCritterData.length ? (
             <ListPlaceholder displaySkeleton={!!isLoading && !sortedCritterData?.length} />
           ) : (
