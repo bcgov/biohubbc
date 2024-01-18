@@ -90,7 +90,7 @@ const phases = {
     s3KeyPrefix: (isStaticDeployment && 'sims') || `local/${deployChangeId}/sims`,
     tz: config.timezone.api,
     sso: config.sso.dev,
-    logLevel: 'silly',
+    logLevel: 'info',
     nodeOptions: '--max_old_space_size=2250', // 75% of memoryLimit (bytes)
     cpuRequest: '50m',
     cpuLimit: '600m',
@@ -156,7 +156,7 @@ const phases = {
     s3KeyPrefix: 'sims',
     tz: config.timezone.api,
     sso: config.sso.prod,
-    logLevel: 'error',
+    logLevel: 'warn',
     nodeOptions: '--max_old_space_size=2250', // 75% of memoryLimit (bytes)
     cpuRequest: '50m',
     cpuLimit: '1000m',
