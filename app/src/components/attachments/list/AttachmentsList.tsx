@@ -53,7 +53,7 @@ export interface IAttachmentsListProps<T extends IGetProjectAttachment | IGetSur
   handleDelete: (attachment: T) => void;
   handleViewDetails: (attachment: T) => void;
   handleRemoveOrResubmit: (attachment: T) => void;
-  emptyStateText?: string
+  emptyStateText?: string;
 }
 
 const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>(props: IAttachmentsListProps<T>) => {

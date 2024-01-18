@@ -309,7 +309,12 @@ const SamplingSiteList = () => {
                   <FormGroup>
                     <FormControlLabel
                       label={
-                        <Typography variant="body2" component="span" color="textSecondary" fontWeight={700} sx={{ textTransform: 'uppercase' }}>
+                        <Typography
+                          variant="body2"
+                          component="span"
+                          color="textSecondary"
+                          fontWeight={700}
+                          sx={{ textTransform: 'uppercase' }}>
                           Select All
                         </Typography>
                       }
