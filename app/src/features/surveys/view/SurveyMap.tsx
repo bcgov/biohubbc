@@ -1,5 +1,4 @@
-import { Box, Paper, Toolbar } from '@mui/material';
-import Button from '@mui/material/Button';
+import { Box, Paper } from '@mui/material';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
 import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
@@ -14,12 +13,7 @@ import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { coloredPoint, INonEditableGeometries } from 'utils/mapUtils';
 import { v4 as uuidv4 } from 'uuid';
 import NoSurveySectionData from '../components/NoSurveySectionData';
-
-export enum SurveyMapData {
-  OBSERVATIONS = 'Observations',
-  TELEMETRY = 'Telemetry',
-  MARKED_ANIMALS = 'Marked Animals'
-}
+import SurveyMapToolBar from './components/SurveyMapToolBar';
 
 const SurveyMap = () => {
   const observationsContext = useContext(ObservationsContext);
@@ -50,43 +44,11 @@ const SurveyMap = () => {
       });
   }, [observationsContext.observationsDataLoader.data]);
 
-  const [mapPoints, setMapPoints] = useState<INonEditableGeometries[]>(surveyObservations);
-
-  const setCurrentDataSet = (dataset: SurveyMapData) => {
-    console.log(`Current Data Selected: ${dataset}`);
-    switch (dataset) {
-      case SurveyMapData.OBSERVATIONS:
-        setMapPoints(surveyObservations);
-        break;
-      case SurveyMapData.TELEMETRY:
-        setMapPoints([]);
-        break;
-      case SurveyMapData.MARKED_ANIMALS:
-        setMapPoints([]);
-        break;
-
-      default:
-        setMapPoints([]);
-        break;
-    }
-  };
+  const [mapPoints] = useState<INonEditableGeometries[]>(surveyObservations);
 
   return (
     <Paper elevation={0}>
-      <Toolbar
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between'
-        }}>
-        <Box>
-          <Button onClick={() => setCurrentDataSet(SurveyMapData.OBSERVATIONS)}>Observations</Button>
-          <Button onClick={() => setCurrentDataSet(SurveyMapData.TELEMETRY)}>Telemetry</Button>
-          <Button onClick={() => setCurrentDataSet(SurveyMapData.MARKED_ANIMALS)}>Marked Animals</Button>
-        </Box>
-        <Button variant="contained" color="primary" title="Manage Map">
-          Manage
-        </Button>
-      </Toolbar>
+      <SurveyMapToolBar />
       <Box position="relative" height={{ sm: 400, md: 600 }}>
         <LeafletMapContainer
           data-testid="leaflet-survey-map"
