@@ -82,9 +82,9 @@ const ProjectAttachments = () => {
       />
 
       <H2MenuToolbar
-        label="Documents"
+        label="Shared Files"
         buttonLabel="Upload"
-        buttonTitle="Upload Documents"
+        buttonTitle="Upload Shared Files"
         buttonProps={{ variant: 'contained', disableElevation: true }}
         buttonStartIcon={<Icon path={mdiTrayArrowUp} size={1} />}
         menuItems={[

@@ -53,6 +53,7 @@ export interface IAttachmentsListProps<T extends IGetProjectAttachment | IGetSur
   handleDelete: (attachment: T) => void;
   handleViewDetails: (attachment: T) => void;
   handleRemoveOrResubmit: (attachment: T) => void;
+  emptyStateText?: string
 }
 
 const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>(props: IAttachmentsListProps<T>) => {
@@ -64,7 +65,7 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
   const [page] = useState(0);
 
   if (!attachments.length) {
-    return <NoSurveySectionData text={'No Documents'} />;
+    return <NoSurveySectionData text={props.emptyStateText ?? 'No Documents'} />;
   }
 
   return (
