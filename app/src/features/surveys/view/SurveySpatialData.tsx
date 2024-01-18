@@ -15,7 +15,7 @@ import { v4 as uuidv4 } from 'uuid';
 import NoSurveySectionData from '../components/NoSurveySectionData';
 import SurveyMapToolBar from './components/SurveyMapToolBar';
 
-const SurveyMap = () => {
+const SurveySpatialData = () => {
   const observationsContext = useContext(ObservationsContext);
   // set default bounds to encompass all of BC
   const [bounds] = useState<LatLngBoundsExpression | undefined>(calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]));
@@ -84,4 +84,4 @@ const SurveyMap = () => {
   );
 };
 
-export default SurveyMap;
+export default SurveySpatialData;

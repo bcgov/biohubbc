@@ -21,7 +21,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import SurveyStudyArea from './components/SurveyStudyArea';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyHeader from './SurveyHeader';
-import SurveyMap from './SurveyMap';
+import SurveySpatialData from './SurveySpatialData';
 
 //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
@@ -122,7 +122,7 @@ const SurveyPage: React.FC = () => {
 
         <Box mt={3}>
           <Paper elevation={0}>
-            <SurveyMap />
+            <SurveySpatialData />
           </Paper>
         </Box>
         {/* <Box mt={3}>
