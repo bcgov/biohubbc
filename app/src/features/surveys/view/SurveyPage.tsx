@@ -18,13 +18,10 @@ import { SurveyContext } from 'contexts/surveyContext';
 import SurveyDetails from 'features/surveys/view/SurveyDetails';
 import React, { useContext, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import ObservationsMap from '../observations/ObservationsMap';
-import ManualTelemetrySection from '../telemetry/ManualTelemetrySection';
 import SurveyStudyArea from './components/SurveyStudyArea';
-import SurveySummaryResults from './summary-results/SurveySummaryResults';
-import SurveyAnimals from './SurveyAnimals';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyHeader from './SurveyHeader';
+import SurveyMap from './SurveyMap';
 
 //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
@@ -85,7 +82,8 @@ const SurveyPage: React.FC = () => {
               Manage Observations
             </Button>
           </Toolbar>
-          <Box position="relative" height={{ sm: 400, md: 600 }}>
+          {/* <Box position="relative" height={{ sm: 400, md: 600 }}> */}
+          <Box>
             {observationsContext.observationsDataLoader.isLoading && (
               <Box
                 sx={{
@@ -118,27 +116,32 @@ const SurveyPage: React.FC = () => {
                 <Icon path={mdiMapSearchOutline} size={2} />
               </Box>
             )}
-            <ObservationsMap />
+            {/* <ObservationsMap /> */}
           </Box>
         </Paper>
 
         <Box mt={3}>
           <Paper elevation={0}>
-            <ManualTelemetrySection />
+            <SurveyMap />
           </Paper>
         </Box>
+        {/* <Box mt={3}>
+          <Paper elevation={0}>
+            <ManualTelemetrySection />
+          </Paper>
+        </Box> */}
 
-        <Box mt={3}>
+        {/* <Box mt={3}>
           <Paper elevation={0}>
             <SurveyAnimals />
           </Paper>
-        </Box>
+        </Box> */}
 
-        <Box mt={3}>
+        {/* <Box mt={3}>
           <Paper elevation={0}>
             <SurveySummaryResults />
           </Paper>
-        </Box>
+        </Box> */}
 
         <Box mt={3}>
           <Paper elevation={0}>
