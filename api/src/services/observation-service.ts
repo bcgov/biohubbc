@@ -25,11 +25,12 @@ import { DBService } from './db-service';
 const defaultLog = getLogger('services/observation-service');
 
 const observationCSVColumnValidator: IXLSXCSVValidator = {
-  columnNames: ['SPECIES_TAXONOMIC_ID', 'COUNT', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
+  columnNames: ['SPECIES', 'COUNT', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
   columnTypes: ['number', 'number', 'date', 'string', 'number', 'number'],
   columnAliases: {
     LATITUDE: ['LAT'],
-    LONGITUDE: ['LON', 'LONG', 'LNG']
+    LONGITUDE: ['LON', 'LONG', 'LNG'],
+    SPECIES: ['TAXON']
   }
 };
 
@@ -278,7 +279,7 @@ export class ObservationService extends DBService {
     // Step 5. Merge all the table rows into an array of ObservationInsert[]
     const insertRows: InsertObservation[] = worksheetRowObjects.map((row) => ({
       survey_id: surveyId,
-      wldtaxonomic_units_id: row['SPECIES_TAXONOMIC_ID'],
+      wldtaxonomic_units_id: row['SPECIES'],
       survey_sample_site_id: null,
       survey_sample_method_id: null,
       survey_sample_period_id: null,
