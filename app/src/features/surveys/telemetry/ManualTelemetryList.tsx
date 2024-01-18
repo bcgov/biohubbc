@@ -541,6 +541,9 @@ const ManualTelemetryList = () => {
                       <>
                         {!critterDeployments.length && (
                           <Stack
+                            sx={{
+                              background: grey[100]
+                            }}
                             display="flex"
                             alignItems="center"
                             justifyContent="center"

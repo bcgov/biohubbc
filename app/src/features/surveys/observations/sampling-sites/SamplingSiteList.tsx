@@ -347,6 +347,9 @@ const SamplingSiteList = () => {
                   {/* Display text if the sample site data loader has no items in it */}
                   {!surveyContext.sampleSiteDataLoader.data?.sampleSites.length && (
                     <Stack
+                      sx={{
+                        background: grey[100]
+                      }}
                       display="flex"
                       alignItems="center"
                       justifyContent="center"
