@@ -535,21 +535,39 @@ const ManualTelemetryList = () => {
                     sx={{
                       background: grey[100]
                     }}>
-                    {/* Display list of skeleton components while waiting for a response */}
-                    {surveyContext.deploymentDataLoader.isLoading && <SkeletonListStack />}
-
-                    {critterDeployments?.map((item) => (
-                      <ManualTelemetryCard
-                        key={`${item.deployment.device_id}:${item.deployment.attachment_start}`}
-                        device_id={item.deployment.device_id}
-                        name={String(item.critter.animal_id ?? item.critter.taxon)}
-                        start_date={item.deployment.attachment_start}
-                        end_date={item.deployment.attachment_end}
-                        onMenu={(event, id) => {
-                          handleMenuOpen(event, id);
-                        }}
-                      />
-                    ))}
+                    {surveyContext.deploymentDataLoader.isLoading ? (
+                      <SkeletonListStack />
+                    ) : (
+                      <>
+                        {!critterDeployments.length && (
+                          <Stack
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="center"
+                            flex="1 1 auto"
+                            position="absolute"
+                            top={0}
+                            right={0}
+                            left={0}
+                            bottom={0}
+                            height="100%">
+                            <Typography variant="body2">No Deployments</Typography>
+                          </Stack>
+                        )}
+                        {critterDeployments?.map((item) => (
+                          <ManualTelemetryCard
+                            key={`${item.deployment.device_id}:${item.deployment.attachment_start}`}
+                            device_id={item.deployment.device_id}
+                            name={String(item.critter.animal_id ?? item.critter.taxon)}
+                            start_date={item.deployment.attachment_start}
+                            end_date={item.deployment.attachment_end}
+                            onMenu={(event, id) => {
+                              handleMenuOpen(event, id);
+                            }}
+                          />
+                        ))}
+                      </>
+                    )}
                   </Box>
                 </Box>
               </Paper>
