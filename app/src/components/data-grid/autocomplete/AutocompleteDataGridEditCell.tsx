@@ -37,6 +37,10 @@ export interface IAutocompleteDataGridEditCellProps<
    * @memberof IAutocompleteDataGridEditCellProps
    */
   error?: boolean;
+  /**
+   * TODO
+   */
+  autofill?: boolean;
 }
 
 /**
@@ -84,6 +88,33 @@ const AutocompleteDataGridEditCell = <DataGridType extends GridValidRowModel, Va
 
     return currentOption;
   }
+
+  /**
+   * Auto-fills the value of the edit cell
+   */
+  useEnhancedEffect(() => {
+    if (!props.autofill) {
+      // Break if autofill is not enabled
+      return;
+    }
+
+    if (getCurrentValue()) {
+      // Break if a value has already been assigned
+      return;
+    }
+
+    if (options.length !== 1) {
+      // Break if option choice is ambiguous
+      return;
+    }
+  
+    apiRef.current.setEditCellValue({
+      id: dataGridProps.id,
+      field: dataGridProps.field,
+      value: options[0]?.value
+    });
+  
+  }, [options, props.autofill]);
 
   return (
     <Autocomplete

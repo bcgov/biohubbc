@@ -35,6 +35,10 @@ export interface IConditionalAutocompleteDataGridEditCellProps<
    * @memberof IConditionalAutocompleteDataGridEditCellProps
    */
   error?: boolean;
+  /**
+   * TODO
+   */
+  autofill?: boolean;
 }
 
 /**
@@ -57,13 +61,17 @@ const ConditionalAutocompleteDataGridEditCell = <
 
   const options = useMemo(
     function () {
-      const options = optionsGetter(dataGridProps.row, allOptions);
-      return options;
+      return optionsGetter(dataGridProps.row, allOptions);
     },
     [allOptions, dataGridProps.row, optionsGetter]
   );
 
-  return <AutocompleteDataGridEditCell dataGridProps={dataGridProps} options={options} error={props.error} />;
+  return <AutocompleteDataGridEditCell
+    dataGridProps={dataGridProps}
+    options={options}
+    error={props.error}
+    autofill={props.autofill}
+  />;
 };
 
 export default ConditionalAutocompleteDataGridEditCell;

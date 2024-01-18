@@ -210,6 +210,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             }}
             allOptions={sampleMethodOptions}
             error={hasError(params)}
+            autofill
           />
         );
       }
@@ -254,6 +255,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             }}
             allOptions={samplePeriodOptions}
             error={hasError(params)}
+            autofill
           />
         );
       }
