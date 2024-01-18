@@ -102,11 +102,11 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     .flat(2);
   const sampleMethodOptions: ISampleMethodOption[] = hasLoadedCodes
     ? surveySampleMethods.map((method) => ({
-        survey_sample_method_id: method.survey_sample_method_id,
-        survey_sample_site_id: method.survey_sample_site_id,
-        sample_method_name:
-          getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_lookup_id) ?? ''
-      }))
+      survey_sample_method_id: method.survey_sample_method_id,
+      survey_sample_site_id: method.survey_sample_site_id,
+      sample_method_name:
+        getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_lookup_id) ?? ''
+    }))
     : [];
 
   // Collect sample periods
@@ -117,9 +117,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     .map((samplePeriod: IGetSamplePeriodRecord) => ({
       survey_sample_period_id: samplePeriod.survey_sample_period_id,
       survey_sample_method_id: samplePeriod.survey_sample_method_id,
-      sample_period_name: `${samplePeriod.start_date} ${samplePeriod.start_time || ''} - ${samplePeriod.end_date} ${
-        samplePeriod.end_time || ''
-      }`
+      sample_period_name: `${samplePeriod.start_date} ${samplePeriod.start_time || ''} - ${samplePeriod.end_date} ${samplePeriod.end_time || ''
+        }`
     }));
 
   const observationColumns: GridColDef<IObservationTableRow>[] = [
@@ -127,6 +126,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       field: 'wldtaxonomic_units_id',
       headerName: 'Species',
       editable: true,
+      hideable: true,
       flex: 1,
       minWidth: 250,
       disableColumnMenu: true,
@@ -146,6 +146,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       field: 'survey_sample_site_id',
       headerName: 'Sampling Site',
       editable: true,
+      hideable: true,
       flex: 1,
       minWidth: 250,
       disableColumnMenu: true,
@@ -180,6 +181,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       field: 'survey_sample_method_id',
       headerName: 'Sampling Method',
       editable: true,
+      hideable: true,
       flex: 1,
       minWidth: 250,
       disableColumnMenu: true,
@@ -218,6 +220,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       field: 'survey_sample_period_id',
       headerName: 'Sampling Period',
       editable: true,
+      hideable: true,
       flex: 0,
       width: 250,
       disableColumnMenu: true,
@@ -262,6 +265,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       field: 'count',
       headerName: 'Count',
       editable: true,
+      hideable: true,
       type: 'number',
       minWidth: 110,
       disableColumnMenu: true,
@@ -302,6 +306,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       field: 'observation_date',
       headerName: 'Date',
       editable: true,
+      hideable: true,
       type: 'date',
       minWidth: 150,
       valueGetter: (params) => (params.row.observation_date ? dayjs(params.row.observation_date).toDate() : null),
@@ -342,6 +347,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       field: 'observation_time',
       headerName: 'Time',
       editable: true,
+      hideable: true,
       type: 'string',
       width: 150,
       disableColumnMenu: true,
@@ -394,6 +400,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       field: 'latitude',
       headerName: 'Lat',
       editable: true,
+      hideable: true,
       width: 120,
       disableColumnMenu: true,
       headerAlign: 'right',
@@ -443,6 +450,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       field: 'longitude',
       headerName: 'Long',
       editable: true,
+      hideable: true,
       width: 120,
       disableColumnMenu: true,
       headerAlign: 'right',
