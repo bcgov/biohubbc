@@ -8,27 +8,18 @@ import TableRow from '@mui/material/TableRow';
 import { v4 as uuid } from 'uuid';
 
 interface ISurveySpatialDataTableProps {
-  tableData: any[];
+  tableHeaders: string[];
+  tableRows: string[][];
 }
 
 const SurveySpatialDataTable = (props: ISurveySpatialDataTableProps) => {
-  const buildTablesHeaders = (data: any) => {
-    return Object.keys(data);
-  };
-
-  const buildTableRows = (data: any[]) => {
-    return data.map((item) => {
-      return Object.values(item);
-    });
-  };
-
   return (
     <>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              {buildTablesHeaders(props.tableData[0] || []).map((header) => (
+              {props.tableHeaders.map((header) => (
                 <TableCell key={uuid()} align="left">
                   {header}
                 </TableCell>
@@ -36,9 +27,9 @@ const SurveySpatialDataTable = (props: ISurveySpatialDataTableProps) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {buildTableRows(props.tableData).map((items) => (
+            {props.tableRows.map((items: string[]) => (
               <TableRow key={uuid()} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                {items.map((value: any) => (
+                {items.map((value: string) => (
                   <TableCell key={uuid()}>{value}</TableCell>
                 ))}
               </TableRow>

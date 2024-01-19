@@ -2,6 +2,7 @@ import { Box, Paper } from '@mui/material';
 import { ObservationsContext } from 'contexts/observationsContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TelemetryDataContext } from 'contexts/telemetryDataContext';
+import dayjs from 'dayjs';
 import { Position } from 'geojson';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { INonEditableGeometries } from 'utils/mapUtils';
@@ -72,9 +73,8 @@ const SurveySpatialData = () => {
   }, [observationsContext.observationsDataLoader.data]);
 
   const [mapPoints, setMapPoints] = useState<INonEditableGeometries[]>(surveyObservations);
-  const [tableData, setTableData] = useState<any[]>(
-    observationsContext.observationsDataLoader.data?.surveyObservations || []
-  );
+  const [tableHeaders, setTableHeaders] = useState<string[]>([]);
+  const [tableRows, setTableRows] = useState<string[][]>([]);
 
   // TODO: this needs to be saved between page visits
   // const [layout, setLayout] = useState<SurveySpatialDataLayout>(SurveySpatialDataLayout.MAP);
@@ -84,17 +84,41 @@ const SurveySpatialData = () => {
     switch (data) {
       case SurveySpatialDataSet.OBSERVATIONS:
         setMapPoints(surveyObservations);
-        setTableData(observationsContext.observationsDataLoader.data?.surveyObservations || []);
+        setTableHeaders(['Species', 'Count', 'Date', 'Time', 'Lat', 'Long']);
+        setTableRows(
+          observationsContext.observationsDataLoader.data?.surveyObservations.map((item) => [
+            `Moose...`,
+            `${item.count}`,
+            `${dayjs(item.observation_date).format('YYYY-MM-DD')}`,
+            `${dayjs(item.observation_date).format('HH:mm:ss')}`,
+            `${item.latitude}`,
+            `${item.longitude}`
+          ]) || []
+        );
         break;
       case SurveySpatialDataSet.TELEMETRY:
         setMapPoints(telemetryPoints);
-        setTableData(telemetryContext.telemetryDataLoader.data || []);
+        setTableHeaders(['Alias', 'Device ID', 'Date', 'Time', 'Lat', 'Long']);
+        setTableRows(
+          telemetryContext.telemetryDataLoader.data?.map((item) => [
+            `${item.deployment_id}`,
+            `${item.deployment_id}`,
+            `${dayjs(item.acquisition_date).format('YYYY-MM-DD')}`,
+            `${dayjs(item.acquisition_date).format('HH:mm:ss')}`,
+            `${item.latitude}`,
+            `${item.longitude}`
+          ]) || []
+        );
         break;
       case SurveySpatialDataSet.MARKED_ANIMALS:
         setMapPoints([]);
+        setTableHeaders(['Alias', 'Event', 'Date', 'Time', 'Lat', 'Long']);
+        setTableRows([]);
         break;
       default:
         setMapPoints([]);
+        setTableHeaders([]);
+        setTableRows([]);
         break;
     }
   };
@@ -112,7 +136,7 @@ const SurveySpatialData = () => {
         <SurveyMap mapPoints={mapPoints} />
       </Box>
       <Box p={3}>
-        <SurveySpatialDataTable tableData={tableData} />
+        <SurveySpatialDataTable tableHeaders={tableHeaders} tableRows={tableRows} />
         {/* <NoSurveySectionData text="No data available" paperVariant="outlined" /> */}
       </Box>
 
