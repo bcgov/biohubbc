@@ -51,7 +51,6 @@ const SurveySpatialData = () => {
       case SurveySpatialDataSet.MARKED_ANIMALS:
         setMapPoints([]);
         break;
-
       default:
         setMapPoints([]);
         break;

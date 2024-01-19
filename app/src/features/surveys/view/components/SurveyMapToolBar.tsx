@@ -19,13 +19,18 @@ interface ISurveyMapToolBarProps {
   updateLayout: (data: SurveySpatialDataLayout) => void;
 }
 const SurveyMapToolBar = (props: ISurveyMapToolBarProps) => {
+  const [dataset, setDataset] = useState<SurveySpatialDataSet>(SurveySpatialDataSet.OBSERVATIONS);
+  const [layout, setLayout] = useState<SurveySpatialDataLayout>(SurveySpatialDataLayout.MAP);
+
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
   const updateDataSet = (event: React.MouseEvent<HTMLElement>, newAlignment: SurveySpatialDataSet) => {
+    setDataset(newAlignment);
     props.updateDataSet(newAlignment);
   };
   const updateLayout = (event: React.MouseEvent<HTMLElement>, newAlignment: SurveySpatialDataLayout) => {
+    setLayout(newAlignment);
     props.updateLayout(newAlignment);
   };
 
@@ -59,12 +64,12 @@ const SurveyMapToolBar = (props: ISurveyMapToolBarProps) => {
           </Button>
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 2 }}>
-          <ToggleButtonGroup onChange={updateDataSet} exclusive>
+          <ToggleButtonGroup value={dataset} onChange={updateDataSet} exclusive>
             <ToggleButton value={SurveySpatialDataSet.OBSERVATIONS}>Observations</ToggleButton>
             <ToggleButton value={SurveySpatialDataSet.TELEMETRY}>Telemetry</ToggleButton>
             <ToggleButton value={SurveySpatialDataSet.MARKED_ANIMALS}>Marked Animals</ToggleButton>
           </ToggleButtonGroup>
-          <ToggleButtonGroup onChange={updateLayout} exclusive>
+          <ToggleButtonGroup value={layout} onChange={updateLayout} exclusive>
             <ToggleButton value={SurveySpatialDataLayout.MAP}>MAP</ToggleButton>
             <ToggleButton value={SurveySpatialDataLayout.TABLE}>TABLE</ToggleButton>
             <ToggleButton value={SurveySpatialDataLayout.SPLIT}>SPLIT</ToggleButton>
