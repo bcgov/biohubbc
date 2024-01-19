@@ -14,15 +14,19 @@ export enum SurveyMapDataDisplay {
   SPLIT = 'Split'
 }
 
-const SurveyMapToolBar = () => {
+interface ISurveyMapToolBarProps {
+  updateDataSet: (data: SurveyMapDataSet) => void;
+  updateLayout: (data: SurveyMapDataDisplay) => void;
+}
+const SurveyMapToolBar = (props: ISurveyMapToolBarProps) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
-  const updateDataSet = (event: React.MouseEvent<HTMLElement>, newAlignment: string | null) => {
-    console.log(`DataSet: ${newAlignment}`);
+  const updateDataSet = (event: React.MouseEvent<HTMLElement>, newAlignment: SurveyMapDataSet) => {
+    props.updateDataSet(newAlignment);
   };
-  const updateLayout = (event: React.MouseEvent<HTMLElement>, newAlignment: string | null) => {
-    console.log(`Layout: ${newAlignment}`);
+  const updateLayout = (event: React.MouseEvent<HTMLElement>, newAlignment: SurveyMapDataDisplay) => {
+    props.updateLayout(newAlignment);
   };
 
   const handleMenuClick = (e: any) => {
@@ -55,12 +59,12 @@ const SurveyMapToolBar = () => {
           </Button>
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 2 }}>
-          <ToggleButtonGroup onChange={updateDataSet}>
+          <ToggleButtonGroup onChange={updateDataSet} exclusive>
             <ToggleButton value={SurveyMapDataSet.OBSERVATIONS}>Observations</ToggleButton>
             <ToggleButton value={SurveyMapDataSet.TELEMETRY}>Telemetry</ToggleButton>
             <ToggleButton value={SurveyMapDataSet.MARKED_ANIMALS}>Marked Animals</ToggleButton>
           </ToggleButtonGroup>
-          <ToggleButtonGroup onChange={updateLayout}>
+          <ToggleButtonGroup onChange={updateLayout} exclusive>
             <ToggleButton value={SurveyMapDataDisplay.MAP}>MAP</ToggleButton>
             <ToggleButton value={SurveyMapDataDisplay.TABLE}>TABLE</ToggleButton>
             <ToggleButton value={SurveyMapDataDisplay.SPLIT}>SPLIT</ToggleButton>

@@ -1,24 +1,14 @@
 import { Box, Paper } from '@mui/material';
-import BaseLayerControls from 'components/map/components/BaseLayerControls';
-import { SetMapBounds } from 'components/map/components/Bounds';
-import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
-import { MapBaseCss } from 'components/map/styles/MapBaseCss';
-import { ALL_OF_BC_BOUNDARY, MAP_DEFAULT_CENTER } from 'constants/spatial';
 import { ObservationsContext } from 'contexts/observationsContext';
 import { Position } from 'geojson';
-import { LatLngBoundsExpression } from 'leaflet';
 import { useContext, useMemo, useState } from 'react';
-import { GeoJSON, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
-import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
-import { coloredPoint, INonEditableGeometries } from 'utils/mapUtils';
-import { v4 as uuidv4 } from 'uuid';
+import { INonEditableGeometries } from 'utils/mapUtils';
 import NoSurveySectionData from '../components/NoSurveySectionData';
-import SurveyMapToolBar from './components/SurveyMapToolBar';
+import SurveyMapToolBar, { SurveyMapDataSet } from './components/SurveyMapToolBar';
+import SurveyMap from './SurveyMap';
 
 const SurveySpatialData = () => {
   const observationsContext = useContext(ObservationsContext);
-  // set default bounds to encompass all of BC
-  const [bounds] = useState<LatLngBoundsExpression | undefined>(calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]));
 
   const surveyObservations: INonEditableGeometries[] = useMemo(() => {
     const observations = observationsContext.observationsDataLoader.data?.surveyObservations;
@@ -44,36 +34,32 @@ const SurveySpatialData = () => {
       });
   }, [observationsContext.observationsDataLoader.data]);
 
-  const [mapPoints] = useState<INonEditableGeometries[]>(surveyObservations);
+  const [mapPoints, setMapPoints] = useState<INonEditableGeometries[]>(surveyObservations);
+
+  const updateDataSet = (data: SurveyMapDataSet) => {
+    console.log(`DataSet: ${data}`);
+    switch (data) {
+      case SurveyMapDataSet.OBSERVATIONS:
+        setMapPoints(surveyObservations);
+        break;
+      case SurveyMapDataSet.TELEMETRY:
+        setMapPoints([]);
+        break;
+      case SurveyMapDataSet.MARKED_ANIMALS:
+        setMapPoints([]);
+        break;
+
+      default:
+        setMapPoints([]);
+        break;
+    }
+  };
 
   return (
     <Paper elevation={0}>
-      <SurveyMapToolBar />
+      <SurveyMapToolBar updateDataSet={updateDataSet} updateLayout={(layout) => {}} />
       <Box position="relative" height={{ sm: 400, md: 600 }}>
-        <LeafletMapContainer
-          data-testid="leaflet-survey-map"
-          id="survey-map"
-          center={MAP_DEFAULT_CENTER}
-          scrollWheelZoom={false}
-          fullscreenControl={true}
-          style={{ height: '100%' }}>
-          <MapBaseCss />
-          <FullScreenScrollingEventHandler bounds={bounds} scrollWheelZoom={false} />
-          <SetMapBounds bounds={bounds} />
-
-          {mapPoints?.map((nonEditableGeo: INonEditableGeometries) => (
-            <GeoJSON
-              key={uuidv4()}
-              data={nonEditableGeo.feature}
-              pointToLayer={(_, latlng) => coloredPoint({ latlng, fillColor: '#1f7dff', borderColor: '#ffffff' })}>
-              {nonEditableGeo.popupComponent}
-            </GeoJSON>
-          ))}
-
-          <LayersControl position="bottomright">
-            <BaseLayerControls />
-          </LayersControl>
-        </LeafletMapContainer>
+        <SurveyMap mapPoints={mapPoints} />
       </Box>
       <Box>
         <Box p={3}>
