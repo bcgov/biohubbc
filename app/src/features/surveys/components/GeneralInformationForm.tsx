@@ -4,12 +4,11 @@ import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteField';
 import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
+import SpeciesAutocompleteField from 'components/fields/SpeciesAutocompleteField';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { useFormikContext } from 'formik';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import { debounce } from 'lodash-es';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import SurveyPermitForm, { SurveyPermitFormYupSchema } from '../SurveyPermitForm';
@@ -104,38 +103,6 @@ export interface IGeneralInformationFormProps {
 const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) => {
   const formikProps = useFormikContext<IGeneralInformationForm>();
 
-  const biohubApi = useBiohubApi();
-
-  const convertOptions = (value: any): IMultiAutocompleteFieldOption[] =>
-    value.map((item: any) => {
-      return { value: parseInt(item.id), label: item.label };
-    });
-
-  const handleGetInitList = async (initialvalues: number[]) => {
-    const response = await biohubApi.taxonomy.getSpeciesFromIds(initialvalues);
-
-    return convertOptions(response.searchResponse);
-  };
-
-  const handleSearch = useMemo(
-    () =>
-      debounce(
-        async (
-          inputValue: string,
-          existingValues: (string | number)[],
-          callback: (searchedValues: IMultiAutocompleteFieldOption[]) => void
-        ) => {
-          const response = await biohubApi.taxonomy.searchSpecies(inputValue);
-          const newOptions = convertOptions(response.searchResponse).filter(
-            (item: any) => !existingValues?.includes(item.value)
-          );
-          callback(newOptions);
-        },
-        500
-      ),
-    [biohubApi.taxonomy]
-  );
-
   return (
     <>
       <Grid container spacing={3}>
@@ -184,23 +151,13 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         </Typography>
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            <MultiAutocompleteFieldVariableSize
-              id="species.focal_species"
-              label="Focal Species"
-              required={true}
-              type="api-search"
-              getInitList={handleGetInitList}
-              search={handleSearch}
-            />
+            <SpeciesAutocompleteField formikFieldName="species.focal_species" label="Focal Species" required={true} />
           </Grid>
           <Grid item xs={12}>
-            <MultiAutocompleteFieldVariableSize
-              id="species.ancillary_species"
+            <SpeciesAutocompleteField
+              formikFieldName="species.ancillary_species"
               label="Ancillary Species"
               required={false}
-              type="api-search"
-              getInitList={handleGetInitList}
-              search={handleSearch}
             />
           </Grid>
         </Grid>
