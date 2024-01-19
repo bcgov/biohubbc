@@ -88,6 +88,47 @@ describe('AttachmentsList', () => {
     expect(getByText('No Documents')).toBeInTheDocument();
   });
 
+  it('renders correctly with no shared files', () => {
+    const mockSurveyContext: ISurveyContext = {
+      projectId: 1,
+      surveyDataLoader: {
+        data: { surveyData: { survey_details: { survey_name: 'name' } } },
+        load: jest.fn()
+      } as unknown as DataLoader<any, any, any>
+    } as unknown as ISurveyContext;
+
+    const mockProjectContext: IProjectContext = {
+      projectId: 1,
+      projectDataLoader: {
+        data: { projectData: { project: { project_name: 'name' } } },
+        load: jest.fn()
+      } as unknown as DataLoader<any, any, any>
+    } as unknown as IProjectContext;
+
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
+
+    const { getByText } = render(
+      <AuthStateContext.Provider value={authState}>
+        <Router history={history}>
+          <ProjectContext.Provider value={mockProjectContext}>
+            <SurveyContext.Provider value={mockSurveyContext}>
+              <AttachmentsList
+                attachments={[]}
+                handleDownload={jest.fn()}
+                handleDelete={jest.fn()}
+                handleViewDetails={jest.fn()}
+                handleRemoveOrResubmit={jest.fn()}
+                emptyStateText="No Shared Files"
+              />
+            </SurveyContext.Provider>
+          </ProjectContext.Provider>
+        </Router>
+      </AuthStateContext.Provider>
+    );
+
+    expect(getByText('No Shared Files')).toBeInTheDocument();
+  });
+
   it('renders correctly with attachments (of various sizes)', async () => {
     const mockSurveyContext: ISurveyContext = {
       projectId: 1,
