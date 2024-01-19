@@ -309,8 +309,13 @@ const SamplingSiteList = () => {
                   <FormGroup>
                     <FormControlLabel
                       label={
-                        <Typography variant="body2" component="span" color="textSecondary" fontWeight={700}>
-                          SELECT ALL
+                        <Typography
+                          variant="body2"
+                          component="span"
+                          color="textSecondary"
+                          fontWeight={700}
+                          sx={{ textTransform: 'uppercase' }}>
+                          Select All
                         </Typography>
                       }
                       control={
@@ -318,7 +323,7 @@ const SamplingSiteList = () => {
                           sx={{
                             mr: 0.75
                           }}
-                          checked={checkboxSelectedIds.length === samplingSiteCount}
+                          checked={checkboxSelectedIds.length > 0 && checkboxSelectedIds.length === samplingSiteCount}
                           indeterminate={
                             checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < samplingSiteCount
                           }
@@ -338,24 +343,31 @@ const SamplingSiteList = () => {
                   </FormGroup>
                 </Box>
                 <Divider flexItem></Divider>
-                <Box flex="1 1 auto" overflow="hidden">
+                <Box
+                  flex="1 1 auto"
+                  overflow="hidden"
+                  sx={{
+                    background: grey[100]
+                  }}>
                   {/* Display text if the sample site data loader has no items in it */}
-                  {!surveyContext.sampleSiteDataLoader.data?.sampleSites.length &&
-                    !surveyContext.sampleSiteDataLoader.isLoading && (
-                      <Stack
-                        display="flex"
-                        alignItems="center"
-                        justifyContent="center"
-                        flex="1 1 auto"
-                        position="absolute"
-                        top={0}
-                        right={0}
-                        left={0}
-                        bottom={0}
-                        height="100%">
-                        <Typography variant="body2">No Sampling Sites</Typography>
-                      </Stack>
-                    )}
+                  {!surveyContext.sampleSiteDataLoader.data?.sampleSites.length && (
+                    <Stack
+                      sx={{
+                        background: grey[100]
+                      }}
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      flex="1 1 auto"
+                      position="absolute"
+                      top={0}
+                      right={0}
+                      left={0}
+                      bottom={0}
+                      height="100%">
+                      <Typography variant="body2">No Sampling Sites</Typography>
+                    </Stack>
+                  )}
 
                   {surveyContext.sampleSiteDataLoader.data?.sampleSites.map((sampleSite, index) => {
                     return (

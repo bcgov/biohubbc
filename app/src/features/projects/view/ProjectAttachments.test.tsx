@@ -93,7 +93,7 @@ describe('ProjectAttachments', () => {
     expect(getByText('Close')).toBeInTheDocument();
   });
 
-  it('renders correctly with no attachments', async () => {
+  it('renders correctly with no shared files', async () => {
     const mockProjectContext: IProjectContext = {
       artifactDataLoader: {
         data: null,
@@ -128,7 +128,7 @@ describe('ProjectAttachments', () => {
       </AuthStateContext.Provider>
     );
     await waitFor(() => {
-      expect(getByText('No Documents')).toBeInTheDocument();
+      expect(getByText('No Shared Files')).toBeInTheDocument();
     });
   });
 
