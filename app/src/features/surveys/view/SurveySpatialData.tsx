@@ -73,7 +73,7 @@ const SurveySpatialData = () => {
   const [mapPoints, setMapPoints] = useState<INonEditableGeometries[]>(surveyObservations);
 
   // TODO: this needs to be saved between page visits
-  const [layout, setLayout] = useState<SurveySpatialDataLayout>(SurveySpatialDataLayout.MAP);
+  // const [layout, setLayout] = useState<SurveySpatialDataLayout>(SurveySpatialDataLayout.MAP);
 
   const updateDataSet = (data: SurveySpatialDataSet) => {
     console.log(`DataSet: ${data}`);
@@ -95,14 +95,21 @@ const SurveySpatialData = () => {
 
   const updateLayout = (data: SurveySpatialDataLayout) => {
     console.log(`Layout: ${data}`);
-    setLayout(data);
+    // setLayout(data);
   };
 
   return (
     <Paper elevation={0}>
       <SurveyMapToolBar updateDataSet={updateDataSet} updateLayout={updateLayout} />
 
-      {layout === SurveySpatialDataLayout.MAP && (
+      <Box height={{ sm: 400, md: 600 }}>
+        <SurveyMap mapPoints={mapPoints} />
+      </Box>
+      <Box p={3}>
+        <NoSurveySectionData text="No data available" paperVariant="outlined" />
+      </Box>
+
+      {/* {layout === SurveySpatialDataLayout.MAP && (
         <Box position="relative" height={{ sm: 400, md: 600 }}>
           <SurveyMap mapPoints={mapPoints} />
         </Box>
@@ -125,7 +132,7 @@ const SurveySpatialData = () => {
             <SurveyMap mapPoints={mapPoints} />
           </Box>
         </Box>
-      )}
+      )} */}
     </Paper>
   );
 };
