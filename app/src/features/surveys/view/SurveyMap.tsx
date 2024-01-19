@@ -13,6 +13,7 @@ import { v4 as uuidv4 } from 'uuid';
 interface ISurveyMapProps {
   mapPoints: INonEditableGeometries[];
 }
+// TODO: need a way to pass in the map dimensions depending on the screen size
 const SurveyMap = (props: ISurveyMapProps) => {
   const [bounds] = useState<LatLngBoundsExpression | undefined>(calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]));
   return (

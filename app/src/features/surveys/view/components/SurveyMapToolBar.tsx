@@ -15,6 +15,7 @@ export enum SurveySpatialDataLayout {
 }
 
 interface ISurveyMapToolBarProps {
+  //TODO: I don't want to pull the contexts into this but I will need an array of key value pairs for the options
   updateDataSet: (data: SurveySpatialDataSet) => void;
   updateLayout: (data: SurveySpatialDataLayout) => void;
 }

@@ -1,7 +1,9 @@
 import { Box, Paper } from '@mui/material';
 import { ObservationsContext } from 'contexts/observationsContext';
+import { SurveyContext } from 'contexts/surveyContext';
+import { TelemetryDataContext } from 'contexts/telemetryDataContext';
 import { Position } from 'geojson';
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { INonEditableGeometries } from 'utils/mapUtils';
 import NoSurveySectionData from '../components/NoSurveySectionData';
 import SurveyMapToolBar, { SurveySpatialDataLayout, SurveySpatialDataSet } from './components/SurveyMapToolBar';
@@ -9,6 +11,40 @@ import SurveyMap from './SurveyMap';
 
 const SurveySpatialData = () => {
   const observationsContext = useContext(ObservationsContext);
+  const telemetryContext = useContext(TelemetryDataContext);
+  const surveyContext = useContext(SurveyContext);
+
+  useEffect(() => {
+    surveyContext.deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId).then(() => {
+      if (surveyContext.deploymentDataLoader.data) {
+        const deploymentIds = surveyContext.deploymentDataLoader.data.map((item) => item.deployment_id);
+        telemetryContext.telemetryDataLoader.load(deploymentIds);
+      }
+    });
+  }, []);
+
+  const telemetryPoints: INonEditableGeometries[] = useMemo(() => {
+    const telemetryData = telemetryContext.telemetryDataLoader.data;
+    if (!telemetryData) {
+      return [];
+    }
+
+    return telemetryData
+      .filter((telemetry) => telemetry.latitude !== undefined && telemetry.longitude !== undefined)
+      .map((telemetry) => {
+        return {
+          feature: {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+              type: 'Point',
+              coordinates: [telemetry.longitude, telemetry.latitude] as Position
+            }
+          },
+          popupComponent: undefined
+        };
+      });
+  }, [telemetryContext.telemetryDataLoader.data]);
 
   const surveyObservations: INonEditableGeometries[] = useMemo(() => {
     const observations = observationsContext.observationsDataLoader.data?.surveyObservations;
@@ -46,7 +82,7 @@ const SurveySpatialData = () => {
         setMapPoints(surveyObservations);
         break;
       case SurveySpatialDataSet.TELEMETRY:
-        setMapPoints([]);
+        setMapPoints(telemetryPoints);
         break;
       case SurveySpatialDataSet.MARKED_ANIMALS:
         setMapPoints([]);
