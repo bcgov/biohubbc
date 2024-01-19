@@ -85,14 +85,13 @@ export class PostSurveyArtifactsToBiohubObject implements BioHubSubmissionFeatur
   constructor(attachmentRecord: ISurveyAttachment) {
     defaultLog.debug({ label: 'PostSurveyArtifactsToBiohubObject', message: 'params', attachmentRecord });
 
-    this.id = String(attachmentRecord.survey_attachment_id);
+    this.id = attachmentRecord.uuid;
     this.type = BiohubFeatureType.ARTIFACT;
     this.properties = {
+      artifact_id: attachmentRecord.survey_attachment_id,
       filename: attachmentRecord.file_name,
       file_type: attachmentRecord.file_type,
-      file_size: attachmentRecord?.file_size,
-      uuid: attachmentRecord?.uuid,
-      s3_key: attachmentRecord.key,
+      file_size: attachmentRecord.file_size,
       title: attachmentRecord?.title || null,
       description: attachmentRecord?.description || null
     };
