@@ -12,11 +12,12 @@ describe('worksheet utils', () => {
 
     it('should validate aliases', () => {
       const observationCSVColumnValidator: worksheet_utils.IXLSXCSVValidator = {
-        columnNames: ['SPECIES_TAXONOMIC_ID', 'COUNT', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
+        columnNames: ['SPECIES', 'COUNT', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
         columnTypes: ['number', 'number', 'date', 'string', 'number', 'number'],
         columnAliases: {
           LATITUDE: ['LAT'],
-          LONGITUDE: ['LON', 'LONG', 'LNG']
+          LONGITUDE: ['LON', 'LONG', 'LNG'],
+          SPECIES: ['TAXON']
         }
       };
 
@@ -24,7 +25,7 @@ describe('worksheet utils', () => {
 
       const getWorksheetHeaderssStub = sinon
         .stub(worksheet_utils, 'getWorksheetHeaders')
-        .callsFake(() => ['SPECIES_TAXONOMIC_ID', 'COUNT', 'DATE', 'TIME', 'LAT', 'LON']);
+        .callsFake(() => ['TAXON', 'COUNT', 'DATE', 'TIME', 'LAT', 'LON']);
 
       const result = worksheet_utils.validateWorksheetHeaders(mockWorksheet, observationCSVColumnValidator);
 
@@ -34,7 +35,7 @@ describe('worksheet utils', () => {
 
     it('should fail for unknown aliases', () => {
       const observationCSVColumnValidator: worksheet_utils.IXLSXCSVValidator = {
-        columnNames: ['SPECIES_TAXONOMIC_ID', 'COUNT', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
+        columnNames: ['SPECIES', 'COUNT', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
         columnTypes: ['number', 'number', 'date', 'string', 'number', 'number'],
         columnAliases: {
           LATITUDE: ['LAT'],
@@ -46,7 +47,7 @@ describe('worksheet utils', () => {
 
       const getWorksheetHeaderssStub = sinon
         .stub(worksheet_utils, 'getWorksheetHeaders')
-        .callsFake(() => ['SPECIES_TAXONOMIC_ID', 'COUNT', 'DATE', 'TIME', 'SOMETHING_LAT', 'LON']);
+        .callsFake(() => ['SPECIES', 'COUNT', 'DATE', 'TIME', 'SOMETHING_LAT', 'LON']);
 
       const result = worksheet_utils.validateWorksheetHeaders(mockWorksheet, observationCSVColumnValidator);
 
