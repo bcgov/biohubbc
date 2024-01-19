@@ -133,45 +133,43 @@ describe('PlatformService', () => {
         id: '1',
         name: undefined,
         description: 'additional information',
-        features: [
-          {
-            id: '1',
-            type: 'dataset',
-            properties: {
-              survey_id: undefined,
-              project_id: undefined,
-              name: undefined,
-              start_date: undefined,
-              end_date: undefined,
-              survey_types: undefined,
-              revision_count: undefined,
-              geometry: {
-                type: 'FeatureCollection',
-                features: []
-              }
-            },
-            features: [
-              {
-                id: '2',
-                type: 'observation',
-                properties: {
-                  survey_id: undefined,
-                  taxonomy: undefined,
-                  survey_sample_site_id: null,
-                  survey_sample_method_id: null,
-                  survey_sample_period_id: null,
-                  latitude: undefined,
-                  longitude: undefined,
-                  count: undefined,
-                  observation_time: undefined,
-                  observation_date: undefined,
-                  geometry: { type: 'FeatureCollection', features: [] }
-                },
-                features: []
-              }
-            ]
-          }
-        ]
+        content: {
+          id: '1',
+          type: 'dataset',
+          properties: {
+            survey_id: undefined,
+            project_id: undefined,
+            name: undefined,
+            start_date: undefined,
+            end_date: undefined,
+            survey_types: undefined,
+            revision_count: undefined,
+            geometry: {
+              type: 'FeatureCollection',
+              features: []
+            }
+          },
+          child_features: [
+            {
+              id: '2',
+              type: 'observation',
+              properties: {
+                survey_id: undefined,
+                taxonomy: undefined,
+                survey_sample_site_id: null,
+                survey_sample_method_id: null,
+                survey_sample_period_id: null,
+                latitude: undefined,
+                longitude: undefined,
+                count: undefined,
+                observation_time: undefined,
+                observation_date: undefined,
+                geometry: { type: 'FeatureCollection', features: [] }
+              },
+              child_features: []
+            }
+          ]
+        }
       });
     });
   });

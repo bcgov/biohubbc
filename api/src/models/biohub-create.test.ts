@@ -144,7 +144,7 @@ describe('PostSurveyToBiohubObject', () => {
     });
 
     it('sets features', () => {
-      expect(data.features).to.eql([new PostSurveyObservationToBiohubObject(observation_obj)]);
+      expect(data.child_features).to.eql([new PostSurveyObservationToBiohubObject(observation_obj)]);
     });
   });
 });
@@ -214,8 +214,8 @@ describe('PostSurveySubmissionToBioHubObject', () => {
       expect(data.description).to.equal('A description of the submission');
     });
 
-    it('sets features', () => {
-      expect(data.features).to.eql([new PostSurveyToBiohubObject(survey_obj, observation_obj, survey_geometry, [])]);
+    it('sets content', () => {
+      expect(data.content).to.eql(new PostSurveyToBiohubObject(survey_obj, observation_obj, survey_geometry, []));
     });
   });
 });

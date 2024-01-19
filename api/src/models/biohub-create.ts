@@ -6,11 +6,17 @@ import { GetSurveyData } from './survey-view';
 
 const defaultLog = getLogger('models/biohub-create');
 
+export interface BioHubSubmission {
+  id: string;
+  name: string;
+  description: string;
+  content: BioHubSubmissionFeature;
+}
 export interface BioHubSubmissionFeature {
   id: string;
   type: string;
   properties: Record<string, any>;
-  features: BioHubSubmissionFeature[];
+  child_features: BioHubSubmissionFeature[];
 }
 
 /**
@@ -24,7 +30,7 @@ export class PostSurveyObservationToBiohubObject implements BioHubSubmissionFeat
   id: string;
   type: string;
   properties: Record<string, any>;
-  features: BioHubSubmissionFeature[];
+  child_features: BioHubSubmissionFeature[];
 
   constructor(observationRecord: ObservationRecord) {
     defaultLog.debug({ label: 'PostSurveyObservationToBiohubObject', message: 'params', observationRecord });
@@ -59,7 +65,7 @@ export class PostSurveyObservationToBiohubObject implements BioHubSubmissionFeat
             : []
       }
     };
-    this.features = [];
+    this.child_features = [];
   }
 }
 
@@ -74,7 +80,7 @@ export class PostSurveyArtifactsToBiohubObject implements BioHubSubmissionFeatur
   id: string;
   type: string;
   properties: Record<string, any>;
-  features: BioHubSubmissionFeature[];
+  child_features: BioHubSubmissionFeature[];
 
   constructor(attachmentRecord: ISurveyAttachment) {
     defaultLog.debug({ label: 'PostSurveyArtifactsToBiohubObject', message: 'params', attachmentRecord });
@@ -90,7 +96,7 @@ export class PostSurveyArtifactsToBiohubObject implements BioHubSubmissionFeatur
       title: attachmentRecord?.title || null,
       description: attachmentRecord?.description || null
     };
-    this.features = [];
+    this.child_features = [];
   }
 }
 
@@ -105,7 +111,7 @@ export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
   properties: Record<string, any>;
-  features: PostSurveyObservationToBiohubObject[];
+  child_features: PostSurveyObservationToBiohubObject[];
 
   constructor(
     surveyData: GetSurveyData,
@@ -133,15 +139,15 @@ export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
       revision_count: surveyData.revision_count,
       geometry: surveyGeometry
     };
-    this.features = [...observationFeatures, ...artifactFeatures];
+    this.child_features = [...observationFeatures, ...artifactFeatures];
   }
 }
 
-export class PostSurveySubmissionToBioHubObject {
+export class PostSurveySubmissionToBioHubObject implements BioHubSubmission {
   id: string;
   name: string;
   description: string;
-  features: BioHubSubmissionFeature[];
+  content: BioHubSubmissionFeature;
 
   constructor(
     surveyData: GetSurveyData,
@@ -155,7 +161,7 @@ export class PostSurveySubmissionToBioHubObject {
     this.id = surveyData.uuid;
     this.name = surveyData.survey_name;
     this.description = additionalInformation;
-    this.features = [new PostSurveyToBiohubObject(surveyData, observationRecords, surveyGeometry, surveyAttachments)];
+    this.content = new PostSurveyToBiohubObject(surveyData, observationRecords, surveyGeometry, surveyAttachments);
   }
 }
 
