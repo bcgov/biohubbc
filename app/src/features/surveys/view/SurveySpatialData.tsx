@@ -5,15 +5,16 @@ import { TelemetryDataContext } from 'contexts/telemetryDataContext';
 import { Position } from 'geojson';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { INonEditableGeometries } from 'utils/mapUtils';
-import NoSurveySectionData from '../components/NoSurveySectionData';
 import SurveyMapToolBar, { SurveySpatialDataLayout, SurveySpatialDataSet } from './components/SurveyMapToolBar';
 import SurveyMap from './SurveyMap';
+import SurveySpatialDataTable from './SurveySpatialDataTable';
 
 const SurveySpatialData = () => {
   const observationsContext = useContext(ObservationsContext);
   const telemetryContext = useContext(TelemetryDataContext);
   const surveyContext = useContext(SurveyContext);
 
+  //TODO: is this the cleanest way to do this? because this feels gross
   useEffect(() => {
     surveyContext.deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId).then(() => {
       if (surveyContext.deploymentDataLoader.data) {
@@ -71,6 +72,9 @@ const SurveySpatialData = () => {
   }, [observationsContext.observationsDataLoader.data]);
 
   const [mapPoints, setMapPoints] = useState<INonEditableGeometries[]>(surveyObservations);
+  const [tableData, setTableData] = useState<any[]>(
+    observationsContext.observationsDataLoader.data?.surveyObservations || []
+  );
 
   // TODO: this needs to be saved between page visits
   // const [layout, setLayout] = useState<SurveySpatialDataLayout>(SurveySpatialDataLayout.MAP);
@@ -80,9 +84,11 @@ const SurveySpatialData = () => {
     switch (data) {
       case SurveySpatialDataSet.OBSERVATIONS:
         setMapPoints(surveyObservations);
+        setTableData(observationsContext.observationsDataLoader.data?.surveyObservations || []);
         break;
       case SurveySpatialDataSet.TELEMETRY:
         setMapPoints(telemetryPoints);
+        setTableData(telemetryContext.telemetryDataLoader.data || []);
         break;
       case SurveySpatialDataSet.MARKED_ANIMALS:
         setMapPoints([]);
@@ -106,7 +112,8 @@ const SurveySpatialData = () => {
         <SurveyMap mapPoints={mapPoints} />
       </Box>
       <Box p={3}>
-        <NoSurveySectionData text="No data available" paperVariant="outlined" />
+        <SurveySpatialDataTable tableData={tableData} />
+        {/* <NoSurveySectionData text="No data available" paperVariant="outlined" /> */}
       </Box>
 
       {/* {layout === SurveySpatialDataLayout.MAP && (
