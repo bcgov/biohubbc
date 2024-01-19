@@ -1,6 +1,6 @@
 import { mdiRefresh } from '@mdi/js';
 import Icon from '@mdi/react';
-import { IconButton } from '@mui/material';
+import { Button, IconButton } from '@mui/material';
 import Box from '@mui/material/Box';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
@@ -11,16 +11,52 @@ import { ALL_OF_BC_BOUNDARY, MAP_DEFAULT_CENTER } from 'constants/spatial';
 import { ObservationsContext } from 'contexts/observationsContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { Feature, Position } from 'geojson';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { LatLngBoundsExpression } from 'leaflet';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { GeoJSON, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
+import { GeoJSON, LayersControl, MapContainer as LeafletMapContainer, Popup } from 'react-leaflet';
+import { Link as RouterLink } from 'react-router-dom';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { coloredPoint, INonEditableGeometries } from 'utils/mapUtils';
 import { v4 as uuidv4 } from 'uuid';
 
 const ObservationsMap = () => {
+  const biohubApi = useBiohubApi();
   const observationsContext = useContext(ObservationsContext);
   const surveyContext = useContext(SurveyContext);
+  const [speciesNames, setSpeciesNames] = useState<{ id: string; label: string }[]>([]);
+
+  const handleGetSpecies = useCallback(
+    async (taxonomic_ids: number[]) => {
+      const response = await biohubApi.taxonomy.getSpeciesFromIds(taxonomic_ids);
+
+      setSpeciesNames(response.searchResponse);
+    },
+    [biohubApi.taxonomy]
+  );
+
+  const speciesIds = useMemo(() => {
+    const observations = observationsContext.observationsDataLoader.data?.surveyObservations;
+
+    if (!observations) {
+      return [];
+    }
+
+    return observations.map((observation) => observation.wldtaxonomic_units_id);
+  }, [observationsContext.observationsDataLoader.data]);
+
+  useEffect(() => {
+    handleGetSpecies(speciesIds);
+  }, [handleGetSpecies, speciesIds]);
+
+  const handleCheckSpeciesName = useMemo(
+    (id: number) => {
+      const speciesName = speciesNames.find((item) => Number(item.id) === id);
+
+      return speciesName ? speciesName.label : '';
+    },
+    [speciesNames]
+  );
 
   const surveyObservations: INonEditableGeometries[] = useMemo(() => {
     const observations = observationsContext.observationsDataLoader.data?.surveyObservations;
@@ -31,12 +67,10 @@ const ObservationsMap = () => {
 
     return observations
       .filter((observation) => observation.latitude !== undefined && observation.longitude !== undefined)
-      .map((observation) => {
-        /*
+      .map((observation, index) => {
         const link = observation.survey_observation_id
           ? `observations/#view-${observation.survey_observation_id}`
-          : 'observations'
-        */
+          : 'observations';
 
         return {
           feature: {
@@ -47,40 +81,54 @@ const ObservationsMap = () => {
               coordinates: [observation.longitude, observation.latitude] as Position
             }
           },
-          popupComponent: undefined
-          /*(
+          popupComponent: (
             <Popup>
-              <div>{JSON.stringify(observation)}</div>
+              <div>{(speciesNames.length && handleCheckSpeciesName(observation.wldtaxonomic_units_id)) || ''}</div>
               <Button component={RouterLink} to={link}>
-                Check 'er Out
+                View Observation
               </Button>
             </Popup>
-          )*/
+          )
         };
       });
-  }, [observationsContext.observationsDataLoader.data]);
+  }, [observationsContext.observationsDataLoader.data, handleCheckSpeciesName, speciesNames]);
 
-  const studyAreaFeatures: Feature[] = useMemo(() => {
+  const studyAreaFeatures: { geojson: Feature; name: string }[] = useMemo(() => {
     const locations = surveyContext.surveyDataLoader.data?.surveyData.locations;
     if (!locations) {
       return [];
     }
 
-    return locations.flatMap((item) => item.geojson);
+    return locations.flatMap((item) => {
+      return item.geojson.map((geojson) => {
+        return {
+          geojson,
+          name: item.name
+        };
+      });
+    });
   }, [surveyContext.surveyDataLoader.data]);
 
-  const sampleSiteFeatures: Feature[] = useMemo(() => {
+  const sampleSiteFeatures: { geojson: Feature; name: string }[] = useMemo(() => {
     const sites = surveyContext.sampleSiteDataLoader.data?.sampleSites;
     if (!sites) {
       return [];
     }
-
-    return sites.map((item) => item.geojson);
+    return sites.map((item) => {
+      return {
+        geojson: item.geojson,
+        name: item.name
+      };
+    });
   }, [surveyContext.sampleSiteDataLoader.data]);
 
   const getDefaultMapBounds = useCallback((): LatLngBoundsExpression | undefined => {
     const features = surveyObservations.map((observation) => observation.feature);
-    return calculateUpdatedMapBounds([...features, ...studyAreaFeatures, ...sampleSiteFeatures]);
+
+    const studyAreaFeaturesGeoJSON = studyAreaFeatures.map((item) => item.geojson);
+    const sampleSiteFeaturesGeoJSON = sampleSiteFeatures.map((item) => item.geojson);
+
+    return calculateUpdatedMapBounds([...features, ...studyAreaFeaturesGeoJSON, ...sampleSiteFeaturesGeoJSON]);
   }, [surveyObservations, studyAreaFeatures, sampleSiteFeatures]);
 
   // set default bounds to encompass all of BC
@@ -135,14 +183,17 @@ const ObservationsMap = () => {
             layers={[
               {
                 layerName: 'Study Area',
-                features: studyAreaFeatures.map((feature) => ({ geoJSON: feature, tooltip: <span>Study Area</span> }))
+                features: studyAreaFeatures.map((feature) => ({
+                  geoJSON: feature.geojson,
+                  tooltip: <span>Study Area: {feature.name}</span>
+                }))
               },
               {
                 layerName: 'Sample Sites',
                 layerColors: { color: '#1f7dff', fillColor: '#1f7dff' },
                 features: sampleSiteFeatures.map((feature) => ({
-                  geoJSON: feature,
-                  tooltip: <span>Sample Site</span>
+                  geoJSON: feature.geojson,
+                  tooltip: <span>Sampling Site: {feature.name}</span>
                 }))
               }
             ]}
