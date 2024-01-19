@@ -14,16 +14,12 @@ const SurveySpatialData = () => {
   const observationsContext = useContext(ObservationsContext);
   const telemetryContext = useContext(TelemetryDataContext);
   const surveyContext = useContext(SurveyContext);
-
-  //TODO: is this the cleanest way to do this? because this feels gross
   useEffect(() => {
-    surveyContext.deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId).then(() => {
-      if (surveyContext.deploymentDataLoader.data) {
-        const deploymentIds = surveyContext.deploymentDataLoader.data.map((item) => item.deployment_id);
-        telemetryContext.telemetryDataLoader.load(deploymentIds);
-      }
-    });
-  }, []);
+    if (surveyContext.deploymentDataLoader.data) {
+      const deploymentIds = surveyContext.deploymentDataLoader.data.map((item) => item.deployment_id);
+      telemetryContext.telemetryDataLoader.load(deploymentIds);
+    }
+  }, [surveyContext.deploymentDataLoader.data]);
 
   const telemetryPoints: INonEditableGeometries[] = useMemo(() => {
     const telemetryData = telemetryContext.telemetryDataLoader.data;
