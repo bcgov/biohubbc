@@ -4,7 +4,7 @@ import { Position } from 'geojson';
 import { useContext, useMemo, useState } from 'react';
 import { INonEditableGeometries } from 'utils/mapUtils';
 import NoSurveySectionData from '../components/NoSurveySectionData';
-import SurveyMapToolBar, { SurveyMapDataSet } from './components/SurveyMapToolBar';
+import SurveyMapToolBar, { SurveySpatialDataLayout, SurveySpatialDataSet } from './components/SurveyMapToolBar';
 import SurveyMap from './SurveyMap';
 
 const SurveySpatialData = () => {
@@ -36,16 +36,19 @@ const SurveySpatialData = () => {
 
   const [mapPoints, setMapPoints] = useState<INonEditableGeometries[]>(surveyObservations);
 
-  const updateDataSet = (data: SurveyMapDataSet) => {
+  // TODO: this needs to be saved between page visits
+  const [layout, setLayout] = useState<SurveySpatialDataLayout>(SurveySpatialDataLayout.MAP);
+
+  const updateDataSet = (data: SurveySpatialDataSet) => {
     console.log(`DataSet: ${data}`);
     switch (data) {
-      case SurveyMapDataSet.OBSERVATIONS:
+      case SurveySpatialDataSet.OBSERVATIONS:
         setMapPoints(surveyObservations);
         break;
-      case SurveyMapDataSet.TELEMETRY:
+      case SurveySpatialDataSet.TELEMETRY:
         setMapPoints([]);
         break;
-      case SurveyMapDataSet.MARKED_ANIMALS:
+      case SurveySpatialDataSet.MARKED_ANIMALS:
         setMapPoints([]);
         break;
 
@@ -55,17 +58,39 @@ const SurveySpatialData = () => {
     }
   };
 
+  const updateLayout = (data: SurveySpatialDataLayout) => {
+    console.log(`Layout: ${data}`);
+    setLayout(data);
+  };
+
   return (
     <Paper elevation={0}>
-      <SurveyMapToolBar updateDataSet={updateDataSet} updateLayout={(layout) => {}} />
-      <Box position="relative" height={{ sm: 400, md: 600 }}>
-        <SurveyMap mapPoints={mapPoints} />
-      </Box>
-      <Box>
+      <SurveyMapToolBar updateDataSet={updateDataSet} updateLayout={updateLayout} />
+
+      {layout === SurveySpatialDataLayout.MAP && (
+        <Box position="relative" height={{ sm: 400, md: 600 }}>
+          <SurveyMap mapPoints={mapPoints} />
+        </Box>
+      )}
+
+      {layout === SurveySpatialDataLayout.TABLE && (
         <Box p={3}>
           <NoSurveySectionData text="No data available" paperVariant="outlined" />
         </Box>
-      </Box>
+      )}
+
+      {layout === SurveySpatialDataLayout.SPLIT && (
+        <Box sx={{ display: 'flex' }}>
+          <Box>
+            <Box p={3}>
+              <NoSurveySectionData text="No data available" paperVariant="outlined" />
+            </Box>
+          </Box>
+          <Box height={{ sm: 400, md: 600 }}>
+            <SurveyMap mapPoints={mapPoints} />
+          </Box>
+        </Box>
+      )}
     </Paper>
   );
 };

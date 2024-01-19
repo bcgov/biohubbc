@@ -23,6 +23,7 @@ const SurveyMap = (props: ISurveyMapProps) => {
         center={MAP_DEFAULT_CENTER}
         scrollWheelZoom={false}
         fullscreenControl={true}
+        // style={{ height: '100%', width: '800px' }}
         style={{ height: '100%' }}>
         <MapBaseCss />
         <FullScreenScrollingEventHandler bounds={bounds} scrollWheelZoom={false} />
