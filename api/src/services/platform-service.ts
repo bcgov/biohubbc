@@ -1,7 +1,7 @@
-import AdmZip from 'adm-zip';
 import axios from 'axios';
 import FormData from 'form-data';
 import { Feature, FeatureCollection } from 'geojson';
+import mime from 'mime';
 import { URL } from 'url';
 import { IDBConnection } from '../database/db';
 import { ApiError, ApiErrorType, ApiGeneralError } from '../errors/api-error';
@@ -18,7 +18,15 @@ import { SurveyService } from './survey-service';
 
 const defaultLog = getLogger('services/platform-repository');
 
-export interface IArchiveFile {
+export interface IArtifact {
+  /**
+   * UUID that uniquely identifies the submission feature artifact is contained in
+   */
+  submission_uuid: string;
+  /**
+   * The BioHub artifact upload key, used to associate the submitted artifact with the appropriate submission.
+   */
+  artifact_upload_key?: number;
   /**
    * Raw file data
    */
@@ -33,49 +41,9 @@ export interface IArchiveFile {
   mimeType: string;
 }
 
-export interface IArtifactMetadata {
-  file_type: string;
-  title: string | null;
-  description: string | null;
-}
-
-export interface IArtifact {
-  /**
-   * An artifact zip file.
-   */
-  archiveFile: IArchiveFile;
-  /**
-   * UUID that uniquely identifies the artifact
-   */
-  dataPackageId: string;
-  metadata: IArtifactMetadata & {
-    file_name: string;
-    file_size: string;
-  };
-}
-
-export interface IFeatureArtifact {
-  /**
-   * An artifact zip file.
-   */
-  archiveFile: IArchiveFile;
-  /**
-   * UUID that uniquely identifies the submission feature artifact is contained in
-   */
-  submission_uuid: string;
-
-  artifact_upload_key?: number;
-
-  metadata: IArtifactMetadata & {
-    file_name: string;
-    file_size: string;
-  };
-}
-
 const getBackboneIntakeEnabled = () => process.env.BACKBONE_INTAKE_ENABLED === 'true' || false;
 const getBackboneApiHost = () => process.env.BACKBONE_API_HOST || '';
 const getBackboneArtifactIntakePath = () => process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '/api/artifact/intake';
-const getBackboneArtifactDeletePath = () => process.env.BACKBONE_ARTIFACT_DELETE_PATH || '/api/artifact/delete';
 const getBackboneSurveyIntakePath = () => process.env.BACKBONE_DATASET_INTAKE_PATH || '/api/submission/intake';
 
 export class PlatformService extends DBService {
@@ -119,7 +87,7 @@ export class PlatformService extends DBService {
     const surveyAttachments = await this.attachmentService.getSurveyAttachments(surveyId);
 
     // Generate survey data package
-    const surveyDataPackage = await this.generateSurveyDataPackage(
+    const surveyDataPackage = await this._generateSurveyDataPackage(
       surveyId,
       surveyAttachments,
       data.additionalInformation
@@ -169,7 +137,7 @@ export class PlatformService extends DBService {
    * @return {*}  {Promise<PostSurveySubmissionToBioHubObject>}
    * @memberof PlatformService
    */
-  async generateSurveyDataPackage(
+  async _generateSurveyDataPackage(
     surveyId: number,
     surveyAttachments: ISurveyAttachment[],
     additionalInformation: string
@@ -226,8 +194,24 @@ export class PlatformService extends DBService {
           throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to submit survey attachment to Biohub');
         }
 
+        const s3File = await getFileFromS3(attachment.key);
+
         // Build artifact object
-        const artifact = await this._makeArtifactFromSurveyAttachment(submissionUUID, artifactUploadKey, attachment);
+        const artifact = {
+          submission_uuid: submissionUUID,
+          artifact_upload_key: artifactUploadKey,
+          data: s3File.Body as Buffer,
+          fileName: attachment.file_name,
+          mimeType: s3File.ContentType || mime.getType(attachment.file_name) || attachment.file_type
+
+          //   metadata: {
+          //     file_name: attachment.file_name,
+          //     file_size: attachment.file_size,
+          //     file_type: attachment.file_type,
+          //     title: attachment.title,
+          //     description: attachment.description
+          //   }
+        };
 
         // Submit artifact to BioHub
         const { artifact_uuid } = await this._submitArtifactFeatureToBioHub(artifact);
@@ -244,54 +228,14 @@ export class PlatformService extends DBService {
   }
 
   /**
-   * Create artifact object from survey attachment.
+   * Submit survey Artifact to BioHub.
    *
-   * @param {{
-   *     submissionUUID: string;
-   *     attachment: ISurveyAttachment;
-   *   }} data
-   * @return {*}  {Promise<IFeatureArtifact>}
+   * @param {IArtifact} artifact
+   * @return {*}  {Promise<{ artifact_uuid: string }>}
    * @memberof PlatformService
    */
-  async _makeArtifactFromSurveyAttachment(
-    submissionUUID: string,
-    artifactUploadKey: number,
-    attachment: ISurveyAttachment
-  ): Promise<IFeatureArtifact> {
-    // Get attachment file from S3
-    const s3File = await getFileFromS3(attachment.key);
-    const artifactZip = new AdmZip();
-    // Add attachment file to artifact zip
-    artifactZip.addFile(attachment.file_name, s3File.Body as Buffer);
-
-    // Build artifact object
-    return {
-      submission_uuid: submissionUUID,
-      artifact_upload_key: artifactUploadKey,
-      archiveFile: {
-        data: artifactZip.toBuffer(),
-        fileName: `${attachment.uuid}.zip`,
-        mimeType: 'application/zip'
-      },
-      metadata: {
-        file_name: attachment.file_name,
-        file_size: attachment.file_size,
-        file_type: attachment.file_type,
-        title: attachment.title,
-        description: attachment.description
-      }
-    };
-  }
-
-  /**
-   * Submit survey Artifact Feature to BioHub.
-   *
-   * @param {IFeatureArtifact} artifact
-   * @return {*}  {Promise<{ artifact_uuid: number }>}
-   * @memberof PlatformService
-   */
-  async _submitArtifactFeatureToBioHub(artifact: IFeatureArtifact): Promise<{ artifact_uuid: string }> {
-    defaultLog.debug({ label: '_submitArtifactToBioHub', metadata: artifact.metadata });
+  async _submitArtifactFeatureToBioHub(artifact: IArtifact): Promise<{ artifact_uuid: string }> {
+    defaultLog.debug({ label: '_submitArtifactToBioHub', metadata: artifact.fileName });
 
     const keycloakService = new KeycloakService();
 
@@ -299,11 +243,10 @@ export class PlatformService extends DBService {
 
     const formData = new FormData();
 
-    formData.append('media', artifact.archiveFile.data, {
-      filename: artifact.archiveFile.fileName,
-      contentType: artifact.archiveFile.mimeType
+    formData.append('media', artifact.data, {
+      filename: artifact.fileName,
+      contentType: artifact.mimeType
     });
-
     formData.append('submission_uuid', artifact.submission_uuid);
     formData.append('artifact_upload_key', String(artifact.artifact_upload_key));
 
@@ -317,38 +260,5 @@ export class PlatformService extends DBService {
     });
 
     return data;
-  }
-
-  /**
-   * Deletes the given attachment from BioHub.
-   *
-   * @param {string} artifactUUID
-   * @return {*}  {Promise<void>}
-   * @memberof PlatformService
-   */
-  async deleteAttachmentFromBiohub(artifactUUID: string): Promise<void> {
-    defaultLog.debug({ label: 'deleteAttachmentFromBiohub', message: 'params', artifactUUID });
-
-    const keycloakService = new KeycloakService();
-
-    const token = await keycloakService.getKeycloakServiceToken();
-
-    const backboneArtifactIntakeUrl = new URL(getBackboneArtifactDeletePath(), getBackboneApiHost()).href;
-
-    const response = await axios.post<boolean>(
-      backboneArtifactIntakeUrl,
-      {
-        artifactUUIDs: [artifactUUID]
-      },
-      {
-        headers: {
-          authorization: `Bearer ${token}`
-        }
-      }
-    );
-
-    if (!response.data) {
-      throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to delete attachment from Biohub');
-    }
   }
 }

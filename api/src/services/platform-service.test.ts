@@ -46,12 +46,12 @@ describe('PlatformService', () => {
 
       const getKeycloakServiceTokenStub = sinon
         .stub(KeycloakService.prototype, 'getKeycloakServiceToken')
-        .resolves('token');
+    .resolves('token');
 
       sinon.stub(AttachmentService.prototype, 'getSurveyAttachments').resolves([]);
 
-      const generateSurveyDataPackageStub = sinon
-        .stub(PlatformService.prototype, 'generateSurveyDataPackage')
+      const _generateSurveyDataPackageStub = sinon
+        .stub(PlatformService.prototype, '_generateSurveyDataPackage')
         .resolves(({ id: '123-456-789' } as unknown) as any);
 
       sinon.stub(axios, 'post').resolves({});
@@ -61,7 +61,7 @@ describe('PlatformService', () => {
       } catch (error) {
         expect((error as Error).message).to.equal('Failed to submit survey ID to Biohub');
         expect(getKeycloakServiceTokenStub).to.have.been.calledOnce;
-        expect(generateSurveyDataPackageStub).to.have.been.calledOnceWith(1, [], 'test');
+        expect(_generateSurveyDataPackageStub).to.have.been.calledOnceWith(1, [], 'test');
       }
     });
 
@@ -78,8 +78,8 @@ describe('PlatformService', () => {
 
       sinon.stub(AttachmentService.prototype, 'getSurveyAttachments').resolves([]);
 
-      const generateSurveyDataPackageStub = sinon
-        .stub(PlatformService.prototype, 'generateSurveyDataPackage')
+      const _generateSurveyDataPackageStub = sinon
+        .stub(PlatformService.prototype, '_generateSurveyDataPackage')
         .resolves(({ id: '123-456-789' } as unknown) as any);
 
       sinon.stub(axios, 'post').resolves({ data: { submission_uuid: '123-456-789', artifact_upload_keys: [] } });
@@ -95,7 +95,7 @@ describe('PlatformService', () => {
       const response = await platformService.submitSurveyToBioHub(1, { additionalInformation: 'test' });
 
       expect(getKeycloakServiceTokenStub).to.have.been.calledOnce;
-      expect(generateSurveyDataPackageStub).to.have.been.calledOnceWith(1, [], 'test');
+      expect(_generateSurveyDataPackageStub).to.have.been.calledOnceWith(1, [], 'test');
       expect(_submitSurveyAttachmentsToBioHubStub).to.have.been.calledOnceWith('123-456-789', [], []);
       expect(insertSurveyMetadataPublishRecordStub).to.have.been.calledOnceWith({
         survey_id: 1,
@@ -105,7 +105,7 @@ describe('PlatformService', () => {
     });
   });
 
-  describe('generateSurveyDataPackage', () => {
+  describe('_generateSurveyDataPackage', () => {
     afterEach(() => {
       sinon.restore();
     });
@@ -124,7 +124,7 @@ describe('PlatformService', () => {
         .stub(SurveyService.prototype, 'getSurveyLocationsData')
         .resolves([] as any);
 
-      const response = await platformService.generateSurveyDataPackage(1, [], 'additional information');
+      const response = await platformService._generateSurveyDataPackage(1, [], 'additional information');
 
       expect(getSurveyDataStub).to.have.been.calledOnceWith(1);
       expect(getSurveyObservationsWithSupplementaryDataStub).to.have.been.calledOnceWith(1);
@@ -171,45 +171,6 @@ describe('PlatformService', () => {
           ]
         }
       });
-    });
-  });
-
-  describe('deleteAttachmentFromBiohub', () => {
-    beforeEach(() => {
-      process.env.BACKBONE_API_HOST = 'http://backbone-host.dev/';
-      process.env.BACKBONE_ARTIFACT_DELETE_PATH = 'api/artifact/delete';
-      process.env.BACKBONE_INTAKE_ENABLED = 'true';
-      sinon.restore();
-    });
-
-    it('should delete an attachment from biohub successfully', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const platformService = new PlatformService(mockDBConnection);
-
-      const getKeycloakServiceTokenStub = sinon
-        .stub(KeycloakService.prototype, 'getKeycloakServiceToken')
-        .resolves('token');
-
-      const axiosStub = sinon.stub(axios, 'post').resolves({
-        data: {
-          success: true
-        }
-      });
-
-      await platformService.deleteAttachmentFromBiohub('uuid');
-
-      expect(getKeycloakServiceTokenStub).to.have.been.calledOnce;
-      expect(axiosStub).to.have.been.calledOnceWith(
-        'http://backbone-host.dev/api/artifact/delete',
-        {
-          artifactUUIDs: ['uuid']
-        },
-        {
-          headers: {
-            authorization: `Bearer token`
-          }
-        }
-      );
     });
   });
 });
