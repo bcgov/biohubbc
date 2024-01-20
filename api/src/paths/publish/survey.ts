@@ -50,11 +50,12 @@ POST.apiDoc = {
             data: {
               description: 'Additional data to include in the submission to BioHub',
               type: 'object',
-              required: ['additionalInformation'],
+              required: ['submissionComment'],
               properties: {
-                additionalInformation: {
+                submissionComment: {
                   type: 'string',
-                  description: 'Additional information to include in the upload'
+                  description:
+                    'Submission comment to include in the submission to BioHub. May include sensitive information.'
                 }
               }
             }

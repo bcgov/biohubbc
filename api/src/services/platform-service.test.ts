@@ -30,7 +30,7 @@ describe('PlatformService', () => {
       const platformService = new PlatformService(mockDBConnection);
 
       try {
-        await platformService.submitSurveyToBioHub(1, { additionalInformation: 'test' });
+        await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' });
         expect.fail();
       } catch (error) {
         expect((error as Error).message).to.equal('BioHub intake is not enabled');
@@ -46,7 +46,7 @@ describe('PlatformService', () => {
 
       const getKeycloakServiceTokenStub = sinon
         .stub(KeycloakService.prototype, 'getKeycloakServiceToken')
-    .resolves('token');
+        .resolves('token');
 
       sinon.stub(AttachmentService.prototype, 'getSurveyAttachments').resolves([]);
 
@@ -57,7 +57,7 @@ describe('PlatformService', () => {
       sinon.stub(axios, 'post').resolves({});
 
       try {
-        await platformService.submitSurveyToBioHub(1, { additionalInformation: 'test' });
+        await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' });
       } catch (error) {
         expect((error as Error).message).to.equal('Failed to submit survey ID to Biohub');
         expect(getKeycloakServiceTokenStub).to.have.been.calledOnce;
@@ -92,7 +92,7 @@ describe('PlatformService', () => {
         .stub(HistoryPublishService.prototype, 'insertSurveyMetadataPublishRecord')
         .resolves();
 
-      const response = await platformService.submitSurveyToBioHub(1, { additionalInformation: 'test' });
+      const response = await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' });
 
       expect(getKeycloakServiceTokenStub).to.have.been.calledOnce;
       expect(_generateSurveyDataPackageStub).to.have.been.calledOnceWith(1, [], 'test');
@@ -116,6 +116,10 @@ describe('PlatformService', () => {
 
       const getSurveyDataStub = sinon.stub(SurveyService.prototype, 'getSurveyData').resolves({ uuid: '1' } as any);
 
+      const getSurveyPurposeAndMethodologyStub = sinon
+        .stub(SurveyService.prototype, 'getSurveyPurposeAndMethodology')
+        .resolves({ additional_details: 'a description of the purpose' } as any);
+
       const getSurveyObservationsWithSupplementaryDataStub = sinon
         .stub(ObservationService.prototype, 'getSurveyObservationsWithSupplementaryData')
         .resolves({ surveyObservations: [{ survey_observation_id: 2 } as any], supplementaryData: [] } as any);
@@ -124,15 +128,17 @@ describe('PlatformService', () => {
         .stub(SurveyService.prototype, 'getSurveyLocationsData')
         .resolves([] as any);
 
-      const response = await platformService._generateSurveyDataPackage(1, [], 'additional information');
+      const response = await platformService._generateSurveyDataPackage(1, [], 'a comment about the submission');
 
       expect(getSurveyDataStub).to.have.been.calledOnceWith(1);
+      expect(getSurveyPurposeAndMethodologyStub).to.have.been.calledOnceWith(1);
       expect(getSurveyObservationsWithSupplementaryDataStub).to.have.been.calledOnceWith(1);
       expect(getSurveyLocationsDataStub).to.have.been.calledOnceWith(1);
       expect(response).to.eql({
         id: '1',
         name: undefined,
-        description: 'additional information',
+        description: 'a description of the purpose',
+        comment: 'a comment about the submission',
         content: {
           id: '1',
           type: 'dataset',

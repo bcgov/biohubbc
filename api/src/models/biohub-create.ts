@@ -2,7 +2,7 @@ import { FeatureCollection } from 'geojson';
 import { ISurveyAttachment } from '../repositories/attachment-repository';
 import { ObservationRecord } from '../repositories/observation-repository';
 import { getLogger } from '../utils/logger';
-import { GetSurveyData } from './survey-view';
+import { GetSurveyData, GetSurveyPurposeAndMethodologyData } from './survey-view';
 
 const defaultLog = getLogger('models/biohub-create');
 
@@ -146,20 +146,23 @@ export class PostSurveySubmissionToBioHubObject implements BioHubSubmission {
   id: string;
   name: string;
   description: string;
+  comment: string;
   content: BioHubSubmissionFeature;
 
   constructor(
     surveyData: GetSurveyData,
+    GetSurveyPurposeAndMethodologyData: GetSurveyPurposeAndMethodologyData,
     observationRecords: ObservationRecord[],
     surveyGeometry: FeatureCollection,
     surveyAttachments: ISurveyAttachment[],
-    additionalInformation: string
+    submissionComment: string
   ) {
     defaultLog.debug({ label: 'PostSurveySubmissionToBioHubObject' });
 
     this.id = surveyData.uuid;
     this.name = surveyData.survey_name;
-    this.description = additionalInformation;
+    this.description = GetSurveyPurposeAndMethodologyData.additional_details;
+    this.comment = submissionComment;
     this.content = new PostSurveyToBiohubObject(surveyData, observationRecords, surveyGeometry, surveyAttachments);
   }
 }

@@ -19,7 +19,7 @@ import yup from 'utils/YupSchema';
 import PublishSurveyIdContent from './components/PublishSurveyContent';
 
 export interface ISubmitSurvey {
-  additionalInformation: string;
+  submissionComment: string;
   agreement1: boolean;
   agreement2: boolean;
   agreement3: boolean;
@@ -31,14 +31,14 @@ interface IPublishSurveyIdDialogProps {
 }
 
 const surveySubmitFormInitialValues: ISubmitSurvey = {
-  additionalInformation: '',
+  submissionComment: '',
   agreement1: false,
   agreement2: false,
   agreement3: false
 };
 
 const surveySubmitFormYupSchema = yup.object().shape({
-  additionalInformation: yup.string(),
+  submissionComment: yup.string(),
   agreement1: yup.boolean().oneOf([true], 'You must accept all agreements.'),
   agreement2: yup.boolean().oneOf([true], 'You must accept all agreements.'),
   agreement3: yup.boolean().oneOf([true], 'You must accept all agreements.')

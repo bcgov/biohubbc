@@ -37,7 +37,7 @@ describe('survey', () => {
         body: {
           surveyId: 1,
           data: {
-            additionalInformation: 'test'
+            submissionComment: 'test'
           }
         },
         params: {}

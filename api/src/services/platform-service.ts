@@ -61,13 +61,13 @@ export class PlatformService extends DBService {
    * Submit survey to BioHub.
    *
    * @param {number} surveyId
-   * @param {{ additionalInformation: string }} data
+   * @param {{ submissionComment: string }} data
    * @return {*}  {Promise<{ submission_uuid: number }>}
    * @memberof PlatformService
    */
   async submitSurveyToBioHub(
     surveyId: number,
-    data: { additionalInformation: string }
+    data: { submissionComment: string }
   ): Promise<{ submission_uuid: string }> {
     defaultLog.debug({ label: 'submitSurveyToBioHub', message: 'params', surveyId });
 
@@ -90,7 +90,7 @@ export class PlatformService extends DBService {
     const surveyDataPackage = await this._generateSurveyDataPackage(
       surveyId,
       surveyAttachments,
-      data.additionalInformation
+      data.submissionComment
     );
 
     // Submit survey data package to BioHub
@@ -133,20 +133,21 @@ export class PlatformService extends DBService {
    *
    * @param {number} surveyId
    * @param {ISurveyAttachment[]} surveyAttachments
-   * @param {string} additionalInformation
+   * @param {string} submissionComment
    * @return {*}  {Promise<PostSurveySubmissionToBioHubObject>}
    * @memberof PlatformService
    */
   async _generateSurveyDataPackage(
     surveyId: number,
     surveyAttachments: ISurveyAttachment[],
-    additionalInformation: string
+    submissionComment: string
   ): Promise<PostSurveySubmissionToBioHubObject> {
     const observationService = new ObservationService(this.connection);
     const surveyService = new SurveyService(this.connection);
 
     // Get survey data
     const survey = await surveyService.getSurveyData(surveyId);
+    const purposeAndMethodology = await surveyService.getSurveyPurposeAndMethodology(surveyId);
     const { surveyObservations } = await observationService.getSurveyObservationsWithSupplementaryData(surveyId);
     const surveyLocation = await surveyService.getSurveyLocationsData(surveyId);
 
@@ -158,10 +159,11 @@ export class PlatformService extends DBService {
     // Generate survey data package
     const surveyDataPackage = new PostSurveySubmissionToBioHubObject(
       survey,
+      purposeAndMethodology,
       surveyObservations,
       geometryFeatureCollection,
       surveyAttachments,
-      additionalInformation
+      submissionComment
     );
 
     return surveyDataPackage;

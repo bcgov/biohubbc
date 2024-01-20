@@ -368,16 +368,6 @@ describe('AttachmentService', () => {
               .stub(AttachmentService.prototype, 'deleteProjectAttachment')
               .resolves();
 
-            const getProjectReportPublishStub = sinon
-              .stub(HistoryPublishService.prototype, 'getProjectReportPublishRecord')
-              .resolves(({
-                survey_report_publish_id: 1
-              } as unknown) as ProjectReportPublish);
-            const getProjectPublishStub = sinon
-              .stub(HistoryPublishService.prototype, 'getProjectAttachmentPublishRecord')
-              .resolves(({
-                survey_report_publish_id: 1
-              } as unknown) as ProjectAttachmentPublish);
             const deleteProjectPublishStub = sinon
               .stub(HistoryPublishService.prototype, 'deleteProjectAttachmentPublishRecord')
               .resolves();
@@ -397,7 +387,6 @@ describe('AttachmentService', () => {
             await service.handleDeleteProjectAttachment(1, 1, ATTACHMENT_TYPE.REPORT);
 
             expect(getProjectReportStub).to.be.called;
-            expect(getProjectReportPublishStub).to.be.called;
             expect(deleteProjectReportPublishStub).to.be.called;
             expect(deleteProjectReportAuthorsStub).to.be.called;
             expect(deleteProjectReportAttachmentStub).to.be.called;
@@ -405,7 +394,6 @@ describe('AttachmentService', () => {
 
             expect(deleteProjectAttachmentStub).to.not.be.called;
             expect(getProjectAttachmentStub).to.not.be.called;
-            expect(getProjectPublishStub).to.not.be.called;
             expect(deleteProjectPublishStub).to.not.be.called;
           });
         });
@@ -439,16 +427,6 @@ describe('AttachmentService', () => {
               .stub(AttachmentService.prototype, 'deleteProjectAttachment')
               .resolves();
 
-            const getProjectReportPublishStub = sinon
-              .stub(HistoryPublishService.prototype, 'getProjectReportPublishRecord')
-              .resolves(({
-                survey_report_publish_id: 1
-              } as unknown) as ProjectReportPublish);
-            const getProjectPublishStub = sinon
-              .stub(HistoryPublishService.prototype, 'getProjectAttachmentPublishRecord')
-              .resolves(({
-                survey_report_publish_id: 1
-              } as unknown) as ProjectAttachmentPublish);
             const deleteProjectPublishStub = sinon
               .stub(HistoryPublishService.prototype, 'deleteProjectAttachmentPublishRecord')
               .resolves();
@@ -468,13 +446,11 @@ describe('AttachmentService', () => {
             await service.handleDeleteProjectAttachment(1, 1, ATTACHMENT_TYPE.OTHER);
 
             expect(getProjectAttachmentStub).to.be.called;
-            expect(getProjectPublishStub).to.be.called;
             expect(deleteProjectPublishStub).to.be.called;
             expect(deleteProjectAttachmentStub).to.be.called;
             expect(deleteS3).to.be.called;
 
             expect(getProjectReportStub).to.not.be.called;
-            expect(getProjectReportPublishStub).to.not.be.called;
             expect(deleteProjectReportPublishStub).to.not.be.called;
             expect(deleteProjectReportAuthorsStub).to.not.be.called;
             expect(deleteProjectReportAttachmentStub).to.not.be.called;
@@ -843,16 +819,6 @@ describe('AttachmentService', () => {
                 uuid: 'uuid',
                 key: 's3/key'
               } as unknown) as ISurveyAttachment);
-            const reportPublishStatusStub = sinon
-              .stub(HistoryPublishService.prototype, 'getSurveyReportPublishRecord')
-              .resolves(({
-                survey_report_publish_id: 1
-              } as unknown) as SurveyReportPublish);
-            const attachmentPublishStatusStub = sinon
-              .stub(HistoryPublishService.prototype, 'getSurveyAttachmentPublishRecord')
-              .resolves(({
-                survey_attachment_publish_id: 1
-              } as unknown) as SurveyAttachmentPublish);
             const deleteSurveyReportPublishStub = sinon
               .stub(HistoryPublishService.prototype, 'deleteSurveyReportAttachmentPublishRecord')
               .resolves();
@@ -891,13 +857,11 @@ describe('AttachmentService', () => {
             await service.handleDeleteSurveyAttachment(1, 1, ATTACHMENT_TYPE.OTHER);
 
             expect(getSurveyAttachmentStub).to.be.called;
-            expect(attachmentPublishStatusStub).to.be.called;
             expect(attachmentPublishDeleteStub).to.be.called;
             expect(deleteSurveyAttachmentStub).to.be.called;
             expect(deleteS3).to.be.called;
 
             expect(getSurveyReportStub).to.be.not.called;
-            expect(reportPublishStatusStub).to.be.not.called;
             expect(deleteSurveyReportPublishStub).to.be.not.called;
             expect(deleteSurveyReportAuthorsStub).to.be.not.called;
             expect(deleteSurveyReportStub).to.be.not.called;
@@ -917,11 +881,6 @@ describe('AttachmentService', () => {
                 uuid: 'uuid',
                 key: 's3/key'
               } as unknown) as ISurveyAttachment);
-            const reportPublishStatusStub = sinon
-              .stub(HistoryPublishService.prototype, 'getSurveyReportPublishRecord')
-              .resolves(({
-                survey_report_publish_id: 1
-              } as unknown) as SurveyReportPublish);
             const attachmentPublishStatusStub = sinon
               .stub(HistoryPublishService.prototype, 'getSurveyAttachmentPublishRecord')
               .resolves(({
@@ -961,7 +920,6 @@ describe('AttachmentService', () => {
             await service.handleDeleteSurveyAttachment(1, 1, ATTACHMENT_TYPE.REPORT);
 
             expect(getSurveyReportStub).to.be.called;
-            expect(reportPublishStatusStub).to.be.called;
             expect(deleteSurveyReportPublishStub).to.be.called;
             expect(deleteSurveyReportAuthorsStub).to.be.called;
             expect(deleteSurveyReportStub).to.be.called;
