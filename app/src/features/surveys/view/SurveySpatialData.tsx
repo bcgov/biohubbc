@@ -146,7 +146,7 @@ const SurveySpatialData = () => {
     <Paper>
       <SurveyMapToolBar updateDataSet={updateDataSet} updateLayout={updateLayout} />
 
-      <Box height={{ sm: 400, md: 600 }}>
+      <Box height={{ sm: 400, md: 600 }} position="relative">
         <SurveyMap mapPoints={mapPoints} />
       </Box>
       <Box p={1}>
