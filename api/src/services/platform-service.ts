@@ -6,7 +6,7 @@ import { URL } from 'url';
 import { IDBConnection } from '../database/db';
 import { ApiError, ApiErrorType, ApiGeneralError } from '../errors/api-error';
 import { PostSurveySubmissionToBioHubObject } from '../models/biohub-create';
-import { ISurveyAttachment } from '../repositories/attachment-repository';
+import { ISurveyAttachment, ISurveyReportAttachment } from '../repositories/attachment-repository';
 import { getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { AttachmentService } from './attachment-service';
@@ -16,7 +16,7 @@ import { KeycloakService } from './keycloak-service';
 import { ObservationService } from './observation-service';
 import { SurveyService } from './survey-service';
 
-const defaultLog = getLogger('services/platform-repository');
+const defaultLog = getLogger('services/platform-service');
 
 export interface IArtifact {
   /**
@@ -43,8 +43,8 @@ export interface IArtifact {
 
 const getBackboneIntakeEnabled = () => process.env.BACKBONE_INTAKE_ENABLED === 'true' || false;
 const getBackboneApiHost = () => process.env.BACKBONE_API_HOST || '';
-const getBackboneArtifactIntakePath = () => process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '/api/artifact/intake';
-const getBackboneSurveyIntakePath = () => process.env.BACKBONE_DATASET_INTAKE_PATH || '/api/submission/intake';
+const getBackboneArtifactIntakePath = () => process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '';
+const getBackboneSurveyIntakePath = () => process.env.BACKBONE_DATASET_INTAKE_PATH || '';
 
 export class PlatformService extends DBService {
   attachmentService: AttachmentService;
@@ -62,7 +62,7 @@ export class PlatformService extends DBService {
    *
    * @param {number} surveyId
    * @param {{ submissionComment: string }} data
-   * @return {*}  {Promise<{ submission_uuid: number }>}
+   * @return {*}  {Promise<{ submission_uuid: string }>}
    * @memberof PlatformService
    */
   async submitSurveyToBioHub(
@@ -77,7 +77,7 @@ export class PlatformService extends DBService {
 
     const keycloakService = new KeycloakService();
 
-    // Get keycloak token for BioHub service account
+    // Get keycloak token for SIMS service client account
     const token = await keycloakService.getKeycloakServiceToken();
 
     // Create intake url
@@ -86,10 +86,14 @@ export class PlatformService extends DBService {
     // Get survey attachments
     const surveyAttachments = await this.attachmentService.getSurveyAttachments(surveyId);
 
+    // Get survey report attachments
+    const surveyReportAttachments = await this.attachmentService.getSurveyReportAttachments(surveyId);
+
     // Generate survey data package
     const surveyDataPackage = await this._generateSurveyDataPackage(
       surveyId,
       surveyAttachments,
+      surveyReportAttachments,
       data.submissionComment
     );
 
@@ -108,18 +112,22 @@ export class PlatformService extends DBService {
       throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to submit survey ID to Biohub');
     }
 
-    // Submit survey attachments to BioHub
-    await this._submitSurveyAttachmentsToBioHub(
-      surveyDataPackage.id,
-      surveyAttachments,
-      response.data.artifact_upload_keys
-    );
+    await Promise.all([
+      // Submit survey attachments to BioHub
+      this._submitSurveyAttachmentsToBioHub(
+        surveyDataPackage.id,
+        surveyAttachments,
+        response.data.artifact_upload_keys
+      ),
+      // Submit survey report attachments to BioHub
+      this._submitSurveyReportAttachmentsToBioHub(
+        surveyDataPackage.id,
+        surveyReportAttachments,
+        response.data.artifact_upload_keys
+      )
+    ]);
 
     // Insert publish history record
-
-    // NOTE: this is a temporary solution to get the submission_uuid into the publish history table
-    //      the submission_uuid is not returned from the survey intake endpoint, so we are using the submission_uuid
-    //      as a temporary solution
     await this.historyPublishService.insertSurveyMetadataPublishRecord({
       survey_id: surveyId,
       submission_uuid: response.data.submission_uuid
@@ -133,6 +141,7 @@ export class PlatformService extends DBService {
    *
    * @param {number} surveyId
    * @param {ISurveyAttachment[]} surveyAttachments
+   * @param {ISurveyReportAttachment[]} surveyReportAttachments
    * @param {string} submissionComment
    * @return {*}  {Promise<PostSurveySubmissionToBioHubObject>}
    * @memberof PlatformService
@@ -140,6 +149,7 @@ export class PlatformService extends DBService {
   async _generateSurveyDataPackage(
     surveyId: number,
     surveyAttachments: ISurveyAttachment[],
+    surveyReportAttachments: ISurveyReportAttachment[],
     submissionComment: string
   ): Promise<PostSurveySubmissionToBioHubObject> {
     const observationService = new ObservationService(this.connection);
@@ -163,6 +173,7 @@ export class PlatformService extends DBService {
       surveyObservations,
       geometryFeatureCollection,
       surveyAttachments,
+      surveyReportAttachments,
       submissionComment
     );
 
@@ -173,17 +184,18 @@ export class PlatformService extends DBService {
    * Submit survey attachments submission to BioHub.
    *
    * @param {string} submissionUUID
-   * @param {ISurveyAttachment[]} surveyAttachments
-   * @return {*}  {Promise<{ survey_attachment_publish_id: number }[]>}
+   * @param {ISurveyReportAttachment[]} surveyReportAttachments
+   * @param {{ artifact_filename: string; artifact_upload_key: number }[]} artifact_upload_keys
+   * @return {*}  {Promise<{ survey_report_publish_id: number }[]>}
    * @memberof PlatformService
    */
   async _submitSurveyAttachmentsToBioHub(
     submissionUUID: string,
     surveyAttachments: ISurveyAttachment[],
     artifact_upload_keys: { artifact_filename: string; artifact_upload_key: number }[]
-  ): Promise<void> {
+  ): Promise<{ survey_attachment_publish_id: number }[]> {
     // Submit survey attachments to BioHub
-    await Promise.all(
+    return Promise.all(
       // Loop through survey attachments
       surveyAttachments.map(async (attachment) => {
         // Get artifact_upload_key for attachment
@@ -204,15 +216,7 @@ export class PlatformService extends DBService {
           artifact_upload_key: artifactUploadKey,
           data: s3File.Body as Buffer,
           fileName: attachment.file_name,
-          mimeType: s3File.ContentType || mime.getType(attachment.file_name) || attachment.file_type
-
-          //   metadata: {
-          //     file_name: attachment.file_name,
-          //     file_size: attachment.file_size,
-          //     file_type: attachment.file_type,
-          //     title: attachment.title,
-          //     description: attachment.description
-          //   }
+          mimeType: s3File.ContentType || mime.getType(attachment.file_name) || 'application/octet-stream'
         };
 
         // Submit artifact to BioHub
@@ -225,8 +229,57 @@ export class PlatformService extends DBService {
         });
       })
     );
+  }
 
-    // return attachmentArtifactPublishRecords;
+  /**
+   * Submit survey report attachments submission to BioHub.
+   *
+   * @param {string} submissionUUID
+   * @param {ISurveyReportAttachment[]} surveyReportAttachments
+   * @param {{ artifact_filename: string; artifact_upload_key: number }[]} artifact_upload_keys
+   * @return {*}  {Promise<{ survey_report_publish_id: number }[]>}
+   * @memberof PlatformService
+   */
+  async _submitSurveyReportAttachmentsToBioHub(
+    submissionUUID: string,
+    surveyReportAttachments: ISurveyReportAttachment[],
+    artifact_upload_keys: { artifact_filename: string; artifact_upload_key: number }[]
+  ): Promise<{ survey_report_publish_id: number }[]> {
+    // Submit survey attachments to BioHub
+    return Promise.all(
+      // Loop through survey report attachments
+      surveyReportAttachments.map(async (attachment) => {
+        // Get artifact_upload_key for attachment
+        const artifactUploadKey = artifact_upload_keys.find(
+          (artifact) => artifact.artifact_filename === attachment.file_name
+        )?.artifact_upload_key;
+
+        // Throw error if artifact_upload_key is not found
+        if (!artifactUploadKey) {
+          throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to submit survey report attachment to Biohub');
+        }
+
+        const s3File = await getFileFromS3(attachment.key);
+
+        // Build artifact object
+        const artifact = {
+          submission_uuid: submissionUUID,
+          artifact_upload_key: artifactUploadKey,
+          data: s3File.Body as Buffer,
+          fileName: attachment.file_name,
+          mimeType: s3File.ContentType || mime.getType(attachment.file_name) || 'application/octet-stream'
+        };
+
+        // Submit artifact to BioHub
+        const { artifact_uuid } = await this._submitArtifactFeatureToBioHub(artifact);
+
+        // Insert publish history record
+        return this.historyPublishService.insertSurveyReportPublishRecord({
+          artifact_uuid,
+          survey_report_attachment_id: attachment.survey_report_attachment_id
+        });
+      })
+    );
   }
 
   /**
