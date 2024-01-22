@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import { Position } from 'geojson';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { INonEditableGeometries } from 'utils/mapUtils';
+import NoSurveySectionData from '../components/NoSurveySectionData';
 import SurveyMapToolBar, { SurveySpatialDataLayout, SurveySpatialDataSet } from './components/SurveyMapToolBar';
 import SurveyMap from './SurveyMap';
 import SurveySpatialDataTable from './SurveySpatialDataTable';
@@ -149,8 +150,11 @@ const SurveySpatialData = () => {
         <SurveyMap mapPoints={mapPoints} />
       </Box>
       <Box p={1}>
-        <SurveySpatialDataTable tableHeaders={tableHeaders} tableRows={tableRows} />
-        {/* <NoSurveySectionData text="No data available" paperVariant="outlined" /> */}
+        {tableRows.length > 0 ? (
+          <SurveySpatialDataTable tableHeaders={tableHeaders} tableRows={tableRows} />
+        ) : (
+          <NoSurveySectionData text="No data available" paperVariant="outlined" />
+        )}
       </Box>
 
       {/* {layout === SurveySpatialDataLayout.MAP && (
