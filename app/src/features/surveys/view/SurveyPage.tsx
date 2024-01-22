@@ -47,11 +47,14 @@ const SurveyPage: React.FC = () => {
     <>
       <SurveyHeader />
       <Container maxWidth="xl" sx={{ py: 3 }}>
-        <Paper elevation={0}>
-          <TaxonomyContextProvider>
-            <SurveySpatialData />
-          </TaxonomyContextProvider>
-        </Paper>
+
+        <Stack gap={3}>
+        
+          <Paper>
+            <TaxonomyContextProvider>
+              <SurveySpatialData />
+            </TaxonomyContextProvider>
+          </Paper>
 
           <Paper>
             <SurveyAnimals />
