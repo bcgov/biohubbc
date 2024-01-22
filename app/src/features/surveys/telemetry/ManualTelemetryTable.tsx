@@ -41,6 +41,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
     });
     return data;
   }, [surveyContext.critterDataLoader.data, surveyContext.deploymentDataLoader.data]);
+
   const { _muiDataGridApiRef } = telemetryTableContext;
   const hasError = useCallback(
     (params: GridCellParams): boolean => {

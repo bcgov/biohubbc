@@ -8,6 +8,7 @@ import { Position } from 'geojson';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { INonEditableGeometries } from 'utils/mapUtils';
 import NoSurveySectionData from '../components/NoSurveySectionData';
+import { ICritterDeployment } from '../telemetry/ManualTelemetryList';
 import SurveyMapToolBar, { SurveySpatialDataLayout, SurveySpatialDataSet } from './components/SurveyMapToolBar';
 import SurveyMap from './SurveyMap';
 import SurveySpatialDataTable from './SurveySpatialDataTable';
@@ -18,7 +19,11 @@ const SurveySpatialData = () => {
   const taxonomyContext = useContext(TaxonomyContext);
   const surveyContext = useContext(SurveyContext);
 
-  //
+  useEffect(() => {
+    surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+  }, []);
+
   useEffect(() => {
     if (surveyContext.deploymentDataLoader.data) {
       const deploymentIds = surveyContext.deploymentDataLoader.data.map((item) => item.deployment_id);
@@ -30,15 +35,32 @@ const SurveySpatialData = () => {
   useEffect(() => {
     const cacheTaxonomicData = async () => {
       if (observationsContext.observationsDataLoader.data) {
-        const taxonomicIds = observationsContext.observationsDataLoader.data.surveyObservations.map(
-          (item) => item.wldtaxonomic_units_id
-        );
+        // fetch all unique wldtaxonomic_units_id's from observations to find taxonomic names
+        const taxonomicIds = [
+          ...new Set(
+            observationsContext.observationsDataLoader.data.surveyObservations.map((item) => item.wldtaxonomic_units_id)
+          )
+        ];
         await taxonomyContext.cacheSpeciesTaxonomyByIds(taxonomicIds);
       }
     };
 
     cacheTaxonomicData();
   }, [observationsContext.observationsDataLoader.data]);
+
+  const flattenedCritterDeployments: ICritterDeployment[] = useMemo(() => {
+    const data: ICritterDeployment[] = [];
+    // combine all critter and deployments into a flat list
+    surveyContext.deploymentDataLoader.data?.forEach((deployment) => {
+      const critter = surveyContext.critterDataLoader.data?.find(
+        (critter) => critter.critter_id === deployment.critter_id
+      );
+      if (critter) {
+        data.push({ critter, deployment });
+      }
+    });
+    return data;
+  }, [surveyContext.critterDataLoader.data, surveyContext.deploymentDataLoader.data]);
 
   const telemetryPoints: INonEditableGeometries[] = useMemo(() => {
     const telemetryData = telemetryContext.telemetryDataLoader.data;
@@ -112,21 +134,21 @@ const SurveySpatialData = () => {
         break;
       case SurveySpatialDataSet.TELEMETRY:
         setMapPoints(telemetryPoints);
-        setTableHeaders(['Deployment ID', 'Device ID', 'Date', 'Time', 'Lat', 'Long']);
+        setTableHeaders(['Alias', 'Device ID', 'Start', 'End']);
         setTableRows(
-          telemetryContext.telemetryDataLoader.data?.map((item) => [
-            `${item.deployment_id}`,
-            `${item.deployment_id}`,
-            `${dayjs(item.acquisition_date).format('YYYY-MM-DD')}`,
-            `${dayjs(item.acquisition_date).format('HH:mm:ss')}`,
-            `${item.latitude}`,
-            `${item.longitude}`
-          ]) || []
+          flattenedCritterDeployments.map((item) => {
+            return [
+              `${item.critter.animal_id}`,
+              `${item.deployment.device_id}`,
+              `${dayjs(item.deployment.attachment_start).format('YYYY-MM-DD')}`,
+              `${dayjs(item.deployment.attachment_end).format('YYYY-MM-DD')}`
+            ];
+          })
         );
         break;
       case SurveySpatialDataSet.MARKED_ANIMALS:
         setMapPoints([]);
-        setTableHeaders(['Alias', 'Event', 'Date', 'Time', 'Lat', 'Long']);
+        setTableHeaders(['Deployment ID', 'Device ID', 'Date', 'Time', 'Lat', 'Long']);
         setTableRows([]);
         break;
       default:
