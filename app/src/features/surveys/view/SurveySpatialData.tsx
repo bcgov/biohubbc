@@ -125,13 +125,13 @@ const SurveySpatialData = () => {
   };
 
   return (
-    <Paper elevation={0}>
+    <Paper>
       <SurveyMapToolBar updateDataSet={updateDataSet} updateLayout={updateLayout} />
 
       <Box height={{ sm: 400, md: 600 }}>
         <SurveyMap mapPoints={mapPoints} />
       </Box>
-      <Box px={1}>
+      <Box p={1}>
         <SurveySpatialDataTable tableHeaders={tableHeaders} tableRows={tableRows} />
         {/* <NoSurveySectionData text="No data available" paperVariant="outlined" /> */}
       </Box>

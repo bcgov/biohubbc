@@ -1,6 +1,6 @@
-import { mdiChevronDown } from '@mdi/js';
+import { mdiBroadcast, mdiChevronDown, mdiEye } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, Menu, MenuItem, ToggleButton, ToggleButtonGroup, Toolbar, Typography } from '@mui/material';
+import { Box, Divider, ListItemIcon, ListItemText, Menu, MenuItem, ToggleButton, ToggleButtonGroup, Toolbar, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import { useState } from 'react';
 
@@ -60,9 +60,14 @@ const SurveyMapToolBar = (props: ISurveyMapToolBarProps) => {
           horizontal: 'right',
         }}
       >
-        <MenuItem>Observations</MenuItem>
-        <MenuItem>Telemetry</MenuItem>
-        <MenuItem>Marked Animals</MenuItem>
+        <MenuItem>
+          <ListItemIcon><Icon path={mdiEye} size={1} /></ListItemIcon>
+          <ListItemText>Observations</ListItemText>
+        </MenuItem>
+        <MenuItem>
+          <ListItemIcon><Icon path={mdiBroadcast} size={1} /></ListItemIcon>
+          <ListItemText>Telemetry</ListItemText>
+        </MenuItem>
       </Menu>
       <Box
         sx={{
@@ -72,7 +77,7 @@ const SurveyMapToolBar = (props: ISurveyMapToolBarProps) => {
         }}>
         <Toolbar sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 2 }}>
           <Typography variant="h3" flex="1 1 auto">
-            SURVEY DATA
+            Survey Data
           </Typography>
           <Button 
             variant="contained" 
@@ -82,11 +87,15 @@ const SurveyMapToolBar = (props: ISurveyMapToolBarProps) => {
             endIcon={
               <Icon path={mdiChevronDown} size={0.75}></Icon>
             }
+            sx={{
+              m: -1
+            }}
           >
             Manage
           </Button>
         </Toolbar>
-        <Box px={2} pb={2}>
+        <Divider flexItem></Divider>
+        <Box py={2} px={3}>
           <ToggleButtonGroup value={dataset} onChange={updateDataSet} exclusive
             sx={{
               display: 'flex',
@@ -96,22 +105,14 @@ const SurveyMapToolBar = (props: ISurveyMapToolBarProps) => {
                 px: 1.25,
                 border: 'none',
                 borderRadius: '4px !important',
+                fontSize: '0.875rem',
                 fontWeight: 700,
-                letterSpacing: '0.01rem',
-                '&.Mui-selected': {
-                  color: '#fff',
-                  backgroundColor: 'info.main'
-                },
-                '&.Mui-selected:hover': {
-                  color: '#fff',
-                  backgroundColor: 'info.main'
-                }
+                letterSpacing: '0.02rem'
               }
             }}
           >
-            <ToggleButton component={Button} color="primary" value={SurveySpatialDataSet.OBSERVATIONS}>Observations</ToggleButton>
-            <ToggleButton component={Button} color="primary" value={SurveySpatialDataSet.TELEMETRY}>Telemetry</ToggleButton>
-            <ToggleButton component={Button} color="primary" variant="contained" value={SurveySpatialDataSet.MARKED_ANIMALS}>Animal Events</ToggleButton>
+            <ToggleButton component={Button} color="primary" startIcon={<Icon path={mdiEye} size={0.75} />} value={SurveySpatialDataSet.OBSERVATIONS}>Observations</ToggleButton>
+            <ToggleButton component={Button} color="primary" startIcon={<Icon path={mdiBroadcast} size={0.75} />} value={SurveySpatialDataSet.TELEMETRY}>Telemetry</ToggleButton>
           </ToggleButtonGroup>
 
           <ToggleButtonGroup value={layout} onChange={updateLayout} exclusive sx={{display: 'none'}}>

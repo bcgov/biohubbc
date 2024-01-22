@@ -14,6 +14,8 @@ import SurveyStudyArea from './components/SurveyStudyArea';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyHeader from './SurveyHeader';
 import SurveySpatialData from './SurveySpatialData';
+import SurveyAnimals from './SurveyAnimals';
+import { Stack } from '@mui/material';
 
 //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
@@ -45,9 +47,22 @@ const SurveyPage: React.FC = () => {
       <SurveyHeader />
       <Container maxWidth="xl" sx={{ py: 3 }}>
 
-        <Paper elevation={0}>
-          <SurveySpatialData />
-        </Paper>
+        <Stack gap={3}>
+          <Paper>
+            <SurveySpatialData />
+          </Paper>
+
+          <Paper>
+            <SurveyAnimals />
+          </Paper>
+
+          <Paper>
+            <SurveyAttachments />
+          </Paper>
+
+          <SurveyDetails />
+
+        </Stack>
 
         {/* <Box mt={3}>
           <Paper elevation={0}>
@@ -57,25 +72,9 @@ const SurveyPage: React.FC = () => {
 
         {/* <Box mt={3}>
           <Paper elevation={0}>
-            <SurveyAnimals />
-          </Paper>
-        </Box> */}
-
-        {/* <Box mt={3}>
-          <Paper elevation={0}>
             <SurveySummaryResults />
           </Paper>
         </Box> */}
-
-        <Box mt={3}>
-          <Paper elevation={0}>
-            <SurveyAttachments />
-          </Paper>
-        </Box>
-
-        <Box sx={{ mt: 3 }}>
-          <SurveyDetails />
-        </Box>
 
         <Paper sx={{ display: 'none' }}>
           <SurveyStudyArea />
