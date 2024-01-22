@@ -8,6 +8,7 @@ import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContext } from 'contexts/codesContext';
 import { ObservationsContext } from 'contexts/observationsContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
 import SurveyDetails from 'features/surveys/view/SurveyDetails';
 import React, { useContext, useEffect } from 'react';
 import SurveyStudyArea from './components/SurveyStudyArea';
@@ -44,9 +45,10 @@ const SurveyPage: React.FC = () => {
     <>
       <SurveyHeader />
       <Container maxWidth="xl" sx={{ py: 3 }}>
-
         <Paper elevation={0}>
-          <SurveySpatialData />
+          <TaxonomyContextProvider>
+            <SurveySpatialData />
+          </TaxonomyContextProvider>
         </Paper>
 
         {/* <Box mt={3}>

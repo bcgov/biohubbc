@@ -1,6 +1,7 @@
 import { Box, Paper } from '@mui/material';
 import { ObservationsContext } from 'contexts/observationsContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import { TaxonomyContext } from 'contexts/taxonomyContext';
 import { TelemetryDataContext } from 'contexts/telemetryDataContext';
 import dayjs from 'dayjs';
 import { Position } from 'geojson';
@@ -13,13 +14,31 @@ import SurveySpatialDataTable from './SurveySpatialDataTable';
 const SurveySpatialData = () => {
   const observationsContext = useContext(ObservationsContext);
   const telemetryContext = useContext(TelemetryDataContext);
+  const taxonomyContext = useContext(TaxonomyContext);
   const surveyContext = useContext(SurveyContext);
+
+  //
   useEffect(() => {
     if (surveyContext.deploymentDataLoader.data) {
       const deploymentIds = surveyContext.deploymentDataLoader.data.map((item) => item.deployment_id);
       telemetryContext.telemetryDataLoader.load(deploymentIds);
     }
   }, [surveyContext.deploymentDataLoader.data]);
+
+  // Fetch/ Cache all taxonomic data for the observations
+  useEffect(() => {
+    const cacheTaxonomicData = async () => {
+      if (observationsContext.observationsDataLoader.data) {
+        const taxonomicIds = observationsContext.observationsDataLoader.data.surveyObservations.map(
+          (item) => item.wldtaxonomic_units_id
+        );
+        console.log(`Taxonomic IDs: ${taxonomicIds}`);
+        await taxonomyContext.cacheSpeciesTaxonomyByIds(taxonomicIds);
+      }
+    };
+
+    cacheTaxonomicData();
+  }, [observationsContext.observationsDataLoader.data]);
 
   const telemetryPoints: INonEditableGeometries[] = useMemo(() => {
     const telemetryData = telemetryContext.telemetryDataLoader.data;
@@ -44,7 +63,7 @@ const SurveySpatialData = () => {
       });
   }, [telemetryContext.telemetryDataLoader.data]);
 
-  const surveyObservations: INonEditableGeometries[] = useMemo(() => {
+  const observationPoints: INonEditableGeometries[] = useMemo(() => {
     const observations = observationsContext.observationsDataLoader.data?.surveyObservations;
 
     if (!observations) {
@@ -68,7 +87,7 @@ const SurveySpatialData = () => {
       });
   }, [observationsContext.observationsDataLoader.data]);
 
-  const [mapPoints, setMapPoints] = useState<INonEditableGeometries[]>(surveyObservations);
+  const [mapPoints, setMapPoints] = useState<INonEditableGeometries[]>(observationPoints);
   const [tableHeaders, setTableHeaders] = useState<string[]>([]);
   const [tableRows, setTableRows] = useState<string[][]>([]);
 
@@ -76,14 +95,13 @@ const SurveySpatialData = () => {
   // const [layout, setLayout] = useState<SurveySpatialDataLayout>(SurveySpatialDataLayout.MAP);
 
   const updateDataSet = (data: SurveySpatialDataSet) => {
-    console.log(`DataSet: ${data}`);
     switch (data) {
       case SurveySpatialDataSet.OBSERVATIONS:
-        setMapPoints(surveyObservations);
+        setMapPoints(observationPoints);
         setTableHeaders(['Species', 'Count', 'Date', 'Time', 'Lat', 'Long']);
         setTableRows(
           observationsContext.observationsDataLoader.data?.surveyObservations.map((item) => [
-            `Moose...`,
+            `${taxonomyContext.getCachedSpeciesTaxonomyById(item.wldtaxonomic_units_id)?.label}`,
             `${item.count}`,
             `${dayjs(item.observation_date).format('YYYY-MM-DD')}`,
             `${dayjs(item.observation_date).format('HH:mm:ss')}`,
