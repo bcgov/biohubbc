@@ -1,4 +1,5 @@
 import { Box, Paper } from '@mui/material';
+import { CodesContext } from 'contexts/codesContext';
 import { ObservationsContext } from 'contexts/observationsContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TaxonomyContext } from 'contexts/taxonomyContext';
@@ -7,6 +8,7 @@ import dayjs from 'dayjs';
 import { Position } from 'geojson';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { INonEditableGeometries } from 'utils/mapUtils';
+import { getCodesName } from 'utils/Utils';
 import NoSurveySectionData from '../components/NoSurveySectionData';
 import { ICritterDeployment } from '../telemetry/ManualTelemetryList';
 import SurveyMapToolBar, { SurveySpatialDataLayout, SurveySpatialDataSet } from './components/SurveyMapToolBar';
@@ -18,10 +20,13 @@ const SurveySpatialData = () => {
   const telemetryContext = useContext(TelemetryDataContext);
   const taxonomyContext = useContext(TaxonomyContext);
   const surveyContext = useContext(SurveyContext);
+  const codesContext = useContext(CodesContext);
 
   useEffect(() => {
+    codesContext.codesDataLoader.load();
     surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
     surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
   }, []);
 
   useEffect(() => {
@@ -61,6 +66,22 @@ const SurveySpatialData = () => {
     });
     return data;
   }, [surveyContext.critterDataLoader.data, surveyContext.deploymentDataLoader.data]);
+
+  const sampleSites = useMemo(() => {
+    return surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
+  }, [surveyContext.sampleSiteDataLoader.data]);
+
+  const sampleMethods = useMemo(() => {
+    return surveyContext.sampleSiteDataLoader.data?.sampleSites.flatMap((item) => item.sample_methods) || [];
+  }, [surveyContext.sampleSiteDataLoader.data]);
+
+  const samplePeriods = useMemo(() => {
+    return (
+      surveyContext.sampleSiteDataLoader.data?.sampleSites.flatMap((item) =>
+        item.sample_methods?.flatMap((method) => method.sample_periods)
+      ) || []
+    );
+  }, [surveyContext.sampleSiteDataLoader.data]);
 
   const telemetryPoints: INonEditableGeometries[] = useMemo(() => {
     const telemetryData = telemetryContext.telemetryDataLoader.data;
@@ -120,16 +141,41 @@ const SurveySpatialData = () => {
     switch (data) {
       case SurveySpatialDataSet.OBSERVATIONS:
         setMapPoints(observationPoints);
-        setTableHeaders(['Species', 'Count', 'Date', 'Time', 'Lat', 'Long']);
+        setTableHeaders([
+          'Species',
+          'Count',
+          'Sample Site',
+          'Sample Method',
+          'Sample Period',
+          'Date',
+          'Time',
+          'Lat',
+          'Long'
+        ]);
         setTableRows(
-          observationsContext.observationsDataLoader.data?.surveyObservations.map((item) => [
-            `${taxonomyContext.getCachedSpeciesTaxonomyById(item.wldtaxonomic_units_id)?.label}`,
-            `${item.count}`,
-            `${dayjs(item.observation_date).format('YYYY-MM-DD')}`,
-            `${dayjs(item.observation_date).format('HH:mm:ss')}`,
-            `${item.latitude}`,
-            `${item.longitude}`
-          ]) || []
+          observationsContext.observationsDataLoader.data?.surveyObservations.map((item) => {
+            const siteName = sampleSites.find(
+              (site) => site.survey_sample_site_id === item.survey_sample_site_id
+            )?.name;
+            const method_id = sampleMethods.find(
+              (method) => method?.survey_sample_method_id === item.survey_sample_method_id
+            )?.method_lookup_id;
+            const period = samplePeriods.find(
+              (period) => period?.survey_sample_period_id === item.survey_sample_period_id
+            );
+
+            return [
+              `${taxonomyContext.getCachedSpeciesTaxonomyById(item.wldtaxonomic_units_id)?.label}`,
+              `${item.count}`,
+              `${siteName}`,
+              `${method_id ? getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method_id) : ''}`,
+              `${period?.start_date} ${period?.end_date}`,
+              `${dayjs(item.observation_date).format('YYYY-MM-DD')}`,
+              `${dayjs(item.observation_date).format('HH:mm:ss')}`,
+              `${item.latitude}`,
+              `${item.longitude}`
+            ];
+          }) || []
         );
         break;
       case SurveySpatialDataSet.TELEMETRY:
