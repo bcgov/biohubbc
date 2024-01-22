@@ -111,7 +111,7 @@ const SurveySpatialData = () => {
         break;
       case SurveySpatialDataSet.TELEMETRY:
         setMapPoints(telemetryPoints);
-        setTableHeaders(['Alias', 'Device ID', 'Date', 'Time', 'Lat', 'Long']);
+        setTableHeaders(['Deployment ID', 'Device ID', 'Date', 'Time', 'Lat', 'Long']);
         setTableRows(
           telemetryContext.telemetryDataLoader.data?.map((item) => [
             `${item.deployment_id}`,
