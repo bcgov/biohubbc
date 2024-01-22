@@ -32,7 +32,6 @@ const SurveySpatialData = () => {
         const taxonomicIds = observationsContext.observationsDataLoader.data.surveyObservations.map(
           (item) => item.wldtaxonomic_units_id
         );
-        console.log(`Taxonomic IDs: ${taxonomicIds}`);
         await taxonomyContext.cacheSpeciesTaxonomyByIds(taxonomicIds);
       }
     };
