@@ -48,7 +48,9 @@ describe('PlatformService', () => {
         .stub(KeycloakService.prototype, 'getKeycloakServiceToken')
         .resolves('token');
 
-      sinon.stub(AttachmentService.prototype, 'getSurveyAttachments').resolves([]);
+      sinon.stub(AttachmentService.prototype, 'getSurveyAttachmentsForBioHubSubmission').resolves([]);
+
+      sinon.stub(AttachmentService.prototype, 'getSurveyReportAttachments').resolves([]);
 
       const _generateSurveyDataPackageStub = sinon
         .stub(PlatformService.prototype, '_generateSurveyDataPackage')
@@ -61,7 +63,7 @@ describe('PlatformService', () => {
       } catch (error) {
         expect((error as Error).message).to.equal('Failed to submit survey ID to Biohub');
         expect(getKeycloakServiceTokenStub).to.have.been.calledOnce;
-        expect(_generateSurveyDataPackageStub).to.have.been.calledOnceWith(1, [], 'test');
+        expect(_generateSurveyDataPackageStub).to.have.been.calledOnceWith(1, [], [], 'test');
       }
     });
 
@@ -76,7 +78,9 @@ describe('PlatformService', () => {
         .stub(KeycloakService.prototype, 'getKeycloakServiceToken')
         .resolves('token');
 
-      sinon.stub(AttachmentService.prototype, 'getSurveyAttachments').resolves([]);
+      sinon.stub(AttachmentService.prototype, 'getSurveyAttachmentsForBioHubSubmission').resolves([]);
+
+      sinon.stub(AttachmentService.prototype, 'getSurveyReportAttachments').resolves([]);
 
       const _generateSurveyDataPackageStub = sinon
         .stub(PlatformService.prototype, '_generateSurveyDataPackage')
@@ -88,6 +92,10 @@ describe('PlatformService', () => {
         .stub(PlatformService.prototype, '_submitSurveyAttachmentsToBioHub')
         .resolves();
 
+      const _submitSurveyReportAttachmentsToBioHubStub = sinon
+        .stub(PlatformService.prototype, '_submitSurveyReportAttachmentsToBioHub')
+        .resolves();
+
       const insertSurveyMetadataPublishRecordStub = sinon
         .stub(HistoryPublishService.prototype, 'insertSurveyMetadataPublishRecord')
         .resolves();
@@ -95,8 +103,9 @@ describe('PlatformService', () => {
       const response = await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' });
 
       expect(getKeycloakServiceTokenStub).to.have.been.calledOnce;
-      expect(_generateSurveyDataPackageStub).to.have.been.calledOnceWith(1, [], 'test');
+      expect(_generateSurveyDataPackageStub).to.have.been.calledOnceWith(1, [], [], 'test');
       expect(_submitSurveyAttachmentsToBioHubStub).to.have.been.calledOnceWith('123-456-789', [], []);
+      expect(_submitSurveyReportAttachmentsToBioHubStub).to.have.been.calledOnceWith('123-456-789', [], []);
       expect(insertSurveyMetadataPublishRecordStub).to.have.been.calledOnceWith({
         survey_id: 1,
         submission_uuid: '123-456-789'
@@ -128,7 +137,7 @@ describe('PlatformService', () => {
         .stub(SurveyService.prototype, 'getSurveyLocationsData')
         .resolves([] as any);
 
-      const response = await platformService._generateSurveyDataPackage(1, [], 'a comment about the submission');
+      const response = await platformService._generateSurveyDataPackage(1, [], [], 'a comment about the submission');
 
       expect(getSurveyDataStub).to.have.been.calledOnceWith(1);
       expect(getSurveyPurposeAndMethodologyStub).to.have.been.calledOnceWith(1);

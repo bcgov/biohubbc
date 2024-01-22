@@ -84,7 +84,7 @@ export class PlatformService extends DBService {
     const backboneSurveyIntakeUrl = new URL(getBackboneSurveyIntakePath(), getBackboneApiHost()).href;
 
     // Get survey attachments
-    const surveyAttachments = await this.attachmentService.getSurveyAttachments(surveyId);
+    const surveyAttachments = await this.attachmentService.getSurveyAttachmentsForBioHubSubmission(surveyId);
 
     // Get survey report attachments
     const surveyReportAttachments = await this.attachmentService.getSurveyReportAttachments(surveyId);

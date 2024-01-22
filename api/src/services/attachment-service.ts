@@ -224,6 +224,20 @@ export class AttachmentService extends DBService {
   }
 
   /**
+   * Get all survey attachments for the given survey ID, which are publishable to BioHub.
+   *
+   * Note: Not all attachment types are publishable to BioHub. This method filters out attachment types that should not
+   * be published.
+   *
+   * @param {number} surveyId the ID of the survey.
+   * @return {Promise<ISurveyAttachment[]>} Promise resolving all survey publishable attachments.
+   * @memberof AttachmentService
+   */
+  async getSurveyAttachmentsForBioHubSubmission(surveyId: number): Promise<ISurveyAttachment[]> {
+    return this.attachmentRepository.getSurveyAttachmentsForBioHubSubmission(surveyId);
+  }
+
+  /**
    * Finds all of the survey report attachments for the given survey ID.
    * @param {number} surveyId the ID of the survey
    * @return {Promise<ISurveyReportAttachment[]>} Promise resolving all survey report attachments.
