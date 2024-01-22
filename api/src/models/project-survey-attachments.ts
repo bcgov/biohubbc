@@ -1,7 +1,7 @@
 import { default as dayjs } from 'dayjs';
+import { ATTACHMENT_TYPE } from '../constants/attachments';
 import { getLogger } from '../utils/logger';
 import { SurveySupplementaryData } from './survey-view';
-import { ATTACHMENT_TYPE } from '../constants/attachments';
 
 const defaultLog = getLogger('models/project-survey-attachments');
 
