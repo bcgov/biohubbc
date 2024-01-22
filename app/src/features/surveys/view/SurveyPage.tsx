@@ -50,11 +50,9 @@ const SurveyPage: React.FC = () => {
 
         <Stack gap={3}>
         
-          <Paper>
-            <TaxonomyContextProvider>
-              <SurveySpatialData />
-            </TaxonomyContextProvider>
-          </Paper>
+          <TaxonomyContextProvider>
+            <SurveySpatialData />
+          </TaxonomyContextProvider>
 
           <Paper>
             <SurveyAnimals />

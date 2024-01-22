@@ -1,4 +1,4 @@
-import { mdiBroadcast, mdiChevronDown, mdiEye } from '@mdi/js';
+import { mdiBroadcast, mdiChevronDown, mdiCog, mdiEye } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, Divider, ListItemIcon, ListItemText, Menu, MenuItem, ToggleButton, ToggleButtonGroup, Toolbar, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
@@ -84,6 +84,9 @@ const SurveyMapToolBar = (props: ISurveyMapToolBarProps) => {
             color="primary" 
             aria-label="Manage Survey Data" 
             onClick={handleMenuClick}
+            startIcon={
+              <Icon path={mdiCog} size={0.75}></Icon>
+            }
             endIcon={
               <Icon path={mdiChevronDown} size={0.75}></Icon>
             }
@@ -102,7 +105,7 @@ const SurveyMapToolBar = (props: ISurveyMapToolBarProps) => {
               gap: 1,
               '& Button': {
                 py: 0.25,
-                px: 1.25,
+                px: 1.5,
                 border: 'none',
                 borderRadius: '4px !important',
                 fontSize: '0.875rem',

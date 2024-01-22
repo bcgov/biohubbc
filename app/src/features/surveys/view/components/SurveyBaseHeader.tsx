@@ -25,7 +25,7 @@ const SurveyBaseHeader = (props: ISurveyHeader) => {
       square={true}
       id="pageTitle"
       sx={{
-        position: 'sticky',
+        position: {sm: 'relative', xl: 'sticky'},
         top: 0,
         zIndex: 1002,
         borderBottom: '1px solid' + grey[300]

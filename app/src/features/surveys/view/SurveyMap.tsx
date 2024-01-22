@@ -1,3 +1,7 @@
+import { mdiMapSearchOutline } from '@mdi/js';
+import Icon from '@mdi/react';
+import { Box, Skeleton } from '@mui/material';
+import grey from '@mui/material/colors/grey';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
 import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
@@ -18,6 +22,38 @@ const SurveyMap = (props: ISurveyMapProps) => {
   const [bounds] = useState<LatLngBoundsExpression | undefined>(calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]));
   return (
     <>
+      
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0,
+          zIndex: 1001,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: '#fff',
+          '& svg': {
+            color: grey[300]
+          }
+        }}>
+        <Skeleton
+          variant="rectangular"
+          width="100%"
+          height="100%"
+          sx={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0
+          }}
+        />
+        <Icon path={mdiMapSearchOutline} size={2} />
+      </Box>
+
       <LeafletMapContainer
         data-testid="leaflet-survey-map"
         id="survey-map"
