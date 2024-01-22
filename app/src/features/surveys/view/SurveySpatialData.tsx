@@ -131,7 +131,7 @@ const SurveySpatialData = () => {
       <Box height={{ sm: 400, md: 600 }}>
         <SurveyMap mapPoints={mapPoints} />
       </Box>
-      <Box p={3}>
+      <Box px={1}>
         <SurveySpatialDataTable tableHeaders={tableHeaders} tableRows={tableRows} />
         {/* <NoSurveySectionData text="No data available" paperVariant="outlined" /> */}
       </Box>

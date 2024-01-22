@@ -44,11 +44,10 @@ const SurveyPage: React.FC = () => {
     <>
       <SurveyHeader />
       <Container maxWidth="xl" sx={{ py: 3 }}>
-        <Box mt={3}>
-          <Paper elevation={0}>
-            <SurveySpatialData />
-          </Paper>
-        </Box>
+
+        <Paper elevation={0}>
+          <SurveySpatialData />
+        </Paper>
 
         {/* <Box mt={3}>
           <Paper elevation={0}>

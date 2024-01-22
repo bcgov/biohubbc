@@ -1,4 +1,3 @@
-import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -15,7 +14,7 @@ interface ISurveySpatialDataTableProps {
 const SurveySpatialDataTable = (props: ISurveySpatialDataTableProps) => {
   return (
     <>
-      <TableContainer component={Paper}>
+      <TableContainer>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
