@@ -49,7 +49,7 @@ const ObservationsMap = () => {
     handleGetSpecies(speciesIds);
   }, [handleGetSpecies, speciesIds]);
 
-  const handleCheckSpeciesName = useMemo(
+  const handleCheckSpeciesName = useCallback(
     (id: number) => {
       const speciesName = speciesNames.find((item) => Number(item.id) === id);
 
@@ -67,7 +67,7 @@ const ObservationsMap = () => {
 
     return observations
       .filter((observation) => observation.latitude !== undefined && observation.longitude !== undefined)
-      .map((observation, index) => {
+      .map((observation) => {
         const link = observation.survey_observation_id
           ? `observations/#view-${observation.survey_observation_id}`
           : 'observations';
