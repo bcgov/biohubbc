@@ -1,3 +1,5 @@
+import { mdiMapSearchOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
 import Paper from '@mui/material/Paper';
@@ -114,4 +116,37 @@ const SkeletonRow = () => (
   </Stack>
 );
 
-export { SkeletonList, SkeletonListStack, SkeletonRow, SkeletonTable };
+const SkeletonMap = () => (
+  <Box
+    sx={{
+      position: 'absolute',
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+      zIndex: 1001,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: '#fff',
+      '& svg': {
+        color: grey[300]
+      }
+    }}>
+    <Skeleton
+      variant="rectangular"
+      width="100%"
+      height="100%"
+      sx={{
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0
+      }}
+    />
+    <Icon path={mdiMapSearchOutline} size={2} />
+  </Box>
+);
+
+export { SkeletonList, SkeletonListStack, SkeletonRow, SkeletonTable, SkeletonMap };

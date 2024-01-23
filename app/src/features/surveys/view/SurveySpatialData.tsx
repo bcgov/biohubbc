@@ -103,6 +103,15 @@ const SurveySpatialData = () => {
   // TODO: this needs to be saved between page visits
   // const [layout, setLayout] = useState<SurveySpatialDataLayout>(SurveySpatialDataLayout.MAP);
 
+  const isLoading = () => {
+    return (
+      codesContext.codesDataLoader.isLoading ||
+      surveyContext.deploymentDataLoader.isLoading ||
+      surveyContext.critterDataLoader.isLoading ||
+      surveyContext.sampleSiteDataLoader.isLoading
+    );
+  };
+
   const updateDataSet = (data: SurveySpatialDataSet) => {
     setCurrentTab(data);
     switch (data) {
@@ -131,7 +140,7 @@ const SurveySpatialData = () => {
       <SurveyMapToolBar updateDataSet={updateDataSet} updateLayout={updateLayout} />
 
       <Box height={{ sm: 400, md: 600 }} position="relative">
-        <SurveyMap mapPoints={mapPoints} />
+        <SurveyMap mapPoints={mapPoints} isLoading={isLoading()} />
       </Box>
       <Box p={1}>
         {currentTab === SurveySpatialDataSet.OBSERVATIONS && (
