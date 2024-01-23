@@ -133,6 +133,7 @@ const SurveyMapToolBar = (props: ISurveyMapToolBarProps) => {
             }}>
             {props.toggleButtons.map((item) => (
               <ToggleButton
+                key={item.value}
                 component={Button}
                 color="primary"
                 startIcon={<Icon path={item.icon} size={0.75} />}

@@ -20,7 +20,6 @@ const SurveySpatialData = () => {
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
 
-  const [mapPoints, setMapPoints] = useState<INonEditableGeometries[]>([]);
   const [currentTab, setCurrentTab] = useState<SurveySpatialDataSet>(SurveySpatialDataSet.OBSERVATIONS);
 
   useEffect(() => {
@@ -115,26 +114,28 @@ const SurveySpatialData = () => {
 
   const updateDataSet = (data: SurveySpatialDataSet) => {
     setCurrentTab(data);
-    switch (data) {
-      case SurveySpatialDataSet.OBSERVATIONS:
-        setMapPoints(observationPoints);
-        break;
-      case SurveySpatialDataSet.TELEMETRY:
-        setMapPoints(telemetryPoints);
-        break;
-      case SurveySpatialDataSet.MARKED_ANIMALS:
-        setMapPoints([]);
-        break;
-      default:
-        setMapPoints([]);
-        break;
-    }
   };
 
   const updateLayout = (data: SurveySpatialDataLayout) => {
     console.log(`Layout: ${data}`);
     // setLayout(data);
   };
+
+  let mapPoints: INonEditableGeometries[] = [];
+  switch (currentTab) {
+    case SurveySpatialDataSet.OBSERVATIONS:
+      mapPoints = observationPoints;
+      break;
+    case SurveySpatialDataSet.TELEMETRY:
+      mapPoints = telemetryPoints;
+      break;
+    case SurveySpatialDataSet.MARKED_ANIMALS:
+      mapPoints = [];
+      break;
+    default:
+      mapPoints = [];
+      break;
+  }
 
   return (
     <Paper>
