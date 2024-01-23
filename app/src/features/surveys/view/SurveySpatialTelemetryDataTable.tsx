@@ -1,3 +1,4 @@
+import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { SurveyContext } from 'contexts/surveyContext';
 import dayjs from 'dayjs';
 import { useContext, useMemo } from 'react';
@@ -5,7 +6,10 @@ import NoSurveySectionData from '../components/NoSurveySectionData';
 import { ICritterDeployment } from '../telemetry/ManualTelemetryList';
 import SurveySpatialDataTable from './SurveySpatialDataTable';
 
-const SurveySpatialTelemetryDataTable = () => {
+interface ISurveySpatialTelemetryDataTableProps {
+  isLoading: boolean;
+}
+const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTableProps) => {
   const surveyContext = useContext(SurveyContext);
   const flattenedCritterDeployments: ICritterDeployment[] = useMemo(() => {
     const data: ICritterDeployment[] = [];
@@ -31,12 +35,17 @@ const SurveySpatialTelemetryDataTable = () => {
       ];
     });
   };
+
   return (
     <>
-      {flattenedCritterDeployments.length > 0 ? (
+      {flattenedCritterDeployments.length > 0 && !props.isLoading && (
         <SurveySpatialDataTable tableHeaders={['Alias', 'Device ID', 'Start', 'End']} tableRows={mapData()} />
-      ) : (
-        <NoSurveySectionData text="No data available" paperVariant="outlined" />
+      )}
+
+      {props.isLoading && <SkeletonList />}
+
+      {!props.isLoading && flattenedCritterDeployments.length === 0 && (
+        <NoSurveySectionData text="No telemetry data available" paperVariant="outlined" />
       )}
     </>
   );

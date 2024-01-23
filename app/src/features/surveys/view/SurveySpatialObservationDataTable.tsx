@@ -1,3 +1,4 @@
+import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { CodesContext } from 'contexts/codesContext';
 import { IObservationRecord } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -12,6 +13,7 @@ import SurveySpatialDataTable from './SurveySpatialDataTable';
 interface ISurveySpatialObservationDataTableProps {
   data: IObservationRecord[];
   sample_sites: IGetSampleLocationRecord[];
+  isLoading: boolean;
 }
 const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataTableProps) => {
   const surveyContext = useContext(SurveyContext);
@@ -60,7 +62,13 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
 
   return (
     <>
-      {props.data.length > 0 ? (
+      {props.isLoading && <SkeletonList />}
+
+      {!props.isLoading && props.data.length === 0 && (
+        <NoSurveySectionData text="No data available" paperVariant="outlined" />
+      )}
+
+      {!props.isLoading && props.data.length > 0 && (
         <SurveySpatialDataTable
           tableHeaders={[
             'Species',
@@ -75,8 +83,6 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
           ]}
           tableRows={mapData()}
         />
-      ) : (
-        <NoSurveySectionData text="No data available" paperVariant="outlined" />
       )}
     </>
   );
