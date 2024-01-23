@@ -34,7 +34,7 @@ export interface ISurveySupplementaryData {
   occurrence_submission_publish_id: number;
   occurrence_submission_id: number;
   event_timestamp: string;
-  queue_id: number;
+  submission_uuid: string;
   create_date: string;
   create_user: number;
   update_date: string | null;

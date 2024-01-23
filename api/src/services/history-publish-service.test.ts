@@ -38,7 +38,7 @@ describe('HistoryPublishService', () => {
 
       const data = {
         project_id: 1,
-        queue_id: 1
+        submission_uuid: '123-456-789'
       };
 
       const repoStub = sinon.stub(HistoryPublishRepository.prototype, 'insertProjectMetadataPublishRecord').resolves(1);
@@ -57,7 +57,7 @@ describe('HistoryPublishService', () => {
 
       const data = {
         survey_id: 1,
-        queue_id: 1
+        submission_uuid: '123-456-789'
       };
 
       const repoStub = sinon.stub(HistoryPublishRepository.prototype, 'insertSurveyMetadataPublishRecord').resolves(1);
@@ -76,7 +76,7 @@ describe('HistoryPublishService', () => {
 
       const data = {
         occurrence_submission_id: 1,
-        queue_id: 1
+        submission_uuid: '123-456-789'
       };
 
       const repoStub = sinon
@@ -97,7 +97,7 @@ describe('HistoryPublishService', () => {
 
       const data = {
         project_attachment_id: 1,
-        artifact_id: 1
+        artifact_uuid: '123-456-789'
       };
 
       const repoStub = sinon
@@ -118,7 +118,7 @@ describe('HistoryPublishService', () => {
 
       const data = {
         project_report_attachment_id: 1,
-        artifact_id: 1
+        artifact_uuid: '123-456-789'
       };
 
       const repoStub = sinon
@@ -139,7 +139,7 @@ describe('HistoryPublishService', () => {
 
       const data = {
         survey_attachment_id: 1,
-        artifact_id: 1
+        artifact_uuid: '123-456-789'
       };
 
       const repoStub = sinon
@@ -160,7 +160,7 @@ describe('HistoryPublishService', () => {
 
       const data = {
         survey_report_attachment_id: 1,
-        artifact_id: 1
+        artifact_uuid: '123-456-789'
       };
 
       const repoStub = sinon
@@ -181,7 +181,7 @@ describe('HistoryPublishService', () => {
 
       const data = {
         survey_summary_submission_id: 1,
-        artifact_id: 1
+        artifact_uuid: '123-456-789'
       };
 
       const repoStub = sinon

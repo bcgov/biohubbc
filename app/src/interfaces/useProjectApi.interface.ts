@@ -254,7 +254,7 @@ export interface ProjectSupplementaryData {
     project_metadata_publish_id: number;
     project_id: number;
     event_timestamp: string;
-    queue_id: number;
+    submission_uuid: string;
     create_date: string;
     create_user: number;
     update_date: string | null;

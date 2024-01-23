@@ -6,49 +6,49 @@ import { BaseRepository } from './base-repository';
 
 export interface IProjectMetadataPublish {
   project_id: number;
-  queue_id: number;
+  submission_uuid: string;
 }
 
 export interface ISurveyMetadataPublish {
   survey_id: number;
-  queue_id: number;
+  submission_uuid: string;
 }
 
 export interface IOccurrenceSubmissionPublish {
   occurrence_submission_id: number;
-  queue_id: number;
+  submission_uuid: string;
 }
 
 export interface ISummarySubmissionPublish {
   survey_summary_submission_id: number;
-  artifact_id: number;
+  artifact_uuid: string;
 }
 
 export interface IProjectAttachmentPublish {
   project_attachment_id: number;
-  artifact_id: number;
+  artifact_uuid: string;
 }
 
 export interface IProjectReportPublish {
   project_report_attachment_id: number;
-  artifact_id: number;
+  artifact_uuid: string;
 }
 
 export interface ISurveyAttachmentPublish {
   survey_attachment_id: number;
-  artifact_id: number;
+  artifact_uuid: string;
 }
 
 export interface ISurveyReportPublish {
   survey_report_attachment_id: number;
-  artifact_id: number;
+  artifact_uuid: string;
 }
 
 export const ProjectMetadataPublish = z.object({
   project_metadata_publish_id: z.number(),
   project_id: z.number(),
   event_timestamp: z.string(),
-  queue_id: z.number(),
+  submission_uuid: z.string().uuid(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),
@@ -62,7 +62,7 @@ export const SurveyMetadataPublish = z.object({
   survey_metadata_publish_id: z.number(),
   survey_id: z.number(),
   event_timestamp: z.string(),
-  queue_id: z.number(),
+  submission_uuid: z.string().uuid(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),
@@ -76,7 +76,7 @@ export const OccurrenceSubmissionPublish = z.object({
   occurrence_submission_publish_id: z.number(),
   occurrence_submission_id: z.number(),
   event_timestamp: z.string(),
-  queue_id: z.number(),
+  submission_uuid: z.string().uuid(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),
@@ -90,7 +90,7 @@ export const ProjectReportPublish = z.object({
   project_report_publish_id: z.number(),
   project_report_attachment_id: z.number(),
   event_timestamp: z.string(),
-  artifact_revision_id: z.number(),
+  artifact_revision_id: z.string(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),
@@ -104,7 +104,7 @@ export const ProjectAttachmentPublish = z.object({
   project_attachment_publish_id: z.number(),
   project_attachment_id: z.number(),
   event_timestamp: z.string(),
-  artifact_revision_id: z.number(),
+  artifact_revision_id: z.string(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),
@@ -118,7 +118,7 @@ export const SurveyReportPublish = z.object({
   survey_report_publish_id: z.number(),
   survey_report_attachment_id: z.number(),
   event_timestamp: z.string(),
-  artifact_revision_id: z.number(),
+  artifact_revision_id: z.string(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),
@@ -132,7 +132,7 @@ export const SurveyAttachmentPublish = z.object({
   survey_attachment_publish_id: z.number(),
   survey_attachment_id: z.number(),
   event_timestamp: z.string(),
-  artifact_revision_id: z.number(),
+  artifact_revision_id: z.string(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),
@@ -146,7 +146,7 @@ export const SurveySummarySubmissionPublish = z.object({
   survey_summary_submission_publish_id: z.number(),
   survey_summary_submission_id: z.number(),
   event_timestamp: z.string(),
-  artifact_revision_id: z.number(),
+  artifact_revision_id: z.string(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),
@@ -171,9 +171,9 @@ export const SurveyAttachmentWithPublishData = z.object({
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number(),
-  uuid: z.string(),
+  uuid: z.string().uuid(),
   event_timestamp: z.string(),
-  artifact_revision_id: z.number()
+  artifact_revision_id: z.string()
 });
 
 export type SurveyAttachmentWithPublishData = z.infer<typeof SurveyAttachmentWithPublishData>;
@@ -193,9 +193,9 @@ export const SurveyReportWithPublishData = z.object({
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number(),
-  uuid: z.string(),
+  uuid: z.string().uuid(),
   event_timestamp: z.string(),
-  artifact_revision_id: z.number()
+  artifact_revision_id: z.string()
 });
 
 export type SurveyReportWithPublishData = z.infer<typeof SurveyReportWithPublishData>;
@@ -215,9 +215,9 @@ export const ProjectAttachmentWithPublishData = z.object({
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number(),
-  uuid: z.string(),
+  uuid: z.string().uuid(),
   event_timestamp: z.string(),
-  artifact_revision_id: z.number()
+  artifact_revision_id: z.string()
 });
 
 export type ProjectAttachmentWithPublishData = z.infer<typeof ProjectAttachmentWithPublishData>;
@@ -237,9 +237,9 @@ export const ProjectReportWithPublishData = z.object({
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number(),
-  uuid: z.string(),
+  uuid: z.string().uuid(),
   event_timestamp: z.string(),
-  artifact_revision_id: z.number()
+  artifact_revision_id: z.string()
 });
 
 export type ProjectReportWithPublishData = z.infer<typeof ProjectReportWithPublishData>;
@@ -261,9 +261,9 @@ export class HistoryPublishRepository extends BaseRepository {
   async insertProjectMetadataPublishRecord(data: IProjectMetadataPublish): Promise<number> {
     const sqlStatement = SQL`
       INSERT INTO project_metadata_publish
-        (project_id, queue_id, event_timestamp)
+        (project_id, submission_uuid, event_timestamp)
       VALUES
-        (${data.project_id}, ${data.queue_id}, NOW())
+        (${data.project_id}, ${data.submission_uuid}, NOW())
       RETURNING project_metadata_publish_id;
     `;
     const response = await this.connection.sql(sqlStatement);
@@ -287,14 +287,14 @@ export class HistoryPublishRepository extends BaseRepository {
   async insertSurveyMetadataPublishRecord(data: ISurveyMetadataPublish): Promise<number> {
     const sqlStatement = SQL`
       INSERT INTO survey_metadata_publish
-        (survey_id, queue_id, event_timestamp)
+        (survey_id, submission_uuid, event_timestamp)
       VALUES
-        (${data.survey_id}, ${data.queue_id}, NOW())
-      ON CONFLICT (queue_id) DO UPDATE SET event_timestamp = NOW()
+        (${data.survey_id}, ${data.submission_uuid}, NOW())
+      ON CONFLICT (submission_uuid) DO UPDATE SET event_timestamp = NOW()
       RETURNING survey_metadata_publish_id;
     `;
 
-    // NOTE: ON CONFLICT is used to update the timestamp if the same queue_id is used
+    // NOTE: ON CONFLICT is used to update the timestamp if the same submission_uuid is used
     //      to publish the same survey multiple times
 
     const response = await this.connection.sql(sqlStatement);
@@ -318,9 +318,9 @@ export class HistoryPublishRepository extends BaseRepository {
   async insertOccurrenceSubmissionPublishRecord(data: IOccurrenceSubmissionPublish): Promise<number> {
     const sqlStatement = SQL`
       INSERT INTO occurrence_submission_publish
-        (occurrence_submission_id, queue_id, event_timestamp)
+        (occurrence_submission_id, submission_uuid, event_timestamp)
       VALUES
-        (${data.occurrence_submission_id}, ${data.queue_id}, NOW())
+        (${data.occurrence_submission_id}, ${data.submission_uuid}, NOW())
       RETURNING occurrence_submission_id;
     `;
     const response = await this.connection.sql(sqlStatement);
@@ -349,7 +349,7 @@ export class HistoryPublishRepository extends BaseRepository {
     INSERT INTO survey_summary_submission_publish
     (survey_summary_submission_id, artifact_revision_id, event_timestamp)
     VALUES
-    (${data.survey_summary_submission_id}, ${data.artifact_id}, NOW())
+    (${data.survey_summary_submission_id}, ${data.artifact_uuid}, NOW())
     RETURNING survey_summary_submission_publish_id;
     `;
 
@@ -378,7 +378,7 @@ export class HistoryPublishRepository extends BaseRepository {
       INSERT INTO project_attachment_publish
         (project_attachment_id, artifact_revision_id, event_timestamp)
       VALUES
-        (${data.project_attachment_id}, ${data.artifact_id}, NOW())
+        (${data.project_attachment_id}, ${data.artifact_uuid}, NOW())
       RETURNING project_attachment_publish_id;
     `;
     const response = await this.connection.sql(sqlStatement);
@@ -404,7 +404,7 @@ export class HistoryPublishRepository extends BaseRepository {
       INSERT INTO project_report_publish
         (project_report_attachment_id, artifact_revision_id, event_timestamp)
       VALUES
-        (${data.project_report_attachment_id}, ${data.artifact_id}, NOW())
+        (${data.project_report_attachment_id}, ${data.artifact_uuid}, NOW())
       RETURNING project_report_publish_id;
     `;
     const response = await this.connection.sql(sqlStatement);
@@ -432,7 +432,7 @@ export class HistoryPublishRepository extends BaseRepository {
       INSERT INTO survey_attachment_publish
         (survey_attachment_id, artifact_revision_id, event_timestamp)
       VALUES
-        (${data.survey_attachment_id}, ${data.artifact_id}, NOW())
+        (${data.survey_attachment_id}, ${data.artifact_uuid}, NOW())
       RETURNING survey_attachment_publish_id;
     `;
     const response = await this.connection.sql(sqlStatement);
@@ -458,7 +458,7 @@ export class HistoryPublishRepository extends BaseRepository {
       INSERT INTO survey_report_publish
         (survey_report_attachment_id, artifact_revision_id, event_timestamp)
       VALUES
-        (${data.survey_report_attachment_id}, ${data.artifact_id}, NOW())
+        (${data.survey_report_attachment_id}, ${data.artifact_uuid}, NOW())
       RETURNING survey_report_publish_id;
     `;
     const response = await this.connection.sql(sqlStatement);
