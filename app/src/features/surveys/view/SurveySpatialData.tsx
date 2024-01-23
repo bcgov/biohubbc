@@ -104,12 +104,22 @@ const SurveySpatialData = () => {
   // const [layout, setLayout] = useState<SurveySpatialDataLayout>(SurveySpatialDataLayout.MAP);
 
   const isLoading = () => {
-    return (
-      codesContext.codesDataLoader.isLoading ||
-      surveyContext.deploymentDataLoader.isLoading ||
-      surveyContext.critterDataLoader.isLoading ||
-      surveyContext.sampleSiteDataLoader.isLoading
-    );
+    let isLoading = false;
+    if (currentTab === SurveySpatialDataSet.OBSERVATIONS) {
+      isLoading =
+        codesContext.codesDataLoader.isLoading ||
+        surveyContext.sampleSiteDataLoader.isLoading ||
+        observationsContext.observationsDataLoader.isLoading;
+    }
+
+    if (currentTab === SurveySpatialDataSet.TELEMETRY) {
+      isLoading =
+        codesContext.codesDataLoader.isLoading ||
+        surveyContext.deploymentDataLoader.isLoading ||
+        surveyContext.critterDataLoader.isLoading;
+    }
+
+    return isLoading;
   };
 
   const updateDataSet = (data: SurveySpatialDataSet) => {
@@ -162,14 +172,14 @@ const SurveySpatialData = () => {
         <SurveyMap mapPoints={mapPoints} isLoading={isLoading()} />
       </Box>
       <Box p={1}>
-        {currentTab === SurveySpatialDataSet.OBSERVATIONS && (
+        {currentTab === SurveySpatialDataSet.OBSERVATIONS && !isLoading() && (
           <SurveySpatialObservationDataTable
             data={observationsContext.observationsDataLoader.data?.surveyObservations || []}
             sample_sites={surveyContext.sampleSiteDataLoader.data?.sampleSites || []}
           />
         )}
 
-        {currentTab === SurveySpatialDataSet.TELEMETRY && <SurveySpatialTelemetryDataTable />}
+        {currentTab === SurveySpatialDataSet.TELEMETRY && !isLoading() && <SurveySpatialTelemetryDataTable />}
       </Box>
 
       {/* {layout === SurveySpatialDataLayout.MAP && (
