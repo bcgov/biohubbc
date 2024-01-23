@@ -1,5 +1,4 @@
 import { PublishStatus } from 'constants/attachments';
-import { IGetObservationSubmissionResponse } from 'interfaces/useDwcaApi.interface';
 import {
   IGetSurveyForListResponse,
   IGetSurveyForViewResponse,
@@ -127,27 +126,6 @@ export const surveySupplementaryData: SurveySupplementaryData = {
 export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
   surveyData: surveyObject,
   surveySupplementaryData: surveySupplementaryData
-};
-
-export const getObservationSubmissionResponse: IGetObservationSubmissionResponse = {
-  surveyObservationData: {
-    occurrence_submission_id: 1,
-    inputFileName: 'input_file_name.txt',
-    status: 'status',
-    isValidating: false,
-    messageTypes: []
-  },
-  surveyObservationSupplementaryData: {
-    occurrence_submission_publish_id: 1,
-    occurrence_submission_id: 2,
-    event_timestamp: '2022-02-15',
-    submission_uuid: '123-456-789',
-    create_date: '2022-02-15',
-    create_user: 4,
-    update_date: null,
-    update_user: null,
-    revision_count: 0
-  }
 };
 
 export const getSurveyForListResponse: IGetSurveyForListResponse[] = [
