@@ -4,16 +4,13 @@ import { ObservationsContext } from 'contexts/observationsContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TaxonomyContext } from 'contexts/taxonomyContext';
 import { TelemetryDataContext } from 'contexts/telemetryDataContext';
-import dayjs from 'dayjs';
 import { Position } from 'geojson';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { INonEditableGeometries } from 'utils/mapUtils';
-import { getCodesName } from 'utils/Utils';
-import NoSurveySectionData from '../components/NoSurveySectionData';
-import { ICritterDeployment } from '../telemetry/ManualTelemetryList';
 import SurveyMapToolBar, { SurveySpatialDataLayout, SurveySpatialDataSet } from './components/SurveyMapToolBar';
 import SurveyMap from './SurveyMap';
-import SurveySpatialDataTable from './SurveySpatialDataTable';
+import SurveySpatialObservationDataTable from './SurveySpatialObservationDataTable';
+import SurveySpatialTelemetryDataTable from './SurveySpatialTelemetryDataTable';
 
 const SurveySpatialData = () => {
   const observationsContext = useContext(ObservationsContext);
@@ -21,6 +18,9 @@ const SurveySpatialData = () => {
   const taxonomyContext = useContext(TaxonomyContext);
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
+
+  const [mapPoints, setMapPoints] = useState<INonEditableGeometries[]>([]);
+  const [currentTab, setCurrentTab] = useState<SurveySpatialDataSet>(SurveySpatialDataSet.OBSERVATIONS);
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
@@ -52,36 +52,6 @@ const SurveySpatialData = () => {
 
     cacheTaxonomicData();
   }, [observationsContext.observationsDataLoader.data]);
-
-  const flattenedCritterDeployments: ICritterDeployment[] = useMemo(() => {
-    const data: ICritterDeployment[] = [];
-    // combine all critter and deployments into a flat list
-    surveyContext.deploymentDataLoader.data?.forEach((deployment) => {
-      const critter = surveyContext.critterDataLoader.data?.find(
-        (critter) => critter.critter_id === deployment.critter_id
-      );
-      if (critter) {
-        data.push({ critter, deployment });
-      }
-    });
-    return data;
-  }, [surveyContext.critterDataLoader.data, surveyContext.deploymentDataLoader.data]);
-
-  const sampleSites = useMemo(() => {
-    return surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
-  }, [surveyContext.sampleSiteDataLoader.data]);
-
-  const sampleMethods = useMemo(() => {
-    return surveyContext.sampleSiteDataLoader.data?.sampleSites.flatMap((item) => item.sample_methods) || [];
-  }, [surveyContext.sampleSiteDataLoader.data]);
-
-  const samplePeriods = useMemo(() => {
-    return (
-      surveyContext.sampleSiteDataLoader.data?.sampleSites.flatMap((item) =>
-        item.sample_methods?.flatMap((method) => method.sample_periods)
-      ) || []
-    );
-  }, [surveyContext.sampleSiteDataLoader.data]);
 
   const telemetryPoints: INonEditableGeometries[] = useMemo(() => {
     const telemetryData = telemetryContext.telemetryDataLoader.data;
@@ -130,77 +100,23 @@ const SurveySpatialData = () => {
       });
   }, [observationsContext.observationsDataLoader.data]);
 
-  const [mapPoints, setMapPoints] = useState<INonEditableGeometries[]>(observationPoints);
-  const [tableHeaders, setTableHeaders] = useState<string[]>([]);
-  const [tableRows, setTableRows] = useState<string[][]>([]);
-
   // TODO: this needs to be saved between page visits
   // const [layout, setLayout] = useState<SurveySpatialDataLayout>(SurveySpatialDataLayout.MAP);
 
   const updateDataSet = (data: SurveySpatialDataSet) => {
+    setCurrentTab(data);
     switch (data) {
       case SurveySpatialDataSet.OBSERVATIONS:
         setMapPoints(observationPoints);
-        setTableHeaders([
-          'Species',
-          'Count',
-          'Sample Site',
-          'Sample Method',
-          'Sample Period',
-          'Date',
-          'Time',
-          'Lat',
-          'Long'
-        ]);
-        setTableRows(
-          observationsContext.observationsDataLoader.data?.surveyObservations.map((item) => {
-            const siteName = sampleSites.find(
-              (site) => site.survey_sample_site_id === item.survey_sample_site_id
-            )?.name;
-            const method_id = sampleMethods.find(
-              (method) => method?.survey_sample_method_id === item.survey_sample_method_id
-            )?.method_lookup_id;
-            const period = samplePeriods.find(
-              (period) => period?.survey_sample_period_id === item.survey_sample_period_id
-            );
-
-            return [
-              `${taxonomyContext.getCachedSpeciesTaxonomyById(item.wldtaxonomic_units_id)?.label}`,
-              `${item.count}`,
-              `${siteName}`,
-              `${method_id ? getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method_id) : ''}`,
-              `${period?.start_date} ${period?.end_date}`,
-              `${dayjs(item.observation_date).format('YYYY-MM-DD')}`,
-              `${dayjs(item.observation_date).format('HH:mm:ss')}`,
-              `${item.latitude}`,
-              `${item.longitude}`
-            ];
-          }) || []
-        );
         break;
       case SurveySpatialDataSet.TELEMETRY:
         setMapPoints(telemetryPoints);
-        setTableHeaders(['Alias', 'Device ID', 'Start', 'End']);
-        setTableRows(
-          flattenedCritterDeployments.map((item) => {
-            return [
-              `${item.critter.animal_id}`,
-              `${item.deployment.device_id}`,
-              `${dayjs(item.deployment.attachment_start).format('YYYY-MM-DD')}`,
-              `${dayjs(item.deployment.attachment_end).format('YYYY-MM-DD')}`
-            ];
-          })
-        );
         break;
       case SurveySpatialDataSet.MARKED_ANIMALS:
         setMapPoints([]);
-        setTableHeaders(['Deployment ID', 'Device ID', 'Date', 'Time', 'Lat', 'Long']);
-        setTableRows([]);
         break;
       default:
         setMapPoints([]);
-        setTableHeaders([]);
-        setTableRows([]);
         break;
     }
   };
@@ -218,11 +134,14 @@ const SurveySpatialData = () => {
         <SurveyMap mapPoints={mapPoints} />
       </Box>
       <Box p={1}>
-        {tableRows.length > 0 ? (
-          <SurveySpatialDataTable tableHeaders={tableHeaders} tableRows={tableRows} />
-        ) : (
-          <NoSurveySectionData text="No data available" paperVariant="outlined" />
+        {currentTab === SurveySpatialDataSet.OBSERVATIONS && (
+          <SurveySpatialObservationDataTable
+            data={observationsContext.observationsDataLoader.data?.surveyObservations || []}
+            sample_sites={surveyContext.sampleSiteDataLoader.data?.sampleSites || []}
+          />
         )}
+
+        {currentTab === SurveySpatialDataSet.TELEMETRY && <SurveySpatialTelemetryDataTable />}
       </Box>
 
       {/* {layout === SurveySpatialDataLayout.MAP && (
