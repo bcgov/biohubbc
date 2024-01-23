@@ -1,19 +1,18 @@
 import { mdiBroadcast, mdiChevronDown, mdiCog, mdiEye } from '@mdi/js';
 import Icon from '@mdi/react';
-import {
-  Box,
-  Divider,
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
-  ToggleButton,
-  ToggleButtonGroup,
-  Toolbar,
-  Typography
-} from '@mui/material';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
 import { useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 
 export enum SurveySpatialDataSet {
   OBSERVATIONS = 'Observations',
@@ -27,10 +26,16 @@ export enum SurveySpatialDataLayout {
   SPLIT = 'Split'
 }
 
+interface IToolBarButtons {
+  label: string;
+  icon: string;
+  value: SurveySpatialDataSet;
+  isLoading: boolean;
+}
 interface ISurveyMapToolBarProps {
-  //TODO: I don't want to pull the contexts into this but I will need an array of key value pairs for the options
   updateDataSet: (data: SurveySpatialDataSet) => void;
   updateLayout: (data: SurveySpatialDataLayout) => void;
+  toggleButtons: IToolBarButtons[];
 }
 const SurveyMapToolBar = (props: ISurveyMapToolBarProps) => {
   const [dataset, setDataset] = useState<SurveySpatialDataSet>(SurveySpatialDataSet.OBSERVATIONS);
@@ -62,6 +67,7 @@ const SurveyMapToolBar = (props: ISurveyMapToolBarProps) => {
         anchorEl={anchorEl}
         open={open}
         onClose={handleMenuClose}
+        disableAutoFocusItem
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'right'
@@ -70,13 +76,13 @@ const SurveyMapToolBar = (props: ISurveyMapToolBarProps) => {
           vertical: 'top',
           horizontal: 'right'
         }}>
-        <MenuItem>
+        <MenuItem component={RouterLink} to="observations">
           <ListItemIcon>
             <Icon path={mdiEye} size={1} />
           </ListItemIcon>
           <ListItemText>Observations</ListItemText>
         </MenuItem>
-        <MenuItem>
+        <MenuItem component={RouterLink} to="telemetry">
           <ListItemIcon>
             <Icon path={mdiBroadcast} size={1} />
           </ListItemIcon>
@@ -125,20 +131,15 @@ const SurveyMapToolBar = (props: ISurveyMapToolBarProps) => {
                 letterSpacing: '0.02rem'
               }
             }}>
-            <ToggleButton
-              component={Button}
-              color="primary"
-              startIcon={<Icon path={mdiEye} size={0.75} />}
-              value={SurveySpatialDataSet.OBSERVATIONS}>
-              Observations
-            </ToggleButton>
-            <ToggleButton
-              component={Button}
-              color="primary"
-              startIcon={<Icon path={mdiBroadcast} size={0.75} />}
-              value={SurveySpatialDataSet.TELEMETRY}>
-              Telemetry
-            </ToggleButton>
+            {props.toggleButtons.map((item) => (
+              <ToggleButton
+                component={Button}
+                color="primary"
+                startIcon={<Icon path={item.icon} size={0.75} />}
+                value={item.value}>
+                {item.label}
+              </ToggleButton>
+            ))}
           </ToggleButtonGroup>
 
           <ToggleButtonGroup value={layout} onChange={updateLayout} exclusive sx={{ display: 'none' }}>

@@ -1,3 +1,4 @@
+import { mdiBroadcast, mdiEye } from '@mdi/js';
 import { Box, Paper } from '@mui/material';
 import { CodesContext } from 'contexts/codesContext';
 import { ObservationsContext } from 'contexts/observationsContext';
@@ -24,9 +25,9 @@ const SurveySpatialData = () => {
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
-    surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-    surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-    surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    surveyContext.deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+    surveyContext.critterDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+    surveyContext.sampleSiteDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
   }, []);
 
   useEffect(() => {
@@ -137,7 +138,24 @@ const SurveySpatialData = () => {
 
   return (
     <Paper>
-      <SurveyMapToolBar updateDataSet={updateDataSet} updateLayout={updateLayout} />
+      <SurveyMapToolBar
+        toggleButtons={[
+          {
+            label: `Observations (${observationPoints.length})`,
+            value: SurveySpatialDataSet.OBSERVATIONS,
+            icon: mdiEye,
+            isLoading: false
+          },
+          {
+            label: `Telemetry (${telemetryPoints.length})`,
+            value: SurveySpatialDataSet.TELEMETRY,
+            icon: mdiBroadcast,
+            isLoading: false
+          }
+        ]}
+        updateDataSet={updateDataSet}
+        updateLayout={updateLayout}
+      />
 
       <Box height={{ sm: 400, md: 600 }} position="relative">
         <SurveyMap mapPoints={mapPoints} isLoading={isLoading()} />
