@@ -10,6 +10,7 @@ import { ProjectContext } from 'contexts/projectContext';
 import { useContext } from 'react';
 import GeneralInformation from './components/GeneralInformation';
 import ProjectObjectives from './components/ProjectObjectives';
+import ProjectTeamMembers from './components/ProjectTeamMembers';
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectMetadata: {
@@ -74,13 +75,19 @@ const ProjectDetails = () => {
           <Divider></Divider>
           <ProjectObjectives />
         </Box>
-
         <Box component="section">
           <Typography component="h4" className={classes.projectMetaSectionHeader}>
             General Information
           </Typography>
           <Divider></Divider>
           <GeneralInformation />
+        </Box>
+        <Box component="section">
+          <Typography component="h4" className={classes.projectMetaSectionHeader}>
+            Team Members
+          </Typography>
+          <Divider></Divider>
+          <ProjectTeamMembers />
         </Box>
 
         {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-162) Commenting out IUCN form (view) temporarily, while its decided if IUCN information is desired */}
