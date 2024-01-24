@@ -33,7 +33,7 @@ const SurveySpatialData = () => {
   useEffect(() => {
     if (surveyContext.deploymentDataLoader.data) {
       const deploymentIds = surveyContext.deploymentDataLoader.data.map((item) => item.deployment_id);
-      telemetryContext.telemetryDataLoader.load(deploymentIds);
+      telemetryContext.telemetryDataLoader.refresh(deploymentIds);
     }
   }, [surveyContext.deploymentDataLoader.data]);
 

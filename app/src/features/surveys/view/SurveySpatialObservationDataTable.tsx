@@ -16,11 +16,11 @@ import { getCodesName } from 'utils/Utils';
 
 interface IObservationTableRow {
   id: number;
-  taxon: string | undefined;
+  itis_scientific_name: string | undefined;
   count: number | null;
-  site: string | undefined;
-  method: string | undefined;
-  period: string | undefined;
+  sample_name: string | undefined;
+  sample_method: string | undefined;
+  sample_period: string | undefined;
   date: string | undefined;
   time: string | undefined;
   latitude: number | null;
@@ -99,11 +99,11 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
 
     return {
       id: item.survey_observation_id,
-      taxon: taxonomyContext.getCachedSpeciesTaxonomyById(item.wldtaxonomic_units_id)?.label,
+      itis_scientific_name: taxonomyContext.getCachedSpeciesTaxonomyById(item.wldtaxonomic_units_id)?.label,
       count: item.count,
-      site: siteName,
-      method: method_id ? getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method_id) : '',
-      period: periodString,
+      sample_name: siteName,
+      sample_method: method_id ? getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method_id) : '',
+      sample_period: periodString,
       date: dayjs(item.observation_date).format('YYYY-MM-DD'),
       time: dayjs(item.observation_date).format('HH:mm:ss'),
       latitude: item.latitude,
@@ -113,25 +113,25 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
 
   const columns: GridColDef<IObservationTableRow>[] = [
     {
-      field: 'taxon',
+      field: 'itis_scientific_name',
       headerName: 'Species',
       flex: 1,
       minWidth: 200
     },
     {
-      field: 'site',
+      field: 'sample_site',
       headerName: 'Sample Site',
       flex: 1,
       minWidth: 200
     },
     {
-      field: 'method',
+      field: 'sample_method',
       headerName: 'Sample Method',
       flex: 1,
       minWidth: 200
     },
     {
-      field: 'period',
+      field: 'sample_period',
       headerName: 'Sample Period',
       flex: 1,
       minWidth: 200
@@ -156,14 +156,14 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
       maxWidth: 100
     },
     {
-      field: 'lat',
+      field: 'latitude',
       headerName: 'Lat',
       headerAlign: 'right',
       align: 'right',
       maxWidth: 100
     },
     {
-      field: 'long',
+      field: 'longitude',
       headerName: 'Long',
       headerAlign: 'right',
       align: 'right',
