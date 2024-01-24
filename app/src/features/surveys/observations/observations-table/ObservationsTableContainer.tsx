@@ -93,18 +93,13 @@ const ObservationComponent = () => {
         return [...prev, field];
       }
     });
-  }
+  };
 
   // The array of columns that may be toggled as hidden or visible
   const hideableColumns = useMemo(() => {
-    return observationsTableContext
-      .getColumns()
-      .filter((column) => {
-        return column &&
-          column.type &&
-          !(['actions', 'checkboxSelection'].includes(column.type)) &&
-          column.hideable
-      });
+    return observationsTableContext.getColumns().filter((column) => {
+      return column && column.type && !['actions', 'checkboxSelection'].includes(column.type) && column.hideable;
+    });
   }, [observationsTableContext.getColumns]);
 
   /**
@@ -114,7 +109,7 @@ const ObservationComponent = () => {
     if (hiddenFields.length > 0) {
       setHiddenFields([]);
     } else {
-      setHiddenFields(hideableColumns.map((column) => column.field))
+      setHiddenFields(hideableColumns.map((column) => column.field));
     }
   }, [hiddenFields]);
 
@@ -125,15 +120,15 @@ const ObservationComponent = () => {
     _muiDataGridApiRef.current.setColumnVisibilityModel({
       ...Object.fromEntries(hideableColumns.map((column) => [column.field, true])),
       ...Object.fromEntries(hiddenFields.map((field) => [field, false]))
-    })
-  }, [hideableColumns, hiddenFields])
+    });
+  }, [hideableColumns, hiddenFields]);
 
   /**
    * On first mount, load visibility state from session storage, if it exists.
    */
   useEffect(() => {
     const fieldsJson: string | null = sessionStorage.getItem(SIMS_OBSERVATIONS_HIDDEN_COLUMNS);
-  
+
     if (!fieldsJson) {
       return;
     }
@@ -242,8 +237,7 @@ const ObservationComponent = () => {
                   // variant="outlined"
                   color="default"
                   onClick={(event) => setColumnVisibilityMenuAnchorEl(event.currentTarget)}
-                  disabled={observationsTableContext.isSaving}
-                >
+                  disabled={observationsTableContext.isSaving}>
                   <Icon path={mdiCogOutline} size={1} />
                   {/* Column Visibility */}
                 </IconButton>
@@ -263,33 +257,34 @@ const ObservationComponent = () => {
                   MenuListProps={{
                     'aria-labelledby': 'basic-button'
                   }}>
-                    <MenuItem dense onClick={() => toggleShowHideAll()}>
-                      <ListItemIcon>
-                        <Checkbox
-                          sx={{ ml: -1 }}
-                          indeterminate={hiddenFields.length > 0 && hiddenFields.length < hideableColumns.length}
-                          checked={hiddenFields.length === 0}
-                        />
-                      </ListItemIcon>
-                      <ListItemText sx={{ textTransform: 'uppercase' }}>Show/Hide All</ListItemText>
-                    </MenuItem>
-                    <Divider />
-                    <Box sx={{
+                  <MenuItem dense onClick={() => toggleShowHideAll()}>
+                    <ListItemIcon>
+                      <Checkbox
+                        sx={{ ml: -1 }}
+                        indeterminate={hiddenFields.length > 0 && hiddenFields.length < hideableColumns.length}
+                        checked={hiddenFields.length === 0}
+                      />
+                    </ListItemIcon>
+                    <ListItemText sx={{ textTransform: 'uppercase' }}>Show/Hide All</ListItemText>
+                  </MenuItem>
+                  <Divider />
+                  <Box
+                    sx={{
                       xs: { maxHeight: '300px' },
                       lg: { maxHeight: '400px' }
                     }}>
-                      {hideableColumns.map((column) => {
-                        return (
-                          <MenuItem dense key={column.field} onClick={() => toggleColumnVisibility(column.field)}>
-                            <ListItemIcon>
-                              <Checkbox sx={{ ml: -1 }} checked={!hiddenFields.includes(column.field)} />
-                            </ListItemIcon>
-                            <ListItemText>{column.headerName}</ListItemText>
-                          </MenuItem>
-                        )
-                      })}
-                    </Box>
-                  </Menu>
+                    {hideableColumns.map((column) => {
+                      return (
+                        <MenuItem dense key={column.field} onClick={() => toggleColumnVisibility(column.field)}>
+                          <ListItemIcon>
+                            <Checkbox sx={{ ml: -1 }} checked={!hiddenFields.includes(column.field)} />
+                          </ListItemIcon>
+                          <ListItemText>{column.headerName}</ListItemText>
+                        </MenuItem>
+                      );
+                    })}
+                  </Box>
+                </Menu>
               </>
             )}
             <Box>

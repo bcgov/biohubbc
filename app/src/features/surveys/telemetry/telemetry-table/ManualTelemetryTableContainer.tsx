@@ -1,6 +1,7 @@
 import { mdiCogOutline, mdiDotsVertical, mdiImport, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
+import { Checkbox, ListItemText } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
@@ -25,13 +26,11 @@ import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { pluralize as p } from 'utils/Utils';
 import ManualTelemetryTable from './ManualTelemetryTable';
-import { Checkbox, ListItemText } from '@mui/material';
 
 /**
  * Key used to cache column visiblity in sessionStorage
  */
 const SIMS_TELEMETRY_HIDDEN_COLUMNS = 'SIMS_TELEMETRY_HIDDEN_COLUMNS';
-
 
 const ManualTelemetryTableContainer = () => {
   const [showImportDialog, setShowImportDialog] = useState(false);
@@ -69,18 +68,13 @@ const ManualTelemetryTableContainer = () => {
         return [...prev, field];
       }
     });
-  }
+  };
 
   // The array of columns that may be toggled as hidden or visible
   const hideableColumns = useMemo(() => {
-    return telemetryTableContext
-      .getColumns()
-      .filter((column) => {
-        return column &&
-          column.type &&
-          !(['actions', 'checkboxSelection'].includes(column.type)) &&
-          column.hideable
-      });
+    return telemetryTableContext.getColumns().filter((column) => {
+      return column && column.type && !['actions', 'checkboxSelection'].includes(column.type) && column.hideable;
+    });
   }, [telemetryTableContext.getColumns]);
 
   /**
@@ -90,7 +84,7 @@ const ManualTelemetryTableContainer = () => {
     if (hiddenFields.length > 0) {
       setHiddenFields([]);
     } else {
-      setHiddenFields(hideableColumns.map((column) => column.field))
+      setHiddenFields(hideableColumns.map((column) => column.field));
     }
   }, [hiddenFields]);
 
@@ -101,8 +95,8 @@ const ManualTelemetryTableContainer = () => {
     _muiDataGridApiRef.current.setColumnVisibilityModel({
       ...Object.fromEntries(hideableColumns.map((column) => [column.field, true])),
       ...Object.fromEntries(hiddenFields.map((field) => [field, false]))
-    })
-  }, [hideableColumns, hiddenFields])
+    });
+  }, [hideableColumns, hiddenFields]);
 
   /**
    * On first mount, load visibility state from session storage, if it exists.
@@ -248,8 +242,7 @@ const ManualTelemetryTableContainer = () => {
                   // variant="outlined"
                   color="default"
                   onClick={(event) => setColumnVisibilityMenuAnchorEl(event.currentTarget)}
-                  disabled={telemetryTableContext.isSaving}
-                >
+                  disabled={telemetryTableContext.isSaving}>
                   <Icon path={mdiCogOutline} size={1} />
                   {/* Column Visibility */}
                 </IconButton>
@@ -269,33 +262,34 @@ const ManualTelemetryTableContainer = () => {
                   MenuListProps={{
                     'aria-labelledby': 'basic-button'
                   }}>
-                    <MenuItem dense onClick={() => toggleShowHideAll()}>
-                      <ListItemIcon>
-                        <Checkbox
-                          sx={{ ml: -1 }}
-                          indeterminate={hiddenFields.length > 0 && hiddenFields.length < hideableColumns.length}
-                          checked={hiddenFields.length === 0}
-                        />
-                      </ListItemIcon>
-                      <ListItemText sx={{ textTransform: 'uppercase' }}>Show/Hide All</ListItemText>
-                    </MenuItem>
-                    <Divider />
-                    <Box sx={{
+                  <MenuItem dense onClick={() => toggleShowHideAll()}>
+                    <ListItemIcon>
+                      <Checkbox
+                        sx={{ ml: -1 }}
+                        indeterminate={hiddenFields.length > 0 && hiddenFields.length < hideableColumns.length}
+                        checked={hiddenFields.length === 0}
+                      />
+                    </ListItemIcon>
+                    <ListItemText sx={{ textTransform: 'uppercase' }}>Show/Hide All</ListItemText>
+                  </MenuItem>
+                  <Divider />
+                  <Box
+                    sx={{
                       xs: { maxHeight: '300px' },
                       lg: { maxHeight: '400px' }
                     }}>
-                      {hideableColumns.map((column) => {
-                        return (
-                          <MenuItem dense key={column.field} onClick={() => toggleColumnVisibility(column.field)}>
-                            <ListItemIcon>
-                              <Checkbox sx={{ ml: -1 }} checked={!hiddenFields.includes(column.field)} />
-                            </ListItemIcon>
-                            <ListItemText>{column.headerName}</ListItemText>
-                          </MenuItem>
-                        )
-                      })}
-                    </Box>
-                  </Menu>
+                    {hideableColumns.map((column) => {
+                      return (
+                        <MenuItem dense key={column.field} onClick={() => toggleColumnVisibility(column.field)}>
+                          <ListItemIcon>
+                            <Checkbox sx={{ ml: -1 }} checked={!hiddenFields.includes(column.field)} />
+                          </ListItemIcon>
+                          <ListItemText>{column.headerName}</ListItemText>
+                        </MenuItem>
+                      );
+                    })}
+                  </Box>
+                </Menu>
               </>
             )}
             <Box>

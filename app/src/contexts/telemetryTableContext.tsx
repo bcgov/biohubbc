@@ -43,7 +43,7 @@ export type ITelemetryTableContext = {
   /**
    * Returns all columns belonging to the telemetry table
    */
-  getColumns: () =>  GridStateColDef[];
+  getColumns: () => GridStateColDef[];
   /**
    * Appends a new blank record to the telemetry rows
    */

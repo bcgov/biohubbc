@@ -59,7 +59,7 @@ export type IObservationsTableContext = {
   /**
    * Returns all columns belonging to the observation table
    */
-  getColumns: () =>  GridStateColDef[];
+  getColumns: () => GridStateColDef[];
   /**
    * Appends a new blank record to the observation rows
    */
