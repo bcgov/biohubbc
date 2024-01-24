@@ -1,8 +1,3 @@
-/*
-itis_tsn                integer                   NOT NULL,
-      itis_scientific_name    varchar(300)              NOT NULL,
-      */
-
 import { Knex } from 'knex';
 
 /**
@@ -14,6 +9,8 @@ import { Knex } from 'knex';
  */
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`--sql 
+    SET search_path = 'biohub';
+
     ALTER TABLE survey_observation ADD itis_tsn integer;
     ALTER TABLE survey_observation ADD itis_scientific_name varchar(300);
   `);
