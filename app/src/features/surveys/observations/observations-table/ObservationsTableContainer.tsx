@@ -27,6 +27,9 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { pluralize as p } from 'utils/Utils';
 
+/**
+ * Key used to cache column visiblity in sessionStorage
+ */
 const SIMS_OBSERVATIONS_HIDDEN_COLUMNS = 'SIMS_OBSERVATIONS_HIDDEN_COLUMNS';
 
 const ObservationComponent = () => {
