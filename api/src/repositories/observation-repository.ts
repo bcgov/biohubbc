@@ -4,6 +4,7 @@ import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 
 /**
  * Interface reflecting survey observations retrieved from the database
@@ -200,14 +201,19 @@ export class ObservationRepository extends BaseRepository {
    * Retrieves all observation records for the given survey
    *
    * @param {number} surveyId
+   * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<ObservationRecord[]>}
    * @memberof ObservationRepository
    */
-  async getSurveyObservations(surveyId: number): Promise<ObservationRecord[]> {
+  async getSurveyObservations(surveyId: number, pagination?: ApiPaginationOptions): Promise<ObservationRecord[]> {
     const knex = getKnex();
-    const sqlStatement = knex.queryBuilder().select('*').from('survey_observation').where('survey_id', surveyId);
+    const allRowsQuery = knex.queryBuilder().select('*').from('survey_observation').where('survey_id', surveyId)
 
-    const response = await this.connection.knex(sqlStatement, ObservationRecord);
+    const query = pagination
+      ? allRowsQuery.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit)
+      : allRowsQuery
+
+    const response = await this.connection.knex(query, ObservationRecord);
     return response.rows;
   }
 
@@ -215,7 +221,7 @@ export class ObservationRepository extends BaseRepository {
    * Retrieves the count of survey observations for the given survey
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<{ observationCount: number }>}
+   * @return {*}  {Promise<number>}
    * @memberof ObservationRepository
    */
   async getSurveyObservationCount(surveyId: number): Promise<number> {

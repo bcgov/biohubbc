@@ -43,10 +43,20 @@ const useObservationApi = (axios: AxiosInstance) => {
    */
   const getObservationRecords = async (
     projectId: number,
-    surveyId: number
+    surveyId: number,
+    pagination?: { page: number, limit: number }
   ): Promise<IGetSurveyObservationsResponse> => {
+    let urlParamsString = '';
+
+    if (pagination) {
+      const params = new URLSearchParams();
+      params.append('page', pagination.page.toString());
+      params.append('limit', pagination.limit.toString());
+      urlParamsString = `?${params.toString()}`;
+    }
+
     const { data } = await axios.get<IGetSurveyObservationsResponse>(
-      `/api/project/${projectId}/survey/${surveyId}/observations`
+      `/api/project/${projectId}/survey/${surveyId}/observations${urlParamsString}`
     );
 
     return data;

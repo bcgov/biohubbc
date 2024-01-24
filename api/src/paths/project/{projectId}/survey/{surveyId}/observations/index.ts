@@ -7,6 +7,7 @@ import { InsertObservation, UpdateObservation } from '../../../../../../reposito
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ObservationService } from '../../../../../../services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
+import { ApiPaginationOptions } from '../../../../../../zod-schema/pagination';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation');
 
@@ -136,6 +137,28 @@ export const surveyObservationsResponseSchema: SchemaObject = {
   }
 };
 
+const paginationSchema: SchemaObject = {
+  type: 'object',
+  required: ['total', 'per_page', 'current_page', 'last_page'],
+  properties: {
+    total: {
+      type: 'integer'
+    },
+    per_page: {
+      type: 'integer',
+      minimum: 1
+    },
+    current_page: {
+      type: 'integer',
+      minimum: 1,
+    },
+    last_page: {
+      type: 'integer',
+      minimum: 1,
+    }
+  }
+}
+
 GET.apiDoc = {
   description: 'Get all observations for the survey.',
   tags: ['observation'],
@@ -174,7 +197,8 @@ GET.apiDoc = {
             required: ['surveyObservations', 'supplementaryObservationData'],
             properties: {
               ...surveyObservationsResponseSchema.properties,
-              supplementaryObservationData: { ...surveyObservationsSupplementaryData }
+              supplementaryObservationData: { ...surveyObservationsSupplementaryData },
+              pagination: { ...paginationSchema }
             },
             title: 'Survey get response object, for view purposes'
           }
@@ -217,6 +241,16 @@ PUT.apiDoc = {
       in: 'path',
       name: 'surveyId',
       required: true
+    },
+    {
+      in: 'query',
+      name: 'page',
+      required: false
+    },
+    {
+      in: 'query',
+      name: 'limit',
+      required: false
     }
   ],
   requestBody: {
@@ -302,6 +336,8 @@ PUT.apiDoc = {
 export function getSurveyObservations(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
+    const page: number | undefined = req.query.page ? Number(req.query.page) : undefined;
+    const limit: number | undefined = req.query.limit ? Number(req.query.limit) : undefined;
 
     defaultLog.debug({ label: 'getSurveyObservations', surveyId });
 
@@ -312,8 +348,19 @@ export function getSurveyObservations(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      const observationData = await observationService.getSurveyObservationsWithSupplementaryData(surveyId);
-      return res.status(200).json(observationData);
+      const paginationOptions: ApiPaginationOptions | undefined = (limit && page) ? { limit, page } : undefined
+      const observationData = await observationService.getSurveyObservationsWithSupplementaryData(surveyId, paginationOptions);
+      const { observationCount } = observationData.supplementaryObservationData
+
+      return res.status(200).json({
+        ...observationData,
+        pagination: {
+          total: observationCount,
+          per_page: limit ?? observationCount,
+          current_page: page ?? 1,
+          last_page: limit ? Math.ceil(observationCount / limit) : 1
+        }
+      });
     } catch (error) {
       defaultLog.error({ label: 'getSurveyObservations', message: 'error', error });
       await connection.rollback();
