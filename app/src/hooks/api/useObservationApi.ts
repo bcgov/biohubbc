@@ -5,6 +5,7 @@ import {
   ISupplementaryObservationData
 } from 'contexts/observationsTableContext';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
+import { ApiPaginationOptions } from 'types/misc';
 
 /**
  * Returns a set of supported api methods for working with observations.
@@ -39,12 +40,13 @@ const useObservationApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
+   * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<IObservationTableRow[]>}
    */
   const getObservationRecords = async (
     projectId: number,
     surveyId: number,
-    pagination?: { page: number, limit: number }
+    pagination?: ApiPaginationOptions
   ): Promise<IGetSurveyObservationsResponse> => {
     let urlParamsString = '';
 
@@ -52,6 +54,12 @@ const useObservationApi = (axios: AxiosInstance) => {
       const params = new URLSearchParams();
       params.append('page', pagination.page.toString());
       params.append('limit', pagination.limit.toString());
+      if (pagination.sort) {
+        params.append('sort', pagination.sort);
+      }
+      if (pagination.order) {
+        params.append('order', pagination.order);
+      }
       urlParamsString = `?${params.toString()}`;
     }
 

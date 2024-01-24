@@ -210,10 +210,17 @@ export class ObservationRepository extends BaseRepository {
     const allRowsQuery = knex.queryBuilder().select('*').from('survey_observation').where('survey_id', surveyId)
 
     const query = pagination
-      ? allRowsQuery.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit)
+      ? allRowsQuery
+        .limit(pagination.limit)
+        .offset((pagination.page - 1) * pagination.limit)
       : allRowsQuery
 
-    const response = await this.connection.knex(query, ObservationRecord);
+    // TODO possible to conditionally chain these methods together, rather than redeclare the query builder?
+    const query2 = pagination?.sort && pagination.order
+      ? query.orderBy(pagination.sort, pagination.order)
+      : query;
+
+    const response = await this.connection.knex(query2, ObservationRecord);
     return response.rows;
   }
 
