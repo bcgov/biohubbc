@@ -149,22 +149,21 @@ const paginationSchema: SchemaObject = {
       minimum: 1
     },
     current_page: {
-      type: 'integer',
-      minimum: 1,
+      type: 'integer'
     },
     last_page: {
       type: 'integer',
-      minimum: 1,
+      minimum: 1
     },
     sort: {
-      type: 'string',
+      type: 'string'
     },
     order: {
       type: 'string',
       enum: ['ASC', 'DESC']
     }
   }
-}
+};
 
 GET.apiDoc = {
   description: 'Get all observations for the survey.',
@@ -346,7 +345,7 @@ export function getSurveyObservations(): RequestHandler {
     const page: number | undefined = req.query.page ? Number(req.query.page) : undefined;
     const limit: number | undefined = req.query.limit ? Number(req.query.limit) : undefined;
     const sort: string | undefined = req.query.sort ? String(req.query.sort) : undefined;
-    const order: 'ASC' | 'DESC' | undefined = req.query.order ? String(req.query.order) as 'ASC' | 'DESC' : undefined;
+    const order: 'ASC' | 'DESC' | undefined = req.query.order ? (String(req.query.order) as 'ASC' | 'DESC') : undefined;
 
     defaultLog.debug({ label: 'getSurveyObservations', surveyId });
 
@@ -357,9 +356,13 @@ export function getSurveyObservations(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      const paginationOptions: ApiPaginationOptions | undefined = (limit && page) ? { limit, page, sort, order } : undefined
-      const observationData = await observationService.getSurveyObservationsWithSupplementaryData(surveyId, paginationOptions);
-      const { observationCount } = observationData.supplementaryObservationData
+      const paginationOptions: ApiPaginationOptions | undefined =
+        limit !== undefined && page !== undefined ? { limit, page, sort, order } : undefined;
+      const observationData = await observationService.getSurveyObservationsWithSupplementaryData(
+        surveyId,
+        paginationOptions
+      );
+      const { observationCount } = observationData.supplementaryObservationData;
 
       return res.status(200).json({
         ...observationData,

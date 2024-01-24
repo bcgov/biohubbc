@@ -3,8 +3,8 @@ import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { getLogger } from '../utils/logger';
-import { BaseRepository } from './base-repository';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
+import { BaseRepository } from './base-repository';
 
 /**
  * Interface reflecting survey observations retrieved from the database
@@ -207,18 +207,14 @@ export class ObservationRepository extends BaseRepository {
    */
   async getSurveyObservations(surveyId: number, pagination?: ApiPaginationOptions): Promise<ObservationRecord[]> {
     const knex = getKnex();
-    const allRowsQuery = knex.queryBuilder().select('*').from('survey_observation').where('survey_id', surveyId)
+    const allRowsQuery = knex.queryBuilder().select('*').from('survey_observation').where('survey_id', surveyId);
 
     const query = pagination
-      ? allRowsQuery
-        .limit(pagination.limit)
-        .offset((pagination.page - 1) * pagination.limit)
-      : allRowsQuery
+      ? allRowsQuery.limit(pagination.limit).offset(pagination.page * pagination.limit)
+      : allRowsQuery;
 
     // TODO possible to conditionally chain these methods together, rather than redeclare the query builder?
-    const query2 = pagination?.sort && pagination.order
-      ? query.orderBy(pagination.sort, pagination.order)
-      : query;
+    const query2 = pagination?.sort && pagination.order ? query.orderBy(pagination.sort, pagination.order) : query;
 
     const response = await this.connection.knex(query2, ObservationRecord);
     return response.rows;

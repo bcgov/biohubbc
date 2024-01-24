@@ -176,7 +176,6 @@ const SurveySpatialData = () => {
       <Box p={1} position="relative">
         {currentTab === SurveySpatialDataSet.OBSERVATIONS && (
           <SurveySpatialObservationDataTable
-            data={observationsContext.observationsDataLoader.data?.surveyObservations || []}
             sample_sites={surveyContext.sampleSiteDataLoader.data?.sampleSites || []}
             isLoading={isLoading()}
           />

@@ -1,3 +1,6 @@
+import grey from '@mui/material/colors/grey';
+import Skeleton from '@mui/material/Skeleton';
+import Stack from '@mui/material/Stack';
 import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { CodesContext } from 'contexts/codesContext';
@@ -5,13 +8,12 @@ import { IObservationRecord } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TaxonomyContext } from 'contexts/taxonomyContext';
 import dayjs from 'dayjs';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
 import { IGetSampleLocationRecord } from 'interfaces/useSurveyApi.interface';
-import { useContext, useMemo } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { getCodesName } from 'utils/Utils';
 import NoSurveySectionData from '../components/NoSurveySectionData';
-import Stack from '@mui/material/Stack';
-import Skeleton from '@mui/material/Skeleton';
-import grey from '@mui/material/colors/grey';
 
 interface IObservationTableRow {
   id: number;
@@ -26,14 +28,38 @@ interface IObservationTableRow {
   long: number | null;
 }
 interface ISurveySpatialObservationDataTableProps {
-  data: IObservationRecord[];
   sample_sites: IGetSampleLocationRecord[];
   isLoading: boolean;
 }
 const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataTableProps) => {
+  const biohubApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
   const taxonomyContext = useContext(TaxonomyContext);
+
+  const [data, setData] = useState<IObservationRecord[]>([]);
+  const [totalRows, setTotalRows] = useState<number>(0);
+  const [page, setPage] = useState<number>(0);
+  const [pageSize, setPageSize] = useState<number>(5);
+
+  const paginatedDataLoader = useDataLoader((page: number, limit: number) =>
+    biohubApi.observation.getObservationRecords(surveyContext.projectId, surveyContext.surveyId, {
+      page,
+      limit
+    })
+  );
+
+  // page information has changed, fetch more data
+  useEffect(() => {
+    paginatedDataLoader.refresh(page, pageSize);
+  }, [page, pageSize]);
+
+  useEffect(() => {
+    if (paginatedDataLoader.data) {
+      setData(paginatedDataLoader.data.surveyObservations);
+      setTotalRows(paginatedDataLoader.data.pagination.total);
+    }
+  }, [paginatedDataLoader.data]);
 
   const sampleSites = useMemo(() => {
     return surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
@@ -51,7 +77,7 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
     );
   }, [surveyContext.sampleSiteDataLoader.data]);
 
-  const tableData: IObservationTableRow[] = props.data.map((item) => {
+  const tableData: IObservationTableRow[] = data.map((item) => {
     const siteName = sampleSites.find((site) => site.survey_sample_site_id === item.survey_sample_site_id)?.name;
     const method_id = sampleMethods.find(
       (method) => method?.survey_sample_method_id === item.survey_sample_method_id
@@ -162,7 +188,7 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
       <Skeleton variant="text" />
       <Skeleton variant="text" />
     </Stack>
-  )
+  );
 
   return (
     <>
@@ -174,23 +200,29 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
         </Stack>
       )}
 
-      {!props.isLoading && props.data.length === 0 && (
+      {!props.isLoading && data.length === 0 && (
         <NoSurveySectionData text="No data available" paperVariant="outlined" />
       )}
 
-      {!props.isLoading && props.data.length > 0 && (
+      {!props.isLoading && data.length > 0 && (
         <>
           <StyledDataGrid
             columnHeaderHeight={RowHeight}
             autoHeight
             rows={tableData}
+            rowCount={totalRows}
+            paginationModel={{ pageSize, page }}
+            onPaginationModelChange={(model) => {
+              setPage(model.page);
+              setPageSize(model.pageSize);
+            }}
+            pageSizeOptions={[5]}
+            paginationMode="server"
+            loading={paginatedDataLoader.isLoading}
             getRowId={(row) => row.id}
             columns={columns}
-            pageSizeOptions={[5]}
             rowSelection={false}
             checkboxSelection={false}
-            hideFooter
-            disableRowSelectionOnClick
             disableColumnSelector
             disableColumnFilter
             disableColumnMenu
