@@ -23,8 +23,8 @@ interface IObservationTableRow {
   period: string | undefined;
   date: string | undefined;
   time: string | undefined;
-  lat: number | null;
-  long: number | null;
+  latitude: number | null;
+  longitude: number | null;
 }
 interface ISurveySpatialObservationDataTableProps {
   sample_sites: IGetSampleLocationRecord[];
@@ -92,6 +92,10 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
       (method) => method?.survey_sample_method_id === item.survey_sample_method_id
     )?.method_lookup_id;
     const period = samplePeriods.find((period) => period?.survey_sample_period_id === item.survey_sample_period_id);
+    let periodString = '';
+    if (period) {
+      periodString = `${period.start_date} ${period.start_time ?? ''} - ${period.end_date} ${period.end_time ?? ''}`;
+    }
 
     return {
       id: item.survey_observation_id,
@@ -99,11 +103,11 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
       count: item.count,
       site: siteName,
       method: method_id ? getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method_id) : '',
-      period: `${period?.start_date} ${period?.end_date}`,
+      period: periodString,
       date: dayjs(item.observation_date).format('YYYY-MM-DD'),
       time: dayjs(item.observation_date).format('HH:mm:ss'),
-      lat: item.latitude,
-      long: item.longitude
+      latitude: item.latitude,
+      longitude: item.longitude
     };
   });
 
@@ -240,7 +244,7 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
         />
       )}
     </>
-  )
+  );
 };
 
 export default SurveySpatialObservationDataTable;
