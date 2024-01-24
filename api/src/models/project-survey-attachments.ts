@@ -1,4 +1,5 @@
 import { default as dayjs } from 'dayjs';
+import { ATTACHMENT_TYPE } from '../constants/attachments';
 import { getLogger } from '../utils/logger';
 import { SurveySupplementaryData } from './survey-view';
 
@@ -28,7 +29,7 @@ export class GetAttachmentsWithSupplementalData {
       attachment.project_attachment_id ||
       attachment.project_report_attachment_id;
     this.fileName = attachment.file_name;
-    this.fileType = attachment.file_type || 'Report';
+    this.fileType = attachment.file_type || ATTACHMENT_TYPE.REPORT;
     this.lastModified = dayjs(attachment.update_date || attachment.create_date).toISOString();
     this.size = attachment.file_size;
     this.status = attachment.status;

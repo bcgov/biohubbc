@@ -6,7 +6,7 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
-import BorderLinearProgress from '../../survey-observations/components/BorderLinearProgress';
+import BorderLinearProgress from '../../components/BorderLinearProgress';
 
 const useStyles = makeStyles((theme: Theme) => ({
   importFile: {

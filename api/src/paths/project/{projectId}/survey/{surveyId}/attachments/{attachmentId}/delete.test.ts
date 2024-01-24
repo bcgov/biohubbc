@@ -91,6 +91,6 @@ describe('deleteAttachment', () => {
 
     await result(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
 
-    expect(handleDeleteSurveyAttachmentStub).to.be.calledOnceWith(1, 2, 'Report', false);
+    expect(handleDeleteSurveyAttachmentStub).to.be.calledOnceWith(1, 2, 'Report');
   });
 });

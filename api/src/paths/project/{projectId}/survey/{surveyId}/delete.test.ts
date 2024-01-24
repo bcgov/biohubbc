@@ -7,7 +7,6 @@ import * as db from '../../../../../database/db';
 import { HTTPError } from '../../../../../errors/http-error';
 import { ISurveyAttachment } from '../../../../../repositories/attachment-repository';
 import { AttachmentService } from '../../../../../services/attachment-service';
-import { PlatformService } from '../../../../../services/platform-service';
 import { SurveyService } from '../../../../../services/survey-service';
 import * as file_utils from '../../../../../utils/file-utils';
 import { getMockDBConnection } from '../../../../../__mocks__/db';
@@ -112,10 +111,6 @@ describe('deleteSurvey', () => {
       .stub(file_utils, 'deleteFileFromS3')
       .resolves((true as unknown) as S3.DeleteObjectOutput);
 
-    const submitDwCAMetadataPackageStub = sinon
-      .stub(PlatformService.prototype, 'submitProjectDwCMetadataToBioHub')
-      .resolves();
-
     let actualResult: any = null;
     const sampleRes = {
       status: () => {
@@ -134,6 +129,5 @@ describe('deleteSurvey', () => {
     expect(getSurveyAttachmentsStub).to.be.calledOnce;
     expect(deleteSurveyStub).to.be.calledOnce;
     expect(fileUtilsStub).to.be.calledOnce;
-    expect(submitDwCAMetadataPackageStub).to.be.calledOnce;
   });
 });

@@ -9,9 +9,6 @@ import Paper from '@mui/material/Paper';
 import Skeleton from '@mui/material/Skeleton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import SurveySubmissionAlertBar from 'components/publish/SurveySubmissionAlertBar';
-import { SystemRoleGuard } from 'components/security/Guards';
-import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContext } from 'contexts/codesContext';
 import { ObservationsContext } from 'contexts/observationsContext';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -153,12 +150,6 @@ const SurveyPage: React.FC = () => {
         <Paper sx={{ display: 'none' }}>
           <SurveyStudyArea />
         </Paper>
-
-        <Box sx={{ display: 'none' }} my={3}>
-          <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-            <SurveySubmissionAlertBar />
-          </SystemRoleGuard>
-        </Box>
       </Container>
     </>
   );

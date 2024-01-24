@@ -23,7 +23,7 @@ describe('HistoryPublishRepository', () => {
       });
 
       const repo = new HistoryPublishRepository(mockConnection);
-      const response = await repo.insertProjectMetadataPublishRecord({ project_id: 1, queue_id: 1 });
+      const response = await repo.insertProjectMetadataPublishRecord({ project_id: 1, submission_uuid: '123-456-789' });
 
       expect(response).to.be.eql(1);
     });
@@ -37,7 +37,7 @@ describe('HistoryPublishRepository', () => {
 
       const repo = new HistoryPublishRepository(mockConnection);
       try {
-        await repo.insertProjectMetadataPublishRecord({ project_id: 1, queue_id: 1 });
+        await repo.insertProjectMetadataPublishRecord({ project_id: 1, submission_uuid: '123-456-789' });
         expect.fail();
       } catch (error) {
         expect((error as ApiExecuteSQLError).message).to.equal('Failed to insert Project Metadata Publish record');
@@ -54,7 +54,7 @@ describe('HistoryPublishRepository', () => {
       });
 
       const repo = new HistoryPublishRepository(mockConnection);
-      const response = await repo.insertSurveyMetadataPublishRecord({ survey_id: 1, queue_id: 1 });
+      const response = await repo.insertSurveyMetadataPublishRecord({ survey_id: 1, submission_uuid: '123-456-789' });
 
       expect(response).to.be.eql(1);
     });
@@ -68,7 +68,7 @@ describe('HistoryPublishRepository', () => {
 
       const repo = new HistoryPublishRepository(mockConnection);
       try {
-        await repo.insertSurveyMetadataPublishRecord({ survey_id: 1, queue_id: 1 });
+        await repo.insertSurveyMetadataPublishRecord({ survey_id: 1, submission_uuid: '123-456-789' });
         expect.fail();
       } catch (error) {
         expect((error as ApiExecuteSQLError).message).to.equal('Failed to insert Survey Metadata Publish record');
@@ -87,7 +87,10 @@ describe('HistoryPublishRepository', () => {
       });
 
       const repo = new HistoryPublishRepository(mockConnection);
-      const response = await repo.insertSurveySummaryPublishRecord({ survey_summary_submission_id: 1, artifact_id: 1 });
+      const response = await repo.insertSurveySummaryPublishRecord({
+        survey_summary_submission_id: 1,
+        artifact_uuid: '123-456-789'
+      });
 
       expect(response).to.be.eql(1);
     });
@@ -101,7 +104,7 @@ describe('HistoryPublishRepository', () => {
 
       const repo = new HistoryPublishRepository(mockConnection);
       try {
-        await repo.insertSurveySummaryPublishRecord({ survey_summary_submission_id: 1, artifact_id: 1 });
+        await repo.insertSurveySummaryPublishRecord({ survey_summary_submission_id: 1, artifact_uuid: '123-456-789' });
         expect.fail();
       } catch (error) {
         expect((error as ApiExecuteSQLError).message).to.equal('Failed to insert Survey Summary Publish record');
@@ -118,7 +121,10 @@ describe('HistoryPublishRepository', () => {
       });
 
       const repo = new HistoryPublishRepository(mockConnection);
-      const response = await repo.insertOccurrenceSubmissionPublishRecord({ occurrence_submission_id: 1, queue_id: 1 });
+      const response = await repo.insertOccurrenceSubmissionPublishRecord({
+        occurrence_submission_id: 1,
+        submission_uuid: '123-456-789'
+      });
 
       expect(response).to.be.eql(1);
     });
@@ -132,7 +138,10 @@ describe('HistoryPublishRepository', () => {
 
       const repo = new HistoryPublishRepository(mockConnection);
       try {
-        await repo.insertOccurrenceSubmissionPublishRecord({ occurrence_submission_id: 1, queue_id: 1 });
+        await repo.insertOccurrenceSubmissionPublishRecord({
+          occurrence_submission_id: 1,
+          submission_uuid: '123-456-789'
+        });
         expect.fail();
       } catch (error) {
         expect((error as ApiExecuteSQLError).message).to.equal('Failed to insert Occurrence Submission Publish record');
@@ -151,7 +160,7 @@ describe('HistoryPublishRepository', () => {
       const repo = new HistoryPublishRepository(mockConnection);
       const response = await repo.insertProjectAttachmentPublishRecord({
         project_attachment_id: 1,
-        artifact_id: 1
+        artifact_uuid: '123-456-789'
       });
 
       expect(response).to.be.eql({ project_attachment_publish_id: 1 });
@@ -166,7 +175,7 @@ describe('HistoryPublishRepository', () => {
 
       const repo = new HistoryPublishRepository(mockConnection);
       try {
-        await repo.insertProjectAttachmentPublishRecord({ project_attachment_id: 1, artifact_id: 1 });
+        await repo.insertProjectAttachmentPublishRecord({ project_attachment_id: 1, artifact_uuid: '123-456-789' });
         expect.fail();
       } catch (error) {
         expect((error as ApiExecuteSQLError).message).to.equal('Failed to insert Project Attachment Publish record');
@@ -183,7 +192,10 @@ describe('HistoryPublishRepository', () => {
       });
 
       const repo = new HistoryPublishRepository(mockConnection);
-      const response = await repo.insertProjectReportPublishRecord({ project_report_attachment_id: 1, artifact_id: 1 });
+      const response = await repo.insertProjectReportPublishRecord({
+        project_report_attachment_id: 1,
+        artifact_uuid: '123-456-789'
+      });
 
       expect(response).to.be.eql({ project_report_publish_id: 1 });
     });
@@ -197,7 +209,7 @@ describe('HistoryPublishRepository', () => {
 
       const repo = new HistoryPublishRepository(mockConnection);
       try {
-        await repo.insertProjectReportPublishRecord({ project_report_attachment_id: 1, artifact_id: 1 });
+        await repo.insertProjectReportPublishRecord({ project_report_attachment_id: 1, artifact_uuid: '123-456-789' });
         expect.fail();
       } catch (error) {
         expect((error as ApiExecuteSQLError).message).to.equal('Failed to insert Project Report Publish record');
@@ -216,7 +228,7 @@ describe('HistoryPublishRepository', () => {
       const repo = new HistoryPublishRepository(mockConnection);
       const response = await repo.insertSurveyAttachmentPublishRecord({
         survey_attachment_id: 1,
-        artifact_id: 1
+        artifact_uuid: '123-456-789'
       });
 
       expect(response).to.be.eql({ survey_attachment_publish_id: 1 });
@@ -231,7 +243,7 @@ describe('HistoryPublishRepository', () => {
 
       const repo = new HistoryPublishRepository(mockConnection);
       try {
-        await repo.insertSurveyAttachmentPublishRecord({ survey_attachment_id: 1, artifact_id: 1 });
+        await repo.insertSurveyAttachmentPublishRecord({ survey_attachment_id: 1, artifact_uuid: '123-456-789' });
         expect.fail();
       } catch (error) {
         expect((error as ApiExecuteSQLError).message).to.equal('Failed to insert Survey Attachment Publish record');
@@ -248,7 +260,10 @@ describe('HistoryPublishRepository', () => {
       });
 
       const repo = new HistoryPublishRepository(mockConnection);
-      const response = await repo.insertSurveyReportPublishRecord({ survey_report_attachment_id: 1, artifact_id: 1 });
+      const response = await repo.insertSurveyReportPublishRecord({
+        survey_report_attachment_id: 1,
+        artifact_uuid: '123-456-789'
+      });
 
       expect(response).to.be.eql({ survey_report_publish_id: 1 });
     });
@@ -262,7 +277,7 @@ describe('HistoryPublishRepository', () => {
 
       const repo = new HistoryPublishRepository(mockConnection);
       try {
-        await repo.insertSurveyReportPublishRecord({ survey_report_attachment_id: 1, artifact_id: 1 });
+        await repo.insertSurveyReportPublishRecord({ survey_report_attachment_id: 1, artifact_uuid: '123-456-789' });
         expect.fail();
       } catch (error) {
         expect((error as ApiExecuteSQLError).message).to.equal('Failed to insert Survey Report Publish record');
