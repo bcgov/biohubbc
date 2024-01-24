@@ -1,7 +1,7 @@
 import grey from '@mui/material/colors/grey';
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
-import { GridColDef } from '@mui/x-data-grid';
+import { GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { CodesContext } from 'contexts/codesContext';
 import { IObservationRecord } from 'contexts/observationsTableContext';
@@ -41,18 +41,28 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
   const [totalRows, setTotalRows] = useState<number>(0);
   const [page, setPage] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(5);
+  const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
-  const paginatedDataLoader = useDataLoader((page: number, limit: number) =>
+  const paginatedDataLoader = useDataLoader((page: number, limit: number, sort?: string, order?: 'asc' | 'desc') =>
     biohubApi.observation.getObservationRecords(surveyContext.projectId, surveyContext.surveyId, {
       page,
-      limit
+      limit,
+      sort,
+      order
     })
   );
 
   // page information has changed, fetch more data
   useEffect(() => {
-    paginatedDataLoader.refresh(page, pageSize);
-  }, [page, pageSize]);
+    if (sortModel.length > 0) {
+      if (sortModel[0].sort) {
+        console.log(`Table Sort: ${sortModel[0].field} ${sortModel[0].sort}`);
+        paginatedDataLoader.refresh(page, pageSize, sortModel[0].field, sortModel[0].sort);
+      }
+    } else {
+      paginatedDataLoader.refresh(page, pageSize);
+    }
+  }, [page, pageSize, sortModel]);
 
   useEffect(() => {
     if (paginatedDataLoader.data) {
@@ -218,6 +228,9 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
             }}
             pageSizeOptions={[5]}
             paginationMode="server"
+            sortingMode="server"
+            sortModel={sortModel}
+            onSortModelChange={(model) => setSortModel(model)}
             loading={paginatedDataLoader.isLoading}
             getRowId={(row) => row.id}
             columns={columns}
