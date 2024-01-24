@@ -173,7 +173,7 @@ const SurveySpatialData = () => {
       <Box height={{ sm: 400, md: 600 }} position="relative">
         <SurveyMap mapPoints={mapPoints} isLoading={isLoading()} />
       </Box>
-      <Box p={1}>
+      <Box p={1} position="relative">
         {currentTab === SurveySpatialDataSet.OBSERVATIONS && (
           <SurveySpatialObservationDataTable
             data={observationsContext.observationsDataLoader.data?.surveyObservations || []}

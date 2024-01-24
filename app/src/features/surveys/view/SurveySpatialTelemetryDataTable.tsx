@@ -6,6 +6,9 @@ import dayjs from 'dayjs';
 import { useContext, useMemo } from 'react';
 import NoSurveySectionData from '../components/NoSurveySectionData';
 import { ICritterDeployment } from '../telemetry/ManualTelemetryList';
+import Stack from '@mui/material/Stack';
+import Skeleton from '@mui/material/Skeleton';
+import grey from '@mui/material/colors/grey';
 interface ITelemetryData {
   id: number;
   critter_id: string | null;
@@ -39,6 +42,7 @@ const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTable
     start: dayjs(item.deployment.attachment_start).format('YYYY-MM-DD'),
     end: item.deployment.attachment_end ? dayjs(item.deployment.attachment_end).format('YYYY-MM-DD') : 'Still Active'
   }));
+
   const columns: GridColDef<ITelemetryData>[] = [
     {
       field: 'critter_id',
@@ -61,8 +65,57 @@ const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTable
       flex: 1
     }
   ];
+
+  // Set height so we the skeleton loader will match table rows
+  const RowHeight = 52;
+
+  // Skeleton Loader template
+  const SkeletonRow = () => (
+    <Stack
+      flexDirection="row"
+      alignItems="center"
+      gap={2}
+      p={2}
+      height={RowHeight}
+      overflow="hidden"
+      sx={{
+        borderBottom: '1px solid ' + grey[300],
+        '&:last-of-type': {
+          borderBottom: 'none'
+        },
+        '& .MuiSkeleton-root': {
+          flex: '1 1 auto'
+        },
+        '& *': {
+          fontSize: '0.875rem'
+        }
+      }}>
+      <Skeleton variant="text" />
+      <Skeleton variant="text" />
+      <Skeleton variant="text" />
+      <Skeleton variant="text" />
+      <Skeleton variant="text" />
+      <Skeleton variant="text" />
+      <Skeleton variant="text" />
+      <Skeleton variant="text" />
+      <Skeleton variant="text" />
+    </Stack>
+  )
+
   return (
     <>
+      {!props.isLoading && (
+        <Stack>
+          <SkeletonRow />
+          <SkeletonRow />
+          <SkeletonRow />
+        </Stack>
+      )}
+
+      {!props.isLoading && flattenedCritterDeployments.length === 0 && (
+        <NoSurveySectionData text="No telemetry data available" paperVariant="outlined" />
+      )}
+
       {flattenedCritterDeployments.length > 0 && !props.isLoading && (
         <StyledDataGrid
           autoHeight
@@ -81,12 +134,6 @@ const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTable
           sortingOrder={['asc', 'desc']}
           data-testid="survey-spatial-telemetry-data-table"
         />
-      )}
-
-      {props.isLoading && <SkeletonList />}
-
-      {!props.isLoading && flattenedCritterDeployments.length === 0 && (
-        <NoSurveySectionData text="No telemetry data available" paperVariant="outlined" />
       )}
     </>
   );

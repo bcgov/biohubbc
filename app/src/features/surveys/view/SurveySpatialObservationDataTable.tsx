@@ -1,6 +1,5 @@
 import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { CodesContext } from 'contexts/codesContext';
 import { IObservationRecord } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -10,6 +9,9 @@ import { IGetSampleLocationRecord } from 'interfaces/useSurveyApi.interface';
 import { useContext, useMemo } from 'react';
 import { getCodesName } from 'utils/Utils';
 import NoSurveySectionData from '../components/NoSurveySectionData';
+import Stack from '@mui/material/Stack';
+import Skeleton from '@mui/material/Skeleton';
+import grey from '@mui/material/colors/grey';
 
 interface IObservationTableRow {
   id: number;
@@ -69,15 +71,11 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
       long: item.longitude
     };
   });
+
   const columns: GridColDef<IObservationTableRow>[] = [
     {
       field: 'taxon',
       headerName: 'Species',
-      flex: 1
-    },
-    {
-      field: 'count',
-      headerName: 'Count',
       flex: 1
     },
     {
@@ -96,30 +94,85 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
       flex: 1
     },
     {
+      field: 'count',
+      headerName: 'Count',
+      headerAlign: 'right',
+      align: 'right',
+      width: 100
+    },
+    {
       field: 'date',
       headerName: 'Date',
-      flex: 1
+      width: 100
     },
     {
       field: 'time',
       headerName: 'Time',
-      flex: 1
+      headerAlign: 'right',
+      align: 'right',
+      width: 100
     },
     {
       field: 'lat',
       headerName: 'Lat',
-      flex: 1
+      headerAlign: 'right',
+      align: 'right',
+      width: 100
     },
     {
       field: 'long',
       headerName: 'Long',
-      flex: 1
+      headerAlign: 'right',
+      align: 'right',
+      width: 100
     }
   ];
 
+  // Set height so we the skeleton loader will match table rows
+  const RowHeight = 52;
+
+  // Skeleton Loader template
+  const SkeletonRow = () => (
+    <Stack
+      flexDirection="row"
+      alignItems="center"
+      gap={2}
+      p={2}
+      height={RowHeight}
+      overflow="hidden"
+      sx={{
+        borderBottom: '1px solid ' + grey[300],
+        '&:last-of-type': {
+          borderBottom: 'none'
+        },
+        '& .MuiSkeleton-root': {
+          flex: '1 1 auto'
+        },
+        '& *': {
+          fontSize: '0.875rem'
+        }
+      }}>
+      <Skeleton variant="text" />
+      <Skeleton variant="text" />
+      <Skeleton variant="text" />
+      <Skeleton variant="text" />
+      <Skeleton variant="text" />
+      <Skeleton variant="text" />
+      <Skeleton variant="text" />
+      <Skeleton variant="text" />
+      <Skeleton variant="text" />
+    </Stack>
+  )
+
   return (
     <>
-      {props.isLoading && <SkeletonList />}
+      {!props.isLoading && (
+        <Stack>
+          <SkeletonRow />
+          <SkeletonRow />
+          <SkeletonRow />
+        </Stack>
+      )}
 
       {!props.isLoading && props.data.length === 0 && (
         <NoSurveySectionData text="No data available" paperVariant="outlined" />
@@ -128,6 +181,7 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
       {!props.isLoading && props.data.length > 0 && (
         <>
           <StyledDataGrid
+            columnHeaderHeight={RowHeight}
             autoHeight
             rows={tableData}
             getRowId={(row) => row.id}
