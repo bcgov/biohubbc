@@ -223,6 +223,9 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
           }}
           pageSizeOptions={[5]}
           paginationMode="server"
+          sortingMode="server"
+          sortModel={sortModel}
+          onSortModelChange={(model) => setSortModel(model)}
           loading={paginatedDataLoader.isLoading}
           getRowId={(row) => row.id}
           columns={columns}
@@ -236,11 +239,8 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
           data-testid="survey-spatial-observation-data-table"
         />
       )}
-			sortingMode="server"
-            sortModel={sortModel}
-            onSortModelChange={(model) => setSortModel(model)}
     </>
-  );
+  )
 };
 
 export default SurveySpatialObservationDataTable;
