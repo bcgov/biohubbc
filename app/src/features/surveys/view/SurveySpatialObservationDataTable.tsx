@@ -1,3 +1,5 @@
+import { GridColDef } from '@mui/x-data-grid';
+import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { CodesContext } from 'contexts/codesContext';
 import { IObservationRecord } from 'contexts/observationsTableContext';
@@ -8,8 +10,19 @@ import { IGetSampleLocationRecord } from 'interfaces/useSurveyApi.interface';
 import { useContext, useMemo } from 'react';
 import { getCodesName } from 'utils/Utils';
 import NoSurveySectionData from '../components/NoSurveySectionData';
-import SurveySpatialDataTable from './SurveySpatialDataTable';
 
+interface IObservationTableRow {
+  id: number;
+  taxon: string | undefined;
+  count: number | null;
+  site: string | undefined;
+  method: string | undefined;
+  period: string | undefined;
+  date: string | undefined;
+  time: string | undefined;
+  lat: number | null;
+  long: number | null;
+}
 interface ISurveySpatialObservationDataTableProps {
   data: IObservationRecord[];
   sample_sites: IGetSampleLocationRecord[];
@@ -36,29 +49,73 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
     );
   }, [surveyContext.sampleSiteDataLoader.data]);
 
-  const mapData = (): string[][] => {
-    return (
-      props.data.map((item) => {
-        const siteName = sampleSites.find((site) => site.survey_sample_site_id === item.survey_sample_site_id)?.name;
-        const method_id = sampleMethods.find(
-          (method) => method?.survey_sample_method_id === item.survey_sample_method_id
-        )?.method_lookup_id;
-        const period = samplePeriods.find((period) => period?.survey_sample_period_id === item.survey_sample_period_id);
+  const tableData: IObservationTableRow[] = props.data.map((item) => {
+    const siteName = sampleSites.find((site) => site.survey_sample_site_id === item.survey_sample_site_id)?.name;
+    const method_id = sampleMethods.find(
+      (method) => method?.survey_sample_method_id === item.survey_sample_method_id
+    )?.method_lookup_id;
+    const period = samplePeriods.find((period) => period?.survey_sample_period_id === item.survey_sample_period_id);
 
-        return [
-          `${taxonomyContext.getCachedSpeciesTaxonomyById(item.wldtaxonomic_units_id)?.label}`,
-          `${item.count}`,
-          `${siteName}`,
-          `${method_id ? getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method_id) : ''}`,
-          `${period?.start_date} ${period?.end_date}`,
-          `${dayjs(item.observation_date).format('YYYY-MM-DD')}`,
-          `${dayjs(item.observation_date).format('HH:mm:ss')}`,
-          `${item.latitude}`,
-          `${item.longitude}`
-        ];
-      }) || []
-    );
-  };
+    return {
+      id: item.survey_observation_id,
+      taxon: taxonomyContext.getCachedSpeciesTaxonomyById(item.wldtaxonomic_units_id)?.label,
+      count: item.count,
+      site: siteName,
+      method: method_id ? getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method_id) : '',
+      period: `${period?.start_date} ${period?.end_date}`,
+      date: dayjs(item.observation_date).format('YYYY-MM-DD'),
+      time: dayjs(item.observation_date).format('HH:mm:ss'),
+      lat: item.latitude,
+      long: item.longitude
+    };
+  });
+  const columns: GridColDef<IObservationTableRow>[] = [
+    {
+      field: 'taxon',
+      headerName: 'Species',
+      flex: 1
+    },
+    {
+      field: 'count',
+      headerName: 'Count',
+      flex: 1
+    },
+    {
+      field: 'site',
+      headerName: 'Sample Site',
+      flex: 1
+    },
+    {
+      field: 'method',
+      headerName: 'Sample Method',
+      flex: 1
+    },
+    {
+      field: 'period',
+      headerName: 'Sample Period',
+      flex: 1
+    },
+    {
+      field: 'date',
+      headerName: 'Date',
+      flex: 1
+    },
+    {
+      field: 'time',
+      headerName: 'Time',
+      flex: 1
+    },
+    {
+      field: 'lat',
+      headerName: 'Lat',
+      flex: 1
+    },
+    {
+      field: 'long',
+      headerName: 'Long',
+      flex: 1
+    }
+  ];
 
   return (
     <>
@@ -69,20 +126,25 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
       )}
 
       {!props.isLoading && props.data.length > 0 && (
-        <SurveySpatialDataTable
-          tableHeaders={[
-            'Species',
-            'Count',
-            'Sample Site',
-            'Sample Method',
-            'Sample Period',
-            'Date',
-            'Time',
-            'Lat',
-            'Long'
-          ]}
-          tableRows={mapData()}
-        />
+        <>
+          <StyledDataGrid
+            autoHeight
+            rows={tableData}
+            getRowId={(row) => row.id}
+            columns={columns}
+            pageSizeOptions={[5]}
+            rowSelection={false}
+            checkboxSelection={false}
+            hideFooter
+            disableRowSelectionOnClick
+            disableColumnSelector
+            disableColumnFilter
+            disableColumnMenu
+            disableVirtualization
+            sortingOrder={['asc', 'desc']}
+            data-testid="survey-spatial-observation-data-table"
+          />
+        </>
       )}
     </>
   );

@@ -10,7 +10,6 @@ interface ISurveySpatialDataTableProps {
   tableHeaders: string[];
   tableRows: string[][];
 }
-
 const SurveySpatialDataTable = (props: ISurveySpatialDataTableProps) => {
   return (
     <>

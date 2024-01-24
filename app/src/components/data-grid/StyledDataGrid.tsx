@@ -34,7 +34,7 @@ const useStyles = makeStyles(() => ({
     }
   }
 }));
-export const CustomDataGrid = (props: DataGridProps) => {
+export const StyledDataGrid = (props: DataGridProps) => {
   const classes = useStyles();
   const NoRowsOverlayStyled = useCallback(() => <NoRowsOverlay className={classes.noDataText} />, [classes.noDataText]);
   return <DataGrid {...props} className={classes.dataGrid} slots={{ noRowsOverlay: NoRowsOverlayStyled }} />;
