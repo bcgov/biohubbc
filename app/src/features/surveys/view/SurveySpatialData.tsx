@@ -21,7 +21,7 @@ const SurveySpatialData = () => {
   const codesContext = useContext(CodesContext);
 
   //TODO: look into adding this to the query param
-  const [currentTab, setCurrentTab] = useState<SurveySpatialDataSet>(SurveySpatialDataSet.TELEMETRY);
+  const [currentTab, setCurrentTab] = useState<SurveySpatialDataSet>(SurveySpatialDataSet.OBSERVATIONS);
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
