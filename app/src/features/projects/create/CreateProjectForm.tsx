@@ -160,7 +160,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
 
         <HorizontalSplitFormComponent
           title="Team Members"
-          summary="Specify team members and their associated role for this project."
+          summary="Invite team members and assign them a role for this project."
           component={<ProjectUserForm users={getProjectParticipants()} roles={codes.project_roles} />}
         />
         <Divider className={classes.sectionDivider} />
