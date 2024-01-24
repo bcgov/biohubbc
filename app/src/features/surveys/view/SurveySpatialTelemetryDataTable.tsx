@@ -103,7 +103,7 @@ const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTable
 
   return (
     <>
-      {!props.isLoading && (
+      {props.isLoading && (
         <Stack>
           <SkeletonRow />
           <SkeletonRow />
