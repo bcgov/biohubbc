@@ -3,7 +3,6 @@ import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { SurveyContext } from 'contexts/surveyContext';
 import dayjs from 'dayjs';
 import { useContext, useMemo } from 'react';
-import NoSurveySectionData from '../components/NoSurveySectionData';
 import { ICritterDeployment } from '../telemetry/ManualTelemetryList';
 import Stack from '@mui/material/Stack';
 import Skeleton from '@mui/material/Skeleton';
@@ -66,7 +65,7 @@ const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTable
   ];
 
   // Set height so we the skeleton loader will match table rows
-  const RowHeight = 52;
+  const RowHeight = 40;
 
   // Skeleton Loader template
   const SkeletonRow = () => (
@@ -103,28 +102,26 @@ const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTable
 
   return (
     <>
-      {props.isLoading && (
+      {props.isLoading ? (
         <Stack>
           <SkeletonRow />
           <SkeletonRow />
           <SkeletonRow />
         </Stack>
-      )}
-
-      {!props.isLoading && flattenedCritterDeployments.length === 0 && (
-        <NoSurveySectionData text="No telemetry data available" paperVariant="outlined" />
-      )}
-
-      {flattenedCritterDeployments.length > 0 && !props.isLoading && (
+      ) : (
         <StyledDataGrid
-          autoHeight
+          columnHeaderHeight={RowHeight}
           rows={tableData}
           getRowId={(row) => row.id}
           columns={columns}
+          initialState={{
+            pagination: {
+              paginationModel: { page: 1, pageSize: 5 },
+            },
+          }}
           pageSizeOptions={[5]}
           rowSelection={false}
           checkboxSelection={false}
-          hideFooter
           disableRowSelectionOnClick
           disableColumnSelector
           disableColumnFilter

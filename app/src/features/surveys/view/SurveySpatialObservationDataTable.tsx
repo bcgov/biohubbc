@@ -13,7 +13,6 @@ import useDataLoader from 'hooks/useDataLoader';
 import { IGetSampleLocationRecord } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { getCodesName } from 'utils/Utils';
-import NoSurveySectionData from '../components/NoSurveySectionData';
 
 interface IObservationTableRow {
   id: number;
@@ -102,60 +101,64 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
     {
       field: 'taxon',
       headerName: 'Species',
-      flex: 1
+      flex: 1,
+      minWidth: 200
     },
     {
       field: 'site',
       headerName: 'Sample Site',
-      flex: 1
+      flex: 1,
+      minWidth: 200
     },
     {
       field: 'method',
       headerName: 'Sample Method',
-      flex: 1
+      flex: 1,
+      minWidth: 200
     },
     {
       field: 'period',
       headerName: 'Sample Period',
-      flex: 1
+      flex: 1,
+      minWidth: 200
     },
     {
       field: 'count',
       headerName: 'Count',
       headerAlign: 'right',
       align: 'right',
-      width: 100
+      maxWidth: 100
     },
     {
       field: 'date',
       headerName: 'Date',
-      width: 100
+      maxWidth: 120
     },
     {
       field: 'time',
       headerName: 'Time',
       headerAlign: 'right',
       align: 'right',
-      width: 100
+      maxWidth: 100
     },
     {
       field: 'lat',
       headerName: 'Lat',
       headerAlign: 'right',
       align: 'right',
-      width: 100
+      maxWidth: 100
     },
     {
       field: 'long',
       headerName: 'Long',
       headerAlign: 'right',
       align: 'right',
-      width: 100
+      maxWidth: 100
     }
   ];
 
   // Set height so we the skeleton loader will match table rows
-  const RowHeight = 52;
+  const RowHeight = 40;
 
   // Skeleton Loader template
   const SkeletonRow = () => (
@@ -192,45 +195,36 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
 
   return (
     <>
-      {props.isLoading && (
+      {props.isLoading ? (
         <Stack>
           <SkeletonRow />
           <SkeletonRow />
           <SkeletonRow />
         </Stack>
-      )}
-
-      {!props.isLoading && data.length === 0 && (
-        <NoSurveySectionData text="No data available" paperVariant="outlined" />
-      )}
-
-      {!props.isLoading && data.length > 0 && (
-        <>
-          <StyledDataGrid
-            columnHeaderHeight={RowHeight}
-            autoHeight
-            rows={tableData}
-            rowCount={totalRows}
-            paginationModel={{ pageSize, page }}
-            onPaginationModelChange={(model) => {
-              setPage(model.page);
-              setPageSize(model.pageSize);
-            }}
-            pageSizeOptions={[5]}
-            paginationMode="server"
-            loading={paginatedDataLoader.isLoading}
-            getRowId={(row) => row.id}
-            columns={columns}
-            rowSelection={false}
-            checkboxSelection={false}
-            disableColumnSelector
-            disableColumnFilter
-            disableColumnMenu
-            disableVirtualization
-            sortingOrder={['asc', 'desc']}
-            data-testid="survey-spatial-observation-data-table"
-          />
-        </>
+      ) : (
+        <StyledDataGrid
+          columnHeaderHeight={RowHeight}
+          rows={tableData}
+          rowCount={totalRows}
+          paginationModel={{ pageSize, page }}
+          onPaginationModelChange={(model) => {
+            setPage(model.page);
+            setPageSize(model.pageSize);
+          }}
+          pageSizeOptions={[5]}
+          paginationMode="server"
+          loading={paginatedDataLoader.isLoading}
+          getRowId={(row) => row.id}
+          columns={columns}
+          rowSelection={false}
+          checkboxSelection={false}
+          disableColumnSelector
+          disableColumnFilter
+          disableColumnMenu
+          disableVirtualization
+          sortingOrder={['asc', 'desc']}
+          data-testid="survey-spatial-observation-data-table"
+        />
       )}
     </>
   );
