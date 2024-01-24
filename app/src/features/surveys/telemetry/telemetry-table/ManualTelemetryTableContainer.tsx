@@ -26,7 +26,7 @@ import { useContext, useState } from 'react';
 import { pluralize as p } from 'utils/Utils';
 import ManualTelemetryTable from './ManualTelemetryTable';
 
-const ManualTelemetryComponent = () => {
+const ManualTelemetryTableContainer = () => {
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [processingRecords, setProcessingRecords] = useState(false);
   const [showConfirmRemoveAllDialog, setShowConfirmRemoveAllDialog] = useState(false);
@@ -212,4 +212,4 @@ const ManualTelemetryComponent = () => {
   );
 };
 
-export default ManualTelemetryComponent;
+export default ManualTelemetryTableContainer;

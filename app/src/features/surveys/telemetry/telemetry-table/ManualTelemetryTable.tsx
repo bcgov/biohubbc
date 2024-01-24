@@ -15,7 +15,7 @@ import { IManualTelemetryTableRow, TelemetryTableContext } from 'contexts/teleme
 import { default as dayjs } from 'dayjs';
 import { useCallback, useContext, useEffect, useMemo } from 'react';
 import { getFormattedDate } from 'utils/Utils';
-import { ICritterDeployment } from './ManualTelemetryList';
+import { ICritterDeployment } from '../ManualTelemetryList';
 interface IManualTelemetryTableProps {
   isLoading: boolean;
 }
