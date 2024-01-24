@@ -1,5 +1,5 @@
 import { GridColDef } from '@mui/x-data-grid';
-import { CustomDataGrid } from 'components/data-grid/CustomDataGrid';
+import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { default as dayjs } from 'dayjs';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import SurveyAnimalsTableActions from './SurveyAnimalsTableActions';
@@ -106,7 +106,7 @@ export const SurveyAnimalsTable = ({
   ];
 
   return (
-    <CustomDataGrid
+    <StyledDataGrid
       autoHeight
       rows={animalDeviceData}
       getRowId={(row) => row.critter_id}

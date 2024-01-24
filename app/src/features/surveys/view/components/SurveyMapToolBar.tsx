@@ -36,16 +36,15 @@ interface ISurveyMapToolBarProps {
   updateDataSet: (data: SurveySpatialDataSet) => void;
   updateLayout: (data: SurveySpatialDataLayout) => void;
   toggleButtons: IToolBarButtons[];
+  currentTab: SurveySpatialDataSet;
 }
 const SurveyMapToolBar = (props: ISurveyMapToolBarProps) => {
-  const [dataset, setDataset] = useState<SurveySpatialDataSet>(SurveySpatialDataSet.OBSERVATIONS);
   const [layout, setLayout] = useState<SurveySpatialDataLayout>(SurveySpatialDataLayout.MAP);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
   const updateDataSet = (event: React.MouseEvent<HTMLElement>, newAlignment: SurveySpatialDataSet) => {
-    setDataset(newAlignment);
     props.updateDataSet(newAlignment);
   };
   const updateLayout = (event: React.MouseEvent<HTMLElement>, newAlignment: SurveySpatialDataLayout) => {
@@ -115,7 +114,7 @@ const SurveyMapToolBar = (props: ISurveyMapToolBarProps) => {
         <Divider flexItem></Divider>
         <Box py={2} px={3}>
           <ToggleButtonGroup
-            value={dataset}
+            value={props.currentTab}
             onChange={updateDataSet}
             exclusive
             sx={{

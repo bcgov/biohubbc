@@ -20,13 +20,14 @@ const SurveySpatialData = () => {
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
 
-  const [currentTab, setCurrentTab] = useState<SurveySpatialDataSet>(SurveySpatialDataSet.OBSERVATIONS);
+  //TODO: look into adding this to the query param
+  const [currentTab, setCurrentTab] = useState<SurveySpatialDataSet>(SurveySpatialDataSet.TELEMETRY);
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
-    surveyContext.deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
-    surveyContext.critterDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
-    surveyContext.sampleSiteDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+    surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
   }, []);
 
   useEffect(() => {
@@ -150,6 +151,7 @@ const SurveySpatialData = () => {
   return (
     <Paper>
       <SurveyMapToolBar
+        currentTab={currentTab}
         toggleButtons={[
           {
             label: `Observations (${observationPoints.length})`,
@@ -172,14 +174,15 @@ const SurveySpatialData = () => {
         <SurveyMap mapPoints={mapPoints} isLoading={isLoading()} />
       </Box>
       <Box p={1}>
-        {currentTab === SurveySpatialDataSet.OBSERVATIONS && !isLoading() && (
+        {currentTab === SurveySpatialDataSet.OBSERVATIONS && (
           <SurveySpatialObservationDataTable
             data={observationsContext.observationsDataLoader.data?.surveyObservations || []}
             sample_sites={surveyContext.sampleSiteDataLoader.data?.sampleSites || []}
+            isLoading={isLoading()}
           />
         )}
 
-        {currentTab === SurveySpatialDataSet.TELEMETRY && !isLoading() && <SurveySpatialTelemetryDataTable />}
+        {currentTab === SurveySpatialDataSet.TELEMETRY && <SurveySpatialTelemetryDataTable isLoading={isLoading()} />}
       </Box>
 
       {/* {layout === SurveySpatialDataLayout.MAP && (
