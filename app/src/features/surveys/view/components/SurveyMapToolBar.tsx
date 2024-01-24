@@ -74,7 +74,21 @@ const SurveyMapToolBar = (props: ISurveyMapToolBarProps) => {
         transformOrigin={{
           vertical: 'top',
           horizontal: 'right'
-        }}>
+        }}
+        sx={{
+          '& a': {
+            display: 'flex',
+            px: 2,
+            py: '6px',
+            textDecoration: 'none',
+            color: 'text.primary',
+            borderRadius: 0,
+            '&:focus': {
+              outline: 'none'
+            }
+          }
+        }}
+      >
         <MenuItem component={RouterLink} to="observations">
           <ListItemIcon>
             <Icon path={mdiEye} size={1} />
@@ -112,7 +126,7 @@ const SurveyMapToolBar = (props: ISurveyMapToolBarProps) => {
           </Button>
         </Toolbar>
         <Divider flexItem></Divider>
-        <Box py={2} px={3}>
+        <Box p={2}>
           <ToggleButtonGroup
             value={props.currentTab}
             onChange={updateDataSet}
