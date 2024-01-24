@@ -51,6 +51,7 @@
     "jwks-rsa": "~2.0.5",
     "knex": "~1.0.1",
     "lodash": "~4.17.21",
+    "logform": "^2.2.0",
     "mime": "~2.5.2",
     "multer": "~1.4.3",
     "pg": "~8.7.1",
@@ -60,7 +61,7 @@
     "typescript": "~4.1.6",
     "utm": "^1.1.1",
     "uuid": "~8.3.2",
-    "winston": "~3.3.3",
+    "winston": "3.3.3",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.19.3/xlsx-0.19.3.tgz",
     "xml2js": "~0.4.23",
     "zod": "~3.21.4"

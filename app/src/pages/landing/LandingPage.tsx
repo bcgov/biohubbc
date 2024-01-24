@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   heroSubtitle: {
     margin: '1.6em 0 2em 0',
-    maxWidth: '50ch',
+    maxWidth: '55ch',
     fontSize: '0.9em',
     textShadow: '0px 0px 10px rgba(0,13,26,1)'
   }
@@ -60,8 +60,7 @@ export const LandingPage = () => {
               Species Inventory Management System
             </Typography>
             <Typography className={classes.heroSubtitle}>
-              Upload and submit your species inventory project data to help us understand how we can better protect and
-              preserve biodiversity in British Columbia.
+              Upload and manage species inventory data and information to help protect biodiversity in British Columbia.
             </Typography>
             <LandingActions />
           </Box>
