@@ -24,13 +24,13 @@ export interface ISpeciesAutocompleteFieldProps {
 export type ISpeciesAutocompleteField = {
   id: number;
   label: string;
+  scientificName: string;
 };
 
 const SpeciesAutocompleteField: React.FC<ISpeciesAutocompleteFieldProps> = (props) => {
   const biohubApi = useBiohubApi();
 
   const { values, setFieldValue, errors, setErrors } = useFormikContext<ISpeciesAutocompleteField[]>();
-  console.log('errors', errors);
 
   const [inputValue, setInputValue] = useState('');
   const [options, setOptions] = useState<ISpeciesAutocompleteField[]>([]);
@@ -41,9 +41,9 @@ const SpeciesAutocompleteField: React.FC<ISpeciesAutocompleteFieldProps> = (prop
   const handleAddSpecies = (species: ISpeciesAutocompleteField) => {
     selectedSpecies.push(species);
 
-    setFieldValue(`${props.formikFieldName}[${selectedSpecies.length - 1}]`, species.id);
+    // setFieldValue(`${props.formikFieldName}[${selectedSpecies.length - 1}]`, species.id);
     setOptions([]);
-    clearErrors();
+    setErrors([]);
   };
 
   const handleRemoveSpecies = (species_id: number) => {
@@ -56,19 +56,12 @@ const SpeciesAutocompleteField: React.FC<ISpeciesAutocompleteFieldProps> = (prop
     setFieldValue(props.formikFieldName, filteredValues);
   };
 
-  const clearErrors = () => {
-    setErrors([]);
-  };
-
-  const handleGetInitList = async (initialValues: number[]) => {
-    return biohubApi.taxonomy.getSpeciesFromIds(initialValues);
-  };
-
   const convertSearchResponseToOptions = (searchResponse: ITaxonomy[]) => {
     return searchResponse.map((item: ITaxonomy) => {
       return {
         id: Number(item.id),
-        label: item.label
+        label: item.label,
+        scientificName: item.scientificName
       } as ISpeciesAutocompleteField;
     });
   };
@@ -76,7 +69,7 @@ const SpeciesAutocompleteField: React.FC<ISpeciesAutocompleteFieldProps> = (prop
   const handleSearch = useMemo(
     () =>
       debounce(async (inputValue: string, callback: (searchedValues: ISpeciesAutocompleteField[]) => void) => {
-        const response = await biohubApi.taxonomy.searchSpecies(inputValue);
+        const response = await biohubApi.taxonomy.searchSpeciesItis(inputValue);
 
         const newOptions = convertSearchResponseToOptions(response.searchResponse);
 
@@ -87,7 +80,7 @@ const SpeciesAutocompleteField: React.FC<ISpeciesAutocompleteFieldProps> = (prop
 
   const apiSearchTypeHelpers = {
     async loadOptionsForSelectedValues() {
-      const response = await handleGetInitList(selectedValues);
+      const response = await biohubApi.taxonomy.getSpeciesFromIds(selectedValues);
 
       setSelectedSpecies(convertSearchResponseToOptions(response.searchResponse));
     },
@@ -154,7 +147,7 @@ const SpeciesAutocompleteField: React.FC<ISpeciesAutocompleteFieldProps> = (prop
         renderOption={(renderProps, renderOption) => {
           return (
             <Box component="li" {...renderProps} key={renderOption.id}>
-              <SpeciesCard name={renderOption.label} subtext={renderOption.label} />
+              <SpeciesCard name={renderOption.label} subtext={renderOption.scientificName} />
             </Box>
           );
         }}

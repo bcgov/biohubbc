@@ -1,0 +1,93 @@
+import { RequestHandler } from 'express';
+import { Operation } from 'express-openapi';
+import { TaxonomyService } from '../../../services/taxonomy-service';
+import { getLogger } from '../../../utils/logger';
+
+const defaultLog = getLogger('paths/taxonomy/itis/search');
+
+export const GET: Operation = [searchSpecies()];
+
+GET.apiDoc = {
+  description: 'Gets a list of taxonomic units.',
+  tags: ['taxonomy'],
+  parameters: [
+    {
+      description: 'Taxonomy search parameters.',
+      in: 'query',
+      name: 'terms',
+      required: true,
+      schema: {
+        type: 'string'
+      }
+    }
+  ],
+  responses: {
+    200: {
+      description: 'Taxonomy search response object.',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              searchResponse: {
+                type: 'array',
+                items: {
+                  title: 'Species',
+                  type: 'object',
+                  required: ['id', 'label'],
+                  properties: {
+                    id: {
+                      type: 'string'
+                    },
+                    label: {
+                      type: 'string'
+                    },
+                    scientificName: {
+                      type: 'string'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    400: {
+      $ref: '#/components/responses/400'
+    },
+    500: {
+      $ref: '#/components/responses/500'
+    },
+    default: {
+      $ref: '#/components/responses/default'
+    }
+  }
+};
+
+/**
+ * Get taxonomic search results from itis.
+ *
+ * @returns {RequestHandler}
+ */
+export function searchSpecies(): RequestHandler {
+  return async (req, res) => {
+    defaultLog.debug({ label: 'getSearchResults', message: 'request params', req_params: req.query.terms });
+
+    const term = String(req.query.terms) || '';
+
+    try {
+      const taxonomyService = new TaxonomyService();
+
+      const response = await taxonomyService.itisSearch(term.toLowerCase());
+
+      // Overwrite default cache-control header, allow caching up to 7 days
+      // res.setHeader('Cache-Control', 'max-age=604800'); TODO: put this back in
+
+      res.status(200).json({ searchResponse: response });
+    } catch (error) {
+      defaultLog.error({ label: 'getSearchResults', message: 'error', error });
+      throw error;
+    }
+  };
+}

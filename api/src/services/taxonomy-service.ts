@@ -5,6 +5,7 @@ import {
   SearchRequest,
   SearchResponse
 } from '@elastic/elasticsearch/lib/api/types';
+import axios from 'axios';
 import { getLogger } from '../utils/logger';
 import { ElasticSearchIndices, ESService } from './es-service';
 
@@ -23,6 +24,17 @@ export interface ITaxonomySource {
   end_date: string | null;
   parent_id: number | null;
   parent_hierarchy: { id: number; level: string }[];
+}
+
+export interface IItisSearchResult {
+  commonNames: string[];
+  kingdom: string;
+  name: string;
+  parentTSN: string;
+  scientificName: string;
+  tsn: string;
+  updateDate: string;
+  usage: string;
 }
 
 export interface IEnrichedTaxonomyData {
@@ -60,6 +72,43 @@ export class TaxonomyService extends ESService {
       defaultLog.debug({ label: 'elasticSearch', message: 'error', error });
     }
   }
+
+  /**
+   * Returns the ITIS search species Query.
+   *
+   * @param {*} searchRequest
+   * @return {*}  {(Promise<any | undefined>)}
+   * @memberof TaxonomyService
+   */
+  async itisSearch(searchRequest: any): Promise<any | undefined> {
+    try {
+      const itisClient = await this.getItisSearchUrl(searchRequest);
+
+      const response = await axios.get(itisClient);
+
+      if (!response.data || !response.data.response || !response.data.response.docs) {
+        return [];
+      }
+
+      const taxonomySpecies = this._sanitizeItisData(response.data.response.docs);
+
+      return taxonomySpecies;
+    } catch (error) {
+      defaultLog.debug({ label: 'itisSearch', message: 'error', error });
+    }
+  }
+
+  _sanitizeItisData = (data: IItisSearchResult[]): { id: string; label: string; scientificName: string }[] => {
+    return data.map((item: IItisSearchResult) => {
+      const commonName = (item.commonNames && item.commonNames[0].split('$')[1]) || item.scientificName;
+
+      return {
+        id: item.tsn,
+        label: commonName,
+        scientificName: item.scientificName
+      };
+    });
+  };
 
   /**
    * Sanitizes species data retrieved from Elasticsearch.

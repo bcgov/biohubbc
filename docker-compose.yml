@@ -47,6 +47,8 @@ services:
       # Elastic Search
       - ELASTICSEARCH_URL=${ELASTICSEARCH_URL}
       - ELASTICSEARCH_TAXONOMY_INDEX=${ELASTICSEARCH_TAXONOMY_INDEX}
+      # ITIS API
+      - ITIS_URL=${ITIS_URL}
       # Database
       - TZ=${API_TZ}
       - DB_HOST=${DB_HOST}

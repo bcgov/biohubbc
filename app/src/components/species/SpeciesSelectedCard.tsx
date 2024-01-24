@@ -37,7 +37,7 @@ const SpeciesSelectedCard: React.FC<ISpeciesSelectedCardProps> = (props) => {
         }}>
         <Box display="flex" alignItems="center" px={2} py={1.5}>
           <Box flex="1 1 auto">
-            <SpeciesCard name={species.label} subtext={species.label} />
+            <SpeciesCard name={species.label} subtext={species.scientificName} />
           </Box>
           <Box flex="0 0 auto">
             <IconButton
