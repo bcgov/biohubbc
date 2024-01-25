@@ -32,7 +32,6 @@ import {
 import { getMockDBConnection } from '../__mocks__/db';
 import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
-import { PlatformService } from './platform-service';
 import { SiteSelectionStrategyService } from './site-selection-strategy-service';
 import { SurveyBlockService } from './survey-block-service';
 import { SurveyLocationService } from './survey-location-service';
@@ -1213,58 +1212,6 @@ describe('SurveyService', () => {
       } catch (actualError) {
         expect((actualError as ApiGeneralError).message).to.equal('Failed to delete survey occurrence submission');
       }
-    });
-  });
-
-  describe('createSurveyAndUploadMetadataToBioHub', () => {
-    it('returns projectId on success', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new SurveyService(dbConnection);
-
-      const projectId = 1;
-      const surveyId = 2;
-      const surveyData = (null as unknown) as PostSurveyObject;
-
-      const createSurveyStub = sinon.stub(SurveyService.prototype, 'createSurvey').resolves(surveyId);
-      const submitSurveyDwCMetadataToBioHubStub = sinon
-        .stub(PlatformService.prototype, 'submitSurveyDwCMetadataToBioHub')
-        .resolves();
-      const submitProjectDwCMetadataToBioHubStub = sinon
-        .stub(PlatformService.prototype, 'submitProjectDwCMetadataToBioHub')
-        .resolves();
-
-      const response = await service.createSurveyAndUploadMetadataToBioHub(projectId, surveyData);
-
-      expect(createSurveyStub).to.be.calledOnce;
-      expect(submitSurveyDwCMetadataToBioHubStub).to.be.calledOnceWith(surveyId);
-      expect(submitProjectDwCMetadataToBioHubStub).to.be.calledOnceWith(projectId);
-      expect(response).to.eql(surveyId);
-    });
-  });
-
-  describe('updateSurveyAndUploadMetadataToBiohub', () => {
-    it('successfully updates survey and submits data to BioHub', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new SurveyService(dbConnection);
-
-      const surveyId = 1;
-      const projectId = 2;
-      const surveyData = (null as unknown) as PutSurveyObject;
-
-      const updateSurveyStub = sinon.stub(SurveyService.prototype, 'updateSurvey').resolves();
-      const submitSurveyDwCMetadataToBioHubStub = sinon
-        .stub(PlatformService.prototype, 'submitSurveyDwCMetadataToBioHub')
-        .resolves();
-      const submitProjectDwCMetadataToBioHubStub = sinon
-        .stub(PlatformService.prototype, 'submitProjectDwCMetadataToBioHub')
-        .resolves();
-
-      const response = await service.updateSurveyAndUploadMetadataToBiohub(projectId, surveyId, surveyData);
-
-      expect(updateSurveyStub).to.be.calledOnceWith(surveyId, surveyData);
-      expect(submitSurveyDwCMetadataToBioHubStub).to.be.calledOnceWith(surveyId);
-      expect(submitProjectDwCMetadataToBioHubStub).to.be.calledOnceWith(projectId);
-      expect(response).to.eql(undefined);
     });
   });
 

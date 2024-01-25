@@ -50,10 +50,10 @@ const PublishSurveyContent = () => {
             should be secured.
           </Typography>
           <CustomTextField
-            name="additionalInformation"
+            name="submissionComment"
             label=""
             other={{
-              placeholder: 'Additional information, security concerns, etc.',
+              placeholder: 'Submission comment',
               multiline: true,
               rows: 3
             }}

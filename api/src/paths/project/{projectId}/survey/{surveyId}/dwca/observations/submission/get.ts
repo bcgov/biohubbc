@@ -146,7 +146,7 @@ GET.apiDoc = {
                   'occurrence_submission_publish_id',
                   'occurrence_submission_id',
                   'event_timestamp',
-                  'queue_id',
+                  'submission_uuid',
                   'create_date',
                   'create_user',
                   'update_date',
@@ -166,9 +166,9 @@ GET.apiDoc = {
                     oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
                     description: 'ISO 8601 date string for the project start date'
                   },
-                  queue_id: {
-                    type: 'integer',
-                    minimum: 1
+                  submission_uuid: {
+                    type: 'string',
+                    format: 'uuid'
                   },
                   create_date: {
                     oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
