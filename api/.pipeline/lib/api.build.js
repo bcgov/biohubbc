@@ -14,8 +14,24 @@ const apiBuild = (settings) => {
   const phase = settings.options.env;
 
   console.log('4==============================================');
-  console.log('api phases', phases);
+  console.log('api options', options);
+  console.log('api phase', phase);
+  console.log('api phases', phases[phase]);
   console.log('5==============================================');
+
+  console.log('6==============================================');
+  console.log({
+    NAME: phases[phase].name,
+    SUFFIX: phases[phase].suffix,
+    VERSION: phases[phase].tag,
+    SOURCE_REPOSITORY_URL: oc.git.http_url,
+    SOURCE_REPOSITORY_REF: phases[phase].branch || oc.git.ref,
+    CPU_REQUEST: phases[phase].cpuRequest,
+    CPU_LIMIT: phases[phase].cpuLimit,
+    MEMORY_REQUEST: phases[phase].memoryRequest,
+    MEMORY_LIMIT: phases[phase].memoryLimit
+  });
+  console.log('7==============================================');
 
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
 
@@ -30,7 +46,7 @@ const apiBuild = (settings) => {
         SUFFIX: phases[phase].suffix,
         VERSION: phases[phase].tag,
         SOURCE_REPOSITORY_URL: oc.git.http_url,
-        SOURCE_REPOSITORY_REF: phases[phase].branch,
+        SOURCE_REPOSITORY_REF: phases[phase].branch || oc.git.ref,
         CPU_REQUEST: phases[phase].cpuRequest,
         CPU_LIMIT: phases[phase].cpuLimit,
         MEMORY_REQUEST: phases[phase].memoryRequest,
