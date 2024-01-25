@@ -109,7 +109,7 @@ const phases = {
     // siteminderLogoutURL: pipelineConfigMap.siteminderLogoutURL.dev,
     // maxUploadNumFiles,
     // maxUploadFileSize,
-    // env: 'dev',
+    nodeEnv: 'development',
     sso: pipelineConfigMap.sso.dev,
     // cpuRequest: '50m',
     // cpuLimit: '200m',
