@@ -1,41 +1,39 @@
 import { grey } from '@mui/material/colors';
-import { makeStyles } from '@mui/styles';
 import { DataGrid, DataGridProps } from '@mui/x-data-grid';
-import NoRowsOverlay from 'features/funding-sources/list/FundingSourcesTableNoRowsOverlay';
-import { useCallback } from 'react';
-const useStyles = makeStyles(() => ({
-  projectsTable: {
-    tableLayout: 'fixed'
-  },
-  linkButton: {
-    textAlign: 'left',
-    fontWeight: 700
-  },
-  noDataText: {
-    fontFamily: 'inherit !important',
-    fontSize: '0.875rem',
-    fontWeight: 700
-  },
-  dataGrid: {
-    border: 'none !important',
-    fontFamily: 'inherit !important',
-    '& .MuiDataGrid-columnHeaderTitle': {
-      textTransform: 'uppercase',
-      fontSize: '0.875rem',
-      fontWeight: 700,
-      color: grey[600]
-    },
-    '& .MuiDataGrid-cell:focus-within, & .MuiDataGrid-cellCheckbox:focus-within, & .MuiDataGrid-columnHeader:focus-within':
-      {
-        outline: 'none !important'
-      },
-    '& .MuiDataGrid-row:hover': {
-      backgroundColor: 'transparent !important'
-    }
-  }
-}));
+import StyledDataGridOverlay from './StyledDataGridOverlay';
+import Box from '@mui/material/Box';
+
+const StyledLoadingOverlay = () => (
+  <Box width="100%" height="100%" sx={{ backgroundColor: grey[300], opacity: 0.25 }}></Box>
+);
+
 export const StyledDataGrid = (props: DataGridProps) => {
-  const classes = useStyles();
-  const NoRowsOverlayStyled = useCallback(() => <NoRowsOverlay className={classes.noDataText} />, [classes.noDataText]);
-  return <DataGrid {...props} className={classes.dataGrid} slots={{ noRowsOverlay: NoRowsOverlayStyled }} />;
+  return (
+    <DataGrid
+      {...props}
+      autoHeight
+      slots={{
+        loadingOverlay: StyledLoadingOverlay,
+        noRowsOverlay: StyledDataGridOverlay,
+      }}
+      sx={{
+        border: 'none',
+        '& *:focus-within': {
+          outline: 'none !important'
+        },
+        '& .MuiDataGrid-columnHeaderTitle': {
+          textTransform: 'uppercase',
+          fontWeight: 700
+        },
+        '& .MuiDataGrid-row:nth-of-type(odd)': {
+          backgroundColor: grey[50]
+        },
+        '& .MuiDataGrid-row:last-of-type': {
+          '& .MuiDataGrid-cell': {
+            borderBottom: 'none'
+          }
+        },
+      }}
+    />
+  );
 };

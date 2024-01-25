@@ -65,7 +65,7 @@ const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTable
   ];
 
   // Set height so we the skeleton loader will match table rows
-  const RowHeight = 40;
+  const RowHeight = 52;
 
   // Skeleton Loader template
   const SkeletonRow = () => (
@@ -111,6 +111,7 @@ const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTable
       ) : (
         <StyledDataGrid
           columnHeaderHeight={RowHeight}
+          rowHeight={RowHeight}
           rows={tableData}
           getRowId={(row) => row.id}
           columns={columns}

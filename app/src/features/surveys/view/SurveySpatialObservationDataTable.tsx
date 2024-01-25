@@ -172,7 +172,7 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
   ];
 
   // Set height so we the skeleton loader will match table rows
-  const RowHeight = 40;
+  const RowHeight = 52;
 
   // Skeleton Loader template
   const SkeletonRow = () => (
@@ -180,7 +180,8 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
       flexDirection="row"
       alignItems="center"
       gap={2}
-      p={2}
+      py={2}
+      px={1}
       height={RowHeight}
       overflow="hidden"
       sx={{
@@ -218,6 +219,7 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
       ) : (
         <StyledDataGrid
           columnHeaderHeight={RowHeight}
+          rowHeight={RowHeight}
           rows={tableData}
           rowCount={totalRows}
           paginationModel={{ pageSize, page }}
