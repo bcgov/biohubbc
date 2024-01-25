@@ -28,6 +28,7 @@ const SurveySpatialData = () => {
     surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
     surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
     surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    observationsContext.observationsDataLoader.refresh();
   }, []);
 
   useEffect(() => {

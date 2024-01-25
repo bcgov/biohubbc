@@ -1,3 +1,4 @@
+import { Stack } from '@mui/material';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
@@ -6,17 +7,15 @@ import SurveySubmissionAlertBar from 'components/publish/SurveySubmissionAlertBa
 import { SystemRoleGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContext } from 'contexts/codesContext';
-import { ObservationsContext } from 'contexts/observationsContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
 import SurveyDetails from 'features/surveys/view/SurveyDetails';
 import React, { useContext, useEffect } from 'react';
 import SurveyStudyArea from './components/SurveyStudyArea';
+import SurveyAnimals from './SurveyAnimals';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyHeader from './SurveyHeader';
 import SurveySpatialData from './SurveySpatialData';
-import SurveyAnimals from './SurveyAnimals';
-import { Stack } from '@mui/material';
 
 //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
@@ -28,16 +27,10 @@ import { Stack } from '@mui/material';
 const SurveyPage: React.FC = () => {
   const codesContext = useContext(CodesContext);
   const surveyContext = useContext(SurveyContext);
-  const observationsContext = useContext(ObservationsContext);
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
-
-  useEffect(() => {
-    observationsContext.observationsDataLoader.refresh();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   if (!codesContext.codesDataLoader.data || !surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -47,9 +40,7 @@ const SurveyPage: React.FC = () => {
     <>
       <SurveyHeader />
       <Container maxWidth="xl" sx={{ py: 3 }}>
-
         <Stack gap={3}>
-        
           <TaxonomyContextProvider>
             <SurveySpatialData />
           </TaxonomyContextProvider>
@@ -63,7 +54,6 @@ const SurveyPage: React.FC = () => {
           </Paper>
 
           <SurveyDetails />
-
         </Stack>
 
         {/* <Box mt={3}>
