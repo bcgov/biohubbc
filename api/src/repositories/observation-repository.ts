@@ -33,7 +33,7 @@ export type ObservationRecord = z.infer<typeof ObservationRecord>;
 export const ObservationRecordWithSamplingData = ObservationRecord.extend({
   survey_sample_site_name: z.string(),
   survey_sample_method_name: z.string(),
-  survey_sample_period_start_datetime: z.date()
+  survey_sample_period_start_datetime: z.string()
 });
 
 export type ObservationRecordWithSamplingData = z.infer<typeof ObservationRecordWithSamplingData>;
