@@ -153,7 +153,7 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
               zoom={MAP_DEFAULT_ZOOM}
               maxZoom={17}
               fullscreenControl={true}
-              scrollWheelZoom={false}>
+              scrollWheelZoom={true}>
               <MapBaseCss />
               <LayersControl position="bottomright">
                 <FullScreenScrollingEventHandler bounds={updatedBounds} scrollWheelZoom={false} />
