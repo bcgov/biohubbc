@@ -8,7 +8,7 @@ import { useContext, useEffect, useState } from 'react';
 import yup from 'utils/YupSchema';
 
 export interface IStratum {
-  survey_stratum_id?: number;
+  survey_stratum_id: number;
   name: string;
   description: string | null;
 }

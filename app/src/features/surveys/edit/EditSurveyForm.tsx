@@ -229,7 +229,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
 
           <HorizontalSplitFormComponent
             title="Sampling Strategy"
-            summary="Specify site selection methods, stratums and optional sampling blocks for this survey."
+            summary="Specify site selection methods, strata and optional sampling site groups for this survey."
             component={<SamplingStrategyForm />}
           />
 

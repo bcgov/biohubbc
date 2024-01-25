@@ -12,7 +12,7 @@ const CreateSurveyBlockDialog: React.FC<ICreateBlockProps> = (props) => {
   return (
     <>
       <EditDialog
-        dialogTitle={'Add Block'}
+        dialogTitle={'Add Sampling Site Group'}
         open={open}
         dialogLoading={false}
         component={{
@@ -24,7 +24,7 @@ const CreateSurveyBlockDialog: React.FC<ICreateBlockProps> = (props) => {
           },
           validationSchema: BlockYupSchema
         }}
-        dialogSaveButtonLabel="Add Block"
+        dialogSaveButtonLabel="Add Sampling Site Group"
         onCancel={() => onClose()}
         onSave={(formValues) => {
           onSave(formValues);

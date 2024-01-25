@@ -24,6 +24,7 @@ import { useContext, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
 import SamplingSiteHeader from './SamplingSiteHeader';
+import SamplingBlockStratumForm from '../../components/SampleBlockStratumForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -45,10 +46,24 @@ export interface ISurveySampleSite {
   feature: Feature;
 }
 
+export interface ISurveySampleBlock {
+  name: string;
+  description: string;
+  feature: Feature;
+}
+
+export interface ISurveySampleStratum {
+  name: string;
+  description: string;
+  feature: Feature;
+}
+
 export interface ICreateSamplingSiteRequest {
   survey_id: number;
   survey_sample_sites: ISurveySampleSite[]; // extracted list from shape files
   methods: ISurveySampleMethodData[];
+  blocks: ISurveySampleBlock[];
+  stratums: ISurveySampleStratum[];
 }
 
 const SamplingSitePage = () => {
@@ -197,6 +212,14 @@ const SamplingSitePage = () => {
                     title="Sampling Methods"
                     summary="Specify sampling methods that were used to collect data."
                     component={<SamplingMethodForm />}></HorizontalSplitFormComponent>
+
+                  <Divider className={classes.sectionDivider} />
+
+                  <HorizontalSplitFormComponent
+                    title="Sampling Site Groupings"
+                    summary="Group similar sites by assigning them to groups or strata, 
+                    which you can add when creating or editing your Survey."
+                    component={<SamplingBlockStratumForm />}></HorizontalSplitFormComponent>
 
                   <Divider className={classes.sectionDivider} />
 

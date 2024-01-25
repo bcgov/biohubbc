@@ -26,7 +26,7 @@ const SamplingStrategyForm = () => {
             }}
             variant="body1"
             color="textSecondary">
-            Specify each stratum used when selecting sampling sites.
+            Specify strata used when selecting sampling sites, such as high and low elevation.
           </Typography>
           <SurveyStratumForm />
         </Box>
@@ -37,7 +37,7 @@ const SamplingStrategyForm = () => {
           sx={{
             mb: 0
           }}>
-          Add Blocks (Optional)
+          Add Sampling Site Groups (Optional)
         </Typography>
         <Typography
           sx={{
@@ -45,7 +45,7 @@ const SamplingStrategyForm = () => {
           }}
           variant="body1"
           color="textSecondary">
-          If required, specify each block included in this survey.
+          Specify sampling site groups to later assign sampling sites to, letting you group similar or related sites.
         </Typography>
         <SurveyBlockSection />
       </Box>

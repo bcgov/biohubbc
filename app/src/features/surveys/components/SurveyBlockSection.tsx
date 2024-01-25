@@ -161,11 +161,11 @@ const SurveyBlockSection: React.FC = () => {
           data-testid="block-form-add-button"
           variant="outlined"
           color="primary"
-          title="Add Block"
-          aria-label="Add Block"
+          title="Add Sampling Site Group" // Synonymous with Blocks
+          aria-label="Add Sampling Site Group"
           startIcon={<Icon path={mdiPlus} size={1} />}
           onClick={() => setIsCreateModalOpen(true)}>
-          Add Block
+          Add Sampling Site Group
         </Button>
       </form>
     </>
