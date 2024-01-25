@@ -47,7 +47,7 @@ const SurveyMap = (props: ISurveyMapProps) => {
             </GeoJSON>
           ))}
 
-          <LayersControl position="bottomright">
+          <LayersControl position="topright">
             <BaseLayerControls />
           </LayersControl>
         </LeafletMapContainer>

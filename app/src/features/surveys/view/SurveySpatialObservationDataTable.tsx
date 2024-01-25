@@ -188,7 +188,7 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
         </Stack>
       ) : (
         <StyledDataGrid
-          noRowsMessage="No Observation data sources available"
+          noRowsMessage="No observation records found"
           columnHeaderHeight={RowHeight}
           rowHeight={RowHeight}
           rows={tableData}
