@@ -19,7 +19,7 @@ interface IObservationTableRow {
   survey_sample_site_name: string | null;
   survey_sample_method_name: string | null;
   survey_sample_period_start_datetime: string | null;
-  observation_date: Date;
+  observation_date: string;
   observation_time: string;
   latitude: number | null;
   longitude: number | null;
@@ -51,7 +51,6 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
   useEffect(() => {
     if (sortModel.length > 0) {
       if (sortModel[0].sort) {
-        console.log(`Table Sort: ${sortModel[0].field} ${sortModel[0].sort}`);
         paginatedDataLoader.refresh(page, pageSize, sortModel[0].field, sortModel[0].sort);
       }
     } else {
@@ -75,7 +74,7 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
       survey_sample_site_name: item.survey_sample_site_name,
       survey_sample_method_name: item.survey_sample_method_name,
       survey_sample_period_start_datetime: item.survey_sample_period_start_datetime,
-      observation_date: dayjs(item.observation_date).toDate(),
+      observation_date: dayjs(item.observation_date).format('YYYY-MM-DD'),
       observation_time: dayjs(item.observation_date).format('HH:mm:ss'),
       latitude: item.latitude,
       longitude: item.longitude
