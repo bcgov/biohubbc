@@ -497,6 +497,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     // Remove any rows that are newly created
     setRows(rows.filter((row) => !addedRowIds.includes(String(row.id))));
+
+    // Reset all validation errors
+    setValidationModel({});
   }, [_muiDataGridApiRef, addedRowIds, rows]);
 
   const refreshObservationRecords = useCallback(async () => {
