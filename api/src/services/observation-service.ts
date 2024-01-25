@@ -132,7 +132,7 @@ export class ObservationService extends DBService {
    */
   async getSurveyObservationsWithSupplementaryAndSamplingData(
     surveyId: number,
-    pagination: ApiPaginationOptions
+    pagination?: ApiPaginationOptions
   ): Promise<{ surveyObservations: ObservationRecord[]; supplementaryObservationData: ObservationSupplementaryData }> {
     const surveyObservations = await this.observationRepository.getSurveyObservationsWithSamplingData(surveyId, pagination);
     const supplementaryObservationData = await this.getSurveyObservationsSupplementaryData(surveyId);

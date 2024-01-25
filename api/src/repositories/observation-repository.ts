@@ -216,11 +216,11 @@ export class ObservationRepository extends BaseRepository {
    */
   async getSurveyObservationsWithSamplingData(
     surveyId: number,
-    pagination: ApiPaginationOptions
+    pagination?: ApiPaginationOptions
   ): Promise<ObservationRecordWithSamplingData[]> {
     const knex = getKnex();
 
-    const paginatedQuery = knex
+    const allRowsQuery = knex
       .with(
         'survey_sample_method_with_name',
         knex
@@ -262,11 +262,13 @@ export class ObservationRepository extends BaseRepository {
       // Join sample period onto observation
       .leftJoin({ ssp: 'survey_sample_period' }, 'so.survey_sample_period_id', 'ssp.survey_sample_period_id') // Join survey_sample_period
       .where('so.survey_id', surveyId)
+
+
+  const paginatedQuery = !pagination
+    ? allRowsQuery
+    : allRowsQuery
       .limit(pagination.limit)
       .offset(pagination.page * pagination.limit);
-
-    // const { bindings, sql } = paginatedQuery.toSQL().toNative();
-    // console.log( { sql, bindings })
 
     const query =
       pagination?.sort && pagination.order ? paginatedQuery.orderBy(pagination.sort, pagination.order) : paginatedQuery;

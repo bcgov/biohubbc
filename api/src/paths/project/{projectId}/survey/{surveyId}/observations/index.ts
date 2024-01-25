@@ -195,7 +195,7 @@ GET.apiDoc = {
     {
       in: 'query',
       name: 'page',
-      required: true,
+      required: false,
       schema: {
         type: 'integer',
         minimum: 1
@@ -204,7 +204,7 @@ GET.apiDoc = {
     {
       in: 'query',
       name: 'limit',
-      required: true,
+      required: false,
       schema: {
         type: 'integer',
         minimum: 1,
@@ -376,7 +376,7 @@ export function getSurveyObservations(): RequestHandler {
       const observationService = new ObservationService(connection);
 
       const paginationOptions: ApiPaginationOptions | undefined =
-        limit !== undefined && page !== undefined ? { limit, page, sort, order } : { limit: 10, page: 0 };
+        limit !== undefined && page !== undefined ? { limit, page, sort, order } : undefined
 
       const observationData = await observationService.getSurveyObservationsWithSupplementaryAndSamplingData(
         surveyId,
