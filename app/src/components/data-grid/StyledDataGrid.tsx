@@ -1,20 +1,24 @@
+import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
 import { DataGrid, DataGridProps } from '@mui/x-data-grid';
+import { useCallback } from 'react';
 import StyledDataGridOverlay from './StyledDataGridOverlay';
-import Box from '@mui/material/Box';
 
 const StyledLoadingOverlay = () => (
   <Box width="100%" height="100%" sx={{ backgroundColor: grey[300], opacity: 0.25 }}></Box>
 );
-
-export const StyledDataGrid = (props: DataGridProps) => {
+export type StyledDataGridProps = DataGridProps & {
+  noRowsMessage?: string;
+};
+export const StyledDataGrid = (props: StyledDataGridProps) => {
+  const noRowsOverlay = useCallback(() => <StyledDataGridOverlay message={props.noRowsMessage} />, []);
   return (
     <DataGrid
       {...props}
       autoHeight
       slots={{
         loadingOverlay: StyledLoadingOverlay,
-        noRowsOverlay: StyledDataGridOverlay,
+        noRowsOverlay: noRowsOverlay
       }}
       sx={{
         border: 'none',
@@ -32,7 +36,7 @@ export const StyledDataGrid = (props: DataGridProps) => {
           '& .MuiDataGrid-cell': {
             borderBottom: 'none'
           }
-        },
+        }
       }}
     />
   );

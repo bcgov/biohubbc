@@ -1,12 +1,12 @@
+import grey from '@mui/material/colors/grey';
+import Skeleton from '@mui/material/Skeleton';
+import Stack from '@mui/material/Stack';
 import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { SurveyContext } from 'contexts/surveyContext';
 import dayjs from 'dayjs';
 import { useContext, useMemo } from 'react';
 import { ICritterDeployment } from '../telemetry/ManualTelemetryList';
-import Stack from '@mui/material/Stack';
-import Skeleton from '@mui/material/Skeleton';
-import grey from '@mui/material/colors/grey';
 interface ITelemetryData {
   id: number;
   critter_id: string | null;
@@ -98,7 +98,7 @@ const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTable
       <Skeleton variant="text" />
       <Skeleton variant="text" />
     </Stack>
-  )
+  );
 
   return (
     <>
@@ -110,6 +110,7 @@ const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTable
         </Stack>
       ) : (
         <StyledDataGrid
+          noRowsMessage={'No Telemetry data sources available'}
           columnHeaderHeight={RowHeight}
           rowHeight={RowHeight}
           rows={tableData}
@@ -117,8 +118,8 @@ const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTable
           columns={columns}
           initialState={{
             pagination: {
-              paginationModel: { page: 1, pageSize: 5 },
-            },
+              paginationModel: { page: 1, pageSize: 5 }
+            }
           }}
           pageSizeOptions={[5]}
           rowSelection={false}
