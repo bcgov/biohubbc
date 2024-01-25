@@ -1,7 +1,7 @@
-import { IObservationRecord, ISupplementaryObservationData } from 'contexts/observationsTableContext';
+import { IObservationRecordWithSamplingData, ISupplementaryObservationData } from 'contexts/observationsTableContext';
 
 export interface IGetSurveyObservationsResponse {
-  surveyObservations: IObservationRecord[];
+  surveyObservations: IObservationRecordWithSamplingData[];
   supplementaryObservationData: ISupplementaryObservationData;
   pagination: {
     total: number;

@@ -149,7 +149,8 @@ const paginationSchema: SchemaObject = {
       minimum: 1
     },
     current_page: {
-      type: 'integer'
+      type: 'integer',
+      minimum: 1
     },
     last_page: {
       type: 'integer',
@@ -251,11 +252,28 @@ PUT.apiDoc = {
     {
       in: 'query',
       name: 'page',
-      required: false
+      required: true,
+      // TODO how to enforce this?
+      // type: 'integer',
+      // minimum: 1,
     },
     {
       in: 'query',
       name: 'limit',
+      // TODO how to enforce this?
+      // type: 'integer',
+      // minimum: 1,
+      // maximum: 100,
+      required: true
+    },
+    {
+      in: 'query',
+      name: 'sort',
+      required: false
+    },
+    {
+      in: 'query',
+      name: 'order',
       required: false
     }
   ],
@@ -356,9 +374,11 @@ export function getSurveyObservations(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      const paginationOptions: ApiPaginationOptions | undefined =
-        limit !== undefined && page !== undefined ? { limit, page, sort, order } : undefined;
-      const observationData = await observationService.getSurveyObservationsWithSupplementaryData(
+      const paginationOptions: ApiPaginationOptions | undefined = limit !== undefined && page !== undefined
+        ? { limit, page, sort, order }
+        : { limit: 10, page: 1 }
+
+      const observationData = await observationService.getSurveyObservationsWithSupplementaryAndSamplingData(
         surveyId,
         paginationOptions
       );
@@ -370,7 +390,9 @@ export function getSurveyObservations(): RequestHandler {
           total: observationCount,
           per_page: limit ?? observationCount,
           current_page: page ?? 1,
-          last_page: limit ? Math.ceil(observationCount / limit) : 1
+          last_page: limit ? Math.ceil(observationCount / limit) : 1,
+          sort,
+          order
         }
       });
     } catch (error) {

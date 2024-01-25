@@ -326,7 +326,7 @@ export class PlatformService extends DBService {
     const surveyService = new SurveyService(this.connection);
 
     const survey = await surveyService.getSurveyData(surveyId);
-    const { surveyObservations } = await observationService.getSurveyObservationsWithSupplementaryData(surveyId);
+    const surveyObservations = await observationService.getAllSurveyObservations(surveyId);
     const surveyLocation = await surveyService.getSurveyLocationsData(surveyId);
 
     const geometryFeatureCollection: FeatureCollection = {

@@ -112,6 +112,17 @@ export class ObservationService extends DBService {
   }
 
   /**
+   * Retrieves all observation records for the given survey
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<ObservationRecord[]>}
+   * @memberof ObservationRepository
+   */
+  async getAllSurveyObservations(surveyId: number): Promise<ObservationRecord[]> {
+    return this.observationRepository.getAllSurveyObservations(surveyId);
+  }
+
+  /**
    * Retrieves all observation records for the given survey along with supplementary data
    *
    * @param {number} surveyId
@@ -119,11 +130,11 @@ export class ObservationService extends DBService {
    * @return {*}  {Promise<{ surveyObservations: ObservationRecord[]; supplementaryObservationData: ObservationSupplementaryData }>}
    * @memberof ObservationService
    */
-  async getSurveyObservationsWithSupplementaryData(
+  async getSurveyObservationsWithSupplementaryAndSamplingData(
     surveyId: number,
-    pagination?: ApiPaginationOptions
+    pagination: ApiPaginationOptions
   ): Promise<{ surveyObservations: ObservationRecord[]; supplementaryObservationData: ObservationSupplementaryData }> {
-    const surveyObservations = await this.observationRepository.getSurveyObservations(surveyId, pagination);
+    const surveyObservations = await this.observationRepository.getSurveyObservationsWithSamplingData(surveyId, pagination);
     const supplementaryObservationData = await this.getSurveyObservationsSupplementaryData(surveyId);
 
     return { surveyObservations, supplementaryObservationData };

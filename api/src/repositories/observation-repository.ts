@@ -30,6 +30,14 @@ export const ObservationRecord = z.object({
 
 export type ObservationRecord = z.infer<typeof ObservationRecord>;
 
+export const ObservationRecordWithSamplingData = ObservationRecord.extend({
+  survey_sample_site_name: z.string(),
+  survey_sample_method_name: z.string(),
+  survey_sample_period_start_datetime: z.date()
+});
+
+export type ObservationRecordWithSamplingData = z.infer<typeof ObservationRecordWithSamplingData>;
+
 /**
  * Interface reflecting survey observations that are being inserted into the database
  */
@@ -198,25 +206,80 @@ export class ObservationRepository extends BaseRepository {
   }
 
   /**
-   * Retrieves all observation records for the given survey
+   * Retrieves a paginated set of observation records for the given survey, including data for
+   * associated sampling records.
    *
    * @param {number} surveyId
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<ObservationRecord[]>}
    * @memberof ObservationRepository
    */
-  async getSurveyObservations(surveyId: number, pagination?: ApiPaginationOptions): Promise<ObservationRecord[]> {
+  async getSurveyObservationsWithSamplingData(surveyId: number, pagination: ApiPaginationOptions): Promise<ObservationRecordWithSamplingData[]> {
+    const knex = getKnex();
+
+    const paginatedQuery = knex
+      .with('survey_sample_method_with_name', knex
+        .select([
+          'ml.name as survey_sample_method_name',
+          'ssm.survey_sample_method_id'
+        ])
+        .from({ ssm: 'survey_sample_method '})
+        .leftJoin({ ml: 'method_lookup' }, 'ml.method_lookup_id', 'ssm.method_lookup_id')
+      )
+      .select([
+        'so.*', // Select all columns from survey_observation
+
+        // Select columns from the joined survey_sample_site table
+        'sss.survey_sample_site_id',
+        'sss.name as survey_sample_site_name',
+        
+        // Select columns from the joined survey_sample_method table
+        'ssmwn.survey_sample_method_id',
+        'ssmwn.survey_sample_method_name',
+
+        // Select columns from the joined survey_sample_period table
+        'ssp.survey_sample_period_id',
+        knex.raw('(??::date + ??::time)::timestamp as survey_sample_period_start_datetime', ['ssp.start_date', 'ssp.start_time'])
+        // 'ssp.name as survey_sample_period_name',
+      ])
+      .from({ so: 'survey_observation' }) // Alias survey_observation as so
+      
+      // Join sample site onto observation
+      .leftJoin({ sss: 'survey_sample_site' }, 'so.survey_sample_site_id', 'sss.survey_sample_site_id') // Join survey_sample_site
+
+      // Join sample method onto observation
+      .leftJoin({ ssmwn: 'survey_sample_method_with_name' }, 'so.survey_sample_method_id', 'ssmwn.survey_sample_method_id') // Join survey_sample_method
+
+      // Join sample period onto observation
+      .leftJoin({ ssp: 'survey_sample_period' }, 'so.survey_sample_period_id', 'ssp.survey_sample_period_id') // Join survey_sample_period
+      .where('so.survey_id', surveyId)
+      .limit(pagination.limit)
+      .offset((pagination.page - 1) * pagination.limit);
+
+    // const { bindings, sql } = paginatedQuery.toSQL().toNative();
+    // console.log( { sql, bindings })
+
+    const query = pagination?.sort && pagination.order
+      ? paginatedQuery.orderBy(pagination.sort, pagination.order)
+      : paginatedQuery;
+
+    const response = await this.connection.knex(query, ObservationRecordWithSamplingData);
+
+    return response.rows;
+  }
+
+  /**
+   * Retrieves all observation records for the given survey
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<ObservationRecord[]>}
+   * @memberof ObservationRepository
+   */
+  async getAllSurveyObservations(surveyId: number): Promise<ObservationRecord[]> {
     const knex = getKnex();
     const allRowsQuery = knex.queryBuilder().select('*').from('survey_observation').where('survey_id', surveyId);
 
-    const query = pagination
-      ? allRowsQuery.limit(pagination.limit).offset(pagination.page * pagination.limit)
-      : allRowsQuery;
-
-    // TODO possible to conditionally chain these methods together, rather than redeclare the query builder?
-    const query2 = pagination?.sort && pagination.order ? query.orderBy(pagination.sort, pagination.order) : query;
-
-    const response = await this.connection.knex(query2, ObservationRecord);
+    const response = await this.connection.knex(allRowsQuery, ObservationRecord);
     return response.rows;
   }
 

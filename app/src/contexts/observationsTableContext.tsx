@@ -26,6 +26,22 @@ export interface IObservationRecord {
   longitude: number | null;
 }
 
+export interface IObservationRecordWithSamplingData {
+  survey_observation_id: number;
+  wldtaxonomic_units_id: number;
+  survey_sample_site_id: number | null;
+  survey_sample_site_name: string | null;
+  survey_sample_method_id: number | null;
+  survey_sample_method_name: string | null;
+  survey_sample_period_id: number | null;
+  survey_sample_period_start_datetime: string | null;
+  count: number | null;
+  observation_date: Date;
+  observation_time: string;
+  latitude: number | null;
+  longitude: number | null;
+}
+
 export interface ISupplementaryObservationData {
   observationCount: number;
 }
