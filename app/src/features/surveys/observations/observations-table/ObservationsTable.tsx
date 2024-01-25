@@ -328,7 +328,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             textFieldProps={{
               name: params.field,
               type: 'date',
-              value: params.value ? dayjs(params.value).format('YYYY-MM-DD') : null,
+              value: params.value ? dayjs(params.value).format('YYYY-MM-DD') : '',
               onChange: (event) => {
                 const value = dayjs(event.target.value).toDate();
                 apiRef?.current.setEditCellValue({
