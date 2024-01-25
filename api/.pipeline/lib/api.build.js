@@ -19,6 +19,8 @@ const apiBuild = (settings) => {
   console.log('api phases', phases[phase]);
   console.log('5==============================================');
 
+  const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
+
   console.log('6==============================================');
   console.log({
     NAME: phases[phase].name,
@@ -32,8 +34,6 @@ const apiBuild = (settings) => {
     MEMORY_LIMIT: phases[phase].memoryLimit
   });
   console.log('7==============================================');
-
-  const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
 
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../templates'));
 

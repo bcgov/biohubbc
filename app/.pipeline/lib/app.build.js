@@ -26,7 +26,7 @@ const appBuild = (settings) => {
         SUFFIX: phases[phase].suffix,
         VERSION: phases[phase].tag,
         SOURCE_REPOSITORY_URL: oc.git.http_url,
-        SOURCE_REPOSITORY_REF: phases[phase].branch,
+        SOURCE_REPOSITORY_REF: phases[phase].branch || oc.git.ref,
         CPU_REQUEST: phases[phase].cpuRequest,
         CPU_LIMIT: phases[phase].cpuLimit,
         MEMORY_REQUEST: phases[phase].memoryRequest,
