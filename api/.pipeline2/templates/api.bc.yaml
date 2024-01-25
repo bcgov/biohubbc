@@ -1,0 +1,114 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: sims-api-bc
+  labels:
+    build: sims-api
+parameters:
+  - name: NAME
+    description: Image name
+    required: true
+    value: sims-api
+  - name: SUFFIX
+    description: A suffix appended to all objects
+    required: true
+    value: '-dev'
+  - name: VERSION
+    required: true
+    value: '1.0'
+  - name: SOURCE_CONTEXT_DIR
+    required: true
+    value: api
+  - name: SOURCE_REPOSITORY_URL
+    required: true
+    value: https://github.com/bcgov/biohubbc
+  - name: SOURCE_REPOSITORY_REF
+    required: false
+    value: dev
+  - name: BASE_IMAGE_URL
+    required: true
+    value: image-registry.openshift-image-registry.svc:5000/openshift/nodejs:14-ubi8
+  - name: SOURCE_IMAGE_NAME
+    required: true
+    value: nodejs
+  - name: SOURCE_IMAGE_TAG
+    required: true
+    value: 14-ubi8
+  - name: CPU_REQUEST
+    value: '50m'
+  - name: CPU_LIMIT
+    value: '1000m'
+  - name: MEMORY_REQUEST
+    value: '100Mi'
+  - name: MEMORY_LIMIT
+    value: '3Gi'
+objects:
+  - kind: ImageStream
+    apiVersion: image.openshift.io/v1
+    metadata:
+      name: ${SOURCE_IMAGE_NAME}
+      annotations:
+        description: Nodejs Base Image
+      labels:
+        shared: 'true'
+    spec:
+      lookupPolicy:
+        local: false
+      tags:
+        - name: ${SOURCE_IMAGE_TAG}
+          annotations: null
+          from:
+            kind: DockerImage
+            name: ${BASE_IMAGE_URL}
+          importPolicy: {}
+          referencePolicy:
+            type: Local
+  - kind: ImageStream
+    apiVersion: image.openshift.io/v1
+    metadata:
+      name: '${NAME}'
+      annotations:
+        description: Nodejs Runtime Image
+      labels:
+        shared: 'true'
+    spec:
+      lookupPolicy:
+        local: false
+  - apiVersion: v1
+    kind: BuildConfig
+    metadata:
+      name: '${NAME}${SUFFIX}'
+      labels: {}
+      annotations: {}
+    spec:
+      failedBuildsHistoryLimit: 5
+      nodeSelector:
+      output:
+        to:
+          kind: ImageStreamTag
+          name: '${NAME}:${VERSION}'
+      postCommit: {}
+      resources:
+        requests:
+          cpu: ${CPU_REQUEST}
+          memory: ${MEMORY_REQUEST}
+        limits:
+          cpu: ${CPU_LIMIT}
+          memory: ${MEMORY_LIMIT}
+      runPolicy: SerialLatestOnly
+      source:
+        contextDir: '${SOURCE_CONTEXT_DIR}'
+        git:
+          uri: '${SOURCE_REPOSITORY_URL}'
+          ref: '${SOURCE_REPOSITORY_REF}'
+        type: Git
+      strategy:
+        dockerStrategy:
+          from:
+            kind: ImageStreamTag
+            name: ${SOURCE_IMAGE_NAME}:${SOURCE_IMAGE_TAG}
+        type: Docker
+      successfulBuildsHistoryLimit: 5
+      triggers:
+        - type: ConfigChange
+        - type: ImageChange

@@ -6,18 +6,16 @@ const path = require('path');
 /**
  * Build the app image.
  *
- * @param {*} settings
+ * @param {*} { phases, options }
  */
-const appBuild = (settings) => {
-  const phases = settings.phases;
-  const options = settings.options;
+const appBuild = ({ phases, options }) => {
   const phase = settings.phase;
 
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
 
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../templates'));
 
-  let objects = [];
+  const objects = [];
 
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/app.bc.yaml`, {
@@ -26,7 +24,7 @@ const appBuild = (settings) => {
         SUFFIX: phases[phase].suffix,
         VERSION: phases[phase].tag,
         SOURCE_REPOSITORY_URL: oc.git.http_url,
-        SOURCE_REPOSITORY_REF: phases[phase].branch || oc.git.ref,
+        SOURCE_REPOSITORY_REF: phases[phase].branch,
         CPU_REQUEST: phases[phase].cpuRequest,
         CPU_LIMIT: phases[phase].cpuLimit,
         MEMORY_REQUEST: phases[phase].memoryRequest,

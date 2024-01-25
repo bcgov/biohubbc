@@ -1,0 +1,483 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: sims-api-dc
+  labels:
+    build: sims-api
+parameters:
+  - name: NAME
+    value: sims-api
+  - name: SUFFIX
+    value: '-dev'
+  - name: VERSION
+    description: Version of the application
+    value: '1.0.0'
+  - name: HOST
+    description: Host name of the application
+    required: true
+  - name: APP_HOST
+    description: APP host for application frontend
+    value: ''
+  - name: CHANGE_ID
+    description: Change id of the project. This will help to pull image stream
+    required: true
+    value: '0'
+  - name: NODE_ENV
+    description: Application Environment type variable
+    required: true
+    value: 'dev'
+  - name: API_PORT_DEFAULT
+    value: '6100'
+  - name: API_PORT_DEFAULT_NAME
+    description: Api default port name
+    value: '6100-tcp'
+  # Clamav
+  - name: ENABLE_FILE_VIRUS_SCAN
+    value: 'true'
+  - name: CLAMAV_HOST
+    value: 'clamav'
+  - name: CLAMAV_PORT
+    value: '3310'
+  # BioHub Platform (aka: Backbone)
+  - name: BACKBONE_API_HOST
+    required: true
+    description: API host for BioHub Platform Backbone. Example "https://platform.com".
+  - name: BACKBONE_INTAKE_PATH
+    required: true
+    description: API path for BioHub Platform Backbone DwCA submission intake endpoint. Example "/api/path/to/intake".
+  - name: BACKBONE_ARTIFACT_INTAKE_PATH
+    required: true
+    description: API path for BioHub Platform Backbone artifact submission intake endpoint. Example "/api/path/to/artifact/intake".
+  - name: BACKBONE_INTAKE_ENABLED
+    required: true
+    description: Controls whether or not SIMS will submit DwCA datasets to the BioHub Platform Backbone. Set to "true" to enable it, will be disabled by default otherwise.
+  # BCTW / Critterbase
+  - name: CB_API_HOST
+    description: API host for the Critterbase service, SIMS API will hit this to retrieve critter metadata. Example "https://critterbase.com".
+    required: true
+  - name: BCTW_API_HOST
+    description: API host for the BC Telemetry Warehouse service. SIMS API will hit this for device deployments and other telemetry operations.  Example "https://bctw.com".
+    required: true
+  # Elastic Search
+  - name: ELASTICSEARCH_URL
+    description: Platform Elasticsearch URL
+    required: true
+    value: 'http://es01:9200'
+  - name: ELASTICSEARCH_TAXONOMY_INDEX
+    description: Platform Elasticsearch Taxonomy Index
+    required: true
+    value: 'taxonomy_3.0.0'
+  # Database
+  - name: TZ
+    description: Application timezone
+    required: false
+    value: 'America/Vancouver'
+  - name: DB_SERVICE_NAME
+    description: 'Database service name associated with deployment'
+    required: true
+  # Keycloak
+  - name: KEYCLOAK_HOST
+    description: Key clock login url
+    required: true
+  - name: KEYCLOAK_REALM
+    description: Realm identifier or name
+    required: true
+  - name: KEYCLOAK_CLIENT_ID
+    description: Client Id for application
+    required: true
+  # Keycloak secret
+  - name: KEYCLOAK_SECRET
+    description: The name of the keycloak secret
+    required: true
+  # Keycloak Service Client
+  - name: KEYCLOAK_ADMIN_USERNAME
+    description: keycloak host admin username
+    required: true
+  - name: KEYCLOAK_SECRET_ADMIN_PASSWORD_KEY
+    description: The key of the admin password in the keycloak secret
+    required: true
+  # Keycloak CSS API
+  - name: KEYCLOAK_API_TOKEN_URL
+    description: The url to fetch a css api access token, which is needed to call the css rest api
+    required: true
+  - name: KEYCLOAK_API_CLIENT_ID
+    description: The css api client id
+    required: true
+  - name: KEYCLOAK_API_CLIENT_SECRET_KEY
+    description: The css api client secret
+    required: true
+  - name: KEYCLOAK_API_HOST
+    description: The url of the css rest api
+    required: true
+  - name: KEYCLOAK_API_ENVIRONMENT
+    description: The css api environment to query (dev, test, prod)
+    required: true
+  # Object Store (S3)
+  - name: OBJECT_STORE_SECRETS
+    description: Secrets used to read and write to the S3 storage
+    value: 'sims-object-store'
+  - name: S3_KEY_PREFIX
+    description: S3 key optional prefix
+    required: false
+    value: 'sims'
+  # Log level
+  - name: LOG_LEVEL
+    value: 'info'
+  # GCNotify
+  - name: GCNOTIFY_API_SECRET
+    description: Secret for gcnotify api key
+    value: 'gcnotify-api-key'
+  - name: GCNOTIFY_ADMIN_EMAIL
+    description: admin email for gcnotify api
+    value: biohub@gov.bc.ca
+  - name: GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE
+    description: gcnotify email template id
+    value: 7779a104-b863-40ac-902f-1aa607d2071a
+  - name: GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE
+    description: gcnotify sms template id
+    value: af2f1e40-bd72-4612-9c5a-567ee5b26ca5
+  - name: GCNOTIFY_REQUEST_RESUBMIT_TEMPLATE
+    description: gcnotify request resubmit email template
+    value: c973da33-1f2b-435a-9429-d8ab4fd273c5
+  - name: GCNOTIFY_EMAIL_URL
+    value: https://api.notification.canada.ca/v2/notifications/email
+  - name: GCNOTIFY_SMS_URL
+    value: https://api.notification.canada.ca/v2/notifications/sms
+  # Openshift Resources
+  - name: CPU_REQUEST
+    value: '50m'
+  - name: CPU_LIMIT
+    value: '500m'
+  - name: MEMORY_REQUEST
+    value: '100Mi'
+  - name: MEMORY_LIMIT
+    value: '2Gi'
+  - name: REPLICAS
+    value: '1'
+  - name: REPLICAS_MAX
+    value: '1'
+objects:
+  - apiVersion: image.openshift.io/v1
+    kind: ImageStream
+    metadata:
+      annotations:
+        description: Nodejs Runtime Image
+      labels:
+        shared: 'true'
+      generation: 0
+      name: ${NAME}
+    spec:
+      lookupPolicy:
+        local: false
+    status:
+      dockerImageRepository: null
+
+  - kind: DeploymentConfig
+    apiVersion: apps.openshift.io/v1
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftWebConsole
+      generation: 0
+      labels:
+        role: api
+      name: ${NAME}${SUFFIX}
+    spec:
+      replicas: ${{REPLICAS}}
+      revisionHistoryLimit: 10
+      selector:
+        deploymentConfig: ${NAME}${SUFFIX}
+      strategy:
+        activeDeadlineSeconds: 21600
+        recreateParams:
+          timeoutSeconds: 600
+        resources:
+          requests:
+            cpu: ${CPU_REQUEST}
+            memory: ${MEMORY_REQUEST}
+          limits:
+            cpu: ${CPU_LIMIT}
+            memory: ${MEMORY_LIMIT}
+        type: Rolling
+      template:
+        metadata:
+          annotations: null
+          labels:
+            deploymentConfig: ${NAME}${SUFFIX}
+            role: api
+        spec:
+          containers:
+            - env:
+                - name: API_HOST
+                  value: ${HOST}
+                - name: API_PORT
+                  value: ${API_PORT_DEFAULT}
+                - name: APP_HOST
+                  value: ${APP_HOST}
+                - name: VERSION
+                  value: ${VERSION}
+                - name: CHANGE_VERSION
+                  value: ${CHANGE_ID}
+                - name: NODE_ENV
+                  value: ${NODE_ENV}
+                # BioHub Platform (aka: Backbone)
+                - name: BACKBONE_API_HOST
+                  value: ${BACKBONE_API_HOST}
+                - name: BACKBONE_INTAKE_PATH
+                  value: ${BACKBONE_INTAKE_PATH}
+                - name: BACKBONE_ARTIFACT_INTAKE_PATH
+                  value: ${BACKBONE_ARTIFACT_INTAKE_PATH}
+                - name: BACKBONE_INTAKE_ENABLED
+                  value: ${BACKBONE_INTAKE_ENABLED}
+                # BCTW / Critterbase
+                - name: CB_API_HOST
+                  value: ${CB_API_HOST}
+                - name: BCTW_API_HOST
+                  value: ${BCTW_API_HOST}
+                # Clamav
+                - name: ENABLE_FILE_VIRUS_SCAN
+                  value: ${ENABLE_FILE_VIRUS_SCAN}
+                - name: CLAMAV_HOST
+                  value: ${CLAMAV_HOST}
+                - name: CLAMAV_PORT
+                  value: ${CLAMAV_PORT}
+                # Database
+                - name: TZ
+                  value: ${TZ}
+                - name: DB_HOST
+                  value: ${DB_SERVICE_NAME}
+                - name: DB_USER_API
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-user-api
+                      name: ${DB_SERVICE_NAME}
+                - name: DB_USER_API_PASS
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-user-api-password
+                      name: ${DB_SERVICE_NAME}
+                - name: DB_DATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-name
+                      name: ${DB_SERVICE_NAME}
+                - name: DB_PORT
+                  value: '5432'
+                - name: PROJECT_SEEDER_USER_IDENTIFIER
+                  value: ${PROJECT_SEEDER_USER_IDENTIFIER}
+                # Keycloak
+                - name: KEYCLOAK_HOST
+                  value: ${KEYCLOAK_HOST}
+                - name: KEYCLOAK_REALM
+                  value: ${KEYCLOAK_REALM}
+                - name: KEYCLOAK_CLIENT_ID
+                  value: ${KEYCLOAK_CLIENT_ID}
+                # Keycloak Service Client
+                - name: KEYCLOAK_ADMIN_USERNAME
+                  value: ${KEYCLOAK_ADMIN_USERNAME}
+                - name: KEYCLOAK_ADMIN_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${KEYCLOAK_SECRET}
+                      key: ${KEYCLOAK_SECRET_ADMIN_PASSWORD_KEY}
+                # Keycloak CSS API
+                - name: KEYCLOAK_API_TOKEN_URL
+                  value: ${KEYCLOAK_API_TOKEN_URL}
+                - name: KEYCLOAK_API_CLIENT_ID
+                  value: ${KEYCLOAK_API_CLIENT_ID}
+                - name: KEYCLOAK_API_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${KEYCLOAK_SECRET}
+                      key: ${KEYCLOAK_API_CLIENT_SECRET_KEY}
+                - name: KEYCLOAK_API_HOST
+                  value: ${KEYCLOAK_API_HOST}
+                - name: KEYCLOAK_API_ENVIRONMENT
+                  value: ${KEYCLOAK_API_ENVIRONMENT}
+                # Elastic Search
+                - name: ELASTICSEARCH_URL
+                  value: ${ELASTICSEARCH_URL}
+                - name: ELASTICSEARCH_TAXONOMY_INDEX
+                  value: ${ELASTICSEARCH_TAXONOMY_INDEX}
+                - name: S3_KEY_PREFIX
+                  value: ${S3_KEY_PREFIX}
+                # Object Store (S3)
+                - name: OBJECT_STORE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: object_store_url
+                      name: ${OBJECT_STORE_SECRETS}
+                - name: OBJECT_STORE_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      key: object_store_access_key_id
+                      name: ${OBJECT_STORE_SECRETS}
+                - name: OBJECT_STORE_SECRET_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      key: object_store_secret_key_id
+                      name: ${OBJECT_STORE_SECRETS}
+                - name: OBJECT_STORE_BUCKET_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      key: object_store_bucket_name
+                      name: ${OBJECT_STORE_SECRETS}
+                # Log level
+                - name: LOG_LEVEL
+                  value: ${LOG_LEVEL}
+                # GCNotify
+                - name: GCNOTIFY_SECRET_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      key: key
+                      name: ${GCNOTIFY_API_SECRET}
+                - name: GCNOTIFY_ADMIN_EMAIL
+                  value: ${GCNOTIFY_ADMIN_EMAIL}
+                - name: GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE
+                  value: ${GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE}
+                - name: GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE
+                  value: ${GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE}
+                - name: GCNOTIFY_EMAIL_URL
+                  value: ${GCNOTIFY_EMAIL_URL}
+                - name: GCNOTIFY_SMS_URL
+                  value: ${GCNOTIFY_SMS_URL}
+              image: ' '
+              imagePullPolicy: Always
+              name: api
+              ports:
+                - containerPort: ${{API_PORT_DEFAULT}}
+                  protocol: TCP
+              resources:
+                requests:
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
+                limits:
+                  cpu: ${CPU_LIMIT}
+                  memory: ${MEMORY_LIMIT}
+              readinessProbe:
+                httpGet:
+                  path: /api/version
+                  port: ${{API_PORT_DEFAULT}}
+                  scheme: HTTP
+                initialDelaySeconds: 60
+                periodSeconds: 30
+                timeoutSeconds: 15
+                successThreshold: 1
+                failureThreshold: 20
+              livenessProbe:
+                httpGet:
+                  path: /api/version
+                  port: ${{API_PORT_DEFAULT}}
+                  scheme: HTTP
+                initialDelaySeconds: 60
+                periodSeconds: 30
+                timeoutSeconds: 15
+                successThreshold: 1
+                failureThreshold: 20
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              volumeMounts:
+                - mountPath: /opt/app-root/app
+                  name: ${NAME}${SUFFIX}
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+          volumes:
+            - emptyDir: {}
+              name: ${NAME}${SUFFIX}
+      test: false
+      triggers:
+        - imageChangeParams:
+            automatic: true
+            containerNames:
+              - api
+            from:
+              kind: ImageStreamTag
+              name: ${NAME}:${VERSION}
+          type: ImageChange
+        - type: ConfigChange
+    status:
+      availableReplicas: 0
+      latestVersion: 0
+      observedGeneration: 0
+      replicas: 0
+      unavailableReplicas: 0
+      updatedReplicas: 0
+
+  - kind: Secret
+    apiVersion: v1
+    stringData:
+      database-name: ''
+      database-user-api-password: ''
+      database-user-api: ''
+    metadata:
+      annotations:
+        as-copy-of: ${DB_SERVICE_NAME}
+      name: ${NAME}${SUFFIX}
+    type: Opaque
+
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations: null
+      labels: {}
+      name: ${NAME}${SUFFIX}
+    spec:
+      ports:
+        - name: ${NAME}-${API_PORT_DEFAULT_NAME}
+          port: ${{API_PORT_DEFAULT}}
+          protocol: TCP
+          targetPort: ${{API_PORT_DEFAULT}}
+      selector:
+        deploymentconfig: ${NAME}${SUFFIX}
+      sessionAffinity: None
+      type: ClusterIP
+    status:
+      loadBalancer: {}
+
+  - kind: Route
+    apiVersion: route.openshift.io/v1
+    metadata:
+      annotations:
+        # These 2 annotations (haproxy.router.openshift.io/balance and haproxy.router.openshift.io/disable_cookies) are set in order to prevent 'sticky sessions'
+        # 'sticky sessions': If an API pod is busy fullfilling a request, subsequent requests will go to other API pods rather than wait for the same pod (when pod replicas is > 1)
+        haproxy.router.openshift.io/balance: 'leastconn'
+        haproxy.router.openshift.io/disable_cookies: 'true'
+      labels: {}
+      name: ${NAME}${SUFFIX}
+    spec:
+      host: ${HOST}
+      tls:
+        insecureEdgeTerminationPolicy: Redirect
+        termination: edge
+      port:
+        targetPort: ${NAME}-${API_PORT_DEFAULT_NAME}
+      to:
+        kind: Service
+        name: ${NAME}${SUFFIX}
+        weight: 100
+      wildcardPolicy: None
+    status:
+      ingress: null
+
+  - kind: HorizontalPodAutoscaler
+    apiVersion: autoscaling/v2
+    metadata:
+      annotations: {}
+      labels: {}
+      name: ${NAME}${SUFFIX}
+    spec:
+      minReplicas: ${{REPLICAS}}
+      maxReplicas: ${{REPLICAS_MAX}}
+      scaleTargetRef:
+        apiVersion: apps.openshift.io/v1
+        kind: DeploymentConfig
+        name: ${NAME}${SUFFIX}
+      metrics:
+        - type: Resource
+          resource:
+            name: cpu
+            target:
+              type: Utilization
+              averageUtilization: 80

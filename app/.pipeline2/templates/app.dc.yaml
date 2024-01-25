@@ -1,0 +1,263 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: sims-app-dc-2
+  labels:
+    build: sims-app
+parameters:
+  - name: NAME
+    required: true
+    value: 'sims-app-2'
+  - name: VERSION
+    required: true
+    value: 'latest'
+  - name: HOST
+    required: true
+    value: 'dev-sims.apps.silver.devops.gov.bc.ca'
+  - name: CHANGE_ID
+  - name: REACT_APP_API_HOST
+    required: true
+    description: API host for application backend
+    value: ''
+  - name: REACT_APP_SITEMINDER_LOGOUT_URL
+    required: true
+    description: Siteminder URL to log out and clear the session for the logged in user
+    value: ''
+  - name: REACT_APP_MAX_UPLOAD_NUM_FILES
+    required: true
+    description: Default maximum number of files that can be uploaded at a time vai the upload component UI.
+    value: '10'
+  - name: REACT_APP_MAX_UPLOAD_FILE_SIZE
+    required: true
+    description: Default maximum size of a single file that can be uploaded by the upload component UI.
+    value: '52428800'
+  - name: NODE_ENV
+    required: true
+    description: NODE_ENV specification variable
+    value: 'dev'
+  - name: REACT_APP_NODE_ENV
+    required: true
+    description: NODE_ENV specification variable for React app
+    value: 'dev'
+  - name: OBJECT_STORE_SECRETS
+    required: true
+    description: Secrets used to read and write to the S3 storage
+    value: 'sims-object-store'
+  - name: APP_PORT_DEFAULT
+    description: Application default port
+    required: true
+    value: '7100'
+  - name: APP_PORT_DEFAULT_NAME
+    description: Default port resource name
+    required: true
+    value: '7100-tcp'
+  - name: REACT_APP_KEYCLOAK_HOST
+    description: Key clock login url
+    required: true
+  - name: REACT_APP_KEYCLOAK_REALM
+    description: Realm identifier or name
+    required: true
+  - name: REACT_APP_KEYCLOAK_CLIENT_ID
+    description: Client Id for application
+    required: true
+  - name: CONFIG_MAP_NAME
+    required: true
+    value: 'sims-pipeline-config'
+  - name: CPU_REQUEST
+    required: true
+    value: '50m'
+  - name: CPU_LIMIT
+    required: true
+    value: '200m'
+  - name: MEMORY_REQUEST
+    required: true
+    value: '50Mi'
+  - name: MEMORY_LIMIT
+    required: true
+    value: '200Mi'
+  - name: REPLICAS
+    required: true
+    value: '1'
+  - name: REPLICAS_MAX
+    required: true
+    value: '1'
+objects:
+  - kind: DeploymentConfig
+    apiVersion: apps.openshift.io/v1
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftWebConsole
+      generation: 0
+      labels:
+        role: app
+      name: ${NAME}
+    spec:
+      replicas: ${{REPLICAS}}
+      revisionHistoryLimit: 10
+      selector:
+        deploymentConfig: ${NAME}
+      strategy:
+        activeDeadlineSeconds: 21600
+        recreateParams:
+          timeoutSeconds: 600
+        resources:
+          requests:
+            cpu: ${CPU_REQUEST}
+            memory: ${MEMORY_REQUEST}
+          limits:
+            cpu: ${CPU_LIMIT}
+            memory: ${MEMORY_LIMIT}
+        type: Rolling
+      template:
+        metadata:
+          annotations: null
+          labels:
+            deploymentConfig: ${NAME}
+            role: app
+        spec:
+          containers:
+            - env:
+                - name: CHANGE_VERSION
+                  value: ${CHANGE_ID}
+                - name: REACT_APP_API_HOST
+                  value: ${REACT_APP_API_HOST}
+                - name: REACT_APP_SITEMINDER_LOGOUT_URL
+                  value: ${REACT_APP_SITEMINDER_LOGOUT_URL}
+                - name: REACT_APP_MAX_UPLOAD_NUM_FILES
+                  value: ${REACT_APP_MAX_UPLOAD_NUM_FILES}
+                - name: REACT_APP_MAX_UPLOAD_FILE_SIZE
+                  value: ${REACT_APP_MAX_UPLOAD_FILE_SIZE}
+                - name: OBJECT_STORE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: object_store_url
+                      name: ${OBJECT_STORE_SECRETS}
+                - name: OBJECT_STORE_BUCKET_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      key: object_store_bucket_name
+                      name: ${OBJECT_STORE_SECRETS}
+                - name: NODE_ENV
+                  value: ${NODE_ENV}
+                - name: REACT_APP_NODE_ENV
+                  value: ${REACT_APP_NODE_ENV}
+                - name: VERSION
+                  value: ${VERSION}
+                - name: REACT_APP_KEYCLOAK_HOST
+                  value: ${REACT_APP_KEYCLOAK_HOST}
+                - name: REACT_APP_KEYCLOAK_REALM
+                  value: ${REACT_APP_KEYCLOAK_REALM}
+                - name: REACT_APP_KEYCLOAK_CLIENT_ID
+                  value: ${REACT_APP_KEYCLOAK_CLIENT_ID}
+              image: ' '
+              imagePullPolicy: Always
+              name: app
+              ports:
+                - containerPort: ${{APP_PORT_DEFAULT}}
+                  protocol: TCP
+              resources:
+                requests:
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
+                limits:
+                  cpu: ${CPU_LIMIT}
+                  memory: ${MEMORY_LIMIT}
+              readinessProbe:
+                httpGet:
+                  path: /
+                  port: ${{APP_PORT_DEFAULT}}
+                  scheme: HTTP
+                initialDelaySeconds: 60
+                periodSeconds: 30
+                timeoutSeconds: 15
+                successThreshold: 1
+                failureThreshold: 20
+              livenessProbe:
+                httpGet:
+                  path: /
+                  port: ${{APP_PORT_DEFAULT}}
+                  scheme: HTTP
+                initialDelaySeconds: 60
+                periodSeconds: 30
+                timeoutSeconds: 15
+                successThreshold: 1
+                failureThreshold: 20
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+          volumes:
+            - name: config-volume
+              configMap:
+                name: ${CONFIG_MAP_NAME}
+      test: false
+      triggers:
+        - imageChangeParams:
+            automatic: true
+            containerNames:
+              - app
+            from:
+              kind: ImageStreamTag
+              name: ${NAME}:${VERSION}
+          type: ImageChange
+        - type: ConfigChange
+
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      annotations: null
+      labels: {}
+      name: ${NAME}
+    spec:
+      ports:
+        - name: ${NAME}-${APP_PORT_DEFAULT_NAME}
+          port: ${{APP_PORT_DEFAULT}}
+          protocol: TCP
+          targetPort: ${{APP_PORT_DEFAULT}}
+      selector:
+        deploymentconfig: ${NAME}
+      sessionAffinity: None
+      type: ClusterIP
+
+  - kind: Route
+    apiVersion: route.openshift.io/v1
+    metadata:
+      annotations: {}
+      labels: {}
+      name: ${NAME}
+    spec:
+      host: ${HOST}
+      tls:
+        insecureEdgeTerminationPolicy: Redirect
+        termination: edge
+      port:
+        targetPort: ${NAME}-${APP_PORT_DEFAULT_NAME}
+      to:
+        kind: Service
+        name: ${NAME}
+        weight: 100
+      wildcardPolicy: None
+
+  - kind: HorizontalPodAutoscaler
+    apiVersion: autoscaling/v2
+    metadata:
+      annotations: {}
+      labels: {}
+      name: ${NAME}
+    spec:
+      minReplicas: ${{REPLICAS}}
+      maxReplicas: ${{REPLICAS_MAX}}
+      scaleTargetRef:
+        apiVersion: apps.openshift.io/v1
+        kind: DeploymentConfig
+        name: ${NAME}
+      metrics:
+        - type: Resource
+          resource:
+            name: cpu
+            target:
+              type: Utilization
+              averageUtilization: 80

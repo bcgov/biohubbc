@@ -1,32 +1,59 @@
 'use strict';
 
-let options = require('pipeline-cli').Util.parseArguments();
+const { PipelineConfigMapSchema } = require('./utils/configMapSchema');
+const PipelineCli = require('pipeline-cli');
 
-// The root config for common values
-const config = require('../../.config/config.json');
+// Options passed in from the git action
+const rawOptions = PipelineCli.Util.parseArguments();
 
-const name = config.module.app;
-const apiName = config.module.api;
+// Pull-request number or branch name
+const changeId = rawOptions.pr;
 
-const version = config.version;
-
-const changeId = options.pr; // pull-request number or branch name
+// Pipeline config map from openshift
+const rawPipelineConfigMap = rawOptions.config;
+// Validate the pipeline config map is not missing any fields
+const pipelineConfigMap = PipelineConfigMapSchema.parse(JSON.parse(rawPipelineConfigMap));
 
 // A static deployment is when the deployment is updating dev, test, or prod (rather than a temporary PR)
 // See `--type=static` in the `deployStatic.yml` git workflow
-const isStaticDeployment = options.type === 'static';
+const isStaticDeployment = rawOptions.type === 'static';
 
-const deployChangeId = (isStaticDeployment && 'deploy') || changeId;
-const branch = (isStaticDeployment && options.branch) || null;
-const tag = (branch && `build-${version}-${changeId}-${branch}`) || `build-${version}-${changeId}`;
+// const deployChangeId = (isStaticDeployment && 'deploy') || changeId;
+const branch = (isStaticDeployment && rawOptions.branch) || null;
+const tag =
+  (branch && `build-${pipelineConfigMap.version}-${changeId}-${branch}`) ||
+  `build-${pipelineConfigMap.version}-${changeId}`;
 
-const staticUrls = config.staticUrls || {};
-const staticUrlsAPI = config.staticUrlsAPI || {};
+// const maxUploadNumFiles = 10;
+// const maxUploadFileSize = 52428800; // (bytes)
 
-const maxUploadNumFiles = 10;
-const maxUploadFileSize = 52428800; // (bytes)
-
-const processOptions = (options) => {
+/**
+ * Parses the npm cli command options and the git action context.
+ *
+ * @param {*} options
+ * @return {{
+ *   git: {
+ *     dir: '<string>',
+ *     branch: {
+ *       name: '<string>',
+ *       remote: '<string>',
+ *       merge: '<string>'
+ *     },
+ *     url: 'https://github.com/bcgov/biohubbc.git',
+ *     uri: 'https://github.com/bcgov/biohubbc',
+ *     http_url: 'https://github.com/bcgov/biohubbc.git',
+ *     owner: 'bcgov',
+ *     repository: 'biohubbc',
+ *     pull_request: '<pr_number>',
+ *     ref: '<string>',
+ *     branch_ref: '<string>'
+ *   },
+ *   pr: '<pr_number>',
+ *   config: {}, // JSON config map
+ *   type?: 'static'
+ * }}
+ */
+function processOptions(options) {
   const result = { ...options };
 
   // Check git
@@ -46,99 +73,132 @@ const processOptions = (options) => {
   }
 
   return result;
-};
+}
 
-options = processOptions(options);
+const options = processOptions(rawOptions);
 
 const phases = {
   build: {
+    ...pipelineConfigMap.app.build,
     namespace: 'af2668-tools',
-    name: `${name}`,
+    name: pipelineConfigMap.module.app,
     phase: 'build',
     changeId: changeId,
     suffix: `-build-${changeId}`,
-    instance: `${name}-build-${changeId}`,
-    version: `${version}-${changeId}`,
+    instance: `${pipelineConfigMap.module.app}-build-${changeId}`,
+    version: `${pipelineConfigMap.version}-${changeId}`,
     tag: tag,
-    branch: branch,
-    cpuRequest: '50m',
-    cpuLimit: '2000m',
-    memoryRequest: '100Mi',
-    memoryLimit: '6Gi'
+    branch: branch
+    // cpuRequest: '50m',
+    // cpuLimit: '1000m',
+    // memoryRequest: '100Mi',
+    // memoryLimit: '5Gi'
+  },
+  pr: {
+    ...pipelineConfigMap.app.deploy.pr,
+    namespace: 'af2668-dev',
+    name: pipelineConfigMap.module.app,
+    phase: 'dev',
+    changeId: changeId,
+    suffix: `-dev-${changeId}`,
+    instance: `${pipelineConfigMap.module.app}-dev-${changeId}`,
+    version: `${changeId}-${changeId}`,
+    tag: `dev-${pipelineConfigMap.version}-${changeId}`,
+    host: `${pipelineConfigMap.module.app}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
+    apiHost: `${pipelineConfigMap.module.api}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
+    // siteminderLogoutURL: pipelineConfigMap.siteminderLogoutURL.dev,
+    // maxUploadNumFiles,
+    // maxUploadFileSize,
+    env: 'dev',
+    sso: pipelineConfigMap.sso.dev
+    // cpuRequest: '50m',
+    // cpuLimit: '200m',
+    // memoryRequest: '100Mi',
+    // memoryLimit: '333Mi',
+    // replicas: (isStaticDeployment && '1') || '1',
+    // replicasMax: (isStaticDeployment && '2') || '1'
   },
   dev: {
+    ...pipelineConfigMap.app.deploy.dev,
     namespace: 'af2668-dev',
-    name: `${name}`,
+    name: pipelineConfigMap.module.app,
     phase: 'dev',
-    changeId: deployChangeId,
-    suffix: `-dev-${deployChangeId}`,
-    instance: `${name}-dev-${deployChangeId}`,
-    version: `${deployChangeId}-${changeId}`,
-    tag: `dev-${version}-${deployChangeId}`,
-    host: (isStaticDeployment && staticUrls.dev) || `${name}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
-    apiHost:
-      (isStaticDeployment && staticUrlsAPI.dev) || `${apiName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
-    siteminderLogoutURL: config.siteminderLogoutURL.dev,
-    maxUploadNumFiles,
-    maxUploadFileSize,
+    changeId: 'deploy',
+    suffix: '-dev-deploy',
+    instance: `${pipelineConfigMap.module.app}-dev-deploy`,
+    version: `deploy-${changeId}`,
+    tag: `dev-${pipelineConfigMap.version}-deploy`,
+    host: pipelineConfigMap.app.deploy.dev.staticAppUrl,
+    apiHost: pipelineConfigMap.app.deploy.dev.staticApiUrl,
+    // siteminderLogoutURL: pipelineConfigMap.siteminderLogoutURL.dev,
+    // maxUploadNumFiles,
+    // maxUploadFileSize,
     nodeEnv: 'development',
-    sso: config.sso.dev,
-    cpuRequest: '50m',
-    cpuLimit: '300m',
-    memoryRequest: '100Mi',
-    memoryLimit: '500Mi',
-    replicas: (isStaticDeployment && '1') || '1',
-    replicasMax: (isStaticDeployment && '2') || '1',
+    sso: pipelineConfigMap.sso.dev
+    // cpuRequest: '50m',
+    // cpuLimit: '200m',
+    // memoryRequest: '100Mi',
+    // memoryLimit: '333Mi',
+    // replicas: (isStaticDeployment && '1') || '1',
+    // replicasMax: (isStaticDeployment && '2') || '1',
     biohubFeatureFlag: 'true'
   },
   test: {
+    ...pipelineConfigMap.app.deploy.test,
     namespace: 'af2668-test',
-    name: `${name}`,
+    name: pipelineConfigMap.module.app,
     phase: 'test',
-    changeId: deployChangeId,
+    changeId: 'deploy',
     suffix: `-test`,
-    instance: `${name}-test`,
-    version: `${version}`,
-    tag: `test-${version}`,
-    host: staticUrls.test,
-    apiHost: staticUrlsAPI.test,
-    siteminderLogoutURL: config.siteminderLogoutURL.test,
-    maxUploadNumFiles,
-    maxUploadFileSize,
+    instance: `${pipelineConfigMap.module.app}-test`,
+    version: pipelineConfigMap.version,
+    tag: `test-${pipelineConfigMap.version}`,
+    host: pipelineConfigMap.app.deploy.test.staticAppUrl,
+    apiHost: pipelineConfigMap.app.deploy.test.staticApiUrl,
+    // siteminderLogoutURL: pipelineConfigMap.siteminderLogoutURL.test,
+    // maxUploadNumFiles,
+    // maxUploadFileSize,
     nodeEnv: 'production',
-    sso: config.sso.test,
-    cpuRequest: '50m',
-    cpuLimit: '500m',
-    memoryRequest: '100Mi',
-    memoryLimit: '500Mi',
-    replicas: '2',
-    replicasMax: '3',
+    sso: pipelineConfigMap.sso.test
+    // cpuRequest: '50m',
+    // cpuLimit: '500m',
+    // memoryRequest: '100Mi',
+    // memoryLimit: '500Mi',
+    // replicas: '2',
+    // replicasMax: '3',
     biohubFeatureFlag: 'false'
   },
   prod: {
+    ...pipelineConfigMap.app.deploy.prod,
     namespace: 'af2668-prod',
-    name: `${name}`,
+    name: pipelineConfigMap.module.app,
     phase: 'prod',
-    changeId: deployChangeId,
+    changeId: 'deploy',
     suffix: `-prod`,
-    instance: `${name}-prod`,
-    version: `${version}`,
-    tag: `prod-${version}`,
-    host: staticUrls.prod,
-    apiHost: staticUrlsAPI.prod,
-    siteminderLogoutURL: config.siteminderLogoutURL.prod,
-    maxUploadNumFiles,
-    maxUploadFileSize,
+    instance: `${pipelineConfigMap.module.app}-prod`,
+    version: pipelineConfigMap.version,
+    tag: `prod-${pipelineConfigMap.version}`,
+    host: pipelineConfigMap.app.deploy.prod.staticAppUrl,
+    apiHost: pipelineConfigMap.app.deploy.prod.staticApiUrl,
+    // siteminderLogoutURL: pipelineConfigMap.siteminderLogoutURL.prod,
+    // maxUploadNumFiles,
+    // maxUploadFileSize,
     nodeEnv: 'production',
-    sso: config.sso.prod,
-    cpuRequest: '50m',
-    cpuLimit: '500m',
-    memoryRequest: '100Mi',
-    memoryLimit: '500Mi',
-    replicas: '2',
-    replicasMax: '3',
+    sso: pipelineConfigMap.sso.prod
+    // cpuRequest: '50m',
+    // cpuLimit: '500m',
+    // memoryRequest: '100Mi',
+    // memoryLimit: '500Mi',
+    // replicas: '2',
+    // replicasMax: '3',
     biohubFeatureFlag: 'false'
   }
 };
+
+console.log('1==============================================');
+console.log('api phases', phases);
+console.log('2==============================================');
+console.log('api options', options);
+console.log('3==============================================');
 
 module.exports = exports = { phases, options };
