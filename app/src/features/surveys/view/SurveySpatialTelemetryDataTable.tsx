@@ -110,7 +110,7 @@ const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTable
         </Stack>
       ) : (
         <StyledDataGrid
-          noRowsMessage={'No Telemetry data sources available'}
+          noRowsMessage={'No telemetry records found'}
           columnHeaderHeight={RowHeight}
           rowHeight={RowHeight}
           rows={tableData}
