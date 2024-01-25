@@ -13,6 +13,10 @@ const apiBuild = (settings) => {
   const options = settings.options;
   const phase = settings.options.env;
 
+  console.log('4==============================================');
+  console.log('api phases', phases);
+  console.log('5==============================================');
+
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
 
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../templates'));

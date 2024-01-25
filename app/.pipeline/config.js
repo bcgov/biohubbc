@@ -109,14 +109,15 @@ const phases = {
     // siteminderLogoutURL: pipelineConfigMap.siteminderLogoutURL.dev,
     // maxUploadNumFiles,
     // maxUploadFileSize,
-    env: 'dev',
-    sso: pipelineConfigMap.sso.dev
+    // env: 'dev',
+    sso: pipelineConfigMap.sso.dev,
     // cpuRequest: '50m',
     // cpuLimit: '200m',
     // memoryRequest: '100Mi',
     // memoryLimit: '333Mi',
     // replicas: (isStaticDeployment && '1') || '1',
     // replicasMax: (isStaticDeployment && '2') || '1'
+    biohubFeatureFlag: 'true'
   },
   dev: {
     ...pipelineConfigMap.app.deploy.dev,
@@ -134,7 +135,7 @@ const phases = {
     // maxUploadNumFiles,
     // maxUploadFileSize,
     nodeEnv: 'development',
-    sso: pipelineConfigMap.sso.dev
+    sso: pipelineConfigMap.sso.dev,
     // cpuRequest: '50m',
     // cpuLimit: '200m',
     // memoryRequest: '100Mi',
@@ -159,7 +160,7 @@ const phases = {
     // maxUploadNumFiles,
     // maxUploadFileSize,
     nodeEnv: 'production',
-    sso: pipelineConfigMap.sso.test
+    sso: pipelineConfigMap.sso.test,
     // cpuRequest: '50m',
     // cpuLimit: '500m',
     // memoryRequest: '100Mi',
@@ -184,7 +185,7 @@ const phases = {
     // maxUploadNumFiles,
     // maxUploadFileSize,
     nodeEnv: 'production',
-    sso: pipelineConfigMap.sso.prod
+    sso: pipelineConfigMap.sso.prod,
     // cpuRequest: '50m',
     // cpuLimit: '500m',
     // memoryRequest: '100Mi',

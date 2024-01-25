@@ -106,7 +106,7 @@ const phases = {
     instance: `${pipelineConfigMap.module.db}-dev-${deployChangeId}`,
     version: `${deployChangeId}-${changeId}`,
     tag: `dev-${pipelineConfigMap.version}-${deployChangeId}`,
-    env: 'dev',
+    // env: 'dev',
     // tz: pipelineConfigMap.tz.db,
     dbSetupDockerfilePath: dbSetupDockerfilePath
     // volumeCapacity: (isStaticDeployment && '3Gi') || '500Mi',

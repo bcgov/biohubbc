@@ -111,7 +111,7 @@ const phases = {
     // backboneIntakeEnabled: false,
     // bctwApiHost: 'https://moe-bctw-api-dev.apps.silver.devops.gov.bc.ca',
     // critterbaseApiHost: 'https://moe-critterbase-api-dev.apps.silver.devops.gov.bc.ca/api',
-    env: 'dev',
+    // env: 'dev',
     // elasticsearchURL: 'http://es01.a0ec71-dev:9200',
     // elasticsearchTaxonomyIndex: 'taxonomy_3.0.0',
     s3KeyPrefix: `local/${changeId}/sims`,
