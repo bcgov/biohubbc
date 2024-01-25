@@ -191,6 +191,35 @@ GET.apiDoc = {
         minimum: 1
       },
       required: true
+    },
+    {
+      in: 'query',
+      name: 'page',
+      required: true,
+      schema: {
+        type: 'integer',
+        minimum: 1
+      }
+    },
+    {
+      in: 'query',
+      name: 'limit',
+      required: true,
+      schema: {
+        type: 'integer',
+        minimum: 1,
+        maximum: 100,
+      }
+    },
+    {
+      in: 'query',
+      name: 'sort',
+      required: false
+    },
+    {
+      in: 'query',
+      name: 'order',
+      required: false
     }
   ],
   responses: {
@@ -247,33 +276,6 @@ PUT.apiDoc = {
       in: 'path',
       name: 'surveyId',
       required: true
-    },
-    {
-      in: 'query',
-      name: 'page',
-      required: true
-      // TODO how to enforce this?
-      // type: 'integer',
-      // minimum: 1,
-    },
-    {
-      in: 'query',
-      name: 'limit',
-      // TODO how to enforce this?
-      // type: 'integer',
-      // minimum: 1,
-      // maximum: 100,
-      required: true
-    },
-    {
-      in: 'query',
-      name: 'sort',
-      required: false
-    },
-    {
-      in: 'query',
-      name: 'order',
-      required: false
     }
   ],
   requestBody: {

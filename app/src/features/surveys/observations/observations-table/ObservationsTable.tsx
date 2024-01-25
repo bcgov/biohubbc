@@ -536,6 +536,9 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         localeText={{
           noRowsLabel: 'No Records'
         }}
+        initialState={{
+          pagination: { paginationModel: { pageSize: 10 } },
+        }}
         onRowSelectionModelChange={observationsTableContext.onRowSelectionModelChange}
         rowSelectionModel={observationsTableContext.rowSelectionModel}
         getRowHeight={() => 'auto'}

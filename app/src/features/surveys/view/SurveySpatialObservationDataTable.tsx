@@ -34,7 +34,7 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
 
   const [data, setData] = useState<IObservationRecordWithSamplingData[]>([]);
   const [totalRows, setTotalRows] = useState<number>(0);
-  const [page, setPage] = useState<number>(0);
+  const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(5);
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
