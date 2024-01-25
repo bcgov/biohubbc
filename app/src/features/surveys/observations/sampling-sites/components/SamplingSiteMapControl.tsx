@@ -168,8 +168,8 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
                  <FeatureGroup data-id="draw-control-feature-group" key="draw-control-feature-group">
                   <DrawControls
                     options={{
-                      // Always disable circle, circlemarker and line
-                      draw: { circle: false, circlemarker: false, polyline: false, marker: false }
+                      // Always disable circle, circlemarker; enable lines for transect sampling sites
+                      draw: { circle: false, circlemarker: false, marker: false }
                     }}
                     onLayerAdd={(event: DrawEvents.Created) => {
                       const feature = event.layer.toGeoJSON();

@@ -139,7 +139,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
             ref={draw_controls_ref}
             options={{
               // Always disable circle, circlemarker and line
-              draw: { circle: false, circlemarker: false, polyline: false }
+              draw: { circle: false, circlemarker: false, polyline: false, marker: false }
             }}
             onLayerAdd={(event: DrawEvents.Created, id: number) => {
               const feature: Feature = event.layer.toGeoJSON();
