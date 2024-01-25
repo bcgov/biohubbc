@@ -22,13 +22,14 @@ import SampleSiteFileUploadItemProgressBar from 'features/surveys/observations/s
 import SampleSiteFileUploadItemSubtext from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemSubtext';
 import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
-import { LatLngBoundsExpression } from 'leaflet';
+import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
 import get from 'lodash-es/get';
 import { useContext, useEffect, useState } from 'react';
-import { LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
+import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { useParams } from 'react-router';
 import { boundaryUploadHelper, calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { pluralize } from 'utils/Utils';
+import DrawControls from 'components/map/components/DrawControls';
 
 const useStyles = makeStyles(() => ({
   zoomToBoundaryExtentBtn: {
@@ -81,8 +82,8 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
   // Array of sampling site features
   const samplingSiteGeoJsonFeatures: Feature[] = get(values, name);
 
-  useEffect(() => {
-    setUpdatedBounds(calculateUpdatedMapBounds(samplingSiteGeoJsonFeatures));
+  const updateStaticLayers = (geoJsonFeatures: Feature[]) => {
+    setUpdatedBounds(calculateUpdatedMapBounds(geoJsonFeatures));
 
     const staticLayers: IStaticLayer[] = [
       {
@@ -92,6 +93,18 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
     ];
 
     setStaticLayers(staticLayers);
+  }
+
+  const [editedGeometry, setEditedGeometry] = useState<Feature[] | undefined>(undefined)
+
+  useEffect(() => {
+     if (editedGeometry){
+      updateStaticLayers(editedGeometry)
+    }
+  }, [editedGeometry])
+
+  useEffect(() => {
+    updateStaticLayers(samplingSiteGeoJsonFeatures)
   }, [samplingSiteGeoJsonFeatures]);
 
   return (
@@ -153,8 +166,34 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
               zoom={MAP_DEFAULT_ZOOM}
               maxZoom={17}
               fullscreenControl={true}
-              scrollWheelZoom={true}>
+              scrollWheelZoom={false}>
               <MapBaseCss />
+              
+              <FeatureGroup data-id="draw-control-feature-group" key="draw-control-feature-group">
+                  <DrawControls
+                    options={{
+                      // Always disable circle, circlemarker and line
+                      draw: { circle: false, circlemarker: false, polyline: false, marker: false }
+                    }}
+                    onLayerAdd={(event: DrawEvents.Created) => {
+                      const feature = event.layer.toGeoJSON();
+                      console.log(feature)
+                      setFieldValue(name, [feature]);
+                      setEditedGeometry([feature])
+                    }}
+                    onLayerEdit={(event: DrawEvents.Edited) => {
+                      event.layers.getLayers().forEach((layer: any) => {
+                        const feature = layer.toGeoJSON() as Feature;
+                        setFieldValue(name, [feature]);
+                        setEditedGeometry([feature])
+                      });
+                    }}
+                    onLayerDelete={(event: DrawEvents.Deleted) => {
+                      setFieldValue(name, sampleSiteData?.geojson ? [sampleSiteData?.geojson] : [])
+                    }}
+                  />
+                </FeatureGroup>
+              
               <LayersControl position="bottomright">
                 <FullScreenScrollingEventHandler bounds={updatedBounds} scrollWheelZoom={false} />
                 <SetMapBounds bounds={updatedBounds} />
