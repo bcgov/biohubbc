@@ -34,7 +34,7 @@ const FocalSpeciesComponent: React.FC = () => {
   return (
     <>
       <SpeciesAutocompleteField
-        formikFieldName={'species.focal_species_object'}
+        formikFieldName={'species.focal_species'}
         label={'Focal Species'}
         required={true}
         handleAddSpecies={handleAddSpecies}

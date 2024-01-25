@@ -38,7 +38,6 @@ import { SurveyBlockService } from './survey-block-service';
 import { SurveyLocationService } from './survey-location-service';
 import { SurveyParticipationService } from './survey-participation-service';
 import { SurveyService } from './survey-service';
-import { TaxonomyService } from './taxonomy-service';
 
 chai.use(sinonChai);
 
@@ -381,17 +380,18 @@ describe('SurveyService', () => {
 
       const repoStub = sinon.stub(SurveyRepository.prototype, 'getSpeciesData').resolves([data]);
 
-      const serviceStub1 = sinon
-        .stub(TaxonomyService.prototype, 'getSpeciesFromIds')
-        .resolves([{ id: '1', label: 'string' }]);
-
       const response = await service.getSpeciesData(1);
 
       expect(repoStub).to.be.calledOnce;
-      expect(serviceStub1).to.be.calledTwice;
       expect(response).to.eql({
-        ...new GetFocalSpeciesData([{ id: '1', label: 'string' }]),
-        ...new GetAncillarySpeciesData([{ id: '1', label: 'string' }])
+        ...new GetFocalSpeciesData([]),
+        ...new GetAncillarySpeciesData([
+          {
+            id: '6',
+            label: 'Species 6',
+            scientificName: 'Scientific Name 6'
+          }
+        ])
       });
     });
   });
@@ -1482,14 +1482,14 @@ describe('getPartnershipsData', () => {
   it('returns the first row on success', async () => {
     const dbConnection = getMockDBConnection();
     const service = new ProjectService(dbConnection);
-    
+
     const data = new GetPartnershipsData([{ id: 1 }], [{ id: 1 }]);
-    
+
     const repoStub1 = sinon.stub(ProjectRepository.prototype, 'getIndigenousPartnershipsRows').resolves([{ id: 1 }]);
     const repoStub2 = sinon.stub(ProjectRepository.prototype, 'getStakeholderPartnershipsRows').resolves([{ id: 1 }]);
-    
+
     const response = await service.getPartnershipsData(1);
-    
+
     expect(repoStub1).to.be.calledOnce;
     expect(repoStub2).to.be.calledOnce;
     expect(response).to.eql(data);

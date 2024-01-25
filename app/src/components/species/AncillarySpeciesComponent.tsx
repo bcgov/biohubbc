@@ -34,7 +34,7 @@ const AncillarySpeciesComponent: React.FC = () => {
   return (
     <>
       <SpeciesAutocompleteField
-        formikFieldName={'species.ancillary_species_object'}
+        formikFieldName={'species.ancillary_species'}
         label={'Ancillary Species'}
         required={false}
         handleAddSpecies={handleAddSpecies}

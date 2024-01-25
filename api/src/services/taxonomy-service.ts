@@ -26,7 +26,7 @@ export interface ITaxonomySource {
   parent_hierarchy: { id: number; level: string }[];
 }
 
-export interface IItisSearchResult {
+export interface IItisSearchResponse {
   commonNames: string[];
   kingdom: string;
   name: string;
@@ -35,6 +35,12 @@ export interface IItisSearchResult {
   tsn: string;
   updateDate: string;
   usage: string;
+}
+
+export interface IItisSearchResult {
+  id: string;
+  label: string;
+  scientificName: string;
 }
 
 export interface IEnrichedTaxonomyData {
@@ -77,10 +83,10 @@ export class TaxonomyService extends ESService {
    * Returns the ITIS search species Query.
    *
    * @param {*} searchRequest
-   * @return {*}  {(Promise<any | undefined>)}
+   * @return {*}  {(Promise<IItisSearchResult[] | undefined>)}
    * @memberof TaxonomyService
    */
-  async itisSearch(searchRequest: any): Promise<any | undefined> {
+  async itisSearch(searchRequest: string): Promise<IItisSearchResult[] | undefined> {
     try {
       const itisClient = await this.getItisSearchUrl(searchRequest);
 
@@ -90,16 +96,14 @@ export class TaxonomyService extends ESService {
         return [];
       }
 
-      const taxonomySpecies = this._sanitizeItisData(response.data.response.docs);
-
-      return taxonomySpecies;
+      return this._sanitizeItisData(response.data.response.docs);
     } catch (error) {
       defaultLog.debug({ label: 'itisSearch', message: 'error', error });
     }
   }
 
-  _sanitizeItisData = (data: IItisSearchResult[]): { id: string; label: string; scientificName: string }[] => {
-    return data.map((item: IItisSearchResult) => {
+  _sanitizeItisData = (data: IItisSearchResponse[]): IItisSearchResult[] => {
+    return data.map((item: IItisSearchResponse) => {
       const commonName = (item.commonNames && item.commonNames[0].split('$')[1]) || item.scientificName;
 
       return {
@@ -110,32 +114,30 @@ export class TaxonomyService extends ESService {
     });
   };
 
-  _getFocalSpeciesFromBiohub = async (
-    ids: string[] | number[]
-  ): Promise<{ id: number; label: string; scientificName: string }[]> => {
+  _getFocalSpeciesFromBiohub = async (ids: string[] | number[]): Promise<IItisSearchResult[]> => {
     const speciesDummyData = [
       {
-        id: 1,
+        id: '1',
         label: 'Species 1',
         scientificName: 'Scientific Name 1'
       },
       {
-        id: 2,
+        id: '2',
         label: 'Species 2',
         scientificName: 'Scientific Name 2'
       },
       {
-        id: 3,
+        id: '3',
         label: 'Species 3',
         scientificName: 'Scientific Name 3'
       },
       {
-        id: 4,
+        id: '4',
         label: 'Species 4',
         scientificName: 'Scientific Name 4'
       },
       {
-        id: 5,
+        id: '5',
         label: 'Species 5',
         scientificName: 'Scientific Name 5'
       }
@@ -148,28 +150,26 @@ export class TaxonomyService extends ESService {
     return sliceSpecies;
   };
 
-  _getAncillarySpeciesFromBiohub = async (
-    ids: string[] | number[]
-  ): Promise<{ id: number; label: string; scientificName: string }[]> => {
+  _getAncillarySpeciesFromBiohub = async (ids: string[] | number[]): Promise<IItisSearchResult[]> => {
     const speciesDummyData = [
-      { id: 6, label: 'Species 6', scientificName: 'Scientific Name 6' },
+      { id: '6', label: 'Species 6', scientificName: 'Scientific Name 6' },
       {
-        id: 7,
+        id: '7',
         label: 'Species 7',
         scientificName: 'Scientific Name 7'
       },
       {
-        id: 8,
+        id: '8',
         label: 'Species 8',
         scientificName: 'Scientific Name 8'
       },
       {
-        id: 9,
+        id: '9',
         label: 'Species 9',
         scientificName: 'Scientific Name 9'
       },
       {
-        id: 10,
+        id: '10',
         label: 'Species 10',
         scientificName: 'Scientific Name 10'
       }
