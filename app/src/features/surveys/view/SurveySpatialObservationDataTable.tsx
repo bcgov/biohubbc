@@ -3,40 +3,36 @@ import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import { GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { CodesContext } from 'contexts/codesContext';
-import { IObservationRecord } from 'contexts/observationsTableContext';
+import { IObservationRecordWithSamplingData } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TaxonomyContext } from 'contexts/taxonomyContext';
 import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { IGetSampleLocationRecord } from 'interfaces/useSurveyApi.interface';
-import { useContext, useEffect, useMemo, useState } from 'react';
-import { getCodesName } from 'utils/Utils';
+import { useContext, useEffect, useState } from 'react';
 
 interface IObservationTableRow {
-  id: number;
+  survey_observation_id: number;
   itis_scientific_name: string | undefined;
+  wldtaxonomic_units_id: number;
   count: number | null;
-  sample_name: string | undefined;
-  sample_method: string | undefined;
-  sample_period: string | undefined;
-  date: string | undefined;
-  time: string | undefined;
+  survey_sample_site_name: string | null;
+  survey_sample_method_name: string | null;
+  survey_sample_period_start_datetime: string | null;
+  observation_date: Date;
+  observation_time: string;
   latitude: number | null;
   longitude: number | null;
 }
 interface ISurveySpatialObservationDataTableProps {
-  sample_sites: IGetSampleLocationRecord[];
   isLoading: boolean;
 }
 const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataTableProps) => {
   const biohubApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
-  const codesContext = useContext(CodesContext);
   const taxonomyContext = useContext(TaxonomyContext);
 
-  const [data, setData] = useState<IObservationRecord[]>([]);
+  const [data, setData] = useState<IObservationRecordWithSamplingData[]>([]);
   const [totalRows, setTotalRows] = useState<number>(0);
   const [page, setPage] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(5);
@@ -70,42 +66,17 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
     }
   }, [paginatedDataLoader.data]);
 
-  const sampleSites = useMemo(() => {
-    return surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
-  }, [surveyContext.sampleSiteDataLoader.data]);
-
-  const sampleMethods = useMemo(() => {
-    return surveyContext.sampleSiteDataLoader.data?.sampleSites.flatMap((item) => item.sample_methods) || [];
-  }, [surveyContext.sampleSiteDataLoader.data]);
-
-  const samplePeriods = useMemo(() => {
-    return (
-      surveyContext.sampleSiteDataLoader.data?.sampleSites.flatMap((item) =>
-        item.sample_methods?.flatMap((method) => method.sample_periods)
-      ) || []
-    );
-  }, [surveyContext.sampleSiteDataLoader.data]);
-
   const tableData: IObservationTableRow[] = data.map((item) => {
-    const siteName = sampleSites.find((site) => site.survey_sample_site_id === item.survey_sample_site_id)?.name;
-    const method_id = sampleMethods.find(
-      (method) => method?.survey_sample_method_id === item.survey_sample_method_id
-    )?.method_lookup_id;
-    const period = samplePeriods.find((period) => period?.survey_sample_period_id === item.survey_sample_period_id);
-    let periodString = '';
-    if (period) {
-      periodString = `${period.start_date} ${period.start_time ?? ''} - ${period.end_date} ${period.end_time ?? ''}`;
-    }
-
     return {
-      id: item.survey_observation_id,
+      survey_observation_id: item.survey_observation_id,
       itis_scientific_name: taxonomyContext.getCachedSpeciesTaxonomyById(item.wldtaxonomic_units_id)?.label,
+      wldtaxonomic_units_id: item.wldtaxonomic_units_id,
       count: item.count,
-      sample_name: siteName,
-      sample_method: method_id ? getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method_id) : '',
-      sample_period: periodString,
-      date: dayjs(item.observation_date).format('YYYY-MM-DD'),
-      time: dayjs(item.observation_date).format('HH:mm:ss'),
+      survey_sample_site_name: item.survey_sample_site_name,
+      survey_sample_method_name: item.survey_sample_method_name,
+      survey_sample_period_start_datetime: item.survey_sample_period_start_datetime,
+      observation_date: dayjs(item.observation_date).toDate(),
+      observation_time: dayjs(item.observation_date).format('HH:mm:ss'),
       latitude: item.latitude,
       longitude: item.longitude
     };
@@ -119,19 +90,19 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
       minWidth: 200
     },
     {
-      field: 'sample_site',
+      field: 'survey_sample_site_name',
       headerName: 'Sample Site',
       flex: 1,
       minWidth: 200
     },
     {
-      field: 'sample_method',
+      field: 'survey_sample_method_name',
       headerName: 'Sample Method',
       flex: 1,
       minWidth: 200
     },
     {
-      field: 'sample_period',
+      field: 'survey_sample_period_start_datetime',
       headerName: 'Sample Period',
       flex: 1,
       minWidth: 200
@@ -144,12 +115,12 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
       maxWidth: 100
     },
     {
-      field: 'date',
+      field: 'observation_date',
       headerName: 'Date',
       maxWidth: 120
     },
     {
-      field: 'time',
+      field: 'observation_time',
       headerName: 'Time',
       headerAlign: 'right',
       align: 'right',
@@ -234,7 +205,7 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
           sortModel={sortModel}
           onSortModelChange={(model) => setSortModel(model)}
           loading={paginatedDataLoader.isLoading}
-          getRowId={(row) => row.id}
+          getRowId={(row) => row.survey_observation_id}
           columns={columns}
           rowSelection={false}
           checkboxSelection={false}

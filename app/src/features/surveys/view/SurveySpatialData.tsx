@@ -175,10 +175,7 @@ const SurveySpatialData = () => {
       </Box>
       <Box py={1} px={2} position="relative">
         {currentTab === SurveySpatialDataSet.OBSERVATIONS && (
-          <SurveySpatialObservationDataTable
-            sample_sites={surveyContext.sampleSiteDataLoader.data?.sampleSites || []}
-            isLoading={isLoading()}
-          />
+          <SurveySpatialObservationDataTable isLoading={isLoading()} />
         )}
 
         {currentTab === SurveySpatialDataSet.TELEMETRY && <SurveySpatialTelemetryDataTable isLoading={isLoading()} />}
