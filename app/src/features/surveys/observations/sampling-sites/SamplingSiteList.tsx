@@ -345,9 +345,10 @@ const SamplingSiteList = () => {
                 <Divider flexItem></Divider>
                 <Box
                   flex="1 1 auto"
-                  overflow="hidden"
+                
                   sx={{
-                    background: grey[100]
+                    background: grey[100],
+                    overflowY: "scroll"
                   }}>
                   {/* Display text if the sample site data loader has no items in it */}
                   {!surveyContext.sampleSiteDataLoader.data?.sampleSites.length && (
@@ -364,7 +365,7 @@ const SamplingSiteList = () => {
                       right={0}
                       left={0}
                       bottom={0}
-                      height="100%">
+                      height="100%" >
                       <Typography variant="body2">No Sampling Sites</Typography>
                     </Stack>
                   )}
