@@ -1,0 +1,141 @@
+import { mdiMagnify } from '@mdi/js';
+import Icon from '@mdi/react';
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import SpeciesCard from 'components/species/components/SpeciesCard';
+import { useFormikContext } from 'formik';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { ITaxonomy } from 'interfaces/useTaxonomy.interface';
+import { debounce } from 'lodash-es';
+import { default as React, useEffect, useMemo, useState } from 'react';
+
+export interface ISpeciesAutocompleteFieldProps {
+  formikFieldName: string;
+  label: string;
+  required?: boolean;
+  handleAddSpecies: (species: ISpeciesAutocompleteField) => void;
+}
+
+export type ISpeciesAutocompleteField = {
+  id: number;
+  label: string;
+  scientificName: string;
+};
+
+const SpeciesAutocompleteField: React.FC<ISpeciesAutocompleteFieldProps> = (props) => {
+  const { formikFieldName, label, required, handleAddSpecies } = props;
+
+  const biohubApi = useBiohubApi();
+
+  const { values } = useFormikContext<ISpeciesAutocompleteField[]>();
+
+  const [inputValue, setInputValue] = useState('');
+  const [options, setOptions] = useState<ISpeciesAutocompleteField[]>([]);
+
+  const convertSearchResponseToOptions = (searchResponse: ITaxonomy[]) => {
+    return searchResponse.map((item: ITaxonomy) => {
+      return {
+        id: Number(item.id),
+        label: item.label,
+        scientificName: item.scientificName
+      } as ISpeciesAutocompleteField;
+    });
+  };
+
+  const handleSearch = useMemo(
+    () =>
+      debounce(async (inputValue: string, callback: (searchedValues: ISpeciesAutocompleteField[]) => void) => {
+        const response = await biohubApi.taxonomy.searchSpeciesItis(inputValue);
+
+        const newOptions = convertSearchResponseToOptions(response.searchResponse);
+
+        callback(newOptions);
+      }, 500),
+    [biohubApi.taxonomy]
+  );
+
+  const searchSpecies = async () => {
+    if (!inputValue) {
+      setOptions([]);
+      handleSearch.cancel();
+    } else {
+      handleSearch(inputValue, (newOptions) => {
+        if (newOptions.length) {
+          setOptions(newOptions);
+        }
+      });
+    }
+  };
+
+  useEffect(() => {
+    searchSpecies();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inputValue]);
+
+  return (
+    <Autocomplete
+      id={props.formikFieldName}
+      data-testid={props.formikFieldName}
+      filterSelectedOptions
+      noOptionsText="No matching options"
+      options={options}
+      getOptionLabel={(option) => option.label}
+      isOptionEqualToValue={(option, value) => {
+        return option.id === value.id;
+      }}
+      filterOptions={(options, state) => {
+        const searchFilter = createFilterOptions<ISpeciesAutocompleteField>({ ignoreCase: true });
+        if (!values?.length) {
+          return options;
+        }
+
+        const unselectedOptions = options.filter((item) => {
+          return !values.some((existing) => existing.id === item.id);
+        });
+        return searchFilter(unselectedOptions, state);
+      }}
+      inputValue={inputValue}
+      onInputChange={(_, value, reason) => {
+        if (reason === 'reset') {
+          setInputValue('');
+        } else {
+          setInputValue(value);
+        }
+      }}
+      onChange={(_, option) => {
+        if (option) {
+          handleAddSpecies(option);
+        }
+      }}
+      renderOption={(renderProps, renderOption) => {
+        return (
+          <Box component="li" {...renderProps} key={renderOption.id}>
+            <SpeciesCard name={renderOption.label} subtext={renderOption.scientificName} />
+          </Box>
+        );
+      }}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          name={formikFieldName}
+          required={required}
+          label={label}
+          variant="outlined"
+          fullWidth
+          placeholder="Type to start searching"
+          InputProps={{
+            ...params.InputProps,
+            startAdornment: (
+              <Box mx={1} mt="6px">
+                <Icon path={mdiMagnify} size={1}></Icon>
+              </Box>
+            )
+          }}
+        />
+      )}
+    />
+  );
+};
+
+export default SpeciesAutocompleteField;

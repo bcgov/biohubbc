@@ -75,15 +75,18 @@ export class GetSurveyFundingSourceData {
 export class GetFocalSpeciesData {
   focal_species: number[];
   focal_species_names: string[];
+  focal_species_object: { id: number; label: string; scientificName: string }[];
 
   constructor(obj?: any[]) {
     this.focal_species = [];
     this.focal_species_names = [];
+    this.focal_species_object = [];
 
     obj?.length &&
       obj.forEach((item: any) => {
         this.focal_species.push(Number(item.id));
         this.focal_species_names.push(item.label);
+        this.focal_species_object.push(item);
       });
   }
 }
@@ -91,15 +94,18 @@ export class GetFocalSpeciesData {
 export class GetAncillarySpeciesData {
   ancillary_species: number[];
   ancillary_species_names: string[];
+  ancillary_species_object: { id: number; label: string; scientificName: string }[];
 
   constructor(obj?: any[]) {
     this.ancillary_species = [];
     this.ancillary_species_names = [];
+    this.ancillary_species_object = [];
 
     obj?.length &&
       obj.forEach((item: any) => {
         this.ancillary_species.push(Number(item.id));
         this.ancillary_species_names.push(item.label);
+        this.ancillary_species_object.push(item);
       });
   }
 }

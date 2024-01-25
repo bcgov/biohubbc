@@ -115,7 +115,14 @@ GET.apiDoc = {
                   species: {
                     description: 'Survey Species',
                     type: 'object',
-                    required: ['focal_species', 'focal_species_names', 'ancillary_species', 'ancillary_species_names'],
+                    required: [
+                      'focal_species',
+                      'focal_species_names',
+                      'focal_species_object',
+                      'ancillary_species',
+                      'ancillary_species_names',
+                      'ancillary_species_object'
+                    ],
                     properties: {
                       ancillary_species: {
                         nullable: true,
@@ -131,6 +138,25 @@ GET.apiDoc = {
                           type: 'string'
                         }
                       },
+                      ancillary_species_object: {
+                        nullable: true,
+                        type: 'array',
+                        items: {
+                          type: 'object',
+                          required: ['id', 'label', 'scientificName'],
+                          properties: {
+                            id: {
+                              type: 'number'
+                            },
+                            label: {
+                              type: 'string'
+                            },
+                            scientificName: {
+                              type: 'string'
+                            }
+                          }
+                        }
+                      },
                       focal_species: {
                         type: 'array',
                         items: {
@@ -141,6 +167,24 @@ GET.apiDoc = {
                         type: 'array',
                         items: {
                           type: 'string'
+                        }
+                      },
+                      focal_species_object: {
+                        type: 'array',
+                        items: {
+                          type: 'object',
+                          required: ['id', 'label', 'scientificName'],
+                          properties: {
+                            id: {
+                              type: 'number'
+                            },
+                            label: {
+                              type: 'string'
+                            },
+                            scientificName: {
+                              type: 'string'
+                            }
+                          }
                         }
                       }
                     }

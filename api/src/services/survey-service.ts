@@ -181,8 +181,8 @@ export class SurveyService extends DBService {
 
     const taxonomyService = new TaxonomyService();
 
-    const focalSpecies = await taxonomyService.getSpeciesFromIds(focalSpeciesIds);
-    const ancillarySpecies = await taxonomyService.getSpeciesFromIds(ancillarySpeciesIds);
+    const focalSpecies = await taxonomyService._getFocalSpeciesFromBiohub(focalSpeciesIds);
+    const ancillarySpecies = await taxonomyService._getAncillarySpeciesFromBiohub(ancillarySpeciesIds);
 
     return { ...new GetFocalSpeciesData(focalSpecies), ...new GetAncillarySpeciesData(ancillarySpecies) };
   }

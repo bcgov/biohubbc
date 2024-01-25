@@ -4,8 +4,10 @@ import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteField';
 import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
-import SpeciesAutocompleteField from 'components/fields/SpeciesAutocompleteField';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
+import AncillarySpeciesComponent from 'components/species/AncillarySpeciesComponent';
+import { ISpeciesAutocompleteField } from 'components/species/components/SpeciesAutocompleteField';
+import FocalSpeciesComponent from 'components/species/FocalSpeciesComponent';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { useFormikContext } from 'formik';
 import React from 'react';
@@ -39,8 +41,8 @@ export interface IGeneralInformationForm {
     survey_types: number[];
   };
   species: {
-    focal_species: number[];
-    ancillary_species: number[];
+    focal_species: ISpeciesAutocompleteField[];
+    ancillary_species: ISpeciesAutocompleteField[];
   };
   permit: {
     permits: {
@@ -151,14 +153,10 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         </Typography>
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            <SpeciesAutocompleteField formikFieldName="species.focal_species" label="Focal Species" required={true} />
+            <FocalSpeciesComponent />
           </Grid>
           <Grid item xs={12}>
-            <SpeciesAutocompleteField
-              formikFieldName="species.ancillary_species"
-              label="Ancillary Species"
-              required={false}
-            />
+            <AncillarySpeciesComponent />
           </Grid>
         </Grid>
       </Box>

@@ -2,7 +2,7 @@ import { mdiClose } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, IconButton, Paper } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import { ISpeciesAutocompleteField } from 'components/fields/SpeciesAutocompleteField';
+import { ISpeciesAutocompleteField } from 'components/species/components/SpeciesAutocompleteField';
 import SpeciesCard from './SpeciesCard';
 
 interface ISpeciesSelectedCardProps {

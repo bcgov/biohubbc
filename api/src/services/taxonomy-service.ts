@@ -110,6 +110,78 @@ export class TaxonomyService extends ESService {
     });
   };
 
+  _getFocalSpeciesFromBiohub = async (
+    ids: string[] | number[]
+  ): Promise<{ id: number; label: string; scientificName: string }[]> => {
+    const speciesDummyData = [
+      {
+        id: 1,
+        label: 'Species 1',
+        scientificName: 'Scientific Name 1'
+      },
+      {
+        id: 2,
+        label: 'Species 2',
+        scientificName: 'Scientific Name 2'
+      },
+      {
+        id: 3,
+        label: 'Species 3',
+        scientificName: 'Scientific Name 3'
+      },
+      {
+        id: 4,
+        label: 'Species 4',
+        scientificName: 'Scientific Name 4'
+      },
+      {
+        id: 5,
+        label: 'Species 5',
+        scientificName: 'Scientific Name 5'
+      }
+    ];
+
+    const idsLength = ids.length;
+
+    const sliceSpecies = speciesDummyData.slice(0, idsLength);
+
+    return sliceSpecies;
+  };
+
+  _getAncillarySpeciesFromBiohub = async (
+    ids: string[] | number[]
+  ): Promise<{ id: number; label: string; scientificName: string }[]> => {
+    const speciesDummyData = [
+      { id: 6, label: 'Species 6', scientificName: 'Scientific Name 6' },
+      {
+        id: 7,
+        label: 'Species 7',
+        scientificName: 'Scientific Name 7'
+      },
+      {
+        id: 8,
+        label: 'Species 8',
+        scientificName: 'Scientific Name 8'
+      },
+      {
+        id: 9,
+        label: 'Species 9',
+        scientificName: 'Scientific Name 9'
+      },
+      {
+        id: 10,
+        label: 'Species 10',
+        scientificName: 'Scientific Name 10'
+      }
+    ];
+
+    const idsLength = ids.length;
+
+    const sliceSpecies = speciesDummyData.slice(0, idsLength);
+
+    return sliceSpecies;
+  };
+
   /**
    * Sanitizes species data retrieved from Elasticsearch.
    *
