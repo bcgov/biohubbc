@@ -75,7 +75,7 @@ const options = processOptions(rawOptions);
 
 const phases = {
   build: {
-    ...pipelineConfigMap.api.build.pr,
+    ...pipelineConfigMap.api.build,
     namespace: 'af2668-tools',
     name: pipelineConfigMap.module.api,
     dbName: pipelineConfigMap.module.db,
