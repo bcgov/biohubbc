@@ -33,7 +33,7 @@ const SurveySpatialData = () => {
   useEffect(() => {
     if (surveyContext.deploymentDataLoader.data) {
       const deploymentIds = surveyContext.deploymentDataLoader.data.map((item) => item.deployment_id);
-      telemetryContext.telemetryDataLoader.load(deploymentIds);
+      telemetryContext.telemetryDataLoader.refresh(deploymentIds);
     }
   }, [surveyContext.deploymentDataLoader.data]);
 
@@ -170,10 +170,10 @@ const SurveySpatialData = () => {
         updateLayout={updateLayout}
       />
 
-      <Box height={{ sm: 400, md: 600 }} position="relative">
+      <Box height={{ sm: 300, md: 500 }} position="relative">
         <SurveyMap mapPoints={mapPoints} isLoading={isLoading()} />
       </Box>
-      <Box p={1} position="relative" height={312}>
+      <Box py={1} px={2} position="relative">
         {currentTab === SurveySpatialDataSet.OBSERVATIONS && (
           <SurveySpatialObservationDataTable
             sample_sites={surveyContext.sampleSiteDataLoader.data?.sampleSites || []}

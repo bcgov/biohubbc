@@ -63,6 +63,7 @@ const FundingSourcesTable = (props: IFundingSourcesTableTableProps) => {
 
   return (
     <StyledDataGrid
+      noRowsMessage={'No Funding Sources available'}
       autoHeight
       rows={props.fundingSources}
       getRowId={(row) => `funding-source-${row.funding_source_id}`}

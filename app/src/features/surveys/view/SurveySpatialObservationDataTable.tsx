@@ -16,15 +16,15 @@ import { getCodesName } from 'utils/Utils';
 
 interface IObservationTableRow {
   id: number;
-  taxon: string | undefined;
+  itis_scientific_name: string | undefined;
   count: number | null;
-  site: string | undefined;
-  method: string | undefined;
-  period: string | undefined;
+  sample_name: string | undefined;
+  sample_method: string | undefined;
+  sample_period: string | undefined;
   date: string | undefined;
   time: string | undefined;
-  lat: number | null;
-  long: number | null;
+  latitude: number | null;
+  longitude: number | null;
 }
 interface ISurveySpatialObservationDataTableProps {
   sample_sites: IGetSampleLocationRecord[];
@@ -92,42 +92,46 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
       (method) => method?.survey_sample_method_id === item.survey_sample_method_id
     )?.method_lookup_id;
     const period = samplePeriods.find((period) => period?.survey_sample_period_id === item.survey_sample_period_id);
+    let periodString = '';
+    if (period) {
+      periodString = `${period.start_date} ${period.start_time ?? ''} - ${period.end_date} ${period.end_time ?? ''}`;
+    }
 
     return {
       id: item.survey_observation_id,
-      taxon: taxonomyContext.getCachedSpeciesTaxonomyById(item.wldtaxonomic_units_id)?.label,
+      itis_scientific_name: taxonomyContext.getCachedSpeciesTaxonomyById(item.wldtaxonomic_units_id)?.label,
       count: item.count,
-      site: siteName,
-      method: method_id ? getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method_id) : '',
-      period: `${period?.start_date} ${period?.end_date}`,
+      sample_name: siteName,
+      sample_method: method_id ? getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method_id) : '',
+      sample_period: periodString,
       date: dayjs(item.observation_date).format('YYYY-MM-DD'),
       time: dayjs(item.observation_date).format('HH:mm:ss'),
-      lat: item.latitude,
-      long: item.longitude
+      latitude: item.latitude,
+      longitude: item.longitude
     };
   });
 
   const columns: GridColDef<IObservationTableRow>[] = [
     {
-      field: 'taxon',
+      field: 'itis_scientific_name',
       headerName: 'Species',
       flex: 1,
       minWidth: 200
     },
     {
-      field: 'site',
+      field: 'sample_site',
       headerName: 'Sample Site',
       flex: 1,
       minWidth: 200
     },
     {
-      field: 'method',
+      field: 'sample_method',
       headerName: 'Sample Method',
       flex: 1,
       minWidth: 200
     },
     {
-      field: 'period',
+      field: 'sample_period',
       headerName: 'Sample Period',
       flex: 1,
       minWidth: 200
@@ -152,14 +156,14 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
       maxWidth: 100
     },
     {
-      field: 'lat',
+      field: 'latitude',
       headerName: 'Lat',
       headerAlign: 'right',
       align: 'right',
       maxWidth: 100
     },
     {
-      field: 'long',
+      field: 'longitude',
       headerName: 'Long',
       headerAlign: 'right',
       align: 'right',
@@ -168,7 +172,7 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
   ];
 
   // Set height so we the skeleton loader will match table rows
-  const RowHeight = 40;
+  const RowHeight = 52;
 
   // Skeleton Loader template
   const SkeletonRow = () => (
@@ -176,7 +180,8 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
       flexDirection="row"
       alignItems="center"
       gap={2}
-      p={2}
+      py={2}
+      px={1}
       height={RowHeight}
       overflow="hidden"
       sx={{
@@ -213,7 +218,9 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
         </Stack>
       ) : (
         <StyledDataGrid
+          noRowsMessage="No Observation data sources available"
           columnHeaderHeight={RowHeight}
+          rowHeight={RowHeight}
           rows={tableData}
           rowCount={totalRows}
           paginationModel={{ pageSize, page }}
@@ -240,7 +247,7 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
         />
       )}
     </>
-  )
+  );
 };
 
 export default SurveySpatialObservationDataTable;
