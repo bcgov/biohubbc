@@ -22,16 +22,17 @@ import SampleSiteFileUploadItemProgressBar from 'features/surveys/observations/s
 import SampleSiteFileUploadItemSubtext from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemSubtext';
 import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
-import { LatLngBoundsExpression } from 'leaflet';
+import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
 import 'leaflet/dist/leaflet.css';
 import get from 'lodash-es/get';
-import { useContext, useEffect, useMemo, useState } from 'react';
-import { LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
+import { useContext, useEffect, useMemo, useState} from 'react';
+import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { boundaryUploadHelper, calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { pluralize, shapeFileFeatureDesc, shapeFileFeatureName } from 'utils/Utils';
 import { ISurveySampleSite } from '../SamplingSitePage';
+import DrawControls from 'components/map/components/DrawControls';
 
 const useStyles = makeStyles(() => ({
   zoomToBoundaryExtentBtn: {
@@ -51,6 +52,8 @@ export interface ISamplingSiteMapControlProps {
   name: string;
   title: string;
   mapId: string;
+  // formikKey: string;
+  // drawControlsRef: React.RefObject<IDrawControlsRef>;
   formikProps: FormikContextType<any>;
 }
 
@@ -68,6 +71,8 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
   const { name, mapId, formikProps } = props;
 
   const { values, errors, setFieldValue, setFieldError } = formikProps;
+
+  let numSites = surveyContext.sampleSiteDataLoader.data?.sampleSites.length ?? 0;
 
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
 
@@ -102,7 +107,6 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
           <FileUpload
             uploadHandler={boundaryUploadHelper({
               onSuccess: (features: Feature[]) => {
-                let numSites = surveyContext.sampleSiteDataLoader.data?.sampleSites.length ?? 0;
                 setFieldValue(
                   name,
                   features.map((feature) => ({
@@ -161,15 +165,44 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
                 {/* Programmatically set map bounds */}
                 <SetMapBounds bounds={updatedBounds} />
 
+                 <FeatureGroup data-id="draw-control-feature-group" key="draw-control-feature-group">
+                  <DrawControls
+                    options={{
+                      // Always disable circle, circlemarker and line
+                      draw: { circle: false, circlemarker: false, polyline: false, marker: false }
+                    }}
+                    onLayerAdd={(event: DrawEvents.Created) => {
+                      const feature = event.layer.toGeoJSON();
+                      setFieldValue(name, [{
+                        name: `Sample Site ${++numSites}`,
+                        description: '',
+                        feature: feature}]);
+                    }}
+                    onLayerEdit={(event: DrawEvents.Edited) => {
+                      event.layers.getLayers().forEach((layer: any) => {
+                        const feature = layer.toGeoJSON() as Feature;
+                        setFieldValue(name, [{
+                          name: `Sample Site ${++numSites}`,
+                          description: '',
+                          feature: feature}]);
+                      });
+                    }}
+                    onLayerDelete={(event: DrawEvents.Deleted) => {
+                      setFieldValue(name, [])
+                    }}
+                  />
+                </FeatureGroup>
+
                 <LayersControl position="bottomright">
-                  <StaticLayers
+               <StaticLayers
                     layers={[
                       {
                         layerName: 'Sampling Sites',
-                        features: samplingSiteGeoJsonFeatures.map((feature: Feature) => ({ geoJSON: feature }))
+                        features: samplingSiteGeoJsonFeatures
+                          .filter((item) => item?.id) // Filter for only drawn features
+                          .map((feature) => ({ geoJSON: feature }))
                       }
-                    ]}
-                  />
+                    ]}/> 
                   <BaseLayerControls />
                 </LayersControl>
               </LeafletMapContainer>
