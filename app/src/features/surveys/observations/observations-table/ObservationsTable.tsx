@@ -3,7 +3,7 @@ import Icon from '@mdi/react';
 import { cyan, grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import { DataGrid, GridCellParams, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridCellParams, GridColDef, GridSortModel } from '@mui/x-data-grid';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
 import ConditionalAutocompleteDataGridEditCell from 'components/data-grid/conditional-autocomplete/ConditionalAutocompleteDataGridEditCell';
@@ -25,7 +25,7 @@ import {
   IGetSamplePeriodRecord
 } from 'interfaces/useSurveyApi.interface';
 import { has } from 'lodash-es';
-import { useCallback, useContext, useEffect, useMemo } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router';
 import { getCodesName, getFormattedDate } from 'utils/Utils';
 
@@ -56,6 +56,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
   const hasLoadedCodes = Boolean(codesContext.codesDataLoader.data);
+
+  const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
   const apiRef = observationsTableContext._muiDataGridApiRef;
 
@@ -529,15 +531,22 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         editMode="row"
         columns={observationColumns}
         rows={observationsTableContext.rows}
+        rowCount={observationsTableContext.observationCount}
+        paginationModel={observationsTableContext.paginationModel}
+        pageSizeOptions={[10]}
+        onPaginationModelChange={(model) => {
+          observationsTableContext.updatePaginationModel(model);
+        }}
+        paginationMode="server"
+        sortingMode="server"
+        sortModel={sortModel}
+        onSortModelChange={(model) => setSortModel(model)}
         onRowEditStart={(params) => observationsTableContext.onRowEditStart(params.id)}
         onRowEditStop={(_params, event) => {
           event.defaultMuiPrevented = true;
         }}
         localeText={{
           noRowsLabel: 'No Records'
-        }}
-        initialState={{
-          pagination: { paginationModel: { pageSize: 10 } }
         }}
         onRowSelectionModelChange={observationsTableContext.onRowSelectionModelChange}
         rowSelectionModel={observationsTableContext.rowSelectionModel}
