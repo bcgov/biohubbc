@@ -6,7 +6,7 @@ import {
   GridValidRowModel,
   useGridApiRef
 } from '@mui/x-data-grid';
-import { GridApiCommunity } from '@mui/x-data-grid/internals';
+import { GridApiCommunity, GridStateColDef } from '@mui/x-data-grid/internals';
 import { ObservationsTableI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { ObservationsContext } from 'contexts/observationsContext';
@@ -78,6 +78,10 @@ export type IObservationsTableContext = {
    * A setState setter for the `rows`
    */
   setRows: React.Dispatch<React.SetStateAction<IObservationTableRow[]>>;
+  /**
+   * Returns all columns belonging to the observation table
+   */
+  getColumns: () => GridStateColDef[];
   /**
    * Appends a new blank record to the observation rows
    */
@@ -151,6 +155,7 @@ export const ObservationsTableContext = createContext<IObservationsTableContext>
   _muiDataGridApiRef: null as unknown as React.MutableRefObject<GridApiCommunity>,
   rows: [],
   setRows: () => {},
+  getColumns: () => [],
   addObservationRecord: () => {},
   saveObservationRecords: () => {},
   deleteObservationRecords: () => undefined,
@@ -238,12 +243,19 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   };
 
   /**
+   * Returns all columns belonging to thte observations table.
+   */
+  const getColumns = useCallback(() => {
+    return _muiDataGridApiRef.current.getAllColumns?.() ?? [];
+  }, [_muiDataGridApiRef.current.getAllColumns]);
+
+  /**
    * Validates all rows belonging to the table. Returns null if validation passes, otherwise
    * returns the validation model
    */
   const _validateRows = (): ObservationTableValidationModel | null => {
     const rowValues = _getRowsWithEditedValues();
-    const tableColumns = _muiDataGridApiRef.current.getAllColumns();
+    const tableColumns = getColumns();
 
     const requiredColumns: (keyof IObservationTableRow)[] = [
       'count',
@@ -529,6 +541,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     // Remove any rows that are newly created
     setRows(rows.filter((row) => !addedRowIds.includes(String(row.id))));
+
+    // Reset all validation errors
+    setValidationModel({});
   }, [_muiDataGridApiRef, addedRowIds, rows]);
 
   const refreshObservationRecords = useCallback(async () => {
@@ -702,6 +717,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       _muiDataGridApiRef,
       rows,
       setRows,
+      getColumns,
       addObservationRecord,
       saveObservationRecords,
       deleteObservationRecords,
