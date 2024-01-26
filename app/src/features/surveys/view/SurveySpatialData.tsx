@@ -25,14 +25,16 @@ const SurveySpatialData = () => {
   const biohubApi = useBiohubApi();
   const { projectId, surveyId } = useContext(SurveyContext);
 
-  const _test__observationsGeometry = useDataLoader(() =>
+  const observationsGeometryDataLoader = useDataLoader(() =>
     biohubApi.observation.getObservationsGeometry(projectId, surveyId)
   );
-  _test__observationsGeometry.load();
+
+  observationsGeometryDataLoader.load();
 
   //TODO: look into adding this to the query param
   const [currentTab, setCurrentTab] = useState<SurveySpatialDataSet>(SurveySpatialDataSet.OBSERVATIONS);
 
+  // TODO is this actually needed?
   useEffect(() => {
     codesContext.codesDataLoader.load();
     surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
@@ -89,28 +91,18 @@ const SurveySpatialData = () => {
   }, [telemetryContext.telemetryDataLoader.data]);
 
   const observationPoints: INonEditableGeometries[] = useMemo(() => {
-    const observations = observationsContext.observationsDataLoader.data?.surveyObservations;
-
-    if (!observations) {
-      return [];
-    }
-
-    return observations
-      .filter((observation) => observation.latitude !== undefined && observation.longitude !== undefined)
-      .map((observation) => {
-        return {
-          feature: {
-            type: 'Feature',
-            properties: {},
-            geometry: {
-              type: 'Point',
-              coordinates: [observation.longitude, observation.latitude] as Position
-            }
-          },
-          popupComponent: undefined
-        };
-      });
-  }, [observationsContext.observationsDataLoader.data]);
+    // TODO type change from any
+    return (observationsGeometryDataLoader.data?.surveyObservationsGeometry ?? []).map((observation: any) => {
+      return {
+        feature: {
+          type: 'Feature',
+          properties: {},
+          geometry: observation.geojson
+        },
+        popupComponent: undefined
+      };
+    });
+  }, [observationsGeometryDataLoader.data]);
 
   // TODO: this needs to be saved between page visits
   // const [layout, setLayout] = useState<SurveySpatialDataLayout>(SurveySpatialDataLayout.MAP);
@@ -165,7 +157,9 @@ const SurveySpatialData = () => {
         currentTab={currentTab}
         toggleButtons={[
           {
-            label: `Observations (${observationPoints.length})`,
+            label: `Observations (${
+              observationsGeometryDataLoader.data?.supplementaryObservationData?.observationCount ?? 0
+            })`,
             value: SurveySpatialDataSet.OBSERVATIONS,
             icon: mdiEye,
             isLoading: false

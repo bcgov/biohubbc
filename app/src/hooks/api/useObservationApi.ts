@@ -4,7 +4,10 @@ import {
   IObservationTableRow,
   ISupplementaryObservationData
 } from 'contexts/observationsTableContext';
-import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
+import {
+  IGetSurveyObservationsGeometryResponse,
+  IGetSurveyObservationsResponse
+} from 'interfaces/useObservationApi.interface';
 import { ApiPaginationOptions } from 'types/misc';
 
 /**
@@ -71,8 +74,13 @@ const useObservationApi = (axios: AxiosInstance) => {
   };
 
   // TODO promise type; jsdoc.
-  const getObservationsGeometry = async (projectId: number, surveyId: number): Promise<any> => {
-    const { data } = await axios.get<any>(`/api/project/${projectId}/survey/${surveyId}/observations/spatial`);
+  const getObservationsGeometry = async (
+    projectId: number,
+    surveyId: number
+  ): Promise<IGetSurveyObservationsGeometryResponse> => {
+    const { data } = await axios.get<IGetSurveyObservationsGeometryResponse>(
+      `/api/project/${projectId}/survey/${surveyId}/observations/spatial`
+    );
 
     return data;
   };
