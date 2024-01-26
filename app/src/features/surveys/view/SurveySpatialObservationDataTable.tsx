@@ -213,7 +213,6 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
           disableColumnFilter
           disableColumnMenu
           disableVirtualization
-          sortingOrder={['asc', 'desc']}
           data-testid="survey-spatial-observation-data-table"
         />
       )}
