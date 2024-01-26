@@ -34,13 +34,13 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
 
   const [data, setData] = useState<IObservationRecordWithSamplingData[]>([]);
   const [totalRows, setTotalRows] = useState<number>(0);
-  const [page, setPage] = useState<number>(1);
+  const [page, setPage] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(5);
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
   const paginatedDataLoader = useDataLoader((page: number, limit: number, sort?: string, order?: 'asc' | 'desc') =>
     biohubApi.observation.getObservationRecords(surveyContext.projectId, surveyContext.surveyId, {
-      page,
+      page: page + 1, // this fixes an off by one error between the front end and the back end
       limit,
       sort,
       order
@@ -178,6 +178,7 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
     </Stack>
   );
 
+  console.log(`Page: ${page} Page Size: ${pageSize}`);
   return (
     <>
       {props.isLoading ? (
