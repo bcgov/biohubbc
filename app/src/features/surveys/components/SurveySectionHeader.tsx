@@ -7,13 +7,14 @@ import { Link as RouterLink } from 'react-router-dom';
 
 export interface SurveySectionHeaderProps {
   project_id: number;
+  project_name: string;
   survey_id: number;
   survey_name: string;
   title: string;
 }
 
 const SurveySectionHeader = (props: SurveySectionHeaderProps) => {
-  const { project_id, survey_id, survey_name, title } = props;
+  const { project_id, project_name, survey_id, survey_name, title } = props;
   return (
     <Paper
       square
@@ -22,11 +23,10 @@ const SurveySectionHeader = (props: SurveySectionHeaderProps) => {
         p: { xs: 2, sm: 3 },
         borderBottom: '1px solid' + grey[300]
       }}>
-      <Breadcrumbs
-        aria-label="breadcrumb"
-        sx={{
-          typography: 'body2'
-        }}>
+      <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
+        <Link component={RouterLink} underline="hover" to={`/admin/projects/${project_id}`}>
+          {project_name}
+        </Link>
         <Link
           component={RouterLink}
           underline="hover"

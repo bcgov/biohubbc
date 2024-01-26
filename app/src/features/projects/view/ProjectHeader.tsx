@@ -1,6 +1,5 @@
 import {
   mdiAccountMultipleOutline,
-  mdiCalendarRangeOutline,
   mdiCalendarTodayOutline,
   mdiChevronDown,
   mdiCogOutline,
@@ -8,18 +7,15 @@ import {
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import grey from '@mui/material/colors/grey';
-import Container from '@mui/material/Container';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import assert from 'assert';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import PageHeader from 'components/layout/PageHeader';
 import PublishProjectDialog from 'components/publish/PublishProjectDialog';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
@@ -107,124 +103,91 @@ const ProjectHeader = () => {
 
   return (
     <>
-      <Paper
-        square
-        elevation={0}
-        sx={{
-          borderBottom: '1px solid' + grey[300]
-        }}>
-        <Container maxWidth="xl" sx={{ py: { xs: 2, sm: 3 } }}>
-          <Stack
-            alignItems="flex-start"
-            flexDirection={{ xs: 'column', md: 'row' }}
-            justifyContent="space-between"
-            gap={3}>
-            <Box>
-              <Typography
-                variant="h1"
-                sx={{
-                  my: -0.5,
-                  py: 0.5,
-                  display: '-webkit-box',
-                  WebkitLineClamp: '2',
-                  WebkitBoxOrient: 'vertical',
-                  maxWidth: '72ch',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
-                }}>
-                {projectData?.projectData.project.project_name}
-              </Typography>
-              <Stack flexDirection="row" alignItems="center" gap={1} mt={1} mb={0.25}>
-                <>
-                  {projectData.projectData.project.end_date ? (
-                    <Stack flexDirection="row" alignItems="center" gap={0.75}>
-                      <Icon path={mdiCalendarRangeOutline} size={0.75} />
-                      <Typography component="span" color="textSecondary">
-                        Project Timeline:
-                      </Typography>
-                      {getFormattedDateRangeString(
-                        DATE_FORMAT.ShortMediumDateFormat,
-                        projectData.projectData.project.start_date,
-                        projectData.projectData.project.end_date
-                      )}
-                    </Stack>
-                  ) : (
-                    <Stack flexDirection="row" alignItems="center" gap={1}>
-                      <Icon path={mdiCalendarTodayOutline} size={0.75} />
-                      <Typography component="span" color="textSecondary">
-                        Start Date:
-                      </Typography>
-                      {getFormattedDateRangeString(
-                        DATE_FORMAT.ShortMediumDateFormat,
-                        projectData.projectData.project.start_date
-                      )}
-                    </Stack>
-                  )}
-                </>
+      <PageHeader
+        title={projectData?.projectData.project.project_name}
+        subTitleJSX={
+          <>
+            {projectData.projectData.project.end_date ? (
+              <Stack flexDirection="row" alignItems="center" gap={0.75} color="text.secondary">
+                <Typography component="span">Project Timeline:</Typography>
+                {getFormattedDateRangeString(
+                  DATE_FORMAT.ShortMediumDateFormat,
+                  projectData.projectData.project.start_date,
+                  projectData.projectData.project.end_date
+                )}
               </Stack>
-            </Box>
-            <Stack flexDirection="row" alignItems="center" gap={1}>
-              <ProjectRoleGuard
-                validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                <>
-                  <Button
-                    id="project_settings-button"
-                    variant="outlined"
-                    color="primary"
-                    startIcon={<Icon path={mdiCogOutline} size={1} />}
-                    endIcon={<Icon path={mdiChevronDown} size={1} />}
-                    aria-label="Project Settings"
-                    aria-controls="projectSettingsMenu"
-                    aria-haspopup="true"
-                    onClick={(event: React.MouseEvent<HTMLButtonElement>) => setMenuAnchorEl(event.currentTarget)}>
-                    Settings
-                  </Button>
-                  <Menu
-                    id="projectSettingsMenu"
-                    aria-labelledby="project_settings_button"
-                    style={{ marginTop: '8px' }}
-                    anchorEl={menuAnchorEl}
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'right'
-                    }}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'right'
-                    }}
-                    keepMounted
-                    open={Boolean(menuAnchorEl)}
-                    onClose={() => setMenuAnchorEl(null)}>
-                    <MenuItem onClick={() => history.push('edit')}>
-                      <ListItemIcon>
-                        <Icon path={mdiPencilOutline} size={1} />
-                      </ListItemIcon>
-                      <Typography variant="inherit">Edit Project Details</Typography>
-                    </MenuItem>
-                    <ProjectRoleGuard
-                      validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}
-                      validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                      <MenuItem onClick={() => history.push('users')}>
-                        <ListItemIcon>
-                          <Icon path={mdiAccountMultipleOutline} size={1} />
-                        </ListItemIcon>
-                        <Typography variant="inherit">Manage Project Team</Typography>
-                      </MenuItem>
-                      <MenuItem onClick={showDeleteProjectDialog} data-testid={'delete-project-button'}>
-                        <ListItemIcon>
-                          <Icon path={mdiTrashCanOutline} size={1} />
-                        </ListItemIcon>
-                        <Typography variant="inherit">Delete Project</Typography>
-                      </MenuItem>
-                    </ProjectRoleGuard>
-                  </Menu>
-                </>
-              </ProjectRoleGuard>
-            </Stack>
-          </Stack>
-        </Container>
-      </Paper>
+            ) : (
+              <Stack flexDirection="row" alignItems="center" gap={1}>
+                <Icon path={mdiCalendarTodayOutline} size={0.75} />
+                <Typography component="span">Start Date:</Typography>
+                {getFormattedDateRangeString(
+                  DATE_FORMAT.ShortMediumDateFormat,
+                  projectData.projectData.project.start_date
+                )}
+              </Stack>
+            )}
+          </>
+        }
+        buttonJSX={
+          <ProjectRoleGuard
+            validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+            <>
+              <Button
+                id="project_settings-button"
+                variant="outlined"
+                color="primary"
+                startIcon={<Icon path={mdiCogOutline} size={0.75} />}
+                endIcon={<Icon path={mdiChevronDown} size={0.75} />}
+                aria-label="Project Settings"
+                aria-controls="projectSettingsMenu"
+                aria-haspopup="true"
+                onClick={(event: React.MouseEvent<HTMLButtonElement>) => setMenuAnchorEl(event.currentTarget)}>
+                Settings
+              </Button>
+              <Menu
+                id="projectSettingsMenu"
+                aria-labelledby="project_settings_button"
+                style={{ marginTop: '8px' }}
+                anchorEl={menuAnchorEl}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right'
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right'
+                }}
+                keepMounted
+                open={Boolean(menuAnchorEl)}
+                onClose={() => setMenuAnchorEl(null)}>
+                <MenuItem onClick={() => history.push('edit')}>
+                  <ListItemIcon>
+                    <Icon path={mdiPencilOutline} size={1} />
+                  </ListItemIcon>
+                  <Typography variant="inherit">Edit Project Details</Typography>
+                </MenuItem>
+                <ProjectRoleGuard
+                  validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}
+                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <MenuItem onClick={() => history.push('users')}>
+                    <ListItemIcon>
+                      <Icon path={mdiAccountMultipleOutline} size={1} />
+                    </ListItemIcon>
+                    <Typography variant="inherit">Manage Project Team</Typography>
+                  </MenuItem>
+                  <MenuItem onClick={showDeleteProjectDialog} data-testid={'delete-project-button'}>
+                    <ListItemIcon>
+                      <Icon path={mdiTrashCanOutline} size={1} />
+                    </ListItemIcon>
+                    <Typography variant="inherit">Delete Project</Typography>
+                  </MenuItem>
+                </ProjectRoleGuard>
+              </Menu>
+            </>
+          </ProjectRoleGuard>
+        }
+      />
 
       <PublishProjectDialog open={publishProjectDialogOpen} onClose={() => setPublishProjectDialogOpen(false)} />
     </>

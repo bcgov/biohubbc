@@ -40,10 +40,8 @@ const appTheme = createTheme({
     h1: {
       fontSize: '1.875rem',
       fontWeight: 700,
-      marginTop: '-4px',
-      marginBottom: '-4px',
       paddingTop: '4px',
-      paddingBottom: '4px',
+      paddingBottom: '6px',
       display: '-webkit-box',
       WebkitLineClamp: '2',
       WebkitBoxOrient: 'vertical',
@@ -121,8 +119,8 @@ const appTheme = createTheme({
     MuiBreadcrumbs: {
       styleOverrides: {
         root: {
-          marginTop: '-8px',
-          marginBottom: '8px',
+          marginTop: '-4px',
+          marginBottom: '4px',
           marginLeft: '-4px'
         },
         li: {
@@ -131,20 +129,20 @@ const appTheme = createTheme({
           whiteSpace: 'nowrap',
           '& a': {
             display: 'block',
-            fontSize: 'inherit',
+            fontSize: '0.9rem',
             overflow: 'hidden',
             textOverflow: 'ellipsis'
           },
           '& span': {
             display: 'block',
-            fontSize: 'inherit',
+            fontSize: '0.9rem',
             overflow: 'hidden',
             textOverflow: 'ellipsis'
           }
         },
         separator: {
-          marginLeft: '4px',
-          marginRight: '4px'
+          marginRight: '4px',
+          marginLeft: '4px'
         }
       }
     },

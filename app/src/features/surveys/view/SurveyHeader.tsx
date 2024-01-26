@@ -1,4 +1,4 @@
-import { mdiCalendarRangeOutline, mdiChevronDown, mdiCog, mdiPencil, mdiTrashCanOutline } from '@mdi/js';
+import { mdiChevronDown, mdiCog, mdiPencil, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
@@ -10,6 +10,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import PageHeader from 'components/layout/PageHeader';
 import PublishSurveyIdDialog from 'components/publish/PublishSurveyDialog';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
@@ -27,7 +28,6 @@ import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { hasAtLeastOneValidValue } from 'utils/authUtils';
 import { getFormattedDateRangeString } from 'utils/Utils';
-import SurveyBaseHeader from './components/SurveyBaseHeader';
 
 /**
  * Survey header for a single-survey view.
@@ -135,14 +135,10 @@ const SurveyHeader = () => {
 
   return (
     <>
-      <SurveyBaseHeader
+      <PageHeader
         title={surveyWithDetails.surveyData.survey_details.survey_name}
-        breadCrumb={
-          <Breadcrumbs
-            aria-label="breadcrumb"
-            sx={{
-              typography: 'body2'
-            }}>
+        breadCrumbJSX={
+          <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
             <Link
               component={RouterLink}
               underline="hover"
@@ -155,14 +151,9 @@ const SurveyHeader = () => {
             </Typography>
           </Breadcrumbs>
         }
-        subTitle={
-          <Stack flexDirection="row" alignItems="center" gap={1} mt={1} mb={0.25}>
-            <Stack flexDirection="row" alignItems="center" gap={0.75}>
-              <Icon path={mdiCalendarRangeOutline} size={0.75} />
-              <Typography component="span" color="textSecondary">
-                Survey Timeline:
-              </Typography>
-            </Stack>
+        subTitleJSX={
+          <Stack flexDirection="row" alignItems="center" gap={0.75} color="text.secondary">
+            <Typography component="span">Survey Timeline:</Typography>
             <Typography component="span">
               {getFormattedDateRangeString(
                 DATE_FORMAT.ShortMediumDateFormat,
@@ -183,7 +174,6 @@ const SurveyHeader = () => {
                     component="span"
                     variant="subtitle2"
                     fontSize="0.9rem"
-                    fontWeight="700"
                     sx={{
                       flex: '0 0 auto',
                       mr: { sm: 0, md: 0.5 },
@@ -199,7 +189,7 @@ const SurveyHeader = () => {
                         </Typography>
                       </>
                     ) : (
-                      <Typography component="span" color="textSecondary" variant="inherit" sx={{ mr: 1 }}>
+                      <Typography component="span" color="textSecondary" variant="inherit" sx={{ mr: 0.5 }}>
                         Never Published
                       </Typography>
                     )}
