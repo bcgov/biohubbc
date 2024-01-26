@@ -144,7 +144,6 @@ const ManualTelemetryTableContainer = () => {
           });
         })
         .catch((error) => {
-          console.log(error);
           showSnackBar({
             snackbarMessage: (
               <Typography variant="body2" component="div">

@@ -226,7 +226,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   };
 
   const updateSortModel = (model: GridSortModel) => {
-    console.log("Updating Sort Model")
     setSortModel(model);
   };
 
@@ -240,7 +239,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
   // Fetch new rows based on sort/ pagination model changes
   useEffect(() => {
-    console.log("Models have changed")
     const sort = firstOrNull(sortModel);
     observationsContext.observationsDataLoader.refresh({
       page: paginationModel.page + 1, // +1 to correct an off by one error with pagination
@@ -574,8 +572,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   }, [_muiDataGridApiRef, addedRowIds, rows]);
 
   const refreshObservationRecords = useCallback(async () => {
-    console.log('REFRESH OBSERVATION TRIGGERED');
-    console.log(paginationModel);
     return observationsContext.observationsDataLoader.refresh({
       page: paginationModel.page,
       limit: paginationModel.pageSize

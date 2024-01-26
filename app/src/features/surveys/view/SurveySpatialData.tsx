@@ -131,7 +131,6 @@ const SurveySpatialData = () => {
   };
 
   const updateLayout = (data: SurveySpatialDataLayout) => {
-    console.log(`Layout: ${data}`);
     // setLayout(data);
   };
 
