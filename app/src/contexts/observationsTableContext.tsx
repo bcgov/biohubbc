@@ -3,6 +3,7 @@ import {
   GridPaginationModel,
   GridRowId,
   GridRowSelectionModel,
+  GridSortModel,
   GridValidRowModel,
   useGridApiRef
 } from '@mui/x-data-grid';
@@ -14,6 +15,7 @@ import { default as dayjs } from 'dayjs';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { firstOrNull } from 'utils/Utils';
 import { v4 as uuidv4 } from 'uuid';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
 import { SurveyContext } from './surveyContext';
@@ -149,6 +151,8 @@ export type IObservationsTableContext = {
 
   updatePaginationModel: (model: GridPaginationModel) => void;
   paginationModel: GridPaginationModel;
+  updateSortModel: (mode: GridSortModel) => void;
+  sortModel: GridSortModel;
 };
 
 export const ObservationsTableContext = createContext<IObservationsTableContext>({
@@ -173,7 +177,9 @@ export const ObservationsTableContext = createContext<IObservationsTableContext>
   observationCount: 0,
   setObservationCount: () => undefined,
   updatePaginationModel: () => undefined,
-  paginationModel: { page: 0, pageSize: 0 }
+  paginationModel: { page: 0, pageSize: 0 },
+  updateSortModel: () => undefined,
+  sortModel: []
 });
 
 export const ObservationsTableContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
@@ -213,15 +219,36 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     page: 0,
     pageSize: 10
   });
-  // const [sortModel, setSortModel] = useState<GridSortModel>([]);
+  const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
   const updatePaginationModel = (model: GridPaginationModel) => {
     setPaginationModel(model);
   };
 
+  const updateSortModel = (model: GridSortModel) => {
+    console.log("Updating Sort Model")
+    setSortModel(model);
+  };
+
+  // initial load with pagination values
   useEffect(() => {
-    observationsContext.observationsDataLoader.refresh({ page: 1, limit: 10 });
+    observationsContext.observationsDataLoader.refresh({
+      page: paginationModel.page + 1, // +1 to correct an off by one error with pagination
+      limit: paginationModel.pageSize
+    });
   }, []);
+
+  // Fetch new rows based on sort/ pagination model changes
+  useEffect(() => {
+    console.log("Models have changed")
+    const sort = firstOrNull(sortModel);
+    observationsContext.observationsDataLoader.refresh({
+      page: paginationModel.page + 1, // +1 to correct an off by one error with pagination
+      limit: paginationModel.pageSize,
+      sort: sort?.field || undefined,
+      order: sort?.sort || undefined
+    });
+  }, [paginationModel, sortModel]);
 
   /**
    * Gets all rows from the table, including values that have been edited in the table.
@@ -735,7 +762,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       observationCount,
       setObservationCount,
       updatePaginationModel,
-      paginationModel
+      paginationModel,
+      updateSortModel,
+      sortModel
     }),
     [
       _muiDataGridApiRef,
@@ -754,7 +783,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       isSaving,
       observationCount,
       updatePaginationModel,
-      paginationModel
+      paginationModel,
+      updateSortModel,
+      sortModel
     ]
   );
 
