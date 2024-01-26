@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { IDBConnection } from '../database/db';
 import {
   InsertObservation,
+  ObservationGeometryRecord,
   ObservationRecord,
   ObservationRepository,
   ObservationSubmissionRecord,
@@ -20,8 +21,8 @@ import {
   validateWorksheetColumnTypes,
   validateWorksheetHeaders
 } from '../utils/xlsx-utils/worksheet-utils';
-import { DBService } from './db-service';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
+import { DBService } from './db-service';
 
 const defaultLog = getLogger('services/observation-service');
 
@@ -134,10 +135,26 @@ export class ObservationService extends DBService {
     surveyId: number,
     pagination?: ApiPaginationOptions
   ): Promise<{ surveyObservations: ObservationRecord[]; supplementaryObservationData: ObservationSupplementaryData }> {
-    const surveyObservations = await this.observationRepository.getSurveyObservationsWithSamplingData(surveyId, pagination);
+    const surveyObservations = await this.observationRepository.getSurveyObservationsWithSamplingData(
+      surveyId,
+      pagination
+    );
     const supplementaryObservationData = await this.getSurveyObservationsSupplementaryData(surveyId);
 
     return { surveyObservations, supplementaryObservationData };
+  }
+
+  // TODO jsdoc
+  async getSurveyObservationsGeometryWithSupplementaryData(
+    surveyId: number
+  ): Promise<{
+    surveyObservationsGeometry: ObservationGeometryRecord[];
+    supplementaryObservationData: ObservationSupplementaryData;
+  }> {
+    const surveyObservationsGeometry = await this.observationRepository.getSurveyObservationsGeometry(surveyId);
+    const supplementaryObservationData = await this.getSurveyObservationsSupplementaryData(surveyId);
+
+    return { surveyObservationsGeometry, supplementaryObservationData };
   }
 
   /**
@@ -163,7 +180,6 @@ export class ObservationService extends DBService {
   async getSurveyObservationCount(surveyId: number): Promise<number> {
     return this.observationRepository.getSurveyObservationCount(surveyId);
   }
-
 
   /**
    * Inserts a survey observation submission record into the database and returns the key

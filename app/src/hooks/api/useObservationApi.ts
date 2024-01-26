@@ -70,6 +70,13 @@ const useObservationApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  // TODO promise type; jsdoc.
+  const getObservationsGeometry = async (projectId: number, surveyId: number): Promise<any> => {
+    const { data } = await axios.get<any>(`/api/project/${projectId}/survey/${surveyId}/observations/spatial`);
+
+    return data;
+  };
+
   /**
    * Uploads an observation CSV for import.
    *
@@ -143,6 +150,7 @@ const useObservationApi = (axios: AxiosInstance) => {
   return {
     insertUpdateObservationRecords,
     getObservationRecords,
+    getObservationsGeometry,
     deleteObservationRecords,
     uploadCsvForImport,
     processCsvSubmission

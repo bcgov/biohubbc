@@ -48,7 +48,7 @@ const SurveyMapToolBar = (props: ISurveyMapToolBarProps) => {
     if (!dataset) {
       return;
     }
-  
+
     props.updateDataSet(dataset);
   };
 
@@ -92,8 +92,7 @@ const SurveyMapToolBar = (props: ISurveyMapToolBarProps) => {
               outline: 'none'
             }
           }
-        }}
-      >
+        }}>
         <MenuItem component={RouterLink} to="observations">
           <ListItemIcon>
             <Icon path={mdiEye} size={1} />

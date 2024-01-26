@@ -6,6 +6,8 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { TaxonomyContext } from 'contexts/taxonomyContext';
 import { TelemetryDataContext } from 'contexts/telemetryDataContext';
 import { Position } from 'geojson';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { INonEditableGeometries } from 'utils/mapUtils';
 import SurveyMapToolBar, { SurveySpatialDataLayout, SurveySpatialDataSet } from './components/SurveyMapToolBar';
@@ -19,6 +21,14 @@ const SurveySpatialData = () => {
   const taxonomyContext = useContext(TaxonomyContext);
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
+
+  const biohubApi = useBiohubApi();
+  const { projectId, surveyId } = useContext(SurveyContext);
+
+  const _test__observationsGeometry = useDataLoader(() =>
+    biohubApi.observation.getObservationsGeometry(projectId, surveyId)
+  );
+  _test__observationsGeometry.load();
 
   //TODO: look into adding this to the query param
   const [currentTab, setCurrentTab] = useState<SurveySpatialDataSet>(SurveySpatialDataSet.OBSERVATIONS);

@@ -38,6 +38,13 @@ export const ObservationRecordWithSamplingData = ObservationRecord.extend({
 
 export type ObservationRecordWithSamplingData = z.infer<typeof ObservationRecordWithSamplingData>;
 
+export const ObservationGeometryRecord = z.object({
+  survey_observation_id: z.number(),
+  geojson: z.string().transform((jsonString) => JSON.parse(jsonString))
+});
+
+export type ObservationGeometryRecord = z.infer<typeof ObservationGeometryRecord>;
+
 /**
  * Interface reflecting survey observations that are being inserted into the database
  */
@@ -261,19 +268,31 @@ export class ObservationRepository extends BaseRepository {
 
       // Join sample period onto observation
       .leftJoin({ ssp: 'survey_sample_period' }, 'so.survey_sample_period_id', 'ssp.survey_sample_period_id') // Join survey_sample_period
-      .where('so.survey_id', surveyId)
+      .where('so.survey_id', surveyId);
 
-
-  const paginatedQuery = !pagination
-    ? allRowsQuery
-    : allRowsQuery
-      .limit(pagination.limit)
-      .offset(pagination.page * pagination.limit);
+    const paginatedQuery = !pagination
+      ? allRowsQuery
+      : allRowsQuery.limit(pagination.limit).offset(pagination.page * pagination.limit);
 
     const query =
       pagination?.sort && pagination.order ? paginatedQuery.orderBy(pagination.sort, pagination.order) : paginatedQuery;
 
     const response = await this.connection.knex(query, ObservationRecordWithSamplingData);
+
+    return response.rows;
+  }
+
+  /**
+   * TODO jsdoc
+   */
+  async getSurveyObservationsGeometry(surveyId: number): Promise<ObservationGeometryRecord[]> {
+    const knex = getKnex();
+
+    const query = knex
+      .select('survey_observation_id', knex.raw('ST_AsGeoJSON(ST_MakePoint(longitude, latitude)) as geojson'))
+      .from('survey_observation');
+
+    const response = await this.connection.knex(query, ObservationGeometryRecord);
 
     return response.rows;
   }

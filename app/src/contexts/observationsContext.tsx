@@ -26,7 +26,9 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
 
   const biohubApi = useBiohubApi();
 
-  const observationsDataLoader = useDataLoader(() => biohubApi.observation.getObservationRecords(projectId, surveyId, { page: 1, limit: 10 }));
+  const observationsDataLoader = useDataLoader(() =>
+    biohubApi.observation.getObservationRecords(projectId, surveyId, { page: 1, limit: 10 })
+  );
 
   observationsDataLoader.load();
 
