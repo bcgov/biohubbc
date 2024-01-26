@@ -44,9 +44,14 @@ const SurveyMapToolBar = (props: ISurveyMapToolBarProps) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
-  const updateDataSet = (event: React.MouseEvent<HTMLElement>, newAlignment: SurveySpatialDataSet) => {
-    props.updateDataSet(newAlignment);
+  const updateDataSet = (event: React.MouseEvent<HTMLElement>, dataset: SurveySpatialDataSet) => {
+    if (!dataset) {
+      return;
+    }
+  
+    props.updateDataSet(dataset);
   };
+
   const updateLayout = (event: React.MouseEvent<HTMLElement>, newAlignment: SurveySpatialDataLayout) => {
     setLayout(newAlignment);
     props.updateLayout(newAlignment);
