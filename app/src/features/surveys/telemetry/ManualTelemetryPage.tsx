@@ -5,9 +5,9 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { TelemetryDataContextProvider } from 'contexts/telemetryDataContext';
 import { TelemetryTableContextProvider } from 'contexts/telemetryTableContext';
 import { useContext, useMemo } from 'react';
-import ManualTelemetryComponent from './ManualTelemetryComponent';
 import ManualTelemetryHeader from './ManualTelemetryHeader';
 import ManualTelemetryList from './ManualTelemetryList';
+import ManualTelemetryTableContainer from './telemetry-table/ManualTelemetryTableContainer';
 
 const ManualTelemetryPage = () => {
   const surveyContext = useContext(SurveyContext);
@@ -36,7 +36,7 @@ const ManualTelemetryPage = () => {
           {/* Telemetry Component */}
           <Box flex="1 1 auto" position="relative">
             <TelemetryTableContextProvider deployment_ids={deploymentIds ?? []}>
-              <ManualTelemetryComponent />
+              <ManualTelemetryTableContainer />
             </TelemetryTableContextProvider>
           </Box>
         </Stack>
