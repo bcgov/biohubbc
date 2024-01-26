@@ -369,7 +369,7 @@ export function updateProject(): RequestHandler {
       await connection.open();
 
       const projectService = new ProjectService(connection);
-      await projectService.updateProjectAndUploadMetadataToBioHub(projectId, entities);
+      await projectService.updateProject(projectId, entities);
 
       await connection.commit();
 

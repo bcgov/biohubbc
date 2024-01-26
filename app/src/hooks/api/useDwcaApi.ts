@@ -1,10 +1,6 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
 import { GeoJsonProperties } from 'geojson';
-import {
-  IGetObservationSubmissionResponse,
-  ISpatialData,
-  IUploadObservationSubmissionResponse
-} from 'interfaces/useDwcaApi.interface';
+import { ISpatialData, IUploadObservationSubmissionResponse } from 'interfaces/useDwcaApi.interface';
 
 /**
  * Returns a set of supported api methods for working with DarwinCore observations.
@@ -42,22 +38,6 @@ const useDwcaApi = (axios: AxiosInstance) => {
         onUploadProgress: onProgress
       }
     );
-
-    return data;
-  };
-
-  /**
-   * Get observation submission based on survey ID
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @returns {*} {Promise<IGetObservationSubmissionResponse>}
-   */
-  const getObservationSubmission = async (
-    projectId: number,
-    surveyId: number
-  ): Promise<IGetObservationSubmissionResponse> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/dwca/observations/submission/get`);
 
     return data;
   };
@@ -174,7 +154,6 @@ const useDwcaApi = (axios: AxiosInstance) => {
 
   return {
     uploadObservationSubmission,
-    getObservationSubmission,
     deleteObservationSubmission,
     getObservationSubmissionSignedURL,
     initiateXLSXSubmissionTransform,

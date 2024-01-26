@@ -1,5 +1,6 @@
 import { QueryResult } from 'pg';
 import SQL from 'sql-template-strings';
+import { ATTACHMENT_TYPE } from '../constants/attachments';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostReportAttachmentMetadata, PutReportAttachmentMetadata } from '../models/project-survey-attachments';
@@ -410,6 +411,46 @@ export class AttachmentRepository extends BaseRepository {
       .andWhere('survey_id', surveyId);
 
     const response = await this.connection.knex<ISurveyAttachment>(queryBuilder);
+
+    return response.rows;
+  }
+
+  /**
+   * Get all survey attachments for the given survey id, which are safe to publish to BioHub.
+   *
+   * Note: Not all attachment types are publishable to BioHub. This method filters out attachment types that should not
+   * be published.
+   *
+   * @param {number} surveyId
+   * @param {number[]} attachmentIds
+   * @return {*}  {Promise<ISurveyAttachment[]>}
+   * @memberof AttachmentRepository
+   */
+  async getSurveyAttachmentsForBioHubSubmission(surveyId: number): Promise<ISurveyAttachment[]> {
+    defaultLog.debug({ label: 'getSurveyAttachmentsForBioHubSubmission' });
+
+    const sqlStatement = SQL`
+      SELECT
+        survey_attachment_id,
+        uuid,
+        file_name,
+        file_type,
+        title,
+        description,
+        create_date,
+        update_date,
+        create_date,
+        file_size,
+        key
+      FROM
+        survey_attachment
+      WHERE
+        survey_id = ${surveyId}
+      AND
+        LOWER(file_type) != LOWER(${ATTACHMENT_TYPE.KEYX});
+    `;
+
+    const response = await this.connection.sql<ISurveyAttachment>(sqlStatement);
 
     return response.rows;
   }

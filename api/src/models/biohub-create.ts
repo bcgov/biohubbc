@@ -1,15 +1,23 @@
 import { FeatureCollection } from 'geojson';
+import { ATTACHMENT_TYPE } from '../constants/attachments';
+import { ISurveyAttachment, ISurveyReportAttachment } from '../repositories/attachment-repository';
 import { ObservationRecord } from '../repositories/observation-repository';
 import { getLogger } from '../utils/logger';
-import { GetSurveyData } from './survey-view';
+import { GetSurveyData, GetSurveyPurposeAndMethodologyData } from './survey-view';
 
 const defaultLog = getLogger('models/biohub-create');
 
+export interface BioHubSubmission {
+  id: string;
+  name: string;
+  description: string;
+  content: BioHubSubmissionFeature;
+}
 export interface BioHubSubmissionFeature {
   id: string;
   type: string;
   properties: Record<string, any>;
-  features: BioHubSubmissionFeature[];
+  child_features: BioHubSubmissionFeature[];
 }
 
 /**
@@ -23,7 +31,7 @@ export class PostSurveyObservationToBiohubObject implements BioHubSubmissionFeat
   id: string;
   type: string;
   properties: Record<string, any>;
-  features: BioHubSubmissionFeature[];
+  child_features: BioHubSubmissionFeature[];
 
   constructor(observationRecord: ObservationRecord) {
     defaultLog.debug({ label: 'PostSurveyObservationToBiohubObject', message: 'params', observationRecord });
@@ -58,7 +66,68 @@ export class PostSurveyObservationToBiohubObject implements BioHubSubmissionFeat
             : []
       }
     };
-    this.features = [];
+    this.child_features = [];
+  }
+}
+
+/**
+ * Object to be sent to Biohub API for creating an artifact (for a SIMS attachment).
+ *
+ * @export
+ * @class PostSurveyAttachmentsToBiohubObject
+ * @implements {BioHubSubmissionFeature}
+ */
+export class PostSurveyAttachmentsToBiohubObject implements BioHubSubmissionFeature {
+  id: string;
+  type: string;
+  properties: Record<string, any>;
+  child_features: BioHubSubmissionFeature[];
+
+  constructor(attachmentRecord: ISurveyAttachment) {
+    defaultLog.debug({ label: 'PostSurveyAttachmentsToBiohubObject', message: 'params', attachmentRecord });
+
+    this.id = attachmentRecord.uuid;
+    this.type = BiohubFeatureType.ARTIFACT;
+    this.properties = {
+      artifact_id: attachmentRecord.survey_attachment_id,
+      filename: attachmentRecord.file_name,
+      file_type: attachmentRecord.file_type,
+      file_size: attachmentRecord.file_size,
+      title: attachmentRecord?.title || null,
+      description: attachmentRecord?.description || null
+    };
+    this.child_features = [];
+  }
+}
+
+/**
+ * Object to be sent to Biohub API for creating an artifact (for a SIMS report attachment).
+ *
+ * @export
+ * @class PostSurveyReportAttachmentsToBiohubObject
+ * @implements {BioHubSubmissionFeature}
+ */
+export class PostSurveyReportAttachmentsToBiohubObject implements BioHubSubmissionFeature {
+  id: string;
+  type: string;
+  properties: Record<string, any>;
+  child_features: BioHubSubmissionFeature[];
+
+  constructor(reportAttachmentRecord: ISurveyReportAttachment) {
+    defaultLog.debug({ label: 'PostSurveyReportAttachmentsToBiohubObject', message: 'params', reportAttachmentRecord });
+
+    this.id = reportAttachmentRecord.uuid;
+    this.type = BiohubFeatureType.ARTIFACT;
+    this.properties = {
+      artifact_id: reportAttachmentRecord.survey_report_attachment_id,
+      filename: reportAttachmentRecord.file_name,
+      file_type: ATTACHMENT_TYPE.REPORT,
+      file_size: reportAttachmentRecord.file_size,
+      title: reportAttachmentRecord.title,
+      description: reportAttachmentRecord.description,
+      year_published: reportAttachmentRecord.year_published
+    };
+    this.child_features = [];
   }
 }
 
@@ -73,10 +142,28 @@ export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
   properties: Record<string, any>;
-  features: PostSurveyObservationToBiohubObject[];
+  child_features: PostSurveyObservationToBiohubObject[];
 
-  constructor(surveyData: GetSurveyData, observationRecords: ObservationRecord[], surveyGeometry: FeatureCollection) {
+  constructor(
+    surveyData: GetSurveyData,
+    observationRecords: ObservationRecord[],
+    surveyGeometry: FeatureCollection,
+    surveyAttachments: ISurveyAttachment[],
+    surveyReports: ISurveyReportAttachment[]
+  ) {
     defaultLog.debug({ label: 'PostSurveyToBiohubObject', message: 'params', surveyData });
+
+    const observationFeatures = observationRecords.map(
+      (observation) => new PostSurveyObservationToBiohubObject(observation)
+    );
+
+    const attachmentFeatures = surveyAttachments.map(
+      (attachment) => new PostSurveyAttachmentsToBiohubObject(attachment)
+    );
+
+    const reportAttachmentFeatures = surveyReports.map(
+      (attachment) => new PostSurveyReportAttachmentsToBiohubObject(attachment)
+    );
 
     this.id = surveyData.uuid;
     this.type = BiohubFeatureType.DATASET;
@@ -90,32 +177,44 @@ export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
       revision_count: surveyData.revision_count,
       geometry: surveyGeometry
     };
-    this.features = observationRecords.map((observation) => new PostSurveyObservationToBiohubObject(observation));
+    this.child_features = [...observationFeatures, ...reportAttachmentFeatures, ...attachmentFeatures];
   }
 }
 
-export class PostSurveySubmissionToBioHubObject {
+export class PostSurveySubmissionToBioHubObject implements BioHubSubmission {
   id: string;
   name: string;
   description: string;
-  features: BioHubSubmissionFeature[];
+  comment: string;
+  content: BioHubSubmissionFeature;
 
   constructor(
     surveyData: GetSurveyData,
+    GetSurveyPurposeAndMethodologyData: GetSurveyPurposeAndMethodologyData,
     observationRecords: ObservationRecord[],
     surveyGeometry: FeatureCollection,
-    additionalInformation: string
+    surveyAttachments: ISurveyAttachment[],
+    surveyReports: ISurveyReportAttachment[],
+    submissionComment: string
   ) {
     defaultLog.debug({ label: 'PostSurveySubmissionToBioHubObject' });
 
     this.id = surveyData.uuid;
     this.name = surveyData.survey_name;
-    this.description = additionalInformation;
-    this.features = [new PostSurveyToBiohubObject(surveyData, observationRecords, surveyGeometry)];
+    this.description = GetSurveyPurposeAndMethodologyData.additional_details;
+    this.comment = submissionComment;
+    this.content = new PostSurveyToBiohubObject(
+      surveyData,
+      observationRecords,
+      surveyGeometry,
+      surveyAttachments,
+      surveyReports
+    );
   }
 }
 
 export enum BiohubFeatureType {
   DATASET = 'dataset',
-  OBSERVATION = 'observation'
+  OBSERVATION = 'observation',
+  ARTIFACT = 'artifact'
 }

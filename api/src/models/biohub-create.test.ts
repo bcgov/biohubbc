@@ -7,7 +7,7 @@ import {
   PostSurveySubmissionToBioHubObject,
   PostSurveyToBiohubObject
 } from './biohub-create';
-import { GetSurveyData } from './survey-view';
+import { GetSurveyData, GetSurveyPurposeAndMethodologyData } from './survey-view';
 
 describe('PostSurveyObservationToBiohubObject', () => {
   describe('All values provided', () => {
@@ -114,7 +114,13 @@ describe('PostSurveyToBiohubObject', () => {
     } as GetSurveyData;
 
     before(() => {
-      data = new PostSurveyToBiohubObject(survey_obj, [observation_obj], { type: 'FeatureCollection', features: [] });
+      data = new PostSurveyToBiohubObject(
+        survey_obj,
+        [observation_obj],
+        { type: 'FeatureCollection', features: [] },
+        [],
+        []
+      );
     });
 
     it('sets id', () => {
@@ -139,7 +145,7 @@ describe('PostSurveyToBiohubObject', () => {
     });
 
     it('sets features', () => {
-      expect(data.features).to.eql([new PostSurveyObservationToBiohubObject(observation_obj)]);
+      expect(data.child_features).to.eql([new PostSurveyObservationToBiohubObject(observation_obj)]);
     });
   });
 });
@@ -180,19 +186,29 @@ describe('PostSurveySubmissionToBioHubObject', () => {
       revision_count: 1
     };
 
+    const purpose_and_methodology: GetSurveyPurposeAndMethodologyData = {
+      intended_outcome_ids: [],
+      additional_details: 'A description of the purpose',
+      revision_count: 0,
+      vantage_code_ids: []
+    };
+
     const survey_geometry: FeatureCollection = {
       type: 'FeatureCollection',
       features: []
     };
 
-    const additionalInformation = 'A description of the submission';
+    const submissionComment = 'A comment about the submission';
 
     before(() => {
       data = new PostSurveySubmissionToBioHubObject(
         survey_obj,
+        purpose_and_methodology,
         observation_obj,
         survey_geometry,
-        additionalInformation
+        [],
+        [],
+        submissionComment
       );
     });
 
@@ -205,11 +221,15 @@ describe('PostSurveySubmissionToBioHubObject', () => {
     });
 
     it('sets description', () => {
-      expect(data.description).to.equal('A description of the submission');
+      expect(data.description).to.equal('A description of the purpose');
     });
 
-    it('sets features', () => {
-      expect(data.features).to.eql([new PostSurveyToBiohubObject(survey_obj, observation_obj, survey_geometry)]);
+    it('sets comment', () => {
+      expect(data.comment).to.equal('A comment about the submission');
+    });
+
+    it('sets content', () => {
+      expect(data.content).to.eql(new PostSurveyToBiohubObject(survey_obj, observation_obj, survey_geometry, [], []));
     });
   });
 });

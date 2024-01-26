@@ -1,11 +1,7 @@
 import { Stack } from '@mui/material';
-import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
-import SurveySubmissionAlertBar from 'components/publish/SurveySubmissionAlertBar';
-import { SystemRoleGuard } from 'components/security/Guards';
-import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
@@ -71,12 +67,6 @@ const SurveyPage: React.FC = () => {
         <Paper sx={{ display: 'none' }}>
           <SurveyStudyArea />
         </Paper>
-
-        <Box sx={{ display: 'none' }} my={3}>
-          <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-            <SurveySubmissionAlertBar />
-          </SystemRoleGuard>
-        </Box>
       </Container>
     </>
   );

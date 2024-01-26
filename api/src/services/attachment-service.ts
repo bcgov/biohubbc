@@ -14,16 +14,9 @@ import {
   ISurveyAttachment,
   ISurveyReportAttachment
 } from '../repositories/attachment-repository';
-import {
-  ProjectAttachmentPublish,
-  ProjectReportPublish,
-  SurveyAttachmentPublish,
-  SurveyReportPublish
-} from '../repositories/history-publish-repository';
 import { deleteFileFromS3, generateS3FileKey } from '../utils/file-utils';
 import { DBService } from './db-service';
 import { HistoryPublishService } from './history-publish-service';
-import { PlatformService } from './platform-service';
 
 export interface IAttachmentType {
   id: number;
@@ -228,6 +221,20 @@ export class AttachmentService extends DBService {
    */
   async getSurveyAttachmentsByIds(surveyId: number, attachmentIds: number[]): Promise<ISurveyAttachment[]> {
     return this.attachmentRepository.getSurveyAttachmentsByIds(surveyId, attachmentIds);
+  }
+
+  /**
+   * Get all survey attachments for the given survey ID, which are publishable to BioHub.
+   *
+   * Note: Not all attachment types are publishable to BioHub. This method filters out attachment types that should not
+   * be published.
+   *
+   * @param {number} surveyId the ID of the survey.
+   * @return {Promise<ISurveyAttachment[]>} Promise resolving all survey publishable attachments.
+   * @memberof AttachmentService
+   */
+  async getSurveyAttachmentsForBioHubSubmission(surveyId: number): Promise<ISurveyAttachment[]> {
+    return this.attachmentRepository.getSurveyAttachmentsForBioHubSubmission(surveyId);
   }
 
   /**
@@ -866,47 +873,29 @@ export class AttachmentService extends DBService {
    * @param {number} projectId
    * @param {number} attachmentId
    * @param {string} attachmentType
-   * @param {boolean} isAdmin
    * @return {*}  {Promise<void>}
    * @memberof AttachmentService
    */
-  async handleDeleteProjectAttachment(
-    projectId: number,
-    attachmentId: number,
-    attachmentType: string,
-    isAdmin: boolean
-  ): Promise<void> {
+  async handleDeleteProjectAttachment(projectId: number, attachmentId: number, attachmentType: string): Promise<void> {
     const historyPublishService = new HistoryPublishService(this.connection);
 
     let attachment: IProjectAttachment | IProjectReportAttachment | null;
-    let publishStatus: ProjectReportPublish | ProjectAttachmentPublish | null;
 
     if (attachmentType === ATTACHMENT_TYPE.REPORT) {
-      // Get the attachment and publish record
+      // Get the attachment
       attachment = await this.getProjectReportAttachmentById(projectId, attachmentId);
-      publishStatus = await historyPublishService.getProjectReportPublishRecord(
-        attachment.project_report_attachment_id
-      );
 
       // Delete the publish record, authors, and attachment
       await historyPublishService.deleteProjectReportAttachmentPublishRecord(attachmentId);
       await this.deleteProjectReportAttachmentAuthors(attachmentId);
       await this.deleteProjectReportAttachment(attachmentId);
     } else {
-      // Get the attachment and publish record
+      // Get the attachment
       attachment = await this.getProjectAttachmentById(projectId, attachmentId);
-      publishStatus = await historyPublishService.getProjectAttachmentPublishRecord(attachment.project_attachment_id);
 
       // Delete the publish record and attachment
       await historyPublishService.deleteProjectAttachmentPublishRecord(attachmentId);
       await this.deleteProjectAttachment(attachmentId);
-    }
-
-    // If attachment was published, and isAdmin, delete the attachment from Platform
-    if (publishStatus && isAdmin) {
-      const platformService = new PlatformService(this.connection);
-      // request BIOHUB API to delete attachment
-      await platformService.deleteAttachmentFromBiohub(attachment.uuid);
     }
 
     // Delete the attachment from S3
@@ -924,51 +913,32 @@ export class AttachmentService extends DBService {
    * - delete publish record
    * - delete attachment
    *
-   * If attachment was published and user is admin:
-   * - delete from Platform
-   *
    * @param {number} surveyId
    * @param {number} attachmentId
    * @param {string} attachmentType
-   * @param {boolean} isAdmin
    * @return {*}  {Promise<void>}
    * @memberof AttachmentService
    */
-  async handleDeleteSurveyAttachment(
-    surveyId: number,
-    attachmentId: number,
-    attachmentType: string,
-    isAdmin: boolean
-  ): Promise<void> {
+  async handleDeleteSurveyAttachment(surveyId: number, attachmentId: number, attachmentType: string): Promise<void> {
     const historyPublishService = new HistoryPublishService(this.connection);
 
     let attachment: ISurveyAttachment | ISurveyReportAttachment | null;
-    let publishStatus: SurveyReportPublish | SurveyAttachmentPublish | null;
 
     if (attachmentType === ATTACHMENT_TYPE.REPORT) {
-      // Get the attachment and publish record
+      // Get the attachment
       attachment = await this.getSurveyReportAttachmentById(surveyId, attachmentId);
-      publishStatus = await historyPublishService.getSurveyReportPublishRecord(attachment.survey_report_attachment_id);
 
       // Delete the publish record, authors, and attachment
       await historyPublishService.deleteSurveyReportAttachmentPublishRecord(attachmentId);
       await this.deleteSurveyReportAttachmentAuthors(attachmentId);
       await this.deleteSurveyReportAttachment(attachmentId);
     } else {
-      // Get the attachment and publish record
+      // Get the attachment
       attachment = await this.getSurveyAttachmentById(surveyId, attachmentId);
-      publishStatus = await historyPublishService.getSurveyAttachmentPublishRecord(attachment.survey_attachment_id);
 
       // Delete the publish record and attachment
       await historyPublishService.deleteSurveyAttachmentPublishRecord(attachmentId);
       await this.deleteSurveyAttachment(attachmentId);
-    }
-
-    // If attachment was published, and isAdmin, delete the attachment from Platform
-    if (publishStatus && isAdmin) {
-      const platformService = new PlatformService(this.connection);
-      // request BIOHUB API to delete attachment
-      await platformService.deleteAttachmentFromBiohub(attachment.uuid);
     }
 
     // Delete the attachment from S3

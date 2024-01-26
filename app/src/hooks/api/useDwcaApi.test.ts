@@ -16,18 +16,6 @@ describe('useDwcaApi', () => {
   const projectId = 1;
   const surveyId = 2;
 
-  it('getObservationSubmission works as expected', async () => {
-    mock.onGet(`/api/project/${projectId}/survey/${surveyId}/dwca/observations/submission/get`).reply(200, {
-      surveyObservationData: { occurrence_submission_id: 1, inputFileName: 'file.txt' },
-      surveyObservationSupplementaryData: null
-    });
-
-    const result = await useDwcaApi(axios).getObservationSubmission(projectId, surveyId);
-
-    expect(result.surveyObservationData.occurrence_submission_id).toEqual(1);
-    expect(result.surveyObservationData.inputFileName).toEqual('file.txt');
-  });
-
   it('deleteObservationSubmission works as expected', async () => {
     const submissionId = 1;
 
