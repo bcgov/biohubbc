@@ -225,6 +225,8 @@ export class ObservationRepository extends BaseRepository {
     surveyId: number,
     pagination?: ApiPaginationOptions
   ): Promise<ObservationRecordWithSamplingData[]> {
+    defaultLog.debug({ label: 'getSurveyObservationsWithSamplingData', surveyId, pagination });
+
     const knex = getKnex();
 
     const allRowsQuery = knex
@@ -272,7 +274,7 @@ export class ObservationRepository extends BaseRepository {
 
     const paginatedQuery = !pagination
       ? allRowsQuery
-      : allRowsQuery.limit(pagination.limit).offset(pagination.page * pagination.limit);
+      : allRowsQuery.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
 
     const query =
       pagination?.sort && pagination.order ? paginatedQuery.orderBy(pagination.sort, pagination.order) : paginatedQuery;
