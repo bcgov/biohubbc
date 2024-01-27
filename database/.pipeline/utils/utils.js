@@ -9,7 +9,7 @@
  * @throws an Error if the oc command fails
  */
 const getResourceByName = (resourceName, oc) => {
-  console.log(`1 - getResourceByName - Fetching resource: ${resourceName}`);
+  console.debug(`1 - getResourceByName - Fetching resource: ${resourceName}`);
   const matches = oc.get(resourceName);
 
   if (!matches || !matches.length) {
@@ -60,7 +60,7 @@ const getResourceByRaw = (selector, type, settings, oc) => {
  * @return {*}
  */
 const deleteResourceByName = (resourceName, oc) => {
-  console.log(`1 - deleteResourceByName - Deleting resource: ${resourceName}`);
+  console.debug(`1 - deleteResourceByName - Deleting resource: ${resourceName}`);
   return oc.delete([resourceName], { 'ignore-not-found': 'true', wait: 'true' });
 };
 
@@ -75,29 +75,29 @@ const isResourceRunning = (resource) => {
   const status = resource.status || { conditions: [], containerStatuses: [] };
 
   if (!status.conditions) {
-    console.log(`1 - isResourceRunning - Resource 'status.conditions' is null or undefined`);
+    console.debug(`1 - isResourceRunning - Resource 'status.conditions' is null or undefined`);
     return false;
   }
 
   if (status.conditions && !status.conditions.length) {
-    console.log(`2 - isResourceRunning - Resource 'status.conditions' is empty`);
+    console.debug(`2 - isResourceRunning - Resource 'status.conditions' is empty`);
     return false;
   }
 
   if (!status.containerStatuses) {
-    console.log(`3 - isResourceRunning - Resource 'status.containerStatuses' is null or undefined`);
+    console.debug(`3 - isResourceRunning - Resource 'status.containerStatuses' is null or undefined`);
     return false;
   }
 
   if (!status.containerStatuses.length) {
-    console.log(`4 - isResourceRunning - Resource 'status.containerStatuses' is empty`);
+    console.debug(`4 - isResourceRunning - Resource 'status.containerStatuses' is empty`);
     return false;
   }
 
   const containerStatus = status.containerStatuses[0] || {};
 
   if (!containerStatus.state) {
-    console.log(`5 - isResourceRunning - Resource 'status.containerStatus[0].state' is null or undefined`);
+    console.debug(`5 - isResourceRunning - Resource 'status.containerStatus[0].state' is null or undefined`);
     return false;
   }
 
@@ -105,21 +105,21 @@ const isResourceRunning = (resource) => {
 
   if (state.terminated) {
     if (state.terminated.reason.toLowerCase() === 'completed') {
-      console.log(`8 - isResourceRunning - Resource completed successfully`);
+      console.debug(`8 - isResourceRunning - Resource completed successfully`);
       throw new Error(`7 - isResourceRunning - Resource terminated without error`);
     } else {
-      console.log(`9 - isResourceRunning - Resource terminated with error`);
-      console.log(`9 - isResourceRunning - Error: resource status = ${JSON.stringify(resource.status, null, 2)}`);
+      console.debug(`9 - isResourceRunning - Resource terminated with error`);
+      console.debug(`9 - isResourceRunning - Error: resource status = ${JSON.stringify(resource.status, null, 2)}`);
       throw new Error(`9 - isResourceRunning - Resource terminated with error`);
     }
   }
 
   if (state.running) {
-    console.log(`6 - isResourceRunning - Resource is running`);
+    console.debug(`6 - isResourceRunning - Resource is running`);
     return true; // Happy path
   }
 
-  console.log(`7 - isResourceRunning - Resource is pending`);
+  console.debug(`7 - isResourceRunning - Resource is pending`);
   return false;
 };
 
@@ -135,29 +135,29 @@ const isResourceComplete = (resource) => {
   const status = resource.status || { conditions: [], containerStatuses: [] };
 
   if (!status.conditions) {
-    console.log(`1 - isResourceComplete - Resource 'status.conditions' is null or undefined`);
+    console.debug(`1 - isResourceComplete - Resource 'status.conditions' is null or undefined`);
     return false;
   }
 
   if (status.conditions && !status.conditions.length) {
-    console.log(`2 - isResourceComplete - Resource 'status.conditions' is empty`);
+    console.debug(`2 - isResourceComplete - Resource 'status.conditions' is empty`);
     return false;
   }
 
   if (!status.containerStatuses) {
-    console.log(`3 - isResourceComplete - Resource 'status.containerStatuses' is null or undefined`);
+    console.debug(`3 - isResourceComplete - Resource 'status.containerStatuses' is null or undefined`);
     return false;
   }
 
   if (!status.containerStatuses.length) {
-    console.log(`4 - isResourceComplete - Resource 'status.containerStatuses' is empty`);
+    console.debug(`4 - isResourceComplete - Resource 'status.containerStatuses' is empty`);
     return false;
   }
 
   const containerStatus = status.containerStatuses[0] || {};
 
   if (!containerStatus.state) {
-    console.log(`5 - isResourceComplete - Resource 'status.containerStatus[0].state' is null or undefined`);
+    console.debug(`5 - isResourceComplete - Resource 'status.containerStatus[0].state' is null or undefined`);
     return false;
   }
 
@@ -165,16 +165,16 @@ const isResourceComplete = (resource) => {
 
   if (state.terminated) {
     if (state.terminated.reason.toLowerCase() === 'completed') {
-      console.log(`7 - isResourceComplete - Resource completed successfully`);
+      console.debug(`7 - isResourceComplete - Resource completed successfully`);
       return true; // Happy path
     } else {
-      console.log(`8 - isResourceComplete - Resource terminated with error`);
-      console.log(`8 - isResourceComplete - Error: resource status = ${JSON.stringify(resource.status, null, 2)}`);
+      console.debug(`8 - isResourceComplete - Resource terminated with error`);
+      console.debug(`8 - isResourceComplete - Error: resource status = ${JSON.stringify(resource.status, null, 2)}`);
       throw new Error(`8 - isResourceComplete - Resource terminated with error`);
     }
   }
 
-  console.log(`6 - isResourceComplete - Resource is pending`);
+  console.debug(`6 - isResourceComplete - Resource is pending`);
   return false;
 };
 
@@ -215,7 +215,7 @@ const waitForResourceToMeetCondition = async (
   const retry = async () => {
     if (count > 0) {
       count = count - 1;
-      console.log(`4 - waitForResourceToMeetCondition - Waiting for resource: retry count = ${count}`);
+      console.debug(`4 - waitForResourceToMeetCondition - Waiting for resource: retry count = ${count}`);
       await sleep(timeout);
       return check();
     } else {
@@ -224,19 +224,19 @@ const waitForResourceToMeetCondition = async (
   };
 
   const check = async () => {
-    console.log(`1 - waitForResourceToMeetCondition - Waiting for resource begin`);
+    console.debug(`1 - waitForResourceToMeetCondition - Waiting for resource begin`);
 
     let resource;
 
     try {
       resource = getResourceFunction();
     } catch {
-      console.log(`2 - waitForResourceToMeetCondition - Resource was not found`);
+      console.debug(`2 - waitForResourceToMeetCondition - Resource was not found`);
       return retry();
     }
 
     if (!resource) {
-      console.log(`3 - waitForResourceToMeetCondition - Resource was not found`);
+      console.debug(`3 - waitForResourceToMeetCondition - Resource was not found`);
       return retry();
     }
 
@@ -275,7 +275,7 @@ const checkAndClean = async (resourceName, numberOfRetries, timeoutBetweenRetrie
   const retry = async () => {
     if (count > 0) {
       count = count - 1;
-      console.log(`5 - checkAndClean - Waiting for resource: retry count = ${count}`);
+      console.debug(`5 - checkAndClean - Waiting for resource: retry count = ${count}`);
       await sleep(timeout);
       return check();
     } else {
@@ -284,7 +284,7 @@ const checkAndClean = async (resourceName, numberOfRetries, timeoutBetweenRetrie
   };
 
   const check = async () => {
-    console.log(`1 - checkAndClean - Waiting for resource begin`);
+    console.debug(`1 - checkAndClean - Waiting for resource begin`);
 
     try {
       let resource;
@@ -292,16 +292,16 @@ const checkAndClean = async (resourceName, numberOfRetries, timeoutBetweenRetrie
       try {
         resource = getResourceByName(resourceName, oc);
       } catch {
-        console.log(`2 - checkAndClean - Resource was not found`);
+        console.debug(`2 - checkAndClean - Resource was not found`);
         return retry();
       }
 
       if (!resource) {
-        console.log(`3 - checkAndClean - Resource was not found`);
+        console.debug(`3 - checkAndClean - Resource was not found`);
         return retry();
       }
 
-      console.log(`4 - checkAndClean - Deleting resource: ${resourceName}`);
+      console.debug(`4 - checkAndClean - Deleting resource: ${resourceName}`);
       deleteResourceByName(resourceName, oc);
     } catch {
       console.error(`7 - checkAndClean - Error: waiting for resource failed`);

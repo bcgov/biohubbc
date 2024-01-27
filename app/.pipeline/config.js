@@ -92,7 +92,7 @@ const phases = {
       ...pipelineConfigMap.app.pr.deploy,
       namespace: 'af2668-dev',
       name: pipelineConfigMap.module.app,
-      phase: 'dev',
+      //   phase: 'dev',
       changeId: changeId,
       suffix: `-dev-${changeId}`,
       instance: `${pipelineConfigMap.module.app}-dev-${changeId}`,
@@ -119,7 +119,7 @@ const phases = {
       ...pipelineConfigMap.app.dev.deploy,
       namespace: 'af2668-dev',
       name: pipelineConfigMap.module.app,
-      phase: 'dev',
+      //   phase: 'dev',
       changeId: 'deploy',
       suffix: '-dev-deploy',
       instance: `${pipelineConfigMap.module.app}-dev-deploy`,
@@ -146,7 +146,7 @@ const phases = {
       ...pipelineConfigMap.app.test.deploy,
       namespace: 'af2668-test',
       name: pipelineConfigMap.module.app,
-      phase: 'test',
+      //   phase: 'test',
       changeId: 'deploy',
       suffix: `-test`,
       instance: `${pipelineConfigMap.module.app}-test`,
@@ -173,7 +173,7 @@ const phases = {
       ...pipelineConfigMap.app.prod.deploy,
       namespace: 'af2668-prod',
       name: pipelineConfigMap.module.app,
-      phase: 'prod',
+      //   phase: 'prod',
       changeId: 'deploy',
       suffix: `-prod`,
       instance: `${pipelineConfigMap.module.app}-prod`,
@@ -185,11 +185,5 @@ const phases = {
     }
   }
 };
-
-console.log('1==============================================');
-console.log('api phases', phases);
-console.log('2==============================================');
-console.log('api options', options);
-console.log('3==============================================');
 
 module.exports = exports = { phases, options };

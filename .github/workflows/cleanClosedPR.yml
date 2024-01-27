@@ -73,7 +73,7 @@ jobs:
       # Clean the reamaining build/deployment artifacts
       - name: Clean remaining Artifacts
         env:
-          POD_SELECTOR: biohubbc
+          POD_SELECTOR: sims
         run: |
           oc --namespace af2668-dev   get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete --ignore-not-found " $1}' | bash
           oc --namespace af2668-tools get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete --ignore-not-found " $1}' | bash

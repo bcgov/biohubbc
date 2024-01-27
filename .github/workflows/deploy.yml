@@ -166,7 +166,7 @@ jobs:
       fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch != github.head_ref ) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
-      APP_NAME: "biohubbc-app"
+      APP_NAME: "sims-app"
       PIPELINE_CONFIG: ${{ needs.getPipelineConfigMap.outputs.pipeline_config }}
     needs:
       - checkoutRepo
@@ -230,7 +230,7 @@ jobs:
       fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch != github.head_ref ) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
-      APP_NAME: "biohubbc-db"
+      APP_NAME: "sims-db"
       PIPELINE_CONFIG: ${{ needs.getPipelineConfigMap.outputs.pipeline_config }}
     needs:
       - checkoutRepo
@@ -351,7 +351,7 @@ jobs:
       fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.skipped_by.branch != github.head_ref ) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
-      APP_NAME: "biohubbc-api"
+      APP_NAME: "sims-api"
       PIPELINE_CONFIG: ${{ needs.getPipelineConfigMap.outputs.pipeline_config }}
     needs:
       - checkoutRepo

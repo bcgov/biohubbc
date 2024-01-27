@@ -93,7 +93,7 @@ const phases = {
     },
     deploy: {
       ...pipelineConfigMap.database.pr.deploy,
-      phase: 'dev',
+      //   phase: 'dev',
       namespace: 'af2668-dev',
       name: pipelineConfigMap.module.db,
       changeId: deployChangeId,
@@ -117,7 +117,7 @@ const phases = {
     },
     deploy: {
       ...pipelineConfigMap.database.dev.deploy,
-      phase: 'dev',
+      //   phase: 'dev',
       namespace: 'af2668-dev',
       name: pipelineConfigMap.module.db,
       changeId: deployChangeId,
@@ -141,7 +141,7 @@ const phases = {
     },
     deploy: {
       ...pipelineConfigMap.database.test.deploy,
-      phase: 'test',
+      //   phase: 'test',
       namespace: 'af2668-test',
       name: pipelineConfigMap.module.db,
       changeId: deployChangeId,
@@ -165,7 +165,7 @@ const phases = {
     },
     deploy: {
       ...pipelineConfigMap.database.prod.deploy,
-      phase: 'prod',
+      //   phase: 'prod',
       namespace: 'af2668-prod',
       name: pipelineConfigMap.module.db,
       changeId: deployChangeId,
@@ -178,9 +178,9 @@ const phases = {
 };
 
 console.log('1==============================================');
-console.log('api phases', phases);
+console.log('phases', phases);
 console.log('2==============================================');
-console.log('api options', options);
+console.log('options', options);
 console.log('3==============================================');
 
 module.exports = exports = { phases, options };

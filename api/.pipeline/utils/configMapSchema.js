@@ -246,7 +246,6 @@ const PipelineConfigMapSchema = z.object({
       deploy: z.object({
         nodeEnv: z.string(),
         tz: z.string(),
-        dbSetupDockerfilePath: z.string(),
         volumeCapacity: z.string(),
         cpuRequest: z.string(),
         cpuLimit: z.string(),
@@ -267,7 +266,6 @@ const PipelineConfigMapSchema = z.object({
       deploy: z.object({
         nodeEnv: z.string(),
         tz: z.string(),
-        dbSetupDockerfilePath: z.string(),
         volumeCapacity: z.string(),
         cpuRequest: z.string(),
         cpuLimit: z.string(),
@@ -288,7 +286,6 @@ const PipelineConfigMapSchema = z.object({
       deploy: z.object({
         nodeEnv: z.string(),
         tz: z.string(),
-        dbSetupDockerfilePath: z.string(),
         volumeCapacity: z.string(),
         cpuRequest: z.string(),
         cpuLimit: z.string(),
@@ -309,7 +306,6 @@ const PipelineConfigMapSchema = z.object({
       deploy: z.object({
         nodeEnv: z.string(),
         tz: z.string(),
-        dbSetupDockerfilePath: z.string(),
         volumeCapacity: z.string(),
         cpuRequest: z.string(),
         cpuLimit: z.string(),

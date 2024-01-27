@@ -90,7 +90,7 @@ const phases = {
     },
     deploy: {
       ...pipelineConfigMap.api.pr.deploy,
-      phase: 'pr',
+      //   phase: 'pr',
       namespace: 'af2668-dev',
       name: pipelineConfigMap.module.api,
       dbName: pipelineConfigMap.module.db,
@@ -120,7 +120,7 @@ const phases = {
     },
     deploy: {
       ...pipelineConfigMap.api.dev.deploy,
-      phase: 'dev',
+      //   phase: 'dev',
       namespace: 'af2668-dev',
       name: pipelineConfigMap.module.api,
       dbName: pipelineConfigMap.module.db,
@@ -149,7 +149,7 @@ const phases = {
     },
     deploy: {
       ...pipelineConfigMap.api.test.deploy,
-      phase: 'test',
+      //   phase: 'test',
       namespace: 'af2668-test',
       name: pipelineConfigMap.module.api,
       dbName: pipelineConfigMap.module.db,
@@ -179,7 +179,7 @@ const phases = {
     },
     deploy: {
       ...pipelineConfigMap.api.prod.deploy,
-      phase: 'prod',
+      //   phase: 'prod',
       namespace: 'af2668-prod',
       name: pipelineConfigMap.module.api,
       dbName: pipelineConfigMap.module.db,
@@ -194,11 +194,5 @@ const phases = {
     }
   }
 };
-
-console.log('1==============================================');
-console.log('api phases', phases);
-console.log('2==============================================');
-console.log('api options', options);
-console.log('3==============================================');
 
 module.exports = exports = { phases, options };

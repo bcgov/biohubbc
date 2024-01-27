@@ -16,6 +16,22 @@ const dbSetupBuild = (settings) => {
 
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases[env][phase].namespace }, options));
 
+  console.log('4==========================================');
+  console.log({
+    NAME: name,
+    SUFFIX: phases[env][phase].suffix,
+    VERSION: phases[env][phase].tag,
+    SOURCE_CONTEXT_DIR: phases[env][phase].sourceContextDir,
+    DB_SETUP_DOCKERFILE_PATH: phases[env][phase].dbSetupDockerfilePath,
+    SOURCE_REPOSITORY_URL: oc.git.http_url,
+    SOURCE_REPOSITORY_REF: phases[env][phase].branch,
+    CPU_REQUEST: phases[env][phase].cpuRequest,
+    CPU_LIMIT: phases[env][phase].cpuLimit,
+    MEMORY_REQUEST: phases[env][phase].memoryRequest,
+    MEMORY_LIMIT: phases[env][phase].memoryLimit
+  });
+  console.log('5==========================================');
+
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../templates'));
 
   const name = `${phases[env][phase].name}-setup`;
@@ -28,7 +44,7 @@ const dbSetupBuild = (settings) => {
         NAME: name,
         SUFFIX: phases[env][phase].suffix,
         VERSION: phases[env][phase].tag,
-        SOURCE_CONTEXT_DIR: phases[env][phase].sourceContextDir,
+        // SOURCE_CONTEXT_DIR: phases[env][phase].sourceContextDir,
         DB_SETUP_DOCKERFILE_PATH: phases[env][phase].dbSetupDockerfilePath,
         SOURCE_REPOSITORY_URL: oc.git.http_url,
         SOURCE_REPOSITORY_REF: phases[env][phase].branch,

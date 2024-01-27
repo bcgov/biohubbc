@@ -52,7 +52,7 @@ const dbSetupDeploy = async (settings) => {
   const fetchedImageStreams = oc.get(`istag/${imageStreamName}`) || [];
 
   if (!fetchedImageStreams.length) {
-    console.log('Unable to fetch Database image reference for use in database setup deployment');
+    console.debug('Unable to fetch Database image reference for use in database setup deployment');
     process.exit(0);
   }
 

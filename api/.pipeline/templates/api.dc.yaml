@@ -116,7 +116,7 @@ parameters:
   # Object Store (S3)
   - name: OBJECT_STORE_SECRETS
     description: Secrets used to read and write to the S3 storage
-    value: 'biohubbc-object-store'
+    value: 'sims-object-store'
   - name: S3_KEY_PREFIX
     description: S3 key optional prefix
     required: false

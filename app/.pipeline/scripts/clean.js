@@ -5,6 +5,6 @@ const config = require('../config.js');
 
 // Cleans all build and deployment artifacts (pods, etc)
 clean(config).catch((error) => {
-  console.log('app clean - catch - error: ', error);
+  console.debug('app clean - catch - error: ', error);
   throw error;
 });

@@ -37,7 +37,7 @@ parameters:
     value: 'development'
   - name: OBJECT_STORE_SECRETS
     description: Secrets used to read and write to the S3 storage
-    value: 'biohubbc-object-store'
+    value: 'sims-object-store'
   - name: APP_PORT_DEFAULT
     description: Application default port
     value: '7100'

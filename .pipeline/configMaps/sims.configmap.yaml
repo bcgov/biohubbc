@@ -255,7 +255,6 @@ data:
           "deploy": {
             "nodeEnv": "development",
             "tz": "America/Vancouver",
-            "dbSetupDockerfilePath": "./.docker/db/Dockerfile.setup",
             "volumeCapacity": "500Mi",
             "cpuRequest": "50m",
             "cpuLimit": "400m",
@@ -277,7 +276,6 @@ data:
           "deploy": {
             "nodeEnv": "development",
             "tz": "America/Vancouver",
-            "dbSetupDockerfilePath": "./.docker/db/Dockerfile.setup",
             "volumeCapacity": "3Gi",
             "cpuRequest": "50m",
             "cpuLimit": "400m",
@@ -299,7 +297,6 @@ data:
           "deploy": {
             "nodeEnv": "production",
             "tz": "America/Vancouver",
-            "dbSetupDockerfilePath": "./.docker/db/Dockerfile.migrate",
             "volumeCapacity": "3Gi",
             "cpuRequest": "50m",
             "cpuLimit": "1000m",
@@ -321,7 +318,6 @@ data:
           "deploy": {
             "nodeEnv": "production",
             "tz": "America/Vancouver",
-            "dbSetupDockerfilePath": "./.docker/db/Dockerfile.migrate",
             "volumeCapacity": "5Gi",
             "cpuRequest": "50m",
             "cpuLimit": "1000m",
