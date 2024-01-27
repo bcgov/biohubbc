@@ -121,8 +121,8 @@ const PipelineConfigMapSchema = z.object({
       memoryLimit: z.string()
     }),
     deploy: z.object({
-      nodeEnv: z.string(),
       pr: z.object({
+        nodeEnv: z.string(),
         siteminderLogoutURL: z.string(),
         maxUploadNumFiles: z.number(),
         maxUploadFileSize: z.number(),
