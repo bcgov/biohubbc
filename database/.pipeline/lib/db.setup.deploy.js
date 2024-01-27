@@ -14,18 +14,19 @@ const {
 const dbSetupDeploy = async (settings) => {
   const phases = settings.phases;
   const options = settings.options;
+  const env = settings.options.env;
   const phase = settings.options.phase;
 
-  const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
+  const oc = new OpenShiftClientX(Object.assign({ namespace: phases[env][phase].deploy.namespace }, options));
 
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../templates'));
 
-  const changeId = phases[phase].changeId;
-  const isName = `${phases[phase].name}-setup`;
+  const changeId = phases[env][phase].deploy.changeId;
+  const isName = `${phases[env][phase].deploy.name}-setup`;
   const instance = `${isName}-${changeId}`;
-  const isVersion = `${phases[phase].tag}-setup`;
+  const isVersion = `${phases[env][phase].deploy.tag}-setup`;
   const imageStreamName = `${isName}:${isVersion}`;
-  const dbName = `${phases[phase].name}-postgresql${phases[phase].suffix}`;
+  const dbName = `${phases[env][phase].deploy.name}-postgresql${phases[env][phase].deploy.suffix}`;
 
   const objects = [];
   const imageStreamObjects = [];
@@ -44,7 +45,7 @@ const dbSetupDeploy = async (settings) => {
     })
   );
 
-  oc.applyRecommendedLabels(imageStreamObjects, isName, phase, `${changeId}`, instance);
+  oc.applyRecommendedLabels(imageStreamObjects, isName, env, `${changeId}`, instance);
   oc.importImageStreams(imageStreamObjects, isVersion, phases.build.namespace, phases.build.tag);
 
   // Get database setup image stream
@@ -57,16 +58,16 @@ const dbSetupDeploy = async (settings) => {
 
   const dbSetupImageStream = fetchedImageStreams[0];
 
-  const name = `${isName}${phases[phase].suffix}`;
+  const name = `${isName}${phases[env][phase].deploy.suffix}`;
 
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.setup.dc.yaml`, {
       param: {
         NAME: name,
-        SUFFIX: phases[phase].suffix,
-        VERSION: phases[phase].tag,
+        SUFFIX: phases[env][phase].deploy.suffix,
+        VERSION: phases[env][phase].deploy.tag,
         CHANGE_ID: changeId,
-        NODE_ENV: phases[phase].nodeEnv,
+        NODE_ENV: phases[env][phase].deploy.nodeEnv,
         DB_SERVICE_NAME: dbName,
         DB_SCHEMA: 'biohub',
         DB_SCHEMA_DAPI_V1: 'biohub_dapi_v1',
@@ -94,8 +95,8 @@ const dbSetupDeploy = async (settings) => {
   );
 
   // Deploy the db setup pod
-  oc.applyRecommendedLabels(objects, isName, phase, `${changeId}`, instance);
-  await oc.applyAndDeploy(objects, phases[phase].instance);
+  oc.applyRecommendedLabels(objects, isName, env, `${changeId}`, instance);
+  await oc.applyAndDeploy(objects, phases[env][phase].deploy.instance);
 
   // Wait to confirm if the db setup pod deployed successfully
   await waitForResourceToMeetCondition(() => getResourceByName(`pod/${name}`, oc), isResourceComplete, 30, 5, 0);

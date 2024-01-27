@@ -79,61 +79,101 @@ function processOptions(options) {
 const options = processOptions(rawOptions);
 
 const phases = {
-  build: {
-    ...pipelineConfigMap.database.build,
-    phase: 'build',
-    namespace: 'af2668-tools',
-    name: pipelineConfigMap.module.db,
-    changeId: changeId,
-    suffix: `-build-${changeId}`,
-    instance: `${pipelineConfigMap.module.db}-build-${changeId}`,
-    version: `${pipelineConfigMap.version}-${changeId}`,
-    tag: tag,
-    branch: branch
-  },
   pr: {
-    ...pipelineConfigMap.database.deploy.pr,
-    phase: 'dev',
-    namespace: 'af2668-dev',
-    name: pipelineConfigMap.module.db,
-    changeId: deployChangeId,
-    suffix: `-dev-${deployChangeId}`,
-    instance: `${pipelineConfigMap.module.db}-dev-${deployChangeId}`,
-    version: `${deployChangeId}-${changeId}`,
-    tag: `dev-${pipelineConfigMap.version}-${deployChangeId}`
+    build: {
+      ...pipelineConfigMap.database.pr.build,
+      namespace: 'af2668-tools',
+      name: pipelineConfigMap.module.db,
+      changeId: changeId,
+      suffix: `-build-${changeId}`,
+      instance: `${pipelineConfigMap.module.db}-build-${changeId}`,
+      version: `${pipelineConfigMap.version}-${changeId}`,
+      tag: tag,
+      branch: branch
+    },
+    deploy: {
+      ...pipelineConfigMap.database.pr.deploy,
+      phase: 'dev',
+      namespace: 'af2668-dev',
+      name: pipelineConfigMap.module.db,
+      changeId: deployChangeId,
+      suffix: `-dev-${deployChangeId}`,
+      instance: `${pipelineConfigMap.module.db}-dev-${deployChangeId}`,
+      version: `${deployChangeId}-${changeId}`,
+      tag: `dev-${pipelineConfigMap.version}-${deployChangeId}`
+    }
   },
   dev: {
-    ...pipelineConfigMap.database.deploy.dev,
-    phase: 'dev',
-    namespace: 'af2668-dev',
-    name: pipelineConfigMap.module.db,
-    changeId: deployChangeId,
-    suffix: `-dev-${deployChangeId}`,
-    instance: `${pipelineConfigMap.module.db}-dev-${deployChangeId}`,
-    version: `${deployChangeId}-${changeId}`,
-    tag: `dev-${pipelineConfigMap.version}-${deployChangeId}`
+    build: {
+      ...pipelineConfigMap.database.dev.build,
+      namespace: 'af2668-tools',
+      name: pipelineConfigMap.module.db,
+      changeId: changeId,
+      suffix: `-build-${changeId}`,
+      instance: `${pipelineConfigMap.module.db}-build-${changeId}`,
+      version: `${pipelineConfigMap.version}-${changeId}`,
+      tag: tag,
+      branch: branch
+    },
+    deploy: {
+      ...pipelineConfigMap.database.dev.deploy,
+      phase: 'dev',
+      namespace: 'af2668-dev',
+      name: pipelineConfigMap.module.db,
+      changeId: deployChangeId,
+      suffix: `-dev-${deployChangeId}`,
+      instance: `${pipelineConfigMap.module.db}-dev-${deployChangeId}`,
+      version: `${deployChangeId}-${changeId}`,
+      tag: `dev-${pipelineConfigMap.version}-${deployChangeId}`
+    }
   },
   test: {
-    ...pipelineConfigMap.database.deploy.test,
-    phase: 'test',
-    namespace: 'af2668-test',
-    name: pipelineConfigMap.module.db,
-    changeId: deployChangeId,
-    suffix: `-test`,
-    instance: `${pipelineConfigMap.module.db}-test`,
-    version: pipelineConfigMap.version,
-    tag: `test-${pipelineConfigMap.version}`
+    build: {
+      ...pipelineConfigMap.database.test.build,
+      namespace: 'af2668-tools',
+      name: pipelineConfigMap.module.db,
+      changeId: changeId,
+      suffix: `-build-${changeId}`,
+      instance: `${pipelineConfigMap.module.db}-build-${changeId}`,
+      version: `${pipelineConfigMap.version}-${changeId}`,
+      tag: tag,
+      branch: branch
+    },
+    deploy: {
+      ...pipelineConfigMap.database.test.deploy,
+      phase: 'test',
+      namespace: 'af2668-test',
+      name: pipelineConfigMap.module.db,
+      changeId: deployChangeId,
+      suffix: `-test`,
+      instance: `${pipelineConfigMap.module.db}-test`,
+      version: pipelineConfigMap.version,
+      tag: `test-${pipelineConfigMap.version}`
+    }
   },
   prod: {
-    ...pipelineConfigMap.database.deploy.prod,
-    phase: 'prod',
-    namespace: 'af2668-prod',
-    name: pipelineConfigMap.module.db,
-    changeId: deployChangeId,
-    suffix: `-prod`,
-    instance: `${pipelineConfigMap.module.db}-prod`,
-    version: pipelineConfigMap.version,
-    tag: `prod-${pipelineConfigMap.version}`
+    build: {
+      ...pipelineConfigMap.database.prod.build,
+      namespace: 'af2668-tools',
+      name: pipelineConfigMap.module.db,
+      changeId: changeId,
+      suffix: `-build-${changeId}`,
+      instance: `${pipelineConfigMap.module.db}-build-${changeId}`,
+      version: `${pipelineConfigMap.version}-${changeId}`,
+      tag: tag,
+      branch: branch
+    },
+    deploy: {
+      ...pipelineConfigMap.database.prod.deploy,
+      phase: 'prod',
+      namespace: 'af2668-prod',
+      name: pipelineConfigMap.module.db,
+      changeId: deployChangeId,
+      suffix: `-prod`,
+      instance: `${pipelineConfigMap.module.db}-prod`,
+      version: pipelineConfigMap.version,
+      tag: `prod-${pipelineConfigMap.version}`
+    }
   }
 };
 

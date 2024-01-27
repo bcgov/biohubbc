@@ -76,73 +76,113 @@ function processOptions(options) {
 const options = processOptions(rawOptions);
 
 const phases = {
-  build: {
-    ...pipelineConfigMap.app.build,
-    namespace: 'af2668-tools',
-    name: pipelineConfigMap.module.app,
-    phase: 'build',
-    changeId: changeId,
-    suffix: `-build-${changeId}`,
-    instance: `${pipelineConfigMap.module.app}-build-${changeId}`,
-    version: `${pipelineConfigMap.version}-${changeId}`,
-    tag: tag,
-    branch: branch
-  },
   pr: {
-    ...pipelineConfigMap.app.deploy.pr,
-    namespace: 'af2668-dev',
-    name: pipelineConfigMap.module.app,
-    phase: 'dev',
-    changeId: changeId,
-    suffix: `-dev-${changeId}`,
-    instance: `${pipelineConfigMap.module.app}-dev-${changeId}`,
-    version: `${changeId}-${changeId}`,
-    tag: `dev-${pipelineConfigMap.version}-${changeId}`,
-    host: `${pipelineConfigMap.module.app}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
-    apiHost: `${pipelineConfigMap.module.api}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
-    sso: pipelineConfigMap.sso.dev
+    build: {
+      ...pipelineConfigMap.app.pr.build,
+      namespace: 'af2668-tools',
+      name: pipelineConfigMap.module.app,
+      changeId: changeId,
+      suffix: `-build-${changeId}`,
+      instance: `${pipelineConfigMap.module.app}-build-${changeId}`,
+      version: `${pipelineConfigMap.version}-${changeId}`,
+      tag: tag,
+      branch: branch
+    },
+    deploy: {
+      ...pipelineConfigMap.app.pr.deploy,
+      namespace: 'af2668-dev',
+      name: pipelineConfigMap.module.app,
+      phase: 'dev',
+      changeId: changeId,
+      suffix: `-dev-${changeId}`,
+      instance: `${pipelineConfigMap.module.app}-dev-${changeId}`,
+      version: `${changeId}-${changeId}`,
+      tag: `dev-${pipelineConfigMap.version}-${changeId}`,
+      host: `${pipelineConfigMap.module.app}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
+      apiHost: `${pipelineConfigMap.module.api}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
+      sso: pipelineConfigMap.sso.dev
+    }
   },
   dev: {
-    ...pipelineConfigMap.app.deploy.dev,
-    namespace: 'af2668-dev',
-    name: pipelineConfigMap.module.app,
-    phase: 'dev',
-    changeId: 'deploy',
-    suffix: '-dev-deploy',
-    instance: `${pipelineConfigMap.module.app}-dev-deploy`,
-    version: `deploy-${changeId}`,
-    tag: `dev-${pipelineConfigMap.version}-deploy`,
-    host: pipelineConfigMap.app.deploy.dev.staticAppUrl,
-    apiHost: pipelineConfigMap.app.deploy.dev.staticApiUrl,
-    sso: pipelineConfigMap.sso.dev
+    build: {
+      ...pipelineConfigMap.app.dev.build,
+      namespace: 'af2668-tools',
+      name: pipelineConfigMap.module.app,
+      changeId: changeId,
+      suffix: `-build-${changeId}`,
+      instance: `${pipelineConfigMap.module.app}-build-${changeId}`,
+      version: `${pipelineConfigMap.version}-${changeId}`,
+      tag: tag,
+      branch: branch
+    },
+    deploy: {
+      ...pipelineConfigMap.app.dev.deploy,
+      namespace: 'af2668-dev',
+      name: pipelineConfigMap.module.app,
+      phase: 'dev',
+      changeId: 'deploy',
+      suffix: '-dev-deploy',
+      instance: `${pipelineConfigMap.module.app}-dev-deploy`,
+      version: `deploy-${changeId}`,
+      tag: `dev-${pipelineConfigMap.version}-deploy`,
+      host: pipelineConfigMap.app.dev.deploy.staticAppUrl,
+      apiHost: pipelineConfigMap.app.dev.deploy.staticApiUrl,
+      sso: pipelineConfigMap.sso.dev
+    }
   },
   test: {
-    ...pipelineConfigMap.app.deploy.test,
-    namespace: 'af2668-test',
-    name: pipelineConfigMap.module.app,
-    phase: 'test',
-    changeId: 'deploy',
-    suffix: `-test`,
-    instance: `${pipelineConfigMap.module.app}-test`,
-    version: pipelineConfigMap.version,
-    tag: `test-${pipelineConfigMap.version}`,
-    host: pipelineConfigMap.app.deploy.test.staticAppUrl,
-    apiHost: pipelineConfigMap.app.deploy.test.staticApiUrl,
-    sso: pipelineConfigMap.sso.test
+    build: {
+      ...pipelineConfigMap.app.test.build,
+      namespace: 'af2668-tools',
+      name: pipelineConfigMap.module.app,
+      changeId: changeId,
+      suffix: `-build-${changeId}`,
+      instance: `${pipelineConfigMap.module.app}-build-${changeId}`,
+      version: `${pipelineConfigMap.version}-${changeId}`,
+      tag: tag,
+      branch: branch
+    },
+    deploy: {
+      ...pipelineConfigMap.app.test.deploy,
+      namespace: 'af2668-test',
+      name: pipelineConfigMap.module.app,
+      phase: 'test',
+      changeId: 'deploy',
+      suffix: `-test`,
+      instance: `${pipelineConfigMap.module.app}-test`,
+      version: pipelineConfigMap.version,
+      tag: `test-${pipelineConfigMap.version}`,
+      host: pipelineConfigMap.app.test.deploy.staticAppUrl,
+      apiHost: pipelineConfigMap.app.test.deploy.staticApiUrl,
+      sso: pipelineConfigMap.sso.test
+    }
   },
   prod: {
-    ...pipelineConfigMap.app.deploy.prod,
-    namespace: 'af2668-prod',
-    name: pipelineConfigMap.module.app,
-    phase: 'prod',
-    changeId: 'deploy',
-    suffix: `-prod`,
-    instance: `${pipelineConfigMap.module.app}-prod`,
-    version: pipelineConfigMap.version,
-    tag: `prod-${pipelineConfigMap.version}`,
-    host: pipelineConfigMap.app.deploy.prod.staticAppUrl,
-    apiHost: pipelineConfigMap.app.deploy.prod.staticApiUrl,
-    sso: pipelineConfigMap.sso.prod
+    build: {
+      ...pipelineConfigMap.app.prod.build,
+      namespace: 'af2668-tools',
+      name: pipelineConfigMap.module.app,
+      changeId: changeId,
+      suffix: `-build-${changeId}`,
+      instance: `${pipelineConfigMap.module.app}-build-${changeId}`,
+      version: `${pipelineConfigMap.version}-${changeId}`,
+      tag: tag,
+      branch: branch
+    },
+    deploy: {
+      ...pipelineConfigMap.app.prod.deploy,
+      namespace: 'af2668-prod',
+      name: pipelineConfigMap.module.app,
+      phase: 'prod',
+      changeId: 'deploy',
+      suffix: `-prod`,
+      instance: `${pipelineConfigMap.module.app}-prod`,
+      version: pipelineConfigMap.version,
+      tag: `prod-${pipelineConfigMap.version}`,
+      host: pipelineConfigMap.app.prod.deploy.staticAppUrl,
+      apiHost: pipelineConfigMap.app.prod.deploy.staticApiUrl,
+      sso: pipelineConfigMap.sso.prod
+    }
   }
 };
 

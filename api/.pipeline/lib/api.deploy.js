@@ -12,76 +12,77 @@ const path = require('path');
 const apiDeploy = async (settings) => {
   const phases = settings.phases;
   const options = settings.options;
+  const env = settings.options.env;
   const phase = settings.options.phase;
 
-  const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
+  const oc = new OpenShiftClientX(Object.assign({ namespace: phases[env][phase].namespace }, options));
 
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../templates'));
 
-  const changeId = phases[phase].changeId;
+  const changeId = phases[env][phase].changeId;
 
   let objects = [];
 
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api.dc.yaml`, {
       param: {
-        NAME: phases[phase].name,
-        SUFFIX: phases[phase].suffix,
-        VERSION: phases[phase].tag,
-        HOST: phases[phase].host,
-        APP_HOST: phases[phase].appHost,
+        NAME: phases[env][phase].name,
+        SUFFIX: phases[env][phase].suffix,
+        VERSION: phases[env][phase].tag,
+        HOST: phases[env][phase].host,
+        APP_HOST: phases[env][phase].appHost,
         CHANGE_ID: phases.build.changeId || changeId,
         // Node
-        NODE_ENV: phases[phase].nodeEnv,
-        NODE_OPTIONS: phases[phase].nodeOptions,
+        NODE_ENV: phases[env][phase].nodeEnv,
+        NODE_OPTIONS: phases[env][phase].nodeOptions,
         // BioHub Platform (aka: Backbone)
-        BACKBONE_API_HOST: phases[phase].backboneApiHost,
-        BACKBONE_INTAKE_PATH: phases[phase].backboneIntakePath,
-        BACKBONE_ARTIFACT_INTAKE_PATH: phases[phase].backboneArtifactIntakePath,
-        BACKBONE_INTAKE_ENABLED: phases[phase].backboneIntakeEnabled,
+        BACKBONE_API_HOST: phases[env][phase].backboneApiHost,
+        BACKBONE_INTAKE_PATH: phases[env][phase].backboneIntakePath,
+        BACKBONE_ARTIFACT_INTAKE_PATH: phases[env][phase].backboneArtifactIntakePath,
+        BACKBONE_INTAKE_ENABLED: phases[env][phase].backboneIntakeEnabled,
         // BCTW / Critterbase
-        BCTW_API_HOST: phases[phase].bctwApiHost,
-        CB_API_HOST: phases[phase].critterbaseApiHost,
+        BCTW_API_HOST: phases[env][phase].bctwApiHost,
+        CB_API_HOST: phases[env][phase].critterbaseApiHost,
         // Elastic Search
-        ELASTICSEARCH_URL: phases[phase].elasticsearchURL,
-        ELASTICSEARCH_TAXONOMY_INDEX: phases[phase].elasticsearchTaxonomyIndex,
+        ELASTICSEARCH_URL: phases[env][phase].elasticsearchURL,
+        ELASTICSEARCH_TAXONOMY_INDEX: phases[env][phase].elasticsearchTaxonomyIndex,
         // S3
-        S3_KEY_PREFIX: phases[phase].s3KeyPrefix,
+        S3_KEY_PREFIX: phases[env][phase].s3KeyPrefix,
         // Database
-        TZ: phases[phase].tz,
-        DB_SERVICE_NAME: `${phases[phase].dbName}-postgresql${phases[phase].suffix}`,
+        TZ: phases[env][phase].tz,
+        DB_SERVICE_NAME: `${phases[env][phase].dbName}-postgresql${phases[env][phase].suffix}`,
         // Keycloak
-        KEYCLOAK_HOST: phases[phase].sso.host,
-        KEYCLOAK_REALM: phases[phase].sso.realm,
-        KEYCLOAK_CLIENT_ID: phases[phase].sso.clientId,
+        KEYCLOAK_HOST: phases[env][phase].sso.host,
+        KEYCLOAK_REALM: phases[env][phase].sso.realm,
+        KEYCLOAK_CLIENT_ID: phases[env][phase].sso.clientId,
         // Keycloak secret
-        KEYCLOAK_SECRET: phases[phase].sso.keycloakSecret,
+        KEYCLOAK_SECRET: phases[env][phase].sso.keycloakSecret,
         // Keycloak Service Client
-        KEYCLOAK_ADMIN_USERNAME: phases[phase].sso.serviceClient.serviceClientName,
-        KEYCLOAK_SECRET_ADMIN_PASSWORD_KEY: phases[phase].sso.serviceClient.keycloakSecretServiceClientPasswordKey,
+        KEYCLOAK_ADMIN_USERNAME: phases[env][phase].sso.serviceClient.serviceClientName,
+        KEYCLOAK_SECRET_ADMIN_PASSWORD_KEY: phases[env][phase].sso.serviceClient.keycloakSecretServiceClientPasswordKey,
         // Keycloak CSS API
-        KEYCLOAK_API_TOKEN_URL: phases[phase].sso.cssApi.cssApiTokenUrl,
-        KEYCLOAK_API_CLIENT_ID: phases[phase].sso.cssApi.cssApiClientId,
-        KEYCLOAK_API_CLIENT_SECRET_KEY: phases[phase].sso.cssApi.keycloakSecretCssApiSecretKey,
-        KEYCLOAK_API_HOST: phases[phase].sso.cssApi.cssApiHost,
-        KEYCLOAK_API_ENVIRONMENT: phases[phase].sso.cssApi.cssApiEnvironment,
+        KEYCLOAK_API_TOKEN_URL: phases[env][phase].sso.cssApi.cssApiTokenUrl,
+        KEYCLOAK_API_CLIENT_ID: phases[env][phase].sso.cssApi.cssApiClientId,
+        KEYCLOAK_API_CLIENT_SECRET_KEY: phases[env][phase].sso.cssApi.keycloakSecretCssApiSecretKey,
+        KEYCLOAK_API_HOST: phases[env][phase].sso.cssApi.cssApiHost,
+        KEYCLOAK_API_ENVIRONMENT: phases[env][phase].sso.cssApi.cssApiEnvironment,
         // Log Level
-        LOG_LEVEL: phases[phase].logLevel || 'info',
+        LOG_LEVEL: phases[env][phase].logLevel || 'info',
         // Openshift Resources
-        CPU_REQUEST: phases[phase].cpuRequest,
-        CPU_LIMIT: phases[phase].cpuLimit,
-        MEMORY_REQUEST: phases[phase].memoryRequest,
-        MEMORY_LIMIT: phases[phase].memoryLimit,
-        REPLICAS: phases[phase].replicas,
-        REPLICAS_MAX: phases[phase].replicasMax
+        CPU_REQUEST: phases[env][phase].cpuRequest,
+        CPU_LIMIT: phases[env][phase].cpuLimit,
+        MEMORY_REQUEST: phases[env][phase].memoryRequest,
+        MEMORY_LIMIT: phases[env][phase].memoryLimit,
+        REPLICAS: phases[env][phase].replicas,
+        REPLICAS_MAX: phases[env][phase].replicasMax
       }
     })
   );
 
-  oc.applyRecommendedLabels(objects, phases[phase].name, phase, `${changeId}`, phases[phase].instance);
-  oc.importImageStreams(objects, phases[phase].tag, phases.build.namespace, phases.build.tag);
+  oc.applyRecommendedLabels(objects, phases[env][phase].name, env, `${changeId}`, phases[env][phase].instance);
+  oc.importImageStreams(objects, phases[env][phase].tag, phases.build.namespace, phases.build.tag);
 
-  await oc.applyAndDeploy(objects, phases[phase].instance);
+  await oc.applyAndDeploy(objects, phases[env][phase].instance);
 };
 
 module.exports = { apiDeploy };

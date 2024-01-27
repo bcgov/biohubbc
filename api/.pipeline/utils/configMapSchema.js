@@ -16,35 +16,44 @@ const PipelineConfigMapSchema = z.object({
     app: z.string()
   }),
   api: z.object({
-    build: z.object({
-      tz: z.string(),
-      cpuRequest: z.string(),
-      cpuLimit: z.string(),
-      memoryRequest: z.string(),
-      memoryLimit: z.string()
+    pr: z.object({
+      build: z.object({
+        tz: z.string(),
+        cpuRequest: z.string(),
+        cpuLimit: z.string(),
+        memoryRequest: z.string(),
+        memoryLimit: z.string()
+      }),
+      deploy: z.object({
+        nodeEnv: z.string(),
+        tz: z.string(),
+        backboneApiHost: z.string(),
+        backboneIntakePath: z.string(),
+        backboneArtifactIntakePath: z.string(),
+        backboneIntakeEnabled: z.boolean(),
+        bctwApiHost: z.string(),
+        critterbaseApiHost: z.string(),
+        elasticsearchURL: z.string(),
+        elasticsearchTaxonomyIndex: z.string(),
+        s3KeyPrefix: z.string(),
+        logLevel: z.string(),
+        cpuRequest: z.string(),
+        cpuLimit: z.string(),
+        memoryRequest: z.string(),
+        memoryLimit: z.string(),
+        replicas: z.string(),
+        replicasMax: z.string()
+      })
     }),
-    deploy: z.object({
-      pr: z.object({
-        nodeEnv: z.string(),
+    dev: z.object({
+      build: z.object({
         tz: z.string(),
-        backboneApiHost: z.string(),
-        backboneIntakePath: z.string(),
-        backboneArtifactIntakePath: z.string(),
-        backboneIntakeEnabled: z.boolean(),
-        bctwApiHost: z.string(),
-        critterbaseApiHost: z.string(),
-        elasticsearchURL: z.string(),
-        elasticsearchTaxonomyIndex: z.string(),
-        s3KeyPrefix: z.string(),
-        logLevel: z.string(),
         cpuRequest: z.string(),
         cpuLimit: z.string(),
         memoryRequest: z.string(),
-        memoryLimit: z.string(),
-        replicas: z.string(),
-        replicasMax: z.string()
+        memoryLimit: z.string()
       }),
-      dev: z.object({
+      deploy: z.object({
         nodeEnv: z.string(),
         staticApiUrl: z.string(),
         staticAppUrl: z.string(),
@@ -65,8 +74,17 @@ const PipelineConfigMapSchema = z.object({
         memoryLimit: z.string(),
         replicas: z.string(),
         replicasMax: z.string()
+      })
+    }),
+    test: z.object({
+      build: z.object({
+        tz: z.string(),
+        cpuRequest: z.string(),
+        cpuLimit: z.string(),
+        memoryRequest: z.string(),
+        memoryLimit: z.string()
       }),
-      test: z.object({
+      deploy: z.object({
         nodeEnv: z.string(),
         staticApiUrl: z.string(),
         staticAppUrl: z.string(),
@@ -87,8 +105,17 @@ const PipelineConfigMapSchema = z.object({
         memoryLimit: z.string(),
         replicas: z.string(),
         replicasMax: z.string()
+      })
+    }),
+    prod: z.object({
+      build: z.object({
+        tz: z.string(),
+        cpuRequest: z.string(),
+        cpuLimit: z.string(),
+        memoryRequest: z.string(),
+        memoryLimit: z.string()
       }),
-      prod: z.object({
+      deploy: z.object({
         nodeEnv: z.string(),
         staticApiUrl: z.string(),
         staticAppUrl: z.string(),
@@ -114,27 +141,35 @@ const PipelineConfigMapSchema = z.object({
     })
   }),
   app: z.object({
-    build: z.object({
-      cpuRequest: z.string(),
-      cpuLimit: z.string(),
-      memoryRequest: z.string(),
-      memoryLimit: z.string()
+    pr: z.object({
+      build: z.object({
+        cpuRequest: z.string(),
+        cpuLimit: z.string(),
+        memoryRequest: z.string(),
+        memoryLimit: z.string()
+      }),
+      deploy: z.object({
+        nodeEnv: z.string(),
+        siteminderLogoutURL: z.string(),
+        maxUploadNumFiles: z.number(),
+        maxUploadFileSize: z.number(),
+        biohubFeatureFlag: z.string(),
+        cpuRequest: z.string(),
+        cpuLimit: z.string(),
+        memoryRequest: z.string(),
+        memoryLimit: z.string(),
+        replicas: z.string(),
+        replicasMax: z.string()
+      })
     }),
-    deploy: z.object({
-      pr: z.object({
-        nodeEnv: z.string(),
-        siteminderLogoutURL: z.string(),
-        maxUploadNumFiles: z.number(),
-        maxUploadFileSize: z.number(),
-        biohubFeatureFlag: z.string(),
+    dev: z.object({
+      build: z.object({
         cpuRequest: z.string(),
         cpuLimit: z.string(),
         memoryRequest: z.string(),
-        memoryLimit: z.string(),
-        replicas: z.string(),
-        replicasMax: z.string()
+        memoryLimit: z.string()
       }),
-      dev: z.object({
+      deploy: z.object({
         nodeEnv: z.string(),
         staticApiUrl: z.string(),
         staticAppUrl: z.string(),
@@ -148,8 +183,16 @@ const PipelineConfigMapSchema = z.object({
         memoryLimit: z.string(),
         replicas: z.string(),
         replicasMax: z.string()
+      })
+    }),
+    test: z.object({
+      build: z.object({
+        cpuRequest: z.string(),
+        cpuLimit: z.string(),
+        memoryRequest: z.string(),
+        memoryLimit: z.string()
       }),
-      test: z.object({
+      deploy: z.object({
         nodeEnv: z.string(),
         staticApiUrl: z.string(),
         staticAppUrl: z.string(),
@@ -163,8 +206,16 @@ const PipelineConfigMapSchema = z.object({
         memoryLimit: z.string(),
         replicas: z.string(),
         replicasMax: z.string()
+      })
+    }),
+    prod: z.object({
+      build: z.object({
+        cpuRequest: z.string(),
+        cpuLimit: z.string(),
+        memoryRequest: z.string(),
+        memoryLimit: z.string()
       }),
-      prod: z.object({
+      deploy: z.object({
         nodeEnv: z.string(),
         staticApiUrl: z.string(),
         staticAppUrl: z.string(),
@@ -183,11 +234,37 @@ const PipelineConfigMapSchema = z.object({
     })
   }),
   database: z.object({
-    build: z.object({
-      tz: z.string()
+    pr: z.object({
+      build: z.object({
+        tz: z.string(),
+        dbSetupDockerfilePath: z.string(),
+        cpuRequest: z.string(),
+        cpuLimit: z.string(),
+        memoryRequest: z.string(),
+        memoryLimit: z.string()
+      }),
+      deploy: z.object({
+        nodeEnv: z.string(),
+        tz: z.string(),
+        dbSetupDockerfilePath: z.string(),
+        volumeCapacity: z.string(),
+        cpuRequest: z.string(),
+        cpuLimit: z.string(),
+        memoryRequest: z.string(),
+        memoryLimit: z.string(),
+        replicas: z.string()
+      })
     }),
-    deploy: z.object({
-      pr: z.object({
+    dev: z.object({
+      build: z.object({
+        tz: z.string(),
+        dbSetupDockerfilePath: z.string(),
+        cpuRequest: z.string(),
+        cpuLimit: z.string(),
+        memoryRequest: z.string(),
+        memoryLimit: z.string()
+      }),
+      deploy: z.object({
         nodeEnv: z.string(),
         tz: z.string(),
         dbSetupDockerfilePath: z.string(),
@@ -197,8 +274,18 @@ const PipelineConfigMapSchema = z.object({
         memoryRequest: z.string(),
         memoryLimit: z.string(),
         replicas: z.string()
+      })
+    }),
+    test: z.object({
+      build: z.object({
+        tz: z.string(),
+        dbSetupDockerfilePath: z.string(),
+        cpuRequest: z.string(),
+        cpuLimit: z.string(),
+        memoryRequest: z.string(),
+        memoryLimit: z.string()
       }),
-      dev: z.object({
+      deploy: z.object({
         nodeEnv: z.string(),
         tz: z.string(),
         dbSetupDockerfilePath: z.string(),
@@ -208,19 +295,18 @@ const PipelineConfigMapSchema = z.object({
         memoryRequest: z.string(),
         memoryLimit: z.string(),
         replicas: z.string()
-      }),
-      test: z.object({
-        nodeEnv: z.string(),
+      })
+    }),
+    prod: z.object({
+      build: z.object({
         tz: z.string(),
         dbSetupDockerfilePath: z.string(),
-        volumeCapacity: z.string(),
         cpuRequest: z.string(),
         cpuLimit: z.string(),
         memoryRequest: z.string(),
-        memoryLimit: z.string(),
-        replicas: z.string()
+        memoryLimit: z.string()
       }),
-      prod: z.object({
+      deploy: z.object({
         nodeEnv: z.string(),
         tz: z.string(),
         dbSetupDockerfilePath: z.string(),

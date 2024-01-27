@@ -11,13 +11,14 @@ const path = require('path');
 const dbSetupBuild = (settings) => {
   const phases = settings.phases;
   const options = settings.options;
+  const env = settings.options.env;
   const phase = settings.options.phase;
 
-  const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
+  const oc = new OpenShiftClientX(Object.assign({ namespace: phases[env][phase].namespace }, options));
 
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../templates'));
 
-  const name = `${phases[phase].name}-setup`;
+  const name = `${phases[env][phase].name}-setup`;
 
   const objects = [];
 
@@ -25,21 +26,21 @@ const dbSetupBuild = (settings) => {
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.setup.bc.yaml`, {
       param: {
         NAME: name,
-        SUFFIX: phases[phase].suffix,
-        VERSION: phases[phase].tag,
-        SOURCE_CONTEXT_DIR: 'database',
-        DB_SETUP_DOCKERFILE_PATH: phases[phase].dbSetupDockerfilePath,
+        SUFFIX: phases[env][phase].suffix,
+        VERSION: phases[env][phase].tag,
+        SOURCE_CONTEXT_DIR: phases[env][phase].sourceContextDir,
+        DB_SETUP_DOCKERFILE_PATH: phases[env][phase].dbSetupDockerfilePath,
         SOURCE_REPOSITORY_URL: oc.git.http_url,
-        SOURCE_REPOSITORY_REF: phases[phase].branch || oc.git.ref,
-        CPU_REQUEST: '50m',
-        CPU_LIMIT: '1000m',
-        MEMORY_REQUEST: '100Mi',
-        MEMORY_LIMIT: '1.5Gi'
+        SOURCE_REPOSITORY_REF: phases[env][phase].branch || oc.git.ref,
+        CPU_REQUEST: phases[env][phase].cpuRequest,
+        CPU_LIMIT: phases[env][phase].cpuLimit,
+        MEMORY_REQUEST: phases[env][phase].memoryRequest,
+        MEMORY_LIMIT: phases[env][phase].memoryLimit
       }
     })
   );
 
-  oc.applyRecommendedLabels(objects, name, phase, phases[phase].changeId, phases[phase].instance);
+  oc.applyRecommendedLabels(objects, name, env, phases[env][phase].changeId, phases[env][phase].instance);
   oc.applyAndBuild(objects);
 };
 

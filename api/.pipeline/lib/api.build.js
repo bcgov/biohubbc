@@ -11,27 +11,29 @@ const path = require('path');
 const apiBuild = (settings) => {
   const phases = settings.phases;
   const options = settings.options;
+  const env = settings.options.env;
   const phase = settings.options.phase;
 
   console.log('4==============================================');
   console.log('api options', options);
+  console.log('api env', env);
   console.log('api phase', phase);
-  console.log('api phases', phases[phase]);
+  console.log('api phases', phases[env][phase]);
   console.log('5==============================================');
 
-  const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
+  const oc = new OpenShiftClientX(Object.assign({ namespace: phases[env][phase].namespace }, options));
 
   console.log('6==============================================');
   console.log({
-    NAME: phases[phase].name,
-    SUFFIX: phases[phase].suffix,
-    VERSION: phases[phase].tag,
+    NAME: phases[env][phase].name,
+    SUFFIX: phases[env][phase].suffix,
+    VERSION: phases[env][phase].tag,
     SOURCE_REPOSITORY_URL: oc.git.http_url,
-    SOURCE_REPOSITORY_REF: phases[phase].branch || oc.git.ref,
-    CPU_REQUEST: phases[phase].cpuRequest,
-    CPU_LIMIT: phases[phase].cpuLimit,
-    MEMORY_REQUEST: phases[phase].memoryRequest,
-    MEMORY_LIMIT: phases[phase].memoryLimit
+    SOURCE_REPOSITORY_REF: phases[env][phase].branch || oc.git.ref,
+    CPU_REQUEST: phases[env][phase].cpuRequest,
+    CPU_LIMIT: phases[env][phase].cpuLimit,
+    MEMORY_REQUEST: phases[env][phase].memoryRequest,
+    MEMORY_LIMIT: phases[env][phase].memoryLimit
   });
   console.log('7==============================================');
 
@@ -42,20 +44,26 @@ const apiBuild = (settings) => {
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api.bc.yaml`, {
       param: {
-        NAME: phases[phase].name,
-        SUFFIX: phases[phase].suffix,
-        VERSION: phases[phase].tag,
+        NAME: phases[env][phase].name,
+        SUFFIX: phases[env][phase].suffix,
+        VERSION: phases[env][phase].tag,
         SOURCE_REPOSITORY_URL: oc.git.http_url,
-        SOURCE_REPOSITORY_REF: phases[phase].branch || oc.git.ref,
-        CPU_REQUEST: phases[phase].cpuRequest,
-        CPU_LIMIT: phases[phase].cpuLimit,
-        MEMORY_REQUEST: phases[phase].memoryRequest,
-        MEMORY_LIMIT: phases[phase].memoryLimit
+        SOURCE_REPOSITORY_REF: phases[env][phase].branch || oc.git.ref,
+        CPU_REQUEST: phases[env][phase].cpuRequest,
+        CPU_LIMIT: phases[env][phase].cpuLimit,
+        MEMORY_REQUEST: phases[env][phase].memoryRequest,
+        MEMORY_LIMIT: phases[env][phase].memoryLimit
       }
     })
   );
 
-  oc.applyRecommendedLabels(objects, phases[phase].name, phase, phases[phase].changeId, phases[phase].instance);
+  oc.applyRecommendedLabels(
+    objects,
+    phases[env][phase].name,
+    env,
+    phases[env][phase].changeId,
+    phases[env][phase].instance
+  );
   oc.applyAndBuild(objects);
 };
 

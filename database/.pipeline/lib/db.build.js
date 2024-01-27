@@ -11,9 +11,10 @@ const path = require('path');
 const dbBuild = (settings) => {
   const phases = settings.phases;
   const options = settings.options;
+  const env = settings.options.env;
   const phase = settings.options.phase;
 
-  const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
+  const oc = new OpenShiftClientX(Object.assign({ namespace: phases[env][phase].namespace }, options));
 
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../templates'));
 
@@ -22,14 +23,14 @@ const dbBuild = (settings) => {
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.bc.yaml`, {
       param: {
-        NAME: phases[phase].name,
-        SUFFIX: phases[phase].suffix,
-        TAG_NAME: phases[phase].tag
+        NAME: phases[env][phase].name,
+        SUFFIX: phases[env][phase].suffix,
+        TAG_NAME: phases[env][phase].tag
       }
     })
   );
 
-  oc.applyRecommendedLabels(objects, phases[phase].name, phase, phases[phase].changeId, phases[phase].instance);
+  oc.applyRecommendedLabels(objects, phases[env][phase].name, env, phases[env][phase].changeId, phases[env][phase].instance);
   oc.applyAndBuild(objects);
 };
 

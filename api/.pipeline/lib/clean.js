@@ -10,6 +10,7 @@ const { OpenShiftClientX } = require('pipeline-cli');
 const clean = (settings) => {
   const phases = settings.phases;
   const options = settings.options;
+  const target_env = settings.options.env;
   const target_phase = settings.options.phase;
 
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases.build.namespace }, options));
