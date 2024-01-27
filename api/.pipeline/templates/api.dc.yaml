@@ -1,12 +1,12 @@
 apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
-  name: biohubbc-api-dc
+  name: sims-api-dc
   labels:
-    build: biohubbc-api
+    build: sims-api
 parameters:
   - name: NAME
-    value: biohubbc-api
+    value: sims-api
   - name: SUFFIX
     value: '-dev'
   - name: VERSION
