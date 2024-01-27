@@ -77,7 +77,13 @@ const apiDeploy = async (settings) => {
     })
   );
 
-  oc.applyRecommendedLabels(objects, phases[env][phase].name, env, `${changeId}`, phases[env][phase].instance);
+  oc.applyRecommendedLabels(
+    objects,
+    phases[env][phase].name,
+    env,
+    phases[env][phase].changeId,
+    phases[env][phase].instance
+  );
   oc.importImageStreams(objects, phases[env][phase].tag, phases.build.namespace, phases.build.tag);
 
   await oc.applyAndDeploy(objects, phases[env][phase].instance);

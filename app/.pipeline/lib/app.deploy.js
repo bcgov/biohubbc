@@ -13,8 +13,6 @@ const appDeploy = async (settings) => {
 
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../templates'));
 
-  const changeId = phases[env][phase].changeId;
-
   const objects = [];
 
   objects.push(
@@ -24,7 +22,7 @@ const appDeploy = async (settings) => {
         SUFFIX: phases[env][phase].suffix,
         VERSION: phases[env][phase].tag,
         HOST: phases[env][phase].host,
-        CHANGE_ID: phases.build.changeId || changeId,
+        CHANGE_ID: phases[env][phase].changeId,
         REACT_APP_API_HOST: phases[env][phase].apiHost,
         REACT_APP_SITEMINDER_LOGOUT_URL: phases[env][phase].siteminderLogoutURL,
         // File Upload Settings
@@ -49,7 +47,13 @@ const appDeploy = async (settings) => {
     })
   );
 
-  oc.applyRecommendedLabels(objects, phases[env][phase].name, env, `${changeId}`, phases[env][phase].instance);
+  oc.applyRecommendedLabels(
+    objects,
+    phases[env][phase].name,
+    env,
+    phases[env][phase].changeId,
+    phases[env][phase].instance
+  );
   oc.importImageStreams(objects, phases[env][phase].tag, phases.build.namespace, phases.build.tag);
 
   await oc.applyAndDeploy(objects, phases[env][phase].instance);

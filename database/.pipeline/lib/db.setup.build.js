@@ -31,7 +31,7 @@ const dbSetupBuild = (settings) => {
         SOURCE_CONTEXT_DIR: phases[env][phase].sourceContextDir,
         DB_SETUP_DOCKERFILE_PATH: phases[env][phase].dbSetupDockerfilePath,
         SOURCE_REPOSITORY_URL: oc.git.http_url,
-        SOURCE_REPOSITORY_REF: phases[env][phase].branch || oc.git.ref,
+        SOURCE_REPOSITORY_REF: phases[env][phase].branch,
         CPU_REQUEST: phases[env][phase].cpuRequest,
         CPU_LIMIT: phases[env][phase].cpuLimit,
         MEMORY_REQUEST: phases[env][phase].memoryRequest,

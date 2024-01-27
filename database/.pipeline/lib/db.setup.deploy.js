@@ -72,10 +72,10 @@ const dbSetupDeploy = async (settings) => {
         DB_SCHEMA: 'biohub',
         DB_SCHEMA_DAPI_V1: 'biohub_dapi_v1',
         IMAGE: dbSetupImageStream.image.dockerImageReference,
-        CPU_REQUEST: '50m',
-        CPU_LIMIT: '1000m',
-        MEMORY_REQUEST: '100Mi',
-        MEMORY_LIMIT: '1.5Gi'
+        CPU_REQUEST: phases[env][phase].cpuRequest,
+        CPU_LIMIT: phases[env][phase].cpuLimit,
+        MEMORY_REQUEST: phases[env][phase].memoryRequest,
+        MEMORY_LIMIT: phases[env][phase].memoryLimit
       }
     })
   );
@@ -95,7 +95,7 @@ const dbSetupDeploy = async (settings) => {
   );
 
   // Deploy the db setup pod
-  oc.applyRecommendedLabels(objects, isName, env, `${changeId}`, instance);
+  oc.applyRecommendedLabels(objects, isName, env, changeId, instance);
   await oc.applyAndDeploy(objects, phases[env][phase].deploy.instance);
 
   // Wait to confirm if the db setup pod deployed successfully

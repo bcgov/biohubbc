@@ -86,7 +86,7 @@ const phases = {
       instance: `${pipelineConfigMap.module.api}-build-${changeId}`,
       version: `${pipelineConfigMap.version}-${changeId}`,
       tag: tag,
-      branch: branch
+      branch: branch || options.git.ref
     },
     deploy: {
       ...pipelineConfigMap.api.pr.deploy,
@@ -116,7 +116,7 @@ const phases = {
       instance: `${pipelineConfigMap.module.api}-build-${changeId}`,
       version: `${pipelineConfigMap.version}-${changeId}`,
       tag: tag,
-      branch: branch
+      branch: branch || options.git.ref
     },
     deploy: {
       ...pipelineConfigMap.api.dev.deploy,
@@ -145,7 +145,7 @@ const phases = {
       instance: `${pipelineConfigMap.module.api}-build-${changeId}`,
       version: `${pipelineConfigMap.version}-${changeId}`,
       tag: tag,
-      branch: branch
+      branch: branch || options.git.ref
     },
     deploy: {
       ...pipelineConfigMap.api.test.deploy,
@@ -175,7 +175,7 @@ const phases = {
       instance: `${pipelineConfigMap.module.api}-build-${changeId}`,
       version: `${pipelineConfigMap.version}-${changeId}`,
       tag: tag,
-      branch: branch
+      branch: branch || options.git.ref
     },
     deploy: {
       ...pipelineConfigMap.api.prod.deploy,
