@@ -216,7 +216,7 @@ jobs:
       - name: Build APP Image
         working-directory: app/.pipeline/
         run: |
-          DEBUG=* npm run build -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=build
+          DEBUG=* npm run build -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --phase=build
 
   # Build the Database image
   buildDatabase:
@@ -280,7 +280,7 @@ jobs:
       - name: Build Database Image
         working-directory: database/.pipeline/
         run: |
-          DEBUG=* npm run db:build -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=build
+          DEBUG=* npm run db:build -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --phase=build
 
   # Build the Database Setup image
   buildDatabaseSetup:
@@ -337,7 +337,7 @@ jobs:
       - name: Build Database Setup Image
         working-directory: database/.pipeline/
         run: |
-          DEBUG=* npm run db-setup:build -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=build
+          DEBUG=* npm run db-setup:build -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --phase=build
 
   # Build the API image
   buildAPI:
@@ -401,7 +401,7 @@ jobs:
       - name: Build API Image
         working-directory: api/.pipeline/
         run: |
-          DEBUG=* npm run build -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=build
+          DEBUG=* npm run build -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --phase=build
 
   # Deploy APP image
   deployAPP:
@@ -458,7 +458,7 @@ jobs:
       - name: Deploy APP Image
         working-directory: app/.pipeline
         run: |
-          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=pr
+          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --phase=pr
 
   # Deploy Database image
   deployDatabase:
@@ -515,7 +515,7 @@ jobs:
       - name: Deploy Database Image
         working-directory: database/.pipeline/
         run: |
-          DEBUG=* npm run db:deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=pr
+          DEBUG=* npm run db:deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --phase=pr
 
   # Deploy Database image
   deployDatabaseSetup:
@@ -573,7 +573,7 @@ jobs:
       - name: Deploy Database Setup Image
         working-directory: database/.pipeline/
         run: |
-          DEBUG=* npm run db-setup:deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=pr
+          DEBUG=* npm run db-setup:deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --phase=pr
 
   # Deploy API image
   deployAPI:
@@ -633,7 +633,7 @@ jobs:
       - name: Deploy API Image
         working-directory: api/.pipeline/
         run: |
-          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=pr
+          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --phase=pr
 
   # Report the overall status of all jobs.
   # Why? Skipped jobs are not considered successes when specifying requird jobs in the GitHub PR settings. Rather than

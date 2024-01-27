@@ -11,7 +11,7 @@ const path = require('path');
 const dbBuild = (settings) => {
   const phases = settings.phases;
   const options = settings.options;
-  const phase = settings.options.env;
+  const phase = settings.options.phase;
 
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
 

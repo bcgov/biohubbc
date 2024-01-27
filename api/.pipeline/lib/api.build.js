@@ -11,7 +11,7 @@ const path = require('path');
 const apiBuild = (settings) => {
   const phases = settings.phases;
   const options = settings.options;
-  const phase = settings.options.env;
+  const phase = settings.options.phase;
 
   console.log('4==============================================');
   console.log('api options', options);

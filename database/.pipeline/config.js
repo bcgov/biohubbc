@@ -19,17 +19,12 @@ const pipelineConfigMap = PipelineConfigMapSchema.parse(JSON.parse(rawPipelineCo
 const isStaticDeployment = rawOptions.type === 'static';
 
 const deployChangeId = (isStaticDeployment && 'deploy') || changeId;
+
 const branch = (isStaticDeployment && rawOptions.branch) || null;
+
 const tag =
   (branch && `build-${pipelineConfigMap.version}-${changeId}-${branch}`) ||
   `build-${pipelineConfigMap.version}-${changeId}`;
-
-// Default: run both seeding and migrations
-let dbSetupDockerfilePath = './.docker/db/Dockerfile.setup';
-if (isStaticDeployment && options.branch === 'prod') {
-  // If this is static build to prod, then only run the migrations
-  dbSetupDockerfilePath = './.docker/db/Dockerfile.migrate';
-}
 
 /**
  * Parses the npm cli command options and the git action context.
@@ -52,7 +47,9 @@ if (isStaticDeployment && options.branch === 'prod') {
  *     ref: '<string>',
  *     branch_ref: '<string>'
  *   },
- *   pr: '<pr_number>',
+ *   pr?: '<pr_number>',
+ *   branch?: '<string>',
+ *   static?: '<boolean>',
  *   config: {}, // JSON config map
  *   type?: 'static'
  * }}
@@ -84,97 +81,59 @@ const options = processOptions(rawOptions);
 const phases = {
   build: {
     ...pipelineConfigMap.database.build,
+    phase: 'build',
     namespace: 'af2668-tools',
     name: pipelineConfigMap.module.db,
-    phase: 'build',
     changeId: changeId,
     suffix: `-build-${changeId}`,
     instance: `${pipelineConfigMap.module.db}-build-${changeId}`,
     version: `${pipelineConfigMap.version}-${changeId}`,
     tag: tag,
-    // tz: pipelineConfigMap.tz.db,
-    branch: branch,
-    dbSetupDockerfilePath: dbSetupDockerfilePath
+    branch: branch
   },
   pr: {
     ...pipelineConfigMap.database.deploy.pr,
+    phase: 'dev',
     namespace: 'af2668-dev',
     name: pipelineConfigMap.module.db,
-    phase: 'dev',
     changeId: deployChangeId,
     suffix: `-dev-${deployChangeId}`,
     instance: `${pipelineConfigMap.module.db}-dev-${deployChangeId}`,
     version: `${deployChangeId}-${changeId}`,
-    tag: `dev-${pipelineConfigMap.version}-${deployChangeId}`,
-    nodeEnv: 'development',
-    // tz: pipelineConfigMap.tz.db,
-    dbSetupDockerfilePath: dbSetupDockerfilePath
-    // volumeCapacity: (isStaticDeployment && '3Gi') || '500Mi',
-    // cpuRequest: '50m',
-    // cpuLimit: '400m',
-    // memoryRequest: '100Mi',
-    // memoryLimit: '2Gi',
-    // replicas: '1'
+    tag: `dev-${pipelineConfigMap.version}-${deployChangeId}`
   },
   dev: {
     ...pipelineConfigMap.database.deploy.dev,
+    phase: 'dev',
     namespace: 'af2668-dev',
     name: pipelineConfigMap.module.db,
-    phase: 'dev',
     changeId: deployChangeId,
     suffix: `-dev-${deployChangeId}`,
     instance: `${pipelineConfigMap.module.db}-dev-${deployChangeId}`,
     version: `${deployChangeId}-${changeId}`,
-    tag: `dev-${pipelineConfigMap.version}-${deployChangeId}`,
-    nodeEnv: 'development',
-    // tz: pipelineConfigMap.tz.db,
-    dbSetupDockerfilePath: dbSetupDockerfilePath
-    // volumeCapacity: (isStaticDeployment && '3Gi') || '500Mi',
-    // cpuRequest: '50m',
-    // cpuLimit: '600m',
-    // memoryRequest: '100Mi',
-    // memoryLimit: '3Gi',
-    // replicas: '1'
+    tag: `dev-${pipelineConfigMap.version}-${deployChangeId}`
   },
   test: {
     ...pipelineConfigMap.database.deploy.test,
+    phase: 'test',
     namespace: 'af2668-test',
     name: pipelineConfigMap.module.db,
-    phase: 'test',
     changeId: deployChangeId,
     suffix: `-test`,
     instance: `${pipelineConfigMap.module.db}-test`,
     version: pipelineConfigMap.version,
-    tag: `test-${pipelineConfigMap.version}`,
-    nodeEnv: 'production',
-    // tz: pipelineConfigMap.tz.db,
-    dbSetupDockerfilePath: dbSetupDockerfilePath
-    // volumeCapacity: '3Gi',
-    // cpuRequest: '50m',
-    // cpuLimit: '1000m',
-    // memoryRequest: '100Mi',
-    // memoryLimit: '3Gi',
-    // replicas: '1'
+    tag: `test-${pipelineConfigMap.version}`
   },
   prod: {
     ...pipelineConfigMap.database.deploy.prod,
+    phase: 'prod',
     namespace: 'af2668-prod',
     name: pipelineConfigMap.module.db,
-    phase: 'prod',
     changeId: deployChangeId,
     suffix: `-prod`,
     instance: `${pipelineConfigMap.module.db}-prod`,
     version: pipelineConfigMap.version,
-    tag: `prod-${pipelineConfigMap.version}`,
-    nodeEnv: 'production',
-    // tz: pipelineConfigMap.tz.db,
-    dbSetupDockerfilePath: dbSetupDockerfilePath
-    // volumeCapacity: '5Gi',
-    // cpuRequest: '50m',
-    // cpuLimit: '1000m',
-    // memoryRequest: '100Mi',
-    // memoryLimit: '3Gi',
-    // replicas: '1'
+    tag: `prod-${pipelineConfigMap.version}`
   }
 };
 

@@ -30,7 +30,30 @@ data:
           "memoryLimit": "3Gi"
         },
         "deploy": {
+          "pr": {
+            "nodeEnv": "development",
+            "staticApiUrl": "api-dev-sims.apps.silver.devops.gov.bc.ca",
+            "staticAppUrl": "dev-sims.apps.silver.devops.gov.bc.ca",
+            "tz": "America/Vancouver",
+            "backboneApiHost": "https://api-dev-biohub-platform.apps.silver.devops.gov.bc.ca",
+            "backboneIntakePath": "/api/dwc/submission/queue",
+            "backboneArtifactIntakePath": "/api/artifact/intake",
+            "backboneIntakeEnabled": false,
+            "bctwApiHost": "https://moe-bctw-api-dev.apps.silver.devops.gov.bc.ca",
+            "critterbaseApiHost": "https://moe-critterbase-api-dev.apps.silver.devops.gov.bc.ca/api",
+            "elasticsearchURL": "http://es01.a0ec71-dev:9200",
+            "elasticsearchTaxonomyIndex": "taxonomy_3.0.0",
+            "s3KeyPrefix": "sims",
+            "logLevel": "debug",
+            "cpuRequest": "50m",
+            "cpuLimit": "400m",
+            "memoryRequest": "100Mi",
+            "memoryLimit": "2Gi",
+            "replicas": "1",
+            "replicasMax": "2"
+          },
           "dev": {
+            "nodeEnv": "development",
             "staticApiUrl": "api-dev-sims.apps.silver.devops.gov.bc.ca",
             "staticAppUrl": "dev-sims.apps.silver.devops.gov.bc.ca",
             "tz": "America/Vancouver",
@@ -52,6 +75,7 @@ data:
             "replicasMax": "2"
           },
           "test": {
+            "nodeEnv": "production",
             "staticApiUrl": "api-test-sims.apps.silver.devops.gov.bc.ca",
             "staticAppUrl": "test-sims.apps.silver.devops.gov.bc.ca",
             "tz": "America/Vancouver",
@@ -73,6 +97,7 @@ data:
             "replicasMax": "4"
           },
           "prod": {
+            "nodeEnv": "production",
             "staticApiUrl": "api-sims.apps.silver.devops.gov.bc.ca",
             "staticAppUrl": "sims.apps.silver.devops.gov.bc.ca",
             "staticAppVanityUrl": "sims.nrs.gov.bc.ca",
@@ -104,12 +129,27 @@ data:
           "memoryLimit": "5Gi"
         },
         "deploy": {
+          "pr": {
+            "nodeEnv": "development",
+            "siteminderLogoutURL": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",
+            "maxUploadNumFiles": 10,
+            "maxUploadFileSize": 52428800,
+            "biohubFeatureFlag": "true",
+            "cpuRequest": "50m",
+            "cpuLimit": "200m",
+            "memoryRequest": "100Mi",
+            "memoryLimit": "333Mi",
+            "replicas": "1",
+            "replicasMax": "1"
+          },
           "dev": {
+            "nodeEnv": "development",
             "staticApiUrl": "api-dev-sims.apps.silver.devops.gov.bc.ca",
             "staticAppUrl": "dev-sims.apps.silver.devops.gov.bc.ca",
             "siteminderLogoutURL": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",
             "maxUploadNumFiles": 10,
             "maxUploadFileSize": 52428800,
+            "biohubFeatureFlag": "true",
             "cpuRequest": "50m",
             "cpuLimit": "200m",
             "memoryRequest": "100Mi",
@@ -118,11 +158,13 @@ data:
             "replicasMax": "1"
           },
           "test": {
+            "nodeEnv": "production",
             "staticApiUrl": "api-test-sims.apps.silver.devops.gov.bc.ca",
             "staticAppUrl": "test-sims.apps.silver.devops.gov.bc.ca",
             "siteminderLogoutURL": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",
             "maxUploadNumFiles": 10,
             "maxUploadFileSize": 52428800,
+            "biohubFeatureFlag": "false",
             "cpuRequest": "50m",
             "cpuLimit": "500m",
             "memoryRequest": "100Mi",
@@ -131,12 +173,14 @@ data:
             "replicasMax": "3"
           },
           "prod": {
+            "nodeEnv": "production",
             "staticApiUrl": "api-sims.apps.silver.devops.gov.bc.ca",
             "staticAppUrl": "sims.apps.silver.devops.gov.bc.ca",
             "staticAppVanityUrl": "sims.nrs.gov.bc.ca",
             "siteminderLogoutURL": "https://logon7.gov.bc.ca/clp-cgi/logoff.cgi",
             "maxUploadNumFiles": 10,
             "maxUploadFileSize": 52428800,
+            "biohubFeatureFlag": "false",
             "cpuRequest": "50m",
             "cpuLimit": "500m",
             "memoryRequest": "100Mi",
@@ -151,8 +195,21 @@ data:
           "tz": "America/Vancouver"
         },
         "deploy": {
-          "dev": {
+          "pr": {
+            "nodeEnv": "development",
             "tz": "America/Vancouver",
+            "dbSetupDockerfilePath": "./.docker/db/Dockerfile.setup",
+            "volumeCapacity": "500Mi",
+            "cpuRequest": "50m",
+            "cpuLimit": "400m",
+            "memoryRequest": "100Mi",
+            "memoryLimit": "2Gi",
+            "replicas": "1"
+          },
+          "dev": {
+            "nodeEnv": "development",
+            "tz": "America/Vancouver",
+            "dbSetupDockerfilePath": "./.docker/db/Dockerfile.setup",
             "volumeCapacity": "3Gi",
             "cpuRequest": "50m",
             "cpuLimit": "400m",
@@ -161,7 +218,9 @@ data:
             "replicas": "1"
           },
           "test": {
+            "nodeEnv": "production",
             "tz": "America/Vancouver",
+            "dbSetupDockerfilePath": "./.docker/db/Dockerfile.migrate",
             "volumeCapacity": "3Gi",
             "cpuRequest": "50m",
             "cpuLimit": "1000m",
@@ -170,7 +229,9 @@ data:
             "replicas": "1"
           },
           "prod": {
+            "nodeEnv": "production",
             "tz": "America/Vancouver",
+            "dbSetupDockerfilePath": "./.docker/db/Dockerfile.migrate",
             "volumeCapacity": "5Gi",
             "cpuRequest": "50m",
             "cpuLimit": "1000m",
@@ -181,6 +242,23 @@ data:
         }
       },
       "sso": {
+        "pr": {
+          "host": "https://dev.loginproxy.gov.bc.ca/auth",
+          "realm": "standard",
+          "clientId": "sims-4461",
+          "keycloakSecret": "keycloak",
+          "serviceClient": {
+            "serviceClientName": "sims-svc-4464",
+            "keycloakSecretServiceClientPasswordKey": "sims_svc_client_password"
+          },
+          "cssApi": {
+            "cssApiTokenUrl": "https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token",
+            "cssApiClientId": "service-account-team-1190-4229",
+            "cssApiHost": "https://api.loginproxy.gov.bc.ca/api/v1",
+            "keycloakSecretCssApiSecretKey": "css_api_client_secret",
+            "cssApiEnvironment": "dev"
+          }
+        },
         "dev": {
           "host": "https://dev.loginproxy.gov.bc.ca/auth",
           "realm": "standard",

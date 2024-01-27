@@ -4,8 +4,6 @@ const process = require('process');
 const { apiDeploy } = require('../lib/api.deploy.js');
 const config = require('../config.js');
 
-const settings = { ...config, phase: config.options.phase };
-
 process.on('unhandledRejection', (reason, promise) => {
   console.log('api deploy - unhandled rejection:', promise, 'reason:', reason);
   process.exit(1);
@@ -16,7 +14,7 @@ process.on('exit', (code) => {
 });
 
 // Deploys the api image
-apiDeploy(settings).catch((error) => {
+apiDeploy(config).catch((error) => {
   console.log('api deploy - catch - error: ', error);
   throw error;
 });

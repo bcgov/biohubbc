@@ -20,12 +20,10 @@ const isStaticDeployment = rawOptions.type === 'static';
 
 // const deployChangeId = (isStaticDeployment && 'deploy') || changeId;
 const branch = (isStaticDeployment && rawOptions.branch) || null;
+
 const tag =
   (branch && `build-${pipelineConfigMap.version}-${changeId}-${branch}`) ||
   `build-${pipelineConfigMap.version}-${changeId}`;
-
-// const maxUploadNumFiles = 10;
-// const maxUploadFileSize = 52428800; // (bytes)
 
 /**
  * Parses the npm cli command options and the git action context.
@@ -89,10 +87,6 @@ const phases = {
     version: `${pipelineConfigMap.version}-${changeId}`,
     tag: tag,
     branch: branch
-    // cpuRequest: '50m',
-    // cpuLimit: '1000m',
-    // memoryRequest: '100Mi',
-    // memoryLimit: '5Gi'
   },
   pr: {
     ...pipelineConfigMap.app.deploy.pr,
@@ -106,18 +100,7 @@ const phases = {
     tag: `dev-${pipelineConfigMap.version}-${changeId}`,
     host: `${pipelineConfigMap.module.app}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     apiHost: `${pipelineConfigMap.module.api}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
-    // siteminderLogoutURL: pipelineConfigMap.siteminderLogoutURL.dev,
-    // maxUploadNumFiles,
-    // maxUploadFileSize,
-    nodeEnv: 'development',
-    sso: pipelineConfigMap.sso.dev,
-    // cpuRequest: '50m',
-    // cpuLimit: '200m',
-    // memoryRequest: '100Mi',
-    // memoryLimit: '333Mi',
-    // replicas: (isStaticDeployment && '1') || '1',
-    // replicasMax: (isStaticDeployment && '2') || '1'
-    biohubFeatureFlag: 'true'
+    sso: pipelineConfigMap.sso.dev
   },
   dev: {
     ...pipelineConfigMap.app.deploy.dev,
@@ -131,18 +114,7 @@ const phases = {
     tag: `dev-${pipelineConfigMap.version}-deploy`,
     host: pipelineConfigMap.app.deploy.dev.staticAppUrl,
     apiHost: pipelineConfigMap.app.deploy.dev.staticApiUrl,
-    // siteminderLogoutURL: pipelineConfigMap.siteminderLogoutURL.dev,
-    // maxUploadNumFiles,
-    // maxUploadFileSize,
-    nodeEnv: 'development',
-    sso: pipelineConfigMap.sso.dev,
-    // cpuRequest: '50m',
-    // cpuLimit: '200m',
-    // memoryRequest: '100Mi',
-    // memoryLimit: '333Mi',
-    // replicas: (isStaticDeployment && '1') || '1',
-    // replicasMax: (isStaticDeployment && '2') || '1',
-    biohubFeatureFlag: 'true'
+    sso: pipelineConfigMap.sso.dev
   },
   test: {
     ...pipelineConfigMap.app.deploy.test,
@@ -156,18 +128,7 @@ const phases = {
     tag: `test-${pipelineConfigMap.version}`,
     host: pipelineConfigMap.app.deploy.test.staticAppUrl,
     apiHost: pipelineConfigMap.app.deploy.test.staticApiUrl,
-    // siteminderLogoutURL: pipelineConfigMap.siteminderLogoutURL.test,
-    // maxUploadNumFiles,
-    // maxUploadFileSize,
-    nodeEnv: 'production',
-    sso: pipelineConfigMap.sso.test,
-    // cpuRequest: '50m',
-    // cpuLimit: '500m',
-    // memoryRequest: '100Mi',
-    // memoryLimit: '500Mi',
-    // replicas: '2',
-    // replicasMax: '3',
-    biohubFeatureFlag: 'false'
+    sso: pipelineConfigMap.sso.test
   },
   prod: {
     ...pipelineConfigMap.app.deploy.prod,
@@ -181,18 +142,7 @@ const phases = {
     tag: `prod-${pipelineConfigMap.version}`,
     host: pipelineConfigMap.app.deploy.prod.staticAppUrl,
     apiHost: pipelineConfigMap.app.deploy.prod.staticApiUrl,
-    // siteminderLogoutURL: pipelineConfigMap.siteminderLogoutURL.prod,
-    // maxUploadNumFiles,
-    // maxUploadFileSize,
-    nodeEnv: 'production',
-    sso: pipelineConfigMap.sso.prod,
-    // cpuRequest: '50m',
-    // cpuLimit: '500m',
-    // memoryRequest: '100Mi',
-    // memoryLimit: '500Mi',
-    // replicas: '2',
-    // replicasMax: '3',
-    biohubFeatureFlag: 'false'
+    sso: pipelineConfigMap.sso.prod
   }
 };
 

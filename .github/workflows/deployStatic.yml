@@ -85,6 +85,29 @@ jobs:
           path: ${{ github.workspace }}/*
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
 
+  # Fetch the pipeline config map from Openshift
+  getPipelineConfigMap:
+    name: Get Pipeline Config
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: ${{ github.event.pull_request.merged == false }}
+    env:
+      PR_NUMBER: ${{ github.event.number }}
+    outputs:
+      pipeline_config: ${{ steps.get_config.outputs.pipeline_config }}
+    steps:
+      # Log in to OpenShift.
+      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
+      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
+      - name: Log in to OpenShift
+        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+
+      # Fetch config map and store in pipeline_config for use by subsequent jobs
+      - name: Fetch pipeline config map
+        id: "get_config"
+        run: |
+          echo "pipeline_config=$( oc get configmap sims-pipeline-config -o jsonpath={.data.config} | jq -c )" >> "$GITHUB_OUTPUT"
+
   # Build the web frontend app image
   buildAPP:
     name: Build APP Image
@@ -94,8 +117,10 @@ jobs:
     env:
       PR_NUMBER: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
+      PIPELINE_CONFIG: ${{ needs.getPipelineConfigMap.outputs.pipeline_config }}
     needs:
       - checkoutRepo
+      - getPipelineConfigMap
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
@@ -133,7 +158,7 @@ jobs:
       - name: Build APP Image
         working-directory: "app/.pipeline/"
         run: |
-          DEBUG=* npm run build -- --pr=$PR_NUMBER --branch=$BRANCH --type=static
+          DEBUG=* npm run build -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --branch=$BRANCH --type=static
 
   # Build the Database image
   buildDatabase:
@@ -144,8 +169,10 @@ jobs:
     env:
       PR_NUMBER: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
+      PIPELINE_CONFIG: ${{ needs.getPipelineConfigMap.outputs.pipeline_config }}
     needs:
       - checkoutRepo
+      - getPipelineConfigMap
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
@@ -183,7 +210,7 @@ jobs:
       - name: Build Database Image
         working-directory: "database/.pipeline/"
         run: |
-          DEBUG=* npm run db:build -- --pr=$PR_NUMBER --branch=$BRANCH --type=static
+          DEBUG=* npm run db:build -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --branch=$BRANCH --type=static
 
   # Build the Database Setup image
   buildDatabaseSetup:
@@ -194,8 +221,10 @@ jobs:
     env:
       PR_NUMBER: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
+      PIPELINE_CONFIG: ${{ needs.getPipelineConfigMap.outputs.pipeline_config }}
     needs:
       - checkoutRepo
+      - getPipelineConfigMap
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
@@ -233,7 +262,7 @@ jobs:
       - name: Build Database Setup Image
         working-directory: "database/.pipeline/"
         run: |
-          DEBUG=* npm run db-setup:build -- --pr=$PR_NUMBER --branch=$BRANCH --type=static
+          DEBUG=* npm run db-setup:build -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --branch=$BRANCH --type=static
 
   # Build the API image
   buildAPI:
@@ -244,8 +273,10 @@ jobs:
     env:
       PR_NUMBER: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
+      PIPELINE_CONFIG: ${{ needs.getPipelineConfigMap.outputs.pipeline_config }}
     needs:
       - checkoutRepo
+      - getPipelineConfigMap
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
@@ -283,7 +314,7 @@ jobs:
       - name: Build API Image
         working-directory: "api/.pipeline/"
         run: |
-          DEBUG=* npm run build -- --pr=$PR_NUMBER --branch=$BRANCH --type=static
+          DEBUG=* npm run build -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --branch=$BRANCH --type=static
 
   # Deploy APP image
   deployAPP:
@@ -294,9 +325,11 @@ jobs:
     env:
       PR_NUMBER: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
+      PIPELINE_CONFIG: ${{ needs.getPipelineConfigMap.outputs.pipeline_config }}
     needs:
       - scaleDownPods
       - buildAPP
+      - getPipelineConfigMap
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
@@ -334,7 +367,7 @@ jobs:
       - name: Deploy APP Image
         working-directory: "app/.pipeline"
         run: |
-          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --phase=$BRANCH --branch=$BRANCH --type=static
+          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --phase=$BRANCH --branch=$BRANCH --type=static
 
   # Deploy Database image
   deployDatabase:
@@ -345,9 +378,11 @@ jobs:
     env:
       PR_NUMBER: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
+      PIPELINE_CONFIG: ${{ needs.getPipelineConfigMap.outputs.pipeline_config }}
     needs:
       - scaleDownPods
       - buildDatabase
+      - getPipelineConfigMap
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
@@ -385,7 +420,7 @@ jobs:
       - name: Deploy Database Image
         working-directory: "database/.pipeline/"
         run: |
-          DEBUG=* npm run db:deploy -- --pr=$PR_NUMBER --phase=$BRANCH --branch=$BRANCH --type=static
+          DEBUG=* npm run db:deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --phase=$BRANCH --branch=$BRANCH --type=static
 
   # Deploy Database setup image
   deployDatabaseSetup:
@@ -396,10 +431,12 @@ jobs:
     env:
       PR_NUMBER: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
+      PIPELINE_CONFIG: ${{ needs.getPipelineConfigMap.outputs.pipeline_config }}
     needs:
       - scaleDownPods
       - buildDatabaseSetup
       - deployDatabase
+      - getPipelineConfigMap
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
@@ -437,7 +474,7 @@ jobs:
       - name: Deploy Database Setup Image
         working-directory: "database/.pipeline/"
         run: |
-          DEBUG=* npm run db-setup:deploy -- --pr=$PR_NUMBER --phase=$BRANCH --branch=$BRANCH --type=static
+          DEBUG=* npm run db-setup:deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --phase=$BRANCH --branch=$BRANCH --type=static
 
   # Deploy API image
   deployAPI:
@@ -448,10 +485,12 @@ jobs:
     env:
       PR_NUMBER: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
+      PIPELINE_CONFIG: ${{ needs.getPipelineConfigMap.outputs.pipeline_config }}
     needs:
       - scaleDownPods
       - buildAPI
       - deployDatabase
+      - getPipelineConfigMap
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
@@ -489,7 +528,7 @@ jobs:
       - name: Deploy API Image
         working-directory: "api/.pipeline/"
         run: |
-          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --phase=$BRANCH --branch=$BRANCH --type=static
+          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --phase=$BRANCH --branch=$BRANCH --type=static
 
   # Clean build/deployment artifacts
   clean:
