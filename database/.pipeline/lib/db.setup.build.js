@@ -16,6 +16,12 @@ const dbSetupBuild = (settings) => {
 
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases[env][phase].namespace }, options));
 
+  const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../templates'));
+
+  const name = `${phases[env][phase].name}-setup`;
+
+  const objects = [];
+
   console.log('4==========================================');
   console.log({
     NAME: name,
@@ -31,12 +37,6 @@ const dbSetupBuild = (settings) => {
     MEMORY_LIMIT: phases[env][phase].memoryLimit
   });
   console.log('5==========================================');
-
-  const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../templates'));
-
-  const name = `${phases[env][phase].name}-setup`;
-
-  const objects = [];
 
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.setup.bc.yaml`, {
