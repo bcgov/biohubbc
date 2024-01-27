@@ -4,4 +4,7 @@ const { clean } = require('../lib/clean.js');
 const config = require('../config.js');
 
 // Cleans all build and deployment artifacts (pods, etc)
-clean(config);
+clean(config).catch((error) => {
+  console.log('api clean - catch - error: ', error);
+  throw error;
+});

@@ -19,8 +19,6 @@ const apiDeploy = async (settings) => {
 
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../templates'));
 
-  const changeId = phases[env][phase].changeId;
-
   let objects = [];
 
   objects.push(
@@ -31,7 +29,7 @@ const apiDeploy = async (settings) => {
         VERSION: phases[env][phase].tag,
         HOST: phases[env][phase].host,
         APP_HOST: phases[env][phase].appHost,
-        CHANGE_ID: phases.build.changeId || changeId,
+        CHANGE_ID: phases[env][phase].changeId,
         // Node
         NODE_ENV: phases[env][phase].nodeEnv,
         NODE_OPTIONS: phases[env][phase].nodeOptions,

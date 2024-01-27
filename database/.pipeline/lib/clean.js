@@ -3,6 +3,11 @@
 const { OpenShiftClientX } = require('pipeline-cli');
 const { checkAndClean } = require('../utils/utils');
 
+/**
+ * Run OC commands to clean all build and deployment artifacts (pods, imagestreams, builds/deployment configs, etc).
+ *
+ * @param {*} settings
+ */
 const clean = async (settings) => {
   const phases = settings.phases;
   const options = settings.options;
@@ -21,39 +26,37 @@ const clean = async (settings) => {
     return;
   }
 
-  const phaseObj = phases[env][phase];
-
   // Get build configs
   let buildConfigs = oc.get('bc', {
-    selector: `app=${phaseObj.instance},env-id=${phaseObj.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
-    namespace: phaseObj.namespace
+    selector: `app=${phases[env][phase].instance},env-id=${phases[env][phase].changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
+    namespace: phases[env][phase].namespace
   });
 
   // Clean build configs
-  buildConfigs.forEach((bc) => {
-    if (bc.spec.output.to.kind == 'ImageStreamTag') {
-      oc.delete([`ImageStreamTag/${bc.spec.output.to.name}`], {
+  buildConfigs.forEach((buildConfig) => {
+    if (buildConfig.spec.output.to.kind == 'ImageStreamTag') {
+      oc.delete([`ImageStreamTag/${buildConfig.spec.output.to.name}`], {
         'ignore-not-found': 'true',
         wait: 'true',
-        namespace: phaseObj.namespace
+        namespace: phases[env][phase].namespace
       });
     }
   });
 
   // get deployment configs
   let deploymentConfigs = oc.get('dc', {
-    selector: `app=${phaseObj.instance},env-id=${phaseObj.changeId},env-name=${env},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
-    namespace: phaseObj.namespace
+    selector: `app=${phases[env][phase].instance},env-id=${phases[env][phase].changeId},env-name=${env},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
+    namespace: phases[env][phase].namespace
   });
 
   // Clean deployment configs
-  deploymentConfigs.forEach((dc) => {
-    dc.spec.triggers.forEach((trigger) => {
+  deploymentConfigs.forEach((deploymentConfig) => {
+    deploymentConfig.spec.triggers.forEach((trigger) => {
       if (trigger.type == 'ImageChange' && trigger.imageChangeParams.from.kind == 'ImageStreamTag') {
         oc.delete([`ImageStreamTag/${trigger.imageChangeParams.from.name}`], {
           'ignore-not-found': 'true',
           wait: 'true',
-          namespace: phaseObj.namespace
+          namespace: phases[env][phase].namespace
         });
       }
     });
@@ -61,23 +64,23 @@ const clean = async (settings) => {
 
   // Cleaning other pods
   if (phase !== 'build') {
-    const newOC = new OpenShiftClientX(Object.assign({ namespace: phaseObj.namespace }, options));
-    const setupPod = `${phaseObj.name}-setup${phaseObj.suffix}`;
+    const newOC = new OpenShiftClientX(Object.assign({ namespace: phases[env][phase].namespace }, options));
+    const setupPod = `${phases[env][phase].name}-setup${phases[env][phase].suffix}`;
     await checkAndClean(`pod/${setupPod}`, 10, 5, 0, newOC).catch(() => {
       // Ignore errors, nothing to clean
     });
   }
 
   oc.raw('delete', ['all'], {
-    selector: `app=${phaseObj.instance},env-id=${phaseObj.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
+    selector: `app=${phases[env][phase].instance},env-id=${phases[env][phase].changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
     wait: 'true',
-    namespace: phaseObj.namespace
+    namespace: phases[env][phase].namespace
   });
 
   oc.raw('delete', ['all,pvc,secrets,Secrets,secret,configmap,endpoints,Endpoints'], {
-    selector: `app=${phaseObj.instance},env-id=${phaseObj.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
+    selector: `app=${phases[env][phase].instance},env-id=${phases[env][phase].changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
     wait: 'true',
-    namespace: phaseObj.namespace
+    namespace: phases[env][phase].namespace
   });
 };
 
