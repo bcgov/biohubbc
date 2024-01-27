@@ -45,7 +45,7 @@ const dbSetupDeploy = async (settings) => {
     })
   );
 
-  oc.applyRecommendedLabels(imageStreamObjects, isName, env, `${changeId}`, instance);
+  oc.applyRecommendedLabels(imageStreamObjects, isName, env, changeId, instance);
   oc.importImageStreams(imageStreamObjects, isVersion, phases[env].build.namespace, phases[env].build.tag);
 
   // Get database setup image stream
