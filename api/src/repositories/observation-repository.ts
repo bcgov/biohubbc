@@ -238,7 +238,8 @@ export class ObservationRepository extends BaseRepository {
           .leftJoin({ ml: 'method_lookup' }, 'ml.method_lookup_id', 'ssm.method_lookup_id')
       )
       .select([
-        'so.*', // Select all columns from survey_observation
+        // Select all columns from survey_observation
+        'so.*',
 
         // Select columns from the joined survey_sample_site table
         'sss.survey_sample_site_id',
@@ -254,9 +255,9 @@ export class ObservationRepository extends BaseRepository {
           'ssp.start_date',
           'ssp.start_time'
         ])
-        // 'ssp.name as survey_sample_period_name',
       ])
-      .from({ so: 'survey_observation' }) // Alias survey_observation as so
+      // Alias survey_observation as so
+      .from({ so: 'survey_observation' })
 
       // Join sample site onto observation
       .leftJoin({ sss: 'survey_sample_site' }, 'so.survey_sample_site_id', 'sss.survey_sample_site_id') // Join survey_sample_site
@@ -266,7 +267,7 @@ export class ObservationRepository extends BaseRepository {
         { ssmwn: 'survey_sample_method_with_name' },
         'so.survey_sample_method_id',
         'ssmwn.survey_sample_method_id'
-      ) // Join survey_sample_method
+      )
 
       // Join sample period onto observation
       .leftJoin({ ssp: 'survey_sample_period' }, 'so.survey_sample_period_id', 'ssp.survey_sample_period_id') // Join survey_sample_period
@@ -285,14 +286,20 @@ export class ObservationRepository extends BaseRepository {
   }
 
   /**
-   * TODO jsdoc
+   * Gets a set of GeoJson geometries representing the set of all lat/long points for the
+   * given survey's observations.
+   * 
+   * @param {number} surveyId
+   * @return {*}  {Promise<ObservationGeometryRecord[]>}
+   * @memberof ObservationRepository
    */
   async getSurveyObservationsGeometry(surveyId: number): Promise<ObservationGeometryRecord[]> {
     const knex = getKnex();
 
     const query = knex
       .select('survey_observation_id', knex.raw('ST_AsGeoJSON(ST_MakePoint(longitude, latitude)) as geojson'))
-      .from('survey_observation');
+      .from('survey_observation')
+      .where('survey_id', surveyId);
 
     const response = await this.connection.knex(query, ObservationGeometryRecord);
 

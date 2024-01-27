@@ -144,7 +144,17 @@ export class ObservationService extends DBService {
     return { surveyObservations, supplementaryObservationData };
   }
 
-  // TODO jsdoc
+  /**
+   * Gets a set of GeoJson geometries representing the set of all lat/long points for the
+   * given survey's observations.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<{
+   *     surveyObservationsGeometry: ObservationGeometryRecord[];
+   *     supplementaryObservationData: ObservationSupplementaryData;
+   *   }>}
+   * @memberof ObservationService
+   */
   async getSurveyObservationsGeometryWithSupplementaryData(
     surveyId: number
   ): Promise<{

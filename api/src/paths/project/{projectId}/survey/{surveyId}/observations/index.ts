@@ -137,7 +137,7 @@ export const surveyObservationsResponseSchema: SchemaObject = {
   }
 };
 
-const paginationSchema: SchemaObject = {
+const paginationResponseSchema: SchemaObject = {
   type: 'object',
   required: ['total', 'per_page', 'current_page', 'last_page'],
   properties: {
@@ -233,7 +233,7 @@ GET.apiDoc = {
             properties: {
               ...surveyObservationsResponseSchema.properties,
               supplementaryObservationData: { ...surveyObservationsSupplementaryData },
-              pagination: { ...paginationSchema }
+              pagination: { ...paginationResponseSchema }
             },
             title: 'Survey get response object, for view purposes'
           }
@@ -361,6 +361,7 @@ PUT.apiDoc = {
 export function getSurveyObservations(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
+
     const page: number | undefined = req.query.page ? Number(req.query.page) : undefined;
     const limit: number | undefined = req.query.limit ? Number(req.query.limit) : undefined;
     const sort: string | undefined = req.query.sort ? String(req.query.sort) : undefined;

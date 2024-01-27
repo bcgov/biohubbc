@@ -142,7 +142,7 @@ export function getSurveyObservationsGeometry(): RequestHandler {
 
       return res.status(200).json(observationData);
     } catch (error) {
-      defaultLog.error({ label: 'getSurveyObservations', message: 'error', error });
+      defaultLog.error({ label: 'getSurveyObservationsGeometry', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
