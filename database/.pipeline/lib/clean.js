@@ -14,7 +14,7 @@ const clean = async (settings) => {
   const env = settings.options.env;
   const phase = settings.options.phase;
 
-  const oc = new OpenShiftClientX(Object.assign({ namespace: phases.build.namespace }, options));
+  const oc = new OpenShiftClientX(Object.assign({ namespace: phases[env].build.namespace }, options));
 
   if (!Object.prototype.hasOwnProperty.call(phases, env)) {
     // <env> is not a field of phases
