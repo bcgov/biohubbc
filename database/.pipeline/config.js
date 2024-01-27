@@ -18,8 +18,6 @@ const pipelineConfigMap = PipelineConfigMapSchema.parse(JSON.parse(rawPipelineCo
 // See `--type=static` in the `deployStatic.yml` git workflow
 const isStaticDeployment = rawOptions.type === 'static';
 
-const deployChangeId = (isStaticDeployment && 'deploy') || changeId;
-
 const branch = (isStaticDeployment && rawOptions.branch) || null;
 
 const tag =
@@ -47,9 +45,10 @@ const tag =
  *     ref: '<string>',
  *     branch_ref: '<string>'
  *   },
+ *   env: 'pr' | 'dev' | 'test' | 'prod',
+ *   phase: 'build' | 'deploy',
  *   pr?: '<pr_number>',
- *   branch?: '<string>',
- *   static?: '<boolean>',
+ *   branch?: '<branch_name>',
  *   config: {}, // JSON config map
  *   type?: 'static'
  * }}
@@ -96,11 +95,11 @@ const phases = {
       //   phase: 'dev',
       namespace: 'af2668-dev',
       name: pipelineConfigMap.module.db,
-      changeId: deployChangeId,
-      suffix: `-dev-${deployChangeId}`,
-      instance: `${pipelineConfigMap.module.db}-dev-${deployChangeId}`,
-      version: `${deployChangeId}-${changeId}`,
-      tag: `dev-${pipelineConfigMap.version}-${deployChangeId}`
+      changeId: changeId,
+      suffix: `-dev-${changeId}`,
+      instance: `${pipelineConfigMap.module.db}-pr-${changeId}`,
+      version: `${changeId}-${changeId}`,
+      tag: `dev-${pipelineConfigMap.version}-${changeId}`
     }
   },
   dev: {
@@ -120,11 +119,11 @@ const phases = {
       //   phase: 'dev',
       namespace: 'af2668-dev',
       name: pipelineConfigMap.module.db,
-      changeId: deployChangeId,
-      suffix: `-dev-${deployChangeId}`,
-      instance: `${pipelineConfigMap.module.db}-dev-${deployChangeId}`,
-      version: `${deployChangeId}-${changeId}`,
-      tag: `dev-${pipelineConfigMap.version}-${deployChangeId}`
+      changeId: 'deploy',
+      suffix: `-dev-deploy`,
+      instance: `${pipelineConfigMap.module.db}-dev-deploy`,
+      version: `deploy-${changeId}`,
+      tag: `dev-${pipelineConfigMap.version}-deploy`
     }
   },
   test: {
@@ -144,7 +143,7 @@ const phases = {
       //   phase: 'test',
       namespace: 'af2668-test',
       name: pipelineConfigMap.module.db,
-      changeId: deployChangeId,
+      changeId: 'deploy',
       suffix: `-test`,
       instance: `${pipelineConfigMap.module.db}-test`,
       version: pipelineConfigMap.version,
@@ -168,7 +167,7 @@ const phases = {
       //   phase: 'prod',
       namespace: 'af2668-prod',
       name: pipelineConfigMap.module.db,
-      changeId: deployChangeId,
+      changeId: 'deploy',
       suffix: `-prod`,
       instance: `${pipelineConfigMap.module.db}-prod`,
       version: pipelineConfigMap.version,

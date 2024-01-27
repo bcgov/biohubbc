@@ -45,7 +45,10 @@ const tag =
  *     ref: '<string>',
  *     branch_ref: '<string>'
  *   },
- *   pr: '<pr_number>',
+ *   env: 'pr' | 'dev' | 'test' | 'prod',
+ *   phase: 'build' | 'deploy',
+ *   pr?: '<pr_number>',
+ *   branch?: '<branch_name>',
  *   config: {}, // JSON config map
  *   type?: 'static'
  * }}
@@ -96,7 +99,7 @@ const phases = {
       dbName: pipelineConfigMap.module.db,
       changeId: changeId,
       suffix: `-dev-${changeId}`,
-      instance: `${pipelineConfigMap.module.api}-dev-${changeId}`,
+      instance: `${pipelineConfigMap.module.api}-pr-${changeId}`,
       version: `${changeId}-${changeId}`,
       tag: `dev-${pipelineConfigMap.version}-${changeId}`,
       host: `${pipelineConfigMap.module.api}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,

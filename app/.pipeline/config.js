@@ -18,7 +18,6 @@ const pipelineConfigMap = PipelineConfigMapSchema.parse(JSON.parse(rawPipelineCo
 // See `--type=static` in the `deployStatic.yml` git workflow
 const isStaticDeployment = rawOptions.type === 'static';
 
-// const deployChangeId = (isStaticDeployment && 'deploy') || changeId;
 const branch = (isStaticDeployment && rawOptions.branch) || null;
 
 const tag =
@@ -46,7 +45,10 @@ const tag =
  *     ref: '<string>',
  *     branch_ref: '<string>'
  *   },
- *   pr: '<pr_number>',
+ *   env: 'pr' | 'dev' | 'test' | 'prod',
+ *   phase: 'build' | 'deploy',
+ *   pr?: '<pr_number>',
+ *   branch?: '<branch_name>',
  *   config: {}, // JSON config map
  *   type?: 'static'
  * }}
@@ -95,7 +97,7 @@ const phases = {
       //   phase: 'dev',
       changeId: changeId,
       suffix: `-dev-${changeId}`,
-      instance: `${pipelineConfigMap.module.app}-dev-${changeId}`,
+      instance: `${pipelineConfigMap.module.app}-pr-${changeId}`,
       version: `${changeId}-${changeId}`,
       tag: `dev-${pipelineConfigMap.version}-${changeId}`,
       host: `${pipelineConfigMap.module.app}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,

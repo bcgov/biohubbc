@@ -56,7 +56,7 @@ jobs:
         run: |
           npm ci
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
-          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
+          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=pr
 
       # Clean the database build/deployment artifacts
       - name: Clean Database Artifacts
@@ -64,7 +64,7 @@ jobs:
         run: |
           npm ci
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
-          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
+          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=pr
 
       # Clean the api deployment artifacts
       - name: Clean API Deployment
@@ -72,7 +72,7 @@ jobs:
         run: |
           npm ci
           DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
-          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
+          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=pr
 
       # Clean the reamaining build/deployment artifacts
       - name: Clean remaining Artifacts
