@@ -10,10 +10,10 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { INonEditableGeometries } from 'utils/mapUtils';
-import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './SurveySpatialToolbar';
 import SurveyMap from '../../SurveyMap';
 import SurveySpatialObservationDataTable from './SurveySpatialObservationDataTable';
 import SurveySpatialTelemetryDataTable from './SurveySpatialTelemetryDataTable';
+import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './SurveySpatialToolbar';
 
 const SurveySpatialData = () => {
   const [activeView, setActiveView] = useState<SurveySpatialDatasetViewEnum>(SurveySpatialDatasetViewEnum.OBSERVATIONS);
@@ -126,8 +126,7 @@ const SurveySpatialData = () => {
       default:
         return [];
     }
-  }, [activeView, observationPoints, telemetryPoints])
-  
+  }, [activeView, observationPoints, telemetryPoints]);
 
   return (
     <Paper>

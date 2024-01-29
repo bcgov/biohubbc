@@ -200,12 +200,7 @@ const ManualTelemetryTableContainer = () => {
             </Typography>
           </Typography>
 
-          <Stack
-            flexDirection="row"
-            alignItems="center"
-            gap={1}
-            overflow="hidden"
-            whiteSpace="nowrap">
+          <Stack flexDirection="row" alignItems="center" gap={1} overflow="hidden" whiteSpace="nowrap">
             <Button
               variant="contained"
               color="primary"
@@ -222,10 +217,7 @@ const ManualTelemetryTableContainer = () => {
               Add Record
             </Button>
             <Collapse in={hasUnsavedChanges} orientation="horizontal">
-              <Stack
-                flexDirection="row"
-                whiteSpace="nowrap"
-                gap={1}>
+              <Stack flexDirection="row" whiteSpace="nowrap" gap={1}>
                 <LoadingButton
                   loading={telemetryTableContext.isSaving}
                   variant="contained"

@@ -11,6 +11,9 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useContext, useEffect, useState } from 'react';
 
+// Set height so we the skeleton loader will match table rows
+const rowHeight = 52;
+
 interface IObservationTableRow {
   survey_observation_id: number;
   itis_scientific_name: string | undefined;
@@ -24,9 +27,11 @@ interface IObservationTableRow {
   latitude: number | null;
   longitude: number | null;
 }
+
 interface ISurveySpatialObservationDataTableProps {
   isLoading: boolean;
 }
+
 const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataTableProps) => {
   const biohubApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
@@ -141,9 +146,6 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
     }
   ];
 
-  // Set height so we the skeleton loader will match table rows
-  const RowHeight = 52;
-
   // Skeleton Loader template
   const SkeletonRow = () => (
     <Stack
@@ -152,7 +154,7 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
       gap={2}
       py={2}
       px={1}
-      height={RowHeight}
+      height={rowHeight}
       overflow="hidden"
       sx={{
         borderBottom: '1px solid ' + grey[300],
@@ -178,7 +180,6 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
     </Stack>
   );
 
-  console.log(`Page: ${page} Page Size: ${pageSize}`);
   return (
     <>
       {props.isLoading ? (
@@ -190,8 +191,8 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
       ) : (
         <StyledDataGrid
           noRowsMessage="No observation records found"
-          columnHeaderHeight={RowHeight}
-          rowHeight={RowHeight}
+          columnHeaderHeight={rowHeight}
+          rowHeight={rowHeight}
           rows={tableData}
           rowCount={totalRows}
           paginationModel={{ pageSize, page }}
