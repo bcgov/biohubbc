@@ -200,7 +200,12 @@ const ManualTelemetryTableContainer = () => {
             </Typography>
           </Typography>
 
-          <Box display={'flex'} overflow={'hidden'} gap={1} whiteSpace={'nowrap'}>
+          <Stack
+            flexDirection="row"
+            alignItems="center"
+            gap={1}
+            overflow="hidden"
+            whiteSpace="nowrap">
             <Button
               variant="contained"
               color="primary"
@@ -216,8 +221,11 @@ const ManualTelemetryTableContainer = () => {
               disabled={telemetryTableContext.isSaving}>
               Add Record
             </Button>
-            <Collapse in={hasUnsavedChanges} orientation="horizontal" sx={{ mr: -1 }}>
-              <Box whiteSpace="nowrap" display="flex" sx={{ gap: 1, pr: 1 }}>
+            <Collapse in={hasUnsavedChanges} orientation="horizontal">
+              <Stack
+                flexDirection="row"
+                whiteSpace="nowrap"
+                gap={1}>
                 <LoadingButton
                   loading={telemetryTableContext.isSaving}
                   variant="contained"
@@ -233,17 +241,14 @@ const ManualTelemetryTableContainer = () => {
                   disabled={telemetryTableContext.isSaving}>
                   Discard Changes
                 </Button>
-              </Box>
+              </Stack>
             </Collapse>
             {hideableColumns.length > 0 && (
               <>
                 <IconButton
-                  // variant="outlined"
-                  color="default"
                   onClick={(event) => setColumnVisibilityMenuAnchorEl(event.currentTarget)}
                   disabled={telemetryTableContext.isSaving}>
                   <Icon path={mdiCogOutline} size={1} />
-                  {/* Column Visibility */}
                 </IconButton>
                 <Menu
                   anchorOrigin={{
@@ -330,7 +335,7 @@ const ManualTelemetryTableContainer = () => {
                 </MenuItem>
               </Menu>
             </Box>
-          </Box>
+          </Stack>
         </Toolbar>
 
         <Divider flexItem></Divider>
