@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-// import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import { ObservationsTableContext, ObservationsTableContextProvider } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';

@@ -14,7 +14,7 @@ export interface IGetSurveyObservationsResponse {
 export interface IGetSurveyObservationsGeometryResponse {
   surveyObservationsGeometry: {
     survey_observation_id: number;
-    geojson: any; // TODO actually type `{ type: "Point", coordinates: [number, number] }`. Does this type exist in our app already?
+    geometry: GeoJSON.Point;
   }[];
   supplementaryObservationData: ISupplementaryObservationData;
 }

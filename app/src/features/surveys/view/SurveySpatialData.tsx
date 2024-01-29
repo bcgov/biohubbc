@@ -10,29 +10,28 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { INonEditableGeometries } from 'utils/mapUtils';
-import SurveyMapToolBar, { SurveySpatialDataLayout, SurveySpatialDataSet } from './components/SurveyMapToolBar';
+import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './components/SurveyMapToolbar';
 import SurveyMap from './SurveyMap';
 import SurveySpatialObservationDataTable from './SurveySpatialObservationDataTable';
 import SurveySpatialTelemetryDataTable from './SurveySpatialTelemetryDataTable';
 
 const SurveySpatialData = () => {
+  const [activeView, setActiveView] = useState<SurveySpatialDatasetViewEnum>(SurveySpatialDatasetViewEnum.OBSERVATIONS);
+
   const observationsContext = useContext(ObservationsContext);
   const telemetryContext = useContext(TelemetryDataContext);
   const taxonomyContext = useContext(TaxonomyContext);
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
+  const { projectId, surveyId } = useContext(SurveyContext);
 
   const biohubApi = useBiohubApi();
-  const { projectId, surveyId } = useContext(SurveyContext);
 
   const observationsGeometryDataLoader = useDataLoader(() =>
     biohubApi.observation.getObservationsGeometry(projectId, surveyId)
   );
 
   observationsGeometryDataLoader.load();
-
-  //TODO: look into adding this to the query param
-  const [currentTab, setCurrentTab] = useState<SurveySpatialDataSet>(SurveySpatialDataSet.OBSERVATIONS);
 
   // TODO is this actually needed?
   useEffect(() => {
@@ -50,7 +49,7 @@ const SurveySpatialData = () => {
     }
   }, [surveyContext.deploymentDataLoader.data]);
 
-  // Fetch/ Cache all taxonomic data for the observations
+  // Fetch/cache all taxonomic data for the observations
   useEffect(() => {
     const cacheTaxonomicData = async () => {
       if (observationsContext.observationsDataLoader.data) {
@@ -91,124 +90,83 @@ const SurveySpatialData = () => {
   }, [telemetryContext.telemetryDataLoader.data]);
 
   const observationPoints: INonEditableGeometries[] = useMemo(() => {
-    // TODO type change from any
-    return (observationsGeometryDataLoader.data?.surveyObservationsGeometry ?? []).map((observation: any) => {
+    return (observationsGeometryDataLoader.data?.surveyObservationsGeometry ?? []).map((observation) => {
       return {
         feature: {
           type: 'Feature',
           properties: {},
-          geometry: observation.geojson
+          geometry: observation.geometry
         },
         popupComponent: undefined
       };
     });
   }, [observationsGeometryDataLoader.data]);
 
-  // TODO: this needs to be saved between page visits
-  // const [layout, setLayout] = useState<SurveySpatialDataLayout>(SurveySpatialDataLayout.MAP);
+  let isLoading = false;
+  if (activeView === SurveySpatialDatasetViewEnum.OBSERVATIONS) {
+    isLoading =
+      codesContext.codesDataLoader.isLoading ||
+      surveyContext.sampleSiteDataLoader.isLoading ||
+      observationsContext.observationsDataLoader.isLoading;
+  }
 
-  const isLoading = () => {
-    let isLoading = false;
-    if (currentTab === SurveySpatialDataSet.OBSERVATIONS) {
-      isLoading =
-        codesContext.codesDataLoader.isLoading ||
-        surveyContext.sampleSiteDataLoader.isLoading ||
-        observationsContext.observationsDataLoader.isLoading;
-    }
-
-    if (currentTab === SurveySpatialDataSet.TELEMETRY) {
-      isLoading =
-        codesContext.codesDataLoader.isLoading ||
-        surveyContext.deploymentDataLoader.isLoading ||
-        surveyContext.critterDataLoader.isLoading;
-    }
-
-    return isLoading;
-  };
-
-  const updateDataSet = (data: SurveySpatialDataSet) => {
-    setCurrentTab(data);
-  };
-
-  const updateLayout = (data: SurveySpatialDataLayout) => {
-    // setLayout(data);
-  };
+  if (activeView === SurveySpatialDatasetViewEnum.TELEMETRY) {
+    isLoading =
+      codesContext.codesDataLoader.isLoading ||
+      surveyContext.deploymentDataLoader.isLoading ||
+      surveyContext.critterDataLoader.isLoading;
+  }
 
   let mapPoints: INonEditableGeometries[] = [];
-  switch (currentTab) {
-    case SurveySpatialDataSet.OBSERVATIONS:
+  switch (activeView) {
+    case SurveySpatialDatasetViewEnum.OBSERVATIONS:
       mapPoints = observationPoints;
       break;
-    case SurveySpatialDataSet.TELEMETRY:
+    case SurveySpatialDatasetViewEnum.TELEMETRY:
       mapPoints = telemetryPoints;
       break;
-    case SurveySpatialDataSet.MARKED_ANIMALS:
+    case SurveySpatialDatasetViewEnum.MARKED_ANIMALS:
       mapPoints = [];
       break;
     default:
-      mapPoints = [];
       break;
   }
 
   return (
     <Paper>
-      <SurveyMapToolBar
-        currentTab={currentTab}
-        toggleButtons={[
+      <SurveySpatialToolbar
+        activeView={activeView}
+        views={[
           {
             label: `Observations (${
               observationsGeometryDataLoader.data?.supplementaryObservationData?.observationCount ?? 0
             })`,
-            value: SurveySpatialDataSet.OBSERVATIONS,
+            value: SurveySpatialDatasetViewEnum.OBSERVATIONS,
             icon: mdiEye,
             isLoading: false
           },
           {
             label: `Telemetry (${telemetryPoints.length})`,
-            value: SurveySpatialDataSet.TELEMETRY,
+            value: SurveySpatialDatasetViewEnum.TELEMETRY,
             icon: mdiBroadcast,
             isLoading: false
           }
         ]}
-        updateDataSet={updateDataSet}
-        updateLayout={updateLayout}
+        updateDatasetView={setActiveView}
       />
 
       <Box height={{ sm: 300, md: 500 }} position="relative">
-        <SurveyMap mapPoints={mapPoints} isLoading={isLoading()} />
+        <SurveyMap mapPoints={mapPoints} isLoading={isLoading} />
       </Box>
       <Box py={1} px={2} position="relative">
-        {currentTab === SurveySpatialDataSet.OBSERVATIONS && (
-          <SurveySpatialObservationDataTable isLoading={isLoading()} />
+        {activeView === SurveySpatialDatasetViewEnum.OBSERVATIONS && (
+          <SurveySpatialObservationDataTable isLoading={isLoading} />
         )}
 
-        {currentTab === SurveySpatialDataSet.TELEMETRY && <SurveySpatialTelemetryDataTable isLoading={isLoading()} />}
+        {activeView === SurveySpatialDatasetViewEnum.TELEMETRY && (
+          <SurveySpatialTelemetryDataTable isLoading={isLoading} />
+        )}
       </Box>
-
-      {/* {layout === SurveySpatialDataLayout.MAP && (
-        <Box position="relative" height={{ sm: 400, md: 600 }}>
-          <SurveyMap mapPoints={mapPoints} />
-        </Box>
-      )}
-
-      {layout === SurveySpatialDataLayout.TABLE && (
-        <Box p={3}>
-          <NoSurveySectionData text="No data available" paperVariant="outlined" />
-        </Box>
-      )}
-
-      {layout === SurveySpatialDataLayout.SPLIT && (
-        <Box sx={{ display: 'flex' }}>
-          <Box>
-            <Box p={3}>
-              <NoSurveySectionData text="No data available" paperVariant="outlined" />
-            </Box>
-          </Box>
-          <Box height={{ sm: 400, md: 600 }}>
-            <SurveyMap mapPoints={mapPoints} />
-          </Box>
-        </Box>
-      )} */}
     </Paper>
   );
 };

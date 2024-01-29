@@ -40,7 +40,7 @@ export type ObservationRecordWithSamplingData = z.infer<typeof ObservationRecord
 
 export const ObservationGeometryRecord = z.object({
   survey_observation_id: z.number(),
-  geojson: z.string().transform((jsonString) => JSON.parse(jsonString))
+  geometry: z.string().transform((jsonString) => JSON.parse(jsonString))
 });
 
 export type ObservationGeometryRecord = z.infer<typeof ObservationGeometryRecord>;
@@ -297,7 +297,7 @@ export class ObservationRepository extends BaseRepository {
     const knex = getKnex();
 
     const query = knex
-      .select('survey_observation_id', knex.raw('ST_AsGeoJSON(ST_MakePoint(longitude, latitude)) as geojson'))
+      .select('survey_observation_id', knex.raw('ST_AsGeoJSON(ST_MakePoint(longitude, latitude)) as geometry'))
       .from('survey_observation')
       .where('survey_id', surveyId);
 

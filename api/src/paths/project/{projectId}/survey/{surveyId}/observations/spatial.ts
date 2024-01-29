@@ -85,12 +85,12 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
-                  required: ['survey_observation_id', 'geojson'],
+                  required: ['survey_observation_id', 'geometry'],
                   properties: {
                     survey_observation_id: {
                       type: 'integer'
                     },
-                    geojson: {
+                    geometry: {
                       type: 'object'
                     }
                   }

@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import Menu from '@mui/material/Menu';
+import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
@@ -14,51 +14,38 @@ import Typography from '@mui/material/Typography';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
-export enum SurveySpatialDataSet {
-  OBSERVATIONS = 'Observations',
-  TELEMETRY = 'Telemetry',
-  MARKED_ANIMALS = 'Marked Animals'
+export enum SurveySpatialDatasetViewEnum {
+  OBSERVATIONS = 'OBSERVATIONS',
+  TELEMETRY = 'TELEMETRY',
+  MARKED_ANIMALS = 'MARKED_ANIMALS'
 }
 
-export enum SurveySpatialDataLayout {
-  MAP = 'Map',
-  TABLE = 'Table',
-  SPLIT = 'Split'
-}
-
-interface IToolBarButtons {
+interface ISurveySpatialDatasetView {
   label: string;
   icon: string;
-  value: SurveySpatialDataSet;
+  value: SurveySpatialDatasetViewEnum;
   isLoading: boolean;
 }
-interface ISurveyMapToolBarProps {
-  updateDataSet: (data: SurveySpatialDataSet) => void;
-  updateLayout: (data: SurveySpatialDataLayout) => void;
-  toggleButtons: IToolBarButtons[];
-  currentTab: SurveySpatialDataSet;
+
+interface ISurveySptialToolbarProps {
+  updateDatasetView: (view: SurveySpatialDatasetViewEnum) => void;
+  views: ISurveySpatialDatasetView[];
+  activeView: SurveySpatialDatasetViewEnum;
 }
-const SurveyMapToolBar = (props: ISurveyMapToolBarProps) => {
-  const [layout, setLayout] = useState<SurveySpatialDataLayout>(SurveySpatialDataLayout.MAP);
 
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
+const SurveySpatialToolbar = (props: ISurveySptialToolbarProps) => {
+  const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
 
-  const updateDataSet = (event: React.MouseEvent<HTMLElement>, dataset: SurveySpatialDataSet) => {
-    if (!dataset) {
+  const updateDatasetView = (_event: React.MouseEvent<HTMLElement>, view: SurveySpatialDatasetViewEnum) => {
+    if (!view) {
       return;
     }
 
-    props.updateDataSet(dataset);
+    props.updateDatasetView(view);
   };
 
-  const updateLayout = (event: React.MouseEvent<HTMLElement>, newAlignment: SurveySpatialDataLayout) => {
-    setLayout(newAlignment);
-    props.updateLayout(newAlignment);
-  };
-
-  const handleMenuClick = (e: any) => {
-    setAnchorEl(e.currentTarget);
+  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    setAnchorEl(event.currentTarget);
   };
 
   const handleMenuClose = () => {
@@ -69,7 +56,7 @@ const SurveyMapToolBar = (props: ISurveyMapToolBarProps) => {
     <>
       <Menu
         anchorEl={anchorEl}
-        open={open}
+        open={Boolean(anchorEl)}
         onClose={handleMenuClose}
         disableAutoFocusItem
         anchorOrigin={{
@@ -132,8 +119,8 @@ const SurveyMapToolBar = (props: ISurveyMapToolBarProps) => {
         <Divider flexItem></Divider>
         <Box p={2}>
           <ToggleButtonGroup
-            value={props.currentTab}
-            onChange={updateDataSet}
+            value={props.activeView}
+            onChange={updateDatasetView}
             exclusive
             sx={{
               display: 'flex',
@@ -148,22 +135,16 @@ const SurveyMapToolBar = (props: ISurveyMapToolBarProps) => {
                 letterSpacing: '0.02rem'
               }
             }}>
-            {props.toggleButtons.map((item) => (
+            {props.views.map((view) => (
               <ToggleButton
-                key={item.value}
+                key={view.value}
                 component={Button}
                 color="primary"
-                startIcon={<Icon path={item.icon} size={0.75} />}
-                value={item.value}>
-                {item.label}
+                startIcon={<Icon path={view.icon} size={0.75} />}
+                value={view.value}>
+                {view.label}
               </ToggleButton>
             ))}
-          </ToggleButtonGroup>
-
-          <ToggleButtonGroup value={layout} onChange={updateLayout} exclusive sx={{ display: 'none' }}>
-            <ToggleButton value={SurveySpatialDataLayout.MAP}>MAP</ToggleButton>
-            <ToggleButton value={SurveySpatialDataLayout.TABLE}>TABLE</ToggleButton>
-            <ToggleButton value={SurveySpatialDataLayout.SPLIT}>SPLIT</ToggleButton>
           </ToggleButtonGroup>
         </Box>
       </Box>
@@ -171,4 +152,4 @@ const SurveyMapToolBar = (props: ISurveyMapToolBarProps) => {
   );
 };
 
-export default SurveyMapToolBar;
+export default SurveySpatialToolbar;
