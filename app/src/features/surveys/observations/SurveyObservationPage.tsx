@@ -6,7 +6,7 @@ import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
 import { useContext } from 'react';
-import ObservationComponent from './observations-table/ObservationComponent';
+import ObservationsTableContainer from './observations-table/ObservationsTableContainer';
 import SamplingSiteList from './sampling-sites/SamplingSiteList';
 import SurveyObservationHeader from './SurveyObservationHeader';
 
@@ -57,7 +57,7 @@ export const SurveyObservationPage = () => {
                     return <CircularProgress className="pageProgress" size={40} />;
                   }
 
-                  return <ObservationComponent />;
+                  return <ObservationsTableContainer />;
                 }}
               </ObservationsTableContext.Consumer>
             </ObservationsTableContextProvider>
