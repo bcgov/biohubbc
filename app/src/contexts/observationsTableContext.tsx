@@ -212,9 +212,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   // Stores the current validation state of the table
   const [validationModel, setValidationModel] = useState<ObservationTableValidationModel>({});
 
-  // Pagination States
-
-  // const [totalRows, setTotalRows] = useState<number>(0);
+  // Pagination State
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
     pageSize: 10
@@ -232,8 +230,10 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   // initial load with pagination values
   useEffect(() => {
     observationsContext.observationsDataLoader.refresh({
-      page: paginationModel.page + 1, // +1 to correct an off by one error with pagination
-      limit: paginationModel.pageSize
+      limit: paginationModel.pageSize,
+
+      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+      page: paginationModel.page + 1
     });
   }, []);
 
@@ -241,10 +241,12 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   useEffect(() => {
     const sort = firstOrNull(sortModel);
     observationsContext.observationsDataLoader.refresh({
-      page: paginationModel.page + 1, // +1 to correct an off by one error with pagination
       limit: paginationModel.pageSize,
       sort: sort?.field || undefined,
-      order: sort?.sort || undefined
+      order: sort?.sort || undefined,
+
+      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+      page: paginationModel.page + 1
     });
   }, [paginationModel, sortModel]);
 

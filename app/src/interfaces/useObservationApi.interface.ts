@@ -5,9 +5,11 @@ export interface IGetSurveyObservationsResponse {
   supplementaryObservationData: ISupplementaryObservationData;
   pagination: {
     total: number;
-    per_page: number;
     current_page: number;
     last_page: number;
+    per_page?: number;
+    sort?: string;
+    order?: 'asc' | 'desc';
   };
 }
 

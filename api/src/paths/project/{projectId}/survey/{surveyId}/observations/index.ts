@@ -139,7 +139,7 @@ export const surveyObservationsResponseSchema: SchemaObject = {
 
 const paginationResponseSchema: SchemaObject = {
   type: 'object',
-  required: ['total', 'per_page', 'current_page', 'last_page'],
+  required: ['total', 'current_page', 'last_page'],
   properties: {
     total: {
       type: 'integer'
@@ -229,7 +229,7 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             ...surveyObservationsResponseSchema,
-            required: ['surveyObservations', 'supplementaryObservationData'],
+            required: ['surveyObservations', 'supplementaryObservationData', 'pagination'],
             properties: {
               ...surveyObservationsResponseSchema.properties,
               supplementaryObservationData: { ...surveyObservationsSupplementaryData },
@@ -408,7 +408,7 @@ export function getSurveyObservations(): RequestHandler {
         ...observationData,
         pagination: {
           total: observationCount,
-          per_page: limit ?? observationCount,
+          per_page: limit,
           current_page: page ?? 1,
           last_page: limit ? Math.ceil(observationCount / limit) : 1,
           sort,
