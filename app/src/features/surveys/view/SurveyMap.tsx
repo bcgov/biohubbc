@@ -8,12 +8,12 @@ import { LatLngBoundsExpression } from 'leaflet';
 import { GeoJSON, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { coloredPoint, INonEditableGeometries } from 'utils/mapUtils';
-import { v4 as uuidv4 } from 'uuid';
 
 interface ISurveyMapProps {
   mapPoints: INonEditableGeometries[];
   isLoading: boolean;
 }
+
 // TODO: need a way to pass in the map dimensions depending on the screen size
 const SurveyMap = (props: ISurveyMapProps) => {
   let bounds: LatLngBoundsExpression | undefined;
@@ -38,14 +38,18 @@ const SurveyMap = (props: ISurveyMapProps) => {
           <FullScreenScrollingEventHandler bounds={bounds} scrollWheelZoom={false} />
           <SetMapBounds bounds={bounds} />
 
-          {props.mapPoints?.map((nonEditableGeo: INonEditableGeometries) => (
-            <GeoJSON
-              key={uuidv4()}
-              data={nonEditableGeo.feature}
-              pointToLayer={(_, latlng) => coloredPoint({ latlng, fillColor: '#1f7dff', borderColor: '#ffffff' })}>
-              {nonEditableGeo.popupComponent}
-            </GeoJSON>
-          ))}
+          {props.mapPoints?.map((nonEditableGeo: INonEditableGeometries, index: number) => {
+            const key = nonEditableGeo.feature.id ?? index;
+
+            return (
+              <GeoJSON
+                key={key}
+                data={nonEditableGeo.feature}
+                pointToLayer={(_, latlng) => coloredPoint({ latlng, fillColor: '#1f7dff', borderColor: '#ffffff' })}>
+                {nonEditableGeo.popupComponent}
+              </GeoJSON>
+            );
+          })}
 
           <LayersControl position="topright">
             <BaseLayerControls />
