@@ -6,7 +6,6 @@ import TextField from '@mui/material/TextField';
 import SpeciesCard from 'components/species/components/SpeciesCard';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { ITaxonomy } from 'interfaces/useTaxonomy.interface';
 import { debounce } from 'lodash-es';
 import { default as React, useEffect, useMemo, useState } from 'react';
 
@@ -25,7 +24,6 @@ export type ISpeciesAutocompleteField = {
 
 const SpeciesAutocompleteField: React.FC<ISpeciesAutocompleteFieldProps> = (props) => {
   const { formikFieldName, label, required, handleAddSpecies } = props;
-
   const biohubApi = useBiohubApi();
 
   const { values } = useFormikContext<ISpeciesAutocompleteField[]>();
@@ -33,26 +31,15 @@ const SpeciesAutocompleteField: React.FC<ISpeciesAutocompleteFieldProps> = (prop
   const [inputValue, setInputValue] = useState('');
   const [options, setOptions] = useState<ISpeciesAutocompleteField[]>([]);
 
-  const convertSearchResponseToOptions = (searchResponse: ITaxonomy[]) => {
-    return searchResponse.map((item: ITaxonomy) => {
-      return {
-        id: Number(item.id),
-        label: item.label,
-        scientificName: item.scientificName
-      } as ISpeciesAutocompleteField;
-    });
-  };
-
   const handleSearch = useMemo(
     () =>
       debounce(async (inputValue: string, callback: (searchedValues: ISpeciesAutocompleteField[]) => void) => {
-        const response = await biohubApi.taxonomy.searchSpeciesItis(inputValue);
+        console.log('inputValue', inputValue);
+        const response = await biohubApi.itis.itisSearch(inputValue);
 
-        const newOptions = convertSearchResponseToOptions(response.searchResponse);
-
-        callback(newOptions);
+        callback(response || []);
       }, 500),
-    [biohubApi.taxonomy]
+    [biohubApi.itis]
   );
 
   const searchSpecies = async () => {

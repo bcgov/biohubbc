@@ -5,5 +5,4 @@ export interface ITaxonomySearchResult {
 export interface ITaxonomy {
   id: string;
   label: string;
-  scientificName?: string;
 }

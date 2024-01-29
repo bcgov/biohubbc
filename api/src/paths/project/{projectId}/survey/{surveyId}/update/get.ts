@@ -146,7 +146,7 @@ GET.apiDoc = {
                           required: ['id', 'label', 'scientificName'],
                           properties: {
                             id: {
-                              type: 'number'
+                              type: 'string'
                             },
                             label: {
                               type: 'string'
@@ -176,7 +176,7 @@ GET.apiDoc = {
                           required: ['id', 'label', 'scientificName'],
                           properties: {
                             id: {
-                              type: 'number'
+                              type: 'string'
                             },
                             label: {
                               type: 'string'
