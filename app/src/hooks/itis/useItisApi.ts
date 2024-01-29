@@ -1,5 +1,4 @@
-import { AxiosInstance } from 'axios';
-import qs from 'qs';
+import useAxios from 'hooks/api/useAxios';
 
 export interface IItisSearchResponse {
   commonNames: string[];
@@ -23,22 +22,21 @@ export const ITIS_PARAMS = {
   FILTER: 'omitHeader=true&fl=tsn+scientificName:nameWOInd+kingdom+parentTSN+commonNames:vernacular+updateDate+usage'
 };
 
-const useItisApi = (axios: AxiosInstance) => {
+const useItisApi = () => {
+  const apiAxios = useAxios(process.env.REACT_APP_ITIS_URL);
+
   /**
    * Returns the ITIS search species Query.
    *
-   * @param {*} searchRequest
+   * @param {*} searchTerm
    * @return {*}  {(Promise<IItisSearchResult[] | undefined>)}
    * @memberof TaxonomyService
    */
-  const itisSearch = async (searchRequest: string): Promise<IItisSearchResult[] | undefined> => {
+  const itisSearch = async (searchTerm: string): Promise<IItisSearchResult[] | undefined> => {
     try {
-      console.log('searchRequest', searchRequest);
-      const itisClient = getItisSearchUrl(searchRequest);
-      console.log('itisClient', itisClient);
+      const itisClient = getItisSearchUrl(searchTerm);
 
-      const response = await axios.get(itisClient);
-      console.log('response', response);
+      const response = await apiAxios.get(itisClient);
 
       if (!response.data || !response.data.response || !response.data.response.docs) {
         return [];
@@ -58,17 +56,8 @@ const useItisApi = (axios: AxiosInstance) => {
    * @memberof ESService
    */
   const getItisSearchUrl = (searchSpecies: string): string => {
-    const itisUrl = process.env.REACT_APP_ITIS_URL;
-    if (!itisUrl) {
-      throw new Error('ITIS_SEARCH_URL not defined.');
-    }
     const itisSearchSpecies = `q=(nameWOInd:*${searchSpecies}*+AND+usage:/(valid|accepted)/)+(vernacular:*${searchSpecies}*+AND+usage:/(valid|accepted)/)`;
-    console.log('itisSearchSpecies', itisSearchSpecies);
-    const url = `${itisUrl}?${ITIS_PARAMS.SORT}&${itisSearchSpecies}&${ITIS_PARAMS.FILTER}`;
-    console.log('url', url);
-    const qsdata = qs.stringify(url);
-    console.log('qsdata', qsdata);
-    return qsdata;
+    return `?${ITIS_PARAMS.SORT}&${itisSearchSpecies}&${ITIS_PARAMS.FILTER}`;
   };
 
   /**

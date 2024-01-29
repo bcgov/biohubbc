@@ -36,6 +36,7 @@ const SpeciesAutocompleteField: React.FC<ISpeciesAutocompleteFieldProps> = (prop
       debounce(async (inputValue: string, callback: (searchedValues: ISpeciesAutocompleteField[]) => void) => {
         console.log('inputValue', inputValue);
         const response = await biohubApi.itis.itisSearch(inputValue);
+        console.log('response', response);
 
         callback(response || []);
       }, 500),

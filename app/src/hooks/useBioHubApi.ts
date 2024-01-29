@@ -61,7 +61,7 @@ export const useBiohubApi = () => {
 
   const samplingSite = useSamplingSiteApi(apiAxios);
 
-  const itis = useItisApi(apiAxios);
+  const itis = useItisApi();
 
   return useMemo(
     () => ({
