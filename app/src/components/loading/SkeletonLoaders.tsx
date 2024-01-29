@@ -1,9 +1,10 @@
+import { mdiMapSearchOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
 import Paper from '@mui/material/Paper';
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
-import { v4 } from 'uuid';
 
 export interface IMultipleSkeletonProps {
   numberOfLines?: number;
@@ -11,11 +12,10 @@ export interface IMultipleSkeletonProps {
 
 const SkeletonList = (props: IMultipleSkeletonProps) => (
   <>
-    {Array(props.numberOfLines ?? 3)
-      .fill(null)
-      .map(() => (
+    {Array.from(Array(props.numberOfLines ?? 3).keys())
+      .map((key: number) => (
         <Stack
-          key={v4()}
+          key={key}
           flexDirection="row"
           alignItems="center"
           gap={2}
@@ -40,11 +40,10 @@ const SkeletonList = (props: IMultipleSkeletonProps) => (
 
 const SkeletonListStack = (props: IMultipleSkeletonProps) => (
   <>
-    {Array(props.numberOfLines ?? 3)
-      .fill(null)
-      .map(() => (
+    {Array.from(Array(props.numberOfLines ?? 3).keys())
+      .map((key: number) => (
         <Stack
-          key={v4()}
+          key={key}
           flexDirection="column"
           justifyContent="center"
           px={2}
@@ -77,10 +76,9 @@ const SkeletonTable = (props: IMultipleSkeletonProps) => (
       borderRadius: '4px'
     }}>
     <Paper elevation={0}>
-      {Array(props.numberOfLines ?? 3)
-        .fill(null)
-        .map(() => (
-          <SkeletonRow key={v4()} />
+      {Array.from(Array(props.numberOfLines ?? 3).keys())
+        .map((key: number) => (
+          <SkeletonRow key={key} />
         ))}
     </Paper>
   </Box>
@@ -114,4 +112,37 @@ const SkeletonRow = () => (
   </Stack>
 );
 
-export { SkeletonList, SkeletonListStack, SkeletonRow, SkeletonTable };
+const SkeletonMap = () => (
+  <Box
+    sx={{
+      position: 'absolute',
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+      zIndex: 1001,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: '#fff',
+      '& svg': {
+        color: grey[300]
+      }
+    }}>
+    <Skeleton
+      variant="rectangular"
+      width="100%"
+      height="100%"
+      sx={{
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0
+      }}
+    />
+    <Icon path={mdiMapSearchOutline} size={2} />
+  </Box>
+);
+
+export { SkeletonList, SkeletonListStack, SkeletonRow, SkeletonTable, SkeletonMap };
