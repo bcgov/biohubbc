@@ -33,15 +33,6 @@ const SurveySpatialData = () => {
 
   observationsGeometryDataLoader.load();
 
-  // TODO is this actually needed?
-  useEffect(() => {
-    codesContext.codesDataLoader.load();
-    surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-    surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-    surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-    observationsContext.observationsDataLoader.refresh();
-  }, []);
-
   useEffect(() => {
     if (surveyContext.deploymentDataLoader.data) {
       const deploymentIds = surveyContext.deploymentDataLoader.data.map((item) => item.deployment_id);
