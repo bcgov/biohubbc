@@ -828,7 +828,7 @@ describe('getSurveyObservationsWithSupplementaryData', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     const getSurveyObservationsStub = sinon
-      .stub(ObservationService.prototype, 'getSurveyObservationsWithSupplementaryData')
+      .stub(ObservationService.prototype, 'getSurveyObservationsWithSupplementaryAndSamplingData')
       .resolves({
         surveyObservations: ([
           { survey_observation_id: 1 },
@@ -851,7 +851,15 @@ describe('getSurveyObservationsWithSupplementaryData', () => {
     expect(mockRes.statusValue).to.equal(200);
     expect(mockRes.jsonValue).to.eql({
       surveyObservations: [{ survey_observation_id: 1 }, { survey_observation_id: 2 }],
-      supplementaryObservationData: { observationCount: 2 }
+      supplementaryObservationData: { observationCount: 2 },
+      pagination: {
+        current_page: 1,
+        last_page: 1,
+        order: undefined,
+        per_page: 2,
+        sort: undefined,
+        total: 2
+      }
     });
   });
 
@@ -861,7 +869,7 @@ describe('getSurveyObservationsWithSupplementaryData', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     sinon
-      .stub(ObservationService.prototype, 'getSurveyObservationsWithSupplementaryData')
+      .stub(ObservationService.prototype, 'getSurveyObservationsWithSupplementaryAndSamplingData')
       .rejects(new Error('a test error'));
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();

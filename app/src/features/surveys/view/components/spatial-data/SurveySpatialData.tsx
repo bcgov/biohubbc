@@ -57,6 +57,10 @@ const SurveySpatialData = () => {
     cacheTaxonomicData();
   }, [observationsContext.observationsDataLoader.data]);
 
+  /**
+   * Because Telemetry data is client-side paginated, we can collect all spatial points from
+   * traversing the array of telemetry data.
+   */
   const telemetryPoints: INonEditableGeometries[] = useMemo(() => {
     const telemetryData = telemetryContext.telemetryDataLoader.data;
     if (!telemetryData) {
@@ -80,6 +84,10 @@ const SurveySpatialData = () => {
       });
   }, [telemetryContext.telemetryDataLoader.data]);
 
+  /**
+   * Because Observations data is server-side paginated, we must collect all spatial points from
+   * a dedicated endpoint.
+   */
   const observationPoints: INonEditableGeometries[] = useMemo(() => {
     return (observationsGeometryDataLoader.data?.surveyObservationsGeometry ?? []).map((observation) => {
       return {
@@ -108,20 +116,18 @@ const SurveySpatialData = () => {
       surveyContext.critterDataLoader.isLoading;
   }
 
-  let mapPoints: INonEditableGeometries[] = [];
-  switch (activeView) {
-    case SurveySpatialDatasetViewEnum.OBSERVATIONS:
-      mapPoints = observationPoints;
-      break;
-    case SurveySpatialDatasetViewEnum.TELEMETRY:
-      mapPoints = telemetryPoints;
-      break;
-    case SurveySpatialDatasetViewEnum.MARKED_ANIMALS:
-      mapPoints = [];
-      break;
-    default:
-      break;
-  }
+  const mapPoints: INonEditableGeometries[] = useMemo(() => {
+    switch (activeView) {
+      case SurveySpatialDatasetViewEnum.OBSERVATIONS:
+        return observationPoints;
+      case SurveySpatialDatasetViewEnum.TELEMETRY:
+        return telemetryPoints;
+      case SurveySpatialDatasetViewEnum.MARKED_ANIMALS:
+      default:
+        return [];
+    }
+  }, [activeView, observationPoints, telemetryPoints])
+  
 
   return (
     <Paper>

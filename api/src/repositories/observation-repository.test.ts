@@ -100,7 +100,7 @@ describe('ObservationRepository', () => {
     });
   });
 
-  describe('getSurveyObservations', () => {
+  describe('getSurveyObservationsWithSamplingData', () => {
     it('get all observations for a survey when some observation records exist', async () => {
       const mockRows = [{}, {}];
       const mockQueryResponse = ({ rows: mockRows, rowCount: 2 } as unknown) as QueryResult<any>;
@@ -113,7 +113,7 @@ describe('ObservationRepository', () => {
 
       const surveyId = 1;
 
-      const response = await repository.getSurveyObservations(surveyId);
+      const response = await repository.getSurveyObservationsWithSamplingData(surveyId);
 
       expect(response).to.be.eql(mockRows);
     });
@@ -130,7 +130,7 @@ describe('ObservationRepository', () => {
 
       const surveyId = 1;
 
-      const response = await repository.getSurveyObservations(surveyId);
+      const response = await repository.getSurveyObservationsWithSamplingData(surveyId);
 
       expect(response).to.be.eql(mockRows);
     });

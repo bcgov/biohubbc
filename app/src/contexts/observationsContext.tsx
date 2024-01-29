@@ -31,8 +31,6 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     biohubApi.observation.getObservationRecords(projectId, surveyId, pagination)
   );
 
-  observationsDataLoader.load();
-
   const observationsContext: IObservationsContext = {
     observationsDataLoader
   };

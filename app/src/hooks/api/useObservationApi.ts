@@ -73,7 +73,14 @@ const useObservationApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  // TODO promise type; jsdoc.
+  /**
+   * Fetches all geojson geometry points for all observation records belonging to
+   * the given survey.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}  {Promise<IGetSurveyObservationsGeometryResponse>}
+   */
   const getObservationsGeometry = async (
     projectId: number,
     surveyId: number

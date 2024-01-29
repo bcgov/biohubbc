@@ -353,6 +353,19 @@ PUT.apiDoc = {
 };
 
 /**
+ * This record maps observation table sampling site site ID columns to sampling data
+ * columns that can be sorted on.
+ *
+ * TODO We should probably modify frontend functionality to make requests to sort on these
+ * columns.
+ */
+const samplingSiteSortingColumnName: Record<string, string> = {
+  survey_sample_site_id: 'survey_sample_site_name',
+  survey_sample_method_id: 'survey_sample_method_name',
+  survey_sample_period_id: 'survey_sample_period_start_datetime'
+};
+
+/**
  * Fetch all observations for a survey.
  *
  * @export
@@ -364,8 +377,14 @@ export function getSurveyObservations(): RequestHandler {
 
     const page: number | undefined = req.query.page ? Number(req.query.page) : undefined;
     const limit: number | undefined = req.query.limit ? Number(req.query.limit) : undefined;
-    const sort: string | undefined = req.query.sort ? String(req.query.sort) : undefined;
     const order: 'asc' | 'desc' | undefined = req.query.order ? (String(req.query.order) as 'asc' | 'desc') : undefined;
+
+    const sortQuery: string | undefined = req.query.sort ? String(req.query.sort) : undefined;
+    let sort = sortQuery;
+
+    if (sortQuery && samplingSiteSortingColumnName[sortQuery]) {
+      sort = samplingSiteSortingColumnName[sortQuery];
+    }
 
     defaultLog.debug({ label: 'getSurveyObservations', surveyId });
 

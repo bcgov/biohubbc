@@ -288,7 +288,7 @@ export class ObservationRepository extends BaseRepository {
   /**
    * Gets a set of GeoJson geometries representing the set of all lat/long points for the
    * given survey's observations.
-   * 
+   *
    * @param {number} surveyId
    * @return {*}  {Promise<ObservationGeometryRecord[]>}
    * @memberof ObservationRepository
