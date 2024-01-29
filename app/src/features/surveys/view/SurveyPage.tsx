@@ -51,19 +51,6 @@ const SurveyPage: React.FC = () => {
 
           <SurveyDetails />
         </Stack>
-
-        {/* <Box mt={3}>
-          <Paper elevation={0}>
-            <ManualTelemetrySection />
-          </Paper>
-        </Box> */}
-
-        {/* <Box mt={3}>
-          <Paper elevation={0}>
-            <SurveySummaryResults />
-          </Paper>
-        </Box> */}
-
         <Paper sx={{ display: 'none' }}>
           <SurveyStudyArea />
         </Paper>
