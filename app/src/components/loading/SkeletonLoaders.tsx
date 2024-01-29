@@ -12,54 +12,52 @@ export interface IMultipleSkeletonProps {
 
 const SkeletonList = (props: IMultipleSkeletonProps) => (
   <>
-    {Array.from(Array(props.numberOfLines ?? 3).keys())
-      .map((key: number) => (
-        <Stack
-          key={key}
-          flexDirection="row"
-          alignItems="center"
-          gap={2}
-          sx={{
-            px: 2,
-            height: '56px',
-            background: '#fff',
-            borderBottom: '1px solid ' + grey[300],
-            '& .MuiSkeleton-root:not(:first-of-type)': {
-              flex: '1 1 auto'
-            },
-            '& *': {
-              fontSize: '0.875rem'
-            }
-          }}>
-          <Skeleton variant="text" width={20} height={20} />
-          <Skeleton variant="text" />
-        </Stack>
-      ))}
+    {Array.from(Array(props.numberOfLines ?? 3).keys()).map((key: number) => (
+      <Stack
+        key={key}
+        flexDirection="row"
+        alignItems="center"
+        gap={2}
+        sx={{
+          px: 2,
+          height: '56px',
+          background: '#fff',
+          borderBottom: '1px solid ' + grey[300],
+          '& .MuiSkeleton-root:not(:first-of-type)': {
+            flex: '1 1 auto'
+          },
+          '& *': {
+            fontSize: '0.875rem'
+          }
+        }}>
+        <Skeleton variant="text" width={20} height={20} />
+        <Skeleton variant="text" />
+      </Stack>
+    ))}
   </>
 );
 
 const SkeletonListStack = (props: IMultipleSkeletonProps) => (
   <>
-    {Array.from(Array(props.numberOfLines ?? 3).keys())
-      .map((key: number) => (
-        <Stack
-          key={key}
-          flexDirection="column"
-          justifyContent="center"
-          px={2}
-          py={1.2}
-          height={70}
-          sx={{
-            background: '#fff',
-            borderBottom: '1px solid ' + grey[300],
-            '& *': {
-              fontSize: '0.875rem'
-            }
-          }}>
-          <Skeleton variant="text" />
-          <Skeleton variant="text" width="50%" />
-        </Stack>
-      ))}
+    {Array.from(Array(props.numberOfLines ?? 3).keys()).map((key: number) => (
+      <Stack
+        key={key}
+        flexDirection="column"
+        justifyContent="center"
+        px={2}
+        py={1.2}
+        height={70}
+        sx={{
+          background: '#fff',
+          borderBottom: '1px solid ' + grey[300],
+          '& *': {
+            fontSize: '0.875rem'
+          }
+        }}>
+        <Skeleton variant="text" />
+        <Skeleton variant="text" width="50%" />
+      </Stack>
+    ))}
   </>
 );
 
@@ -76,10 +74,9 @@ const SkeletonTable = (props: IMultipleSkeletonProps) => (
       borderRadius: '4px'
     }}>
     <Paper elevation={0}>
-      {Array.from(Array(props.numberOfLines ?? 3).keys())
-        .map((key: number) => (
-          <SkeletonRow key={key} />
-        ))}
+      {Array.from(Array(props.numberOfLines ?? 3).keys()).map((key: number) => (
+        <SkeletonRow key={key} />
+      ))}
     </Paper>
   </Box>
 );
