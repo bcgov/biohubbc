@@ -11,7 +11,7 @@ import SurveyStudyArea from './components/SurveyStudyArea';
 import SurveyAnimals from './SurveyAnimals';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyHeader from './SurveyHeader';
-import SurveySpatialData from './SurveySpatialData';
+import SurveySpatialData from './components/spatial-data/SurveySpatialData';
 
 //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 

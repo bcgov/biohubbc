@@ -10,8 +10,8 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { INonEditableGeometries } from 'utils/mapUtils';
-import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './components/SurveyMapToolbar';
-import SurveyMap from './SurveyMap';
+import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './SurveySpatialToolbar';
+import SurveyMap from '../../SurveyMap';
 import SurveySpatialObservationDataTable from './SurveySpatialObservationDataTable';
 import SurveySpatialTelemetryDataTable from './SurveySpatialTelemetryDataTable';
 

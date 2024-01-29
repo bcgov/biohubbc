@@ -6,7 +6,11 @@ import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { SurveyContext } from 'contexts/surveyContext';
 import dayjs from 'dayjs';
 import { useContext, useMemo } from 'react';
-import { ICritterDeployment } from '../telemetry/ManualTelemetryList';
+import { ICritterDeployment } from '../../../telemetry/ManualTelemetryList';
+
+// Set height so we the skeleton loader will match table rows
+const rowHeight = 52;
+
 interface ITelemetryData {
   id: number;
   critter_id: string | null;
@@ -14,11 +18,14 @@ interface ITelemetryData {
   start: string;
   end: string;
 }
+
 interface ISurveySpatialTelemetryDataTableProps {
   isLoading: boolean;
 }
+
 const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTableProps) => {
   const surveyContext = useContext(SurveyContext);
+
   const flattenedCritterDeployments: ICritterDeployment[] = useMemo(() => {
     const data: ICritterDeployment[] = [];
     // combine all critter and deployments into a flat list
@@ -64,9 +71,6 @@ const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTable
     }
   ];
 
-  // Set height so we the skeleton loader will match table rows
-  const RowHeight = 52;
-
   // Skeleton Loader template
   const SkeletonRow = () => (
     <Stack
@@ -74,7 +78,7 @@ const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTable
       alignItems="center"
       gap={2}
       p={2}
-      height={RowHeight}
+      height={rowHeight}
       overflow="hidden"
       sx={{
         borderBottom: '1px solid ' + grey[300],
@@ -111,8 +115,8 @@ const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTable
       ) : (
         <StyledDataGrid
           noRowsMessage={'No telemetry records found'}
-          columnHeaderHeight={RowHeight}
-          rowHeight={RowHeight}
+          columnHeaderHeight={rowHeight}
+          rowHeight={rowHeight}
           rows={tableData}
           getRowId={(row) => row.id}
           columns={columns}
