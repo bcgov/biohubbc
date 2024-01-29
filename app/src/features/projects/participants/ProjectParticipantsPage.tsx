@@ -152,7 +152,7 @@ const ProjectParticipantsPage: React.FC = () => {
                     <TableCell>Username</TableCell>
                     <TableCell>Type</TableCell>
                     <TableCell>Project Role</TableCell>
-                    <TableCell align="right"></TableCell>
+                    <TableCell width={80} align="right"></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
