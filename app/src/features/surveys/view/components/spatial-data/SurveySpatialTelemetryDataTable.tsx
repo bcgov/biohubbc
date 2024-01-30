@@ -23,6 +23,39 @@ interface ISurveySpatialTelemetryDataTableProps {
   isLoading: boolean;
 }
 
+// Skeleton Loader template
+const SkeletonRow = () => (
+  <Stack
+    flexDirection="row"
+    alignItems="center"
+    gap={2}
+    p={2}
+    height={rowHeight}
+    overflow="hidden"
+    sx={{
+      borderBottom: '1px solid ' + grey[300],
+      '&:last-of-type': {
+        borderBottom: 'none'
+      },
+      '& .MuiSkeleton-root': {
+        flex: '1 1 auto'
+      },
+      '& *': {
+        fontSize: '0.875rem'
+      }
+    }}>
+    <Skeleton variant="text" />
+    <Skeleton variant="text" />
+    <Skeleton variant="text" />
+    <Skeleton variant="text" />
+    <Skeleton variant="text" />
+    <Skeleton variant="text" />
+    <Skeleton variant="text" />
+    <Skeleton variant="text" />
+    <Skeleton variant="text" />
+  </Stack>
+);
+
 const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTableProps) => {
   const surveyContext = useContext(SurveyContext);
 
@@ -70,39 +103,6 @@ const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTable
       flex: 1
     }
   ];
-
-  // Skeleton Loader template
-  const SkeletonRow = () => (
-    <Stack
-      flexDirection="row"
-      alignItems="center"
-      gap={2}
-      p={2}
-      height={rowHeight}
-      overflow="hidden"
-      sx={{
-        borderBottom: '1px solid ' + grey[300],
-        '&:last-of-type': {
-          borderBottom: 'none'
-        },
-        '& .MuiSkeleton-root': {
-          flex: '1 1 auto'
-        },
-        '& *': {
-          fontSize: '0.875rem'
-        }
-      }}>
-      <Skeleton variant="text" />
-      <Skeleton variant="text" />
-      <Skeleton variant="text" />
-      <Skeleton variant="text" />
-      <Skeleton variant="text" />
-      <Skeleton variant="text" />
-      <Skeleton variant="text" />
-      <Skeleton variant="text" />
-      <Skeleton variant="text" />
-    </Stack>
-  );
 
   return (
     <>

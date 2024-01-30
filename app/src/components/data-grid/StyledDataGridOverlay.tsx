@@ -4,7 +4,7 @@ import { GridOverlay } from '@mui/x-data-grid';
 const StyledDataGridOverlay = (props: { message?: string }) => (
   <GridOverlay>
     <Typography variant="body2" color="textSecondary" data-testid="data-grid-table-empty">
-      {props.message || 'No records found'}
+      {props.message ?? 'No records found'}
     </Typography>
   </GridOverlay>
 );

@@ -130,9 +130,9 @@ export class ObservationService extends DBService {
    * @return {*}  {Promise<ObservationRecord[]>}
    * @memberof ObservationRepository
    */
-    async getSurveyObservationById(surveyObservationId: number): Promise<ObservationRecord> {
-      return this.observationRepository.getSurveyObservationById(surveyObservationId);
-    }
+  async getSurveyObservationById(surveyObservationId: number): Promise<ObservationRecord> {
+    return this.observationRepository.getSurveyObservationById(surveyObservationId);
+  }
 
   /**
    * Retrieves all observation records for the given survey along with supplementary data
