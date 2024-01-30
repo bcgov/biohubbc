@@ -1,4 +1,3 @@
-import React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -12,41 +11,45 @@ import ListItem from '@mui/material/ListItem';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import { mdiTrashCanOutline } from '@mdi/js';
+import { ICreateSamplingSiteRequest } from '../SamplingSitePage';
+import { useContext } from 'react';
+import { SurveyContext } from 'contexts/surveyContext';
 
-interface ISamplingBlockStratumFormProps {
-  label: string;
-  subHeader: string;
-  options: ISelectWithSubtextFieldOption[] | undefined;
-  arrayFieldName: string;
-  addButtonLabel: string;
-}
 
-const SamplingBlockStratumForm: React.FC<ISamplingBlockStratumFormProps> = ({
-  label,
-  subHeader,
-  options,
-  arrayFieldName,
-  addButtonLabel,
-}) => {
-  const { values, setFieldValue } = useFormikContext<any>();
+const SamplingBlockForm = () => {
+
+  const { values, setFieldValue } = useFormikContext<ICreateSamplingSiteRequest>();
+
+    const surveyContext = useContext(SurveyContext);
+
+  const options: ISelectWithSubtextFieldOption[] | undefined = surveyContext.surveyDataLoader?.data?.surveyData?.blocks.map((block) => ({
+      value: block.survey_block_id,
+      label: block.name,
+      subText: block.description
+  }))
 
   const handleAddItem = () => {
     const newItem = {
-      id: values[arrayFieldName].length,
+      id: values.blocks.length,
       stratum: null,
     };
 
-    setFieldValue(arrayFieldName, [...values[arrayFieldName], newItem]);
+    setFieldValue('blocks', [...values.blocks, newItem]);
   };
 
   const handleRemoveItem = (index: number) => {
-    const updatedItems = values[arrayFieldName].filter((_: any, i: number) => i !== index);
-    setFieldValue(arrayFieldName, updatedItems);
+    const updatedItems = values.blocks.filter((_: any, i: number) => i !== index);
+    setFieldValue('blocks', updatedItems);
   };
+
+  const determineOptions = (options: ISelectWithSubtextFieldOption[]) => options.filter((option) => {
+    return !values.blocks.some((value) => value.survey_block_id === option.value)
+  })
+
 
   return ( options ?
     <>
-      <Typography component="legend">{label}</Typography>
+      <Typography component="legend">Add Sampling Site Groups</Typography>
       <Typography
         variant="body1"
         color="textSecondary"
@@ -54,27 +57,27 @@ const SamplingBlockStratumForm: React.FC<ISamplingBlockStratumFormProps> = ({
           mb: 3,
           maxWidth: '92ch',
         }}
-      >{subHeader}</Typography>
+      >All sampling sites being imported together will be assigned to the selected sampling site groups</Typography>
       <FieldArray
-        name={arrayFieldName}
+        name={'blocks'}
         render={(arrayHelpers: FieldArrayRenderProps) => (
           <>
             <Box sx={{ mb: 3, maxWidth: '92ch' }}>
               <List dense disablePadding>
-                {values[arrayFieldName].map((item: any, index: number) => (
+                {values.blocks.map((item: any, index: number) => (
                   <ListItem disableGutters key={index}>
                     <ListItemText>
                       <SelectWithSubtextField
-                        id={`samplingSiteItem-${index}`}
-                        label={label}
-                        name={`${arrayFieldName}.${index}.stratum`}
-                        options={options}
+                        id={`sampling-site-block-${index}`}
+                        label='Sampling Site Group'
+                        name={`${'blocks'}.${index}.block`}
+                        options={determineOptions(options)}
                       />
                     </ListItemText>
                     <ListItemSecondaryAction>
                       <IconButton
                         data-testid={`delete-icon-${index}`}
-                        aria-label={`remove ${label}`}
+                        aria-label={`remove group`}
                         onClick={() => handleRemoveItem(index)}
                       >
                         <Icon path={mdiTrashCanOutline} size={1} />
@@ -88,11 +91,11 @@ const SamplingBlockStratumForm: React.FC<ISamplingBlockStratumFormProps> = ({
                   type="button"
                   variant="outlined"
                   color="primary"
-                  aria-label={`add ${label}`}
+                  aria-label={`add group`}
                   startIcon={<Icon path={mdiPlus} size={1} />}
                   onClick={handleAddItem}
                 >
-                  {addButtonLabel}
+                  Add Group
                 </Button>
               </Box>
             </Box>
@@ -103,4 +106,4 @@ const SamplingBlockStratumForm: React.FC<ISamplingBlockStratumFormProps> = ({
   );
 };
 
-export default SamplingBlockStratumForm;
+export default SamplingBlockForm;

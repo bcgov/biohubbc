@@ -8,6 +8,10 @@ export interface IBlockData {
   description: string;
 }
 
+export function isBlockData(obj: IBlockData): obj is IBlockData {
+  return 'survey_block_id' in obj;
+}
+
 const BlockForm: React.FC = () => {
   return (
     <form>
