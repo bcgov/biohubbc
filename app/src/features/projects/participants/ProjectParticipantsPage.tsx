@@ -13,7 +13,6 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import { ProjectParticipantsI18N } from 'constants/i18n';
@@ -30,18 +29,7 @@ import { alphabetizeObjects, getFormattedIdentitySource } from 'utils/Utils';
 import ProjectParticipantsHeader from './ProjectParticipantsHeader';
 import ProjectParticipantsRoleMenu from './ProjectParticipantsRoleMenu';
 
-const useStyles = makeStyles(() => ({
-  teamMembersTable: {
-    tableLayout: 'fixed',
-    '& td': {
-      verticalAlign: 'middle'
-    }
-  }
-}));
-
 const ProjectParticipantsPage: React.FC = () => {
-  const classes = useStyles();
-
   const codesContext = useContext(CodesContext);
   const projectContext = useContext(ProjectContext);
 
@@ -148,9 +136,9 @@ const ProjectParticipantsPage: React.FC = () => {
 
       <Container maxWidth="xl">
         <Box my={3}>
-          <Paper elevation={0}>
+          <Paper>
             <Toolbar>
-              <Typography component="h2" variant="h4" color="inherit">
+              <Typography component="h2" variant="h3" color="inherit">
                 Team Members
               </Typography>
             </Toolbar>
@@ -158,13 +146,13 @@ const ProjectParticipantsPage: React.FC = () => {
             <Divider></Divider>
 
             <Box px={1}>
-              <Table className={classes.teamMembersTable}>
+              <Table sx={{ tableLayout: 'fixed' }}>
                 <TableHead>
                   <TableRow>
                     <TableCell>Username</TableCell>
                     <TableCell>Type</TableCell>
                     <TableCell>Project Role</TableCell>
-                    <TableCell width="80px" align="right"></TableCell>
+                    <TableCell width={80} align="right"></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
