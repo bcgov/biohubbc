@@ -307,6 +307,29 @@ export class ObservationRepository extends BaseRepository {
   }
 
   /**
+   * Retrieves a single observation record
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<ObservationRecord[]>}
+   * @memberof ObservationRepository
+   */
+  async getSurveyObservationById(surveyObservationId: number): Promise<ObservationRecord> {
+    const knex = getKnex();
+    const query = knex.queryBuilder().select('*').from('survey_observation').where('survey_observation_id', surveyObservationId);
+
+    const response = await this.connection.knex(query, ObservationRecord);
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to get observation record', [
+        'ObservationRepository->getSurveyObservationById',
+        'rowCount was null or undefined, expected rowCount = 1'
+      ]);
+    }
+
+    return response.rows[0];
+  }
+
+  /**
    * Retrieves all observation records for the given survey
    *
    * @param {number} surveyId
