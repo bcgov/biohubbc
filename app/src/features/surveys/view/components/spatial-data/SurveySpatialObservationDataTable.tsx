@@ -32,6 +32,40 @@ interface ISurveySpatialObservationDataTableProps {
   isLoading: boolean;
 }
 
+// Skeleton Loader template
+const SkeletonRow = () => (
+  <Stack
+    flexDirection="row"
+    alignItems="center"
+    gap={2}
+    py={2}
+    px={1}
+    height={rowHeight}
+    overflow="hidden"
+    sx={{
+      borderBottom: '1px solid ' + grey[300],
+      '&:last-of-type': {
+        borderBottom: 'none'
+      },
+      '& .MuiSkeleton-root': {
+        flex: '1 1 auto'
+      },
+      '& *': {
+        fontSize: '0.875rem'
+      }
+    }}>
+    <Skeleton variant="text" />
+    <Skeleton variant="text" />
+    <Skeleton variant="text" />
+    <Skeleton variant="text" />
+    <Skeleton variant="text" />
+    <Skeleton variant="text" />
+    <Skeleton variant="text" />
+    <Skeleton variant="text" />
+    <Skeleton variant="text" />
+  </Stack>
+);
+
 const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataTableProps) => {
   const biohubApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
@@ -145,40 +179,6 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
       maxWidth: 100
     }
   ];
-
-  // Skeleton Loader template
-  const SkeletonRow = () => (
-    <Stack
-      flexDirection="row"
-      alignItems="center"
-      gap={2}
-      py={2}
-      px={1}
-      height={rowHeight}
-      overflow="hidden"
-      sx={{
-        borderBottom: '1px solid ' + grey[300],
-        '&:last-of-type': {
-          borderBottom: 'none'
-        },
-        '& .MuiSkeleton-root': {
-          flex: '1 1 auto'
-        },
-        '& *': {
-          fontSize: '0.875rem'
-        }
-      }}>
-      <Skeleton variant="text" />
-      <Skeleton variant="text" />
-      <Skeleton variant="text" />
-      <Skeleton variant="text" />
-      <Skeleton variant="text" />
-      <Skeleton variant="text" />
-      <Skeleton variant="text" />
-      <Skeleton variant="text" />
-      <Skeleton variant="text" />
-    </Stack>
-  );
 
   return (
     <>
