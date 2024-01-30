@@ -1,6 +1,6 @@
 import Typography from '@mui/material/Typography';
 import { GridRowId, GridRowSelectionModel, GridValidRowModel, useGridApiRef } from '@mui/x-data-grid';
-import { GridApiCommunity } from '@mui/x-data-grid/internals';
+import { GridApiCommunity, GridStateColDef } from '@mui/x-data-grid/internals';
 import { TelemetryTableI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { default as dayjs } from 'dayjs';
@@ -40,6 +40,10 @@ export type ITelemetryTableContext = {
    * A setState setter for the `rows`
    */
   setRows: React.Dispatch<React.SetStateAction<IManualTelemetryTableRow[]>>;
+  /**
+   * Returns all columns belonging to the telemetry table
+   */
+  getColumns: () => GridStateColDef[];
   /**
    * Appends a new blank record to the telemetry rows
    */
@@ -110,6 +114,7 @@ export const TelemetryTableContext = createContext<ITelemetryTableContext>({
   _muiDataGridApiRef: null as unknown as React.MutableRefObject<GridApiCommunity>,
   rows: [],
   setRows: () => {},
+  getColumns: () => [],
   addRecord: () => {},
   saveRecords: () => {},
   deleteRecords: () => undefined,
@@ -180,12 +185,19 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
   };
 
   /**
+   * Returns all columns belonging to thte telemetry table.
+   */
+  const getColumns = useCallback(() => {
+    return _muiDataGridApiRef.current.getAllColumns?.() ?? [];
+  }, [_muiDataGridApiRef.current.getAllColumns]);
+
+  /**
    * Validates all rows belonging to the table. Returns null if validation passes, otherwise
    * returns the validation model
    */
   const _validateRows = (): TelemetryTableValidationModel | null => {
     const rowValues = _getRowsWithEditedValues();
-    const tableColumns = _muiDataGridApiRef.current.getAllColumns();
+    const tableColumns = getColumns();
 
     const requiredColumns: (keyof IManualTelemetryTableRow)[] = [
       'deployment_id',
@@ -625,6 +637,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
       _muiDataGridApiRef,
       rows,
       setRows,
+      getColumns,
       addRecord,
       saveRecords,
       deleteRecords,
