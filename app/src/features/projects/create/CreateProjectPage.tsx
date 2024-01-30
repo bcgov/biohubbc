@@ -2,14 +2,13 @@ import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import grey from '@mui/material/colors/grey';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
+import PageHeader from 'components/layout/PageHeader';
 import { CreateProjectDraftI18N, CreateProjectI18N, DeleteProjectDraftI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
@@ -281,54 +280,25 @@ const CreateProjectPage: React.FC = () => {
         onYes={() => handleDeleteDraft()}
       />
 
-      <Paper
-        square
-        elevation={0}
-        sx={{
-          py: 3,
-          borderBottom: '1px solid' + grey[300]
-        }}>
-        <Container maxWidth="xl">
-          <Stack
-            alignItems="flex-start"
-            flexDirection={{ xs: 'column', lg: 'row' }}
-            justifyContent="space-between"
-            gap={3}>
-            <Typography
-              component="h1"
-              variant="h2"
-              sx={{
-                ml: '-2px'
-              }}>
-              Create New Project
-            </Typography>
-            <Stack flexDirection="row" alignItems="center" gap={1}>
-              {/* TODO: DEPRICATE DRAFT FUNCTIONALITY */}
-              {/* <Button color="primary" variant="contained" onClick={() => setOpenDraftDialog(true)}>
-                Save Draft
-              </Button>
-              {draftId ? (
-                <Button color="primary" variant="outlined" onClick={() => setOpenDeleteDraftDialog(true)}>
-                  Delete Draft
-                </Button>
-              ) : null} */}
-
-              <LoadingButton
-                loading={isLoading}
-                type="submit"
-                color="primary"
-                variant="contained"
-                onClick={() => formikRef.current?.submitForm()}
-                data-testid="submit-project-button">
-                Save and Exit
-              </LoadingButton>
-              <Button color="primary" variant="outlined" onClick={handleCancel}>
-                Cancel
-              </Button>
-            </Stack>
-          </Stack>
-        </Container>
-      </Paper>
+      <PageHeader
+        title="Create New Project"
+        buttonJSX={
+          <>
+            <LoadingButton
+              loading={isLoading}
+              type="submit"
+              color="primary"
+              variant="contained"
+              onClick={() => formikRef.current?.submitForm()}
+              data-testid="submit-project-button">
+              Save and Exit
+            </LoadingButton>
+            <Button color="primary" variant="outlined" onClick={handleCancel}>
+              Cancel
+            </Button>
+          </>
+        }
+      />
 
       <Container maxWidth="xl">
         <Box py={3}>
