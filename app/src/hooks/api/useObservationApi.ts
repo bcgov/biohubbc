@@ -74,6 +74,26 @@ const useObservationApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Retrieves all survey observation records for the given survey
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {Promise<IObservationTableRow[]>}
+   */
+  const getObservationRecord = async (
+    projectId: number,
+    surveyId: number,
+    surveyObservationId: number
+  ): Promise<IObservationRecord> => {
+    const { data } = await axios.get<IObservationRecord>(
+      `/api/project/${projectId}/survey/${surveyId}/observations/${surveyObservationId}`
+    );
+
+    return data;
+  };
+
+  /**
    * Fetches all geojson geometry points for all observation records belonging to
    * the given survey.
    *
@@ -165,6 +185,7 @@ const useObservationApi = (axios: AxiosInstance) => {
   return {
     insertUpdateObservationRecords,
     getObservationRecords,
+    getObservationRecord,
     getObservationsGeometry,
     deleteObservationRecords,
     uploadCsvForImport,
