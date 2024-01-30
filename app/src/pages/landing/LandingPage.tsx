@@ -60,7 +60,7 @@ export const LandingPage = () => {
               Species Inventory Management System
             </Typography>
             <Typography className={classes.heroSubtitle}>
-              Upload and collaboratively manage species inventory data and 
+              Collaboratively manage and submit species inventory data and 
               information to help protect biodiversity in British Columbia.
             </Typography>
             <LandingActions />

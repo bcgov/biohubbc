@@ -49,7 +49,7 @@ const SamplingStratumForm = () => {
 
   return ( options ?
     <>
-      <Typography component="legend">Add Sampling Site Groups</Typography>
+      <Typography component="legend">Assign to Strata</Typography>
       <Typography
         variant="body1"
         color="textSecondary"
@@ -69,7 +69,7 @@ const SamplingStratumForm = () => {
                     <ListItemText>
                       <SelectWithSubtextField
                         id={`sampling-site-stratum-${index}`}
-                        label='Sampling Site Group'
+                        label='Stratums'
                         name={`${'stratums'}.${index}.stratum`}
                         options={determineOptions(options)}
                       />
@@ -95,7 +95,7 @@ const SamplingStratumForm = () => {
                   startIcon={<Icon path={mdiPlus} size={1} />}
                   onClick={handleAddItem}
                 >
-                  Add Group
+                  Add Stratum
                 </Button>
               </Box>
             </Box>

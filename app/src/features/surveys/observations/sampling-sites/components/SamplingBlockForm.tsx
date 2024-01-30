@@ -49,7 +49,7 @@ const SamplingBlockForm = () => {
 
   return ( options ?
     <>
-      <Typography component="legend">Add Sampling Site Groups</Typography>
+      <Typography component="legend">Assign to Sampling Site Groups</Typography>
       <Typography
         variant="body1"
         color="textSecondary"
