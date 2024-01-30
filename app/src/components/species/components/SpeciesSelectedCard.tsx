@@ -13,7 +13,7 @@ interface ISpeciesSelectedCardProps {
   label: string;
 }
 
-const SpeciesSelectedCard: React.FC<ISpeciesSelectedCardProps> = (props) => {
+const SpeciesSelectedCard = (props: ISpeciesSelectedCardProps) => {
   const { index, species, error, handleRemove } = props;
 
   return (

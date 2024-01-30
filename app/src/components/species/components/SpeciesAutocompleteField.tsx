@@ -22,7 +22,7 @@ export type ISpeciesAutocompleteField = {
   scientificName: string;
 };
 
-const SpeciesAutocompleteField: React.FC<ISpeciesAutocompleteFieldProps> = (props) => {
+const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
   const { formikFieldName, label, required, handleAddSpecies } = props;
   const biohubApi = useBiohubApi();
 

@@ -17,13 +17,13 @@ export interface IItisSearchResult {
   scientificName: string;
 }
 
-export const ITIS_PARAMS = {
+export const ITIS_SOLR_PARAMS = {
   SORT: 'wt=json&sort=nameWOInd+asc&rows=25',
   FILTER: 'omitHeader=true&fl=tsn+scientificName:nameWOInd+kingdom+parentTSN+commonNames:vernacular+updateDate+usage'
 };
 
 const useItisApi = () => {
-  const apiAxios = useAxios(process.env.REACT_APP_ITIS_URL);
+  const apiAxios = useAxios(process.env.REACT_APP_ITIS_SOLR_URL);
 
   /**
    * Returns the ITIS search species Query.
@@ -57,7 +57,7 @@ const useItisApi = () => {
    */
   const getItisSearchUrl = (searchSpecies: string): string => {
     const itisSearchSpecies = `q=(nameWOInd:*${searchSpecies}*+AND+usage:/(valid|accepted)/)+(vernacular:*${searchSpecies}*+AND+usage:/(valid|accepted)/)`;
-    return `?${ITIS_PARAMS.SORT}&${itisSearchSpecies}&${ITIS_PARAMS.FILTER}`;
+    return `?${ITIS_SOLR_PARAMS.SORT}&${itisSearchSpecies}&${ITIS_SOLR_PARAMS.FILTER}`;
   };
 
   /**

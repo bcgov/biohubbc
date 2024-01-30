@@ -1,7 +1,6 @@
 import { Collapse } from '@mui/material';
 import Box from '@mui/material/Box';
 import SpeciesSelectedCard from 'components/species/components/SpeciesSelectedCard';
-import { default as React } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { ISpeciesAutocompleteField } from './SpeciesAutocompleteField';
 
@@ -10,7 +9,7 @@ export interface ISelectedSpeciesProps {
   handleRemoveSpecies: (species_id: number) => void;
 }
 
-const SelectedSpecies: React.FC<ISelectedSpeciesProps> = (props) => {
+const SelectedSpecies = (props: ISelectedSpeciesProps) => {
   const { selectedSpecies, handleRemoveSpecies } = props;
 
   return (

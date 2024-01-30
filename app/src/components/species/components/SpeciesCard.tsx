@@ -4,7 +4,7 @@ interface ISpeciesCard {
   name: string;
   subtext: string;
 }
-const SpeciesCard: React.FC<ISpeciesCard> = (props) => {
+const SpeciesCard = (props: ISpeciesCard) => {
   // combine all text fields and join them with a middot
   const subTitle = [props.subtext].filter((item) => item !== null).join(`\u00A0\u00B7\u00A0`);
   return (

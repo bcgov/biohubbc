@@ -2,11 +2,10 @@ import { Box } from '@mui/material';
 import AlertBar from 'components/alert/AlertBar';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
-import { default as React } from 'react';
 import SelectedSpecies from './components/SelectedSpecies';
 import SpeciesAutocompleteField, { ISpeciesAutocompleteField } from './components/SpeciesAutocompleteField';
 
-const AncillarySpeciesComponent: React.FC = () => {
+const AncillarySpeciesComponent = () => {
   const { values, setFieldValue, setErrors, errors } = useFormikContext<ISpeciesAutocompleteField[]>();
 
   const selectedSpecies: ISpeciesAutocompleteField[] = get(values, 'species.ancillary_species_object') || [];

@@ -33,7 +33,7 @@ describe('ESService', () => {
     });
 
     it('should return new elastic search client', async () => {
-      process.env.ITIS_URL = 'http://itis.test';
+      process.env.ITIS_SOLR_URL = 'http://itis.test';
 
       const esService = new ESService();
 
