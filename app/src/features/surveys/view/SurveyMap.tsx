@@ -5,6 +5,7 @@ import FullScreenScrollingEventHandler from 'components/map/components/FullScree
 import { MapBaseCss } from 'components/map/styles/MapBaseCss';
 import { ALL_OF_BC_BOUNDARY, MAP_DEFAULT_CENTER } from 'constants/spatial';
 import { LatLngBoundsExpression } from 'leaflet';
+import { useMemo } from 'react';
 import { GeoJSON, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { coloredPoint, INonEditableGeometries } from 'utils/mapUtils';
@@ -16,12 +17,14 @@ interface ISurveyMapProps {
 
 // TODO: need a way to pass in the map dimensions depending on the screen size
 const SurveyMap = (props: ISurveyMapProps) => {
-  let bounds: LatLngBoundsExpression | undefined;
-  if (props.mapPoints.length > 0) {
-    bounds = calculateUpdatedMapBounds(props.mapPoints.map((item) => item.feature));
-  } else {
-    bounds = calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]);
-  }
+  const bounds: LatLngBoundsExpression | undefined = useMemo(() => {
+    if (props.mapPoints.length > 0) {
+      return calculateUpdatedMapBounds(props.mapPoints.map((item) => item.feature));
+    } else {
+      return calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]);
+    }
+  }, [props.mapPoints]);
+
   return (
     <>
       {props.isLoading ? (
