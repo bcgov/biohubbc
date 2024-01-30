@@ -24,7 +24,9 @@ import { useContext, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
 import SamplingSiteHeader from './SamplingSiteHeader';
-import SamplingBlockStratumForm from '../../components/SampleBlockStratumForm';
+import SamplingStratumForm from '../../components/SamplingStratumForm';
+import { IBlockData } from 'features/surveys/components/BlockForm';
+import { IStratum } from 'features/surveys/components/SurveySiteSelectionForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -46,24 +48,12 @@ export interface ISurveySampleSite {
   feature: Feature;
 }
 
-export interface ISurveySampleBlock {
-  name: string;
-  description: string;
-  feature: Feature;
-}
-
-export interface ISurveySampleStratum {
-  name: string;
-  description: string;
-  feature: Feature;
-}
-
 export interface ICreateSamplingSiteRequest {
   survey_id: number;
   survey_sample_sites: ISurveySampleSite[]; // extracted list from shape files
   methods: ISurveySampleMethodData[];
-  blocks: ISurveySampleBlock[];
-  stratums: ISurveySampleStratum[];
+  blocks: IBlockData[];
+  stratums: IStratum[];
 }
 
 const SamplingSitePage = () => {
@@ -178,7 +168,9 @@ const SamplingSitePage = () => {
           name: '',
           description: '',
           survey_sample_sites: [],
-          methods: []
+          methods: [],
+          blocks: [],
+          stratums: []
         }}
         validationSchema={samplingSiteYupSchema}
         validateOnBlur={true}
@@ -219,7 +211,7 @@ const SamplingSitePage = () => {
                     title="Sampling Site Groupings"
                     summary="Group similar sites by assigning them to groups or strata, 
                     which you can add when creating or editing your Survey."
-                    component={<SamplingBlockStratumForm />}></HorizontalSplitFormComponent>
+                    component={<SamplingStratumForm />}></HorizontalSplitFormComponent>
 
                   <Divider className={classes.sectionDivider} />
 
