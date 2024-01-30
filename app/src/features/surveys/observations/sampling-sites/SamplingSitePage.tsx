@@ -25,6 +25,11 @@ import { useContext, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
 import SamplingSiteHeader from './SamplingSiteHeader';
+import SamplingStratumForm from '../../components/SamplingStratumForm';
+import { IBlockData } from 'features/surveys/components/BlockForm';
+import { IStratum } from 'features/surveys/components/SurveySiteSelectionForm';
+import SamplingBlockForm from './components/SamplingBlockForm';
+import SamplingSiteGroupingsForm from './components/SamplingSiteGroupingsForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -50,7 +55,7 @@ export interface ICreateSamplingSiteRequest {
   survey_id: number;
   survey_sample_sites: ISurveySampleSite[]; // extracted list from shape files
   methods: ISurveySampleMethodData[];
-  blocks: IGetSurveyBlock[];
+  blocks: IBlockData[];
   stratums: IStratum[];
 }
 
@@ -166,7 +171,9 @@ const SamplingSitePage = () => {
           name: '',
           description: '',
           survey_sample_sites: [],
-          methods: []
+          methods: [],
+          blocks: [],
+          stratums: []
         }}
         validationSchema={samplingSiteYupSchema}
         validateOnBlur={true}
@@ -200,6 +207,14 @@ const SamplingSitePage = () => {
                     title="Sampling Methods"
                     summary="Specify sampling methods that were used to collect data."
                     component={<SamplingMethodForm />}></HorizontalSplitFormComponent>
+
+                  <Divider className={classes.sectionDivider} />
+
+                  <HorizontalSplitFormComponent
+                    title="Sampling Site Groupings"
+                    summary="Group similar sites by assigning them to groups or strata, 
+                    which you can add when creating or editing your Survey."
+                    component={<SamplingSiteGroupingsForm />}></HorizontalSplitFormComponent>
 
                   <Divider className={classes.sectionDivider} />
 

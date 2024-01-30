@@ -28,6 +28,7 @@ export interface IStratumForm {
 export const StratumFormInitialValues: IStratumForm = {
   index: null,
   stratum: {
+    survey_stratum_id: 0,
     name: '',
     description: ''
   }
