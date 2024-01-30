@@ -1,15 +1,13 @@
-import { mdiArrowLeft, mdiPlus } from '@mdi/js';
+import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Theme } from '@mui/material';
-import Box from '@mui/material/Box';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
-import Paper from '@mui/material/Paper';
+import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import assert from 'assert';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import PageHeader from 'components/layout/PageHeader';
 import { ProjectParticipantsI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
@@ -17,32 +15,12 @@ import { ProjectContext } from 'contexts/projectContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import AddProjectParticipantsForm, {
   AddProjectParticipantsFormInitialValues,
   AddProjectParticipantsFormYupSchema,
   IAddProjectParticipantsForm
 } from './AddProjectParticipantsForm';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  projectTitleContainer: {
-    maxWidth: '170ch',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis'
-  },
-  projectTitle: {
-    display: '-webkit-box',
-    '-webkit-line-clamp': 2,
-    '-webkit-box-orient': 'vertical',
-    paddingTop: theme.spacing(0.5),
-    paddingBottom: theme.spacing(0.5),
-    overflow: 'hidden'
-  },
-  titleActions: {
-    paddingTop: theme.spacing(0.75),
-    paddingBottom: theme.spacing(0.75)
-  }
-}));
 
 export interface IProjectParticipantsHeaderProps {
   refresh: () => void;
@@ -55,10 +33,10 @@ export interface IProjectParticipantsHeaderProps {
  * @return {*}
  */
 const ProjectParticipantsHeader = (props: IProjectParticipantsHeaderProps) => {
-  const classes = useStyles();
-
   const codesContext = useContext(CodesContext);
   const projectContext = useContext(ProjectContext);
+
+  const projectWithDetails = projectContext.projectDataLoader.data;
 
   // Codes data must be loaded by a parent before this component is rendered
   assert(codesContext.codesDataLoader.data);
@@ -111,41 +89,31 @@ const ProjectParticipantsHeader = (props: IProjectParticipantsHeaderProps) => {
   };
 
   return (
-    <Paper square elevation={0}>
-      <Container maxWidth="xl">
-        <Box py={4}>
-          <Box mt={-1} ml={-0.5} mb={1}>
-            <Button
-              component={Link}
-              to={`/admin/projects/${projectContext.projectId}`}
-              color="primary"
-              startIcon={<Icon path={mdiArrowLeft} size={0.9} />}>
-              <strong>Back to Project</strong>
-            </Button>
-          </Box>
-
-          <Box display="flex" justifyContent="space-between">
-            <Box flex="1 1 auto" className={classes.projectTitleContainer}>
-              <Typography variant="h1" className={classes.projectTitle}>
-                Manage Project Team
-              </Typography>
-            </Box>
-            <Box flex="0 0 auto" className={classes.titleActions}>
-              <Box ml={4}>
-                <Button
-                  color="primary"
-                  variant="contained"
-                  data-testid="invite-project-users-button"
-                  aria-label={'Add Team Members'}
-                  startIcon={<Icon path={mdiPlus} size={1} />}
-                  onClick={() => setOpenAddParticipantsDialog(true)}>
-                  Add Team Members
-                </Button>
-              </Box>
-            </Box>
-          </Box>
-        </Box>
-      </Container>
+    <>
+      <PageHeader
+        title="Manage Project Team"
+        breadCrumbJSX={
+          <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
+            <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectContext.projectId}`}>
+              {projectWithDetails?.projectData.project.project_name}
+            </Link>
+            <Typography component="span" variant="inherit" color="textSecondary" aria-current="page">
+              Manage Project Team
+            </Typography>
+          </Breadcrumbs>
+        }
+        buttonJSX={
+          <Button
+            color="primary"
+            variant="contained"
+            data-testid="invite-project-users-button"
+            aria-label={'Add Team Members'}
+            startIcon={<Icon path={mdiPlus} size={1} />}
+            onClick={() => setOpenAddParticipantsDialog(true)}>
+            Add Team Members
+          </Button>
+        }
+      />
 
       <EditDialog
         dialogTitle={'Add Team Members'}
@@ -178,7 +146,7 @@ const ProjectParticipantsHeader = (props: IProjectParticipantsHeaderProps) => {
           });
         }}
       />
-    </Paper>
+    </>
   );
 };
 
