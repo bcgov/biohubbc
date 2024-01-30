@@ -11,6 +11,7 @@ import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { ScrollToFormikError } from 'components/formik/ScrollToFormikError';
+import PageHeader from 'components/layout/PageHeader';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import { CreateSurveyI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
@@ -53,7 +54,6 @@ import SurveyFundingSourceForm, {
 } from './components/SurveyFundingSourceForm';
 import { SurveySiteSelectionInitialValues, SurveySiteSelectionYupSchema } from './components/SurveySiteSelectionForm';
 import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from './components/SurveyUserForm';
-import SurveyBaseHeader from './view/components/SurveyBaseHeader';
 
 /**
  * Page to create a survey.
@@ -241,22 +241,14 @@ const CreateSurveyPage = () => {
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
-      <SurveyBaseHeader
+      <PageHeader
         title="Create New Survey"
-        breadCrumb={
-          <Breadcrumbs
-            aria-label="breadcrumb"
-            sx={{
-              typography: 'body2'
-            }}>
-            <Link
-              component={RouterLink}
-              underline="hover"
-              to={`/admin/projects/${projectData.project.project_id}/`}
-              aria-current="page">
+        breadCrumbJSX={
+          <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
+            <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectData.project.project_id}/`}>
               {projectData.project.project_name}
             </Link>
-            <Typography variant="body2" component="span" color="textSecondary">
+            <Typography variant="body2" component="span" color="textSecondary" aria-current="page">
               Create New Survey
             </Typography>
           </Breadcrumbs>

@@ -4,9 +4,9 @@ import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
-import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import PageHeader from 'components/layout/PageHeader';
 import { EditSurveyI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
@@ -21,7 +21,6 @@ import { IEditSurveyRequest, SurveyUpdateObject } from 'interfaces/useSurveyApi.
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
-import SurveyBaseHeader from '../view/components/SurveyBaseHeader';
 import EditSurveyForm from './EditSurveyForm';
 
 /**
@@ -181,42 +180,33 @@ const EditSurveyPage = () => {
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
-      <SurveyBaseHeader
+      <PageHeader
         title="Edit Survey Details"
-        breadCrumb={
-          <Breadcrumbs
-            aria-label="breadcrumb"
-            sx={{
-              typography: 'body2'
-            }}>
-            <Link
-              component={RouterLink}
-              underline="hover"
-              to={`/admin/projects/${projectData.project.project_id}/`}
-              aria-current="page">
+        breadCrumbJSX={
+          <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
+            <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectData.project.project_id}/`}>
               {projectData.project.project_name}
             </Link>
             <Link
               component={RouterLink}
               underline="hover"
-              to={`/admin/projects/${projectData.project.project_id}/surveys/${surveyId}/details`}
-              aria-current="page">
+              to={`/admin/projects/${projectData.project.project_id}/surveys/${surveyId}/details`}>
               {surveyData && surveyData.survey_details && surveyData.survey_details.survey_name}
             </Link>
-            <Typography variant="body2" component="span" color="textSecondary">
+            <Typography component="a" color="textSecondary" aria-current="page">
               Edit Survey Details
             </Typography>
           </Breadcrumbs>
         }
         buttonJSX={
-          <Stack flexDirection="row" gap={1}>
+          <>
             <Button color="primary" variant="contained" onClick={() => formikRef.current?.submitForm()}>
               Save and Exit
             </Button>
             <Button color="primary" variant="outlined" onClick={handleCancel}>
               Cancel
             </Button>
-          </Stack>
+          </>
         }
       />
 

@@ -1,10 +1,7 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import grey from '@mui/material/colors/grey';
 import Container from '@mui/material/Container';
-import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
+import PageHeader from 'components/layout/PageHeader';
 import { AdministrativeActivityStatusType, AdministrativeActivityType } from 'constants/misc';
 import AccessRequestList from 'features/admin/users/AccessRequestList';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -121,22 +118,7 @@ const ManageUsersPage: React.FC = () => {
 
   return (
     <>
-      <Paper
-        square
-        elevation={0}
-        sx={{
-          borderBottom: '1px solid' + grey[300]
-        }}>
-        <Container maxWidth="xl" sx={{ py: { xs: 2, sm: 3, lg: 4 } }}>
-          <Stack
-            alignItems="flex-start"
-            flexDirection={{ xs: 'column', md: 'row' }}
-            justifyContent="space-between"
-            gap={3}>
-            <Typography variant="h1">Manage Users</Typography>
-          </Stack>
-        </Container>
-      </Paper>
+      <PageHeader title="Manage Users" />
       <Container maxWidth="xl">
         <Box py={3}>
           <AccessRequestList
