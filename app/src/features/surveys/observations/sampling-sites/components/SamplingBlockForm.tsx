@@ -1,108 +1,168 @@
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
-import SelectWithSubtextField, { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
-import { mdiPlus } from '@mdi/js';
+
+import { mdiClose, mdiMagnify } from '@mdi/js';
 import Icon from '@mdi/react';
-import IconButton from '@mui/material/IconButton';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
-import ListItemText from '@mui/material/ListItemText';
-import { mdiTrashCanOutline } from '@mdi/js';
-import { ICreateSamplingSiteRequest } from '../SamplingSitePage';
-import { useContext } from 'react';
+import { Card, CardHeader, Collapse, IconButton, Typography } from '@mui/material';
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
+import Box from '@mui/material/Box';
+import { grey } from '@mui/material/colors';
+import TextField from '@mui/material/TextField';
 import { SurveyContext } from 'contexts/surveyContext';
+import { useFormikContext } from 'formik';
+import { default as React, useContext, useState } from 'react';
+import { TransitionGroup } from 'react-transition-group';
+import { ICreateSamplingSiteRequest } from '../SamplingSitePage';
+import { IGetSurveyBlock } from 'interfaces/useSurveyApi.interface';
+import { IBlockData } from 'features/surveys/components/BlockForm';
 
-
-const SamplingBlockForm = () => {
-
+const SamplingBlockForm: React.FC = () => {
   const { values, setFieldValue } = useFormikContext<ICreateSamplingSiteRequest>();
 
-    const surveyContext = useContext(SurveyContext);
+  const surveyContext = useContext(SurveyContext);
 
-  const options: ISelectWithSubtextFieldOption[] | undefined = surveyContext.surveyDataLoader?.data?.surveyData?.blocks.map((block) => ({
-      value: block.survey_block_id,
-      label: block.name,
-      subText: block.description
-  }))
+  const options = surveyContext.surveyDataLoader?.data?.surveyData?.blocks || [];
+  const [selectedBlocks, setSelectedBlocks] = useState<IGetSurveyBlock[]>([]);
 
-  const handleAddItem = () => {
-    const newItem = {
-      id: values.blocks.length,
-      stratum: null,
-    };
+  console.log(options)
 
-    setFieldValue('blocks', [...values.blocks, newItem]);
+  interface IBlockCard {
+    label: string;
+    description: string;
+  }
+
+  const BlockCard: React.FC<IBlockCard> = (props) => (
+    <Box>
+      <Box>
+        <Typography variant="subtitle1" fontWeight="bold">
+          {props.label}
+        </Typography>
+      </Box>
+      <Box my={0.25}>
+        <Typography variant="subtitle2" color="textSecondary">
+          {props.description}
+        </Typography>
+      </Box>
+    </Box>
+  );
+
+  const [searchText, setSearchText] = useState('');
+
+  const handleAddBlock = (block: IGetSurveyBlock) => {
+    selectedBlocks.push(block);
+    setFieldValue(`blocks[${selectedBlocks.length - 1}]`, block);
   };
 
-  const handleRemoveItem = (index: number) => {
-    const updatedItems = values.blocks.filter((_: any, i: number) => i !== index);
-    setFieldValue('blocks', updatedItems);
+  const handleRemoveItem = (block: IBlockData, index: number) => {
+    const filteredBlocks = selectedBlocks.filter(
+      (existing) => existing.survey_block_id !== block.survey_block_id
+    );
+    setSelectedBlocks(filteredBlocks);
+    setFieldValue(`blocks`, filteredBlocks);
   };
 
-  const determineOptions = (options: ISelectWithSubtextFieldOption[]) => options.filter((option) => {
-    return !values.blocks.some((value) => value.survey_block_id === option.value)
-  })
-
-
-  return ( options ?
+  return (
     <>
-      <Typography component="legend">Assign to Sampling Site Groups</Typography>
+      <Typography component="legend">Assign to Block</Typography>
       <Typography
         variant="body1"
         color="textSecondary"
         sx={{
           mb: 3,
-          maxWidth: '92ch',
+          maxWidth: '92ch'
+        }}>
+        All sampling sites being imported together will be assigned to the selected block
+      </Typography>
+      <Autocomplete
+        id={'autocomplete-sample-block-form'}
+        data-testid={'autocomplete-user-role-search'}
+        filterSelectedOptions
+        noOptionsText="No records found"
+        options={options}
+        filterOptions={(options, state) => {
+          const searchFilter = createFilterOptions<IGetSurveyBlock>({ ignoreCase: true });
+          const unselectedOptions = options.filter((item) =>
+            !selectedBlocks.some((existing) => existing.survey_block_id === item.survey_block_id)
+          );
+          return searchFilter(unselectedOptions, state);
         }}
-      >All sampling sites being imported together will be assigned to the selected sampling site groups</Typography>
-      <FieldArray
-        name={'blocks'}
-        render={(arrayHelpers: FieldArrayRenderProps) => (
-          <>
-            <Box sx={{ mb: 3, maxWidth: '92ch' }}>
-              <List dense disablePadding>
-                {values.blocks.map((item: any, index: number) => (
-                  <ListItem disableGutters key={index}>
-                    <ListItemText>
-                      <SelectWithSubtextField
-                        id={`sampling-site-block-${index}`}
-                        label='Sampling Site Group'
-                        name={`${'blocks'}.${index}.block`}
-                        options={determineOptions(options)}
-                      />
-                    </ListItemText>
-                    <ListItemSecondaryAction>
-                      <IconButton
-                        data-testid={`delete-icon-${index}`}
-                        aria-label={`remove group`}
-                        onClick={() => handleRemoveItem(index)}
-                      >
-                        <Icon path={mdiTrashCanOutline} size={1} />
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                ))}
-              </List>
-              <Box>
-                <Button
-                  type="button"
-                  variant="outlined"
-                  color="primary"
-                  aria-label={`add group`}
-                  startIcon={<Icon path={mdiPlus} size={1} />}
-                  onClick={handleAddItem}
-                >
-                  Add Group
-                </Button>
-              </Box>
-            </Box>
-          </>
+        getOptionLabel={(option) => option.name}
+        inputValue={searchText}
+        onInputChange={(_, value, reason) => {
+          if (reason === 'reset') {
+            setSearchText('');
+          } else {
+            setSearchText(value);
+          }
+        }}
+        onChange={(_, option) => {
+          if (option) {
+            handleAddBlock(option);
+          }
+        }}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            variant="outlined"
+            placeholder={'Select block'}
+            fullWidth
+            InputProps={{
+              ...params.InputProps,
+              startAdornment: (
+                <Box mx={1} mt="6px">
+                  <Icon path={mdiMagnify} size={1}></Icon>
+                </Box>
+              )
+            }}
+          />
         )}
+        renderOption={(renderProps, renderOption) => {
+          return (
+            <Box component="li" {...renderProps} key={renderOption?.survey_block_id}>
+              <BlockCard label={renderOption.name} description={renderOption.description || ''} />
+            </Box>
+          );
+        }}
       />
-    </> : null
+      <TransitionGroup>
+        {values.blocks.map((item, index) => {
+          return (
+            <Collapse key={`${item.name}-${item.description}-${index}`}>
+              <Card
+                variant="outlined"
+                sx={{
+                  background: grey[100],
+                  '& .MuiCardHeader-subheader': {
+                    display: '-webkit-box',
+                    WebkitLineClamp: '2',
+                    WebkitBoxOrient: 'vertical',
+                    maxWidth: '92ch',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    fontSize: '14px'
+                  },
+                  mt: 1,
+                  '& .MuiCardHeader-title': {
+                    mb: 0.5
+                  }
+                }}>
+                <CardHeader
+                  action={
+                    <IconButton
+                      onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
+                        handleRemoveItem(item, index)
+                      }
+                      aria-label="settings">
+                      <Icon path={mdiClose} size={1} />
+                    </IconButton>
+                  }
+                  title={item.name}
+                  subheader={item.description}
+                />
+              </Card>
+            </Collapse>
+          );
+        })}
+      </TransitionGroup>
+    </>
   );
 };
 

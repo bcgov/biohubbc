@@ -3,13 +3,9 @@ import CustomTextField from 'components/fields/CustomTextField';
 import React from 'react';
 
 export interface IBlockData {
-  survey_block_id: number | null;
+  survey_block_id: number;
   name: string;
   description: string;
-}
-
-export function isBlockData(obj: IBlockData): obj is IBlockData {
-  return 'survey_block_id' in obj;
 }
 
 const BlockForm: React.FC = () => {

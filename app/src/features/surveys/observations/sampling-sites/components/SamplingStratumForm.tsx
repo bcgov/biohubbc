@@ -1,53 +1,62 @@
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
-import SelectWithSubtextField, { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
-import { mdiPlus } from '@mdi/js';
+
+import { mdiClose, mdiMagnify } from '@mdi/js';
 import Icon from '@mdi/react';
-import IconButton from '@mui/material/IconButton';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
-import ListItemText from '@mui/material/ListItemText';
-import { mdiTrashCanOutline } from '@mdi/js';
-import { ICreateSamplingSiteRequest } from '../SamplingSitePage';
-import { useContext } from 'react';
+import { Card, CardHeader, Collapse, IconButton, Typography } from '@mui/material';
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
+import Box from '@mui/material/Box';
+import { grey } from '@mui/material/colors';
+import TextField from '@mui/material/TextField';
 import { SurveyContext } from 'contexts/surveyContext';
+import { IStratum } from 'features/surveys/components/SurveySiteSelectionForm';
+import { useFormikContext } from 'formik';
+import { default as React, useContext, useState } from 'react';
+import { TransitionGroup } from 'react-transition-group';
+import { ICreateSamplingSiteRequest } from '../SamplingSitePage';
 
-
-const SamplingStratumForm = () => {
-
+const SamplingStratumForm: React.FC = () => {
   const { values, setFieldValue } = useFormikContext<ICreateSamplingSiteRequest>();
 
-    const surveyContext = useContext(SurveyContext);
+  const surveyContext = useContext(SurveyContext);
 
-  const options: ISelectWithSubtextFieldOption[] | undefined = surveyContext.surveyDataLoader?.data?.surveyData?.site_selection?.stratums.map((stratum) => ({
-      value: stratum.survey_stratum_id,
-      label: stratum.name,
-      subText: stratum.description || undefined
-  }))
+  const options = surveyContext.surveyDataLoader?.data?.surveyData?.site_selection?.stratums || [];
+  const [selectedStratums, setSelectedStratums] = useState<IStratum[]>([]);
 
-  const handleAddItem = () => {
-    const newItem = {
-      id: values.stratums.length,
-      stratum: null,
-    };
+  interface IStratumCard {
+    label: string;
+    description: string;
+  }
 
-    setFieldValue('stratums', [...values.stratums, newItem]);
+  const StratumCard: React.FC<IStratumCard> = (props) => (
+    <Box>
+      <Box>
+        <Typography variant="subtitle1" fontWeight="bold">
+          {props.label}
+        </Typography>
+      </Box>
+      <Box my={0.25}>
+        <Typography variant="subtitle2" color="textSecondary">
+          {props.description}
+        </Typography>
+      </Box>
+    </Box>
+  );
+
+  const [searchText, setSearchText] = useState('');
+
+  const handleAddStratum = (stratum: IStratum) => {
+    selectedStratums.push(stratum);
+    setFieldValue(`stratums[${selectedStratums.length - 1}]`, stratum);
   };
 
-  const handleRemoveItem = (index: number) => {
-    const updatedItems = values.stratums.filter((_: any, i: number) => i !== index);
-    setFieldValue('stratums', updatedItems);
+  const handleRemoveItem = (stratum: IStratum, index: number) => {
+    const filteredStratums = selectedStratums.filter(
+      (existing) => existing.survey_stratum_id !== stratum.survey_stratum_id
+    );
+    setSelectedStratums(filteredStratums);
+    setFieldValue(`stratums`, filteredStratums);
   };
 
-  const determineOptions = (options: ISelectWithSubtextFieldOption[]) => options.filter((option) => {
-    return !values.stratums.some((value) => value.survey_stratum_id === option.value)
-  })
-
-
-  return ( options ?
+  return (
     <>
       <Typography component="legend">Assign to Strata</Typography>
       <Typography
@@ -55,54 +64,103 @@ const SamplingStratumForm = () => {
         color="textSecondary"
         sx={{
           mb: 3,
-          maxWidth: '92ch',
+          maxWidth: '92ch'
+        }}>
+        All sampling sites being imported together will be assigned to the selected sampling site groups
+      </Typography>
+      <Autocomplete
+        id={'autocomplete-sample-stratum-form'}
+        data-testid={'autocomplete-user-role-search'}
+        filterSelectedOptions
+        noOptionsText="No records found"
+        options={options}
+        filterOptions={(options, state) => {
+          const searchFilter = createFilterOptions<IStratum>({ ignoreCase: true });
+          const unselectedOptions = options.filter((item) =>
+            !selectedStratums.some((existing) => existing.survey_stratum_id === item.survey_stratum_id)
+          );
+          console.log(unselectedOptions, state);
+          return searchFilter(unselectedOptions, state);
         }}
-      >All sampling sites being imported together will be assigned to the selected sampling site groups</Typography>
-      <FieldArray
-        name={'stratums'}
-        render={(arrayHelpers: FieldArrayRenderProps) => (
-          <>
-            <Box sx={{ mb: 3, maxWidth: '92ch' }}>
-              <List dense disablePadding>
-                {values.stratums.map((item: any, index: number) => (
-                  <ListItem disableGutters key={index}>
-                    <ListItemText>
-                      <SelectWithSubtextField
-                        id={`sampling-site-stratum-${index}`}
-                        label='Stratums'
-                        name={`${'stratums'}.${index}.stratum`}
-                        options={determineOptions(options)}
-                      />
-                    </ListItemText>
-                    <ListItemSecondaryAction>
-                      <IconButton
-                        data-testid={`delete-icon-${index}`}
-                        aria-label={`remove group`}
-                        onClick={() => handleRemoveItem(index)}
-                      >
-                        <Icon path={mdiTrashCanOutline} size={1} />
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                ))}
-              </List>
-              <Box>
-                <Button
-                  type="button"
-                  variant="outlined"
-                  color="primary"
-                  aria-label={`add group`}
-                  startIcon={<Icon path={mdiPlus} size={1} />}
-                  onClick={handleAddItem}
-                >
-                  Add Stratum
-                </Button>
-              </Box>
-            </Box>
-          </>
+        getOptionLabel={(option) => option.name}
+        inputValue={searchText}
+        onInputChange={(_, value, reason) => {
+          if (reason === 'reset') {
+            setSearchText('');
+          } else {
+            setSearchText(value);
+          }
+        }}
+        onChange={(_, option) => {
+          if (option) {
+            handleAddStratum(option);
+          }
+        }}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            variant="outlined"
+            placeholder={'Select stratum'}
+            fullWidth
+            InputProps={{
+              ...params.InputProps,
+              startAdornment: (
+                <Box mx={1} mt="6px">
+                  <Icon path={mdiMagnify} size={1}></Icon>
+                </Box>
+              )
+            }}
+          />
         )}
+        renderOption={(renderProps, renderOption) => {
+          return (
+            <Box component="li" {...renderProps} key={renderOption?.survey_stratum_id}>
+              <StratumCard label={renderOption.name} description={renderOption.description || ''} />
+            </Box>
+          );
+        }}
       />
-    </> : null
+      <TransitionGroup>
+        {values.stratums.map((item, index) => {
+          return (
+            <Collapse key={`${item.name}-${item.description}-${index}`}>
+              <Card
+                variant="outlined"
+                sx={{
+                  background: grey[100],
+                  '& .MuiCardHeader-subheader': {
+                    display: '-webkit-box',
+                    WebkitLineClamp: '2',
+                    WebkitBoxOrient: 'vertical',
+                    maxWidth: '92ch',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    fontSize: '14px'
+                  },
+                  mt: 1,
+                  '& .MuiCardHeader-title': {
+                    mb: 0.5
+                  }
+                }}>
+                <CardHeader
+                  action={
+                    <IconButton
+                      onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
+                        handleRemoveItem(item, index)
+                      }
+                      aria-label="settings">
+                      <Icon path={mdiClose} size={1} />
+                    </IconButton>
+                  }
+                  title={item.name}
+                  subheader={item.description}
+                />
+              </Card>
+            </Collapse>
+          );
+        })}
+      </TransitionGroup>
+    </>
   );
 };
 
