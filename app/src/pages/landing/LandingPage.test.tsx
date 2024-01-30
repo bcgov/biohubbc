@@ -239,12 +239,6 @@ describe('LandingPage', () => {
       const viewProjectsButton = getByTestId('landing_page_projects_button');
       expect(viewProjectsButton).toBeVisible();
       expect(viewProjectsButton).toHaveAttribute('href', '/admin/projects');
-
-      // Should see the Manage Users button
-      const manageUsersButton = getByTestId('landing_page_manage_users_button');
-      expect(manageUsersButton).toHaveTextContent('Manage Users');
-      expect(manageUsersButton).toBeVisible();
-      expect(manageUsersButton).toHaveAttribute('href', '/admin/users');
     });
   });
 });

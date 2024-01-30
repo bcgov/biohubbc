@@ -1,3 +1,5 @@
+// import SelectWithSubtextField from 'components/fields/SelectWithSubtext';
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
@@ -13,8 +15,6 @@ import React, { useMemo } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import SurveyPermitForm, { SurveyPermitFormYupSchema } from '../SurveyPermitForm';
-// import SelectWithSubtextField from 'components/fields/SelectWithSubtext';
-import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 
 export const AddPermitFormInitialValues = {
   permits: [
@@ -186,35 +186,34 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         </Typography>
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            
             <FormControl
-                  variant="outlined"
-                  fullWidth
-                  required={true}
-                  // error={permitTypeMeta.touched && Boolean(permitTypeMeta.error)}
-                  >
-                  <InputLabel id="permit_type">Status</InputLabel>
-                  <Select
-                    id={`survey-status`}
-                    name={`survey-status`}
-                    labelId="survey_status"
-                    label="Survey Status"
-                    // value={permit.permit_type}
-                    // onChange={handleChange}
-                    displayEmpty
-                    inputProps={{ 'aria-label': 'Survey Status' }}>
-                    <MenuItem key={1} value="Park Use Permit">
-                      Planning
-                    </MenuItem>
-                    <MenuItem key={2} value="Wildlife Permit - General">
-                      In progress
-                    </MenuItem>
-                    <MenuItem key={3} value="Scientific Fish Collection Permit">
-                      Completed
-                    </MenuItem>
-                  </Select>
-                  {/* <FormHelperText>{permitTypeMeta.touched && permitTypeMeta.error}</FormHelperText> */}
-                </FormControl>
+              variant="outlined"
+              fullWidth
+              required={true}
+              // error={permitTypeMeta.touched && Boolean(permitTypeMeta.error)}
+            >
+              <InputLabel id="permit_type">Status</InputLabel>
+              <Select
+                id={`survey-status`}
+                name={`survey-status`}
+                labelId="survey_status"
+                label="Survey Status"
+                // value={permit.permit_type}
+                // onChange={handleChange}
+                displayEmpty
+                inputProps={{ 'aria-label': 'Survey Status' }}>
+                <MenuItem key={1} value="Park Use Permit">
+                  Planning
+                </MenuItem>
+                <MenuItem key={2} value="Wildlife Permit - General">
+                  In progress
+                </MenuItem>
+                <MenuItem key={3} value="Scientific Fish Collection Permit">
+                  Completed
+                </MenuItem>
+              </Select>
+              {/* <FormHelperText>{permitTypeMeta.touched && permitTypeMeta.error}</FormHelperText> */}
+            </FormControl>
           </Grid>
         </Grid>
       </Box>

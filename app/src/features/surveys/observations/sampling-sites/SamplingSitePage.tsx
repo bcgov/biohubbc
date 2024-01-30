@@ -12,9 +12,11 @@ import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormC
 import { CreateSamplingSiteI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import { IBlockData } from 'features/surveys/components/BlockForm';
 import { ISurveySampleMethodData, SamplingSiteMethodYupSchema } from 'features/surveys/components/MethodForm';
 import SamplingMethodForm from 'features/surveys/components/SamplingMethodForm';
 import SurveySamplingSiteImportForm from 'features/surveys/components/SurveySamplingSiteImportForm';
+import { IStratum } from 'features/surveys/components/SurveySiteSelectionForm';
 import { Formik, FormikProps } from 'formik';
 import { Feature } from 'geojson';
 import History from 'history';
@@ -23,11 +25,9 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
-import SamplingSiteHeader from './SamplingSiteHeader';
 // import SamplingStratumForm from '../../components/SamplingStratumForm';
 import SamplingSiteGroupingsForm from './components/SamplingSiteGroupingsForm';
-import { IBlockData } from 'features/surveys/components/BlockForm';
-import { IStratum } from 'features/surveys/components/SurveySiteSelectionForm';
+import SamplingSiteHeader from './SamplingSiteHeader';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -212,8 +212,7 @@ const SamplingSitePage = () => {
                     title="Sampling Site Groupings"
                     summary="Group similar sites by assigning them to groups or strata, 
                     which you can add when creating or editing your Survey."
-                    component={<SamplingSiteGroupingsForm/>
-                  }></HorizontalSplitFormComponent>
+                    component={<SamplingSiteGroupingsForm />}></HorizontalSplitFormComponent>
 
                   <Divider className={classes.sectionDivider} />
 

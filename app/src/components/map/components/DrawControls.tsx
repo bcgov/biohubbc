@@ -103,12 +103,13 @@ const DrawControls = forwardRef<IDrawControlsRef | undefined, IDrawControlsProps
     });
 
     const drawOptions: L.Control.DrawConstructorOptions = {
-      
       draw: {
         ...options?.draw,
-        ...options?.draw?.marker !== false ? {
-          icon: new CustomMarker()
-        } : null
+        ...(options?.draw?.marker !== false
+          ? {
+              icon: new CustomMarker()
+            }
+          : null)
       },
       edit: {
         ...options?.edit,

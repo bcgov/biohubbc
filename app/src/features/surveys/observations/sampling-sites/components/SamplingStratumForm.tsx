@@ -1,4 +1,3 @@
-
 import { mdiClose, mdiMagnify } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Card, CardHeader, Collapse, IconButton, Typography } from '@mui/material';
@@ -76,8 +75,8 @@ const SamplingStratumForm: React.FC = () => {
         options={options}
         filterOptions={(options, state) => {
           const searchFilter = createFilterOptions<IStratum>({ ignoreCase: true });
-          const unselectedOptions = options.filter((item) =>
-            !selectedStratums.some((existing) => existing.survey_stratum_id === item.survey_stratum_id)
+          const unselectedOptions = options.filter(
+            (item) => !selectedStratums.some((existing) => existing.survey_stratum_id === item.survey_stratum_id)
           );
           console.log(unselectedOptions, state);
           return searchFilter(unselectedOptions, state);

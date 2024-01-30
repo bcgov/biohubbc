@@ -1,4 +1,3 @@
-
 import { mdiClose, mdiMagnify } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Card, CardHeader, Collapse, IconButton, Typography } from '@mui/material';
@@ -7,12 +6,12 @@ import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
 import TextField from '@mui/material/TextField';
 import { SurveyContext } from 'contexts/surveyContext';
+import { IBlockData } from 'features/surveys/components/BlockForm';
 import { useFormikContext } from 'formik';
+import { IGetSurveyBlock } from 'interfaces/useSurveyApi.interface';
 import { default as React, useContext, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { ICreateSamplingSiteRequest } from '../SamplingSitePage';
-import { IGetSurveyBlock } from 'interfaces/useSurveyApi.interface';
-import { IBlockData } from 'features/surveys/components/BlockForm';
 
 const SamplingBlockForm: React.FC = () => {
   const { values, setFieldValue } = useFormikContext<ICreateSamplingSiteRequest>();
@@ -22,7 +21,7 @@ const SamplingBlockForm: React.FC = () => {
   const options = surveyContext.surveyDataLoader?.data?.surveyData?.blocks || [];
   const [selectedBlocks, setSelectedBlocks] = useState<IGetSurveyBlock[]>([]);
 
-  console.log(options)
+  console.log(options);
 
   interface IBlockCard {
     label: string;
@@ -52,9 +51,7 @@ const SamplingBlockForm: React.FC = () => {
   };
 
   const handleRemoveItem = (block: IBlockData, index: number) => {
-    const filteredBlocks = selectedBlocks.filter(
-      (existing) => existing.survey_block_id !== block.survey_block_id
-    );
+    const filteredBlocks = selectedBlocks.filter((existing) => existing.survey_block_id !== block.survey_block_id);
     setSelectedBlocks(filteredBlocks);
     setFieldValue(`blocks`, filteredBlocks);
   };
@@ -79,8 +76,8 @@ const SamplingBlockForm: React.FC = () => {
         options={options}
         filterOptions={(options, state) => {
           const searchFilter = createFilterOptions<IGetSurveyBlock>({ ignoreCase: true });
-          const unselectedOptions = options.filter((item) =>
-            !selectedBlocks.some((existing) => existing.survey_block_id === item.survey_block_id)
+          const unselectedOptions = options.filter(
+            (item) => !selectedBlocks.some((existing) => existing.survey_block_id === item.survey_block_id)
           );
           return searchFilter(unselectedOptions, state);
         }}

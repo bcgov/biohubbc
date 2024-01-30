@@ -12,6 +12,7 @@ import FileUpload from 'components/file-upload/FileUpload';
 import FileUploadItem from 'components/file-upload/FileUploadItem';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
+import DrawControls from 'components/map/components/DrawControls';
 import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
 import StaticLayers from 'components/map/components/StaticLayers';
 import { MapBaseCss } from 'components/map/styles/MapBaseCss';
@@ -27,12 +28,11 @@ import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
 import 'leaflet/dist/leaflet.css';
 import get from 'lodash-es/get';
-import { useContext, useEffect, useMemo, useState} from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { boundaryUploadHelper, calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { pluralize, shapeFileFeatureDesc, shapeFileFeatureName } from 'utils/Utils';
 import { ISurveySampleSite } from '../SamplingSitePage';
-import DrawControls from 'components/map/components/DrawControls';
 
 const useStyles = makeStyles(() => ({
   zoomToBoundaryExtentBtn: {
@@ -165,7 +165,7 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
                 {/* Programmatically set map bounds */}
                 <SetMapBounds bounds={updatedBounds} />
 
-                 <FeatureGroup data-id="draw-control-feature-group" key="draw-control-feature-group">
+                <FeatureGroup data-id="draw-control-feature-group" key="draw-control-feature-group">
                   <DrawControls
                     options={{
                       // Always disable circle, circlemarker; enable lines for transect sampling sites
@@ -173,28 +173,34 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
                     }}
                     onLayerAdd={(event: DrawEvents.Created) => {
                       const feature = event.layer.toGeoJSON();
-                      setFieldValue(name, [{
-                        name: `Sample Site ${++numSites}`,
-                        description: '',
-                        feature: feature}]);
+                      setFieldValue(name, [
+                        {
+                          name: `Sample Site ${++numSites}`,
+                          description: '',
+                          feature: feature
+                        }
+                      ]);
                     }}
                     onLayerEdit={(event: DrawEvents.Edited) => {
                       event.layers.getLayers().forEach((layer: any) => {
                         const feature = layer.toGeoJSON() as Feature;
-                        setFieldValue(name, [{
-                          name: `Sample Site ${++numSites}`,
-                          description: '',
-                          feature: feature}]);
+                        setFieldValue(name, [
+                          {
+                            name: `Sample Site ${++numSites}`,
+                            description: '',
+                            feature: feature
+                          }
+                        ]);
                       });
                     }}
                     onLayerDelete={(event: DrawEvents.Deleted) => {
-                      setFieldValue(name, [])
+                      setFieldValue(name, []);
                     }}
                   />
                 </FeatureGroup>
 
                 <LayersControl position="bottomright">
-               <StaticLayers
+                  <StaticLayers
                     layers={[
                       {
                         layerName: 'Sampling Sites',
@@ -202,7 +208,8 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
                           .filter((item) => item?.id) // Filter for only drawn features
                           .map((feature) => ({ geoJSON: feature }))
                       }
-                    ]}/> 
+                    ]}
+                  />
                   <BaseLayerControls />
                 </LayersControl>
               </LeafletMapContainer>
