@@ -24,7 +24,8 @@ import { useContext, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
 import SamplingSiteHeader from './SamplingSiteHeader';
-import SamplingStratumForm from '../../components/SamplingStratumForm';
+// import SamplingStratumForm from '../../components/SamplingStratumForm';
+import SamplingSiteGroupingsForm from './components/SamplingSiteGroupingsForm';
 import { IBlockData } from 'features/surveys/components/BlockForm';
 import { IStratum } from 'features/surveys/components/SurveySiteSelectionForm';
 
@@ -211,7 +212,8 @@ const SamplingSitePage = () => {
                     title="Sampling Site Groupings"
                     summary="Group similar sites by assigning them to groups or strata, 
                     which you can add when creating or editing your Survey."
-                    component={<SamplingStratumForm />}></HorizontalSplitFormComponent>
+                    component={<SamplingSiteGroupingsForm/>
+                  }></HorizontalSplitFormComponent>
 
                   <Divider className={classes.sectionDivider} />
 
