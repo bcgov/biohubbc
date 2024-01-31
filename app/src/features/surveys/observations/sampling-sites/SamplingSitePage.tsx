@@ -25,7 +25,6 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
-// import SamplingStratumForm from '../../components/SamplingStratumForm';
 import SamplingSiteGroupingsForm from './components/SamplingSiteGroupingsForm';
 import SamplingSiteHeader from './SamplingSiteHeader';
 

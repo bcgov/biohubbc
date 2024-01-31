@@ -52,8 +52,6 @@ export interface ISamplingSiteMapControlProps {
   name: string;
   title: string;
   mapId: string;
-  // formikKey: string;
-  // drawControlsRef: React.RefObject<IDrawControlsRef>;
   formikProps: FormikContextType<any>;
 }
 

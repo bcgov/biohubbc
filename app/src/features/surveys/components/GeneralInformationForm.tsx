@@ -1,4 +1,3 @@
-// import SelectWithSubtextField from 'components/fields/SelectWithSubtext';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -190,7 +189,6 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
               variant="outlined"
               fullWidth
               required={true}
-              // error={permitTypeMeta.touched && Boolean(permitTypeMeta.error)}
             >
               <InputLabel id="permit_type">Status</InputLabel>
               <Select
@@ -198,21 +196,18 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
                 name={`survey-status`}
                 labelId="survey_status"
                 label="Survey Status"
-                // value={permit.permit_type}
-                // onChange={handleChange}
                 displayEmpty
                 inputProps={{ 'aria-label': 'Survey Status' }}>
-                <MenuItem key={1} value="Park Use Permit">
+                <MenuItem key={1} value="Planning">
                   Planning
                 </MenuItem>
-                <MenuItem key={2} value="Wildlife Permit - General">
+                <MenuItem key={2} value="In progress">
                   In progress
                 </MenuItem>
-                <MenuItem key={3} value="Scientific Fish Collection Permit">
+                <MenuItem key={3} value="Completed">
                   Completed
                 </MenuItem>
               </Select>
-              {/* <FormHelperText>{permitTypeMeta.touched && permitTypeMeta.error}</FormHelperText> */}
             </FormControl>
           </Grid>
         </Grid>
