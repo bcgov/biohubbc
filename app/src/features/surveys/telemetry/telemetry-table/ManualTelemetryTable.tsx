@@ -15,7 +15,7 @@ import { IManualTelemetryTableRow, TelemetryTableContext } from 'contexts/teleme
 import { default as dayjs } from 'dayjs';
 import { useCallback, useContext, useEffect, useMemo } from 'react';
 import { getFormattedDate } from 'utils/Utils';
-import { ICritterDeployment } from './ManualTelemetryList';
+import { ICritterDeployment } from '../ManualTelemetryList';
 interface IManualTelemetryTableProps {
   isLoading: boolean;
 }
@@ -58,6 +58,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
       field: 'deployment_id',
       headerName: 'Deployment',
       editable: true,
+      hideable: true,
       flex: 1,
       minWidth: 250,
       disableColumnMenu: true,
@@ -93,6 +94,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
       field: 'latitude',
       headerName: 'Latitude',
       editable: true,
+      hideable: true,
       flex: 1,
       minWidth: 120,
       disableColumnMenu: true,
@@ -143,6 +145,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
       field: 'longitude',
       headerName: 'Longitude',
       editable: true,
+      hideable: true,
       flex: 1,
       minWidth: 120,
       disableColumnMenu: true,
@@ -193,6 +196,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
       field: 'date',
       headerName: 'Date',
       editable: true,
+      hideable: true,
       flex: 1,
       minWidth: 150,
       type: 'date',
@@ -234,6 +238,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
       field: 'time',
       headerName: 'Time',
       editable: true,
+      hideable: true,
       flex: 1,
       minWidth: 150,
       type: 'string',
