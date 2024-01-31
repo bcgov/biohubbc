@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { getLogger } from '../utils/logger';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
 
 /**
@@ -28,6 +29,21 @@ export const ObservationRecord = z.object({
 });
 
 export type ObservationRecord = z.infer<typeof ObservationRecord>;
+
+export const ObservationRecordWithSamplingData = ObservationRecord.extend({
+  survey_sample_site_name: z.string().nullable(),
+  survey_sample_method_name: z.string().nullable(),
+  survey_sample_period_start_datetime: z.string().nullable()
+});
+
+export type ObservationRecordWithSamplingData = z.infer<typeof ObservationRecordWithSamplingData>;
+
+export const ObservationGeometryRecord = z.object({
+  survey_observation_id: z.number(),
+  geometry: z.string().transform((jsonString) => JSON.parse(jsonString))
+});
+
+export type ObservationGeometryRecord = z.infer<typeof ObservationGeometryRecord>;
 
 /**
  * Interface reflecting survey observations that are being inserted into the database
@@ -197,17 +213,138 @@ export class ObservationRepository extends BaseRepository {
   }
 
   /**
+   * Retrieves a paginated set of observation records for the given survey, including data for
+   * associated sampling records.
+   *
+   * @param {number} surveyId
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {Promise<ObservationRecord[]>}
+   * @memberof ObservationRepository
+   */
+  async getSurveyObservationsWithSamplingData(
+    surveyId: number,
+    pagination?: ApiPaginationOptions
+  ): Promise<ObservationRecordWithSamplingData[]> {
+    defaultLog.debug({ label: 'getSurveyObservationsWithSamplingData', surveyId, pagination });
+
+    const knex = getKnex();
+
+    const allRowsQuery = knex
+      .with(
+        'survey_sample_method_with_name',
+        knex
+          .select(['ml.name as survey_sample_method_name', 'ssm.survey_sample_method_id'])
+          .from({ ssm: 'survey_sample_method ' })
+          .leftJoin({ ml: 'method_lookup' }, 'ml.method_lookup_id', 'ssm.method_lookup_id')
+      )
+      .select([
+        // Select all columns from survey_observation
+        'so.*',
+
+        // Select columns from the joined survey_sample_site table
+        'sss.survey_sample_site_id',
+        'sss.name as survey_sample_site_name',
+
+        // Select columns from the joined survey_sample_method table
+        'ssmwn.survey_sample_method_id',
+        'ssmwn.survey_sample_method_name',
+
+        // Select columns from the joined survey_sample_period table
+        'ssp.survey_sample_period_id',
+        knex.raw('(??::date + ??::time)::timestamp as survey_sample_period_start_datetime', [
+          'ssp.start_date',
+          'ssp.start_time'
+        ])
+      ])
+      // Alias survey_observation as so
+      .from({ so: 'survey_observation' })
+
+      // Join sample site onto observation
+      .leftJoin({ sss: 'survey_sample_site' }, 'so.survey_sample_site_id', 'sss.survey_sample_site_id') // Join survey_sample_site
+
+      // Join sample method onto observation
+      .leftJoin(
+        { ssmwn: 'survey_sample_method_with_name' },
+        'so.survey_sample_method_id',
+        'ssmwn.survey_sample_method_id'
+      )
+
+      // Join sample period onto observation
+      .leftJoin({ ssp: 'survey_sample_period' }, 'so.survey_sample_period_id', 'ssp.survey_sample_period_id') // Join survey_sample_period
+      .where('so.survey_id', surveyId);
+
+    const paginatedQuery = !pagination
+      ? allRowsQuery
+      : allRowsQuery.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+    const query =
+      pagination?.sort && pagination.order ? paginatedQuery.orderBy(pagination.sort, pagination.order) : paginatedQuery;
+
+    const response = await this.connection.knex(query, ObservationRecordWithSamplingData);
+
+    return response.rows;
+  }
+
+  /**
+   * Gets a set of GeoJson geometries representing the set of all lat/long points for the
+   * given survey's observations.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<ObservationGeometryRecord[]>}
+   * @memberof ObservationRepository
+   */
+  async getSurveyObservationsGeometry(surveyId: number): Promise<ObservationGeometryRecord[]> {
+    const knex = getKnex();
+
+    const query = knex
+      .select('survey_observation_id', knex.raw('ST_AsGeoJSON(ST_MakePoint(longitude, latitude)) as geometry'))
+      .from('survey_observation')
+      .where('survey_id', surveyId);
+
+    const response = await this.connection.knex(query, ObservationGeometryRecord);
+
+    return response.rows;
+  }
+
+  /**
+   * Retrieves a single observation record
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<ObservationRecord[]>}
+   * @memberof ObservationRepository
+   */
+  async getSurveyObservationById(surveyObservationId: number): Promise<ObservationRecord> {
+    const knex = getKnex();
+    const query = knex
+      .queryBuilder()
+      .select('*')
+      .from('survey_observation')
+      .where('survey_observation_id', surveyObservationId);
+
+    const response = await this.connection.knex(query, ObservationRecord);
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to get observation record', [
+        'ObservationRepository->getSurveyObservationById',
+        'rowCount was null or undefined, expected rowCount = 1'
+      ]);
+    }
+
+    return response.rows[0];
+  }
+
+  /**
    * Retrieves all observation records for the given survey
    *
    * @param {number} surveyId
    * @return {*}  {Promise<ObservationRecord[]>}
    * @memberof ObservationRepository
    */
-  async getSurveyObservations(surveyId: number): Promise<ObservationRecord[]> {
+  async getAllSurveyObservations(surveyId: number): Promise<ObservationRecord[]> {
     const knex = getKnex();
-    const sqlStatement = knex.queryBuilder().select('*').from('survey_observation').where('survey_id', surveyId);
+    const allRowsQuery = knex.queryBuilder().select('*').from('survey_observation').where('survey_id', surveyId);
 
-    const response = await this.connection.knex(sqlStatement, ObservationRecord);
+    const response = await this.connection.knex(allRowsQuery, ObservationRecord);
     return response.rows;
   }
 
@@ -215,7 +352,7 @@ export class ObservationRepository extends BaseRepository {
    * Retrieves the count of survey observations for the given survey
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<{ observationCount: number }>}
+   * @return {*}  {Promise<number>}
    * @memberof ObservationRepository
    */
   async getSurveyObservationCount(surveyId: number): Promise<number> {

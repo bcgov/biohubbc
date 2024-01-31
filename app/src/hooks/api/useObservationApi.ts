@@ -4,7 +4,11 @@ import {
   IObservationTableRow,
   ISupplementaryObservationData
 } from 'contexts/observationsTableContext';
-import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
+import {
+  IGetSurveyObservationsGeometryResponse,
+  IGetSurveyObservationsResponse
+} from 'interfaces/useObservationApi.interface';
+import { ApiPaginationOptions } from 'types/misc';
 
 /**
  * Returns a set of supported api methods for working with observations.
@@ -39,14 +43,70 @@ const useObservationApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
+   * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<IObservationTableRow[]>}
    */
   const getObservationRecords = async (
     projectId: number,
-    surveyId: number
+    surveyId: number,
+    pagination?: ApiPaginationOptions
   ): Promise<IGetSurveyObservationsResponse> => {
+    let urlParamsString = '';
+
+    if (pagination) {
+      const params = new URLSearchParams();
+      params.append('page', pagination.page.toString());
+      params.append('limit', pagination.limit.toString());
+      if (pagination.sort) {
+        params.append('sort', pagination.sort);
+      }
+      if (pagination.order) {
+        params.append('order', pagination.order);
+      }
+      urlParamsString = `?${params.toString()}`;
+    }
+
     const { data } = await axios.get<IGetSurveyObservationsResponse>(
-      `/api/project/${projectId}/survey/${surveyId}/observations`
+      `/api/project/${projectId}/survey/${surveyId}/observations${urlParamsString}`
+    );
+
+    return data;
+  };
+
+  /**
+   * Retrieves all survey observation records for the given survey
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {Promise<IObservationTableRow[]>}
+   */
+  const getObservationRecord = async (
+    projectId: number,
+    surveyId: number,
+    surveyObservationId: number
+  ): Promise<IObservationRecord> => {
+    const { data } = await axios.get<IObservationRecord>(
+      `/api/project/${projectId}/survey/${surveyId}/observations/${surveyObservationId}`
+    );
+
+    return data;
+  };
+
+  /**
+   * Fetches all geojson geometry points for all observation records belonging to
+   * the given survey.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}  {Promise<IGetSurveyObservationsGeometryResponse>}
+   */
+  const getObservationsGeometry = async (
+    projectId: number,
+    surveyId: number
+  ): Promise<IGetSurveyObservationsGeometryResponse> => {
+    const { data } = await axios.get<IGetSurveyObservationsGeometryResponse>(
+      `/api/project/${projectId}/survey/${surveyId}/observations/spatial`
     );
 
     return data;
@@ -125,6 +185,8 @@ const useObservationApi = (axios: AxiosInstance) => {
   return {
     insertUpdateObservationRecords,
     getObservationRecords,
+    getObservationRecord,
+    getObservationsGeometry,
     deleteObservationRecords,
     uploadCsvForImport,
     processCsvSubmission
