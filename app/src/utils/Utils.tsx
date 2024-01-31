@@ -502,3 +502,11 @@ export const setMessageSnackbar = (message: string, context: IDialogContext) => 
     )
   });
 };
+
+/**
+ * This will grab the first element from an array or return null if nothing is found
+ *
+ * @param arr array to check
+ * @returns T
+ */
+export const firstOrNull = <T,>(arr: T[]): T | null => (arr.length > 0 ? arr[0] : null);

@@ -454,7 +454,7 @@ export class Critter {
   _formatCritterQualitativeMeasurements(animal_measurements: IAnimalMeasurement[]): ICritterQualitativeMeasurement[] {
     const filteredQualitativeMeasurements = animal_measurements.filter((measurement) => {
       if (measurement.qualitative_option_id && measurement.value) {
-        console.log('Qualitative measurement must only contain option_id and no value.');
+        // Qualitative measurement must only contain option_id and no value
         return false;
       }
       return measurement.qualitative_option_id;
