@@ -12,7 +12,7 @@ const FocalSpeciesComponent = () => {
 
   const handleAddSpecies = (species: ISpeciesAutocompleteField) => {
     setFieldValue(`species.focal_species_object[${selectedSpecies.length}]`, species);
-    setFieldValue(`species.focal_species[${selectedSpecies.length}]`, species.id);
+    setFieldValue(`species.focal_species[${selectedSpecies.length}]`, species.tsn);
     setErrors([]);
   };
 
@@ -23,7 +23,7 @@ const FocalSpeciesComponent = () => {
     });
 
     const filteredSpecies = selectedSpecies.filter((value: ISpeciesAutocompleteField) => {
-      return value.id !== species_id;
+      return value.tsn !== species_id;
     });
 
     setFieldValue('species.focal_species_object', filteredSpecies);

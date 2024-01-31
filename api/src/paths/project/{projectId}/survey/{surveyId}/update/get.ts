@@ -143,9 +143,9 @@ GET.apiDoc = {
                         type: 'array',
                         items: {
                           type: 'object',
-                          required: ['id', 'label', 'scientificName'],
+                          required: ['tsn', 'label', 'scientificName'],
                           properties: {
-                            id: {
+                            tsn: {
                               type: 'string'
                             },
                             label: {
@@ -173,9 +173,9 @@ GET.apiDoc = {
                         type: 'array',
                         items: {
                           type: 'object',
-                          required: ['id', 'label', 'scientificName'],
+                          required: ['tsn', 'label', 'scientificName'],
                           properties: {
-                            id: {
+                            tsn: {
                               type: 'string'
                             },
                             label: {

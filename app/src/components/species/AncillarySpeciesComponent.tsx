@@ -12,7 +12,7 @@ const AncillarySpeciesComponent = () => {
 
   const handleAddSpecies = (species: ISpeciesAutocompleteField) => {
     setFieldValue(`species.ancillary_species_object[${selectedSpecies.length}]`, species);
-    setFieldValue(`species.ancillary_species[${selectedSpecies.length}]`, species.id);
+    setFieldValue(`species.ancillary_species[${selectedSpecies.length}]`, species.tsn);
     setErrors([]);
   };
 
@@ -23,7 +23,7 @@ const AncillarySpeciesComponent = () => {
     });
 
     const filteredValues = selectedSpecies.filter((value: ISpeciesAutocompleteField) => {
-      return value.id !== species_id;
+      return value.tsn !== species_id;
     });
 
     setFieldValue('species.ancillary_species_object', filteredValues);

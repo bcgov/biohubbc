@@ -14,19 +14,14 @@ export interface IItisSearchResponse {
 }
 
 export interface IItisSearchResult {
-  id: number;
+  tsn: number;
   label: string;
   scientificName: string;
 }
 
-export const ITIS_SOLR_PARAMS = {
-  SORT: 'wt=json&sort=nameWOInd+asc&rows=25',
-  FILTER: 'omitHeader=true&fl=tsn+scientificName:nameWOInd+kingdom+parentTSN+commonNames:vernacular+updateDate+usage'
-};
-
 const useItisApi = () => {
   const config = useContext(ConfigContext);
-  const apiAxios = useAxios(config?.BIOHUB_TAXON_PATH);
+  const apiAxios = useAxios(config?.BIOHUB_API_URL);
 
   /**
    * Returns the ITIS search species Query.
@@ -37,54 +32,35 @@ const useItisApi = () => {
    */
   const itisSearch = async (searchTerm: string): Promise<IItisSearchResult[] | undefined> => {
     try {
-      const itisClient = getItisSearchUrl(searchTerm);
+      console.log('searchTerm', searchTerm);
 
-      const response = await apiAxios.get(itisClient);
+      console.log('apiAxios', apiAxios);
+      console.log('config?.BIOHUB_API_URL', config?.BIOHUB_API_URL);
+      console.log('config?.BIOHUB_TAXON_PATH ', config?.BIOHUB_TAXON_PATH);
 
-      if (!response.data || !response.data.response || !response.data.response.docs) {
+      const { data } = await apiAxios.get<{ searchResponse: IItisSearchResult[] }>(
+        config?.BIOHUB_TAXON_PATH || '/api/taxonomy/taxon',
+        {
+          params: {
+            terms: searchTerm
+          }
+        }
+      );
+      console.log('data', data);
+
+      if (!data.searchResponse) {
         return [];
       }
+      console.log('data.searchResponse', data.searchResponse);
 
-      return sanitizeItisData(response.data.response.docs);
+      return data.searchResponse;
     } catch (error) {
       new Error('Error searching ITIS.');
     }
   };
 
-  /**
-   * Returns the ITIS search URL.
-   *
-   * @param {string} searchSpecies
-   * @return {*}  {Promise<string>}
-   * @memberof ESService
-   */
-  const getItisSearchUrl = (searchSpecies: string): string => {
-    const itisSearchSpecies = `q=(nameWOInd:*${searchSpecies}*+AND+usage:/(valid|accepted)/)+(vernacular:*${searchSpecies}*+AND+usage:/(valid|accepted)/)`;
-    return `?${ITIS_SOLR_PARAMS.SORT}&${itisSearchSpecies}&${ITIS_SOLR_PARAMS.FILTER}`;
-  };
-
-  /**
-   * Sanitize ITIS search results.
-   *
-   * @param {IItisSearchResponse[]} data
-   * @return {*}  {IItisSearchResult[]}
-   */
-  const sanitizeItisData = (data: IItisSearchResponse[]): IItisSearchResult[] => {
-    return data.map((item: IItisSearchResponse) => {
-      const commonName = (item.commonNames && item.commonNames[0].split('$')[1]) || item.scientificName;
-
-      return {
-        id: Number(item.tsn),
-        label: commonName,
-        scientificName: item.scientificName
-      };
-    });
-  };
-
   return {
-    itisSearch,
-    getItisSearchUrl,
-    sanitizeItisData
+    itisSearch
   };
 };
 

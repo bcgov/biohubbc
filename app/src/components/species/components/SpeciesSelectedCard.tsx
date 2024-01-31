@@ -46,7 +46,7 @@ const SpeciesSelectedCard = (props: ISpeciesSelectedCardProps) => {
                 ml: 2
               }}
               aria-label="remove species from project team"
-              onClick={() => handleRemove(species.id)}>
+              onClick={() => handleRemove(species.tsn)}>
               <Icon path={mdiClose} size={1}></Icon>
             </IconButton>
           </Box>

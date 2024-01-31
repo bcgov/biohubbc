@@ -7,7 +7,7 @@ import SpeciesCard from 'components/species/components/SpeciesCard';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { debounce } from 'lodash-es';
-import { default as React, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export interface ISpeciesAutocompleteFieldProps {
   formikFieldName: string;
@@ -17,7 +17,7 @@ export interface ISpeciesAutocompleteFieldProps {
 }
 
 export type ISpeciesAutocompleteField = {
-  id: number;
+  tsn: number;
   label: string;
   scientificName: string;
 };
@@ -34,7 +34,6 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
   const handleSearch = useMemo(
     () =>
       debounce(async (inputValue: string, callback: (searchedValues: ISpeciesAutocompleteField[]) => void) => {
-        console.log('inputValue', inputValue);
         const response = await biohubApi.itis.itisSearch(inputValue);
         console.log('response', response);
 
@@ -70,7 +69,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
       options={options}
       getOptionLabel={(option) => option.label}
       isOptionEqualToValue={(option, value) => {
-        return option.id === value.id;
+        return option.tsn === value.tsn;
       }}
       filterOptions={(options, state) => {
         const searchFilter = createFilterOptions<ISpeciesAutocompleteField>({ ignoreCase: true });
@@ -79,7 +78,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
         }
 
         const unselectedOptions = options.filter((item) => {
-          return !values.some((existing) => existing.id === item.id);
+          return !values.some((existing) => existing.tsn === item.tsn);
         });
         return searchFilter(unselectedOptions, state);
       }}
@@ -98,7 +97,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
       }}
       renderOption={(renderProps, renderOption) => {
         return (
-          <Box component="li" {...renderProps} key={renderOption.id}>
+          <Box component="li" {...renderProps} key={renderOption.tsn}>
             <SpeciesCard name={renderOption.label} subtext={renderOption.scientificName} />
           </Box>
         );

@@ -19,7 +19,7 @@ const SelectedSpecies = (props: ISelectedSpeciesProps) => {
           {selectedSpecies &&
             selectedSpecies.map((species: ISpeciesAutocompleteField, index: number) => {
               return (
-                <Collapse key={species.id}>
+                <Collapse key={species.tsn}>
                   <SpeciesSelectedCard
                     index={index}
                     species={species}
