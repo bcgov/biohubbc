@@ -21,8 +21,6 @@ const SamplingBlockForm: React.FC = () => {
   const options = surveyContext.surveyDataLoader?.data?.surveyData?.blocks || [];
   const [selectedBlocks, setSelectedBlocks] = useState<IGetSurveyBlock[]>([]);
 
-  console.log(options);
-
   interface IBlockCard {
     label: string;
     description: string;
@@ -50,11 +48,13 @@ const SamplingBlockForm: React.FC = () => {
     setFieldValue(`blocks[${selectedBlocks.length - 1}]`, block);
   };
 
-  const handleRemoveItem = (block: IBlockData, index: number) => {
+  const handleRemoveItem = (block: IBlockData) => {
     const filteredBlocks = selectedBlocks.filter((existing) => existing.survey_block_id !== block.survey_block_id);
     setSelectedBlocks(filteredBlocks);
     setFieldValue(`blocks`, filteredBlocks);
   };
+
+  console.log(searchText)
 
   return (
     <>
@@ -75,15 +75,21 @@ const SamplingBlockForm: React.FC = () => {
         noOptionsText="No records found"
         options={options}
         filterOptions={(options, state) => {
+          console.log(state)
           const searchFilter = createFilterOptions<IGetSurveyBlock>({ ignoreCase: true });
-          const unselectedOptions = options.filter(
-            (item) => !selectedBlocks.some((existing) => existing.survey_block_id === item.survey_block_id)
+          const unselectedOptions = options.filter((item) =>
+            selectedBlocks.every((existing) => existing.survey_block_id !== item.survey_block_id)
           );
           return searchFilter(unselectedOptions, state);
         }}
         getOptionLabel={(option) => option.name}
+        selectOnFocus
+        clearOnEscape
         inputValue={searchText}
+        clearOnBlur={false}
+        value={null}
         onInputChange={(_, value, reason) => {
+          console.log(reason, value, _);
           if (reason === 'reset') {
             setSearchText('');
           } else {
@@ -93,7 +99,12 @@ const SamplingBlockForm: React.FC = () => {
         onChange={(_, option) => {
           if (option) {
             handleAddBlock(option);
+            setSearchText('')
           }
+        }}
+        onClose={(value, reason) => {
+          console.log(value, reason)
+          setSearchText('')
         }}
         renderInput={(params) => (
           <TextField
@@ -112,6 +123,7 @@ const SamplingBlockForm: React.FC = () => {
           />
         )}
         renderOption={(renderProps, renderOption) => {
+          // console.log(renderOption)
           return (
             <Box component="li" {...renderProps} key={renderOption?.survey_block_id}>
               <BlockCard label={renderOption.name} description={renderOption.description || ''} />
@@ -144,9 +156,7 @@ const SamplingBlockForm: React.FC = () => {
                 <CardHeader
                   action={
                     <IconButton
-                      onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                        handleRemoveItem(item, index)
-                      }
+                      onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => handleRemoveItem(item)}
                       aria-label="settings">
                       <Icon path={mdiClose} size={1} />
                     </IconButton>

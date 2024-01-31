@@ -54,6 +54,8 @@ import SurveyFundingSourceForm, {
 import { SurveySiteSelectionInitialValues, SurveySiteSelectionYupSchema } from './components/SurveySiteSelectionForm';
 import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from './components/SurveyUserForm';
 import SurveyBaseHeader from './view/components/SurveyBaseHeader';
+import SpeciesForm from './components/SpeciesForm';
+import PermitsForm from './components/PermitsForm';
 
 /**
  * Page to create a survey.
@@ -301,6 +303,19 @@ const CreateSurveyPage = () => {
                       />
                     }></HorizontalSplitFormComponent>
 
+                    <HorizontalSplitFormComponent
+                    title="Species"
+                    summary=""
+                    component={
+                      <SpeciesForm
+                        type={
+                          codes?.type?.map((item) => {
+                            return { value: item.id, label: item.name };
+                          }) || []
+                        }
+                      />
+                    }></HorizontalSplitFormComponent>
+
                   <HorizontalSplitFormComponent
                     title="Purpose and Methodology"
                     summary=""
@@ -345,6 +360,19 @@ const CreateSurveyPage = () => {
                       </Box>
                     }
                   />
+
+                  <HorizontalSplitFormComponent
+                    title="Permits"
+                    summary=""
+                    component={
+                      <PermitsForm
+                        type={
+                          codes?.type?.map((item) => {
+                            return { value: item.id, label: item.name };
+                          }) || []
+                        }
+                      />
+                    }></HorizontalSplitFormComponent>
 
                   <HorizontalSplitFormComponent
                     title="Sampling Strategy"

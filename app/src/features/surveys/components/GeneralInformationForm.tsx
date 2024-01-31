@@ -8,12 +8,9 @@ import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompl
 import StartEndDateFields from 'components/fields/StartEndDateFields';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { useFormikContext } from 'formik';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import { debounce } from 'lodash-es';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
-import SurveyPermitForm, { SurveyPermitFormYupSchema } from '../SurveyPermitForm';
 
 export const AddPermitFormInitialValues = {
   permits: [
@@ -40,10 +37,6 @@ export interface IGeneralInformationForm {
     end_date: string;
     survey_types: number[];
   };
-  species: {
-    focal_species: number[];
-    ancillary_species: number[];
-  };
   permit: {
     permits: {
       permit_id?: number;
@@ -60,35 +53,24 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
     end_date: '',
     survey_types: []
   },
-  species: {
-    focal_species: [],
-    ancillary_species: []
-  },
   permit: {
     permits: []
   }
 };
 
 export const GeneralInformationYupSchema = (customYupRules?: any) => {
-  return yup
-    .object()
-    .shape({
-      survey_details: yup.object().shape({
-        survey_name: yup.string().required('Survey Name is Required'),
-        start_date: customYupRules?.start_date || yup.string().isValidDateString().required('Start Date is Required'),
-        end_date:
-          customYupRules?.end_date || yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date'),
-        survey_types: yup
-          .array(yup.number())
-          .min(1, 'One or more Types are required')
-          .required('One or more Types are required')
-      }),
-      species: yup.object().shape({
-        focal_species: yup.array().min(1, 'You must specify a focal species').required('Required'),
-        ancillary_species: yup.array().isUniqueFocalAncillarySpecies('Focal and Ancillary species must be unique')
-      })
+  return yup.object().shape({
+    survey_details: yup.object().shape({
+      survey_name: yup.string().required('Survey Name is Required'),
+      start_date: customYupRules?.start_date || yup.string().isValidDateString().required('Start Date is Required'),
+      end_date:
+        customYupRules?.end_date || yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date'),
+      survey_types: yup
+        .array(yup.number())
+        .min(1, 'One or more Types are required')
+        .required('One or more Types are required')
     })
-    .concat(SurveyPermitFormYupSchema);
+  });
 };
 
 export interface IGeneralInformationFormProps {
@@ -104,38 +86,6 @@ export interface IGeneralInformationFormProps {
  */
 const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) => {
   const formikProps = useFormikContext<IGeneralInformationForm>();
-
-  const biohubApi = useBiohubApi();
-
-  const convertOptions = (value: any): IMultiAutocompleteFieldOption[] =>
-    value.map((item: any) => {
-      return { value: parseInt(item.id), label: item.label };
-    });
-
-  const handleGetInitList = async (initialvalues: number[]) => {
-    const response = await biohubApi.taxonomy.getSpeciesFromIds(initialvalues);
-
-    return convertOptions(response.searchResponse);
-  };
-
-  const handleSearch = useMemo(
-    () =>
-      debounce(
-        async (
-          inputValue: string,
-          existingValues: (string | number)[],
-          callback: (searchedValues: IMultiAutocompleteFieldOption[]) => void
-        ) => {
-          const response = await biohubApi.taxonomy.searchSpecies(inputValue);
-          const newOptions = convertOptions(response.searchResponse).filter(
-            (item: any) => !existingValues?.includes(item.value)
-          );
-          callback(newOptions);
-        },
-        500
-      ),
-    [biohubApi.taxonomy]
-  );
 
   return (
     <>
@@ -157,27 +107,35 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
             required={true}
           />
         </Grid>
-        <Grid item xs={12}>
-          <StartEndDateFields
-            formikProps={formikProps}
-            startName="survey_details.start_date"
-            endName="survey_details.end_date"
-            startRequired={true}
-            endRequired={false}
-            startDateHelperText={`Start Date cannot precede ${getFormattedDate(
-              DATE_FORMAT.ShortMediumDateFormat,
-              props.projectStartDate
-            )}`}
-            endDateHelperText={
-              props.projectEndDate &&
-              `End Date cannot come after the Project End Date ${getFormattedDate(
-                DATE_FORMAT.ShortMediumDateFormat,
-                props.projectEndDate
-              )}`
-            }
-          />
-        </Grid>
       </Grid>
+
+        <Box component="fieldset" mt={5}>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Typography component="legend" variant="h5">
+                Timeline
+              </Typography>
+              <StartEndDateFields
+                formikProps={formikProps}
+                startName="survey_details.start_date"
+                endName="survey_details.end_date"
+                startRequired={true}
+                endRequired={false}
+                startDateHelperText={`Start Date cannot precede ${getFormattedDate(
+                  DATE_FORMAT.ShortMediumDateFormat,
+                  props.projectStartDate
+                )}`}
+                endDateHelperText={
+                  props.projectEndDate &&
+                  `End Date cannot come after the Project End Date ${getFormattedDate(
+                    DATE_FORMAT.ShortMediumDateFormat,
+                    props.projectEndDate
+                  )}`
+                }
+              />
+            </Grid>
+          </Grid>
+        </Box>
 
       <Box component="fieldset" mt={5}>
         <Typography component="legend" variant="h5">
@@ -185,11 +143,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         </Typography>
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            <FormControl
-              variant="outlined"
-              fullWidth
-              required={true}
-            >
+            <FormControl variant="outlined" fullWidth required={true}>
               <InputLabel id="permit_type">Status</InputLabel>
               <Select
                 id={`survey-status`}
@@ -211,43 +165,6 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
             </FormControl>
           </Grid>
         </Grid>
-      </Box>
-
-      <Box component="fieldset" mt={5}>
-        <Typography component="legend" variant="h5">
-          Species
-        </Typography>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <MultiAutocompleteFieldVariableSize
-              id="species.focal_species"
-              label="Focal Species"
-              required={true}
-              type="api-search"
-              getInitList={handleGetInitList}
-              search={handleSearch}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <MultiAutocompleteFieldVariableSize
-              id="species.ancillary_species"
-              label="Ancillary Species"
-              required={false}
-              type="api-search"
-              getInitList={handleGetInitList}
-              search={handleSearch}
-            />
-          </Grid>
-        </Grid>
-      </Box>
-
-      <Box component="fieldset" mt={5}>
-        <Typography component="legend" variant="h5">
-          Permits
-        </Typography>
-        <Box>
-          <SurveyPermitForm />
-        </Box>
       </Box>
     </>
   );

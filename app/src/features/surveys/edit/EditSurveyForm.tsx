@@ -36,6 +36,8 @@ import SurveyFundingSourceForm, {
 } from '../components/SurveyFundingSourceForm';
 import { SurveySiteSelectionInitialValues, SurveySiteSelectionYupSchema } from '../components/SurveySiteSelectionForm';
 import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from '../components/SurveyUserForm';
+import SpeciesForm from '../components/SpeciesForm';
+import PermitsForm from '../components/PermitsForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -177,6 +179,21 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
           <Divider className={classes.sectionDivider} />
 
           <HorizontalSplitFormComponent
+            title="Species"
+            summary="Enter species of interest"
+            component={
+              <SpeciesForm
+                type={
+                  props.codes?.type?.map((item) => {
+                    return { value: item.id, label: item.name };
+                  }) || []
+                }
+              />
+            }></HorizontalSplitFormComponent>
+
+          <Divider className={classes.sectionDivider} />
+
+          <HorizontalSplitFormComponent
             title="Purpose and Methodology"
             summary=""
             component={
@@ -224,6 +241,22 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
               </Box>
             }
           />
+
+          <Divider className={classes.sectionDivider} />
+
+          <HorizontalSplitFormComponent
+                    title="Permits"
+                    summary="Enter permits used in this work"
+                    component={
+                      <PermitsForm
+                        type={
+                          props?.codes.type?.map((item) => {
+                            return { value: item.id, label: item.name };
+                          }) || []
+                        }
+                      />
+                    }></HorizontalSplitFormComponent>
+
 
           <Divider className={classes.sectionDivider} />
 
