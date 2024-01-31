@@ -1,4 +1,6 @@
+import { ConfigContext } from 'contexts/configContext';
 import useAxios from 'hooks/api/useAxios';
+import { useContext } from 'react';
 
 export interface IItisSearchResponse {
   commonNames: string[];
@@ -23,7 +25,8 @@ export const ITIS_SOLR_PARAMS = {
 };
 
 const useItisApi = () => {
-  const apiAxios = useAxios(process.env.REACT_APP_ITIS_SOLR_URL);
+  const config = useContext(ConfigContext);
+  const apiAxios = useAxios(config?.BIOHUB_TAXON_PATH);
 
   /**
    * Returns the ITIS search species Query.
