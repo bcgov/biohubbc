@@ -51,6 +51,7 @@ export const DeploymentForm = (props: DeploymentFormSectionProps): JSX.Element =
   };
 
   const deploymentOverlapTest = (deployment: IDeploymentTimespan) => {
+    console.log(deviceDetails);
     if (!deviceDetails) {
       return;
     }

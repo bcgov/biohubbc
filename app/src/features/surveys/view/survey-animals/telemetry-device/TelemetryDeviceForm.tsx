@@ -20,7 +20,7 @@ const TelemetryDeviceForm = (props: ITelemetryDeviceFormProps) => {
   const { mode } = props;
 
   const telemetryApi = useTelemetryApi();
-  const { values, validateField } = useFormikContext<IAnimalTelemetryDevice>();
+  const { values } = useFormikContext<IAnimalTelemetryDevice>();
 
   const device = values;
 
@@ -28,19 +28,19 @@ const TelemetryDeviceForm = (props: ITelemetryDeviceFormProps) => {
     telemetryApi.devices.getDeviceDetails(Number(device.device_id), device.device_make)
   );
 
-  const validateDeviceMake = async (value: number | '') => {
-    const deviceMake = deviceDetails?.device?.device_make;
-    if (device.device_id && deviceMake && deviceMake !== value && mode === ANIMAL_FORM_MODE.ADD) {
-      return `The current make for this device is ${deviceMake}`;
-    }
-  };
-
+  //TODO remove?
+  // const validateDeviceMake = async (value: number | '') => {
+  //   const deviceMake = deviceDetails?.device?.device_make;
+  //   if (device.device_id && deviceMake && deviceMake !== value && mode === ANIMAL_FORM_MODE.ADD) {
+  //     return `The current make for this device is ${deviceMake}`;
+  //   }
+  // };
+  //
   useEffect(() => {
     if (!device.device_id || !device.device_make) {
       return;
     }
     refresh();
-    validateField(`device_make`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [device.device_id, device.device_make, deviceDetails?.device?.device_make]);
 
@@ -106,7 +106,6 @@ const TelemetryDeviceForm = (props: ITelemetryDeviceFormProps) => {
               id="manufacturer"
               fetchData={telemetryApi.devices.getCollarVendors}
               controlProps={{ disabled: mode === ANIMAL_FORM_MODE.EDIT, required: true }}
-              validate={validateDeviceMake}
             />
           </Grid>
           <Grid item xs={6}>

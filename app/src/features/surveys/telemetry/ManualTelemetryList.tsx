@@ -562,8 +562,9 @@ const ManualTelemetryList = () => {
                         )}
                         {critterDeployments?.map((item) => (
                           <ManualTelemetryCard
-                            key={`${item.deployment.device_id}:${item.deployment.attachment_start}`}
+                            key={`${item.deployment.device_id}:${item.deployment.device_make}:${item.deployment.attachment_start}`}
                             device_id={item.deployment.device_id}
+                            device_make={item.deployment.device_make}
                             name={String(item.critter.animal_id ?? item.critter.taxon)}
                             start_date={item.deployment.attachment_start}
                             end_date={item.deployment.attachment_end}
