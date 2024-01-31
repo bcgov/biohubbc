@@ -181,6 +181,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
             id={'autocomplete-user-role-search'}
             data-testid={'autocomplete-user-role-search'}
             filterSelectedOptions
+            value={null}
             noOptionsText="No records found"
             options={alphabetizeObjects(searchUserDataLoader.data, 'display_name')}
             filterOptions={(options, state) => {
