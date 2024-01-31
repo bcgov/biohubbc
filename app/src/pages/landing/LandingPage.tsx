@@ -59,7 +59,7 @@ export const LandingPage = () => {
             <Typography variant="h1" className={classes.heroTitle}>
               Species Inventory Management System
             </Typography>
-            <Typography className={classes.heroSubtitle}>
+            <Typography className={classes.heroSubtitle} test-id>
               Collaboratively manage and submit species inventory data and information to help protect biodiversity in
               British Columbia.
             </Typography>

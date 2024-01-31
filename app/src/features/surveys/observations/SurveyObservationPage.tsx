@@ -5,13 +5,15 @@ import Stack from '@mui/material/Stack';
 import { ObservationsTableContext, ObservationsTableContextProvider } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import ObservationsTableContainer from './observations-table/ObservationsTableContainer';
 import SamplingSiteList from './sampling-sites/SamplingSiteList';
 import SurveyObservationHeader from './SurveyObservationHeader';
 
+
 export const SurveyObservationPage = () => {
   const surveyContext = useContext(SurveyContext);
+  const [isCollapsed, setIsCollapsed] = useState(false)
 
   if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -33,8 +35,8 @@ export const SurveyObservationPage = () => {
           p: 1
         }}>
         {/* Sampling Site List */}
-        <Box flex="0 0 auto" width="400px">
-          <SamplingSiteList />
+        <Box flex="0 0 auto" width={!isCollapsed ? "400px" : undefined}>
+          <SamplingSiteList setIsCollapsed={setIsCollapsed} isCollapsed={isCollapsed}/>
         </Box>
 
         {/* Observations Component */}

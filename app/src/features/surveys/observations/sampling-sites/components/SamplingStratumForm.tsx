@@ -65,13 +65,14 @@ const SamplingStratumForm: React.FC = () => {
           mb: 3,
           maxWidth: '92ch'
         }}>
-        All sampling sites being imported together will be assigned to the selected sampling site groups
+        All sampling sites being imported together will be assigned to the selected strata
       </Typography>
       <Autocomplete
         id={'autocomplete-sample-stratum-form'}
         data-testid={'autocomplete-user-role-search'}
         filterSelectedOptions
         noOptionsText="No records found"
+        value={null}
         options={options}
         filterOptions={(options, state) => {
           const searchFilter = createFilterOptions<IStratum>({ ignoreCase: true });

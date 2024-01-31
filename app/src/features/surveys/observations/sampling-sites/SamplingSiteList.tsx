@@ -1,12 +1,15 @@
 import {
   mdiCalendarRange,
   mdiChevronDown,
+  mdiChevronLeft,
+  mdiChevronRight,
   mdiDotsVertical,
   mdiPencilOutline,
   mdiPlus,
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Collapse } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -33,11 +36,17 @@ import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { TransitionGroup } from 'react-transition-group';
 import { getCodesName } from 'utils/Utils';
 
-const SamplingSiteList = () => {
+interface ISamplingSiteCollapseProps {
+  isCollapsed: boolean;
+  setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const SamplingSiteList: React.FC<ISamplingSiteCollapseProps> = (props) => {
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
   const dialogContext = useContext(DialogContext);
@@ -266,260 +275,299 @@ const SamplingSiteList = () => {
         sx={{
           overflow: 'hidden'
         }}>
-        <Toolbar
-          disableGutters
-          sx={{
-            flex: '0 0 auto',
-            pr: 3,
-            pl: 2
-          }}>
-          <Typography variant="h3" component="h2" flexGrow={1}>
-            Sampling Sites &zwnj;
-            <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
-              ({samplingSiteCount})
-            </Typography>
-          </Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            component={RouterLink}
-            to={'sampling'}
-            startIcon={<Icon path={mdiPlus} size={1} />}>
-            Add
-          </Button>
-          <IconButton
-            edge="end"
-            sx={{
-              ml: 1
-            }}
-            aria-label="header-settings"
-            disabled={!checkboxSelectedIds.length}
-            onClick={handleHeaderMenuClick}>
-            <Icon path={mdiDotsVertical} size={1} />
-          </IconButton>
-        </Toolbar>
-        <Divider flexItem />
-        <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
-          <Box position="absolute" top="0" right="0" bottom="0" left="0">
-            {surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading ? (
-              <SkeletonList />
-            ) : (
-              <Stack height="100%" position="relative">
-                <Box flex="0 0 auto" display="flex" alignItems="center" px={2} height={55}>
-                  <FormGroup>
-                    <FormControlLabel
-                      label={
-                        <Typography
-                          variant="body2"
-                          component="span"
-                          color="textSecondary"
-                          fontWeight={700}
-                          sx={{ textTransform: 'uppercase' }}>
-                          Select All
-                        </Typography>
-                      }
-                      control={
-                        <Checkbox
-                          sx={{
-                            mr: 0.75
-                          }}
-                          checked={checkboxSelectedIds.length > 0 && checkboxSelectedIds.length === samplingSiteCount}
-                          indeterminate={
-                            checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < samplingSiteCount
-                          }
-                          onClick={() => {
-                            if (checkboxSelectedIds.length === samplingSiteCount) {
-                              setCheckboxSelectedIds([]);
-                              return;
-                            }
-
-                            const sampleSiteIds = sampleSites.map((sampleSite) => sampleSite.survey_sample_site_id);
-                            setCheckboxSelectedIds(sampleSiteIds);
-                          }}
-                          inputProps={{ 'aria-label': 'controlled' }}
-                        />
-                      }
-                    />
-                  </FormGroup>
-                </Box>
-                <Divider flexItem></Divider>
-                <Box
-                  flex="1 1 auto"
-                  sx={{
-                    background: grey[100],
-                    overflowY: 'scroll'
+        <TransitionGroup>
+          <Collapse in={props?.isCollapsed} timeout="auto" unmountOnExit>
+            <Toolbar
+              disableGutters
+              sx={
+                !props.isCollapsed
+                  ? {
+                      flex: '0 0 auto',
+                      pr: 2,
+                      pl: 2
+                    }
+                  : {
+                      pr: 1,
+                      pl: 1
+                    }
+              }>
+              {!props.isCollapsed ? (
+                <>
+                  <Typography variant="h3" component="h2" flexGrow={1}>
+                    Sampling Sites &zwnj;
+                    <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
+                      ({samplingSiteCount})
+                    </Typography>
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    component={RouterLink}
+                    to={'sampling'}
+                    startIcon={<Icon path={mdiPlus} size={1} />}>
+                    Add
+                  </Button>
+                  <IconButton
+                    edge="end"
+                    sx={{
+                      ml: 1
+                    }}
+                    aria-label="header-settings"
+                    disabled={!checkboxSelectedIds.length}
+                    onClick={handleHeaderMenuClick}>
+                    <Icon path={mdiDotsVertical} size={1} />
+                  </IconButton>
+                  <IconButton
+                    edge="end"
+                    sx={{
+                      ml: 1
+                    }}
+                    aria-label="hide sampling sites"
+                    title='Hide sampling sites'
+                    onClick={() => {
+                      props.setIsCollapsed(true);
+                    }}>
+                    <Icon path={mdiChevronLeft} size={1} />
+                  </IconButton>
+                </>
+              ) : (
+                <IconButton
+                  aria-label="show sampling sites"
+                  title='Show sampling sites'
+                  onClick={() => {
+                    props.setIsCollapsed(false);
                   }}>
-                  {/* Display text if the sample site data loader has no items in it */}
-                  {!surveyContext.sampleSiteDataLoader.data?.sampleSites.length && (
-                    <Stack
-                      sx={{
-                        background: grey[100]
-                      }}
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      flex="1 1 auto"
-                      position="absolute"
-                      top={0}
-                      right={0}
-                      left={0}
-                      bottom={0}
-                      height="100%">
-                      <Typography variant="body2">No Sampling Sites</Typography>
-                    </Stack>
-                  )}
+                  <Icon path={mdiChevronRight} size={1} />
+                </IconButton>
+              )}
+            </Toolbar>
+          </Collapse>
+        </TransitionGroup>
 
-                  {surveyContext.sampleSiteDataLoader.data?.sampleSites.map((sampleSite, index) => {
-                    return (
-                      <Accordion
-                        disableGutters
-                        square
-                        key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}
-                        sx={{
-                          boxShadow: 'none',
-                          borderBottom: '1px solid' + grey[300],
-                          '&:before': {
-                            display: 'none'
-                          }
-                        }}>
-                        <Box display="flex" alignItems="center" overflow="hidden">
-                          <AccordionSummary
-                            expandIcon={<Icon path={mdiChevronDown} size={1} />}
-                            aria-controls="panel1bh-content"
+        <Divider flexItem />
+        {!props.isCollapsed ? (
+          <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
+            <Box position="absolute" top="0" right="0" bottom="0" left="0">
+              {surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading ? (
+                <SkeletonList />
+              ) : (
+                <Stack height="100%" position="relative">
+                  <Box flex="0 0 auto" display="flex" alignItems="center" px={2} height={55}>
+                    <FormGroup>
+                      <FormControlLabel
+                        label={
+                          <Typography
+                            variant="body2"
+                            component="span"
+                            color="textSecondary"
+                            fontWeight={700}
+                            sx={{ textTransform: 'uppercase' }}>
+                            Select All
+                          </Typography>
+                        }
+                        control={
+                          <Checkbox
                             sx={{
-                              flex: '1 1 auto',
-                              py: 0,
-                              pr: 8.5,
-                              pl: 0,
-                              height: 55,
-                              overflow: 'hidden',
-                              '& .MuiAccordionSummary-content': {
+                              mr: 0.75
+                            }}
+                            checked={checkboxSelectedIds.length > 0 && checkboxSelectedIds.length === samplingSiteCount}
+                            indeterminate={
+                              checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < samplingSiteCount
+                            }
+                            onClick={() => {
+                              if (checkboxSelectedIds.length === samplingSiteCount) {
+                                setCheckboxSelectedIds([]);
+                                return;
+                              }
+
+                              const sampleSiteIds = sampleSites.map((sampleSite) => sampleSite.survey_sample_site_id);
+                              setCheckboxSelectedIds(sampleSiteIds);
+                            }}
+                            inputProps={{ 'aria-label': 'controlled' }}
+                          />
+                        }
+                      />
+                    </FormGroup>
+                  </Box>
+                  <Divider flexItem></Divider>
+                  <Box
+                    flex="1 1 auto"
+                    sx={{
+                      background: grey[100],
+                      overflowY: 'scroll'
+                    }}>
+                    {/* Display text if the sample site data loader has no items in it */}
+                    {!surveyContext.sampleSiteDataLoader.data?.sampleSites.length && (
+                      <Stack
+                        sx={{
+                          background: grey[100]
+                        }}
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        flex="1 1 auto"
+                        position="absolute"
+                        top={0}
+                        right={0}
+                        left={0}
+                        bottom={0}
+                        height="100%">
+                        <Typography variant="body2">No Sampling Sites</Typography>
+                      </Stack>
+                    )}
+
+                    {surveyContext.sampleSiteDataLoader.data?.sampleSites.map((sampleSite, index) => {
+                      return (
+                        <Accordion
+                          disableGutters
+                          square
+                          key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}
+                          sx={{
+                            boxShadow: 'none',
+                            borderBottom: '1px solid' + grey[300],
+                            '&:before': {
+                              display: 'none'
+                            }
+                          }}>
+                          <Box display="flex" alignItems="center" overflow="hidden">
+                            <AccordionSummary
+                              expandIcon={<Icon path={mdiChevronDown} size={1} />}
+                              aria-controls="panel1bh-content"
+                              sx={{
                                 flex: '1 1 auto',
                                 py: 0,
+                                pr: 8.5,
                                 pl: 0,
+                                height: 55,
                                 overflow: 'hidden',
-                                whiteSpace: 'nowrap'
-                              }
-                            }}>
-                            <Stack
-                              flexDirection="row"
-                              alignItems="center"
-                              sx={{
-                                gap: 0.75,
-                                pl: 2,
-                                pr: 2,
-                                overflow: 'hidden'
-                              }}>
-                              <Checkbox
-                                edge="start"
-                                checked={checkboxSelectedIds.includes(sampleSite.survey_sample_site_id)}
-                                onClick={(event) => {
-                                  event.stopPropagation();
-                                  handleCheckboxChange(sampleSite.survey_sample_site_id);
-                                }}
-                                inputProps={{ 'aria-label': 'controlled' }}
-                              />
-
-                              <Typography
-                                variant="body2"
-                                component="div"
-                                sx={{
+                                '& .MuiAccordionSummary-content': {
                                   flex: '1 1 auto',
-                                  fontWeight: 700,
+                                  py: 0,
+                                  pl: 0,
                                   overflow: 'hidden',
-                                  textOverflow: 'ellipsis'
+                                  whiteSpace: 'nowrap'
+                                }
+                              }}>
+                              <Stack
+                                flexDirection="row"
+                                alignItems="center"
+                                sx={{
+                                  gap: 0.75,
+                                  pl: 2,
+                                  pr: 2,
+                                  overflow: 'hidden'
                                 }}>
-                                {sampleSite.name}
-                              </Typography>
-                            </Stack>
-                          </AccordionSummary>
-                          <IconButton
-                            sx={{ position: 'absolute', right: '24px' }}
-                            edge="end"
-                            onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                              handleSampleSiteMenuClick(event, sampleSite.survey_sample_site_id)
-                            }
-                            aria-label="sample-site-settings">
-                            <Icon path={mdiDotsVertical} size={1}></Icon>
-                          </IconButton>
-                        </Box>
-                        <AccordionDetails
-                          sx={{
-                            pt: 0,
-                            px: 2
-                          }}>
-                          <List
-                            disablePadding
-                            sx={{
-                              '& .MuiListItemText-primary': {
-                                typography: 'body2'
-                              }
-                            }}>
-                            {sampleSite.sample_methods?.map((sampleMethod) => {
-                              return (
-                                <ListItem
-                                  disableGutters
-                                  key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}`}
+                                <Checkbox
+                                  edge="start"
+                                  checked={checkboxSelectedIds.includes(sampleSite.survey_sample_site_id)}
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    handleCheckboxChange(sampleSite.survey_sample_site_id);
+                                  }}
+                                  inputProps={{ 'aria-label': 'controlled' }}
+                                />
+
+                                <Typography
+                                  variant="body2"
+                                  component="div"
                                   sx={{
-                                    display: 'block',
-                                    p: 0,
-                                    '& + li': {
-                                      mt: 1.5
-                                    }
+                                    flex: '1 1 auto',
+                                    fontWeight: 700,
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis'
                                   }}>
-                                  <ListItemText
+                                  {sampleSite.name}
+                                </Typography>
+                              </Stack>
+                            </AccordionSummary>
+                            <IconButton
+                              sx={{ position: 'absolute', right: '24px' }}
+                              edge="end"
+                              onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
+                                handleSampleSiteMenuClick(event, sampleSite.survey_sample_site_id)
+                              }
+                              aria-label="sample-site-settings">
+                              <Icon path={mdiDotsVertical} size={1}></Icon>
+                            </IconButton>
+                          </Box>
+                          <AccordionDetails
+                            sx={{
+                              pt: 0,
+                              px: 2
+                            }}>
+                            <List
+                              disablePadding
+                              sx={{
+                                '& .MuiListItemText-primary': {
+                                  typography: 'body2'
+                                }
+                              }}>
+                              {sampleSite.sample_methods?.map((sampleMethod) => {
+                                return (
+                                  <ListItem
+                                    disableGutters
+                                    key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}`}
                                     sx={{
-                                      px: 2,
-                                      py: 1,
-                                      background: grey[100]
-                                    }}
-                                    title="Sampling Method"
-                                    primary={getCodesName(
-                                      codesContext.codesDataLoader.data,
-                                      'sample_methods',
-                                      sampleMethod.method_lookup_id
-                                    )}
-                                  />
-                                  <List disablePadding>
-                                    {sampleMethod.sample_periods?.map((samplePeriod) => {
-                                      return (
-                                        <ListItem
-                                          dense
-                                          divider
-                                          disableGutters
-                                          sx={{
-                                            px: 1.5,
-                                            color: 'text.secondary'
-                                          }}
-                                          title="Sampling Period"
-                                          key={`${samplePeriod.survey_sample_method_id}-${samplePeriod.survey_sample_period_id}`}>
-                                          <ListItemIcon sx={{ minWidth: '32px' }} color="inherit">
-                                            <Icon path={mdiCalendarRange} size={0.75}></Icon>
-                                          </ListItemIcon>
-                                          <ListItemText>
-                                            <Typography variant="body2" component="div" color="inherit">
-                                              {`${samplePeriod.start_date} ${samplePeriod.start_time ?? ''} - ${
-                                                samplePeriod.end_date
-                                              } ${samplePeriod.end_time ?? ''}`}
-                                            </Typography>
-                                          </ListItemText>
-                                        </ListItem>
-                                      );
-                                    })}
-                                  </List>
-                                </ListItem>
-                              );
-                            })}
-                          </List>
-                        </AccordionDetails>
-                      </Accordion>
-                    );
-                  })}
-                </Box>
-              </Stack>
-            )}
+                                      display: 'block',
+                                      p: 0,
+                                      '& + li': {
+                                        mt: 1.5
+                                      }
+                                    }}>
+                                    <ListItemText
+                                      sx={{
+                                        px: 2,
+                                        py: 1,
+                                        background: grey[100]
+                                      }}
+                                      title="Sampling Method"
+                                      primary={getCodesName(
+                                        codesContext.codesDataLoader.data,
+                                        'sample_methods',
+                                        sampleMethod.method_lookup_id
+                                      )}
+                                    />
+                                    <List disablePadding>
+                                      {sampleMethod.sample_periods?.map((samplePeriod) => {
+                                        return (
+                                          <ListItem
+                                            dense
+                                            divider
+                                            disableGutters
+                                            sx={{
+                                              px: 1.5,
+                                              color: 'text.secondary'
+                                            }}
+                                            title="Sampling Period"
+                                            key={`${samplePeriod.survey_sample_method_id}-${samplePeriod.survey_sample_period_id}`}>
+                                            <ListItemIcon sx={{ minWidth: '32px' }} color="inherit">
+                                              <Icon path={mdiCalendarRange} size={0.75}></Icon>
+                                            </ListItemIcon>
+                                            <ListItemText>
+                                              <Typography variant="body2" component="div" color="inherit">
+                                                {`${samplePeriod.start_date} ${samplePeriod.start_time ?? ''} - ${
+                                                  samplePeriod.end_date
+                                                } ${samplePeriod.end_time ?? ''}`}
+                                              </Typography>
+                                            </ListItemText>
+                                          </ListItem>
+                                        );
+                                      })}
+                                    </List>
+                                  </ListItem>
+                                );
+                              })}
+                            </List>
+                          </AccordionDetails>
+                        </Accordion>
+                      );
+                    })}
+                  </Box>
+                </Stack>
+              )}
+            </Box>
           </Box>
-        </Box>
+        ) : null}
       </Paper>
     </>
   );

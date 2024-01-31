@@ -208,9 +208,8 @@ const SamplingSitePage = () => {
                   <Divider className={classes.sectionDivider} />
 
                   <HorizontalSplitFormComponent
-                    title="Sampling Site Groupings"
-                    summary="Group similar sites by assigning them to groups or strata, 
-                    which you can add when creating or editing your Survey."
+                    title="Site Groups"
+                    summary="Enter the stratum or group to which this site belongs."
                     component={<SamplingSiteGroupingsForm />}></HorizontalSplitFormComponent>
 
                   <Divider className={classes.sectionDivider} />

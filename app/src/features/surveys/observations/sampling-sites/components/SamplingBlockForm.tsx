@@ -66,7 +66,7 @@ const SamplingBlockForm: React.FC = () => {
           mb: 3,
           maxWidth: '92ch'
         }}>
-        All sampling sites being imported together will be assigned to the selected block
+        All sampling sites being imported together will be assigned to the selected groups
       </Typography>
       <Autocomplete
         id={'autocomplete-sample-block-form'}
