@@ -54,7 +54,7 @@ const SamplingBlockForm: React.FC = () => {
     setFieldValue(`blocks`, filteredBlocks);
   };
 
-  console.log(searchText)
+  console.log(searchText);
 
   return (
     <>
@@ -75,7 +75,7 @@ const SamplingBlockForm: React.FC = () => {
         noOptionsText="No records found"
         options={options}
         filterOptions={(options, state) => {
-          console.log(state)
+          console.log(state);
           const searchFilter = createFilterOptions<IGetSurveyBlock>({ ignoreCase: true });
           const unselectedOptions = options.filter((item) =>
             selectedBlocks.every((existing) => existing.survey_block_id !== item.survey_block_id)
@@ -99,12 +99,12 @@ const SamplingBlockForm: React.FC = () => {
         onChange={(_, option) => {
           if (option) {
             handleAddBlock(option);
-            setSearchText('')
+            setSearchText('');
           }
         }}
         onClose={(value, reason) => {
-          console.log(value, reason)
-          setSearchText('')
+          console.log(value, reason);
+          setSearchText('');
         }}
         renderInput={(params) => (
           <TextField

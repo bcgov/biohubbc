@@ -7,7 +7,6 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { debounce } from 'lodash-es';
 import React, { useMemo } from 'react';
 
-
 export interface ISpeciesForm {
   species: {
     focal_species: number[];
@@ -19,7 +18,7 @@ export const SpeciesInitialValues: ISpeciesForm = {
   species: {
     focal_species: [],
     ancillary_species: []
-  },
+  }
 };
 
 export interface ISpeciesFormProps {
@@ -32,7 +31,7 @@ export interface ISpeciesFormProps {
  * @return {*}
  */
 const SpeciesForm: React.FC<ISpeciesFormProps> = (props) => {
-//   const formikProps = useFormikContext<ISpeciesForm>();
+  //   const formikProps = useFormikContext<ISpeciesForm>();
 
   const biohubApi = useBiohubApi();
 
@@ -67,35 +66,33 @@ const SpeciesForm: React.FC<ISpeciesFormProps> = (props) => {
   );
 
   return (
-
-      <Box component="fieldset">
-        <Typography component="legend" variant="h5">
-          Species
-        </Typography>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <MultiAutocompleteFieldVariableSize
-              id="species.focal_species"
-              label="Focal Species"
-              required={true}
-              type="api-search"
-              getInitList={handleGetInitList}
-              search={handleSearch}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <MultiAutocompleteFieldVariableSize
-              id="species.ancillary_species"
-              label="Ancillary Species"
-              required={false}
-              type="api-search"
-              getInitList={handleGetInitList}
-              search={handleSearch}
-            />
-          </Grid>
+    <Box component="fieldset">
+      <Typography component="legend" variant="h5">
+        Species
+      </Typography>
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <MultiAutocompleteFieldVariableSize
+            id="species.focal_species"
+            label="Focal Species"
+            required={true}
+            type="api-search"
+            getInitList={handleGetInitList}
+            search={handleSearch}
+          />
         </Grid>
-      </Box>
-
+        <Grid item xs={12}>
+          <MultiAutocompleteFieldVariableSize
+            id="species.ancillary_species"
+            label="Ancillary Species"
+            required={false}
+            type="api-search"
+            getInitList={handleGetInitList}
+            search={handleSearch}
+          />
+        </Grid>
+      </Grid>
+    </Box>
   );
 };
 

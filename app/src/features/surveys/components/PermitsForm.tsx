@@ -71,7 +71,6 @@ export interface IPermitsFormProps {
  * @return {*}
  */
 const PermitsForm: React.FC<IPermitsFormProps> = () => {
-
   return (
     <Box component="fieldset">
       <Typography component="legend" variant="h5">

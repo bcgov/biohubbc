@@ -109,33 +109,33 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         </Grid>
       </Grid>
 
-        <Box component="fieldset" mt={5}>
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <Typography component="legend" variant="h5">
-                Timeline
-              </Typography>
-              <StartEndDateFields
-                formikProps={formikProps}
-                startName="survey_details.start_date"
-                endName="survey_details.end_date"
-                startRequired={true}
-                endRequired={false}
-                startDateHelperText={`Start Date cannot precede ${getFormattedDate(
+      <Box component="fieldset" mt={5}>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <Typography component="legend" variant="h5">
+              Timeline
+            </Typography>
+            <StartEndDateFields
+              formikProps={formikProps}
+              startName="survey_details.start_date"
+              endName="survey_details.end_date"
+              startRequired={true}
+              endRequired={false}
+              startDateHelperText={`Start Date cannot precede ${getFormattedDate(
+                DATE_FORMAT.ShortMediumDateFormat,
+                props.projectStartDate
+              )}`}
+              endDateHelperText={
+                props.projectEndDate &&
+                `End Date cannot come after the Project End Date ${getFormattedDate(
                   DATE_FORMAT.ShortMediumDateFormat,
-                  props.projectStartDate
-                )}`}
-                endDateHelperText={
-                  props.projectEndDate &&
-                  `End Date cannot come after the Project End Date ${getFormattedDate(
-                    DATE_FORMAT.ShortMediumDateFormat,
-                    props.projectEndDate
-                  )}`
-                }
-              />
-            </Grid>
+                  props.projectEndDate
+                )}`
+              }
+            />
           </Grid>
-        </Box>
+        </Grid>
+      </Box>
 
       <Box component="fieldset" mt={5}>
         <Typography component="legend" variant="h5">

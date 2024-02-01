@@ -18,8 +18,7 @@ const StudyAreasMap = () => {
 
   const surveys = projectContext.surveysListDataLoader?.data || []; //  ?.map((item) => item.surveyData.locations) || [];
 
-  console.log(surveys)
-
+  console.log(surveys);
 
   const { studyAreaFeatures, surveysLocations } = useMemo(() => {
     const studyAreaFeatures = surveys.flatMap((item) =>
@@ -34,7 +33,7 @@ const StudyAreasMap = () => {
     return { studyAreaFeatures, surveysLocations };
   }, [projectContext.surveysListDataLoader.data]);
 
-  console.log(surveysLocations)
+  console.log(surveysLocations);
 
   const getDefaultMapBounds = useCallback((): LatLngBoundsExpression | undefined => {
     return calculateUpdatedMapBounds([...studyAreaFeatures]);
@@ -90,7 +89,10 @@ const StudyAreasMap = () => {
                 fillColor: staticLayerColors[Number(feature.survey_id) || index][400]
               },
               layerName: String(feature.survey_id),
-              features: feature.geoJSON.map((item) => ({ geoJSON: item, tooltip: <span>Survey {feature.survey_id}</span> }))
+              features: feature.geoJSON.map((item) => ({
+                geoJSON: item,
+                tooltip: <span>Survey {feature.survey_id}</span>
+              }))
             }))}
           />
         </LayersControl>

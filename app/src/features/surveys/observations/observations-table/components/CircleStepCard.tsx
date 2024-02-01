@@ -14,7 +14,7 @@ const CircleStepCard = (props: ICircleStepCard) => {
         <Box
           width="2.2rem"
           height="2.2rem"
-          bgcolor='text.secondary'
+          bgcolor="text.secondary"
           borderRadius="50%"
           textAlign="center"
           alignItems="center"

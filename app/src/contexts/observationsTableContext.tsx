@@ -146,7 +146,7 @@ export const ObservationsTableContext = createContext<IObservationsTableContext>
   isLoading: false,
   validationModel: {},
   observationCount: 0,
-  setObservationCount: () => undefined,
+  setObservationCount: () => undefined
 });
 
 export const ObservationsTableContextProvider = (props: PropsWithChildren<Record<never, any>>) => {

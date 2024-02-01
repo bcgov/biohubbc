@@ -132,7 +132,6 @@ export interface SurveyViewObject {
   blocks: IGetSurveyBlock[];
 }
 
-
 export interface SurveyBasicFieldsObject {
   survey_id: number;
   name: string;
@@ -140,7 +139,7 @@ export interface SurveyBasicFieldsObject {
   end_date: string | null;
   focal_species: number[];
   focal_species_names: string[];
-  locations: IGetSurveyLocation[]
+  locations: IGetSurveyLocation[];
 }
 
 export interface SurveyUpdateObject extends ISurveyLocationForm {

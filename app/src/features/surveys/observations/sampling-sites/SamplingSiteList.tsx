@@ -323,7 +323,7 @@ const SamplingSiteList: React.FC<ISamplingSiteCollapseProps> = (props) => {
                       ml: 1
                     }}
                     aria-label="hide sampling sites"
-                    title='Hide sampling sites'
+                    title="Hide sampling sites"
                     onClick={() => {
                       props.setIsCollapsed(true);
                     }}>
@@ -333,7 +333,7 @@ const SamplingSiteList: React.FC<ISamplingSiteCollapseProps> = (props) => {
               ) : (
                 <IconButton
                   aria-label="show sampling sites"
-                  title='Show sampling sites'
+                  title="Show sampling sites"
                   onClick={() => {
                     props.setIsCollapsed(false);
                   }}>

@@ -36,6 +36,7 @@ import GeneralInformationForm, {
   GeneralInformationInitialValues,
   GeneralInformationYupSchema
 } from './components/GeneralInformationForm';
+import PermitsForm from './components/PermitsForm';
 import ProprietaryDataForm, {
   ProprietaryDataInitialValues,
   ProprietaryDataYupSchema
@@ -45,6 +46,7 @@ import PurposeAndMethodologyForm, {
   PurposeAndMethodologyYupSchema
 } from './components/PurposeAndMethodologyForm';
 import SamplingStrategyForm from './components/SamplingStrategyForm';
+import SpeciesForm from './components/SpeciesForm';
 import StudyAreaForm, { SurveyLocationInitialValues, SurveyLocationYupSchema } from './components/StudyAreaForm';
 import { SurveyBlockInitialValues } from './components/SurveyBlockSection';
 import SurveyFundingSourceForm, {
@@ -54,8 +56,6 @@ import SurveyFundingSourceForm, {
 import { SurveySiteSelectionInitialValues, SurveySiteSelectionYupSchema } from './components/SurveySiteSelectionForm';
 import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from './components/SurveyUserForm';
 import SurveyBaseHeader from './view/components/SurveyBaseHeader';
-import SpeciesForm from './components/SpeciesForm';
-import PermitsForm from './components/PermitsForm';
 
 /**
  * Page to create a survey.
@@ -303,7 +303,7 @@ const CreateSurveyPage = () => {
                       />
                     }></HorizontalSplitFormComponent>
 
-                    <HorizontalSplitFormComponent
+                  <HorizontalSplitFormComponent
                     title="Species"
                     summary=""
                     component={

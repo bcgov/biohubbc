@@ -26,8 +26,10 @@ import GeneralInformationForm, {
   GeneralInformationInitialValues,
   GeneralInformationYupSchema
 } from '../components/GeneralInformationForm';
+import PermitsForm from '../components/PermitsForm';
 import ProprietaryDataForm, { ProprietaryDataYupSchema } from '../components/ProprietaryDataForm';
 import PurposeAndMethodologyForm, { PurposeAndMethodologyYupSchema } from '../components/PurposeAndMethodologyForm';
+import SpeciesForm from '../components/SpeciesForm';
 import StudyAreaForm, { SurveyLocationInitialValues, SurveyLocationYupSchema } from '../components/StudyAreaForm';
 import { SurveyBlockInitialValues } from '../components/SurveyBlockSection';
 import SurveyFundingSourceForm, {
@@ -36,8 +38,6 @@ import SurveyFundingSourceForm, {
 } from '../components/SurveyFundingSourceForm';
 import { SurveySiteSelectionInitialValues, SurveySiteSelectionYupSchema } from '../components/SurveySiteSelectionForm';
 import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from '../components/SurveyUserForm';
-import SpeciesForm from '../components/SpeciesForm';
-import PermitsForm from '../components/PermitsForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -245,18 +245,17 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
           <Divider className={classes.sectionDivider} />
 
           <HorizontalSplitFormComponent
-                    title="Permits"
-                    summary="Enter permits used in this work"
-                    component={
-                      <PermitsForm
-                        type={
-                          props?.codes.type?.map((item) => {
-                            return { value: item.id, label: item.name };
-                          }) || []
-                        }
-                      />
-                    }></HorizontalSplitFormComponent>
-
+            title="Permits"
+            summary="Enter permits used in this work"
+            component={
+              <PermitsForm
+                type={
+                  props?.codes.type?.map((item) => {
+                    return { value: item.id, label: item.name };
+                  }) || []
+                }
+              />
+            }></HorizontalSplitFormComponent>
 
           <Divider className={classes.sectionDivider} />
 

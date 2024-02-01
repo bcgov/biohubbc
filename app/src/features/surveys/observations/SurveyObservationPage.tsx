@@ -10,10 +10,9 @@ import ObservationsTableContainer from './observations-table/ObservationsTableCo
 import SamplingSiteList from './sampling-sites/SamplingSiteList';
 import SurveyObservationHeader from './SurveyObservationHeader';
 
-
 export const SurveyObservationPage = () => {
   const surveyContext = useContext(SurveyContext);
-  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -35,8 +34,8 @@ export const SurveyObservationPage = () => {
           p: 1
         }}>
         {/* Sampling Site List */}
-        <Box flex="0 0 auto" width={!isCollapsed ? "400px" : undefined}>
-          <SamplingSiteList setIsCollapsed={setIsCollapsed} isCollapsed={isCollapsed}/>
+        <Box flex="0 0 auto" width={!isCollapsed ? '400px' : undefined}>
+          <SamplingSiteList setIsCollapsed={setIsCollapsed} isCollapsed={isCollapsed} />
         </Box>
 
         {/* Observations Component */}
