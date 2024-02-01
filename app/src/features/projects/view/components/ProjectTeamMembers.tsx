@@ -11,6 +11,8 @@ import { useContext } from 'react';
 export interface IProjectParticipantsRoles {
   display_name: string;
   roles: string[];
+  first_initial: string;
+  second_initial: string;
 }
 
 /**
@@ -35,7 +37,12 @@ const ProjectTeamMembers = () => {
 
   const projectTeamMembers: IProjectParticipantsRoles[] = projectData.participants
     .map((member) => {
-      return { display_name: member.display_name, roles: member.project_role_names };
+      return {
+        display_name: member.display_name,
+        roles: member.project_role_names,
+        first_initial: member.display_name.split(',')[1][1],
+        second_initial: member.display_name.split(',')[0][0]
+      };
     })
     .sort((a, b) => {
       const roleA = a.roles[0] || '';
@@ -43,16 +50,45 @@ const ProjectTeamMembers = () => {
       return roleOrder[roleA] - roleOrder[roleB];
     });
 
+  function getRandomHexColor(): string {
+    // Generate a random color component and convert it to a two-digit hex value
+    const randomComponent = () =>
+      Math.floor(Math.random() * 130 + 120)
+        .toString(16)
+        .padStart(2, '0');
+
+    // Concatenate three random color components to form a hex color
+    const randomColor = `#${randomComponent()}${randomComponent()}${randomComponent()}`;
+
+    return randomColor;
+  }
+
   return (
     <Box component="dl" my={0}>
       <Stack spacing={1}>
         {projectTeamMembers.map((member) => (
           <Grid
             container
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
             spacing={0}
-            key={member.display_name}
-            sx={{ justifyContent: 'space-between', display: 'flex' }}>
-            <Grid item sm={6}>
+            key={member.display_name}>
+            <Grid item sm={8} display="flex" alignItems="center">
+              <Box
+                width="1.75rem"
+                height="1.75rem"
+                bgcolor={getRandomHexColor()}
+                borderRadius="50%"
+                mr={1}
+                display="flex"
+                alignItems="center"
+                justifyContent="center">
+                <Typography color="#fff" fontWeight="bold" fontSize="0.7rem">
+                  {member.first_initial}
+                  {member.second_initial}
+                </Typography>
+              </Box>
               <Typography component="dd">{member.display_name}</Typography>
             </Grid>
             <Grid item sm={4}>

@@ -642,8 +642,11 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
               borderColor: 'primary.main'
             }
           },
-          '& .MuiDataGrid-virtualScrollerContent, .MuiDataGrid-overlay': {
+          '& .MuiDataGrid-virtualScrollerContent, .MuiDataGrid-overlay, .MuiDataGrid-virtualScroller': {
             background: grey[100]
+          },
+          '& .MuiDataGrid-overlayWrapper': {
+           position: 'static'
           }
         }}
       />
