@@ -28,6 +28,7 @@ import { has } from 'lodash-es';
 import { useCallback, useContext, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router';
 import { getCodesName, getFormattedDate } from 'utils/Utils';
+import { GettingStarted } from './components/GettingStarted';
 
 type ISampleSiteOption = {
   survey_sample_site_id: number;
@@ -542,8 +543,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         onRowEditStop={(_params, event) => {
           event.defaultMuiPrevented = true;
         }}
-        localeText={{
-          noRowsLabel: 'No Records'
+        slots={{
+          noRowsOverlay: () => <GettingStarted />
         }}
         onRowSelectionModelChange={observationsTableContext.onRowSelectionModelChange}
         rowSelectionModel={observationsTableContext.rowSelectionModel}
