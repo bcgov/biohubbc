@@ -37,7 +37,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
         const searchTerms = inputValue.split(' ').filter(Boolean);
         const response = await biohubApi.itis.itisSearch(searchTerms);
 
-        callback(response || []);
+        callback(response);
       }, 500),
     [biohubApi.itis]
   );
@@ -48,9 +48,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
       handleSearch.cancel();
     } else {
       handleSearch(inputValue, (newOptions) => {
-        if (newOptions.length) {
-          setOptions(newOptions);
-        }
+        setOptions(newOptions);
       });
     }
   };
