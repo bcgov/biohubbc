@@ -32,6 +32,7 @@ import {
 import { getMockDBConnection } from '../__mocks__/db';
 import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
+import { PlatformService } from './platform-service';
 import { SiteSelectionStrategyService } from './site-selection-strategy-service';
 import { SurveyBlockService } from './survey-block-service';
 import { SurveyLocationService } from './survey-location-service';
@@ -378,19 +379,15 @@ describe('SurveyService', () => {
       const data = ({ id: 1 } as unknown) as IGetSpeciesData;
 
       const repoStub = sinon.stub(SurveyRepository.prototype, 'getSpeciesData').resolves([data]);
+      const getTaxonomyFromBiohubStub = sinon.stub(PlatformService.prototype, 'getTaxonomyFromBiohub').resolves([]);
 
       const response = await service.getSpeciesData(1);
 
       expect(repoStub).to.be.calledOnce;
+      expect(getTaxonomyFromBiohubStub).to.be.calledTwice;
       expect(response).to.eql({
         ...new GetFocalSpeciesData([]),
-        ...new GetAncillarySpeciesData([
-          {
-            id: '6',
-            label: 'Species 6',
-            scientificName: 'Scientific Name 6'
-          }
-        ])
+        ...new GetAncillarySpeciesData([])
       });
     });
   });
