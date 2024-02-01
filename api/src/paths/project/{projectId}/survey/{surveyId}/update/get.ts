@@ -146,7 +146,7 @@ GET.apiDoc = {
                           required: ['tsn', 'label', 'scientificName'],
                           properties: {
                             tsn: {
-                              type: 'string'
+                              type: 'number'
                             },
                             label: {
                               type: 'string'
@@ -176,7 +176,7 @@ GET.apiDoc = {
                           required: ['tsn', 'label', 'scientificName'],
                           properties: {
                             tsn: {
-                              type: 'string'
+                              type: 'number'
                             },
                             label: {
                               type: 'string'
