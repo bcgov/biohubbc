@@ -1,10 +1,8 @@
 import { AggregationsAggregate, SearchResponse } from '@elastic/elasticsearch/lib/api/types';
-import axios from 'axios';
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { ESService } from './es-service';
 import { ITaxonomySource, TaxonomyService } from './taxonomy-service';
 
 chai.use(sinonChai);
@@ -220,105 +218,6 @@ describe('TaxonomyService', () => {
       taxonomyService.searchSpecies('search term');
 
       expect(elasticSearchStub).to.be.calledOnce;
-    });
-  });
-
-  describe('itisSearch', async () => {
-    it('should query itis', async () => {
-      const taxonomyService = new TaxonomyService();
-
-      const ItisSearchResponse = {
-        data: {
-          response: {
-            docs: [
-              {
-                tsn: '1',
-                commonNames: ['$animal'],
-                scientificName: 'name',
-                kingdom: 'kingdom',
-                parentTSN: '2',
-                updateDate: '2020-01-01',
-                usage: 'valid'
-              },
-              {
-                tsn: '2',
-                commonNames: ['$animal'],
-                scientificName: 'name',
-                kingdom: 'kingdom',
-                parentTSN: '3',
-                updateDate: '2020-01-01',
-                usage: 'valid'
-              },
-              {
-                tsn: '3',
-                commonNames: ['$animal'],
-                scientificName: 'name',
-                kingdom: 'kingdom',
-                parentTSN: '4',
-                updateDate: '2020-01-01',
-                usage: 'valid'
-              }
-            ]
-          }
-        }
-      };
-
-      const itisClientStub = sinon.stub(ESService.prototype, 'getItisSearchUrl').resolves('http://itis.test?test');
-      const itisSearchStub = sinon.stub(axios, 'get').resolves(ItisSearchResponse);
-
-      const response = await taxonomyService.itisSearch('search term');
-
-      expect(itisClientStub).to.be.calledOnce;
-      expect(itisSearchStub).to.be.calledOnce;
-      expect(response).to.eql([
-        {
-          id: '1',
-          label: 'animal',
-          scientificName: 'name'
-        },
-        {
-          id: '2',
-          label: 'animal',
-          scientificName: 'name'
-        },
-        {
-          id: '3',
-          label: 'animal',
-          scientificName: 'name'
-        }
-      ]);
-    });
-
-    it('should query itis and return []', async () => {
-      const taxonomyService = new TaxonomyService();
-
-      const ItisSearchResponse = {
-        data: {}
-      };
-
-      const itisClientStub = sinon.stub(ESService.prototype, 'getItisSearchUrl').resolves('http://itis.test?test');
-      const itisSearchStub = sinon.stub(axios, 'get').resolves(ItisSearchResponse);
-
-      const response = await taxonomyService.itisSearch('search term');
-
-      expect(itisClientStub).to.be.calledOnce;
-      expect(itisSearchStub).to.be.calledOnce;
-      expect(response).to.eql([]);
-    });
-
-    it('should error', async () => {
-      const taxonomyService = new TaxonomyService();
-
-      const itisClientStub = sinon.stub(ESService.prototype, 'getItisSearchUrl').resolves('http://itis.test?test');
-      const itisSearchStub = sinon.stub(axios, 'get').rejects(new Error('a test error'));
-
-      try {
-        await taxonomyService.itisSearch('search term');
-      } catch (error: any) {
-        expect(itisClientStub).to.be.calledOnce;
-        expect(itisSearchStub).to.be.calledOnce;
-        expect(error.message).to.eql('a test error');
-      }
     });
   });
 });

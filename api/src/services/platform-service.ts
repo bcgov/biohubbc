@@ -16,7 +16,6 @@ import { HistoryPublishService } from './history-publish-service';
 import { KeycloakService } from './keycloak-service';
 import { ObservationService } from './observation-service';
 import { SurveyService } from './survey-service';
-import { IItisSearchResult } from './taxonomy-service';
 
 const defaultLog = getLogger('services/platform-service');
 
@@ -41,6 +40,12 @@ export interface IArtifact {
    * The mime type, should be `application/zip` or similar.
    */
   mimeType: string;
+}
+
+export interface IItisSearchResult {
+  tsn: string;
+  label: string;
+  scientificName: string;
 }
 
 const getBackboneIntakeEnabled = () => process.env.BACKBONE_INTAKE_ENABLED === 'true' || false;

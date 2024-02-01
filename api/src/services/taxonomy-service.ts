@@ -25,12 +25,6 @@ export interface ITaxonomySource {
   parent_hierarchy: { id: number; level: string }[];
 }
 
-export interface IItisSearchResult {
-  tsn: string;
-  label: string;
-  scientificName: string;
-}
-
 export interface IEnrichedTaxonomyData {
   scientificName: string;
   englishName: string;
