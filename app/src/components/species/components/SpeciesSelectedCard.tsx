@@ -2,9 +2,9 @@ import { mdiClose } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, IconButton, Paper } from '@mui/material';
 import { grey } from '@mui/material/colors';
+import clsx from 'clsx';
 import { ISpeciesAutocompleteField } from 'components/species/components/SpeciesAutocompleteField';
 import SpeciesCard from './SpeciesCard';
-
 interface ISpeciesSelectedCardProps {
   index: number;
   species: ISpeciesAutocompleteField;
@@ -19,19 +19,13 @@ const SpeciesSelectedCard = (props: ISpeciesSelectedCardProps) => {
   return (
     <Box mt={1} className="speciesItemContainer">
       <Paper
-        variant="outlined"
-        className={error ? 'speciesItemError' : 'speciesItem'}
+        className={clsx({ '--error': error })}
         sx={{
           background: grey[100],
-          '&.speciesItemError': {
+          '&.--error': {
             borderColor: 'error.main',
             '& .MuiOutlinedInput-notchedOutline': {
               borderColor: 'error.main'
-            },
-            '& + p': {
-              pt: 0.75,
-              pb: 0.75,
-              pl: 2
             }
           }
         }}>
@@ -41,11 +35,11 @@ const SpeciesSelectedCard = (props: ISpeciesSelectedCardProps) => {
           </Box>
           <Box flex="0 0 auto">
             <IconButton
-              data-testid={`remove-species-role-button-${index}`}
+              data-testid={`remove-species-button-${index}`}
               sx={{
                 ml: 2
               }}
-              aria-label="remove species from project team"
+              aria-label="remove species"
               onClick={() => handleRemove(species.tsn)}>
               <Icon path={mdiClose} size={1}></Icon>
             </IconButton>

@@ -128,7 +128,7 @@ GET.apiDoc = {
                         nullable: true,
                         type: 'array',
                         items: {
-                          type: 'number'
+                          type: 'integer'
                         }
                       },
                       ancillary_species_names: {
@@ -146,7 +146,7 @@ GET.apiDoc = {
                           required: ['tsn', 'label', 'scientificName'],
                           properties: {
                             tsn: {
-                              type: 'number'
+                              type: 'integer'
                             },
                             label: {
                               type: 'string'
@@ -160,7 +160,7 @@ GET.apiDoc = {
                       focal_species: {
                         type: 'array',
                         items: {
-                          type: 'number'
+                          type: 'integer'
                         }
                       },
                       focal_species_names: {
@@ -176,7 +176,7 @@ GET.apiDoc = {
                           required: ['tsn', 'label', 'scientificName'],
                           properties: {
                             tsn: {
-                              type: 'number'
+                              type: 'integer'
                             },
                             label: {
                               type: 'string'

@@ -69,7 +69,7 @@ GET.apiDoc = {
  */
 export function searchSpecies(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'getSearchResults', message: 'request params', req_params: req.query.terms });
+    defaultLog.debug({ label: 'searchSpecies', message: 'request params', req_params: req.query.terms });
 
     const term = String(req.query.terms) || '';
 
@@ -82,7 +82,7 @@ export function searchSpecies(): RequestHandler {
 
       res.status(200).json({ searchResponse: response });
     } catch (error) {
-      defaultLog.error({ label: 'getSearchResults', message: 'error', error });
+      defaultLog.error({ label: 'searchSpecies', message: 'error', error });
       throw error;
     }
   };

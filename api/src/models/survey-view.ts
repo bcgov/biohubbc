@@ -73,6 +73,7 @@ export class GetSurveyFundingSourceData {
 }
 
 export class GetFocalSpeciesData {
+  //TODO: combine these into a single array of objects, will need to update the API to return the same format and fix all the places that use this data
   focal_species: number[];
   focal_species_names: string[];
   focal_species_object: { tsn: number; label: string; scientificName: string }[];
@@ -92,6 +93,7 @@ export class GetFocalSpeciesData {
 }
 
 export class GetAncillarySpeciesData {
+  //TODO: same as above
   ancillary_species: number[];
   ancillary_species_names: string[];
   ancillary_species_object: { tsn: number; label: string; scientificName: string }[];
