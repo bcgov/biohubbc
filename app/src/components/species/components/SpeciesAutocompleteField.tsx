@@ -34,8 +34,8 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
   const handleSearch = useMemo(
     () =>
       debounce(async (inputValue: string, callback: (searchedValues: ISpeciesAutocompleteField[]) => void) => {
-        const response = await biohubApi.itis.itisSearch(inputValue);
-        console.log('response', response);
+        const searchTerms = inputValue.split(' ').filter(Boolean);
+        const response = await biohubApi.itis.itisSearch(searchTerms);
 
         callback(response || []);
       }, 500),

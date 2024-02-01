@@ -1,5 +1,6 @@
 import useAxios from 'hooks/api/useAxios';
 import { useConfigContext } from 'hooks/useContext';
+import qs from 'qs';
 
 export interface IItisSearchResponse {
   commonNames: string[];
@@ -23,17 +24,17 @@ const useItisApi = () => {
   const apiAxios = useAxios(config.BACKBONE_API_HOST);
 
   /**
-   * Returns the ITIS search species Query.
+   * Search for taxon records by search terms.
    *
-   * @param {*} searchTerm
-   * @return {*}  {(Promise<IItisSearchResult[] | undefined>)}
-   * @memberof TaxonomyService
+   * @param {string[]} searchTerms
+   * @return {*}  {(Promise<IItisSearchResult[]>)}
    */
-  const itisSearch = async (searchTerm: string): Promise<IItisSearchResult[] | undefined> => {
+  const itisSearch = async (searchTerms: string[]): Promise<IItisSearchResult[]> => {
     try {
       const { data } = await apiAxios.get<{ searchResponse: IItisSearchResult[] }>(config.BIOHUB_TAXON_PATH, {
-        params: {
-          terms: searchTerm
+        params: { terms: searchTerms },
+        paramsSerializer: (params) => {
+          return qs.stringify(params, { arrayFormat: 'repeat' });
         }
       });
 
@@ -43,7 +44,7 @@ const useItisApi = () => {
 
       return data.searchResponse;
     } catch (error) {
-      new Error('Error searching ITIS.');
+      throw new Error('Failed to fetch Taxon records.');
     }
   };
 

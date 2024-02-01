@@ -65,7 +65,6 @@ const ManualTelemetryComponent = () => {
           });
         })
         .catch((error) => {
-          console.log(error);
           showSnackBar({
             snackbarMessage: (
               <Typography variant="body2" component="div">
