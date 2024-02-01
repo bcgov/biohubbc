@@ -12,6 +12,7 @@ import {
   GetSurveyPurposeAndMethodologyData
 } from '../models/survey-view';
 import { getLogger } from '../utils/logger';
+import { GeoJSONFeatureZodSchema } from '../zod-schema/geoJsonZodSchema';
 import { BaseRepository } from './base-repository';
 
 export interface IGetSpeciesData {
@@ -119,13 +120,20 @@ export type StakeholderPartnershipRecord = z.infer<typeof StakeholderPartnership
 
 export type IndigenousPartnershipRecord = z.infer<typeof IndigenousPartnershipRecord>;
 
+export const locationSchema = z.object({
+  name: z.string(),
+  description: z.string(),
+  geojson: z.array(GeoJSONFeatureZodSchema),
+});
+
 export const SurveyBasicFields = z.object({
   survey_id: z.number(),
   name: z.string(),
   start_date: z.string(),
   end_date: z.string().nullable(),
   focal_species: z.array(z.number()),
-  focal_species_names: z.array(z.string())
+  focal_species_names: z.array(z.string()),
+  locations: z.array(locationSchema)
 });
 
 export type SurveyBasicFields = z.infer<typeof SurveyBasicFields>;
@@ -584,6 +592,32 @@ export class SurveyRepository extends BaseRepository {
   async getSurveysBasicFieldsByProjectId(projectId: number): Promise<Omit<SurveyBasicFields, 'focal_species_names'>[]> {
     const knex = getKnex();
 
+    // const queryBuilder = knex
+    //   .queryBuilder()
+    //   .select(
+    //     'survey.survey_id',
+    //     'survey.name',
+    //     'survey.start_date',
+    //     'survey.end_date',
+    //     knex.raw('survey_location.name AS location_name'),
+    //     'survey_location.description',
+    //     'survey_location.geojson',
+    //     knex.raw('array_remove(array_agg(study_species.wldtaxonomic_units_id), NULL) AS focal_species')
+    //   )
+    //   .from('project')
+    //   .leftJoin('survey', 'survey.project_id', 'project.project_id')
+    //   .leftJoin('study_species', 'study_species.survey_id', 'survey.survey_id')
+    //   .leftJoin('survey_location', 'survey_location.survey_id', 'survey.survey_id')
+    //   .where('project.project_id', projectId)
+    //   .where('study_species.is_focal', true)
+    //   .groupBy('survey.survey_id')
+    //   .groupBy('survey.name')
+    //   .groupBy('survey.start_date')
+    //   .groupBy('survey.end_date')
+    //   .groupBy('survey_location.name')
+    //   .groupBy('survey_location.description')
+    //   .groupBy('survey_location.geojson');
+
     const queryBuilder = knex
       .queryBuilder()
       .select(
@@ -591,11 +625,15 @@ export class SurveyRepository extends BaseRepository {
         'survey.name',
         'survey.start_date',
         'survey.end_date',
+        knex.raw(
+          "json_agg(json_build_object('name', survey_location.name, 'description', survey_location.description, 'geojson', survey_location.geojson)) AS locations"
+        ),
         knex.raw('array_remove(array_agg(study_species.wldtaxonomic_units_id), NULL) AS focal_species')
       )
       .from('project')
       .leftJoin('survey', 'survey.project_id', 'project.project_id')
       .leftJoin('study_species', 'study_species.survey_id', 'survey.survey_id')
+      .leftJoin('survey_location', 'survey_location.survey_id', 'survey.survey_id')
       .where('project.project_id', projectId)
       .where('study_species.is_focal', true)
       .groupBy('survey.survey_id')

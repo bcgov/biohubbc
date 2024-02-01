@@ -136,7 +136,8 @@ export const getSurveyForListResponse: IGetSurveyForListResponse[] = [
       start_date: '2021-04-09 11:53:53',
       end_date: '2021-05-09 11:53:53',
       focal_species: [1],
-      focal_species_names: ['species 1']
+      focal_species_names: ['species 1'],
+      locations: []
     },
     surveySupplementaryData: {
       publishStatus: PublishStatus.NO_DATA
@@ -149,7 +150,8 @@ export const getSurveyForListResponse: IGetSurveyForListResponse[] = [
       start_date: '2021-04-09 11:53:53',
       end_date: '2021-06-10 11:53:53',
       focal_species: [3],
-      focal_species_names: ['species 3']
+      focal_species_names: ['species 3'],
+      locations: []
     },
     surveySupplementaryData: {
       publishStatus: PublishStatus.NO_DATA

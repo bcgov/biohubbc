@@ -1,15 +1,10 @@
 import { Theme } from '@mui/material';
-import Chip from '@mui/material/Chip';
 import { grey } from '@mui/material/colors';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import { DataGrid, GridColDef, GridOverlay } from '@mui/x-data-grid';
-import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
-import { SystemRoleGuard } from 'components/security/Guards';
-import { PublishStatus } from 'constants/attachments';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { SYSTEM_ROLE } from 'constants/roles';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetDraftsListResponse } from 'interfaces/useDraftApi.interface';
 import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
@@ -59,7 +54,6 @@ interface IProjectsListTableEntry {
   id: number;
   isDraft: boolean;
   name: string;
-  status?: PublishStatus;
   type?: string;
   startDate?: string;
   endDate?: string;
@@ -119,27 +113,6 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
       minWidth: 150,
       valueGetter: ({ value }) => (value ? new Date(value) : undefined),
       valueFormatter: ({ value }) => (value ? getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, value) : undefined)
-    },
-    {
-      field: 'status',
-      headerName: 'Status',
-      minWidth: 150,
-      renderCell: (params) => {
-        if (params.row.isDraft) {
-          return <Chip label={'Draft'} />;
-        }
-
-        if (!params.row.status) {
-          return <></>;
-        }
-
-        //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-        return (
-          <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-            <SubmitStatusChip status={params.row.status} />
-          </SystemRoleGuard>
-        );
-      }
     }
   ];
 
@@ -166,7 +139,6 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
         ...props.projects.map((project: IGetProjectsListResponse) => ({
           id: project.projectData.id,
           name: project.projectData.name,
-          status: project.projectSupplementaryData.publishStatus,
           program: getProjectPrograms(project),
           startDate: project.projectData.start_date,
           endDate: project.projectData.end_date,

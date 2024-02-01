@@ -16,15 +16,15 @@ const GettingStarted = () => {
     },
     {
       title: 'Add species observations',
-      description: `After adding sampling sites, you can add species observations manually or by uploading a
-      file. For manual imports, click ADD RECORD in the top right, enter your observations, then SAVE. For file imports, upload a .csv or .xlsx\n
-      file with column names matching what you see above.`,
+      description: `After adding sampling sites, add species observations manually or by uploading a
+      file. For manual imports, click ADD RECORD, enter your observations, then SAVE. For file imports, upload a .csv or .xlsx\n
+      file with column names matching the names above.`,
       resources: <a href={filePath}>Download an example species observations file</a>
     }
   ];
 
   return (
-    <Box sx={{ opacity: 0.5 }} p={2} overflow='auto'>
+    <Box sx={{ opacity: 0.5 }} mt={5}>
       <Grid container sx={gridContainerSx}>
         <Grid item xs={12} sm={10} lg={10} xl={8} sx={gridItemSx}>
           <Box flex="1">

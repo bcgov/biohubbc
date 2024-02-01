@@ -1,5 +1,4 @@
 import { Box, Grid, Typography } from '@mui/material';
-// import { grey } from '@mui/material/colors';
 
 interface ICircleStepCard {
   number: number;
@@ -9,20 +8,19 @@ interface ICircleStepCard {
 }
 
 const CircleStepCard = (props: ICircleStepCard) => {
-  console.log(props);
   return (
     <Grid container p={2}>
       <Grid item xs={1}>
         <Box
-          width="2.5rem"
-          height="2.5rem"
+          width="2.2rem"
+          height="2.2rem"
           bgcolor='text.secondary'
           borderRadius="50%"
           textAlign="center"
           alignItems="center"
           justifyContent="center"
           display="flex">
-          <Typography variant="h2" color="#fff" textAlign="center" alignItems="center">
+          <Typography variant="h3" color="#fff" textAlign="center" alignItems="center">
             {props.number}
           </Typography>
         </Box>

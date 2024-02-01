@@ -53,7 +53,7 @@ const ProjectTeamMembers = () => {
   function getRandomHexColor(): string {
     // Generate a random color component and convert it to a two-digit hex value
     const randomComponent = () =>
-      Math.floor(Math.random() * 130 + 120)
+      Math.floor(Math.random() * 150 + 70)
         .toString(16)
         .padStart(2, '0');
 

@@ -643,10 +643,13 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             }
           },
           '& .MuiDataGrid-virtualScrollerContent, .MuiDataGrid-overlay, .MuiDataGrid-virtualScroller': {
-            background: grey[100]
+            background: grey[100],
           },
           '& .MuiDataGrid-overlayWrapper': {
-           position: 'static'
+            position: 'static'
+          },
+          '& .MuiDataGrid-overlayWrapperInner, .MuiDataGrid-overlayWrapper': {
+            flex: 1,
           }
         }}
       />
