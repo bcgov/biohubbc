@@ -1,6 +1,5 @@
-import { ConfigContext } from 'contexts/configContext';
 import useAxios from 'hooks/api/useAxios';
-import { useContext } from 'react';
+import { useConfigContext } from 'hooks/useContext';
 
 export interface IItisSearchResponse {
   commonNames: string[];
@@ -20,8 +19,8 @@ export interface IItisSearchResult {
 }
 
 const useItisApi = () => {
-  const config = useContext(ConfigContext);
-  const apiAxios = useAxios(config?.BIOHUB_API_URL);
+  const config = useConfigContext();
+  const apiAxios = useAxios(config.BACKBONE_API_HOST);
 
   /**
    * Returns the ITIS search species Query.
@@ -32,26 +31,15 @@ const useItisApi = () => {
    */
   const itisSearch = async (searchTerm: string): Promise<IItisSearchResult[] | undefined> => {
     try {
-      console.log('searchTerm', searchTerm);
-
-      console.log('apiAxios', apiAxios);
-      console.log('config?.BIOHUB_API_URL', config?.BIOHUB_API_URL);
-      console.log('config?.BIOHUB_TAXON_PATH ', config?.BIOHUB_TAXON_PATH);
-
-      const { data } = await apiAxios.get<{ searchResponse: IItisSearchResult[] }>(
-        config?.BIOHUB_TAXON_PATH || '/api/taxonomy/taxon',
-        {
-          params: {
-            terms: searchTerm
-          }
+      const { data } = await apiAxios.get<{ searchResponse: IItisSearchResult[] }>(config.BIOHUB_TAXON_PATH, {
+        params: {
+          terms: searchTerm
         }
-      );
-      console.log('data', data);
+      });
 
       if (!data.searchResponse) {
         return [];
       }
-      console.log('data.searchResponse', data.searchResponse);
 
       return data.searchResponse;
     } catch (error) {

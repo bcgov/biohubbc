@@ -46,8 +46,8 @@ export interface IArtifact {
 const getBackboneIntakeEnabled = () => process.env.BACKBONE_INTAKE_ENABLED === 'true' || false;
 const getBackboneApiHost = () => process.env.BACKBONE_API_HOST || '';
 const getBackboneArtifactIntakePath = () => process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '';
-const getBackboneSurveyIntakePath = () => process.env.BACKBONE_DATASET_INTAKE_PATH || '';
-const getBackboneTaxonTsnPath = () => process.env.BACKBONE_TAXON_TSN_PATH || '';
+const getBackboneSurveyIntakePath = () => process.env.BACKBONE_INTAKE_PATH || '';
+const getBackboneTaxonTsnPath = () => process.env.BIOHUB_TAXON_TSN_PATH || '';
 
 export class PlatformService extends DBService {
   attachmentService: AttachmentService;
