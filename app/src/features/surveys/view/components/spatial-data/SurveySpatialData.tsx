@@ -10,7 +10,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { INonEditableGeometries } from 'utils/mapUtils';
-import SurveyMap from '../../SurveyMap';
+import SurveyMap, { ISurveyMapPoint, ISurveyMapPointMetadata } from '../../SurveyMap';
 import SurveySpatialObservationDataTable from './SurveySpatialObservationDataTable';
 import SurveySpatialTelemetryDataTable from './SurveySpatialTelemetryDataTable';
 import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './SurveySpatialToolbar';
@@ -88,16 +88,33 @@ const SurveySpatialData = () => {
    * Because Observations data is server-side paginated, we must collect all spatial points from
    * a dedicated endpoint.
    */
-  const observationPoints: INonEditableGeometries[] = useMemo(() => {
+  const observationPoints: ISurveyMapPoint[] = useMemo(() => {
     return (observationsGeometryDataLoader.data?.surveyObservationsGeometry ?? []).map((observation) => {
-      return {
+      const link = `observations/#view-${observation.survey_observation_id}`;
+
+      const point: ISurveyMapPoint = {
         feature: {
           type: 'Feature',
           properties: {},
           geometry: observation.geometry
         },
-        popupComponent: undefined
+        key: `observation-${observation.survey_observation_id}`,
+        link,
+        onLoad: async (): Promise<ISurveyMapPointMetadata[]> => {
+          const response = await biohubApi.observation.getObservationRecord(
+            projectId,
+            surveyId,
+            observation.survey_observation_id
+          );
+
+          return [
+            { label: 'Taxon ID', value: String(response.wldtaxonomic_units_id) },
+            { label: 'Count', value: String(response.count) }
+          ];
+        }
       };
+
+      return point;
     });
   }, [observationsGeometryDataLoader.data]);
 
@@ -116,12 +133,12 @@ const SurveySpatialData = () => {
       surveyContext.critterDataLoader.isLoading;
   }
 
-  const mapPoints: INonEditableGeometries[] = useMemo(() => {
+  const mapPoints: ISurveyMapPoint[] = useMemo(() => {
     switch (activeView) {
       case SurveySpatialDatasetViewEnum.OBSERVATIONS:
         return observationPoints;
       case SurveySpatialDatasetViewEnum.TELEMETRY:
-        return telemetryPoints;
+      // return telemetryPoints; // TODO
       case SurveySpatialDatasetViewEnum.MARKED_ANIMALS:
       default:
         return [];
