@@ -1,4 +1,4 @@
-import { Skeleton } from '@mui/material';
+import { Skeleton, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { Box, Stack, Theme } from '@mui/system';
 import { SkeletonMap } from 'components/loading/SkeletonLoaders';
@@ -101,26 +101,49 @@ const SurveyMap = (props: ISurveyMapProps) => {
                   });
                 }}>
                 <Popup className={classes.popup}>
-                  <Box>
+                  <Box minWidth={200}>
                     {isLoading ? (
-                      <Stack>
-                        <Skeleton width="100px" />
-                        <Skeleton width="100px" />
-                        <Skeleton width="100px" />
-                      </Stack>
+                      <Box position="absolute" top="0" left="0" right="0" sx={{ opacity: 1 }}>
+                        <Typography component="div" variant="body2" fontWeight={700}
+                          sx={{
+                            pr: 3,
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis'
+                          }}
+                        >
+                          <Skeleton></Skeleton>
+                        </Typography>
+                        <Box mt={1} mb={0}>
+                          <Stack flexDirection="row" alignItems="flex-start" gap={1} sx={{ typography: 'body2' }}>
+                            <Skeleton width="80px" />
+                            <Skeleton sx={{ flex: '1 1 auto' }} />
+                          </Stack>
+                          <Stack flexDirection="row" alignItems="flex-start" gap={1} sx={{ typography: 'body2' }}>
+                            <Skeleton width="80px" />
+                            <Skeleton sx={{ flex: '1 1 auto' }} />
+                          </Stack>
+                        </Box>
+                      </Box>
                     ) : (
-                      <Stack gap={1}>
-                        <table>
+                      <Box>
+                        <Typography component="div" variant="body2" fontWeight={700}
+                          sx={{
+                            pr: 4,
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis'
+                          }}
+                        >OBSERVATION RECORD</Typography>
+                        <Box component="dl" mt={1} mb={0}>
                           {mapPointMetadata[key].map((metadata) => (
-                            <tr>
-                              <td>
-                                <strong>{metadata.label}:</strong>
-                              </td>
-                              <td>{metadata.value}</td>
-                            </tr>
+                            <Stack flexDirection="row" alignItems="flex-start" gap={1} sx={{ typography: 'body2' }}>
+                              <Box component="dt" width={80} flex="0 0 auto" sx={{ color: 'text.secondary' }}>{metadata.label}:</Box>
+                              <Box component="dd" m={0} minWidth={100}>{metadata.value}</Box>
+                            </Stack>
                           ))}
-                        </table>
-                      </Stack>
+                        </Box>
+                      </Box>
                     )}
                   </Box>
                 </Popup>

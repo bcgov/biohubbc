@@ -137,8 +137,8 @@ const SurveySpatialData = () => {
     switch (activeView) {
       case SurveySpatialDatasetViewEnum.OBSERVATIONS:
         return observationPoints;
-      case SurveySpatialDatasetViewEnum.TELEMETRY:
-      // return telemetryPoints; // TODO
+      // case SurveySpatialDatasetViewEnum.TELEMETRY:
+      // // return telemetryPoints; // TODO
       case SurveySpatialDatasetViewEnum.MARKED_ANIMALS:
       default:
         return [];
@@ -151,9 +151,8 @@ const SurveySpatialData = () => {
         activeView={activeView}
         views={[
           {
-            label: `Observations (${
-              observationsGeometryDataLoader.data?.supplementaryObservationData?.observationCount ?? 0
-            })`,
+            label: `Observations (${observationsGeometryDataLoader.data?.supplementaryObservationData?.observationCount ?? 0
+              })`,
             value: SurveySpatialDatasetViewEnum.OBSERVATIONS,
             icon: mdiEye,
             isLoading: false
