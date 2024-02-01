@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
+import { GeoJSONFeature } from '../../../../openapi/schemas/geoJson';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { SurveyService } from '../../../../services/survey-service';
 import { getLogger } from '../../../../utils/logger';
@@ -63,7 +64,15 @@ GET.apiDoc = {
               properties: {
                 surveyData: {
                   type: 'object',
-                  required: ['survey_id', 'name', 'start_date', 'end_date', 'focal_species', 'focal_species_names'],
+                  required: [
+                    'survey_id',
+                    'name',
+                    'start_date',
+                    'end_date',
+                    'focal_species',
+                    'focal_species_names',
+                    'locations'
+                  ],
                   properties: {
                     survey_id: {
                       type: 'integer',
@@ -94,6 +103,19 @@ GET.apiDoc = {
                       type: 'array',
                       items: {
                         type: 'string'
+                      }
+                    },
+                    locations: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        required: ['name', 'description', 'geojson'],
+                        properties: {
+                          name: { type: 'string' },
+                          description: { type: 'string' },
+                          geojson: { type: 'array', items: { ...(GeoJSONFeature as object) } }
+                        },
+                        additionalProperties: false
                       }
                     }
                   }
