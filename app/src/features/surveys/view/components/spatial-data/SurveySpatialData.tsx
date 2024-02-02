@@ -14,6 +14,7 @@ import SurveyMap, { ISurveyMapPoint, ISurveyMapPointMetadata, ISurveyMapSuppleme
 import SurveySpatialObservationDataTable from './SurveySpatialObservationDataTable';
 import SurveySpatialTelemetryDataTable from './SurveySpatialTelemetryDataTable';
 import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './SurveySpatialToolbar';
+import dayjs from 'dayjs';
 
 const SurveySpatialData = () => {
   const [activeView, setActiveView] = useState<SurveySpatialDatasetViewEnum>(SurveySpatialDatasetViewEnum.OBSERVATIONS);
@@ -109,7 +110,15 @@ const SurveySpatialData = () => {
 
           return [
             { label: 'Taxon ID', value: String(response.wldtaxonomic_units_id) },
-            { label: 'Count', value: String(response.count) }
+            { label: 'Count', value: String(response.count) },
+            {
+              label: 'Location',
+              value: [response.latitude, response.longitude]
+                .filter((coord): coord is number => (coord !== null))
+                .map((coord) => coord.toFixed(6))
+                .join(', ')
+            },
+            { label: 'Date', value: dayjs(`${response.observation_date} ${response.observation_time}`).toISOString() }
           ];
         }
       };
