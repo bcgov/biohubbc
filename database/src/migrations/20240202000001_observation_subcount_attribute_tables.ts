@@ -5,7 +5,7 @@ import { Knex } from 'knex';
  * - observation_subcount
  * - subcount_critter
  * - subcount_attribute
- * 
+ *
  * Create new function/trigger:
  * - tr_observation_subcount_count
  *
