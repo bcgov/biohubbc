@@ -101,7 +101,6 @@ export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
             maxDate={dayjs(DATE_LIMIT.max)}
             value={formattedDateValue}
             onChange={(value) => {
-              console.log(value);
               if (!value || value === 'Invalid Date') {
                 // The creation input value will be 'Invalid Date' when the date field is cleared (empty), and will
                 // contain an actual date string value if the field is not empty but is invalid.

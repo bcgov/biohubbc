@@ -538,6 +538,14 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         editMode="row"
         columns={observationColumns}
         rows={observationsTableContext.rows}
+        rowCount={observationsTableContext.observationCount}
+        paginationModel={observationsTableContext.paginationModel}
+        pageSizeOptions={[10, 15, 20]}
+        onPaginationModelChange={(model) => observationsTableContext.updatePaginationModel(model)}
+        paginationMode="server"
+        sortingMode="server"
+        sortModel={observationsTableContext.sortModel}
+        onSortModelChange={(model) => observationsTableContext.updateSortModel(model)}
         onRowEditStart={(params) => observationsTableContext.onRowEditStart(params.id)}
         onRowEditStop={(_params, event) => {
           event.defaultMuiPrevented = true;
