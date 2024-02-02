@@ -24,7 +24,7 @@ const SelectedSpecies = (props: ISelectedSpeciesProps) => {
                     index={index}
                     species={species}
                     handleRemove={handleRemoveSpecies}
-                    label={species.label}
+                    label={species.commonName ? species.commonName : species.scientificName}
                   />
                 </Collapse>
               );

@@ -18,7 +18,7 @@ export interface ISpeciesAutocompleteFieldProps {
 
 export type ISpeciesAutocompleteField = {
   tsn: number;
-  label: string;
+  commonName?: string;
   scientificName: string;
 };
 
@@ -66,7 +66,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
       filterSelectedOptions
       noOptionsText="No matching options"
       options={options}
-      getOptionLabel={(option) => option.label}
+      getOptionLabel={(option) => option.commonName || option.scientificName}
       isOptionEqualToValue={(option, value) => {
         return option.tsn === value.tsn;
       }}
@@ -97,7 +97,10 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
       renderOption={(renderProps, renderOption) => {
         return (
           <Box component="li" {...renderProps} key={renderOption.tsn}>
-            <SpeciesCard name={renderOption.label} subtext={renderOption.scientificName} />
+            <SpeciesCard
+              name={renderOption.commonName || renderOption.scientificName}
+              subtext={renderOption.scientificName}
+            />
           </Box>
         );
       }}

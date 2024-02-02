@@ -76,7 +76,7 @@ export class GetFocalSpeciesData {
   //TODO: combine these into a single array of objects, will need to update the API to return the same format and fix all the places that use this data
   focal_species: number[];
   focal_species_names: string[];
-  focal_species_object: { tsn: number; label: string; scientificName: string }[];
+  focal_species_object: { tsn: number; commonName: string; scientificName: string }[];
 
   constructor(obj?: any[]) {
     this.focal_species = [];
@@ -86,7 +86,7 @@ export class GetFocalSpeciesData {
     obj?.length &&
       obj.forEach((item: any) => {
         this.focal_species.push(Number(item.tsn));
-        this.focal_species_names.push(item.label);
+        this.focal_species_names.push(item.commonName || item.scientificName);
         this.focal_species_object.push(item);
       });
   }
@@ -96,7 +96,7 @@ export class GetAncillarySpeciesData {
   //TODO: same as above
   ancillary_species: number[];
   ancillary_species_names: string[];
-  ancillary_species_object: { tsn: number; label: string; scientificName: string }[];
+  ancillary_species_object: { tsn: number; commonName: string; scientificName: string }[];
 
   constructor(obj?: any[]) {
     this.ancillary_species = [];
@@ -106,7 +106,7 @@ export class GetAncillarySpeciesData {
     obj?.length &&
       obj.forEach((item: any) => {
         this.ancillary_species.push(Number(item.tsn));
-        this.ancillary_species_names.push(item.label);
+        this.ancillary_species_names.push(item.commonName || item.scientificName);
         this.ancillary_species_object.push(item);
       });
   }

@@ -44,7 +44,7 @@ export interface IArtifact {
 
 export interface IItisSearchResult {
   tsn: string;
-  label: string;
+  commonName?: string;
   scientificName: string;
 }
 

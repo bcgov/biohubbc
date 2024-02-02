@@ -15,7 +15,7 @@ export interface IItisSearchResponse {
 
 export interface IItisSearchResult {
   tsn: number;
-  label: string;
+  commonName?: string;
   scientificName: string;
 }
 

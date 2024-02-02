@@ -182,7 +182,9 @@ export class SurveyService extends DBService {
     const platformService = new PlatformService(this.connection);
 
     const focalSpecies = await platformService.getTaxonomyFromBiohub(focalSpeciesIds);
+    console.log('focalSpecies', focalSpecies);
     const ancillarySpecies = await platformService.getTaxonomyFromBiohub(ancillarySpeciesIds);
+    console.log('ancillarySpecies', ancillarySpecies);
 
     return { ...new GetFocalSpeciesData(focalSpecies), ...new GetAncillarySpeciesData(ancillarySpecies) };
   }

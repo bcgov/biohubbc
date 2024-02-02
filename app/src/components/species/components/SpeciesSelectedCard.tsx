@@ -31,7 +31,7 @@ const SpeciesSelectedCard = (props: ISpeciesSelectedCardProps) => {
         }}>
         <Box display="flex" alignItems="center" px={2} py={1.5}>
           <Box flex="1 1 auto">
-            <SpeciesCard name={species.label} subtext={species.scientificName} />
+            <SpeciesCard name={species.commonName || species.scientificName} subtext={species.scientificName} />
           </Box>
           <Box flex="0 0 auto">
             <IconButton

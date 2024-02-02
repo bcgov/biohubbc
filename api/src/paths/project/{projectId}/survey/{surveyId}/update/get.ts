@@ -143,13 +143,14 @@ GET.apiDoc = {
                         type: 'array',
                         items: {
                           type: 'object',
-                          required: ['tsn', 'label', 'scientificName'],
+                          required: ['tsn', 'commonName', 'scientificName'],
                           properties: {
                             tsn: {
                               type: 'integer'
                             },
-                            label: {
-                              type: 'string'
+                            commonName: {
+                              type: 'string',
+                              nullable: true
                             },
                             scientificName: {
                               type: 'string'
@@ -173,13 +174,14 @@ GET.apiDoc = {
                         type: 'array',
                         items: {
                           type: 'object',
-                          required: ['tsn', 'label', 'scientificName'],
+                          required: ['tsn', 'commonName', 'scientificName'],
                           properties: {
                             tsn: {
                               type: 'integer'
                             },
-                            label: {
-                              type: 'string'
+                            commonName: {
+                              type: 'string',
+                              nullable: true
                             },
                             scientificName: {
                               type: 'string'
