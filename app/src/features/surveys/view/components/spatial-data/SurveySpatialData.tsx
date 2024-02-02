@@ -9,7 +9,6 @@ import { Position } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { INonEditableGeometries } from 'utils/mapUtils';
 import SurveyMap, { ISurveyMapPoint, ISurveyMapPointMetadata, ISurveyMapSupplementaryLayer } from '../../SurveyMap';
 import SurveySpatialObservationDataTable from './SurveySpatialObservationDataTable';
 import SurveySpatialTelemetryDataTable from './SurveySpatialTelemetryDataTable';
@@ -62,7 +61,7 @@ const SurveySpatialData = () => {
    * Because Telemetry data is client-side paginated, we can collect all spatial points from
    * traversing the array of telemetry data.
    */
-  const telemetryPoints: INonEditableGeometries[] = useMemo(() => {
+  const telemetryPoints: ISurveyMapPoint[]  = useMemo(() => {
     const telemetryData = telemetryContext.telemetryDataLoader.data;
     if (!telemetryData) {
       return [];
@@ -80,7 +79,20 @@ const SurveySpatialData = () => {
               coordinates: [telemetry.longitude, telemetry.latitude] as Position
             }
           },
-          popupComponent: undefined
+          key: `telemetry-${telemetry.telemetry_manual_id}`,
+          onLoadMetadata: async (): Promise<ISurveyMapPointMetadata[]> => {
+            return Promise.resolve([
+              { label: 'Deployment ID', value: String(telemetry.deployment_id) },
+              { label: 'Alias', value: 'TODO' },
+              {
+                label: 'Location',
+                value: [telemetry.latitude, telemetry.longitude]
+                  .filter((coord): coord is number => (coord !== null))
+                  .map((coord) => coord.toFixed(6))
+                  .join(', ')
+              },
+            ]);
+          }
         };
       });
   }, [telemetryContext.telemetryDataLoader.data]);
@@ -91,8 +103,6 @@ const SurveySpatialData = () => {
    */
   const observationPoints: ISurveyMapPoint[] = useMemo(() => {
     return (observationsGeometryDataLoader.data?.surveyObservationsGeometry ?? []).map((observation) => {
-      const link = `observations/#view-${observation.survey_observation_id}`;
-
       const point: ISurveyMapPoint = {
         feature: {
           type: 'Feature',
@@ -100,7 +110,6 @@ const SurveySpatialData = () => {
           geometry: observation.geometry
         },
         key: `observation-${observation.survey_observation_id}`,
-        link,
         onLoadMetadata: async (): Promise<ISurveyMapPointMetadata[]> => {
           const response = await biohubApi.observation.getObservationRecord(
             projectId,
@@ -157,7 +166,7 @@ const SurveySpatialData = () => {
           {
             layerName: 'Telemetry',
             popupRecordTitle: 'Telemetry Record',
-            mapPoints: observationPoints // TODO
+            mapPoints: telemetryPoints
           }
         ];
       case SurveySpatialDatasetViewEnum.MARKED_ANIMALS:

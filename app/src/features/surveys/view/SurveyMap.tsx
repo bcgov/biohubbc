@@ -85,6 +85,8 @@ const SurveyMap = (props: ISurveyMapProps) => {
       return [];
     }
 
+    console.log('LOCATIONS:', locations)
+
     return locations.flatMap((item) => item.geojson);
   }, [surveyContext.surveyDataLoader.data]);
 
@@ -151,22 +153,21 @@ const SurveyMap = (props: ISurveyMapProps) => {
                     layerName: supplementaryLayer.layerName,
                     layerColors: { fillColor: '#1f7dff', color: '#FFFFFF' },
                     features: supplementaryLayer.mapPoints.map((mapPoint: ISurveyMapPoint, index: number): IStaticLayerFeature => {
-                      const { key } = mapPoint;
-                      const isLoading = !mapPointMetadata[key];
+                      const isLoading = !mapPointMetadata[mapPoint.key];
 
                       return {
-                        key,
+                        key: mapPoint.key,
                         geoJSON: mapPoint.feature,
                         GeoJSONProps: {
                           onEachFeature: (feature, layer) => {
                             layer.on({
                               popupopen: () => {
-                                if (mapPointMetadata[key]) {
+                                if (mapPointMetadata[mapPoint.key]) {
                                   return;
                                 }
 
                                 mapPoint.onLoadMetadata().then((metadata) => {
-                                  setMapPointMetadata((prev) => ({ ...prev, [key]: metadata }));
+                                  setMapPointMetadata((prev) => ({ ...prev, [mapPoint.key]: metadata }));
                                 });
                               }
                             });
@@ -210,7 +211,7 @@ const SurveyMap = (props: ISurveyMapProps) => {
                                   }}
                                 >{supplementaryLayer.popupRecordTitle}</Typography>
                                 <Box component="dl" mt={1} mb={0}>
-                                  {mapPointMetadata[key].map((metadata) => (
+                                  {mapPointMetadata[mapPoint.key].map((metadata) => (
                                     <Stack flexDirection="row" alignItems="flex-start" gap={1} sx={{ typography: 'body2' }}>
                                       <Box component="dt" width={80} flex="0 0 auto" sx={{ color: 'text.secondary' }}>{metadata.label}:</Box>
                                       <Box component="dd" m={0} minWidth={100}>{metadata.value}</Box>
