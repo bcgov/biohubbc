@@ -10,7 +10,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { INonEditableGeometries } from 'utils/mapUtils';
-import SurveyMap, { ISurveyMapPoint, ISurveyMapPointMetadata } from '../../SurveyMap';
+import SurveyMap, { ISurveyMapPoint, ISurveyMapPointMetadata, ISurveyMapSupplementaryLayer } from '../../SurveyMap';
 import SurveySpatialObservationDataTable from './SurveySpatialObservationDataTable';
 import SurveySpatialTelemetryDataTable from './SurveySpatialTelemetryDataTable';
 import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './SurveySpatialToolbar';
@@ -100,7 +100,7 @@ const SurveySpatialData = () => {
         },
         key: `observation-${observation.survey_observation_id}`,
         link,
-        onLoad: async (): Promise<ISurveyMapPointMetadata[]> => {
+        onLoadMetadata: async (): Promise<ISurveyMapPointMetadata[]> => {
           const response = await biohubApi.observation.getObservationRecord(
             projectId,
             surveyId,
@@ -133,12 +133,24 @@ const SurveySpatialData = () => {
       surveyContext.critterDataLoader.isLoading;
   }
 
-  const mapPoints: ISurveyMapPoint[] = useMemo(() => {
+  const supplementaryLayers: ISurveyMapSupplementaryLayer[] = useMemo(() => {
     switch (activeView) {
       case SurveySpatialDatasetViewEnum.OBSERVATIONS:
-        return observationPoints;
+        return [
+          {
+            layerName: 'Observations',
+            popupRecordTitle: 'Observation Record',
+            mapPoints: observationPoints
+          }
+        ];
       case SurveySpatialDatasetViewEnum.TELEMETRY:
-      // return telemetryPoints; // TODO
+        return [
+          {
+            layerName: 'Telemetry',
+            popupRecordTitle: 'Telemetry Record',
+            mapPoints: observationPoints // TODO
+          }
+        ];
       case SurveySpatialDatasetViewEnum.MARKED_ANIMALS:
       default:
         return [];
@@ -169,7 +181,7 @@ const SurveySpatialData = () => {
       />
 
       <Box height={{ sm: 300, md: 500 }} position="relative">
-        <SurveyMap mapPoints={mapPoints} isLoading={isLoading} />
+        <SurveyMap supplementaryLayers={supplementaryLayers} isLoading={isLoading} />
       </Box>
       <Box py={1} px={2} position="relative">
         {activeView === SurveySpatialDatasetViewEnum.OBSERVATIONS && (

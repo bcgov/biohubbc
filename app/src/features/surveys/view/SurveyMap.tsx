@@ -1,22 +1,38 @@
-import { Skeleton } from '@mui/material';
+import { Skeleton, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { Box, Stack, Theme } from '@mui/system';
 import { SkeletonMap } from 'components/loading/SkeletonLoaders';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
 import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
+import StaticLayers, { IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { MapBaseCss } from 'components/map/styles/MapBaseCss';
 import { ALL_OF_BC_BOUNDARY, MAP_DEFAULT_CENTER } from 'constants/spatial';
+import { SurveyContext } from 'contexts/surveyContext';
 import { Feature } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
-import { useMemo, useState } from 'react';
-import { GeoJSON, LayersControl, MapContainer as LeafletMapContainer, Popup } from 'react-leaflet';
+import { useContext, useMemo, useState } from 'react';
+import { LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
-import { coloredPoint } from 'utils/mapUtils';
 
 export interface ISurveyMapPointMetadata {
   label: string;
   value: string;
+}
+
+export interface ISurveyMapSupplementaryLayer {
+  /**
+   * The name of the layer
+   */
+  layerName: string;
+  /**
+   * The array of map points
+   */
+  mapPoints: ISurveyMapPoint[];
+  /**
+   * The title of the feature type displayed in the popup
+   */
+  popupRecordTitle: string;
 }
 
 export interface ISurveyMapPoint {
@@ -28,11 +44,12 @@ export interface ISurveyMapPoint {
    * The geometric feature to display
    */
   feature: Feature;
+
   /**
    * Callback to fetch metadata, which is fired when the geometry's popup
    * is opened
    */
-  onLoad: () => Promise<ISurveyMapPointMetadata[]>;
+  onLoadMetadata: () => Promise<ISurveyMapPointMetadata[]>;
   /**
    * Optional link that renders a button to view/manage/edit the data
    * that the geometry belongs to
@@ -41,7 +58,7 @@ export interface ISurveyMapPoint {
 }
 
 interface ISurveyMapProps {
-  mapPoints: ISurveyMapPoint[];
+  supplementaryLayers: ISurveyMapSupplementaryLayer[];
   isLoading: boolean;
 }
 
@@ -49,22 +66,48 @@ const useStyles = makeStyles((theme: Theme) => ({
   popup: {
     '& a': {
       color: theme.palette.primary.contrastText
+    },
+    '& p': {
+      margin: 0
     }
   }
 }));
 
-// TODO: need a way to pass in the map dimensions depending on the screen size
 const SurveyMap = (props: ISurveyMapProps) => {
   const classes = useStyles();
   const [mapPointMetadata, setMapPointMetadata] = useState<Record<string, ISurveyMapPointMetadata[]>>({});
 
+  const surveyContext = useContext(SurveyContext);
+
+  const studyAreaFeatures: Feature[] = useMemo(() => {
+    const locations = surveyContext.surveyDataLoader.data?.surveyData.locations;
+    if (!locations) {
+      return [];
+    }
+
+    return locations.flatMap((item) => item.geojson);
+  }, [surveyContext.surveyDataLoader.data]);
+
+  const sampleSiteFeatures: Feature[] = useMemo(() => {
+    const sites = surveyContext.sampleSiteDataLoader.data?.sampleSites;
+    if (!sites) {
+      return [];
+    }
+
+    return sites.map((item) => item.geojson);
+  }, [surveyContext.sampleSiteDataLoader.data]);
+
   const bounds: LatLngBoundsExpression | undefined = useMemo(() => {
-    if (props.mapPoints.length > 0) {
-      return calculateUpdatedMapBounds(props.mapPoints.map((item) => item.feature));
+    const allMapPoints = props.supplementaryLayers.reduce((acc: ISurveyMapPoint[], layer) => {
+      return acc.concat(layer.mapPoints)
+    }, []);
+
+    if (allMapPoints.length > 0) {
+      return calculateUpdatedMapBounds(allMapPoints.map((item) => item.feature));
     } else {
       return calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]);
     }
-  }, [props.mapPoints]);
+  }, [props.supplementaryLayers]);
 
   return (
     <>
@@ -81,56 +124,84 @@ const SurveyMap = (props: ISurveyMapProps) => {
           <MapBaseCss />
           <FullScreenScrollingEventHandler bounds={bounds} scrollWheelZoom={false} />
           <SetMapBounds bounds={bounds} />
+        <LayersControl position="bottomright">
+          <BaseLayerControls />
+          <StaticLayers
+            layers={[
+              {
+                layerName: 'Study Area',
+                features: studyAreaFeatures.map((feature) => ({ geoJSON: feature, tooltip: <span>Study Area</span> }))
+              },
+              {
+                layerName: 'Sample Sites',
+                layerColors: { color: '#1f7dff', fillColor: '#1f7dff' },
+                features: sampleSiteFeatures.map((feature) => ({
+                  geoJSON: feature,
+                  tooltip: <span>Sample Site</span>
+                }))
+              },
+              ...props.supplementaryLayers.map((supplementaryLayer) => {
 
-          {props.mapPoints?.map((mapPoint: ISurveyMapPoint, index: number) => {
-            const { key } = mapPoint;
-            const isLoading = !mapPointMetadata[key];
-
-            return (
-              <GeoJSON
-                key={key}
-                data={mapPoint.feature}
-                pointToLayer={(_, latlng) => coloredPoint({ latlng, fillColor: '#1f7dff', borderColor: '#ffffff' })}
-                onEachFeature={(feature, layer) => {
-                  layer.on({
-                    popupopen: () => {
-                      mapPoint.onLoad().then((metadata) => {
-                        setMapPointMetadata((prev) => ({ ...prev, [key]: metadata }));
-                      });
+                return {
+                  layerName: supplementaryLayer.layerName,
+                  layerColors: { fillColor: '#1f7dff', color: '#FFFFFF' },
+                  features: supplementaryLayer.mapPoints.map((mapPoint: ISurveyMapPoint, index: number): IStaticLayerFeature => {
+                    const { key } = mapPoint;
+                    const isLoading = !mapPointMetadata[key];
+        
+                    return {
+                    
+                      key,
+                      geoJSON: mapPoint.feature,
+                      GeoJSONProps: {
+                        onEachFeature: (feature, layer) => {
+                          layer.on({
+                            popupopen: () => {
+                              mapPoint.onLoadMetadata().then((metadata) => {
+                                setMapPointMetadata((prev) => ({ ...prev, [key]: metadata }));
+                              });
+                            }
+                          });
+                        },
+                      },
+                      PopupProps: { className: classes.popup },
+                      popup: (
+                      
+                        <Box>
+                          {isLoading ? (
+                            <Stack>
+                              <Skeleton width="100px" />
+                              <Skeleton width="100px" />
+                              <Skeleton width="100px" />
+                            </Stack>
+                          ) : (
+                            <Stack gap={1}>
+                              <Typography variant='body1'><strong>{supplementaryLayer.popupRecordTitle}</strong></Typography>
+                              <table>
+                                {mapPointMetadata[key].map((metadata) => (
+                                  <tr>
+                                    <td>
+                                        {metadata.label}:
+                                    </td>
+                                    <td>
+                                      <strong>
+                                        {metadata.value}
+                                      </strong>
+                                      </td>
+                                  </tr>
+                                ))}
+                              </table>
+                            </Stack>
+                          )}
+                        </Box>
+                      )
                     }
-                  });
-                }}>
-                <Popup className={classes.popup}>
-                  <Box>
-                    {isLoading ? (
-                      <Stack>
-                        <Skeleton width="100px" />
-                        <Skeleton width="100px" />
-                        <Skeleton width="100px" />
-                      </Stack>
-                    ) : (
-                      <Stack gap={1}>
-                        <table>
-                          {mapPointMetadata[key].map((metadata) => (
-                            <tr>
-                              <td>
-                                <strong>{metadata.label}:</strong>
-                              </td>
-                              <td>{metadata.value}</td>
-                            </tr>
-                          ))}
-                        </table>
-                      </Stack>
-                    )}
-                  </Box>
-                </Popup>
-              </GeoJSON>
-            );
-          })}
-
-          <LayersControl position="topright">
-            <BaseLayerControls />
-          </LayersControl>
+                  })
+                }
+              })
+            ]}
+          />
+        </LayersControl>
         </LeafletMapContainer>
       )}
     </>
