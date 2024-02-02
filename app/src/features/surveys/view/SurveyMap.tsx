@@ -85,8 +85,6 @@ const SurveyMap = (props: ISurveyMapProps) => {
       return [];
     }
 
-    console.log('LOCATIONS:', locations)
-
     return locations.flatMap((item) => item.geojson);
   }, [surveyContext.surveyDataLoader.data]);
 

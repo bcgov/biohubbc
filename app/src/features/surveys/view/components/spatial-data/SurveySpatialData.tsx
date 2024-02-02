@@ -14,6 +14,9 @@ import SurveySpatialObservationDataTable from './SurveySpatialObservationDataTab
 import SurveySpatialTelemetryDataTable from './SurveySpatialTelemetryDataTable';
 import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './SurveySpatialToolbar';
 import dayjs from 'dayjs';
+import { IAnimalDeployment } from '../../survey-animals/telemetry-device/device';
+import { ITelemetry } from 'hooks/useTelemetryApi';
+import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 
 const SurveySpatialData = () => {
   const [activeView, setActiveView] = useState<SurveySpatialDatasetViewEnum>(SurveySpatialDatasetViewEnum.OBSERVATIONS);
@@ -60,16 +63,26 @@ const SurveySpatialData = () => {
   /**
    * Because Telemetry data is client-side paginated, we can collect all spatial points from
    * traversing the array of telemetry data.
-   */
+   */  
   const telemetryPoints: ISurveyMapPoint[]  = useMemo(() => {
-    const telemetryData = telemetryContext.telemetryDataLoader.data;
-    if (!telemetryData) {
-      return [];
-    }
-
-    return telemetryData
+    const deployments: IAnimalDeployment[] = surveyContext.deploymentDataLoader.data ?? [];
+    const critters: IDetailedCritterWithInternalId[] = surveyContext.critterDataLoader.data ?? [];
+    const telemetry: ITelemetry[] = telemetryContext.telemetryDataLoader.data ?? [];
+    
+    return telemetry
       .filter((telemetry) => telemetry.latitude !== undefined && telemetry.longitude !== undefined)
-      .map((telemetry) => {
+
+      // Combine all critter and deployments data into a flat list
+      .reduce((acc: { deployment: IAnimalDeployment, critter: IDetailedCritterWithInternalId, telemetry: ITelemetry}[], telemetry: ITelemetry) => {
+        const deployment = deployments.find((animalDeployment) => animalDeployment.deployment_id === telemetry.deployment_id);
+        const critter = critters.find((detailedCritter) => detailedCritter.critter_id === deployment?.critter_id);
+        if (critter && deployment) {
+          acc.push({ deployment, critter, telemetry })
+        }
+
+        return acc;
+      }, [])
+      .map(({ telemetry, deployment, critter }) => {
         return {
           feature: {
             type: 'Feature',
@@ -82,8 +95,8 @@ const SurveySpatialData = () => {
           key: `telemetry-${telemetry.telemetry_manual_id}`,
           onLoadMetadata: async (): Promise<ISurveyMapPointMetadata[]> => {
             return Promise.resolve([
-              { label: 'Deployment ID', value: String(telemetry.deployment_id) },
-              { label: 'Alias', value: 'TODO' },
+              { label: 'Device ID', value: String(deployment.device_id) },
+              { label: 'Alias', value: critter.animal_id ?? 'None' }, // TODO which placeholder to use?
               {
                 label: 'Location',
                 value: [telemetry.latitude, telemetry.longitude]
@@ -91,11 +104,14 @@ const SurveySpatialData = () => {
                   .map((coord) => coord.toFixed(6))
                   .join(', ')
               },
+              { label: 'Date', value: dayjs(telemetry.acquisition_date).toISOString() }
             ]);
           }
         };
       });
-  }, [telemetryContext.telemetryDataLoader.data]);
+
+
+  }, [surveyContext.critterDataLoader.data, surveyContext.deploymentDataLoader.data]);
 
   /**
    * Because Observations data is server-side paginated, we must collect all spatial points from
