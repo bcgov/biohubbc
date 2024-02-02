@@ -125,91 +125,109 @@ const SurveyMap = (props: ISurveyMapProps) => {
           <MapBaseCss />
           <FullScreenScrollingEventHandler bounds={bounds} scrollWheelZoom={false} />
           <SetMapBounds bounds={bounds} />
-        <LayersControl position="bottomright">
-          <BaseLayerControls />
-          <StaticLayers
-            layers={[
-              {
-                layerName: 'Study Area',
-                features: studyAreaFeatures.map((feature) => {
-                  return {
-                    geoJSON: feature,
-                    tooltip: <span>Study Area</span>
-                  }
-                })
-              },
-              {
-                layerName: 'Sample Sites',
-                layerColors: { color: '#1f7dff', fillColor: '#1f7dff' },
-                features: sampleSiteFeatures.map((feature) => ({
-                  geoJSON: feature,
-                  tooltip: <span>Sample Site</span>
-                }))
-              },
-              ...props.supplementaryLayers.map((supplementaryLayer) => {
-                return {
-                  layerName: supplementaryLayer.layerName,
-                  layerColors: { fillColor: '#1f7dff', color: '#FFFFFF' },
-                  features: supplementaryLayer.mapPoints.map((mapPoint: ISurveyMapPoint, index: number): IStaticLayerFeature => {
-                    const { key } = mapPoint;
-                    const isLoading = !mapPointMetadata[key];
-        
+          <LayersControl position="bottomright">
+            <BaseLayerControls />
+            <StaticLayers
+              layers={[
+                {
+                  layerName: 'Study Area',
+                  features: studyAreaFeatures.map((feature) => {
                     return {
-                      key,
-                      geoJSON: mapPoint.feature,
-                      GeoJSONProps: {
-                        onEachFeature: (feature, layer) => {
-                          layer.on({
-                            popupopen: () => {
-                              if (mapPointMetadata[key]) {
-                                return;
-                              }
-
-                              mapPoint.onLoadMetadata().then((metadata) => {
-                                setMapPointMetadata((prev) => ({ ...prev, [key]: metadata }));
-                              });
-                            }
-                          });
-                        },
-                      },
-                      PopupProps: { className: classes.popup },
-                      popup: (
-                      
-                        <Box>
-                          {isLoading ? (
-                            <Stack>
-                              <Skeleton width="100px" />
-                              <Skeleton width="100px" />
-                              <Skeleton width="100px" />
-                            </Stack>
-                          ) : (
-                            <Stack gap={1}>
-                              <Typography variant='body1'><strong>{supplementaryLayer.popupRecordTitle}</strong></Typography>
-                              <table>
-                                {mapPointMetadata[key].map((metadata) => (
-                                  <tr>
-                                    <td>
-                                        {metadata.label}:
-                                    </td>
-                                    <td>
-                                      <strong>
-                                        {metadata.value}
-                                      </strong>
-                                      </td>
-                                  </tr>
-                                ))}
-                              </table>
-                            </Stack>
-                          )}
-                        </Box>
-                      )
+                      geoJSON: feature,
+                      tooltip: <span>Study Area</span>
                     }
                   })
-                }
-              })
-            ]}
-          />
-        </LayersControl>
+                },
+                {
+                  layerName: 'Sample Sites',
+                  layerColors: { color: '#1f7dff', fillColor: '#1f7dff' },
+                  features: sampleSiteFeatures.map((feature) => ({
+                    geoJSON: feature,
+                    tooltip: <span>Sample Site</span>
+                  }))
+                },
+                ...props.supplementaryLayers.map((supplementaryLayer) => {
+                  return {
+                    layerName: supplementaryLayer.layerName,
+                    layerColors: { fillColor: '#1f7dff', color: '#FFFFFF' },
+                    features: supplementaryLayer.mapPoints.map((mapPoint: ISurveyMapPoint, index: number): IStaticLayerFeature => {
+                      const { key } = mapPoint;
+                      const isLoading = !mapPointMetadata[key];
+
+                      return {
+                        key,
+                        geoJSON: mapPoint.feature,
+                        GeoJSONProps: {
+                          onEachFeature: (feature, layer) => {
+                            layer.on({
+                              popupopen: () => {
+                                if (mapPointMetadata[key]) {
+                                  return;
+                                }
+
+                                mapPoint.onLoadMetadata().then((metadata) => {
+                                  setMapPointMetadata((prev) => ({ ...prev, [key]: metadata }));
+                                });
+                              }
+                            });
+                          },
+                        },
+                        PopupProps: { className: classes.popup },
+                        popup: (
+                          <Box>
+                            {isLoading ? (
+                              <Box position="absolute" top="0" left="0" right="0" sx={{ opacity: 1 }}>
+                                <Typography component="div" variant="body2" fontWeight={700}
+                                  sx={{
+                                    pr: 3,
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis'
+                                  }}
+                                >
+                                  <Skeleton></Skeleton>
+                                </Typography>
+                                <Box mt={1} mb={0}>
+                                  <Stack flexDirection="row" alignItems="flex-start" gap={1} sx={{ typography: 'body2' }}>
+                                    <Skeleton width="80px" />
+                                    <Skeleton sx={{ flex: '1 1 auto' }} />
+                                  </Stack>
+                                  <Stack flexDirection="row" alignItems="flex-start" gap={1} sx={{ typography: 'body2' }}>
+                                    <Skeleton width="80px" />
+                                    <Skeleton sx={{ flex: '1 1 auto' }} />
+                                  </Stack>
+                                </Box>
+                              </Box>
+                            ) : (
+                              <Box>
+                                <Typography component="div" variant="body2" fontWeight={700}
+                                  sx={{
+                                    pr: 4,
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    textTransform: 'uppercase'
+                                  }}
+                                >{supplementaryLayer.popupRecordTitle}</Typography>
+                                <Box component="dl" mt={1} mb={0}>
+                                  {mapPointMetadata[key].map((metadata) => (
+                                    <Stack flexDirection="row" alignItems="flex-start" gap={1} sx={{ typography: 'body2' }}>
+                                      <Box component="dt" width={80} flex="0 0 auto" sx={{ color: 'text.secondary' }}>{metadata.label}:</Box>
+                                      <Box component="dd" m={0} minWidth={100}>{metadata.value}</Box>
+                                    </Stack>
+                                  ))}
+                                </Box>
+                              </Box>
+                            )}
+                          </Box>
+                        )
+                      }
+                    })
+                  }
+                })
+              ]}
+            />
+          </LayersControl>
         </LeafletMapContainer>
       )}
     </>

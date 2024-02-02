@@ -172,9 +172,8 @@ const SurveySpatialData = () => {
         activeView={activeView}
         views={[
           {
-            label: `Observations (${
-              observationsGeometryDataLoader.data?.supplementaryObservationData?.observationCount ?? 0
-            })`,
+            label: `Observations (${observationsGeometryDataLoader.data?.supplementaryObservationData?.observationCount ?? 0
+              })`,
             value: SurveySpatialDatasetViewEnum.OBSERVATIONS,
             icon: mdiEye,
             isLoading: false
