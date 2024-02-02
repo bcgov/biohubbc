@@ -9,7 +9,7 @@ interface ISpeciesSelectedCardProps {
   index: number;
   species: ISpeciesAutocompleteField;
   error?: JSX.Element | undefined;
-  handleRemove: (id: number) => void;
+  handleRemove: (tsn: number) => void;
   label: string;
 }
 
