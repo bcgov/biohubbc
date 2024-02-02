@@ -98,6 +98,7 @@ const SurveyMap = (props: ISurveyMapProps) => {
   }, [surveyContext.sampleSiteDataLoader.data]);
 
   const bounds: LatLngBoundsExpression | undefined = useMemo(() => {
+    // TODO the sampling sites and study areas will be included in the bounds calculation
     const allMapPoints = props.supplementaryLayers.reduce((acc: ISurveyMapPoint[], layer) => {
       return acc.concat(layer.mapPoints)
     }, []);
@@ -130,7 +131,12 @@ const SurveyMap = (props: ISurveyMapProps) => {
             layers={[
               {
                 layerName: 'Study Area',
-                features: studyAreaFeatures.map((feature) => ({ geoJSON: feature, tooltip: <span>Study Area</span> }))
+                features: studyAreaFeatures.map((feature) => {
+                  return {
+                    geoJSON: feature,
+                    tooltip: <span>Study Area</span>
+                  }
+                })
               },
               {
                 layerName: 'Sample Sites',
@@ -141,7 +147,6 @@ const SurveyMap = (props: ISurveyMapProps) => {
                 }))
               },
               ...props.supplementaryLayers.map((supplementaryLayer) => {
-
                 return {
                   layerName: supplementaryLayer.layerName,
                   layerColors: { fillColor: '#1f7dff', color: '#FFFFFF' },
@@ -150,13 +155,16 @@ const SurveyMap = (props: ISurveyMapProps) => {
                     const isLoading = !mapPointMetadata[key];
         
                     return {
-                    
                       key,
                       geoJSON: mapPoint.feature,
                       GeoJSONProps: {
                         onEachFeature: (feature, layer) => {
                           layer.on({
                             popupopen: () => {
+                              if (mapPointMetadata[key]) {
+                                return;
+                              }
+
                               mapPoint.onLoadMetadata().then((metadata) => {
                                 setMapPointMetadata((prev) => ({ ...prev, [key]: metadata }));
                               });
