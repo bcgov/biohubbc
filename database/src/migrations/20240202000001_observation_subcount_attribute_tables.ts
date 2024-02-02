@@ -64,7 +64,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN subcount_critter.update_date                IS 'The datetime the record was updated.';
     COMMENT ON COLUMN subcount_critter.update_user                IS 'The id of the user who updated the record as identified in the system user table.';
     COMMENT ON COLUMN subcount_critter.revision_count             IS 'Revision count used for concurrency control.';
-    COMMENT ON TABLE  subcount_critter                            IS 'Associates an observation subcount record to critter records.';
+    COMMENT ON TABLE  subcount_critter                            IS 'Associates an observation subcount record to zero or many critter records.';
 
     ----------------------------------------------------------------------------------------
 
@@ -88,7 +88,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN subcount_attribute.update_date                IS 'The datetime the record was updated.';
     COMMENT ON COLUMN subcount_attribute.update_user                IS 'The id of the user who updated the record as identified in the system user table.';
     COMMENT ON COLUMN subcount_attribute.revision_count             IS 'Revision count used for concurrency control.';
-    COMMENT ON TABLE  subcount_attribute                            IS 'Defines attributes of an observation subcount record.';
+    COMMENT ON TABLE  subcount_attribute                            IS 'Tracks an external system id to Critterbase, which tracks the attributes (measurements, etc) associated to the subcount record.';
 
     ----------------------------------------------------------------------------------------
     -- Create Indexes and Constraints for table: observation_subcount
