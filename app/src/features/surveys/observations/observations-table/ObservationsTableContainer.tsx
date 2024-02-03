@@ -22,6 +22,7 @@ import { ObservationsTableI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { ObservationsTableContext } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import { ObservationMeasurementsButton } from 'features/surveys/observations/observation-measurements/ObsevationMeasurementsButton';
 import ObservationsTable from 'features/surveys/observations/observations-table/ObservationsTable';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
@@ -231,6 +232,7 @@ const ObservationComponent = () => {
                 </Button>
               </Box>
             </Collapse>
+            <ObservationMeasurementsButton surveyId={surveyId} />
             {hideableColumns.length > 0 && (
               <>
                 <IconButton

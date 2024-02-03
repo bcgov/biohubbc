@@ -36,11 +36,11 @@ export type DataLoader<AFArgs extends any[], AFResponse = unknown, AFError = unk
   /**
    * Executes the `fetchData` function once, only if it has never been called before. Does nothing if called again.
    */
-  load: (...args: AFArgs) => Promise<void>;
+  load: (...args: AFArgs) => Promise<AFResponse | undefined>;
   /**
    * Executes the `fetchData` function again.
    */
-  refresh: (...args: AFArgs) => Promise<void>;
+  refresh: (...args: AFArgs) => Promise<AFResponse | undefined>;
   /**
    * Clears any errors caught from a failed `fetchData` call.
    */
@@ -85,7 +85,7 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
 
   const getData = useAsync(fetchData);
 
-  const loadData = async (...args: AFArgs) => {
+  const loadData = async (...args: AFArgs): Promise<AFResponse | undefined> => {
     try {
       setIsLoading(true);
 
@@ -96,6 +96,8 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
       }
 
       setData(response);
+
+      return response;
     } catch (error) {
       if (!isMounted()) {
         return;

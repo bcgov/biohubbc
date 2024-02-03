@@ -130,7 +130,7 @@ const SurveyAnimals: React.FC = () => {
         </Button>
       </Toolbar>
       <Divider flexItem></Divider>
-      <Box py={1} px={2}>
+      <Box p={3}>
         {critterData?.length ? (
           <SurveyAnimalsTable
             animalData={critterData}

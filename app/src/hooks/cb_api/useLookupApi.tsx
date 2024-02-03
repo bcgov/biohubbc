@@ -26,6 +26,18 @@ export interface IMeasurementStub {
   max_value?: number;
   unit?: string;
 }
+
+// TODO finalize this type. Combine with above?
+export type Measurement = {
+  uuid: string;
+  scientificName: string;
+  commonName?: string;
+  measurementId: number;
+  measurementName: string;
+  measurementType?: string;
+  measurementDescription: string;
+};
+
 const useLookupApi = (axios: AxiosInstance) => {
   const getSelectOptions = async ({ route, param, query, orderBy }: SelectOptionsProps) => {
     const _param = param ? `/${param}` : ``;
@@ -63,10 +75,48 @@ const useLookupApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get measurements by search terms.
+   *
+   * TODO: Implement this method.
+   *
+   * @param {string[]} searchTerms
+   * @return {*}  {Measurement[]}
+   */
+  const getMeasurementsBySearachTerms = async (searchTerms: string[]): Promise<Measurement[]> => {
+    return [
+      {
+        uuid: '930f2b50-84b7-4fb5-a956-15c5152cf388',
+        scientificName: 'scientificName 1',
+        commonName: 'commonName 1',
+        measurementId: 1,
+        measurementName: 'measurementName 1',
+        measurementDescription: 'measurementDescription 1'
+      },
+      {
+        uuid: '6004651d-a6c5-4e04-ab46-8dcce1d1e124',
+        scientificName: 'scientificName 2',
+        commonName: 'commonName 2',
+        measurementId: 2,
+        measurementName: 'measurementName 2',
+        measurementDescription: 'measurementDescription 2'
+      },
+      {
+        uuid: 'bbc7a940-ab8a-4977-8995-e56d2dda5d60',
+        scientificName: 'scientificName 3',
+        commonName: 'commonName 3',
+        measurementId: 3,
+        measurementName: 'measurementName 3',
+        measurementDescription: 'measurementDescription 3'
+      }
+    ];
+  };
+
   return {
     getSelectOptions,
     getTaxonMeasurements,
-    getTaxonMarkingBodyLocations
+    getTaxonMarkingBodyLocations,
+    getMeasurementsBySearachTerms
   };
 };
 

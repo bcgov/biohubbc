@@ -14,6 +14,7 @@ import { ObservationsContext } from 'contexts/observationsContext';
 import { default as dayjs } from 'dayjs';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { firstOrNull } from 'utils/Utils';
 import { v4 as uuidv4 } from 'uuid';
@@ -107,7 +108,7 @@ export type IObservationsTableContext = {
   /**
    * Refreshes the Observation Table with already existing records
    */
-  refreshObservationRecords: () => Promise<void>;
+  refreshObservationRecords: () => Promise<IGetSurveyObservationsResponse | undefined>;
   /**
    * Returns all of the observation table records that have been selected
    */
@@ -165,7 +166,7 @@ export const ObservationsTableContext = createContext<IObservationsTableContext>
   deleteObservationRecords: () => undefined,
   deleteSelectedObservationRecords: () => undefined,
   revertObservationRecords: () => undefined,
-  refreshObservationRecords: () => Promise.resolve(),
+  refreshObservationRecords: () => Promise.resolve(undefined),
   getSelectedObservationRecords: () => [],
   hasUnsavedChanges: false,
   onRowEditStart: () => {},
