@@ -8,11 +8,13 @@ import FullScreenScrollingEventHandler from 'components/map/components/FullScree
 import StaticLayers, { IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { MapBaseCss } from 'components/map/styles/MapBaseCss';
 import { ALL_OF_BC_BOUNDARY, MAP_DEFAULT_CENTER } from 'constants/spatial';
+import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { Feature } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
 import { useContext, useMemo, useState } from 'react';
 import { LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
+import { getCodesName } from 'utils/Utils';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 
 export interface ISurveyMapPointMetadata {
@@ -73,29 +75,73 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
+interface ISurveyMapPopupProps {
+  isLoading: boolean;
+  title: string;
+  metadata: ISurveyMapPointMetadata[]
+}
+
+const SurveyMapPopup = (props: ISurveyMapPopupProps) => {
+  return (
+    <Box>
+      {props.isLoading ? (
+        <Box position="absolute" top="0" left="0" right="0" sx={{ opacity: 1 }}>
+          <Typography component="div" variant="body2" fontWeight={700}
+            sx={{
+              pr: 3,
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }}
+          >
+            <Skeleton></Skeleton>
+          </Typography>
+          <Box mt={1} mb={0}>
+            <Stack flexDirection="row" alignItems="flex-start" gap={1} sx={{ typography: 'body2' }}>
+              <Skeleton width="80px" />
+              <Skeleton sx={{ flex: '1 1 auto' }} />
+            </Stack>
+            <Stack flexDirection="row" alignItems="flex-start" gap={1} sx={{ typography: 'body2' }}>
+              <Skeleton width="80px" />
+              <Skeleton sx={{ flex: '1 1 auto' }} />
+            </Stack>
+          </Box>
+        </Box>
+      ) : (
+        <Box>
+          <Typography component="div" variant="body2" fontWeight={700}
+            sx={{
+              pr: 4,
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              textTransform: 'uppercase'
+            }}
+          >{props.title}</Typography>
+          <Box component="dl" mt={1} mb={0}>
+            {props.metadata.map((metadata) => (
+              <Stack flexDirection="row" alignItems="flex-start" gap={1} sx={{ typography: 'body2' }}>
+                <Box component="dt" width={80} flex="0 0 auto" sx={{ color: 'text.secondary' }}>{metadata.label}:</Box>
+                <Box component="dd" m={0} minWidth={100}>{metadata.value}</Box>
+              </Stack>
+            ))}
+          </Box>
+        </Box>
+      )}
+    </Box>
+  )
+}
+
 const SurveyMap = (props: ISurveyMapProps) => {
   const classes = useStyles();
   const [mapPointMetadata, setMapPointMetadata] = useState<Record<string, ISurveyMapPointMetadata[]>>({});
+  // const [sampleSiteMetadata, setSampleSiteMetadata] = useState<Record<string, ISurveyMapPointMetadata[]>>({});
 
   const surveyContext = useContext(SurveyContext);
+  const codesContext = useContext(CodesContext);
 
-  const studyAreaFeatures: Feature[] = useMemo(() => {
-    const locations = surveyContext.surveyDataLoader.data?.surveyData.locations;
-    if (!locations) {
-      return [];
-    }
-
-    return locations.flatMap((item) => item.geojson);
-  }, [surveyContext.surveyDataLoader.data]);
-
-  const sampleSiteFeatures: Feature[] = useMemo(() => {
-    const sites = surveyContext.sampleSiteDataLoader.data?.sampleSites;
-    if (!sites) {
-      return [];
-    }
-
-    return sites.map((item) => item.geojson);
-  }, [surveyContext.sampleSiteDataLoader.data]);
+  const studyAreaLocations = surveyContext.surveyDataLoader.data?.surveyData.locations ?? [];
+  const sampleSites = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
 
   const bounds: LatLngBoundsExpression | undefined = useMemo(() => {
     // TODO the sampling sites and study areas will be included in the bounds calculation
@@ -130,21 +176,45 @@ const SurveyMap = (props: ISurveyMapProps) => {
             <StaticLayers
               layers={[
                 {
-                  layerName: 'Study Area',
-                  features: studyAreaFeatures.map((feature) => {
-                    return {
-                      geoJSON: feature,
-                      tooltip: <span>Study Area</span>
-                    }
+                  layerName: 'Study Areas',
+                  features: studyAreaLocations.flatMap((location) => {
+                    return location.geojson.map((feature) => {
+                      return {
+                        geoJSON: feature,
+                        popup: (
+                          <SurveyMapPopup
+                            title={'Study Area'}
+                            metadata={[{ label: 'Name', value: location.name }]}
+                            isLoading={false}
+                          />
+                        )
+                      }
+                    })
                   })
                 },
                 {
                   layerName: 'Sample Sites',
                   layerColors: { color: '#1f7dff', fillColor: '#1f7dff' },
-                  features: sampleSiteFeatures.map((feature) => ({
-                    geoJSON: feature,
-                    tooltip: <span>Sample Site</span>
-                  }))
+                  features: sampleSites.map((sampleSite) => {
+                    // const isLoading = !mapPointMetadata[mapPoint.key]; // Remove?
+
+                    return {
+                      geoJSON: sampleSite.geojson,
+                      popup: (
+                        <SurveyMapPopup
+                          isLoading={false}
+                          title='Sampling Site'
+                          metadata={[{
+                            label: 'Methods',
+                            value: (sampleSite.sample_methods ?? [])
+                              .map((method) => getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_lookup_id) ?? '')
+                              .filter(Boolean)
+                              .join(', ')
+                          }]}
+                        />
+                      )
+                    }
+                  })
                 },
                 ...props.supplementaryLayers.map((supplementaryLayer) => {
                   return {
@@ -173,52 +243,11 @@ const SurveyMap = (props: ISurveyMapProps) => {
                         },
                         PopupProps: { className: classes.popup },
                         popup: (
-                          <Box>
-                            {isLoading ? (
-                              <Box position="absolute" top="0" left="0" right="0" sx={{ opacity: 1 }}>
-                                <Typography component="div" variant="body2" fontWeight={700}
-                                  sx={{
-                                    pr: 3,
-                                    whiteSpace: 'nowrap',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis'
-                                  }}
-                                >
-                                  <Skeleton></Skeleton>
-                                </Typography>
-                                <Box mt={1} mb={0}>
-                                  <Stack flexDirection="row" alignItems="flex-start" gap={1} sx={{ typography: 'body2' }}>
-                                    <Skeleton width="80px" />
-                                    <Skeleton sx={{ flex: '1 1 auto' }} />
-                                  </Stack>
-                                  <Stack flexDirection="row" alignItems="flex-start" gap={1} sx={{ typography: 'body2' }}>
-                                    <Skeleton width="80px" />
-                                    <Skeleton sx={{ flex: '1 1 auto' }} />
-                                  </Stack>
-                                </Box>
-                              </Box>
-                            ) : (
-                              <Box>
-                                <Typography component="div" variant="body2" fontWeight={700}
-                                  sx={{
-                                    pr: 4,
-                                    whiteSpace: 'nowrap',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    textTransform: 'uppercase'
-                                  }}
-                                >{supplementaryLayer.popupRecordTitle}</Typography>
-                                <Box component="dl" mt={1} mb={0}>
-                                  {mapPointMetadata[mapPoint.key].map((metadata) => (
-                                    <Stack flexDirection="row" alignItems="flex-start" gap={1} sx={{ typography: 'body2' }}>
-                                      <Box component="dt" width={80} flex="0 0 auto" sx={{ color: 'text.secondary' }}>{metadata.label}:</Box>
-                                      <Box component="dd" m={0} minWidth={100}>{metadata.value}</Box>
-                                    </Stack>
-                                  ))}
-                                </Box>
-                              </Box>
-                            )}
-                          </Box>
+                          <SurveyMapPopup
+                            isLoading={isLoading}
+                            title={supplementaryLayer.popupRecordTitle}
+                            metadata={mapPointMetadata[mapPoint.key]}
+                          />
                         )
                       }
                     })
