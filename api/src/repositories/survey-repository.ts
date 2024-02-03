@@ -615,8 +615,6 @@ export class SurveyRepository extends BaseRepository {
       .groupBy('survey.start_date')
       .groupBy('survey.end_date');
 
-    console.log(queryBuilder.toSQL().toNative().sql);
-    console.log(queryBuilder.toSQL().toNative().bindings);
     const response = await this.connection.knex(queryBuilder, SurveyBasicFields.omit({ focal_species_names: true }));
 
     return response.rows;

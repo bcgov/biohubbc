@@ -18,8 +18,6 @@ const StudyAreasMap = () => {
 
   const surveys = projectContext.surveysListDataLoader?.data || []; //  ?.map((item) => item.surveyData.locations) || [];
 
-  console.log(surveys);
-
   const { studyAreaFeatures, surveysLocations } = useMemo(() => {
     const studyAreaFeatures = surveys.flatMap((item) =>
       item.surveyData.locations.flatMap((location) => location.geojson)
@@ -32,8 +30,6 @@ const StudyAreasMap = () => {
 
     return { studyAreaFeatures, surveysLocations };
   }, [projectContext.surveysListDataLoader.data]);
-
-  console.log(surveysLocations);
 
   const getDefaultMapBounds = useCallback((): LatLngBoundsExpression | undefined => {
     return calculateUpdatedMapBounds([...studyAreaFeatures]);

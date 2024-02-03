@@ -53,7 +53,6 @@ const ProjectPage = () => {
       <Container maxWidth="xl">
         <Box py={3}>
           <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-            {/* <ProjectSubmissionAlertBar /> */}
           </SystemRoleGuard>
           <Grid container spacing={3}>
             <Grid item md={12} lg={4}>
@@ -81,7 +80,6 @@ const ProjectPage = () => {
                       )}
                     </Typography>
                   </Toolbar>
-                  {/* <Paper elevation={0} sx={{ overflow: 'hidden' }}> */}
                   <Box position="relative" height={{ sm: 400, md: 500 }}>
                     {projectContext.surveysListDataLoader.isLoading && (
                       <Box
@@ -117,7 +115,6 @@ const ProjectPage = () => {
                     )}
                     <StudyAreasMap />
                   </Box>
-                  {/* </Paper> */}
                 </Paper>
               </Box>
               <Box mb={3}>
