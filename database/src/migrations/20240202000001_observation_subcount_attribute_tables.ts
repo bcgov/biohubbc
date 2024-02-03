@@ -23,7 +23,7 @@ export async function up(knex: Knex): Promise<void> {
     CREATE TABLE observation_subcount(
       observation_subcount_id    integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       survey_observation_id      integer            NOT NULL,
-      count                      integer            NOT NULL,
+      subcount                   integer            NOT NULL,
       create_date                timestamptz(6)     DEFAULT now() NOT NULL,
       create_user                integer            NOT NULL,
       update_date                timestamptz(6),
@@ -34,7 +34,7 @@ export async function up(knex: Knex): Promise<void> {
 
     COMMENT ON COLUMN observation_subcount.observation_subcount_id    IS 'System generated surrogate primary key identifier.';
     COMMENT ON COLUMN observation_subcount.survey_observation_id      IS 'A foreign key pointing to the survey_observation table.';
-    COMMENT ON COLUMN observation_subcount.count                      IS 'The subcount of the observation.';
+    COMMENT ON COLUMN observation_subcount.subcount                   IS 'The subcount of the observation.';
     COMMENT ON COLUMN observation_subcount.create_date                IS 'The datetime the record was created.';
     COMMENT ON COLUMN observation_subcount.create_user                IS 'The id of the user who created the record as identified in the system user table.';
     COMMENT ON COLUMN observation_subcount.update_date                IS 'The datetime the record was updated.';
@@ -162,7 +162,7 @@ export async function up(knex: Knex): Promise<void> {
     $$
     BEGIN
       IF (
-        SELECT SUM(count) FROM observation_subcount WHERE survey_observation_id = NEW.survey_observation_id
+        SELECT SUM(subcount) FROM observation_subcount WHERE survey_observation_id = NEW.survey_observation_id
       ) > (
         SELECT count FROM survey_observation WHERE  survey_observation_id = NEW.survey_observation_id
       ) 
