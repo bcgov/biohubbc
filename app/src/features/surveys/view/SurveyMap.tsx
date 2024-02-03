@@ -144,17 +144,19 @@ const SurveyMap = (props: ISurveyMapProps) => {
   const sampleSites = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
 
   const bounds: LatLngBoundsExpression | undefined = useMemo(() => {
-    // TODO the sampling sites and study areas will be included in the bounds calculation
-    const allMapPoints = props.supplementaryLayers.reduce((acc: ISurveyMapPoint[], layer) => {
-      return acc.concat(layer.mapPoints)
-    }, []);
+    const allMapFeatures: Feature[] = [
+      ...props.supplementaryLayers
+        .flatMap((supplementaryLayer) => supplementaryLayer.mapPoints.map((mapPoint) => mapPoint.feature)),
+      ...studyAreaLocations.flatMap((location) => location.geojson),
+      ...sampleSites.map((sampleSite) => sampleSite.geojson)
+    ]
 
-    if (allMapPoints.length > 0) {
-      return calculateUpdatedMapBounds(allMapPoints.map((item) => item.feature));
+    if (allMapFeatures.length > 0) {
+      return calculateUpdatedMapBounds(allMapFeatures);
     } else {
       return calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]);
     }
-  }, [props.supplementaryLayers]);
+  }, [props.supplementaryLayers, studyAreaLocations, sampleSites]);
 
   return (
     <>
@@ -196,8 +198,6 @@ const SurveyMap = (props: ISurveyMapProps) => {
                   layerName: 'Sample Sites',
                   layerColors: { color: '#1f7dff', fillColor: '#1f7dff' },
                   features: sampleSites.map((sampleSite) => {
-                    // const isLoading = !mapPointMetadata[mapPoint.key]; // Remove?
-
                     return {
                       geoJSON: sampleSite.geojson,
                       popup: (
