@@ -91,7 +91,9 @@ export const useTelemetryApi = () => {
    * @param {ICreateManualTelemetry[]} manualTelemetry Manual Telemetry create objects
    * @return {*}  {Promise<ICreateManualTelemetry[]>}
    */
-  const createManualTelemetry = async (manualTelemetry: ICreateManualTelemetry[]): Promise<ICreateManualTelemetry[]> => {
+  const createManualTelemetry = async (
+    manualTelemetry: ICreateManualTelemetry[]
+  ): Promise<ICreateManualTelemetry[]> => {
     const { data } = await axios.post<IManualTelemetry[]>('/api/telemetry/manual', manualTelemetry);
     return data;
   };
@@ -100,7 +102,7 @@ export const useTelemetryApi = () => {
    * Bulk update Manual Telemetry
    *
    * @param {IUpdateManualTelemetry[]} manualTelemetry Manual Telemetry update objects
-   * @return {*} 
+   * @return {*}
    */
   const updateManualTelemetry = async (manualTelemetry: IUpdateManualTelemetry[]) => {
     const { data } = await axios.patch<IManualTelemetry[]>('/api/telemetry/manual', manualTelemetry);
@@ -111,7 +113,7 @@ export const useTelemetryApi = () => {
    * Delete manual telemetry records
    *
    * @param {string[]} telemetryIds Manual Telemetry ids to delete
-   * @return {*} 
+   * @return {*}
    */
   const deleteManualTelemetry = async (telemetryIds: string[]) => {
     const { data } = await axios.post<IManualTelemetry[]>('/api/telemetry/manual/delete', telemetryIds);

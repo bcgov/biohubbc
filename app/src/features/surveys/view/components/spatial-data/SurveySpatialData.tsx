@@ -5,18 +5,18 @@ import { ObservationsContext } from 'contexts/observationsContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TaxonomyContext } from 'contexts/taxonomyContext';
 import { TelemetryDataContext } from 'contexts/telemetryDataContext';
+import dayjs from 'dayjs';
 import { Position } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { ITelemetry } from 'hooks/useTelemetryApi';
+import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useMemo, useState } from 'react';
+import { IAnimalDeployment } from '../../survey-animals/telemetry-device/device';
 import SurveyMap, { ISurveyMapPoint, ISurveyMapPointMetadata, ISurveyMapSupplementaryLayer } from '../../SurveyMap';
 import SurveySpatialObservationDataTable from './SurveySpatialObservationDataTable';
 import SurveySpatialTelemetryDataTable from './SurveySpatialTelemetryDataTable';
 import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './SurveySpatialToolbar';
-import dayjs from 'dayjs';
-import { IAnimalDeployment } from '../../survey-animals/telemetry-device/device';
-import { ITelemetry } from 'hooks/useTelemetryApi';
-import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 
 const SurveySpatialData = () => {
   const [activeView, setActiveView] = useState<SurveySpatialDatasetViewEnum>(SurveySpatialDatasetViewEnum.OBSERVATIONS);
@@ -63,54 +63,62 @@ const SurveySpatialData = () => {
   /**
    * Because Telemetry data is client-side paginated, we can collect all spatial points from
    * traversing the array of telemetry data.
-   */  
-  const telemetryPoints: ISurveyMapPoint[]  = useMemo(() => {
+   */
+  const telemetryPoints: ISurveyMapPoint[] = useMemo(() => {
     const deployments: IAnimalDeployment[] = surveyContext.deploymentDataLoader.data ?? [];
     const critters: IDetailedCritterWithInternalId[] = surveyContext.critterDataLoader.data ?? [];
     const telemetry: ITelemetry[] = telemetryContext.telemetryDataLoader.data ?? [];
-    
-    return telemetry
-      .filter((telemetry) => telemetry.latitude !== undefined && telemetry.longitude !== undefined)
 
-      // Combine all critter and deployments data into a flat list
-      .reduce((acc: { deployment: IAnimalDeployment, critter: IDetailedCritterWithInternalId, telemetry: ITelemetry}[], telemetry: ITelemetry) => {
-        const deployment = deployments.find((animalDeployment) => animalDeployment.deployment_id === telemetry.deployment_id);
-        const critter = critters.find((detailedCritter) => detailedCritter.critter_id === deployment?.critter_id);
-        if (critter && deployment) {
-          acc.push({ deployment, critter, telemetry })
-        }
+    return (
+      telemetry
+        .filter((telemetry) => telemetry.latitude !== undefined && telemetry.longitude !== undefined)
 
-        return acc;
-      }, [])
-      .map(({ telemetry, deployment, critter }) => {
-        return {
-          feature: {
-            type: 'Feature',
-            properties: {},
-            geometry: {
-              type: 'Point',
-              coordinates: [telemetry.longitude, telemetry.latitude] as Position
+        // Combine all critter and deployments data into a flat list
+        .reduce(
+          (
+            acc: { deployment: IAnimalDeployment; critter: IDetailedCritterWithInternalId; telemetry: ITelemetry }[],
+            telemetry: ITelemetry
+          ) => {
+            const deployment = deployments.find(
+              (animalDeployment) => animalDeployment.deployment_id === telemetry.deployment_id
+            );
+            const critter = critters.find((detailedCritter) => detailedCritter.critter_id === deployment?.critter_id);
+            if (critter && deployment) {
+              acc.push({ deployment, critter, telemetry });
             }
+
+            return acc;
           },
-          key: `telemetry-${telemetry.telemetry_manual_id}`,
-          onLoadMetadata: async (): Promise<ISurveyMapPointMetadata[]> => {
-            return Promise.resolve([
-              { label: 'Device ID', value: String(deployment.device_id) },
-              { label: 'Alias', value: critter.animal_id ?? 'None' }, // TODO which placeholder to use?
-              {
-                label: 'Location',
-                value: [telemetry.latitude, telemetry.longitude]
-                  .filter((coord): coord is number => (coord !== null))
-                  .map((coord) => coord.toFixed(6))
-                  .join(', ')
-              },
-              { label: 'Date', value: dayjs(telemetry.acquisition_date).toISOString() }
-            ]);
-          }
-        };
-      });
-
-
+          []
+        )
+        .map(({ telemetry, deployment, critter }) => {
+          return {
+            feature: {
+              type: 'Feature',
+              properties: {},
+              geometry: {
+                type: 'Point',
+                coordinates: [telemetry.longitude, telemetry.latitude] as Position
+              }
+            },
+            key: `telemetry-${telemetry.telemetry_manual_id}`,
+            onLoadMetadata: async (): Promise<ISurveyMapPointMetadata[]> => {
+              return Promise.resolve([
+                { label: 'Device ID', value: String(deployment.device_id) },
+                { label: 'Alias', value: critter.animal_id ?? 'None' }, // TODO which placeholder to use?
+                {
+                  label: 'Location',
+                  value: [telemetry.latitude, telemetry.longitude]
+                    .filter((coord): coord is number => coord !== null)
+                    .map((coord) => coord.toFixed(6))
+                    .join(', ')
+                },
+                { label: 'Date', value: dayjs(telemetry.acquisition_date).toISOString() }
+              ]);
+            }
+          };
+        })
+    );
   }, [surveyContext.critterDataLoader.data, surveyContext.deploymentDataLoader.data]);
 
   /**
@@ -139,7 +147,7 @@ const SurveySpatialData = () => {
             {
               label: 'Location',
               value: [response.latitude, response.longitude]
-                .filter((coord): coord is number => (coord !== null))
+                .filter((coord): coord is number => coord !== null)
                 .map((coord) => coord.toFixed(6))
                 .join(', ')
             },
@@ -197,8 +205,9 @@ const SurveySpatialData = () => {
         activeView={activeView}
         views={[
           {
-            label: `Observations (${observationsGeometryDataLoader.data?.supplementaryObservationData?.observationCount ?? 0
-              })`,
+            label: `Observations (${
+              observationsGeometryDataLoader.data?.supplementaryObservationData?.observationCount ?? 0
+            })`,
             value: SurveySpatialDatasetViewEnum.OBSERVATIONS,
             icon: mdiEye,
             isLoading: false

@@ -14,8 +14,8 @@ import { Feature } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
 import { useContext, useMemo, useState } from 'react';
 import { LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
-import { getCodesName } from 'utils/Utils';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
+import { getCodesName } from 'utils/Utils';
 
 export interface ISurveyMapPointMetadata {
   label: string;
@@ -78,7 +78,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 interface ISurveyMapPopupProps {
   isLoading: boolean;
   title: string;
-  metadata: ISurveyMapPointMetadata[]
+  metadata: ISurveyMapPointMetadata[];
 }
 
 const SurveyMapPopup = (props: ISurveyMapPopupProps) => {
@@ -86,14 +86,16 @@ const SurveyMapPopup = (props: ISurveyMapPopupProps) => {
     <Box>
       {props.isLoading ? (
         <Box position="absolute" top="0" left="0" right="0" sx={{ opacity: 1 }}>
-          <Typography component="div" variant="body2" fontWeight={700}
+          <Typography
+            component="div"
+            variant="body2"
+            fontWeight={700}
             sx={{
               pr: 3,
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis'
-            }}
-          >
+            }}>
             <Skeleton></Skeleton>
           </Typography>
           <Box mt={1} mb={0}>
@@ -109,28 +111,36 @@ const SurveyMapPopup = (props: ISurveyMapPopupProps) => {
         </Box>
       ) : (
         <Box>
-          <Typography component="div" variant="body2" fontWeight={700}
+          <Typography
+            component="div"
+            variant="body2"
+            fontWeight={700}
             sx={{
               pr: 4,
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               textTransform: 'uppercase'
-            }}
-          >{props.title}</Typography>
+            }}>
+            {props.title}
+          </Typography>
           <Box component="dl" mt={1} mb={0}>
             {props.metadata.map((metadata) => (
               <Stack flexDirection="row" alignItems="flex-start" gap={1} sx={{ typography: 'body2' }}>
-                <Box component="dt" width={80} flex="0 0 auto" sx={{ color: 'text.secondary' }}>{metadata.label}:</Box>
-                <Box component="dd" m={0} minWidth={100}>{metadata.value}</Box>
+                <Box component="dt" width={80} flex="0 0 auto" sx={{ color: 'text.secondary' }}>
+                  {metadata.label}:
+                </Box>
+                <Box component="dd" m={0} minWidth={100}>
+                  {metadata.value}
+                </Box>
               </Stack>
             ))}
           </Box>
         </Box>
       )}
     </Box>
-  )
-}
+  );
+};
 
 const SurveyMap = (props: ISurveyMapProps) => {
   const classes = useStyles();
@@ -145,11 +155,12 @@ const SurveyMap = (props: ISurveyMapProps) => {
 
   const bounds: LatLngBoundsExpression | undefined = useMemo(() => {
     const allMapFeatures: Feature[] = [
-      ...props.supplementaryLayers
-        .flatMap((supplementaryLayer) => supplementaryLayer.mapPoints.map((mapPoint) => mapPoint.feature)),
+      ...props.supplementaryLayers.flatMap((supplementaryLayer) =>
+        supplementaryLayer.mapPoints.map((mapPoint) => mapPoint.feature)
+      ),
       ...studyAreaLocations.flatMap((location) => location.geojson),
       ...sampleSites.map((sampleSite) => sampleSite.geojson)
-    ]
+    ];
 
     if (allMapFeatures.length > 0) {
       return calculateUpdatedMapBounds(allMapFeatures);
@@ -190,8 +201,8 @@ const SurveyMap = (props: ISurveyMapProps) => {
                             isLoading={false}
                           />
                         )
-                      }
-                    })
+                      };
+                    });
                   })
                 },
                 {
@@ -203,55 +214,66 @@ const SurveyMap = (props: ISurveyMapProps) => {
                       popup: (
                         <SurveyMapPopup
                           isLoading={false}
-                          title='Sampling Site'
-                          metadata={[{
-                            label: 'Methods',
-                            value: (sampleSite.sample_methods ?? [])
-                              .map((method) => getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_lookup_id) ?? '')
-                              .filter(Boolean)
-                              .join(', ')
-                          }]}
+                          title="Sampling Site"
+                          metadata={[
+                            {
+                              label: 'Methods',
+                              value: (sampleSite.sample_methods ?? [])
+                                .map(
+                                  (method) =>
+                                    getCodesName(
+                                      codesContext.codesDataLoader.data,
+                                      'sample_methods',
+                                      method.method_lookup_id
+                                    ) ?? ''
+                                )
+                                .filter(Boolean)
+                                .join(', ')
+                            }
+                          ]}
                         />
                       )
-                    }
+                    };
                   })
                 },
                 ...props.supplementaryLayers.map((supplementaryLayer) => {
                   return {
                     layerName: supplementaryLayer.layerName,
                     layerColors: { fillColor: '#1f7dff', color: '#FFFFFF' },
-                    features: supplementaryLayer.mapPoints.map((mapPoint: ISurveyMapPoint, index: number): IStaticLayerFeature => {
-                      const isLoading = !mapPointMetadata[mapPoint.key];
+                    features: supplementaryLayer.mapPoints.map(
+                      (mapPoint: ISurveyMapPoint, index: number): IStaticLayerFeature => {
+                        const isLoading = !mapPointMetadata[mapPoint.key];
 
-                      return {
-                        key: mapPoint.key,
-                        geoJSON: mapPoint.feature,
-                        GeoJSONProps: {
-                          onEachFeature: (feature, layer) => {
-                            layer.on({
-                              popupopen: () => {
-                                if (mapPointMetadata[mapPoint.key]) {
-                                  return;
+                        return {
+                          key: mapPoint.key,
+                          geoJSON: mapPoint.feature,
+                          GeoJSONProps: {
+                            onEachFeature: (feature, layer) => {
+                              layer.on({
+                                popupopen: () => {
+                                  if (mapPointMetadata[mapPoint.key]) {
+                                    return;
+                                  }
+
+                                  mapPoint.onLoadMetadata().then((metadata) => {
+                                    setMapPointMetadata((prev) => ({ ...prev, [mapPoint.key]: metadata }));
+                                  });
                                 }
-
-                                mapPoint.onLoadMetadata().then((metadata) => {
-                                  setMapPointMetadata((prev) => ({ ...prev, [mapPoint.key]: metadata }));
-                                });
-                              }
-                            });
+                              });
+                            }
                           },
-                        },
-                        PopupProps: { className: classes.popup },
-                        popup: (
-                          <SurveyMapPopup
-                            isLoading={isLoading}
-                            title={supplementaryLayer.popupRecordTitle}
-                            metadata={mapPointMetadata[mapPoint.key]}
-                          />
-                        )
+                          PopupProps: { className: classes.popup },
+                          popup: (
+                            <SurveyMapPopup
+                              isLoading={isLoading}
+                              title={supplementaryLayer.popupRecordTitle}
+                              metadata={mapPointMetadata[mapPoint.key]}
+                            />
+                          )
+                        };
                       }
-                    })
-                  }
+                    )
+                  };
                 })
               ]}
             />
