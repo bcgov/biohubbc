@@ -81,6 +81,7 @@ const ProjectPage = () => {
                       )}
                     </Typography>
                   </Toolbar>
+                  {/* <Paper elevation={0} sx={{ overflow: 'hidden' }}> */}
                   <Box position="relative" height={{ sm: 400, md: 500 }}>
                     {projectContext.surveysListDataLoader.isLoading && (
                       <Box
@@ -116,6 +117,7 @@ const ProjectPage = () => {
                     )}
                     <StudyAreasMap />
                   </Box>
+                  {/* </Paper> */}
                 </Paper>
               </Box>
               <Box mb={3}>

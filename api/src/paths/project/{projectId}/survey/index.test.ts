@@ -51,7 +51,8 @@ describe('survey list', () => {
       start_date: '2023-01-01',
       end_date: null,
       focal_species: [1],
-      focal_species_names: ['Species 1']
+      focal_species_names: ['Species 1'],
+      locations: []
     };
 
     const surveyId2 = 2;
@@ -61,7 +62,8 @@ describe('survey list', () => {
       start_date: '2023-04-04',
       end_date: '2024-05-05',
       focal_species: [1, 2],
-      focal_species_names: ['Species 1', 'Species 2']
+      focal_species_names: ['Species 1', 'Species 2'],
+      locations: []
     };
 
     const getSurveysBasicFieldsByProjectIdStub = sinon
