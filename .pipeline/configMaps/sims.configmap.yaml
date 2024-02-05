@@ -8,13 +8,6 @@ data:
   config: |
     {
       "name": "sims",
-      "namespaceSuffix": "af2668",
-      "namespace": {
-        "tools": "tools",
-        "dev": "dev",
-        "test": "test",
-        "prod": "prod"
-      },
       "version": "1.0.0",
       "module": {
         "db": "sims-db",
@@ -24,6 +17,7 @@ data:
       "api": {
         "pr": {
           "build": {
+            "namespace": "af2668-tools",
             "tz": "America/Vancouver",
             "cpuRequest": "50m",
             "cpuLimit": "1000m",
@@ -31,9 +25,8 @@ data:
             "memoryLimit": "3Gi"
           },
           "deploy": {
+            "namespace": "af2668-dev",
             "nodeEnv": "development",
-            "staticApiUrl": "api-dev-sims.apps.silver.devops.gov.bc.ca",
-            "staticAppUrl": "dev-sims.apps.silver.devops.gov.bc.ca",
             "tz": "America/Vancouver",
             "backboneApiHost": "https://api-dev-biohub-platform.apps.silver.devops.gov.bc.ca",
             "backboneIntakePath": "/api/dwc/submission/queue",
@@ -55,6 +48,7 @@ data:
         },
         "dev": {
           "build": {
+            "namespace": "af2668-tools",
             "tz": "America/Vancouver",
             "cpuRequest": "50m",
             "cpuLimit": "1000m",
@@ -62,6 +56,7 @@ data:
             "memoryLimit": "3Gi"
           },
           "deploy": {
+            "namespace": "af2668-dev",
             "nodeEnv": "development",
             "staticApiUrl": "api-dev-sims.apps.silver.devops.gov.bc.ca",
             "staticAppUrl": "dev-sims.apps.silver.devops.gov.bc.ca",
@@ -86,6 +81,7 @@ data:
         },
         "test": {
           "build": {
+            "namespace": "af2668-tools",
             "tz": "America/Vancouver",
             "cpuRequest": "50m",
             "cpuLimit": "1000m",
@@ -93,6 +89,7 @@ data:
             "memoryLimit": "3Gi"
           },
           "deploy": {
+            "namespace": "af2668-test",
             "nodeEnv": "production",
             "staticApiUrl": "api-test-sims.apps.silver.devops.gov.bc.ca",
             "staticAppUrl": "test-sims.apps.silver.devops.gov.bc.ca",
@@ -117,6 +114,7 @@ data:
         },
         "prod": {
           "build": {
+            "namespace": "af2668-tools",
             "tz": "America/Vancouver",
             "cpuRequest": "50m",
             "cpuLimit": "1000m",
@@ -124,6 +122,7 @@ data:
             "memoryLimit": "3Gi"
           },
           "deploy": {
+            "namespace": "af2668-prod",
             "nodeEnv": "production",
             "staticApiUrl": "api-sims.apps.silver.devops.gov.bc.ca",
             "staticAppUrl": "sims.apps.silver.devops.gov.bc.ca",
@@ -151,12 +150,14 @@ data:
       "app": {
         "pr": {
           "build": {
+            "namespace": "af2668-tools",
             "cpuRequest": "50m",
             "cpuLimit": "1000m",
             "memoryRequest": "100Mi",
             "memoryLimit": "5Gi"
           },
           "deploy": {
+            "namespace": "af2668-dev",
             "nodeEnv": "development",
             "siteminderLogoutURL": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",
             "maxUploadNumFiles": 10,
@@ -172,12 +173,14 @@ data:
         },
         "dev": {
           "build": {
+            "namespace": "af2668-tools",
             "cpuRequest": "50m",
             "cpuLimit": "1000m",
             "memoryRequest": "100Mi",
             "memoryLimit": "5Gi"
           },
           "deploy": {
+            "namespace": "af2668-dev",
             "nodeEnv": "development",
             "staticApiUrl": "api-dev-sims.apps.silver.devops.gov.bc.ca",
             "staticAppUrl": "dev-sims.apps.silver.devops.gov.bc.ca",
@@ -195,12 +198,14 @@ data:
         },
         "test": {
           "build": {
+            "namespace": "af2668-tools",
             "cpuRequest": "50m",
             "cpuLimit": "1000m",
             "memoryRequest": "100Mi",
             "memoryLimit": "5Gi"
           },
           "deploy": {
+            "namespace": "af2668-test",
             "nodeEnv": "production",
             "staticApiUrl": "api-test-sims.apps.silver.devops.gov.bc.ca",
             "staticAppUrl": "test-sims.apps.silver.devops.gov.bc.ca",
@@ -218,12 +223,14 @@ data:
         },
         "prod": {
           "build": {
+            "namespace": "af2668-tools",
             "cpuRequest": "50m",
             "cpuLimit": "1000m",
             "memoryRequest": "100Mi",
             "memoryLimit": "5Gi"
           },
           "deploy": {
+            "namespace": "af2668-prod",
             "nodeEnv": "production",
             "staticApiUrl": "api-sims.apps.silver.devops.gov.bc.ca",
             "staticAppUrl": "sims.apps.silver.devops.gov.bc.ca",
@@ -244,6 +251,7 @@ data:
       "database": {
         "pr": {
           "build": {
+            "namespace": "af2668-tools",
             "tz": "America/Vancouver",
             "sourceContextDir": "database",
             "dbSetupDockerfilePath": "./.docker/db/Dockerfile.setup",
@@ -253,6 +261,7 @@ data:
             "memoryLimit": "1.5Gi"
           },
           "deploy": {
+            "namespace": "af2668-dev",
             "nodeEnv": "development",
             "tz": "America/Vancouver",
             "volumeCapacity": "500Mi",
@@ -265,6 +274,7 @@ data:
         },
         "dev": {
           "build": {
+            "namespace": "af2668-tools",
             "tz": "America/Vancouver",
             "sourceContextDir": "database",
             "dbSetupDockerfilePath": "./.docker/db/Dockerfile.setup",
@@ -274,6 +284,7 @@ data:
             "memoryLimit": "1.5Gi"
           },
           "deploy": {
+            "namespace": "af2668-dev",
             "nodeEnv": "development",
             "tz": "America/Vancouver",
             "volumeCapacity": "3Gi",
@@ -286,6 +297,7 @@ data:
         },
         "test": {
           "build": {
+            "namespace": "af2668-tools",
             "tz": "America/Vancouver",
             "sourceContextDir": "database",
             "dbSetupDockerfilePath": "./.docker/db/Dockerfile.migrate",
@@ -295,6 +307,7 @@ data:
             "memoryLimit": "1.5Gi"
           },
           "deploy": {
+            "namespace": "af2668-test",
             "nodeEnv": "production",
             "tz": "America/Vancouver",
             "volumeCapacity": "3Gi",
@@ -307,6 +320,7 @@ data:
         },
         "prod": {
           "build": {
+            "namespace": "af2668-tools",
             "tz": "America/Vancouver",
             "sourceContextDir": "database",
             "dbSetupDockerfilePath": "./.docker/db/Dockerfile.migrate",
@@ -316,6 +330,7 @@ data:
             "memoryLimit": "1.5Gi"
           },
           "deploy": {
+            "namespace": "af2668-prod",
             "nodeEnv": "production",
             "tz": "America/Vancouver",
             "volumeCapacity": "5Gi",
@@ -325,8 +340,7 @@ data:
             "memoryLimit": "3Gi",
             "replicas": "1"
           }
-        },
-        "deploy": {}
+        }
       },
       "sso": {
         "pr": {

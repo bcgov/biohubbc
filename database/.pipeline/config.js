@@ -1,7 +1,7 @@
 'use strict';
 
-const { PipelineConfigMapSchema } = require('./utils/configMapSchema');
 const PipelineCli = require('pipeline-cli');
+const { PipelineConfigMapSchema } = require('../../.pipeline/configMaps/PipelineConfigMapSchema');
 
 // Options passed in from the git action
 const rawOptions = PipelineCli.Util.parseArguments();
@@ -81,7 +81,6 @@ const phases = {
   pr: {
     build: {
       ...pipelineConfigMap.database.pr.build,
-      namespace: 'af2668-tools',
       name: pipelineConfigMap.module.db,
       changeId: changeId,
       suffix: `-build-${changeId}`,
@@ -92,20 +91,17 @@ const phases = {
     },
     deploy: {
       ...pipelineConfigMap.database.pr.deploy,
-      //   phase: 'dev',
-      namespace: 'af2668-dev',
       name: pipelineConfigMap.module.db,
       changeId: changeId,
       suffix: `-dev-${changeId}`,
       instance: `${pipelineConfigMap.module.db}-pr-${changeId}`,
-      version: `${changeId}-${changeId}`,
+      version: `pr-${changeId}`,
       tag: `dev-${pipelineConfigMap.version}-${changeId}`
     }
   },
   dev: {
     build: {
       ...pipelineConfigMap.database.dev.build,
-      namespace: 'af2668-tools',
       name: pipelineConfigMap.module.db,
       changeId: changeId,
       suffix: `-build-${changeId}`,
@@ -116,8 +112,6 @@ const phases = {
     },
     deploy: {
       ...pipelineConfigMap.database.dev.deploy,
-      //   phase: 'dev',
-      namespace: 'af2668-dev',
       name: pipelineConfigMap.module.db,
       changeId: 'deploy',
       suffix: `-dev-deploy`,
@@ -129,7 +123,6 @@ const phases = {
   test: {
     build: {
       ...pipelineConfigMap.database.test.build,
-      namespace: 'af2668-tools',
       name: pipelineConfigMap.module.db,
       changeId: changeId,
       suffix: `-build-${changeId}`,
@@ -140,20 +133,17 @@ const phases = {
     },
     deploy: {
       ...pipelineConfigMap.database.test.deploy,
-      //   phase: 'test',
-      namespace: 'af2668-test',
       name: pipelineConfigMap.module.db,
       changeId: 'deploy',
       suffix: `-test`,
       instance: `${pipelineConfigMap.module.db}-test`,
-      version: pipelineConfigMap.version,
+      version: `deploy-${changeId}`,
       tag: `test-${pipelineConfigMap.version}`
     }
   },
   prod: {
     build: {
       ...pipelineConfigMap.database.prod.build,
-      namespace: 'af2668-tools',
       name: pipelineConfigMap.module.db,
       changeId: changeId,
       suffix: `-build-${changeId}`,
@@ -164,13 +154,11 @@ const phases = {
     },
     deploy: {
       ...pipelineConfigMap.database.prod.deploy,
-      //   phase: 'prod',
-      namespace: 'af2668-prod',
       name: pipelineConfigMap.module.db,
       changeId: 'deploy',
       suffix: `-prod`,
       instance: `${pipelineConfigMap.module.db}-prod`,
-      version: pipelineConfigMap.version,
+      version: `deploy-${changeId}`,
       tag: `prod-${pipelineConfigMap.version}`
     }
   }

@@ -1,7 +1,7 @@
 'use strict';
 
-const { PipelineConfigMapSchema } = require('./utils/configMapSchema');
 const PipelineCli = require('pipeline-cli');
+const { PipelineConfigMapSchema } = require('../../.pipeline/configMaps/PipelineConfigMapSchema');
 
 // Options passed in from the git action
 const rawOptions = PipelineCli.Util.parseArguments();
@@ -81,7 +81,6 @@ const phases = {
   pr: {
     build: {
       ...pipelineConfigMap.app.pr.build,
-      namespace: 'af2668-tools',
       name: pipelineConfigMap.module.app,
       changeId: changeId,
       suffix: `-build-${changeId}`,
@@ -92,23 +91,20 @@ const phases = {
     },
     deploy: {
       ...pipelineConfigMap.app.pr.deploy,
-      namespace: 'af2668-dev',
       name: pipelineConfigMap.module.app,
-      //   phase: 'dev',
       changeId: changeId,
       suffix: `-dev-${changeId}`,
       instance: `${pipelineConfigMap.module.app}-pr-${changeId}`,
-      version: `${changeId}-${changeId}`,
+      version: `pr-${changeId}`,
       tag: `dev-${pipelineConfigMap.version}-${changeId}`,
       host: `${pipelineConfigMap.module.app}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
       apiHost: `${pipelineConfigMap.module.api}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
-      sso: pipelineConfigMap.sso.dev
+      sso: pipelineConfigMap.sso.pr
     }
   },
   dev: {
     build: {
       ...pipelineConfigMap.app.dev.build,
-      namespace: 'af2668-tools',
       name: pipelineConfigMap.module.app,
       changeId: changeId,
       suffix: `-build-${changeId}`,
@@ -119,9 +115,7 @@ const phases = {
     },
     deploy: {
       ...pipelineConfigMap.app.dev.deploy,
-      namespace: 'af2668-dev',
       name: pipelineConfigMap.module.app,
-      //   phase: 'dev',
       changeId: 'deploy',
       suffix: '-dev-deploy',
       instance: `${pipelineConfigMap.module.app}-dev-deploy`,
@@ -135,7 +129,6 @@ const phases = {
   test: {
     build: {
       ...pipelineConfigMap.app.test.build,
-      namespace: 'af2668-tools',
       name: pipelineConfigMap.module.app,
       changeId: changeId,
       suffix: `-build-${changeId}`,
@@ -146,13 +139,11 @@ const phases = {
     },
     deploy: {
       ...pipelineConfigMap.app.test.deploy,
-      namespace: 'af2668-test',
       name: pipelineConfigMap.module.app,
-      //   phase: 'test',
       changeId: 'deploy',
       suffix: `-test`,
       instance: `${pipelineConfigMap.module.app}-test`,
-      version: pipelineConfigMap.version,
+      version: `deploy-${changeId}`,
       tag: `test-${pipelineConfigMap.version}`,
       host: pipelineConfigMap.app.test.deploy.staticAppUrl,
       apiHost: pipelineConfigMap.app.test.deploy.staticApiUrl,
@@ -162,7 +153,6 @@ const phases = {
   prod: {
     build: {
       ...pipelineConfigMap.app.prod.build,
-      namespace: 'af2668-tools',
       name: pipelineConfigMap.module.app,
       changeId: changeId,
       suffix: `-build-${changeId}`,
@@ -173,13 +163,11 @@ const phases = {
     },
     deploy: {
       ...pipelineConfigMap.app.prod.deploy,
-      namespace: 'af2668-prod',
       name: pipelineConfigMap.module.app,
-      //   phase: 'prod',
       changeId: 'deploy',
       suffix: `-prod`,
       instance: `${pipelineConfigMap.module.app}-prod`,
-      version: pipelineConfigMap.version,
+      version: `deploy-${changeId}`,
       tag: `prod-${pipelineConfigMap.version}`,
       host: pipelineConfigMap.app.prod.deploy.staticAppUrl,
       apiHost: pipelineConfigMap.app.prod.deploy.staticApiUrl,
