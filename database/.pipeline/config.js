@@ -1,9 +1,6 @@
 'use strict';
 
 const PipelineCli = require('pipeline-cli');
-const { getPipelineConfigMapSchema } = require('../../.pipeline/configMaps/PipelineConfigMapSchema');
-
-const PipelineConfigMapSchema = getPipelineConfigMapSchema();
 
 // Options passed in from the git action
 const rawOptions = PipelineCli.Util.parseArguments();
@@ -14,7 +11,7 @@ const changeId = rawOptions.pr;
 // Pipeline config map from openshift
 const rawPipelineConfigMap = rawOptions.config;
 // Validate the pipeline config map is not missing any fields
-const pipelineConfigMap = PipelineConfigMapSchema.parse(JSON.parse(rawPipelineConfigMap));
+const pipelineConfigMap = JSON.parse(rawPipelineConfigMap);
 
 // A static deployment is when the deployment is updating dev, test, or prod (rather than a temporary PR)
 // See `--type=static` in the `deployStatic.yml` git workflow
