@@ -14,8 +14,26 @@ import { debounce } from 'lodash-es';
 import { useMemo, useState } from 'react';
 
 export interface IMeasurementsSearchAutocompleteProps {
+  /**
+   * The selected measurements.
+   *
+   * @type {Measurement[]}
+   * @memberof IMeasurementsSearchAutocompleteProps
+   */
   selectedOptions: Measurement[];
+  /**
+   * An async function that returns an array of options, based on the provided input value.
+   *
+   * @memberof IMeasurementsSearchAutocompleteProps
+   */
   getOptions: (inputValue: string) => Promise<Measurement[]>;
+  /**
+   * Callback fired on selecting options.
+   *
+   * Note: this is not fired until the user un-focuses the component.
+   *
+   * @memberof IMeasurementsSearchAutocompleteProps
+   */
   onSelectOptions: (measurements: Measurement[]) => void;
 }
 
@@ -122,7 +140,7 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
                 </Typography>
               </Box>
               <Box>
-                <Typography variant="body1" color="textPrimary">
+                <Typography variant="body1" fontWeight={700}>
                   {renderOption.measurementName}
                 </Typography>
               </Box>

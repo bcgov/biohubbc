@@ -52,7 +52,7 @@ export const MeasurementsListCard = (props: IMeasurementsListCardProps) => {
           </Typography>
         </Box>
         <Box>
-          <Typography variant="body1" color="textPrimary">
+          <Typography variant="body1" fontWeight={700}>
             {props.measurement.measurementName}
           </Typography>
         </Box>
