@@ -125,8 +125,8 @@ const SurveyMapPopup = (props: ISurveyMapPopupProps) => {
             {props.title}
           </Typography>
           <Box component="dl" mt={1} mb={0}>
-            {props.metadata.map((metadata) => (
-              <Stack flexDirection="row" alignItems="flex-start" gap={1} sx={{ typography: 'body2' }}>
+            {props.metadata.map((metadata, index) => (
+              <Stack key={`${metadata.label}-${index}`} flexDirection="row" alignItems="flex-start" gap={1} sx={{ typography: 'body2' }}>
                 <Box component="dt" width={80} flex="0 0 auto" sx={{ color: 'text.secondary' }}>
                   {metadata.label}:
                 </Box>
@@ -145,7 +145,6 @@ const SurveyMapPopup = (props: ISurveyMapPopupProps) => {
 const SurveyMap = (props: ISurveyMapProps) => {
   const classes = useStyles();
   const [mapPointMetadata, setMapPointMetadata] = useState<Record<string, ISurveyMapPointMetadata[]>>({});
-  // const [sampleSiteMetadata, setSampleSiteMetadata] = useState<Record<string, ISurveyMapPointMetadata[]>>({});
 
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);

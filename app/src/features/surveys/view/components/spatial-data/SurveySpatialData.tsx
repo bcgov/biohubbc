@@ -105,7 +105,7 @@ const SurveySpatialData = () => {
             onLoadMetadata: async (): Promise<ISurveyMapPointMetadata[]> => {
               return Promise.resolve([
                 { label: 'Device ID', value: String(deployment.device_id) },
-                { label: 'Alias', value: critter.animal_id ?? 'None' }, // TODO which placeholder to use?
+                { label: 'Alias', value: critter.animal_id ?? '' },
                 {
                   label: 'Location',
                   value: [telemetry.latitude, telemetry.longitude]
