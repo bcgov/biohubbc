@@ -5,6 +5,8 @@ import CheckBoxOutlineBlank from '@mui/icons-material/CheckBoxOutlineBlank';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
+import ListItem from '@mui/material/ListItem';
+import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { Measurement } from 'hooks/cb_api/useLookupApi';
@@ -90,7 +92,15 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
       }}
       renderOption={(renderProps, renderOption) => {
         return (
-          <Box component="li" {...renderProps} key={renderOption.uuid}>
+          <ListItem
+            disablePadding
+            divider
+            sx={{
+              py: '12px !important',
+              px: 2
+            }}
+            {...renderProps}
+            key={renderOption.uuid}>
             <Checkbox
               icon={<CheckBoxOutlineBlank fontSize="small" />}
               checkedIcon={<CheckBox fontSize="small" />}
@@ -98,19 +108,24 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
               value={renderOption.uuid}
               color="default"
             />
-            <Box>
+            <Stack gap={0.75} mt={-0.25}>
               <Box>
-                <Typography variant="subtitle1" fontWeight="bold">
+                <Typography variant="body2" color="textSecondary">
+                  {renderOption.scientificName} ({renderOption.commonName})
+                </Typography>
+              </Box>
+              <Box>
+                <Typography variant="body1" color="textPrimary">
                   {renderOption.measurementName}
                 </Typography>
               </Box>
-              <Box my={0.25}>
-                <Typography variant="subtitle2" color="textSecondary">
+              <Box>
+                <Typography variant="subtitle2" color="textPrimary">
                   {renderOption.measurementDescription}
                 </Typography>
               </Box>
-            </Box>
-          </Box>
+            </Stack>
+          </ListItem>
         );
       }}
       renderInput={(params) => (

@@ -13,7 +13,7 @@ export const MeasurementsList = (props: IMeasurementsListProps) => {
   const { selectedMeasurements, onRemove } = props;
 
   return (
-    <Stack component={TransitionGroup} gap={1} mt={3}>
+    <Stack component={TransitionGroup} gap={1} mt={1}>
       {selectedMeasurements.map((measurement) => {
         return (
           <Collapse key={measurement.uuid}>

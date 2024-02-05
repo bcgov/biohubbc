@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Measurement } from 'hooks/cb_api/useLookupApi';
 
@@ -26,7 +27,7 @@ export const MeasurementsListCard = (props: IMeasurementsListCardProps) => {
         p: 2,
         background: grey[100]
       }}>
-      <Box>
+      <Stack gap={0.75} mt={-0.25}>
         <Box>
           <Typography variant="body2" color="textSecondary">
             {props.measurement.scientificName} ({props.measurement.commonName})
@@ -42,11 +43,11 @@ export const MeasurementsListCard = (props: IMeasurementsListCardProps) => {
             {props.measurement.measurementDescription}
           </Typography>
         </Box>
-        <Box>
-          <IconButton data-testid="delete-author-icon" aria-label="remove author" onClick={onRemove}>
-            <Icon path={mdiTrashCanOutline} size={1} />
-          </IconButton>
-        </Box>
+      </Stack>
+      <Box>
+        <IconButton data-testid="delete-author-icon" aria-label="remove author" onClick={onRemove}>
+          <Icon path={mdiTrashCanOutline} size={1} />
+        </IconButton>
       </Box>
     </Card>
   );
