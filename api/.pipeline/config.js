@@ -79,7 +79,7 @@ const options = processOptions(rawOptions);
 const phases = {
   pr: {
     build: {
-      ...PipelineConfigMapSchema.api.pr.build,
+      ...pipelineConfigMap.api.pr.build,
       name: pipelineConfigMap.module.api,
       dbName: pipelineConfigMap.module.db,
       changeId: changeId,
