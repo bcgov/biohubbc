@@ -1,7 +1,9 @@
 'use strict';
 
 const PipelineCli = require('pipeline-cli');
-const { PipelineConfigMapSchema } = require('../../.pipeline/configMaps/PipelineConfigMapSchema');
+const { getPipelineConfigMapSchema } = require('../../.pipeline/configMaps/PipelineConfigMapSchema');
+
+const PipelineConfigMapSchema = getPipelineConfigMapSchema();
 
 // Options passed in from the git action
 const rawOptions = PipelineCli.Util.parseArguments();
