@@ -35,6 +35,10 @@ const appDeploy = async (settings) => {
         REACT_APP_KEYCLOAK_HOST: phases[env][phase].sso.host,
         REACT_APP_KEYCLOAK_REALM: phases[env][phase].sso.realm,
         REACT_APP_KEYCLOAK_CLIENT_ID: phases[env][phase].sso.clientId,
+        // BioHub Plastform (aka: Backbone)
+        REACT_APP_BIOHUB_FEATURE_FLAG: phases[env][phase].biohubFeatureFlag,
+        REACT_APP_BACKBONE_API_HOST: phases[env][phase].backboneApiHost,
+        REACT_APP_BIOHUB_TAXON_PATH: phases[env][phase].biohubTaxonPath,
         // Openshift Resources
         CPU_REQUEST: phases[env][phase].cpuRequest,
         CPU_LIMIT: phases[env][phase].cpuLimit,

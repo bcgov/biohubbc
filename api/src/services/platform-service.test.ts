@@ -3,6 +3,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { ObservationRecord } from '../repositories/observation-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { AttachmentService } from './attachment-service';
 import { HistoryPublishService } from './history-publish-service';
@@ -129,9 +130,9 @@ describe('PlatformService', () => {
         .stub(SurveyService.prototype, 'getSurveyPurposeAndMethodology')
         .resolves({ additional_details: 'a description of the purpose' } as any);
 
-      const getSurveyObservationsWithSupplementaryDataStub = sinon
-        .stub(ObservationService.prototype, 'getSurveyObservationsWithSupplementaryData')
-        .resolves({ surveyObservations: [{ survey_observation_id: 2 } as any], supplementaryData: [] } as any);
+      const getAllSurveyObservationsStub = sinon
+        .stub(ObservationService.prototype, 'getAllSurveyObservations')
+        .resolves([({ survey_observation_id: 2 } as unknown) as ObservationRecord]);
 
       const getSurveyLocationsDataStub = sinon
         .stub(SurveyService.prototype, 'getSurveyLocationsData')
@@ -141,7 +142,7 @@ describe('PlatformService', () => {
 
       expect(getSurveyDataStub).to.have.been.calledOnceWith(1);
       expect(getSurveyPurposeAndMethodologyStub).to.have.been.calledOnceWith(1);
-      expect(getSurveyObservationsWithSupplementaryDataStub).to.have.been.calledOnceWith(1);
+      expect(getAllSurveyObservationsStub).to.have.been.calledOnceWith(1);
       expect(getSurveyLocationsDataStub).to.have.been.calledOnceWith(1);
       expect(response).to.eql({
         id: '1',

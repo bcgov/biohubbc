@@ -179,10 +179,10 @@ export class SurveyService extends DBService {
     const focalSpeciesIds = response.filter((item) => item.is_focal).map((item) => item.wldtaxonomic_units_id);
     const ancillarySpeciesIds = response.filter((item) => !item.is_focal).map((item) => item.wldtaxonomic_units_id);
 
-    const taxonomyService = new TaxonomyService();
+    const platformService = new PlatformService(this.connection);
 
-    const focalSpecies = await taxonomyService.getSpeciesFromIds(focalSpeciesIds);
-    const ancillarySpecies = await taxonomyService.getSpeciesFromIds(ancillarySpeciesIds);
+    const focalSpecies = await platformService.getTaxonomyFromBiohub(focalSpeciesIds);
+    const ancillarySpecies = await platformService.getTaxonomyFromBiohub(ancillarySpeciesIds);
 
     return { ...new GetFocalSpeciesData(focalSpecies), ...new GetAncillarySpeciesData(ancillarySpecies) };
   }

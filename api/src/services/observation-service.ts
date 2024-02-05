@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { IDBConnection } from '../database/db';
 import {
   InsertObservation,
+  ObservationGeometryRecord,
   ObservationRecord,
   ObservationRepository,
   ObservationSubmissionRecord,
@@ -20,6 +21,7 @@ import {
   validateWorksheetColumnTypes,
   validateWorksheetHeaders
 } from '../utils/xlsx-utils/worksheet-utils';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
 
 const defaultLog = getLogger('services/observation-service');
@@ -111,32 +113,93 @@ export class ObservationService extends DBService {
   }
 
   /**
+   * Retrieves all observation records for the given survey
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<ObservationRecord[]>}
+   * @memberof ObservationRepository
+   */
+  async getAllSurveyObservations(surveyId: number): Promise<ObservationRecord[]> {
+    return this.observationRepository.getAllSurveyObservations(surveyId);
+  }
+
+  /**
+   * Retrieves a single observation records by ID
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<ObservationRecord[]>}
+   * @memberof ObservationRepository
+   */
+  async getSurveyObservationById(surveyObservationId: number): Promise<ObservationRecord> {
+    return this.observationRepository.getSurveyObservationById(surveyObservationId);
+  }
+
+  /**
    * Retrieves all observation records for the given survey along with supplementary data
    *
    * @param {number} surveyId
+   * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<{ surveyObservations: ObservationRecord[]; supplementaryObservationData: ObservationSupplementaryData }>}
    * @memberof ObservationService
    */
-  async getSurveyObservationsWithSupplementaryData(
-    surveyId: number
+  async getSurveyObservationsWithSupplementaryAndSamplingData(
+    surveyId: number,
+    pagination?: ApiPaginationOptions
   ): Promise<{ surveyObservations: ObservationRecord[]; supplementaryObservationData: ObservationSupplementaryData }> {
-    const surveyObservations = await this.observationRepository.getSurveyObservations(surveyId);
+    const surveyObservations = await this.observationRepository.getSurveyObservationsWithSamplingData(
+      surveyId,
+      pagination
+    );
     const supplementaryObservationData = await this.getSurveyObservationsSupplementaryData(surveyId);
 
     return { surveyObservations, supplementaryObservationData };
   }
 
   /**
+   * Gets a set of GeoJson geometries representing the set of all lat/long points for the
+   * given survey's observations.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<{
+   *     surveyObservationsGeometry: ObservationGeometryRecord[];
+   *     supplementaryObservationData: ObservationSupplementaryData;
+   *   }>}
+   * @memberof ObservationService
+   */
+  async getSurveyObservationsGeometryWithSupplementaryData(
+    surveyId: number
+  ): Promise<{
+    surveyObservationsGeometry: ObservationGeometryRecord[];
+    supplementaryObservationData: ObservationSupplementaryData;
+  }> {
+    const surveyObservationsGeometry = await this.observationRepository.getSurveyObservationsGeometry(surveyId);
+    const supplementaryObservationData = await this.getSurveyObservationsSupplementaryData(surveyId);
+
+    return { surveyObservationsGeometry, supplementaryObservationData };
+  }
+
+  /**
    * Retrieves all supplementary data for the given survey's observations
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<{ surveyObservations: ObservationRecord[]; supplementaryObservationData: ObservationSupplementaryData }>}
+   * @return {*}  {Promise<ObservationSupplementaryData>}
    * @memberof ObservationService
    */
   async getSurveyObservationsSupplementaryData(surveyId: number): Promise<ObservationSupplementaryData> {
     const observationCount = await this.observationRepository.getSurveyObservationCount(surveyId);
 
     return { observationCount };
+  }
+
+  /**
+   * Retrieves the count of survey observations for the given survey
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<number>}
+   * @memberof ObservationRepository
+   */
+  async getSurveyObservationCount(surveyId: number): Promise<number> {
+    return this.observationRepository.getSurveyObservationCount(surveyId);
   }
 
   /**

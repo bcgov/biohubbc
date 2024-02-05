@@ -52,6 +52,9 @@ parameters:
   - name: BACKBONE_INTAKE_ENABLED
     required: true
     description: Controls whether or not SIMS will submit DwCA datasets to the BioHub Platform Backbone. Set to "true" to enable it, will be disabled by default otherwise.
+  - name: BIOHUB_TAXON_TSN_PATH
+    required: true
+    description: API path for BioHub Platform Backbone taxon TSN endpoint. Example "/api/path/to/taxon/tsn".
   # BCTW / Critterbase
   - name: CB_API_HOST
     description: API host for the Critterbase service, SIMS API will hit this to retrieve critter metadata. Example "https://critterbase.com".
@@ -232,6 +235,8 @@ objects:
                   value: ${BACKBONE_ARTIFACT_INTAKE_PATH}
                 - name: BACKBONE_INTAKE_ENABLED
                   value: ${BACKBONE_INTAKE_ENABLED}
+                - name: BIOHUB_TAXON_TSN_PATH
+                  value: ${BIOHUB_TAXON_TSN_PATH}
                 # BCTW / Critterbase
                 - name: CB_API_HOST
                   value: ${CB_API_HOST}

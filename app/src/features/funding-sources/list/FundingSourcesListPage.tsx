@@ -3,13 +3,12 @@ import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import grey from '@mui/material/colors/grey';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import PageHeader from 'components/layout/PageHeader';
 import { FundingSourceI18N } from 'constants/i18n';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -95,37 +94,22 @@ const FundingSourcesListPage: React.FC = () => {
           openViewModal={openViewModal}
         />
       )}
-      <Paper
-        square
-        elevation={0}
-        sx={{
-          borderBottom: '1px solid' + grey[300]
-        }}>
-        <Container maxWidth="xl" sx={{ py: { xs: 2, sm: 3, lg: 4 } }}>
-          <Stack
-            alignItems="flex-start"
-            flexDirection={{ xs: 'column', md: 'row' }}
-            justifyContent="space-between"
-            gap={3}>
-            <Typography
-              variant="h1"
-              sx={{
-                ml: '-2px'
-              }}>
-              Funding Sources
-            </Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              aria-label="Create Funding Source"
-              startIcon={<Icon path={mdiPlus} size={1} />}
-              onClick={() => setIsCreateModalOpen(true)}
-              data-testid="funding-source-list-create-button">
-              Create Funding Source
-            </Button>
-          </Stack>
-        </Container>
-      </Paper>
+
+      <PageHeader
+        title="Funding Sources"
+        buttonJSX={
+          <Button
+            variant="contained"
+            color="primary"
+            aria-label="Create Funding Source"
+            startIcon={<Icon path={mdiPlus} size={1} />}
+            onClick={() => setIsCreateModalOpen(true)}
+            data-testid="funding-source-list-create-button">
+            Create Funding Source
+          </Button>
+        }
+      />
+
       <Container maxWidth="xl">
         <Box py={3}>
           <Paper elevation={0}>

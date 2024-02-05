@@ -122,12 +122,15 @@ const SurveyAnimals: React.FC = () => {
           title="Manage Marked and Known Animals"
           color="primary"
           variant="contained"
-          startIcon={<Icon path={mdiCog} size={0.75} />}>
+          startIcon={<Icon path={mdiCog} size={0.75} />}
+          sx={{
+            m: -1
+          }}>
           Manage Animals
         </Button>
       </Toolbar>
-      <Divider></Divider>
-      <Box p={3}>
+      <Divider flexItem></Divider>
+      <Box py={1} px={2}>
         {critterData?.length ? (
           <SurveyAnimalsTable
             animalData={critterData}

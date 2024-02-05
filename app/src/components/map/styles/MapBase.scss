@@ -7,3 +7,15 @@
 path.leaflet-interactive:focus {
   outline: none;
 }
+
+.leaflet-top .leaflet-control {
+  margin-top: 16px;
+}
+
+.leaflet-left .leaflet-control {
+  margin-left: 16px;
+}
+
+.leaflet-right .leaflet-control {
+  margin-right: 16px;
+}

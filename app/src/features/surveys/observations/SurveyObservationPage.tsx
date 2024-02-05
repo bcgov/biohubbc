@@ -1,26 +1,36 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-// import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import { ObservationsTableContext, ObservationsTableContextProvider } from 'contexts/observationsTableContext';
+import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
 import { useContext } from 'react';
-import ObservationComponent from './observations-table/ObservationComponent';
+import ObservationsTableContainer from './observations-table/ObservationsTableContainer';
 import SamplingSiteList from './sampling-sites/SamplingSiteList';
 import SurveyObservationHeader from './SurveyObservationHeader';
 
 export const SurveyObservationPage = () => {
   const surveyContext = useContext(SurveyContext);
+  const projectContext = useContext(ProjectContext);
 
-  if (!surveyContext.surveyDataLoader.data) {
+  if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
-    <Box display="flex" flexDirection="column" height="100%" overflow="hidden" position="relative">
+    <Stack
+      position="relative"
+      height="100%"
+      overflow="hidden"
+      sx={{
+        '& .MuiContainer-root': {
+          maxWidth: 'none'
+        }
+      }}>
       <SurveyObservationHeader
         project_id={surveyContext.projectId}
+        project_name={projectContext.projectDataLoader.data.projectData.project.project_name}
         survey_id={surveyContext.surveyId}
         survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
       />
@@ -47,13 +57,13 @@ export const SurveyObservationPage = () => {
                     return <CircularProgress className="pageProgress" size={40} />;
                   }
 
-                  return <ObservationComponent />;
+                  return <ObservationsTableContainer />;
                 }}
               </ObservationsTableContext.Consumer>
             </ObservationsTableContextProvider>
           </TaxonomyContextProvider>
         </Box>
       </Stack>
-    </Box>
+    </Stack>
   );
 };

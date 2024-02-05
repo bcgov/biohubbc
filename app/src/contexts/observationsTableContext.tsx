@@ -1,6 +1,13 @@
 import Typography from '@mui/material/Typography';
-import { GridRowId, GridRowSelectionModel, GridValidRowModel, useGridApiRef } from '@mui/x-data-grid';
-import { GridApiCommunity } from '@mui/x-data-grid/internals';
+import {
+  GridPaginationModel,
+  GridRowId,
+  GridRowSelectionModel,
+  GridSortModel,
+  GridValidRowModel,
+  useGridApiRef
+} from '@mui/x-data-grid';
+import { GridApiCommunity, GridStateColDef } from '@mui/x-data-grid/internals';
 import { ObservationsTableI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { ObservationsContext } from 'contexts/observationsContext';
@@ -8,6 +15,7 @@ import { default as dayjs } from 'dayjs';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { firstOrNull } from 'utils/Utils';
 import { v4 as uuidv4 } from 'uuid';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
 import { SurveyContext } from './surveyContext';
@@ -19,6 +27,22 @@ export interface IObservationRecord {
   survey_sample_site_id: number | null;
   survey_sample_method_id: number | null;
   survey_sample_period_id: number | null;
+  count: number | null;
+  observation_date: Date;
+  observation_time: string;
+  latitude: number | null;
+  longitude: number | null;
+}
+
+export interface IObservationRecordWithSamplingData {
+  survey_observation_id: number;
+  wldtaxonomic_units_id: number;
+  survey_sample_site_id: number | null;
+  survey_sample_site_name: string | null;
+  survey_sample_method_id: number | null;
+  survey_sample_method_name: string | null;
+  survey_sample_period_id: number | null;
+  survey_sample_period_start_datetime: string | null;
   count: number | null;
   observation_date: Date;
   observation_time: string;
@@ -56,6 +80,10 @@ export type IObservationsTableContext = {
    * A setState setter for the `rows`
    */
   setRows: React.Dispatch<React.SetStateAction<IObservationTableRow[]>>;
+  /**
+   * Returns all columns belonging to the observation table
+   */
+  getColumns: () => GridStateColDef[];
   /**
    * Appends a new blank record to the observation rows
    */
@@ -120,12 +148,18 @@ export type IObservationsTableContext = {
    * Updates the total observation count for the survey
    */
   setObservationCount: (observationCount: number) => void;
+
+  updatePaginationModel: (model: GridPaginationModel) => void;
+  paginationModel: GridPaginationModel;
+  updateSortModel: (mode: GridSortModel) => void;
+  sortModel: GridSortModel;
 };
 
 export const ObservationsTableContext = createContext<IObservationsTableContext>({
   _muiDataGridApiRef: null as unknown as React.MutableRefObject<GridApiCommunity>,
   rows: [],
   setRows: () => {},
+  getColumns: () => [],
   addObservationRecord: () => {},
   saveObservationRecords: () => {},
   deleteObservationRecords: () => undefined,
@@ -141,7 +175,11 @@ export const ObservationsTableContext = createContext<IObservationsTableContext>
   isLoading: false,
   validationModel: {},
   observationCount: 0,
-  setObservationCount: () => undefined
+  setObservationCount: () => undefined,
+  updatePaginationModel: () => undefined,
+  paginationModel: { page: 0, pageSize: 0 },
+  updateSortModel: () => undefined,
+  sortModel: []
 });
 
 export const ObservationsTableContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
@@ -174,6 +212,44 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   // Stores the current validation state of the table
   const [validationModel, setValidationModel] = useState<ObservationTableValidationModel>({});
 
+  // Pagination State
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: 10
+  });
+  const [sortModel, setSortModel] = useState<GridSortModel>([]);
+
+  const updatePaginationModel = (model: GridPaginationModel) => {
+    setPaginationModel(model);
+  };
+
+  const updateSortModel = (model: GridSortModel) => {
+    setSortModel(model);
+  };
+
+  // initial load with pagination values
+  useEffect(() => {
+    observationsContext.observationsDataLoader.refresh({
+      limit: paginationModel.pageSize,
+
+      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+      page: paginationModel.page + 1
+    });
+  }, []);
+
+  // Fetch new rows based on sort/ pagination model changes
+  useEffect(() => {
+    const sort = firstOrNull(sortModel);
+    observationsContext.observationsDataLoader.refresh({
+      limit: paginationModel.pageSize,
+      sort: sort?.field || undefined,
+      order: sort?.sort || undefined,
+
+      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+      page: paginationModel.page + 1
+    });
+  }, [paginationModel, sortModel]);
+
   /**
    * Gets all rows from the table, including values that have been edited in the table.
    */
@@ -194,12 +270,19 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   };
 
   /**
+   * Returns all columns belonging to thte observations table.
+   */
+  const getColumns = useCallback(() => {
+    return _muiDataGridApiRef.current.getAllColumns?.() ?? [];
+  }, [_muiDataGridApiRef.current.getAllColumns]);
+
+  /**
    * Validates all rows belonging to the table. Returns null if validation passes, otherwise
    * returns the validation model
    */
   const _validateRows = (): ObservationTableValidationModel | null => {
     const rowValues = _getRowsWithEditedValues();
-    const tableColumns = _muiDataGridApiRef.current.getAllColumns();
+    const tableColumns = getColumns();
 
     const requiredColumns: (keyof IObservationTableRow)[] = [
       'count',
@@ -485,11 +568,17 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     // Remove any rows that are newly created
     setRows(rows.filter((row) => !addedRowIds.includes(String(row.id))));
+
+    // Reset all validation errors
+    setValidationModel({});
   }, [_muiDataGridApiRef, addedRowIds, rows]);
 
   const refreshObservationRecords = useCallback(async () => {
-    return observationsContext.observationsDataLoader.refresh();
-  }, [observationsContext.observationsDataLoader]);
+    return observationsContext.observationsDataLoader.refresh({
+      page: paginationModel.page,
+      limit: paginationModel.pageSize
+    });
+  }, [observationsContext.observationsDataLoader, paginationModel]);
 
   // True if the data grid contains at least 1 unsaved record
   const hasUnsavedChanges = modifiedRowIds.length > 0 || addedRowIds.length > 0;
@@ -653,6 +742,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       _muiDataGridApiRef,
       rows,
       setRows,
+      getColumns,
       addObservationRecord,
       saveObservationRecords,
       deleteObservationRecords,
@@ -668,7 +758,11 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       isSaving,
       validationModel,
       observationCount,
-      setObservationCount
+      setObservationCount,
+      updatePaginationModel,
+      paginationModel,
+      updateSortModel,
+      sortModel
     }),
     [
       _muiDataGridApiRef,
@@ -685,7 +779,11 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       isLoading,
       validationModel,
       isSaving,
-      observationCount
+      observationCount,
+      updatePaginationModel,
+      paginationModel,
+      updateSortModel,
+      sortModel
     ]
   );
 

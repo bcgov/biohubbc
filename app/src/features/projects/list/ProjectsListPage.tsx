@@ -3,13 +3,12 @@ import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import grey from '@mui/material/colors/grey';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import PageHeader from 'components/layout/PageHeader';
 import ProjectsSubmissionAlertBar from 'components/publish/ProjectListSubmissionAlertBar';
 import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
 import { SystemRoleGuard } from 'components/security/Guards';
@@ -67,45 +66,22 @@ const ProjectsListPage: React.FC = () => {
    */
   return (
     <>
-      <Paper
-        square
-        elevation={0}
-        sx={{
-          borderBottom: '1px solid' + grey[300]
-        }}>
-        <Container maxWidth="xl" sx={{ py: { xs: 2, sm: 3, lg: 4 } }}>
-          <Stack
-            alignItems="flex-start"
-            flexDirection={{ xs: 'column', sm: 'row' }}
-            justifyContent="space-between"
-            gap={1}>
-            <Typography
-              variant="h1"
-              sx={{
-                ml: '-2px'
-              }}>
-              Projects
-            </Typography>
-            <Stack flexDirection="row" alignItems="center" gap={1}>
-              <SystemRoleGuard
-                validSystemRoles={[
-                  SYSTEM_ROLE.SYSTEM_ADMIN,
-                  SYSTEM_ROLE.PROJECT_CREATOR,
-                  SYSTEM_ROLE.DATA_ADMINISTRATOR
-                ]}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  startIcon={<Icon path={mdiPlus} size={1} />}
-                  component={RouterLink}
-                  to={'/admin/projects/create'}>
-                  Create Project
-                </Button>
-              </SystemRoleGuard>
-            </Stack>
-          </Stack>
-        </Container>
-      </Paper>
+      <PageHeader
+        title="Projects"
+        buttonJSX={
+          <SystemRoleGuard
+            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_CREATOR, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Icon path={mdiPlus} size={1} />}
+              component={RouterLink}
+              to={'/admin/projects/create'}>
+              Create Project
+            </Button>
+          </SystemRoleGuard>
+        }
+      />
 
       <Container maxWidth="xl">
         <Box py={3}>
