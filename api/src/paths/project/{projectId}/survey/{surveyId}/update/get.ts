@@ -115,13 +115,20 @@ GET.apiDoc = {
                   species: {
                     description: 'Survey Species',
                     type: 'object',
-                    required: ['focal_species', 'focal_species_names', 'ancillary_species', 'ancillary_species_names'],
+                    required: [
+                      'focal_species',
+                      'focal_species_names',
+                      'focal_species_object',
+                      'ancillary_species',
+                      'ancillary_species_names',
+                      'ancillary_species_object'
+                    ],
                     properties: {
                       ancillary_species: {
                         nullable: true,
                         type: 'array',
                         items: {
-                          type: 'number'
+                          type: 'integer'
                         }
                       },
                       ancillary_species_names: {
@@ -131,16 +138,55 @@ GET.apiDoc = {
                           type: 'string'
                         }
                       },
+                      ancillary_species_object: {
+                        nullable: true,
+                        type: 'array',
+                        items: {
+                          type: 'object',
+                          required: ['tsn', 'commonName', 'scientificName'],
+                          properties: {
+                            tsn: {
+                              type: 'integer'
+                            },
+                            commonName: {
+                              type: 'string',
+                              nullable: true
+                            },
+                            scientificName: {
+                              type: 'string'
+                            }
+                          }
+                        }
+                      },
                       focal_species: {
                         type: 'array',
                         items: {
-                          type: 'number'
+                          type: 'integer'
                         }
                       },
                       focal_species_names: {
                         type: 'array',
                         items: {
                           type: 'string'
+                        }
+                      },
+                      focal_species_object: {
+                        type: 'array',
+                        items: {
+                          type: 'object',
+                          required: ['tsn', 'commonName', 'scientificName'],
+                          properties: {
+                            tsn: {
+                              type: 'integer'
+                            },
+                            commonName: {
+                              type: 'string',
+                              nullable: true
+                            },
+                            scientificName: {
+                              type: 'string'
+                            }
+                          }
                         }
                       }
                     }

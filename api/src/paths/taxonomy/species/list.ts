@@ -70,7 +70,7 @@ GET.apiDoc = {
  */
 export function getSpeciesFromIds(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'getSearchResults', message: 'request body', req_body: req.query });
+    defaultLog.debug({ label: 'getSpeciesFromIds', message: 'query', query: req.query });
 
     const ids = Object.values(qs.parse(req.query.ids?.toString() || ''));
 
