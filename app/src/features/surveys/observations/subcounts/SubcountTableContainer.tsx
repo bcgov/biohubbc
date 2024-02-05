@@ -1,4 +1,4 @@
-import { mdiCogOutline, mdiDotsVertical, mdiImport, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiClose, mdiCogOutline, mdiDotsVertical, mdiImport, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
 import { Checkbox, ListItemText } from '@mui/material';
@@ -21,17 +21,17 @@ import { ObservationsTableI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { ObservationsTableContext } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import ObservationsTable from 'features/surveys/observations/observations-table/ObservationsTable';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { pluralize as p } from 'utils/Utils';
-import ObservationsTable from './ObservationsTable';
 
 /**
  * Key used to cache column visiblity in sessionStorage
  */
 const SIMS_OBSERVATIONS_HIDDEN_COLUMNS = 'SIMS_OBSERVATIONS_HIDDEN_COLUMNS';
 
-const ObservationComponent = () => {
+const SubcountTableContainer = () => {
   const [showImportDialog, setShowImportDialog] = useState<boolean>(false);
   const [columnVisibilityMenuAnchorEl, setColumnVisibilityMenuAnchorEl] = useState<Element | null>(null);
   const [hiddenFields, setHiddenFields] = useState<string[]>([]);
@@ -188,7 +188,7 @@ const ObservationComponent = () => {
             fontSize: '1.125rem',
             fontWeight: 700
           }}>
-          Observations &zwnj;
+          Subcounts &zwnj;
           <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
             ({observationsTableContext.observationCount})
           </Typography>
@@ -324,6 +324,14 @@ const ObservationComponent = () => {
               </MenuItem>
             </Menu>
           </Box>
+          <IconButton
+            onClick={() => {
+              observationsTableContext.setCurrentObservation(null);
+            }}
+            edge="end"
+            aria-label="close subcount table">
+            <Icon size={1} path={mdiClose} />
+          </IconButton>
         </Stack>
       </Toolbar>
 
@@ -331,7 +339,7 @@ const ObservationComponent = () => {
 
       <DataGridValidationAlert validationModel={validationModel} muiDataGridApiRef={_muiDataGridApiRef.current} />
 
-      <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
+      <Box display="none" flexDirection="column" flex="1 1 auto" position="relative">
         <Box position="absolute" width="100%" height="100%">
           <ObservationsTable isLoading={processingRecords} />
         </Box>
@@ -340,4 +348,4 @@ const ObservationComponent = () => {
   );
 };
 
-export default ObservationComponent;
+export default SubcountTableContainer;

@@ -124,6 +124,14 @@ export type IObservationsTableContext = {
    * Updates the total observation count for the survey
    */
   setObservationCount: (observationCount: number) => void;
+  /**
+   * Reflects the currently selected observation in the observations table
+   */
+  currentObservation: IObservationTableRow | null;
+  /**
+   * Updates current observation selected in the observations table
+   */
+  setCurrentObservation: (currentObservation: IObservationTableRow | null) => void;
 };
 
 export const ObservationsTableContext = createContext<IObservationsTableContext>({
@@ -146,7 +154,9 @@ export const ObservationsTableContext = createContext<IObservationsTableContext>
   isLoading: false,
   validationModel: {},
   observationCount: 0,
-  setObservationCount: () => undefined
+  setObservationCount: () => undefined,
+  currentObservation: null,
+  setCurrentObservation: () => undefined
 });
 
 export const ObservationsTableContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
@@ -178,6 +188,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   const [observationCount, setObservationCount] = useState<number>(0);
   // Stores the current validation state of the table
   const [validationModel, setValidationModel] = useState<ObservationTableValidationModel>({});
+  // Stores the current observation row that has been selected in the table
+  const [currentObservation, setCurrentObservation] = useState<IObservationTableRow | null>(null);
 
   /**
    * Gets all rows from the table, including values that have been edited in the table.
@@ -684,7 +696,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       isSaving,
       validationModel,
       observationCount,
-      setObservationCount
+      setObservationCount,
+      currentObservation,
+      setCurrentObservation
     }),
     [
       _muiDataGridApiRef,
@@ -701,7 +715,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       isLoading,
       validationModel,
       isSaving,
-      observationCount
+      observationCount,
+      currentObservation,
+      setCurrentObservation
     ]
   );
 

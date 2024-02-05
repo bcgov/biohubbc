@@ -42,8 +42,8 @@ import { TransitionGroup } from 'react-transition-group';
 import { getCodesName } from 'utils/Utils';
 
 interface ISamplingSiteCollapseProps {
-  isCollapsed: boolean;
-  setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+  sitesIsCollapsed: boolean;
+  setSitesIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const SamplingSiteList: React.FC<ISamplingSiteCollapseProps> = (props) => {
@@ -276,11 +276,11 @@ const SamplingSiteList: React.FC<ISamplingSiteCollapseProps> = (props) => {
           overflow: 'hidden'
         }}>
         <TransitionGroup>
-          <Collapse in={props?.isCollapsed} timeout="auto" unmountOnExit>
+          <Collapse in={props?.sitesIsCollapsed} timeout="auto" unmountOnExit>
             <Toolbar
               disableGutters
               sx={
-                !props.isCollapsed
+                !props.sitesIsCollapsed
                   ? {
                       flex: '0 0 auto',
                       pr: 2,
@@ -291,7 +291,7 @@ const SamplingSiteList: React.FC<ISamplingSiteCollapseProps> = (props) => {
                       pl: 1
                     }
               }>
-              {!props.isCollapsed ? (
+              {!props.sitesIsCollapsed ? (
                 <>
                   <Typography variant="h3" component="h2" flexGrow={1}>
                     Sampling Sites &zwnj;
@@ -325,7 +325,7 @@ const SamplingSiteList: React.FC<ISamplingSiteCollapseProps> = (props) => {
                     aria-label="hide sampling sites"
                     title="Hide sampling sites"
                     onClick={() => {
-                      props.setIsCollapsed(true);
+                      props.setSitesIsCollapsed(true);
                     }}>
                     <Icon path={mdiChevronLeft} size={1} />
                   </IconButton>
@@ -335,7 +335,7 @@ const SamplingSiteList: React.FC<ISamplingSiteCollapseProps> = (props) => {
                   aria-label="show sampling sites"
                   title="Show sampling sites"
                   onClick={() => {
-                    props.setIsCollapsed(false);
+                    props.setSitesIsCollapsed(false);
                   }}>
                   <Icon path={mdiChevronRight} size={1} />
                 </IconButton>
@@ -345,7 +345,7 @@ const SamplingSiteList: React.FC<ISamplingSiteCollapseProps> = (props) => {
         </TransitionGroup>
 
         <Divider flexItem />
-        {!props.isCollapsed ? (
+        {!props.sitesIsCollapsed ? (
           <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
             <Box position="absolute" top="0" right="0" bottom="0" left="0">
               {surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading ? (

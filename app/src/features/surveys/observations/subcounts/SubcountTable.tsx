@@ -46,7 +46,7 @@ export interface ISpeciesObservationTableProps {
   isLoading?: boolean;
 }
 
-const ObservationsTable = (props: ISpeciesObservationTableProps) => {
+const SubcountTable = (props: ISpeciesObservationTableProps) => {
   const location = useLocation();
   const observationsTableContext = useContext(ObservationsTableContext);
   const observationsContext = useContext(ObservationsContext);
@@ -520,14 +520,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         editMode="row"
         columns={observationColumns}
         rows={observationsTableContext.rows}
-        onRowClick={(params) => {
-          if (observationsTableContext.currentObservation?.id === params.row.id) {
-            // return observationsTableContext.setCurrentObservation(null);
-            return;
-          } else {
-            return observationsTableContext.setCurrentObservation(params.row);
-          }
-        }}
+        onRowClick={(params) => observationsTableContext.setCurrentObservation(params.row)}
         onRowEditStart={(params) => observationsTableContext.onRowEditStart(params.id)}
         onRowEditStop={(_params, event) => {
           event.defaultMuiPrevented = true;
@@ -535,13 +528,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         onRowSelectionModelChange={observationsTableContext.onRowSelectionModelChange}
         rowSelectionModel={observationsTableContext.rowSelectionModel}
         getRowHeight={() => 'auto'}
-        getRowClassName={(params) => {
-          return observationsTableContext.currentObservation?.id === params.row.id
-            ? 'selected-row'
-            : has(observationsTableContext.validationModel, params.row.id)
-            ? 'error'
-            : '';
-        }}
+        getRowClassName={(params) => (has(observationsTableContext.validationModel, params.row.id) ? 'error' : '')}
         sx={{
           border: 'none',
           borderRadius: 0,
@@ -560,41 +547,27 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             top: 0,
             borderLeft: '1px solid' + grey[300]
           },
-          '& .selected-row': {
-            '& .MuiDataGrid-cell': {
-              backgroundColor: grey[200]
-            }
-          },
           '& .MuiDataGrid-columnHeaders': {
             position: 'relative'
           },
           '& .MuiDataGrid-columnHeader:focus-within': {
             outline: 'none',
-            backgroundColor: grey[200]
+            background: grey[200]
           },
           '& .MuiDataGrid-columnHeaderTitle': {
             fontWeight: 700,
             textTransform: 'uppercase',
             color: 'text.secondary'
           },
-          '& .MuiDataGrid-row': {
-            '&:hover': {
-              backgroundColor: grey[100],
-              cursor: 'pointer'
-            },
-            backgroundColor: '#fff'
-          },
           '& .MuiDataGrid-cell': {
             py: 0.75,
+            background: '#fff',
             '&.MuiDataGrid-cell--editing:focus-within': {
               outline: 'none'
             },
             '&.MuiDataGrid-cell--editing': {
               p: 0.5,
               backgroundColor: cyan[100]
-            },
-            '&:focus': {
-              outline: 'none'
             }
           },
           '& .MuiDataGrid-row--editing': {
@@ -657,13 +630,10 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
           '& .MuiDataGrid-overlayWrapperInner, .MuiDataGrid-overlayWrapper': {
             flex: 1
           }
-          // '& .MuiDataGrid-footerContainer': {
-          //   backgroundColor: grey[100]
-          // }
         }}
       />
     </>
   );
 };
 
-export default ObservationsTable;
+export default SubcountTable;

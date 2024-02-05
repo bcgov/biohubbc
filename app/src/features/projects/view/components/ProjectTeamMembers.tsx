@@ -11,8 +11,7 @@ import { useContext } from 'react';
 export interface IProjectParticipantsRoles {
   display_name: string;
   roles: string[];
-  first_initial: string;
-  second_initial: string;
+  initials: string;
 }
 
 /**
@@ -37,11 +36,11 @@ const ProjectTeamMembers = () => {
 
   const projectTeamMembers: IProjectParticipantsRoles[] = projectData.participants
     .map((member) => {
+      const initials = member.display_name.split(', ').map((name) => name[0]).reverse();
       return {
         display_name: member.display_name,
         roles: member.project_role_names,
-        first_initial: member.display_name.split(',')[1][1],
-        second_initial: member.display_name.split(',')[0][0]
+        initials: initials.join('')
       };
     })
     .sort((a, b) => {
@@ -85,8 +84,7 @@ const ProjectTeamMembers = () => {
                 alignItems="center"
                 justifyContent="center">
                 <Typography color="#fff" fontWeight="bold" fontSize="0.7rem">
-                  {member.first_initial}
-                  {member.second_initial}
+                  {member.initials}
                 </Typography>
               </Box>
               <Typography component="dd">{member.display_name}</Typography>
