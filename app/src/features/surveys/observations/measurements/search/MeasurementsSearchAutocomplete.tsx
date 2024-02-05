@@ -19,6 +19,12 @@ export interface IMeasurementsSearchAutocompleteProps {
   onSelectOptions: (measurements: Measurement[]) => void;
 }
 
+/**
+ * Renders a search input to find and add measurements.
+ *
+ * @param {IMeasurementsSearchAutocompleteProps} props
+ * @return {*}
+ */
 const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompleteProps) => {
   const { selectedOptions, getOptions, onSelectOptions } = props;
 
@@ -100,7 +106,8 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
               px: 2
             }}
             {...renderProps}
-            key={renderOption.uuid}>
+            key={renderOption.uuid}
+            data-testid="measurements-autocomplete-option">
             <Checkbox
               icon={<CheckBoxOutlineBlank fontSize="small" />}
               checkedIcon={<CheckBox fontSize="small" />}
@@ -144,6 +151,7 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
               </Box>
             )
           }}
+          data-testid="measurements-autocomplete-input"
         />
       )}
     />

@@ -6,19 +6,47 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import useTheme from '@mui/material/styles/useTheme';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { MeasurementsList } from 'features/surveys/observations/observation-measurements/list/MeasurementsList';
-import { MeasurementsSearch } from 'features/surveys/observations/observation-measurements/search/MeasurementsSearch';
+import { MeasurementsList } from 'features/surveys/observations/measurements/list/MeasurementsList';
+import { MeasurementsSearch } from 'features/surveys/observations/measurements/search/MeasurementsSearch';
 import { Measurement } from 'hooks/cb_api/useLookupApi';
 import { useState } from 'react';
 
-export interface IObservationMeasurementsDialogProps {
+export interface IrementsDialogProps {
+  /**
+   * The current survey id.
+   *
+   * @type {number}
+   * @memberof IObservationMeasurementsButtonProps
+   */
   surveyId: number;
+  /**
+   * Controls whether the dialog is open or not.
+   *
+   * @type {boolean}
+   * @memberof IrementsDialogProps
+   */
   open: boolean;
+  /**
+   * Callback fired on save.
+   *
+   * @memberof IrementsDialogProps
+   */
   onSave: (measurements: Measurement[]) => void;
+  /**
+   * Callback fired on cancel.
+   *
+   * @memberof IrementsDialogProps
+   */
   onCancel: () => void;
 }
 
-export const ObservationMeasurementsDialog = (props: IObservationMeasurementsDialogProps) => {
+/**
+ * Renders a dialog to manage measurements.
+ *
+ * @param {IrementsDialogProps} props
+ * @return {*}
+ */
+export const MeasurementsDialog = (props: IrementsDialogProps) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -30,7 +58,7 @@ export const ObservationMeasurementsDialog = (props: IObservationMeasurementsDia
     );
   };
 
-  const onChange = (measurementsToAdd: Measurement[]) => {
+  const onSelectOptions = (measurementsToAdd: Measurement[]) => {
     setSelectedMeasurements((currentMeasurements) =>
       [...currentMeasurements, ...measurementsToAdd].filter(
         (item1, index, self) => index === self.findIndex((item2) => item2.uuid === item1.uuid)
@@ -51,7 +79,7 @@ export const ObservationMeasurementsDialog = (props: IObservationMeasurementsDia
       aria-labelledby="observation-measurements-dialog-title">
       <DialogTitle id="observation-measurements-dialog-title">Observation Measurements</DialogTitle>
       <DialogContent>
-        <MeasurementsSearch selectedMeasurements={selectedMeasurements} onChange={onChange} />
+        <MeasurementsSearch selectedMeasurements={selectedMeasurements} onSelectOptions={onSelectOptions} />
         <MeasurementsList selectedMeasurements={selectedMeasurements} onRemove={onRemove} />
       </DialogContent>
       <DialogActions>
@@ -62,14 +90,14 @@ export const ObservationMeasurementsDialog = (props: IObservationMeasurementsDia
           color="primary"
           variant="contained"
           autoFocus
-          data-testid="observation-measurements-add-button">
+          data-testid="observation-measurements-dialog-add-button">
           Add
         </LoadingButton>
         <Button
           onClick={props.onCancel}
           color="primary"
           variant="outlined"
-          data-testid="observation-measurements-cancel-button">
+          data-testid="observation-measurements-dialog-cancel-button">
           Cancel
         </Button>
       </DialogActions>

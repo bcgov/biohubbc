@@ -1,17 +1,34 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import MeasurementsSearchAutocomplete from 'features/surveys/observations/observation-measurements/search/MeasurementsSearchAutocomplete';
+import MeasurementsSearchAutocomplete from 'features/surveys/observations/measurements/search/MeasurementsSearchAutocomplete';
 import { Measurement } from 'hooks/cb_api/useLookupApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 
 export interface IMeasurementsSearchProps {
+  /**
+   * The selected measurements.
+   *
+   * @type {Measurement[]}
+   * @memberof IMeasurementsSearchProps
+   */
   selectedMeasurements: Measurement[];
-  onChange: (measurements: Measurement[]) => void;
+  /**
+   * Callback fired on select options.
+   *
+   * @memberof IMeasurementsSearchProps
+   */
+  onSelectOptions: (measurements: Measurement[]) => void;
 }
 
+/**
+ * Renders an search input to find and add measurements.
+ *
+ * @param {IMeasurementsSearchProps} props
+ * @return {*}
+ */
 export const MeasurementsSearch = (props: IMeasurementsSearchProps) => {
-  const { selectedMeasurements, onChange } = props;
+  const { selectedMeasurements, onSelectOptions } = props;
 
   const critterbaseApi = useCritterbaseApi();
 
@@ -33,7 +50,7 @@ export const MeasurementsSearch = (props: IMeasurementsSearchProps) => {
           const response = await measurementsDataLoader.refresh(searchTerms);
           return response || [];
         }}
-        onSelectOptions={onChange}
+        onSelectOptions={onSelectOptions}
       />
     </Box>
   );

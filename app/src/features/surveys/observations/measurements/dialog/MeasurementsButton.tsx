@@ -1,14 +1,31 @@
 import Button from '@mui/material/Button';
-import { ObservationMeasurementsDialog } from 'features/surveys/observations/observation-measurements/ObservationMeasurementsDialog';
+import { MeasurementsDialog } from 'features/surveys/observations/measurements/dialog/MeasurementsDialog';
 import { Measurement } from 'hooks/cb_api/useLookupApi';
 import { useState } from 'react';
 
-export interface IObservationMeasurementsButtonProps {
+export interface IMeasurementsButtonProps {
+  /**
+   * The current survey id.
+   *
+   * @type {number}
+   * @memberof IMeasurementsButtonProps
+   */
   surveyId: number;
+  /**
+   * Callback fired on save.
+   *
+   * @memberof IMeasurementsButtonProps
+   */
   onSave: (measurements: Measurement[]) => void;
 }
 
-export const ObservationMeasurementsButton = (props: IObservationMeasurementsButtonProps) => {
+/**
+ * Renders a dialog to manage measurements, and a button to open the dialog.
+ *
+ * @param {IMeasurementsButtonProps} props
+ * @return {*}
+ */
+export const MeasurementsButton = (props: IMeasurementsButtonProps) => {
   const { surveyId, onSave } = props;
 
   const [open, setOpen] = useState(false);
@@ -23,7 +40,7 @@ export const ObservationMeasurementsButton = (props: IObservationMeasurementsBut
         autoFocus>
         Manage Columns
       </Button>
-      <ObservationMeasurementsDialog
+      <MeasurementsDialog
         open={open}
         surveyId={surveyId}
         onSave={(measurements) => {

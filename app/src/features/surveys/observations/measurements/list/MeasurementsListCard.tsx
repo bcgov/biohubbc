@@ -9,10 +9,27 @@ import Typography from '@mui/material/Typography';
 import { Measurement } from 'hooks/cb_api/useLookupApi';
 
 export interface IMeasurementsListCardProps {
+  /**
+   * The measurement to display.
+   *
+   * @type {Measurement}
+   * @memberof IMeasurementsListCardProps
+   */
   measurement: Measurement;
+  /**
+   * Callback fired on remove.
+   *
+   * @memberof IMeasurementsListCardProps
+   */
   onRemove: () => void;
 }
 
+/**
+ * Renders a single measurement card.
+ *
+ * @param {IMeasurementsListCardProps} props
+ * @return {*}
+ */
 export const MeasurementsListCard = (props: IMeasurementsListCardProps) => {
   const { onRemove } = props;
 
@@ -26,7 +43,8 @@ export const MeasurementsListCard = (props: IMeasurementsListCardProps) => {
         justifyContent: 'space-between',
         p: 2,
         background: grey[100]
-      }}>
+      }}
+      data-testid="measurements-list-item">
       <Stack gap={0.75} mt={-0.25}>
         <Box>
           <Typography variant="body2" color="textSecondary">
