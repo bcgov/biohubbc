@@ -32,12 +32,12 @@ import {
 import { getMockDBConnection } from '../__mocks__/db';
 import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
+import { PlatformService } from './platform-service';
 import { SiteSelectionStrategyService } from './site-selection-strategy-service';
 import { SurveyBlockService } from './survey-block-service';
 import { SurveyLocationService } from './survey-location-service';
 import { SurveyParticipationService } from './survey-participation-service';
 import { SurveyService } from './survey-service';
-import { TaxonomyService } from './taxonomy-service';
 
 chai.use(sinonChai);
 
@@ -379,18 +379,15 @@ describe('SurveyService', () => {
       const data = ({ id: 1 } as unknown) as IGetSpeciesData;
 
       const repoStub = sinon.stub(SurveyRepository.prototype, 'getSpeciesData').resolves([data]);
-
-      const serviceStub1 = sinon
-        .stub(TaxonomyService.prototype, 'getSpeciesFromIds')
-        .resolves([{ id: '1', label: 'string' }]);
+      const getTaxonomyFromBiohubStub = sinon.stub(PlatformService.prototype, 'getTaxonomyFromBiohub').resolves([]);
 
       const response = await service.getSpeciesData(1);
 
       expect(repoStub).to.be.calledOnce;
-      expect(serviceStub1).to.be.calledTwice;
+      expect(getTaxonomyFromBiohubStub).to.be.calledTwice;
       expect(response).to.eql({
-        ...new GetFocalSpeciesData([{ id: '1', label: 'string' }]),
-        ...new GetAncillarySpeciesData([{ id: '1', label: 'string' }])
+        ...new GetFocalSpeciesData([]),
+        ...new GetAncillarySpeciesData([])
       });
     });
   });

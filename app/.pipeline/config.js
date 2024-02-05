@@ -89,7 +89,9 @@ const phases = {
     memoryLimit: '500Mi',
     replicas: (isStaticDeployment && '1') || '1',
     replicasMax: (isStaticDeployment && '2') || '1',
-    biohubFeatureFlag: 'true'
+    biohubFeatureFlag: 'true',
+    backboneApiHost: 'https://api-dev-biohub-platform.apps.silver.devops.gov.bc.ca',
+    biohubTaxonPath: '/api/taxonomy/taxon'
   },
   test: {
     namespace: 'af2668-test',
@@ -113,7 +115,9 @@ const phases = {
     memoryLimit: '500Mi',
     replicas: '2',
     replicasMax: '3',
-    biohubFeatureFlag: 'false'
+    biohubFeatureFlag: 'false',
+    backboneApiHost: 'https://api-test-biohub-platform.apps.silver.devops.gov.bc.ca',
+    biohubTaxonPath: '/api/taxonomy/taxon'
   },
   prod: {
     namespace: 'af2668-prod',
@@ -137,7 +141,9 @@ const phases = {
     memoryLimit: '500Mi',
     replicas: '2',
     replicasMax: '3',
-    biohubFeatureFlag: 'false'
+    biohubFeatureFlag: 'false',
+    backboneApiHost: 'https://api-biohub-platform.apps.silver.devops.gov.bc.ca',
+    biohubTaxonPath: '/api/taxonomy/taxon'
   }
 };
 
