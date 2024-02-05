@@ -2,6 +2,7 @@ import axios from 'axios';
 import FormData from 'form-data';
 import { Feature, FeatureCollection } from 'geojson';
 import mime from 'mime';
+import qs from 'qs';
 import { URL } from 'url';
 import { IDBConnection } from '../database/db';
 import { ApiError, ApiErrorType, ApiGeneralError } from '../errors/api-error';
@@ -41,10 +42,17 @@ export interface IArtifact {
   mimeType: string;
 }
 
+export interface IItisSearchResult {
+  tsn: string;
+  commonName?: string;
+  scientificName: string;
+}
+
 const getBackboneIntakeEnabled = () => process.env.BACKBONE_INTAKE_ENABLED === 'true' || false;
 const getBackboneApiHost = () => process.env.BACKBONE_API_HOST || '';
 const getBackboneArtifactIntakePath = () => process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '';
-const getBackboneSurveyIntakePath = () => process.env.BACKBONE_DATASET_INTAKE_PATH || '';
+const getBackboneSurveyIntakePath = () => process.env.BACKBONE_INTAKE_PATH || '';
+const getBackboneTaxonTsnPath = () => process.env.BIOHUB_TAXON_TSN_PATH || '';
 
 export class PlatformService extends DBService {
   attachmentService: AttachmentService;
@@ -55,6 +63,35 @@ export class PlatformService extends DBService {
 
     this.historyPublishService = new HistoryPublishService(this.connection);
     this.attachmentService = new AttachmentService(connection);
+  }
+
+  /**
+   * Get taxonomic data from BioHub.
+   *
+   * @param {(string | number)[]} ids
+   * @return {*}  {Promise<IItisSearchResult[]>}
+   * @memberof PlatformService
+   */
+  async getTaxonomyFromBiohub(ids: (string | number)[]): Promise<IItisSearchResult[]> {
+    const keycloakService = new KeycloakService();
+
+    const token = await keycloakService.getKeycloakServiceToken();
+
+    const backboneTaxonTsnUrl = new URL(getBackboneTaxonTsnPath(), getBackboneApiHost()).href;
+
+    const { data } = await axios.get<{ searchResponse: IItisSearchResult[] }>(backboneTaxonTsnUrl, {
+      headers: {
+        authorization: `Bearer ${token}`
+      },
+      params: {
+        tsn: [...new Set(ids)]
+      },
+      paramsSerializer: (params) => {
+        return qs.stringify(params);
+      }
+    });
+
+    return data.searchResponse;
   }
 
   /**
