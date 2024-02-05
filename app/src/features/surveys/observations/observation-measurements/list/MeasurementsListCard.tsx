@@ -2,6 +2,7 @@ import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { Measurement } from 'hooks/cb_api/useLookupApi';
@@ -15,7 +16,16 @@ export const MeasurementsListCard = (props: IMeasurementsListCardProps) => {
   const { onRemove } = props;
 
   return (
-    <Card variant="outlined">
+    <Card
+      variant="outlined"
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        p: 2,
+        background: grey[100]
+      }}>
       <Box>
         <Box>
           <Typography variant="body2" color="textSecondary">

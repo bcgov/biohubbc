@@ -6,8 +6,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import useTheme from '@mui/material/styles/useTheme';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { MeasurementsList } from 'features/surveys/observations/observation-measurements/MeasurementsList';
-import { MeasurementsSearch } from 'features/surveys/observations/observation-measurements/MeasurementsSearch';
+import { MeasurementsList } from 'features/surveys/observations/observation-measurements/list/MeasurementsList';
+import { MeasurementsSearch } from 'features/surveys/observations/observation-measurements/search/MeasurementsSearch';
 import { Measurement } from 'hooks/cb_api/useLookupApi';
 import { useState } from 'react';
 
@@ -22,11 +22,19 @@ export const ObservationMeasurementsDialog = (props: IObservationMeasurementsDia
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const [measurements, setMeasurements] = useState<Measurement[]>([]);
+  const [selectedMeasurements, setSelectedMeasurements] = useState<Measurement[]>([]);
 
   const onRemove = (measurementToRemove: Measurement) => {
-    setMeasurements((currentMeasurements) =>
+    setSelectedMeasurements((currentMeasurements) =>
       currentMeasurements.filter((currentMeasurement) => currentMeasurement.uuid !== measurementToRemove.uuid)
+    );
+  };
+
+  const onChange = (measurementsToAdd: Measurement[]) => {
+    setSelectedMeasurements((currentMeasurements) =>
+      [...currentMeasurements, ...measurementsToAdd].filter(
+        (item1, index, self) => index === self.findIndex((item2) => item2.uuid === item1.uuid)
+      )
     );
   };
 
@@ -43,19 +51,14 @@ export const ObservationMeasurementsDialog = (props: IObservationMeasurementsDia
       aria-labelledby="observation-measurements-dialog-title">
       <DialogTitle id="observation-measurements-dialog-title">Observation Measurements</DialogTitle>
       <DialogContent>
-        <MeasurementsSearch
-          measurements={measurements}
-          onChange={(measurementsToAdd) =>
-            setMeasurements((currentMeasurements) => [...currentMeasurements, ...measurementsToAdd])
-          }
-        />
-        <MeasurementsList measurements={measurements} onRemove={onRemove} />
+        <MeasurementsSearch selectedMeasurements={selectedMeasurements} onChange={onChange} />
+        <MeasurementsList selectedMeasurements={selectedMeasurements} onRemove={onRemove} />
       </DialogContent>
       <DialogActions>
         <LoadingButton
           loading={false}
           disabled={false}
-          onClick={() => props.onSave(measurements)}
+          onClick={() => props.onSave(selectedMeasurements)}
           color="primary"
           variant="contained"
           autoFocus

@@ -27,7 +27,7 @@ export interface IMeasurementStub {
   unit?: string;
 }
 
-// TODO finalize this type. Combine with above?
+// TODO finalize this type based on actual Critterbase values. Combine with above `IMeasurementStub`?
 export type Measurement = {
   uuid: string;
   scientificName: string;

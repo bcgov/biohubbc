@@ -24,6 +24,7 @@ import { ObservationsTableContext } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { ObservationMeasurementsButton } from 'features/surveys/observations/observation-measurements/ObsevationMeasurementsButton';
 import ObservationsTable from 'features/surveys/observations/observations-table/ObservationsTable';
+import { Measurement } from 'hooks/cb_api/useLookupApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { pluralize as p } from 'utils/Utils';
@@ -232,7 +233,9 @@ const ObservationComponent = () => {
                 </Button>
               </Box>
             </Collapse>
-            <ObservationMeasurementsButton surveyId={surveyId} />
+            <ObservationMeasurementsButton surveyId={surveyId} onSave={(measurements: Measurement[]) => {
+                console.log('Column Measurements', measurements);
+            }} />
             {hideableColumns.length > 0 && (
               <>
                 <IconButton

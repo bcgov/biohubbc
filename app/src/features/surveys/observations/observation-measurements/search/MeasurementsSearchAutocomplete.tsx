@@ -9,7 +9,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { Measurement } from 'hooks/cb_api/useLookupApi';
 import { debounce } from 'lodash-es';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 export interface IMeasurementsSearchAutocompleteProps {
   selectedOptions: Measurement[];
@@ -33,21 +33,6 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
       }, 500),
     []
   );
-
-  const search = async () => {
-    if (!inputValue) {
-      setOptions([]);
-      handleSearch.cancel();
-    } else {
-      handleSearch(inputValue, (newOptions) => {
-        setOptions(() => newOptions);
-      });
-    }
-  };
-
-  useEffect(() => {
-    search();
-  }, [inputValue]);
 
   return (
     <Autocomplete
@@ -75,19 +60,33 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
 
         return unselectedOptions;
       }}
+      inputMode="search"
       inputValue={inputValue}
       onInputChange={(_, value, reason) => {
+        if (reason === 'reset') {
+          return;
+        }
+
         if (reason === 'clear') {
           setInputValue('');
-        } else {
-          setInputValue(value);
+          setOptions([]);
+          return;
         }
+
+        setInputValue(value);
+        handleSearch(value, (newOptions) => {
+          setOptions(() => newOptions);
+        });
+      }}
+      value={[]} // The selected value is not displayed in the input field or tracked by this component
+      onChange={(_, option, reason) => {
+        setPendingSelectedOptions((currentPendingOptions) => {
+          return [...currentPendingOptions, ...option];
+        });
       }}
       onClose={() => {
         onSelectOptions(pendingSelectedOptions);
-      }}
-      onChange={(_, option) => {
-        setPendingSelectedOptions(option);
+        setPendingSelectedOptions([]);
       }}
       renderOption={(renderProps, renderOption) => {
         return (
@@ -95,7 +94,7 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
             <Checkbox
               icon={<CheckBoxOutlineBlank fontSize="small" />}
               checkedIcon={<CheckBox fontSize="small" />}
-              checked={selectedOptions.some((selectedOption) => selectedOption.uuid === renderOption.uuid)}
+              checked={pendingSelectedOptions.some((option) => option.uuid === renderOption.uuid)}
               value={renderOption.uuid}
               color="default"
             />
@@ -121,7 +120,7 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
           name={'measurements-autocomplete-input'}
           variant="outlined"
           fullWidth
-          placeholder="Type to start searching"
+          placeholder="Add measurements"
           InputProps={{
             ...params.InputProps,
             startAdornment: (

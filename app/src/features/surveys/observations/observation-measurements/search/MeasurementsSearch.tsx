@@ -1,17 +1,17 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import MeasurementsSearchAutocomplete from 'features/surveys/observations/observation-measurements/MeasurementsSearchAutocomplete';
+import MeasurementsSearchAutocomplete from 'features/surveys/observations/observation-measurements/search/MeasurementsSearchAutocomplete';
 import { Measurement } from 'hooks/cb_api/useLookupApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 
 export interface IMeasurementsSearchProps {
-  measurements: Measurement[];
+  selectedMeasurements: Measurement[];
   onChange: (measurements: Measurement[]) => void;
 }
 
 export const MeasurementsSearch = (props: IMeasurementsSearchProps) => {
-  const { measurements, onChange } = props;
+  const { selectedMeasurements, onChange } = props;
 
   const critterbaseApi = useCritterbaseApi();
 
@@ -19,11 +19,12 @@ export const MeasurementsSearch = (props: IMeasurementsSearchProps) => {
 
   return (
     <Box p={3}>
-      <Typography component="dt" variant="body1" color="textSecondary">
-        Find and add measurements
+      <Typography component="legend">Find and add measurements</Typography>
+      <Typography variant="body1" color="textSecondary" sx={{ mt: -1, mb: 3 }}>
+        Customize the observation columns by adding one or more measurements.
       </Typography>
       <MeasurementsSearchAutocomplete
-        selectedOptions={measurements}
+        selectedOptions={selectedMeasurements}
         getOptions={async (inputValue: string) => {
           const searchTerms = inputValue
             .split(' ')
@@ -32,9 +33,7 @@ export const MeasurementsSearch = (props: IMeasurementsSearchProps) => {
           const response = await measurementsDataLoader.refresh(searchTerms);
           return response || [];
         }}
-        onSelectOptions={(selectedOptions: Measurement[]) => {
-          onChange(selectedOptions);
-        }}
+        onSelectOptions={onChange}
       />
     </Box>
   );
