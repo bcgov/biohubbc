@@ -88,8 +88,8 @@ describe('GetFocalSpeciesData', () => {
     let data: GetFocalSpeciesData;
 
     const obj = [
-      { id: 1, label: 'species1' },
-      { id: 2, label: 'species2' }
+      { tsn: 1, commonName: 'species1' },
+      { tsn: 2, commonName: 'species2' }
     ];
 
     before(() => {
@@ -127,8 +127,8 @@ describe('GetAncillarySpeciesData', () => {
     let data: GetAncillarySpeciesData;
 
     const obj = [
-      { id: 1, label: 'species1' },
-      { id: 2, label: 'species2' }
+      { tsn: 1, commonName: 'species1' },
+      { tsn: 2, commonName: 'species2' }
     ];
 
     before(() => {
