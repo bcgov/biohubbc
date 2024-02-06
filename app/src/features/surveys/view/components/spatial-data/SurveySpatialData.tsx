@@ -47,9 +47,9 @@ const SurveySpatialData = () => {
         // fetch all unique wldtaxonomic_units_id's from observations to find taxonomic names
         const taxonomicIds = [
           ...new Set(
-            observationsContext.observationsDataLoader.data.surveyObservations.map((item) => item.wldtaxonomic_units_id)
+            observationsContext.observationsDataLoader.data.surveyObservations.map((item) => item.itis_tsn)
           )
-        ];
+        ].filter((tsn): tsn is number => tsn !== null)
         await taxonomyContext.cacheSpeciesTaxonomyByIds(taxonomicIds);
       }
     };

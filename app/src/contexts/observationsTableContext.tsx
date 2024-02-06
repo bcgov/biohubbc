@@ -23,7 +23,7 @@ import { TaxonomyContext } from './taxonomyContext';
 
 export interface IObservationRecord {
   survey_observation_id: number;
-  wldtaxonomic_units_id: number;
+  // wldtaxonomic_units_id: number; // TODO remove
   survey_sample_site_id: number | null;
   survey_sample_method_id: number | null;
   survey_sample_period_id: number | null;
@@ -38,7 +38,7 @@ export interface IObservationRecord {
 
 export interface IObservationRecordWithSamplingData {
   survey_observation_id: number;
-  wldtaxonomic_units_id: number;
+  // wldtaxonomic_units_id: number; // TODO remove
   survey_sample_site_id: number | null;
   survey_sample_site_name: string | null;
   survey_sample_method_id: number | null;
@@ -294,7 +294,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       'longitude',
       'observation_date',
       'observation_time',
-      'wldtaxonomic_units_id'
+      // 'wldtaxonomic_units_id' // TODO remove
+      'itis_tsn',
+      'itis_scientific_name'
     ];
 
     const samplingRequiredColumns: (keyof IObservationTableRow)[] = [
@@ -495,7 +497,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     const newRecord: IObservationTableRow = {
       id,
       survey_observation_id: null as unknown as number,
-      wldtaxonomic_units_id: null as unknown as number,
+      // wldtaxonomic_units_id: null as unknown as number,
       survey_sample_site_id: null as unknown as number,
       survey_sample_method_id: null as unknown as number,
       survey_sample_period_id: null,
@@ -503,7 +505,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       observation_date: null as unknown as Date,
       observation_time: '',
       latitude: null as unknown as number,
-      longitude: null as unknown as number
+      longitude: null as unknown as number,
+      itis_tsn: null as unknown as number,
+      itis_scientific_name: ''
     };
 
     // Append new record to initial rows
@@ -512,7 +516,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     setAddedRowIds((current) => [...current, id]);
 
     // Set edit mode for the new row
-    _muiDataGridApiRef.current.startRowEditMode({ id, fieldToFocus: 'wldtaxonomic_units' });
+    _muiDataGridApiRef.current.startRowEditMode({ id, fieldToFocus: 'species' }); // TODO use 'species' as new column name?
   }, [_muiDataGridApiRef, rows]);
 
   /**
@@ -668,6 +672,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   /**
    * Runs onces on initial page load.
    */
+
+  // TODO repair this useEffect
   useEffect(() => {
     if (taxonomyContext.isLoading || hasInitializedTaxonomyCache) {
       // Taxonomy cache is currently loading, or has already loaded
@@ -685,7 +691,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     const uniqueTaxonomicIds: number[] = Array.from(
       observationsContext.observationsDataLoader.data.surveyObservations.reduce(
         (acc: Set<number>, record: IObservationRecord) => {
-          acc.add(record.wldtaxonomic_units_id);
+          if (record.itis_tsn) {
+            acc.add(record.itis_tsn);
+          }
           return acc;
         },
         new Set<number>([])
