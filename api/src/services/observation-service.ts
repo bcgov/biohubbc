@@ -341,7 +341,6 @@ export class ObservationService extends DBService {
     // Step 5. Merge all the table rows into an array of ObservationInsert[]
     const insertRows: InsertObservation[] = worksheetRowObjects.map((row) => ({
       survey_id: surveyId,
-      // wldtaxonomic_units_id: row['SPECIES'], // TODO remove
       survey_sample_site_id: null,
       survey_sample_method_id: null,
       survey_sample_period_id: null,

@@ -75,7 +75,6 @@ export const surveyObservationsResponseSchema: SchemaObject = {
         type: 'object',
         required: [
           'survey_observation_id',
-          'wldtaxonomic_units_id',
           'latitude',
           'longitude',
           'count',
@@ -85,13 +84,12 @@ export const surveyObservationsResponseSchema: SchemaObject = {
           'create_date',
           'update_user',
           'update_date',
-          'revision_count'
+          'revision_count',
+          'itis_tsn',
+          'itis_scientific_name'
         ],
         properties: {
           survey_observation_id: {
-            type: 'integer'
-          },
-          wldtaxonomic_units_id: {
             type: 'integer'
           },
           latitude: {
@@ -110,12 +108,10 @@ export const surveyObservationsResponseSchema: SchemaObject = {
             type: 'string'
           },
           itis_tsn: {
-            type: 'string',
-            nullable: true
+            type: 'integer',
           },
           itis_scientific_name: {
             type: 'string',
-            nullable: true
           },
           create_date: {
             oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
@@ -309,17 +305,15 @@ PUT.apiDoc = {
               items: {
                 type: 'object',
                 required: [
-                  'wldtaxonomic_units_id',
                   'count',
                   'latitude',
                   'longitude',
                   'observation_date',
-                  'observation_time'
+                  'observation_time',
+                  'itis_tsn',
+                  'itis_scientific_name'
                 ],
                 properties: {
-                  wldtaxonomic_units_id: {
-                    oneOf: [{ type: 'integer' }, { type: 'string' }]
-                  },
                   count: {
                     type: 'integer'
                   },
@@ -333,6 +327,12 @@ PUT.apiDoc = {
                     type: 'string'
                   },
                   observation_time: {
+                    type: 'string'
+                  },
+                  itis_tsn: {
+                    type: 'integer'
+                  },
+                  itis_scientific_name: {
                     type: 'string'
                   }
                 }
@@ -468,7 +468,6 @@ export function insertUpdateSurveyObservations(): RequestHandler {
       const records: (InsertObservation | UpdateObservation)[] = req.body.surveyObservations.map((record: any) => {
         return {
           survey_observation_id: record.survey_observation_id,
-          wldtaxonomic_units_id: Number(record.wldtaxonomic_units_id),
           survey_sample_site_id: record.survey_sample_site_id,
           survey_sample_method_id: record.survey_sample_method_id,
           survey_sample_period_id: record.survey_sample_period_id,
