@@ -429,7 +429,7 @@ export function getSurveyObservations(): RequestHandler {
           total: observationCount,
           per_page: limit,
           current_page: page ?? 1,
-          last_page: limit ? Math.ceil(observationCount / limit) : 1,
+          last_page: Math.max(1, Math.ceil(observationCount / (limit ?? 1))),
           sort,
           order
         }

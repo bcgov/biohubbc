@@ -40,7 +40,7 @@ export class PostSurveyObservationToBiohubObject implements BioHubSubmissionFeat
     this.type = BiohubFeatureType.OBSERVATION;
     this.properties = {
       survey_id: observationRecord.survey_id,
-      taxonomy: observationRecord.wldtaxonomic_units_id,
+      // taxonomy: observationRecord.wldtaxonomic_units_id, // TODO need to replace this.
       survey_sample_site_id: observationRecord?.survey_sample_site_id || null,
       survey_sample_method_id: observationRecord?.survey_sample_method_id || null,
       survey_sample_period_id: observationRecord?.survey_sample_period_id || null,

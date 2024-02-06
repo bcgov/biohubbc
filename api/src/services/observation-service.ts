@@ -27,12 +27,11 @@ import { DBService } from './db-service';
 const defaultLog = getLogger('services/observation-service');
 
 const observationCSVColumnValidator: IXLSXCSVValidator = {
-  columnNames: ['SPECIES', 'COUNT', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE', 'ITIS_TSN', 'ITIS_SCIENTIFIC_NAME'],
-  columnTypes: ['number', 'number', 'date', 'string', 'number', 'number'],
+  columnNames: ['ITIS_TSN', 'ITIS_SCIENTIFIC_NAME', 'COUNT', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
+  columnTypes: ['number', 'string', 'number', 'date', 'string', 'number', 'number'],
   columnAliases: {
     LATITUDE: ['LAT'],
     LONGITUDE: ['LON', 'LONG', 'LNG'],
-    SPECIES: ['TAXON']
   }
 };
 
@@ -333,7 +332,7 @@ export class ObservationService extends DBService {
     const xlsxWorksheets = constructWorksheets(xlsxWorkBook);
 
     if (!validateCsvFile(xlsxWorksheets, observationCSVColumnValidator)) {
-      throw new Error('Failed to process file for importing observations. Invalid CSV file.');
+      throw new Error('Failed to process file for importing observations. Column validator failed.');
     }
 
     // Get the worksheet row objects
@@ -342,7 +341,7 @@ export class ObservationService extends DBService {
     // Step 5. Merge all the table rows into an array of ObservationInsert[]
     const insertRows: InsertObservation[] = worksheetRowObjects.map((row) => ({
       survey_id: surveyId,
-      wldtaxonomic_units_id: row['SPECIES'],
+      // wldtaxonomic_units_id: row['SPECIES'], // TODO remove
       survey_sample_site_id: null,
       survey_sample_method_id: null,
       survey_sample_period_id: null,
