@@ -219,35 +219,17 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   });
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
-  const updatePaginationModel = (model: GridPaginationModel) => {
-    setPaginationModel(model);
-  };
+  // const updatePaginationModel = (model: GridPaginationModel) => {
+  //   setPaginationModel(model);
+  // };
 
-  const updateSortModel = (model: GridSortModel) => {
-    setSortModel(model);
-  };
-
-  // initial load with pagination values
-  useEffect(() => {
-    observationsContext.observationsDataLoader.refresh({
-      limit: paginationModel.pageSize,
-
-      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
-      page: paginationModel.page + 1
-    });
-  }, []);
+  // const updateSortModel = (model: GridSortModel) => {
+  //   setSortModel(model);
+  // };
 
   // Fetch new rows based on sort/ pagination model changes
   useEffect(() => {
-    const sort = firstOrNull(sortModel);
-    observationsContext.observationsDataLoader.refresh({
-      limit: paginationModel.pageSize,
-      sort: sort?.field || undefined,
-      order: sort?.sort || undefined,
-
-      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
-      page: paginationModel.page + 1
-    });
+    refreshObservationRecords();
   }, [paginationModel, sortModel]);
 
   /**
@@ -406,6 +388,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
           ),
           open: true
         });
+
+        console.log('Refreshing after delete...')
+        refreshObservationRecords();
       } catch {
         // Close yes-no dialog
         dialogContext.setYesNoDialog({ open: false });
@@ -574,11 +559,16 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   }, [_muiDataGridApiRef, addedRowIds, rows]);
 
   const refreshObservationRecords = useCallback(async () => {
+    const sort = firstOrNull(sortModel);
     return observationsContext.observationsDataLoader.refresh({
-      page: paginationModel.page,
-      limit: paginationModel.pageSize
+      limit: paginationModel.pageSize,
+      sort: sort?.field || undefined,
+      order: sort?.sort || undefined,
+
+      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+      page: paginationModel.page + 1
     });
-  }, [observationsContext.observationsDataLoader, paginationModel]);
+  }, [observationsContext.observationsDataLoader, paginationModel, sortModel]);
 
   // True if the data grid contains at least 1 unsaved record
   const hasUnsavedChanges = modifiedRowIds.length > 0 || addedRowIds.length > 0;
@@ -759,9 +749,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       validationModel,
       observationCount,
       setObservationCount,
-      updatePaginationModel,
+      updatePaginationModel: setPaginationModel,
       paginationModel,
-      updateSortModel,
+      updateSortModel: setSortModel,
       sortModel
     }),
     [
@@ -774,15 +764,16 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       revertObservationRecords,
       refreshObservationRecords,
       getSelectedObservationRecords,
+      setRowSelectionModel,
       hasUnsavedChanges,
       rowSelectionModel,
       isLoading,
       validationModel,
       isSaving,
       observationCount,
-      updatePaginationModel,
+      setPaginationModel,
       paginationModel,
-      updateSortModel,
+      setSortModel,
       sortModel
     ]
   );
