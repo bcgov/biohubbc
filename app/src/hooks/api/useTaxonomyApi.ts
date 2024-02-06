@@ -1,32 +1,20 @@
 import { AxiosInstance } from 'axios';
-import { ITaxonomySearchResult } from 'interfaces/useTaxonomy.interface';
+import { ITaxonomy } from 'hooks/itis/useItisApi';
 import qs from 'qs';
 
 const useTaxonomyApi = (axios: AxiosInstance) => {
-  const searchSpecies = async (value: string): Promise<ITaxonomySearchResult> => {
-    const { data } = await axios.get<ITaxonomySearchResult>(`/api/taxonomy/species/search`, {
-      params: { terms: value },
-      paramsSerializer: (params) => {
-        return qs.stringify(params);
-      }
-    });
-
-    return data;
-  };
-
-  const getSpeciesFromIds = async (ids: number[]): Promise<ITaxonomySearchResult> => {
-    const { data } = await axios.get<ITaxonomySearchResult>(`/api/taxonomy/species/list`, {
+  const getSpeciesFromIds = async (ids: number[]): Promise<ITaxonomy[]> => {
+    const { data } = await axios.get<{ searchResponse: ITaxonomy[] }>(`/api/taxonomy/species/list`, {
       params: { ids: qs.stringify(ids) },
       paramsSerializer: (params) => {
         return qs.stringify(params);
       }
     });
 
-    return data;
+    return data.searchResponse;
   };
 
   return {
-    searchSpecies,
     getSpeciesFromIds
   };
 };

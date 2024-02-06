@@ -109,6 +109,14 @@ export const surveyObservationsResponseSchema: SchemaObject = {
           observation_time: {
             type: 'string'
           },
+          itis_tsn: {
+            type: 'string',
+            nullable: true
+          },
+          itis_scientific_name: {
+            type: 'string',
+            nullable: true
+          },
           create_date: {
             oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
             description: 'ISO 8601 date string for the project start date'
@@ -412,6 +420,7 @@ export function getSurveyObservations(): RequestHandler {
         surveyId,
         paginationOptions
       );
+      console.log('observationData', observationData);
       const { observationCount } = observationData.supplementaryObservationData;
 
       return res.status(200).json({
@@ -467,7 +476,9 @@ export function insertUpdateSurveyObservations(): RequestHandler {
           longitude: record.longitude,
           count: record.count,
           observation_date: record.observation_date,
-          observation_time: record.observation_time
+          observation_time: record.observation_time,
+          itis_tsn: record.itis_tsn,
+          itis_scientific_name: record.itis_scientific_name
         } as InsertObservation | UpdateObservation;
       });
 

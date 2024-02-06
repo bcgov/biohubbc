@@ -62,15 +62,6 @@ parameters:
   - name: BCTW_API_HOST
     description: API host for the BC Telemetry Warehouse service. SIMS API will hit this for device deployments and other telemetry operations.  Example "https://bctw.com".
     required: true
-  # Elastic Search
-  - name: ELASTICSEARCH_URL
-    description: Platform Elasticsearch URL
-    required: true
-    value: 'http://es01:9200'
-  - name: ELASTICSEARCH_TAXONOMY_INDEX
-    description: Platform Elasticsearch Taxonomy Index
-    required: true
-    value: 'taxonomy_3.0.0'
   # Database
   - name: TZ
     description: Application timezone
@@ -302,13 +293,6 @@ objects:
                   value: ${KEYCLOAK_API_HOST}
                 - name: KEYCLOAK_API_ENVIRONMENT
                   value: ${KEYCLOAK_API_ENVIRONMENT}
-                # Elastic Search
-                - name: ELASTICSEARCH_URL
-                  value: ${ELASTICSEARCH_URL}
-                - name: ELASTICSEARCH_TAXONOMY_INDEX
-                  value: ${ELASTICSEARCH_TAXONOMY_INDEX}
-                - name: S3_KEY_PREFIX
-                  value: ${S3_KEY_PREFIX}
                 # Object Store (S3)
                 - name: OBJECT_STORE_URL
                   valueFrom:

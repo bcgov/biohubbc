@@ -107,7 +107,7 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
   const tableData: IObservationTableRow[] = data.map((item) => {
     return {
       survey_observation_id: item.survey_observation_id,
-      itis_scientific_name: taxonomyContext.getCachedSpeciesTaxonomyById(item.wldtaxonomic_units_id)?.label,
+      itis_scientific_name: taxonomyContext.getCachedSpeciesTaxonomyById(item.wldtaxonomic_units_id)?.scientificName,
       wldtaxonomic_units_id: item.wldtaxonomic_units_id,
       count: item.count,
       survey_sample_site_name: item.survey_sample_site_name,

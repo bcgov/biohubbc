@@ -32,6 +32,8 @@ export interface IObservationRecord {
   observation_time: string;
   latitude: number | null;
   longitude: number | null;
+  itis_tsn: number | null;
+  itis_scientific_name: string | null;
 }
 
 export interface IObservationRecordWithSamplingData {
@@ -43,6 +45,8 @@ export interface IObservationRecordWithSamplingData {
   survey_sample_method_name: string | null;
   survey_sample_period_id: number | null;
   survey_sample_period_start_datetime: string | null;
+  itis_tsn: number | null;
+  itis_scientific_name: string | null;
   count: number | null;
   observation_date: Date;
   observation_time: string;

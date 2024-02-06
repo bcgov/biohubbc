@@ -1,7 +1,8 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import qs from 'qs';
-import { TaxonomyService } from '../../../services/taxonomy-service';
+import { getDBConnection } from '../../../database/db';
+import { PlatformService } from '../../../services/platform-service';
 import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/taxonomy/list');
@@ -35,12 +36,16 @@ GET.apiDoc = {
                 items: {
                   title: 'Species',
                   type: 'object',
-                  required: ['id', 'label'],
+                  required: ['tsn', 'commonName', 'scientificName'],
                   properties: {
-                    id: {
+                    tsn: {
                       type: 'string'
                     },
-                    label: {
+                    commonName: {
+                      type: 'string',
+                      nullable: true
+                    },
+                    scientificName: {
                       type: 'string'
                     }
                   }
@@ -72,11 +77,13 @@ export function getSpeciesFromIds(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'getSpeciesFromIds', message: 'query', query: req.query });
 
+    const connection = getDBConnection(req['keycloak_token']);
+
     const ids = Object.values(qs.parse(req.query.ids?.toString() || ''));
 
     try {
-      const taxonomyService = new TaxonomyService();
-      const response = await taxonomyService.getSpeciesFromIds(ids as string[]);
+      const platformService = new PlatformService(connection);
+      const response = await platformService.getTaxonomyFromBiohub(ids as string[]);
 
       // Overwrite default cache-control header, allow caching up to 7 days
       res.setHeader('Cache-Control', 'max-age=604800');

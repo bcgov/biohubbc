@@ -13,34 +13,17 @@ describe('useTaxonomyApi', () => {
     mock.restore();
   });
 
-  it('searchSpecies works as expected', async () => {
-    const res = [
-      {
-        id: '1',
-        label: 'something'
-      },
-      {
-        id: '2',
-        label: 'anything'
-      }
-    ];
-
-    mock.onGet('/api/taxonomy/species/search').reply(200, res);
-
-    const result = await useTaxonomyApi(axios).searchSpecies('th');
-
-    expect(result).toEqual(res);
-  });
-
   it('getSpeciesFromIds works as expected', async () => {
     const res = [
       {
-        id: '1',
-        label: 'something'
+        tsn: '1',
+        commonName: 'something',
+        scientificName: 'something'
       },
       {
-        id: '2',
-        label: 'anything'
+        tsn: '2',
+        commonName: 'anything',
+        scientificName: 'anything'
       }
     ];
 

@@ -27,7 +27,7 @@ import { DBService } from './db-service';
 const defaultLog = getLogger('services/observation-service');
 
 const observationCSVColumnValidator: IXLSXCSVValidator = {
-  columnNames: ['SPECIES', 'COUNT', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
+  columnNames: ['SPECIES', 'COUNT', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE', 'ITIS_TSN', 'ITIS_SCIENTIFIC_NAME'],
   columnTypes: ['number', 'number', 'date', 'string', 'number', 'number'],
   columnAliases: {
     LATITUDE: ['LAT'],
@@ -350,7 +350,9 @@ export class ObservationService extends DBService {
       longitude: row['LONGITUDE'] ?? row['LON'] ?? row['LONG'] ?? row['LNG'],
       count: row['COUNT'],
       observation_time: row['TIME'],
-      observation_date: row['DATE']
+      observation_date: row['DATE'],
+      itis_tsn: row['ITIS_TSN'],
+      itis_scientific_name: row['ITIS_SCIENTIFIC_NAME']
     }));
 
     // Step 6. Insert new rows and return them

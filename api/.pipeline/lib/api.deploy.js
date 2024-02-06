@@ -43,9 +43,6 @@ const apiDeploy = async (settings) => {
         // BCTW / Critterbase
         BCTW_API_HOST: phases[phase].bctwApiHost,
         CB_API_HOST: phases[phase].critterbaseApiHost,
-        // Elastic Search
-        ELASTICSEARCH_URL: phases[phase].elasticsearchURL,
-        ELASTICSEARCH_TAXONOMY_INDEX: phases[phase].elasticsearchTaxonomyIndex,
         // S3
         S3_KEY_PREFIX: phases[phase].s3KeyPrefix,
         // Database

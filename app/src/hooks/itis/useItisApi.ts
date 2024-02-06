@@ -13,7 +13,7 @@ export interface IItisSearchResponse {
   usage: string;
 }
 
-export interface IItisSearchResult {
+export interface ITaxonomy {
   tsn: number;
   commonName?: string;
   scientificName: string;
@@ -27,11 +27,11 @@ const useItisApi = () => {
    * Search for taxon records by search terms.
    *
    * @param {string[]} searchTerms
-   * @return {*}  {(Promise<IItisSearchResult[]>)}
+   * @return {*}  {(Promise<ITaxonomy[]>)}
    */
-  const itisSearch = async (searchTerms: string[]): Promise<IItisSearchResult[]> => {
+  const itisSearch = async (searchTerms: string[]): Promise<ITaxonomy[]> => {
     try {
-      const { data } = await apiAxios.get<{ searchResponse: IItisSearchResult[] }>(config.BIOHUB_TAXON_PATH, {
+      const { data } = await apiAxios.get<{ searchResponse: ITaxonomy[] }>(config.BIOHUB_TAXON_PATH, {
         params: { terms: searchTerms },
         paramsSerializer: (params) => {
           return qs.stringify(params, { arrayFormat: 'repeat' });

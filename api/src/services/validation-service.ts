@@ -109,10 +109,10 @@ export class ValidationService extends DBService {
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
 
       // Normalize DwC source
-      const normalizedDWC = this.normalizeDWCArchive(dwcPrep.archive);
+      // const normalizedDWC = this.normalizeDWCArchive(dwcPrep.archive);
 
       // Apply decorations to DwC
-      const decoratedDWC = await this.dwCService.decorateDwCJSON(normalizedDWC);
+      const decoratedDWC = {}; // await this.dwCService.decorateDwCJSON(normalizedDWC);
 
       await this.occurrenceService.updateDWCSourceForOccurrenceSubmission(submissionId, JSON.stringify(decoratedDWC));
 
@@ -164,13 +164,13 @@ export class ValidationService extends DBService {
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
 
       // Run template transformations
-      const transformedObject = await this.templateTransformation(submissionPrep.xlsx, surveyId);
+      // const transformedObject = await this.templateTransformation(submissionPrep.xlsx, surveyId);
 
       // Insert transformation complete status
       await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED);
 
       // Apply decorations to DwC
-      const decoratedDWC = await this.dwCService.decorateDwCJSON(transformedObject);
+      const decoratedDWC = {}; // await this.dwCService.decorateDwCJSON(transformedObject);
 
       await this.occurrenceService.updateDWCSourceForOccurrenceSubmission(submissionId, JSON.stringify(decoratedDWC));
 

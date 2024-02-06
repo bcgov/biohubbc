@@ -42,7 +42,7 @@ const TaxonomyDataGridViewCell = <DataGridType extends GridValidRowModel>(
         textOverflow: 'ellipsis',
         color: props.error ? 'error' : undefined
       }}>
-      {response.label}
+      {response.commonName || response.scientificName}
     </Typography>
   );
 };

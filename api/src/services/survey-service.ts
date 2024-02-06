@@ -41,7 +41,6 @@ import { SiteSelectionStrategyService } from './site-selection-strategy-service'
 import { SurveyBlockService } from './survey-block-service';
 import { SurveyLocationService } from './survey-location-service';
 import { SurveyParticipationService } from './survey-participation-service';
-import { TaxonomyService } from './taxonomy-service';
 
 const defaultLog = getLogger('services/survey-service');
 
@@ -355,15 +354,15 @@ export class SurveyService extends DBService {
     );
 
     // Fetch focal species data for all species ids
-    const taxonomyService = new TaxonomyService();
-    const focalSpecies = await taxonomyService.getSpeciesFromIds(uniqueFocalSpeciesIds);
+    const platformService = new PlatformService(this.connection);
+    const focalSpecies = await platformService.getTaxonomyFromBiohub(uniqueFocalSpeciesIds);
 
     // Decorate the surveys response with their matching focal species labels
     const decoratedSurveys: SurveyBasicFields[] = [];
     for (const survey of surveys) {
       const matchingFocalSpeciesNames = focalSpecies
-        .filter((item) => survey.focal_species.includes(Number(item.id)))
-        .map((item) => item.label);
+        .filter((item) => survey.focal_species.includes(Number(item.tsn)))
+        .map((item) => item.commonName || item.scientificName);
 
       decoratedSurveys.push({ ...survey, focal_species_names: matchingFocalSpeciesNames });
     }
