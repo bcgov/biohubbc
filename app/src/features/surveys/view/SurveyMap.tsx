@@ -16,7 +16,6 @@ import { useContext, useMemo, useState } from 'react';
 import { LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { getCodesName } from 'utils/Utils';
-import hash from 'object-hash'
 
 export interface ISurveyMapPointMetadata {
   label: string;
@@ -178,9 +177,9 @@ const SurveyMap = (props: ISurveyMapProps) => {
     {
       layerName: 'Study Areas',
       features: studyAreaLocations.flatMap((location) => {
-        return location.geojson.map((feature) => {
+        return location.geojson.map((feature, index) => {
           return {
-            key: `${location.survey_location_id}-${hash(feature.geometry)}`,
+            key: `${location.survey_location_id}-${index}`,
             geoJSON: feature,
             popup: (
               <SurveyMapPopup
@@ -196,9 +195,9 @@ const SurveyMap = (props: ISurveyMapProps) => {
     {
       layerName: 'Sample Sites',
       layerColors: { color: '#1f7dff', fillColor: '#1f7dff' },
-      features: sampleSites.map((sampleSite) => {
+      features: sampleSites.map((sampleSite, index) => {
         return {
-          key: `${sampleSite.survey_sample_site_id}-${hash(sampleSite.geojson.geometry)}`,
+          key: `${sampleSite.survey_sample_site_id}-${index}`,
           geoJSON: sampleSite.geojson,
           popup: (
             <SurveyMapPopup
