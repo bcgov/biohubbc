@@ -1,6 +1,7 @@
-import { mdiDotsVertical, mdiImport, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiCogOutline, mdiDotsVertical, mdiImport, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
+import { Checkbox, ListItemText } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
@@ -22,15 +23,22 @@ import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TelemetryTableContext } from 'contexts/telemetryTableContext';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
-import { useContext, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { pluralize as p } from 'utils/Utils';
 import ManualTelemetryTable from './ManualTelemetryTable';
 
-const ManualTelemetryComponent = () => {
+/**
+ * Key used to cache column visiblity in sessionStorage
+ */
+const SIMS_TELEMETRY_HIDDEN_COLUMNS = 'SIMS_TELEMETRY_HIDDEN_COLUMNS';
+
+const ManualTelemetryTableContainer = () => {
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [processingRecords, setProcessingRecords] = useState(false);
   const [showConfirmRemoveAllDialog, setShowConfirmRemoveAllDialog] = useState(false);
-  const [anchorEl, setAnchorEl] = useState<Element | null>(null);
+  const [contextMenuAnchorEl, setContextMenuAnchorEl] = useState<Element | null>(null);
+  const [columnVisibilityMenuAnchorEl, setColumnVisibilityMenuAnchorEl] = useState<Element | null>(null);
+  const [hiddenFields, setHiddenFields] = useState<string[]>([]);
   const dialogContext = useContext(DialogContext);
   const telemetryTableContext = useContext(TelemetryTableContext);
   const surveyContext = useContext(SurveyContext);
@@ -41,11 +49,82 @@ const ManualTelemetryComponent = () => {
     dialogContext.setSnackbar({ ...textDialogProps, open: true });
   };
 
-  const handleCloseMenu = () => {
-    setAnchorEl(null);
+  const handleCloseContextMenu = () => {
+    setContextMenuAnchorEl(null);
   };
 
+  const handleCloseColumnVisibilityMenu = () => {
+    setColumnVisibilityMenuAnchorEl(null);
+  };
+
+  /**
+   * Toggles visibility for a particular column
+   */
+  const toggleColumnVisibility = (field: string) => {
+    setHiddenFields((prev) => {
+      if (prev.includes(field)) {
+        return prev.filter((hiddenField) => hiddenField !== field);
+      } else {
+        return [...prev, field];
+      }
+    });
+  };
+
+  // The array of columns that may be toggled as hidden or visible
+  const hideableColumns = useMemo(() => {
+    return telemetryTableContext.getColumns().filter((column) => {
+      return column && column.type && !['actions', 'checkboxSelection'].includes(column.type) && column.hideable;
+    });
+  }, [telemetryTableContext.getColumns]);
+
+  /**
+   * Toggles whether all columns are hidden or visible.
+   */
+  const toggleShowHideAll = useCallback(() => {
+    if (hiddenFields.length > 0) {
+      setHiddenFields([]);
+    } else {
+      setHiddenFields(hideableColumns.map((column) => column.field));
+    }
+  }, [hiddenFields]);
+
+  /**
+   * Whenever hidden fields updates, trigger an update in visiblity for the table.
+   */
+  useEffect(() => {
+    _muiDataGridApiRef.current.setColumnVisibilityModel({
+      ...Object.fromEntries(hideableColumns.map((column) => [column.field, true])),
+      ...Object.fromEntries(hiddenFields.map((field) => [field, false]))
+    });
+  }, [hideableColumns, hiddenFields]);
+
+  /**
+   * On first mount, load visibility state from session storage, if it exists.
+   */
+  useEffect(() => {
+    const fieldsJson: string | null = sessionStorage.getItem(SIMS_TELEMETRY_HIDDEN_COLUMNS);
+
+    if (!fieldsJson) {
+      return;
+    }
+
+    try {
+      const fields: string[] = JSON.parse(fieldsJson);
+      setHiddenFields(fields);
+    } catch {
+      return;
+    }
+  }, []);
+
+  /**
+   * Persist visibility state in session
+   */
+  useEffect(() => {
+    sessionStorage.setItem(SIMS_TELEMETRY_HIDDEN_COLUMNS, JSON.stringify(hiddenFields));
+  }, [hiddenFields]);
+
   const { projectId, surveyId } = surveyContext;
+
   const handleFileImport = async (file: File) => {
     telemetryApi.uploadCsvForImport(projectId, surveyId, file).then((response) => {
       setShowImportDialog(false);
@@ -65,7 +144,6 @@ const ManualTelemetryComponent = () => {
           });
         })
         .catch((error) => {
-          console.log(error);
           showSnackBar({
             snackbarMessage: (
               <Typography variant="body2" component="div">
@@ -79,6 +157,7 @@ const ManualTelemetryComponent = () => {
   };
 
   const numSelectedRows = telemetryTableContext.rowSelectionModel.length;
+
   return (
     <>
       <FileUploadDialog
@@ -121,7 +200,7 @@ const ManualTelemetryComponent = () => {
             </Typography>
           </Typography>
 
-          <Box display={'flex'} overflow={'hidden'} gap={1} whiteSpace={'nowrap'}>
+          <Stack flexDirection="row" alignItems="center" gap={1} overflow="hidden" whiteSpace="nowrap">
             <Button
               variant="contained"
               color="primary"
@@ -137,8 +216,8 @@ const ManualTelemetryComponent = () => {
               disabled={telemetryTableContext.isSaving}>
               Add Record
             </Button>
-            <Collapse in={hasUnsavedChanges} orientation="horizontal" sx={{ mr: -1 }}>
-              <Box whiteSpace="nowrap" display="flex" sx={{ gap: 1, pr: 1 }}>
+            <Collapse in={hasUnsavedChanges} orientation="horizontal">
+              <Stack flexDirection="row" whiteSpace="nowrap" gap={1}>
                 <LoadingButton
                   loading={telemetryTableContext.isSaving}
                   variant="contained"
@@ -154,12 +233,65 @@ const ManualTelemetryComponent = () => {
                   disabled={telemetryTableContext.isSaving}>
                   Discard Changes
                 </Button>
-              </Box>
+              </Stack>
             </Collapse>
+            {hideableColumns.length > 0 && (
+              <>
+                <IconButton
+                  onClick={(event) => setColumnVisibilityMenuAnchorEl(event.currentTarget)}
+                  disabled={telemetryTableContext.isSaving}>
+                  <Icon path={mdiCogOutline} size={1} />
+                </IconButton>
+                <Menu
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right'
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right'
+                  }}
+                  id="survey-observations-table-actions-menu"
+                  anchorEl={columnVisibilityMenuAnchorEl}
+                  open={Boolean(columnVisibilityMenuAnchorEl)}
+                  onClose={handleCloseColumnVisibilityMenu}
+                  MenuListProps={{
+                    'aria-labelledby': 'basic-button'
+                  }}>
+                  <MenuItem dense onClick={() => toggleShowHideAll()}>
+                    <ListItemIcon>
+                      <Checkbox
+                        sx={{ ml: -1 }}
+                        indeterminate={hiddenFields.length > 0 && hiddenFields.length < hideableColumns.length}
+                        checked={hiddenFields.length === 0}
+                      />
+                    </ListItemIcon>
+                    <ListItemText sx={{ textTransform: 'uppercase' }}>Show/Hide All</ListItemText>
+                  </MenuItem>
+                  <Divider />
+                  <Box
+                    sx={{
+                      xs: { maxHeight: '300px' },
+                      lg: { maxHeight: '400px' }
+                    }}>
+                    {hideableColumns.map((column) => {
+                      return (
+                        <MenuItem dense key={column.field} onClick={() => toggleColumnVisibility(column.field)}>
+                          <ListItemIcon>
+                            <Checkbox sx={{ ml: -1 }} checked={!hiddenFields.includes(column.field)} />
+                          </ListItemIcon>
+                          <ListItemText>{column.headerName}</ListItemText>
+                        </MenuItem>
+                      );
+                    })}
+                  </Box>
+                </Menu>
+              </>
+            )}
             <Box>
               <IconButton
                 onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-                  setAnchorEl(event.currentTarget);
+                  setContextMenuAnchorEl(event.currentTarget);
                 }}
                 size="small"
                 disabled={numSelectedRows === 0}
@@ -176,16 +308,16 @@ const ManualTelemetryComponent = () => {
                   horizontal: 'right'
                 }}
                 id="manual-telemetry-table-actions-menu"
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleCloseMenu}
+                anchorEl={contextMenuAnchorEl}
+                open={Boolean(contextMenuAnchorEl)}
+                onClose={handleCloseContextMenu}
                 MenuListProps={{
                   'aria-labelledby': 'basic-button'
                 }}>
                 <MenuItem
                   onClick={() => {
                     telemetryTableContext.deleteSelectedRecords();
-                    handleCloseMenu();
+                    handleCloseContextMenu();
                   }}
                   disabled={telemetryTableContext.isSaving}>
                   <ListItemIcon>
@@ -195,7 +327,7 @@ const ManualTelemetryComponent = () => {
                 </MenuItem>
               </Menu>
             </Box>
-          </Box>
+          </Stack>
         </Toolbar>
 
         <Divider flexItem></Divider>
@@ -212,4 +344,4 @@ const ManualTelemetryComponent = () => {
   );
 };
 
-export default ManualTelemetryComponent;
+export default ManualTelemetryTableContainer;

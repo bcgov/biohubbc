@@ -98,8 +98,15 @@ const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataG
       }
 
       const field = String(focusedError.field);
+      const visibleFields = props.muiDataGridApiRef.getVisibleColumns().map((column) => column.field);
+      const colIndex = visibleFields.indexOf(field);
+
+      if (colIndex < 0) {
+        // Column is not visible, cannot focus it
+        return;
+      }
+
       const rowIndex = props.muiDataGridApiRef.getSortedRowIds().indexOf(focusedError.rowId);
-      const colIndex = props.muiDataGridApiRef.getColumnIndex(field);
       const pageSize = props.muiDataGridApiRef.state.pagination.paginationModel.pageSize;
       const page = Math.floor((rowIndex + 1) / pageSize);
 

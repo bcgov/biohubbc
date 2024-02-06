@@ -7,6 +7,7 @@ import { InsertObservation, UpdateObservation } from '../../../../../../reposito
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ObservationService } from '../../../../../../services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
+import { ApiPaginationOptions } from '../../../../../../zod-schema/pagination';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation');
 
@@ -136,6 +137,40 @@ export const surveyObservationsResponseSchema: SchemaObject = {
   }
 };
 
+const paginationResponseSchema: SchemaObject = {
+  type: 'object',
+  required: ['total', 'current_page', 'last_page'],
+  properties: {
+    total: {
+      type: 'integer',
+      description: 'The total number of observation records belonging to the survey'
+    },
+    per_page: {
+      type: 'integer',
+      minimum: 1,
+      description: 'The number of records shown per page'
+    },
+    current_page: {
+      type: 'integer',
+      description: 'The current page being fetched'
+    },
+    last_page: {
+      type: 'integer',
+      minimum: 1,
+      description: 'The total number of pages'
+    },
+    sort: {
+      type: 'string',
+      description: 'The column that is being sorted on'
+    },
+    order: {
+      type: 'string',
+      enum: ['asc', 'desc'],
+      description: 'The sort order of the response'
+    }
+  }
+};
+
 GET.apiDoc = {
   description: 'Get all observations for the survey.',
   tags: ['observation'],
@@ -149,7 +184,7 @@ GET.apiDoc = {
       in: 'path',
       name: 'projectId',
       schema: {
-        type: 'number',
+        type: 'integer',
         minimum: 1
       },
       required: true
@@ -158,10 +193,43 @@ GET.apiDoc = {
       in: 'path',
       name: 'surveyId',
       schema: {
-        type: 'number',
+        type: 'integer',
         minimum: 1
       },
       required: true
+    },
+    {
+      in: 'query',
+      name: 'page',
+      required: false,
+      schema: {
+        type: 'integer',
+        minimum: 1,
+        description: 'The current page number being fetched'
+      }
+    },
+    {
+      in: 'query',
+      name: 'limit',
+      required: false,
+      schema: {
+        type: 'integer',
+        minimum: 1,
+        maximum: 100,
+        description: 'The number of records per page'
+      }
+    },
+    {
+      in: 'query',
+      name: 'sort',
+      required: false,
+      description: 'The column being sorted on'
+    },
+    {
+      in: 'query',
+      name: 'order',
+      required: false,
+      description: 'The order of the sort, i.e. asc or desc'
     }
   ],
   responses: {
@@ -171,10 +239,11 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             ...surveyObservationsResponseSchema,
-            required: ['surveyObservations', 'supplementaryObservationData'],
+            required: ['surveyObservations', 'supplementaryObservationData', 'pagination'],
             properties: {
               ...surveyObservationsResponseSchema.properties,
-              supplementaryObservationData: { ...surveyObservationsSupplementaryData }
+              supplementaryObservationData: { ...surveyObservationsSupplementaryData },
+              pagination: { ...paginationResponseSchema }
             },
             title: 'Survey get response object, for view purposes'
           }
@@ -244,7 +313,7 @@ PUT.apiDoc = {
                     oneOf: [{ type: 'integer' }, { type: 'string' }]
                   },
                   count: {
-                    type: 'number'
+                    type: 'integer'
                   },
                   latitude: {
                     type: 'number'
@@ -294,6 +363,19 @@ PUT.apiDoc = {
 };
 
 /**
+ * This record maps observation table sampling site site ID columns to sampling data
+ * columns that can be sorted on.
+ *
+ * TODO We should probably modify frontend functionality to make requests to sort on these
+ * columns.
+ */
+const samplingSiteSortingColumnName: Record<string, string> = {
+  survey_sample_site_id: 'survey_sample_site_name',
+  survey_sample_method_id: 'survey_sample_method_name',
+  survey_sample_period_id: 'survey_sample_period_start_datetime'
+};
+
+/**
  * Fetch all observations for a survey.
  *
  * @export
@@ -302,6 +384,17 @@ PUT.apiDoc = {
 export function getSurveyObservations(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
+
+    const page: number | undefined = req.query.page ? Number(req.query.page) : undefined;
+    const limit: number | undefined = req.query.limit ? Number(req.query.limit) : undefined;
+    const order: 'asc' | 'desc' | undefined = req.query.order ? (String(req.query.order) as 'asc' | 'desc') : undefined;
+
+    const sortQuery: string | undefined = req.query.sort ? String(req.query.sort) : undefined;
+    let sort = sortQuery;
+
+    if (sortQuery && samplingSiteSortingColumnName[sortQuery]) {
+      sort = samplingSiteSortingColumnName[sortQuery];
+    }
 
     defaultLog.debug({ label: 'getSurveyObservations', surveyId });
 
@@ -312,8 +405,26 @@ export function getSurveyObservations(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      const observationData = await observationService.getSurveyObservationsWithSupplementaryData(surveyId);
-      return res.status(200).json(observationData);
+      const paginationOptions: ApiPaginationOptions | undefined =
+        limit !== undefined && page !== undefined ? { limit, page, sort, order } : undefined;
+
+      const observationData = await observationService.getSurveyObservationsWithSupplementaryAndSamplingData(
+        surveyId,
+        paginationOptions
+      );
+      const { observationCount } = observationData.supplementaryObservationData;
+
+      return res.status(200).json({
+        ...observationData,
+        pagination: {
+          total: observationCount,
+          per_page: limit,
+          current_page: page ?? 1,
+          last_page: limit ? Math.ceil(observationCount / limit) : 1,
+          sort,
+          order
+        }
+      });
     } catch (error) {
       defaultLog.error({ label: 'getSurveyObservations', message: 'error', error });
       await connection.rollback();

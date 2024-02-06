@@ -76,7 +76,7 @@ const SurveyRecord = z.object({
   project_id: z.number(),
   survey_id: z.number(),
   name: z.string().nullable(),
-  uuid: z.string().nullable(),
+  uuid: z.string().uuid().nullable(),
   start_date: z.string(),
   end_date: z.string().nullable(),
   additional_details: z.string().nullable(),

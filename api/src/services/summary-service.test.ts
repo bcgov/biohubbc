@@ -695,9 +695,14 @@ describe('SummaryService', () => {
 
     it('should return valid `ISummaryTemplateSpeciesData[]`', async () => {
       const service = mockService();
-      const mockSpecies = sinon
-        .stub(SurveyService.prototype, 'getSpeciesData')
-        .resolves({ focal_species: [], focal_species_names: [], ancillary_species: [], ancillary_species_names: [] });
+      const mockSpecies = sinon.stub(SurveyService.prototype, 'getSpeciesData').resolves({
+        focal_species: [],
+        focal_species_names: [],
+        focal_species_object: [],
+        ancillary_species: [],
+        ancillary_species_names: [],
+        ancillary_species_object: []
+      });
       const mockXLSX = ({
         workbook: {
           rawWorkbook: {

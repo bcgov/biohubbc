@@ -1,6 +1,7 @@
-import { mdiDotsVertical, mdiImport, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiCogOutline, mdiDotsVertical, mdiImport, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
+import { Checkbox, ListItemText } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
@@ -23,13 +24,20 @@ import { ObservationsTableContext } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import ObservationsTable from 'features/surveys/observations/observations-table/ObservationsTable';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useContext, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { pluralize as p } from 'utils/Utils';
+
+/**
+ * Key used to cache column visiblity in sessionStorage
+ */
+const SIMS_OBSERVATIONS_HIDDEN_COLUMNS = 'SIMS_OBSERVATIONS_HIDDEN_COLUMNS';
 
 const ObservationComponent = () => {
   const [showImportDialog, setShowImportDialog] = useState<boolean>(false);
+  const [columnVisibilityMenuAnchorEl, setColumnVisibilityMenuAnchorEl] = useState<Element | null>(null);
+  const [hiddenFields, setHiddenFields] = useState<string[]>([]);
   const [processingRecords, setProcessingRecords] = useState<boolean>(false);
-  const [menuAnchorEl, setMenuAnchorEl] = useState<Element | null>(null);
+  const [contextMenuAnchorEl, setContextMenuAnchorEl] = useState<Element | null>(null);
   const [showConfirmRemoveAllDialog, setShowConfirmRemoveAllDialog] = useState<boolean>(false);
   const observationsTableContext = useContext(ObservationsTableContext);
   const surveyContext = useContext(SurveyContext);
@@ -40,8 +48,12 @@ const ObservationComponent = () => {
     dialogContext.setSnackbar({ ...textDialogProps, open: true });
   };
 
-  const handleCloseMenu = () => {
-    setMenuAnchorEl(null);
+  const handleCloseContextMenu = () => {
+    setContextMenuAnchorEl(null);
+  };
+
+  const handleCloseColumnVisibilityMenu = () => {
+    setColumnVisibilityMenuAnchorEl(null);
   };
 
   const { projectId, surveyId } = surveyContext;
@@ -69,6 +81,72 @@ const ObservationComponent = () => {
         });
     });
   };
+
+  /**
+   * Toggles visibility for a particular column
+   */
+  const toggleColumnVisibility = (field: string) => {
+    setHiddenFields((prev) => {
+      if (prev.includes(field)) {
+        return prev.filter((hiddenField) => hiddenField !== field);
+      } else {
+        return [...prev, field];
+      }
+    });
+  };
+
+  // The array of columns that may be toggled as hidden or visible
+  const hideableColumns = useMemo(() => {
+    return observationsTableContext.getColumns().filter((column) => {
+      return column && column.type && !['actions', 'checkboxSelection'].includes(column.type) && column.hideable;
+    });
+  }, [observationsTableContext.getColumns]);
+
+  /**
+   * Toggles whether all columns are hidden or visible.
+   */
+  const toggleShowHideAll = useCallback(() => {
+    if (hiddenFields.length > 0) {
+      setHiddenFields([]);
+    } else {
+      setHiddenFields(hideableColumns.map((column) => column.field));
+    }
+  }, [hiddenFields]);
+
+  /**
+   * Whenever hidden fields updates, trigger an update in visiblity for the table.
+   */
+  useEffect(() => {
+    _muiDataGridApiRef.current.setColumnVisibilityModel({
+      ...Object.fromEntries(hideableColumns.map((column) => [column.field, true])),
+      ...Object.fromEntries(hiddenFields.map((field) => [field, false]))
+    });
+  }, [hideableColumns, hiddenFields]);
+
+  /**
+   * On first mount, load visibility state from session storage, if it exists.
+   */
+  useEffect(() => {
+    const fieldsJson: string | null = sessionStorage.getItem(SIMS_OBSERVATIONS_HIDDEN_COLUMNS);
+
+    if (!fieldsJson) {
+      return;
+    }
+
+    try {
+      const fields: string[] = JSON.parse(fieldsJson);
+      setHiddenFields(fields);
+    } catch {
+      return;
+    }
+  }, []);
+
+  /**
+   * Persist visibility state in session
+   */
+  useEffect(() => {
+    sessionStorage.setItem(SIMS_OBSERVATIONS_HIDDEN_COLUMNS, JSON.stringify(hiddenFields));
+  }, [hiddenFields]);
 
   const { hasUnsavedChanges, validationModel, _muiDataGridApiRef } = observationsTableContext;
   const numSelectedRows = observationsTableContext.rowSelectionModel.length;
@@ -153,10 +231,66 @@ const ObservationComponent = () => {
                 </Button>
               </Box>
             </Collapse>
+            {hideableColumns.length > 0 && (
+              <>
+                <IconButton
+                  // variant="outlined"
+                  color="default"
+                  onClick={(event) => setColumnVisibilityMenuAnchorEl(event.currentTarget)}
+                  disabled={observationsTableContext.isSaving}>
+                  <Icon path={mdiCogOutline} size={1} />
+                  {/* Column Visibility */}
+                </IconButton>
+                <Menu
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right'
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right'
+                  }}
+                  id="survey-observations-table-actions-menu"
+                  anchorEl={columnVisibilityMenuAnchorEl}
+                  open={Boolean(columnVisibilityMenuAnchorEl)}
+                  onClose={handleCloseColumnVisibilityMenu}
+                  MenuListProps={{
+                    'aria-labelledby': 'basic-button'
+                  }}>
+                  <MenuItem dense onClick={() => toggleShowHideAll()}>
+                    <ListItemIcon>
+                      <Checkbox
+                        sx={{ ml: -1 }}
+                        indeterminate={hiddenFields.length > 0 && hiddenFields.length < hideableColumns.length}
+                        checked={hiddenFields.length === 0}
+                      />
+                    </ListItemIcon>
+                    <ListItemText sx={{ textTransform: 'uppercase' }}>Show/Hide All</ListItemText>
+                  </MenuItem>
+                  <Divider />
+                  <Box
+                    sx={{
+                      xs: { maxHeight: '300px' },
+                      lg: { maxHeight: '400px' }
+                    }}>
+                    {hideableColumns.map((column) => {
+                      return (
+                        <MenuItem dense key={column.field} onClick={() => toggleColumnVisibility(column.field)}>
+                          <ListItemIcon>
+                            <Checkbox sx={{ ml: -1 }} checked={!hiddenFields.includes(column.field)} />
+                          </ListItemIcon>
+                          <ListItemText>{column.headerName}</ListItemText>
+                        </MenuItem>
+                      );
+                    })}
+                  </Box>
+                </Menu>
+              </>
+            )}
             <Box>
               <IconButton
                 onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-                  setMenuAnchorEl(event.currentTarget);
+                  setContextMenuAnchorEl(event.currentTarget);
                 }}
                 edge="end"
                 disabled={numSelectedRows === 0}
@@ -173,16 +307,16 @@ const ObservationComponent = () => {
                   horizontal: 'right'
                 }}
                 id="survey-observations-table-actions-menu"
-                anchorEl={menuAnchorEl}
-                open={Boolean(menuAnchorEl)}
-                onClose={handleCloseMenu}
+                anchorEl={contextMenuAnchorEl}
+                open={Boolean(contextMenuAnchorEl)}
+                onClose={handleCloseContextMenu}
                 MenuListProps={{
                   'aria-labelledby': 'basic-button'
                 }}>
                 <MenuItem
                   onClick={() => {
                     observationsTableContext.deleteSelectedObservationRecords();
-                    handleCloseMenu();
+                    handleCloseContextMenu();
                   }}
                   disabled={observationsTableContext.isSaving}>
                   <ListItemIcon>

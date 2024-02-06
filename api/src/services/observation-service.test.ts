@@ -4,6 +4,7 @@ import sinonChai from 'sinon-chai';
 import {
   InsertObservation,
   ObservationRecord,
+  ObservationRecordWithSamplingData,
   ObservationRepository,
   UpdateObservation
 } from '../repositories/observation-repository';
@@ -108,11 +109,11 @@ describe('ObservationService', () => {
     });
   });
 
-  describe('getSurveyObservationsWithSupplementaryData', () => {
+  describe('getSurveyObservationsWithSupplementaryAndSamplingData', () => {
     it('Gets observations by survey id', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      const mockObservations: ObservationRecord[] = [
+      const mockObservations: ObservationRecordWithSamplingData[] = [
         {
           survey_observation_id: 11,
           survey_id: 1,
@@ -127,6 +128,9 @@ describe('ObservationService', () => {
           update_date: null,
           update_user: null,
           revision_count: 0,
+          survey_sample_method_name: 'METHOD_NAME',
+          survey_sample_period_start_datetime: '2000-01-01 00:00:00',
+          survey_sample_site_name: 'SITE_NAME',
           survey_sample_site_id: 1,
           survey_sample_method_id: 1,
           survey_sample_period_id: 1
@@ -145,6 +149,9 @@ describe('ObservationService', () => {
           update_date: '2023-04-04',
           update_user: 2,
           revision_count: 1,
+          survey_sample_method_name: 'METHOD_NAME',
+          survey_sample_period_start_datetime: '2000-01-01 00:00:00',
+          survey_sample_site_name: 'SITE_NAME',
           survey_sample_site_id: 1,
           survey_sample_method_id: 1,
           survey_sample_period_id: 1
@@ -156,7 +163,7 @@ describe('ObservationService', () => {
       };
 
       const getSurveyObservationsStub = sinon
-        .stub(ObservationRepository.prototype, 'getSurveyObservations')
+        .stub(ObservationRepository.prototype, 'getSurveyObservationsWithSamplingData')
         .resolves(mockObservations);
 
       const getSurveyObservationSupplementaryDataStub = sinon
@@ -167,7 +174,7 @@ describe('ObservationService', () => {
 
       const observationService = new ObservationService(mockDBConnection);
 
-      const response = await observationService.getSurveyObservationsWithSupplementaryData(surveyId);
+      const response = await observationService.getSurveyObservationsWithSupplementaryAndSamplingData(surveyId);
 
       expect(getSurveyObservationsStub).to.be.calledOnceWith(surveyId);
       expect(getSurveyObservationSupplementaryDataStub).to.be.calledOnceWith(surveyId);

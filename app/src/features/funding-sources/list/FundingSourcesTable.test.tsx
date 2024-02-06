@@ -13,12 +13,12 @@ describe('FundingSourcesTable', () => {
     const onEdit = jest.fn();
     const onDelete = jest.fn();
 
-    const { getByTestId } = render(
+    const { getByText } = render(
       <FundingSourcesTable fundingSources={fundingSources} onView={onView} onEdit={onEdit} onDelete={onDelete} />
     );
 
     await waitFor(() => {
-      expect(getByTestId('funding-source-table-empty')).toBeVisible();
+      expect(getByText('No Funding Sources available')).toBeVisible();
     });
   });
 

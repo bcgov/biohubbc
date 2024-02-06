@@ -1,12 +1,10 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import grey from '@mui/material/colors/grey';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import PageHeader from 'components/layout/PageHeader';
 import { EditProjectI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
@@ -160,38 +158,19 @@ const EditProjectPage: React.FC = (props) => {
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
 
-      <Paper
-        square
-        elevation={0}
-        sx={{
-          py: 3,
-          borderBottom: '1px solid' + grey[300]
-        }}>
-        <Container maxWidth="xl">
-          <Stack
-            alignItems="flex-start"
-            flexDirection={{ xs: 'column', lg: 'row' }}
-            justifyContent="space-between"
-            gap={3}>
-            <Typography
-              component="h1"
-              variant="h2"
-              sx={{
-                ml: '-2px'
-              }}>
-              Edit Project Details
-            </Typography>
-            <Stack flexDirection="row" alignItems="center" gap={1}>
-              <Button color="primary" variant="contained" onClick={() => formikRef.current?.submitForm()}>
-                Save Project
-              </Button>
-              <Button color="primary" variant="outlined" onClick={handleCancel}>
-                Cancel
-              </Button>
-            </Stack>
-          </Stack>
-        </Container>
-      </Paper>
+      <PageHeader
+        title="Edit Project Details"
+        buttonJSX={
+          <>
+            <Button color="primary" variant="contained" onClick={() => formikRef.current?.submitForm()}>
+              Save Project
+            </Button>
+            <Button color="primary" variant="outlined" onClick={handleCancel}>
+              Cancel
+            </Button>
+          </>
+        }
+      />
 
       <Container maxWidth="xl">
         <Box py={3}>

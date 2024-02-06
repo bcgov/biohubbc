@@ -21,9 +21,7 @@ describe('updateSurvey', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    const updateSurveyAndUploadMetadataToBiohubStub = sinon
-      .stub(SurveyService.prototype, 'updateSurveyAndUploadMetadataToBiohub')
-      .resolves();
+    const updateSurveyStub = sinon.stub(SurveyService.prototype, 'updateSurvey').resolves();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -42,11 +40,7 @@ describe('updateSurvey', () => {
       expect.fail();
     }
 
-    expect(updateSurveyAndUploadMetadataToBiohubStub).to.have.been.calledOnceWith(
-      1,
-      2,
-      sinon.match(new PutSurveyObject())
-    );
+    expect(updateSurveyStub).to.have.been.calledOnceWith(2, sinon.match(new PutSurveyObject()));
     expect(mockRes.statusValue).to.equal(200);
     expect(mockRes.jsonValue).to.eql({ id: 2 });
   });
@@ -56,7 +50,7 @@ describe('updateSurvey', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(SurveyService.prototype, 'updateSurveyAndUploadMetadataToBiohub').rejects(new Error('a test error'));
+    sinon.stub(SurveyService.prototype, 'updateSurvey').rejects(new Error('a test error'));
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 

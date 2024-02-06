@@ -179,10 +179,10 @@ export class SurveyService extends DBService {
     const focalSpeciesIds = response.filter((item) => item.is_focal).map((item) => item.wldtaxonomic_units_id);
     const ancillarySpeciesIds = response.filter((item) => !item.is_focal).map((item) => item.wldtaxonomic_units_id);
 
-    const taxonomyService = new TaxonomyService();
+    const platformService = new PlatformService(this.connection);
 
-    const focalSpecies = await taxonomyService.getSpeciesFromIds(focalSpeciesIds);
-    const ancillarySpecies = await taxonomyService.getSpeciesFromIds(ancillarySpeciesIds);
+    const focalSpecies = await platformService.getTaxonomyFromBiohub(focalSpeciesIds);
+    const ancillarySpecies = await platformService.getTaxonomyFromBiohub(ancillarySpeciesIds);
 
     return { ...new GetFocalSpeciesData(focalSpecies), ...new GetAncillarySpeciesData(ancillarySpecies) };
   }
@@ -370,33 +370,6 @@ export class SurveyService extends DBService {
 
     return decoratedSurveys;
   }
-
-  /**
-   * Creates a survey and uploads the affected metadata to BioHub
-   *
-   * @param {number} projectId
-   * @param {PostSurveyObject} postSurveyData
-   * @return {*}  {Promise<number>}
-   * @memberof SurveyService
-   */
-  async createSurveyAndUploadMetadataToBioHub(projectId: number, postSurveyData: PostSurveyObject): Promise<number> {
-    const surveyId = await this.createSurvey(projectId, postSurveyData);
-
-    try {
-      // Publish survey metadata
-      const publishSurveyPromise = this.platformService.submitSurveyDwCMetadataToBioHub(surveyId);
-
-      // Publish project metadata (which needs to be updated now that the survey metadata has changed)
-      const publishProjectPromise = this.platformService.submitProjectDwCMetadataToBioHub(projectId);
-
-      await Promise.all([publishSurveyPromise, publishProjectPromise]);
-    } catch (error) {
-      defaultLog.warn({ label: 'createSurveyAndUploadMetadataToBioHub', message: 'error', error });
-    }
-
-    return surveyId;
-  }
-
   /**
    * Creates the survey
    *
@@ -689,35 +662,6 @@ export class SurveyService extends DBService {
       return this.surveyRepository.associateSurveyToPermit(projectId, surveyId, permitNumber);
     } else {
       return this.surveyRepository.insertSurveyPermit(systemUserId, projectId, surveyId, permitNumber, permitType);
-    }
-  }
-
-  /**
-   * Updates provided survey information and submits affected metadata to BioHub
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {PutSurveyObject} putSurveyData
-   * @returns {*} {Promise<void>}
-   * @memberof SurveyService
-   */
-  async updateSurveyAndUploadMetadataToBiohub(
-    projectId: number,
-    surveyId: number,
-    putSurveyData: PutSurveyObject
-  ): Promise<void> {
-    await this.updateSurvey(surveyId, putSurveyData);
-
-    try {
-      // Publish survey metadata
-      const publishSurveyPromise = this.platformService.submitSurveyDwCMetadataToBioHub(surveyId);
-
-      // Publish project metadata (which needs to be updated now that the survey metadata has changed)
-      const publishProjectPromise = this.platformService.submitProjectDwCMetadataToBioHub(projectId);
-
-      await Promise.all([publishSurveyPromise, publishProjectPromise]);
-    } catch (error) {
-      defaultLog.warn({ label: 'updateSurveyAndUploadMetadataToBiohub', message: 'error', error });
     }
   }
 

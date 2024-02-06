@@ -65,7 +65,7 @@ describe('ProjectService', () => {
         project_metadata_publish_id: 1,
         project_id: 1,
         event_timestamp: '',
-        queue_id: 1,
+        submission_uuid: '',
         create_date: '',
         create_user: 1,
         update_date: null,

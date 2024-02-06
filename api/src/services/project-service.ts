@@ -21,7 +21,6 @@ import { ProjectUser } from '../repositories/project-participation-repository';
 import { ProjectRepository } from '../repositories/project-repository';
 import { SystemUser } from '../repositories/user-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
-import { getLogger } from '../utils/logger';
 import { AttachmentService } from './attachment-service';
 import { DBService } from './db-service';
 import { HistoryPublishService } from './history-publish-service';
@@ -29,8 +28,6 @@ import { PlatformService } from './platform-service';
 import { ProjectParticipationService } from './project-participation-service';
 import { RegionService } from './region-service';
 import { SurveyService } from './survey-service';
-
-const defaultLog = getLogger('services/project-service');
 
 export class ProjectService extends DBService {
   attachmentService: AttachmentService;
@@ -176,25 +173,6 @@ export class ProjectService extends DBService {
    * @return {*}  {Promise<number>}
    * @memberof ProjectService
    */
-  async createProjectAndUploadMetadataToBioHub(postProjectData: PostProjectObject): Promise<number> {
-    const projectId = await this.createProject(postProjectData);
-
-    try {
-      await this.platformService.submitProjectDwCMetadataToBioHub(projectId);
-    } catch (error) {
-      defaultLog.warn({ label: 'createProjectAndUploadMetadataToBioHub', message: 'error', error });
-    }
-
-    return projectId;
-  }
-
-  /**
-   *
-   *
-   * @param {PostProjectObject} postProjectData
-   * @return {*}  {Promise<number>}
-   * @memberof ProjectService
-   */
   async createProject(postProjectData: PostProjectObject): Promise<number> {
     const projectId = await this.insertProject(postProjectData);
 
@@ -280,32 +258,6 @@ export class ProjectService extends DBService {
   async insertPrograms(projectId: number, projectPrograms: number[]): Promise<void> {
     await this.projectRepository.deletePrograms(projectId);
     await this.projectRepository.insertProgram(projectId, projectPrograms);
-  }
-
-  /**
-   * Updates the project and uploads affected metadata to BioHub
-   *
-   * @param {number} projectId
-   * @param {IUpdateProject} entities
-   * @return {*}  {Promise<void>}
-   * @memberof ProjectService
-   */
-  async updateProjectAndUploadMetadataToBioHub(projectId: number, entities: IUpdateProject): Promise<void> {
-    await this.updateProject(projectId, entities);
-
-    try {
-      // Publish project metadata
-      const publishProjectPromise = this.platformService.submitProjectDwCMetadataToBioHub(projectId);
-
-      // Publish all survey metadata (which needs to be updated now that the project metadata has changed)
-      const publishSurveysPromise = this.surveyService.getSurveyIdsByProjectId(projectId).then((surveyIds) => {
-        return surveyIds.map((item) => this.platformService.submitSurveyDwCMetadataToBioHub(item.id));
-      });
-
-      await Promise.all([publishProjectPromise, publishSurveysPromise]);
-    } catch (error) {
-      defaultLog.warn({ label: 'updateProjectAndUploadMetadataToBioHub', message: 'error', error });
-    }
   }
 
   /**

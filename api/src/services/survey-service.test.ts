@@ -38,7 +38,6 @@ import { SurveyBlockService } from './survey-block-service';
 import { SurveyLocationService } from './survey-location-service';
 import { SurveyParticipationService } from './survey-participation-service';
 import { SurveyService } from './survey-service';
-import { TaxonomyService } from './taxonomy-service';
 
 chai.use(sinonChai);
 
@@ -380,18 +379,15 @@ describe('SurveyService', () => {
       const data = ({ id: 1 } as unknown) as IGetSpeciesData;
 
       const repoStub = sinon.stub(SurveyRepository.prototype, 'getSpeciesData').resolves([data]);
-
-      const serviceStub1 = sinon
-        .stub(TaxonomyService.prototype, 'getSpeciesFromIds')
-        .resolves([{ id: '1', label: 'string' }]);
+      const getTaxonomyFromBiohubStub = sinon.stub(PlatformService.prototype, 'getTaxonomyFromBiohub').resolves([]);
 
       const response = await service.getSpeciesData(1);
 
       expect(repoStub).to.be.calledOnce;
-      expect(serviceStub1).to.be.calledTwice;
+      expect(getTaxonomyFromBiohubStub).to.be.calledTwice;
       expect(response).to.eql({
-        ...new GetFocalSpeciesData([{ id: '1', label: 'string' }]),
-        ...new GetAncillarySpeciesData([{ id: '1', label: 'string' }])
+        ...new GetFocalSpeciesData([]),
+        ...new GetAncillarySpeciesData([])
       });
     });
   });
@@ -1216,58 +1212,6 @@ describe('SurveyService', () => {
     });
   });
 
-  describe('createSurveyAndUploadMetadataToBioHub', () => {
-    it('returns projectId on success', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new SurveyService(dbConnection);
-
-      const projectId = 1;
-      const surveyId = 2;
-      const surveyData = (null as unknown) as PostSurveyObject;
-
-      const createSurveyStub = sinon.stub(SurveyService.prototype, 'createSurvey').resolves(surveyId);
-      const submitSurveyDwCMetadataToBioHubStub = sinon
-        .stub(PlatformService.prototype, 'submitSurveyDwCMetadataToBioHub')
-        .resolves();
-      const submitProjectDwCMetadataToBioHubStub = sinon
-        .stub(PlatformService.prototype, 'submitProjectDwCMetadataToBioHub')
-        .resolves();
-
-      const response = await service.createSurveyAndUploadMetadataToBioHub(projectId, surveyData);
-
-      expect(createSurveyStub).to.be.calledOnce;
-      expect(submitSurveyDwCMetadataToBioHubStub).to.be.calledOnceWith(surveyId);
-      expect(submitProjectDwCMetadataToBioHubStub).to.be.calledOnceWith(projectId);
-      expect(response).to.eql(surveyId);
-    });
-  });
-
-  describe('updateSurveyAndUploadMetadataToBiohub', () => {
-    it('successfully updates survey and submits data to BioHub', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new SurveyService(dbConnection);
-
-      const surveyId = 1;
-      const projectId = 2;
-      const surveyData = (null as unknown) as PutSurveyObject;
-
-      const updateSurveyStub = sinon.stub(SurveyService.prototype, 'updateSurvey').resolves();
-      const submitSurveyDwCMetadataToBioHubStub = sinon
-        .stub(PlatformService.prototype, 'submitSurveyDwCMetadataToBioHub')
-        .resolves();
-      const submitProjectDwCMetadataToBioHubStub = sinon
-        .stub(PlatformService.prototype, 'submitProjectDwCMetadataToBioHub')
-        .resolves();
-
-      const response = await service.updateSurveyAndUploadMetadataToBiohub(projectId, surveyId, surveyData);
-
-      expect(updateSurveyStub).to.be.calledOnceWith(surveyId, surveyData);
-      expect(submitSurveyDwCMetadataToBioHubStub).to.be.calledOnceWith(surveyId);
-      expect(submitProjectDwCMetadataToBioHubStub).to.be.calledOnceWith(projectId);
-      expect(response).to.eql(undefined);
-    });
-  });
-
   describe('surveyPublishStatus', () => {
     afterEach(() => {
       sinon.restore();
@@ -1482,14 +1426,14 @@ describe('getPartnershipsData', () => {
   it('returns the first row on success', async () => {
     const dbConnection = getMockDBConnection();
     const service = new ProjectService(dbConnection);
-    
+
     const data = new GetPartnershipsData([{ id: 1 }], [{ id: 1 }]);
-    
+
     const repoStub1 = sinon.stub(ProjectRepository.prototype, 'getIndigenousPartnershipsRows').resolves([{ id: 1 }]);
     const repoStub2 = sinon.stub(ProjectRepository.prototype, 'getStakeholderPartnershipsRows').resolves([{ id: 1 }]);
-    
+
     const response = await service.getPartnershipsData(1);
-    
+
     expect(repoStub1).to.be.calledOnce;
     expect(repoStub2).to.be.calledOnce;
     expect(response).to.eql(data);
