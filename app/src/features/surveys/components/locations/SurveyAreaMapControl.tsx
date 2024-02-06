@@ -24,6 +24,7 @@ import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { shapeFileFeatureDesc, shapeFileFeatureName } from 'utils/Utils';
 import { v4 } from 'uuid';
 import { ISurveyLocation, ISurveyLocationForm } from '../StudyAreaForm';
+import hash from 'object-hash'
 
 export interface ISurveyAreMapControlProps {
   map_id: string;
@@ -152,7 +153,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
                 geojson: [feature],
                 revision_count: 0,
                 leaflet_id: id,
-                uuid: v4()
+                uuid: v4() // TODO why does ISurveyLocation have this property?
               };
               setFieldValue(formik_key, [...values.locations, location]);
             }}
@@ -206,7 +207,10 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
               .filter((item) => !item?.leaflet_id) // filter out user drawn locations
               .map((item) => {
                 // Map geojson features into layer objects for leaflet
-                return { layerName: item.name, features: item.geojson.map((geo) => ({ geoJSON: geo })) };
+                return {
+                  layerName: item.name,
+                  features: item.geojson.map((geo) => ({ geoJSON: geo, key: hash(geo.geometry) }))
+                };
               })}
           />
           <BaseLayerControls />

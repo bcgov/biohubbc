@@ -32,6 +32,7 @@ import { LayersControl, MapContainer as LeafletMapContainer } from 'react-leafle
 import { boundaryUploadHelper, calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { pluralize, shapeFileFeatureDesc, shapeFileFeatureName } from 'utils/Utils';
 import { ISurveySampleSite } from '../SamplingSitePage';
+import hash from 'object-hash'
 
 const useStyles = makeStyles(() => ({
   zoomToBoundaryExtentBtn: {
@@ -166,7 +167,7 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
                     layers={[
                       {
                         layerName: 'Sampling Sites',
-                        features: samplingSiteGeoJsonFeatures.map((feature: Feature) => ({ geoJSON: feature }))
+                        features: samplingSiteGeoJsonFeatures.map((feature: Feature) => ({ geoJSON: feature, key: hash(feature.geometry) }))
                       }
                     ]}
                   />

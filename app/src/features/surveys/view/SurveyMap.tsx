@@ -5,7 +5,7 @@ import { SkeletonMap } from 'components/loading/SkeletonLoaders';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
 import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
-import StaticLayers, { IStaticLayerFeature } from 'components/map/components/StaticLayers';
+import StaticLayers, { IStaticLayer, IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { MapBaseCss } from 'components/map/styles/MapBaseCss';
 import { ALL_OF_BC_BOUNDARY, MAP_DEFAULT_CENTER } from 'constants/spatial';
 import { CodesContext } from 'contexts/codesContext';
@@ -16,6 +16,7 @@ import { useContext, useMemo, useState } from 'react';
 import { LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { getCodesName } from 'utils/Utils';
+import hash from 'object-hash'
 
 export interface ISurveyMapPointMetadata {
   label: string;
@@ -173,6 +174,100 @@ const SurveyMap = (props: ISurveyMapProps) => {
     }
   }, [props.supplementaryLayers, studyAreaLocations, sampleSites]);
 
+  const staticLayers: IStaticLayer[] = [
+    {
+      layerName: 'Study Areas',
+      features: studyAreaLocations.flatMap((location) => {
+        return location.geojson.map((feature) => {
+          return {
+            key: `${location.survey_location_id}-${hash(feature.geometry)}`,
+            geoJSON: feature,
+            popup: (
+              <SurveyMapPopup
+                title={'Study Area'}
+                metadata={[{ label: 'Name', value: location.name }]}
+                isLoading={false}
+              />
+            )
+          };
+        });
+      })
+    },
+    {
+      layerName: 'Sample Sites',
+      layerColors: { color: '#1f7dff', fillColor: '#1f7dff' },
+      features: sampleSites.map((sampleSite) => {
+        return {
+          key: `${sampleSite.survey_sample_site_id}-${hash(sampleSite.geojson.geometry)}`,
+          geoJSON: sampleSite.geojson,
+          popup: (
+            <SurveyMapPopup
+              isLoading={false}
+              title="Sampling Site"
+              metadata={[
+                {
+                  label: 'Methods',
+                  value: (sampleSite.sample_methods ?? [])
+                    .map(
+                      (method) =>
+                        getCodesName(
+                          codesContext.codesDataLoader.data,
+                          'sample_methods',
+                          method.method_lookup_id
+                        ) ?? ''
+                    )
+                    .filter(Boolean)
+                    .join(', ')
+                }
+              ]}
+            />
+          )
+        };
+      })
+    },
+    ...props.supplementaryLayers.map((supplementaryLayer) => {
+      return {
+        layerName: supplementaryLayer.layerName,
+        layerColors: { fillColor: '#1f7dff', color: '#FFFFFF' },
+        features: supplementaryLayer.mapPoints.map(
+          (mapPoint: ISurveyMapPoint, index: number): IStaticLayerFeature => {
+            const isLoading = !mapPointMetadata[mapPoint.key];
+
+            return {
+              key: mapPoint.key,
+              geoJSON: mapPoint.feature,
+              GeoJSONProps: {
+                onEachFeature: (feature, layer) => {
+                  layer.on({
+                    popupopen: () => {
+                      if (mapPointMetadata[mapPoint.key]) {
+                        return;
+                      }
+
+                      mapPoint.onLoadMetadata().then((metadata) => {
+                        setMapPointMetadata((prev) => ({ ...prev, [mapPoint.key]: metadata }));
+                      });
+                    }
+                  });
+                }
+              },
+              PopupProps: { className: classes.popup },
+              popup: (
+                <SurveyMapPopup
+                  isLoading={isLoading}
+                  title={supplementaryLayer.popupRecordTitle}
+                  metadata={mapPointMetadata[mapPoint.key]}
+                />
+              )
+            };
+          }
+        )
+      };
+    })
+  ];
+
+  // console.log('staticlayers:', staticLayers)
+
   return (
     <>
       {props.isLoading ? (
@@ -190,97 +285,7 @@ const SurveyMap = (props: ISurveyMapProps) => {
           <SetMapBounds bounds={bounds} />
           <LayersControl position="bottomright">
             <BaseLayerControls />
-            <StaticLayers
-              layers={[
-                {
-                  layerName: 'Study Areas',
-                  features: studyAreaLocations.flatMap((location) => {
-                    return location.geojson.map((feature) => {
-                      return {
-                        geoJSON: feature,
-                        popup: (
-                          <SurveyMapPopup
-                            title={'Study Area'}
-                            metadata={[{ label: 'Name', value: location.name }]}
-                            isLoading={false}
-                          />
-                        )
-                      };
-                    });
-                  })
-                },
-                {
-                  layerName: 'Sample Sites',
-                  layerColors: { color: '#1f7dff', fillColor: '#1f7dff' },
-                  features: sampleSites.map((sampleSite) => {
-                    return {
-                      geoJSON: sampleSite.geojson,
-                      popup: (
-                        <SurveyMapPopup
-                          isLoading={false}
-                          title="Sampling Site"
-                          metadata={[
-                            {
-                              label: 'Methods',
-                              value: (sampleSite.sample_methods ?? [])
-                                .map(
-                                  (method) =>
-                                    getCodesName(
-                                      codesContext.codesDataLoader.data,
-                                      'sample_methods',
-                                      method.method_lookup_id
-                                    ) ?? ''
-                                )
-                                .filter(Boolean)
-                                .join(', ')
-                            }
-                          ]}
-                        />
-                      )
-                    };
-                  })
-                },
-                ...props.supplementaryLayers.map((supplementaryLayer) => {
-                  return {
-                    layerName: supplementaryLayer.layerName,
-                    layerColors: { fillColor: '#1f7dff', color: '#FFFFFF' },
-                    features: supplementaryLayer.mapPoints.map(
-                      (mapPoint: ISurveyMapPoint, index: number): IStaticLayerFeature => {
-                        const isLoading = !mapPointMetadata[mapPoint.key];
-
-                        return {
-                          key: mapPoint.key,
-                          geoJSON: mapPoint.feature,
-                          GeoJSONProps: {
-                            onEachFeature: (feature, layer) => {
-                              layer.on({
-                                popupopen: () => {
-                                  if (mapPointMetadata[mapPoint.key]) {
-                                    return;
-                                  }
-
-                                  mapPoint.onLoadMetadata().then((metadata) => {
-                                    setMapPointMetadata((prev) => ({ ...prev, [mapPoint.key]: metadata }));
-                                  });
-                                }
-                              });
-                            }
-                          },
-                          PopupProps: { className: classes.popup },
-                          popup: (
-                            <SurveyMapPopup
-                              isLoading={isLoading}
-                              title={supplementaryLayer.popupRecordTitle}
-                              metadata={mapPointMetadata[mapPoint.key]}
-                            />
-                          )
-                        };
-                      }
-                    )
-                  };
-                })
-              ]}
-            />
+            <StaticLayers layers={staticLayers} />
           </LayersControl>
         </LeafletMapContainer>
       )}
