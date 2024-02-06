@@ -219,14 +219,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   });
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
-  // const updatePaginationModel = (model: GridPaginationModel) => {
-  //   setPaginationModel(model);
-  // };
-
-  // const updateSortModel = (model: GridSortModel) => {
-  //   setSortModel(model);
-  // };
-
   // Fetch new rows based on sort/ pagination model changes
   useEffect(() => {
     refreshObservationRecords();
@@ -389,7 +381,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
           open: true
         });
 
-        console.log('Refreshing after delete...')
+        console.log('Refreshing after delete...');
         refreshObservationRecords();
       } catch {
         // Close yes-no dialog

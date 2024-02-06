@@ -209,11 +209,7 @@ const SurveyMap = (props: ISurveyMapProps) => {
                   value: (sampleSite.sample_methods ?? [])
                     .map(
                       (method) =>
-                        getCodesName(
-                          codesContext.codesDataLoader.data,
-                          'sample_methods',
-                          method.method_lookup_id
-                        ) ?? ''
+                        getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_lookup_id) ?? ''
                     )
                     .filter(Boolean)
                     .join(', ')
@@ -228,39 +224,37 @@ const SurveyMap = (props: ISurveyMapProps) => {
       return {
         layerName: supplementaryLayer.layerName,
         layerColors: { fillColor: '#1f7dff', color: '#FFFFFF' },
-        features: supplementaryLayer.mapPoints.map(
-          (mapPoint: ISurveyMapPoint, index: number): IStaticLayerFeature => {
-            const isLoading = !mapPointMetadata[mapPoint.key];
+        features: supplementaryLayer.mapPoints.map((mapPoint: ISurveyMapPoint, index: number): IStaticLayerFeature => {
+          const isLoading = !mapPointMetadata[mapPoint.key];
 
-            return {
-              key: mapPoint.key,
-              geoJSON: mapPoint.feature,
-              GeoJSONProps: {
-                onEachFeature: (feature, layer) => {
-                  layer.on({
-                    popupopen: () => {
-                      if (mapPointMetadata[mapPoint.key]) {
-                        return;
-                      }
-
-                      mapPoint.onLoadMetadata().then((metadata) => {
-                        setMapPointMetadata((prev) => ({ ...prev, [mapPoint.key]: metadata }));
-                      });
+          return {
+            key: mapPoint.key,
+            geoJSON: mapPoint.feature,
+            GeoJSONProps: {
+              onEachFeature: (feature, layer) => {
+                layer.on({
+                  popupopen: () => {
+                    if (mapPointMetadata[mapPoint.key]) {
+                      return;
                     }
-                  });
-                }
-              },
-              PopupProps: { className: classes.popup },
-              popup: (
-                <SurveyMapPopup
-                  isLoading={isLoading}
-                  title={supplementaryLayer.popupRecordTitle}
-                  metadata={mapPointMetadata[mapPoint.key]}
-                />
-              )
-            };
-          }
-        )
+
+                    mapPoint.onLoadMetadata().then((metadata) => {
+                      setMapPointMetadata((prev) => ({ ...prev, [mapPoint.key]: metadata }));
+                    });
+                  }
+                });
+              }
+            },
+            PopupProps: { className: classes.popup },
+            popup: (
+              <SurveyMapPopup
+                isLoading={isLoading}
+                title={supplementaryLayer.popupRecordTitle}
+                metadata={mapPointMetadata[mapPoint.key]}
+              />
+            )
+          };
+        })
       };
     })
   ];

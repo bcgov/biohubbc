@@ -24,7 +24,6 @@ import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { shapeFileFeatureDesc, shapeFileFeatureName } from 'utils/Utils';
 import { v4 } from 'uuid';
 import { ISurveyLocation, ISurveyLocationForm } from '../StudyAreaForm';
-import hash from 'object-hash'
 
 export interface ISurveyAreMapControlProps {
   map_id: string;
@@ -205,11 +204,11 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
           <StaticLayers
             layers={values.locations
               .filter((item) => !item?.leaflet_id) // filter out user drawn locations
-              .map((item) => {
+              .map((item, index) => {
                 // Map geojson features into layer objects for leaflet
                 return {
                   layerName: item.name,
-                  features: item.geojson.map((geo) => ({ geoJSON: geo, key: hash(geo.geometry) }))
+                  features: item.geojson.map((geo) => ({ geoJSON: geo, key: index }))
                 };
               })}
           />

@@ -37,52 +37,58 @@ export interface IStaticLayersProps {
 }
 
 const StaticLayers = (props: PropsWithChildren<IStaticLayersProps>) => {
-  const layerControls: ReactElement[] = useMemo(() => props.layers
-    .filter((layer) => Boolean(layer.features?.length))
-    .map((layer) => {
-      const layerColors = layer.layerColors || { color: '#1f7dff', fillColor: '#1f7dff' };
+  const layerControls: ReactElement[] = useMemo(
+    () =>
+      props.layers
+        .filter((layer) => Boolean(layer.features?.length))
+        .map((layer) => {
+          const layerColors = layer.layerColors || { color: '#1f7dff', fillColor: '#1f7dff' };
 
-      return (
-        <LayersControl.Overlay checked={true} name={layer.layerName} key={`static-layer-${layer.layerName}`}>
-          <FeatureGroup key={`static-feature-group-${layer.layerName}`}>
-            {layer.features.map((item, index) => {
-              const id = item.key || item.geoJSON.id || index;
+          return (
+            <LayersControl.Overlay checked={true} name={layer.layerName} key={`static-layer-${layer.layerName}`}>
+              <FeatureGroup key={`static-feature-group-${layer.layerName}`}>
+                {layer.features.map((item, index) => {
+                  const id = item.key || item.geoJSON.id || index;
 
-              return (
-                <GeoJSON
-                  key={`static-feature-${id}`}
-                  style={{ ...layerColors }}
-                  pointToLayer={(feature, latlng) => {
-                    if (feature.properties?.radius) {
-                      return new L.Circle([latlng.lat, latlng.lng], feature.properties.radius);
-                    }
+                  return (
+                    <GeoJSON
+                      key={`static-feature-${id}`}
+                      style={{ ...layerColors }}
+                      pointToLayer={(feature, latlng) => {
+                        if (feature.properties?.radius) {
+                          return new L.Circle([latlng.lat, latlng.lng], feature.properties.radius);
+                        }
 
-                    return coloredPoint({ latlng });
-                  }}
-                  data={item.geoJSON}
-                  {...item.GeoJSONProps}>
-                  {item.tooltip && (
-                    <Tooltip key={`static-feature-tooltip-${id}`} direction="top" sticky={true} {...item.TooltipProps}>
-                      {item.tooltip}
-                    </Tooltip>
-                  )}
-                  {item.popup && (
-                    <Popup
-                      key={`static-feature-popup-${id}`}
-                      keepInView={false}
-                      closeButton={false}
-                      autoPan={false}
-                      {...item.PopupProps}>
-                      {item.popup}
-                    </Popup>
-                  )}
-                </GeoJSON>
-              );
-            })}
-          </FeatureGroup>
-        </LayersControl.Overlay>
-      )
-    }),
+                        return coloredPoint({ latlng });
+                      }}
+                      data={item.geoJSON}
+                      {...item.GeoJSONProps}>
+                      {item.tooltip && (
+                        <Tooltip
+                          key={`static-feature-tooltip-${id}`}
+                          direction="top"
+                          sticky={true}
+                          {...item.TooltipProps}>
+                          {item.tooltip}
+                        </Tooltip>
+                      )}
+                      {item.popup && (
+                        <Popup
+                          key={`static-feature-popup-${id}`}
+                          keepInView={false}
+                          closeButton={false}
+                          autoPan={false}
+                          {...item.PopupProps}>
+                          {item.popup}
+                        </Popup>
+                      )}
+                    </GeoJSON>
+                  );
+                })}
+              </FeatureGroup>
+            </LayersControl.Overlay>
+          );
+        }),
     [props.layers]
   );
 

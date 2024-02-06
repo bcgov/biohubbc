@@ -166,7 +166,10 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
                     layers={[
                       {
                         layerName: 'Sampling Sites',
-                        features: samplingSiteGeoJsonFeatures.map((feature: Feature, index) => ({ geoJSON: feature, key: index}))
+                        features: samplingSiteGeoJsonFeatures.map((feature: Feature, index) => ({
+                          geoJSON: feature,
+                          key: index
+                        }))
                       }
                     ]}
                   />
