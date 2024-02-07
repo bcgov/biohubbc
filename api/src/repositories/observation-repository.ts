@@ -12,6 +12,7 @@ import { BaseRepository } from './base-repository';
 export const ObservationRecord = z.object({
   survey_observation_id: z.number(),
   survey_id: z.number(),
+  // wldtaxonomic_units_id: z.number(), // TODO remove
   survey_sample_site_id: z.number().nullable(),
   survey_sample_method_id: z.number().nullable(),
   survey_sample_period_id: z.number().nullable(),
@@ -54,6 +55,7 @@ export type InsertObservation = Pick<
   | 'itis_tsn'
   | 'itis_scientific_name'
   | 'survey_id'
+  // | 'wldtaxonomic_units_id' // TODO remove
   | 'latitude'
   | 'longitude'
   | 'count'
@@ -72,6 +74,7 @@ export type UpdateObservation = Pick<
   | 'itis_tsn'
   | 'itis_scientific_name'
   | 'survey_observation_id'
+  // | 'wldtaxonomic_units_id' // TODO remove
   | 'latitude'
   | 'longitude'
   | 'count'
@@ -148,43 +151,72 @@ export class ObservationRepository extends BaseRepository {
     surveyId: number,
     observations: (InsertObservation | UpdateObservation)[]
   ): Promise<ObservationRecord[]> {
-    const knex = getKnex();
+    const sqlStatement = SQL`
+      INSERT INTO
+        survey_observation
+      (
+        survey_observation_id,
+        survey_id,
+        survey_sample_site_id,
+        survey_sample_method_id,
+        survey_sample_period_id,
+        count,
+        latitude,
+        longitude,
+        observation_date,
+        observation_time,
+        itis_tsn,
+        itis_scientific_name
+      )
+      OVERRIDING SYSTEM VALUE
+      VALUES
+    `;
 
-    const queryBuilder = knex('survey_observation')
-      .insert(observations.map((observation) => ({
-        survey_observation_id: observation['survey_observation_id'] || knex.raw('DEFAULT'),
-        survey_id: surveyId,
-        survey_sample_site_id: observation.survey_sample_site_id || null,
-        survey_sample_method_id: observation.survey_sample_method_id || null,
-        survey_sample_period_id: observation.survey_sample_period_id || null,
-        count: observation.count,
-        latitude: observation.latitude,
-        longitude: observation.longitude,
-        observation_date: observation.observation_date,
-        observation_time: observation.observation_time,
-        itis_tsn: observation.itis_tsn || null,
-        itis_scientific_name: observation.itis_scientific_name || null
-      })))
-      // .into("survey_observation")
-      .onConflict('survey_observation_id')
-      .merge({
-        itis_tsn: knex.raw('EXCLUDED.itis_tsn'),
-        itis_scientific_name: knex.raw('EXCLUDED.itis_scientific_name'),
-        survey_sample_site_id: knex.raw('EXCLUDED.survey_sample_site_id'),
-        survey_sample_method_id: knex.raw('EXCLUDED.survey_sample_method_id'),
-        survey_sample_period_id: knex.raw('EXCLUDED.survey_sample_period_id'),
-        count: knex.raw('EXCLUDED.count'),
-        observation_date: knex.raw('EXCLUDED.observation_date'),
-        observation_time: knex.raw('EXCLUDED.observation_time'),
-        latitude: knex.raw('EXCLUDED.latitude'),
-        longitude: knex.raw('EXCLUDED.longitude')
-      })
-      .returning('*');
+    sqlStatement.append(
+      observations
+        .map((observation) => {
+          return `(${[
+            observation['survey_observation_id'] || 'DEFAULT',
+            surveyId,
+            observation.survey_sample_site_id ?? 'NULL',
+            observation.survey_sample_method_id ?? 'NULL',
+            observation.survey_sample_period_id ?? 'NULL',
+            observation.count,
+            observation.latitude,
+            observation.longitude,
+            `'${observation.observation_date}'`,
+            `'${observation.observation_time}'`,
+            observation.itis_tsn ?? 'NULL',
+            observation.itis_scientific_name ? `'${observation.itis_scientific_name}'` : 'NULL',
+          ].join(', ')})`;
+        })
+        .join(', ')
+    );
+
+    sqlStatement.append(`
+      ON CONFLICT
+        (survey_observation_id)
+      DO UPDATE SET
+        itis_tsn = EXCLUDED.itis_tsn,
+        itis_scientific_name = EXCLUDED.itis_scientific_name,
+        survey_sample_site_id = EXCLUDED.survey_sample_site_id,
+        survey_sample_method_id = EXCLUDED.survey_sample_method_id,
+        survey_sample_period_id = EXCLUDED.survey_sample_period_id,
+        count = EXCLUDED.count,
+        observation_date = EXCLUDED.observation_date,
+        observation_time = EXCLUDED.observation_time,
+        latitude = EXCLUDED.latitude,
+        longitude = EXCLUDED.longitude
+    `);
+
+    sqlStatement.append(`
+      RETURNING *;
+    `);
     
     
     // console.log('QQQQ:', sqlStatement.text)
 
-    const response = await this.connection.knex(queryBuilder, ObservationRecord);
+    const response = await this.connection.sql(sqlStatement, ObservationRecord);
 
     return response.rows;
   }
