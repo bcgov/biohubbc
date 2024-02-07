@@ -3,6 +3,7 @@ import Icon from '@mdi/react';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { GridCellParams, GridColDef } from '@mui/x-data-grid';
+import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
 import ConditionalAutocompleteDataGridEditCell from 'components/data-grid/conditional-autocomplete/ConditionalAutocompleteDataGridEditCell';
@@ -14,6 +15,7 @@ import TimePickerDataGrid from 'components/data-grid/TimePickerDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IObservationTableRow, ObservationsTableContext } from 'contexts/observationsTableContext';
 import { default as dayjs } from 'dayjs';
+import { Measurement, MeasurementOption } from 'hooks/cb_api/useLookupApi';
 import { useContext } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 
@@ -505,5 +507,86 @@ export const ObservationActionsColDef = (): GridColDef<IObservationTableRow> => 
         <Icon path={mdiTrashCanOutline} size={1} />
       </IconButton>
     ]
+  };
+};
+
+export const ObservationQuantitativeMeasurementColDef = (props: {
+  measurement: Measurement;
+  hasError: (params: GridCellParams) => boolean;
+  apiRef: React.MutableRefObject<GridApiCommunity>;
+}): GridColDef<IObservationTableRow> => {
+  const { measurement, hasError, apiRef } = props;
+
+  return {
+    field: measurement.measurementName,
+    headerName: measurement.measurementName,
+    editable: true,
+    hideable: true,
+    type: 'number',
+    minWidth: 110,
+    disableColumnMenu: true,
+    headerAlign: 'right',
+    align: 'right',
+    renderCell: (params) => (
+      <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
+        {params.value}
+      </Typography>
+    ),
+    renderEditCell: (params) => {
+      const error = hasError(params);
+
+      return (
+        <TextFieldDataGrid
+          dataGridProps={params}
+          textFieldProps={{
+            name: params.field,
+            onChange: (event) => {
+              if (!/^\d{0,7}$/.test(event.target.value)) {
+                // If the value is not a number, return
+                return;
+              }
+
+              apiRef.current?.setEditCellValue({
+                id: params.id,
+                field: params.field,
+                value: event.target.value
+              });
+            },
+            error
+          }}
+        />
+      );
+    }
+  };
+};
+
+export const ObservationQualitativeMeasurementColDef = (props: {
+  measurement: Measurement;
+  measurementOptions: MeasurementOption[];
+  hasError: (params: GridCellParams) => boolean;
+  apiRef: React.MutableRefObject<GridApiCommunity>;
+}): GridColDef<IObservationTableRow> => {
+  const { measurement, measurementOptions, hasError } = props;
+
+  return {
+    field: measurement.uuid,
+    headerName: measurement.measurementName,
+    editable: true,
+    hideable: true,
+    flex: 1,
+    minWidth: 250,
+    disableColumnMenu: true,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: (params) => {
+      return (
+        <AutocompleteDataGridViewCell dataGridProps={params} options={measurementOptions} error={hasError(params)} />
+      );
+    },
+    renderEditCell: (params) => {
+      const error = hasError(params);
+
+      return <AutocompleteDataGridEditCell dataGridProps={params} options={measurementOptions} error={error} />;
+    }
   };
 };

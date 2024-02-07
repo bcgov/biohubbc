@@ -14,17 +14,19 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { GridColDef } from '@mui/x-data-grid';
 import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
-import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
 import FileUploadDialog from 'components/dialog/FileUploadDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
 import { ObservationsTableI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
-import { IObservationTableRow, ObservationsTableContext } from 'contexts/observationsTableContext';
+import { ObservationsTableContext } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { MeasurementsButton } from 'features/surveys/observations/measurements/dialog/MeasurementsButton';
+import {
+  ObservationQualitativeMeasurementColDef,
+  ObservationQuantitativeMeasurementColDef
+} from 'features/surveys/observations/observations-table/GridColumnDefinitions';
 import ObservationsTable from 'features/surveys/observations/observations-table/ObservationsTable';
 import { Measurement } from 'hooks/cb_api/useLookupApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -241,53 +243,30 @@ const ObservationComponent = () => {
                   return;
                 }
 
-                const additionalColumns = measurements.map((measurement) => {
-                  // TODO: Move these generic measurement columns into discrete components for reuse
-                  const quantitativeMeasurement: GridColDef<IObservationTableRow> = {
-                    field: measurement.measurementName,
-                    headerName: measurement.measurementName,
-                    editable: true,
-                    hideable: true,
-                    type: 'number',
-                    minWidth: 110,
-                    disableColumnMenu: true,
-                    headerAlign: 'right',
-                    align: 'right',
-                    renderCell: (params) => (
-                      <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
-                        {params.value}
-                      </Typography>
-                    ),
-                    renderEditCell: (params) => {
-                      // TODO: Implement error checking
-                      const error = false; // hasError(params);
+                const additionalColumns = [];
 
-                      return (
-                        <TextFieldDataGrid
-                          dataGridProps={params}
-                          textFieldProps={{
-                            name: params.field,
-                            onChange: (event) => {
-                              if (!/^\d{0,7}$/.test(event.target.value)) {
-                                // If the value is not a number, return
-                                return;
-                              }
+                for (const measurement of measurements) {
+                  if (measurement.measurementType === 'Quantitative') {
+                    additionalColumns.push(
+                      ObservationQuantitativeMeasurementColDef({
+                        measurement: measurement,
+                        hasError: () => false,
+                        apiRef: _muiDataGridApiRef
+                      })
+                    );
+                  }
 
-                              _muiDataGridApiRef.current?.setEditCellValue({
-                                id: params.id,
-                                field: params.field,
-                                value: event.target.value
-                              });
-                            },
-                            error
-                          }}
-                        />
-                      );
-                    }
-                  };
-
-                  return quantitativeMeasurement;
-                });
+                  if (measurement.measurementType === 'Qualitative') {
+                    additionalColumns.push(
+                      ObservationQualitativeMeasurementColDef({
+                        measurement: measurement,
+                        measurementOptions: measurement.measurementOptions || [],
+                        hasError: () => false,
+                        apiRef: _muiDataGridApiRef
+                      })
+                    );
+                  }
+                }
 
                 observationsTableContext.addAdditionalColumns(additionalColumns);
               }}

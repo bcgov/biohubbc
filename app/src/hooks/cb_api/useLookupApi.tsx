@@ -27,6 +27,11 @@ export interface IMeasurementStub {
   unit?: string;
 }
 
+export type MeasurementOption = {
+  value: string;
+  label: string;
+};
+
 // TODO finalize this type based on actual Critterbase values. Combine with above `IMeasurementStub`?
 export type Measurement = {
   uuid: string;
@@ -36,6 +41,7 @@ export type Measurement = {
   measurementName: string;
   measurementType?: string;
   measurementDescription: string;
+  measurementOptions?: MeasurementOption[];
 };
 
 const useLookupApi = (axios: AxiosInstance) => {
@@ -87,27 +93,35 @@ const useLookupApi = (axios: AxiosInstance) => {
     return [
       {
         uuid: '930f2b50-84b7-4fb5-a956-15c5152cf388',
-        scientificName: 'scientificName 1',
-        commonName: 'commonName 1',
+        scientificName: 'Falconus Americanus',
+        commonName: 'Falcon',
         measurementId: 1,
-        measurementName: 'measurementName 1',
-        measurementDescription: 'measurementDescription 1'
+        measurementType: 'Quantitative',
+        measurementName: 'WIngspan (cm)',
+        measurementDescription: 'Description of Wingspan'
       },
       {
         uuid: '6004651d-a6c5-4e04-ab46-8dcce1d1e124',
-        scientificName: 'scientificName 2',
-        commonName: 'commonName 2',
+        scientificName: 'Smallus Shrewus',
+        commonName: 'Shrew 2',
         measurementId: 2,
-        measurementName: 'measurementName 2',
-        measurementDescription: 'measurementDescription 2'
+        measurementType: 'Quantitative',
+        measurementName: 'Age (years)',
+        measurementDescription: 'Description of Age'
       },
       {
         uuid: 'bbc7a940-ab8a-4977-8995-e56d2dda5d60',
-        scientificName: 'scientificName 3',
-        commonName: 'commonName 3',
+        scientificName: 'Alces Alces Americanus',
+        commonName: 'Moose',
         measurementId: 3,
-        measurementName: 'measurementName 3',
-        measurementDescription: 'measurementDescription 3'
+        measurementType: 'Qualitative',
+        measurementName: 'Colour',
+        measurementDescription: 'Description of Colour',
+        measurementOptions: [
+          { label: 'Red', value: 'red' },
+          { label: 'Green', value: 'green' },
+          { label: 'Blue', value: 'blue' }
+        ]
       }
     ];
   };
