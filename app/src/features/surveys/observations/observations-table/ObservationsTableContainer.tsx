@@ -250,8 +250,7 @@ const ObservationComponent = () => {
                     additionalColumns.push(
                       ObservationQuantitativeMeasurementColDef({
                         measurement: measurement,
-                        hasError: () => false,
-                        apiRef: _muiDataGridApiRef
+                        hasError: observationsTableContext.hasError
                       })
                     );
                   }
@@ -261,8 +260,7 @@ const ObservationComponent = () => {
                       ObservationQualitativeMeasurementColDef({
                         measurement: measurement,
                         measurementOptions: measurement.measurementOptions || [],
-                        hasError: () => false,
-                        apiRef: _muiDataGridApiRef
+                        hasError: observationsTableContext.hasError
                       })
                     );
                   }

@@ -1,5 +1,5 @@
 import { cyan, grey } from '@mui/material/colors';
-import { DataGrid, GridCellParams, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { CodesContext } from 'contexts/codesContext';
 import { ObservationsContext } from 'contexts/observationsContext';
@@ -23,7 +23,7 @@ import {
   IGetSamplePeriodRecord
 } from 'interfaces/useSurveyApi.interface';
 import { has } from 'lodash-es';
-import { useCallback, useContext, useEffect, useMemo } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router';
 import { getCodesName } from 'utils/Utils';
 
@@ -56,17 +56,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
   const hasLoadedCodes = Boolean(codesContext.codesDataLoader.data);
 
   const apiRef = observationsTableContext._muiDataGridApiRef;
-
-  const hasError = useCallback(
-    (params: GridCellParams): boolean => {
-      return Boolean(
-        observationsTableContext.validationModel[params.row.id]?.some((error) => {
-          return error.field === params.field;
-        })
-      );
-    },
-    [observationsTableContext.validationModel]
-  );
 
   const isLoading = useMemo(() => {
     return [
@@ -121,15 +110,15 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     }));
 
   const observationColumns: GridColDef<IObservationTableRow>[] = [
-    TaxonomyColDef({ hasError }),
-    SampleSiteColDef({ sampleSiteOptions, hasError }),
-    SampleMethodColDef({ sampleMethodOptions, hasError }),
-    SamplePeriodColDef({ samplePeriodOptions, hasError }),
-    ObservationCountColDef({ hasError }),
-    ObservationDateColDef({ hasError }),
-    ObservationTimeColDef({ hasError }),
-    ObservationLatitudeColDef({ hasError }),
-    ObservationLongitudeColDef({ hasError }),
+    TaxonomyColDef({ hasError: observationsTableContext.hasError }),
+    SampleSiteColDef({ sampleSiteOptions, hasError: observationsTableContext.hasError }),
+    SampleMethodColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
+    SamplePeriodColDef({ samplePeriodOptions, hasError: observationsTableContext.hasError }),
+    ObservationCountColDef({ hasError: observationsTableContext.hasError }),
+    ObservationDateColDef({ hasError: observationsTableContext.hasError }),
+    ObservationTimeColDef({ hasError: observationsTableContext.hasError }),
+    ObservationLatitudeColDef({ hasError: observationsTableContext.hasError }),
+    ObservationLongitudeColDef({ hasError: observationsTableContext.hasError }),
     ...observationsTableContext.additionalColumns,
     ObservationActionsColDef()
   ];

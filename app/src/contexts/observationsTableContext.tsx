@@ -1,5 +1,6 @@
 import Typography from '@mui/material/Typography';
 import {
+  GridCellParams,
   GridColDef,
   GridPaginationModel,
   GridRowId,
@@ -148,6 +149,10 @@ export type IObservationsTableContext = {
    */
   validationModel: ObservationTableValidationModel;
   /**
+   * Indicates if the given row has a validation error.
+   */
+  hasError: (params: GridCellParams) => boolean;
+  /**
    * Reflects the count of total observations for the survey
    */
   observationCount: number;
@@ -183,6 +188,7 @@ export const ObservationsTableContext = createContext<IObservationsTableContext>
   isSaving: false,
   isLoading: false,
   validationModel: {},
+  hasError: () => false,
   observationCount: 0,
   setObservationCount: () => undefined,
   updatePaginationModel: () => undefined,
@@ -373,6 +379,17 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     return Object.keys(validation).length > 0 ? validation : null;
   };
+
+  const hasError = useCallback(
+    (params: GridCellParams): boolean => {
+      return Boolean(
+        validationModel[params.row.id]?.some((error) => {
+          return error.field === params.field;
+        })
+      );
+    },
+    [validationModel]
+  );
 
   const _deleteRecords = useCallback(
     async (observationRecords: IObservationTableRow[]): Promise<void> => {
@@ -786,6 +803,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       updatePaginationModel,
       paginationModel,
       updateSortModel,
+      hasError,
       sortModel,
       additionalColumns
     }),
