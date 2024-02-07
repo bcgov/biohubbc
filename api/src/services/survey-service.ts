@@ -175,15 +175,18 @@ export class SurveyService extends DBService {
   async getSpeciesData(surveyId: number): Promise<GetFocalSpeciesData & GetAncillarySpeciesData> {
     const studySpeciesResponse = await this.surveyRepository.getSpeciesData(surveyId);
 
-    const [focalSpeciesIds, ancillarySpeciesIds] = studySpeciesResponse.reduce(([focal, ancillary]: [number[], number[]], studySpecies) => {
-      if (studySpecies.is_focal) {
-        focal.push(studySpecies.itis_tsn);
-      } else {
-        ancillary.push(studySpecies.itis_tsn);
-      }
+    const [focalSpeciesIds, ancillarySpeciesIds] = studySpeciesResponse.reduce(
+      ([focal, ancillary]: [number[], number[]], studySpecies) => {
+        if (studySpecies.is_focal) {
+          focal.push(studySpecies.itis_tsn);
+        } else {
+          ancillary.push(studySpecies.itis_tsn);
+        }
 
-      return [focal, ancillary]
-    }, [[], []])
+        return [focal, ancillary];
+      },
+      [[], []]
+    );
 
     const platformService = new PlatformService(this.connection);
 

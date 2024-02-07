@@ -262,7 +262,7 @@ export class SurveyRepository extends BaseRepository {
         sv.survey_id = s.survey_id
       LEFT OUTER JOIN
         survey_intended_outcome io
-      ON 
+      ON
         io.survey_id = s.survey_id
       WHERE
         s.survey_id = ${surveyId}
@@ -687,7 +687,7 @@ export class SurveyRepository extends BaseRepository {
   async insertFocalSpecies(focal_species_id: number, surveyId: number): Promise<number> {
     const sqlStatement = SQL`
       INSERT INTO study_species (
-        wldtaxonomic_units_id,
+        itis_tsn,
         is_focal,
         survey_id
       ) VALUES (
@@ -721,7 +721,7 @@ export class SurveyRepository extends BaseRepository {
   async insertAncillarySpecies(ancillary_species_id: number, surveyId: number): Promise<number> {
     const sqlStatement = SQL`
       INSERT INTO study_species (
-        wldtaxonomic_units_id,
+        itis_tsn,
         is_focal,
         survey_id
       ) VALUES (
