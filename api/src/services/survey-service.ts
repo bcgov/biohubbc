@@ -35,7 +35,7 @@ import { DBService } from './db-service';
 import { FundingSourceService } from './funding-source-service';
 import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
-import { PlatformService } from './platform-service';
+import { ITaxonomy, PlatformService } from './platform-service';
 import { RegionService } from './region-service';
 import { SiteSelectionStrategyService } from './site-selection-strategy-service';
 import { SurveyBlockService } from './survey-block-service';
@@ -191,7 +191,9 @@ export class SurveyService extends DBService {
     const platformService = new PlatformService(this.connection);
 
     const focalSpecies = await platformService.getTaxonomyFromBiohub(focalSpeciesIds);
+    console.log('focalSpecies', focalSpecies);
     const ancillarySpecies = await platformService.getTaxonomyFromBiohub(ancillarySpeciesIds);
+    console.log('ancillarySpecies', ancillarySpecies);
 
     return { ...new GetFocalSpeciesData(focalSpecies), ...new GetAncillarySpeciesData(ancillarySpecies) };
   }
@@ -842,12 +844,12 @@ export class SurveyService extends DBService {
 
     const promises: Promise<any>[] = [];
 
-    surveyData.species.focal_species.forEach((focalSpeciesId: number) =>
-      promises.push(this.insertFocalSpecies(focalSpeciesId, surveyId))
+    surveyData.species.focal_species.forEach((focalSpecies: ITaxonomy) =>
+      promises.push(this.insertFocalSpecies(focalSpecies.tsn, surveyId))
     );
 
-    surveyData.species.ancillary_species.forEach((ancillarySpeciesId: number) =>
-      promises.push(this.insertAncillarySpecies(ancillarySpeciesId, surveyId))
+    surveyData.species.ancillary_species.forEach((ancillarySpecies: ITaxonomy) =>
+      promises.push(this.insertAncillarySpecies(ancillarySpecies.tsn, surveyId))
     );
 
     return Promise.all(promises);

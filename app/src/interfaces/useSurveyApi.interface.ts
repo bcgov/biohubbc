@@ -7,6 +7,7 @@ import { ISurveyLocationForm } from 'features/surveys/components/StudyAreaForm';
 import { ISurveyFundingSource, ISurveyFundingSourceForm } from 'features/surveys/components/SurveyFundingSourceForm';
 import { ISurveySiteSelectionForm } from 'features/surveys/components/SurveySiteSelectionForm';
 import { Feature } from 'geojson';
+import { ITaxonomy } from 'hooks/itis/useItisApi';
 import { StringBoolean } from 'types/misc';
 import { ICritterDetailedResponse } from './useCritterApi.interface';
 
@@ -150,8 +151,8 @@ export interface SurveyUpdateObject extends ISurveyLocationForm {
     revision_count: number;
   };
   species?: {
-    focal_species: number[];
-    ancillary_species: number[];
+    focal_species: ITaxonomy[];
+    ancillary_species: ITaxonomy[];
   };
   permit?: {
     permits: {
@@ -277,10 +278,8 @@ export interface IGetSurveyDetailsResponse {
 }
 
 export interface IGetSpecies {
-  focal_species: number[];
-  focal_species_names: string[];
-  ancillary_species: number[];
-  ancillary_species_names: string[];
+  focal_species: ITaxonomy[];
+  ancillary_species: ITaxonomy[];
 }
 
 export interface IGetSurveyAttachment {

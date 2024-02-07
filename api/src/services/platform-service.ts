@@ -48,6 +48,12 @@ export interface IItisSearchResult {
   scientificName: string;
 }
 
+export interface ITaxonomy {
+  tsn: number;
+  commonName?: string;
+  scientificName: string;
+}
+
 const getBackboneIntakeEnabled = () => process.env.BACKBONE_INTAKE_ENABLED === 'true' || false;
 const getBackboneApiHost = () => process.env.BACKBONE_API_HOST || '';
 const getBackboneArtifactIntakePath = () => process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '';

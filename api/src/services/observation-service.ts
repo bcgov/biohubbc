@@ -31,7 +31,7 @@ const observationCSVColumnValidator: IXLSXCSVValidator = {
   columnTypes: ['number', 'string', 'number', 'date', 'string', 'number', 'number'],
   columnAliases: {
     LATITUDE: ['LAT'],
-    LONGITUDE: ['LON', 'LONG', 'LNG'],
+    LONGITUDE: ['LON', 'LONG', 'LNG']
   }
 };
 

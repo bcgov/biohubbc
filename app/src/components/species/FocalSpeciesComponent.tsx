@@ -8,26 +8,19 @@ import SpeciesAutocompleteField, { ISpeciesAutocompleteField } from './component
 const FocalSpeciesComponent = () => {
   const { values, setFieldValue, setErrors, errors } = useFormikContext<ISpeciesAutocompleteField[]>();
 
-  const selectedSpecies: ISpeciesAutocompleteField[] = get(values, 'species.focal_species_object') || [];
+  const selectedSpecies: ISpeciesAutocompleteField[] = get(values, 'species.focal_species') || [];
 
   const handleAddSpecies = (species: ISpeciesAutocompleteField) => {
-    setFieldValue(`species.focal_species_object[${selectedSpecies.length}]`, species);
-    setFieldValue(`species.focal_species[${selectedSpecies.length}]`, species.tsn);
+    setFieldValue(`species.focal_species[${selectedSpecies.length}]`, species);
     setErrors([]);
   };
 
   const handleRemoveSpecies = (species_id: number) => {
-    const speciesIds = get(values, 'species.focal_species') || [];
-    const filteredSpeciesIds = speciesIds.filter((value: number) => {
-      return value !== species_id;
-    });
-
     const filteredSpecies = selectedSpecies.filter((value: ISpeciesAutocompleteField) => {
       return value.tsn !== species_id;
     });
 
-    setFieldValue('species.focal_species_object', filteredSpecies);
-    setFieldValue('species.focal_species', filteredSpeciesIds);
+    setFieldValue('species.focal_species', filteredSpecies);
   };
 
   return (

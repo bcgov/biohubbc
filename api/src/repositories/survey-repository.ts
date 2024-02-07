@@ -591,7 +591,7 @@ export class SurveyRepository extends BaseRepository {
         'survey.name',
         'survey.start_date',
         'survey.end_date',
-        knex.raw('array_remove(array_agg(study_species.wldtaxonomic_units_id), NULL) AS focal_species')
+        knex.raw('array_remove(array_agg(study_species.itis_tsn), NULL) AS focal_species')
       )
       .from('project')
       .leftJoin('survey', 'survey.project_id', 'project.project_id')

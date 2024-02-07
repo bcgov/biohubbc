@@ -275,7 +275,9 @@ export class SummaryService extends DBService {
       }
     });
 
-    return this.summaryRepository.getSummaryTemplateSpeciesRecords(sims_name, sims_version, speciesData.focal_species);
+    const speciesIds = speciesData.focal_species.map((species) => species.tsn);
+
+    return this.summaryRepository.getSummaryTemplateSpeciesRecords(sims_name, sims_version, speciesIds);
   }
 
   /**

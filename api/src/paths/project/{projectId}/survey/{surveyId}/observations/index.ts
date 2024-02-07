@@ -108,10 +108,10 @@ export const surveyObservationsResponseSchema: SchemaObject = {
             type: 'string'
           },
           itis_tsn: {
-            type: 'integer',
+            type: 'integer'
           },
           itis_scientific_name: {
-            type: 'string',
+            type: 'string'
           },
           create_date: {
             oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
@@ -420,7 +420,7 @@ export function getSurveyObservations(): RequestHandler {
         surveyId,
         paginationOptions
       );
-      console.log('observationData', observationData);
+
       const { observationCount } = observationData.supplementaryObservationData;
 
       return res.status(200).json({

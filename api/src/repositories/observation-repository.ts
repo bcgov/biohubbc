@@ -12,7 +12,6 @@ import { BaseRepository } from './base-repository';
 export const ObservationRecord = z.object({
   survey_observation_id: z.number(),
   survey_id: z.number(),
-  // wldtaxonomic_units_id: z.number(), // TODO remove
   survey_sample_site_id: z.number().nullable(),
   survey_sample_method_id: z.number().nullable(),
   survey_sample_period_id: z.number().nullable(),
@@ -187,7 +186,7 @@ export class ObservationRepository extends BaseRepository {
             `'${observation.observation_date}'`,
             `'${observation.observation_time}'`,
             observation.itis_tsn ?? 'NULL',
-            observation.itis_scientific_name ? `'${observation.itis_scientific_name}'` : 'NULL',
+            observation.itis_scientific_name ? `'${observation.itis_scientific_name}'` : 'NULL'
           ].join(', ')})`;
         })
         .join(', ')
@@ -212,8 +211,7 @@ export class ObservationRepository extends BaseRepository {
     sqlStatement.append(`
       RETURNING *;
     `);
-    
-    
+
     // console.log('QQQQ:', sqlStatement.text)
 
     const response = await this.connection.sql(sqlStatement, ObservationRecord);

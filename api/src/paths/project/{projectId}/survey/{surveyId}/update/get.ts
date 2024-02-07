@@ -115,30 +115,9 @@ GET.apiDoc = {
                   species: {
                     description: 'Survey Species',
                     type: 'object',
-                    required: [
-                      'focal_species',
-                      'focal_species_names',
-                      'focal_species_object',
-                      'ancillary_species',
-                      'ancillary_species_names',
-                      'ancillary_species_object'
-                    ],
+                    required: ['focal_species', 'ancillary_species'],
                     properties: {
                       ancillary_species: {
-                        nullable: true,
-                        type: 'array',
-                        items: {
-                          type: 'integer'
-                        }
-                      },
-                      ancillary_species_names: {
-                        nullable: true,
-                        type: 'array',
-                        items: {
-                          type: 'string'
-                        }
-                      },
-                      ancillary_species_object: {
                         nullable: true,
                         type: 'array',
                         items: {
@@ -159,18 +138,7 @@ GET.apiDoc = {
                         }
                       },
                       focal_species: {
-                        type: 'array',
-                        items: {
-                          type: 'integer'
-                        }
-                      },
-                      focal_species_names: {
-                        type: 'array',
-                        items: {
-                          type: 'string'
-                        }
-                      },
-                      focal_species_object: {
+                        nullable: true,
                         type: 'array',
                         items: {
                           type: 'object',
