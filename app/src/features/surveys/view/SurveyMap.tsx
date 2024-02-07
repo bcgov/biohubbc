@@ -125,9 +125,9 @@ const SurveyMapPopup = (props: ISurveyMapPopupProps) => {
             {props.title}
           </Typography>
           <Box component="dl" mt={1} mb={0}>
-            {props.metadata.map((metadata, index) => (
+            {props.metadata.map((metadata) => (
               <Stack
-                key={`${metadata.label}-${index}`}
+                key={`${metadata.label}-${metadata.value}`}
                 flexDirection="row"
                 alignItems="flex-start"
                 gap={1}
