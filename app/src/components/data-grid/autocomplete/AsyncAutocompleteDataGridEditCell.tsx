@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
 import useEnhancedEffect from '@mui/material/utils/useEnhancedEffect';
-import { GridRenderCellParams, GridValidRowModel, useGridApiContext } from '@mui/x-data-grid';
+import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import { IAutocompleteDataGridOption } from 'components/data-grid/autocomplete/AutocompleteDataGrid.interface';
 import { DebouncedFunc } from 'lodash-es';
 import { useEffect, useRef, useState } from 'react';
@@ -56,8 +56,6 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
   props: IAsyncAutocompleteDataGridEditCell<DataGridType, ValueType>
 ) => {
   const { dataGridProps, getCurrentOption, getOptions } = props;
-
-  const apiRef = useGridApiContext();
 
   const ref = useRef<HTMLInputElement>();
 
@@ -161,7 +159,7 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
         setCurrentOption(selectedOption);
 
         // Set the data grid cell value with selected options value
-        apiRef.current.setEditCellValue({
+        dataGridProps.api.setEditCellValue({
           id: dataGridProps.id,
           field: dataGridProps.field,
           value: selectedOption?.value

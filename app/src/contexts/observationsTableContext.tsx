@@ -615,7 +615,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
   const refreshObservationRecords = useCallback(async () => {
     return observationsContext.observationsDataLoader.refresh({
-      page: paginationModel.page,
+      page: paginationModel.page + 1,
       limit: paginationModel.pageSize
     });
   }, [observationsContext.observationsDataLoader, paginationModel]);

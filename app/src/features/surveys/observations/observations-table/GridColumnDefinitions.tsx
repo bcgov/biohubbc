@@ -3,7 +3,6 @@ import Icon from '@mdi/react';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { GridCellParams, GridColDef } from '@mui/x-data-grid';
-import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
 import ConditionalAutocompleteDataGridEditCell from 'components/data-grid/conditional-autocomplete/ConditionalAutocompleteDataGridEditCell';
@@ -211,9 +210,6 @@ export const ObservationCountColDef = (props: {
 }): GridColDef<IObservationTableRow> => {
   const { hasError } = props;
 
-  const observationsTableContext = useContext(ObservationsTableContext);
-  const apiRef = observationsTableContext._muiDataGridApiRef;
-
   return {
     field: 'count',
     headerName: 'Count',
@@ -243,7 +239,7 @@ export const ObservationCountColDef = (props: {
                 return;
               }
 
-              apiRef?.current.setEditCellValue({
+              params.api.setEditCellValue({
                 id: params.id,
                 field: params.field,
                 value: event.target.value
@@ -261,9 +257,6 @@ export const ObservationDateColDef = (props: {
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
   const { hasError } = props;
-
-  const observationsTableContext = useContext(ObservationsTableContext);
-  const apiRef = observationsTableContext._muiDataGridApiRef;
 
   return {
     field: 'observation_date',
@@ -293,7 +286,8 @@ export const ObservationDateColDef = (props: {
             value: params.value ? dayjs(params.value).format('YYYY-MM-DD') : '',
             onChange: (event) => {
               const value = dayjs(event.target.value).toDate();
-              apiRef?.current.setEditCellValue({
+
+              params.api.setEditCellValue({
                 id: params.id,
                 field: params.field,
                 value
@@ -373,9 +367,6 @@ export const ObservationLatitudeColDef = (props: {
 }): GridColDef<IObservationTableRow> => {
   const { hasError } = props;
 
-  const observationsTableContext = useContext(ObservationsTableContext);
-  const apiRef = observationsTableContext._muiDataGridApiRef;
-
   return {
     field: 'latitude',
     headerName: 'Lat',
@@ -414,7 +405,7 @@ export const ObservationLatitudeColDef = (props: {
                 return;
               }
 
-              apiRef?.current.setEditCellValue({
+              params.api.setEditCellValue({
                 id: params.id,
                 field: params.field,
                 value: event.target.value
@@ -432,9 +423,6 @@ export const ObservationLongitudeColDef = (props: {
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
   const { hasError } = props;
-
-  const observationsTableContext = useContext(ObservationsTableContext);
-  const apiRef = observationsTableContext._muiDataGridApiRef;
 
   return {
     field: 'longitude',
@@ -474,7 +462,7 @@ export const ObservationLongitudeColDef = (props: {
                 return;
               }
 
-              apiRef?.current.setEditCellValue({
+              params.api.setEditCellValue({
                 id: params.id,
                 field: params.field,
                 value: event.target.value
@@ -513,9 +501,8 @@ export const ObservationActionsColDef = (): GridColDef<IObservationTableRow> => 
 export const ObservationQuantitativeMeasurementColDef = (props: {
   measurement: Measurement;
   hasError: (params: GridCellParams) => boolean;
-  apiRef: React.MutableRefObject<GridApiCommunity>;
 }): GridColDef<IObservationTableRow> => {
-  const { measurement, hasError, apiRef } = props;
+  const { measurement, hasError } = props;
 
   return {
     field: measurement.measurementName,
@@ -546,7 +533,7 @@ export const ObservationQuantitativeMeasurementColDef = (props: {
                 return;
               }
 
-              apiRef.current?.setEditCellValue({
+              params.api.setEditCellValue({
                 id: params.id,
                 field: params.field,
                 value: event.target.value
@@ -564,7 +551,6 @@ export const ObservationQualitativeMeasurementColDef = (props: {
   measurement: Measurement;
   measurementOptions: MeasurementOption[];
   hasError: (params: GridCellParams) => boolean;
-  apiRef: React.MutableRefObject<GridApiCommunity>;
 }): GridColDef<IObservationTableRow> => {
   const { measurement, measurementOptions, hasError } = props;
 
