@@ -5,6 +5,7 @@ import { OpenAPIV3 } from 'openapi-types';
 import swaggerUIExperss from 'swagger-ui-express';
 import { defaultPoolConfig, initDBPool } from './database/db';
 import { ensureHTTPError, HTTPErrorType } from './errors/http-error';
+import { getCritterbaseProxyMiddleware } from './middleware/critterbase-proxy';
 import { rootAPIDoc } from './openapi/root-api-doc';
 import { authenticateRequest, authenticateRequestOptional } from './request-handlers/security/authentication';
 import { getLogger } from './utils/logger';
@@ -35,6 +36,9 @@ app.use(function (req: Request, res: Response, next: NextFunction) {
 
   next();
 });
+
+// Enable Critterbase API proxy
+app.use(getCritterbaseProxyMiddleware());
 
 // Initialize express-openapi framework
 const openAPIFramework = initialize({
