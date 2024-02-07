@@ -5,13 +5,6 @@ import { useState } from 'react';
 
 export interface IMeasurementsButtonProps {
   /**
-   * The current survey id.
-   *
-   * @type {number}
-   * @memberof IMeasurementsButtonProps
-   */
-  surveyId: number;
-  /**
    * Callback fired on save.
    *
    * @memberof IMeasurementsButtonProps
@@ -26,7 +19,7 @@ export interface IMeasurementsButtonProps {
  * @return {*}
  */
 export const MeasurementsButton = (props: IMeasurementsButtonProps) => {
-  const { surveyId, onSave } = props;
+  const { onSave } = props;
 
   const [open, setOpen] = useState(false);
 
@@ -42,7 +35,6 @@ export const MeasurementsButton = (props: IMeasurementsButtonProps) => {
       </Button>
       <MeasurementsDialog
         open={open}
-        surveyId={surveyId}
         onSave={(measurements) => {
           onSave(measurements);
           setOpen(false);

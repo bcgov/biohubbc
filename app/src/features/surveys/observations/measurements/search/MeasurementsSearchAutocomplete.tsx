@@ -105,7 +105,7 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
         });
       }}
       value={[]} // The selected value is not displayed in the input field or tracked by this component
-      onChange={(_, option, reason) => {
+      onChange={(_, option) => {
         setPendingSelectedOptions((currentPendingOptions) => {
           return [...currentPendingOptions, ...option];
         });
@@ -156,8 +156,7 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
       renderInput={(params) => (
         <TextField
           {...params}
-          id="123"
-          name={'measurements-autocomplete-input'}
+          name="measurements-autocomplete-input"
           variant="outlined"
           fullWidth
           placeholder="Add measurements"

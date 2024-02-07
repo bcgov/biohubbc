@@ -13,13 +13,6 @@ import { useState } from 'react';
 
 export interface IrementsDialogProps {
   /**
-   * The current survey id.
-   *
-   * @type {number}
-   * @memberof IObservationMeasurementsButtonProps
-   */
-  surveyId: number;
-  /**
    * Controls whether the dialog is open or not.
    *
    * @type {boolean}

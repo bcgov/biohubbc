@@ -497,6 +497,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         );
       }
     },
+    ...observationsTableContext.additionalColumns,
     {
       field: 'actions',
       headerName: '',

@@ -1,5 +1,6 @@
 import Typography from '@mui/material/Typography';
 import {
+  GridColDef,
   GridPaginationModel,
   GridRowId,
   GridRowSelectionModel,
@@ -33,6 +34,7 @@ export interface IObservationRecord {
   observation_time: string;
   latitude: number | null;
   longitude: number | null;
+  [key: string]: any;
 }
 
 export interface IObservationRecordWithSamplingData {
@@ -85,6 +87,10 @@ export type IObservationsTableContext = {
    * Returns all columns belonging to the observation table
    */
   getColumns: () => GridStateColDef[];
+  /**
+   * Adds columns to the observation table, ignoring duplicates.
+   */
+  addAdditionalColumns: (columnsToAdd: GridColDef[]) => void;
   /**
    * Appends a new blank record to the observation rows
    */
@@ -154,6 +160,7 @@ export type IObservationsTableContext = {
   paginationModel: GridPaginationModel;
   updateSortModel: (mode: GridSortModel) => void;
   sortModel: GridSortModel;
+  additionalColumns: GridColDef[];
 };
 
 export const ObservationsTableContext = createContext<IObservationsTableContext>({
@@ -161,6 +168,7 @@ export const ObservationsTableContext = createContext<IObservationsTableContext>
   rows: [],
   setRows: () => {},
   getColumns: () => [],
+  addAdditionalColumns: () => undefined,
   addObservationRecord: () => {},
   saveObservationRecords: () => {},
   deleteObservationRecords: () => undefined,
@@ -180,7 +188,8 @@ export const ObservationsTableContext = createContext<IObservationsTableContext>
   updatePaginationModel: () => undefined,
   paginationModel: { page: 0, pageSize: 0 },
   updateSortModel: () => undefined,
-  sortModel: []
+  sortModel: [],
+  additionalColumns: []
 });
 
 export const ObservationsTableContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
@@ -212,7 +221,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   const [observationCount, setObservationCount] = useState<number>(0);
   // Stores the current validation state of the table
   const [validationModel, setValidationModel] = useState<ObservationTableValidationModel>({});
-
+  // Stores any additional columns that are not part of the default observation table columns
+  const [additionalColumns, setAdditionalColumns] = useState<GridColDef[]>([]);
   // Pagination State
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
@@ -271,11 +281,23 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   };
 
   /**
-   * Returns all columns belonging to thte observations table.
+   * Returns all columns belonging to the observations table.
    */
   const getColumns = useCallback(() => {
     return _muiDataGridApiRef.current.getAllColumns?.() ?? [];
   }, [_muiDataGridApiRef.current.getAllColumns]);
+
+  /**
+   * Adds columns to the observations table, ignoring duplicates.
+   */
+  const addAdditionalColumns = useCallback((columnsToAdd: GridColDef[]) => {
+    setAdditionalColumns((currentColumns) => {
+      const newColumns = columnsToAdd.filter(
+        (columnToAdd) => !currentColumns.find((currentColumn) => currentColumn.field === columnToAdd.field)
+      );
+      return [...currentColumns, ...newColumns];
+    });
+  }, []);
 
   /**
    * Validates all rows belonging to the table. Returns null if validation passes, otherwise
@@ -744,6 +766,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       rows,
       setRows,
       getColumns,
+      addAdditionalColumns,
       addObservationRecord,
       saveObservationRecords,
       deleteObservationRecords,
@@ -763,7 +786,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       updatePaginationModel,
       paginationModel,
       updateSortModel,
-      sortModel
+      sortModel,
+      additionalColumns
     }),
     [
       _muiDataGridApiRef,
@@ -784,7 +808,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       updatePaginationModel,
       paginationModel,
       updateSortModel,
-      sortModel
+      sortModel,
+      additionalColumns
     ]
   );
 
