@@ -578,7 +578,8 @@ const insertSurveyObservationData = (surveyId: number) => `
   INSERT INTO survey_observation
   (
     survey_id,
-    wldtaxonomic_units_id,
+    itis_tsn,
+    itis_scientific_name,
     latitude,
     longitude,
     count,
@@ -591,7 +592,8 @@ const insertSurveyObservationData = (surveyId: number) => `
   VALUES
   (
     ${surveyId},
-    $$${faker.number.int({ min: 30000, max: 32000 })}$$,
+    $$${focalTaxonIdOptions[0].itis_tsn}$$,
+    $$${focalTaxonIdOptions[0].itis_scientific_name}$$,
     $$${faker.number.int({ min: 48, max: 60 })}$$,
     $$${faker.number.int({ min: -132, max: -116 })}$$,
     $$${faker.number.int({ min: 1, max: 20 })}$$,
@@ -607,7 +609,8 @@ const insertSurveyObservationData = (surveyId: number) => `
   ),
   (
     ${surveyId},
-    $$${faker.number.int({ min: 30000, max: 32000 })}$$,
+    $$${focalTaxonIdOptions[0].itis_tsn}$$,
+    $$${focalTaxonIdOptions[0].itis_scientific_name}$$,
     $$${faker.number.int({ min: 48, max: 60 })}$$,
     $$${faker.number.int({ min: -132, max: -116 })}$$,
     $$${faker.number.int({ min: 1, max: 20 })}$$,
@@ -623,7 +626,8 @@ const insertSurveyObservationData = (surveyId: number) => `
   ),
   (
     ${surveyId},
-    $$${faker.number.int({ min: 30000, max: 32000 })}$$,
+    $$${focalTaxonIdOptions[0].itis_tsn}$$,
+    $$${focalTaxonIdOptions[0].itis_scientific_name}$$,
     $$${faker.number.int({ min: 48, max: 60 })}$$,
     $$${faker.number.int({ min: -132, max: -116 })}$$,
     $$${faker.number.int({ min: 1, max: 20 })}$$,
