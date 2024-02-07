@@ -211,7 +211,7 @@ const insertSurveyFundingData = (surveyId: number) => `
  * SQL to insert Survey study species data
  *
  */
-const focalTaxonIdOptions = [2065, 2066, 2067, 2068];
+const focalTaxonIdOptions = [180543]; // TODO
 const insertSurveyFocalSpeciesData = (surveyId: number) => `
   INSERT into study_species
     (
@@ -225,7 +225,7 @@ const insertSurveyFocalSpeciesData = (surveyId: number) => `
     'Y'
   );
 `;
-const ancillaryTaxonIdOptions = [1666, 1667, 1668, 1669];
+const ancillaryTaxonIdOptions = [180543]; // TODO
 const insertSurveyAncillarySpeciesData = (surveyId: number) => `
   INSERT into study_species
     (

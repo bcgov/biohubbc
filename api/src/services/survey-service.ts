@@ -173,6 +173,7 @@ export class SurveyService extends DBService {
    * @memberof SurveyService
    */
   async getSpeciesData(surveyId: number): Promise<GetFocalSpeciesData & GetAncillarySpeciesData> {
+    // TODO fix this method
     const response = await this.surveyRepository.getSpeciesData(surveyId);
 
     const focalSpeciesIds = response.filter((item) => item.is_focal).map((item) => item.wldtaxonomic_units_id);

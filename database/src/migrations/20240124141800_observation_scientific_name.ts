@@ -14,7 +14,7 @@ export async function up(knex: Knex): Promise<void> {
     ALTER TABLE survey_observation ADD COLUMN itis_tsn INTEGER;
     ALTER TABLE survey_observation ADD COLUMN itis_scientific_name VARCHAR(300);
 
-    COMMENT ON COLUMN survey_observation.wldtaxonomic_units_id IS '(Deprecated) 'The species associated with the observation.';
+    COMMENT ON COLUMN survey_observation.wldtaxonomic_units_id IS '(Deprecated) The species associated with the observation.';
     COMMENT ON COLUMN survey_observation.itis_tsn IS 'The ITIS TSN identifier for the species associated with the observation.';
     COMMENT ON COLUMN survey_observation.itis_scientific_name IS 'The scientific name for the species associated with the observation.';
 

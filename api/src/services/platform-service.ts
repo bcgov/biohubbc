@@ -73,6 +73,8 @@ export class PlatformService extends DBService {
    * @memberof PlatformService
    */
   async getTaxonomyFromBiohub(ids: (string | number)[]): Promise<IItisSearchResult[]> {
+    defaultLog.debug({ label: 'getTaxonomyFromBiohub', ids });
+
     const keycloakService = new KeycloakService();
 
     const token = await keycloakService.getKeycloakServiceToken();
