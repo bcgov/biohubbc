@@ -39,6 +39,7 @@ const apiDeploy = async (settings) => {
         BACKBONE_INTAKE_PATH: phases[phase].backboneIntakePath,
         BACKBONE_ARTIFACT_INTAKE_PATH: phases[phase].backboneArtifactIntakePath,
         BACKBONE_INTAKE_ENABLED: phases[phase].backboneIntakeEnabled,
+        BIOHUB_TAXON_TSN_PATH: phases[phase].biohubTaxonTsnPath,
         // BCTW / Critterbase
         BCTW_API_HOST: phases[phase].bctwApiHost,
         CB_API_HOST: phases[phase].critterbaseApiHost,
