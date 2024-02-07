@@ -57,7 +57,7 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
         const response = await getOptions(inputValue);
         callback(response);
       }, 500),
-    []
+    [getOptions]
   );
 
   return (
