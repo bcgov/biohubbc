@@ -173,11 +173,17 @@ export class SurveyService extends DBService {
    * @memberof SurveyService
    */
   async getSpeciesData(surveyId: number): Promise<GetFocalSpeciesData & GetAncillarySpeciesData> {
-    // TODO fix this method
-    const response = await this.surveyRepository.getSpeciesData(surveyId);
+    const studySpeciesResponse = await this.surveyRepository.getSpeciesData(surveyId);
 
-    const focalSpeciesIds = response.filter((item) => item.is_focal).map((item) => item.wldtaxonomic_units_id);
-    const ancillarySpeciesIds = response.filter((item) => !item.is_focal).map((item) => item.wldtaxonomic_units_id);
+    const [focalSpeciesIds, ancillarySpeciesIds] = studySpeciesResponse.reduce(([focal, ancillary]: [number[], number[]], studySpecies) => {
+      if (studySpecies.is_focal) {
+        focal.push(studySpecies.itis_tsn);
+      } else {
+        ancillary.push(studySpecies.itis_tsn);
+      }
+
+      return [focal, ancillary]
+    }, [[], []])
 
     const platformService = new PlatformService(this.connection);
 

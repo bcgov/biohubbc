@@ -15,7 +15,7 @@ import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
 
 export interface IGetSpeciesData {
-  wldtaxonomic_units_id: string;
+  itis_tsn: number;
   is_focal: boolean;
 }
 
@@ -228,7 +228,7 @@ export class SurveyRepository extends BaseRepository {
   async getSpeciesData(surveyId: number): Promise<IGetSpeciesData[]> {
     const sqlStatement = SQL`
       SELECT
-        wldtaxonomic_units_id,
+        itis_tsn,
         is_focal
       FROM
         study_species

@@ -5,6 +5,16 @@ const DB_SCHEMA = process.env.DB_SCHEMA;
 const DB_SCHEMA_DAPI_V1 = process.env.DB_SCHEMA_DAPI_V1;
 const PROJECT_SEEDER_USER_IDENTIFIER = process.env.PROJECT_SEEDER_USER_IDENTIFIER;
 
+// TODO
+const focalTaxonIdOptions = [
+  { itis_tsn: 180543, itis_scientific_name: 'Ursus arctos nelsoni' } // Mexican grizzly bear :^)
+]; 
+
+// TODO
+const ancillaryTaxonIdOptions = [
+  { itis_tsn: 180543, itis_scientific_name: 'Ursus arctos nelsoni' } // Mexican grizzly bear :^)
+];
+
 /**
  * Add spatial transform
  *
@@ -211,34 +221,40 @@ const insertSurveyFundingData = (surveyId: number) => `
  * SQL to insert Survey study species data
  *
  */
-const focalTaxonIdOptions = [180543]; // TODO
-const insertSurveyFocalSpeciesData = (surveyId: number) => `
-  INSERT into study_species
-    (
-      survey_id,
-      wldtaxonomic_units_id,
-      is_focal
-    )
-  VALUES (
-    ${surveyId},
-    ${focalTaxonIdOptions[Math.floor(Math.random() * focalTaxonIdOptions.length)]},
-    'Y'
-  );
-`;
-const ancillaryTaxonIdOptions = [180543]; // TODO
-const insertSurveyAncillarySpeciesData = (surveyId: number) => `
-  INSERT into study_species
-    (
-      survey_id,
-      wldtaxonomic_units_id,
-      is_focal
-    )
-  VALUES (
-    ${surveyId},
-    ${ancillaryTaxonIdOptions[Math.floor(Math.random() * ancillaryTaxonIdOptions.length)]},
-    'N'
-  );
-`;
+const insertSurveyFocalSpeciesData = (surveyId: number) => {
+  const focalSpecies = focalTaxonIdOptions[Math.floor(Math.random() * focalTaxonIdOptions.length)];
+
+  return `
+    INSERT into study_species
+      (
+        survey_id,
+        itis_tsn,
+        is_focal
+      )
+    VALUES (
+      ${surveyId},
+      ${focalSpecies.itis_tsn},
+      'Y'
+    );
+  `;
+}
+
+const insertSurveyAncillarySpeciesData = (surveyId: number) => {
+  const ancillarySpecies = ancillaryTaxonIdOptions[Math.floor(Math.random() * ancillaryTaxonIdOptions.length)]
+  return`
+    INSERT into study_species
+      (
+        survey_id,
+        itis_tsn,
+        is_focal
+      )
+    VALUES (
+      ${surveyId},
+      ${ancillarySpecies.itis_tsn},
+      'N'
+    );
+  `;
+}
 
 /**
  * SQL to insert Survey permit data
