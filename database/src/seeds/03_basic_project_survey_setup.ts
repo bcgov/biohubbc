@@ -7,12 +7,12 @@ const PROJECT_SEEDER_USER_IDENTIFIER = process.env.PROJECT_SEEDER_USER_IDENTIFIE
 
 // TODO
 const focalTaxonIdOptions = [
-  { itis_tsn: 180543, itis_scientific_name: 'Ursus arctos nelsoni' } // Mexican grizzly bear :^)
+  { itis_tsn: 202384, itis_scientific_name: 'Ursus arctos nelsoni' } // Mexican grizzly bear :^)
 ]; 
 
 // TODO
 const ancillaryTaxonIdOptions = [
-  { itis_tsn: 180543, itis_scientific_name: 'Ursus arctos nelsoni' } // Mexican grizzly bear :^)
+  { itis_tsn: 202384, itis_scientific_name: 'Ursus arctos nelsoni' } // Mexican grizzly bear :^)
 ];
 
 /**

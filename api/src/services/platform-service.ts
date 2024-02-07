@@ -78,14 +78,17 @@ export class PlatformService extends DBService {
    * @return {*}  {Promise<IItisSearchResult[]>}
    * @memberof PlatformService
    */
-  async getTaxonomyFromBiohub(ids: (string | number)[]): Promise<IItisSearchResult[]> {
-    defaultLog.debug({ label: 'getTaxonomyFromBiohub', ids });
+  async getTaxonomyByTsns(tsns: (string | number)[]): Promise<IItisSearchResult[]> {
+    defaultLog.debug({ label: 'getTaxonomyByTsns', tsns });
 
-    if (!ids.length) return [];
+    if (!tsns.length) {
+      return [];
+    }
 
     const keycloakService = new KeycloakService();
 
     const token = await keycloakService.getKeycloakServiceToken();
+    console.log("TTTTOKEN:", token)
 
     const backboneTaxonTsnUrl = new URL(getBackboneTaxonTsnPath(), getBackboneApiHost()).href;
 
@@ -94,7 +97,7 @@ export class PlatformService extends DBService {
         authorization: `Bearer ${token}`
       },
       params: {
-        tsn: [...new Set(ids)]
+        tsn: [...new Set(tsns)]
       },
       paramsSerializer: (params) => {
         return qs.stringify(params);

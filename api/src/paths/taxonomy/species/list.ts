@@ -1,22 +1,25 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import qs from 'qs';
-import { getDBConnection } from '../../../database/db';
+import { getAPIUserDBConnection } from '../../../database/db';
 import { PlatformService } from '../../../services/platform-service';
 import { getLogger } from '../../../utils/logger';
 
-const defaultLog = getLogger('paths/taxonomy/list');
+const defaultLog = getLogger('paths/taxonomy/species/list');
 
-export const GET: Operation = [getSpeciesFromIds()];
+export const GET: Operation = [
+  
+  getSpeciesFromTsns()
+];
 
 GET.apiDoc = {
   description: 'Gets the labels of the taxonomic units identified by the provided list of ids.',
   tags: ['taxonomy'],
   parameters: [
     {
-      description: 'Taxonomy ids.',
+      description: 'ITIS TSNs.',
       in: 'query',
-      name: 'ids',
+      name: 'tsn',
       required: true,
       schema: {
         type: 'string'
@@ -39,7 +42,7 @@ GET.apiDoc = {
                   required: ['tsn', 'commonName', 'scientificName'],
                   properties: {
                     tsn: {
-                      type: 'string'
+                      type: 'integer'
                     },
                     commonName: {
                       type: 'string',
@@ -73,24 +76,24 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function getSpeciesFromIds(): RequestHandler {
+export function getSpeciesFromTsns(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'getSpeciesFromIds', message: 'query', query: req.query });
+    defaultLog.debug({ label: 'getSpeciesFromTsns', message: 'query', query: req.query });
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const tsns = Object.values(qs.parse(req.query.tsn?.toString() || '')).map(String).filter(Boolean);
 
-    const ids = Object.values(qs.parse(req.query.ids?.toString() || ''));
+    const connection = getAPIUserDBConnection();
 
     try {
       const platformService = new PlatformService(connection);
-      const response = await platformService.getTaxonomyFromBiohub(ids as string[]);
+      const response = await platformService.getTaxonomyByTsns(tsns);
 
       // Overwrite default cache-control header, allow caching up to 7 days
       res.setHeader('Cache-Control', 'max-age=604800');
 
       res.status(200).json({ searchResponse: response });
     } catch (error) {
-      defaultLog.error({ label: 'getSearchResults', message: 'error', error });
+      defaultLog.error({ label: 'getSpeciesFromTsns', message: 'error', error });
       throw error;
     }
   };

@@ -3,9 +3,15 @@ import { ITaxonomy } from 'hooks/itis/useItisApi';
 import qs from 'qs';
 
 const useTaxonomyApi = (axios: AxiosInstance) => {
-  const getSpeciesFromIds = async (ids: number[]): Promise<ITaxonomy[]> => {
+  /**
+   * TODO jsdoc
+   *
+   * @param {number[]} tsn
+   * @return {*}  {Promise<ITaxonomy[]>}
+   */
+  const getSpeciesFromIds = async (tsns: number[]): Promise<ITaxonomy[]> => {
     const { data } = await axios.get<{ searchResponse: ITaxonomy[] }>(`/api/taxonomy/species/list`, {
-      params: { ids: qs.stringify(ids) },
+      params: { tsn: qs.stringify(tsns) },
       paramsSerializer: (params) => {
         return qs.stringify(params);
       }

@@ -190,10 +190,8 @@ export class SurveyService extends DBService {
 
     const platformService = new PlatformService(this.connection);
 
-    const focalSpecies = await platformService.getTaxonomyFromBiohub(focalSpeciesIds);
-    console.log('focalSpecies', focalSpecies);
-    const ancillarySpecies = await platformService.getTaxonomyFromBiohub(ancillarySpeciesIds);
-    console.log('ancillarySpecies', ancillarySpecies);
+    const focalSpecies = await platformService.getTaxonomyByTsns(focalSpeciesIds);
+    const ancillarySpecies = await platformService.getTaxonomyByTsns(ancillarySpeciesIds);
 
     return { ...new GetFocalSpeciesData(focalSpecies), ...new GetAncillarySpeciesData(ancillarySpecies) };
   }
@@ -367,7 +365,7 @@ export class SurveyService extends DBService {
 
     // Fetch focal species data for all species ids
     const platformService = new PlatformService(this.connection);
-    const focalSpecies = await platformService.getTaxonomyFromBiohub(uniqueFocalSpeciesIds);
+    const focalSpecies = await platformService.getTaxonomyByTsns(uniqueFocalSpeciesIds);
 
     // Decorate the surveys response with their matching focal species labels
     const decoratedSurveys: SurveyBasicFields[] = [];

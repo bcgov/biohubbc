@@ -675,18 +675,19 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
   // TODO repair this useEffect
   useEffect(() => {
+    console.log('running useEffect')
     if (taxonomyContext.isLoading || hasInitializedTaxonomyCache) {
       // Taxonomy cache is currently loading, or has already loaded
       return;
     }
 
-    // Only attempt to initialize the cache once
-    setHasInitializedTaxonomyCache(true);
-
     if (!observationsContext.observationsDataLoader.data?.surveyObservations.length) {
       // No taxonomy records to fetch and cache
       return;
     }
+
+    // Only attempt to initialize the cache once
+    setHasInitializedTaxonomyCache(true);
 
     const uniqueTaxonomicIds: number[] = Array.from(
       observationsContext.observationsDataLoader.data.surveyObservations.reduce(
@@ -695,7 +696,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
             acc.add(record.itis_tsn);
           }
           return acc;
-        },
+      },
         new Set<number>([])
       )
     );
