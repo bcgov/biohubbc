@@ -89,6 +89,43 @@ const ObservationComponent = () => {
   };
 
   /**
+   * Handles the addition of measurement columns to the table.
+   *
+   * @param {Measurement[]} measurements
+   * @return {*}
+   */
+  const handleMeasurements = (measurements: Measurement[]) => {
+    if (!measurements?.length) {
+      return;
+    }
+
+    const additionalColumns = [];
+
+    for (const measurement of measurements) {
+      if (measurement.measurementType === 'Quantitative') {
+        additionalColumns.push(
+          ObservationQuantitativeMeasurementColDef({
+            measurement: measurement,
+            hasError: observationsTableContext.hasError
+          })
+        );
+      }
+
+      if (measurement.measurementType === 'Qualitative') {
+        additionalColumns.push(
+          ObservationQualitativeMeasurementColDef({
+            measurement: measurement,
+            measurementOptions: measurement.measurementOptions,
+            hasError: observationsTableContext.hasError
+          })
+        );
+      }
+    }
+
+    observationsTableContext.addAdditionalColumns(additionalColumns);
+  };
+
+  /**
    * Toggles visibility for a particular column
    */
   const toggleColumnVisibility = (field: string) => {
@@ -237,38 +274,7 @@ const ObservationComponent = () => {
                 </Button>
               </Box>
             </Collapse>
-            <MeasurementsButton
-              onSave={(measurements: Measurement[]) => {
-                if (!measurements?.length) {
-                  return;
-                }
-
-                const additionalColumns = [];
-
-                for (const measurement of measurements) {
-                  if (measurement.measurementType === 'Quantitative') {
-                    additionalColumns.push(
-                      ObservationQuantitativeMeasurementColDef({
-                        measurement: measurement,
-                        hasError: observationsTableContext.hasError
-                      })
-                    );
-                  }
-
-                  if (measurement.measurementType === 'Qualitative') {
-                    additionalColumns.push(
-                      ObservationQualitativeMeasurementColDef({
-                        measurement: measurement,
-                        measurementOptions: measurement.measurementOptions || [],
-                        hasError: observationsTableContext.hasError
-                      })
-                    );
-                  }
-                }
-
-                observationsTableContext.addAdditionalColumns(additionalColumns);
-              }}
-            />
+            <MeasurementsButton onSave={handleMeasurements} />
             {hideableColumns.length > 0 && (
               <>
                 <IconButton

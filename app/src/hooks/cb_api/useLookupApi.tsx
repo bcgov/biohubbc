@@ -39,10 +39,12 @@ export type Measurement = {
   commonName?: string;
   measurementId: number;
   measurementName: string;
-  measurementType?: string;
+  measurementType: 'Quantitative' | 'Qualitative';
   measurementDescription: string;
-  measurementOptions?: MeasurementOption[];
-};
+} & (
+  | { measurementType: 'Quantitative'; measurementOptions?: MeasurementOption[] }
+  | { measurementType: 'Qualitative'; measurementOptions: MeasurementOption[] }
+);
 
 const useLookupApi = (axios: AxiosInstance) => {
   const getSelectOptions = async ({ route, param, query, orderBy }: SelectOptionsProps) => {
