@@ -1,7 +1,8 @@
 import Typography from '@mui/material/Typography';
 import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import { TaxonomyContext } from 'contexts/taxonomyContext';
-import { useContext } from 'react';
+import { ITaxonomy } from 'interfaces/useTaxonomy.interface';
+import { useContext, useEffect, useState } from 'react';
 
 export interface ITaxonomyDataGridViewCellProps<DataGridType extends GridValidRowModel> {
   dataGridProps: GridRenderCellParams<DataGridType>;
@@ -22,13 +23,23 @@ const TaxonomyDataGridViewCell = <DataGridType extends GridValidRowModel>(
 
   const taxonomyContext = useContext(TaxonomyContext);
 
+  const [taxon, setTaxon] = useState<ITaxonomy | null>(null);
+
+  useEffect(() => {
+    const response = taxonomyContext.getCachedSpeciesTaxonomyById(dataGridProps.value);
+
+    if (!response) {
+      return;
+    }
+
+    setTaxon(response);
+  }, [taxonomyContext, dataGridProps.value]);
+
   if (!dataGridProps.value) {
     return null;
   }
 
-  const response = taxonomyContext.getCachedSpeciesTaxonomyById(dataGridProps.value);
-
-  if (!response) {
+  if (!taxon) {
     return null;
   }
 
@@ -42,7 +53,7 @@ const TaxonomyDataGridViewCell = <DataGridType extends GridValidRowModel>(
         textOverflow: 'ellipsis',
         color: props.error ? 'error' : undefined
       }}>
-      {response.label}
+      {taxon.label}
     </Typography>
   );
 };

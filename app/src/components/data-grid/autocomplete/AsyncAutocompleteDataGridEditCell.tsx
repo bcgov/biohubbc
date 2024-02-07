@@ -1,4 +1,4 @@
-import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
+import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
@@ -137,15 +137,6 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
     };
   }, [inputValue, getOptions, currentOption]);
 
-  function getCurrentValue() {
-    if (!dataGridValue) {
-      // No current value
-      return null;
-    }
-
-    return currentOption || options.find((option) => dataGridValue === option.value) || null;
-  }
-
   return (
     <Autocomplete
       id={`${dataGridProps.id}[${dataGridProps.field}]`}
@@ -155,7 +146,7 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
       blurOnSelect
       handleHomeEndKeys
       loading={isLoading}
-      value={getCurrentValue()}
+      value={currentOption}
       options={options}
       getOptionLabel={(option) => option.label}
       isOptionEqualToValue={(option, value) => {
@@ -164,7 +155,7 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
         }
         return option.value === value.value;
       }}
-      filterOptions={createFilterOptions({ limit: 50 })}
+      filterOptions={(item) => item}
       onChange={(_, selectedOption) => {
         setOptions(selectedOption ? [selectedOption, ...options] : options);
         setCurrentOption(selectedOption);

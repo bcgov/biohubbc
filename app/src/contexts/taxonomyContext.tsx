@@ -39,6 +39,10 @@ export const TaxonomyContextProvider = (props: PropsWithChildren) => {
 
   const cacheSpeciesTaxonomyByIds = useCallback(
     async (ids: number[]) => {
+      if (!isMounted()) {
+        return;
+      }
+
       setIsLoading(true);
       ids.forEach((id) => _dispatchedIds.current.add(id));
       await biohubApi.taxonomy

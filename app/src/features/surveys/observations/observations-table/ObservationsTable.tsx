@@ -4,12 +4,8 @@ import { cyan, grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { DataGrid, GridCellParams, GridColDef } from '@mui/x-data-grid';
-import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
-import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
 import ConditionalAutocompleteDataGridEditCell from 'components/data-grid/conditional-autocomplete/ConditionalAutocompleteDataGridEditCell';
 import ConditionalAutocompleteDataGridViewCell from 'components/data-grid/conditional-autocomplete/ConditionalAutocompleteDataGridViewCell';
-import TaxonomyDataGridEditCell from 'components/data-grid/taxonomy/TaxonomyDataGridEditCell';
-import TaxonomyDataGridViewCell from 'components/data-grid/taxonomy/TaxonomyDataGridViewCell';
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
 import TimePickerDataGrid from 'components/data-grid/TimePickerDataGrid';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
@@ -19,6 +15,10 @@ import { ObservationsContext } from 'contexts/observationsContext';
 import { IObservationTableRow, ObservationsTableContext } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { default as dayjs } from 'dayjs';
+import {
+  SampleSiteDocDef,
+  TaxonomyColDef
+} from 'features/surveys/observations/observations-table/GridColumnDefinitions';
 import {
   IGetSampleLocationRecord,
   IGetSampleMethodRecord,
@@ -123,61 +123,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     }));
 
   const observationColumns: GridColDef<IObservationTableRow>[] = [
-    {
-      field: 'wldtaxonomic_units_id',
-      headerName: 'Species',
-      editable: true,
-      hideable: true,
-      flex: 1,
-      minWidth: 250,
-      disableColumnMenu: true,
-      headerAlign: 'left',
-      align: 'left',
-      valueSetter: (params) => {
-        return { ...params.row, wldtaxonomic_units_id: Number(params.value) };
-      },
-      renderCell: (params) => {
-        return <TaxonomyDataGridViewCell dataGridProps={params} error={hasError(params)} />;
-      },
-      renderEditCell: (params) => {
-        return <TaxonomyDataGridEditCell dataGridProps={params} error={hasError(params)} />;
-      }
-    },
-    {
-      field: 'survey_sample_site_id',
-      headerName: 'Sampling Site',
-      editable: true,
-      hideable: true,
-      flex: 1,
-      minWidth: 250,
-      disableColumnMenu: true,
-      headerAlign: 'left',
-      align: 'left',
-      renderCell: (params) => {
-        return (
-          <AutocompleteDataGridViewCell<IObservationTableRow, number>
-            dataGridProps={params}
-            options={sampleSiteOptions.map((item) => ({
-              label: item.sample_site_name,
-              value: item.survey_sample_site_id
-            }))}
-            error={hasError(params)}
-          />
-        );
-      },
-      renderEditCell: (params) => {
-        return (
-          <AutocompleteDataGridEditCell<IObservationTableRow, number>
-            dataGridProps={params}
-            options={sampleSiteOptions.map((item) => ({
-              label: item.sample_site_name,
-              value: item.survey_sample_site_id
-            }))}
-            error={hasError(params)}
-          />
-        );
-      }
-    },
+    TaxonomyColDef({ hasError }),
+    SampleSiteDocDef({ sampleSiteOptions, hasError }),
     {
       field: 'survey_sample_method_id',
       headerName: 'Sampling Method',
