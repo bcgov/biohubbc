@@ -5,12 +5,15 @@ import { ObservationsContext } from 'contexts/observationsContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TaxonomyContext } from 'contexts/taxonomyContext';
 import { TelemetryDataContext } from 'contexts/telemetryDataContext';
+import dayjs from 'dayjs';
 import { Position } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { ITelemetry } from 'hooks/useTelemetryApi';
+import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { INonEditableGeometries } from 'utils/mapUtils';
-import SurveyMap from '../../SurveyMap';
+import { IAnimalDeployment } from '../../survey-animals/telemetry-device/device';
+import SurveyMap, { ISurveyMapPoint, ISurveyMapPointMetadata, ISurveyMapSupplementaryLayer } from '../../SurveyMap';
 import SurveySpatialObservationDataTable from './SurveySpatialObservationDataTable';
 import SurveySpatialTelemetryDataTable from './SurveySpatialTelemetryDataTable';
 import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './SurveySpatialToolbar';
@@ -59,43 +62,99 @@ const SurveySpatialData = () => {
    * Because Telemetry data is client-side paginated, we can collect all spatial points from
    * traversing the array of telemetry data.
    */
-  const telemetryPoints: INonEditableGeometries[] = useMemo(() => {
-    const telemetryData = telemetryContext.telemetryDataLoader.data;
-    if (!telemetryData) {
-      return [];
-    }
+  const telemetryPoints: ISurveyMapPoint[] = useMemo(() => {
+    const deployments: IAnimalDeployment[] = surveyContext.deploymentDataLoader.data ?? [];
+    const critters: IDetailedCritterWithInternalId[] = surveyContext.critterDataLoader.data ?? [];
+    const telemetry: ITelemetry[] = telemetryContext.telemetryDataLoader.data ?? [];
 
-    return telemetryData
-      .filter((telemetry) => telemetry.latitude !== undefined && telemetry.longitude !== undefined)
-      .map((telemetry) => {
-        return {
-          feature: {
-            type: 'Feature',
-            properties: {},
-            geometry: {
-              type: 'Point',
-              coordinates: [telemetry.longitude, telemetry.latitude] as Position
+    return (
+      telemetry
+        .filter((telemetry) => telemetry.latitude !== undefined && telemetry.longitude !== undefined)
+
+        // Combine all critter and deployments data into a flat list
+        .reduce(
+          (
+            acc: { deployment: IAnimalDeployment; critter: IDetailedCritterWithInternalId; telemetry: ITelemetry }[],
+            telemetry: ITelemetry
+          ) => {
+            const deployment = deployments.find(
+              (animalDeployment) => animalDeployment.deployment_id === telemetry.deployment_id
+            );
+            const critter = critters.find((detailedCritter) => detailedCritter.critter_id === deployment?.critter_id);
+            if (critter && deployment) {
+              acc.push({ deployment, critter, telemetry });
             }
+
+            return acc;
           },
-          popupComponent: undefined
-        };
-      });
-  }, [telemetryContext.telemetryDataLoader.data]);
+          []
+        )
+        .map(({ telemetry, deployment, critter }) => {
+          return {
+            feature: {
+              type: 'Feature',
+              properties: {},
+              geometry: {
+                type: 'Point',
+                coordinates: [telemetry.longitude, telemetry.latitude] as Position
+              }
+            },
+            key: `telemetry-${telemetry.telemetry_manual_id}`,
+            onLoadMetadata: async (): Promise<ISurveyMapPointMetadata[]> => {
+              return Promise.resolve([
+                { label: 'Device ID', value: String(deployment.device_id) },
+                { label: 'Alias', value: critter.animal_id ?? '' },
+                {
+                  label: 'Location',
+                  value: [telemetry.latitude, telemetry.longitude]
+                    .filter((coord): coord is number => coord !== null)
+                    .map((coord) => coord.toFixed(6))
+                    .join(', ')
+                },
+                { label: 'Date', value: dayjs(telemetry.acquisition_date).toISOString() }
+              ]);
+            }
+          };
+        })
+    );
+  }, [surveyContext.critterDataLoader.data, surveyContext.deploymentDataLoader.data]);
 
   /**
    * Because Observations data is server-side paginated, we must collect all spatial points from
    * a dedicated endpoint.
    */
-  const observationPoints: INonEditableGeometries[] = useMemo(() => {
+  const observationPoints: ISurveyMapPoint[] = useMemo(() => {
     return (observationsGeometryDataLoader.data?.surveyObservationsGeometry ?? []).map((observation) => {
-      return {
+      const point: ISurveyMapPoint = {
         feature: {
           type: 'Feature',
           properties: {},
           geometry: observation.geometry
         },
-        popupComponent: undefined
+        key: `observation-${observation.survey_observation_id}`,
+        onLoadMetadata: async (): Promise<ISurveyMapPointMetadata[]> => {
+          const response = await biohubApi.observation.getObservationRecord(
+            projectId,
+            surveyId,
+            observation.survey_observation_id
+          );
+
+          return [
+            { label: 'Taxon ID', value: String(response.wldtaxonomic_units_id) },
+            { label: 'Count', value: String(response.count) },
+            {
+              label: 'Location',
+              value: [response.latitude, response.longitude]
+                .filter((coord): coord is number => coord !== null)
+                .map((coord) => coord.toFixed(6))
+                .join(', ')
+            },
+            { label: 'Date', value: dayjs(`${response.observation_date} ${response.observation_time}`).toISOString() }
+          ];
+        }
       };
+
+      return point;
     });
   }, [observationsGeometryDataLoader.data]);
 
@@ -114,12 +173,24 @@ const SurveySpatialData = () => {
       surveyContext.critterDataLoader.isLoading;
   }
 
-  const mapPoints: INonEditableGeometries[] = useMemo(() => {
+  const supplementaryLayers: ISurveyMapSupplementaryLayer[] = useMemo(() => {
     switch (activeView) {
       case SurveySpatialDatasetViewEnum.OBSERVATIONS:
-        return observationPoints;
+        return [
+          {
+            layerName: 'Observations',
+            popupRecordTitle: 'Observation Record',
+            mapPoints: observationPoints
+          }
+        ];
       case SurveySpatialDatasetViewEnum.TELEMETRY:
-        return telemetryPoints;
+        return [
+          {
+            layerName: 'Telemetry',
+            popupRecordTitle: 'Telemetry Record',
+            mapPoints: telemetryPoints
+          }
+        ];
       case SurveySpatialDatasetViewEnum.MARKED_ANIMALS:
       default:
         return [];
@@ -150,7 +221,7 @@ const SurveySpatialData = () => {
       />
 
       <Box height={{ sm: 300, md: 500 }} position="relative">
-        <SurveyMap mapPoints={mapPoints} isLoading={isLoading} />
+        <SurveyMap supplementaryLayers={supplementaryLayers} isLoading={isLoading} />
       </Box>
       <Box py={1} px={2} position="relative">
         {activeView === SurveySpatialDatasetViewEnum.OBSERVATIONS && (
