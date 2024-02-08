@@ -18,7 +18,7 @@ export interface IConfig {
   MAX_UPLOAD_FILE_SIZE: number;
   S3_PUBLIC_HOST_URL: string;
   BIOHUB_FEATURE_FLAG: boolean;
-  BACKBONE_INTERNAL_API_HOST: string;
+  BACKBONE_PUBLIC_API_HOST: string;
   BIOHUB_TAXON_PATH: string;
 }
 
@@ -38,7 +38,7 @@ export const ConfigContext = React.createContext<IConfig | undefined>({
   MAX_UPLOAD_FILE_SIZE: 52428800,
   S3_PUBLIC_HOST_URL: '',
   BIOHUB_FEATURE_FLAG: false,
-  BACKBONE_INTERNAL_API_HOST: '',
+  BACKBONE_PUBLIC_API_HOST: '',
   BIOHUB_TAXON_PATH: ''
 });
 
@@ -71,7 +71,7 @@ const getLocalConfig = (): IConfig => {
     MAX_UPLOAD_FILE_SIZE: Number(process.env.REACT_APP_MAX_UPLOAD_FILE_SIZE) || 52428800,
     S3_PUBLIC_HOST_URL: ensureProtocol(`${OBJECT_STORE_URL}/${OBJECT_STORE_BUCKET_NAME}`, 'https://'),
     BIOHUB_FEATURE_FLAG: process.env.REACT_APP_BIOHUB_FEATURE_FLAG === 'true',
-    BACKBONE_INTERNAL_API_HOST: process.env.REACT_APP_BACKBONE_INTERNAL_API_HOST || '',
+    BACKBONE_PUBLIC_API_HOST: process.env.REACT_APP_BACKBONE_PUBLIC_API_HOST || '',
     BIOHUB_TAXON_PATH: process.env.REACT_APP_BIOHUB_TAXON_PATH || ''
   };
 };

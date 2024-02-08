@@ -6,7 +6,7 @@ import useAxios from './useAxios';
 
 const useTaxonomyApi = (axios: AxiosInstance) => {
   const config = useConfigContext();
-  const apiAxios = useAxios(config.BACKBONE_INTERNAL_API_HOST);
+  const apiAxios = useAxios(config.BACKBONE_PUBLIC_API_HOST);
 
   /**
    * Searches for taxon records based on ITIS TSNs.
