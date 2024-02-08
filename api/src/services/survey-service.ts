@@ -403,15 +403,15 @@ export class SurveyService extends DBService {
     // Handle focal species associated to this survey
     promises.push(
       Promise.all(
-        postSurveyData.species.focal_species.map((speciesId: number) => this.insertFocalSpecies(speciesId, surveyId))
+        postSurveyData.species.focal_species.map((species: ITaxonomy) => this.insertFocalSpecies(species.tsn, surveyId))
       )
     );
 
     // Handle ancillary species associated to this survey
     promises.push(
       Promise.all(
-        postSurveyData.species.ancillary_species.map((speciesId: number) =>
-          this.insertAncillarySpecies(speciesId, surveyId)
+        postSurveyData.species.ancillary_species.map((species: ITaxonomy) =>
+          this.insertAncillarySpecies(species.tsn, surveyId)
         )
       )
     );

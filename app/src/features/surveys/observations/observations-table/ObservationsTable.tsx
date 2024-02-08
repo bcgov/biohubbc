@@ -124,7 +124,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
 
   const observationColumns: GridColDef<IObservationTableRow>[] = [
     {
-      field: 'observation_species',
+      field: 'itis_tsn',
       headerName: 'Species',
       editable: true,
       hideable: true,
@@ -133,9 +133,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
-      // valueSetter: (params) => { // TODO remove?
-      //   return { ...params.row, wldtaxonomic_units_id: Number(params.value) };
-      // },
       renderCell: (params) => {
         return <TaxonomyDataGridViewCell dataGridProps={params} error={hasError(params)} />;
       },

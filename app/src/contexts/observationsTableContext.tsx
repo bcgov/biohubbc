@@ -23,7 +23,6 @@ import { TaxonomyContext } from './taxonomyContext';
 
 export interface IObservationRecord {
   survey_observation_id: number;
-  // wldtaxonomic_units_id: number; // TODO remove
   survey_sample_site_id: number | null;
   survey_sample_method_id: number | null;
   survey_sample_period_id: number | null;
@@ -38,7 +37,6 @@ export interface IObservationRecord {
 
 export interface IObservationRecordWithSamplingData {
   survey_observation_id: number;
-  // wldtaxonomic_units_id: number; // TODO remove
   survey_sample_site_id: number | null;
   survey_sample_site_name: string | null;
   survey_sample_method_id: number | null;
@@ -294,9 +292,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       'longitude',
       'observation_date',
       'observation_time',
-      // 'wldtaxonomic_units_id' // TODO remove
-      'itis_tsn',
-      'itis_scientific_name'
+      'itis_tsn'
     ];
 
     const samplingRequiredColumns: (keyof IObservationTableRow)[] = [
@@ -497,7 +493,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     const newRecord: IObservationTableRow = {
       id,
       survey_observation_id: null as unknown as number,
-      // wldtaxonomic_units_id: null as unknown as number,
       survey_sample_site_id: null as unknown as number,
       survey_sample_method_id: null as unknown as number,
       survey_sample_period_id: null,
@@ -673,9 +668,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    * Runs onces on initial page load.
    */
 
-  // TODO repair this useEffect
   useEffect(() => {
-    console.log('running useEffect')
     if (taxonomyContext.isLoading || hasInitializedTaxonomyCache) {
       // Taxonomy cache is currently loading, or has already loaded
       return;
@@ -696,7 +689,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
             acc.add(record.itis_tsn);
           }
           return acc;
-      },
+        },
         new Set<number>([])
       )
     );
@@ -780,6 +773,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     [
       _muiDataGridApiRef,
       rows,
+      getColumns,
       addObservationRecord,
       saveObservationRecords,
       deleteObservationRecords,

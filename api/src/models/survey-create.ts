@@ -1,5 +1,6 @@
 import { SurveyStratum } from '../repositories/site-selection-strategy-repository';
 import { PostSurveyBlock } from '../repositories/survey-block-repository';
+import { ITaxonomy } from '../services/platform-service';
 import { PostSurveyLocationData } from './survey-update';
 
 export class PostSurveyObject {
@@ -86,8 +87,8 @@ export class PostSurveyDetailsData {
 }
 
 export class PostSpeciesData {
-  focal_species: number[];
-  ancillary_species: number[];
+  focal_species: ITaxonomy[];
+  ancillary_species: ITaxonomy[];
 
   constructor(obj?: any) {
     this.focal_species = (obj?.focal_species?.length && obj.focal_species) || [];

@@ -54,7 +54,6 @@ export type InsertObservation = Pick<
   | 'itis_tsn'
   | 'itis_scientific_name'
   | 'survey_id'
-  // | 'wldtaxonomic_units_id' // TODO remove
   | 'latitude'
   | 'longitude'
   | 'count'
@@ -73,7 +72,6 @@ export type UpdateObservation = Pick<
   | 'itis_tsn'
   | 'itis_scientific_name'
   | 'survey_observation_id'
-  // | 'wldtaxonomic_units_id' // TODO remove
   | 'latitude'
   | 'longitude'
   | 'count'
@@ -211,8 +209,6 @@ export class ObservationRepository extends BaseRepository {
     sqlStatement.append(`
       RETURNING *;
     `);
-
-    // console.log('QQQQ:', sqlStatement.text)
 
     const response = await this.connection.sql(sqlStatement, ObservationRecord);
 

@@ -88,7 +88,6 @@ export class PlatformService extends DBService {
     const keycloakService = new KeycloakService();
 
     const token = await keycloakService.getKeycloakServiceToken();
-    console.log("TTTTOKEN:", token)
 
     const backboneTaxonTsnUrl = new URL(getBackboneTaxonTsnPath(), getBackboneApiHost()).href;
 

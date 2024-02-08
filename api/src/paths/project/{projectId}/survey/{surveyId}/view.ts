@@ -478,7 +478,6 @@ export function getSurvey(): RequestHandler {
       const surveyService = new SurveyService(connection);
 
       const surveyData = await surveyService.getSurveyById(surveyId);
-      console.log('surveyData', surveyData);
 
       const surveySupplementaryData = await surveyService.getSurveySupplementaryDataById(Number(req.params.surveyId));
 

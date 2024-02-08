@@ -78,15 +78,15 @@ export const surveyObservationsResponseSchema: SchemaObject = {
           'latitude',
           'longitude',
           'count',
+          'itis_tsn',
+          'itis_scientific_name',
           'observation_date',
           'observation_time',
           'create_user',
           'create_date',
           'update_user',
           'update_date',
-          'revision_count',
-          'itis_tsn',
-          'itis_scientific_name'
+          'revision_count'
         ],
         properties: {
           survey_observation_id: {
@@ -101,16 +101,16 @@ export const surveyObservationsResponseSchema: SchemaObject = {
           count: {
             type: 'integer'
           },
-          observation_date: {
-            type: 'string'
-          },
-          observation_time: {
-            type: 'string'
-          },
           itis_tsn: {
             type: 'integer'
           },
           itis_scientific_name: {
+            type: 'string'
+          },
+          observation_date: {
+            type: 'string'
+          },
+          observation_time: {
             type: 'string'
           },
           create_date: {
