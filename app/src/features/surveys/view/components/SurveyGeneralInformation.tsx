@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import { ITaxonomy } from 'hooks/itis/useItisApi';
+import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { useContext } from 'react';
 import { getFormattedDateRangeString } from 'utils/Utils';
 

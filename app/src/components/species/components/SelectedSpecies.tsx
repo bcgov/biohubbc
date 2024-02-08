@@ -1,11 +1,11 @@
 import { Collapse } from '@mui/material';
 import Box from '@mui/material/Box';
 import SpeciesSelectedCard from 'components/species/components/SpeciesSelectedCard';
+import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { TransitionGroup } from 'react-transition-group';
-import { ISpeciesAutocompleteField } from './SpeciesAutocompleteField';
 
 export interface ISelectedSpeciesProps {
-  selectedSpecies: ISpeciesAutocompleteField[];
+  selectedSpecies: ITaxonomy[];
   handleRemoveSpecies: (species_id: number) => void;
 }
 
@@ -17,14 +17,14 @@ const SelectedSpecies = (props: ISelectedSpeciesProps) => {
       <Box>
         <TransitionGroup>
           {selectedSpecies &&
-            selectedSpecies.map((species: ISpeciesAutocompleteField, index: number) => {
+            selectedSpecies.map((species: ITaxonomy, index: number) => {
               return (
                 <Collapse key={species.tsn}>
                   <SpeciesSelectedCard
                     index={index}
                     species={species}
                     handleRemove={handleRemoveSpecies}
-                    label={species.commonName ? species.commonName : species.scientificName}
+                    label={species.commonName ?? species.scientificName}
                   />
                 </Collapse>
               );

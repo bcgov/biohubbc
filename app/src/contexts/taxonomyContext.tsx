@@ -1,6 +1,6 @@
-import { ITaxonomy } from 'hooks/itis/useItisApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';
+import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { get as getProperty, has as hasProperty } from 'lodash';
 import { createContext, PropsWithChildren, useCallback, useMemo, useRef, useState } from 'react';
 

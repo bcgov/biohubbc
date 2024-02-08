@@ -7,7 +7,7 @@ import { ISurveyLocationForm } from 'features/surveys/components/StudyAreaForm';
 import { ISurveyFundingSource, ISurveyFundingSourceForm } from 'features/surveys/components/SurveyFundingSourceForm';
 import { ISurveySiteSelectionForm } from 'features/surveys/components/SurveySiteSelectionForm';
 import { Feature } from 'geojson';
-import { ITaxonomy } from 'hooks/itis/useItisApi';
+import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { StringBoolean } from 'types/misc';
 import { ICritterDetailedResponse } from './useCritterApi.interface';
 

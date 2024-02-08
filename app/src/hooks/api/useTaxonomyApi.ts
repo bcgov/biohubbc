@@ -1,12 +1,17 @@
 import { AxiosInstance } from 'axios';
-import { ITaxonomy } from 'hooks/itis/useItisApi';
+import { useConfigContext } from 'hooks/useContext';
+import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import qs from 'qs';
+import useAxios from './useAxios';
 
 const useTaxonomyApi = (axios: AxiosInstance) => {
+  const config = useConfigContext();
+  const apiAxios = useAxios(config.BACKBONE_API_HOST);
+
   /**
-   * TODO jsdoc
+   * Searches for taxon records based on ITIS TSNs.
    *
-   * @param {number[]} tsn
+   * @param {number[]} tsns
    * @return {*}  {Promise<ITaxonomy[]>}
    */
   const getSpeciesFromIds = async (tsns: number[]): Promise<ITaxonomy[]> => {
@@ -20,8 +25,34 @@ const useTaxonomyApi = (axios: AxiosInstance) => {
     return data.searchResponse;
   };
 
+  /**
+   * Search for taxon records by search terms.
+   *
+   * @param {string[]} searchTerms
+   * @return {*}  {(Promise<ITaxonomy[]>)}
+   */
+  const searchSpeciesByTerms = async (searchTerms: string[]): Promise<ITaxonomy[]> => {
+    try {
+      const { data } = await apiAxios.get<{ searchResponse: ITaxonomy[] }>(config.BIOHUB_TAXON_PATH, {
+        params: { terms: searchTerms },
+        paramsSerializer: (params) => {
+          return qs.stringify(params, { arrayFormat: 'repeat' });
+        }
+      });
+
+      if (!data.searchResponse) {
+        return [];
+      }
+
+      return data.searchResponse;
+    } catch (error) {
+      throw new Error('Failed to fetch Taxon records.');
+    }
+  };
+
   return {
-    getSpeciesFromIds
+    getSpeciesFromIds,
+    searchSpeciesByTerms
   };
 };
 

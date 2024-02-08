@@ -8,8 +8,8 @@ import MultiAutocompleteFieldVariableSize, {
 import StartEndDateFields from 'components/fields/StartEndDateFields';
 import { CodesContext } from 'contexts/codesContext';
 import { useFormikContext } from 'formik';
-import { ITaxonomy } from 'hooks/itis/useItisApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { debounce } from 'lodash-es';
 import { useContext, useMemo } from 'react';
 
@@ -70,13 +70,13 @@ const ProjectAdvancedFilters = () => {
           existingValues: (string | number)[],
           callback: (searchedValues: IMultiAutocompleteFieldOption[]) => void
         ) => {
-          const response = await biohubApi.itis.itisSearch([inputValue.toLowerCase()]);
+          const response = await biohubApi.taxonomy.searchSpeciesByTerms([inputValue.toLowerCase()]);
           const newOptions = convertOptions(response).filter((item) => !existingValues?.includes(item.value));
           callback(newOptions);
         },
         500
       ),
-    [biohubApi.itis]
+    [biohubApi.taxonomy]
   );
 
   return (

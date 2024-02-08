@@ -1,22 +1,23 @@
 import { Box } from '@mui/material';
 import AlertBar from 'components/alert/AlertBar';
 import { useFormikContext } from 'formik';
+import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import get from 'lodash-es/get';
 import SelectedSpecies from './components/SelectedSpecies';
-import SpeciesAutocompleteField, { ISpeciesAutocompleteField } from './components/SpeciesAutocompleteField';
+import SpeciesAutocompleteField from './components/SpeciesAutocompleteField';
 
 const AncillarySpeciesComponent = () => {
-  const { values, setFieldValue, setErrors, errors } = useFormikContext<ISpeciesAutocompleteField[]>();
+  const { values, setFieldValue, setErrors, errors } = useFormikContext<ITaxonomy[]>();
 
-  const selectedSpecies: ISpeciesAutocompleteField[] = get(values, 'species.ancillary_species') || [];
+  const selectedSpecies: ITaxonomy[] = get(values, 'species.ancillary_species') || [];
 
-  const handleAddSpecies = (species: ISpeciesAutocompleteField) => {
+  const handleAddSpecies = (species: ITaxonomy) => {
     setFieldValue(`species.ancillary_species[${selectedSpecies.length}]`, species);
     setErrors([]);
   };
 
   const handleRemoveSpecies = (species_id: number) => {
-    const filteredValues = selectedSpecies.filter((value: ISpeciesAutocompleteField) => {
+    const filteredValues = selectedSpecies.filter((value: ITaxonomy) => {
       return value.tsn !== species_id;
     });
 
