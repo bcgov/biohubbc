@@ -35,7 +35,7 @@ const apiDeploy = async (settings) => {
         NODE_ENV: phases[phase].nodeEnv,
         NODE_OPTIONS: phases[phase].nodeOptions,
         // BioHub Platform (aka: Backbone)
-        BACKBONE_API_HOST: phases[phase].backboneApiHost,
+        BACKBONE_INTERNAL_API_HOST: phases[phase].backboneInternalApiHost,
         BACKBONE_INTAKE_PATH: phases[phase].backboneIntakePath,
         BACKBONE_ARTIFACT_INTAKE_PATH: phases[phase].backboneArtifactIntakePath,
         BACKBONE_INTAKE_ENABLED: phases[phase].backboneIntakeEnabled,

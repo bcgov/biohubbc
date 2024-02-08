@@ -44,7 +44,7 @@ const appDeploy = async (settings) => {
         REPLICAS: phases[phase].replicas,
         REPLICAS_MAX: phases[phase].replicasMax,
         REACT_APP_BIOHUB_FEATURE_FLAG: phases[phase].biohubFeatureFlag,
-        REACT_APP_BACKBONE_API_HOST: phases[phase].backboneApiHost,
+        REACT_APP_BACKBONE_INTERNAL_API_HOST: phases[phase].backboneInternalApiHost,
         REACT_APP_BIOHUB_TAXON_PATH: phases[phase].biohubTaxonPath
       }
     })

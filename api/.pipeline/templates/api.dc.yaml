@@ -40,7 +40,7 @@ parameters:
   - name: CLAMAV_PORT
     value: '3310'
   # BioHub Platform (aka: Backbone)
-  - name: BACKBONE_API_HOST
+  - name: BACKBONE_INTERNAL_API_HOST
     required: true
     description: API host for BioHub Platform Backbone. Example "https://platform.com".
   - name: BACKBONE_INTAKE_PATH
@@ -218,8 +218,8 @@ objects:
                 - name: NODE_OPTIONS
                   value: ${NODE_OPTIONS}
                 # BioHub Platform (aka: Backbone)
-                - name: BACKBONE_API_HOST
-                  value: ${BACKBONE_API_HOST}
+                - name: BACKBONE_INTERNAL_API_HOST
+                  value: ${BACKBONE_INTERNAL_API_HOST}
                 - name: BACKBONE_INTAKE_PATH
                   value: ${BACKBONE_INTAKE_PATH}
                 - name: BACKBONE_ARTIFACT_INTAKE_PATH
