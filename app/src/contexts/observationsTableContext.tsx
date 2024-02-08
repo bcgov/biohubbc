@@ -381,7 +381,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
           open: true
         });
 
-        console.log('Refreshing after delete...');
         refreshObservationRecords();
       } catch {
         // Close yes-no dialog

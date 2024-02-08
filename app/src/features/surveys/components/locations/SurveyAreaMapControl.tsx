@@ -152,7 +152,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
                 geojson: [feature],
                 revision_count: 0,
                 leaflet_id: id,
-                uuid: v4() // TODO why does ISurveyLocation have this property?
+                uuid: v4()
               };
               setFieldValue(formik_key, [...values.locations, location]);
             }}
@@ -203,12 +203,12 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
         <LayersControl position="bottomright">
           <StaticLayers
             layers={values.locations
-              .filter((item) => !item?.leaflet_id) // filter out user drawn locations
-              .map((item, index) => {
+              .filter((location) => !location?.leaflet_id) // filter out user drawn locations
+              .map((location, index) => {
                 // Map geojson features into layer objects for leaflet
                 return {
-                  layerName: item.name,
-                  features: item.geojson.map((geo) => ({ geoJSON: geo, key: index }))
+                  layerName: location.name,
+                  features: location.geojson.map((geo) => ({ geoJSON: geo, key: location.uuid }))
                 };
               })}
           />
