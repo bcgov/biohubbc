@@ -139,7 +139,6 @@ GET.apiDoc = {
                         }
                       },
                       focal_species: {
-                        nullable: true,
                         type: 'array',
                         items: {
                           type: 'object',

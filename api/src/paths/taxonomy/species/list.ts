@@ -7,10 +7,7 @@ import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/taxonomy/species/list');
 
-export const GET: Operation = [
-  
-  getSpeciesFromTsns()
-];
+export const GET: Operation = [getTaxonomyByTsns()];
 
 GET.apiDoc = {
   description: 'Gets the labels of the taxonomic units identified by the provided list of ids.',
@@ -76,11 +73,13 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function getSpeciesFromTsns(): RequestHandler {
+export function getTaxonomyByTsns(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'getSpeciesFromTsns', message: 'query', query: req.query });
+    defaultLog.debug({ label: 'getTaxonomyByTsns', message: 'query', query: req.query });
 
-    const tsns = Object.values(qs.parse(req.query.tsn?.toString() || '')).map(String).filter(Boolean);
+    const tsns = Object.values(qs.parse(req.query.tsn?.toString() || ''))
+      .map(String)
+      .filter(Boolean);
 
     const connection = getAPIUserDBConnection();
 
@@ -93,7 +92,7 @@ export function getSpeciesFromTsns(): RequestHandler {
 
       res.status(200).json({ searchResponse: response });
     } catch (error) {
-      defaultLog.error({ label: 'getSpeciesFromTsns', message: 'error', error });
+      defaultLog.error({ label: 'getTaxonomyByTsns', message: 'error', error });
       throw error;
     }
   };
