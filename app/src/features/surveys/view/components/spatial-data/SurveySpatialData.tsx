@@ -140,7 +140,7 @@ const SurveySpatialData = () => {
           );
 
           return [
-            { label: 'Taxon ID', value: String(response.wldtaxonomic_units_id) },
+            { label: 'Taxon ID', value: String(response.itis_tsn) },
             { label: 'Count', value: String(response.count) },
             {
               label: 'Location',
