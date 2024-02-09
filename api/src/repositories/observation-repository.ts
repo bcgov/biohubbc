@@ -38,6 +38,14 @@ export const ObservationRecordWithSamplingData = ObservationRecord.extend({
 
 export type ObservationRecordWithSamplingData = z.infer<typeof ObservationRecordWithSamplingData>;
 
+export const ObservationRecordWithSamplingDataWithAttributes = ObservationRecordWithSamplingData.extend({
+  subcount: z.number().nullable(),
+  observation_subcount_attributes: z.array(z.string()).nullable()
+});
+export type ObservationRecordWithSamplingDataWithAttributes = z.infer<
+  typeof ObservationRecordWithSamplingDataWithAttributes
+>;
+
 export const ObservationGeometryRecord = z.object({
   survey_observation_id: z.number(),
   geometry: z.string().transform((jsonString) => JSON.parse(jsonString))
@@ -224,7 +232,7 @@ export class ObservationRepository extends BaseRepository {
   async getSurveyObservationsWithSamplingData(
     surveyId: number,
     pagination?: ApiPaginationOptions
-  ): Promise<ObservationRecordWithSamplingData[]> {
+  ): Promise<ObservationRecordWithSamplingDataWithAttributes[]> {
     defaultLog.debug({ label: 'getSurveyObservationsWithSamplingData', surveyId, pagination });
 
     const knex = getKnex();
@@ -236,6 +244,18 @@ export class ObservationRepository extends BaseRepository {
           .select(['ml.name as survey_sample_method_name', 'ssm.survey_sample_method_id'])
           .from({ ssm: 'survey_sample_method ' })
           .leftJoin({ ml: 'method_lookup' }, 'ml.method_lookup_id', 'ssm.method_lookup_id')
+      )
+      .with(
+        'observation_subcount_attributes',
+        knex
+          .select([
+            'os.survey_observation_id',
+            'os.subcount',
+            knex.raw(`array_agg(sa.critterbase_event_id) as critterbase_event_ids`)
+          ])
+          .from({ os: 'observation_subcount' })
+          .leftJoin({ sa: 'subcount_attribute' }, 'os.observation_subcount_id', 'sa.observation_subcount_id')
+          .groupBy(['os.survey_observation_id', 'os.subcount'])
       )
       .select([
         // Select all columns from survey_observation
@@ -254,7 +274,9 @@ export class ObservationRepository extends BaseRepository {
         knex.raw('(??::date + ??::time)::timestamp as survey_sample_period_start_datetime', [
           'ssp.start_date',
           'ssp.start_time'
-        ])
+        ]),
+        'osa.subcount',
+        'osa.critterbase_event_ids as observation_subcount_attributes'
       ])
       // Alias survey_observation as so
       .from({ so: 'survey_observation' })
@@ -271,6 +293,9 @@ export class ObservationRepository extends BaseRepository {
 
       // Join sample period onto observation
       .leftJoin({ ssp: 'survey_sample_period' }, 'so.survey_sample_period_id', 'ssp.survey_sample_period_id') // Join survey_sample_period
+
+      // Join aggregated observation attributes
+      .leftJoin({ osa: 'observation_subcount_attributes' }, 'so.survey_observation_id', 'osa.survey_observation_id')
       .where('so.survey_id', surveyId);
 
     const paginatedQuery = !pagination
@@ -280,7 +305,7 @@ export class ObservationRepository extends BaseRepository {
     const query =
       pagination?.sort && pagination.order ? paginatedQuery.orderBy(pagination.sort, pagination.order) : paginatedQuery;
 
-    const response = await this.connection.knex(query, ObservationRecordWithSamplingData);
+    const response = await this.connection.knex(query, ObservationRecordWithSamplingDataWithAttributes);
 
     return response.rows;
   }
