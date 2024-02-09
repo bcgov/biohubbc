@@ -299,33 +299,72 @@ PUT.apiDoc = {
               description: 'Survey observation records.',
               type: 'array',
               items: {
+                description: 'A single survey observation record.',
                 type: 'object',
-                required: [
-                  'wldtaxonomic_units_id',
-                  'count',
-                  'latitude',
-                  'longitude',
-                  'observation_date',
-                  'observation_time'
-                ],
+                required: ['standardColumns', 'measurementColumns'],
                 properties: {
-                  wldtaxonomic_units_id: {
-                    oneOf: [{ type: 'integer' }, { type: 'string' }]
+                  standardColumns: {
+                    description: 'Standard column data for an observation record.',
+                    type: 'object',
+                    required: [
+                      'wldtaxonomic_units_id',
+                      'count',
+                      'latitude',
+                      'longitude',
+                      'observation_date',
+                      'observation_time'
+                    ],
+                    properties: {
+                      survey_observation_id: {
+                        type: 'number'
+                      },
+                      wldtaxonomic_units_id: {
+                        oneOf: [{ type: 'integer' }, { type: 'string' }]
+                      },
+                      survey_sample_site_id: {
+                        type: 'number'
+                      },
+                      survey_sample_method_id: {
+                        type: 'number'
+                      },
+                      survey_sample_period_id: {
+                        type: 'number'
+                      },
+                      count: {
+                        type: 'integer'
+                      },
+                      latitude: {
+                        type: 'number'
+                      },
+                      longitude: {
+                        type: 'number'
+                      },
+                      observation_date: {
+                        type: 'string'
+                      },
+                      observation_time: {
+                        type: 'string'
+                      }
+                    }
                   },
-                  count: {
-                    type: 'integer'
-                  },
-                  latitude: {
-                    type: 'number'
-                  },
-                  longitude: {
-                    type: 'number'
-                  },
-                  observation_date: {
-                    type: 'string'
-                  },
-                  observation_time: {
-                    type: 'string'
+                  measurementColumns: {
+                    description: 'Non-standard user-added measurement column data for an observation subcount record.',
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      required: ['id', 'field', 'value'],
+                      properties: {
+                        id: {
+                          type: 'string'
+                        },
+                        field: {
+                          type: 'string'
+                        },
+                        value: {
+                          oneOf: [{ type: 'number' }, { type: 'string' }]
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -458,16 +497,16 @@ export function insertUpdateSurveyObservations(): RequestHandler {
       // Sanitize all incoming records
       const records: (InsertObservation | UpdateObservation)[] = req.body.surveyObservations.map((record: any) => {
         return {
-          survey_observation_id: record.survey_observation_id,
-          wldtaxonomic_units_id: Number(record.wldtaxonomic_units_id),
-          survey_sample_site_id: record.survey_sample_site_id,
-          survey_sample_method_id: record.survey_sample_method_id,
-          survey_sample_period_id: record.survey_sample_period_id,
-          latitude: record.latitude,
-          longitude: record.longitude,
-          count: record.count,
-          observation_date: record.observation_date,
-          observation_time: record.observation_time
+          survey_observation_id: record.standardColumns.survey_observation_id,
+          wldtaxonomic_units_id: Number(record.standardColumns.wldtaxonomic_units_id),
+          survey_sample_site_id: record.standardColumns.survey_sample_site_id,
+          survey_sample_method_id: record.standardColumns.survey_sample_method_id,
+          survey_sample_period_id: record.standardColumns.survey_sample_period_id,
+          latitude: record.standardColumns.latitude,
+          longitude: record.standardColumns.longitude,
+          count: record.standardColumns.count,
+          observation_date: record.standardColumns.observation_date,
+          observation_time: record.standardColumns.observation_time
         } as InsertObservation | UpdateObservation;
       });
 

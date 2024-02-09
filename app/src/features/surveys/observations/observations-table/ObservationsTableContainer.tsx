@@ -21,7 +21,7 @@ import YesNoDialog from 'components/dialog/YesNoDialog';
 import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
 import { ObservationsTableI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
-import { ObservationsTableContext } from 'contexts/observationsTableContext';
+import { IAdditionalColumn, ObservationsTableContext } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { MeasurementsButton } from 'features/surveys/observations/measurements/dialog/MeasurementsButton';
 import {
@@ -100,26 +100,28 @@ const ObservationComponent = () => {
       return;
     }
 
-    const additionalColumns = [];
+    const additionalColumns: IAdditionalColumn[] = [];
 
     for (const measurement of measurements) {
       if (measurement.measurementType === 'Quantitative') {
-        additionalColumns.push(
-          ObservationQuantitativeMeasurementColDef({
+        additionalColumns.push({
+          measuremnt: measurement,
+          colDef: ObservationQuantitativeMeasurementColDef({
             measurement: measurement,
             hasError: observationsTableContext.hasError
           })
-        );
+        });
       }
 
       if (measurement.measurementType === 'Qualitative') {
-        additionalColumns.push(
-          ObservationQualitativeMeasurementColDef({
+        additionalColumns.push({
+          measuremnt: measurement,
+          colDef: ObservationQualitativeMeasurementColDef({
             measurement: measurement,
             measurementOptions: measurement.measurementOptions,
             hasError: observationsTableContext.hasError
           })
-        );
+        });
       }
     }
 

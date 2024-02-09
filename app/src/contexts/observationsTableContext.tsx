@@ -6,7 +6,6 @@ import {
   GridRowId,
   GridRowSelectionModel,
   GridSortModel,
-  GridValidRowModel,
   useGridApiRef
 } from '@mui/x-data-grid';
 import { GridApiCommunity, GridStateColDef } from '@mui/x-data-grid/internals';
@@ -15,6 +14,8 @@ import { DialogContext } from 'contexts/dialogContext';
 import { ObservationsContext } from 'contexts/observationsContext';
 import { default as dayjs } from 'dayjs';
 import { APIError } from 'hooks/api/useAxios';
+import { IMeasurementColumnToSave, IObservationTableRowToSave } from 'hooks/api/useObservationApi';
+import { Measurement } from 'hooks/cb_api/useLookupApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
@@ -24,7 +25,7 @@ import { RowValidationError, TableValidationModel } from '../components/data-gri
 import { SurveyContext } from './surveyContext';
 import { TaxonomyContext } from './taxonomyContext';
 
-export interface IObservationRecord {
+export interface IStandardObservationColumns {
   survey_observation_id: number;
   wldtaxonomic_units_id: number;
   survey_sample_site_id: number | null;
@@ -35,6 +36,9 @@ export interface IObservationRecord {
   observation_time: string;
   latitude: number | null;
   longitude: number | null;
+}
+
+export interface IObservationRecord extends IStandardObservationColumns {
   [key: string]: any;
 }
 
@@ -52,6 +56,11 @@ export interface IObservationRecordWithSamplingData {
   observation_time: string;
   latitude: number | null;
   longitude: number | null;
+}
+
+export interface IAdditionalColumn {
+  measuremnt: Measurement;
+  colDef: GridColDef;
 }
 
 export interface IObservationRecordWithSamplingDataWithAttributes extends IObservationRecordWithSamplingData {
@@ -96,7 +105,7 @@ export type IObservationsTableContext = {
   /**
    * Adds columns to the observation table, ignoring duplicates.
    */
-  addAdditionalColumns: (columnsToAdd: GridColDef[]) => void;
+  addAdditionalColumns: (columnsToAdd: IAdditionalColumn[]) => void;
   /**
    * Appends a new blank record to the observation rows
    */
@@ -170,7 +179,10 @@ export type IObservationsTableContext = {
   paginationModel: GridPaginationModel;
   updateSortModel: (mode: GridSortModel) => void;
   sortModel: GridSortModel;
-  additionalColumns: GridColDef[];
+  /**
+   * Additional user-added columns that are not part of the default observation table columns.
+   */
+  additionalColumns: IAdditionalColumn[];
 };
 
 export const ObservationsTableContext = createContext<IObservationsTableContext>({
@@ -233,7 +245,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   // Stores the current validation state of the table
   const [validationModel, setValidationModel] = useState<ObservationTableValidationModel>({});
   // Stores any additional columns that are not part of the default observation table columns
-  const [additionalColumns, setAdditionalColumns] = useState<GridColDef[]>([]);
+  const [additionalColumns, setAdditionalColumns] = useState<IAdditionalColumn[]>([]);
   // Pagination State
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
@@ -301,10 +313,11 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   /**
    * Adds columns to the observations table, ignoring duplicates.
    */
-  const addAdditionalColumns = useCallback((columnsToAdd: GridColDef[]) => {
+  const addAdditionalColumns = useCallback((columnsToAdd: IAdditionalColumn[]) => {
     setAdditionalColumns((currentColumns) => {
       const newColumns = columnsToAdd.filter(
-        (columnToAdd) => !currentColumns.find((currentColumn) => currentColumn.field === columnToAdd.field)
+        (columnToAdd) =>
+          !currentColumns.find((currentColumn) => currentColumn.colDef.field === columnToAdd.colDef.field)
       );
       return [...currentColumns, ...newColumns];
     });
@@ -632,13 +645,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    * Send all observation rows to the backend.
    */
   const _saveRecords = useCallback(
-    async (rowsToSave: GridValidRowModel[]) => {
+    async (rowsToSave: IObservationTableRowToSave[]) => {
       try {
-        await biohubApi.observation.insertUpdateObservationRecords(
-          projectId,
-          surveyId,
-          rowsToSave as IObservationTableRow[]
-        );
+        await biohubApi.observation.insertUpdateObservationRecords(projectId, surveyId, rowsToSave);
 
         setModifiedRowIds([]);
         setAddedRowIds([]);
@@ -779,8 +788,36 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     const rowModels = _muiDataGridApiRef.current.getRowModels();
     const rowValues = Array.from(rowModels, ([_, value]) => value);
 
-    _saveRecords(rowValues);
-  }, [_muiDataGridApiRef, _saveRecords, _isSaving, _isStoppingEdit, modifiedRowIds]);
+    const measurements = additionalColumns.map((item) => item.measuremnt);
+
+    // Build the object expected by the SIMS API
+    const rowsToSave = rowValues.map((row) => {
+      const standardColumns: IStandardObservationColumns = row as IStandardObservationColumns;
+
+      const measurementColumns: IMeasurementColumnToSave[] = [];
+
+      const rowEntries = Object.entries(row);
+      rowEntries.forEach(([key, value]) => {
+        console.log(key, value);
+        const matchingMeasurement = measurements.find((item) => item.uuid === key);
+
+        if (matchingMeasurement) {
+          measurementColumns.push({
+            id: matchingMeasurement.uuid,
+            field: matchingMeasurement.measurementName,
+            value: value as any
+          });
+        }
+      });
+
+      return {
+        standardColumns,
+        measurementColumns
+      };
+    });
+
+    _saveRecords(rowsToSave);
+  }, [_muiDataGridApiRef, _saveRecords, _isSaving, _isStoppingEdit, modifiedRowIds, additionalColumns]);
 
   const observationsTableContext: IObservationsTableContext = useMemo(
     () => ({
@@ -815,6 +852,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     [
       _muiDataGridApiRef,
       rows,
+      getColumns,
+      addAdditionalColumns,
       addObservationRecord,
       saveObservationRecords,
       deleteObservationRecords,
@@ -825,12 +864,11 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       hasUnsavedChanges,
       rowSelectionModel,
       isLoading,
-      validationModel,
       isSaving,
+      validationModel,
       observationCount,
-      updatePaginationModel,
       paginationModel,
-      updateSortModel,
+      hasError,
       sortModel,
       additionalColumns
     ]
