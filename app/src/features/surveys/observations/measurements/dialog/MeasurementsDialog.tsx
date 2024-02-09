@@ -70,7 +70,7 @@ export const MeasurementsDialog = (props: IrementsDialogProps) => {
       maxWidth="xl"
       open={props.open}
       aria-labelledby="observation-measurements-dialog-title">
-      <DialogTitle id="observation-measurements-dialog-title">Observation Measurements</DialogTitle>
+      <DialogTitle id="observation-measurements-dialog-title">Add Observation Measurements</DialogTitle>
       <DialogContent>
         <MeasurementsSearch selectedMeasurements={selectedMeasurements} onSelectOptions={onSelectOptions} />
         <MeasurementsList selectedMeasurements={selectedMeasurements} onRemove={onRemove} />

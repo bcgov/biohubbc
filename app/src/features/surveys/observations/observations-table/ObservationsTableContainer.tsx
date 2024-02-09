@@ -301,8 +301,8 @@ const ObservationComponent = () => {
                 >
                   <Box>
 
-                    <Stack flexDirection="row" alignItems="center" justifyContent="space-between" px={2.5} py={2}>
-                      <Typography component="div" variant="body2" fontWeight={700}>CONFIGURE COLUMNS</Typography>
+                    <Stack flexDirection="row" alignItems="center" justifyContent="space-between" gap={10} px={2.5} py={2}>
+                      <Typography component="div" variant="body2" fontWeight={700}>CONFIGURE OBSERVATIONS</Typography>
                       <MeasurementsButton onSave={handleMeasurements} />
                     </Stack>
 

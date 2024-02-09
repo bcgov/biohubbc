@@ -135,17 +135,28 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
             />
             <Stack gap={0.75} mt={-0.25}>
               <Box>
-                <Typography variant="body2" color="textSecondary">
-                  {renderOption.scientificName} ({renderOption.commonName})
+                <Typography variant="body2">
+                  <em>{renderOption.scientificName}</em>&nbsp;
+                  {renderOption.commonName ? (
+                    <span>({renderOption.commonName})</span>
+                  ) : (
+                    ''
+                  )}
                 </Typography>
               </Box>
               <Box>
-                <Typography variant="body1" fontWeight={700}>
+                <Typography component="div" variant="body1" fontWeight={700}>
                   {renderOption.measurementName}
                 </Typography>
-              </Box>
-              <Box>
-                <Typography variant="subtitle2" color="textPrimary">
+                <Typography component="div" variant="subtitle2" color="textSecondary"
+                  sx={{
+                    display: '-webkit-box',
+                    WebkitLineClamp: '2',
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
                   {renderOption.measurementDescription}
                 </Typography>
               </Box>
@@ -159,7 +170,7 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
           name="measurements-autocomplete-input"
           variant="outlined"
           fullWidth
-          placeholder="Add measurements"
+          placeholder="Enter measurement name"
           InputProps={{
             ...params.InputProps,
             startAdornment: (
@@ -169,6 +180,7 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
             )
           }}
           data-testid="measurements-autocomplete-input"
+          aria-label="Find observation measurements"
         />
       )}
     />

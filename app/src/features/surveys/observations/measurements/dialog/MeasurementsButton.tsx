@@ -35,9 +35,9 @@ export const MeasurementsButton = (props: IMeasurementsButtonProps) => {
         startIcon={
           <Icon path={mdiPlus} size={0.75} />
         }
-        aria-label="Add columns"
+        aria-label="Add Measurements"
       >
-        Add
+        Add Measurements
       </Button>
       <MeasurementsDialog
         open={open}

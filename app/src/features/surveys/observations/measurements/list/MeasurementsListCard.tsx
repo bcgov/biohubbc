@@ -34,30 +34,41 @@ export const MeasurementsListCard = (props: IMeasurementsListCardProps) => {
   const { onRemove } = props;
 
   return (
-    <Card
+    <Card component={Stack}
       variant="outlined"
+      flexDirection="row"
+      alignItems="center"
+      justifyContent="space-between"
+      p={2}
       sx={{
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        p: 2,
         background: grey[100]
       }}
       data-testid="measurements-list-item">
       <Stack gap={0.75} mt={-0.25}>
         <Box>
-          <Typography variant="body2" color="textSecondary">
-            {props.measurement.scientificName} ({props.measurement.commonName})
+          <Typography variant="body2">
+            <em>{props.measurement.scientificName}</em>&nbsp;
+            {props.measurement.commonName ? (
+              <span>({props.measurement.commonName})</span>
+            ) : (
+              ''
+            )}
           </Typography>
         </Box>
         <Box>
-          <Typography variant="body1" fontWeight={700}>
+          <Typography component="div" variant="body1" fontWeight={700}>
             {props.measurement.measurementName}
           </Typography>
-        </Box>
-        <Box>
-          <Typography variant="subtitle2" color="textPrimary">
+          <Typography component="div" variant="subtitle2" color="textSecondary"
+            sx={{
+              display: '-webkit-box',
+              WebkitLineClamp: '2',
+              WebkitBoxOrient: 'vertical',
+              maxWidth: '80ch',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
             {props.measurement.measurementDescription}
           </Typography>
         </Box>

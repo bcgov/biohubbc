@@ -42,9 +42,9 @@ export type Measurement = {
   measurementType: 'Quantitative' | 'Qualitative';
   measurementDescription: string;
 } & (
-  | { measurementType: 'Quantitative'; measurementOptions?: MeasurementOption[] }
-  | { measurementType: 'Qualitative'; measurementOptions: MeasurementOption[] }
-);
+    | { measurementType: 'Quantitative'; measurementOptions?: MeasurementOption[] }
+    | { measurementType: 'Qualitative'; measurementOptions: MeasurementOption[] }
+  );
 
 const useLookupApi = (axios: AxiosInstance) => {
   const getSelectOptions = async ({ route, param, query, orderBy }: SelectOptionsProps) => {
@@ -124,6 +124,15 @@ const useLookupApi = (axios: AxiosInstance) => {
           { label: 'Green', value: 'green' },
           { label: 'Blue', value: 'blue' }
         ]
+      },
+      {
+        uuid: '6004651d-a6c5-4e04-ab46-8dcce1d1e125',
+        scientificName: 'Scientific Name',
+        commonName: '',
+        measurementId: 4,
+        measurementType: 'Quantitative',
+        measurementName: 'Measurement Name',
+        measurementDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
       }
     ];
   };
