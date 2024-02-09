@@ -63,6 +63,11 @@ export interface IAdditionalColumn {
   colDef: GridColDef;
 }
 
+export interface IObservationRecordWithSamplingDataWithAttributes extends IObservationRecordWithSamplingData {
+  subcount: number;
+  observation_subcount_attributes: string[]
+}
+
 export interface ISupplementaryObservationData {
   observationCount: number;
 }

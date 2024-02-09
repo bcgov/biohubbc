@@ -1,7 +1,7 @@
 import { mdiCogOutline, mdiDotsVertical, mdiImport, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
-import { Checkbox, ListItemText } from '@mui/material';
+import { Checkbox, FormControlLabel, List, ListItem, ListItemButton, ListItemText, Popover } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
@@ -14,6 +14,7 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import grey from '@mui/material/colors/grey';
 import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
 import FileUploadDialog from 'components/dialog/FileUploadDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
@@ -276,7 +277,6 @@ const ObservationComponent = () => {
                 </Button>
               </Box>
             </Collapse>
-            <MeasurementsButton onSave={handleMeasurements} />
             {hideableColumns.length > 0 && (
               <>
                 <IconButton
@@ -287,7 +287,7 @@ const ObservationComponent = () => {
                   <Icon path={mdiCogOutline} size={1} />
                   {/* Column Visibility */}
                 </IconButton>
-                <Menu
+                <Popover
                   anchorOrigin={{
                     vertical: 'bottom',
                     horizontal: 'right'
@@ -300,37 +300,64 @@ const ObservationComponent = () => {
                   anchorEl={columnVisibilityMenuAnchorEl}
                   open={Boolean(columnVisibilityMenuAnchorEl)}
                   onClose={handleCloseColumnVisibilityMenu}
-                  MenuListProps={{
-                    'aria-labelledby': 'basic-button'
-                  }}>
-                  <MenuItem dense onClick={() => toggleShowHideAll()}>
-                    <ListItemIcon>
-                      <Checkbox
-                        sx={{ ml: -1 }}
-                        indeterminate={hiddenFields.length > 0 && hiddenFields.length < hideableColumns.length}
-                        checked={hiddenFields.length === 0}
+                >
+                  <Box>
+
+                    <Stack flexDirection="row" alignItems="center" justifyContent="space-between" gap={10} px={2.5} py={2}>
+                      <Typography component="div" variant="body2" fontWeight={700}>CONFIGURE OBSERVATIONS</Typography>
+                      <MeasurementsButton onSave={handleMeasurements} />
+                    </Stack>
+
+                    <Divider flexItem />
+
+                    <Stack flexDirection="row" alignItems="center" justifyContent="space-between" py={0.5} pl={2.5} pr={1.5} minWidth={400}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            indeterminate={hiddenFields.length > 0 && hiddenFields.length < hideableColumns.length}
+                            checked={hiddenFields.length === 0}
+                            onClick={() => toggleShowHideAll()}
+                          />
+                        }
+                        label={<Typography variant="body2" sx={{ ml: 1 }}>Show/Hide all</Typography>}
                       />
-                    </ListItemIcon>
-                    <ListItemText sx={{ textTransform: 'uppercase' }}>Show/Hide All</ListItemText>
-                  </MenuItem>
-                  <Divider />
-                  <Box
-                    sx={{
-                      xs: { maxHeight: '300px' },
-                      lg: { maxHeight: '400px' }
-                    }}>
-                    {hideableColumns.map((column) => {
-                      return (
-                        <MenuItem dense key={column.field} onClick={() => toggleColumnVisibility(column.field)}>
-                          <ListItemIcon>
-                            <Checkbox sx={{ ml: -1 }} checked={!hiddenFields.includes(column.field)} />
-                          </ListItemIcon>
-                          <ListItemText>{column.headerName}</ListItemText>
-                        </MenuItem>
-                      );
-                    })}
+                    </Stack>
+
+                    <Divider flexItem />
+
+                    <List
+                      component={Stack}
+                      gap={0.5}
+                      sx={{
+                        p: 0.5,
+                        maxHeight: { sm: 300, md: 500 },
+                        overflowY: 'auto'
+                      }}
+                      disablePadding
+                    >
+                      {hideableColumns.map((column) => {
+                        return (
+                          <ListItem key={column.field}
+                            secondaryAction={
+                              <IconButton edge="end" aria-label="Remove measurement">
+                                <Icon path={mdiTrashCanOutline} size={1} />
+                              </IconButton>
+                            }
+                            disablePadding
+                          >
+                            <ListItemButton dense onClick={() => toggleColumnVisibility(column.field)} sx={{ background: grey[50] }}>
+                              <ListItemIcon>
+                                <Checkbox edge="start" checked={!hiddenFields.includes(column.field)} />
+                              </ListItemIcon>
+                              <ListItemText>{column.headerName}</ListItemText>
+                            </ListItemButton>
+                          </ListItem>
+                        );
+                      })}
+                    </List>
+
                   </Box>
-                </Menu>
+                </Popover>
               </>
             )}
             <Box>

@@ -35,10 +35,9 @@ export const MeasurementsSearch = (props: IMeasurementsSearchProps) => {
   const measurementsDataLoader = useDataLoader(critterbaseApi.lookup.getMeasurementsBySearachTerms);
 
   return (
-    <Box p={0}>
-      <Typography component="legend">Find and add measurements</Typography>
+    <Box>
       <Typography variant="body1" color="textSecondary" sx={{ mt: -1, mb: 3 }}>
-        Customize the observation columns by adding one or more measurements.
+        Add additional measurements to your observations data.
       </Typography>
       <MeasurementsSearchAutocomplete
         selectedOptions={selectedMeasurements}

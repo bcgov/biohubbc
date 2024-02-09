@@ -447,7 +447,7 @@ export function getSurveyObservations(): RequestHandler {
       const paginationOptions: ApiPaginationOptions | undefined =
         limit !== undefined && page !== undefined ? { limit, page, sort, order } : undefined;
 
-      const observationData = await observationService.getSurveyObservationsWithSupplementaryAndSamplingData(
+      const observationData = await observationService.getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData(
         surveyId,
         paginationOptions
       );

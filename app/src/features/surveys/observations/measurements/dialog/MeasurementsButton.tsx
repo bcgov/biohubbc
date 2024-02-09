@@ -1,3 +1,5 @@
+import { mdiPlus } from '@mdi/js';
+import Icon from '@mdi/react';
 import Button from '@mui/material/Button';
 import { MeasurementsDialog } from 'features/surveys/observations/measurements/dialog/MeasurementsDialog';
 import { Measurement } from 'hooks/cb_api/useLookupApi';
@@ -27,11 +29,15 @@ export const MeasurementsButton = (props: IMeasurementsButtonProps) => {
     <>
       <Button
         color="primary"
-        variant="contained"
+        variant="outlined"
         data-testid="observation-measurements-button"
         onClick={() => setOpen(true)}
-        autoFocus>
-        Manage Columns
+        startIcon={
+          <Icon path={mdiPlus} size={0.75} />
+        }
+        aria-label="Add Measurements"
+      >
+        Add Measurements
       </Button>
       <MeasurementsDialog
         open={open}
