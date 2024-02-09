@@ -55,6 +55,9 @@ parameters:
   - name: BIOHUB_TAXON_TSN_PATH
     required: true
     description: API path for BioHub Platform Backbone taxon TSN endpoint. Example "/api/path/to/taxon/tsn".
+  - name: BIOHUB_TAXON_PATH
+    required: true
+    description: API path for BioHub Platform Backbone taxon endpoint. Example "/api/path/to/taxon".
   # BCTW / Critterbase
   - name: CB_API_HOST
     description: API host for the Critterbase service, SIMS API will hit this to retrieve critter metadata. Example "https://critterbase.com".
@@ -228,6 +231,8 @@ objects:
                   value: ${BACKBONE_INTAKE_ENABLED}
                 - name: BIOHUB_TAXON_TSN_PATH
                   value: ${BIOHUB_TAXON_TSN_PATH}
+                - name: BIOHUB_TAXON_PATH
+                  value: ${BIOHUB_TAXON_PATH}
                 # BCTW / Critterbase
                 - name: CB_API_HOST
                   value: ${CB_API_HOST}

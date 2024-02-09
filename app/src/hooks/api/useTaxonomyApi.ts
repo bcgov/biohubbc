@@ -1,12 +1,13 @@
-import { AxiosInstance } from 'axios';
 import { useConfigContext } from 'hooks/useContext';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import qs from 'qs';
 import useAxios from './useAxios';
 
-const useTaxonomyApi = (axios: AxiosInstance) => {
+const useTaxonomyApi = () => {
   const config = useConfigContext();
   const apiAxios = useAxios(config.BACKBONE_PUBLIC_API_HOST);
+
+  console.log({ config })
 
   /**
    * Searches for taxon records based on ITIS TSNs.
@@ -15,7 +16,7 @@ const useTaxonomyApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<ITaxonomy[]>}
    */
   const getSpeciesFromIds = async (tsns: number[]): Promise<ITaxonomy[]> => {
-    const { data } = await axios.get<{ searchResponse: ITaxonomy[] }>(config.BIOHUB_TAXON_TSN_PATH, {
+    const { data } = await apiAxios.get<{ searchResponse: ITaxonomy[] }>(config.BIOHUB_TAXON_TSN_PATH, {
       params: { tsn: qs.stringify(tsns) },
       paramsSerializer: (params) => {
         return qs.stringify(params);
