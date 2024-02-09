@@ -91,7 +91,8 @@ const phases = {
     replicasMax: (isStaticDeployment && '2') || '1',
     biohubFeatureFlag: 'true',
     backbonePublicApiHost: 'https://api-dev-biohub-platform.apps.silver.devops.gov.bc.ca',
-    biohubTaxonPath: '/api/taxonomy/taxon'
+    biohubTaxonPath: '/api/taxonomy/taxon',
+    biohubTaxonTsnPath: '/api/taxonomy/taxon/tsn'
   },
   test: {
     namespace: 'af2668-test',
@@ -117,7 +118,8 @@ const phases = {
     replicasMax: '3',
     biohubFeatureFlag: 'false',
     backbonePublicApiHost: 'https://api-test-biohub-platform.apps.silver.devops.gov.bc.ca',
-    biohubTaxonPath: '/api/taxonomy/taxon'
+    biohubTaxonPath: '/api/taxonomy/taxon',
+    biohubTaxonTsnPath: '/api/taxonomy/taxon/tsn'
   },
   prod: {
     namespace: 'af2668-prod',
@@ -143,7 +145,8 @@ const phases = {
     replicasMax: '3',
     biohubFeatureFlag: 'false',
     backbonePublicApiHost: 'https://api-biohub-platform.apps.silver.devops.gov.bc.ca',
-    biohubTaxonPath: '/api/taxonomy/taxon'
+    biohubTaxonPath: '/api/taxonomy/taxon',
+    biohubTaxonTsnPath: '/api/taxonomy/taxon/tsn'
   }
 };
 

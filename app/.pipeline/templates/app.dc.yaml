@@ -57,6 +57,8 @@ parameters:
     description: Backbone API host for application frontend
   - name: REACT_APP_BIOHUB_TAXON_PATH
     description: Taxon path for biohub
+  - name: REACT_APP_BIOHUB_TAXON_TSN_PATH
+    description: Taxon TSN path for biohub
   - name: CPU_REQUEST
     value: '50m'
   - name: CPU_LIMIT
@@ -159,6 +161,8 @@ objects:
                   value: ${REACT_APP_BACKBONE_PUBLIC_API_HOST}
                 - name: REACT_APP_BIOHUB_TAXON_PATH
                   value: ${REACT_APP_BIOHUB_TAXON_PATH}
+                - name: REACT_APP_BIOHUB_TAXON_TSN_PATH
+                  value: ${REACT_APP_BIOHUB_TAXON_TSN_PATH}
               image: ' '
               imagePullPolicy: Always
               ports:

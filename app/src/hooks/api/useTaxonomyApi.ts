@@ -15,7 +15,7 @@ const useTaxonomyApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<ITaxonomy[]>}
    */
   const getSpeciesFromIds = async (tsns: number[]): Promise<ITaxonomy[]> => {
-    const { data } = await axios.get<{ searchResponse: ITaxonomy[] }>(`/api/taxonomy/species/list`, {
+    const { data } = await axios.get<{ searchResponse: ITaxonomy[] }>(config.BIOHUB_TAXON_TSN_PATH, {
       params: { tsn: qs.stringify(tsns) },
       paramsSerializer: (params) => {
         return qs.stringify(params);
