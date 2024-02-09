@@ -14,7 +14,7 @@ const SpeciesCard = (props: ISpeciesCard) => {
           {props.name}
         </Typography>
       </Box>
-      <Box my={0.25}>
+      <Box>
         <Typography variant="subtitle2" color="textSecondary">
           {subTitle}
         </Typography>

@@ -16,7 +16,7 @@ const UserCard: React.FC<IUserCard> = (props) => {
           {props.name}
         </Typography>
       </Box>
-      <Box my={0.25}>
+      <Box>
         <Typography variant="subtitle2" color="textSecondary">
           {subTitle}
         </Typography>

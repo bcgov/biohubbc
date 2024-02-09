@@ -19,6 +19,7 @@ const SpeciesSelectedCard = (props: ISpeciesSelectedCardProps) => {
   return (
     <Box mt={1} className="speciesItemContainer">
       <Paper
+        variant="outlined"
         className={clsx({ '--error': error })}
         sx={{
           background: grey[100],
