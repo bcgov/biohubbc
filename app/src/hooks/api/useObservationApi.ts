@@ -1,7 +1,7 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
 import {
   IObservationRecord,
-  IObservationTableRow,
+  IStandardObservationColumns,
   ISupplementaryObservationData
 } from 'contexts/observationsTableContext';
 import {
@@ -9,6 +9,17 @@ import {
   IGetSurveyObservationsResponse
 } from 'interfaces/useObservationApi.interface';
 import { ApiPaginationOptions } from 'types/misc';
+
+export interface IMeasurementColumnToSave {
+  id: string;
+  field: string;
+  value: string | number;
+}
+
+export interface IObservationTableRowToSave {
+  standardColumns: IStandardObservationColumns;
+  measurementColumns: IMeasurementColumnToSave[];
+}
 
 /**
  * Returns a set of supported api methods for working with observations.
@@ -22,14 +33,15 @@ const useObservationApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {IObservationTableRow[]} surveyObservations
-   * @return {*}
+   * @param {IObservationTableRowToSave[]} surveyObservations
+   * @return {*}  {Promise<IObservationRecord[]>}
    */
   const insertUpdateObservationRecords = async (
     projectId: number,
     surveyId: number,
-    surveyObservations: IObservationTableRow[]
+    surveyObservations: IObservationTableRowToSave[]
   ): Promise<IObservationRecord[]> => {
+    // TODO `IObservationRecord[]` might not be the actual return value once measurements are being returned
     const { data } = await axios.put<IGetSurveyObservationsResponse>(
       `/api/project/${projectId}/survey/${surveyId}/observations`,
       { surveyObservations }

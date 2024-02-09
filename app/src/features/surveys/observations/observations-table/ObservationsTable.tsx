@@ -117,7 +117,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     ObservationTimeColDef({ hasError: observationsTableContext.hasError }),
     ObservationLatitudeColDef({ hasError: observationsTableContext.hasError }),
     ObservationLongitudeColDef({ hasError: observationsTableContext.hasError }),
-    ...observationsTableContext.additionalColumns,
+    ...observationsTableContext.additionalColumns.map((item) => item.colDef),
     ObservationActionsColDef()
   ];
 

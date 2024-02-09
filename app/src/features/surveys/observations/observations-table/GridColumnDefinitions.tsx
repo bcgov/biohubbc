@@ -505,7 +505,7 @@ export const ObservationQuantitativeMeasurementColDef = (props: {
   const { measurement, hasError } = props;
 
   return {
-    field: measurement.measurementName,
+    field: measurement.uuid,
     headerName: measurement.measurementName,
     editable: true,
     hideable: true,
