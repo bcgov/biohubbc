@@ -54,6 +54,11 @@ export interface IObservationRecordWithSamplingData {
   longitude: number | null;
 }
 
+export interface IObservationRecordWithSamplingDataWithAttributes extends IObservationRecordWithSamplingData {
+  subcount: number;
+  observation_subcount_attributes: string[]
+}
+
 export interface ISupplementaryObservationData {
   observationCount: number;
 }
