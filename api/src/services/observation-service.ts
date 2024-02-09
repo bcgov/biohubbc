@@ -23,6 +23,7 @@ import {
   validateWorksheetHeaders
 } from '../utils/xlsx-utils/worksheet-utils';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
+import { CritterbaseService } from './critterbase-service';
 import { DBService } from './db-service';
 
 const defaultLog = getLogger('services/observation-service');
@@ -150,10 +151,22 @@ export class ObservationService extends DBService {
     surveyObservations: ObservationRecordWithSamplingDataWithAttributes[];
     supplementaryObservationData: ObservationSupplementaryData;
   }> {
+    const service = new CritterbaseService({
+      keycloak_guid: '',
+      username: ''
+    });
     const surveyObservations = await this.observationRepository.getSurveyObservationsWithSamplingData(
       surveyId,
       pagination
     );
+
+    // fetch data from critterbase
+    const attribute_ids = surveyObservations
+      .flatMap((item) => item.observation_subcount_attributes)
+      .filter((item) => item !== null);
+
+    service.getAttributes(attribute_ids);
+
     const supplementaryObservationData = await this.getSurveyObservationsSupplementaryData(surveyId);
 
     return { surveyObservations, supplementaryObservationData };

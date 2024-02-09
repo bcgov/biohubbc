@@ -300,4 +300,9 @@ export class CritterbaseService {
     const response = await this.axiosInstance.post(SIGNUP_ENDPOINT);
     return response.data;
   }
+
+  async getAttributes(ids: (string | null)[]): Promise<any> {
+    const response = await this.axiosInstance.post('', ids);
+    return response.data;
+  }
 }
