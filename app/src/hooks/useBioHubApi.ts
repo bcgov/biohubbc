@@ -32,7 +32,7 @@ export const useBiohubApi = () => {
 
   const projectParticipants = useProjectParticipationApi(apiAxios);
 
-  const taxonomy = useTaxonomyApi(apiAxios);
+  const taxonomy = useTaxonomyApi();
 
   const survey = useSurveyApi(apiAxios);
 
