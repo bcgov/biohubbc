@@ -53,8 +53,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
   const codesContext = useContext(CodesContext);
   const hasLoadedCodes = Boolean(codesContext.codesDataLoader.data);
 
-  const apiRef = observationsTableContext._muiDataGridApiRef;
-
   const isLoading = useMemo(() => {
     return [
       observationsContext.observationsDataLoader.isLoading && !observationsContext.observationsDataLoader.hasLoaded,
@@ -117,7 +115,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     ObservationTimeColDef({ hasError: observationsTableContext.hasError }),
     ObservationLatitudeColDef({ hasError: observationsTableContext.hasError }),
     ObservationLongitudeColDef({ hasError: observationsTableContext.hasError }),
-    ...observationsTableContext.additionalColumns.map((item) => item.colDef),
+    ...observationsTableContext.measurementColumns.map((item) => item.colDef),
     ObservationActionsColDef()
   ];
 
@@ -129,7 +127,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         checkboxSelection
         disableRowSelectionOnClick
         rowHeight={56}
-        apiRef={apiRef}
+        apiRef={observationsTableContext._muiDataGridApiRef}
         editMode="row"
         columns={observationColumns}
         rows={observationsTableContext.rows}

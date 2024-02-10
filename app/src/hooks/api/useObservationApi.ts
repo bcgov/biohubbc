@@ -10,7 +10,7 @@ import {
 } from 'interfaces/useObservationApi.interface';
 import { ApiPaginationOptions } from 'types/misc';
 
-export interface IMeasurementColumnToSave {
+export interface MeasurementColumnToSave {
   id: string;
   field: string;
   value: string | number;
@@ -18,7 +18,7 @@ export interface IMeasurementColumnToSave {
 
 export interface IObservationTableRowToSave {
   standardColumns: IStandardObservationColumns;
-  measurementColumns: IMeasurementColumnToSave[];
+  measurementColumns: MeasurementColumnToSave[];
 }
 
 /**

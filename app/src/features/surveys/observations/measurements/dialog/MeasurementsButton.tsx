@@ -32,11 +32,8 @@ export const MeasurementsButton = (props: IMeasurementsButtonProps) => {
         variant="outlined"
         data-testid="observation-measurements-button"
         onClick={() => setOpen(true)}
-        startIcon={
-          <Icon path={mdiPlus} size={0.75} />
-        }
-        aria-label="Add Measurements"
-      >
+        startIcon={<Icon path={mdiPlus} size={0.75} />}
+        aria-label="Add Measurements">
         Add Measurements
       </Button>
       <MeasurementsDialog

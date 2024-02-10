@@ -5,6 +5,7 @@ import { Checkbox, FormControlLabel, List, ListItem, ListItemButton, ListItemTex
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
+import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -14,14 +15,13 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import grey from '@mui/material/colors/grey';
 import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
 import FileUploadDialog from 'components/dialog/FileUploadDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
 import { ObservationsTableI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
-import { IAdditionalColumn, ObservationsTableContext } from 'contexts/observationsTableContext';
+import { MeasurementColumn, ObservationsTableContext } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { MeasurementsButton } from 'features/surveys/observations/measurements/dialog/MeasurementsButton';
 import {
@@ -40,13 +40,18 @@ import { pluralize as p } from 'utils/Utils';
 const SIMS_OBSERVATIONS_HIDDEN_COLUMNS = 'SIMS_OBSERVATIONS_HIDDEN_COLUMNS';
 
 const ObservationComponent = () => {
+  const observationsTableContext = useContext(ObservationsTableContext);
+
+  const { hasUnsavedChanges, validationModel, _muiDataGridApiRef } = observationsTableContext;
+  const numSelectedRows = observationsTableContext.rowSelectionModel.length;
+
   const [showImportDialog, setShowImportDialog] = useState<boolean>(false);
   const [columnVisibilityMenuAnchorEl, setColumnVisibilityMenuAnchorEl] = useState<Element | null>(null);
   const [hiddenFields, setHiddenFields] = useState<string[]>([]);
   const [processingRecords, setProcessingRecords] = useState<boolean>(false);
   const [contextMenuAnchorEl, setContextMenuAnchorEl] = useState<Element | null>(null);
   const [showConfirmRemoveAllDialog, setShowConfirmRemoveAllDialog] = useState<boolean>(false);
-  const observationsTableContext = useContext(ObservationsTableContext);
+
   const surveyContext = useContext(SurveyContext);
   const biohubApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
@@ -100,11 +105,11 @@ const ObservationComponent = () => {
       return;
     }
 
-    const additionalColumns: IAdditionalColumn[] = [];
+    const measurementColumns: MeasurementColumn[] = [];
 
     for (const measurement of measurements) {
       if (measurement.measurementType === 'Quantitative') {
-        additionalColumns.push({
+        measurementColumns.push({
           measuremnt: measurement,
           colDef: ObservationQuantitativeMeasurementColDef({
             measurement: measurement,
@@ -114,7 +119,7 @@ const ObservationComponent = () => {
       }
 
       if (measurement.measurementType === 'Qualitative') {
-        additionalColumns.push({
+        measurementColumns.push({
           measuremnt: measurement,
           colDef: ObservationQualitativeMeasurementColDef({
             measurement: measurement,
@@ -125,7 +130,7 @@ const ObservationComponent = () => {
       }
     }
 
-    observationsTableContext.addAdditionalColumns(additionalColumns);
+    observationsTableContext.addMeasurementColumns(measurementColumns);
   };
 
   /**
@@ -146,7 +151,7 @@ const ObservationComponent = () => {
     return observationsTableContext.getColumns().filter((column) => {
       return column && column.type && !['actions', 'checkboxSelection'].includes(column.type) && column.hideable;
     });
-  }, [observationsTableContext.getColumns]);
+  }, [observationsTableContext]);
 
   /**
    * Toggles whether all columns are hidden or visible.
@@ -157,17 +162,17 @@ const ObservationComponent = () => {
     } else {
       setHiddenFields(hideableColumns.map((column) => column.field));
     }
-  }, [hiddenFields]);
+  }, [hiddenFields, hideableColumns]);
 
   /**
    * Whenever hidden fields updates, trigger an update in visiblity for the table.
    */
   useEffect(() => {
-    _muiDataGridApiRef.current.setColumnVisibilityModel({
+    _muiDataGridApiRef?.current?.setColumnVisibilityModel({
       ...Object.fromEntries(hideableColumns.map((column) => [column.field, true])),
       ...Object.fromEntries(hiddenFields.map((field) => [field, false]))
     });
-  }, [hideableColumns, hiddenFields]);
+  }, [hideableColumns, hiddenFields, _muiDataGridApiRef]);
 
   /**
    * On first mount, load visibility state from session storage, if it exists.
@@ -193,9 +198,6 @@ const ObservationComponent = () => {
   useEffect(() => {
     sessionStorage.setItem(SIMS_OBSERVATIONS_HIDDEN_COLUMNS, JSON.stringify(hiddenFields));
   }, [hiddenFields]);
-
-  const { hasUnsavedChanges, validationModel, _muiDataGridApiRef } = observationsTableContext;
-  const numSelectedRows = observationsTableContext.rowSelectionModel.length;
 
   return (
     <>
@@ -299,18 +301,31 @@ const ObservationComponent = () => {
                   id="survey-observations-table-actions-menu"
                   anchorEl={columnVisibilityMenuAnchorEl}
                   open={Boolean(columnVisibilityMenuAnchorEl)}
-                  onClose={handleCloseColumnVisibilityMenu}
-                >
+                  onClose={handleCloseColumnVisibilityMenu}>
                   <Box>
-
-                    <Stack flexDirection="row" alignItems="center" justifyContent="space-between" gap={10} px={2.5} py={2}>
-                      <Typography component="div" variant="body2" fontWeight={700}>CONFIGURE OBSERVATIONS</Typography>
+                    <Stack
+                      flexDirection="row"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      gap={10}
+                      px={2.5}
+                      py={2}>
+                      <Typography component="div" variant="body2" fontWeight={700}>
+                        CONFIGURE OBSERVATIONS
+                      </Typography>
                       <MeasurementsButton onSave={handleMeasurements} />
                     </Stack>
 
                     <Divider flexItem />
 
-                    <Stack flexDirection="row" alignItems="center" justifyContent="space-between" py={0.5} pl={2.5} pr={1.5} minWidth={400}>
+                    <Stack
+                      flexDirection="row"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      py={0.5}
+                      pl={2.5}
+                      pr={1.5}
+                      minWidth={400}>
                       <FormControlLabel
                         control={
                           <Checkbox
@@ -319,7 +334,11 @@ const ObservationComponent = () => {
                             onClick={() => toggleShowHideAll()}
                           />
                         }
-                        label={<Typography variant="body2" sx={{ ml: 1 }}>Show/Hide all</Typography>}
+                        label={
+                          <Typography variant="body2" sx={{ ml: 1 }}>
+                            Show/Hide all
+                          </Typography>
+                        }
                       />
                     </Stack>
 
@@ -333,19 +352,21 @@ const ObservationComponent = () => {
                         maxHeight: { sm: 300, md: 500 },
                         overflowY: 'auto'
                       }}
-                      disablePadding
-                    >
+                      disablePadding>
                       {hideableColumns.map((column) => {
                         return (
-                          <ListItem key={column.field}
+                          <ListItem
+                            key={column.field}
                             secondaryAction={
                               <IconButton edge="end" aria-label="Remove measurement">
                                 <Icon path={mdiTrashCanOutline} size={1} />
                               </IconButton>
                             }
-                            disablePadding
-                          >
-                            <ListItemButton dense onClick={() => toggleColumnVisibility(column.field)} sx={{ background: grey[50] }}>
+                            disablePadding>
+                            <ListItemButton
+                              dense
+                              onClick={() => toggleColumnVisibility(column.field)}
+                              sx={{ background: grey[50] }}>
                               <ListItemIcon>
                                 <Checkbox edge="start" checked={!hiddenFields.includes(column.field)} />
                               </ListItemIcon>
@@ -355,7 +376,6 @@ const ObservationComponent = () => {
                         );
                       })}
                     </List>
-
                   </Box>
                 </Popover>
               </>

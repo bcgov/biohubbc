@@ -69,7 +69,7 @@ export const getCritterbaseProxyMiddleware = () =>
 
       await authorizeAndAuthenticate(req);
 
-      let matchRoutePrefix = new RegExp(`/api/critterbase(/?)(.*)`);
+      const matchRoutePrefix = new RegExp(`/api/critterbase(/?)(.*)`);
       return path.replace(matchRoutePrefix, '/$2');
     },
     onProxyReq: (client, req, res, options) => {
