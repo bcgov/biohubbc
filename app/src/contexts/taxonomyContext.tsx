@@ -2,13 +2,9 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';
 import { ITaxonomy } from 'interfaces/useTaxonomy.interface';
 import { get as getProperty, has as hasProperty } from 'lodash';
-import { createContext, PropsWithChildren, useCallback, useMemo, useRef, useState } from 'react';
+import { createContext, PropsWithChildren, useCallback, useRef, useState } from 'react';
 
 export interface ITaxonomyContext {
-  /**
-   * Indicates whether or not the taxonomy context is currently fetching data.
-   */
-  isLoading: boolean;
   /**
    * Fetches taxonomy data for the given IDs. For each ID, if the results of its query
    * is already in the cache, it is immediately available. Otherwise, `null` is
@@ -22,7 +18,6 @@ export interface ITaxonomyContext {
 }
 
 export const TaxonomyContext = createContext<ITaxonomyContext>({
-  isLoading: false,
   getCachedSpeciesTaxonomyById: () => null,
   cacheSpeciesTaxonomyByIds: () => Promise.resolve()
 });
@@ -35,15 +30,12 @@ export const TaxonomyContextProvider = (props: PropsWithChildren) => {
   const [_taxonomyCache, _setTaxonomyCache] = useState<Record<number, ITaxonomy | null>>({});
   const _dispatchedIds = useRef<Set<number>>(new Set<number>([]));
 
-  const [isLoading, setIsLoading] = useState(false);
-
   const cacheSpeciesTaxonomyByIds = useCallback(
     async (ids: number[]) => {
       if (!isMounted()) {
         return;
       }
 
-      setIsLoading(true);
       ids.forEach((id) => _dispatchedIds.current.add(id));
       await biohubApi.taxonomy
         .getSpeciesFromIds(ids)
@@ -65,8 +57,6 @@ export const TaxonomyContextProvider = (props: PropsWithChildren) => {
           if (!isMounted()) {
             return;
           }
-
-          setIsLoading(false);
         });
     },
     [biohubApi.taxonomy, isMounted]
@@ -92,14 +82,10 @@ export const TaxonomyContextProvider = (props: PropsWithChildren) => {
     [_taxonomyCache, cacheSpeciesTaxonomyByIds]
   );
 
-  const taxonomyContext: ITaxonomyContext = useMemo(
-    () => ({
-      isLoading,
-      getCachedSpeciesTaxonomyById,
-      cacheSpeciesTaxonomyByIds
-    }),
-    [isLoading, getCachedSpeciesTaxonomyById, cacheSpeciesTaxonomyByIds]
-  );
+  const taxonomyContext: ITaxonomyContext = {
+    getCachedSpeciesTaxonomyById,
+    cacheSpeciesTaxonomyByIds
+  };
 
   return <TaxonomyContext.Provider value={taxonomyContext}>{props.children}</TaxonomyContext.Provider>;
 };

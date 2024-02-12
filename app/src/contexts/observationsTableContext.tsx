@@ -209,7 +209,7 @@ export const ObservationsTableContext = createContext<IObservationsTableContext>
   observationCount: 0,
   setObservationCount: () => undefined,
   updatePaginationModel: () => undefined,
-  paginationModel: { page: 0, pageSize: 0 },
+  paginationModel: { page: 1, pageSize: 5 },
   updateSortModel: () => undefined,
   sortModel: [],
   measurementColumns: []
@@ -236,8 +236,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   const [addedRowIds, setAddedRowIds] = useState<string[]>([]);
   // True if the rows are in the process of transitioning from edit to view mode
   const [_isStoppingEdit, _setIsStoppingEdit] = useState(false);
-  // True if the taxonomy cache has been initialized
-  const [hasInitializedTaxonomyCache, setHasInitializedTaxonomyCache] = useState(false);
+  // Status of the taxonomy cache
+  const [taxonomyCacheStatus, setTaxonomyCacheStatus] = useState({ isInitializing: false, isInitialized: false });
   // True if the records are in the process of being saved to the server
   const [_isSaving, _setIsSaving] = useState(false);
   // Stores the current count of observations for this survey
@@ -685,8 +685,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   );
 
   const isLoading: boolean = useMemo(() => {
-    return !hasInitializedTaxonomyCache || observationsContext.observationsDataLoader.isLoading;
-  }, [hasInitializedTaxonomyCache, observationsContext.observationsDataLoader.isLoading]);
+    return !taxonomyCacheStatus.isInitialized || observationsContext.observationsDataLoader.isLoading;
+  }, [observationsContext.observationsDataLoader.isLoading, taxonomyCacheStatus.isInitialized]);
 
   const isSaving: boolean = useMemo(() => {
     return _isSaving || _isStoppingEdit;
@@ -723,16 +723,17 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    * Runs onces on initial page load.
    */
   useEffect(() => {
-    if (taxonomyContext.isLoading || hasInitializedTaxonomyCache) {
+    if (taxonomyCacheStatus.isInitializing || taxonomyCacheStatus.isInitialized) {
       // Taxonomy cache is currently loading, or has already loaded
       return;
     }
 
     // Only attempt to initialize the cache once
-    setHasInitializedTaxonomyCache(true);
+    setTaxonomyCacheStatus({ isInitializing: true, isInitialized: false });
 
     if (!observationsContext.observationsDataLoader.data?.surveyObservations.length) {
       // No taxonomy records to fetch and cache
+      setTaxonomyCacheStatus({ isInitializing: false, isInitialized: true });
       return;
     }
 
@@ -747,10 +748,16 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     );
 
     // Fetch and cache all unique taxonomic IDs
-    taxonomyContext.cacheSpeciesTaxonomyByIds(uniqueTaxonomicIds).catch(() => {});
+    taxonomyContext
+      .cacheSpeciesTaxonomyByIds(uniqueTaxonomicIds)
+      .catch(() => {})
+      .finally(() => {
+        setTaxonomyCacheStatus({ isInitializing: false, isInitialized: true });
+      });
   }, [
-    hasInitializedTaxonomyCache,
     observationsContext.observationsDataLoader.data?.surveyObservations,
+    taxonomyCacheStatus.isInitialized,
+    taxonomyCacheStatus.isInitializing,
     taxonomyContext
   ]);
 
