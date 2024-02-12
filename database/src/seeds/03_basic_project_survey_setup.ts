@@ -8,7 +8,7 @@ const PROJECT_SEEDER_USER_IDENTIFIER = process.env.PROJECT_SEEDER_USER_IDENTIFIE
 // TODO
 const focalTaxonIdOptions = [
   { itis_tsn: 202384, itis_scientific_name: 'Ursus arctos nelsoni' } // Mexican grizzly bear :^)
-]; 
+];
 
 // TODO
 const ancillaryTaxonIdOptions = [
@@ -237,11 +237,11 @@ const insertSurveyFocalSpeciesData = (surveyId: number) => {
       'Y'
     );
   `;
-}
+};
 
 const insertSurveyAncillarySpeciesData = (surveyId: number) => {
-  const ancillarySpecies = ancillaryTaxonIdOptions[Math.floor(Math.random() * ancillaryTaxonIdOptions.length)]
-  return`
+  const ancillarySpecies = ancillaryTaxonIdOptions[Math.floor(Math.random() * ancillaryTaxonIdOptions.length)];
+  return `
     INSERT into study_species
       (
         survey_id,
@@ -254,7 +254,7 @@ const insertSurveyAncillarySpeciesData = (surveyId: number) => {
       'N'
     );
   `;
-}
+};
 
 /**
  * SQL to insert Survey permit data
