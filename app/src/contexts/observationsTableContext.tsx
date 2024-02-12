@@ -815,7 +815,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
           measurementColumns.push({
             id: matchingMeasurement.uuid,
             field: matchingMeasurement.measurementName,
-            value: value as any
+            value: (value as any) || null
           });
         }
       });

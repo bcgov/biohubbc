@@ -13,7 +13,7 @@ import { ApiPaginationOptions } from 'types/misc';
 export interface MeasurementColumnToSave {
   id: string;
   field: string;
-  value: string | number;
+  value: string | number | null;
 }
 
 export interface IObservationTableRowToSave {

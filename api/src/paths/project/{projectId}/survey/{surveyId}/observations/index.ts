@@ -362,7 +362,8 @@ PUT.apiDoc = {
                           type: 'string'
                         },
                         value: {
-                          oneOf: [{ type: 'number' }, { type: 'string' }]
+                          oneOf: [{ type: 'number' }, { type: 'string' }],
+                          nullable: true
                         }
                       }
                     }

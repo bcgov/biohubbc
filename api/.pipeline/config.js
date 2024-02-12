@@ -125,7 +125,7 @@ const phases = {
     s3KeyPrefix: 'sims',
     tz: config.timezone.api,
     sso: config.sso.test,
-    logLevel: 'info',
+    logLevel: (isStaticDeployment && 'info') || 'debug',
     nodeOptions: '--max_old_space_size=2250', // 75% of memoryLimit (bytes)
     cpuRequest: '50m',
     cpuLimit: '1000m',
