@@ -41,6 +41,8 @@ const SurveySpatialData = () => {
       const deploymentIds = surveyContext.deploymentDataLoader.data.map((item) => item.deployment_id);
       telemetryContext.telemetryDataLoader.refresh(deploymentIds);
     }
+    // Should not re-run this effect on `telemetryContext.telemetryDataLoader.refresh` changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [surveyContext.deploymentDataLoader.data]);
 
   // Fetch/cache all taxonomic data for the observations
