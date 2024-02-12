@@ -76,8 +76,8 @@ const StaticLayers = (props: PropsWithChildren<IStaticLayersProps>) => {
                         <Popup
                           key={`static-feature-popup-${id}`}
                           keepInView={false}
-                          closeButton={false}
-                          autoPan={false}
+                          closeButton={true}
+                          autoPan={true}
                           {...item.PopupProps}>
                           {item.popup}
                         </Popup>
