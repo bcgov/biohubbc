@@ -7,8 +7,6 @@ const useTaxonomyApi = () => {
   const config = useConfigContext();
   const apiAxios = useAxios(config.BACKBONE_PUBLIC_API_HOST);
 
-  console.log({ config })
-
   /**
    * Searches for taxon records based on ITIS TSNs.
    *
