@@ -53,8 +53,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
   const codesContext = useContext(CodesContext);
   const hasLoadedCodes = Boolean(codesContext.codesDataLoader.data);
 
-  const apiRef = observationsTableContext._muiDataGridApiRef;
-
   const isLoading = useMemo(() => {
     return [
       observationsContext.observationsDataLoader.isLoading && !observationsContext.observationsDataLoader.hasLoaded,
@@ -87,11 +85,11 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     .flat(2);
   const sampleMethodOptions: ISampleMethodOption[] = hasLoadedCodes
     ? surveySampleMethods.map((method) => ({
-        survey_sample_method_id: method.survey_sample_method_id,
-        survey_sample_site_id: method.survey_sample_site_id,
-        sample_method_name:
-          getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_lookup_id) ?? ''
-      }))
+      survey_sample_method_id: method.survey_sample_method_id,
+      survey_sample_site_id: method.survey_sample_site_id,
+      sample_method_name:
+        getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_lookup_id) ?? ''
+    }))
     : [];
 
   // Collect sample periods
@@ -102,9 +100,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     .map((samplePeriod: IGetSamplePeriodRecord) => ({
       survey_sample_period_id: samplePeriod.survey_sample_period_id,
       survey_sample_method_id: samplePeriod.survey_sample_method_id,
-      sample_period_name: `${samplePeriod.start_date} ${samplePeriod.start_time || ''} - ${samplePeriod.end_date} ${
-        samplePeriod.end_time || ''
-      }`
+      sample_period_name: `${samplePeriod.start_date} ${samplePeriod.start_time || ''} - ${samplePeriod.end_date} ${samplePeriod.end_time || ''
+        }`
     }));
 
   const observationColumns: GridColDef<IObservationTableRow>[] = [
@@ -117,7 +114,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     ObservationTimeColDef({ hasError: observationsTableContext.hasError }),
     ObservationLatitudeColDef({ hasError: observationsTableContext.hasError }),
     ObservationLongitudeColDef({ hasError: observationsTableContext.hasError }),
-    ...observationsTableContext.additionalColumns.map((item) => item.colDef),
+    ...observationsTableContext.measurementColumns.map((item) => item.colDef),
     ObservationActionsColDef()
   ];
 
@@ -129,13 +126,13 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         checkboxSelection
         disableRowSelectionOnClick
         rowHeight={56}
-        apiRef={apiRef}
+        apiRef={observationsTableContext._muiDataGridApiRef}
         editMode="row"
         columns={observationColumns}
         rows={observationsTableContext.rows}
         rowCount={observationsTableContext.observationCount}
         paginationModel={observationsTableContext.paginationModel}
-        pageSizeOptions={[10, 15, 20]}
+        pageSizeOptions={[25, 50, 100]}
         onPaginationModelChange={(model) => observationsTableContext.updatePaginationModel(model)}
         paginationMode="server"
         sortingMode="server"

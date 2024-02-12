@@ -137,26 +137,24 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
               <Box>
                 <Typography variant="body2">
                   <em>{renderOption.scientificName}</em>&nbsp;
-                  {renderOption.commonName ? (
-                    <span>({renderOption.commonName})</span>
-                  ) : (
-                    ''
-                  )}
+                  {renderOption.commonName ? <span>({renderOption.commonName})</span> : ''}
                 </Typography>
               </Box>
               <Box>
                 <Typography component="div" variant="body1" fontWeight={700}>
                   {renderOption.measurementName}
                 </Typography>
-                <Typography component="div" variant="subtitle2" color="textSecondary"
+                <Typography
+                  component="div"
+                  variant="subtitle2"
+                  color="textSecondary"
                   sx={{
                     display: '-webkit-box',
                     WebkitLineClamp: '2',
                     WebkitBoxOrient: 'vertical',
                     overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
-                >
+                    textOverflow: 'ellipsis'
+                  }}>
                   {renderOption.measurementDescription}
                 </Typography>
               </Box>

@@ -42,9 +42,9 @@ export type Measurement = {
   measurementType: 'Quantitative' | 'Qualitative';
   measurementDescription: string;
 } & (
-    | { measurementType: 'Quantitative'; measurementOptions?: MeasurementOption[] }
-    | { measurementType: 'Qualitative'; measurementOptions: MeasurementOption[] }
-  );
+  | { measurementType: 'Quantitative'; measurementOptions?: MeasurementOption[] }
+  | { measurementType: 'Qualitative'; measurementOptions: MeasurementOption[] }
+);
 
 const useLookupApi = (axios: AxiosInstance) => {
   const getSelectOptions = async ({ route, param, query, orderBy }: SelectOptionsProps) => {
@@ -132,7 +132,8 @@ const useLookupApi = (axios: AxiosInstance) => {
         measurementId: 4,
         measurementType: 'Quantitative',
         measurementName: 'Measurement Name',
-        measurementDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+        measurementDescription:
+          'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
       }
     ];
   };

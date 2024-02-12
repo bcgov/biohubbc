@@ -34,7 +34,8 @@ export const MeasurementsListCard = (props: IMeasurementsListCardProps) => {
   const { onRemove } = props;
 
   return (
-    <Card component={Stack}
+    <Card
+      component={Stack}
       variant="outlined"
       flexDirection="row"
       alignItems="center"
@@ -48,27 +49,25 @@ export const MeasurementsListCard = (props: IMeasurementsListCardProps) => {
         <Box>
           <Typography variant="body2">
             <em>{props.measurement.scientificName}</em>&nbsp;
-            {props.measurement.commonName ? (
-              <span>({props.measurement.commonName})</span>
-            ) : (
-              ''
-            )}
+            {props.measurement.commonName ? <span>({props.measurement.commonName})</span> : ''}
           </Typography>
         </Box>
         <Box>
           <Typography component="div" variant="body1" fontWeight={700}>
             {props.measurement.measurementName}
           </Typography>
-          <Typography component="div" variant="subtitle2" color="textSecondary"
+          <Typography
+            component="div"
+            variant="subtitle2"
+            color="textSecondary"
             sx={{
               display: '-webkit-box',
               WebkitLineClamp: '2',
               WebkitBoxOrient: 'vertical',
               maxWidth: '80ch',
               overflow: 'hidden',
-              textOverflow: 'ellipsis',
-            }}
-          >
+              textOverflow: 'ellipsis'
+            }}>
             {props.measurement.measurementDescription}
           </Typography>
         </Box>

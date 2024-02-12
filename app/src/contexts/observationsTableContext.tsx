@@ -14,7 +14,7 @@ import { DialogContext } from 'contexts/dialogContext';
 import { ObservationsContext } from 'contexts/observationsContext';
 import { default as dayjs } from 'dayjs';
 import { APIError } from 'hooks/api/useAxios';
-import { IMeasurementColumnToSave, IObservationTableRowToSave } from 'hooks/api/useObservationApi';
+import { IObservationTableRowToSave, MeasurementColumnToSave } from 'hooks/api/useObservationApi';
 import { Measurement } from 'hooks/cb_api/useLookupApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
@@ -58,14 +58,14 @@ export interface IObservationRecordWithSamplingData {
   longitude: number | null;
 }
 
-export interface IAdditionalColumn {
+export type MeasurementColumn = {
   measuremnt: Measurement;
   colDef: GridColDef;
-}
+};
 
 export interface IObservationRecordWithSamplingDataWithAttributes extends IObservationRecordWithSamplingData {
   subcount: number;
-  observation_subcount_attributes: string[]
+  observation_subcount_attributes: string[];
 }
 
 export interface ISupplementaryObservationData {
@@ -103,9 +103,9 @@ export type IObservationsTableContext = {
    */
   getColumns: () => GridStateColDef[];
   /**
-   * Adds columns to the observation table, ignoring duplicates.
+   * Adds measurement columns to the observation table, ignoring duplicates.
    */
-  addAdditionalColumns: (columnsToAdd: IAdditionalColumn[]) => void;
+  addMeasurementColumns: (columnsToAdd: MeasurementColumn[]) => void;
   /**
    * Appends a new blank record to the observation rows
    */
@@ -182,26 +182,26 @@ export type IObservationsTableContext = {
   /**
    * Additional user-added columns that are not part of the default observation table columns.
    */
-  additionalColumns: IAdditionalColumn[];
+  measurementColumns: MeasurementColumn[];
 };
 
 export const ObservationsTableContext = createContext<IObservationsTableContext>({
   _muiDataGridApiRef: null as unknown as React.MutableRefObject<GridApiCommunity>,
   rows: [],
-  setRows: () => {},
+  setRows: () => { },
   getColumns: () => [],
-  addAdditionalColumns: () => undefined,
-  addObservationRecord: () => {},
-  saveObservationRecords: () => {},
+  addMeasurementColumns: () => undefined,
+  addObservationRecord: () => { },
+  saveObservationRecords: () => { },
   deleteObservationRecords: () => undefined,
   deleteSelectedObservationRecords: () => undefined,
   revertObservationRecords: () => undefined,
   refreshObservationRecords: () => Promise.resolve(undefined),
   getSelectedObservationRecords: () => [],
   hasUnsavedChanges: false,
-  onRowEditStart: () => {},
+  onRowEditStart: () => { },
   rowSelectionModel: [],
-  onRowSelectionModelChange: () => {},
+  onRowSelectionModelChange: () => { },
   isSaving: false,
   isLoading: false,
   validationModel: {},
@@ -212,7 +212,7 @@ export const ObservationsTableContext = createContext<IObservationsTableContext>
   paginationModel: { page: 0, pageSize: 0 },
   updateSortModel: () => undefined,
   sortModel: [],
-  additionalColumns: []
+  measurementColumns: []
 });
 
 export const ObservationsTableContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
@@ -244,12 +244,12 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   const [observationCount, setObservationCount] = useState<number>(0);
   // Stores the current validation state of the table
   const [validationModel, setValidationModel] = useState<ObservationTableValidationModel>({});
-  // Stores any additional columns that are not part of the default observation table columns
-  const [additionalColumns, setAdditionalColumns] = useState<IAdditionalColumn[]>([]);
+  // Stores any measurement columns that are not part of the default observation table columns
+  const [measurementColumns, setMeasurementColumns] = useState<MeasurementColumn[]>([]);
   // Pagination State
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
-    pageSize: 10
+    pageSize: 50
   });
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
@@ -261,7 +261,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     setSortModel(model);
   };
 
-  // initial load with pagination values
+  // initial load with pagination valuesF
   useEffect(() => {
     observationsContext.observationsDataLoader.refresh({
       limit: paginationModel.pageSize,
@@ -269,7 +269,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
       page: paginationModel.page + 1
     });
-  }, []);
+    // Should not re-run this effect on `observationsContext.observationsDataLoader` changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paginationModel.page, paginationModel.pageSize]);
 
   // Fetch new rows based on sort/ pagination model changes
   useEffect(() => {
@@ -282,12 +284,14 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
       page: paginationModel.page + 1
     });
+    // Should not re-run this effect on `observationsContext.observationsDataLoader` changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paginationModel, sortModel]);
 
   /**
    * Gets all rows from the table, including values that have been edited in the table.
    */
-  const _getRowsWithEditedValues = (): IObservationTableRow[] => {
+  const _getRowsWithEditedValues = useCallback((): IObservationTableRow[] => {
     const rowValues = Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values()) as IObservationTableRow[];
 
     return rowValues.map((row) => {
@@ -301,20 +305,20 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         {}
       );
     }) as IObservationTableRow[];
-  };
+  }, [_muiDataGridApiRef]);
 
   /**
    * Returns all columns belonging to the observations table.
    */
   const getColumns = useCallback(() => {
     return _muiDataGridApiRef.current.getAllColumns?.() ?? [];
-  }, [_muiDataGridApiRef.current.getAllColumns]);
+  }, [_muiDataGridApiRef]);
 
   /**
    * Adds columns to the observations table, ignoring duplicates.
    */
-  const addAdditionalColumns = useCallback((columnsToAdd: IAdditionalColumn[]) => {
-    setAdditionalColumns((currentColumns) => {
+  const addMeasurementColumns = useCallback((columnsToAdd: MeasurementColumn[]) => {
+    setMeasurementColumns((currentColumns) => {
       const newColumns = columnsToAdd.filter(
         (columnToAdd) =>
           !currentColumns.find((currentColumn) => currentColumn.colDef.field === columnToAdd.colDef.field)
@@ -327,7 +331,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    * Validates all rows belonging to the table. Returns null if validation passes, otherwise
    * returns the validation model
    */
-  const _validateRows = (): ObservationTableValidationModel | null => {
+  const _validateRows = useCallback((): ObservationTableValidationModel | null => {
     const rowValues = _getRowsWithEditedValues();
     const tableColumns = getColumns();
 
@@ -396,7 +400,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     setValidationModel(validation);
 
     return Object.keys(validation).length > 0 ? validation : null;
-  };
+  }, [_getRowsWithEditedValues, getColumns]);
 
   const hasError = useCallback(
     (params: GridCellParams): boolean => {
@@ -606,7 +610,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     // Store ids of rows that were in edit mode
     setModifiedRowIds(editingIdsToSave);
-  }, [_muiDataGridApiRef, _isStoppingEdit, rows]);
+  }, [_isStoppingEdit, _validateRows, _muiDataGridApiRef, rows]);
 
   /**
    * Transition all rows tracked by `modifiedRowIds` to view mode.
@@ -743,7 +747,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     );
 
     // Fetch and cache all unique taxonomic IDs
-    taxonomyContext.cacheSpeciesTaxonomyByIds(uniqueTaxonomicIds).catch(() => {});
+    taxonomyContext.cacheSpeciesTaxonomyByIds(uniqueTaxonomicIds).catch(() => { });
   }, [
     hasInitializedTaxonomyCache,
     observationsContext.observationsDataLoader.data?.surveyObservations,
@@ -788,17 +792,16 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     const rowModels = _muiDataGridApiRef.current.getRowModels();
     const rowValues = Array.from(rowModels, ([_, value]) => value);
 
-    const measurements = additionalColumns.map((item) => item.measuremnt);
+    const measurements = measurementColumns.map((item) => item.measuremnt);
 
     // Build the object expected by the SIMS API
     const rowsToSave = rowValues.map((row) => {
       const standardColumns: IStandardObservationColumns = row as IStandardObservationColumns;
 
-      const measurementColumns: IMeasurementColumnToSave[] = [];
+      const measurementColumns: MeasurementColumnToSave[] = [];
 
       const rowEntries = Object.entries(row);
       rowEntries.forEach(([key, value]) => {
-        console.log(key, value);
         const matchingMeasurement = measurements.find((item) => item.uuid === key);
 
         if (matchingMeasurement) {
@@ -817,7 +820,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     });
 
     _saveRecords(rowsToSave);
-  }, [_muiDataGridApiRef, _saveRecords, _isSaving, _isStoppingEdit, modifiedRowIds, additionalColumns]);
+  }, [_muiDataGridApiRef, _saveRecords, _isSaving, _isStoppingEdit, modifiedRowIds, measurementColumns]);
 
   const observationsTableContext: IObservationsTableContext = useMemo(
     () => ({
@@ -825,7 +828,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       rows,
       setRows,
       getColumns,
-      addAdditionalColumns,
+      addMeasurementColumns,
       addObservationRecord,
       saveObservationRecords,
       deleteObservationRecords,
@@ -847,13 +850,13 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       updateSortModel,
       hasError,
       sortModel,
-      additionalColumns
+      measurementColumns
     }),
     [
       _muiDataGridApiRef,
       rows,
       getColumns,
-      addAdditionalColumns,
+      addMeasurementColumns,
       addObservationRecord,
       saveObservationRecords,
       deleteObservationRecords,
@@ -870,7 +873,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       paginationModel,
       hasError,
       sortModel,
-      additionalColumns
+      measurementColumns
     ]
   );
 
