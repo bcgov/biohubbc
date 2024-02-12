@@ -28,14 +28,6 @@ const TelemetryDeviceForm = (props: ITelemetryDeviceFormProps) => {
     telemetryApi.devices.getDeviceDetails(Number(device.device_id), device.device_make)
   );
 
-  //TODO remove?
-  // const validateDeviceMake = async (value: number | '') => {
-  //   const deviceMake = deviceDetails?.device?.device_make;
-  //   if (device.device_id && deviceMake && deviceMake !== value && mode === ANIMAL_FORM_MODE.ADD) {
-  //     return `The current make for this device is ${deviceMake}`;
-  //   }
-  // };
-  //
   useEffect(() => {
     if (!device.device_id || !device.device_make) {
       return;
