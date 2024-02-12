@@ -1,9 +1,32 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import useTaxonomyApi from './useTaxonomyApi';
+import { ConfigContext, IConfig } from 'contexts/configContext';
+import { PropsWithChildren } from 'react';
+import { renderHook } from '@testing-library/react-hooks';
+import { AuthProvider, AuthProviderProps } from 'react-oidc-context';
+import { act } from '@testing-library/react';
 
 describe('useTaxonomyApi', () => {
   let mock: any;
+
+  const authConfig: AuthProviderProps = {
+    authority: 'authority',
+    client_id: 'client',
+    redirect_uri: 'redirect'
+  };
+
+  const wrapper = ({ children }: PropsWithChildren) => (
+    <AuthProvider {...authConfig}>
+      <ConfigContext.Provider value={{
+        BACKBONE_PUBLIC_API_HOST: 'http://example.com',
+        BIOHUB_TAXON_PATH: '/api/taxonomy/species',
+        BIOHUB_TAXON_TSN_PATH: '/api/taxonomy/species/list',
+      } as IConfig}>
+        {children}
+      </ConfigContext.Provider>
+    </AuthProvider>
+  );
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
@@ -14,23 +37,33 @@ describe('useTaxonomyApi', () => {
   });
 
   it('getSpeciesFromIds works as expected', async () => {
-    const res = [
-      {
-        tsn: '1',
-        commonName: 'something',
-        scientificName: 'something'
-      },
-      {
-        tsn: '2',
-        commonName: 'anything',
-        scientificName: 'anything'
-      }
-    ];
+    const mockResponse = {
+      searchResponse: [
+        {
+          tsn: '1',
+          commonName: 'something',
+          scientificName: 'something'
+        },
+        {
+          tsn: '2',
+          commonName: 'anything',
+          scientificName: 'anything'
+        }
+      ]
+    }
 
-    mock.onGet('/api/taxonomy/species/list').reply(200, res);
+    mock.onGet('/api/taxonomy/species/list').reply(200, mockResponse);
 
-    const result = await useTaxonomyApi().getSpeciesFromIds([1, 2]);
+    const { result, waitFor } = renderHook(() => useTaxonomyApi(), { wrapper });
 
-    expect(result).toEqual(res);
+    await act(async () => {
+      result.current.getSpeciesFromIds([1, 2]);
+
+      await waitFor(() => {
+        result.current.getSpeciesFromIds([1, 2]).then((data) => {
+          expect(data).toEqual(mockResponse.searchResponse);
+        });
+      }, { timeout: 2000 });
+    });
   });
 });
