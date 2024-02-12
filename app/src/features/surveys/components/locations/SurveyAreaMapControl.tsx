@@ -203,10 +203,13 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
         <LayersControl position="bottomright">
           <StaticLayers
             layers={values.locations
-              .filter((item) => !item?.leaflet_id) // filter out user drawn locations
-              .map((item) => {
+              .filter((location) => !location?.leaflet_id) // filter out user drawn locations
+              .map((location, index) => {
                 // Map geojson features into layer objects for leaflet
-                return { layerName: item.name, features: item.geojson.map((geo) => ({ geoJSON: geo })) };
+                return {
+                  layerName: location.name,
+                  features: location.geojson.map((geo) => ({ geoJSON: geo, key: location.uuid }))
+                };
               })}
           />
           <BaseLayerControls />

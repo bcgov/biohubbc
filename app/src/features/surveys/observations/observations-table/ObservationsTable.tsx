@@ -25,8 +25,7 @@ import {
   IGetSamplePeriodRecord
 } from 'interfaces/useSurveyApi.interface';
 import { has } from 'lodash-es';
-import { useCallback, useContext, useEffect, useMemo } from 'react';
-import { useLocation } from 'react-router';
+import { useCallback, useContext, useMemo } from 'react';
 import { getCodesName, getFormattedDate } from 'utils/Utils';
 
 type ISampleSiteOption = {
@@ -50,7 +49,6 @@ export interface ISpeciesObservationTableProps {
 }
 
 const ObservationsTable = (props: ISpeciesObservationTableProps) => {
-  const location = useLocation();
   const observationsTableContext = useContext(ObservationsTableContext);
   const observationsContext = useContext(ObservationsContext);
   const surveyContext = useContext(SurveyContext);
@@ -515,16 +513,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       ]
     }
   ];
-
-  /**
-   * On first render, pre-selected the observation row based on the URL
-   */
-  useEffect(() => {
-    if (location.hash.startsWith('#view-')) {
-      const selectedId = location.hash.split('-')[1];
-      observationsTableContext.onRowSelectionModelChange([selectedId]);
-    }
-  }, [location.hash, observationsTableContext]);
 
   return (
     <>
