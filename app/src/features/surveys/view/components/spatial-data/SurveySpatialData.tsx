@@ -60,6 +60,8 @@ const SurveySpatialData = () => {
     };
 
     cacheTaxonomicData();
+    // Should not re-run this effect on `taxonomyContext` changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [observationsContext.observationsDataLoader.data]);
 
   /**
@@ -121,7 +123,11 @@ const SurveySpatialData = () => {
           };
         })
     );
-  }, [surveyContext.critterDataLoader.data, surveyContext.deploymentDataLoader.data]);
+  }, [
+    surveyContext.critterDataLoader.data,
+    surveyContext.deploymentDataLoader.data,
+    telemetryContext.telemetryDataLoader.data
+  ]);
 
   /**
    * Because Observations data is server-side paginated, we must collect all spatial points from
@@ -160,7 +166,7 @@ const SurveySpatialData = () => {
 
       return point;
     });
-  }, [observationsGeometryDataLoader.data]);
+  }, [biohubApi.observation, observationsGeometryDataLoader.data?.surveyObservationsGeometry, projectId, surveyId]);
 
   let isLoading = false;
   if (activeView === SurveySpatialDatasetViewEnum.OBSERVATIONS) {
