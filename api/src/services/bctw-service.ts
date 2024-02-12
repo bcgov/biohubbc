@@ -283,7 +283,7 @@ export class BctwService {
   }
 
   /**
-   * Get deployments by device id, may return results for multiple critters.
+   * Get deployments by device id and device make, may return results for multiple critters.
    *
    * @param {number} deviceId
    * @param {string} deviceMake
