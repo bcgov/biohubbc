@@ -188,20 +188,20 @@ export type IObservationsTableContext = {
 export const ObservationsTableContext = createContext<IObservationsTableContext>({
   _muiDataGridApiRef: null as unknown as React.MutableRefObject<GridApiCommunity>,
   rows: [],
-  setRows: () => {},
+  setRows: () => { },
   getColumns: () => [],
   addMeasurementColumns: () => undefined,
-  addObservationRecord: () => {},
-  saveObservationRecords: () => {},
+  addObservationRecord: () => { },
+  saveObservationRecords: () => { },
   deleteObservationRecords: () => undefined,
   deleteSelectedObservationRecords: () => undefined,
   revertObservationRecords: () => undefined,
   refreshObservationRecords: () => Promise.resolve(undefined),
   getSelectedObservationRecords: () => [],
   hasUnsavedChanges: false,
-  onRowEditStart: () => {},
+  onRowEditStart: () => { },
   rowSelectionModel: [],
-  onRowSelectionModelChange: () => {},
+  onRowSelectionModelChange: () => { },
   isSaving: false,
   isLoading: false,
   validationModel: {},
@@ -249,7 +249,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   // Pagination State
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
-    pageSize: 10
+    pageSize: 50
   });
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
@@ -747,7 +747,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     );
 
     // Fetch and cache all unique taxonomic IDs
-    taxonomyContext.cacheSpeciesTaxonomyByIds(uniqueTaxonomicIds).catch(() => {});
+    taxonomyContext.cacheSpeciesTaxonomyByIds(uniqueTaxonomicIds).catch(() => { });
   }, [
     hasInitializedTaxonomyCache,
     observationsContext.observationsDataLoader.data?.surveyObservations,
