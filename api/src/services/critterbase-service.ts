@@ -302,7 +302,7 @@ export class CritterbaseService {
   }
 
   async getAttributes(ids: (string | null)[]): Promise<any> {
-    const response = await this.axiosInstance.post('', ids);
-    return response.data;
+    // const response = await this.axiosInstance.post('', ids);
+    return [];
   }
 }

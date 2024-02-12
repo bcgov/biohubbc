@@ -316,7 +316,8 @@ PUT.apiDoc = {
                     ],
                     properties: {
                       survey_observation_id: {
-                        type: 'number'
+                        type: 'number',
+                        nullable: true
                       },
                       wldtaxonomic_units_id: {
                         oneOf: [{ type: 'integer' }, { type: 'string' }]
@@ -509,6 +510,27 @@ export function insertUpdateSurveyObservations(): RequestHandler {
           observation_time: record.standardColumns.observation_time
         } as InsertObservation | UpdateObservation;
       });
+
+      console.log('__________________________');
+      console.log('__________________________');
+      console.log('__________________________');
+      console.log('__________________________');
+      console.log('__________________________');
+      console.log('UHH');
+      const measurements: any[] = req.body.surveyObservations.map((item: any) => {
+        console.log(item.measurementColumns);
+        return {
+          survey_observation_id: item.standardColumns.survey_observation_id,
+          measurements: item.measurementColumns.map((measurement: any) => {
+            return {
+              count: null,
+              measurement_id: measurement.id,
+              value: measurement.value
+            };
+          })
+        };
+      });
+      console.log(measurements);
 
       const surveyObservations = await observationService.insertUpdateSurveyObservations(surveyId, records);
 
