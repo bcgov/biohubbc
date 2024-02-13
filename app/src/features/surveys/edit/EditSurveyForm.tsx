@@ -4,8 +4,8 @@ import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import { makeStyles } from '@mui/styles';
+import { SnackbarComponent } from 'components/alert/SnackbarComponents';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
-import { ScrollToFormikError } from 'components/formik/ScrollToFormikError';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
 import SamplingStrategyForm from 'features/surveys/components/SamplingStrategyForm';
@@ -157,8 +157,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
         validateOnChange={false}
         onSubmit={props.handleSubmit}>
         <>
-          <ScrollToFormikError fieldOrder={Object.keys(surveyInitialValues)} />
-
+          <SnackbarComponent />
           <HorizontalSplitFormComponent
             title="General Information"
             summary=""

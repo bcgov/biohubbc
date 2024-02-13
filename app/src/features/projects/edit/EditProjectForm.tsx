@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import { makeStyles } from '@mui/styles';
+import { SnackbarComponent } from 'components/alert/SnackbarComponents';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { Formik, FormikProps } from 'formik';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
@@ -62,6 +63,7 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
         enableReinitialize={true}
         onSubmit={handleSubmit}>
         <>
+          <SnackbarComponent />
           <HorizontalSplitFormComponent
             title="General Information"
             summary="Enter general information, objectives and timelines for the project."

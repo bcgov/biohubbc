@@ -10,7 +10,6 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
-import { ScrollToFormikError } from 'components/formik/ScrollToFormikError';
 import PageHeader from 'components/layout/PageHeader';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import { CreateSurveyI18N } from 'constants/i18n';
@@ -54,6 +53,7 @@ import SurveyFundingSourceForm, {
 } from './components/SurveyFundingSourceForm';
 import { SurveySiteSelectionInitialValues, SurveySiteSelectionYupSchema } from './components/SurveySiteSelectionForm';
 import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from './components/SurveyUserForm';
+import { SnackbarComponent } from 'components/alert/SnackbarComponents';
 
 /**
  * Page to create a survey.
@@ -276,7 +276,7 @@ const CreateSurveyPage = () => {
               validateOnChange={false}
               onSubmit={handleSubmit}>
               <>
-                <ScrollToFormikError fieldOrder={Object.keys(surveyInitialValues)} />
+                <SnackbarComponent />
                 <Stack gap={5} divider={<Divider flexItem />}>
                   <HorizontalSplitFormComponent
                     title="General Information"

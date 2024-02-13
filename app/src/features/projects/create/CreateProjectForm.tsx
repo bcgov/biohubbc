@@ -2,8 +2,8 @@ import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import { makeStyles } from '@mui/styles';
+import { SnackbarComponent } from 'components/alert/SnackbarComponents';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
-import { ScrollToFormikError } from 'components/formik/ScrollToFormikError';
 import { PROJECT_ROLE } from 'constants/roles';
 import { Formik, FormikProps } from 'formik';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
@@ -106,8 +106,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
       enableReinitialize={true}
       onSubmit={handleSubmit}>
       <>
-        <ScrollToFormikError fieldOrder={Object.keys(initialProjectFieldData)} />
-
+        <SnackbarComponent />
         <HorizontalSplitFormComponent
           title="General Information"
           summary="Enter general information, objectives and timelines for the project."
