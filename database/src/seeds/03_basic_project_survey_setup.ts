@@ -5,14 +5,18 @@ const DB_SCHEMA = process.env.DB_SCHEMA;
 const DB_SCHEMA_DAPI_V1 = process.env.DB_SCHEMA_DAPI_V1;
 const PROJECT_SEEDER_USER_IDENTIFIER = process.env.PROJECT_SEEDER_USER_IDENTIFIER;
 
-// TODO
 const focalTaxonIdOptions = [
-  { itis_tsn: 202384, itis_scientific_name: 'Ursus arctos nelsoni' } // Mexican grizzly bear :^)
+  { itis_tsn: 180703, itis_scientific_name: 'Alces alces' }, // Moose
+  { itis_tsn: 180596, itis_scientific_name: 'Canis lupus' }, // Wolf
+  { itis_tsn: 180713, itis_scientific_name: 'Oreamnos americanus' }, // Rocky Mountain goat
+  { itis_tsn: 180543, itis_scientific_name: 'Ursus arctos' } // Grizzly bear
 ];
 
-// TODO
 const ancillaryTaxonIdOptions = [
-  { itis_tsn: 202384, itis_scientific_name: 'Ursus arctos nelsoni' } // Mexican grizzly bear :^)
+  { itis_tsn: 180703, itis_scientific_name: 'Alces alces' }, // Moose
+  { itis_tsn: 180596, itis_scientific_name: 'Canis lupus' }, // Wolf
+  { itis_tsn: 180713, itis_scientific_name: 'Oreamnos americanus' }, // Rocky Mountain goat
+  { itis_tsn: 180543, itis_scientific_name: 'Ursus arctos' } // Grizzly bear
 ];
 
 /**
