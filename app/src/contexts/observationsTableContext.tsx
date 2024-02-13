@@ -10,6 +10,7 @@ import {
 } from '@mui/x-data-grid';
 import { GridApiCommunity, GridStateColDef } from '@mui/x-data-grid/internals';
 import { ObservationsTableI18N } from 'constants/i18n';
+import { getSurveySessionStorageKey, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS } from 'constants/session-storage';
 import { DialogContext } from 'contexts/dialogContext';
 import { ObservationsContext } from 'contexts/observationsContext';
 import { default as dayjs } from 'dayjs';
@@ -59,7 +60,7 @@ export interface IObservationRecordWithSamplingData {
 }
 
 export type MeasurementColumn = {
-  measuremnt: Measurement;
+  measurement: Measurement;
   colDef: GridColDef;
 };
 
@@ -104,8 +105,16 @@ export type IObservationsTableContext = {
   getColumns: () => GridStateColDef[];
   /**
    * Adds measurement columns to the observation table, ignoring duplicates.
+   *
+   * @param {MeasurementColumn[]} columnsToAdd The columns to add
    */
   addMeasurementColumns: (columnsToAdd: MeasurementColumn[]) => void;
+  /**
+   * Removes measurement columns from the observations table, ignoring columns that don't exist.
+   *
+   * @param {string[]} columnsToRemove The `field` names of the columns to remove.
+   */
+  removeMeasurementColumns: (columnsToRemove: string[]) => void;
   /**
    * Appends a new blank record to the observation rows
    */
@@ -180,7 +189,7 @@ export type IObservationsTableContext = {
   updateSortModel: (mode: GridSortModel) => void;
   sortModel: GridSortModel;
   /**
-   * Additional user-added columns that are not part of the default observation table columns.
+   * Additional user-added measurement columns that are not part of the default observation table columns.
    */
   measurementColumns: MeasurementColumn[];
 };
@@ -191,6 +200,7 @@ export const ObservationsTableContext = createContext<IObservationsTableContext>
   setRows: () => {},
   getColumns: () => [],
   addMeasurementColumns: () => undefined,
+  removeMeasurementColumns: () => undefined,
   addObservationRecord: () => {},
   saveObservationRecords: () => {},
   deleteObservationRecords: () => undefined,
@@ -245,7 +255,15 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   // Stores the current validation state of the table
   const [validationModel, setValidationModel] = useState<ObservationTableValidationModel>({});
   // Stores any measurement columns that are not part of the default observation table columns
-  const [measurementColumns, setMeasurementColumns] = useState<MeasurementColumn[]>([]);
+  const [measurementColumns, setMeasurementColumns] = useState<MeasurementColumn[]>(() => {
+    const measurementColumnStringified = sessionStorage.getItem(
+      getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS)
+    );
+    if (!measurementColumnStringified) {
+      return [];
+    }
+    return JSON.parse(measurementColumnStringified);
+  });
   // Pagination State
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
@@ -315,17 +333,53 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   }, [_muiDataGridApiRef]);
 
   /**
-   * Adds columns to the observations table, ignoring duplicates.
+   * Adds measurement columns to the observations table, ignoring duplicates.
+   *
+   * @param {MeasurementColumn[]} columnsToAdd The columns to add
    */
-  const addMeasurementColumns = useCallback((columnsToAdd: MeasurementColumn[]) => {
-    setMeasurementColumns((currentColumns) => {
-      const newColumns = columnsToAdd.filter(
-        (columnToAdd) =>
-          !currentColumns.find((currentColumn) => currentColumn.colDef.field === columnToAdd.colDef.field)
-      );
-      return [...currentColumns, ...newColumns];
-    });
-  }, []);
+  const addMeasurementColumns = useCallback(
+    (columnsToAdd: MeasurementColumn[]) => {
+      setMeasurementColumns((currentColumns) => {
+        const newColumns = columnsToAdd.filter(
+          (columnToAdd) =>
+            !currentColumns.find((currentColumn) => currentColumn.colDef.field === columnToAdd.colDef.field)
+        );
+
+        // Store user-added mesurement columns in local storage
+        sessionStorage.setItem(
+          getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS),
+          JSON.stringify([...currentColumns, ...newColumns])
+        );
+
+        return [...currentColumns, ...newColumns];
+      });
+    },
+    [surveyId]
+  );
+
+  /**
+   * Removes measurement columns from the observations table, ignoring columns that don't exist.
+   *
+   * @param {string[]} columnsToRemove The `field` names of the columns to remove
+   */
+  const removeMeasurementColumns = useCallback(
+    (columnsToRemove: string[]) => {
+      setMeasurementColumns((currentColumns) => {
+        const remainingColumns = currentColumns.filter(
+          (currentColumn) => !columnsToRemove.includes(currentColumn.colDef.field)
+        );
+
+        // Store user-added mesurement columns in local storage
+        sessionStorage.setItem(
+          getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS),
+          JSON.stringify(remainingColumns)
+        );
+
+        return remainingColumns;
+      });
+    },
+    [surveyId]
+  );
 
   /**
    * Validates all rows belonging to the table. Returns null if validation passes, otherwise
@@ -799,20 +853,20 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     const rowModels = _muiDataGridApiRef.current.getRowModels();
     const rowValues = Array.from(rowModels, ([_, value]) => value);
 
-    const measurements = measurementColumns.map((item) => item.measuremnt);
+    const measurements = measurementColumns.map((item) => item.measurement);
 
     // Build the object expected by the SIMS API
     const rowsToSave = rowValues.map((row) => {
-      const standardColumns: IStandardObservationColumns = row as IStandardObservationColumns;
+      const standardColumnsToSave: IStandardObservationColumns = row as IStandardObservationColumns;
 
-      const measurementColumns: MeasurementColumnToSave[] = [];
+      const measurementColumnsToSave: MeasurementColumnToSave[] = [];
 
       const rowEntries = Object.entries(row);
       rowEntries.forEach(([key, value]) => {
         const matchingMeasurement = measurements.find((item) => item.uuid === key);
 
         if (matchingMeasurement) {
-          measurementColumns.push({
+          measurementColumnsToSave.push({
             id: matchingMeasurement.uuid,
             field: matchingMeasurement.measurementName,
             value: (value as any) || null
@@ -821,8 +875,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       });
 
       return {
-        standardColumns,
-        measurementColumns
+        standardColumns: standardColumnsToSave,
+        measurementColumns: measurementColumnsToSave
       };
     });
 
@@ -836,6 +890,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       setRows,
       getColumns,
       addMeasurementColumns,
+      removeMeasurementColumns,
       addObservationRecord,
       saveObservationRecords,
       deleteObservationRecords,
@@ -864,6 +919,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       rows,
       getColumns,
       addMeasurementColumns,
+      removeMeasurementColumns,
       addObservationRecord,
       saveObservationRecords,
       deleteObservationRecords,

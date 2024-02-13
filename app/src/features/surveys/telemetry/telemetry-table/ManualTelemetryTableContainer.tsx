@@ -19,6 +19,7 @@ import FileUploadDialog from 'components/dialog/FileUploadDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
 import { TelemetryTableI18N } from 'constants/i18n';
+import { getSurveySessionStorageKey, SIMS_TELEMETRY_HIDDEN_COLUMNS } from 'constants/session-storage';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TelemetryTableContext } from 'contexts/telemetryTableContext';
@@ -26,11 +27,6 @@ import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { pluralize as p } from 'utils/Utils';
 import ManualTelemetryTable from './ManualTelemetryTable';
-
-/**
- * Key used to cache column visiblity in sessionStorage
- */
-const SIMS_TELEMETRY_HIDDEN_COLUMNS = 'SIMS_TELEMETRY_HIDDEN_COLUMNS';
 
 const ManualTelemetryTableContainer = () => {
   const [showImportDialog, setShowImportDialog] = useState(false);
@@ -102,7 +98,9 @@ const ManualTelemetryTableContainer = () => {
    * On first mount, load visibility state from session storage, if it exists.
    */
   useEffect(() => {
-    const fieldsJson: string | null = sessionStorage.getItem(SIMS_TELEMETRY_HIDDEN_COLUMNS);
+    const fieldsJson: string | null = sessionStorage.getItem(
+      getSurveySessionStorageKey(surveyId, SIMS_TELEMETRY_HIDDEN_COLUMNS)
+    );
 
     if (!fieldsJson) {
       return;
@@ -120,7 +118,10 @@ const ManualTelemetryTableContainer = () => {
    * Persist visibility state in session
    */
   useEffect(() => {
-    sessionStorage.setItem(SIMS_TELEMETRY_HIDDEN_COLUMNS, JSON.stringify(hiddenFields));
+    sessionStorage.setItem(
+      getSurveySessionStorageKey(surveyId, SIMS_TELEMETRY_HIDDEN_COLUMNS),
+      JSON.stringify(hiddenFields)
+    );
   }, [hiddenFields]);
 
   const { projectId, surveyId } = surveyContext;
