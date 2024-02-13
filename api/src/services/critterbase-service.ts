@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { URLSearchParams } from 'url';
+import { v4 } from 'uuid';
 import { ApiError, ApiErrorType } from '../errors/api-error';
 import { KeycloakService } from './keycloak-service';
 
@@ -304,5 +305,10 @@ export class CritterbaseService {
   async getAttributes(ids: (string | null)[]): Promise<any> {
     // const response = await this.axiosInstance.post('', ids);
     return [];
+  }
+
+  async addAttributes(measurements: any[]): Promise<string> {
+    // const response = await this.axiosInstance.post('', ids);
+    return v4().toString();
   }
 }

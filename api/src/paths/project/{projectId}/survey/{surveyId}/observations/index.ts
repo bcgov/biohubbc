@@ -5,7 +5,10 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/rol
 import { getDBConnection } from '../../../../../../database/db';
 import { InsertObservation, UpdateObservation } from '../../../../../../repositories/observation-repository';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { ObservationService } from '../../../../../../services/observation-service';
+import {
+  InsertUpdateObservationsWithMeasurements,
+  ObservationService
+} from '../../../../../../services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
 import { ApiPaginationOptions } from '../../../../../../zod-schema/pagination';
 
@@ -50,7 +53,7 @@ export const PUT: Operation = [
       ]
     };
   }),
-  insertUpdateSurveyObservations()
+  insertUpdateSurveyObservationsWithMeasurements()
 ];
 
 export const surveyObservationsSupplementaryData: SchemaObject = {
@@ -483,7 +486,7 @@ export function getSurveyObservations(): RequestHandler {
  * @export
  * @return {*}  {RequestHandler}
  */
-export function insertUpdateSurveyObservations(): RequestHandler {
+export function insertUpdateSurveyObservationsWithMeasurements(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
 
@@ -496,32 +499,21 @@ export function insertUpdateSurveyObservations(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      // Sanitize all incoming records
-      const records: (InsertObservation | UpdateObservation)[] = req.body.surveyObservations.map((record: any) => {
+      // Sanitize incoming records
+      const newRecords: InsertUpdateObservationsWithMeasurements[] = req.body.surveyObservations.map((item: any) => {
         return {
-          survey_observation_id: record.standardColumns.survey_observation_id,
-          wldtaxonomic_units_id: Number(record.standardColumns.wldtaxonomic_units_id),
-          survey_sample_site_id: record.standardColumns.survey_sample_site_id,
-          survey_sample_method_id: record.standardColumns.survey_sample_method_id,
-          survey_sample_period_id: record.standardColumns.survey_sample_period_id,
-          latitude: record.standardColumns.latitude,
-          longitude: record.standardColumns.longitude,
-          count: record.standardColumns.count,
-          observation_date: record.standardColumns.observation_date,
-          observation_time: record.standardColumns.observation_time
-        } as InsertObservation | UpdateObservation;
-      });
-
-      console.log('__________________________');
-      console.log('__________________________');
-      console.log('__________________________');
-      console.log('__________________________');
-      console.log('__________________________');
-      console.log('UHH');
-      const measurements: any[] = req.body.surveyObservations.map((item: any) => {
-        console.log(item.measurementColumns);
-        return {
-          survey_observation_id: item.standardColumns.survey_observation_id,
+          observation: {
+            survey_observation_id: item.standardColumns.survey_observation_id,
+            wldtaxonomic_units_id: Number(item.standardColumns.wldtaxonomic_units_id),
+            survey_sample_site_id: item.standardColumns.survey_sample_site_id,
+            survey_sample_method_id: item.standardColumns.survey_sample_method_id,
+            survey_sample_period_id: item.standardColumns.survey_sample_period_id,
+            latitude: item.standardColumns.latitude,
+            longitude: item.standardColumns.longitude,
+            count: item.standardColumns.count,
+            observation_date: item.standardColumns.observation_date,
+            observation_time: item.standardColumns.observation_time
+          } as InsertObservation | UpdateObservation,
           measurements: item.measurementColumns.map((measurement: any) => {
             return {
               count: null,
@@ -531,15 +523,17 @@ export function insertUpdateSurveyObservations(): RequestHandler {
           })
         };
       });
-      console.log(measurements);
 
-      const surveyObservations = await observationService.insertUpdateSurveyObservations(surveyId, records);
+      const surveyObservations = await observationService.insertUpdateSurveyObservationsWithMeasurements(
+        surveyId,
+        newRecords
+      );
 
       await connection.commit();
 
       return res.status(200).json({ surveyObservations });
     } catch (error) {
-      defaultLog.error({ label: 'insertUpdateSurveyObservations', message: 'error', error });
+      defaultLog.error({ label: 'insertUpdateSurveyObservationsWithMeasurements', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

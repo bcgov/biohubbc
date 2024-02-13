@@ -25,6 +25,7 @@ import {
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { CritterbaseService } from './critterbase-service';
 import { DBService } from './db-service';
+import { SubCountService } from './subcount-service';
 
 const defaultLog = getLogger('services/observation-service');
 
@@ -37,6 +38,15 @@ const observationCSVColumnValidator: IXLSXCSVValidator = {
     SPECIES: ['TAXON']
   }
 };
+
+export interface InsertUpdateObservationsWithMeasurements {
+  measurements: {
+    count: number | null;
+    measurement_id: number;
+    value: string;
+  }[];
+  observation: InsertObservation | UpdateObservation;
+}
 
 export const ObservationSupplementaryData = z.object({
   observationCount: z.number()
@@ -107,11 +117,50 @@ export class ObservationService extends DBService {
    * @return {*}  {Promise<ObservationRecord[]>}
    * @memberof ObservationService
    */
-  async insertUpdateSurveyObservations(
+  async insertUpdateSurveyObservationsWithMeasurements(
     surveyId: number,
-    observations: (InsertObservation | UpdateObservation)[]
+    observations: InsertUpdateObservationsWithMeasurements[]
   ): Promise<ObservationRecord[]> {
-    return this.observationRepository.insertUpdateSurveyObservations(surveyId, observations);
+    const subCountService = new SubCountService(this.connection);
+    const finalResults: ObservationRecord[] = [];
+    // insert/ update observation data
+    // check for measurements
+    //  add them to critter base
+    //  remove old sub count rows
+    //  add observation subcount
+    //  add attribute subcount
+    for (const data of observations) {
+      const results = await this.observationRepository.insertUpdateSurveyObservations(surveyId, [data.observation]);
+      finalResults.push(results[0]);
+      const surveyObservationId = results[0].survey_observation_id;
+
+      // need to add these to critter base
+      if (data.measurements.length > 0) {
+        const critterBaseService = new CritterbaseService({
+          keycloak_guid: this.connection.systemUserGUID(),
+          username: this.connection.systemUserIdentifier()
+        });
+
+        const ids = data.measurements.map((item) => item.measurement_id);
+        const eventId = await critterBaseService.addAttributes(ids);
+
+        // delete old observation and attribute subcounts
+        await subCountService.deleteObservationsAndAttributeSubCounts(surveyObservationId);
+
+        // insert observation subcount
+        const observationSubCount = await subCountService.insertObservationSubCount({
+          survey_observation_id: surveyObservationId,
+          subcount: data.observation.count
+        });
+
+        // insert subcount attribute
+        await subCountService.insertSubCountAttribute({
+          observation_subcount_id: observationSubCount.observation_subcount_id,
+          critterbase_event_id: eventId
+        });
+      }
+    }
+    return finalResults;
   }
 
   /**
