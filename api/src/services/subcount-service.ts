@@ -2,6 +2,8 @@ import { IDBConnection } from '../database/db';
 import {
   InsertObservationSubCount,
   InsertSubCountAttribute,
+  ObservationSubCountRecord,
+  SubCountAttributeRecord,
   SubCountRepository
 } from '../repositories/subcount-repository';
 import { DBService } from './db-service';
@@ -14,11 +16,15 @@ export class SubCountService extends DBService {
     this.subCountRepository = new SubCountRepository(connection);
   }
 
-  async insertObservationSubCount(record: InsertObservationSubCount) {
+  async insertObservationSubCount(record: InsertObservationSubCount): Promise<ObservationSubCountRecord> {
     return this.subCountRepository.insertObservationSubCount(record);
   }
 
-  async insertSubCountAttribute(observationSubCountId: number, records: InsertSubCountAttribute[]) {
-    return this.subCountRepository.insertSubCountAttribute(observationSubCountId, records);
+  async insertSubCountAttribute(records: InsertSubCountAttribute): Promise<SubCountAttributeRecord> {
+    return this.subCountRepository.insertSubCountAttribute(records);
+  }
+
+  async deleteObservationsAndAttributeSubCounts(surveyObservationId: number) {
+    return this.subCountRepository.deleteObservationsAndAttributeSubCounts(surveyObservationId);
   }
 }
