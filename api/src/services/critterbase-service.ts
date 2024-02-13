@@ -137,14 +137,14 @@ export interface ICbSelectRows {
   value: string;
 }
 
-export interface ICBQualitativeMeasurement {
+export interface ICBQuantitativeMeasurement {
   itis_tsn: number | null;
   taxon_measurement_id: string;
   measurement_name: string;
   measurement_desc: string | null;
 }
 
-export interface ICBQuantitativeMeasurement {
+export interface ICBQualitativeMeasurement {
   itis_tsn: number | null;
   taxon_measurement_id: string;
   measurement_name: string;
@@ -152,7 +152,7 @@ export interface ICBQuantitativeMeasurement {
   min_value: number | null;
   max_value: number | null;
   measurement_unit: CBMeasurementUnit | null;
-  options: ICBQuantitativeOption[];
+  options: ICBQualitativeOption[];
 }
 
 export enum CBMeasurementUnit {
@@ -164,7 +164,7 @@ export enum CBMeasurementUnit {
   kilogram = 'kilogram'
 }
 
-export interface ICBQuantitativeOption {
+export interface ICBQualitativeOption {
   taxon_measurement_id: string;
   qualitative_option_id: string;
   option_label: string | null;
