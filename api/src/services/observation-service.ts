@@ -49,7 +49,15 @@ export interface InsertUpdateObservationsWithMeasurements {
 }
 
 export const ObservationSupplementaryData = z.object({
-  observationCount: z.number()
+  observationCount: z.number(),
+  measurementColumns: z
+    .array(
+      z.object({
+        id: z.string(),
+        name: z.string()
+      })
+    )
+    .nullable()
 });
 
 export type ObservationSupplementaryData = z.infer<typeof ObservationSupplementaryData>;
@@ -201,8 +209,8 @@ export class ObservationService extends DBService {
     supplementaryObservationData: ObservationSupplementaryData;
   }> {
     const service = new CritterbaseService({
-      keycloak_guid: '',
-      username: ''
+      keycloak_guid: this.connection.systemUserGUID(),
+      username: this.connection.systemUserIdentifier()
     });
     const surveyObservations = await this.observationRepository.getSurveyObservationsWithSamplingData(
       surveyId,
@@ -214,7 +222,7 @@ export class ObservationService extends DBService {
       .flatMap((item) => item.observation_subcount_attributes)
       .filter((item) => item !== null);
 
-    service.getAttributes(attribute_ids);
+    await service.getMeasurements(attribute_ids);
 
     const supplementaryObservationData = await this.getSurveyObservationsSupplementaryData(surveyId);
 
@@ -252,9 +260,11 @@ export class ObservationService extends DBService {
    * @memberof ObservationService
    */
   async getSurveyObservationsSupplementaryData(surveyId: number): Promise<ObservationSupplementaryData> {
+    const service = new SubCountService(this.connection);
     const observationCount = await this.observationRepository.getSurveyObservationCount(surveyId);
+    const measurementColumns = await service.getMeasurementColumnNamesForSurvey(surveyId);
 
-    return { observationCount };
+    return { observationCount, measurementColumns };
   }
 
   /**

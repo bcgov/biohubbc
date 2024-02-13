@@ -302,9 +302,13 @@ export class CritterbaseService {
     return response.data;
   }
 
-  async getAttributes(ids: (string | null)[]): Promise<any> {
+  async getMeasurements(ids: (string | null)[]): Promise<any> {
     // const response = await this.axiosInstance.post('', ids);
-    return [];
+    return [
+      { id: v4().toString(), name: 'Wingspan', type: 'string' },
+      { id: v4().toString(), name: 'Fur color', type: 'string' },
+      { id: v4().toString(), name: 'Antlers', type: 'number' }
+    ];
   }
 
   async addAttributes(measurements: any[]): Promise<string> {

@@ -77,4 +77,17 @@ export class SubCountRepository extends BaseRepository {
     `;
     await this.connection.sql(deleteAttributes);
   }
+
+  async getAllAttributesForSurveyId(surveyId: number): Promise<string[]> {
+    const sql = SQL`
+      SELECT sa.critterbase_event_id
+      FROM survey_observation so, observation_subcount os, subcount_attribute sa
+      WHERE so.survey_observation_id = os.survey_observation_id 
+      AND os.observation_subcount_id = sa.observation_subcount_id
+      AND so.survey_id = ${surveyId};
+    `;
+
+    const response = await this.connection.sql(sql);
+    return response.rows;
+  }
 }
