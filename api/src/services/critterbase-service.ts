@@ -142,6 +142,9 @@ export interface ICBQuantitativeMeasurement {
   taxon_measurement_id: string;
   measurement_name: string;
   measurement_desc: string | null;
+  min_value: number | null;
+  max_value: number | null;
+  unit: CBMeasurementUnit | null;
 }
 
 export interface ICBQualitativeMeasurement {
@@ -149,9 +152,6 @@ export interface ICBQualitativeMeasurement {
   taxon_measurement_id: string;
   measurement_name: string;
   measurement_desc: string | null;
-  min_value: number | null;
-  max_value: number | null;
-  measurement_unit: CBMeasurementUnit | null;
   options: ICBQualitativeOption[];
 }
 
