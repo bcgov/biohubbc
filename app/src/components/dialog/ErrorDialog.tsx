@@ -94,9 +94,7 @@ export const ErrorDialog = (props: IErrorDialogProps) => {
 
       <DialogContent>
         <DialogContentText id="alert-dialog-description">{props.dialogText}</DialogContentText>
-        {props.dialogError && (
-          <DialogContentText id="alert-dialog-description">{props.dialogError}</DialogContentText>
-        )}
+        {props.dialogError && <DialogContentText id="alert-dialog-description">{props.dialogError}</DialogContentText>}
 
         {props?.dialogErrorDetails?.length && (
           <>

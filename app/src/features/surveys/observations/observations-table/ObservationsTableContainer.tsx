@@ -60,7 +60,7 @@ const ObservationComponent = () => {
 
   const showErrorDialog = (errorDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...errorDialogProps, open: true });
-  }
+  };
 
   const handleCloseContextMenu = () => {
     setContextMenuAnchorEl(null);

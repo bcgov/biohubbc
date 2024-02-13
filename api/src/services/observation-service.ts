@@ -1,6 +1,7 @@
 import xlsx from 'xlsx';
 import { z } from 'zod';
 import { IDBConnection } from '../database/db';
+import { ApiGeneralError } from '../errors/api-error';
 import {
   InsertObservation,
   ObservationGeometryRecord,
@@ -24,7 +25,6 @@ import {
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
 import { PlatformService } from './platform-service';
-import { ApiGeneralError } from '../errors/api-error';
 
 const defaultLog = getLogger('services/observation-service');
 
@@ -111,7 +111,10 @@ export class ObservationService extends DBService {
     surveyId: number,
     observations: (InsertObservation | UpdateObservation)[]
   ): Promise<ObservationRecord[]> {
-    return this.observationRepository.insertUpdateSurveyObservations(surveyId, await this._attachItisScientificName(observations));
+    return this.observationRepository.insertUpdateSurveyObservations(
+      surveyId,
+      await this._attachItisScientificName(observations)
+    );
   }
 
   /**
@@ -357,7 +360,10 @@ export class ObservationService extends DBService {
     }));
 
     // Step 7. Insert new rows and return them
-    return this.observationRepository.insertUpdateSurveyObservations(surveyId, await this._attachItisScientificName(insertRows));
+    return this.observationRepository.insertUpdateSurveyObservations(
+      surveyId,
+      await this._attachItisScientificName(insertRows)
+    );
   }
 
   /**
@@ -368,7 +374,9 @@ export class ObservationService extends DBService {
    * @return {*}  {Promise<InsertObservation[]>}
    * @memberof ObservationService
    */
-  async _attachItisScientificName(records: (InsertObservation | UpdateObservation)[]): Promise<(InsertObservation | UpdateObservation)[]> {
+  async _attachItisScientificName(
+    records: (InsertObservation | UpdateObservation)[]
+  ): Promise<(InsertObservation | UpdateObservation)[]> {
     defaultLog.debug({ label: '_attachItisScientificName' });
 
     const platformService = new PlatformService(this.connection);
@@ -384,15 +392,19 @@ export class ObservationService extends DBService {
     );
 
     const taxonomyResponse = await platformService.getTaxonomyByTsns(Array.from(uniqueTsnSet)).catch((error) => {
-      throw new ApiGeneralError(`Failed to fetch scientific names for observation records. The request to ITIS failed: ${error}`);
+      throw new ApiGeneralError(
+        `Failed to fetch scientific names for observation records. The request to ITIS failed: ${error}`
+      );
     });
 
     return records.map((record: InsertObservation | UpdateObservation) => {
-      record.itis_scientific_name = taxonomyResponse.find((taxonomy) => Number(taxonomy.tsn) === record.itis_tsn)
-        ?.scientificName ?? null;
+      record.itis_scientific_name =
+        taxonomyResponse.find((taxonomy) => Number(taxonomy.tsn) === record.itis_tsn)?.scientificName ?? null;
 
       if (!record.itis_scientific_name) {
-        throw new ApiGeneralError(`Failed to fetch scientific names for observation records. A scientific name could not be found for the given ITIS TSN: ${record.itis_tsn}`);
+        throw new ApiGeneralError(
+          `Failed to fetch scientific names for observation records. A scientific name could not be found for the given ITIS TSN: ${record.itis_tsn}`
+        );
       }
 
       return record;
