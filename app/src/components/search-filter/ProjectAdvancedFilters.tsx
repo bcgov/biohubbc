@@ -54,7 +54,10 @@ const ProjectAdvancedFilters = () => {
 
   const convertOptions = (value: ITaxonomy[]): IMultiAutocompleteFieldOption[] =>
     value.map((item: any) => {
-      return { value: parseInt(item.tsn), label: item.commonName || item.scientificName };
+      return {
+        value: parseInt(item.tsn),
+        label: [item.commonName, `(${item.scientificName})`].filter(Boolean).join(' ')
+      };
     });
 
   const handleGetInitList = async (initialvalues: number[]) => {
