@@ -118,10 +118,13 @@ const ManualTelemetryList = () => {
     setDeviceId(device_id);
 
     const critterDeployment = critterDeployments.find((item) => item.deployment.device_id === device_id);
-    const deviceDetails = await telemetryApi.devices.getDeviceDetails(device_id);
 
     // need to map deployment back into object for initial values
     if (critterDeployment) {
+      const deviceDetails = await telemetryApi.devices.getDeviceDetails(
+        device_id,
+        critterDeployment.deployment.device_make
+      );
       const editData: AnimalDeployment = {
         survey_critter_id: Number(critterDeployment.critter?.survey_critter_id),
         deployments: [
@@ -559,8 +562,9 @@ const ManualTelemetryList = () => {
                         )}
                         {critterDeployments?.map((item) => (
                           <ManualTelemetryCard
-                            key={`${item.deployment.device_id}:${item.deployment.attachment_start}`}
+                            key={`${item.deployment.device_id}:${item.deployment.device_make}:${item.deployment.attachment_start}`}
                             device_id={item.deployment.device_id}
+                            device_make={item.deployment.device_make}
                             name={String(item.critter.animal_id ?? item.critter.taxon)}
                             start_date={item.deployment.attachment_start}
                             end_date={item.deployment.attachment_end}
