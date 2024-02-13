@@ -153,7 +153,7 @@ export class ObservationService extends DBService {
         const eventId = await critterBaseService.addAttributes(ids);
 
         // delete old observation and attribute subcounts
-        await subCountService.deleteObservationsAndAttributeSubCounts(surveyObservationId);
+        await subCountService.deleteObservationsAndAttributeSubCounts([surveyObservationId]);
 
         // insert observation subcount
         const observationSubCount = await subCountService.insertObservationSubCount({
@@ -441,6 +441,9 @@ export class ObservationService extends DBService {
    * @memberof ObservationRepository
    */
   async deleteObservationsByIds(observationIds: number[]): Promise<number> {
+    // Remove any existing sub count data before removing observations
+    const service = new SubCountService(this.connection);
+    await service.deleteObservationsAndAttributeSubCounts(observationIds);
     return this.observationRepository.deleteObservationsByIds(observationIds);
   }
 }

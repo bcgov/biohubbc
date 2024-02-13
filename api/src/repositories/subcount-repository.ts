@@ -59,21 +59,25 @@ export class SubCountRepository extends BaseRepository {
     return response.rows[0];
   }
 
-  async deleteObservationsAndAttributeSubCounts(surveyObservationId: number) {
-    await this.deleteSubCountAttributeForObservationId(surveyObservationId);
-    await this.deleteObservationSubCount(surveyObservationId);
+  async deleteObservationsAndAttributeSubCounts(surveyObservationIds: number[]) {
+    await this.deleteSubCountAttributeForObservationId(surveyObservationIds);
+    await this.deleteObservationSubCount(surveyObservationIds);
   }
 
-  async deleteObservationSubCount(surveyObservationId: number) {
+  async deleteObservationSubCount(surveyObservationIds: number[]) {
     const deleteObservations = SQL`
-    DELETE FROM observation_subcount WHERE survey_observation_id = ${surveyObservationId};
+      DELETE FROM observation_subcount 
+      WHERE survey_observation_id IN (${surveyObservationIds.join(', ')});
     `;
     await this.connection.sql(deleteObservations);
   }
 
-  async deleteSubCountAttributeForObservationId(surveyObservationId: number) {
+  async deleteSubCountAttributeForObservationId(surveyObservationIds: number[]) {
     const deleteAttributes = SQL`
-    DELETE FROM subcount_attribute WHERE observation_subcount_id in (SELECT observation_subcount_id FROM observation_subcount os WHERE survey_observation_id = ${surveyObservationId});
+      DELETE FROM subcount_attribute 
+      WHERE observation_subcount_id IN (SELECT observation_subcount_id FROM observation_subcount os WHERE survey_observation_id IN (${surveyObservationIds.join(
+        ', '
+      )}));
     `;
     await this.connection.sql(deleteAttributes);
   }

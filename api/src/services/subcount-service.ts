@@ -25,8 +25,8 @@ export class SubCountService extends DBService {
     return this.subCountRepository.insertSubCountAttribute(records);
   }
 
-  async deleteObservationsAndAttributeSubCounts(surveyObservationId: number) {
-    return this.subCountRepository.deleteObservationsAndAttributeSubCounts(surveyObservationId);
+  async deleteObservationsAndAttributeSubCounts(surveyObservationIds: number[]) {
+    return this.subCountRepository.deleteObservationsAndAttributeSubCounts(surveyObservationIds);
   }
 
   async getMeasurementColumnNamesForSurvey(
