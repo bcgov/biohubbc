@@ -399,11 +399,6 @@ describe('insertUpdateSurveyObservations', () => {
       .stub(ObservationService.prototype, 'insertUpdateSurveyObservations')
       .resolves(([{ survey_observation_id: 1 }, { survey_observation_id: 2 }] as unknown) as ObservationRecord[]);
 
-    const getTaxonomyByTsnsStub = sinon.stub(PlatformService.prototype, 'getTaxonomyByTsns').resolves([
-      { tsn: '1234', scientificName: 'scientific name' },
-      { tsn: '1234', scientificName: 'scientific name' }
-    ]);
-
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
@@ -416,7 +411,6 @@ describe('insertUpdateSurveyObservations', () => {
         {
           survey_observation_id: 1,
           itis_tsn: 1234,
-          itis_scientific_name: 'scientific name',
           count: 99,
           latitude: 48.103322,
           longitude: -122.798892,
@@ -428,7 +422,6 @@ describe('insertUpdateSurveyObservations', () => {
         },
         {
           itis_tsn: 1234,
-          itis_scientific_name: 'scientific name',
           count: 99,
           latitude: 48.103322,
           longitude: -122.798892,
@@ -448,7 +441,7 @@ describe('insertUpdateSurveyObservations', () => {
       {
         survey_observation_id: 1,
         itis_tsn: 1234,
-        itis_scientific_name: 'scientific name',
+        itis_scientific_name: null,
         latitude: 48.103322,
         longitude: -122.798892,
         count: 99,
@@ -461,7 +454,7 @@ describe('insertUpdateSurveyObservations', () => {
       {
         survey_observation_id: undefined,
         itis_tsn: 1234,
-        itis_scientific_name: 'scientific name',
+        itis_scientific_name: null,
         latitude: 48.103322,
         longitude: -122.798892,
         count: 99,
@@ -472,7 +465,6 @@ describe('insertUpdateSurveyObservations', () => {
         survey_sample_period_id: 1
       }
     ]);
-    expect(getTaxonomyByTsnsStub).to.have.been.calledOnceWith([1234]);
     expect(mockRes.statusValue).to.equal(200);
     expect(mockRes.jsonValue).to.eql({
       surveyObservations: [{ survey_observation_id: 1 }, { survey_observation_id: 2 }]
