@@ -276,7 +276,7 @@ const SurveyMap = (props: ISurveyMapProps) => {
           <MapBaseCss />
           <FullScreenScrollingEventHandler bounds={bounds} scrollWheelZoom={false} />
           <SetMapBounds bounds={bounds} />
-          <LayersControl position="bottomright">
+          <LayersControl position="topright">
             <BaseLayerControls />
             <StaticLayers layers={staticLayers} />
           </LayersControl>
