@@ -20,12 +20,7 @@ const SelectedSpecies = (props: ISelectedSpeciesProps) => {
             selectedSpecies.map((species: ITaxonomy, index: number) => {
               return (
                 <Collapse key={species.tsn}>
-                  <SpeciesSelectedCard
-                    index={index}
-                    species={species}
-                    handleRemove={handleRemoveSpecies}
-                    label={species.commonName ?? species.scientificName}
-                  />
+                  <SpeciesSelectedCard index={index} species={species} handleRemove={handleRemoveSpecies} />
                 </Collapse>
               );
             })}

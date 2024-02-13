@@ -11,7 +11,6 @@ interface ISpeciesSelectedCardProps {
   species: ITaxonomy;
   error?: JSX.Element | undefined;
   handleRemove: (tsn: number) => void;
-  label: string;
 }
 
 const SpeciesSelectedCard = (props: ISpeciesSelectedCardProps) => {
