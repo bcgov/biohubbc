@@ -23,13 +23,16 @@ import {
 } from '../utils/xlsx-utils/worksheet-utils';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
+import { PlatformService } from './platform-service';
+import { ApiGeneralError } from '../errors/api-error';
 
 const defaultLog = getLogger('services/observation-service');
 
 const observationCSVColumnValidator: IXLSXCSVValidator = {
-  columnNames: ['ITIS_TSN', 'ITIS_SCIENTIFIC_NAME', 'COUNT', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
-  columnTypes: ['number', 'string', 'number', 'date', 'string', 'number', 'number'],
+  columnNames: ['ITIS_TSN', 'COUNT', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
+  columnTypes: ['number', 'number', 'date', 'string', 'number', 'number'],
   columnAliases: {
+    ITIS_TSN: ['TAXON', 'SPECIES', 'TSN'],
     LATITUDE: ['LAT'],
     LONGITUDE: ['LON', 'LONG', 'LNG']
   }
@@ -108,7 +111,7 @@ export class ObservationService extends DBService {
     surveyId: number,
     observations: (InsertObservation | UpdateObservation)[]
   ): Promise<ObservationRecord[]> {
-    return this.observationRepository.insertUpdateSurveyObservations(surveyId, observations);
+    return this.observationRepository.insertUpdateSurveyObservations(surveyId, await this._attachItisScientificName(observations));
   }
 
   /**
@@ -350,11 +353,50 @@ export class ObservationService extends DBService {
       observation_time: row['TIME'],
       observation_date: row['DATE'],
       itis_tsn: row['ITIS_TSN'],
-      itis_scientific_name: row['ITIS_SCIENTIFIC_NAME']
+      itis_scientific_name: null
     }));
 
-    // Step 6. Insert new rows and return them
-    return this.observationRepository.insertUpdateSurveyObservations(surveyId, insertRows);
+    // Step 7. Insert new rows and return them
+    return this.observationRepository.insertUpdateSurveyObservations(surveyId, await this._attachItisScientificName(insertRows));
+  }
+
+  /**
+   * Maps over an array of inserted/updated observation records in order to update its scientific
+   * name to match its ITIS TSN.
+   *
+   * @param {InsertObservation[]} records
+   * @return {*}  {Promise<InsertObservation[]>}
+   * @memberof ObservationService
+   */
+  async _attachItisScientificName(records: (InsertObservation | UpdateObservation)[]): Promise<(InsertObservation | UpdateObservation)[]> {
+    defaultLog.debug({ label: '_attachItisScientificName' });
+
+    const platformService = new PlatformService(this.connection);
+
+    const uniqueTsnSet: Set<number> = records.reduce(
+      (acc: Set<number>, record: InsertObservation | UpdateObservation) => {
+        if (record.itis_tsn) {
+          acc.add(record.itis_tsn as number);
+        }
+        return acc;
+      },
+      new Set<number>([])
+    );
+
+    const taxonomyResponse = await platformService.getTaxonomyByTsns(Array.from(uniqueTsnSet)).catch((error) => {
+      throw new ApiGeneralError(`Failed to fetch scientific names for observation records. The request to ITIS failed: ${error}`);
+    });
+
+    return records.map((record: InsertObservation | UpdateObservation) => {
+      record.itis_scientific_name = taxonomyResponse.find((taxonomy) => Number(taxonomy.tsn) === record.itis_tsn)
+        ?.scientificName ?? null;
+
+      if (!record.itis_scientific_name) {
+        throw new ApiGeneralError(`Failed to fetch scientific names for observation records. A scientific name could not be found for the given ITIS TSN: ${record.itis_tsn}`);
+      }
+
+      return record;
+    });
   }
 
   /**

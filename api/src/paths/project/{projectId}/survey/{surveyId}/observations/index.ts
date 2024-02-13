@@ -6,7 +6,6 @@ import { getDBConnection } from '../../../../../../database/db';
 import { InsertObservation, UpdateObservation } from '../../../../../../repositories/observation-repository';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ObservationService } from '../../../../../../services/observation-service';
-import { PlatformService } from '../../../../../../services/platform-service';
 import { getLogger } from '../../../../../../utils/logger';
 import { ApiPaginationOptions } from '../../../../../../zod-schema/pagination';
 
@@ -464,19 +463,6 @@ export function insertUpdateSurveyObservations(): RequestHandler {
       await connection.open();
 
       const observationService = new ObservationService(connection);
-      const platformService = new PlatformService(connection);
-
-      const uniqueTsnSet: Set<number> = req.body.surveyObservations.reduce(
-        (acc: Set<number>, record: Record<string, unknown>) => {
-          if (record.itis_tsn) {
-            acc.add(record.itis_tsn as number);
-          }
-          return acc;
-        },
-        new Set<number>([])
-      );
-
-      const taxonomyResponse = await platformService.getTaxonomyByTsns(Array.from(uniqueTsnSet));
 
       // Sanitize all incoming records
       const records: (InsertObservation | UpdateObservation)[] = req.body.surveyObservations.map(
@@ -492,8 +478,7 @@ export function insertUpdateSurveyObservations(): RequestHandler {
             observation_date: record.observation_date,
             observation_time: record.observation_time,
             itis_tsn: record.itis_tsn,
-            itis_scientific_name: taxonomyResponse.find((taxonomy) => Number(taxonomy.tsn) === record.itis_tsn)
-              ?.scientificName
+            itis_scientific_name: null
           } as InsertObservation | UpdateObservation;
         }
       );
