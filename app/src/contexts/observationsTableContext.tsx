@@ -655,13 +655,18 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       return;
     }
 
-    if (!observationsContext.observationsDataLoader.data?.surveyObservations.length) {
-      // No taxonomy records to fetch and cache
+    if (!observationsContext.observationsDataLoader.data) {
+      // No obserations data has laoded
       return;
     }
 
     // Only attempt to initialize the cache once
     setHasInitializedTaxonomyCache(true);
+
+    if (!observationsContext.observationsDataLoader.data.surveyObservations.length) {
+      // No taxonomy records to fetch and cache
+      return;
+    }
 
     const uniqueTaxonomicIds: number[] = Array.from(
       observationsContext.observationsDataLoader.data.surveyObservations.reduce(
