@@ -355,7 +355,7 @@ export class ObservationService extends DBService {
       count: row['COUNT'],
       observation_time: row['TIME'],
       observation_date: row['DATE'],
-      itis_tsn: row['ITIS_TSN'],
+      itis_tsn: row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES'],
       itis_scientific_name: null
     }));
 
