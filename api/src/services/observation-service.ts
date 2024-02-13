@@ -122,19 +122,25 @@ export class ObservationService extends DBService {
     observations: InsertUpdateObservationsWithMeasurements[]
   ): Promise<ObservationRecord[]> {
     const subCountService = new SubCountService(this.connection);
-    const critterBaseService = new CritterbaseService({ keycloak_guid: '', username: '' });
+    const finalResults: ObservationRecord[] = [];
     // insert/ update observation data
     // check for measurements
-    //  add observation
     //  add them to critter base
+    //  remove old sub count rows
     //  add observation subcount
     //  add attribute subcount
     for (const data of observations) {
       const results = await this.observationRepository.insertUpdateSurveyObservations(surveyId, [data.observation]);
+      finalResults.push(results[0]);
       const surveyObservationId = results[0].survey_observation_id;
 
       // need to add these to critter base
       if (data.measurements.length > 0) {
+        const critterBaseService = new CritterbaseService({
+          keycloak_guid: this.connection.systemUserGUID(),
+          username: this.connection.systemUserIdentifier()
+        });
+
         const ids = data.measurements.map((item) => item.measurement_id);
         const eventId = await critterBaseService.addAttributes(ids);
 
@@ -154,7 +160,7 @@ export class ObservationService extends DBService {
         });
       }
     }
-    return [];
+    return finalResults;
   }
 
   /**
