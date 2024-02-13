@@ -137,6 +137,41 @@ export interface ICbSelectRows {
   value: string;
 }
 
+export interface ICBQualitativeMeasurement {
+  itis_tsn: number | null;
+  taxon_measurement_id: string;
+  measurement_name: string;
+  measurement_desc: string | null;
+}
+
+export interface ICBQuantitativeMeasurement {
+  itis_tsn: number | null;
+  taxon_measurement_id: string;
+  measurement_name: string;
+  measurement_desc: string | null;
+  min_value: number | null;
+  max_value: number | null;
+  measurement_unit: CBMeasurementUnit | null;
+  options: ICBQuantitativeOption[];
+}
+
+export enum CBMeasurementUnit {
+  millimeter = 'millimeter',
+  centimeter = 'centimeter',
+  meter = 'meter',
+  milligram = 'milligram',
+  gram = 'gram',
+  kilogram = 'kilogram'
+}
+
+export interface ICBQuantitativeOption {
+  taxon_measurement_id: string;
+  qualitative_option_id: string;
+  option_label: string | null;
+  option_value: number;
+  option_desc: string | null;
+}
+
 const lookups = '/lookups';
 const xref = '/xref';
 const lookupsEnum = lookups + '/enum';
@@ -302,7 +337,16 @@ export class CritterbaseService {
     return response.data;
   }
 
-  async getMeasurements(ids: (string | null)[]): Promise<any> {
+  async getMeasurements(): Promise<{
+    qualitative: ICBQualitativeMeasurement[];
+    quantitative: ICBQuantitativeMeasurement[];
+  }> {
+    // const response = await this.axiosInstance.post(`measurements`);
+    return { qualitative: [], quantitative: [] };
+  }
+
+  async getMeasurementsForEventIds(ids: (string | null)[]): Promise<any> {
+    // TODO: wire up to critter base api when available
     // const response = await this.axiosInstance.post('', ids);
     return [
       { id: v4().toString(), name: 'Wingspan', type: 'string' },
@@ -311,7 +355,17 @@ export class CritterbaseService {
     ];
   }
 
-  async addAttributes(measurements: any[]): Promise<string> {
+  async searchForMeasurements(search: string): Promise<any> {
+    // TODO: wire up to critter base api when available
+    // const response = await this.axiosInstance.post('', ids);
+    return [
+      { id: v4().toString(), name: 'Wingspan', type: 'string' },
+      { id: v4().toString(), name: 'Fur color', type: 'string' },
+      { id: v4().toString(), name: 'Antlers', type: 'number' }
+    ];
+  }
+
+  async addAttributeRecords(measurements: any[]): Promise<string> {
     // const response = await this.axiosInstance.post('', ids);
     return v4().toString();
   }

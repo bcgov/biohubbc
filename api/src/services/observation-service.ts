@@ -150,7 +150,7 @@ export class ObservationService extends DBService {
         });
 
         const ids = data.measurements.map((item) => item.measurement_id);
-        const eventId = await critterBaseService.addAttributes(ids);
+        const eventId = await critterBaseService.addAttributeRecords(ids);
 
         // delete old observation and attribute subcounts
         await subCountService.deleteObservationsAndAttributeSubCounts([surveyObservationId]);
@@ -218,11 +218,11 @@ export class ObservationService extends DBService {
     );
 
     // fetch data from critterbase
-    const attribute_ids = surveyObservations
+    const eventIds = surveyObservations
       .flatMap((item) => item.observation_subcount_attributes)
       .filter((item) => item !== null);
 
-    await service.getMeasurements(attribute_ids);
+    await service.getMeasurementsForEventIds(eventIds);
 
     const supplementaryObservationData = await this.getSurveyObservationsSupplementaryData(surveyId);
 

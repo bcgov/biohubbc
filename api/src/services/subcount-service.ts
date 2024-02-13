@@ -70,7 +70,7 @@ export class SubCountService extends DBService {
       username: this.connection.systemUserIdentifier()
     });
     const eventIds = await this.subCountRepository.getAllAttributesForSurveyId(surveyId);
-    const measurements = await service.getMeasurements(eventIds);
+    const measurements = await service.getMeasurementsForEventIds(eventIds);
     return measurements;
   }
 }
