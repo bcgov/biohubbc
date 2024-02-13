@@ -37,7 +37,7 @@ const useTaxonomyApi = () => {
       const { data } = await apiAxios.get<{ searchResponse: ITaxonomy[] }>(config.BIOHUB_TAXON_PATH, {
         params: { terms: searchTerms },
         paramsSerializer: (params) => {
-          return qs.stringify(params, { arrayFormat: 'repeat' });
+          return qs.stringify(params);
         }
       });
 

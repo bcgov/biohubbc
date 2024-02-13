@@ -58,6 +58,10 @@ const ProjectAdvancedFilters = () => {
     });
 
   const handleGetInitList = async (initialvalues: number[]) => {
+    if (!initialvalues.length) {
+      return [];
+    }
+
     const response = await biohubApi.taxonomy.getSpeciesFromIds(initialvalues);
     return convertOptions(response);
   };
@@ -70,7 +74,8 @@ const ProjectAdvancedFilters = () => {
           existingValues: (string | number)[],
           callback: (searchedValues: IMultiAutocompleteFieldOption[]) => void
         ) => {
-          const response = await biohubApi.taxonomy.searchSpeciesByTerms([inputValue.toLowerCase()]);
+          const searchTerms = inputValue.split(' ').filter(Boolean);
+          const response = await biohubApi.taxonomy.searchSpeciesByTerms(searchTerms);
           const newOptions = convertOptions(response).filter((item) => !existingValues?.includes(item.value));
           callback(newOptions);
         },
@@ -113,7 +118,7 @@ const ProjectAdvancedFilters = () => {
         <Grid item xs={12} md={3}>
           <CustomTextField name="permit_number" label="Permit Number" />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} md={6}>
           <MultiAutocompleteFieldVariableSize
             id="species"
             label="Species"
