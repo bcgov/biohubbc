@@ -47,7 +47,7 @@ GET.apiDoc = {
             project_programs: {
               type: 'array',
               items: {
-                type: 'number'
+                type: 'integer'
               },
               nullable: true
             },
@@ -59,10 +59,11 @@ GET.apiDoc = {
               type: 'string',
               nullable: true
             },
+            // TODO rename this to imply ITIS TSN filtering
             species: {
               type: 'array',
               items: {
-                type: 'number'
+                type: 'integer'
               }
             }
           }
@@ -80,22 +81,22 @@ GET.apiDoc = {
             items: {
               title: 'Survey get response object, for view purposes',
               type: 'object',
-              required: ['projectData', 'projectSupplementaryData'],
+              required: ['projectData'],
               properties: {
                 projectData: {
                   type: 'object',
                   required: [
-                    'id',
+                    'project_id',
                     'name',
                     'project_programs',
+                    'completion_status',
                     'start_date',
                     'end_date',
-                    'completion_status',
                     'regions'
                   ],
                   properties: {
-                    id: {
-                      type: 'number'
+                    project_id: {
+                      type: 'integer'
                     },
                     name: {
                       type: 'string'
@@ -103,7 +104,7 @@ GET.apiDoc = {
                     project_programs: {
                       type: 'array',
                       items: {
-                        type: 'number'
+                        type: 'integer'
                       }
                     },
                     start_date: {
@@ -123,16 +124,6 @@ GET.apiDoc = {
                     }
                   }
                 },
-                projectSupplementaryData: {
-                  type: 'object',
-                  required: ['publishStatus'],
-                  properties: {
-                    publishStatus: {
-                      type: 'string',
-                      enum: ['NO_DATA', 'UNSUBMITTED', 'SUBMITTED']
-                    }
-                  }
-                }
               }
             }
           }
@@ -182,10 +173,10 @@ export function getProjectList(): RequestHandler {
 
       const projectListWithStatus = await Promise.all(
         projects.map(async (project: any) => {
-          const status = await projectService.projectPublishStatus(project.id);
+          // const status = await projectService.projectPublishStatus(project.id);
           return {
             projectData: project,
-            projectSupplementaryData: { publishStatus: status }
+            // projectSupplementaryData: { publishStatus: status }
           };
         })
       );

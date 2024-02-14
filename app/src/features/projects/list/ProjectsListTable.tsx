@@ -1,18 +1,11 @@
 import { Theme } from '@mui/material';
-import Chip from '@mui/material/Chip';
 import { grey } from '@mui/material/colors';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import { DataGrid, GridColDef, GridOverlay } from '@mui/x-data-grid';
-import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
-import { SystemRoleGuard } from 'components/security/Guards';
-import { PublishStatus } from 'constants/attachments';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { SYSTEM_ROLE } from 'constants/roles';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetDraftsListResponse } from 'interfaces/useDraftApi.interface';
-import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
+import { IProjectsListData } from 'interfaces/useProjectApi.interface';
 import { useCallback } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDate } from 'utils/Utils';
@@ -49,20 +42,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export interface IProjectsListTableProps {
-  projects: IGetProjectsListResponse[];
-  drafts: IGetDraftsListResponse[];
-  codes: IGetAllCodeSetsResponse;
+interface IProjectsListTableRow extends Omit<IProjectsListData, 'project_programs'> {
+  project_programs: string;
 }
 
-interface IProjectsListTableEntry {
-  id: number;
-  isDraft: boolean;
-  name: string;
-  status?: PublishStatus;
-  type?: string;
-  startDate?: string;
-  endDate?: string;
+export interface IProjectsListTableProps {
+  projects: IProjectsListTableRow[];
 }
 
 const NoRowsOverlay = (props: { className: string }) => (
@@ -76,7 +61,7 @@ const NoRowsOverlay = (props: { className: string }) => (
 const ProjectsListTable = (props: IProjectsListTableProps) => {
   const classes = useStyles();
 
-  const columns: GridColDef<IProjectsListTableEntry>[] = [
+  const columns: GridColDef<IProjectsListTableRow>[] = [
     {
       field: 'name',
       headerName: 'Name',
@@ -90,14 +75,14 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
           title={params.row.name}
           component={RouterLink}
           to={
-            params.row.isDraft ? `/admin/projects/create?draftId=${params.row.id}` : `/admin/projects/${params.row.id}`
+            `/admin/projects/${params.row.project_id}`
           }
           children={params.row.name}
         />
       )
     },
     {
-      field: 'program',
+      field: 'project_programs',
       headerName: 'Programs',
       flex: 1
     },
@@ -119,62 +104,17 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
       minWidth: 150,
       valueGetter: ({ value }) => (value ? new Date(value) : undefined),
       valueFormatter: ({ value }) => (value ? getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, value) : undefined)
-    },
-    {
-      field: 'status',
-      headerName: 'Status',
-      minWidth: 150,
-      renderCell: (params) => {
-        if (params.row.isDraft) {
-          return <Chip label={'Draft'} />;
-        }
-
-        if (!params.row.status) {
-          return <></>;
-        }
-
-        //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-        return (
-          <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-            <SubmitStatusChip status={params.row.status} />
-          </SystemRoleGuard>
-        );
-      }
     }
   ];
 
   const NoRowsOverlayStyled = useCallback(() => <NoRowsOverlay className={classes.noDataText} />, [classes.noDataText]);
 
-  const getProjectPrograms = (project: IGetProjectsListResponse) => {
-    return (
-      props.codes.program
-        .filter((code) => project.projectData.project_programs.includes(code.id))
-        .map((code) => code.name)
-        .join(', ') || ''
-    );
-  };
   return (
     <DataGrid
       className={classes.dataGrid}
       autoHeight
-      rows={[
-        ...props.drafts.map((draft: IGetDraftsListResponse) => ({
-          id: draft.webform_draft_id,
-          name: draft.name,
-          isDraft: true
-        })),
-        ...props.projects.map((project: IGetProjectsListResponse) => ({
-          id: project.projectData.id,
-          name: project.projectData.name,
-          status: project.projectSupplementaryData.publishStatus,
-          program: getProjectPrograms(project),
-          startDate: project.projectData.start_date,
-          endDate: project.projectData.end_date,
-          isDraft: false,
-          regions: project.projectData.regions?.join(', ')
-        }))
-      ]}
-      getRowId={(row) => (row.isDraft ? `draft-${row.id}` : `project-${row.id}`)}
+      rows={props.projects}
+      getRowId={(row) => row.project_id}
       columns={columns}
       pageSizeOptions={[5]}
       rowSelection={false}

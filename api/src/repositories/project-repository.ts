@@ -30,11 +30,9 @@ export class ProjectRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         p.project_id,
-        p.name as project_name,
-        p.uuid,
+        p.name,
         p.start_date,
         p.end_date,
-        p.revision_count,
         array_remove(array_agg(DISTINCT rl.region_name), null) as regions,
         array_agg(distinct p2.program_id) as project_programs
       FROM

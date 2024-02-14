@@ -2,24 +2,23 @@ import { mdiFilterOutline, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import PageHeader from 'components/layout/PageHeader';
-import ProjectsSubmissionAlertBar from 'components/publish/ProjectListSubmissionAlertBar';
 import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContext } from 'contexts/codesContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import ProjectsListFilterForm from './ProjectsListFilterForm';
 import ProjectsListTable from './ProjectsListTable';
+import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
 
 //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
@@ -34,17 +33,22 @@ const ProjectsListPage: React.FC = () => {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
   const codesContext = useContext(CodesContext);
-  useEffect(() => {
-    codesContext.codesDataLoader.load();
-  }, [codesContext.codesDataLoader]);
-
   const projectsDataLoader = useDataLoader((filter?: IProjectAdvancedFilters) =>
     biohubApi.project.getProjectsList(filter)
   );
-  projectsDataLoader.load();
 
-  const draftsDataLoader = useDataLoader(() => biohubApi.draft.getDraftsList());
-  draftsDataLoader.load();
+  const getProjectPrograms = (project: IGetProjectsListResponse) => {
+    return (
+      codesContext.codesDataLoader.data?.program
+        .filter((code) => project.projectData.project_programs.includes(code.id))
+        .map((code) => code.name)
+        .join(', ') || ''
+    );
+  };
+
+
+  codesContext.codesDataLoader.load();
+  projectsDataLoader.load();
 
   /**
    * Handle filtering project results.
@@ -56,10 +60,6 @@ const ProjectsListPage: React.FC = () => {
   const handleReset = async () => {
     projectsDataLoader.refresh();
   };
-
-  if (!codesContext.codesDataLoader.data || !projectsDataLoader.data || !draftsDataLoader.data) {
-    return <CircularProgress className="pageProgress" size={40} />;
-  }
 
   /**
    * Displays project list.
@@ -85,9 +85,6 @@ const ProjectsListPage: React.FC = () => {
 
       <Container maxWidth="xl">
         <Box py={3}>
-          <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-            <ProjectsSubmissionAlertBar projects={projectsDataLoader.data} />
-          </SystemRoleGuard>
           <Paper elevation={0}>
             <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
               <Typography variant="h4" component="h2">
@@ -113,10 +110,12 @@ const ProjectsListPage: React.FC = () => {
             {isFiltersOpen && <ProjectsListFilterForm handleSubmit={handleSubmit} handleReset={handleReset} />}
             <Box py={1} pb={2} px={3}>
               <ProjectsListTable
-                projects={projectsDataLoader.data}
-                drafts={draftsDataLoader.data}
-                codes={codesContext.codesDataLoader.data}
-              />
+                projects={projectsDataLoader.data?.map((projectResponse) => {
+                  return {
+                    ...projectResponse.projectData,
+                    project_programs: getProjectPrograms(projectResponse)
+                  }
+                }) ?? []} />
             </Box>
           </Paper>
         </Box>
