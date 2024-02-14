@@ -7,7 +7,6 @@ import { GetRegionsResponse } from 'hooks/api/useSpatialApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IDraftResponse } from 'interfaces/useDraftApi.interface';
 import { ICreateProjectResponse } from 'interfaces/useProjectApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { Router } from 'react-router';
@@ -21,12 +20,6 @@ jest.mock('../../../hooks/useBioHubApi');
 const mockBiohubApi = useBiohubApi as jest.Mock;
 
 const mockUseApi = {
-  draft: {
-    createDraft: jest.fn<Promise<IDraftResponse>, []>(),
-    updateDraft: jest.fn<Promise<IDraftResponse>, []>(),
-    deleteDraft: jest.fn(),
-    getDraft: jest.fn()
-  },
   spatial: {
     getRegions: jest.fn<Promise<GetRegionsResponse>, []>()
   },
@@ -67,9 +60,6 @@ const renderContainer = () => {
 describe('CreateProjectPage', () => {
   beforeEach(() => {
     mockBiohubApi.mockImplementation(() => mockUseApi);
-    mockUseApi.draft.createDraft.mockClear();
-    mockUseApi.draft.updateDraft.mockClear();
-    mockUseApi.draft.getDraft.mockClear();
     mockUseApi.spatial.getRegions.mockClear();
     mockUseApi.codes.getAllCodeSets.mockClear();
     mockUseApi.project.createProject.mockClear();
