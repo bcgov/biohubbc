@@ -95,6 +95,7 @@ export class SiteSelectionStrategyService extends DBService {
       }
     });
 
+
     const removeStratums = existingSiteSelectionStrategies.stratums.filter((stratum) => {
       return !updateStratums.some((updateStratum) => updateStratum.survey_stratum_id === stratum.survey_stratum_id);
     });

@@ -57,6 +57,7 @@ const SurveyStratumForm = () => {
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
 
   const formikProps = useFormikContext<IEditSurveyRequest>();
+  // const formikProps = useFormikContext<ICreateSurveyRequest>();
   const { values, errors, handleSubmit, setFieldValue } = formikProps;
 
   const handleSave = (formikProps: FormikProps<IStratumForm> | null) => {
@@ -66,12 +67,14 @@ const SurveyStratumForm = () => {
 
     const stratumForm = formikProps.values;
 
+    const stratumNameDescription = { name: stratumForm.stratum.name || '', description: stratumForm.stratum.description || "" };
+
     if (stratumForm.index === null) {
       // Create new stratum
-      setFieldValue('site_selection.stratums', [...values.site_selection.stratums, stratumForm.stratum]);
+      setFieldValue('site_selection.stratums', [...values.site_selection.stratums, stratumNameDescription]);
     } else {
       // Edit existing stratum
-      setFieldValue(`site_selection.stratums[${stratumForm.index}`, stratumForm.stratum);
+      setFieldValue(`site_selection.stratums[${stratumForm.index}`, stratumNameDescription);
     }
 
     setDialogOpen(false);
@@ -108,6 +111,8 @@ const SurveyStratumForm = () => {
     setDialogOpen(true);
     setAnchorEl(null);
   };
+
+  console.log(values.site_selection.stratums);
 
   return (
     <>

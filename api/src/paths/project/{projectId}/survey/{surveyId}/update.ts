@@ -380,6 +380,8 @@ export function updateSurvey(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
 
+    console.log(req.body.site_selection)
+
     const sanitizedPutSurveyData = new PutSurveyObject(req.body);
 
     const connection = getDBConnection(req['keycloak_token']);
