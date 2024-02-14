@@ -40,7 +40,7 @@ parameters:
   - name: CLAMAV_PORT
     value: '3310'
   # BioHub Platform (aka: Backbone)
-  - name: BACKBONE_API_HOST
+  - name: BACKBONE_INTERNAL_API_HOST
     required: true
     description: API host for BioHub Platform Backbone. Example "https://platform.com".
   - name: BACKBONE_INTAKE_PATH
@@ -55,6 +55,9 @@ parameters:
   - name: BIOHUB_TAXON_TSN_PATH
     required: true
     description: API path for BioHub Platform Backbone taxon TSN endpoint. Example "/api/path/to/taxon/tsn".
+  - name: BIOHUB_TAXON_PATH
+    required: true
+    description: API path for BioHub Platform Backbone taxon endpoint. Example "/api/path/to/taxon".
   # BCTW / Critterbase
   - name: CB_API_HOST
     description: API host for the Critterbase service, SIMS API will hit this to retrieve critter metadata. Example "https://critterbase.com".
@@ -62,15 +65,6 @@ parameters:
   - name: BCTW_API_HOST
     description: API host for the BC Telemetry Warehouse service. SIMS API will hit this for device deployments and other telemetry operations.  Example "https://bctw.com".
     required: true
-  # Elastic Search
-  - name: ELASTICSEARCH_URL
-    description: Platform Elasticsearch URL
-    required: true
-    value: 'http://es01:9200'
-  - name: ELASTICSEARCH_TAXONOMY_INDEX
-    description: Platform Elasticsearch Taxonomy Index
-    required: true
-    value: 'taxonomy_3.0.0'
   # Database
   - name: TZ
     description: Application timezone
@@ -227,8 +221,8 @@ objects:
                 - name: NODE_OPTIONS
                   value: ${NODE_OPTIONS}
                 # BioHub Platform (aka: Backbone)
-                - name: BACKBONE_API_HOST
-                  value: ${BACKBONE_API_HOST}
+                - name: BACKBONE_INTERNAL_API_HOST
+                  value: ${BACKBONE_INTERNAL_API_HOST}
                 - name: BACKBONE_INTAKE_PATH
                   value: ${BACKBONE_INTAKE_PATH}
                 - name: BACKBONE_ARTIFACT_INTAKE_PATH
@@ -237,6 +231,8 @@ objects:
                   value: ${BACKBONE_INTAKE_ENABLED}
                 - name: BIOHUB_TAXON_TSN_PATH
                   value: ${BIOHUB_TAXON_TSN_PATH}
+                - name: BIOHUB_TAXON_PATH
+                  value: ${BIOHUB_TAXON_PATH}
                 # BCTW / Critterbase
                 - name: CB_API_HOST
                   value: ${CB_API_HOST}
@@ -302,13 +298,6 @@ objects:
                   value: ${KEYCLOAK_API_HOST}
                 - name: KEYCLOAK_API_ENVIRONMENT
                   value: ${KEYCLOAK_API_ENVIRONMENT}
-                # Elastic Search
-                - name: ELASTICSEARCH_URL
-                  value: ${ELASTICSEARCH_URL}
-                - name: ELASTICSEARCH_TAXONOMY_INDEX
-                  value: ${ELASTICSEARCH_TAXONOMY_INDEX}
-                - name: S3_KEY_PREFIX
-                  value: ${S3_KEY_PREFIX}
                 # Object Store (S3)
                 - name: OBJECT_STORE_URL
                   valueFrom:

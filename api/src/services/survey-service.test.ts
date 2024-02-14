@@ -379,12 +379,12 @@ describe('SurveyService', () => {
       const data = ({ id: 1 } as unknown) as IGetSpeciesData;
 
       const repoStub = sinon.stub(SurveyRepository.prototype, 'getSpeciesData').resolves([data]);
-      const getTaxonomyFromBiohubStub = sinon.stub(PlatformService.prototype, 'getTaxonomyFromBiohub').resolves([]);
+      const getTaxonomyByTsnsStub = sinon.stub(PlatformService.prototype, 'getTaxonomyByTsns').resolves([]);
 
       const response = await service.getSpeciesData(1);
 
       expect(repoStub).to.be.calledOnce;
-      expect(getTaxonomyFromBiohubStub).to.be.calledTwice;
+      expect(getTaxonomyByTsnsStub).to.be.calledTwice;
       expect(response).to.eql({
         ...new GetFocalSpeciesData([]),
         ...new GetAncillarySpeciesData([])

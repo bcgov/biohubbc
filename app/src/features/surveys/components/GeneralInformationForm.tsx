@@ -6,10 +6,10 @@ import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocomple
 import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
 import AncillarySpeciesComponent from 'components/species/AncillarySpeciesComponent';
-import { ISpeciesAutocompleteField } from 'components/species/components/SpeciesAutocompleteField';
 import FocalSpeciesComponent from 'components/species/FocalSpeciesComponent';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { useFormikContext } from 'formik';
+import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import React from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
@@ -41,8 +41,8 @@ export interface IGeneralInformationForm {
     survey_types: number[];
   };
   species: {
-    focal_species: ISpeciesAutocompleteField[];
-    ancillary_species: ISpeciesAutocompleteField[];
+    focal_species: ITaxonomy[];
+    ancillary_species: ITaxonomy[];
   };
   permit: {
     permits: {
