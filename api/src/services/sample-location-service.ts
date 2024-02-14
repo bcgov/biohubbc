@@ -6,6 +6,8 @@ import {
   UpdateSampleSiteRecord
 } from '../repositories/sample-location-repository';
 import { InsertSampleMethodRecord } from '../repositories/sample-method-repository';
+import { SurveyStratum } from '../repositories/site-selection-strategy-repository';
+import { PostSurveyBlock } from '../repositories/survey-block-repository';
 import { DBService } from './db-service';
 import { SampleMethodService } from './sample-method-service';
 
@@ -20,6 +22,8 @@ export interface PostSampleLocations {
   survey_id: number;
   survey_sample_sites: SampleSite[];
   methods: InsertSampleMethodRecord[];
+  stratums: SurveyStratum[];
+  blocks: PostSurveyBlock[];
 }
 
 /**
