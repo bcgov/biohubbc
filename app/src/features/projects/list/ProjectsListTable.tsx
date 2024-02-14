@@ -92,14 +92,14 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
       flex: 1
     },
     {
-      field: 'startDate',
+      field: 'start_date',
       headerName: 'Start Date',
       minWidth: 150,
       valueGetter: ({ value }) => (value ? new Date(value) : undefined),
       valueFormatter: ({ value }) => (value ? getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, value) : undefined)
     },
     {
-      field: 'endDate',
+      field: 'end_date',
       headerName: 'End Date',
       minWidth: 150,
       valueGetter: ({ value }) => (value ? new Date(value) : undefined),
