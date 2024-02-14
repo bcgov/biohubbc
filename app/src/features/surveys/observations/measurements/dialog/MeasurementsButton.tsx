@@ -7,11 +7,18 @@ import { useState } from 'react';
 
 export interface IMeasurementsButtonProps {
   /**
+   * The selected measurements.
+   *
+   * @type {Measurement[]}
+   * @memberof IMeasurementsButtonProps
+   */
+  selectedMeasurements: Measurement[];
+  /**
    * Callback fired on save.
    *
    * @memberof IMeasurementsButtonProps
    */
-  onSave: (measurements: Measurement[]) => void;
+  onMeasurementsSave: (measurements: Measurement[]) => void;
 }
 
 /**
@@ -21,7 +28,7 @@ export interface IMeasurementsButtonProps {
  * @return {*}
  */
 export const MeasurementsButton = (props: IMeasurementsButtonProps) => {
-  const { onSave } = props;
+  const { selectedMeasurements, onMeasurementsSave } = props;
 
   const [open, setOpen] = useState(false);
 
@@ -37,9 +44,10 @@ export const MeasurementsButton = (props: IMeasurementsButtonProps) => {
         Add Measurements
       </Button>
       <MeasurementsDialog
+        selectedMeasurements={selectedMeasurements}
         open={open}
         onSave={(measurements) => {
-          onSave(measurements);
+          onMeasurementsSave(measurements);
           setOpen(false);
         }}
         onCancel={() => {

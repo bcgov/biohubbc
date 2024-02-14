@@ -5,6 +5,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
+import { useObservationTableContext } from 'hooks/useContext';
 import { useState } from 'react';
 import { pluralize as p } from 'utils/Utils';
 
@@ -16,25 +17,16 @@ export interface IBulkActionsButtonProps {
    * @memberof IBulkActionsButtonProps
    */
   disabled: boolean;
-  /**
-   * The number of selected rows in the table.
-   *
-   * @type {number}
-   * @memberof IBulkActionsButtonProps
-   */
-  numSelectedRows: number;
-  /**
-   * Callback fired when the delete selected rows button is clicked.
-   *
-   * @memberof IBulkActionsButtonProps
-   */
-  onDeleteSelectedRows: () => void;
 }
 
 export const BulkActionsButton = (props: IBulkActionsButtonProps) => {
-  const { disabled, numSelectedRows, onDeleteSelectedRows } = props;
+  const { disabled } = props;
+
+  const observationsTableContext = useObservationTableContext();
 
   const [contextMenuAnchorEl, setContextMenuAnchorEl] = useState<Element | null>(null);
+
+  const numSelectedRows = observationsTableContext.rowSelectionModel.length;
 
   return (
     <>
@@ -65,7 +57,7 @@ export const BulkActionsButton = (props: IBulkActionsButtonProps) => {
         }}>
         <MenuItem
           onClick={() => {
-            onDeleteSelectedRows();
+            observationsTableContext.deleteSelectedObservationRecords();
             setContextMenuAnchorEl(null);
           }}
           disabled={disabled}>

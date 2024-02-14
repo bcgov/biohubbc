@@ -136,14 +136,16 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
             <Stack gap={0.75} mt={-0.25}>
               <Box>
                 <Typography variant="body2">
-                  {renderOption.commonName ?
+                  {renderOption.commonName ? (
                     <>
                       <span>{renderOption.commonName}</span>&nbsp;
-                      <span>(<em>{renderOption.scientificName}</em>)</span>
+                      <span>
+                        (<em>{renderOption.scientificName}</em>)
+                      </span>
                     </>
-                    :
+                  ) : (
                     <em>{renderOption.scientificName}</em>
-                  }
+                  )}
                 </Typography>
               </Box>
               <Box>

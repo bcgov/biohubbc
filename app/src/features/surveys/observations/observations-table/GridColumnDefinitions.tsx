@@ -12,10 +12,9 @@ import TaxonomyDataGridViewCell from 'components/data-grid/taxonomy/TaxonomyData
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
 import TimePickerDataGrid from 'components/data-grid/TimePickerDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { IObservationTableRow, ObservationsTableContext } from 'contexts/observationsTableContext';
+import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { default as dayjs } from 'dayjs';
 import { Measurement, MeasurementOption } from 'hooks/cb_api/useLookupApi';
-import { useContext } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 
 export type ISampleSiteOption = {
@@ -476,9 +475,10 @@ export const ObservationLongitudeColDef = (props: {
   };
 };
 
-export const ObservationActionsColDef = (): GridColDef<IObservationTableRow> => {
-  const observationsTableContext = useContext(ObservationsTableContext);
-
+export const ObservationActionsColDef = (props: {
+  disabled: boolean;
+  onDelete: (observationRecords: IObservationTableRow[]) => void;
+}): GridColDef<IObservationTableRow> => {
   return {
     field: 'actions',
     headerName: '',
@@ -489,8 +489,8 @@ export const ObservationActionsColDef = (): GridColDef<IObservationTableRow> => 
     cellClassName: 'pinnedColumn',
     getActions: (params) => [
       <IconButton
-        onClick={() => observationsTableContext.deleteObservationRecords([params.row])}
-        disabled={observationsTableContext.isSaving}
+        onClick={() => props.onDelete([params.row])}
+        disabled={props.disabled}
         key={`actions[${params.id}].handleDeleteRow`}>
         <Icon path={mdiTrashCanOutline} size={1} />
       </IconButton>

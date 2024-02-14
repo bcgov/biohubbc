@@ -1,5 +1,7 @@
 import { ConfigContext, IConfig } from 'contexts/configContext';
 import { DialogContext, IDialogContext } from 'contexts/dialogContext';
+import { IObservationsContext, ObservationsContext } from 'contexts/observationsContext';
+import { IObservationsTableContext, ObservationsTableContext } from 'contexts/observationsTableContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
@@ -66,6 +68,40 @@ export const useSurveyContext = (): ISurveyContext => {
   if (!context) {
     throw Error(
       'SurveyContext is undefined, please verify you are calling useSurveyContext() as child of an <SurveyContextProvider> component.'
+    );
+  }
+
+  return context;
+};
+
+/**
+ * Returns an instance of `IObservationsContext` from `SurveyContext`.
+ *
+ * @return {*}  {IObservationsContext}
+ */
+export const useObservationsContext = (): IObservationsContext => {
+  const context = useContext(ObservationsContext);
+
+  if (!context) {
+    throw Error(
+      'ObservationsContext is undefined, please verify you are calling useObservationsContext() as child of an <ObservationsContextProvider> component.'
+    );
+  }
+
+  return context;
+};
+
+/**
+ * Returns an instance of `IObservationsTableContext` from `SurveyContext`.
+ *
+ * @return {*}  {IObservationsTableContext}
+ */
+export const useObservationTableContext = (): IObservationsTableContext => {
+  const context = useContext(ObservationsTableContext);
+
+  if (!context) {
+    throw Error(
+      'ObservationsTableContext is undefined, please verify you are calling useObservationTableContext() as child of an <ObservationsTableContextProvider> component.'
     );
   }
 

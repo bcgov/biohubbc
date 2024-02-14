@@ -1,123 +1,53 @@
 import { cyan, grey } from '@mui/material/colors';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
-import { CodesContext } from 'contexts/codesContext';
-import { ObservationsContext } from 'contexts/observationsContext';
-import { IObservationTableRow, ObservationsTableContext } from 'contexts/observationsTableContext';
+import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import {
-  ObservationActionsColDef,
-  ObservationCountColDef,
-  ObservationDateColDef,
-  ObservationLatitudeColDef,
-  ObservationLongitudeColDef,
-  ObservationTimeColDef,
-  SampleMethodColDef,
-  SamplePeriodColDef,
-  SampleSiteColDef,
-  TaxonomyColDef
-} from 'features/surveys/observations/observations-table/GridColumnDefinitions';
-import {
-  IGetSampleLocationRecord,
-  IGetSampleMethodRecord,
-  IGetSamplePeriodRecord
-} from 'interfaces/useSurveyApi.interface';
+import { useObservationsContext, useObservationTableContext } from 'hooks/useContext';
 import { has } from 'lodash-es';
 import { useContext, useMemo } from 'react';
-import { getCodesName } from 'utils/Utils';
 
-type ISampleSiteOption = {
-  survey_sample_site_id: number;
-  sample_site_name: string;
-};
-
-type ISampleMethodOption = {
-  survey_sample_method_id: number;
-  survey_sample_site_id: number;
-  sample_method_name: string;
-};
-
-type ISamplePeriodOption = {
-  survey_sample_period_id: number;
-  survey_sample_method_id: number;
-  sample_period_name: string;
-};
 export interface ISpeciesObservationTableProps {
+  /**
+   * Manually control the loading state of the table.
+   *
+   * @type {boolean}
+   * @memberof ISpeciesObservationTableProps
+   */
   isLoading?: boolean;
+  /**
+   * The column definitions of the columns to render in the table.
+   *
+   * @type {GridColDef<IObservationTableRow>[]}
+   * @memberof ISpeciesObservationTableProps
+   */
+  columns: GridColDef<IObservationTableRow>[];
 }
 
 const ObservationsTable = (props: ISpeciesObservationTableProps) => {
-  const observationsTableContext = useContext(ObservationsTableContext);
-  const observationsContext = useContext(ObservationsContext);
   const surveyContext = useContext(SurveyContext);
-  const codesContext = useContext(CodesContext);
-  const hasLoadedCodes = Boolean(codesContext.codesDataLoader.data);
+
+  const observationsContext = useObservationsContext();
+
+  const observationsTableContext = useObservationTableContext();
 
   const isLoading = useMemo(() => {
-    return [
-      observationsContext.observationsDataLoader.isLoading && !observationsContext.observationsDataLoader.hasLoaded,
-      props.isLoading,
-      surveyContext.sampleSiteDataLoader.isLoading,
-      observationsTableContext.isLoading,
-      observationsTableContext.isSaving
-    ].some(Boolean);
+    return props.isLoading !== undefined
+      ? props.isLoading
+      : [
+          observationsContext.observationsDataLoader.isLoading && !observationsContext.observationsDataLoader.hasLoaded,
+          surveyContext.sampleSiteDataLoader.isLoading,
+          observationsTableContext.isLoading,
+          observationsTableContext.isSaving
+        ].some(Boolean);
   }, [
+    props.isLoading,
     observationsContext.observationsDataLoader.isLoading,
     observationsContext.observationsDataLoader.hasLoaded,
-    props.isLoading,
     surveyContext.sampleSiteDataLoader.isLoading,
     observationsTableContext.isLoading,
     observationsTableContext.isSaving
   ]);
-
-  // Collect sample sites
-  const surveySampleSites: IGetSampleLocationRecord[] = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
-  const sampleSiteOptions: ISampleSiteOption[] =
-    surveySampleSites.map((site) => ({
-      survey_sample_site_id: site.survey_sample_site_id,
-      sample_site_name: site.name
-    })) ?? [];
-
-  // Collect sample methods
-  const surveySampleMethods: IGetSampleMethodRecord[] = surveySampleSites
-    .filter((sampleSite) => Boolean(sampleSite.sample_methods))
-    .map((sampleSite) => sampleSite.sample_methods as IGetSampleMethodRecord[])
-    .flat(2);
-  const sampleMethodOptions: ISampleMethodOption[] = hasLoadedCodes
-    ? surveySampleMethods.map((method) => ({
-        survey_sample_method_id: method.survey_sample_method_id,
-        survey_sample_site_id: method.survey_sample_site_id,
-        sample_method_name:
-          getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_lookup_id) ?? ''
-      }))
-    : [];
-
-  // Collect sample periods
-  const samplePeriodOptions: ISamplePeriodOption[] = surveySampleMethods
-    .filter((sampleMethod) => Boolean(sampleMethod.sample_periods))
-    .map((sampleMethod) => sampleMethod.sample_periods as IGetSamplePeriodRecord[])
-    .flat(2)
-    .map((samplePeriod: IGetSamplePeriodRecord) => ({
-      survey_sample_period_id: samplePeriod.survey_sample_period_id,
-      survey_sample_method_id: samplePeriod.survey_sample_method_id,
-      sample_period_name: `${samplePeriod.start_date} ${samplePeriod.start_time || ''} - ${samplePeriod.end_date} ${
-        samplePeriod.end_time || ''
-      }`
-    }));
-
-  const observationColumns: GridColDef<IObservationTableRow>[] = [
-    TaxonomyColDef({ hasError: observationsTableContext.hasError }),
-    SampleSiteColDef({ sampleSiteOptions, hasError: observationsTableContext.hasError }),
-    SampleMethodColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
-    SamplePeriodColDef({ samplePeriodOptions, hasError: observationsTableContext.hasError }),
-    ObservationCountColDef({ hasError: observationsTableContext.hasError }),
-    ObservationDateColDef({ hasError: observationsTableContext.hasError }),
-    ObservationTimeColDef({ hasError: observationsTableContext.hasError }),
-    ObservationLatitudeColDef({ hasError: observationsTableContext.hasError }),
-    ObservationLongitudeColDef({ hasError: observationsTableContext.hasError }),
-    ...observationsTableContext.measurementColumns.map((item) => item.colDef),
-    ObservationActionsColDef()
-  ];
 
   return (
     <>
@@ -129,7 +59,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         rowHeight={56}
         apiRef={observationsTableContext._muiDataGridApiRef}
         editMode="row"
-        columns={observationColumns}
+        columns={props.columns}
         rows={observationsTableContext.rows}
         rowCount={observationsTableContext.observationCount}
         paginationModel={observationsTableContext.paginationModel}

@@ -20,6 +20,13 @@ export interface IrementsDialogProps {
    */
   open: boolean;
   /**
+   * The selected measurements.F
+   *
+   * @type {Measurement[]}
+   * @memberof IrementsDialogProps
+   */
+  selectedMeasurements: Measurement[];
+  /**
    * Callback fired on save.
    *
    * @memberof IrementsDialogProps
@@ -40,10 +47,12 @@ export interface IrementsDialogProps {
  * @return {*}
  */
 export const MeasurementsDialog = (props: IrementsDialogProps) => {
+  const { open, selectedMeasurements: initialSelectedMeasurements, onSave, onCancel } = props;
+
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const [selectedMeasurements, setSelectedMeasurements] = useState<Measurement[]>([]);
+  const [selectedMeasurements, setSelectedMeasurements] = useState<Measurement[]>(initialSelectedMeasurements);
 
   const onRemove = (measurementToRemove: Measurement) => {
     setSelectedMeasurements((currentMeasurements) =>
@@ -59,7 +68,7 @@ export const MeasurementsDialog = (props: IrementsDialogProps) => {
     );
   };
 
-  if (!props.open) {
+  if (!open) {
     return <></>;
   }
 
@@ -68,7 +77,7 @@ export const MeasurementsDialog = (props: IrementsDialogProps) => {
       data-testid="observation-measurements-dialog"
       fullScreen={fullScreen}
       maxWidth="xl"
-      open={props.open}
+      open={open}
       aria-labelledby="observation-measurements-dialog-title">
       <DialogTitle id="observation-measurements-dialog-title">Add Observation Measurements</DialogTitle>
       <DialogContent>
@@ -79,7 +88,7 @@ export const MeasurementsDialog = (props: IrementsDialogProps) => {
         <LoadingButton
           loading={false}
           disabled={false}
-          onClick={() => props.onSave(selectedMeasurements)}
+          onClick={() => onSave(selectedMeasurements)}
           color="primary"
           variant="contained"
           autoFocus
@@ -87,7 +96,7 @@ export const MeasurementsDialog = (props: IrementsDialogProps) => {
           Add
         </LoadingButton>
         <Button
-          onClick={props.onCancel}
+          onClick={onCancel}
           color="primary"
           variant="outlined"
           data-testid="observation-measurements-dialog-cancel-button">

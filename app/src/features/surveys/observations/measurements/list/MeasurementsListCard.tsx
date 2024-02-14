@@ -48,14 +48,16 @@ export const MeasurementsListCard = (props: IMeasurementsListCardProps) => {
       <Stack gap={0.75} mt={-0.25}>
         <Box>
           <Typography variant="body2">
-            {props.measurement.commonName ?
+            {props.measurement.commonName ? (
               <>
                 <span>{props.measurement.commonName}</span>&nbsp;
-                <span>(<em>{props.measurement.scientificName}</em>)</span>
+                <span>
+                  (<em>{props.measurement.scientificName}</em>)
+                </span>
               </>
-              :
+            ) : (
               <em>{props.measurement.scientificName}</em>
-            }
+            )}
           </Typography>
         </Box>
         <Box>

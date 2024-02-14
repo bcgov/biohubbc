@@ -1,13 +1,13 @@
 import { mdiBroadcast, mdiEye } from '@mdi/js';
 import { Box, Paper } from '@mui/material';
 import { CodesContext } from 'contexts/codesContext';
-import { ObservationsContext } from 'contexts/observationsContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TaxonomyContext } from 'contexts/taxonomyContext';
 import { TelemetryDataContext } from 'contexts/telemetryDataContext';
 import dayjs from 'dayjs';
 import { Position } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useObservationsContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { ITelemetry } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
@@ -21,7 +21,7 @@ import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './SurveySpat
 const SurveySpatialData = () => {
   const [activeView, setActiveView] = useState<SurveySpatialDatasetViewEnum>(SurveySpatialDatasetViewEnum.OBSERVATIONS);
 
-  const observationsContext = useContext(ObservationsContext);
+  const observationsContext = useObservationsContext();
   const telemetryContext = useContext(TelemetryDataContext);
   const taxonomyContext = useContext(TaxonomyContext);
   const surveyContext = useContext(SurveyContext);
