@@ -199,7 +199,7 @@ describe('BctwService', () => {
       it('should send a get request', async () => {
         const mockGetRequest = sinon.stub(bctwService, '_makeGetRequest');
 
-        await bctwService.getDeviceDetails(123);
+        await bctwService.getDeviceDetails(123, 'Lotek');
 
         expect(mockGetRequest).to.have.been.calledOnceWith(`${GET_DEVICE_DETAILS}${123}`);
       });
@@ -209,10 +209,11 @@ describe('BctwService', () => {
       it('should send a get request', async () => {
         const mockGetRequest = sinon.stub(bctwService, '_makeGetRequest');
 
-        await bctwService.getDeviceDeployments(123);
+        await bctwService.getDeviceDeployments(123, 'Lotek');
 
         expect(mockGetRequest).to.have.been.calledOnceWith(GET_DEPLOYMENTS_BY_DEVICE_ENDPOINT, {
-          device_id: '123'
+          device_id: '123',
+          make: 'Lotek'
         });
       });
     });
