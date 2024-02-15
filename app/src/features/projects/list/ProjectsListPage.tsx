@@ -18,7 +18,7 @@ import React, { useContext, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import ProjectsListFilterForm from './ProjectsListFilterForm';
 import ProjectsListTable from './ProjectsListTable';
-import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
+import { IProjectsListItemData } from 'interfaces/useProjectApi.interface';
 
 //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
@@ -37,10 +37,10 @@ const ProjectsListPage: React.FC = () => {
     biohubApi.project.getProjectsList(filter)
   );
 
-  const getProjectPrograms = (project: IGetProjectsListResponse) => {
+  const getProjectPrograms = (project: IProjectsListItemData) => {
     return (
       codesContext.codesDataLoader.data?.program
-        .filter((code) => project.projectData.project_programs.includes(code.id))
+        .filter((code) => project.project_programs.includes(code.id))
         .map((code) => code.name)
         .join(', ') || ''
     );
@@ -95,7 +95,7 @@ const ProjectsListPage: React.FC = () => {
                   lineHeight="inherit"
                   fontSize="inherit"
                   fontWeight={400}>
-                  ({projectsDataLoader.data?.length || 0})
+                  ({projectsDataLoader.data?.pagination.total || 0})
                 </Typography>
               </Typography>
               <Button
@@ -110,10 +110,10 @@ const ProjectsListPage: React.FC = () => {
             {isFiltersOpen && <ProjectsListFilterForm handleSubmit={handleSubmit} handleReset={handleReset} />}
             <Box py={1} pb={2} px={3}>
               <ProjectsListTable
-                projects={projectsDataLoader.data?.map((projectResponse) => {
+                projects={projectsDataLoader.data?.projects.map((project) => {
                   return {
-                    ...projectResponse.projectData,
-                    project_programs: getProjectPrograms(projectResponse)
+                    ...project,
+                    project_programs: getProjectPrograms(project)
                   }
                 }) ?? []} />
             </Box>

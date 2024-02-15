@@ -98,10 +98,11 @@ export interface IProjectSupplementaryData {
  * @interface IGetProjectsListResponse
  */
 export interface IGetProjectsListResponse {
-  projectData: IProjectsListData; // TODO
+  projects: IProjectsListItemData[],
+  pagination: any; // TODO
 }
 
-export interface IProjectsListData {
+export interface IProjectsListItemData {
   project_id: number;
   name: string;
   start_date: string;

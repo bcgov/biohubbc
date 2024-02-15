@@ -147,6 +147,19 @@ export class ProjectRepository extends BaseRepository {
     return response.rows;
   }
 
+  /**
+   * Returns the total count of projects that are visible to the given user.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @return {*}  {Promise<number>}
+   * @memberof ProjectRepository
+   */
+  async getProjectCount(isUserAdmin: boolean, systemUserId: number | null): Promise<number> {
+    // TODO
+    return 123456
+  }
+
   async getProjectData(projectId: number): Promise<ProjectData> {
     const getProjectSqlStatement = SQL`
       SELECT

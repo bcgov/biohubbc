@@ -49,6 +49,16 @@ export class ProjectService extends DBService {
     this.surveyService = new SurveyService(connection);
   }
 
+  /**
+   * Retrieves the paginated list of all projects that are available to the user.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IProjectAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {(Promise<(ProjectListData & { completion_status: COMPLETION_STATUS })[]>)}
+   * @memberof ProjectService
+   */
   async getProjectList(
     isUserAdmin: boolean,
     systemUserId: number | null,
@@ -65,6 +75,25 @@ export class ProjectService extends DBService {
     }));
   }
 
+  /**
+   * Returns the total count of projects that are visible to the given user.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @return {*}  {Promise<number>}
+   * @memberof ProjectService
+   */
+  async getProjectCount(isUserAdmin: boolean, systemUserId: number | null): Promise<number> {
+    return this.projectRepository.getProjectCount(isUserAdmin, systemUserId);
+  }
+
+  /**
+   * Retrieves a single project by its ID.
+   *
+   * @param {number} projectId
+   * @return {*}  {Promise<IGetProject>}
+   * @memberof ProjectService
+   */
   async getProjectById(projectId: number): Promise<IGetProject> {
     const [projectData, objectiveData, projectParticipantsData, iucnData] = await Promise.all([
       this.getProjectData(projectId),

@@ -7,6 +7,7 @@ import { authorizeRequestHandler, userHasValidRole } from '../../request-handler
 import { ProjectService } from '../../services/project-service';
 import { getLogger } from '../../utils/logger';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
+import { paginationResponseSchema } from '../../openapi/schemas/pagination'
 
 const defaultLog = getLogger('paths/projects');
 
@@ -78,54 +79,51 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            type: 'array',
-            items: {
-              title: 'Survey get response object, for view purposes',
-              type: 'object',
-              required: ['projectData'],
-              properties: {
-                projectData: {
-                  type: 'object',
-                  required: [
-                    'project_id',
-                    'name',
-                    'project_programs',
-                    'completion_status',
-                    'start_date',
-                    'end_date',
-                    'regions'
-                  ],
-                  properties: {
-                    project_id: {
+            type: 'object',
+            required: ['projects', 'pagination'],
+            properties: {
+              projects: {   
+                type: 'object',
+                required: [
+                  'project_id',
+                  'name',
+                  'project_programs',
+                  'completion_status',
+                  'start_date',
+                  'end_date',
+                  'regions'
+                ],
+                properties: {
+                  project_id: {
+                    type: 'integer'
+                  },
+                  name: {
+                    type: 'string'
+                  },
+                  project_programs: {
+                    type: 'array',
+                    items: {
                       type: 'integer'
-                    },
-                    name: {
+                    }
+                  },
+                  start_date: {
+                    oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                    description: 'ISO 8601 date string for the funding end_date'
+                  },
+                  end_date: {
+                    oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                    nullable: true,
+                    description: 'ISO 8601 date string for the funding end_date'
+                  },
+                  regions: {
+                    type: 'array',
+                    items: {
                       type: 'string'
-                    },
-                    project_programs: {
-                      type: 'array',
-                      items: {
-                        type: 'integer'
-                      }
-                    },
-                    start_date: {
-                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                      description: 'ISO 8601 date string for the funding end_date'
-                    },
-                    end_date: {
-                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                      nullable: true,
-                      description: 'ISO 8601 date string for the funding end_date'
-                    },
-                    regions: {
-                      type: 'array',
-                      items: {
-                        type: 'string'
-                      }
                     }
                   }
-                },
-              }
+                }
+              },
+              pagination: { ...paginationResponseSchema }
             }
           }
         }
@@ -182,18 +180,23 @@ export function getProjectList(): RequestHandler {
         limit !== undefined && page !== undefined ? { limit, page, sort, order } : undefined;
 
       const projects = await projectService.getProjectList(isUserAdmin, systemUserId, filterFields, paginationOptions);
+      const projectsTotalCount = await projectService.getProjectCount(isUserAdmin, systemUserId);
 
-      const projectListWithStatus = await Promise.all(
-        projects.map((project) => {
-          return {
-            projectData: project,
-          };
-        })
-      );
+      const response = {
+        projects,
+        pagination: {
+          total: projectsTotalCount,
+          per_page: limit,
+          current_page: page ?? 1,
+          last_page: limit ? Math.max(1, Math.ceil(projectsTotalCount / limit)) : 1,
+          sort,
+          order
+        }
+      };
 
       await connection.commit();
 
-      return res.status(200).json(projectListWithStatus);
+      return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'getProjectList', message: 'error', error });
       throw error;

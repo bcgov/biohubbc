@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import { DataGrid, GridColDef, GridOverlay } from '@mui/x-data-grid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { IProjectsListData } from 'interfaces/useProjectApi.interface';
+import { IProjectsListItemData } from 'interfaces/useProjectApi.interface';
 import { useCallback } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDate } from 'utils/Utils';
@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-interface IProjectsListTableRow extends Omit<IProjectsListData, 'project_programs'> {
+interface IProjectsListTableRow extends Omit<IProjectsListItemData, 'project_programs'> {
   project_programs: string;
 }
 
