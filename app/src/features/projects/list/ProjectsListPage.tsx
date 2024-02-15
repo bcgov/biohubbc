@@ -1,31 +1,31 @@
 import { mdiFilterOutline, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import { grey } from '@mui/material/colors';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
+import { DataGrid, GridColDef, GridOverlay, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import PageHeader from 'components/layout/PageHeader';
 import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
 import { SystemRoleGuard } from 'components/security/Guards';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContext } from 'contexts/codesContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { IProjectsListItemData } from 'interfaces/useProjectApi.interface';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import ProjectsListFilterForm from './ProjectsListFilterForm';
-import { DataGrid, GridColDef, GridOverlay, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { firstOrNull, getFormattedDate } from 'utils/Utils';
-import { Theme } from '@mui/material';
-import { grey } from '@mui/material/colors';
-import { makeStyles } from '@mui/styles';
-import { IProjectsListItemData } from 'interfaces/useProjectApi.interface';
 import { ApiPaginationOptions } from 'types/misc';
+import { firstOrNull, getFormattedDate } from 'utils/Utils';
+import ProjectsListFilterForm from './ProjectsListFilterForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectsTable: {
@@ -80,7 +80,10 @@ const pageSizeOptions = [10, 25, 50];
  */
 const ProjectsListPage = () => {
   const classes = useStyles();
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: pageSizeOptions[0] });
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: pageSizeOptions[0]
+  });
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
@@ -88,7 +91,7 @@ const ProjectsListPage = () => {
 
   const codesContext = useContext(CodesContext);
   const projectsDataLoader = useDataLoader((pagination: ApiPaginationOptions, filter?: IProjectAdvancedFilters) => {
-    return biohubApi.project.getProjectsList(pagination, filter)
+    return biohubApi.project.getProjectsList(pagination, filter);
   });
 
   const getProjectPrograms = (project: IProjectsListItemData) => {
@@ -120,17 +123,18 @@ const ProjectsListPage = () => {
 
       // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
       page: paginationModel.page + 1
-    }
+    };
 
     return projectsDataLoader.refresh(pagination, filterValues);
   };
 
-  const projectRows = projectsDataLoader.data?.projects.map((project) => {
-    return {
-      ...project,
-      project_programs: getProjectPrograms(project)
-    }
-  }) ?? []
+  const projectRows =
+    projectsDataLoader.data?.projects.map((project) => {
+      return {
+        ...project,
+        project_programs: getProjectPrograms(project)
+      };
+    }) ?? [];
 
   const columns: GridColDef<IProjectsListTableRow>[] = [
     {
@@ -145,9 +149,7 @@ const ProjectsListPage = () => {
           underline="always"
           title={params.row.name}
           component={RouterLink}
-          to={
-            `/admin/projects/${params.row.project_id}`
-          }
+          to={`/admin/projects/${params.row.project_id}`}
           children={params.row.name}
         />
       )
@@ -183,7 +185,7 @@ const ProjectsListPage = () => {
   // Refresh projects when pagination or sort changes
   useEffect(() => {
     refreshProjectsList();
-  }, [sortModel, paginationModel])
+  }, [sortModel, paginationModel]);
 
   /**
    * Displays project list.
@@ -233,31 +235,31 @@ const ProjectsListPage = () => {
             <Divider></Divider>
             {isFiltersOpen && <ProjectsListFilterForm handleSubmit={handleSubmit} handleReset={handleReset} />}
             <Box py={1} pb={2} px={3}>
-            <DataGrid
-              className={classes.dataGrid}
-              autoHeight
-              rows={projectRows}
-              rowCount={projectsDataLoader.data?.pagination.total}
-              getRowId={(row) => row.project_id}
-              columns={columns}
-              pageSizeOptions={[...pageSizeOptions]}
-              paginationMode="server"
-              sortingMode="server"
-              sortModel={sortModel}
-              paginationModel={paginationModel}
-              onPaginationModelChange={setPaginationModel}
-              onSortModelChange={setSortModel}
-              rowSelection={false}
-              checkboxSelection={false}
-              disableRowSelectionOnClick
-              disableColumnSelector
-              disableColumnFilter
-              disableColumnMenu
-              sortingOrder={['asc', 'desc']}
-              slots={{
-                noRowsOverlay: NoRowsOverlayStyled
-              }}
-            />
+              <DataGrid
+                className={classes.dataGrid}
+                autoHeight
+                rows={projectRows}
+                rowCount={projectsDataLoader.data?.pagination.total}
+                getRowId={(row) => row.project_id}
+                columns={columns}
+                pageSizeOptions={[...pageSizeOptions]}
+                paginationMode="server"
+                sortingMode="server"
+                sortModel={sortModel}
+                paginationModel={paginationModel}
+                onPaginationModelChange={setPaginationModel}
+                onSortModelChange={setSortModel}
+                rowSelection={false}
+                checkboxSelection={false}
+                disableRowSelectionOnClick
+                disableColumnSelector
+                disableColumnFilter
+                disableColumnMenu
+                sortingOrder={['asc', 'desc']}
+                slots={{
+                  noRowsOverlay: NoRowsOverlayStyled
+                }}
+              />
             </Box>
           </Paper>
         </Box>

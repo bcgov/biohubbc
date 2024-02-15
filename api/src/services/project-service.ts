@@ -22,6 +22,7 @@ import { ProjectUser } from '../repositories/project-participation-repository';
 import { ProjectRepository } from '../repositories/project-repository';
 import { SystemUser } from '../repositories/user-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { AttachmentService } from './attachment-service';
 import { DBService } from './db-service';
 import { HistoryPublishService } from './history-publish-service';
@@ -29,7 +30,6 @@ import { PlatformService } from './platform-service';
 import { ProjectParticipationService } from './project-participation-service';
 import { RegionService } from './region-service';
 import { SurveyService } from './survey-service';
-import { ApiPaginationOptions } from '../zod-schema/pagination';
 
 export class ProjectService extends DBService {
   attachmentService: AttachmentService;
@@ -71,7 +71,7 @@ export class ProjectService extends DBService {
       ...row,
       completion_status:
         (row.end_date && dayjs(row.end_date).endOf('day').isBefore(dayjs()) && COMPLETION_STATUS.COMPLETED) ||
-        COMPLETION_STATUS.ACTIVE,
+        COMPLETION_STATUS.ACTIVE
     }));
   }
 

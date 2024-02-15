@@ -1,4 +1,4 @@
-import { SchemaObject } from "ajv";
+import { SchemaObject } from 'ajv';
 
 export const paginationRequestQueryParamSchema: any[] = [
   {

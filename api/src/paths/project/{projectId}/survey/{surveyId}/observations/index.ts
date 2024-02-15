@@ -1,14 +1,17 @@
-import { SchemaObject,  } from 'ajv';
+import { SchemaObject } from 'ajv';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
+import {
+  paginationRequestQueryParamSchema,
+  paginationResponseSchema
+} from '../../../../../../openapi/schemas/pagination';
 import { InsertObservation, UpdateObservation } from '../../../../../../repositories/observation-repository';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ObservationService } from '../../../../../../services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
 import { ApiPaginationOptions } from '../../../../../../zod-schema/pagination';
-import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../../../../../openapi/schemas/pagination';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation');
 

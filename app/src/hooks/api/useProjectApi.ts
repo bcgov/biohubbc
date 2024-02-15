@@ -116,7 +116,7 @@ const useProjectApi = (axios: AxiosInstance) => {
     filterFieldData?: IProjectAdvancedFilterRequest
   ): Promise<IGetProjectsListResponse> => {
     const params = new URLSearchParams();
-    
+
     if (pagination) {
       params.append('page', pagination.page.toString());
       params.append('limit', pagination.limit.toString());
@@ -131,12 +131,13 @@ const useProjectApi = (axios: AxiosInstance) => {
     if (filterFieldData) {
       Object.entries(filterFieldData).forEach(([key, value]) => {
         params.append(key, value);
-      })
+      });
     }
 
     const urlParamsString = `?${params.toString()}`;
 
-    const { data } = await axios.get(`/api/project/list${urlParamsString}`,
+    const { data } = await axios.get(
+      `/api/project/list${urlParamsString}`
       // {
       //   params,
       //   paramsSerializer: (params: any) => {

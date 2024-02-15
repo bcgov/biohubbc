@@ -1,5 +1,6 @@
 import { isArray } from 'lodash';
 import SQL, { SQLStatement } from 'sql-template-strings';
+import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostProjectObject } from '../models/project-create';
 import { PutObjectivesData, PutProjectData } from '../models/project-update';
@@ -12,9 +13,8 @@ import {
   ProjectData,
   ProjectListData
 } from '../models/project-view';
-import { BaseRepository } from './base-repository';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
-import { z } from 'zod';
+import { BaseRepository } from './base-repository';
 
 /**
  * A repository class for accessing project data.
@@ -138,7 +138,7 @@ export class ProjectRepository extends BaseRepository {
           ${pagination.limit}
         OFFSET
           ${(pagination.page - 1) * pagination.limit}
-      `)
+      `);
     }
 
     sqlStatement.append(';');
