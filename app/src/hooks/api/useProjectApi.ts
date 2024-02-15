@@ -112,7 +112,7 @@ const useProjectApi = (axios: AxiosInstance) => {
   const getProjectsList = async (
     filterFieldData?: IProjectAdvancedFilterRequest
   ): Promise<IGetProjectsListResponse[]> => {
-    const { data } = await axios.get(`/api/project/list`, {
+    const { data } = await axios.get(`/api/project/list?limit=10&page=1`, {
       params: filterFieldData,
       paramsSerializer: (params: any) => {
         return qs.stringify(params, {

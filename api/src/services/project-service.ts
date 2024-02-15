@@ -29,6 +29,7 @@ import { PlatformService } from './platform-service';
 import { ProjectParticipationService } from './project-participation-service';
 import { RegionService } from './region-service';
 import { SurveyService } from './survey-service';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 
 export class ProjectService extends DBService {
   attachmentService: AttachmentService;
@@ -51,9 +52,10 @@ export class ProjectService extends DBService {
   async getProjectList(
     isUserAdmin: boolean,
     systemUserId: number | null,
-    filterFields: IProjectAdvancedFilters
+    filterFields: IProjectAdvancedFilters,
+    pagination?: ApiPaginationOptions
   ): Promise<(ProjectListData & { completion_status: COMPLETION_STATUS })[]> {
-    const response = await this.projectRepository.getProjectList(isUserAdmin, systemUserId, filterFields);
+    const response = await this.projectRepository.getProjectList(isUserAdmin, systemUserId, filterFields, pagination);
 
     return response.map((row) => ({
       ...row,

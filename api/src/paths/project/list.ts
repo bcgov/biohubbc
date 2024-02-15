@@ -6,6 +6,7 @@ import { IProjectAdvancedFilters } from '../../models/project-view';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
 import { ProjectService } from '../../services/project-service';
 import { getLogger } from '../../utils/logger';
+import { ApiPaginationOptions } from '../../zod-schema/pagination';
 
 const defaultLog = getLogger('paths/projects');
 
@@ -155,6 +156,14 @@ GET.apiDoc = {
  */
 export function getProjectList(): RequestHandler {
   return async (req, res) => {
+    defaultLog.debug({ label: 'getProjectList' });
+
+    const page: number | undefined = req.query.page ? Number(req.query.page) : undefined;
+    const limit: number | undefined = req.query.limit ? Number(req.query.limit) : undefined;
+    const order: 'asc' | 'desc' | undefined = req.query.order ? (String(req.query.order) as 'asc' | 'desc') : undefined;
+
+    const sort: string | undefined = req.query.sort ? String(req.query.sort) : undefined;
+
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
@@ -169,14 +178,15 @@ export function getProjectList(): RequestHandler {
 
       const projectService = new ProjectService(connection);
 
-      const projects = await projectService.getProjectList(isUserAdmin, systemUserId, filterFields);
+      const paginationOptions: ApiPaginationOptions | undefined =
+        limit !== undefined && page !== undefined ? { limit, page, sort, order } : undefined;
+
+      const projects = await projectService.getProjectList(isUserAdmin, systemUserId, filterFields, paginationOptions);
 
       const projectListWithStatus = await Promise.all(
-        projects.map(async (project: any) => {
-          // const status = await projectService.projectPublishStatus(project.id);
+        projects.map((project) => {
           return {
             projectData: project,
-            // projectSupplementaryData: { publishStatus: status }
           };
         })
       );

@@ -13,6 +13,7 @@ import {
   ProjectListData
 } from '../models/project-view';
 import { BaseRepository } from './base-repository';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 
 /**
  * A repository class for accessing project data.
@@ -25,7 +26,8 @@ export class ProjectRepository extends BaseRepository {
   async getProjectList(
     isUserAdmin: boolean,
     systemUserId: number | null,
-    filterFields: IProjectAdvancedFilters
+    filterFields: IProjectAdvancedFilters,
+    pagination?: ApiPaginationOptions
   ): Promise<ProjectListData[]> {
     const sqlStatement = SQL`
       SELECT
@@ -43,12 +45,8 @@ export class ProjectRepository extends BaseRepository {
         ON p2.program_id = pp.program_id
       LEFT OUTER JOIN survey as s
         ON s.project_id = p.project_id
-      LEFT OUTER JOIN study_species as sp
-        ON sp.survey_id = s.survey_id
-      LEFT JOIN survey_funding_source as sfs
-        ON s.survey_id = sfs.survey_id
-      LEFT JOIN funding_source as fs
-        ON sfs.funding_source_id = fs.funding_source_id
+
+        
       LEFT JOIN project_region pr
         ON p.project_id = pr.project_id
       LEFT JOIN region_lookup rl
@@ -105,9 +103,7 @@ export class ProjectRepository extends BaseRepository {
         p.project_id,
         p.name,
         p.start_date,
-        p.end_date,
-        p.uuid,
-        p.revision_count
+        p.end_date
     `);
 
     /*
@@ -133,6 +129,15 @@ export class ProjectRepository extends BaseRepository {
         }
       });
       sqlStatement.append(SQL`}'`);
+    }
+
+    if (pagination) {
+      sqlStatement.append(SQL`
+        LIMIT
+          ${pagination.limit}
+        OFFSET
+          ${(pagination.page - 1) * pagination.limit}
+      `)
     }
 
     sqlStatement.append(';');
