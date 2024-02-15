@@ -14,6 +14,7 @@ import {
 } from '../models/project-view';
 import { BaseRepository } from './base-repository';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
+import { z } from 'zod';
 
 /**
  * A repository class for accessing project data.
@@ -156,8 +157,33 @@ export class ProjectRepository extends BaseRepository {
    * @memberof ProjectRepository
    */
   async getProjectCount(isUserAdmin: boolean, systemUserId: number | null): Promise<number> {
-    // TODO
-    return 123456
+    const sqlStatement = SQL`
+      SELECT
+        COUNT(*) as project_count
+      FROM
+        project as p
+      WHERE 1 = 1
+    `;
+
+    if (!isUserAdmin) {
+      sqlStatement.append(SQL`
+        AND p.project_id IN (
+          SELECT
+            project_id
+          FROM
+            project_participation
+          where
+            system_user_id = ${systemUserId}
+        )
+      `);
+    }
+
+    sqlStatement.append(';');
+
+    // TODO cast as int in Postgres, then change this to z.number() (currently, Zod recieves project_count: string)
+    const response = await this.connection.sql(sqlStatement, z.object({ project_count: z.any() }));
+
+    return Number(response.rows[0].project_count);
   }
 
   async getProjectData(projectId: number): Promise<ProjectData> {
