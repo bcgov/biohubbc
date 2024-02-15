@@ -9,6 +9,7 @@ import { InsertSampleMethodRecord } from '../repositories/sample-method-reposito
 import { SurveyStratum } from '../repositories/site-selection-strategy-repository';
 import { PostSurveyBlock } from '../repositories/survey-block-repository';
 import { DBService } from './db-service';
+import { SampleBlockService } from './sample-block-service';
 import { SampleMethodService } from './sample-method-service';
 
 interface SampleSite {
@@ -87,8 +88,9 @@ export class SampleLocationService extends DBService {
    */
   async insertSampleLocations(sampleLocations: PostSampleLocations): Promise<SampleLocationRecord[]> {
     const methodService = new SampleMethodService(this.connection);
+    const sampleBlockService = new SampleBlockService(this.connection);
     // Create a sample location for each feature found
-    const promises = sampleLocations.survey_sample_sites.map((item) => {
+    const promisesLocations = sampleLocations.survey_sample_sites.map((item) => {
       const sampleLocation = {
         survey_id: sampleLocations.survey_id,
         name: item.name,
@@ -98,7 +100,26 @@ export class SampleLocationService extends DBService {
 
       return this.sampleLocationRepository.insertSampleLocation(sampleLocation);
     });
-    const results = await Promise.all<SampleLocationRecord>(promises);
+
+    const results = await Promise.all<SampleLocationRecord>(promisesLocations);
+
+    // Loop through all newly created sample locations
+    // For each location, associate the incoming blocks to each
+    if (sampleLocations.blocks.length > 0) {
+      const promisesBlocks = results.map((sampleSite: SampleLocationRecord) =>
+        sampleLocations.blocks.map((item) => {
+          if (item.survey_block_id) {
+            const sampleBlock = {
+              survey_sample_site_id: sampleSite.survey_sample_site_id,
+              survey_block_id: item.survey_block_id
+            };
+            return sampleBlockService.insertSampleBlock(sampleBlock);
+          }
+        })
+      );
+
+      await Promise.all(promisesBlocks);
+    }
 
     // Loop through all newly reaction sample locations
     // For reach sample location, create methods and associated with sample location id

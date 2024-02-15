@@ -1,6 +1,8 @@
 import { IDBConnection } from '../database/db';
+import { HTTP400 } from '../errors/http-error';
 import { PostSurveyBlock, SurveyBlockRecord, SurveyBlockRepository } from '../repositories/survey-block-repository';
 import { DBService } from './db-service';
+import { SampleBlockService } from './sample-block-service';
 
 export class SurveyBlockService extends DBService {
   surveyBlockRepository: SurveyBlockRepository;
@@ -29,7 +31,18 @@ export class SurveyBlockService extends DBService {
    * @memberof SurveyBlockService
    */
   async deleteSurveyBlock(surveyBlockId: number): Promise<SurveyBlockRecord> {
+
+    const sampleBlockService = new SampleBlockService(this.connection);
+
+    // Check if block is associated to any Sampling Sites
+    if (
+      (await sampleBlockService.getSampleBlocksCountForSurveyBlockId(surveyBlockId)).sampleCount > 0
+    ) {
+      throw new HTTP400('Cannot delete a sample block that is associated with a Sampling Site');
+    }
+    
     return this.surveyBlockRepository.deleteSurveyBlockRecord(surveyBlockId);
+
   }
 
   /**
