@@ -82,43 +82,46 @@ GET.apiDoc = {
             type: 'object',
             required: ['projects', 'pagination'],
             properties: {
-              projects: {   
-                type: 'object',
-                required: [
-                  'project_id',
-                  'name',
-                  'project_programs',
-                  'completion_status',
-                  'start_date',
-                  'end_date',
-                  'regions'
-                ],
-                properties: {
-                  project_id: {
-                    type: 'integer'
-                  },
-                  name: {
-                    type: 'string'
-                  },
-                  project_programs: {
-                    type: 'array',
-                    items: {
+              projects: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  required: [
+                    'project_id',
+                    'name',
+                    'project_programs',
+                    'completion_status',
+                    'start_date',
+                    'end_date',
+                    'regions'
+                  ],
+                  properties: {
+                    project_id: {
                       type: 'integer'
-                    }
-                  },
-                  start_date: {
-                    oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                    description: 'ISO 8601 date string for the funding end_date'
-                  },
-                  end_date: {
-                    oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                    nullable: true,
-                    description: 'ISO 8601 date string for the funding end_date'
-                  },
-                  regions: {
-                    type: 'array',
-                    items: {
+                    },
+                    name: {
                       type: 'string'
+                    },
+                    project_programs: {
+                      type: 'array',
+                      items: {
+                        type: 'integer'
+                      }
+                    },
+                    start_date: {
+                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                      description: 'ISO 8601 date string for the funding end_date'
+                    },
+                    end_date: {
+                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                      nullable: true,
+                      description: 'ISO 8601 date string for the funding end_date'
+                    },
+                    regions: {
+                      type: 'array',
+                      items: {
+                        type: 'string'
+                      }
                     }
                   }
                 }

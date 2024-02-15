@@ -3,7 +3,7 @@ import { grey } from '@mui/material/colors';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
-import { DataGrid, GridColDef, GridOverlay } from '@mui/x-data-grid';
+import { DataGrid, GridCallbackDetails, GridColDef, GridOverlay, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IProjectsListItemData } from 'interfaces/useProjectApi.interface';
 import { useCallback } from 'react';
@@ -107,6 +107,14 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
     }
   ];
 
+  const handlePaginationChange = (model: GridPaginationModel, details: GridCallbackDetails) => {
+    //
+  }
+
+  const handleSortChange = (model: GridSortModel, details: GridCallbackDetails) => {
+    //
+  }
+
   const NoRowsOverlayStyled = useCallback(() => <NoRowsOverlay className={classes.noDataText} />, [classes.noDataText]);
 
   return (
@@ -116,7 +124,11 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
       rows={props.projects}
       getRowId={(row) => row.project_id}
       columns={columns}
-      pageSizeOptions={[5]}
+      pageSizeOptions={[10, 25, 50]}
+      paginationMode="server"
+      sortingMode="server"
+      onPaginationModelChange={handlePaginationChange}
+      onSortModelChange={handleSortChange}
       rowSelection={false}
       checkboxSelection={false}
       hideFooter

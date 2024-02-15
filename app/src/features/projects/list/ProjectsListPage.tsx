@@ -95,7 +95,7 @@ const ProjectsListPage: React.FC = () => {
                   lineHeight="inherit"
                   fontSize="inherit"
                   fontWeight={400}>
-                  ({projectsDataLoader.data?.pagination.total || 0})
+                  ({Number(projectsDataLoader.data?.pagination.total || 0).toLocaleString()})
                 </Typography>
               </Typography>
               <Button
