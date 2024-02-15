@@ -11,7 +11,6 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridColDef } from '@mui/x-data-grid';
 import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
-import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import FileUploadDialog from 'components/dialog/FileUploadDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
@@ -65,18 +64,6 @@ const ObservationComponent = () => {
   const [processingRecords, setProcessingRecords] = useState<boolean>(false);
   const [showConfirmRemoveAllDialog, setShowConfirmRemoveAllDialog] = useState<boolean>(false);
 
-  const defaultErrorDialogProps = {
-    onClose: () => {
-      dialogContext.setErrorDialog({ open: false });
-    },
-    onOk: () => {
-      dialogContext.setErrorDialog({ open: false });
-    }
-  };
-
-  const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
-    dialogContext.setSnackbar({ ...textDialogProps, open: true });
-  };
   // Collect sample sites
   const surveySampleSites: IGetSampleLocationRecord[] = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
   const sampleSiteOptions: ISampleSiteOption[] =
@@ -95,13 +82,6 @@ const ObservationComponent = () => {
     survey_sample_site_id: method.survey_sample_site_id,
     sample_method_name: getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_lookup_id) ?? ''
   }));
-  const showErrorDialog = (errorDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...errorDialogProps, open: true });
-  };
-
-  const handleCloseContextMenu = () => {
-    setContextMenuAnchorEl(null);
-  };
 
   // Collect sample periods
   const samplePeriodOptions: ISamplePeriodOption[] = surveySampleMethods
@@ -140,11 +120,17 @@ const ObservationComponent = () => {
           return observationsTableContext.refreshObservationRecords();
         })
         .catch((apiError) => {
-          showErrorDialog({
+          dialogContext.setErrorDialog({
             dialogTitle: ObservationsTableI18N.importRecordsErrorDialogTitle,
             dialogText: ObservationsTableI18N.importRecordsErrorDialogText,
             dialogErrorDetails: [apiError.message],
-            open: true
+            open: true,
+            onClose: () => {
+              dialogContext.setErrorDialog({ open: false });
+            },
+            onOk: () => {
+              dialogContext.setErrorDialog({ open: false });
+            }
           });
         })
         .finally(() => {

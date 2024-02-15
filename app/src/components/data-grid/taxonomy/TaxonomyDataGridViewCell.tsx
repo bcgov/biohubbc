@@ -1,7 +1,7 @@
 import Typography from '@mui/material/Typography';
 import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import { TaxonomyContext } from 'contexts/taxonomyContext';
-import { ITaxonomy } from 'interfaces/useTaxonomy.interface';
+import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { useContext, useEffect, useState } from 'react';
 
 export interface ITaxonomyDataGridViewCellProps<DataGridType extends GridValidRowModel> {
@@ -53,7 +53,7 @@ const TaxonomyDataGridViewCell = <DataGridType extends GridValidRowModel>(
         textOverflow: 'ellipsis',
         color: props.error ? 'error' : undefined
       }}>
-      {[response.commonName, `(${response.scientificName})`].filter(Boolean).join(' ')}
+      {[taxon.commonName, `(${taxon.scientificName})`].filter(Boolean).join(' ')}
     </Typography>
   );
 };

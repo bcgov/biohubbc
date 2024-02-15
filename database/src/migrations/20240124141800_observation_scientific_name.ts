@@ -9,7 +9,7 @@ import { Knex } from 'knex';
  * @return {*}  {Promise<void>}
  */
 export async function up(knex: Knex): Promise<void> {
-  await knex.raw(`--sql 
+  await knex.raw(`--sql
     SET search_path = 'biohub';
 
     ALTER TABLE survey_observation ADD COLUMN itis_tsn INTEGER;
@@ -20,7 +20,7 @@ export async function up(knex: Knex): Promise<void> {
 
     ALTER TABLE study_species ADD COLUMN itis_tsn INTEGER;
     ALTER TABLE study_species ALTER COLUMN wldtaxonomic_units_id DROP NOT NULL;
-    COMMENT ON COLUMN study_species.wldtaxonomic_units_id IS '(Deprecated) System generated UID for a taxon..';
+    COMMENT ON COLUMN study_species.wldtaxonomic_units_id IS '(Deprecated) System generated UID for a taxon.';
     COMMENT ON COLUMN study_species.itis_tsn IS 'The ITIS TSN identifier for the species associated with the survey.';
 
     -- TODO Currently, we are using a placeholder ITIS species. Instead, we should map all known species used in prod from their elsaticsearch taxonomic ID to their ITIS TSN.
@@ -34,9 +34,9 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
     -- Create new views
     ----------------------------------------------------------------------------------------
-  
+
     set search_path=biohub_dapi_v1;
-  
+
     create or replace view survey_observation as select * from biohub.survey_observation;
     create or replace view study_species as select * from biohub.study_species;
 

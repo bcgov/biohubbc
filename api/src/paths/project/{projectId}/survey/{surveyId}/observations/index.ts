@@ -315,6 +315,11 @@ PUT.apiDoc = {
                     type: 'object',
                     required: [
                       'wldtaxonomic_units_id',
+                      'itis_tsn',
+                      'itis_scientific_name',
+                      'survey_sample_site_id',
+                      'survey_sample_method_id',
+                      'survey_sample_period_id',
                       'count',
                       'latitude',
                       'longitude',
@@ -516,7 +521,7 @@ export function insertUpdateSurveyObservationsWithMeasurements(): RequestHandler
           observation: {
             survey_observation_id: item.standardColumns.survey_observation_id,
             wldtaxonomic_units_id: Number(item.standardColumns.wldtaxonomic_units_id),
-            itis_tsn: record.itis_tsn,
+            itis_tsn: item.itis_tsn,
             itis_scientific_name: null,
             survey_sample_site_id: item.standardColumns.survey_sample_site_id,
             survey_sample_method_id: item.standardColumns.survey_sample_method_id,

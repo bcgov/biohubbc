@@ -396,7 +396,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
     setAddedRowIds((current) => [...current, id]);
 
     // Set edit mode for the new row
-    _muiDataGridApiRef.current.startRowEditMode({ id, fieldToFocus: 'wldtaxonomic_units' });
+    _muiDataGridApiRef.current.startRowEditMode({ id, fieldToFocus: 'itis_tsn' });
   }, [_muiDataGridApiRef, rows]);
 
   /**

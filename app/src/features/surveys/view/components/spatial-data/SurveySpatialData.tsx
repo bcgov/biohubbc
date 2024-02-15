@@ -49,7 +49,7 @@ const SurveySpatialData = () => {
   useEffect(() => {
     const cacheTaxonomicData = async () => {
       if (observationsContext.observationsDataLoader.data) {
-        // fetch all unique wldtaxonomic_units_id's from observations to find taxonomic names
+        // fetch all unique itis_tsn's from observations to find taxonomic names
         const taxonomicIds = [
           ...new Set(observationsContext.observationsDataLoader.data.surveyObservations.map((item) => item.itis_tsn))
         ].filter((tsn): tsn is number => tsn !== null);

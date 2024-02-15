@@ -142,7 +142,7 @@ export class ObservationService extends DBService {
     for (const data of observations) {
       const results = await this.observationRepository.insertUpdateSurveyObservations(
         surveyId,
-        await this._attachItisScientificName(data.observation)
+        await this._attachItisScientificName([data.observation])
       );
       finalResults.push(results[0]);
       const surveyObservationId = results[0].survey_observation_id;
@@ -423,6 +423,8 @@ export class ObservationService extends DBService {
     // Step 5. Merge all the table rows into an array of ObservationInsert[]
     const insertRows: InsertObservation[] = worksheetRowObjects.map((row) => ({
       survey_id: surveyId,
+      itis_tsn: row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES'],
+      itis_scientific_name: null,
       survey_sample_site_id: null,
       survey_sample_method_id: null,
       survey_sample_period_id: null,
@@ -430,9 +432,7 @@ export class ObservationService extends DBService {
       longitude: row['LONGITUDE'] ?? row['LON'] ?? row['LONG'] ?? row['LNG'],
       count: row['COUNT'],
       observation_time: row['TIME'],
-      observation_date: row['DATE'],
-      itis_tsn: row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES'],
-      itis_scientific_name: null
+      observation_date: row['DATE']
     }));
 
     // Step 7. Insert new rows and return them
@@ -446,26 +446,24 @@ export class ObservationService extends DBService {
    * Maps over an array of inserted/updated observation records in order to update its scientific
    * name to match its ITIS TSN.
    *
-   * @param {InsertObservation[]} records
-   * @return {*}  {Promise<InsertObservation[]>}
-   * @memberof ObservationService
+   * @template RecordWithTaxonFields
+   * @param {RecordWithTaxonFields[]} records
+   * @return {*}  {Promise<RecordWithTaxonFields[]>}
+   * @memberof ObservationServiceF
    */
-  async _attachItisScientificName(
-    records: (InsertObservation | UpdateObservation)[]
-  ): Promise<(InsertObservation | UpdateObservation)[]> {
+  async _attachItisScientificName<
+    RecordWithTaxonFields extends Pick<ObservationRecord, 'itis_tsn' | 'itis_scientific_name'>
+  >(records: RecordWithTaxonFields[]): Promise<RecordWithTaxonFields[]> {
     defaultLog.debug({ label: '_attachItisScientificName' });
 
     const platformService = new PlatformService(this.connection);
 
-    const uniqueTsnSet: Set<number> = records.reduce(
-      (acc: Set<number>, record: InsertObservation | UpdateObservation) => {
-        if (record.itis_tsn) {
-          acc.add(record.itis_tsn as number);
-        }
-        return acc;
-      },
-      new Set<number>([])
-    );
+    const uniqueTsnSet: Set<number> = records.reduce((acc: Set<number>, record: RecordWithTaxonFields) => {
+      if (record.itis_tsn) {
+        acc.add(record.itis_tsn as number);
+      }
+      return acc;
+    }, new Set<number>([]));
 
     const taxonomyResponse = await platformService.getTaxonomyByTsns(Array.from(uniqueTsnSet)).catch((error) => {
       throw new ApiGeneralError(
@@ -473,7 +471,7 @@ export class ObservationService extends DBService {
       );
     });
 
-    return records.map((record: InsertObservation | UpdateObservation) => {
+    return records.map((record: RecordWithTaxonFields) => {
       record.itis_scientific_name =
         taxonomyResponse.find((taxonomy) => Number(taxonomy.tsn) === record.itis_tsn)?.scientificName ?? null;
 

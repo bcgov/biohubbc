@@ -107,8 +107,9 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
         paginatedDataLoader.data.surveyObservations.map((item) => {
           return {
             survey_observation_id: item.survey_observation_id,
-            itis_scientific_name: taxonomyContext.getCachedSpeciesTaxonomyById(item.wldtaxonomic_units_id)?.label,
-            wldtaxonomic_units_id: item.wldtaxonomic_units_id,
+            itis_tsn: item.itis_tsn,
+            itis_scientific_name:
+              (item.itis_tsn && taxonomyContext.getCachedSpeciesTaxonomyById(item.itis_tsn)?.scientificName) || null,
             count: item.count,
             survey_sample_site_name: item.survey_sample_site_name,
             survey_sample_method_name: item.survey_sample_method_name,

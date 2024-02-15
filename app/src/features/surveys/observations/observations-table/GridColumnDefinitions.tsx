@@ -40,7 +40,7 @@ export const TaxonomyColDef = (props: {
   const { hasError } = props;
 
   return {
-    field: 'wldtaxonomic_units_id',
+    field: 'itis_tsn',
     headerName: 'Species',
     editable: true,
     hideable: true,
@@ -50,7 +50,7 @@ export const TaxonomyColDef = (props: {
     headerAlign: 'left',
     align: 'left',
     valueSetter: (params) => {
-      return { ...params.row, wldtaxonomic_units_id: Number(params.value) };
+      return { ...params.row, itis_tsn: Number(params.value) };
     },
     renderCell: (params) => {
       return <TaxonomyDataGridViewCell dataGridProps={params} error={hasError(params)} />;

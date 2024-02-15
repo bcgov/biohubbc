@@ -516,7 +516,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     setModifiedRowIds((current) => Array.from(new Set([...current, String(id)])));
     // Put row into edit mode
     setRowModesModel((prevRowModesModel) => {
-      return { ...prevRowModesModel, [id]: { mode: GridRowModes.Edit, fieldToFocus: 'wldtaxonomic_units' } };
+      return { ...prevRowModesModel, [id]: { mode: GridRowModes.Edit, fieldToFocus: 'itis_tsn' } };
     });
   };
 
@@ -548,7 +548,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     // Set edit mode for the new row
     setRowModesModel((prevRowModesModel) => {
-      return { ...prevRowModesModel, [id]: { mode: GridRowModes.Edit, fieldToFocus: 'wldtaxonomic_units' } };
+      return { ...prevRowModesModel, [id]: { mode: GridRowModes.Edit, fieldToFocus: 'itis_tsn' } };
     });
   }, [rows]);
 
@@ -871,7 +871,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       rows,
       rowModesModel,
       getColumns,
-      getColumns,
       addObservationRecord,
       saveObservationRecords,
       deleteObservationRecords,
@@ -889,9 +888,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       setPaginationModel,
       paginationModel,
       hasError,
-      sortModel,
       measurementColumns,
-      setMeasurementColumns
+      setMeasurementColumns,
       setSortModel,
       sortModel
     ]
