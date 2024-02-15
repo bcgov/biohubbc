@@ -3,14 +3,14 @@ import Icon from '@mdi/react';
 import { Box, IconButton, Paper } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import clsx from 'clsx';
-import { ISpeciesAutocompleteField } from 'components/species/components/SpeciesAutocompleteField';
+import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import SpeciesCard from './SpeciesCard';
+
 interface ISpeciesSelectedCardProps {
   index: number;
-  species: ISpeciesAutocompleteField;
+  species: ITaxonomy;
   error?: JSX.Element | undefined;
   handleRemove: (tsn: number) => void;
-  label: string;
 }
 
 const SpeciesSelectedCard = (props: ISpeciesSelectedCardProps) => {

@@ -15,8 +15,8 @@ const rowHeight = 52;
 
 interface IObservationTableRow {
   survey_observation_id: number;
-  itis_scientific_name: string | undefined;
-  wldtaxonomic_units_id: number;
+  itis_tsn: number | null;
+  itis_scientific_name: string | null;
   count: number | null;
   survey_sample_site_name: string | null;
   survey_sample_method_name: string | null;

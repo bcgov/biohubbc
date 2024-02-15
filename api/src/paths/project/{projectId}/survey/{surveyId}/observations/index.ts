@@ -78,10 +78,11 @@ export const surveyObservationsResponseSchema: SchemaObject = {
         type: 'object',
         required: [
           'survey_observation_id',
-          'wldtaxonomic_units_id',
           'latitude',
           'longitude',
           'count',
+          'itis_tsn',
+          'itis_scientific_name',
           'observation_date',
           'observation_time',
           'create_user',
@@ -94,9 +95,6 @@ export const surveyObservationsResponseSchema: SchemaObject = {
           survey_observation_id: {
             type: 'integer'
           },
-          wldtaxonomic_units_id: {
-            type: 'integer'
-          },
           latitude: {
             type: 'number'
           },
@@ -105,6 +103,12 @@ export const surveyObservationsResponseSchema: SchemaObject = {
           },
           count: {
             type: 'integer'
+          },
+          itis_tsn: {
+            type: 'integer'
+          },
+          itis_scientific_name: {
+            type: 'string'
           },
           observation_date: {
             type: 'string'
@@ -325,6 +329,12 @@ PUT.apiDoc = {
                       wldtaxonomic_units_id: {
                         oneOf: [{ type: 'integer' }, { type: 'string' }]
                       },
+                      itis_tsn: {
+                        type: 'integer'
+                      },
+                      itis_scientific_name: {
+                        type: 'string'
+                      },
                       survey_sample_site_id: {
                         type: 'number'
                       },
@@ -456,6 +466,7 @@ export function getSurveyObservations(): RequestHandler {
         surveyId,
         paginationOptions
       );
+
       const { observationCount } = observationData.supplementaryObservationData;
 
       return res.status(200).json({
@@ -464,7 +475,7 @@ export function getSurveyObservations(): RequestHandler {
           total: observationCount,
           per_page: limit,
           current_page: page ?? 1,
-          last_page: limit ? Math.ceil(observationCount / limit) : 1,
+          last_page: limit ? Math.max(1, Math.ceil(observationCount / limit)) : 1,
           sort,
           order
         }
@@ -505,6 +516,8 @@ export function insertUpdateSurveyObservationsWithMeasurements(): RequestHandler
           observation: {
             survey_observation_id: item.standardColumns.survey_observation_id,
             wldtaxonomic_units_id: Number(item.standardColumns.wldtaxonomic_units_id),
+            itis_tsn: record.itis_tsn,
+            itis_scientific_name: null,
             survey_sample_site_id: item.standardColumns.survey_sample_site_id,
             survey_sample_method_id: item.standardColumns.survey_sample_method_id,
             survey_sample_period_id: item.standardColumns.survey_sample_period_id,

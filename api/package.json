@@ -27,7 +27,6 @@
     "npm": ">= 6.0.0"
   },
   "dependencies": {
-    "@elastic/elasticsearch": "~8.1.0",
     "@turf/bbox": "~6.5.0",
     "@turf/circle": "~6.5.0",
     "@turf/helpers": "~6.5.0",

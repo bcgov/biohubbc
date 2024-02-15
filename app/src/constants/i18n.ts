@@ -411,7 +411,10 @@ export const ObservationsTableI18N = {
   saveRecordsSuccessSnackbarMessage: 'Observations updated successfully.',
   deleteSingleRecordSuccessSnackbarMessage: 'Deleted observation record successfully.',
   deleteMultipleRecordSuccessSnackbarMessage: (count: number) =>
-    `Deleted ${count} observation ${p(count, 'record')} successfully.`
+    `Deleted ${count} observation ${p(count, 'record')} successfully.`,
+  importRecordsSuccessSnackbarMessage: 'Observations imported successfully.',
+  importRecordsErrorDialogTitle: 'Error Importing Observation Records',
+  importRecordsErrorDialogText: 'An error occurred while importing observation records.'
 };
 
 export const TelemetryTableI18N = {

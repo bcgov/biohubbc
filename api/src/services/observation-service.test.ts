@@ -39,10 +39,11 @@ describe('ObservationService', () => {
         {
           survey_observation_id: 11,
           survey_id: 1,
-          wldtaxonomic_units_id: 2,
           latitude: 3,
           longitude: 4,
           count: 5,
+          itis_tsn: 6,
+          itis_scientific_name: 'itis_scientific_name',
           observation_date: '2023-01-01',
           observation_time: '12:00:00',
           create_date: '2023-04-04',
@@ -57,10 +58,11 @@ describe('ObservationService', () => {
         {
           survey_observation_id: 6,
           survey_id: 1,
-          wldtaxonomic_units_id: 7,
           latitude: 8,
           longitude: 9,
           count: 10,
+          itis_tsn: 6,
+          itis_scientific_name: 'itis_scientific_name',
           observation_date: '2023-02-02',
           observation_time: '13:00:00',
           create_date: '2023-03-03',
@@ -81,19 +83,21 @@ describe('ObservationService', () => {
       const observations: (InsertObservation | UpdateObservation)[] = [
         {
           survey_id: 1,
-          wldtaxonomic_units_id: 2,
           latitude: 3,
           longitude: 4,
           count: 5,
+          itis_tsn: 6,
+          itis_scientific_name: 'itis_scientific_name',
           observation_date: '2023-01-01',
           observation_time: '12:00:00'
         } as InsertObservation,
         {
           survey_observation_id: 6,
-          wldtaxonomic_units_id: 7,
           latitude: 8,
           longitude: 9,
           count: 10,
+          itis_tsn: 6,
+          itis_scientific_name: 'itis_scientific_name',
           observation_date: '2023-02-02',
           observation_time: '13:00:00'
         } as UpdateObservation
@@ -117,10 +121,11 @@ describe('ObservationService', () => {
         {
           survey_observation_id: 11,
           survey_id: 1,
-          wldtaxonomic_units_id: 2,
           latitude: 3,
           longitude: 4,
           count: 5,
+          itis_tsn: 6,
+          itis_scientific_name: 'itis_scientific_name',
           observation_date: '2023-01-01',
           observation_time: '12:00:00',
           create_date: '2023-04-04',
@@ -138,10 +143,11 @@ describe('ObservationService', () => {
         {
           survey_observation_id: 6,
           survey_id: 1,
-          wldtaxonomic_units_id: 7,
           latitude: 8,
           longitude: 9,
           count: 10,
+          itis_tsn: 6,
+          itis_scientific_name: 'itis_scientific_name',
           observation_date: '2023-02-02',
           observation_time: '13:00:00',
           create_date: '2023-03-03',

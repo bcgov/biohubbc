@@ -30,7 +30,6 @@ import { TaxonomyContext } from './taxonomyContext';
 
 export interface IStandardObservationColumns {
   survey_observation_id: number;
-  wldtaxonomic_units_id: number;
   survey_sample_site_id: number | null;
   survey_sample_method_id: number | null;
   survey_sample_period_id: number | null;
@@ -39,6 +38,8 @@ export interface IStandardObservationColumns {
   observation_time: string;
   latitude: number | null;
   longitude: number | null;
+  itis_tsn: number | null;
+  itis_scientific_name: string | null;
 }
 
 export interface IObservationRecord extends IStandardObservationColumns {
@@ -47,13 +48,14 @@ export interface IObservationRecord extends IStandardObservationColumns {
 
 export interface IObservationRecordWithSamplingData {
   survey_observation_id: number;
-  wldtaxonomic_units_id: number;
   survey_sample_site_id: number | null;
   survey_sample_site_name: string | null;
   survey_sample_method_id: number | null;
   survey_sample_method_name: string | null;
   survey_sample_period_id: number | null;
   survey_sample_period_start_datetime: string | null;
+  itis_tsn: number | null;
+  itis_scientific_name: string | null;
   count: number | null;
   observation_date: Date;
   observation_time: string;
@@ -236,37 +238,29 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   });
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
-  const updatePaginationModel = (model: GridPaginationModel) => {
-    setPaginationModel(model);
-  };
+  // const updatePaginationModel = (model: GridPaginationModel) => {
+  //   setPaginationModel(model);
+  // };
 
-  const updateSortModel = (model: GridSortModel) => {
-    setSortModel(model);
-  };
+  // const updateSortModel = (model: GridSortModel) => {
+  //   setSortModel(model);
+  // };
 
-  // initial load with pagination valuesF
-  useEffect(() => {
-    observationsContext.observationsDataLoader.refresh({
-      limit: paginationModel.pageSize,
+  // // initial load with pagination valuesF
+  // useEffect(() => {
+  //   observationsContext.observationsDataLoader.refresh({
+  //     limit: paginationModel.pageSize,
 
-      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
-      page: paginationModel.page + 1
-    });
-    // Should not re-run this effect on `observationsContext.observationsDataLoader` changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paginationModel.page, paginationModel.pageSize]);
+  //     // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+  //     page: paginationModel.page + 1
+  //   });
+  //   // Should not re-run this effect on `observationsContext.observationsDataLoader` changes
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [paginationModel.page, paginationModel.pageSize]);
 
   // Fetch new rows based on sort/ pagination model changes
   useEffect(() => {
-    const sort = firstOrNull(sortModel);
-    observationsContext.observationsDataLoader.refresh({
-      limit: paginationModel.pageSize,
-      sort: sort?.field || undefined,
-      order: sort?.sort || undefined,
-
-      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
-      page: paginationModel.page + 1
-    });
+    refreshObservationRecords();
     // Should not re-run this effect on `observationsContext.observationsDataLoader` changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paginationModel, sortModel]);
@@ -311,7 +305,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       'longitude',
       'observation_date',
       'observation_time',
-      'wldtaxonomic_units_id'
+      'itis_tsn'
     ];
 
     const samplingRequiredColumns: (keyof IObservationTableRow)[] = [
@@ -438,6 +432,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
           ),
           open: true
         });
+
+        refreshObservationRecords();
       } catch {
         // Close yes-no dialog
         dialogContext.setYesNoDialog({ open: false });
@@ -533,7 +529,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     const newRecord: IObservationTableRow = {
       id,
       survey_observation_id: null as unknown as number,
-      wldtaxonomic_units_id: null as unknown as number,
       survey_sample_site_id: null as unknown as number,
       survey_sample_method_id: null as unknown as number,
       survey_sample_period_id: null,
@@ -541,7 +536,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       observation_date: null as unknown as Date,
       observation_time: '',
       latitude: null as unknown as number,
-      longitude: null as unknown as number
+      longitude: null as unknown as number,
+      itis_tsn: null as unknown as number,
+      itis_scientific_name: ''
     };
 
     // Append new record to initial rows
@@ -632,11 +629,16 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   }, [_muiDataGridApiRef, addedRowIds, rows]);
 
   const refreshObservationRecords = useCallback(async () => {
+    const sort = firstOrNull(sortModel);
     return observationsContext.observationsDataLoader.refresh({
-      page: paginationModel.page + 1,
-      limit: paginationModel.pageSize
+      limit: paginationModel.pageSize,
+      sort: sort?.field || undefined,
+      order: sort?.sort || undefined,
+
+      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+      page: paginationModel.page + 1
     });
-  }, [observationsContext.observationsDataLoader, paginationModel]);
+  }, [observationsContext.observationsDataLoader, paginationModel, sortModel]);
 
   // True if the data grid contains at least 1 unsaved record
   const hasUnsavedChanges = modifiedRowIds.length > 0 || addedRowIds.length > 0;
@@ -718,16 +720,22 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   /**
    * Runs onces on initial page load.
    */
+
   useEffect(() => {
     if (taxonomyCacheStatus.isInitializing || taxonomyCacheStatus.isInitialized) {
       // Taxonomy cache is currently loading, or has already loaded
       return;
     }
 
+    if (!observationsContext.observationsDataLoader.data) {
+      // No obserations data has laoded
+      return;
+    }
+
     // Only attempt to initialize the cache once
     setTaxonomyCacheStatus({ isInitializing: true, isInitialized: false });
 
-    if (!observationsContext.observationsDataLoader.data?.surveyObservations.length) {
+    if (!observationsContext.observationsDataLoader.data.surveyObservations.length) {
       // No taxonomy records to fetch and cache
       setTaxonomyCacheStatus({ isInitializing: false, isInitialized: true });
       return;
@@ -736,7 +744,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     const uniqueTaxonomicIds: number[] = Array.from(
       observationsContext.observationsDataLoader.data.surveyObservations.reduce(
         (acc: Set<number>, record: IObservationRecord) => {
-          acc.add(record.wldtaxonomic_units_id);
+          if (record.itis_tsn) {
+            acc.add(record.itis_tsn);
+          }
           return acc;
         },
         new Set<number>([])
@@ -848,9 +858,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       validationModel,
       observationCount,
       setObservationCount,
-      updatePaginationModel,
+      updatePaginationModel: setPaginationModel,
       paginationModel,
-      updateSortModel,
+      updateSortModel: setSortModel,
       hasError,
       sortModel,
       measurementColumns,
@@ -861,6 +871,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       rows,
       rowModesModel,
       getColumns,
+      getColumns,
       addObservationRecord,
       saveObservationRecords,
       deleteObservationRecords,
@@ -868,17 +879,21 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       revertObservationRecords,
       refreshObservationRecords,
       getSelectedObservationRecords,
+      setRowSelectionModel,
       hasUnsavedChanges,
       rowSelectionModel,
       isLoading,
       isSaving,
       validationModel,
       observationCount,
+      setPaginationModel,
       paginationModel,
       hasError,
       sortModel,
       measurementColumns,
       setMeasurementColumns
+      setSortModel,
+      sortModel
     ]
   );
 

@@ -53,7 +53,7 @@ const TaxonomyDataGridViewCell = <DataGridType extends GridValidRowModel>(
         textOverflow: 'ellipsis',
         color: props.error ? 'error' : undefined
       }}>
-      {taxon.label}
+      {[response.commonName, `(${response.scientificName})`].filter(Boolean).join(' ')}
     </Typography>
   );
 };

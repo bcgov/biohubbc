@@ -77,10 +77,11 @@ GET.apiDoc = {
             type: 'object',
             required: [
               'survey_observation_id',
-              'wldtaxonomic_units_id',
               'latitude',
               'longitude',
               'count',
+              'itis_tsn',
+              'itis_scientific_name',
               'observation_date',
               'observation_time',
               'create_user',
@@ -93,9 +94,6 @@ GET.apiDoc = {
               survey_observation_id: {
                 type: 'integer'
               },
-              wldtaxonomic_units_id: {
-                type: 'integer'
-              },
               latitude: {
                 type: 'number'
               },
@@ -104,6 +102,12 @@ GET.apiDoc = {
               },
               count: {
                 type: 'integer'
+              },
+              itis_tsn: {
+                type: 'integer'
+              },
+              itis_scientific_name: {
+                type: 'string'
               },
               observation_date: {
                 type: 'string'

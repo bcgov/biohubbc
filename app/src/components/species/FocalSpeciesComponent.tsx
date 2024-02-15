@@ -1,33 +1,27 @@
 import { Box } from '@mui/material';
 import AlertBar from 'components/alert/AlertBar';
 import { useFormikContext } from 'formik';
+import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import get from 'lodash-es/get';
 import SelectedSpecies from './components/SelectedSpecies';
-import SpeciesAutocompleteField, { ISpeciesAutocompleteField } from './components/SpeciesAutocompleteField';
+import SpeciesAutocompleteField from './components/SpeciesAutocompleteField';
 
 const FocalSpeciesComponent = () => {
-  const { values, setFieldValue, setErrors, errors } = useFormikContext<ISpeciesAutocompleteField[]>();
+  const { values, setFieldValue, setErrors, errors } = useFormikContext<ITaxonomy[]>();
 
-  const selectedSpecies: ISpeciesAutocompleteField[] = get(values, 'species.focal_species_object') || [];
+  const selectedSpecies: ITaxonomy[] = get(values, 'species.focal_species') || [];
 
-  const handleAddSpecies = (species: ISpeciesAutocompleteField) => {
-    setFieldValue(`species.focal_species_object[${selectedSpecies.length}]`, species);
-    setFieldValue(`species.focal_species[${selectedSpecies.length}]`, species.tsn);
+  const handleAddSpecies = (species: ITaxonomy) => {
+    setFieldValue(`species.focal_species[${selectedSpecies.length}]`, species);
     setErrors([]);
   };
 
   const handleRemoveSpecies = (species_id: number) => {
-    const speciesIds = get(values, 'species.focal_species') || [];
-    const filteredSpeciesIds = speciesIds.filter((value: number) => {
-      return value !== species_id;
-    });
-
-    const filteredSpecies = selectedSpecies.filter((value: ISpeciesAutocompleteField) => {
+    const filteredSpecies = selectedSpecies.filter((value: ITaxonomy) => {
       return value.tsn !== species_id;
     });
 
-    setFieldValue('species.focal_species_object', filteredSpecies);
-    setFieldValue('species.focal_species', filteredSpeciesIds);
+    setFieldValue('species.focal_species', filteredSpecies);
   };
 
   return (

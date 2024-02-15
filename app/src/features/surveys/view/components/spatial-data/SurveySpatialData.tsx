@@ -51,10 +51,8 @@ const SurveySpatialData = () => {
       if (observationsContext.observationsDataLoader.data) {
         // fetch all unique wldtaxonomic_units_id's from observations to find taxonomic names
         const taxonomicIds = [
-          ...new Set(
-            observationsContext.observationsDataLoader.data.surveyObservations.map((item) => item.wldtaxonomic_units_id)
-          )
-        ];
+          ...new Set(observationsContext.observationsDataLoader.data.surveyObservations.map((item) => item.itis_tsn))
+        ].filter((tsn): tsn is number => tsn !== null);
         await taxonomyContext.cacheSpeciesTaxonomyByIds(taxonomicIds);
       }
     };
@@ -150,7 +148,7 @@ const SurveySpatialData = () => {
           );
 
           return [
-            { label: 'Taxon ID', value: String(response.wldtaxonomic_units_id) },
+            { label: 'Taxon ID', value: String(response.itis_tsn) },
             { label: 'Count', value: String(response.count) },
             {
               label: 'Location',

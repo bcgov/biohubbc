@@ -12,13 +12,14 @@ import { BaseRepository } from './base-repository';
 export const ObservationRecord = z.object({
   survey_observation_id: z.number(),
   survey_id: z.number(),
-  wldtaxonomic_units_id: z.number(),
   survey_sample_site_id: z.number().nullable(),
   survey_sample_method_id: z.number().nullable(),
   survey_sample_period_id: z.number().nullable(),
   latitude: z.number(),
   longitude: z.number(),
   count: z.number(),
+  itis_tsn: z.number().nullable(),
+  itis_scientific_name: z.string().nullable(),
   observation_time: z.string(),
   observation_date: z.string(),
   create_date: z.string(),
@@ -58,8 +59,9 @@ export type ObservationGeometryRecord = z.infer<typeof ObservationGeometryRecord
  */
 export type InsertObservation = Pick<
   ObservationRecord,
+  | 'itis_tsn'
+  | 'itis_scientific_name'
   | 'survey_id'
-  | 'wldtaxonomic_units_id'
   | 'latitude'
   | 'longitude'
   | 'count'
@@ -75,8 +77,9 @@ export type InsertObservation = Pick<
  */
 export type UpdateObservation = Pick<
   ObservationRecord,
+  | 'itis_tsn'
+  | 'itis_scientific_name'
   | 'survey_observation_id'
-  | 'wldtaxonomic_units_id'
   | 'latitude'
   | 'longitude'
   | 'count'
@@ -153,17 +156,12 @@ export class ObservationRepository extends BaseRepository {
     surveyId: number,
     observations: (InsertObservation | UpdateObservation)[]
   ): Promise<ObservationRecord[]> {
-    if (!observations.length) {
-      // no observations to create or update, leave early
-      return [];
-    }
     const sqlStatement = SQL`
       INSERT INTO
         survey_observation
       (
         survey_observation_id,
         survey_id,
-        wldtaxonomic_units_id,
         survey_sample_site_id,
         survey_sample_method_id,
         survey_sample_period_id,
@@ -171,7 +169,9 @@ export class ObservationRepository extends BaseRepository {
         latitude,
         longitude,
         observation_date,
-        observation_time
+        observation_time,
+        itis_tsn,
+        itis_scientific_name
       )
       OVERRIDING SYSTEM VALUE
       VALUES
@@ -183,7 +183,6 @@ export class ObservationRepository extends BaseRepository {
           return `(${[
             observation['survey_observation_id'] || 'DEFAULT',
             surveyId,
-            observation.wldtaxonomic_units_id,
             observation.survey_sample_site_id ?? 'NULL',
             observation.survey_sample_method_id ?? 'NULL',
             observation.survey_sample_period_id ?? 'NULL',
@@ -191,7 +190,9 @@ export class ObservationRepository extends BaseRepository {
             observation.latitude,
             observation.longitude,
             `'${observation.observation_date}'`,
-            `'${observation.observation_time}'`
+            `'${observation.observation_time}'`,
+            observation.itis_tsn ?? 'NULL',
+            observation.itis_scientific_name ? `'${observation.itis_scientific_name}'` : 'NULL'
           ].join(', ')})`;
         })
         .join(', ')
@@ -201,7 +202,8 @@ export class ObservationRepository extends BaseRepository {
       ON CONFLICT
         (survey_observation_id)
       DO UPDATE SET
-        wldtaxonomic_units_id = EXCLUDED.wldtaxonomic_units_id,
+        itis_tsn = EXCLUDED.itis_tsn,
+        itis_scientific_name = EXCLUDED.itis_scientific_name,
         survey_sample_site_id = EXCLUDED.survey_sample_site_id,
         survey_sample_method_id = EXCLUDED.survey_sample_method_id,
         survey_sample_period_id = EXCLUDED.survey_sample_period_id,
@@ -213,8 +215,9 @@ export class ObservationRepository extends BaseRepository {
     `);
 
     sqlStatement.append(`
-      RETURNING*;
+      RETURNING *;
     `);
+
     const response = await this.connection.sql(sqlStatement, ObservationRecord);
 
     return response.rows;
