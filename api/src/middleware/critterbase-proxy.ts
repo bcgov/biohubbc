@@ -96,6 +96,7 @@ export const getCritterbaseProxyMiddleware = () =>
     onProxyReq: (client, req) => {
       defaultLog.debug({ label: 'onProxyReq', message: 'path', req: req.path });
 
+      // Set user header as required by Critterbase
       client.setHeader(
         'user',
         JSON.stringify({
@@ -104,9 +105,12 @@ export const getCritterbaseProxyMiddleware = () =>
         })
       );
     },
-    onError: (error, _, res) => {
-      defaultLog.error({ label: 'getCritterbaseProxyMiddleware', message: 'error', req: error });
-
-      res.status(500).send('Failed to proxy request to Critterbase API').end();
+    onProxyRes: (proxyRes, _, res) => {
+      if (proxyRes.statusCode === 401 || proxyRes.statusCode === 403) {
+        // Return 401 and 403 errors as 500 so as not to confuse SIMS, which has special logic for handling 401 and 403
+        // errors from its own API calls.
+        res.status(500).send('Access Denied').end();
+        return;
+      }
     }
   });
