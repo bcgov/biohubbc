@@ -4,6 +4,8 @@ import {
   GridColDef,
   GridPaginationModel,
   GridRowId,
+  GridRowModes,
+  GridRowModesModel,
   GridRowSelectionModel,
   GridSortModel,
   useGridApiRef
@@ -95,6 +97,7 @@ export type IObservationsTableContext = {
    * The rows the data grid should render.
    */
   rows: IObservationTableRow[];
+  rowModesModel: GridRowModesModel;
   /**
    * A setState setter for the `rows`
    */
@@ -198,6 +201,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
   // The data grid rows
   const [rows, setRows] = useState<IObservationTableRow[]>([]);
+  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   // Stores the currently selected row ids
   const [rowSelectionModel, setRowSelectionModel] = useState<GridRowSelectionModel>([]);
   // Existing rows that are in edit mode
@@ -506,8 +510,18 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     deleteObservationRecords(selectedRecords);
   }, [deleteObservationRecords, getSelectedObservationRecords]);
 
+  /**
+   * Puts the specified row into edit mode, and adds the row id to the array of modified rows.
+   *
+   * @param {GridRowId} id
+   */
   const onRowEditStart = (id: GridRowId) => {
+    // Add row to modified rows array
     setModifiedRowIds((current) => Array.from(new Set([...current, String(id)])));
+    // Put row into edit mode
+    setRowModesModel((prevRowModesModel) => {
+      return { ...prevRowModesModel, [id]: { mode: GridRowModes.Edit, fieldToFocus: 'wldtaxonomic_units' } };
+    });
   };
 
   /**
@@ -536,8 +550,10 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     setAddedRowIds((current) => [...current, id]);
 
     // Set edit mode for the new row
-    _muiDataGridApiRef.current.startRowEditMode({ id, fieldToFocus: 'wldtaxonomic_units' });
-  }, [_muiDataGridApiRef, rows]);
+    setRowModesModel((prevRowModesModel) => {
+      return { ...prevRowModesModel, [id]: { mode: GridRowModes.Edit, fieldToFocus: 'wldtaxonomic_units' } };
+    });
+  }, [rows]);
 
   /**
    * Transition all editable rows from edit mode to view mode.
@@ -570,20 +586,29 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     }
 
     // Transition all rows in edit mode to view mode
-    for (const id of editingIdsToSave) {
-      _muiDataGridApiRef.current.stopRowEditMode({ id });
-    }
+
+    setRowModesModel(() => {
+      return editingIdsToSave.reduce<GridRowModesModel>((newRowModesModel, currentId) => {
+        newRowModesModel[currentId] = { mode: GridRowModes.View };
+        return newRowModesModel;
+      }, {});
+    });
 
     // Store ids of rows that were in edit mode
     setModifiedRowIds(editingIdsToSave);
   }, [_isStoppingEdit, _validateRows, _muiDataGridApiRef, rows]);
 
   /**
-   * Transition all rows tracked by `modifiedRowIds` to view mode.
+   * Transition all rows tracked by `modifiedRowIds` to edit mode.
    */
   const _revertAllRowsEditMode = useCallback(() => {
-    modifiedRowIds.forEach((id) => _muiDataGridApiRef.current.startRowEditMode({ id }));
-  }, [_muiDataGridApiRef, modifiedRowIds]);
+    setRowModesModel(() => {
+      return modifiedRowIds.reduce<GridRowModesModel>((newRowModesModel, currentId) => {
+        newRowModesModel[currentId] = { mode: GridRowModes.Edit };
+        return newRowModesModel;
+      }, {});
+    });
+  }, [modifiedRowIds]);
 
   const revertObservationRecords = useCallback(() => {
     // Mark all rows as saved
@@ -592,7 +617,12 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     // Revert any current edits
     const editingIds = Object.keys(_muiDataGridApiRef.current.state.editRows);
-    editingIds.forEach((id) => _muiDataGridApiRef.current.stopRowEditMode({ id, ignoreModifications: true }));
+    setRowModesModel(() => {
+      return editingIds.reduce<GridRowModesModel>((newRowModesModel, currentId) => {
+        newRowModesModel[currentId] = { mode: GridRowModes.View, ignoreModifications: true };
+        return newRowModesModel;
+      }, {});
+    });
 
     // Remove any rows that are newly created
     setRows(rows.filter((row) => !addedRowIds.includes(String(row.id))));
@@ -799,6 +829,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     () => ({
       _muiDataGridApiRef,
       rows,
+      rowModesModel,
       setRows,
       getColumns,
       addObservationRecord,
@@ -828,6 +859,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     [
       _muiDataGridApiRef,
       rows,
+      rowModesModel,
       getColumns,
       addObservationRecord,
       saveObservationRecords,
