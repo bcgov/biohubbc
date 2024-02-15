@@ -1,5 +1,5 @@
 import { cyan, grey } from '@mui/material/colors';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRowModesModel } from '@mui/x-data-grid';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -15,6 +15,15 @@ export interface ISpeciesObservationTableProps {
    * @memberof ISpeciesObservationTableProps
    */
   isLoading?: boolean;
+  /**
+   * The row modes model.
+   *
+   * Defines which rows are in edit mode.
+   *
+   * @type {GridRowModesModel}
+   * @memberof ISpeciesObservationTableProps
+   */
+  rowModesModel: GridRowModesModel;
   /**
    * The column definitions of the columns to render in the table.
    *
@@ -61,6 +70,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         editMode="row"
         columns={props.columns}
         rows={observationsTableContext.rows}
+        rowModesModel={props.rowModesModel}
         rowCount={observationsTableContext.observationCount}
         paginationModel={observationsTableContext.paginationModel}
         pageSizeOptions={[25, 50, 100]}

@@ -6,6 +6,7 @@ import { Measurement } from 'hooks/cb_api/useLookupApi';
 import { useState } from 'react';
 
 export interface IMeasurementsButtonProps {
+  disabled: boolean;
   /**
    * The selected measurements.
    *
@@ -18,7 +19,7 @@ export interface IMeasurementsButtonProps {
    *
    * @memberof IMeasurementsButtonProps
    */
-  onMeasurementsSave: (measurements: Measurement[]) => void;
+  onAddMeasurements: (measurements: Measurement[]) => void;
 }
 
 /**
@@ -28,7 +29,7 @@ export interface IMeasurementsButtonProps {
  * @return {*}
  */
 export const MeasurementsButton = (props: IMeasurementsButtonProps) => {
-  const { selectedMeasurements, onMeasurementsSave } = props;
+  const { selectedMeasurements, onAddMeasurements } = props;
 
   const [open, setOpen] = useState(false);
 
@@ -47,7 +48,7 @@ export const MeasurementsButton = (props: IMeasurementsButtonProps) => {
         selectedMeasurements={selectedMeasurements}
         open={open}
         onSave={(measurements) => {
-          onMeasurementsSave(measurements);
+          onAddMeasurements(measurements);
           setOpen(false);
         }}
         onCancel={() => {

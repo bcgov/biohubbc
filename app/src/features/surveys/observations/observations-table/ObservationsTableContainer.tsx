@@ -236,7 +236,11 @@ const ObservationComponent = () => {
 
         <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
           <Box position="absolute" width="100%" height="100%">
-            <ObservationsTable isLoading={processingRecords} columns={columns} />
+            <ObservationsTable
+              isLoading={processingRecords}
+              rowModesModel={observationsTableContext.rowModesModel}
+              columns={columns}
+            />
           </Box>
         </Box>
       </Paper>

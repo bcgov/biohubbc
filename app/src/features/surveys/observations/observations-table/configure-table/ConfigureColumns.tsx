@@ -17,16 +17,57 @@ export interface IConfigureColumnsProps {
    */
   disabled: boolean;
   /**
-   * The column definitions of the columns rendered in the observations table
+   * The column field names of the hidden columns.
    *
    * @type {GridColDef<IObservationTableRow>[]}
    * @memberof IConfigureColumnsProps
    */
   hiddenFields: string[];
+  /**
+   * The column definitions of the columns that may be toggled to hidden or visible.
+   *
+   * @type {GridColDef<IObservationTableRow>[]}
+   * @memberof IConfigureColumnsProps
+   */
   hideableColumns: GridColDef<IObservationTableRow>[];
+  /**
+   * Callback fired when a column is toggled to hidden or visible.
+   *
+   * @memberof IConfigureColumnsProps
+   */
   onToggleColumnVisibility: (field: string) => void;
+  /**
+   * Callback fired when all columns are toggled to hidden or visible.
+   *
+   * @memberof IConfigureColumnsProps
+   */
   onToggleShowHideAll: () => void;
+  /**
+   * Controls the disabled state of the addF measurement column buttons.
+   *
+   * @type {boolean}
+   * @memberof IConfigureColumnsProps
+   */
+  disabledAddMeasurements: boolean;
+  /**
+   * Controls the disabled state of the remove measurement column buttons.
+   *
+   * @type {boolean}
+   * @memberof IConfigureColumnsProps
+   */
+  disabledRemoveMeasurements: boolean;
+  /**
+   * The measurement columns to render in the table.
+   *
+   * @type {MeasurementColumn[]}
+   * @memberof IConfigureColumnsProps
+   */
   measurementColumns: MeasurementColumn[];
+  /**
+   * Callback fired when a measurement column is removed.
+   *
+   * @memberof IConfigureColumnsProps
+   */
   onRemoveMeasurements: (measurementFields: string[]) => void;
   /**
    * Callback fired when a measurement column is added.
@@ -49,6 +90,8 @@ export const ConfigureColumns = (props: IConfigureColumnsProps) => {
     hideableColumns,
     onToggleColumnVisibility,
     onToggleShowHideAll,
+    disabledAddMeasurements,
+    disabledRemoveMeasurements,
     measurementColumns,
     onRemoveMeasurements,
     onAddMeasurements
@@ -78,13 +121,15 @@ export const ConfigureColumns = (props: IConfigureColumnsProps) => {
         open={Boolean(columnVisibilityMenuAnchorEl)}
         onClose={() => setColumnVisibilityMenuAnchorEl(null)}>
         <ConfigureColumnsPopoverContent
-          hideableColumns={hideableColumns}
           hiddenFields={hiddenFields}
-          measurementColumns={measurementColumns}
-          onMeasurementsDelete={onRemoveMeasurements}
-          onMeasurementsSave={onAddMeasurements}
+          hideableColumns={hideableColumns}
           onToggleColumnVisibility={onToggleColumnVisibility}
           onToggledShowHideAll={onToggleShowHideAll}
+          disabledAddMeasurements={disabledAddMeasurements}
+          disabledRemoveMeasurements={disabledRemoveMeasurements}
+          measurementColumns={measurementColumns}
+          onRemoveMeasurements={onRemoveMeasurements}
+          onAddMeasurements={onAddMeasurements}
         />
       </Popover>
     </>

@@ -1,4 +1,4 @@
-import { GridColDef } from '@mui/x-data-grid';
+import { GridColDef, GridRowModes } from '@mui/x-data-grid';
 import {
   getSurveySessionStorageKey,
   SIMS_OBSERVATIONS_HIDDEN_COLUMNS,
@@ -207,6 +207,12 @@ export const ConfigureColumnsContainer = (props: IConfigureColumnsContainerProps
     }
   }, [setHiddenFields, surveyId]);
 
+  function isAnyRowInEditMode(): boolean {
+    return Object.values(observationsTableContext.rowModesModel).some(
+      (innerObj) => innerObj.mode === GridRowModes.Edit
+    );
+  }
+
   return (
     <ConfigureColumns
       disabled={disabled}
@@ -214,6 +220,8 @@ export const ConfigureColumnsContainer = (props: IConfigureColumnsContainerProps
       hideableColumns={hideableColumns}
       onToggleColumnVisibility={onToggleColumnVisibility}
       onToggleShowHideAll={onToggleShowHideAll}
+      disabledAddMeasurements={isAnyRowInEditMode()}
+      disabledRemoveMeasurements={isAnyRowInEditMode()}
       measurementColumns={observationsTableContext.measurementColumns}
       onRemoveMeasurements={onRemoveMeasurements}
       onAddMeasurements={onAddMeasurements}

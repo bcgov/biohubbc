@@ -21,11 +21,13 @@ import { Measurement } from 'hooks/cb_api/useLookupApi';
 export interface IConfigureColumnsPopoverContentProps {
   hideableColumns: GridColDef<IObservationTableRow>[];
   hiddenFields: string[];
-  measurementColumns: MeasurementColumn[];
   onToggleColumnVisibility: (field: string) => void;
   onToggledShowHideAll: () => void;
-  onMeasurementsDelete: (measurementFields: string[]) => void;
-  onMeasurementsSave: (measurements: Measurement[]) => void;
+  disabledAddMeasurements: boolean;
+  disabledRemoveMeasurements: boolean;
+  measurementColumns: MeasurementColumn[];
+  onRemoveMeasurements: (measurementFields: string[]) => void;
+  onAddMeasurements: (measurements: Measurement[]) => void;
 }
 
 /**
@@ -38,11 +40,12 @@ export const ConfigureColumnsPopoverContent = (props: IConfigureColumnsPopoverCo
   const {
     hideableColumns,
     hiddenFields,
-    measurementColumns,
     onToggleColumnVisibility,
     onToggledShowHideAll,
-    onMeasurementsDelete,
-    onMeasurementsSave
+    measurementColumns,
+    disabledRemoveMeasurements,
+    onRemoveMeasurements,
+    onAddMeasurements
   } = props;
 
   return (
@@ -52,8 +55,9 @@ export const ConfigureColumnsPopoverContent = (props: IConfigureColumnsPopoverCo
           Configure Observations
         </Typography>
         <MeasurementsButton
+          disabled={disabledRemoveMeasurements}
           selectedMeasurements={measurementColumns.map((item) => item.measurement)}
-          onMeasurementsSave={onMeasurementsSave}
+          onAddMeasurements={onAddMeasurements}
         />
       </Stack>
 
@@ -101,9 +105,10 @@ export const ConfigureColumnsPopoverContent = (props: IConfigureColumnsPopoverCo
               secondaryAction={
                 measurementColumns.some((item) => item.colDef.field === column.field) && (
                   <IconButton
+                    disabled={disabledRemoveMeasurements}
                     edge="end"
                     aria-label="Remove measurement"
-                    onClick={() => onMeasurementsDelete([column.field])}>
+                    onClick={() => onRemoveMeasurements([column.field])}>
                     <Icon path={mdiTrashCanOutline} size={1} />
                   </IconButton>
                 )
