@@ -1,5 +1,6 @@
-import { Request } from 'express';
+import { RequestHandler } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
+import { KeycloakService } from '../services/keycloak-service';
 import { HTTP403 } from './../errors/http-error';
 import { authenticateRequest } from './../request-handlers/security/authentication';
 import { authorizeRequest } from './../request-handlers/security/authorization';
@@ -17,6 +18,7 @@ const proxyRoutes = [
   '/api/critterbase/lookups/:key',
   '/api/critterbase/xref/taxon-marking-body-locations',
   '/api/critterbase/xref/taxon-measurements',
+  '/api/critterbase/xref/taxon-qualitative-measurements',
   '/api/critterbase/xref/taxon-qualitative-measurement-options'
 ];
 
@@ -35,7 +37,7 @@ const getCritterbaseApiHostUrl = () => {
  *
  * @param {*} req
  */
-const authorizeAndAuthenticate = async (req: Request) => {
+export const authorizeAndAuthenticateMiddleware: RequestHandler = async (req, _, next) => {
   await authenticateRequest(req);
 
   req['authorization_scheme'] = {
@@ -52,6 +54,27 @@ const authorizeAndAuthenticate = async (req: Request) => {
     defaultLog.warn({ label: 'authorize', message: 'User is not authorized' });
     throw new HTTP403('Access Denied');
   }
+
+  next();
+};
+
+/**
+ * Replaces the Authorization header with a service client bearer token.
+ *
+ * @param {*} req
+ * @param {*} _
+ * @param {*} next
+ */
+export const replaceAuthorizationHeaderMiddleware: RequestHandler = async (req, _, next) => {
+  const keycloakService = new KeycloakService();
+  const serviceClientToken = await keycloakService.getKeycloakServiceToken();
+
+  delete req.headers['authorization'];
+  delete req.headers['Authorization'];
+
+  req.headers['authorization'] = `Bearer ${serviceClientToken}`;
+
+  next();
 };
 
 /**
@@ -64,15 +87,13 @@ export const getCritterbaseProxyMiddleware = () =>
   createProxyMiddleware(proxyRoutes, {
     target: getCritterbaseApiHostUrl(),
     changeOrigin: true,
-    pathRewrite: async (path, req) => {
+    pathRewrite: async (path) => {
       defaultLog.debug({ label: 'pathRewrite', message: 'path', req: path });
-
-      await authorizeAndAuthenticate(req);
 
       const matchRoutePrefix = new RegExp(`/api/critterbase(/?)(.*)`);
       return path.replace(matchRoutePrefix, '/$2');
     },
-    onProxyReq: (client, req, res, options) => {
+    onProxyReq: (client, req) => {
       defaultLog.debug({ label: 'onProxyReq', message: 'path', req: req.path });
 
       client.setHeader(
@@ -82,5 +103,10 @@ export const getCritterbaseProxyMiddleware = () =>
           username: req['system_user']?.user_identifier
         })
       );
+    },
+    onError: (error, _, res) => {
+      defaultLog.error({ label: 'getCritterbaseProxyMiddleware', message: 'error', req: error });
+
+      res.status(500).send('Failed to proxy request to Critterbase API').end();
     }
   });
