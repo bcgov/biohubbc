@@ -20,7 +20,7 @@ export interface IrementsDialogProps {
    */
   open: boolean;
   /**
-   * The selected measurements.F
+   * The selected measurements.
    *
    * @type {Measurement[]}
    * @memberof IrementsDialogProps

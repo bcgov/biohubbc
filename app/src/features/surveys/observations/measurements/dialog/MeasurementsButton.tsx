@@ -29,7 +29,7 @@ export interface IMeasurementsButtonProps {
  * @return {*}
  */
 export const MeasurementsButton = (props: IMeasurementsButtonProps) => {
-  const { selectedMeasurements, onAddMeasurements } = props;
+  const { disabled, selectedMeasurements, onAddMeasurements } = props;
 
   const [open, setOpen] = useState(false);
 
@@ -41,7 +41,8 @@ export const MeasurementsButton = (props: IMeasurementsButtonProps) => {
         data-testid="observation-measurements-button"
         onClick={() => setOpen(true)}
         startIcon={<Icon path={mdiPlus} size={0.75} />}
-        aria-label="Add Measurements">
+        aria-label="Add Measurements"
+        disabled={disabled}>
         Add Measurements
       </Button>
       <MeasurementsDialog

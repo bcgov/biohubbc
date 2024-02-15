@@ -43,6 +43,7 @@ export const ConfigureColumnsPopoverContent = (props: IConfigureColumnsPopoverCo
     onToggleColumnVisibility,
     onToggledShowHideAll,
     measurementColumns,
+    disabledAddMeasurements,
     disabledRemoveMeasurements,
     onRemoveMeasurements,
     onAddMeasurements
@@ -55,7 +56,7 @@ export const ConfigureColumnsPopoverContent = (props: IConfigureColumnsPopoverCo
           Configure Observations
         </Typography>
         <MeasurementsButton
-          disabled={disabledRemoveMeasurements}
+          disabled={disabledAddMeasurements}
           selectedMeasurements={measurementColumns.map((item) => item.measurement)}
           onAddMeasurements={onAddMeasurements}
         />
