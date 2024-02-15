@@ -92,50 +92,20 @@ const useLookupApi = (axios: AxiosInstance) => {
    * @return {*}  {Measurement[]}
    */
   const getMeasurementsBySearachTerms = async (searchTerms: string[]): Promise<Measurement[]> => {
-    return [
-      {
-        uuid: '930f2b50-84b7-4fb5-a956-15c5152cf388',
-        scientificName: 'Falconus Americanus',
-        commonName: 'Falcon',
-        measurementId: 1,
-        measurementType: 'Quantitative',
-        measurementName: 'WIngspan (cm)',
-        measurementDescription: 'Description of Wingspan'
-      },
-      {
-        uuid: '6004651d-a6c5-4e04-ab46-8dcce1d1e124',
-        scientificName: 'Smallus Shrewus',
-        commonName: 'Shrew 2',
-        measurementId: 2,
-        measurementType: 'Quantitative',
-        measurementName: 'Age (years)',
-        measurementDescription: 'Description of Age'
-      },
-      {
-        uuid: 'bbc7a940-ab8a-4977-8995-e56d2dda5d60',
-        scientificName: 'Alces Alces Americanus',
-        commonName: 'Moose',
-        measurementId: 3,
-        measurementType: 'Qualitative',
-        measurementName: 'Colour',
-        measurementDescription: 'Description of Colour',
-        measurementOptions: [
-          { label: 'Red', value: 'red' },
-          { label: 'Green', value: 'green' },
-          { label: 'Blue', value: 'blue' }
-        ]
-      },
-      {
-        uuid: '6004651d-a6c5-4e04-ab46-8dcce1d1e125',
-        scientificName: 'Scientific Name',
+    // TODO: this needs to be updated when itis_tsn is swapped over in critter base
+    const { data } = await axios.get(`/api/critterbase/xref/taxon-measurements`);
+
+    return data.map((item: any, index: number) => {
+      return {
+        uuid: item.taxon_measurement_id,
+        scientificName: '',
         commonName: '',
-        measurementId: 4,
+        measurementId: index,
         measurementType: 'Quantitative',
-        measurementName: 'Measurement Name',
-        measurementDescription:
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-      }
-    ];
+        measurementName: item.measurement_name,
+        measurementDescription: item.measurement_desc ?? ''
+      };
+    });
   };
 
   return {
