@@ -96,12 +96,12 @@ export const useObservationsContext = (): IObservationsContext => {
  *
  * @return {*}  {IObservationsTableContext}
  */
-export const useObservationTableContext = (): IObservationsTableContext => {
+export const useObservationsTableContext = (): IObservationsTableContext => {
   const context = useContext(ObservationsTableContext);
 
   if (!context) {
     throw Error(
-      'ObservationsTableContext is undefined, please verify you are calling useObservationTableContext() as child of an <ObservationsTableContextProvider> component.'
+      'ObservationsTableContext is undefined, please verify you are calling useObservationsTableContext() as child of an <ObservationsTableContextProvider> component.'
     );
   }
 

@@ -1,11 +1,11 @@
 import Button from '@mui/material/Button';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { ObservationsTableI18N } from 'constants/i18n';
-import { useObservationTableContext } from 'hooks/useContext';
+import { useObservationsTableContext } from 'hooks/useContext';
 import { useState } from 'react';
 
 export const DiscardChangesButton = () => {
-  const observationsTableContext = useObservationTableContext();
+  const observationsTableContext = useObservationsTableContext();
 
   const [open, setOpen] = useState<boolean>(false);
 

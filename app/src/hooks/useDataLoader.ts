@@ -110,7 +110,7 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
       if (isMounted()) {
         setIsLoading(false);
         setIsReady(true);
-        !hasLoaded && setHasLoaded(true);
+        setHasLoaded(true);
       }
     }
   };
@@ -125,10 +125,9 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
   };
 
   const refresh = async (...args: AFArgs) => {
-    error && setError(undefined);
-    isLoading && setIsLoading(false);
-    isReady && setIsReady(false);
-    !hasLoaded && setHasLoaded(true);
+    setError(undefined);
+    setIsLoading(false);
+    setIsReady(false);
     return loadData(...args);
   };
 
@@ -138,11 +137,11 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
 
   const clearData = () => {
     setData(undefined);
-    error && setError(undefined);
-    isLoading && setIsLoading(false);
-    isReady && setIsReady(false);
-    hasLoaded && setHasLoaded(false);
-    oneTimeLoad && setOneTimeLoad(false);
+    setError(undefined);
+    setIsLoading(false);
+    setIsReady(false);
+    setHasLoaded(false);
+    setOneTimeLoad(false);
   };
 
   return { data, error, isLoading, isReady, hasLoaded, load, refresh, clearError, clearData };

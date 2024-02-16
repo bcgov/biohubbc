@@ -4,7 +4,7 @@ import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { getSurveySessionStorageKey, SIMS_OBSERVATIONS_HIDDEN_COLUMNS } from 'constants/session-storage';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import { useObservationTableContext } from 'hooks/useContext';
+import { useObservationsTableContext } from 'hooks/useContext';
 import { has } from 'lodash-es';
 import { useContext } from 'react';
 
@@ -37,19 +37,20 @@ export interface ISpeciesObservationTableProps {
 const ObservationsTable = (props: ISpeciesObservationTableProps) => {
   const { surveyId } = useContext(SurveyContext);
 
-  const observationsTableContext = useObservationTableContext();
+  const observationsTableContext = useObservationsTableContext();
+
+  console.log([...observationsTableContext.savedRows, ...observationsTableContext.stagedRows]);
 
   return (
     <>
       {props.isLoading && <SkeletonTable />}
 
       <DataGrid
-        checkboxSelection
-        disableRowSelectionOnClick
-        rowHeight={56}
         apiRef={observationsTableContext._muiDataGridApiRef}
         editMode="row"
+        // Columns
         columns={props.columns}
+        // Column visibility
         columnVisibilityModel={observationsTableContext.columnVisibilityModel}
         onColumnVisibilityModelChange={(model) => {
           // Store current visibility model in session storage
@@ -61,29 +62,44 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
           // Update the column visibility model in the context
           observationsTableContext.setColumnVisibilityModel(model);
         }}
-        rows={observationsTableContext.rows}
+        // Rows
+        rows={[...observationsTableContext.savedRows, ...observationsTableContext.stagedRows]}
+        processRowUpdate={(newRow, oldRow) => {
+          console.log('processRowUpdate', newRow, oldRow);
+          return newRow;
+        }}
+        // Row modes
         rowModesModel={props.rowModesModel}
         onRowModesModelChange={(model) => {
+          console.log('onRowModesModelChange', model);
           // Update the row modes model in the context
           observationsTableContext.setRowModesModel(model);
         }}
-        rowCount={observationsTableContext.observationCount}
-        paginationModel={observationsTableContext.paginationModel}
-        pageSizeOptions={[25, 50, 100]}
-        onPaginationModelChange={(model) => observationsTableContext.updatePaginationModel(model)}
+        // Pagination
         paginationMode="server"
+        rowCount={observationsTableContext.observationCount}
+        pageSizeOptions={[25, 50, 100]}
+        paginationModel={observationsTableContext.paginationModel}
+        onPaginationModelChange={(model) => observationsTableContext.setPaginationModel(model)}
+        // Sorting
         sortingMode="server"
         sortModel={observationsTableContext.sortModel}
-        onSortModelChange={(model) => observationsTableContext.updateSortModel(model)}
+        onSortModelChange={(model) => observationsTableContext.setSortModel(model)}
+        // Row editing
         onRowEditStart={(params) => observationsTableContext.onRowEditStart(params.id)}
         onRowEditStop={(_params, event) => {
           event.defaultMuiPrevented = true;
         }}
+        // Row selection
+        checkboxSelection
+        disableRowSelectionOnClick
+        rowSelectionModel={observationsTableContext.rowSelectionModel}
+        onRowSelectionModelChange={observationsTableContext.onRowSelectionModelChange}
+        // Styling
         localeText={{
           noRowsLabel: 'No Records'
         }}
-        onRowSelectionModelChange={observationsTableContext.onRowSelectionModelChange}
-        rowSelectionModel={observationsTableContext.rowSelectionModel}
+        rowHeight={56}
         getRowHeight={() => 'auto'}
         getRowClassName={(params) => (has(observationsTableContext.validationModel, params.row.id) ? 'error' : '')}
         sx={{

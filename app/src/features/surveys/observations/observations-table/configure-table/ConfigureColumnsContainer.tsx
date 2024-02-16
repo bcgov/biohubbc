@@ -12,7 +12,7 @@ import {
   ObservationQuantitativeMeasurementColDef
 } from 'features/surveys/observations/observations-table/GridColumnDefinitions';
 import { Measurement } from 'hooks/cb_api/useLookupApi';
-import { useObservationTableContext } from 'hooks/useContext';
+import { useObservationsTableContext } from 'hooks/useContext';
 import { useCallback, useContext, useEffect, useMemo } from 'react';
 
 export interface IConfigureColumnsContainerProps {
@@ -44,7 +44,7 @@ export const ConfigureColumnsContainer = (props: IConfigureColumnsContainerProps
   const surveyContext = useContext(SurveyContext);
   const { surveyId } = surveyContext;
 
-  const observationsTableContext = useObservationTableContext();
+  const observationsTableContext = useObservationsTableContext();
 
   // The array of columns that may be toggled as hidden or visible
   const hideableColumns = useMemo(() => {
@@ -70,18 +70,25 @@ export const ConfigureColumnsContainer = (props: IConfigureColumnsContainerProps
       (item) => item === true
     );
 
+    let model: GridColumnVisibilityModel = {};
+
     if (hasHiddenColumns) {
       // Some columns currently hidden, show all columns
-      observationsTableContext.setColumnVisibilityModel({
-        ...Object.fromEntries(hideableColumns.map((column) => [column.field, false]))
-      });
+      model = { ...Object.fromEntries(hideableColumns.map((column) => [column.field, false])) };
     } else {
       // No columns currently hidden, hide all columns
-      observationsTableContext.setColumnVisibilityModel({
-        ...Object.fromEntries(hideableColumns.map((column) => [column.field, true]))
-      });
+      model = { ...Object.fromEntries(hideableColumns.map((column) => [column.field, true])) };
     }
-  }, [hideableColumns, observationsTableContext]);
+
+    // Store current visibility model in session storage
+    sessionStorage.setItem(
+      getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_HIDDEN_COLUMNS),
+      JSON.stringify(model)
+    );
+
+    // Update the column visibility model in the context
+    observationsTableContext.setColumnVisibilityModel(model);
+  }, [hideableColumns, observationsTableContext, surveyId]);
 
   /**
    * Removes measurement columns from the observations table, ignoring columns that don't exist.
