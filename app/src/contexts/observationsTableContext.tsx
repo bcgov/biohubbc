@@ -35,6 +35,7 @@ export interface IStandardObservationColumns {
   survey_sample_method_id: number | null;
   survey_sample_period_id: number | null;
   count: number | null;
+  subcount: number | null;
   observation_date: Date;
   observation_time: string;
   latitude: number | null;
