@@ -101,10 +101,6 @@ export type IObservationsTableContext = {
   rows: IObservationTableRow[];
   rowModesModel: GridRowModesModel;
   /**
-   * A setState setter for the `rows`
-   */
-  setRows: React.Dispatch<React.SetStateAction<IObservationTableRow[]>>;
-  /**
    * Returns all columns belonging to the observation table
    */
   getColumns: () => GridStateColDef[];
@@ -186,6 +182,8 @@ export type IObservationsTableContext = {
    */
   measurementColumns: MeasurementColumn[];
   setMeasurementColumns: React.Dispatch<React.SetStateAction<MeasurementColumn[]>>;
+  disabled: boolean;
+  setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const ObservationsTableContext = createContext<IObservationsTableContext | undefined>(undefined);
@@ -203,23 +201,33 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
   // The data grid rows
   const [rows, setRows] = useState<IObservationTableRow[]>([]);
+
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
+
   // Stores the currently selected row ids
   const [rowSelectionModel, setRowSelectionModel] = useState<GridRowSelectionModel>([]);
+
   // Existing rows that are in edit mode
   const [modifiedRowIds, setModifiedRowIds] = useState<string[]>([]);
+
   // New rows (regardless of mode)
   const [addedRowIds, setAddedRowIds] = useState<string[]>([]);
+
   // True if the rows are in the process of transitioning from edit to view mode
   const [_isStoppingEdit, _setIsStoppingEdit] = useState(false);
+
   // Status of the taxonomy cache
   const [taxonomyCacheStatus, setTaxonomyCacheStatus] = useState({ isInitializing: false, isInitialized: false });
+
   // True if the records are in the process of being saved to the server
   const [_isSaving, _setIsSaving] = useState(false);
+
   // Stores the current count of observations for this survey
   const [observationCount, setObservationCount] = useState<number>(0);
+
   // Stores the current validation state of the table
   const [validationModel, setValidationModel] = useState<ObservationTableValidationModel>({});
+
   // Stores any measurement columns that are not part of the default observation table columns
   const [measurementColumns, setMeasurementColumns] = useState<MeasurementColumn[]>(() => {
     const measurementColumnStringified = sessionStorage.getItem(
@@ -231,6 +239,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     return JSON.parse(measurementColumnStringified);
   });
 
+  const [disabled, setDisabled] = useState(false);
+
   // Pagination State
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
@@ -238,25 +248,17 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   });
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
-  // const updatePaginationModel = (model: GridPaginationModel) => {
-  //   setPaginationModel(model);
-  // };
+  const refreshObservationRecords = useCallback(async () => {
+    const sort = firstOrNull(sortModel);
+    return observationsContext.observationsDataLoader.refresh({
+      limit: paginationModel.pageSize,
+      sort: sort?.field || undefined,
+      order: sort?.sort || undefined,
 
-  // const updateSortModel = (model: GridSortModel) => {
-  //   setSortModel(model);
-  // };
-
-  // // initial load with pagination valuesF
-  // useEffect(() => {
-  //   observationsContext.observationsDataLoader.refresh({
-  //     limit: paginationModel.pageSize,
-
-  //     // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
-  //     page: paginationModel.page + 1
-  //   });
-  //   // Should not re-run this effect on `observationsContext.observationsDataLoader` changes
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [paginationModel.page, paginationModel.pageSize]);
+      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+      page: paginationModel.page + 1
+    });
+  }, [observationsContext.observationsDataLoader, paginationModel, sortModel]);
 
   // Fetch new rows based on sort/ pagination model changes
   useEffect(() => {
@@ -379,6 +381,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
   const _deleteRecords = useCallback(
     async (observationRecords: IObservationTableRow[]): Promise<void> => {
+      console.log('_deleteRecords', observationRecords);
       if (!observationRecords.length) {
         return;
       }
@@ -448,7 +451,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         });
       }
     },
-    [addedRowIds, dialogContext, biohubApi.observation, projectId, surveyId]
+    [addedRowIds, dialogContext, refreshObservationRecords, biohubApi.observation, projectId, surveyId]
   );
 
   const getSelectedObservationRecords: () => IObservationTableRow[] = useCallback(() => {
@@ -458,6 +461,13 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     }
 
     const rowValues = Array.from(_muiDataGridApiRef.current.getRowModels(), ([_, value]) => value);
+    console.log('rowValues', rowValues);
+    console.log(
+      'rowValues.filter',
+      rowValues.filter((row): row is IObservationTableRow =>
+        rowSelectionModel.includes((row as IObservationTableRow).id)
+      )
+    );
     return rowValues.filter((row): row is IObservationTableRow =>
       rowSelectionModel.includes((row as IObservationTableRow).id)
     );
@@ -465,6 +475,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
   const deleteObservationRecords = useCallback(
     (observationRecords: IObservationTableRow[]) => {
+      console.log('deleteObservationRecords', observationRecords);
       if (!observationRecords.length) {
         return;
       }
@@ -499,6 +510,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
   const deleteSelectedObservationRecords = useCallback(() => {
     const selectedRecords = getSelectedObservationRecords();
+    console.log('selectedRecords', selectedRecords);
     if (!selectedRecords.length) {
       return;
     }
@@ -583,13 +595,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     }
 
     // Transition all rows in edit mode to view mode
-
-    setRowModesModel(() => {
-      return editingIdsToSave.reduce<GridRowModesModel>((newRowModesModel, currentId) => {
-        newRowModesModel[currentId] = { mode: GridRowModes.View };
-        return newRowModesModel;
-      }, {});
-    });
+    setRowModesModel({});
 
     // Store ids of rows that were in edit mode
     setModifiedRowIds(editingIdsToSave);
@@ -627,18 +633,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     // Reset all validation errors
     setValidationModel({});
   }, [_muiDataGridApiRef, addedRowIds, rows]);
-
-  const refreshObservationRecords = useCallback(async () => {
-    const sort = firstOrNull(sortModel);
-    return observationsContext.observationsDataLoader.refresh({
-      limit: paginationModel.pageSize,
-      sort: sort?.field || undefined,
-      order: sort?.sort || undefined,
-
-      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
-      page: paginationModel.page + 1
-    });
-  }, [observationsContext.observationsDataLoader, paginationModel, sortModel]);
 
   // True if the data grid contains at least 1 unsaved record
   const hasUnsavedChanges = modifiedRowIds.length > 0 || addedRowIds.length > 0;
@@ -720,7 +714,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   /**
    * Runs onces on initial page load.
    */
-
   useEffect(() => {
     if (taxonomyCacheStatus.isInitializing || taxonomyCacheStatus.isInitialized) {
       // Taxonomy cache is currently loading, or has already loaded
@@ -761,7 +754,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         setTaxonomyCacheStatus({ isInitializing: false, isInitialized: true });
       });
   }, [
-    observationsContext.observationsDataLoader.data?.surveyObservations,
+    observationsContext.observationsDataLoader.data,
     taxonomyCacheStatus.isInitialized,
     taxonomyCacheStatus.isInitializing,
     taxonomyContext
@@ -791,7 +784,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       return;
     }
 
-    if (modifiedRowIds.some((id) => _muiDataGridApiRef.current.getRowMode(id) === 'edit')) {
+    if (Object.values(rowModesModel).some((item) => item.mode === 'edit')) {
       // Not all rows have transitioned to view mode, cannot save yet
       return;
     }
@@ -833,14 +826,13 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     });
 
     _saveRecords(rowsToSave);
-  }, [_muiDataGridApiRef, _saveRecords, _isSaving, _isStoppingEdit, modifiedRowIds, measurementColumns]);
+  }, [_isSaving, _isStoppingEdit, _muiDataGridApiRef, _saveRecords, measurementColumns, modifiedRowIds, rowModesModel]);
 
   const observationsTableContext: IObservationsTableContext = useMemo(
     () => ({
       _muiDataGridApiRef,
       rows,
       rowModesModel,
-      setRows,
       getColumns,
       addObservationRecord,
       saveObservationRecords,
@@ -864,7 +856,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       hasError,
       sortModel,
       measurementColumns,
-      setMeasurementColumns
+      setMeasurementColumns,
+      disabled,
+      setDisabled
     }),
     [
       _muiDataGridApiRef,
@@ -891,7 +885,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       measurementColumns,
       setMeasurementColumns,
       setSortModel,
-      sortModel
+      sortModel,
+      disabled,
+      setDisabled
     ]
   );
 

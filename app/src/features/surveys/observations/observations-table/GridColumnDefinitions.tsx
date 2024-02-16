@@ -489,7 +489,10 @@ export const ObservationActionsColDef = (props: {
     cellClassName: 'pinnedColumn',
     getActions: (params) => [
       <IconButton
-        onClick={() => props.onDelete([params.row])}
+        onClick={() => {
+          console.log(params.row);
+          props.onDelete([params.row]);
+        }}
         disabled={props.disabled}
         key={`actions[${params.id}].handleDeleteRow`}>
         <Icon path={mdiTrashCanOutline} size={1} />

@@ -2,10 +2,8 @@ import { cyan, grey } from '@mui/material/colors';
 import { DataGrid, GridColDef, GridRowModesModel } from '@mui/x-data-grid';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
-import { SurveyContext } from 'contexts/surveyContext';
-import { useObservationsContext, useObservationTableContext } from 'hooks/useContext';
+import { useObservationTableContext } from 'hooks/useContext';
 import { has } from 'lodash-es';
-import { useContext, useMemo } from 'react';
 
 export interface ISpeciesObservationTableProps {
   /**
@@ -34,33 +32,12 @@ export interface ISpeciesObservationTableProps {
 }
 
 const ObservationsTable = (props: ISpeciesObservationTableProps) => {
-  const surveyContext = useContext(SurveyContext);
-
-  const observationsContext = useObservationsContext();
-
   const observationsTableContext = useObservationTableContext();
 
-  const isLoading = useMemo(() => {
-    return props.isLoading !== undefined
-      ? props.isLoading
-      : [
-          observationsContext.observationsDataLoader.isLoading && !observationsContext.observationsDataLoader.hasLoaded,
-          surveyContext.sampleSiteDataLoader.isLoading,
-          observationsTableContext.isLoading,
-          observationsTableContext.isSaving
-        ].some(Boolean);
-  }, [
-    props.isLoading,
-    observationsContext.observationsDataLoader.isLoading,
-    observationsContext.observationsDataLoader.hasLoaded,
-    surveyContext.sampleSiteDataLoader.isLoading,
-    observationsTableContext.isLoading,
-    observationsTableContext.isSaving
-  ]);
 
   return (
     <>
-      {isLoading && <SkeletonTable />}
+      {props.isLoading && <SkeletonTable />}
 
       <DataGrid
         checkboxSelection

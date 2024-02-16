@@ -1,4 +1,4 @@
-import { mdiImport, mdiPlus } from '@mdi/js';
+import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
@@ -11,12 +11,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridColDef } from '@mui/x-data-grid';
 import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
-import FileUploadDialog from 'components/dialog/FileUploadDialog';
-import YesNoDialog from 'components/dialog/YesNoDialog';
-import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
-import { ObservationsTableI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
-import { DialogContext } from 'contexts/dialogContext';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { BulkActionsButton } from 'features/surveys/observations/observations-table/bulk-actions/BulkActionsButton';
@@ -36,33 +31,23 @@ import {
   SampleSiteColDef,
   TaxonomyColDef
 } from 'features/surveys/observations/observations-table/GridColumnDefinitions';
+import { ImportObservationsButton } from 'features/surveys/observations/observations-table/import-observations/ImportObservationsButton';
 import ObservationsTable from 'features/surveys/observations/observations-table/ObservationsTable';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useObservationTableContext } from 'hooks/useContext';
 import {
   IGetSampleLocationRecord,
   IGetSampleMethodRecord,
   IGetSamplePeriodRecord
 } from 'interfaces/useSurveyApi.interface';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { getCodesName } from 'utils/Utils';
 
 const ObservationComponent = () => {
-  const biohubApi = useBiohubApi();
-
   const codesContext = useContext(CodesContext);
 
   const surveyContext = useContext(SurveyContext);
-  const { projectId, surveyId } = surveyContext;
 
   const observationsTableContext = useObservationTableContext();
-  const { hasUnsavedChanges, validationModel, _muiDataGridApiRef } = observationsTableContext;
-
-  const dialogContext = useContext(DialogContext);
-
-  const [showImportDialog, setShowImportDialog] = useState<boolean>(false);
-  const [processingRecords, setProcessingRecords] = useState<boolean>(false);
-  const [showConfirmRemoveAllDialog, setShowConfirmRemoveAllDialog] = useState<boolean>(false);
 
   // Collect sample sites
   const surveySampleSites: IGetSampleLocationRecord[] = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
@@ -96,49 +81,6 @@ const ObservationComponent = () => {
       }`
     }));
 
-  /**
-   * Callback fired when the user attempts to import observations.
-   *
-   * @param {File} file
-   * @return {*}
-   */
-  const handleImportObservations = async (file: File) => {
-    return biohubApi.observation.uploadCsvForImport(projectId, surveyId, file).then((response) => {
-      setShowImportDialog(false);
-      setProcessingRecords(true);
-      biohubApi.observation
-        .processCsvSubmission(projectId, surveyId, response.submissionId)
-        .then(() => {
-          dialogContext.setSnackbar({
-            snackbarMessage: (
-              <Typography variant="body2" component="div">
-                {ObservationsTableI18N.importRecordsSuccessSnackbarMessage}
-              </Typography>
-            ),
-            open: true
-          });
-          return observationsTableContext.refreshObservationRecords();
-        })
-        .catch((apiError) => {
-          dialogContext.setErrorDialog({
-            dialogTitle: ObservationsTableI18N.importRecordsErrorDialogTitle,
-            dialogText: ObservationsTableI18N.importRecordsErrorDialogText,
-            dialogErrorDetails: [apiError.message],
-            open: true,
-            onClose: () => {
-              dialogContext.setErrorDialog({ open: false });
-            },
-            onOk: () => {
-              dialogContext.setErrorDialog({ open: false });
-            }
-          });
-        })
-        .finally(() => {
-          setProcessingRecords(false);
-        });
-    });
-  };
-
   // The column definitions of the columns to render in the observations table
   const columns: GridColDef<IObservationTableRow>[] = [
     TaxonomyColDef({ hasError: observationsTableContext.hasError }),
@@ -159,30 +101,6 @@ const ObservationComponent = () => {
 
   return (
     <>
-      <FileUploadDialog
-        open={showImportDialog}
-        dialogTitle="Import Observation CSV"
-        onClose={() => setShowImportDialog(false)}
-        onUpload={handleImportObservations}
-        FileUploadProps={{
-          dropZoneProps: { maxNumFiles: 1, acceptedFileExtensions: '.csv' },
-          status: UploadFileStatus.STAGED
-        }}></FileUploadDialog>
-      <YesNoDialog
-        dialogTitle={ObservationsTableI18N.removeAllDialogTitle}
-        dialogText={ObservationsTableI18N.removeAllDialogText}
-        yesButtonProps={{ color: 'error' }}
-        yesButtonLabel={'Discard Changes'}
-        noButtonProps={{ color: 'primary', variant: 'outlined' }}
-        noButtonLabel={'Cancel'}
-        open={showConfirmRemoveAllDialog}
-        onYes={() => {
-          setShowConfirmRemoveAllDialog(false);
-          observationsTableContext.revertObservationRecords();
-        }}
-        onClose={() => setShowConfirmRemoveAllDialog(false)}
-        onNo={() => setShowConfirmRemoveAllDialog(false)}
-      />
       <Paper component={Stack} flexDirection="column" flex="1 1 auto" height="100%">
         <Toolbar
           disableGutters
@@ -203,13 +121,11 @@ const ObservationComponent = () => {
           </Typography>
 
           <Stack flexDirection="row" alignItems="center" gap={1} whiteSpace="nowrap">
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<Icon path={mdiImport} size={1} />}
-              onClick={() => setShowImportDialog(true)}>
-              Import
-            </Button>
+            <ImportObservationsButton
+              onStart={() => observationsTableContext.setDisabled(true)}
+              onSuccess={() => observationsTableContext.refreshObservationRecords()}
+              onFinish={() => observationsTableContext.setDisabled(false)}
+            />
             <Button
               variant="contained"
               color="primary"
@@ -218,7 +134,7 @@ const ObservationComponent = () => {
               disabled={observationsTableContext.isSaving}>
               Add Record
             </Button>
-            <Collapse in={hasUnsavedChanges} orientation="horizontal" sx={{ mr: -1 }}>
+            <Collapse in={observationsTableContext.hasUnsavedChanges} orientation="horizontal" sx={{ mr: -1 }}>
               <Box whiteSpace="nowrap" display="flex" sx={{ gap: 1, pr: 1 }}>
                 <LoadingButton
                   loading={observationsTableContext.isSaving}
@@ -228,13 +144,7 @@ const ObservationComponent = () => {
                   disabled={observationsTableContext.isSaving}>
                   Save
                 </LoadingButton>
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  onClick={() => setShowConfirmRemoveAllDialog(true)}
-                  disabled={observationsTableContext.isSaving}>
-                  Discard Changes
-                </Button>
+                <ImportObservationsButton />
               </Box>
             </Collapse>
             <ConfigureColumnsContainer disabled={observationsTableContext.isSaving} columns={columns} />
@@ -244,12 +154,19 @@ const ObservationComponent = () => {
 
         <Divider flexItem></Divider>
 
-        <DataGridValidationAlert validationModel={validationModel} muiDataGridApiRef={_muiDataGridApiRef.current} />
+        <DataGridValidationAlert
+          validationModel={observationsTableContext.validationModel}
+          muiDataGridApiRef={observationsTableContext._muiDataGridApiRef.current}
+        />
 
         <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
           <Box position="absolute" width="100%" height="100%">
             <ObservationsTable
-              isLoading={processingRecords}
+              isLoading={
+                observationsTableContext.isLoading ||
+                observationsTableContext.isSaving ||
+                observationsTableContext.disabled
+              }
               rowModesModel={observationsTableContext.rowModesModel}
               columns={columns}
             />

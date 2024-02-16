@@ -453,35 +453,29 @@ export class ObservationService extends DBService {
    */
   async _attachItisScientificName<
     RecordWithTaxonFields extends Pick<ObservationRecord, 'itis_tsn' | 'itis_scientific_name'>
-  >(records: RecordWithTaxonFields[]): Promise<RecordWithTaxonFields[]> {
+  >(recordsToPatch: RecordWithTaxonFields[]): Promise<RecordWithTaxonFields[]> {
     defaultLog.debug({ label: '_attachItisScientificName' });
 
     const platformService = new PlatformService(this.connection);
 
-    const uniqueTsnSet: Set<number> = records.reduce((acc: Set<number>, record: RecordWithTaxonFields) => {
+    const uniqueTsnSet: Set<number> = recordsToPatch.reduce((acc: Set<number>, record: RecordWithTaxonFields) => {
       if (record.itis_tsn) {
-        acc.add(record.itis_tsn as number);
+        acc.add(record.itis_tsn);
       }
       return acc;
     }, new Set<number>([]));
 
     const taxonomyResponse = await platformService.getTaxonomyByTsns(Array.from(uniqueTsnSet)).catch((error) => {
       throw new ApiGeneralError(
-        `Failed to fetch scientific names for observation records. The request to ITIS failed: ${error}`
+        `Failed to fetch scientific names for observation records. The request to BioHub failed: ${error}`
       );
     });
 
-    return records.map((record: RecordWithTaxonFields) => {
-      record.itis_scientific_name =
-        taxonomyResponse.find((taxonomy) => Number(taxonomy.tsn) === record.itis_tsn)?.scientificName ?? null;
+    return recordsToPatch.map((recordToPatch: RecordWithTaxonFields) => {
+      recordToPatch.itis_scientific_name =
+        taxonomyResponse.find((taxonItem) => Number(taxonItem.tsn) === recordToPatch.itis_tsn)?.scientificName || null;
 
-      if (!record.itis_scientific_name) {
-        throw new ApiGeneralError(
-          `Failed to fetch scientific names for observation records. A scientific name could not be found for the given ITIS TSN: ${record.itis_tsn}`
-        );
-      }
-
-      return record;
+      return recordToPatch;
     });
   }
 

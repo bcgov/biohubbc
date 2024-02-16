@@ -12,7 +12,7 @@ import { BaseRepository } from './base-repository';
 export const ObservationRecord = z.object({
   survey_observation_id: z.number(),
   survey_id: z.number(),
-  itis_tsn: z.number().nullable(),
+  itis_tsn: z.number(),
   itis_scientific_name: z.string().nullable(),
   survey_sample_site_id: z.number().nullable(),
   survey_sample_method_id: z.number().nullable(),

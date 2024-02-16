@@ -26,9 +26,11 @@ export async function up(knex: Knex): Promise<void> {
     -- TODO Currently, we are using a placeholder ITIS species. Instead, we should map all known species used in prod from their elsaticsearch taxonomic ID to their ITIS TSN.
 
     -- Placeholder:
-      UPDATE study_species SET itis_tsn = 202384;
+    UPDATE study_species SET itis_tsn = 202384;
 
     -- Add not null constraint
+    ALTER TABLE survey_observation ALTER COLUMN itis_tsn SET NOT NULL;
+
     ALTER TABLE study_species ALTER COLUMN itis_tsn SET NOT NULL;
 
     ----------------------------------------------------------------------------------------

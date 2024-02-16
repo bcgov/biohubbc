@@ -314,7 +314,6 @@ PUT.apiDoc = {
                     description: 'Standard column data for an observation record.',
                     type: 'object',
                     required: [
-                      'wldtaxonomic_units_id',
                       'itis_tsn',
                       'itis_scientific_name',
                       'survey_sample_site_id',
@@ -330,9 +329,6 @@ PUT.apiDoc = {
                       survey_observation_id: {
                         type: 'number',
                         nullable: true
-                      },
-                      wldtaxonomic_units_id: {
-                        oneOf: [{ type: 'integer' }, { type: 'string' }]
                       },
                       itis_tsn: {
                         type: 'integer'
@@ -520,9 +516,8 @@ export function insertUpdateSurveyObservationsWithMeasurements(): RequestHandler
         return {
           observation: {
             survey_observation_id: item.standardColumns.survey_observation_id,
-            wldtaxonomic_units_id: Number(item.standardColumns.wldtaxonomic_units_id),
-            itis_tsn: item.itis_tsn,
-            itis_scientific_name: null,
+            itis_tsn: item.standardColumns.itis_tsn,
+            itis_scientific_name: item.standardColumns.itis_scientific_name,
             survey_sample_site_id: item.standardColumns.survey_sample_site_id,
             survey_sample_method_id: item.standardColumns.survey_sample_method_id,
             survey_sample_period_id: item.standardColumns.survey_sample_period_id,
