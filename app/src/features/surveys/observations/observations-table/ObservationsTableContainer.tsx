@@ -34,7 +34,7 @@ import {
 } from 'features/surveys/observations/observations-table/GridColumnDefinitions';
 import { ImportObservationsButton } from 'features/surveys/observations/observations-table/import-observations/ImportObservationsButton';
 import ObservationsTable from 'features/surveys/observations/observations-table/ObservationsTable';
-import { useObservationTableContext } from 'hooks/useContext';
+import { useObservationsTableContext } from 'hooks/useContext';
 import {
   IGetSampleLocationRecord,
   IGetSampleMethodRecord,
@@ -48,7 +48,7 @@ const ObservationComponent = () => {
 
   const surveyContext = useContext(SurveyContext);
 
-  const observationsTableContext = useObservationTableContext();
+  const observationsTableContext = useObservationsTableContext();
 
   // Collect sample sites
   const surveySampleSites: IGetSampleLocationRecord[] = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];

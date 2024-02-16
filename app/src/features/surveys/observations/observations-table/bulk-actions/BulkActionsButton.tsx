@@ -5,7 +5,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
-import { useObservationTableContext } from 'hooks/useContext';
+import { useObservationsTableContext } from 'hooks/useContext';
 import { useState } from 'react';
 import { pluralize as p } from 'utils/Utils';
 
@@ -22,7 +22,7 @@ export interface IBulkActionsButtonProps {
 export const BulkActionsButton = (props: IBulkActionsButtonProps) => {
   const { disabled } = props;
 
-  const observationsTableContext = useObservationTableContext();
+  const observationsTableContext = useObservationsTableContext();
 
   const [contextMenuAnchorEl, setContextMenuAnchorEl] = useState<Element | null>(null);
 
@@ -57,7 +57,7 @@ export const BulkActionsButton = (props: IBulkActionsButtonProps) => {
         }}>
         <MenuItem
           onClick={() => {
-            observationsTableContext.deleteSelectedObservationRecords();
+            observationsTableContext.deleteObservationRecords(observationsTableContext.getSelectedObservationRecords());
             setContextMenuAnchorEl(null);
           }}
           disabled={disabled}>
