@@ -100,16 +100,41 @@ POST.apiDoc = {
                 focal_species: {
                   type: 'array',
                   items: {
-                    type: 'number'
-                  },
-                  description: 'Selected focal species ids'
+                    type: 'object',
+                    required: ['tsn', 'commonName', 'scientificName'],
+                    properties: {
+                      tsn: {
+                        type: 'integer'
+                      },
+                      commonName: {
+                        type: 'string',
+                        nullable: true
+                      },
+                      scientificName: {
+                        type: 'string'
+                      }
+                    }
+                  }
                 },
                 ancillary_species: {
+                  nullable: true,
                   type: 'array',
                   items: {
-                    type: 'number'
-                  },
-                  description: 'Selected ancillary species ids'
+                    type: 'object',
+                    required: ['tsn', 'commonName', 'scientificName'],
+                    properties: {
+                      tsn: {
+                        type: 'integer'
+                      },
+                      commonName: {
+                        type: 'string',
+                        nullable: true
+                      },
+                      scientificName: {
+                        type: 'string'
+                      }
+                    }
+                  }
                 }
               }
             },

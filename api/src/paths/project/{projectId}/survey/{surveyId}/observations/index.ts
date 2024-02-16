@@ -75,10 +75,11 @@ export const surveyObservationsResponseSchema: SchemaObject = {
         type: 'object',
         required: [
           'survey_observation_id',
-          'wldtaxonomic_units_id',
           'latitude',
           'longitude',
           'count',
+          'itis_tsn',
+          'itis_scientific_name',
           'observation_date',
           'observation_time',
           'create_user',
@@ -91,9 +92,6 @@ export const surveyObservationsResponseSchema: SchemaObject = {
           survey_observation_id: {
             type: 'integer'
           },
-          wldtaxonomic_units_id: {
-            type: 'integer'
-          },
           latitude: {
             type: 'number'
           },
@@ -102,6 +100,12 @@ export const surveyObservationsResponseSchema: SchemaObject = {
           },
           count: {
             type: 'integer'
+          },
+          itis_tsn: {
+            type: 'integer'
+          },
+          itis_scientific_name: {
+            type: 'string'
           },
           observation_date: {
             type: 'string'
@@ -301,17 +305,15 @@ PUT.apiDoc = {
               items: {
                 type: 'object',
                 required: [
-                  'wldtaxonomic_units_id',
                   'count',
                   'latitude',
                   'longitude',
                   'observation_date',
-                  'observation_time'
+                  'observation_time',
+                  'itis_tsn',
+                  'itis_scientific_name'
                 ],
                 properties: {
-                  wldtaxonomic_units_id: {
-                    oneOf: [{ type: 'integer' }, { type: 'string' }]
-                  },
                   count: {
                     type: 'integer'
                   },
@@ -325,6 +327,12 @@ PUT.apiDoc = {
                     type: 'string'
                   },
                   observation_time: {
+                    type: 'string'
+                  },
+                  itis_tsn: {
+                    type: 'integer'
+                  },
+                  itis_scientific_name: {
                     type: 'string'
                   }
                 }
@@ -412,6 +420,7 @@ export function getSurveyObservations(): RequestHandler {
         surveyId,
         paginationOptions
       );
+
       const { observationCount } = observationData.supplementaryObservationData;
 
       return res.status(200).json({
@@ -456,20 +465,23 @@ export function insertUpdateSurveyObservations(): RequestHandler {
       const observationService = new ObservationService(connection);
 
       // Sanitize all incoming records
-      const records: (InsertObservation | UpdateObservation)[] = req.body.surveyObservations.map((record: any) => {
-        return {
-          survey_observation_id: record.survey_observation_id,
-          wldtaxonomic_units_id: Number(record.wldtaxonomic_units_id),
-          survey_sample_site_id: record.survey_sample_site_id,
-          survey_sample_method_id: record.survey_sample_method_id,
-          survey_sample_period_id: record.survey_sample_period_id,
-          latitude: record.latitude,
-          longitude: record.longitude,
-          count: record.count,
-          observation_date: record.observation_date,
-          observation_time: record.observation_time
-        } as InsertObservation | UpdateObservation;
-      });
+      const records: (InsertObservation | UpdateObservation)[] = req.body.surveyObservations.map(
+        (record: Record<string, unknown>) => {
+          return {
+            survey_observation_id: record.survey_observation_id,
+            survey_sample_site_id: record.survey_sample_site_id,
+            survey_sample_method_id: record.survey_sample_method_id,
+            survey_sample_period_id: record.survey_sample_period_id,
+            latitude: record.latitude,
+            longitude: record.longitude,
+            count: record.count,
+            observation_date: record.observation_date,
+            observation_time: record.observation_time,
+            itis_tsn: record.itis_tsn,
+            itis_scientific_name: null
+          } as InsertObservation | UpdateObservation;
+        }
+      );
 
       const surveyObservations = await observationService.insertUpdateSurveyObservations(surveyId, records);
 

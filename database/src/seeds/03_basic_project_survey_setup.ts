@@ -5,6 +5,20 @@ const DB_SCHEMA = process.env.DB_SCHEMA;
 const DB_SCHEMA_DAPI_V1 = process.env.DB_SCHEMA_DAPI_V1;
 const PROJECT_SEEDER_USER_IDENTIFIER = process.env.PROJECT_SEEDER_USER_IDENTIFIER;
 
+const focalTaxonIdOptions = [
+  { itis_tsn: 180703, itis_scientific_name: 'Alces alces' }, // Moose
+  { itis_tsn: 180596, itis_scientific_name: 'Canis lupus' }, // Wolf
+  { itis_tsn: 180713, itis_scientific_name: 'Oreamnos americanus' }, // Rocky Mountain goat
+  { itis_tsn: 180543, itis_scientific_name: 'Ursus arctos' } // Grizzly bear
+];
+
+const ancillaryTaxonIdOptions = [
+  { itis_tsn: 180703, itis_scientific_name: 'Alces alces' }, // Moose
+  { itis_tsn: 180596, itis_scientific_name: 'Canis lupus' }, // Wolf
+  { itis_tsn: 180713, itis_scientific_name: 'Oreamnos americanus' }, // Rocky Mountain goat
+  { itis_tsn: 180543, itis_scientific_name: 'Ursus arctos' } // Grizzly bear
+];
+
 /**
  * Add spatial transform
  *
@@ -211,34 +225,40 @@ const insertSurveyFundingData = (surveyId: number) => `
  * SQL to insert Survey study species data
  *
  */
-const focalTaxonIdOptions = [2065, 2066, 2067, 2068];
-const insertSurveyFocalSpeciesData = (surveyId: number) => `
-  INSERT into study_species
-    (
-      survey_id,
-      wldtaxonomic_units_id,
-      is_focal
-    )
-  VALUES (
-    ${surveyId},
-    ${focalTaxonIdOptions[Math.floor(Math.random() * focalTaxonIdOptions.length)]},
-    'Y'
-  );
-`;
-const ancillaryTaxonIdOptions = [1666, 1667, 1668, 1669];
-const insertSurveyAncillarySpeciesData = (surveyId: number) => `
-  INSERT into study_species
-    (
-      survey_id,
-      wldtaxonomic_units_id,
-      is_focal
-    )
-  VALUES (
-    ${surveyId},
-    ${ancillaryTaxonIdOptions[Math.floor(Math.random() * ancillaryTaxonIdOptions.length)]},
-    'N'
-  );
-`;
+const insertSurveyFocalSpeciesData = (surveyId: number) => {
+  const focalSpecies = focalTaxonIdOptions[Math.floor(Math.random() * focalTaxonIdOptions.length)];
+
+  return `
+    INSERT into study_species
+      (
+        survey_id,
+        itis_tsn,
+        is_focal
+      )
+    VALUES (
+      ${surveyId},
+      ${focalSpecies.itis_tsn},
+      'Y'
+    );
+  `;
+};
+
+const insertSurveyAncillarySpeciesData = (surveyId: number) => {
+  const ancillarySpecies = ancillaryTaxonIdOptions[Math.floor(Math.random() * ancillaryTaxonIdOptions.length)];
+  return `
+    INSERT into study_species
+      (
+        survey_id,
+        itis_tsn,
+        is_focal
+      )
+    VALUES (
+      ${surveyId},
+      ${ancillarySpecies.itis_tsn},
+      'N'
+    );
+  `;
+};
 
 /**
  * SQL to insert Survey permit data
@@ -562,7 +582,8 @@ const insertSurveyObservationData = (surveyId: number) => `
   INSERT INTO survey_observation
   (
     survey_id,
-    wldtaxonomic_units_id,
+    itis_tsn,
+    itis_scientific_name,
     latitude,
     longitude,
     count,
@@ -575,7 +596,8 @@ const insertSurveyObservationData = (surveyId: number) => `
   VALUES
   (
     ${surveyId},
-    $$${faker.number.int({ min: 30000, max: 32000 })}$$,
+    $$${focalTaxonIdOptions[0].itis_tsn}$$,
+    $$${focalTaxonIdOptions[0].itis_scientific_name}$$,
     $$${faker.number.int({ min: 48, max: 60 })}$$,
     $$${faker.number.int({ min: -132, max: -116 })}$$,
     $$${faker.number.int({ min: 1, max: 20 })}$$,
@@ -591,7 +613,8 @@ const insertSurveyObservationData = (surveyId: number) => `
   ),
   (
     ${surveyId},
-    $$${faker.number.int({ min: 30000, max: 32000 })}$$,
+    $$${focalTaxonIdOptions[0].itis_tsn}$$,
+    $$${focalTaxonIdOptions[0].itis_scientific_name}$$,
     $$${faker.number.int({ min: 48, max: 60 })}$$,
     $$${faker.number.int({ min: -132, max: -116 })}$$,
     $$${faker.number.int({ min: 1, max: 20 })}$$,
@@ -607,7 +630,8 @@ const insertSurveyObservationData = (surveyId: number) => `
   ),
   (
     ${surveyId},
-    $$${faker.number.int({ min: 30000, max: 32000 })}$$,
+    $$${focalTaxonIdOptions[0].itis_tsn}$$,
+    $$${focalTaxonIdOptions[0].itis_scientific_name}$$,
     $$${faker.number.int({ min: 48, max: 60 })}$$,
     $$${faker.number.int({ min: -132, max: -116 })}$$,
     $$${faker.number.int({ min: 1, max: 20 })}$$,
