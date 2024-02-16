@@ -16,6 +16,7 @@ import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { BulkActionsButton } from 'features/surveys/observations/observations-table/bulk-actions/BulkActionsButton';
 import { ConfigureColumnsContainer } from 'features/surveys/observations/observations-table/configure-table/ConfigureColumnsContainer';
+import { DiscardChangesButton } from 'features/surveys/observations/observations-table/discard-changes/DiscardChangesButton';
 import {
   ISampleMethodOption,
   ISamplePeriodOption,
@@ -144,7 +145,7 @@ const ObservationComponent = () => {
                   disabled={observationsTableContext.isSaving}>
                   Save
                 </LoadingButton>
-                <ImportObservationsButton />
+                <DiscardChangesButton />
               </Box>
             </Collapse>
             <ConfigureColumnsContainer disabled={observationsTableContext.isSaving} columns={columns} />

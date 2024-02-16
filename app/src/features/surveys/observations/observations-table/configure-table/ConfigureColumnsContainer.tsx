@@ -1,4 +1,4 @@
-import { GridColDef, GridRowModes } from '@mui/x-data-grid';
+import { GridColDef, GridColumnVisibilityModel, GridRowModes } from '@mui/x-data-grid';
 import {
   getSurveySessionStorageKey,
   SIMS_OBSERVATIONS_HIDDEN_COLUMNS,
@@ -13,7 +13,7 @@ import {
 } from 'features/surveys/observations/observations-table/GridColumnDefinitions';
 import { Measurement } from 'hooks/cb_api/useLookupApi';
 import { useObservationTableContext } from 'hooks/useContext';
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo } from 'react';
 
 export interface IConfigureColumnsContainerProps {
   /**
@@ -46,8 +46,6 @@ export const ConfigureColumnsContainer = (props: IConfigureColumnsContainerProps
 
   const observationsTableContext = useObservationTableContext();
 
-  const [hiddenFields, setHiddenFields] = useState<string[]>([]);
-
   // The array of columns that may be toggled as hidden or visible
   const hideableColumns = useMemo(() => {
     return columns.filter((column) => {
@@ -59,47 +57,31 @@ export const ConfigureColumnsContainer = (props: IConfigureColumnsContainerProps
    * Toggles visibility for a particular column
    */
   const onToggleColumnVisibility = (field: string) => {
-    let newHiddenFields = [];
+    const isColumnVisible = observationsTableContext.columnVisibilityModel[field];
 
-    setHiddenFields((prev) => {
-      if (prev.includes(field)) {
-        newHiddenFields = prev.filter((hiddenField) => hiddenField !== field);
-      } else {
-        newHiddenFields = [...prev, field];
-      }
-
-      // Store column visibility in local storage
-      sessionStorage.setItem(
-        getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_HIDDEN_COLUMNS),
-        JSON.stringify(newHiddenFields)
-      );
-
-      return newHiddenFields;
-    });
+    observationsTableContext._muiDataGridApiRef.current.setColumnVisibility(field, !isColumnVisible);
   };
 
   /**
    * Toggles whether all columns are hidden or visible.
    */
   const onToggleShowHideAll = useCallback(() => {
-    let newHiddenFields: string[] = [];
+    const hasHiddenColumns = Object.values(observationsTableContext.columnVisibilityModel).some(
+      (item) => item === true
+    );
 
-    setHiddenFields(() => {
-      if (hiddenFields.length > 0) {
-        newHiddenFields = [];
-      } else {
-        newHiddenFields = hideableColumns.map((column) => column.field);
-      }
-
-      // Store column visibility in local storage
-      sessionStorage.setItem(
-        getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_HIDDEN_COLUMNS),
-        JSON.stringify(newHiddenFields)
-      );
-
-      return newHiddenFields;
-    });
-  }, [hiddenFields, hideableColumns, setHiddenFields, surveyId]);
+    if (hasHiddenColumns) {
+      // Some columns currently hidden, show all columns
+      observationsTableContext.setColumnVisibilityModel({
+        ...Object.fromEntries(hideableColumns.map((column) => [column.field, false]))
+      });
+    } else {
+      // No columns currently hidden, hide all columns
+      observationsTableContext.setColumnVisibilityModel({
+        ...Object.fromEntries(hideableColumns.map((column) => [column.field, true]))
+      });
+    }
+  }, [hideableColumns, observationsTableContext]);
 
   /**
    * Removes measurement columns from the observations table, ignoring columns that don't exist.
@@ -178,40 +160,46 @@ export const ConfigureColumnsContainer = (props: IConfigureColumnsContainerProps
   };
 
   /**
-   * Whenever hidden fields updates, trigger an update in visiblity for the table.
-   */
-  useEffect(() => {
-    observationsTableContext._muiDataGridApiRef.current.setColumnVisibilityModel({
-      ...Object.fromEntries(hideableColumns.map((column) => [column.field, true])),
-      ...Object.fromEntries(hiddenFields.map((field) => [field, false]))
-    });
-  }, [hideableColumns, hiddenFields, observationsTableContext._muiDataGridApiRef]);
-
-  /**
    * On first mount, load visibility state from session storage, if it exists.
    */
   useEffect(() => {
-    const fieldsJson: string | null = sessionStorage.getItem(
+    if (JSON.stringify(observationsTableContext.columnVisibilityModel) !== '{}') {
+      // TODO is there a better way to prevent this useEffect from running repeatedly after trying once to load from session storage?
+      return;
+    }
+
+    const stringifiedModel: string | null = sessionStorage.getItem(
       getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_HIDDEN_COLUMNS)
     );
 
-    if (!fieldsJson) {
+    if (!stringifiedModel) {
       return;
     }
 
     try {
-      const fields: string[] = JSON.parse(fieldsJson);
-      setHiddenFields(fields);
+      const model: GridColumnVisibilityModel = JSON.parse(stringifiedModel);
+
+      observationsTableContext.setColumnVisibilityModel(model);
     } catch {
       return;
     }
-  }, [setHiddenFields, surveyId]);
+  }, [observationsTableContext, surveyId]);
 
+  /**
+   * Return `true` if any row is in edit mode, `false` otherwise.
+   *
+   * @return {*}  {boolean}
+   */
   function isAnyRowInEditMode(): boolean {
     return Object.values(observationsTableContext.rowModesModel).some(
       (innerObj) => innerObj.mode === GridRowModes.Edit
     );
   }
+
+  // The currently hidden fields
+  const hiddenFields = Object.keys(observationsTableContext.columnVisibilityModel).filter(
+    (key) => observationsTableContext.columnVisibilityModel[key] === false
+  );
 
   return (
     <ConfigureColumns

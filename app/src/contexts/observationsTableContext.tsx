@@ -4,7 +4,6 @@ import {
   GridColDef,
   GridPaginationModel,
   GridRowId,
-  GridRowModes,
   GridRowModesModel,
   GridRowSelectionModel,
   GridSortModel,
@@ -100,6 +99,9 @@ export type IObservationsTableContext = {
    */
   rows: IObservationTableRow[];
   rowModesModel: GridRowModesModel;
+  setRowModesModel: React.Dispatch<React.SetStateAction<GridRowModesModel>>;
+  columnVisibilityModel: Record<string, boolean>;
+  setColumnVisibilityModel: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
   /**
    * Returns all columns belonging to the observation table
    */
@@ -241,6 +243,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
   const [disabled, setDisabled] = useState(false);
 
+  const [columnVisibilityModel, setColumnVisibilityModel] = useState<Record<string, boolean>>({});
+
   // Pagination State
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
@@ -381,7 +385,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
   const _deleteRecords = useCallback(
     async (observationRecords: IObservationTableRow[]): Promise<void> => {
-      console.log('_deleteRecords', observationRecords);
       if (!observationRecords.length) {
         return;
       }
@@ -461,13 +464,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     }
 
     const rowValues = Array.from(_muiDataGridApiRef.current.getRowModels(), ([_, value]) => value);
-    console.log('rowValues', rowValues);
-    console.log(
-      'rowValues.filter',
-      rowValues.filter((row): row is IObservationTableRow =>
-        rowSelectionModel.includes((row as IObservationTableRow).id)
-      )
-    );
+
     return rowValues.filter((row): row is IObservationTableRow =>
       rowSelectionModel.includes((row as IObservationTableRow).id)
     );
@@ -475,7 +472,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
   const deleteObservationRecords = useCallback(
     (observationRecords: IObservationTableRow[]) => {
-      console.log('deleteObservationRecords', observationRecords);
       if (!observationRecords.length) {
         return;
       }
@@ -510,7 +506,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
   const deleteSelectedObservationRecords = useCallback(() => {
     const selectedRecords = getSelectedObservationRecords();
-    console.log('selectedRecords', selectedRecords);
     if (!selectedRecords.length) {
       return;
     }
@@ -526,10 +521,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   const onRowEditStart = (id: GridRowId) => {
     // Add row to modified rows array
     setModifiedRowIds((current) => Array.from(new Set([...current, String(id)])));
-    // Put row into edit mode
-    setRowModesModel((prevRowModesModel) => {
-      return { ...prevRowModesModel, [id]: { mode: GridRowModes.Edit, fieldToFocus: 'itis_tsn' } };
-    });
   };
 
   /**
@@ -559,10 +550,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     setAddedRowIds((current) => [...current, id]);
 
     // Set edit mode for the new row
-    setRowModesModel((prevRowModesModel) => {
-      return { ...prevRowModesModel, [id]: { mode: GridRowModes.Edit, fieldToFocus: 'itis_tsn' } };
-    });
-  }, [rows]);
+    _muiDataGridApiRef.current.startRowEditMode({ id, fieldToFocus: 'wldtaxonomic_units' });
+  }, [_muiDataGridApiRef, rows]);
 
   /**
    * Transition all editable rows from edit mode to view mode.
@@ -595,7 +584,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     }
 
     // Transition all rows in edit mode to view mode
-    setRowModesModel({});
+    for (const id of editingIdsToSave) {
+      _muiDataGridApiRef.current.stopRowEditMode({ id });
+    }
 
     // Store ids of rows that were in edit mode
     setModifiedRowIds(editingIdsToSave);
@@ -605,13 +596,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    * Transition all rows tracked by `modifiedRowIds` to edit mode.
    */
   const _revertAllRowsEditMode = useCallback(() => {
-    setRowModesModel(() => {
-      return modifiedRowIds.reduce<GridRowModesModel>((newRowModesModel, currentId) => {
-        newRowModesModel[currentId] = { mode: GridRowModes.Edit };
-        return newRowModesModel;
-      }, {});
-    });
-  }, [modifiedRowIds]);
+    modifiedRowIds.forEach((id) => _muiDataGridApiRef.current.startRowEditMode({ id }));
+  }, [_muiDataGridApiRef, modifiedRowIds]);
 
   const revertObservationRecords = useCallback(() => {
     // Mark all rows as saved
@@ -620,12 +606,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     // Revert any current edits
     const editingIds = Object.keys(_muiDataGridApiRef.current.state.editRows);
-    setRowModesModel(() => {
-      return editingIds.reduce<GridRowModesModel>((newRowModesModel, currentId) => {
-        newRowModesModel[currentId] = { mode: GridRowModes.View, ignoreModifications: true };
-        return newRowModesModel;
-      }, {});
-    });
+    editingIds.forEach((id) => _muiDataGridApiRef.current.stopRowEditMode({ id, ignoreModifications: true }));
 
     // Remove any rows that are newly created
     setRows(rows.filter((row) => !addedRowIds.includes(String(row.id))));
@@ -833,7 +814,10 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       _muiDataGridApiRef,
       rows,
       rowModesModel,
+      setRowModesModel,
       getColumns,
+      columnVisibilityModel,
+      setColumnVisibilityModel,
       addObservationRecord,
       saveObservationRecords,
       deleteObservationRecords,
@@ -864,7 +848,10 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       _muiDataGridApiRef,
       rows,
       rowModesModel,
+      setRowModesModel,
       getColumns,
+      columnVisibilityModel,
+      setColumnVisibilityModel,
       addObservationRecord,
       saveObservationRecords,
       deleteObservationRecords,

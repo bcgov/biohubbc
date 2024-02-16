@@ -1,9 +1,12 @@
 import { cyan, grey } from '@mui/material/colors';
 import { DataGrid, GridColDef, GridRowModesModel } from '@mui/x-data-grid';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
+import { getSurveySessionStorageKey, SIMS_OBSERVATIONS_HIDDEN_COLUMNS } from 'constants/session-storage';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
+import { SurveyContext } from 'contexts/surveyContext';
 import { useObservationTableContext } from 'hooks/useContext';
 import { has } from 'lodash-es';
+import { useContext } from 'react';
 
 export interface ISpeciesObservationTableProps {
   /**
@@ -32,8 +35,9 @@ export interface ISpeciesObservationTableProps {
 }
 
 const ObservationsTable = (props: ISpeciesObservationTableProps) => {
-  const observationsTableContext = useObservationTableContext();
+  const { surveyId } = useContext(SurveyContext);
 
+  const observationsTableContext = useObservationTableContext();
 
   return (
     <>
@@ -46,8 +50,23 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         apiRef={observationsTableContext._muiDataGridApiRef}
         editMode="row"
         columns={props.columns}
+        columnVisibilityModel={observationsTableContext.columnVisibilityModel}
+        onColumnVisibilityModelChange={(model) => {
+          // Store current visibility model in session storage
+          sessionStorage.setItem(
+            getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_HIDDEN_COLUMNS),
+            JSON.stringify(model)
+          );
+
+          // Update the column visibility model in the context
+          observationsTableContext.setColumnVisibilityModel(model);
+        }}
         rows={observationsTableContext.rows}
         rowModesModel={props.rowModesModel}
+        onRowModesModelChange={(model) => {
+          // Update the row modes model in the context
+          observationsTableContext.setRowModesModel(model);
+        }}
         rowCount={observationsTableContext.observationCount}
         paginationModel={observationsTableContext.paginationModel}
         pageSizeOptions={[25, 50, 100]}

@@ -490,7 +490,6 @@ export const ObservationActionsColDef = (props: {
     getActions: (params) => [
       <IconButton
         onClick={() => {
-          console.log(params.row);
           props.onDelete([params.row]);
         }}
         disabled={props.disabled}

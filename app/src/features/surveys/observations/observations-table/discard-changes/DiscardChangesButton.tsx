@@ -4,7 +4,7 @@ import { ObservationsTableI18N } from 'constants/i18n';
 import { useObservationTableContext } from 'hooks/useContext';
 import { useState } from 'react';
 
-export const ImportObservationsButton = () => {
+export const DiscardChangesButton = () => {
   const observationsTableContext = useObservationTableContext();
 
   const [open, setOpen] = useState<boolean>(false);
