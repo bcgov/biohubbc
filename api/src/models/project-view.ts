@@ -35,7 +35,6 @@ export type ProjectData = z.infer<typeof ProjectData>;
 
 export const ProjectListData = z.object({
   project_id: z.number(),
-  // uuid: z.string().uuid(), // TODO remove?
   name: z.string(),
   project_programs: z.array(z.number()).default([]),
   regions: z.array(z.string()).default([]),

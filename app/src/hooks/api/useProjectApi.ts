@@ -138,15 +138,6 @@ const useProjectApi = (axios: AxiosInstance) => {
 
     const { data } = await axios.get(
       `/api/project/list${urlParamsString}`
-      // {
-      //   params,
-      //   paramsSerializer: (params: any) => {
-      //     return qs.stringify(params, {
-      //       arrayFormat: 'repeat',
-      //       filter: (_prefix: any, value: any) => value || undefined
-      //     });
-      //   }
-      // }
     );
 
     return data;

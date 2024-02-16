@@ -1,5 +1,8 @@
 export type StringBoolean = 'true' | 'false';
 
+/**
+ * Represents server-side pagination options passed as request parameters
+ */
 export type ApiPaginationOptions = {
   page: number;
   limit: number;
@@ -7,6 +10,9 @@ export type ApiPaginationOptions = {
   order?: 'asc' | 'desc';
 };
 
+/**
+ * Represents server-side pagination state given by the server
+ */
 export type ApiPaginationResponseParams = {
   total: number;
   current_page: number;
