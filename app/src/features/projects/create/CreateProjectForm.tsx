@@ -101,7 +101,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
       innerRef={formikRef}
       initialValues={props.initialValues || initialProjectFieldData}
       validationSchema={validationProjectYupSchema}
-      validateOnBlur={true}
+      validateOnBlur={false}
       validateOnChange={false}
       enableReinitialize={true}
       onSubmit={handleSubmit}>

@@ -153,7 +153,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
         innerRef={props.formikRef}
         initialValues={surveyInitialValues}
         validationSchema={surveyEditYupSchemas}
-        validateOnBlur={true}
+        validateOnBlur={false}
         validateOnChange={false}
         onSubmit={props.handleSubmit}>
         <>

@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 
 const SnackbarComponent = () => {
   const formikProps = useFormikContext<any>();
-  const { errors, submitCount } = formikProps;
+  const { errors, submitCount, isSubmitting } = formikProps;
   const [openSnackbar, setOpenSnackbar] = useState({ open: false, msg: '' });
 
   useEffect(() => {
@@ -13,11 +13,10 @@ const SnackbarComponent = () => {
       setOpenSnackbar({ open: true, msg: message });
     };
 
-    if (errors && submitCount > 0) {
+    if (Object.keys(errors).length && submitCount > 0 && !isSubmitting) {
       showSnackBar('Missing one or more required fields.');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [errors, submitCount]);
+  }, [errors, submitCount, isSubmitting]);
 
   const closeSnackBar = () =>
     setOpenSnackbar((currentState) => {

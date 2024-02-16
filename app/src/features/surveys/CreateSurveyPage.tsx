@@ -272,7 +272,7 @@ const CreateSurveyPage = () => {
               innerRef={formikRef}
               initialValues={surveyInitialValues}
               validationSchema={surveyYupSchemas}
-              validateOnBlur={true}
+              validateOnBlur={false}
               validateOnChange={false}
               onSubmit={handleSubmit}>
               <>
