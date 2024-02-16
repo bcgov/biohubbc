@@ -40,6 +40,7 @@ import { SiteSelectionStrategyService } from './site-selection-strategy-service'
 import { SurveyBlockService } from './survey-block-service';
 import { SurveyLocationService } from './survey-location-service';
 import { SurveyParticipationService } from './survey-participation-service';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 
 const defaultLog = getLogger('services/survey-service');
 
@@ -348,14 +349,19 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Fetches a subset of survey fields for all surveys under a project.
+   * Fetches a subset of survey fields for a paginated list of surveys under
+   * a given project.
    *
    * @param {number} projectId
+   * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<SurveyBasicFields[]>}
    * @memberof SurveyService
    */
-  async getSurveysBasicFieldsByProjectId(projectId: number): Promise<SurveyBasicFields[]> {
-    const surveys = await this.surveyRepository.getSurveysBasicFieldsByProjectId(projectId);
+  async getSurveysBasicFieldsByProjectId(
+    projectId: number,
+    pagination?: ApiPaginationOptions
+  ): Promise<SurveyBasicFields[]> {
+    const surveys = await this.surveyRepository.getSurveysBasicFieldsByProjectId(projectId, pagination);
 
     // Build an array of all unique focal species ids from all surveys
     const uniqueFocalSpeciesIds = Array.from(
@@ -378,6 +384,18 @@ export class SurveyService extends DBService {
 
     return decoratedSurveys;
   }
+
+  /**
+   * Returns the total number of surveys belonging to the given project.
+   *
+   * @param {number} projectId
+   * @return {*}  {Promise<number>}
+   * @memberof SurveyService
+   */
+  async getSurveyCountByProjectId(projectId: number): Promise<number> {
+    return this.surveyRepository.getSurveyCountByProjectId(projectId);
+  }
+
   /**
    * Creates the survey
    *

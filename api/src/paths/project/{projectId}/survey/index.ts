@@ -6,6 +6,7 @@ import { authorizeRequestHandler } from '../../../../request-handlers/security/a
 import { SurveyService } from '../../../../services/survey-service';
 import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../../../openapi/schemas/pagination';
 import { getLogger } from '../../../../utils/logger';
+import { ensureCompletePaginationOptions, getPaginationOptionsFromRequest, getPaginationResponse } from '../../../../utils/pagination';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/index');
 
@@ -127,16 +128,23 @@ GET.apiDoc = {
 export function getSurveys(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
-
+    
     try {
       await connection.open();
+      
+      const projectId = Number(req.params.projectId);
+      const paginationOptions = getPaginationOptionsFromRequest(req);
 
       const surveyService = new SurveyService(connection);
-
-      const surveys = await surveyService.getSurveysBasicFieldsByProjectId(Number(req.params.projectId));
+      const surveys = await surveyService.getSurveysBasicFieldsByProjectId(
+        projectId,
+        ensureCompletePaginationOptions(paginationOptions)
+      );
+      const surveysTotalCount = await surveyService.getSurveyCountByProjectId(projectId);
 
       const response = {
         surveys,
+        pagination: getPaginationResponse(surveysTotalCount, paginationOptions)
       }
 
       await connection.commit();
