@@ -41,10 +41,16 @@ const useObservationApi = (axios: AxiosInstance) => {
     surveyId: number,
     surveyObservations: IObservationTableRowToSave[]
   ): Promise<IObservationRecord[]> => {
+    // TODO: There is currently no way in the UI to add a sub count value
+    const dataToSave = surveyObservations.map((item: IObservationTableRowToSave) => {
+      item.standardColumns.subcount = item.standardColumns.count;
+      return item;
+    });
+    console.log(dataToSave);
     // TODO `IObservationRecord[]` might not be the actual return value once measurements are being returned
     const { data } = await axios.put<IGetSurveyObservationsResponse>(
       `/api/project/${projectId}/survey/${surveyId}/observations`,
-      { surveyObservations }
+      { surveyObservations: dataToSave }
     );
 
     return data.surveyObservations;
