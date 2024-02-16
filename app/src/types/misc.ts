@@ -3,7 +3,7 @@ export type StringBoolean = 'true' | 'false';
 /**
  * Represents server-side pagination options passed as request parameters
  */
-export type ApiPaginationOptions = { // TODO rename (on app side) to ApiPaginationRequestOptions
+export type ApiPaginationRequestOptions = {
   page: number;
   limit: number;
   sort?: string;

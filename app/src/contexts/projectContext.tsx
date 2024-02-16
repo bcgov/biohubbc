@@ -4,7 +4,7 @@ import { IGetProjectAttachmentsResponse, IGetProjectForViewResponse } from 'inte
 import { IGetSurveyListResponse } from 'interfaces/useSurveyApi.interface';
 import { createContext, PropsWithChildren, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router';
-import { ApiPaginationOptions } from 'types/misc';
+import { ApiPaginationRequestOptions } from 'types/misc';
 
 /**
  * Context object that stores information about a project
@@ -24,10 +24,10 @@ export interface IProjectContext {
   /**
    * The Data Loader used to load project data
    *
-   * @type {DataLoader<[pagination?: ApiPaginationOptions], IGetSurveyListResponse, unknown>}
+   * @type {DataLoader<[pagination?: ApiPaginationRequestOptions], IGetSurveyListResponse, unknown>}
    * @memberof IProjectContext
    */
-  surveysListDataLoader: DataLoader<[pagination?: ApiPaginationOptions], IGetSurveyListResponse, unknown>;
+  surveysListDataLoader: DataLoader<[pagination?: ApiPaginationRequestOptions], IGetSurveyListResponse, unknown>;
 
   /**
    * The Data Loader used to load project data
@@ -48,7 +48,7 @@ export interface IProjectContext {
 
 export const ProjectContext = createContext<IProjectContext>({
   projectDataLoader: {} as DataLoader<[project_id: number], IGetProjectForViewResponse, unknown>,
-  surveysListDataLoader: {} as DataLoader<[pagination?: ApiPaginationOptions], IGetSurveyListResponse, unknown>,
+  surveysListDataLoader: {} as DataLoader<[pagination?: ApiPaginationRequestOptions], IGetSurveyListResponse, unknown>,
   artifactDataLoader: {} as DataLoader<[project_id: number], IGetProjectAttachmentsResponse, unknown>,
   projectId: -1
 });
@@ -59,7 +59,7 @@ export const ProjectContextProvider = (props: PropsWithChildren<Record<never, an
 
   const biohubApi = useBiohubApi();
   const projectDataLoader = useDataLoader(biohubApi.project.getProjectForView);
-  const surveysListDataLoader = useDataLoader((pagination?: ApiPaginationOptions) => biohubApi.survey.getSurveysBasicFieldsByProjectId(projectId, pagination));
+  const surveysListDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions) => biohubApi.survey.getSurveysBasicFieldsByProjectId(projectId, pagination));
   const artifactDataLoader = useDataLoader(biohubApi.project.getProjectAttachments);
 
   if (!urlParams['id']) {

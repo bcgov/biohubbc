@@ -25,7 +25,7 @@ import {
   SurveyUpdateObject
 } from 'interfaces/useSurveyApi.interface';
 import qs from 'qs';
-import { ApiPaginationOptions } from 'types/misc';
+import { ApiPaginationRequestOptions } from 'types/misc';
 
 /**
  * Returns a set of supported api methods for working with surveys.
@@ -76,10 +76,10 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * Fetches a subset of survey fields for all surveys under a project.
    *
    * @param {number} projectId
-   * @param {ApiPaginationOptions} [pagination]
+   * @param {ApiPaginationRequestOptions} [pagination]
    * @return {*}  {Promise<IGetSurveysListResponse[]>}
    */
-  const getSurveysBasicFieldsByProjectId = async (projectId: number, pagination?: ApiPaginationOptions): Promise<IGetSurveyListResponse> => {
+  const getSurveysBasicFieldsByProjectId = async (projectId: number, pagination?: ApiPaginationRequestOptions): Promise<IGetSurveyListResponse> => {
     let urlParamsString = '';
 
     if (pagination) {

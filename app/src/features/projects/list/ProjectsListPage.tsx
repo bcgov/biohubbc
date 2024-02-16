@@ -23,7 +23,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { IProjectsListItemData } from 'interfaces/useProjectApi.interface';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { ApiPaginationOptions } from 'types/misc';
+import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull, getFormattedDate } from 'utils/Utils';
 import ProjectsListFilterForm from './ProjectsListFilterForm';
 
@@ -90,7 +90,7 @@ const ProjectsListPage = () => {
   const biohubApi = useBiohubApi();
 
   const codesContext = useContext(CodesContext);
-  const projectsDataLoader = useDataLoader((pagination: ApiPaginationOptions, filter?: IProjectAdvancedFilters) => {
+  const projectsDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions, filter?: IProjectAdvancedFilters) => {
     return biohubApi.project.getProjectsList(pagination, filter);
   });
 

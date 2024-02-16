@@ -13,7 +13,7 @@ import { ProjectContext } from 'contexts/projectContext';
 import { SurveyBasicFieldsObject } from 'interfaces/useSurveyApi.interface';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { ApiPaginationOptions } from 'types/misc';
+import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
 
 const pageSizeOptions = [10, 25, 50];
@@ -74,7 +74,7 @@ const SurveysListPage = () => {
 
   const refreshSurveyList = () => {
     const sort = firstOrNull(sortModel);
-    const pagination: ApiPaginationOptions = {
+    const pagination: ApiPaginationRequestOptions = {
       limit: paginationModel.pageSize,
       sort: sort?.field || undefined,
       order: sort?.sort || undefined,
