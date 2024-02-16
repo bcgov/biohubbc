@@ -37,6 +37,7 @@ const SurveysListPage = () => {
         buttonTitle="Create Survey"
         buttonStartIcon={<Icon path={mdiPlus} size={1} />}
         buttonProps={{ variant: 'contained', disableElevation: true }}
+        // TODO use RouterLink
         buttonOnClick={() => navigateToCreateSurveyPage(projectContext.projectId)}
         renderButton={(buttonProps) => (
           <ProjectRoleGuard

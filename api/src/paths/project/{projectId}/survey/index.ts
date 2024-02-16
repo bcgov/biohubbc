@@ -4,7 +4,7 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { SurveyService } from '../../../../services/survey-service';
-import { paginationRequestQueryParamSchema } from '../../../../openapi/schemas/pagination';
+// import { paginationRequestQueryParamSchema } from '../../../../openapi/schemas/pagination';
 import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/index');
@@ -58,12 +58,12 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            type: 'array',
-            items: {
-              type: 'object',
-              required: ['surveyData', 'surveySupplementaryData'],
-              properties: {
-                surveyData: {
+            type: 'object',
+            required: ['surveys'],
+            properties: {
+              surveys: {
+                type: 'array',
+                items: {
                   type: 'object',
                   required: ['survey_id', 'name', 'start_date', 'end_date', 'focal_species'],
                   properties: {
@@ -91,16 +91,6 @@ GET.apiDoc = {
                       items: {
                         type: 'integer'
                       }
-                    }
-                  }
-                },
-                surveySupplementaryData: {
-                  type: 'object',
-                  required: ['publishStatus'],
-                  properties: {
-                    publishStatus: {
-                      type: 'string',
-                      enum: ['NO_DATA', 'UNSUBMITTED', 'SUBMITTED']
                     }
                   }
                 }
@@ -144,16 +134,9 @@ export function getSurveys(): RequestHandler {
 
       const surveys = await surveyService.getSurveysBasicFieldsByProjectId(Number(req.params.projectId));
 
-      const response = await Promise.all(
-        surveys.map(async (survey) => {
-          const surveyPublishStatus = await surveyService.surveyPublishStatus(survey.survey_id);
-
-          return {
-            surveyData: survey,
-            surveySupplementaryData: { publishStatus: surveyPublishStatus }
-          };
-        })
-      );
+      const response = {
+        surveys,
+      }
 
       await connection.commit();
 

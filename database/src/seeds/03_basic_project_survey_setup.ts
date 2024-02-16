@@ -63,7 +63,7 @@ export async function seed(knex: Knex): Promise<void> {
 
       // Insert survey data
       for (let j = 0; j < NUM_SEED_SURVEYS_PER_PROJECT; j++) {
-        const createSurveyResponse = await knex.raw(insertSurveyData(projectId));
+        const createSurveyResponse = await knex.raw(insertSurveyData(projectId, `Seed Survey ${j + 1}`));
         const surveyId = createSurveyResponse.rows[0].survey_id;
 
         await knex.raw(`
@@ -338,7 +338,7 @@ const insertSurveyLocationData = (surveyId: number) => `
  * SQL to insert Survey data
  *
  */
-const insertSurveyData = (projectId: number) => `
+const insertSurveyData = (projectId: number, surveyName?: string) => `
   INSERT into survey
     (
       project_id,
@@ -351,7 +351,7 @@ const insertSurveyData = (projectId: number) => `
     )
   VALUES (
     ${projectId},
-    'Seed Survey',
+    '${surveyName ?? "Seed Survey"}',
     $$${faker.lorem.sentences(2)}$$,
     $$${faker.date.between({ from: '2010-01-01T00:00:00-08:00', to: '2015-01-01T00:00:00-08:00' }).toISOString()}$$,
     $$${faker.date.between({ from: '2020-01-01T00:00:00-08:00', to: '2025-01-01T00:00:00-08:00' }).toISOString()}$$,

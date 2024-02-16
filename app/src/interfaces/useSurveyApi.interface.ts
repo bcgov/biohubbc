@@ -254,8 +254,7 @@ export interface ISurveySupplementaryData {
  * @interface IGetSurveyForListResponse
  */
 export interface IGetSurveyForListResponse {
-  surveyData: SurveyBasicFieldsObject;
-  surveySupplementaryData: ISurveySupplementaryData;
+  surveys: SurveyBasicFieldsObject[];
 }
 
 /**

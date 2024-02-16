@@ -18,7 +18,6 @@ import {
   SurveySupplementaryData
 } from '../models/survey-view';
 import { AttachmentRepository } from '../repositories/attachment-repository';
-import { PublishStatus } from '../repositories/history-publish-repository';
 import { PostSurveyBlock, SurveyBlockRecord } from '../repositories/survey-block-repository';
 import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import {
@@ -1234,42 +1233,5 @@ export class SurveyService extends DBService {
    */
   async deleteOccurrenceSubmission(submissionId: number): Promise<number> {
     return this.surveyRepository.deleteOccurrenceSubmission(submissionId);
-  }
-
-  /**
-   * Publish status for a given survey id
-   *
-   * @param {number} surveyId
-   * @return {*}  {Promise<PublishStatus>}
-   * @memberof SurveyService
-   */
-  async surveyPublishStatus(surveyId: number): Promise<PublishStatus> {
-    const surveyAttachmentsPublishStatus = await this.historyPublishService.surveyAttachmentsPublishStatus(surveyId);
-
-    const surveyReportsPublishStatus = await this.historyPublishService.surveyReportsPublishStatus(surveyId);
-
-    const observationPublishStatus = await this.historyPublishService.observationPublishStatus(surveyId);
-
-    const summaryPublishStatus = await this.historyPublishService.summaryPublishStatus(surveyId);
-
-    if (
-      surveyAttachmentsPublishStatus === PublishStatus.NO_DATA &&
-      surveyReportsPublishStatus === PublishStatus.NO_DATA &&
-      observationPublishStatus === PublishStatus.NO_DATA &&
-      summaryPublishStatus === PublishStatus.NO_DATA
-    ) {
-      return PublishStatus.NO_DATA;
-    }
-
-    if (
-      surveyAttachmentsPublishStatus === PublishStatus.UNSUBMITTED ||
-      surveyReportsPublishStatus === PublishStatus.UNSUBMITTED ||
-      observationPublishStatus === PublishStatus.UNSUBMITTED ||
-      summaryPublishStatus === PublishStatus.UNSUBMITTED
-    ) {
-      return PublishStatus.UNSUBMITTED;
-    }
-
-    return PublishStatus.SUBMITTED;
   }
 }
