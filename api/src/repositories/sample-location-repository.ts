@@ -5,6 +5,7 @@ import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
 import { BaseRepository } from './base-repository';
+import { SampleBlockRecord, UpdateSampleBlockRecord } from './sample-blocks-repository';
 import { SampleMethodRecord, UpdateSampleMethodRecord } from './sample-method-repository';
 
 // This describes a row in the database for Survey Sample Location
@@ -20,7 +21,8 @@ export const SampleLocationRecord = z.object({
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number(),
-  sample_methods: z.array(SampleMethodRecord).default([])
+  sample_methods: z.array(SampleMethodRecord).default([]),
+  sample_blocks: z.array(SampleBlockRecord).default([])
 });
 export type SampleLocationRecord = z.infer<typeof SampleLocationRecord>;
 
@@ -42,6 +44,7 @@ export type UpdateSampleSiteRecord = {
   description: string;
   geojson: Feature;
   methods: UpdateSampleMethodRecord[];
+  blocks: UpdateSampleBlockRecord[];
 };
 
 /**
@@ -92,14 +95,23 @@ export class SampleLocationRepository extends BaseRepository {
           .leftJoin('json_sample_period as jsp', 'jsp.survey_sample_method_id', 'ssm.survey_sample_method_id')
           .groupBy('ssm.survey_sample_site_id');
       })
-      // join aggregated methods to sampling sites
+      .with('json_sample_blocks', (qb) => {
+        // aggregate all sample blocks based on site id
+        qb.select('survey_sample_site_id', knex.raw("COALESCE(json_agg(ssb.*), '[]'::json) as sample_blocks"))
+          .from({ ssb: 'survey_sample_block' })
+          .groupBy('survey_sample_site_id');
+      })
+      // join aggregated methods and blocks to sampling sites
       .select('*')
       .from({ sss: 'survey_sample_site' })
       .leftJoin('json_sample_methods as jsm', 'jsm.survey_sample_site_id', 'sss.survey_sample_site_id')
+      .join('json_sample_blocks as jsb', 'jsb.survey_sample_site_id', 'sss.survey_sample_site_id')
       .where('sss.survey_id', surveyId)
       .orderBy('sss.survey_sample_site_id', 'asc');
 
-    const response = await this.connection.knex(queryBuilder, SampleLocationRecord);
+    const response = await this.connection.knex(queryBuilder); //, SampleLocationRecord);
+    console.log(response);
+
     return response.rows;
   }
 

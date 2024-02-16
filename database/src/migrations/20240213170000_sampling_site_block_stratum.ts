@@ -23,7 +23,8 @@ export async function up(knex: Knex): Promise<void> {
       create_date                             TIMESTAMPTZ(6)    DEFAULT NOW() NOT NULL,
       create_user                             INTEGER           NOT NULL,
       update_date                             TIMESTAMPTZ(6),
-      update_user                             INTEGER
+      update_user                             INTEGER,
+      revision_count                          int4              NOT NULL DEFAULT 0
     );
 
     COMMENT ON COLUMN survey_sample_block.survey_sample_block_id IS 'System generated surrogate primary key identifier.';
@@ -33,7 +34,8 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN survey_sample_block.create_user IS 'The user id of the sampling site block creator.';
     COMMENT ON COLUMN survey_sample_block.update_date IS 'The date the sampling site block was updated.';
     COMMENT ON COLUMN survey_sample_block.update_user IS 'The user id of the sampling site block updater.';
-    COMMENT ON TABLE survey_sample_block IS 'Sampling site block table';
+    COMMENT ON TABLE survey_sample_block IS 'Sampling site block table.';
+    COMMENT ON TABLE survey_sample_block IS 'Revision count used for concurrency control.';
 
     ----------------------------------------------------------------------------------------
     -- Create new keys and indices

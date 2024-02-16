@@ -60,7 +60,7 @@ export class SampleBlockRepository extends BaseRepository {
     const sql = SQL`
       SELECT *
       FROM survey_sample_block
-      WHERE survey_block_id = ${surveyBlockId}
+      WHERE survey_block_id = ${surveyBlockId};
     `;
 
     const response = await this.connection.sql(sql, SampleBlockRecord);
@@ -70,15 +70,15 @@ export class SampleBlockRepository extends BaseRepository {
   /**
    * Gets all survey Sample Blocks.
    *
-   * @param {number} surveySampleSiteId
+   * @param {number} surveyBlockId
    * @return {*}  {Promise<SampleBlockRecord[]>}
    * @memberof sampleBlockRepository
    */
   async getSampleBlocksCountForSurveyBlockId(surveyBlockId: number): Promise<{ sampleCount: number }> {
     const sql = SQL`
-      SELECT *
+      SELECT COUNT(*) as sampleCount
       FROM survey_sample_block
-      WHERE survey_block_id = ${surveyBlockId}
+      WHERE survey_block_id = ${surveyBlockId};
     `;
 
     const response = await this.connection.sql(sql, SampleBlockRecord);
@@ -137,7 +137,7 @@ export class SampleBlockRepository extends BaseRepository {
         *;
       `;
 
-      console.log(sqlStatement)
+    console.log(sqlStatement)
 
     const response = await this.connection.sql(sqlStatement, SampleBlockRecord);
     console.log(response);
