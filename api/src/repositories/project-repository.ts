@@ -15,6 +15,9 @@ import {
 } from '../models/project-view';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
+import { getLogger } from '../utils/logger';
+
+const defaultLog = getLogger('repositories/project-repository');
 
 /**
  * A repository class for accessing project data.
@@ -30,6 +33,8 @@ export class ProjectRepository extends BaseRepository {
     filterFields: IProjectAdvancedFilters,
     pagination?: ApiPaginationOptions
   ): Promise<ProjectListData[]> {
+    defaultLog.debug({ label: 'getProjectList', pagination });
+
     const sqlStatement = SQL`
       SELECT
         p.project_id,
@@ -132,6 +137,14 @@ export class ProjectRepository extends BaseRepository {
       sqlStatement.append(SQL`}'`);
     }
 
+    if (pagination?.sort) {
+      sqlStatement.append(SQL`ORDER BY `).append(pagination.sort).append(SQL` `)
+
+      if (pagination.order) {
+        sqlStatement.append(pagination.order === 'asc' ? SQL`ASC` : SQL`DESC`);
+      }
+    }
+
     if (pagination) {
       sqlStatement.append(SQL`
         LIMIT
@@ -180,10 +193,9 @@ export class ProjectRepository extends BaseRepository {
 
     sqlStatement.append(';');
 
-    // TODO cast as int in Postgres, then change this to z.number() (currently, Zod recieves project_count: string)
-    const response = await this.connection.sql(sqlStatement, z.object({ project_count: z.any() }));
+    const response = await this.connection.sql(sqlStatement, z.object({ project_count: z.string().transform(Number) }));
 
-    return Number(response.rows[0].project_count);
+    return response.rows[0].project_count;
   }
 
   async getProjectData(projectId: number): Promise<ProjectData> {

@@ -51,7 +51,7 @@ export async function seed(knex: Knex): Promise<void> {
   if (!checkProjectsResponse.rows.length) {
     for (let i = 0; i < NUM_SEED_PROJECTS; i++) {
       // Insert project data
-      const createProjectResponse = await knex.raw(insertProjectData());
+      const createProjectResponse = await knex.raw(insertProjectData(`Seed Project ${i + 1}`));
       const projectId = createProjectResponse.rows[0].project_id;
 
       // Insert project IUCN, participant and program data
@@ -653,7 +653,7 @@ const insertSurveyObservationData = (surveyId: number) => `
  * SQL to insert Project data
  *
  */
-const insertProjectData = () => `
+const insertProjectData = (projectName?: string) => `
   INSERT into project
     (
       name,
@@ -665,7 +665,7 @@ const insertProjectData = () => `
       geojson
     )
   VALUES (
-    'Seed Project',
+    '${projectName ?? 'Seed Project'}',
     $$${faker.lorem.sentences(2)}$$,
     $$${faker.lorem.sentences(2)}$$,
     $$${faker.date.between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' }).toISOString()}$$,
