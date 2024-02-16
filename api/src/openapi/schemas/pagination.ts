@@ -1,5 +1,9 @@
 import { SchemaObject } from 'ajv';
 
+/**
+ * API schema used to assert pagination query paramaters
+ * for paginated data requests.
+ */
 export const paginationRequestQueryParamSchema: any[] = [
   {
     in: 'query',
@@ -36,6 +40,10 @@ export const paginationRequestQueryParamSchema: any[] = [
   }
 ];
 
+/**
+ * API schema to assert pagination information for paginated data
+ * responses.
+ */
 export const paginationResponseSchema: SchemaObject = {
   type: 'object',
   required: ['total', 'current_page', 'last_page'],

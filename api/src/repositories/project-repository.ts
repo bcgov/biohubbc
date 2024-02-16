@@ -195,6 +195,13 @@ export class ProjectRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement, z.object({ project_count: z.string().transform(Number) }));
 
+    if (response?.rowCount < 1) {
+      throw new ApiExecuteSQLError('Failed to get project count', [
+        'ProjectRepository->getProjectCount',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
     return response.rows[0].project_count;
   }
 

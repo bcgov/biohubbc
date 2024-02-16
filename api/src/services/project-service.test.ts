@@ -54,6 +54,20 @@ describe('ProjectService', () => {
     });
   });
 
+  describe('getProjectCount', () => {
+    it('returns the total project count', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new ProjectService(dbConnection);
+  
+      const repoStub = sinon.stub(ProjectRepository.prototype, 'getProjectCount').resolves(69);
+  
+      const response = await service.getProjectCount(false, 1001);
+  
+      expect(repoStub).to.be.calledOnce;
+      expect(response).to.eql(69);
+    });
+  });
+
   describe('getProjectSupplementaryDataById', () => {
     it('returns project metadata publish data', async () => {
       const dbConnection = getMockDBConnection();
@@ -93,52 +107,52 @@ describe('ProjectService', () => {
       expect(response).to.eql({ project_metadata_publish: null });
     });
   });
-});
 
-describe('getProjectData', () => {
-  it('returns the first row on success', async () => {
-    const dbConnection = getMockDBConnection();
-    const service = new ProjectService(dbConnection);
+  describe('getProjectData', () => {
+    it('returns the first row on success', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new ProjectService(dbConnection);
 
-    const data = ({ project_id: 1 } as unknown) as ProjectData;
+      const data = ({ project_id: 1 } as unknown) as ProjectData;
 
-    const repoStub = sinon.stub(ProjectRepository.prototype, 'getProjectData').resolves(data);
+      const repoStub = sinon.stub(ProjectRepository.prototype, 'getProjectData').resolves(data);
 
-    const response = await service.getProjectData(1);
+      const response = await service.getProjectData(1);
 
-    expect(repoStub).to.be.calledOnce;
-    expect(response).to.eql(data);
+      expect(repoStub).to.be.calledOnce;
+      expect(response).to.eql(data);
+    });
   });
-});
 
-describe('getObjectivesData', () => {
-  it('returns the first row on success', async () => {
-    const dbConnection = getMockDBConnection();
-    const service = new ProjectService(dbConnection);
+  describe('getObjectivesData', () => {
+    it('returns the first row on success', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new ProjectService(dbConnection);
 
-    const data = new GetObjectivesData({ id: 1 });
+      const data = new GetObjectivesData({ id: 1 });
 
-    const repoStub = sinon.stub(ProjectRepository.prototype, 'getObjectivesData').resolves(data);
+      const repoStub = sinon.stub(ProjectRepository.prototype, 'getObjectivesData').resolves(data);
 
-    const response = await service.getObjectivesData(1);
+      const response = await service.getObjectivesData(1);
 
-    expect(repoStub).to.be.calledOnce;
-    expect(response).to.eql(data);
+      expect(repoStub).to.be.calledOnce;
+      expect(response).to.eql(data);
+    });
   });
-});
 
-describe('getIUCNClassificationData', () => {
-  it('returns the first row on success', async () => {
-    const dbConnection = getMockDBConnection();
-    const service = new ProjectService(dbConnection);
+  describe('getIUCNClassificationData', () => {
+    it('returns the first row on success', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new ProjectService(dbConnection);
 
-    const data = new GetIUCNClassificationData([{ id: 1 }]);
+      const data = new GetIUCNClassificationData([{ id: 1 }]);
 
-    const repoStub = sinon.stub(ProjectRepository.prototype, 'getIUCNClassificationData').resolves(data);
+      const repoStub = sinon.stub(ProjectRepository.prototype, 'getIUCNClassificationData').resolves(data);
 
-    const response = await service.getIUCNClassificationData(1);
+      const response = await service.getIUCNClassificationData(1);
 
-    expect(repoStub).to.be.calledOnce;
-    expect(response).to.eql(data);
+      expect(repoStub).to.be.calledOnce;
+      expect(response).to.eql(data);
+    });
   });
 });
