@@ -13,13 +13,17 @@ import { default as React, useContext, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { ICreateSamplingSiteRequest } from '../SamplingSitePage';
 
-const SamplingBlockForm: React.FC = () => {
+interface SamplingBlockFormProps {
+  blocks: IGetSurveyBlock[];
+}
+
+const SamplingBlockForm = (props: SamplingBlockFormProps) => {
   const { values, setFieldValue } = useFormikContext<ICreateSamplingSiteRequest>();
 
   const surveyContext = useContext(SurveyContext);
 
   const options = surveyContext.surveyDataLoader?.data?.surveyData?.blocks || [];
-  const [selectedBlocks, setSelectedBlocks] = useState<IGetSurveyBlock[]>([]);
+  const [selectedBlocks, setSelectedBlocks] = useState<IGetSurveyBlock[]>(props.blocks);
 
   interface IBlockCard {
     label: string;
@@ -123,7 +127,6 @@ const SamplingBlockForm: React.FC = () => {
           />
         )}
         renderOption={(renderProps, renderOption) => {
-          // console.log(renderOption)
           return (
             <Box component="li" {...renderProps} key={renderOption?.survey_block_id}>
               <BlockCard label={renderOption.name} description={renderOption.description || ''} />
@@ -132,7 +135,7 @@ const SamplingBlockForm: React.FC = () => {
         }}
       />
       <TransitionGroup>
-        {values.blocks.map((item, index) => {
+        {selectedBlocks.map((item, index) => {
           return (
             <Collapse key={`${item.name}-${item.description}-${index}`}>
               <Card

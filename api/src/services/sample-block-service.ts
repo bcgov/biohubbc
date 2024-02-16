@@ -7,6 +7,12 @@ import {
 } from '../repositories/sample-blocks-repository';
 import { DBService } from './db-service';
 
+// export interface PostSampleBlock {
+//   survey_id: number;
+//   survey_sample_site_id: number;
+//   survey_block_id: number;
+// }
+
 /**
  * Sample Block Repository
  *
@@ -74,11 +80,7 @@ export class SampleBlockService extends DBService {
    * @memberof SampleBlockService
    */
   async insertSampleBlock(sampleBlock: InsertSampleBlockRecord): Promise<SampleBlockRecord> {
-    console.log(sampleBlock)
-    const result = await this.sampleBlockRepository.insertSampleBlock(sampleBlock);
-    console.log(result)
-
-    return result
+    return await this.sampleBlockRepository.insertSampleBlock(sampleBlock);
   }
 
   /**
@@ -133,7 +135,7 @@ export class SampleBlockService extends DBService {
     // If it does, update it, otherwise create it
 
     if (sampleBlock.survey_sample_block_id) {
-      const result = await sampleBlockService.updateSampleBlock(sampleBlock);
+      const result = await this.sampleBlockRepository.updateSampleBlock(sampleBlock);
       console.log(result);
       return result;
     } else {

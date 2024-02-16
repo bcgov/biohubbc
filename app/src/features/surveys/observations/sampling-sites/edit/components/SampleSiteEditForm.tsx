@@ -9,9 +9,11 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { ISurveySampleMethodData, SamplingSiteMethodYupSchema } from 'features/surveys/components/MethodForm';
 import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
+import { IGetSampleBlockRecord } from 'interfaces/useSurveyApi.interface';
 import { useContext } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import yup from 'utils/YupSchema';
+import SamplingSiteGroupingsForm from '../../components/SamplingSiteGroupingsForm';
 import SampleMethodEditForm from './SampleMethodEditForm';
 import SampleSiteGeneralInformationForm from './SampleSiteGeneralInformationForm';
 import SurveySamplingSiteEditForm from './SurveySampleSiteEditForm';
@@ -24,6 +26,7 @@ export interface IEditSamplingSiteRequest {
     survey_sample_sites: Feature[]; // extracted list from shape files (used for formik loading)
     geojson?: Feature; // geojson object from map (used for sending to api)
     methods: ISurveySampleMethodData[];
+    blocks: IGetSampleBlockRecord[];
   };
 }
 
@@ -81,6 +84,13 @@ const SampleSiteEditForm = (props: ISampleSiteEditFormProps) => {
               title="Sampling Methods"
               summary="Specify sampling methods that were used to collect data."
               component={<SampleMethodEditForm name={'sampleSite.methods'} />}></HorizontalSplitFormComponent>
+
+            <Divider />
+
+            <HorizontalSplitFormComponent
+              title="Site Groups"
+              summary="Enter the stratum or group to which this site belongs."
+              component={<SamplingSiteGroupingsForm />}></HorizontalSplitFormComponent>
 
             <Divider />
 

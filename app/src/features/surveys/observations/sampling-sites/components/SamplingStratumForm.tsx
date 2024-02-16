@@ -121,7 +121,7 @@ const SamplingStratumForm: React.FC = () => {
         }}
       />
       <TransitionGroup>
-        {values.stratums.map((item, index) => {
+        {values.stratums?.map((item, index) => {
           return (
             <Collapse key={`${item.name}-${item.description}-${index}`}>
               <Card

@@ -50,7 +50,19 @@ export class SampleLocationService extends DBService {
    * @memberof SampleLocationService
    */
   async getSampleLocationsForSurveyId(surveyId: number): Promise<SampleLocationRecord[]> {
-    return await this.sampleLocationRepository.getSampleLocationsForSurveyId(surveyId);
+    const results = await this.sampleLocationRepository.getSampleLocationsForSurveyId(surveyId);
+
+    // todo: could do this in sql
+    return results.map((site) => {
+      // if (!site.sample_stratums) {
+      //   site.sample_stratums = [];
+      // }
+      if (!site.sample_blocks) {
+        site.sample_blocks = [];
+      }
+      console.log(site);
+      return site;
+    });
   }
 
   /**
@@ -147,12 +159,38 @@ export class SampleLocationService extends DBService {
    */
   async updateSampleLocationMethodPeriod(sampleSite: UpdateSampleSiteRecord) {
     const methodService = new SampleMethodService(this.connection);
+    const blockService = new SampleBlockService(this.connection);
 
+    console.log(sampleSite);
     // Update the main sample location
     await this.sampleLocationRepository.updateSampleLocation(sampleSite);
 
     // Check for methods to delete
     await methodService.deleteSampleMethodsNotInArray(sampleSite.survey_sample_site_id, sampleSite.methods);
+
+    // Check for blocks to delete
+    await blockService.deleteSampleBlocksNotInArray(sampleSite.survey_sample_site_id, sampleSite.blocks);
+
+    // Loop through all blocks
+    // For each block, check if it exists
+    // If it exists, update it
+    // If it does not exist, create it
+    for (const item of sampleSite.blocks) {
+      if (item.survey_sample_block_id) {
+        const sampleBlock = {
+          survey_sample_site_id: sampleSite.survey_sample_site_id,
+          survey_sample_block_id: item.survey_sample_block_id,
+          survey_block_id: item.survey_block_id
+        };
+        await blockService.updateSampleBlock(sampleBlock);
+      } else {
+        const sampleBlock = {
+          survey_sample_site_id: sampleSite.survey_sample_site_id,
+          survey_block_id: item.survey_block_id
+        };
+        await blockService.insertSampleBlock(sampleBlock);
+      }
+    }
 
     // Loop through all methods
     // For each method, check if it exists
