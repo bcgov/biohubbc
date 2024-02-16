@@ -99,9 +99,19 @@ export type IObservationsTableContext = {
    */
   savedRows: IObservationTableRow[];
   /**
+   * Sets the previously saved rows.
+   */
+  setSavedRows: React.Dispatch<React.SetStateAction<IObservationTableRow[]>>;
+  /**
    * The new rows, that have not yet been persisted to the server, that the grid should render.
    */
   stagedRows: IObservationTableRow[];
+  /**
+   * Sets the new rows.
+   *
+   * @type {React.Dispatch<React.SetStateAction<IObservationTableRow[]>>}
+   */
+  setStagedRows: React.Dispatch<React.SetStateAction<IObservationTableRow[]>>;
   /**
    * The row modes model, which defines which rows are in edit mode.
    */
@@ -291,7 +301,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    * @return {*}
    */
   const refreshObservationRecords = useCallback(async () => {
-    console.log('refreshObservationRecords');
     const sort = firstOrNull(sortModel);
     return observationsContext.observationsDataLoader.refresh({
       limit: paginationModel.pageSize,
@@ -617,19 +626,14 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       [...savedRows, ...stagedRows].find((row) => String(row.id) === id)
     );
 
-    console.log('editingIdsToSave', editingIdsToSave);
-
     if (!editingIdsToSave.length) {
       // No rows in edit mode, nothing to stop or save
       _setIsStoppingEdit(false);
       return;
     }
 
-    console.log(_muiDataGridApiRef.current.getRowModels?.());
-
     // Transition all rows in edit mode to view mode
     for (const id of editingIdsToSave) {
-      console.log('transition to stop row edit mode');
       _muiDataGridApiRef.current.stopRowEditMode({ id });
     }
 
@@ -735,7 +739,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       (row: IObservationRecord) => ({ ...row, id: String(row.survey_observation_id) })
     );
 
-    console.log('setSavedRows(existingRows);');
     // Set initial rows for the table context
     setSavedRows(existingRows);
 
@@ -816,14 +819,10 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       return;
     }
 
-    console.log('modifiedRowIds', modifiedRowIds);
-
     if (modifiedRowIds.some((id) => _muiDataGridApiRef.current.getRowMode(id) === 'edit')) {
       // Not all rows have transitioned to view mode, cannot save yet
       return;
     }
-
-    console.log('SAVING!!!');
 
     // All rows have transitioned to view mode
     _setIsStoppingEdit(false);
@@ -832,7 +831,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     _setIsSaving(true);
 
     const rowModels = _muiDataGridApiRef.current.getRowModels();
-    console.log(rowModels);
+
     const rowValues = Array.from(rowModels, ([_, value]) => value);
 
     const measurements = measurementColumns.map((item) => item.measurement);
@@ -869,7 +868,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     () => ({
       _muiDataGridApiRef,
       savedRows,
+      setSavedRows,
       stagedRows,
+      setStagedRows,
       rowModesModel,
       setRowModesModel,
       columnVisibilityModel,
@@ -902,7 +903,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     [
       _muiDataGridApiRef,
       savedRows,
+      setSavedRows,
       stagedRows,
+      setStagedRows,
       rowModesModel,
       setRowModesModel,
       columnVisibilityModel,

@@ -39,8 +39,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
 
   const observationsTableContext = useObservationsTableContext();
 
-  console.log([...observationsTableContext.savedRows, ...observationsTableContext.stagedRows]);
-
   return (
     <>
       {props.isLoading && <SkeletonTable />}
@@ -65,13 +63,21 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         // Rows
         rows={[...observationsTableContext.savedRows, ...observationsTableContext.stagedRows]}
         processRowUpdate={(newRow, oldRow) => {
-          console.log('processRowUpdate', newRow, oldRow);
+          if (observationsTableContext.savedRows.find((row) => row.id === newRow.id)) {
+            observationsTableContext.setSavedRows((currentSavedRows) =>
+              currentSavedRows.map((row) => (row.id === newRow.id ? newRow : row))
+            );
+          } else {
+            observationsTableContext.setStagedRows((currentStagedRows) =>
+              currentStagedRows.map((row) => (row.id === newRow.id ? newRow : row))
+            );
+          }
+
           return newRow;
         }}
         // Row modes
         rowModesModel={props.rowModesModel}
         onRowModesModelChange={(model) => {
-          console.log('onRowModesModelChange', model);
           // Update the row modes model in the context
           observationsTableContext.setRowModesModel(model);
         }}
