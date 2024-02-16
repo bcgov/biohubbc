@@ -1,20 +1,20 @@
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Link, Typography } from '@mui/material';
+import { Link, Toolbar, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import { grey } from '@mui/material/colors';
 import { makeStyles } from '@mui/styles';
-import { DataGrid, GridColDef, GridOverlay } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridOverlay, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import { ProjectRoleGuard } from 'components/security/Guards';
-import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { ProjectContext } from 'contexts/projectContext';
 import { SurveyBasicFieldsObject } from 'interfaces/useSurveyApi.interface';
-import { useCallback, useContext } from 'react';
-import { useHistory } from 'react-router';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { ApiPaginationOptions } from 'types/misc';
+import { firstOrNull } from 'utils/Utils';
 
 const pageSizeOptions = [10, 25, 50];
 
@@ -65,12 +65,31 @@ const NoRowsOverlay = (props: { className: string }) => (
  */
 const SurveysListPage = () => {
   const classes = useStyles();
-  const history = useHistory();
   const projectContext = useContext(ProjectContext);
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: pageSizeOptions[0]
+  });
+  const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
-  const navigateToCreateSurveyPage = (projectId: number) => {
-    history.push(`/admin/projects/${projectId}/survey/create`);
+  const refreshSurveyList = () => {
+    const sort = firstOrNull(sortModel);
+    const pagination: ApiPaginationOptions = {
+      limit: paginationModel.pageSize,
+      sort: sort?.field || undefined,
+      order: sort?.sort || undefined,
+
+      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+      page: paginationModel.page + 1
+    };
+
+    return projectContext.surveysListDataLoader.refresh(pagination);
   };
+
+  // Refresh survey list when pagination or sort changes
+  useEffect(() => {
+    refreshSurveyList();
+  }, [sortModel, paginationModel]);
 
   const columns: GridColDef<SurveyBasicFieldsObject>[] = [
     {
@@ -97,22 +116,32 @@ const SurveysListPage = () => {
 
   return (
     <>
-      <H2ButtonToolbar
-        label="Surveys"
-        buttonLabel="Create Survey"
-        buttonTitle="Create Survey"
-        buttonStartIcon={<Icon path={mdiPlus} size={1} />}
-        buttonProps={{ variant: 'contained', disableElevation: true }}
-        // TODO use RouterLink
-        buttonOnClick={() => navigateToCreateSurveyPage(projectContext.projectId)}
-        renderButton={(buttonProps) => (
-          <ProjectRoleGuard
+      <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Typography variant="h4" component="h2">
+          Surveys &zwnj;
+          <Typography
+            component="span"
+            color="textSecondary"
+            lineHeight="inherit"
+            fontSize="inherit"
+            fontWeight={400}>
+            ({Number(projectContext.surveysListDataLoader.data?.pagination.total || 0).toLocaleString()})
+          </Typography>
+        </Typography>
+        <ProjectRoleGuard
             validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-            <Button {...buttonProps} />
-          </ProjectRoleGuard>
-        )}
-      />
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Icon path={mdiPlus} size={1} />}
+            // onClick={() => setIsFiltersOpen(!isFiltersOpen)}
+            component={RouterLink}
+            to={`/admin/projects/${projectContext.projectId}/survey/create`}>
+            Create Survey
+          </Button>
+        </ProjectRoleGuard>
+      </Toolbar>
       <Divider></Divider>
       <Box py={1} pb={2} px={3}>
         <DataGrid
@@ -120,15 +149,15 @@ const SurveysListPage = () => {
           columns={columns}
           autoHeight
           rows={projectContext.surveysListDataLoader.data?.surveys ?? []}
-          // rowCount={projectsDataLoader.data?.pagination.total}
+          rowCount={projectContext.surveysListDataLoader.data?.pagination.total ?? 0}
           getRowId={(row) => row.survey_id}
           pageSizeOptions={[...pageSizeOptions]}
           paginationMode="server"
           sortingMode="server"
-          // sortModel={sortModel}
-          // paginationModel={paginationModel}
-          // onPaginationModelChange={setPaginationModel}
-          // onSortModelChange={setSortModel}
+          sortModel={sortModel}
+          paginationModel={paginationModel}
+          onPaginationModelChange={setPaginationModel}
+          onSortModelChange={setSortModel}
           rowSelection={false}
           checkboxSelection={false}
           disableRowSelectionOnClick
