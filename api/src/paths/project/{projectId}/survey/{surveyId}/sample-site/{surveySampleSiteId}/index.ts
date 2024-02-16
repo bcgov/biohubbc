@@ -157,6 +157,47 @@ PUT.apiDoc = {
   }
 };
 
+// todo: API docs for getSurveySampleSiteByIdRecord
+
+export function getSurveySampleSiteRecord(): RequestHandler {
+  return async (req, res) => {
+    const surveyId = Number(req.params.surveyId);
+    const surveySampleSiteId = Number(req.params.surveySampleSiteId);
+
+    if (!surveySampleSiteId) {
+      throw new HTTP400('Missing required param `surveySampleSiteId`');
+    }
+
+    const connection = getDBConnection(req['keycloak_token']);
+
+    try {
+      await connection.open();
+
+      const observationService = new SampleLocationService(connection);
+
+      if (
+        (await observationService.getObservationsCountBySampleSiteId(surveyId, surveySampleSiteId)).observationCount > 0
+      ) {
+        throw new HTTP400('Cannot delete a sample site that is associated with an observation');
+      }
+
+      const sampleLocationService = new SampleLocationService(connection);
+
+      await sampleLocationService.deleteSampleLocationRecord(surveySampleSiteId);
+
+      await connection.commit();
+
+      return res.status(204).send();
+    } catch (error) {
+      defaultLog.error({ label: 'deleteSurveySampleSiteRecord', message: 'error', error });
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  };
+}
+
 export function updateSurveySampleSite(): RequestHandler {
   return async (req, res) => {
     if (!req.params.surveyId) {

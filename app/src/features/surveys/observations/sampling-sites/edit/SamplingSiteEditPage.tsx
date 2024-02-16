@@ -39,7 +39,8 @@ const SamplingSiteEditPage = () => {
       name: '',
       description: '',
       survey_sample_sites: [],
-      methods: []
+      methods: [],
+      blocks: []
     }
   });
 
@@ -63,7 +64,8 @@ const SamplingSiteEditPage = () => {
                   ...item,
                   periods: item.sample_periods || []
                 };
-              }) || []
+              }) || [],
+            blocks: data.sample_blocks || []
           }
         };
         setInitialFormData(formInitialValues);
@@ -101,7 +103,8 @@ const SamplingSiteEditPage = () => {
           survey_id: values.sampleSite.survey_id,
           survey_sample_sites: values.sampleSite.survey_sample_sites as unknown as Feature[],
           geojson: values.sampleSite.survey_sample_sites[0],
-          methods: values.sampleSite.methods
+          methods: values.sampleSite.methods,
+          blocks: values.sampleSite.blocks
         }
       };
 

@@ -24,7 +24,8 @@ export async function up(knex: Knex): Promise<void> {
       create_user                             INTEGER           NOT NULL,
       update_date                             TIMESTAMPTZ(6),
       update_user                             INTEGER,
-      revision_count                          int4              NOT NULL DEFAULT 0
+      revision_count                          int4              NOT NULL DEFAULT 0,
+      CONSTRAINT survey_sample_block_pk PRIMARY KEY (survey_sample_block_id)
     );
 
     COMMENT ON COLUMN survey_sample_block.survey_sample_block_id IS 'System generated surrogate primary key identifier.';
