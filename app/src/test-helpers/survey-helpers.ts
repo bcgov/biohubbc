@@ -1,6 +1,6 @@
 import { PublishStatus } from 'constants/attachments';
 import {
-  IGetSurveyForListResponse,
+  IGetSurveyListResponse,
   IGetSurveyForViewResponse,
   SurveySupplementaryData,
   SurveyViewObject
@@ -126,7 +126,7 @@ export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
   surveySupplementaryData: surveySupplementaryData
 };
 
-export const getSurveyForListResponse: IGetSurveyForListResponse[] = [
+export const getSurveyForListResponse: IGetSurveyListResponse[] = [
   {
     surveyData: {
       survey_id: 1,

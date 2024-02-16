@@ -6,7 +6,7 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import { ProjectContext } from 'contexts/projectContext';
 import { IGetProjectAttachmentsResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyForListResponse } from 'interfaces/useSurveyApi.interface';
+import { IGetSurveyListResponse } from 'interfaces/useSurveyApi.interface';
 import { useContext, useState } from 'react';
 
 const ProjectSubmissionAlertBar = () => {
@@ -63,7 +63,7 @@ const ProjectSubmissionAlertBar = () => {
   );
 };
 
-function getSurveyDataSubmissionStatus(surveyData?: IGetSurveyForListResponse[]) {
+function getSurveyDataSubmissionStatus(surveyData?: IGetSurveyListResponse[]) {
   if (!surveyData?.length || surveyData.every((item) => item.surveySupplementaryData.publishStatus === 'NO_DATA')) {
     return 'NO_DATA';
   }

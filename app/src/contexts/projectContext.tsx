@@ -1,7 +1,7 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import { IGetProjectAttachmentsResponse, IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyForListResponse } from 'interfaces/useSurveyApi.interface';
+import { IGetSurveyListResponse } from 'interfaces/useSurveyApi.interface';
 import { createContext, PropsWithChildren, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router';
 
@@ -23,10 +23,10 @@ export interface IProjectContext {
   /**
    * The Data Loader used to load project data
    *
-   * @type {DataLoader<[project_id: number], IGetSurveyForListResponse, unknown>}
+   * @type {DataLoader<[project_id: number], IGetSurveyListResponse, unknown>}
    * @memberof IProjectContext
    */
-  surveysListDataLoader: DataLoader<[project_id: number], IGetSurveyForListResponse, unknown>;
+  surveysListDataLoader: DataLoader<[project_id: number], IGetSurveyListResponse, unknown>;
 
   /**
    * The Data Loader used to load project data
@@ -47,7 +47,7 @@ export interface IProjectContext {
 
 export const ProjectContext = createContext<IProjectContext>({
   projectDataLoader: {} as DataLoader<[project_id: number], IGetProjectForViewResponse, unknown>,
-  surveysListDataLoader: {} as DataLoader<[project_id: number], IGetSurveyForListResponse, unknown>,
+  surveysListDataLoader: {} as DataLoader<[project_id: number], IGetSurveyListResponse, unknown>,
   artifactDataLoader: {} as DataLoader<[project_id: number], IGetProjectAttachmentsResponse, unknown>,
   projectId: -1
 });

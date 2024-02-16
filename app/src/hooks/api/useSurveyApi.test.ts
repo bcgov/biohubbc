@@ -6,7 +6,7 @@ import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
   IDetailedCritterWithInternalId,
-  IGetSurveyForListResponse
+  IGetSurveyListResponse
 } from 'interfaces/useSurveyApi.interface';
 import { v4 } from 'uuid';
 import useSurveyApi from './useSurveyApi';
@@ -47,9 +47,9 @@ describe('useSurveyApi', () => {
     it('fetches an array of surveys', async () => {
       const projectId = 1;
 
-      const res: IGetSurveyForListResponse[] = [
-        { surveyData: { survey_id: 1 }, surveySupplementaryData: {} } as IGetSurveyForListResponse,
-        { surveyData: { survey_id: 2 }, surveySupplementaryData: {} } as IGetSurveyForListResponse
+      const res: IGetSurveyListResponse[] = [
+        { surveyData: { survey_id: 1 }, surveySupplementaryData: {} } as IGetSurveyListResponse,
+        { surveyData: { survey_id: 2 }, surveySupplementaryData: {} } as IGetSurveyListResponse
       ];
 
       mock.onGet(`/api/project/${projectId}/survey`).reply(200, res);

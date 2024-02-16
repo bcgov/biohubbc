@@ -19,7 +19,7 @@ import {
   ICreateSurveyResponse,
   IDetailedCritterWithInternalId,
   IGetSurveyAttachmentsResponse,
-  IGetSurveyForListResponse,
+  IGetSurveyListResponse,
   IGetSurveyForUpdateResponse,
   IGetSurveyForViewResponse,
   SurveyUpdateObject
@@ -77,7 +77,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @return {*}  {Promise<IGetSurveysListResponse[]>}
    */
-  const getSurveysBasicFieldsByProjectId = async (projectId: number): Promise<IGetSurveyForListResponse> => {
+  const getSurveysBasicFieldsByProjectId = async (projectId: number): Promise<IGetSurveyListResponse> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey`);
 
     return data;
