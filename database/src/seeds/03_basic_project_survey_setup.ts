@@ -83,8 +83,15 @@ export async function seed(knex: Knex): Promise<void> {
       ${insertSurveySamplingSiteData(surveyId)}
       ${insertSurveySamplingMethodData()}
       ${insertSurveySamplePeriodData()}
-      ${insertSurveyObservationData(surveyId)}
     `);
+    let response = await knex.raw(insertSurveyObservationData(surveyId));
+    await knex.raw(insertObservationSubCount(response.rows[0].survey_observation_id));
+
+    response = await knex.raw(insertSurveyObservationData(surveyId));
+    await knex.raw(insertObservationSubCount(response.rows[0].survey_observation_id));
+
+    response = await knex.raw(insertSurveyObservationData(surveyId));
+    await knex.raw(insertObservationSubCount(response.rows[0].survey_observation_id));
   }
 }
 
@@ -574,6 +581,19 @@ const insertSurveySamplePeriodData = () =>
   );
 `;
 
+const insertObservationSubCount = (surveyObservationId: number) => `
+      INSERT INTO observation_subcount 
+      (
+        survey_observation_id,
+        subcount
+      )
+      VALUES
+      (
+        ${surveyObservationId},
+        $$${faker.number.int({ min: 1, max: 20 })}$$
+      );
+`;
+
 /**
  * SQL to insert survey observation data. Requires sampling site, method, period.
  *
@@ -610,41 +630,8 @@ const insertSurveyObservationData = (surveyId: number) => `
     (SELECT survey_sample_site_id FROM survey_sample_site LIMIT 1),
     (SELECT survey_sample_method_id FROM survey_sample_method LIMIT 1),
     (SELECT survey_sample_period_id FROM survey_sample_period LIMIT 1)
-  ),
-  (
-    ${surveyId},
-    $$${focalTaxonIdOptions[0].itis_tsn}$$,
-    $$${focalTaxonIdOptions[0].itis_scientific_name}$$,
-    $$${faker.number.int({ min: 48, max: 60 })}$$,
-    $$${faker.number.int({ min: -132, max: -116 })}$$,
-    $$${faker.number.int({ min: 1, max: 20 })}$$,
-    $$${faker.date
-      .between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
-      .toISOString()}$$::date,
-    timestamp $$${faker.date
-      .between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
-      .toISOString()}$$::time,
-    (SELECT survey_sample_site_id FROM survey_sample_site LIMIT 1),
-    (SELECT survey_sample_method_id FROM survey_sample_method LIMIT 1),
-    (SELECT survey_sample_period_id FROM survey_sample_period LIMIT 1)
-  ),
-  (
-    ${surveyId},
-    $$${focalTaxonIdOptions[0].itis_tsn}$$,
-    $$${focalTaxonIdOptions[0].itis_scientific_name}$$,
-    $$${faker.number.int({ min: 48, max: 60 })}$$,
-    $$${faker.number.int({ min: -132, max: -116 })}$$,
-    $$${faker.number.int({ min: 1, max: 20 })}$$,
-    $$${faker.date
-      .between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
-      .toISOString()}$$::date,
-    timestamp $$${faker.date
-      .between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
-      .toISOString()}$$::time,
-    (SELECT survey_sample_site_id FROM survey_sample_site LIMIT 1),
-    (SELECT survey_sample_method_id FROM survey_sample_method LIMIT 1),
-    (SELECT survey_sample_period_id FROM survey_sample_period LIMIT 1)
   )
+  RETURNING survey_observation_id;
 `;
 
 /**
