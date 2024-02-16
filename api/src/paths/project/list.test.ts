@@ -4,13 +4,13 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { SYSTEM_ROLE } from '../../constants/roles';
+import { COMPLETION_STATUS } from '../../constants/status';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
 import * as authorization from '../../request-handlers/security/authorization';
 import { ProjectService } from '../../services/project-service';
 import { getMockDBConnection } from '../../__mocks__/db';
 import * as list from './list';
-import { COMPLETION_STATUS } from '../../constants/status';
 
 chai.use(sinonChai);
 
@@ -91,19 +91,17 @@ describe('list', () => {
       });
       sinon.stub(authorization, 'userHasValidRole').returns(true);
 
-      const getProjectListStub = sinon
-        .stub(ProjectService.prototype, 'getProjectList')
-        .resolves([
-          {
-            project_id: 1,
-            name: 'myproject',
-            project_programs: [1],
-            start_date: '2022-02-02',
-            end_date: null,
-            regions: [],
-            completion_status: COMPLETION_STATUS.COMPLETED
-          }
-        ]);
+      const getProjectListStub = sinon.stub(ProjectService.prototype, 'getProjectList').resolves([
+        {
+          project_id: 1,
+          name: 'myproject',
+          project_programs: [1],
+          start_date: '2022-02-02',
+          end_date: null,
+          regions: [],
+          completion_status: COMPLETION_STATUS.COMPLETED
+        }
+      ]);
       sinon.stub(ProjectService.prototype, 'getProjectCount').resolves(1);
 
       const result = list.getProjectList();

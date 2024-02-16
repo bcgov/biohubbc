@@ -13,9 +13,9 @@ import {
   ProjectData,
   ProjectListData
 } from '../models/project-view';
+import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
-import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('repositories/project-repository');
 
@@ -138,7 +138,10 @@ export class ProjectRepository extends BaseRepository {
     }
 
     if (pagination?.sort) {
-      sqlStatement.append(SQL`ORDER BY `).append(pagination.sort).append(SQL` `)
+      sqlStatement
+        .append(SQL`ORDER BY `)
+        .append(pagination.sort)
+        .append(SQL` `);
 
       if (pagination.order) {
         sqlStatement.append(pagination.order === 'asc' ? SQL`ASC` : SQL`DESC`);
