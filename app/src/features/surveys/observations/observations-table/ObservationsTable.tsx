@@ -62,12 +62,14 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         }}
         // Rows
         rows={[...observationsTableContext.savedRows, ...observationsTableContext.stagedRows]}
-        processRowUpdate={(newRow, oldRow) => {
+        processRowUpdate={(newRow) => {
           if (observationsTableContext.savedRows.find((row) => row.id === newRow.id)) {
+            // Update savedRows
             observationsTableContext.setSavedRows((currentSavedRows) =>
               currentSavedRows.map((row) => (row.id === newRow.id ? newRow : row))
             );
           } else {
+            // Update stagedRows
             observationsTableContext.setStagedRows((currentStagedRows) =>
               currentStagedRows.map((row) => (row.id === newRow.id ? newRow : row))
             );
