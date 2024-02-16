@@ -3,7 +3,7 @@ import Snackbar from '@mui/material/Snackbar';
 import { useFormikContext } from 'formik';
 import { useEffect, useState } from 'react';
 
-export const SnackbarComponent = () => {
+const SnackbarComponent = () => {
   const formikProps = useFormikContext<any>();
   const { errors, submitCount } = formikProps;
   const [openSnackbar, setOpenSnackbar] = useState({ open: false, msg: '' });
@@ -40,3 +40,5 @@ export const SnackbarComponent = () => {
     </>
   );
 };
+
+export default SnackbarComponent;

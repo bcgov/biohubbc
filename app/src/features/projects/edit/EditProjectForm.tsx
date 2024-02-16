@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import { makeStyles } from '@mui/styles';
-import { SnackbarComponent } from 'components/alert/SnackbarComponents';
+import SnackbarComponent from 'components/alert/SnackbarComponent';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { Formik, FormikProps } from 'formik';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';

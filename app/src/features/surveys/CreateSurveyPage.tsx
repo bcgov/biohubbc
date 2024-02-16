@@ -8,6 +8,7 @@ import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import SnackbarComponent from 'components/alert/SnackbarComponent';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import PageHeader from 'components/layout/PageHeader';
@@ -53,7 +54,6 @@ import SurveyFundingSourceForm, {
 } from './components/SurveyFundingSourceForm';
 import { SurveySiteSelectionInitialValues, SurveySiteSelectionYupSchema } from './components/SurveySiteSelectionForm';
 import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from './components/SurveyUserForm';
-import { SnackbarComponent } from 'components/alert/SnackbarComponents';
 
 /**
  * Page to create a survey.

@@ -7,7 +7,7 @@ import SelectedSpecies from './components/SelectedSpecies';
 import SpeciesAutocompleteField from './components/SpeciesAutocompleteField';
 
 const FocalSpeciesComponent = () => {
-  const { values, setFieldValue, setErrors, errors } = useFormikContext<ITaxonomy[]>();
+  const { values, setFieldValue, setErrors, errors, submitCount } = useFormikContext<ITaxonomy[]>();
 
   const selectedSpecies: ITaxonomy[] = get(values, 'species.focal_species') || [];
 
@@ -32,7 +32,7 @@ const FocalSpeciesComponent = () => {
         required={true}
         handleAddSpecies={handleAddSpecies}
       />
-      {errors && get(errors, 'species.focal_species') && (
+      {submitCount > 0 && errors && get(errors, 'species.focal_species') && (
         <Box mt={3}>
           <AlertBar
             severity="error"
