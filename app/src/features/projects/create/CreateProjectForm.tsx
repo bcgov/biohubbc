@@ -2,7 +2,7 @@ import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import { makeStyles } from '@mui/styles';
-import SnackbarComponent from 'components/alert/SnackbarComponent';
+import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { PROJECT_ROLE } from 'constants/roles';
 import { Formik, FormikProps } from 'formik';
@@ -106,7 +106,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
       enableReinitialize={true}
       onSubmit={handleSubmit}>
       <>
-        <SnackbarComponent />
+        <FormikErrorSnackbar />
         <HorizontalSplitFormComponent
           title="General Information"
           summary="Enter general information, objectives and timelines for the project."

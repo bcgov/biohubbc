@@ -4,7 +4,7 @@ import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import { makeStyles } from '@mui/styles';
-import SnackbarComponent from 'components/alert/SnackbarComponent';
+import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
@@ -157,7 +157,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
         validateOnChange={false}
         onSubmit={props.handleSubmit}>
         <>
-          <SnackbarComponent />
+          <FormikErrorSnackbar />
           <HorizontalSplitFormComponent
             title="General Information"
             summary=""

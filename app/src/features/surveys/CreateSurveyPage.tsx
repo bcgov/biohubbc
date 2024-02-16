@@ -8,7 +8,7 @@ import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import SnackbarComponent from 'components/alert/SnackbarComponent';
+import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import PageHeader from 'components/layout/PageHeader';
@@ -276,7 +276,7 @@ const CreateSurveyPage = () => {
               validateOnChange={false}
               onSubmit={handleSubmit}>
               <>
-                <SnackbarComponent />
+                <FormikErrorSnackbar />
                 <Stack gap={5} divider={<Divider flexItem />}>
                   <HorizontalSplitFormComponent
                     title="General Information"

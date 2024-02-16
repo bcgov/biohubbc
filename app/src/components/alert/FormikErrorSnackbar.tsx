@@ -3,19 +3,17 @@ import Snackbar from '@mui/material/Snackbar';
 import { useFormikContext } from 'formik';
 import { useEffect, useState } from 'react';
 
-const SnackbarComponent = () => {
+const FormikErrorSnackbar = () => {
   const formikProps = useFormikContext<any>();
   const { errors, submitCount, isSubmitting } = formikProps;
   const [openSnackbar, setOpenSnackbar] = useState({ open: false, msg: '' });
 
   useEffect(() => {
-    const showSnackBar = (message: string) => {
-      setOpenSnackbar({ open: true, msg: message });
-    };
-
-    if (Object.keys(errors).length && submitCount > 0 && !isSubmitting) {
-      showSnackBar('Missing one or more required fields.');
+    if (!Object.keys(errors).length || submitCount <= 0 || isSubmitting) {
+      return;
     }
+
+    setOpenSnackbar({ open: true, msg: 'Missing one or more required fields.' });
   }, [errors, submitCount, isSubmitting]);
 
   const closeSnackBar = () =>
@@ -40,4 +38,4 @@ const SnackbarComponent = () => {
   );
 };
 
-export default SnackbarComponent;
+export default FormikErrorSnackbar;
