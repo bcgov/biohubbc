@@ -4,7 +4,7 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { SurveyService } from '../../../../services/survey-service';
-// import { paginationRequestQueryParamSchema } from '../../../../openapi/schemas/pagination';
+import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../../../openapi/schemas/pagination';
 import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/index');
@@ -50,7 +50,7 @@ GET.apiDoc = {
       },
       required: true
     },
-    // ...paginationRequestQueryParamSchema
+    ...paginationRequestQueryParamSchema
   ],
   responses: {
     200: {
@@ -59,8 +59,9 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
-            required: ['surveys'],
+            required: ['surveys', /*pagination*/], // TODO
             properties: {
+              pagination: { ...paginationResponseSchema },
               surveys: {
                 type: 'array',
                 items: {

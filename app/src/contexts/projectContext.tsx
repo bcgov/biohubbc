@@ -23,10 +23,10 @@ export interface IProjectContext {
   /**
    * The Data Loader used to load project data
    *
-   * @type {DataLoader<[project_id: number], IGetSurveyForListResponse[], unknown>}
+   * @type {DataLoader<[project_id: number], IGetSurveyForListResponse, unknown>}
    * @memberof IProjectContext
    */
-  surveysListDataLoader: DataLoader<[project_id: number], IGetSurveyForListResponse[], unknown>;
+  surveysListDataLoader: DataLoader<[project_id: number], IGetSurveyForListResponse, unknown>;
 
   /**
    * The Data Loader used to load project data
@@ -47,7 +47,7 @@ export interface IProjectContext {
 
 export const ProjectContext = createContext<IProjectContext>({
   projectDataLoader: {} as DataLoader<[project_id: number], IGetProjectForViewResponse, unknown>,
-  surveysListDataLoader: {} as DataLoader<[project_id: number], IGetSurveyForListResponse[], unknown>,
+  surveysListDataLoader: {} as DataLoader<[project_id: number], IGetSurveyForListResponse, unknown>,
   artifactDataLoader: {} as DataLoader<[project_id: number], IGetProjectAttachmentsResponse, unknown>,
   projectId: -1
 });
