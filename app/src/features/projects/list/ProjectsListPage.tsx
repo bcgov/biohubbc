@@ -239,7 +239,7 @@ const ProjectsListPage = () => {
                 className={classes.dataGrid}
                 autoHeight
                 rows={projectRows}
-                rowCount={projectsDataLoader.data?.pagination.total}
+                rowCount={projectsDataLoader.data?.pagination.total ?? 0}
                 getRowId={(row) => row.project_id}
                 columns={columns}
                 pageSizeOptions={[...pageSizeOptions]}
