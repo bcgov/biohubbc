@@ -254,7 +254,7 @@ export class ObservationRepository extends BaseRepository {
           .select([
             'os.survey_observation_id',
             'os.subcount',
-            knex.raw(`array_agg(sa.critterbase_event_id) as critterbase_event_ids`)
+            knex.raw(`array_remove(array_agg(sa.critterbase_event_id), NULL) as critterbase_event_ids`)
           ])
           .from({ os: 'observation_subcount' })
           .leftJoin({ sa: 'subcount_attribute' }, 'os.observation_subcount_id', 'sa.observation_subcount_id')

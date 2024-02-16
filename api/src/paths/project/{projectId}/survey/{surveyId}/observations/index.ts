@@ -320,6 +320,7 @@ PUT.apiDoc = {
                       'survey_sample_method_id',
                       'survey_sample_period_id',
                       'count',
+                      'sub_count',
                       'latitude',
                       'longitude',
                       'observation_date',
@@ -348,6 +349,9 @@ PUT.apiDoc = {
                       count: {
                         type: 'integer'
                       },
+                      sub_count: {
+                        type: 'integer'
+                      },
                       latitude: {
                         type: 'number'
                       },
@@ -363,7 +367,8 @@ PUT.apiDoc = {
                     }
                   },
                   measurementColumns: {
-                    description: 'Non-standard user-added measurement column data for an observation subcount record.',
+                    description:
+                      'Non-standard user-added measurement column data for creating and tracking event data in Critter Base',
                     type: 'array',
                     items: {
                       type: 'object',
@@ -529,7 +534,7 @@ export function insertUpdateSurveyObservationsWithMeasurements(): RequestHandler
           } as InsertObservation | UpdateObservation,
           measurements: item.measurementColumns.map((measurement: any) => {
             return {
-              count: null,
+              count: item.standardColumns.sub_count,
               measurement_id: measurement.id,
               value: measurement.value
             };

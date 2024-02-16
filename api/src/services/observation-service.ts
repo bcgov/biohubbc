@@ -48,6 +48,7 @@ export interface InsertUpdateObservationsWithMeasurements {
     value: string;
   }[];
   observation: InsertObservation | UpdateObservation;
+  sub_count: number;
 }
 
 export const ObservationSupplementaryData = z.object({
@@ -134,10 +135,10 @@ export class ObservationService extends DBService {
     const subCountService = new SubCountService(this.connection);
     const finalResults: ObservationRecord[] = [];
     // insert/ update observation data
+    // remove old sub count rows
+    // add observation subcount
     // check for measurements
     //  add them to critter base
-    //  remove old sub count rows
-    //  add observation subcount
     //  add attribute subcount
     for (const data of observations) {
       const results = await this.observationRepository.insertUpdateSurveyObservations(
@@ -146,6 +147,15 @@ export class ObservationService extends DBService {
       );
       finalResults.push(results[0]);
       const surveyObservationId = results[0].survey_observation_id;
+
+      // delete old observation and attribute sub counts
+      await subCountService.deleteObservationsAndAttributeSubCounts([surveyObservationId]);
+
+      // insert observation sub count
+      const observationSubCount = await subCountService.insertObservationSubCount({
+        survey_observation_id: surveyObservationId,
+        subcount: data.observation.count
+      });
 
       // need to add these to critter base
       if (data.measurements.length > 0) {
@@ -156,15 +166,6 @@ export class ObservationService extends DBService {
 
         const ids = data.measurements.map((item) => item.measurement_id);
         const eventId = await critterBaseService.addAttributeRecords(ids);
-
-        // delete old observation and attribute subcounts
-        await subCountService.deleteObservationsAndAttributeSubCounts([surveyObservationId]);
-
-        // insert observation subcount
-        const observationSubCount = await subCountService.insertObservationSubCount({
-          survey_observation_id: surveyObservationId,
-          subcount: data.observation.count
-        });
 
         // insert subcount attribute
         await subCountService.insertSubCountAttribute({
@@ -222,7 +223,7 @@ export class ObservationService extends DBService {
       pagination
     );
 
-    // fetch data from critterbase
+    // fetch data from critter base
     const eventIds = surveyObservations
       .flatMap((item) => item.observation_subcount_attributes)
       .filter((item) => item !== null);
