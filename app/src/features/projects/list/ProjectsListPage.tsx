@@ -105,15 +105,6 @@ const ProjectsListPage = () => {
 
   codesContext.codesDataLoader.load();
 
-  // TODO unnecesssary
-  const handleSubmit = async (filterValues: IProjectAdvancedFilters) => {
-    refreshProjectsList(filterValues);
-  };
-
-  const handleReset = async () => {
-    refreshProjectsList();
-  };
-
   const refreshProjectsList = (filterValues?: IProjectAdvancedFilters) => {
     const sort = firstOrNull(sortModel);
     const pagination = {
@@ -233,7 +224,12 @@ const ProjectsListPage = () => {
               </Button>
             </Toolbar>
             <Divider></Divider>
-            {isFiltersOpen && <ProjectsListFilterForm handleSubmit={handleSubmit} handleReset={handleReset} />}
+            {isFiltersOpen && (
+              <ProjectsListFilterForm
+                handleSubmit={(filterValues) => refreshProjectsList(filterValues)}
+                handleReset={() => refreshProjectsList()}
+              />
+            )}
             <Box py={1} pb={2} px={3}>
               <DataGrid
                 className={classes.dataGrid}
