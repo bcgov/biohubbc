@@ -3,9 +3,11 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { IProjectAdvancedFilters } from '../../models/project-view';
+import { paginationResponseSchema } from '../../openapi/schemas/pagination';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
 import { ProjectService } from '../../services/project-service';
 import { getLogger } from '../../utils/logger';
+import { ApiPaginationOptions } from '../../zod-schema/pagination';
 
 const defaultLog = getLogger('paths/projects');
 
@@ -47,7 +49,7 @@ GET.apiDoc = {
             project_programs: {
               type: 'array',
               items: {
-                type: 'number'
+                type: 'integer'
               },
               nullable: true
             },
@@ -59,10 +61,11 @@ GET.apiDoc = {
               type: 'string',
               nullable: true
             },
+            // TODO rename this to imply ITIS TSN filtering
             species: {
               type: 'array',
               items: {
-                type: 'number'
+                type: 'integer'
               }
             }
           }
@@ -76,26 +79,25 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            type: 'array',
-            items: {
-              title: 'Survey get response object, for view purposes',
-              type: 'object',
-              required: ['projectData', 'projectSupplementaryData'],
-              properties: {
-                projectData: {
+            type: 'object',
+            required: ['projects', 'pagination'],
+            properties: {
+              projects: {
+                type: 'array',
+                items: {
                   type: 'object',
                   required: [
-                    'id',
+                    'project_id',
                     'name',
                     'project_programs',
+                    'completion_status',
                     'start_date',
                     'end_date',
-                    'completion_status',
                     'regions'
                   ],
                   properties: {
-                    id: {
-                      type: 'number'
+                    project_id: {
+                      type: 'integer'
                     },
                     name: {
                       type: 'string'
@@ -103,7 +105,7 @@ GET.apiDoc = {
                     project_programs: {
                       type: 'array',
                       items: {
-                        type: 'number'
+                        type: 'integer'
                       }
                     },
                     start_date: {
@@ -122,18 +124,9 @@ GET.apiDoc = {
                       }
                     }
                   }
-                },
-                projectSupplementaryData: {
-                  type: 'object',
-                  required: ['publishStatus'],
-                  properties: {
-                    publishStatus: {
-                      type: 'string',
-                      enum: ['NO_DATA', 'UNSUBMITTED', 'SUBMITTED']
-                    }
-                  }
                 }
-              }
+              },
+              pagination: { ...paginationResponseSchema }
             }
           }
         }
@@ -164,6 +157,13 @@ GET.apiDoc = {
  */
 export function getProjectList(): RequestHandler {
   return async (req, res) => {
+    defaultLog.debug({ label: 'getProjectList' });
+
+    const page: number | undefined = req.query.page ? Number(req.query.page) : undefined;
+    const limit: number | undefined = req.query.limit ? Number(req.query.limit) : undefined;
+    const order: 'asc' | 'desc' | undefined = req.query.order ? (String(req.query.order) as 'asc' | 'desc') : undefined;
+    const sort: string | undefined = req.query.sort ? String(req.query.sort) : undefined;
+
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
@@ -178,21 +178,27 @@ export function getProjectList(): RequestHandler {
 
       const projectService = new ProjectService(connection);
 
-      const projects = await projectService.getProjectList(isUserAdmin, systemUserId, filterFields);
+      const paginationOptions: ApiPaginationOptions | undefined =
+        limit !== undefined && page !== undefined ? { limit, page, sort, order } : undefined;
 
-      const projectListWithStatus = await Promise.all(
-        projects.map(async (project: any) => {
-          const status = await projectService.projectPublishStatus(project.id);
-          return {
-            projectData: project,
-            projectSupplementaryData: { publishStatus: status }
-          };
-        })
-      );
+      const projects = await projectService.getProjectList(isUserAdmin, systemUserId, filterFields, paginationOptions);
+      const projectsTotalCount = await projectService.getProjectCount(isUserAdmin, systemUserId);
+
+      const response = {
+        projects,
+        pagination: {
+          total: projectsTotalCount,
+          per_page: limit,
+          current_page: page ?? 1,
+          last_page: limit ? Math.max(1, Math.ceil(projectsTotalCount / limit)) : 1,
+          sort,
+          order
+        }
+      };
 
       await connection.commit();
 
-      return res.status(200).json(projectListWithStatus);
+      return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'getProjectList', message: 'error', error });
       throw error;
