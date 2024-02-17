@@ -8,7 +8,7 @@ import TextField from '@mui/material/TextField';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useFormikContext } from 'formik';
 import { IGetSampleBlockRecord, IGetSurveyBlock } from 'interfaces/useSurveyApi.interface';
-import { default as React, useContext, useState } from 'react';
+import { default as React, useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { IEditSamplingSiteRequest } from './SampleSiteEditForm';
 
@@ -18,9 +18,16 @@ const SamplingBlockEditForm = () => {
 
   const options = surveyContext.surveyDataLoader?.data?.surveyData?.blocks || [];
 
-  const [selectedBlocks, setSelectedBlocks] = useState<(IGetSampleBlockRecord | IGetSurveyBlock)[]>(
-    values.sampleSite.blocks
-  );
+  const [selectedBlocks, setSelectedBlocks] = useState<(IGetSampleBlockRecord | IGetSurveyBlock)[]>(values.sampleSite.blocks);
+
+  useEffect(() => {
+    if (selectedBlocks.length < 1) {
+      setSelectedBlocks(values.sampleSite.blocks);
+    }
+  }, [values.sampleSite]);
+
+  console.log(selectedBlocks);
+  console.log(values);
 
   interface IBlockCard {
     label: string;
@@ -46,13 +53,13 @@ const SamplingBlockEditForm = () => {
 
   const handleAddBlock = (block: IGetSurveyBlock) => {
     selectedBlocks.push(block);
-    setFieldValue(`blocks[${selectedBlocks.length - 1}]`, block);
+    setFieldValue(`sampleSite.blocks[${selectedBlocks.length - 1}]`, block);
   };
 
   const handleRemoveItem = (block: IGetSurveyBlock | IGetSampleBlockRecord) => {
     const filteredBlocks = selectedBlocks.filter((existing) => existing.survey_block_id !== block.survey_block_id);
     setSelectedBlocks(filteredBlocks);
-    setFieldValue(`blocks`, filteredBlocks);
+    setFieldValue(`sampleSite.blocks`, filteredBlocks);
   };
 
   console.log(searchText);

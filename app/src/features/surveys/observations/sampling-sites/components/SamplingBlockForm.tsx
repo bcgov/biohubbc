@@ -6,15 +6,14 @@ import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
 import TextField from '@mui/material/TextField';
 import { SurveyContext } from 'contexts/surveyContext';
-import { FormikProps, useFormikContext } from 'formik';
+import { useFormikContext } from 'formik';
 import { IGetSampleBlockRecord, IGetSurveyBlock } from 'interfaces/useSurveyApi.interface';
 import { default as React, useContext, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
-import { IEditSamplingSiteRequest } from '../edit/components/SampleSiteEditForm';
 import { ICreateSamplingSiteRequest } from '../SamplingSitePage';
 
 const SamplingBlockForm = () => {
-  const { values, setFieldValue } = useFormikContext<ICreateSamplingSiteRequest>();
+  const { setFieldValue } = useFormikContext<ICreateSamplingSiteRequest>();
   const surveyContext = useContext(SurveyContext);
 
   const options = surveyContext.surveyDataLoader?.data?.surveyData?.blocks || [];
@@ -53,8 +52,6 @@ const SamplingBlockForm = () => {
     setSelectedBlocks(filteredBlocks);
     setFieldValue(`blocks`, filteredBlocks);
   };
-
-  console.log(searchText);
 
   return (
     <>

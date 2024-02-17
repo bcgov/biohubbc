@@ -5,6 +5,7 @@ import { IEditSamplingSiteRequest } from '../edit/components/SampleSiteEditForm'
 import { ICreateSamplingSiteRequest } from '../SamplingSitePage';
 import SamplingBlockForm from './SamplingBlockForm';
 import SamplingStratumForm from './SamplingStratumForm';
+import SamplingBlockEditForm from '../edit/components/SamplingBlockEditForm';
 
 const SamplingSiteGroupingsForm = () => {
   const urlParams: Record<string, string | number | undefined> = useParams();
