@@ -40,24 +40,6 @@ export class SampleBlockRepository extends BaseRepository {
    * @return {*}  {Promise<SampleBlockRecord[]>}
    * @memberof sampleBlockRepository
    */
-  async getSampleBlocksForSurveySampleSiteId(surveySampleSiteId: number): Promise<SampleBlockRecord[]> {
-    const sql = SQL`
-      SELECT *
-      FROM survey_sample_block
-      WHERE survey_sample_site_id = ${surveySampleSiteId}
-    `;
-
-    const response = await this.connection.sql(sql, SampleBlockRecord);
-    return response.rows;
-  }
-
-  /**
-   * Gets all survey Sample Blocks.
-   *
-   * @param {number} surveySampleSiteId
-   * @return {*}  {Promise<SampleBlockRecord[]>}
-   * @memberof sampleBlockRepository
-   */
   async getSampleBlocksForSurveyBlockId(surveyBlockId: number): Promise<SampleBlockRecord[]> {
     const sql = SQL`
       SELECT *
@@ -139,7 +121,7 @@ export class SampleBlockRepository extends BaseRepository {
         *;
       `;
 
-    console.log(sqlStatement)
+    console.log(sqlStatement);
 
     const response = await this.connection.sql(sqlStatement, SampleBlockRecord);
     console.log(response);
@@ -173,7 +155,8 @@ export class SampleBlockRepository extends BaseRepository {
         *;
     `;
 
-    const response = await this.connection.sql(sqlStatement, SampleBlockRecord);
+    // todo: reconcile types
+    const response = await this.connection.sql(sqlStatement); //, SampleBlockRecord)
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete sample block', [
@@ -183,5 +166,28 @@ export class SampleBlockRepository extends BaseRepository {
     }
 
     return response.rows[0];
+  }
+
+  /**
+   * Gets all survey Sample Blocks for specific Sample Site.
+   *
+   * @param {number} surveySampleSiteId
+   * @return {*}  {Promise<SampleBlockRecord[]>}
+   * @memberof sampleBlockRepository
+   */
+  async getSampleBlocksForSurveySampleSiteId(surveySampleSiteId: number): Promise<SampleBlockRecord[]> {
+    const sql = SQL`
+      SELECT *
+      FROM survey_sample_block
+      WHERE survey_sample_site_id = ${surveySampleSiteId};
+    `;
+
+    console.log(sql);
+
+    
+    // todo: reconcile types
+    const response = await this.connection.sql(sql); //, SampleBlockRecord
+    console.log(response)
+    return response.rows;
   }
 }
