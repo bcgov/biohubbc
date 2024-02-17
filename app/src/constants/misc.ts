@@ -17,7 +17,6 @@ export enum BioHubSubmittedStatusType {
 export enum ProjectStatusType {
   COMPLETED = 'Completed',
   ACTIVE = 'Active',
-  DRAFT = 'Draft'
 }
 
 export enum SurveyStatusType {

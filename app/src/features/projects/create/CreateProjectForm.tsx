@@ -37,7 +37,6 @@ export interface ICreateProjectForm {
   codes: IGetAllCodeSetsResponse;
   handleSubmit: (formikData: ICreateProjectRequest) => void;
   formikRef: React.RefObject<FormikProps<ICreateProjectRequest>>;
-  initialValues?: ICreateProjectRequest;
 }
 
 export const initialProjectFieldData: ICreateProjectRequest = {
@@ -75,31 +74,24 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
   const authStateContext = useAuthStateContext();
 
   const getProjectParticipants = (): IGetProjectParticipant[] => {
-    let participants: IGetProjectParticipant[] = [];
+    const participants: IGetProjectParticipant[] = [
+      {
+        system_user_id: authStateContext.simsUserWrapper?.systemUserId,
+        display_name: authStateContext.simsUserWrapper?.displayName,
+        email: authStateContext.simsUserWrapper?.email,
+        agency: authStateContext.simsUserWrapper?.agency,
+        identity_source: authStateContext.simsUserWrapper?.identitySource,
+        project_role_names: [PROJECT_ROLE.COORDINATOR]
+      } as IGetProjectParticipant
+    ];
 
-    // load initial values from draft webform
-    if (props.initialValues?.participants) {
-      participants = props.initialValues?.participants as IGetProjectParticipant[];
-    } else {
-      // this is a fresh form and the logged in user needs to be added as a participant
-      participants = [
-        {
-          system_user_id: authStateContext.simsUserWrapper?.systemUserId,
-          display_name: authStateContext.simsUserWrapper?.displayName,
-          email: authStateContext.simsUserWrapper?.email,
-          agency: authStateContext.simsUserWrapper?.agency,
-          identity_source: authStateContext.simsUserWrapper?.identitySource,
-          project_role_names: [PROJECT_ROLE.COORDINATOR]
-        } as IGetProjectParticipant
-      ];
-    }
     return participants;
   };
 
   return (
     <Formik
       innerRef={formikRef}
-      initialValues={props.initialValues || initialProjectFieldData}
+      initialValues={initialProjectFieldData}
       validationSchema={validationProjectYupSchema}
       validateOnBlur={true}
       validateOnChange={false}
