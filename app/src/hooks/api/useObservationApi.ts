@@ -42,6 +42,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     surveyObservations: IObservationTableRowToSave[]
   ): Promise<IObservationRecord[]> => {
     // TODO: There is currently no way in the UI to add a sub count value
+    // TODO: Business requirement to use sub counts as the primary count value
     const dataToSave = surveyObservations.map((item: IObservationTableRowToSave) => {
       item.standardColumns.subcount = item.standardColumns.count;
       return item;
@@ -88,6 +89,12 @@ const useObservationApi = (axios: AxiosInstance) => {
       `/api/project/${projectId}/survey/${surveyId}/observations${urlParamsString}`
     );
 
+    // TODO: Using sub count value here as observation count may be depreciated
+    // TODO: Business requirement to use sub counts as the primary count value
+    data.surveyObservations = data.surveyObservations.map((item: any) => {
+      item.count = item.subcount;
+      return item;
+    });
     return data;
   };
 
