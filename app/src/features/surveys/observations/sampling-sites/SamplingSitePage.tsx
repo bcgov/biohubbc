@@ -27,6 +27,7 @@ import { Prompt, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
 import SamplingSiteGroupingsForm from './components/SamplingSiteGroupingsForm';
 import SamplingSiteHeader from './SamplingSiteHeader';
+import { IGetSampleBlockRecord, IGetSurveyBlock } from 'interfaces/useSurveyApi.interface';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -52,7 +53,7 @@ export interface ICreateSamplingSiteRequest {
   survey_id: number;
   survey_sample_sites: ISurveySampleSite[]; // extracted list from shape files
   methods: ISurveySampleMethodData[];
-  blocks: IBlockData[];
+  blocks: IGetSurveyBlock[];
   stratums: IStratum[];
 }
 

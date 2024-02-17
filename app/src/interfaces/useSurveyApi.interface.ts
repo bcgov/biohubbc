@@ -398,9 +398,9 @@ export interface IGetSampleLocationRecord {
 }
 
 export interface IGetSampleBlockRecord {
-  survey_sample_block_id: string;
-  survey_sample_site_id: string;
-  survey_block_id: string;
+  survey_sample_block_id: number;
+  survey_sample_site_id: number;
+  survey_block_id: number;
   create_date: string;
   create_user: number;
   update_date: string | null;

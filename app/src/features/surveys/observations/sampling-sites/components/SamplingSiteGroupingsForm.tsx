@@ -1,21 +1,18 @@
 import Box from '@mui/material/Box';
-import { SurveyContext } from 'contexts/surveyContext';
-import { useContext } from 'react';
+import { useFormikContext } from 'formik';
+import { useParams } from 'react-router';
+import { IEditSamplingSiteRequest } from '../edit/components/SampleSiteEditForm';
+import { ICreateSamplingSiteRequest } from '../SamplingSitePage';
 import SamplingBlockForm from './SamplingBlockForm';
 import SamplingStratumForm from './SamplingStratumForm';
 
 const SamplingSiteGroupingsForm = () => {
-  const surveyContext = useContext(SurveyContext);
-
-  const existingBlocks = surveyContext.sampleSiteDataLoader.data?.sampleSites?.map((item) => item.sample_blocks) || [];
-
-  console.log(existingBlocks)
-
-  console.log(existingBlocks);
+  const urlParams: Record<string, string | number | undefined> = useParams();
+  const surveySampleSiteId: number | null = Number(urlParams['survey_sample_site_id']) || null;
 
   return (
     <>
-      <SamplingBlockForm blocks={existingBlocks} />
+      {surveySampleSiteId ? <SamplingBlockEditForm/> : <SamplingBlockForm />}
       <Box mt={5}>
         <SamplingStratumForm />
       </Box>

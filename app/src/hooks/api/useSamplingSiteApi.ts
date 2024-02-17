@@ -1,7 +1,7 @@
 import { AxiosInstance } from 'axios';
 import { IEditSamplingSiteRequest } from 'features/surveys/observations/sampling-sites/edit/components/SampleSiteEditForm';
 import { ICreateSamplingSiteRequest } from 'features/surveys/observations/sampling-sites/SamplingSitePage';
-import { IGetSampleSiteResponse } from 'interfaces/useSurveyApi.interface';
+import { IGetSampleSiteByIdResponse, IGetSampleSiteResponse } from 'interfaces/useSurveyApi.interface';
 
 /**
  * Returns a set of supported api methods for working with search functionality

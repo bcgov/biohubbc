@@ -66,6 +66,26 @@ export class SampleLocationService extends DBService {
   }
 
   /**
+   * Gets all survey Sample Locations.
+   *
+   * @param {number} sampleLocationId
+   * @return {*}  {Promise<SampleLocationRecord[]>}
+   * @memberof SampleLocationService
+   */
+  async getSampleLocationById(surveyId: number, sampleLocationId: number): Promise<SampleLocationRecord> {
+    const result = await this.sampleLocationRepository.getSampleLocationsById(surveyId, sampleLocationId);
+
+    console.log(result);
+
+    // todo: could do this in sql
+
+    if (!result.sample_blocks) {
+      result.sample_blocks = [];
+    }
+    return result;
+  }
+
+  /**
    * Deletes a survey Sample Location.
    *
    * @param {number} surveySampleSiteId

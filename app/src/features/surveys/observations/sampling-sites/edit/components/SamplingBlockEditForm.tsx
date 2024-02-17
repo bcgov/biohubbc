@@ -6,20 +6,21 @@ import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
 import TextField from '@mui/material/TextField';
 import { SurveyContext } from 'contexts/surveyContext';
-import { FormikProps, useFormikContext } from 'formik';
+import { useFormikContext } from 'formik';
 import { IGetSampleBlockRecord, IGetSurveyBlock } from 'interfaces/useSurveyApi.interface';
 import { default as React, useContext, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
-import { IEditSamplingSiteRequest } from '../edit/components/SampleSiteEditForm';
-import { ICreateSamplingSiteRequest } from '../SamplingSitePage';
+import { IEditSamplingSiteRequest } from './SampleSiteEditForm';
 
-const SamplingBlockForm = () => {
-  const { values, setFieldValue } = useFormikContext<ICreateSamplingSiteRequest>();
+const SamplingBlockEditForm = () => {
+  const { values, setFieldValue } = useFormikContext<IEditSamplingSiteRequest>();
   const surveyContext = useContext(SurveyContext);
 
   const options = surveyContext.surveyDataLoader?.data?.surveyData?.blocks || [];
 
-  const [selectedBlocks, setSelectedBlocks] = useState<IGetSurveyBlock[]>([]);
+  const [selectedBlocks, setSelectedBlocks] = useState<(IGetSampleBlockRecord | IGetSurveyBlock)[]>(
+    values.sampleSite.blocks
+  );
 
   interface IBlockCard {
     label: string;
@@ -75,7 +76,6 @@ const SamplingBlockForm = () => {
         noOptionsText="No records found"
         options={options}
         filterOptions={(options, state) => {
-          console.log(state);
           const searchFilter = createFilterOptions<IGetSurveyBlock>({ ignoreCase: true });
           const unselectedOptions = options.filter((item) =>
             selectedBlocks.every((existing) => existing.survey_block_id !== item.survey_block_id)
@@ -89,7 +89,6 @@ const SamplingBlockForm = () => {
         clearOnBlur={false}
         value={null}
         onInputChange={(_, value, reason) => {
-          console.log(reason, value, _);
           if (reason === 'reset') {
             setSearchText('');
           } else {
@@ -103,7 +102,6 @@ const SamplingBlockForm = () => {
           }
         }}
         onClose={(value, reason) => {
-          console.log(value, reason);
           setSearchText('');
         }}
         renderInput={(params) => (
@@ -172,4 +170,4 @@ const SamplingBlockForm = () => {
   );
 };
 
-export default SamplingBlockForm;
+export default SamplingBlockEditForm;
