@@ -131,11 +131,92 @@ export class SampleLocationRepository extends BaseRepository {
       .where('sss.survey_id', surveyId)
       .orderBy('sss.survey_sample_site_id', 'asc');
 
-    const response = await this.connection.knex(queryBuilder); //, SampleLocationRecord);
+    const response = await this.connection.knex(queryBuilder, SampleLocationRecord);
 
     console.log(response);
 
     return response.rows;
+  }
+
+  /**
+   * Gets specific survey Sample Locations by id
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<SampleLocationRecord[]>}
+   * @memberof SampleLocationRepository
+   */
+  async getSampleLocationsById(surveyId: number, sampleLocationId: number): Promise<SampleLocationRecord> {
+    const knex = getKnex();
+    const queryBuilder = knex
+      .queryBuilder()
+      .with('json_sample_period', (qb) => {
+        // aggregate all sample periods based on method id
+        qb.select('survey_sample_method_id', knex.raw('json_agg(ssp.*) as sample_periods'))
+          .from({ ssp: 'survey_sample_period' })
+          .groupBy('survey_sample_method_id');
+      })
+      .with('json_sample_methods', (qb) => {
+        // join aggregated samples to methods
+        // aggregate methods base on site id
+        qb.select(
+          'survey_sample_site_id',
+          knex.raw(`
+        json_agg(json_build_object(
+          'sample_periods', jsp.sample_periods,
+          'survey_sample_method_id', ssm.survey_sample_method_id,
+          'method_lookup_id', ssm.method_lookup_id,
+          'description', ssm.description,
+          'create_date', ssm.create_date,
+          'create_user', ssm.create_user,
+          'update_date', ssm.update_date,
+          'update_user', ssm.update_user,
+          'survey_sample_site_id', ssm.survey_sample_site_id,
+          'revision_count', ssm.revision_count
+        )) as sample_methods`)
+        )
+          .from({ ssm: 'survey_sample_method' })
+          .leftJoin('json_sample_period as jsp', 'jsp.survey_sample_method_id', 'ssm.survey_sample_method_id')
+          .groupBy('ssm.survey_sample_site_id');
+      })
+      .with('survey_block_lookup', (qb) => {
+        qb.select('survey_block_id', 'name', 'description', knex.raw('json_agg(sb.*) as block'))
+          .from({ sb: 'survey_block' })
+          .groupBy('sb.survey_block_id', 'name', 'description');
+      })
+      .with('json_sample_blocks', (qb) => {
+        // aggregate all sample blocks based on site id
+        qb.select(
+          'survey_sample_site_id',
+          knex.raw(
+            `json_agg(json_build_object(
+            'survey_sample_block_id', ssb.survey_sample_block_id,
+            'name', sbl.name,
+            'description', sbl.description,
+            'survey_block_id', ssb.survey_block_id,
+            'create_date', ssb.create_date,
+            'create_user', ssb.create_user,
+            'update_date', ssb.update_date,
+            'update_user', ssb.update_user,
+            'survey_sample_site_id', ssb.survey_sample_site_id,
+            'revision_count', ssb.revision_count
+            )) as sample_blocks`
+          )
+        )
+          .from({ ssb: 'survey_sample_block' })
+          .leftJoin('survey_block_lookup as sbl', 'sbl.survey_block_id', 'ssb.survey_block_id')
+          .groupBy('ssb.survey_sample_site_id');
+      })
+      // join aggregated methods and blocks to sampling sites
+      .select('*')
+      .from({ sss: 'survey_sample_site' })
+      .leftJoin('json_sample_blocks as jsb', 'jsb.survey_sample_site_id', 'sss.survey_sample_site_id')
+      .leftJoin('json_sample_methods as jsm', 'jsm.survey_sample_site_id', 'sss.survey_sample_site_id')
+      .where('sss.survey_id', surveyId)
+      .where('sss.survey_sample_site_id', sampleLocationId);
+
+    const response = await this.connection.knex(queryBuilder, SampleLocationRecord);
+    console.log(response);
+    return response[0];
   }
 
   /**
