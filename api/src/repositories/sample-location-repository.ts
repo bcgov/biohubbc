@@ -14,7 +14,7 @@ export const SampleLocationRecord = z.object({
   name: z.string(),
   description: z.string().nullable(),
   geojson: z.any(),
-  geography: z.any(),
+  geometry: z.any(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),
@@ -119,13 +119,13 @@ export class SampleLocationRepository extends BaseRepository {
         name=${sample.name},
         description=${sample.description},
         geojson=${sample.geojson},
-        geography=public.geography(
-          public.ST_Force2D(
+        geometry=public.ST_Force2D(
+          public.ST_Transform(
             public.ST_SetSRID(
       `;
     const geometryCollectionSQL = generateGeometryCollectionSQL(sample.geojson);
     sql.append(geometryCollectionSQL);
-    sql.append(SQL`, 4326)))`);
+    sql.append(SQL`, 4326)), 3005)`);
     sql.append(SQL`
       WHERE
         survey_sample_site_id = ${sample.survey_sample_site_id}
@@ -160,7 +160,7 @@ export class SampleLocationRepository extends BaseRepository {
       name,
       description,
       geojson,
-      geography
+      geometry
     ) VALUES (
       ${sample.survey_id},
       ${sample.name},
@@ -170,15 +170,15 @@ export class SampleLocationRepository extends BaseRepository {
     const geometryCollectionSQL = generateGeometryCollectionSQL(sample.geojson);
 
     sqlStatement.append(SQL`
-      public.geography(
-        public.ST_Force2D(
+      public.ST_Force2D(
+        public.ST_Transform(
           public.ST_SetSRID(
     `);
 
     sqlStatement.append(geometryCollectionSQL);
 
     sqlStatement.append(SQL`
-      , 4326)))
+      , 4326)), 3005)
     `);
 
     sqlStatement.append(SQL`

@@ -288,7 +288,7 @@ const insertSurveyLocationData = (surveyId: number) => `
       survey_id,
       name,
       description,
-      geography,
+      geometry,
       geojson
     )
   VALUES (
@@ -484,7 +484,7 @@ const insertSurveySamplingSiteData = (surveyId: number) =>
     name,
     description,
     geojson,
-    geography
+    geometry
   ) VALUES (
     ${surveyId},
     'Seed Sampling Site',
@@ -505,27 +505,27 @@ const insertSurveySamplingSiteData = (surveyId: number) =>
         ]
       },
       "properties": {}
-    }
-  ',
-    public.geography(
-      public.ST_Force2D(
+    }',
+    public.ST_Force2D(
+      public.ST_Transform(
         public.ST_SetSRID(
-          public.ST_Force2D(public.ST_GeomFromGeoJSON('
+          public.ST_GeomFromGeoJSON('
             {
-                "type": "Polygon",
-                "coordinates": [
-                  [
-                    [-121,    51],
-                    [-121,    51.7],
-                    [-120.5,  51.7],
-                    [-120.5,  51],
-                    [-121,    51]
-                  ]
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [-121,    51],
+                  [-121,    51.7],
+                  [-120.5,  51.7],
+                  [-120.5,  51],
+                  [-121,    51]
                 ]
-              }
-          ')
-          ), 4326
-        )
+              ]
+            }
+          '),
+          4326
+        ), 
+        3005
       )
     )
   );`;
@@ -659,7 +659,7 @@ const insertProjectData = () => `
       location_description,
       start_date,
       end_date,
-      geography,
+      geometry,
       geojson
     )
   VALUES (

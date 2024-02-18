@@ -10,8 +10,7 @@ export const SurveyLocationRecord = z.object({
   survey_location_id: z.number(),
   name: z.string(),
   description: z.string(),
-  geometry: z.record(z.any()).nullable(),
-  geography: z.string(),
+  geometry: z.string(),
   geojson: z.array(GeoJSONFeatureZodSchema),
   revision_count: z.number()
 });
@@ -32,16 +31,17 @@ export class SurveyLocationRepository extends BaseRepository {
         name, 
         description,         
         geojson,
-        geography
+        geometry
       ) 
       VALUES (
         ${surveyId},
         ${data.name},
         ${data.description},
         ${JSON.stringify(data.geojson)},
-        public.geography(
-          public.ST_Force2D(
-            public.ST_SetSRID(`.append(generateGeometryCollectionSQL(data.geojson)).append(`, 4326)
+        public.ST_Force2D(
+          public.ST_Transform(
+            public.ST_SetSRID(`.append(generateGeometryCollectionSQL(data.geojson)).append(`, 4326), 
+            3005
           )
         )
       );`);
@@ -62,11 +62,12 @@ export class SurveyLocationRepository extends BaseRepository {
         name = ${data.name},
         description = ${data.description},
         geojson = ${JSON.stringify(data.geojson)},
-        geography = public.geography(
-                      public.ST_Force2D(
-                        public.ST_SetSRID(`.append(generateGeometryCollectionSQL(data.geojson)).append(`, 4326)
-                      )
-                    )
+        geometry = public.ST_Force2D(
+                     public.ST_Transform(
+                       public.ST_SetSRID(`.append(generateGeometryCollectionSQL(data.geojson)).append(`, 4326),
+                       3005
+                     )
+                   )
       WHERE 
         survey_location_id = ${data.survey_location_id};
     `);

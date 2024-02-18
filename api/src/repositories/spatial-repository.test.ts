@@ -178,7 +178,7 @@ describe('SpatialRepository', () => {
       expect(response.submission_spatial_component_id).to.equal(1);
     });
 
-    it('should succeed with valid data and append geography to sql statement', async () => {
+    it('should succeed with valid data and append geometry to sql statement', async () => {
       const mockQueryResponse = ({ rowCount: 1, rows: [{ submission_spatial_component_id: 1 }] } as any) as Promise<
         QueryResult<any>
       >;

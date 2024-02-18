@@ -102,8 +102,7 @@ export interface IGetSurveyLocation {
   survey_location_id: number;
   name: string;
   description: string;
-  geometry: Feature[];
-  geography: string | null;
+  geometry: string | null;
   geojson: Feature[];
   revision_count: number;
 }
@@ -369,7 +368,7 @@ export interface IGetSampleLocationRecord {
   name: string;
   description: string;
   geojson: Feature;
-  geography: string;
+  geometry: string;
   create_date: string;
   create_user: number;
   update_date: string | null;

@@ -62,7 +62,6 @@ describe('survey/{surveyId}/view', () => {
                 name: 'location name',
                 description: 'location description',
                 geometry: '',
-                geography: '',
                 geojson: [],
                 revision_count: 0
               }
@@ -128,8 +127,7 @@ describe('survey/{surveyId}/view', () => {
                 survey_location_id: 1,
                 name: 'location name',
                 description: 'location description',
-                geometry: null,
-                geography: '',
+                geometry: '',
                 geojson: [],
                 revision_count: 0
               }

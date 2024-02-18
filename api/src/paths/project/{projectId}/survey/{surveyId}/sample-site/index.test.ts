@@ -74,7 +74,7 @@ describe('getSurveySampleLocationRecords', () => {
       name: 'name',
       description: 'description',
       geojson: 'geojson',
-      geography: 'geography',
+      geometry: 'geometry',
       create_date: 'create_date',
       create_user: 1,
       update_date: 'update_date',

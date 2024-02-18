@@ -115,14 +115,14 @@ export class OccurrenceRepository extends BaseRepository {
             'ssc.submission_spatial_component_id',
             'ssc.occurrence_submission_id',
             'ssc.spatial_component',
-            'ssc.geography'
+            'ssc.geometry'
           )
           .from('submission_spatial_component as ssc')
-          .leftJoin('distinct_geographic_points as p', 'p.geography', 'ssc.geography')
+          .leftJoin('distinct_geographic_points as p', 'p.geometry', 'ssc.geometry')
           .groupBy('ssc.submission_spatial_component_id')
           .groupBy('ssc.occurrence_submission_id')
           .groupBy('ssc.spatial_component')
-          .groupBy('ssc.geography');
+          .groupBy('ssc.geometry');
 
         qb1.where((qb2) => {
           qb2.whereRaw(
@@ -136,7 +136,7 @@ export class OccurrenceRepository extends BaseRepository {
             // Select the non-secure spatial component from the search results
             'submission_spatial_component_id',
             'occurrence_submission_id',
-            'geography',
+            'geometry',
             knex.raw(
               `jsonb_build_object( 'submission_spatial_component_id', wfsc.submission_spatial_component_id, 'associated_taxa', wfsc.associated_taxa, 'vernacular_name', wfsc.vernacular_name) taxa_data_object`
             ),
@@ -148,13 +148,13 @@ export class OccurrenceRepository extends BaseRepository {
         knex.raw('array_agg(submission_spatial_component_id) as submission_spatial_component_ids'),
         knex.raw('array_agg(taxa_data_object) as taxa_data'),
         knex.raw('(array_agg(spatial_component))[1] as spatial_component'),
-        'geography'
+        'geometry'
       )
       .from('with_coalesced_spatial_components')
       // Filter out secure spatial components that have no spatial representation
       // The user is not allowed to see any aspect of these particular spatial components
       .whereRaw("spatial_component->'spatial_data' != '{}'")
-      .groupBy('geography');
+      .groupBy('geometry');
 
     const response = await this.connection.knex<ISubmissionSpatialSearchResponseRow>(queryBuilder);
 
@@ -164,9 +164,9 @@ export class OccurrenceRepository extends BaseRepository {
   _withDistinctGeographicPoints(qb1: Knex.QueryBuilder) {
     qb1
       .distinct()
-      .select('geography')
+      .select('geometry')
       .from('submission_spatial_component')
-      .whereRaw(`geometrytype(geography) = 'POINT'`)
+      .whereRaw(`geometrytype(geometry) = 'POINT'`)
       .whereRaw(`jsonb_path_exists(spatial_component,'$.features[*] \\? (@.properties.type == "Occurrence")')`);
   }
 

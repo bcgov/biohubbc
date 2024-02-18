@@ -300,7 +300,7 @@ export class ObservationRepository extends BaseRepository {
     const knex = getKnex();
 
     const query = knex
-      .select('survey_observation_id', knex.raw('ST_AsGeoJSON(ST_MakePoint(longitude, latitude)) as geometry'))
+      .select('survey_observation_id', knex.raw('ST_AsGeoJSON(ST_MakePoint(longitude, latitude), 6) as geometry'))
       .from('survey_observation')
       .where('survey_id', surveyId);
 

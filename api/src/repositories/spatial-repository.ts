@@ -27,8 +27,7 @@ export interface ISubmissionSpatialComponent {
   submission_spatial_component_ids: number[];
   occurrence_submission_id: number;
   spatial_component: FeatureCollection;
-  geometry: null;
-  geography: string;
+  geometry: string;
 }
 
 export class SpatialRepository extends BaseRepository {
@@ -124,7 +123,7 @@ export class SpatialRepository extends BaseRepository {
       INSERT INTO submission_spatial_component (
         occurrence_submission_id,
         spatial_component,
-        geography
+        geometry
       ) VALUES (
         ${submissionId},
         ${JSON.stringify(transformedData)}
@@ -134,15 +133,15 @@ export class SpatialRepository extends BaseRepository {
       const geoCollection = generateGeometryCollectionSQL(transformedData.features);
 
       sqlStatement.append(SQL`
-        ,public.geography(
-          public.ST_Force2D(
+        ,public.ST_Force2D(
+          public.ST_Transform(
             public.ST_SetSRID(
       `);
 
       sqlStatement.append(geoCollection);
 
       sqlStatement.append(SQL`
-        , 4326)))
+        , 4326)), 3005)
       `);
     } else {
       sqlStatement.append(SQL`

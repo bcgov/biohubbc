@@ -79,7 +79,6 @@ GET.apiDoc = {
                     'name',
                     'description',
                     'geojson',
-                    'geography',
                     'create_date',
                     'create_user',
                     'update_date',
@@ -103,9 +102,6 @@ GET.apiDoc = {
                     },
                     geojson: {
                       ...(GeoJSONFeature as object)
-                    },
-                    geography: {
-                      type: 'string'
                     },
                     create_date: {
                       type: 'string'

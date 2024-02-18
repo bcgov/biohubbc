@@ -14,7 +14,7 @@ export const IRegion = z.object({
   feature_name: z.string(),
   object_id: z.number(),
   geojson: z.any(),
-  geography: z.any()
+  geometry: z.any()
 });
 
 export type IRegion = z.infer<typeof IRegion>;

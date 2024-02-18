@@ -296,15 +296,7 @@ GET.apiDoc = {
                     type: 'array',
                     items: {
                       type: 'object',
-                      required: [
-                        'survey_location_id',
-                        'name',
-                        'description',
-                        'geometry',
-                        'geography',
-                        'geojson',
-                        'revision_count'
-                      ],
+                      required: ['survey_location_id', 'name', 'description', 'geometry', 'geojson', 'revision_count'],
                       properties: {
                         survey_location_id: {
                           type: 'integer',
@@ -321,9 +313,6 @@ GET.apiDoc = {
                         geometry: {
                           type: 'string',
                           nullable: true
-                        },
-                        geography: {
-                          type: 'string'
                         },
                         geojson: {
                           type: 'array',
