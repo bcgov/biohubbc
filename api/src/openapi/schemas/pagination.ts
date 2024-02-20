@@ -12,7 +12,7 @@ export const paginationRequestQueryParamSchema: any[] = [
     schema: {
       type: 'integer',
       minimum: 1,
-      description: 'The current page number being fetched'
+      description: 'The current page number to be fetched'
     }
   },
   {
@@ -23,20 +23,27 @@ export const paginationRequestQueryParamSchema: any[] = [
       type: 'integer',
       minimum: 1,
       maximum: 100,
-      description: 'The number of records per page'
+      description: 'The number of records to show per page'
     }
   },
   {
     in: 'query',
     name: 'sort',
     required: false,
-    description: 'The column being sorted on'
+    description: `The column to be sorted on, e.g. 'name'`,
+    schema: {
+      type: 'string'
+    }
   },
   {
     in: 'query',
     name: 'order',
     required: false,
-    description: 'The order of the sort, i.e. asc or desc'
+    description: 'The order of the sort, i.e. asc or desc',
+    schema: {
+      type: 'string',
+      enum: ['asc', 'desc']
+    }
   }
 ];
 
@@ -50,7 +57,7 @@ export const paginationResponseSchema: SchemaObject = {
   properties: {
     total: {
       type: 'integer',
-      description: 'The total number of observation records belonging to the survey'
+      description: 'The total number of records belonging to the collection'
     },
     per_page: {
       type: 'integer',
