@@ -17,7 +17,7 @@ import * as observationRecords from './index';
 
 chai.use(sinonChai);
 
-describe.only('insertUpdateSurveyObservations', () => {
+describe('insertUpdateSurveyObservations', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -53,14 +53,20 @@ describe.only('insertUpdateSurveyObservations', () => {
             body: {
               surveyObservations: [
                 {
-                  survey_observation_id: 1,
-                  itis_tsn: 1234,
-                  itis_scientific_name: 'scientific name',
-                  count: 99,
-                  latitude: 48.103322,
-                  longitude: -122.798892,
-                  observation_date: '1970-01-01',
-                  observation_time: '00:00:00'
+                  standardColumns: {
+                    itis_tsn: 1234,
+                    itis_scientific_name: 'scientific name',
+                    count: 99,
+                    latitude: 48.103322,
+                    longitude: -122.798892,
+                    observation_date: '1970-01-01',
+                    observation_time: '00:00:00',
+                    subcount: 1,
+                    survey_sample_period_id: 1,
+                    survey_sample_method_id: 1,
+                    survey_sample_site_id: 1
+                  },
+                  measurementColumns: []
                 }
               ]
             }
@@ -83,13 +89,20 @@ describe.only('insertUpdateSurveyObservations', () => {
             body: {
               surveyObservations: [
                 {
-                  itis_tsn: 1234,
-                  itis_scientific_name: 'scientific name',
-                  count: 99,
-                  latitude: 48.103322,
-                  longitude: -122.798892,
-                  observation_date: '1970-01-01',
-                  observation_time: '00:00:00'
+                  standardColumns: {
+                    itis_tsn: 1234,
+                    itis_scientific_name: 'scientific name',
+                    count: 99,
+                    latitude: 48.103322,
+                    longitude: -122.798892,
+                    observation_date: '1970-01-01',
+                    observation_time: '00:00:00',
+                    subcount: 1,
+                    survey_sample_period_id: 1,
+                    survey_sample_method_id: 1,
+                    survey_sample_site_id: 1
+                  },
+                  measurementColumns: []
                 }
               ]
             }
@@ -113,13 +126,20 @@ describe.only('insertUpdateSurveyObservations', () => {
             body: {
               surveyObservations: [
                 {
-                  itis_tsn: 1234,
-                  itis_scientific_name: 'scientific name',
-                  count: 99,
-                  latitude: 48.103322,
-                  longitude: -122.798892,
-                  observation_date: '1970-01-01',
-                  observation_time: '00:00:00'
+                  standardColumns: {
+                    itis_tsn: 1234,
+                    itis_scientific_name: 'scientific name',
+                    count: 99,
+                    latitude: 48.103322,
+                    longitude: -122.798892,
+                    observation_date: '1970-01-01',
+                    observation_time: '00:00:00',
+                    subcount: 1,
+                    survey_sample_period_id: 1,
+                    survey_sample_method_id: 1,
+                    survey_sample_site_id: 1
+                  },
+                  measurementColumns: []
                 }
               ]
             }
@@ -532,14 +552,20 @@ describe.only('insertUpdateSurveyObservations', () => {
     mockReq.body = {
       surveyObservations: [
         {
-          survey_observation_id: 1,
-          itis_tsn: 1234,
-          itis_scientific_name: 'scientific name',
-          count: 99,
-          latitude: 48.103322,
-          longitude: -122.798892,
-          observation_date: '1970-01-01',
-          observation_time: '00:00:00'
+          standardColumns: {
+            itis_tsn: 1234,
+            itis_scientific_name: 'scientific name',
+            count: 99,
+            latitude: 48.103322,
+            longitude: -122.798892,
+            observation_date: '1970-01-01',
+            observation_time: '00:00:00',
+            subcount: 1,
+            survey_sample_period_id: 1,
+            survey_sample_method_id: 1,
+            survey_sample_site_id: 1
+          },
+          measurementColumns: []
         }
       ]
     };
@@ -618,12 +644,11 @@ describe('getSurveyObservations', () => {
                   observation_time: '00:00:00'
                 }
               ],
-              supplementaryObservationData: { observationCount: 1 }
+              supplementaryObservationData: { observationCount: 1, measurementColumns: [] }
             }
           };
 
           const response = requestValidator.validateRequest(request);
-
           expect(response.status).to.equal(400);
           expect(response.errors.length).to.equal(1);
           expect(response.errors[0].path).to.equal('surveyId');
