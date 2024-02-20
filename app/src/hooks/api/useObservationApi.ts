@@ -47,7 +47,7 @@ const useObservationApi = (axios: AxiosInstance) => {
       item.standardColumns.subcount = item.standardColumns.count;
       return item;
     });
-    console.log(dataToSave);
+
     // TODO `IObservationRecord[]` might not be the actual return value once measurements are being returned
     const { data } = await axios.put<IGetSurveyObservationsResponse>(
       `/api/project/${projectId}/survey/${surveyId}/observations`,

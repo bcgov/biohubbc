@@ -1,12 +1,12 @@
 import { cyan, grey } from '@mui/material/colors';
-import { DataGrid, GridColDef, GridRowModesModel } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridColumnVisibilityModel, GridRowModesModel } from '@mui/x-data-grid';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { getSurveySessionStorageKey, SIMS_OBSERVATIONS_HIDDEN_COLUMNS } from 'constants/session-storage';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useObservationsTableContext } from 'hooks/useContext';
 import { has } from 'lodash-es';
-import { useContext } from 'react';
+import { useCallback, useContext } from 'react';
 
 export interface ISpeciesObservationTableProps {
   /**
@@ -16,15 +16,6 @@ export interface ISpeciesObservationTableProps {
    * @memberof ISpeciesObservationTableProps
    */
   isLoading?: boolean;
-  /**
-   * The row modes model.
-   *
-   * Defines which rows are in edit mode.
-   *
-   * @type {GridRowModesModel}
-   * @memberof ISpeciesObservationTableProps
-   */
-  rowModesModel: GridRowModesModel;
   /**
    * The column definitions of the columns to render in the table.
    *
@@ -39,6 +30,67 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
 
   const observationsTableContext = useObservationsTableContext();
 
+  const onColumnVisibilityModelChange = useCallback(
+    (model: GridColumnVisibilityModel) => {
+      // Store current visibility model in session storage
+      sessionStorage.setItem(
+        getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_HIDDEN_COLUMNS),
+        JSON.stringify(model)
+      );
+
+      // Update the column visibility model in the context
+      observationsTableContext.setColumnVisibilityModel(model);
+    },
+    [observationsTableContext, surveyId]
+  );
+
+  const processRowUpdate = useCallback(
+    (newRow: IObservationTableRow) => {
+      if (observationsTableContext.savedRows.find((row) => row.id === newRow.id)) {
+        // Update savedRows
+        observationsTableContext.setSavedRows((currentSavedRows) =>
+          currentSavedRows.map((row) => (row.id === newRow.id ? newRow : row))
+        );
+      } else {
+        // Update stagedRows
+        observationsTableContext.setStagedRows((currentStagedRows) =>
+          currentStagedRows.map((row) => (row.id === newRow.id ? newRow : row))
+        );
+      }
+
+      return newRow;
+    },
+    [observationsTableContext]
+  );
+
+  const onRowModesModelChange = useCallback(
+    (model: GridRowModesModel) => {
+      // Update the row modes model in the context
+      observationsTableContext.setRowModesModel((currentModel) => {
+        if (observationsTableContext._isStoppingEdit.current) {
+          // If in the process of stopping edit, only 'view' models should be added
+          // Why? The data-grid 'onRowModesModelChange' callback is designed to work for a single row at a time (the
+          // counterpart to editing a row, which is started on a row-by-row basis by double-clicking a row). Because we
+          // are doing one bulk save action, we trigger the transition from view mode to edit mode for all rows at once.
+          // The 'onRowModesModelChange' callback is fired once for each row in the table, and we need to ensure that
+          // only 'view' models are added to the rowModesModel during this transition. If you don't, then each trigger
+          // of this function will receive  slightly outdated copy of the rowModesModel, and they will overwrite
+          // one-another, resulting in at least some rows being left in 'edit' mode.
+          const onlyViewModels: GridRowModesModel = {};
+          for (const [id, modelItem] of Object.entries(model)) {
+            if (modelItem.mode === 'view') {
+              onlyViewModels[id] = modelItem;
+            }
+          }
+          return { ...currentModel, ...onlyViewModels };
+        }
+
+        return { ...currentModel, ...model };
+      });
+    },
+    [observationsTableContext]
+  );
+
   return (
     <>
       {props.isLoading && <SkeletonTable />}
@@ -50,39 +102,13 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         columns={props.columns}
         // Column visibility
         columnVisibilityModel={observationsTableContext.columnVisibilityModel}
-        onColumnVisibilityModelChange={(model) => {
-          // Store current visibility model in session storage
-          sessionStorage.setItem(
-            getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_HIDDEN_COLUMNS),
-            JSON.stringify(model)
-          );
-
-          // Update the column visibility model in the context
-          observationsTableContext.setColumnVisibilityModel(model);
-        }}
+        onColumnVisibilityModelChange={onColumnVisibilityModelChange}
         // Rows
         rows={[...observationsTableContext.savedRows, ...observationsTableContext.stagedRows]}
-        processRowUpdate={(newRow) => {
-          if (observationsTableContext.savedRows.find((row) => row.id === newRow.id)) {
-            // Update savedRows
-            observationsTableContext.setSavedRows((currentSavedRows) =>
-              currentSavedRows.map((row) => (row.id === newRow.id ? newRow : row))
-            );
-          } else {
-            // Update stagedRows
-            observationsTableContext.setStagedRows((currentStagedRows) =>
-              currentStagedRows.map((row) => (row.id === newRow.id ? newRow : row))
-            );
-          }
-
-          return newRow;
-        }}
+        processRowUpdate={processRowUpdate}
         // Row modes
-        rowModesModel={props.rowModesModel}
-        onRowModesModelChange={(model) => {
-          // Update the row modes model in the context
-          observationsTableContext.setRowModesModel(model);
-        }}
+        rowModesModel={observationsTableContext.rowModesModel}
+        onRowModesModelChange={onRowModesModelChange}
         // Pagination
         paginationMode="server"
         rowCount={observationsTableContext.observationCount}
