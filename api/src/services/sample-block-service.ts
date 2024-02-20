@@ -116,32 +116,32 @@ export class SampleBlockService extends DBService {
     }
   }
 
-  /**
-   * updates a survey Sample block.
-   *
-   * @param {InsertSampleBlockRecord} sampleBlock
-   * @return {*}  {Promise<SampleBlockRecord>}
-   * @memberof SampleBlockService
-   */
-  async updateSampleBlock(sampleBlock: UpdateSampleBlockRecord): Promise<SampleBlockRecord> {
-    // const samplePeriodService = new SamplePeriodService(this.connection);
-    const sampleBlockService = new SampleBlockService(this.connection);
+  // /**
+  //  * updates a survey Sample block.
+  //  *
+  //  * @param {InsertSampleBlockRecord} sampleBlock
+  //  * @return {*}  {Promise<SampleBlockRecord>}
+  //  * @memberof SampleBlockService
+  //  */
+  // async updateSampleBlock(sampleBlock: UpdateSampleBlockRecord): Promise<SampleBlockRecord> {
+  //   // const samplePeriodService = new SamplePeriodService(this.connection);
+  //   const sampleBlockService = new SampleBlockService(this.connection);
 
-    // // Check for any sample periods to delete
-    // await samplePeriodService.deleteSamplePeriodsNotInArray(sampleBlock.survey_sample_block_id, sampleBlock.periods);
+  //   // // Check for any sample periods to delete
+  //   // await samplePeriodService.deleteSamplePeriodsNotInArray(sampleBlock.survey_sample_block_id, sampleBlock.periods);
 
-    // Loop through all new sample periods
-    // For each sample period, check if it exists in the existing list
-    // If it does, update it, otherwise create it
+  //   // Loop through all new sample periods
+  //   // For each sample period, check if it exists in the existing list
+  //   // If it does, update it, otherwise create it
 
-    if (sampleBlock.survey_sample_block_id) {
-      const result = await this.sampleBlockRepository.updateSampleBlock(sampleBlock);
-      console.log(result);
-      return result;
-    } else {
-      const result = await sampleBlockService.insertSampleBlock(sampleBlock);
-      console.log(result);
-      return result;
-    }
-  }
+  //   if (sampleBlock.survey_sample_block_id) {
+  //     const result = await this.sampleBlockRepository.updateSampleBlock(sampleBlock);
+ 
+  //     return result;
+  //   } else {
+  //     const result = await sampleBlockService.insertSampleBlock(sampleBlock);
+
+  //     return result;
+  //   }
+  // }
 }

@@ -157,40 +157,37 @@ PUT.apiDoc = {
   }
 };
 
-// todo: API docs for getSurveySampleSiteByIdRecord
+// // todo: API docs for getSurveySampleSiteByIdRecord
 
-export function getSurveySampleSiteRecord(): RequestHandler {
-  return async (req, res) => {
-    const surveyId = Number(req.params.surveyId);
-    const surveySampleSiteId = Number(req.params.surveySampleSiteId);
+// export function getSurveySampleSiteRecord(): RequestHandler {
+//   return async (req, res) => {
+//     const surveySampleSiteId = Number(req.params.surveySampleSiteId);
 
-    console.log(req.params)
+//     if (!surveySampleSiteId) {
+//       throw new HTTP400('Missing required param `surveySampleSiteId`');
+//     }
 
-    if (!surveySampleSiteId) {
-      throw new HTTP400('Missing required param `surveySampleSiteId`');
-    }
+//     const connection = getDBConnection(req['keycloak_token']);
 
-    const connection = getDBConnection(req['keycloak_token']);
+//     try {
+//       await connection.open();
 
-    try {
-      await connection.open();
+//       const sampleLocationService = new SampleLocationService(connection);
 
-      const sampleLocationService = new SampleLocationService(connection);
+//       await sampleLocationService.getSampleLocationById(surveySampleSiteId);
 
-      await sampleLocationService.getSampleLocationById(surveyId, surveySampleSiteId);
+//       await connection.commit();
 
-      await connection.commit();
-
-      return res.status(204).send();
-    } catch (error) {
-      defaultLog.error({ label: 'getSurveySampleSiteRecord', message: 'error', error });
-      await connection.rollback();
-      throw error;
-    } finally {
-      connection.release();
-    }
-  };
-}
+//       return res.status(204).send();
+//     } catch (error) {
+//       defaultLog.error({ label: 'getSurveySampleSiteRecord', message: 'error', error });
+//       await connection.rollback();
+//       throw error;
+//     } finally {
+//       connection.release();
+//     }
+//   };
+// }
 
 export function updateSurveySampleSite(): RequestHandler {
   return async (req, res) => {

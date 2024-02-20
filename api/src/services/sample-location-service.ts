@@ -7,8 +7,8 @@ import {
 } from '../repositories/sample-location-repository';
 import { InsertSampleMethodRecord } from '../repositories/sample-method-repository';
 import { DBService } from './db-service';
-import { SampleMethodService } from './sample-method-service';
 import { SampleBlockService } from './sample-block-service';
+import { SampleMethodService } from './sample-method-service';
 
 interface SampleSite {
   name: string;
@@ -48,37 +48,32 @@ export class SampleLocationService extends DBService {
   async getSampleLocationsForSurveyId(surveyId: number): Promise<SampleLocationRecord[]> {
     const results = await this.sampleLocationRepository.getSampleLocationsForSurveyId(surveyId);
 
-    // todo: could do this in sql
-    return results.map((site) => {
-      // if (!site.sample_stratums) {
-      //   site.sample_stratums = [];
-      // }
-      if (!site.sample_blocks) {
-        site.sample_blocks = [];
-      }
-      return site;
-    });
+    return results;
+
+    // // todo: could do this in sql
+    // return results.map((site) => {
+    //   // if (!site.sample_stratums) {
+    //   //   site.sample_stratums = [];
+    //   // }
+    //   if (!site.sample_blocks) {
+    //     site.sample_blocks = [];
+    //   }
+    //   return site;
+    // });
   }
 
-  /**
-   * Gets all survey Sample Locations.
-   *
-   * @param {number} sampleLocationId
-   * @return {*}  {Promise<SampleLocationRecord[]>}
-   * @memberof SampleLocationService
-   */
-  async getSampleLocationById(surveyId: number, sampleLocationId: number): Promise<SampleLocationRecord> {
-    const result = await this.sampleLocationRepository.getSampleLocationsById(surveyId, sampleLocationId);
+  // /**
+  //  * Gets all survey Sample Locations.
+  //  *
+  //  * @param {number} sampleLocationId
+  //  * @return {*}  {Promise<SampleLocationRecord[]>}
+  //  * @memberof SampleLocationService
+  //  */
+  // async getSampleLocationById(sampleLocationId: number): Promise<SampleLocationRecord> {
+  //   const result = await this.sampleLocationRepository.getSampleLocationById(sampleLocationId);
 
-    console.log(result);
-
-    // todo: could do this in sql
-
-    if (!result.sample_blocks) {
-      result.sample_blocks = [];
-    }
-    return result;
-  }
+  //   return result;
+  // }
 
   /**
    * Deletes a survey Sample Location.
@@ -165,7 +160,7 @@ export class SampleLocationService extends DBService {
     // Check for blocks to delete
     await blockService.deleteSampleBlocksNotInArray(sampleSite.survey_sample_site_id, sampleSite.blocks);
 
-    console.log(sampleSite)
+    console.log(sampleSite);
 
     // Loop through all blocks
     // For each block, check if it exists
@@ -173,12 +168,13 @@ export class SampleLocationService extends DBService {
     // If it does not exist, create it
     for (const item of sampleSite.blocks) {
       if (item.survey_sample_block_id) {
-        const sampleBlock = {
-          survey_sample_site_id: sampleSite.survey_sample_site_id,
-          survey_sample_block_id: item.survey_sample_block_id,
-          survey_block_id: item.survey_block_id
-        };
-        await blockService.updateSampleBlock(sampleBlock);
+        // const sampleBlock = {
+        //   survey_sample_site_id: sampleSite.survey_sample_site_id,
+        //   survey_sample_block_id: item.survey_sample_block_id,
+        //   survey_block_id: item.survey_block_id
+        // };
+        // // await blockService.updateSampleBlock(sampleBlock);
+        // do nothing
       } else {
         const sampleBlock = {
           survey_sample_site_id: sampleSite.survey_sample_site_id,
