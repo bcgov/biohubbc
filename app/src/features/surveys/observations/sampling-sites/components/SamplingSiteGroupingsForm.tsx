@@ -3,6 +3,7 @@ import { useParams } from 'react-router';
 import SamplingBlockEditForm from '../edit/components/SamplingBlockEditForm';
 import SamplingBlockForm from './SamplingBlockForm';
 import SamplingStratumForm from './SamplingStratumForm';
+import SamplingStratumEditForm from '../edit/components/SamplingStratumEditForm';
 
 const SamplingSiteGroupingsForm = () => {
   const urlParams: Record<string, string | number | undefined> = useParams();
@@ -12,7 +13,7 @@ const SamplingSiteGroupingsForm = () => {
     <>
       {surveySampleSiteId ? <SamplingBlockEditForm /> : <SamplingBlockForm />}
       <Box mt={5}>
-        <SamplingStratumForm />
+      {surveySampleSiteId ? <SamplingStratumEditForm /> : <SamplingStratumForm />}
       </Box>
     </>
   );

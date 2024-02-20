@@ -9,7 +9,7 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { ISurveySampleMethodData, SamplingSiteMethodYupSchema } from 'features/surveys/components/MethodForm';
 import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
-import { IGetSampleBlockRecord } from 'interfaces/useSurveyApi.interface';
+import { IGetSampleBlockDetails, IGetSampleStratumDetails } from 'interfaces/useSurveyApi.interface';
 import { useContext } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import yup from 'utils/YupSchema';
@@ -26,7 +26,8 @@ export interface IEditSamplingSiteRequest {
     survey_sample_sites: Feature[]; // extracted list from shape files (used for formik loading)
     geojson?: Feature; // geojson object from map (used for sending to api)
     methods: ISurveySampleMethodData[];
-    blocks: IGetSampleBlockRecord[];
+    blocks: IGetSampleBlockDetails[];
+    stratums: IGetSampleStratumDetails[];
   };
 }
 

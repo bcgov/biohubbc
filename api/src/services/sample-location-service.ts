@@ -71,10 +71,10 @@ export class SampleLocationService extends DBService {
   async getSampleLocationById(surveyId: number, sampleLocationId: number): Promise<SampleLocationRecord> {
     const result = await this.sampleLocationRepository.getSampleLocationsById(surveyId, sampleLocationId);
 
-    console.log(result);
-
     // todo: could do this in sql
-
+    if (!result.sample_stratums) {
+      result.sample_stratums = [];
+    }
     if (!result.sample_blocks) {
       result.sample_blocks = [];
     }
@@ -157,6 +157,8 @@ export class SampleLocationService extends DBService {
     const methodService = new SampleMethodService(this.connection);
     const blockService = new SampleBlockService(this.connection);
     const stratumService = new SampleStratumService(this.connection);
+
+    console.log(sampleSite)
 
     // Update the main sample location
     await this.sampleLocationRepository.updateSampleLocation(sampleSite);

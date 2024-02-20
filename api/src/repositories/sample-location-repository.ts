@@ -103,6 +103,11 @@ export class SampleLocationRepository extends BaseRepository {
           .from({ sb: 'survey_block' })
           .groupBy('sb.survey_block_id', 'name', 'description');
       })
+      .with('survey_stratum_lookup', (qb) => {
+        qb.select('survey_stratum_id', 'name', 'description', knex.raw('json_agg(sb.*) as stratum'))
+          .from({ sb: 'survey_stratum' })
+          .groupBy('sb.survey_stratum_id', 'name', 'description');
+      })
       .with('json_sample_blocks', (qb) => {
         // aggregate all sample blocks based on site id
         qb.select(
@@ -126,10 +131,34 @@ export class SampleLocationRepository extends BaseRepository {
           .leftJoin('survey_block_lookup as sbl', 'sbl.survey_block_id', 'ssb.survey_block_id')
           .groupBy('ssb.survey_sample_site_id');
       })
+      .with('json_sample_stratums', (qb) => {
+        // aggregate all sample stratums based on site id
+        qb.select(
+          'survey_sample_site_id',
+          knex.raw(
+            `json_agg(json_build_object(
+              'survey_sample_stratum_id', sss.survey_sample_stratum_id,
+              'name', ssl.name,
+              'description', ssl.description,
+              'survey_stratum_id', sss.survey_stratum_id,
+              'create_date', sss.create_date,
+              'create_user', sss.create_user,
+              'update_date', sss.update_date,
+              'update_user', sss.update_user,
+              'survey_sample_site_id', sss.survey_sample_site_id,
+              'revision_count', sss.revision_count
+              )) as sample_stratums`
+          )
+        )
+          .from({ sss: 'survey_sample_stratum' })
+          .leftJoin('survey_stratum_lookup as ssl', 'ssl.survey_stratum_id', 'sss.survey_stratum_id')
+          .groupBy('sss.survey_sample_site_id');
+      })
       // join aggregated methods and blocks to sampling sites
       .select('*')
       .from({ sss: 'survey_sample_site' })
       .leftJoin('json_sample_blocks as jsb', 'jsb.survey_sample_site_id', 'sss.survey_sample_site_id')
+      .leftJoin('json_sample_stratums as jss', 'jss.survey_sample_site_id', 'sss.survey_sample_site_id')
       .leftJoin('json_sample_methods as jsm', 'jsm.survey_sample_site_id', 'sss.survey_sample_site_id')
       .where('sss.survey_id', surveyId)
       .orderBy('sss.survey_sample_site_id', 'asc');

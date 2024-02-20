@@ -118,6 +118,17 @@ export interface IGetSurveyBlock {
   revision_count: number;
 }
 
+export interface IGetSurveyStratum {
+  survey_stratum_id: number;
+  name: string;
+  description: string;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
+}
+
 export interface SurveyViewObject {
   survey_details: IGetSurveyForViewResponseDetails;
   species: IGetSpecies;
@@ -382,13 +393,26 @@ export interface IGetSampleLocationRecord {
   update_user: number | null;
   revision_count: number;
   sample_methods: IGetSampleMethodRecord[] | undefined;
-  sample_blocks: IGetSampleBlockRecord[] | undefined;
+  sample_blocks: IGetSampleBlockDetails[] | undefined;
 }
 
-export interface IGetSampleBlockRecord {
+export interface IGetSampleBlockDetails {
   survey_sample_block_id: number;
   survey_sample_site_id: number;
   survey_block_id: number;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
+  name: string;
+  description: string;
+}
+
+export interface IGetSampleStratumDetails {
+  survey_sample_stratum_id: number;
+  survey_sample_site_id: number;
+  survey_stratum_id: number;
   create_date: string;
   create_user: number;
   update_date: string | null;

@@ -6,26 +6,38 @@ import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
 import TextField from '@mui/material/TextField';
 import { SurveyContext } from 'contexts/surveyContext';
+import { IStratum } from 'features/surveys/components/SurveySiteSelectionForm';
 import { useFormikContext } from 'formik';
-import { IGetSampleBlockDetails, IGetSurveyBlock } from 'interfaces/useSurveyApi.interface';
-import { default as React, useContext, useState } from 'react';
+import { IGetSampleStratumDetails } from 'interfaces/useSurveyApi.interface';
+import { default as React, useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
-import { ICreateSamplingSiteRequest } from '../SamplingSitePage';
+import { IEditSamplingSiteRequest } from './SampleSiteEditForm';
 
-const SamplingBlockForm = () => {
-  const { setFieldValue } = useFormikContext<ICreateSamplingSiteRequest>();
+const SamplingStratumEditForm = () => {
+  const { values, setFieldValue } = useFormikContext<IEditSamplingSiteRequest>();
   const surveyContext = useContext(SurveyContext);
 
-  const options = surveyContext.surveyDataLoader?.data?.surveyData?.blocks || [];
+  const options = surveyContext.surveyDataLoader?.data?.surveyData?.site_selection?.stratums || [];
 
-  const [selectedBlocks, setSelectedBlocks] = useState<IGetSurveyBlock[]>([]);
+  const [selectedStratums, setSelectedStratums] = useState<(IGetSampleStratumDetails | IStratum)[]>(
+    values.sampleSite.stratums
+  );
 
-  interface IBlockCard {
+  useEffect(() => {
+    if (selectedStratums.length < 1) {
+      setSelectedStratums(values.sampleSite.stratums);
+    }
+  }, [values.sampleSite]);
+
+  console.log(selectedStratums);
+  console.log(values);
+
+  interface IStratumCard {
     label: string;
     description: string;
   }
 
-  const BlockCard: React.FC<IBlockCard> = (props) => (
+  const StratumCard: React.FC<IStratumCard> = (props) => (
     <Box>
       <Box>
         <Typography variant="subtitle1" fontWeight="bold">
@@ -42,20 +54,24 @@ const SamplingBlockForm = () => {
 
   const [searchText, setSearchText] = useState('');
 
-  const handleAddBlock = (block: IGetSurveyBlock) => {
-    selectedBlocks.push(block);
-    setFieldValue(`blocks[${selectedBlocks.length - 1}]`, block);
+  const handleAddStratum = (stratum: IStratum) => {
+    selectedStratums.push(stratum);
+    setFieldValue(`sampleSite.stratums[${selectedStratums.length - 1}]`, stratum);
   };
 
-  const handleRemoveItem = (block: IGetSurveyBlock | IGetSampleBlockDetails) => {
-    const filteredBlocks = selectedBlocks.filter((existing) => existing.survey_block_id !== block.survey_block_id);
-    setSelectedBlocks(filteredBlocks);
-    setFieldValue(`blocks`, filteredBlocks);
+  const handleRemoveItem = (stratum: IStratum | IGetSampleStratumDetails) => {
+    const filteredStratums = selectedStratums.filter(
+      (existing) => existing.survey_stratum_id !== stratum.survey_stratum_id
+    );
+    setSelectedStratums(filteredStratums);
+    setFieldValue(`sampleSite.stratums`, filteredStratums);
   };
+
+  console.log(searchText);
 
   return (
     <>
-      <Typography component="legend">Assign to Block</Typography>
+      <Typography component="legend">Assign to Stratum</Typography>
       <Typography
         variant="body1"
         color="textSecondary"
@@ -66,16 +82,15 @@ const SamplingBlockForm = () => {
         All sampling sites being imported together will be assigned to the selected groups
       </Typography>
       <Autocomplete
-        id={'autocomplete-sample-block-form'}
+        id={'autocomplete-sample-stratum-form'}
         data-testid={'autocomplete-user-role-search'}
         filterSelectedOptions
         noOptionsText="No records found"
         options={options}
         filterOptions={(options, state) => {
-          console.log(state);
-          const searchFilter = createFilterOptions<IGetSurveyBlock>({ ignoreCase: true });
+          const searchFilter = createFilterOptions<IStratum>({ ignoreCase: true });
           const unselectedOptions = options.filter((item) =>
-            selectedBlocks.every((existing) => existing.survey_block_id !== item.survey_block_id)
+            selectedStratums.every((existing) => existing.survey_stratum_id !== item.survey_stratum_id)
           );
           return searchFilter(unselectedOptions, state);
         }}
@@ -86,7 +101,6 @@ const SamplingBlockForm = () => {
         clearOnBlur={false}
         value={null}
         onInputChange={(_, value, reason) => {
-          console.log(reason, value, _);
           if (reason === 'reset') {
             setSearchText('');
           } else {
@@ -95,19 +109,18 @@ const SamplingBlockForm = () => {
         }}
         onChange={(_, option) => {
           if (option) {
-            handleAddBlock(option);
+            handleAddStratum(option);
             setSearchText('');
           }
         }}
         onClose={(value, reason) => {
-          console.log(value, reason);
           setSearchText('');
         }}
         renderInput={(params) => (
           <TextField
             {...params}
             variant="outlined"
-            placeholder={'Select block'}
+            placeholder={'Select stratum'}
             fullWidth
             InputProps={{
               ...params.InputProps,
@@ -121,14 +134,14 @@ const SamplingBlockForm = () => {
         )}
         renderOption={(renderProps, renderOption) => {
           return (
-            <Box component="li" {...renderProps} key={renderOption?.survey_block_id}>
-              <BlockCard label={renderOption.name} description={renderOption.description || ''} />
+            <Box component="li" {...renderProps} key={renderOption?.survey_stratum_id}>
+              <StratumCard label={renderOption.name} description={renderOption.description || ''} />
             </Box>
           );
         }}
       />
       <TransitionGroup>
-        {selectedBlocks.map((item, index) => {
+        {selectedStratums.map((item, index) => {
           return (
             <Collapse key={`${item.name}-${item.description}-${index}`}>
               <Card
@@ -169,4 +182,4 @@ const SamplingBlockForm = () => {
   );
 };
 
-export default SamplingBlockForm;
+export default SamplingStratumEditForm;
