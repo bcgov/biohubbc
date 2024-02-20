@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { IProjectAdvancedFilters } from '../../models/project-view';
-import { paginationResponseSchema } from '../../openapi/schemas/pagination';
+import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
 import { ProjectService } from '../../services/project-service';
 import { getLogger } from '../../utils/logger';
@@ -32,6 +32,7 @@ GET.apiDoc = {
       Bearer: []
     }
   ],
+  parameters: [...paginationRequestQueryParamSchema],
   requestBody: {
     description: 'Project list search filter criteria object.',
     content: {
