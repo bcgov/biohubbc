@@ -11,6 +11,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useState } from 'react';
 
 export interface IImportObservationsButtonProps {
+  disabled: boolean;
   onStart?: () => void;
   onSuccess?: () => void;
   onError?: () => void;
@@ -18,7 +19,7 @@ export interface IImportObservationsButtonProps {
 }
 
 export const ImportObservationsButton = (props: IImportObservationsButtonProps) => {
-  const { onStart, onSuccess, onError, onFinish } = props;
+  const { disabled, onStart, onSuccess, onError, onFinish } = props;
 
   const biohubApi = useBiohubApi();
 
@@ -83,7 +84,8 @@ export const ImportObservationsButton = (props: IImportObservationsButtonProps) 
         variant="contained"
         color="primary"
         startIcon={<Icon path={mdiImport} size={1} />}
-        onClick={() => setOpen(true)}>
+        onClick={() => setOpen(true)}
+        disabled={disabled}>
         Import
       </Button>
       <FileUploadDialog

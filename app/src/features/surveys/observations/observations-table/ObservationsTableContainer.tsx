@@ -123,6 +123,7 @@ const ObservationComponent = () => {
 
           <Stack flexDirection="row" alignItems="center" gap={1} whiteSpace="nowrap">
             <ImportObservationsButton
+              disabled={observationsTableContext.isSaving}
               onStart={() => observationsTableContext.setDisabled(true)}
               onSuccess={() => observationsTableContext.refreshObservationRecords()}
               onFinish={() => observationsTableContext.setDisabled(false)}
@@ -168,7 +169,6 @@ const ObservationComponent = () => {
                 observationsTableContext.isSaving ||
                 observationsTableContext.disabled
               }
-              rowModesModel={observationsTableContext.rowModesModel}
               columns={columns}
             />
           </Box>

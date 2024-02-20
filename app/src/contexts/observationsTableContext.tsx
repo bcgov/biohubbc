@@ -20,7 +20,7 @@ import { Measurement } from 'hooks/cb_api/useLookupApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useObservationsContext } from 'hooks/useContext';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
-import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { firstOrNull } from 'utils/Utils';
 import { v4 as uuidv4 } from 'uuid';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
@@ -170,13 +170,27 @@ export type IObservationsTableContext = {
    */
   onRowSelectionModelChange: (rowSelectionModel: GridRowSelectionModel) => void;
   /**
-   * Indicates if the data is in the process of being persisted to the server.
-   */
-  isSaving: boolean;
-  /**
    * Indicates whether or not content in the observations table is loading.
    */
   isLoading: boolean;
+  /**
+   * Indicates if the save process has started.
+   */
+  isSaving: boolean;
+  /**
+   * Indicates that the rows have all transitioned to view mode successfully, and the data is about to be, or is in the
+   * process of being, persisted to the server.
+   *
+   * Note: This ref should not be manually updated outside of this context.
+   */
+  _isSavingData: React.MutableRefObject<boolean>;
+  /**
+   * Indicates that the rows in edit mode are transitioning to view mode, which is part of the process of persisting
+   * the data to the server.
+   *
+   * Note: This ref should not be manually updated outside of this context.
+   */
+  _isStoppingEdit: React.MutableRefObject<boolean>;
   /**
    * The state of the validation model
    */
@@ -256,13 +270,13 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   const [modifiedRowIds, setModifiedRowIds] = useState<string[]>([]);
 
   // True if the rows are in the process of transitioning from edit to view mode
-  const [_isStoppingEdit, _setIsStoppingEdit] = useState(false);
+  const _isStoppingEdit = useRef(false);
+
+  // True if the records are in the process of being saved to the server
+  const _isSavingData = useRef(false);
 
   // Status of the taxonomy cache
   const [taxonomyCacheStatus, setTaxonomyCacheStatus] = useState({ isInitializing: false, isInitialized: false });
-
-  // True if the records are in the process of being saved to the server
-  const [_isSaving, _setIsSaving] = useState(false);
 
   // Stores the current count of observations for this survey
   const [observationCount, setObservationCount] = useState<number>(0);
@@ -605,7 +619,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    * Transition all editable rows from edit mode to view mode.
    */
   const saveObservationRecords = useCallback(() => {
-    if (_isStoppingEdit) {
+    if (_isStoppingEdit.current) {
       // Stop edit mode already in progress
       return;
     }
@@ -617,7 +631,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       return;
     }
 
-    _setIsStoppingEdit(true);
+    _isStoppingEdit.current = true;
 
     // Collect the ids of all rows in edit mode
     const allEditingIds = Object.keys(_muiDataGridApiRef.current.state.editRows);
@@ -629,7 +643,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     if (!editingIdsToSave.length) {
       // No rows in edit mode, nothing to stop or save
-      _setIsStoppingEdit(false);
+      _isStoppingEdit.current = false;
       return;
     }
 
@@ -640,7 +654,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     // Store ids of rows that were in edit mode
     setModifiedRowIds(editingIdsToSave);
-  }, [_isStoppingEdit, _validateRows, _muiDataGridApiRef, savedRows, stagedRows]);
+  }, [_validateRows, _muiDataGridApiRef, savedRows, stagedRows]);
 
   /**
    * Transition all rows tracked by `modifiedRowIds` to edit mode.
@@ -697,7 +711,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
           open: true
         });
       } finally {
-        _setIsSaving(false);
+        _isSavingData.current = false;
       }
     },
     [biohubApi.observation, projectId, surveyId, dialogContext, refreshObservationRecords, _revertAllRowsEditMode]
@@ -707,9 +721,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     return !taxonomyCacheStatus.isInitialized || observationsContext.observationsDataLoader.isLoading;
   }, [observationsContext.observationsDataLoader.isLoading, taxonomyCacheStatus.isInitialized]);
 
-  const isSaving: boolean = useMemo(() => {
-    return _isSaving || _isStoppingEdit;
-  }, [_isSaving, _isStoppingEdit]);
+  const isSaving: boolean = _isSavingData.current || _isStoppingEdit.current;
 
   /**
    * Fetch new rows based on sort/ pagination model changes
@@ -805,7 +817,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       return;
     }
 
-    if (!_isStoppingEdit) {
+    if (!_isStoppingEdit.current) {
       // Stop edit mode not in progress, cannot save yet
       return;
     }
@@ -815,7 +827,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       return;
     }
 
-    if (_isSaving) {
+    if (_isSavingData.current) {
       // Saving already in progress
       return;
     }
@@ -825,11 +837,11 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       return;
     }
 
-    // All rows have transitioned to view mode
-    _setIsStoppingEdit(false);
-
     // Start saving records
-    _setIsSaving(true);
+    _isSavingData.current = true;
+
+    // All rows have transitioned to view mode
+    _isStoppingEdit.current = false;
 
     const rowModels = _muiDataGridApiRef.current.getRowModels();
 
@@ -863,7 +875,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     });
 
     _saveRecords(rowsToSave);
-  }, [_isSaving, _isStoppingEdit, _muiDataGridApiRef, _saveRecords, measurementColumns, modifiedRowIds, rowModesModel]);
+  }, [_muiDataGridApiRef, _saveRecords, measurementColumns, modifiedRowIds, rowModesModel]);
 
   const observationsTableContext: IObservationsTableContext = useMemo(
     () => ({
@@ -888,6 +900,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       onRowSelectionModelChange: setRowSelectionModel,
       isLoading,
       isSaving,
+      _isSavingData,
+      _isStoppingEdit,
       validationModel,
       observationCount,
       setObservationCount,
@@ -904,35 +918,26 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     [
       _muiDataGridApiRef,
       savedRows,
-      setSavedRows,
       stagedRows,
-      setStagedRows,
       rowModesModel,
-      setRowModesModel,
       columnVisibilityModel,
-      setColumnVisibilityModel,
       addObservationRecord,
       saveObservationRecords,
       deleteObservationRecords,
       revertObservationRecords,
       refreshObservationRecords,
       getSelectedObservationRecords,
-      setRowSelectionModel,
       hasUnsavedChanges,
       rowSelectionModel,
       isLoading,
       isSaving,
       validationModel,
       observationCount,
-      setPaginationModel,
       paginationModel,
       hasError,
-      measurementColumns,
-      setMeasurementColumns,
-      setSortModel,
       sortModel,
-      disabled,
-      setDisabled
+      measurementColumns,
+      disabled
     ]
   );
 

@@ -157,7 +157,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
   // New rows (regardless of mode)
   const [addedRowIds, setAddedRowIds] = useState<string[]>([]);
   // True if the rows are in the process of transitioning from edit to view mode
-  const [isStoppingEdit, setIsStoppingEdit] = useState(false);
+  const [_isStoppingEdit, setIsStoppingEdit] = useState(false);
   // True if the records are in the process of being saved to the server
   const [isCurrentlySaving, setIsCurrentlySaving] = useState(false);
   // Stores the current count of telemetry records for this survey
@@ -403,7 +403,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
    * Transition all editable rows from edit mode to view mode.
    */
   const saveRecords = useCallback(() => {
-    if (isStoppingEdit) {
+    if (_isStoppingEdit) {
       // Stop edit mode already in progress
       return;
     }
@@ -436,7 +436,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
 
     // Store ids of rows that were in edit mode
     setModifiedRowIds(editingIdsToSave);
-  }, [_muiDataGridApiRef, _validateRows, isStoppingEdit, rows]);
+  }, [_muiDataGridApiRef, _validateRows, _isStoppingEdit, rows]);
 
   /**
    * Transition all rows tracked by `modifiedRowIds` to view mode.
@@ -549,8 +549,8 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
   }, [telemetryDataContext.telemetryDataLoader.isLoading]);
 
   const isSaving: boolean = useMemo(() => {
-    return isCurrentlySaving || isStoppingEdit;
-  }, [isCurrentlySaving, isStoppingEdit]);
+    return isCurrentlySaving || _isStoppingEdit;
+  }, [isCurrentlySaving, _isStoppingEdit]);
 
   useEffect(() => {
     // Begin fetching telemetry once we have deployments ids
@@ -600,7 +600,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
       return;
     }
 
-    if (!isStoppingEdit) {
+    if (!_isStoppingEdit) {
       // Stop edit mode not in progress, cannot save yet
       return;
     }
@@ -630,7 +630,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
     const rowValues = Array.from(rowModels, ([_, value]) => value);
 
     _saveRecords(rowValues);
-  }, [_muiDataGridApiRef, _saveRecords, isCurrentlySaving, isStoppingEdit, modifiedRowIds]);
+  }, [_muiDataGridApiRef, _saveRecords, isCurrentlySaving, _isStoppingEdit, modifiedRowIds]);
 
   const telemetryTableContext: ITelemetryTableContext = useMemo(
     () => ({
