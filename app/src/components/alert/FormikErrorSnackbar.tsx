@@ -13,7 +13,7 @@ const FormikErrorSnackbar = () => {
       return;
     }
 
-    setOpenSnackbar({ open: true, msg: 'Missing one or more required fields.' });
+    setOpenSnackbar({ open: true, msg: 'One or more required fields is invalid.' });
   }, [errors, submitCount, isSubmitting]);
 
   const closeSnackBar = () =>
@@ -22,19 +22,17 @@ const FormikErrorSnackbar = () => {
     });
 
   return (
-    <>
-      <Snackbar
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center'
-        }}
-        open={openSnackbar.open}
-        onClose={closeSnackBar}>
-        <Alert elevation={4} severity="error" variant="filled" onClose={closeSnackBar}>
-          {openSnackbar.msg}
-        </Alert>
-      </Snackbar>
-    </>
+    <Snackbar
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'center'
+      }}
+      open={openSnackbar.open}
+      onClose={closeSnackBar}>
+      <Alert elevation={4} severity="error" variant="filled" onClose={closeSnackBar}>
+        {openSnackbar.msg}
+      </Alert>
+    </Snackbar>
   );
 };
 
