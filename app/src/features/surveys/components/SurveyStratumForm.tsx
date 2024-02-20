@@ -68,10 +68,13 @@ const SurveyStratumForm = () => {
 
     if (stratumForm.index === null) {
       // Create new stratum
-      setFieldValue('site_selection.stratums', [...values.site_selection.stratums, stratumForm.stratum]);
+      setFieldValue('site_selection.stratums', [
+        ...values.site_selection.stratums,
+        { name: stratumForm.stratum.name, description: stratumForm.stratum.description }
+      ]);
     } else {
       // Edit existing stratum
-      setFieldValue(`site_selection.stratums[${stratumForm.index}`, stratumForm.stratum);
+      setFieldValue(`site_selection.stratums[${stratumForm.index}`, { name: stratumForm.stratum.name, description: stratumForm.stratum.description });
     }
 
     setDialogOpen(false);

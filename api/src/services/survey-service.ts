@@ -725,6 +725,8 @@ export class SurveyService extends DBService {
       );
     }
 
+    console.log(putSurveyData.site_selection.stratums)
+
     // Handle stratums
     if (putSurveyData?.site_selection?.stratums) {
       promises.push(
