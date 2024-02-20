@@ -54,6 +54,8 @@ services:
       - DB_SCHEMA=${DB_SCHEMA}
       # Seed
       - PROJECT_SEEDER_USER_IDENTIFIER=${PROJECT_SEEDER_USER_IDENTIFIER}
+      - NUM_SEED_PROJECTS=${NUM_SEED_PROJECTS}
+      - NUM_SEED_SURVEYS_PER_PROJECT=${NUM_SEED_SURVEYS_PER_PROJECT}
       # Keycloak
       - KEYCLOAK_HOST=${KEYCLOAK_HOST}
       - KEYCLOAK_REALM=${KEYCLOAK_REALM}
@@ -176,6 +178,8 @@ services:
       - DB_USER_API_PASS=${DB_USER_API_PASS}
       - DB_SCHEMA_DAPI_V1=${DB_SCHEMA_DAPI_V1}
       - PROJECT_SEEDER_USER_IDENTIFIER=${PROJECT_SEEDER_USER_IDENTIFIER}
+      - NUM_SEED_PROJECTS=${NUM_SEED_PROJECTS}
+      - NUM_SEED_SURVEYS_PER_PROJECT=${NUM_SEED_SURVEYS_PER_PROJECT}
     volumes:
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
     networks:
@@ -204,6 +208,8 @@ services:
       - DB_USER_API_PASS=${DB_USER_API_PASS}
       - DB_SCHEMA_DAPI_V1=${DB_SCHEMA_DAPI_V1}
       - PROJECT_SEEDER_USER_IDENTIFIER=${PROJECT_SEEDER_USER_IDENTIFIER}
+      - NUM_SEED_PROJECTS=${NUM_SEED_PROJECTS}
+      - NUM_SEED_SURVEYS_PER_PROJECT=${NUM_SEED_SURVEYS_PER_PROJECT}
     volumes:
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
     networks:
@@ -232,6 +238,8 @@ services:
       - DB_USER_API_PASS=${DB_USER_API_PASS}
       - DB_SCHEMA_DAPI_V1=${DB_SCHEMA_DAPI_V1}
       - PROJECT_SEEDER_USER_IDENTIFIER=${PROJECT_SEEDER_USER_IDENTIFIER}
+      - NUM_SEED_PROJECTS=${NUM_SEED_PROJECTS}
+      - NUM_SEED_SURVEYS_PER_PROJECT=${NUM_SEED_SURVEYS_PER_PROJECT}
     volumes:
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
     networks:

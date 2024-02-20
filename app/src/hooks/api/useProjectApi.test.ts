@@ -99,24 +99,20 @@ describe('useProjectApi', () => {
     expect(result).toEqual(1);
   });
 
-  it('getProjectsList works as expected', async () => {
-    const response = [
-      {
-        id: 1,
-        name: 'project name',
-        objectives: 'objectives',
-        start_date: '2020/04/04',
-        end_date: '2020/05/05',
-        comments: 'comment',
-        focal_species_name_list: 'focal'
-      }
-    ];
+  describe('getProjectsList', () => {
+    it('getProjectsList works as expected', async () => {
+      const response = [
+        {
+          project_id: 1
+        }
+      ];
 
-    mock.onGet(`/api/project/list`).reply(200, response);
+      mock.onGet(`/api/project/list?`).reply(200, response);
 
-    const result = await useProjectApi(axios).getProjectsList();
+      const result = await useProjectApi(axios).getProjectsList();
 
-    expect(result).toEqual(response);
+      expect(result).toEqual([{ project_id: 1 }]);
+    });
   });
 
   it('getProjectForView works as expected', async () => {
