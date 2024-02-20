@@ -88,7 +88,11 @@ export const ProjectRoleRouteGuard = (props: IProjectRoleRouteGuardProps) => {
   const authStateContext = useAuthStateContext();
 
   const projectAuthStateContext = useContext(ProjectAuthStateContext);
+  console.log('projectAuthStateContext', projectAuthStateContext);
 
+  console.log('authStateContext.auth.isLoading ', authStateContext.auth.isLoading);
+  console.log('authStateContext.simsUserWrapper.isLoading ', authStateContext.simsUserWrapper.isLoading);
+  console.log('!projectAuthStateContext.hasLoadedParticipantInfo', !projectAuthStateContext.hasLoadedParticipantInfo);
   if (
     authStateContext.auth.isLoading ||
     authStateContext.simsUserWrapper.isLoading ||

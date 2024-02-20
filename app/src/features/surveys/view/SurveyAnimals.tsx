@@ -3,6 +3,8 @@ import Icon from '@mdi/react';
 import { Box, Button, Divider, Toolbar, Typography } from '@mui/material';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
+import { ProjectRoleGuard } from 'components/security/Guards';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -116,18 +118,22 @@ const SurveyAnimals: React.FC = () => {
           }}>
           Marked and Known Animals
         </Typography>
-        <Button
-          component={RouterLink}
-          to={`animals/`}
-          title="Manage Marked and Known Animals"
-          color="primary"
-          variant="contained"
-          startIcon={<Icon path={mdiCog} size={0.75} />}
-          sx={{
-            m: -1
-          }}>
-          Manage Animals
-        </Button>
+        <ProjectRoleGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <Button
+            component={RouterLink}
+            to={`animals/`}
+            title="Manage Marked and Known Animals"
+            color="primary"
+            variant="contained"
+            startIcon={<Icon path={mdiCog} size={0.75} />}
+            sx={{
+              m: -1
+            }}>
+            Manage Animals
+          </Button>
+        </ProjectRoleGuard>
       </Toolbar>
       <Divider flexItem></Divider>
       <Box py={1} px={2}>

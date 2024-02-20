@@ -12,9 +12,9 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { makeStyles } from '@mui/styles';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
-import { SystemRoleGuard } from 'components/security/Guards';
+import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
 import { PublishStatus } from 'constants/attachments';
-import { SYSTEM_ROLE } from 'constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import NoSurveySectionData from 'features/surveys/components/NoSurveySectionData';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
@@ -114,16 +114,20 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
                     <SubmitStatusChip status={attachmentStatus} />
                   </TableCell>
                 </SystemRoleGuard>
-                <TableCell align="right">
-                  <AttachmentsListItemMenuButton
-                    attachmentFileType={attachment.fileType}
-                    attachmentStatus={attachmentStatus}
-                    onDownloadFile={() => handleDownload(attachment)}
-                    onDeleteFile={() => handleDelete(attachment)}
-                    onViewDetails={() => handleViewDetails(attachment)}
-                    onRemoveOrResubmit={() => handleRemoveOrResubmit(attachment)}
-                  />
-                </TableCell>
+                <ProjectRoleGuard
+                  validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <TableCell align="right">
+                    <AttachmentsListItemMenuButton
+                      attachmentFileType={attachment.fileType}
+                      attachmentStatus={attachmentStatus}
+                      onDownloadFile={() => handleDownload(attachment)}
+                      onDeleteFile={() => handleDelete(attachment)}
+                      onViewDetails={() => handleViewDetails(attachment)}
+                      onRemoveOrResubmit={() => handleRemoveOrResubmit(attachment)}
+                    />
+                  </TableCell>
+                </ProjectRoleGuard>
               </TableRow>
             );
           })}

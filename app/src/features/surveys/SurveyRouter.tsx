@@ -27,25 +27,42 @@ const SurveyRouter: React.FC = () => {
         to="/admin/projects/:id/surveys/:survey_id/details"
       />
 
+      {/* Survey Page Routes */}
       <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/details" title={getTitle('Surveys')}>
         <SurveyPage />
       </RouteWithTitle>
 
+      {/* Observations Routes */}
       <RouteWithTitle
         exact
         path="/admin/projects/:id/surveys/:survey_id/observations"
         title={getTitle('Manage Observations')}>
-        <SurveyObservationPage />
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <SurveyObservationPage />
+        </ProjectRoleRouteGuard>
       </RouteWithTitle>
 
+      {/* Telemetry Routes */}
       <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/telemetry" title={getTitle('Telemetry')}>
-        <ManualTelemetryPage />
-      </RouteWithTitle>
-      <RouteWithTitle exact path={'/admin/projects/:id/surveys/:survey_id/animals'} title={getTitle('Manage Animals')}>
-        <SurveyAnimalsPage />
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <ManualTelemetryPage />
+        </ProjectRoleRouteGuard>
       </RouteWithTitle>
 
-      {/* Sample Site Routes */}
+      {/* Animals Routes */}
+      <RouteWithTitle exact path={'/admin/projects/:id/surveys/:survey_id/animals'} title={getTitle('Manage Animals')}>
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <SurveyAnimalsPage />
+        </ProjectRoleRouteGuard>
+      </RouteWithTitle>
+
+      {/* Sample Site Routes  TODO: Remove unused path and page */}
       <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/sampling" title={getTitle('Sampling Sites')}>
         <SamplingSitePage />
       </RouteWithTitle>
@@ -54,10 +71,14 @@ const SurveyRouter: React.FC = () => {
         exact
         path="/admin/projects/:id/surveys/:survey_id/sampling/:survey_sample_site_id/edit"
         title={getTitle('Edit Sampling Site')}>
-        <SamplingSiteEditPage />
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <SamplingSiteEditPage />
+        </ProjectRoleRouteGuard>
       </RouteWithTitle>
 
-      {/* Survey Locations */}
+      {/* Survey Locations TODO: Remove unused path and page */}
       <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/locations" title={getTitle('Survey Area')}>
         <SurveyLocationPage />
       </RouteWithTitle>
