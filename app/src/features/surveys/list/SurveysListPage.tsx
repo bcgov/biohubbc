@@ -135,6 +135,7 @@ const SurveysListPage = () => {
             variant="contained"
             color="primary"
             startIcon={<Icon path={mdiPlus} size={1} />}
+            // TODO fix filters
             // onClick={() => setIsFiltersOpen(!isFiltersOpen)}
             component={RouterLink}
             to={`/admin/projects/${projectContext.projectId}/survey/create`}>

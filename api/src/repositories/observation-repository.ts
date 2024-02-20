@@ -280,10 +280,10 @@ export class ObservationRepository extends BaseRepository {
       ? allRowsQuery
       : allRowsQuery.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
 
-    const query =
+    const sortedPaginatedQuery =
       pagination?.sort && pagination.order ? paginatedQuery.orderBy(pagination.sort, pagination.order) : paginatedQuery;
 
-    const response = await this.connection.knex(query, ObservationRecordWithSamplingData);
+    const response = await this.connection.knex(sortedPaginatedQuery, ObservationRecordWithSamplingData);
 
     return response.rows;
   }

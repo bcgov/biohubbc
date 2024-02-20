@@ -32,8 +32,7 @@ const ProjectPage = () => {
 
   if (
     !codesContext.codesDataLoader.data ||
-    !projectContext.projectDataLoader.data ||
-    !projectContext.surveysListDataLoader.data
+    !projectContext.projectDataLoader.data
   ) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
