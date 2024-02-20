@@ -78,14 +78,10 @@ export class SampleBlockRepository extends BaseRepository {
       WHERE survey_block_id = ${surveyBlockId};
     `;
 
-    console.log(sql)
-
     const response = await this.connection.sql(sql, SampleBlockRecord);
 
-    console.log(response)
-
     const sampleCount = Number(response.rowCount);
-    // console.log(sampleCount);
+  
     return { sampleCount };
   }
 

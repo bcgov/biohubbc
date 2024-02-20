@@ -20,8 +20,6 @@ export const SampleStratumRecord = z.object({
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number()
-  // name: z.string(),
-  // description: z.string()
 });
 export type SampleStratumRecord = z.infer<typeof SampleStratumRecord>;
 
@@ -75,15 +73,15 @@ export class SampleStratumRepository extends BaseRepository {
    */
   async getSampleStratumsCountForSurveyStratumId(surveyStratumId: number): Promise<{ sampleCount: number }> {
     const sql = SQL`
-      SELECT COUNT(*) as sampleCount
+      SELECT *
       FROM survey_sample_stratum
       WHERE survey_stratum_id = ${surveyStratumId};
     `;
 
     const response = await this.connection.sql(sql, SampleStratumRecord);
 
-    const sampleCount = Number(response.rows[0]);
-    // console.log(sampleCount);
+    const sampleCount = Number(response.rowCount);
+  
     return { sampleCount };
   }
 
