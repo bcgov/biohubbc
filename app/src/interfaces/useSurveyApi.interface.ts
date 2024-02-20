@@ -195,6 +195,7 @@ export interface SurveyUpdateObject extends ISurveyLocationForm {
   }[];
 }
 
+// TODO remove in subsequent PR
 export interface SurveySupplementaryData {
   occurrence_submission: {
     occurrence_submission_id: number | null;

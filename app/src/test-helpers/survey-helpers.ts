@@ -1,4 +1,3 @@
-import { PublishStatus } from 'constants/attachments';
 import {
   IGetSurveyListResponse,
   IGetSurveyForViewResponse,
@@ -126,9 +125,9 @@ export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
   surveySupplementaryData: surveySupplementaryData
 };
 
-export const getSurveyForListResponse: IGetSurveyListResponse[] = [
-  {
-    surveyData: {
+export const getSurveyForListResponse: IGetSurveyListResponse = {
+  surveys: [
+    {
       survey_id: 1,
       name: 'Moose Survey 1',
       start_date: '2021-04-09 11:53:53',
@@ -136,21 +135,21 @@ export const getSurveyForListResponse: IGetSurveyListResponse[] = [
       focal_species: [1],
       focal_species_names: ['species 1']
     },
-    surveySupplementaryData: {
-      publishStatus: PublishStatus.NO_DATA
-    }
-  },
-  {
-    surveyData: {
+    {
       survey_id: 2,
       name: 'Moose Survey 2',
       start_date: '2021-04-09 11:53:53',
       end_date: '2021-06-10 11:53:53',
       focal_species: [3],
       focal_species_names: ['species 3']
-    },
-    surveySupplementaryData: {
-      publishStatus: PublishStatus.NO_DATA
     }
+  ],
+  pagination: {
+    current_page: 1,
+    last_page: 1,
+    total: 2,
+    order: undefined,
+    sort: undefined,
+    per_page: 15
   }
-];
+};

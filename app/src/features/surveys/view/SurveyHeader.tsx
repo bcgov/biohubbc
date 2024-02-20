@@ -102,7 +102,8 @@ const SurveyHeader = () => {
         showDeleteErrorDialog({ open: true });
         return;
       }
-      projectContext.surveysListDataLoader.refresh(projectContext.projectId);
+      // TODO is the surveys list automatically refreshed?
+      // projectContext.surveysListDataLoader.refresh(projectContext.projectId);
 
       history.push(`/admin/projects/${surveyContext.projectId}`);
     } catch (error) {
