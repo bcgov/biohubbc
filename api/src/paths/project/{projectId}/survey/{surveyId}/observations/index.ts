@@ -1,4 +1,3 @@
-import { SchemaObject } from 'ajv';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
@@ -60,94 +59,6 @@ export const PUT: Operation = [
   insertUpdateSurveyObservationsWithMeasurements()
 ];
 
-export const surveyObservationsSupplementaryData: SchemaObject = {
-  type: 'object',
-  required: ['observationCount'],
-  properties: {
-    observationCount: {
-      type: 'integer',
-      minimum: 0
-    }
-  }
-};
-
-export const surveyObservationsResponseSchema: SchemaObject = {
-  type: 'object',
-  nullable: true,
-  required: ['surveyObservations'],
-  properties: {
-    surveyObservations: {
-      type: 'array',
-      items: {
-        type: 'object',
-        required: [
-          'survey_observation_id',
-          'latitude',
-          'longitude',
-          'count',
-          'itis_tsn',
-          'itis_scientific_name',
-          'observation_date',
-          'observation_time',
-          'create_user',
-          'create_date',
-          'update_user',
-          'update_date',
-          'revision_count'
-        ],
-        properties: {
-          survey_observation_id: {
-            type: 'integer'
-          },
-          latitude: {
-            type: 'number'
-          },
-          longitude: {
-            type: 'number'
-          },
-          count: {
-            type: 'integer'
-          },
-          itis_tsn: {
-            type: 'integer'
-          },
-          itis_scientific_name: {
-            type: 'string'
-          },
-          observation_date: {
-            type: 'string'
-          },
-          observation_time: {
-            type: 'string'
-          },
-          create_date: {
-            oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-            description: 'ISO 8601 date string for the project start date'
-          },
-          create_user: {
-            type: 'integer',
-            minimum: 1
-          },
-          update_date: {
-            oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-            description: 'ISO 8601 date string for the project start date',
-            nullable: true
-          },
-          update_user: {
-            type: 'integer',
-            minimum: 1,
-            nullable: true
-          },
-          revision_count: {
-            type: 'integer',
-            minimum: 0
-          }
-        }
-      }
-    }
-  }
-};
-
 GET.apiDoc = {
   description: 'Get all observations for the survey.',
   tags: ['observation'],
@@ -183,14 +94,255 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            ...surveyObservationsResponseSchema,
+            type: 'object',
+            nullable: true,
             required: ['surveyObservations', 'supplementaryObservationData', 'pagination'],
             properties: {
-              ...surveyObservationsResponseSchema.properties,
-              supplementaryObservationData: { ...surveyObservationsSupplementaryData },
+              surveyObservations: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  required: [
+                    'survey_observation_id',
+                    'survey_id',
+                    'itis_tsn',
+                    'itis_scientific_name',
+                    'survey_sample_site_id',
+                    'survey_sample_method_id',
+                    'survey_sample_period_id',
+                    'latitude',
+                    'longitude',
+                    'count',
+                    'observation_time',
+                    'observation_date',
+                    'survey_sample_site_name',
+                    'survey_sample_method_name',
+                    'survey_sample_period_start_datetime',
+                    'subcount',
+                    'observation_subcount_attributes',
+                    'create_date',
+                    'create_user',
+                    'update_date',
+                    'update_user',
+                    'revision_count'
+                  ],
+                  properties: {
+                    survey_observation_id: {
+                      type: 'integer'
+                    },
+                    survey_id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    itis_tsn: {
+                      type: 'integer'
+                    },
+                    itis_scientific_name: {
+                      type: 'string',
+                      nullable: true
+                    },
+                    survey_sample_site_id: {
+                      type: 'number',
+                      nullable: true
+                    },
+                    survey_sample_method_id: {
+                      type: 'number',
+                      nullable: true
+                    },
+                    survey_sample_period_id: {
+                      type: 'number',
+                      nullable: true
+                    },
+                    latitude: {
+                      type: 'number'
+                    },
+                    longitude: {
+                      type: 'number'
+                    },
+                    count: {
+                      type: 'integer'
+                    },
+                    observation_time: {
+                      type: 'string'
+                    },
+                    observation_date: {
+                      type: 'string'
+                    },
+                    survey_sample_site_name: {
+                      type: 'string',
+                      nullable: true
+                    },
+                    survey_sample_method_name: {
+                      type: 'string',
+                      nullable: true
+                    },
+                    survey_sample_period_start_datetime: {
+                      type: 'string',
+                      nullable: true
+                    },
+                    subcount: {
+                      type: 'number',
+                      nullable: true
+                    },
+                    observation_subcount_attributes: {
+                      type: 'array',
+                      items: {
+                        type: 'string'
+                      },
+                      nullable: true
+                    },
+                    create_date: {
+                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                      description: 'ISO 8601 date string for the project start date'
+                    },
+                    create_user: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    update_date: {
+                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                      description: 'ISO 8601 date string for the project start date',
+                      nullable: true
+                    },
+                    update_user: {
+                      type: 'integer',
+                      minimum: 1,
+                      nullable: true
+                    },
+                    revision_count: {
+                      type: 'integer',
+                      minimum: 0
+                    }
+                  },
+                  additionalProperties: false
+                }
+              },
+              supplementaryObservationData: {
+                type: 'object',
+                required: ['observationCount'],
+                properties: {
+                  observationCount: {
+                    type: 'integer',
+                    minimum: 0
+                  },
+                  measurementColumns: {
+                    type: 'array',
+                    items: {
+                      anyOf: [
+                        {
+                          description: 'A quantitative (number) measurement, with possible min/max constraint.',
+                          type: 'object',
+                          required: [
+                            'itis_tsn',
+                            'taxon_measurement_id',
+                            'measurement_name',
+                            'measurement_desc',
+                            'min_value',
+                            'max_value',
+                            'unit'
+                          ],
+                          properties: {
+                            itis_tsn: {
+                              type: 'number',
+                              nullable: true
+                            },
+                            taxon_measurement_id: {
+                              type: 'string'
+                            },
+                            measurement_name: {
+                              type: 'string'
+                            },
+                            measurement_desc: {
+                              type: 'string',
+                              nullable: true
+                            },
+                            min_value: {
+                              type: 'number',
+                              nullable: true
+                            },
+                            max_value: {
+                              type: 'number',
+                              nullable: true
+                            },
+                            unit: {
+                              type: 'string',
+                              nullable: true
+                            }
+                          },
+                          additionalProperties: false
+                        },
+                        {
+                          description: 'A qualitative (string) measurement, with array of valid/accepted options',
+                          type: 'object',
+                          required: [
+                            'itis_tsn',
+                            'taxon_measurement_id',
+                            'measurement_name',
+                            'measurement_desc',
+                            'options'
+                          ],
+                          properties: {
+                            itis_tsn: {
+                              type: 'number',
+                              nullable: true
+                            },
+                            taxon_measurement_id: {
+                              type: 'string'
+                            },
+                            measurement_name: {
+                              type: 'string'
+                            },
+                            measurement_desc: {
+                              type: 'string',
+                              nullable: true
+                            },
+                            options: {
+                              description: 'Valid otions for the measurement.',
+                              type: 'array',
+                              items: {
+                                type: 'object',
+                                required: [
+                                  'taxon_measurement_id',
+                                  'qualitative_option_id',
+                                  'option_label',
+                                  'option_value',
+                                  'option_desc'
+                                ],
+                                properties: {
+                                  taxon_measurement_id: {
+                                    type: 'string'
+                                  },
+                                  qualitative_option_id: {
+                                    type: 'string'
+                                  },
+                                  option_label: {
+                                    type: 'string',
+                                    nullable: true
+                                  },
+                                  option_value: {
+                                    type: 'number'
+                                  },
+                                  option_desc: {
+                                    type: 'string',
+                                    nullable: true
+                                  }
+                                },
+                                additionalProperties: false
+                              }
+                            }
+                          },
+                          additionalProperties: false
+                        }
+                      ]
+                    }
+                  }
+                },
+                additionalProperties: false
+              },
               pagination: { ...paginationResponseSchema }
             },
-            title: 'Survey get response object, for view purposes'
+            title: 'Survey get response object, for view purposes',
+            additionalProperties: false
           }
         }
       }
@@ -269,6 +421,10 @@ PUT.apiDoc = {
                         type: 'number',
                         nullable: true
                       },
+                      survey_id: {
+                        type: 'integer',
+                        minimum: 1
+                      },
                       itis_tsn: {
                         type: 'integer'
                       },
@@ -301,8 +457,13 @@ PUT.apiDoc = {
                       },
                       observation_time: {
                         type: 'string'
+                      },
+                      revision_count: {
+                        type: 'integer',
+                        minimum: 0
                       }
-                    }
+                    },
+                    additionalProperties: true
                   },
                   measurementColumns: {
                     description:
@@ -322,13 +483,16 @@ PUT.apiDoc = {
                           oneOf: [{ type: 'number' }, { type: 'string' }],
                           nullable: true
                         }
-                      }
+                      },
+                      additionalProperties: false
                     }
                   }
-                }
+                },
+                additionalProperties: false
               }
             }
-          }
+          },
+          additionalProperties: false
         }
       }
     }
@@ -338,7 +502,105 @@ PUT.apiDoc = {
       description: 'Update OK',
       content: {
         'application/json': {
-          schema: { ...surveyObservationsResponseSchema }
+          schema: {
+            type: 'object',
+            nullable: true,
+            required: ['surveyObservations'],
+            properties: {
+              surveyObservations: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  required: [
+                    'survey_observation_id',
+                    'survey_id',
+                    'itis_tsn',
+                    'itis_scientific_name',
+                    'survey_sample_site_id',
+                    'survey_sample_method_id',
+                    'survey_sample_period_id',
+                    'latitude',
+                    'longitude',
+                    'count',
+                    'observation_time',
+                    'observation_date',
+                    'create_date',
+                    'create_user',
+                    'update_date',
+                    'update_user',
+                    'revision_count'
+                  ],
+                  properties: {
+                    survey_observation_id: {
+                      type: 'integer'
+                    },
+                    survey_id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    itis_tsn: {
+                      type: 'integer'
+                    },
+                    itis_scientific_name: {
+                      type: 'string',
+                      nullable: true
+                    },
+                    survey_sample_site_id: {
+                      type: 'number',
+                      nullable: true
+                    },
+                    survey_sample_method_id: {
+                      type: 'number',
+                      nullable: true
+                    },
+                    survey_sample_period_id: {
+                      type: 'number',
+                      nullable: true
+                    },
+                    latitude: {
+                      type: 'number'
+                    },
+                    longitude: {
+                      type: 'number'
+                    },
+                    count: {
+                      type: 'integer'
+                    },
+                    observation_time: {
+                      type: 'string'
+                    },
+                    observation_date: {
+                      type: 'string'
+                    },
+                    create_date: {
+                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                      description: 'ISO 8601 date string for the project start date'
+                    },
+                    create_user: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    update_date: {
+                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                      description: 'ISO 8601 date string for the project start date',
+                      nullable: true
+                    },
+                    update_user: {
+                      type: 'integer',
+                      minimum: 1,
+                      nullable: true
+                    },
+                    revision_count: {
+                      type: 'integer',
+                      minimum: 0
+                    }
+                  },
+                  additionalProperties: false
+                }
+              }
+            },
+            additionalProperties: false
+          }
         }
       }
     },
@@ -410,18 +672,21 @@ export function getSurveyObservations(): RequestHandler {
         paginationOptions
       );
 
-      const { observationCount } = observationData.supplementaryObservationData;
+      const observationCount = observationData.supplementaryObservationData.observationCount;
+
+      const pagination = {
+        total: observationCount,
+        per_page: limit,
+        current_page: page ?? 1,
+        last_page: limit ? Math.max(1, Math.ceil(observationCount / limit)) : 1,
+        sort,
+        order
+      };
 
       return res.status(200).json({
-        ...observationData,
-        pagination: {
-          total: observationCount,
-          per_page: limit,
-          current_page: page ?? 1,
-          last_page: limit ? Math.max(1, Math.ceil(observationCount / limit)) : 1,
-          sort,
-          order
-        }
+        surveyObservations: observationData.surveyObservations,
+        supplementaryObservationData: observationData.supplementaryObservationData,
+        pagination
       });
     } catch (error) {
       defaultLog.error({ label: 'getSurveyObservations', message: 'error', error });
@@ -456,19 +721,7 @@ export function insertUpdateSurveyObservationsWithMeasurements(): RequestHandler
       // Sanitize incoming records
       const newRecords: InsertUpdateObservationsWithMeasurements[] = req.body.surveyObservations.map((item: any) => {
         return {
-          observation: {
-            survey_observation_id: item.standardColumns.survey_observation_id,
-            itis_tsn: item.standardColumns.itis_tsn,
-            itis_scientific_name: item.standardColumns.itis_scientific_name,
-            survey_sample_site_id: item.standardColumns.survey_sample_site_id,
-            survey_sample_method_id: item.standardColumns.survey_sample_method_id,
-            survey_sample_period_id: item.standardColumns.survey_sample_period_id,
-            latitude: item.standardColumns.latitude,
-            longitude: item.standardColumns.longitude,
-            count: item.standardColumns.count,
-            observation_date: item.standardColumns.observation_date,
-            observation_time: item.standardColumns.observation_time
-          } as InsertObservation | UpdateObservation,
+          observation: { ...item.standardColumns } as InsertObservation | UpdateObservation,
           measurements: item.measurementColumns.map((measurement: any) => {
             return {
               count: item.standardColumns.sub_count,

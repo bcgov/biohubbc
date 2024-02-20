@@ -137,6 +137,17 @@ export interface ICbSelectRows {
   value: string;
 }
 
+/**
+ * Any Critterbase measurement.
+ */
+export type CBMeasurement = ICBQuantitativeMeasurement | ICBQualitativeMeasurement;
+
+/**
+ * A Critterbase quantitative measurement.
+ *
+ * @export
+ * @interface ICBQuantitativeMeasurement
+ */
 export interface ICBQuantitativeMeasurement {
   itis_tsn: number | null;
   taxon_measurement_id: string;
@@ -147,6 +158,12 @@ export interface ICBQuantitativeMeasurement {
   unit: CBMeasurementUnit | null;
 }
 
+/**
+ * A Critterbase qualitative measurement.
+ *
+ * @export
+ * @interface ICBQualitativeMeasurement
+ */
 export interface ICBQualitativeMeasurement {
   itis_tsn: number | null;
   taxon_measurement_id: string;
@@ -155,6 +172,12 @@ export interface ICBQualitativeMeasurement {
   options: ICBQualitativeOption[];
 }
 
+/**
+ * A Critterbase qualitative measurement unit.
+ *
+ * @export
+ * @enum {number}
+ */
 export enum CBMeasurementUnit {
   millimeter = 'millimeter',
   centimeter = 'centimeter',
@@ -164,6 +187,12 @@ export enum CBMeasurementUnit {
   kilogram = 'kilogram'
 }
 
+/**
+ * A Critterbase qualitative measurement option (ie. drop-down option).
+ *
+ * @export
+ * @interface ICBQualitativeOption
+ */
 export interface ICBQualitativeOption {
   taxon_measurement_id: string;
   qualitative_option_id: string;
@@ -345,23 +374,102 @@ export class CritterbaseService {
     return { qualitative: [], quantitative: [] };
   }
 
-  async getMeasurementsForEventIds(ids: (string | null)[]): Promise<any> {
+  async getMeasurementsForEventIds(ids: (string | null)[]): Promise<CBMeasurement[]> {
     // TODO: wire up to critter base api when available
     // const response = await this.axiosInstance.post('', ids);
     return [
-      { id: v4().toString(), name: 'Wingspan', type: 'string' },
-      { id: v4().toString(), name: 'Fur color', type: 'string' },
-      { id: v4().toString(), name: 'Antlers', type: 'number' }
+      {
+        itis_tsn: 123,
+        taxon_measurement_id: 'c38c3d61-833f-47d4-a173-6a01a19a7a13',
+        measurement_name: 'Estimated age',
+        measurement_desc: 'Estimated age of the animal in years',
+        max_value: 100,
+        min_value: 0,
+        unit: null
+      },
+      {
+        itis_tsn: 456,
+        taxon_measurement_id: 'd47568e6-e7ef-49fd-bbac-7e4ad47418be',
+        measurement_name: 'Juvenile at heel indicator',
+        measurement_desc: 'Indicator of juvenile at heel',
+        options: [
+          {
+            qualitative_option_id: '824900f6-f2bd-4a24-b844-3bf54d82a667',
+            taxon_measurement_id: 'd47568e6-e7ef-49fd-bbac-7e4ad47418be',
+            option_label: 'False',
+            option_value: 0,
+            option_desc: null
+          },
+          {
+            qualitative_option_id: '2272abee-8161-4887-a5e4-b842524e48c8',
+            taxon_measurement_id: 'd47568e6-e7ef-49fd-bbac-7e4ad47418be',
+            option_label: 'True',
+            option_value: 1,
+            option_desc: null
+          }
+        ]
+      }
     ];
   }
 
-  async searchForMeasurements(search: string): Promise<any> {
+  async searchForMeasurements(search: string): Promise<CBMeasurement[]> {
     // TODO: wire up to critter base api when available
     // const response = await this.axiosInstance.post('', ids);
     return [
-      { id: v4().toString(), name: 'Wingspan', type: 'string' },
-      { id: v4().toString(), name: 'Fur color', type: 'string' },
-      { id: v4().toString(), name: 'Antlers', type: 'number' }
+      {
+        itis_tsn: 123,
+        taxon_measurement_id: 'c38c3d61-833f-47d4-a173-6a01a19a7a13',
+        measurement_name: 'Estimated age',
+        measurement_desc: 'Estimated age of the animal in years',
+        max_value: null,
+        min_value: 0,
+        unit: null
+      },
+      {
+        itis_tsn: 123,
+        taxon_measurement_id: '9b58e2bd-a5b1-4217-b41e-16112003e7e6',
+        measurement_name: 'Juvenile count',
+        measurement_desc: 'Number of juveniles',
+        max_value: null,
+        min_value: 0,
+        unit: null
+      },
+      {
+        itis_tsn: 123,
+        taxon_measurement_id: 'b0712ca0-74b3-42df-9c42-7066e6713518',
+        measurement_name: 'Life Stage',
+        measurement_desc: 'Life stage of the animal',
+        options: []
+      },
+      {
+        itis_tsn: 456,
+        taxon_measurement_id: '1e1fccd9-9d35-41f8-abd0-408d41e9ba33',
+        measurement_name: 'Life Stage',
+        measurement_desc: 'Life stage of the animal',
+        options: []
+      },
+      {
+        itis_tsn: 456,
+        taxon_measurement_id: 'd47568e6-e7ef-49fd-bbac-7e4ad47418be',
+        measurement_name: 'Juvenile at heel indicator',
+        measurement_desc: 'Indicator of juvenile at heel',
+        options: [
+          {
+            qualitative_option_id: '824900f6-f2bd-4a24-b844-3bf54d82a667',
+            taxon_measurement_id: 'd47568e6-e7ef-49fd-bbac-7e4ad47418be',
+            option_label: 'False',
+            option_value: 0,
+            option_desc: null
+          },
+          {
+            qualitative_option_id: '2272abee-8161-4887-a5e4-b842524e48c8',
+            taxon_measurement_id: 'd47568e6-e7ef-49fd-bbac-7e4ad47418be',
+            option_label: 'True',
+            option_value: 1,
+            option_desc: null
+          }
+        ]
+      }
     ];
   }
 
