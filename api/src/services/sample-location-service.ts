@@ -7,8 +7,9 @@ import {
 } from '../repositories/sample-location-repository';
 import { InsertSampleMethodRecord } from '../repositories/sample-method-repository';
 import { DBService } from './db-service';
-import { SampleMethodService } from './sample-method-service';
 import { SampleBlockService } from './sample-block-service';
+import { SampleMethodService } from './sample-method-service';
+import { SampleStratumService } from './sample-stratum-service';
 
 interface SampleSite {
   name: string;
@@ -155,6 +156,7 @@ export class SampleLocationService extends DBService {
   async updateSampleLocationMethodPeriod(sampleSite: UpdateSampleSiteRecord) {
     const methodService = new SampleMethodService(this.connection);
     const blockService = new SampleBlockService(this.connection);
+    const stratumService = new SampleStratumService(this.connection);
 
     // Update the main sample location
     await this.sampleLocationRepository.updateSampleLocation(sampleSite);
@@ -165,7 +167,8 @@ export class SampleLocationService extends DBService {
     // Check for blocks to delete
     await blockService.deleteSampleBlocksNotInArray(sampleSite.survey_sample_site_id, sampleSite.blocks);
 
-    console.log(sampleSite)
+    // Check for stratums to delete
+    await stratumService.deleteSampleStratumsNotInArray(sampleSite.survey_sample_site_id, sampleSite.stratums);
 
     // Loop through all blocks
     // For each block, check if it exists
@@ -185,6 +188,27 @@ export class SampleLocationService extends DBService {
           survey_block_id: item.survey_block_id
         };
         await blockService.insertSampleBlock(sampleBlock);
+      }
+    }
+
+    // Loop through all stratums
+    // For each stratum, check if it exists
+    // If it exists, update it
+    // If it does not exist, create it
+    for (const item of sampleSite.stratums) {
+      if (item.survey_sample_stratum_id) {
+        const sampleStratum = {
+          survey_sample_site_id: sampleSite.survey_sample_site_id,
+          survey_sample_stratum_id: item.survey_sample_stratum_id,
+          survey_stratum_id: item.survey_stratum_id
+        };
+        await stratumService.updateSampleStratum(sampleStratum);
+      } else {
+        const sampleStratum = {
+          survey_sample_site_id: sampleSite.survey_sample_site_id,
+          survey_stratum_id: item.survey_stratum_id
+        };
+        await stratumService.insertSampleStratum(sampleStratum);
       }
     }
 

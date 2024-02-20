@@ -20,8 +20,6 @@ export const SampleBlockRecord = z.object({
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number()
-  // name: z.string(),
-  // description: z.string()
 });
 export type SampleBlockRecord = z.infer<typeof SampleBlockRecord>;
 
@@ -75,14 +73,18 @@ export class SampleBlockRepository extends BaseRepository {
    */
   async getSampleBlocksCountForSurveyBlockId(surveyBlockId: number): Promise<{ sampleCount: number }> {
     const sql = SQL`
-      SELECT COUNT(*) as sampleCount
+      SELECT *
       FROM survey_sample_block
       WHERE survey_block_id = ${surveyBlockId};
     `;
 
+    console.log(sql)
+
     const response = await this.connection.sql(sql, SampleBlockRecord);
 
-    const sampleCount = Number(response.rows[0]);
+    console.log(response)
+
+    const sampleCount = Number(response.rowCount);
     // console.log(sampleCount);
     return { sampleCount };
   }
