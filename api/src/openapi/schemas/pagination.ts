@@ -1,10 +1,10 @@
-import { SchemaObject } from 'ajv';
+import { OpenAPIV3 } from 'openapi-types';
 
 /**
  * API schema used to assert pagination query paramaters
  * for paginated data requests.
  */
-export const paginationRequestQueryParamSchema: any[] = [
+export const paginationRequestQueryParamSchema: OpenAPIV3.ParameterObject[] = [
   {
     in: 'query',
     name: 'page',
@@ -51,7 +51,7 @@ export const paginationRequestQueryParamSchema: any[] = [
  * API schema to assert pagination information for paginated data
  * responses.
  */
-export const paginationResponseSchema: SchemaObject = {
+export const paginationResponseSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   required: ['total', 'current_page', 'last_page'],
   properties: {
@@ -82,5 +82,6 @@ export const paginationResponseSchema: SchemaObject = {
       enum: ['asc', 'desc'],
       description: 'The sort order of the response'
     }
-  }
+  },
+  additionalProperties: false
 };

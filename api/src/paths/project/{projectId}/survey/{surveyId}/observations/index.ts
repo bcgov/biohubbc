@@ -94,8 +94,8 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
+            description: 'Survey get response object, for view purposes',
             type: 'object',
-            nullable: true,
             required: ['surveyObservations', 'supplementaryObservationData', 'pagination'],
             properties: {
               surveyObservations: {
@@ -219,7 +219,7 @@ GET.apiDoc = {
               },
               supplementaryObservationData: {
                 type: 'object',
-                required: ['observationCount'],
+                required: ['observationCount', 'measurementColumns'],
                 properties: {
                   observationCount: {
                     type: 'integer',
@@ -341,7 +341,6 @@ GET.apiDoc = {
               },
               pagination: { ...paginationResponseSchema }
             },
-            title: 'Survey get response object, for view purposes',
             additionalProperties: false
           }
         }
