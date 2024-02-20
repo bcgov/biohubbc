@@ -790,7 +790,7 @@ describe('getSurveyObservations', () => {
 
           expect(response.message).to.equal('The response was not valid.');
           expect(response.errors.length).to.equal(1);
-          expect(response.errors[0].path).to.equal('surveyObservations');
+          expect(response.errors[0].path).to.equal('surveyObservations/0');
           expect(response.errors[0].message).to.equal(`must have required property 'latitude'`);
         });
 
@@ -939,7 +939,7 @@ describe('getSurveyObservations', () => {
     expect(mockRes.statusValue).to.equal(200);
     expect(mockRes.jsonValue).to.eql({
       surveyObservations: [{ survey_observation_id: 11 }, { survey_observation_id: 12 }],
-      supplementaryObservationData: { observationCount: 59 },
+      supplementaryObservationData: { observationCount: 59, measurementColumns: [] },
       pagination: {
         total: 59,
         current_page: 4,
@@ -985,7 +985,7 @@ describe('getSurveyObservations', () => {
     expect(mockRes.statusValue).to.equal(200);
     expect(mockRes.jsonValue).to.eql({
       surveyObservations: [{ survey_observation_id: 16 }, { survey_observation_id: 17 }],
-      supplementaryObservationData: { observationCount: 50 },
+      supplementaryObservationData: { observationCount: 50, measurementColumns: [] },
       pagination: {
         total: 50,
         current_page: 2,
@@ -1026,7 +1026,7 @@ describe('getSurveyObservations', () => {
     expect(mockRes.statusValue).to.equal(200);
     expect(mockRes.jsonValue).to.eql({
       surveyObservations: [{ survey_observation_id: 16 }, { survey_observation_id: 17 }],
-      supplementaryObservationData: { observationCount: 2 },
+      supplementaryObservationData: { observationCount: 2, measurementColumns: [] },
       pagination: {
         total: 2,
         current_page: 1,
