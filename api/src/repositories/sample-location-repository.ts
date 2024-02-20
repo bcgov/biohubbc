@@ -99,7 +99,7 @@ export class SampleLocationRepository extends BaseRepository {
       .where('sss.survey_id', surveyId)
       .orderBy('sss.survey_sample_site_id', 'asc');
 
-    const response = await this.connection.knex(queryBuilder, SampleLocationRecord);
+    const response = await this.connection.knex(queryBuilder /*, SampleLocationRecord*/);
     return response.rows;
   }
 
