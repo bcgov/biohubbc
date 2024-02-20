@@ -56,7 +56,6 @@ export class SampleLocationService extends DBService {
       if (!site.sample_blocks) {
         site.sample_blocks = [];
       }
-      console.log(site);
       return site;
     });
   }
@@ -157,7 +156,6 @@ export class SampleLocationService extends DBService {
     const methodService = new SampleMethodService(this.connection);
     const blockService = new SampleBlockService(this.connection);
 
-    console.log(sampleSite);
     // Update the main sample location
     await this.sampleLocationRepository.updateSampleLocation(sampleSite);
 
@@ -166,6 +164,8 @@ export class SampleLocationService extends DBService {
 
     // Check for blocks to delete
     await blockService.deleteSampleBlocksNotInArray(sampleSite.survey_sample_site_id, sampleSite.blocks);
+
+    console.log(sampleSite)
 
     // Loop through all blocks
     // For each block, check if it exists

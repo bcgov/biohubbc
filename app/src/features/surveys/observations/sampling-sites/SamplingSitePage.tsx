@@ -20,11 +20,11 @@ import { Feature } from 'geojson';
 import History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetSurveyBlock } from 'interfaces/useSurveyApi.interface';
 import { useContext, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
 import SamplingSiteHeader from './SamplingSiteHeader';
-import { IGetSampleBlockRecord, IGetSurveyBlock } from 'interfaces/useSurveyApi.interface';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {

@@ -5,7 +5,7 @@ import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
 import { BaseRepository } from './base-repository';
-import { SampleBlockRecord, UpdateSampleBlockRecord } from './sample-blocks-repository';
+import { SampleBlockDetails, UpdateSampleBlockRecord } from './sample-blocks-repository';
 import { SampleMethodRecord, UpdateSampleMethodRecord } from './sample-method-repository';
 
 // This describes a row in the database for Survey Sample Location
@@ -22,7 +22,7 @@ export const SampleLocationRecord = z.object({
   update_user: z.number().nullable(),
   revision_count: z.number(),
   sample_methods: z.array(SampleMethodRecord).default([]),
-  sample_blocks: z.array(SampleBlockRecord).default([]).nullable()
+  sample_blocks: z.array(SampleBlockDetails).default([]).nullable()
 });
 export type SampleLocationRecord = z.infer<typeof SampleLocationRecord>;
 

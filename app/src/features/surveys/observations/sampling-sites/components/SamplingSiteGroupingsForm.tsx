@@ -1,11 +1,8 @@
 import Box from '@mui/material/Box';
-import { useFormikContext } from 'formik';
 import { useParams } from 'react-router';
-import { IEditSamplingSiteRequest } from '../edit/components/SampleSiteEditForm';
-import { ICreateSamplingSiteRequest } from '../SamplingSitePage';
+import SamplingBlockEditForm from '../edit/components/SamplingBlockEditForm';
 import SamplingBlockForm from './SamplingBlockForm';
 import SamplingStratumForm from './SamplingStratumForm';
-import SamplingBlockEditForm from '../edit/components/SamplingBlockEditForm';
 
 const SamplingSiteGroupingsForm = () => {
   const urlParams: Record<string, string | number | undefined> = useParams();
@@ -13,7 +10,7 @@ const SamplingSiteGroupingsForm = () => {
 
   return (
     <>
-      {surveySampleSiteId ? <SamplingBlockEditForm/> : <SamplingBlockForm />}
+      {surveySampleSiteId ? <SamplingBlockEditForm /> : <SamplingBlockForm />}
       <Box mt={5}>
         <SamplingStratumForm />
       </Box>
