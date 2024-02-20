@@ -2,18 +2,12 @@ import {
   IObservationRecordWithSamplingDataWithAttributes,
   ISupplementaryObservationData
 } from 'contexts/observationsTableContext';
+import { ApiPaginationResponseParams } from 'types/misc';
 
 export interface IGetSurveyObservationsResponse {
   surveyObservations: IObservationRecordWithSamplingDataWithAttributes[];
   supplementaryObservationData: ISupplementaryObservationData;
-  pagination: {
-    total: number;
-    current_page: number;
-    last_page: number;
-    per_page?: number;
-    sort?: string;
-    order?: 'asc' | 'desc';
-  };
+  pagination: ApiPaginationResponseParams;
 }
 
 export interface IGetSurveyObservationsGeometryResponse {

@@ -3,6 +3,10 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
+import {
+  paginationRequestQueryParamSchema,
+  paginationResponseSchema
+} from '../../../../../../openapi/schemas/pagination';
 import { InsertObservation, UpdateObservation } from '../../../../../../repositories/observation-repository';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import {
@@ -144,40 +148,6 @@ export const surveyObservationsResponseSchema: SchemaObject = {
   }
 };
 
-const paginationResponseSchema: SchemaObject = {
-  type: 'object',
-  required: ['total', 'current_page', 'last_page'],
-  properties: {
-    total: {
-      type: 'integer',
-      description: 'The total number of observation records belonging to the survey'
-    },
-    per_page: {
-      type: 'integer',
-      minimum: 1,
-      description: 'The number of records shown per page'
-    },
-    current_page: {
-      type: 'integer',
-      description: 'The current page being fetched'
-    },
-    last_page: {
-      type: 'integer',
-      minimum: 1,
-      description: 'The total number of pages'
-    },
-    sort: {
-      type: 'string',
-      description: 'The column that is being sorted on'
-    },
-    order: {
-      type: 'string',
-      enum: ['asc', 'desc'],
-      description: 'The sort order of the response'
-    }
-  }
-};
-
 GET.apiDoc = {
   description: 'Get all observations for the survey.',
   tags: ['observation'],
@@ -205,39 +175,7 @@ GET.apiDoc = {
       },
       required: true
     },
-    {
-      in: 'query',
-      name: 'page',
-      required: false,
-      schema: {
-        type: 'integer',
-        minimum: 1,
-        description: 'The current page number being fetched'
-      }
-    },
-    {
-      in: 'query',
-      name: 'limit',
-      required: false,
-      schema: {
-        type: 'integer',
-        minimum: 1,
-        maximum: 100,
-        description: 'The number of records per page'
-      }
-    },
-    {
-      in: 'query',
-      name: 'sort',
-      required: false,
-      description: 'The column being sorted on'
-    },
-    {
-      in: 'query',
-      name: 'order',
-      required: false,
-      description: 'The order of the sort, i.e. asc or desc'
-    }
+    ...paginationRequestQueryParamSchema
   ],
   responses: {
     200: {
@@ -444,6 +382,7 @@ const samplingSiteSortingColumnName: Record<string, string> = {
 export function getSurveyObservations(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
+    defaultLog.debug({ label: 'getSurveyObservations', surveyId });
 
     const page: number | undefined = req.query.page ? Number(req.query.page) : undefined;
     const limit: number | undefined = req.query.limit ? Number(req.query.limit) : undefined;
@@ -455,8 +394,6 @@ export function getSurveyObservations(): RequestHandler {
     if (sortQuery && samplingSiteSortingColumnName[sortQuery]) {
       sort = samplingSiteSortingColumnName[sortQuery];
     }
-
-    defaultLog.debug({ label: 'getSurveyObservations', surveyId });
 
     const connection = getDBConnection(req['keycloak_token']);
 

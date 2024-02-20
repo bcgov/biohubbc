@@ -155,7 +155,7 @@ export class ValidationSchemaParser {
   }
 
   /**
-   * Retreives all validation rules for workbooks. Workbook validations differ from submission
+   * Retrieves all validation rules for workbooks. Workbook validations differ from submission
    * validations in that they alter the validation state of each worksheet within the workbook.
    * @returns {*} {WorkBookValidator[]} All workbook validation rules for the given submission.
    */

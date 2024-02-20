@@ -3,6 +3,7 @@ import { PROJECT_PERMISSION, PROJECT_ROLE } from 'constants/roles';
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
 import { IProjectIUCNForm } from 'features/projects/components/ProjectIUCNForm';
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
+import { ApiPaginationResponseParams } from 'types/misc';
 
 export interface IGetProjectAttachment {
   id: number;
@@ -98,15 +99,15 @@ export interface IProjectSupplementaryData {
  * @interface IGetProjectsListResponse
  */
 export interface IGetProjectsListResponse {
-  projectData: IProjectsListData;
-  projectSupplementaryData: IProjectSupplementaryData;
+  projects: IProjectsListItemData[];
+  pagination: ApiPaginationResponseParams;
 }
 
-export interface IProjectsListData {
-  id: number;
+export interface IProjectsListItemData {
+  project_id: number;
   name: string;
   start_date: string;
-  end_date: string;
+  end_date?: string;
   completion_status: string;
   regions: string[];
   project_programs: number[];

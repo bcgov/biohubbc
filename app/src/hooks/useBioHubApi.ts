@@ -4,7 +4,6 @@ import { useContext, useMemo } from 'react';
 import useAdminApi from './api/useAdminApi';
 import useAxios from './api/useAxios';
 import useCodesApi from './api/useCodesApi';
-import useDraftApi from './api/useDraftApi';
 import useDwcaApi from './api/useDwcaApi';
 import useExternalApi from './api/useExternalApi';
 import useFundingSourceApi from './api/useFundingSourceApi';
@@ -38,8 +37,6 @@ export const useBiohubApi = () => {
 
   const codes = useCodesApi(apiAxios);
 
-  const draft = useDraftApi(apiAxios);
-
   const user = useUserApi(apiAxios);
 
   const admin = useAdminApi(apiAxios);
@@ -70,7 +67,6 @@ export const useBiohubApi = () => {
       dwca,
       resources,
       codes,
-      draft,
       user,
       admin,
       external,
