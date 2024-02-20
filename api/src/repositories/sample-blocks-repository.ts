@@ -19,11 +19,26 @@ export const SampleBlockRecord = z.object({
   create_user: z.number(),
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
+  revision_count: z.number()
+  // name: z.string(),
+  // description: z.string()
+});
+export type SampleBlockRecord = z.infer<typeof SampleBlockRecord>;
+
+// This describes a row in the database for Survey Sample Block
+export const SampleBlockDetails = z.object({
+  survey_sample_block_id: z.number(),
+  survey_sample_site_id: z.number(),
+  survey_block_id: z.number(),
+  create_date: z.string(),
+  create_user: z.number(),
+  update_date: z.string().nullable(),
+  update_user: z.number().nullable(),
   revision_count: z.number(),
   name: z.string(),
   description: z.string()
 });
-export type SampleBlockRecord = z.infer<typeof SampleBlockRecord>;
+export type SampleBlockDetails = z.infer<typeof SampleBlockDetails>;
 
 /**
  * Sample Block Repository
@@ -36,7 +51,7 @@ export class SampleBlockRepository extends BaseRepository {
   /**
    * Gets all survey Sample Blocks.
    *
-   * @param {number} surveySampleSiteId
+   * @param {number} surveyBlockId
    * @return {*}  {Promise<SampleBlockRecord[]>}
    * @memberof sampleBlockRepository
    */
@@ -66,7 +81,7 @@ export class SampleBlockRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sql, SampleBlockRecord);
-    console.log(response);
+
     const sampleCount = Number(response.rows[0]);
     // console.log(sampleCount);
     return { sampleCount };
@@ -184,10 +199,9 @@ export class SampleBlockRepository extends BaseRepository {
 
     console.log(sql);
 
-    
     // todo: reconcile types
     const response = await this.connection.sql(sql); //, SampleBlockRecord
-    console.log(response)
+    console.log(response);
     return response.rows;
   }
 }

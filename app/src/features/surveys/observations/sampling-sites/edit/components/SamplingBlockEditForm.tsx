@@ -18,7 +18,9 @@ const SamplingBlockEditForm = () => {
 
   const options = surveyContext.surveyDataLoader?.data?.surveyData?.blocks || [];
 
-  const [selectedBlocks, setSelectedBlocks] = useState<(IGetSampleBlockRecord | IGetSurveyBlock)[]>(values.sampleSite.blocks);
+  const [selectedBlocks, setSelectedBlocks] = useState<(IGetSampleBlockRecord | IGetSurveyBlock)[]>(
+    values.sampleSite.blocks
+  );
 
   useEffect(() => {
     if (selectedBlocks.length < 1) {

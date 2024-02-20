@@ -12,7 +12,6 @@ import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormC
 import { CreateSamplingSiteI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import { IBlockData } from 'features/surveys/components/BlockForm';
 import { ISurveySampleMethodData, SamplingSiteMethodYupSchema } from 'features/surveys/components/MethodForm';
 import SamplingMethodForm from 'features/surveys/components/SamplingMethodForm';
 import SurveySamplingSiteImportForm from 'features/surveys/components/SurveySamplingSiteImportForm';
@@ -22,12 +21,12 @@ import { Feature } from 'geojson';
 import History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetSurveyBlock } from 'interfaces/useSurveyApi.interface';
 import { useContext, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
 import SamplingSiteGroupingsForm from './components/SamplingSiteGroupingsForm';
 import SamplingSiteHeader from './SamplingSiteHeader';
-import { IGetSampleBlockRecord, IGetSurveyBlock } from 'interfaces/useSurveyApi.interface';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
