@@ -109,7 +109,14 @@ const SurveysListPage = () => {
         />
       )
     },
-    // TODO add focal species column
+    {
+      field: 'focal_species_names',
+      headerName: 'Focal Species',
+      flex: 1,
+      disableColumnMenu: true,
+      sortable: false,
+      renderCell: (params) => <Typography>{params.value.join(', ')}</Typography>
+    }
   ];
 
   const NoRowsOverlayStyled = useCallback(() => <NoRowsOverlay className={classes.noDataText} />, [classes.noDataText]);
