@@ -75,14 +75,14 @@ export class SampleBlockRepository extends BaseRepository {
    */
   async getSampleBlocksCountForSurveyBlockId(surveyBlockId: number): Promise<{ sampleCount: number }> {
     const sql = SQL`
-      SELECT COUNT(*) as sampleCount
+      SELECT *
       FROM survey_sample_block
       WHERE survey_block_id = ${surveyBlockId};
     `;
 
     const response = await this.connection.sql(sql, SampleBlockRecord);
 
-    const sampleCount = Number(response.rows[0]);
+    const sampleCount = Number(response.rowCount);
     // console.log(sampleCount);
     return { sampleCount };
   }
