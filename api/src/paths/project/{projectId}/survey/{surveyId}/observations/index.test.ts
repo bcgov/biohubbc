@@ -6,7 +6,10 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
-import { ObservationRecord } from '../../../../../../repositories/observation-repository';
+import {
+  ObservationRecord,
+  ObservationRecordWithSamplingDataWithAttributes
+} from '../../../../../../repositories/observation-repository';
 import { ObservationService } from '../../../../../../services/observation-service';
 import { PlatformService } from '../../../../../../services/platform-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
@@ -14,7 +17,7 @@ import * as observationRecords from './index';
 
 chai.use(sinonChai);
 
-describe('insertUpdateSurveyObservations', () => {
+describe.only('insertUpdateSurveyObservations', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -142,13 +145,20 @@ describe('insertUpdateSurveyObservations', () => {
             body: {
               surveyObservations: [
                 {
-                  itis_tsn: 1234,
-                  itis_scientific_name: 'scientific name',
-                  count: 99,
-                  // latitude: 48.103322,
-                  longitude: -122.798892,
-                  observation_date: '1970-01-01',
-                  observation_time: '00:00:00'
+                  standardColumns: {
+                    itis_tsn: 1234,
+                    itis_scientific_name: 'scientific name',
+                    count: 99,
+                    // latitude: 48.103322,
+                    longitude: -122.798892,
+                    observation_date: '1970-01-01',
+                    observation_time: '00:00:00',
+                    subcount: 1,
+                    survey_sample_period_id: 1,
+                    survey_sample_method_id: 1,
+                    survey_sample_site_id: 1
+                  },
+                  measurementColumns: []
                 }
               ]
             }
@@ -158,7 +168,7 @@ describe('insertUpdateSurveyObservations', () => {
 
           expect(response.status).to.equal(400);
           expect(response.errors.length).to.equal(1);
-          expect(response.errors[0].path).to.equal('surveyObservations.0.latitude');
+          expect(response.errors[0].path).to.equal('surveyObservations.0.standardColumns.latitude');
           expect(response.errors[0].message).to.equal(`must have required property 'latitude'`);
         });
 
@@ -174,13 +184,20 @@ describe('insertUpdateSurveyObservations', () => {
             body: {
               surveyObservations: [
                 {
-                  itis_tsn: 1234,
-                  itis_scientific_name: 'scientific name',
-                  count: 99,
-                  latitude: 48.103322,
-                  // longitude: -122.798892,
-                  observation_date: '1970-01-01',
-                  observation_time: '00:00:00'
+                  standardColumns: {
+                    itis_tsn: 1234,
+                    itis_scientific_name: 'scientific name',
+                    count: 99,
+                    latitude: 48.103322,
+                    // longitude: -122.798892,
+                    observation_date: '1970-01-01',
+                    observation_time: '00:00:00',
+                    subcount: 1,
+                    survey_sample_period_id: 1,
+                    survey_sample_method_id: 1,
+                    survey_sample_site_id: 1
+                  },
+                  measurementColumns: []
                 }
               ]
             }
@@ -190,7 +207,7 @@ describe('insertUpdateSurveyObservations', () => {
 
           expect(response.status).to.equal(400);
           expect(response.errors.length).to.equal(1);
-          expect(response.errors[0].path).to.equal('surveyObservations.0.longitude');
+          expect(response.errors[0].path).to.equal('surveyObservations.0.standardColumns.longitude');
           expect(response.errors[0].message).to.equal(`must have required property 'longitude'`);
         });
 
@@ -206,13 +223,20 @@ describe('insertUpdateSurveyObservations', () => {
             body: {
               surveyObservations: [
                 {
-                  itis_tsn: 1234,
-                  itis_scientific_name: 'scientific name',
-                  // count: 99,
-                  latitude: 48.103322,
-                  longitude: -122.798892,
-                  observation_date: '1970-01-01',
-                  observation_time: '00:00:00'
+                  standardColumns: {
+                    itis_tsn: 1234,
+                    itis_scientific_name: 'scientific name',
+                    // count: 99,
+                    latitude: 48.103322,
+                    longitude: -122.798892,
+                    observation_date: '1970-01-01',
+                    observation_time: '00:00:00',
+                    subcount: 1,
+                    survey_sample_period_id: 1,
+                    survey_sample_method_id: 1,
+                    survey_sample_site_id: 1
+                  },
+                  measurementColumns: []
                 }
               ]
             }
@@ -222,7 +246,7 @@ describe('insertUpdateSurveyObservations', () => {
 
           expect(response.status).to.equal(400);
           expect(response.errors.length).to.equal(1);
-          expect(response.errors[0].path).to.equal('surveyObservations.0.count');
+          expect(response.errors[0].path).to.equal('surveyObservations.0.standardColumns.count');
           expect(response.errors[0].message).to.equal(`must have required property 'count'`);
         });
       });
@@ -396,7 +420,7 @@ describe('insertUpdateSurveyObservations', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     const insertUpdateSurveyObservationsStub = sinon
-      .stub(ObservationService.prototype, 'insertUpdateSurveyObservations')
+      .stub(ObservationService.prototype, 'insertUpdateSurveyObservationsWithMeasurements')
       .resolves(([{ survey_observation_id: 1 }, { survey_observation_id: 2 }] as unknown) as ObservationRecord[]);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -409,60 +433,74 @@ describe('insertUpdateSurveyObservations', () => {
     mockReq.body = {
       surveyObservations: [
         {
-          survey_observation_id: 1,
-          itis_tsn: 1234,
-          count: 99,
-          latitude: 48.103322,
-          longitude: -122.798892,
-          observation_date: '1970-01-01',
-          observation_time: '00:00:00',
-          survey_sample_site_id: 1,
-          survey_sample_method_id: 1,
-          survey_sample_period_id: 1
+          standardColumns: {
+            survey_observation_id: 1,
+            itis_tsn: 1234,
+            itis_scientific_name: '',
+            count: 99,
+            latitude: 48.103322,
+            longitude: -122.798892,
+            observation_date: '1970-01-01',
+            observation_time: '00:00:00',
+            survey_sample_site_id: 1,
+            survey_sample_method_id: 1,
+            survey_sample_period_id: 1
+          },
+          measurementColumns: []
         },
         {
-          itis_tsn: 1234,
-          count: 99,
-          latitude: 48.103322,
-          longitude: -122.798892,
-          observation_date: '1970-01-01',
-          observation_time: '00:00:00',
-          survey_sample_site_id: 1,
-          survey_sample_method_id: 1,
-          survey_sample_period_id: 1
+          standardColumns: {
+            itis_tsn: 1234,
+            itis_scientific_name: '',
+            count: 99,
+            latitude: 48.103322,
+            longitude: -122.798892,
+            observation_date: '1970-01-01',
+            observation_time: '00:00:00',
+            survey_sample_site_id: 1,
+            survey_sample_method_id: 1,
+            survey_sample_period_id: 1
+          },
+          measurementColumns: []
         }
       ]
     };
 
-    const requestHandler = observationRecords.insertUpdateSurveyObservations();
+    const requestHandler = observationRecords.insertUpdateSurveyObservationsWithMeasurements();
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(insertUpdateSurveyObservationsStub).to.have.been.calledOnceWith(2, [
       {
-        survey_observation_id: 1,
-        itis_tsn: 1234,
-        itis_scientific_name: null,
-        latitude: 48.103322,
-        longitude: -122.798892,
-        count: 99,
-        observation_date: '1970-01-01',
-        observation_time: '00:00:00',
-        survey_sample_site_id: 1,
-        survey_sample_method_id: 1,
-        survey_sample_period_id: 1
+        observation: {
+          survey_observation_id: 1,
+          itis_tsn: 1234,
+          itis_scientific_name: '',
+          survey_sample_site_id: 1,
+          survey_sample_method_id: 1,
+          survey_sample_period_id: 1,
+          latitude: 48.103322,
+          longitude: -122.798892,
+          count: 99,
+          observation_date: '1970-01-01',
+          observation_time: '00:00:00'
+        },
+        measurements: []
       },
       {
-        survey_observation_id: undefined,
-        itis_tsn: 1234,
-        itis_scientific_name: null,
-        latitude: 48.103322,
-        longitude: -122.798892,
-        count: 99,
-        observation_date: '1970-01-01',
-        observation_time: '00:00:00',
-        survey_sample_site_id: 1,
-        survey_sample_method_id: 1,
-        survey_sample_period_id: 1
+        observation: {
+          survey_observation_id: undefined,
+          itis_tsn: 1234,
+          itis_scientific_name: '',
+          survey_sample_site_id: 1,
+          survey_sample_method_id: 1,
+          survey_sample_period_id: 1,
+          latitude: 48.103322,
+          longitude: -122.798892,
+          count: 99,
+          observation_date: '1970-01-01',
+          observation_time: '00:00:00'
+        },
+        measurements: []
       }
     ]);
     expect(mockRes.statusValue).to.equal(200);
@@ -476,7 +514,9 @@ describe('insertUpdateSurveyObservations', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(ObservationService.prototype, 'insertUpdateSurveyObservations').rejects(new Error('a test error'));
+    sinon
+      .stub(ObservationService.prototype, 'insertUpdateSurveyObservationsWithMeasurements')
+      .rejects(new Error('a test error'));
     sinon.stub(PlatformService.prototype, 'getTaxonomyByTsns').resolves([
       { tsn: '1234', scientificName: 'scientific name' },
       { tsn: '1234', scientificName: 'scientific name' }
@@ -505,7 +545,7 @@ describe('insertUpdateSurveyObservations', () => {
     };
 
     try {
-      const requestHandler = observationRecords.insertUpdateSurveyObservations();
+      const requestHandler = observationRecords.insertUpdateSurveyObservationsWithMeasurements();
 
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
@@ -547,7 +587,7 @@ describe('getSurveyObservations', () => {
                   observation_time: '00:00:00'
                 }
               ],
-              supplementaryObservationData: { observationCount: 1 }
+              supplementaryObservationData: { observationCount: 1, measurementColumns: [] }
             }
           };
 
@@ -725,7 +765,7 @@ describe('getSurveyObservations', () => {
 
           expect(response.message).to.equal('The response was not valid.');
           expect(response.errors.length).to.equal(1);
-          expect(response.errors[0].path).to.equal('surveyObservations/0');
+          expect(response.errors[0].path).to.equal('surveyObservations');
           expect(response.errors[0].message).to.equal(`must have required property 'latitude'`);
         });
 
@@ -844,13 +884,13 @@ describe('getSurveyObservations', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     const getSurveyObservationsStub = sinon
-      .stub(ObservationService.prototype, 'getSurveyObservationsWithSupplementaryAndSamplingData')
+      .stub(ObservationService.prototype, 'getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData')
       .resolves({
         surveyObservations: ([
           { survey_observation_id: 11 },
           { survey_observation_id: 12 }
-        ] as unknown) as ObservationRecord[],
-        supplementaryObservationData: { observationCount: 59 }
+        ] as unknown) as ObservationRecordWithSamplingDataWithAttributes[],
+        supplementaryObservationData: { observationCount: 59, measurementColumns: [] }
       });
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -892,13 +932,13 @@ describe('getSurveyObservations', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     const getSurveyObservationsStub = sinon
-      .stub(ObservationService.prototype, 'getSurveyObservationsWithSupplementaryAndSamplingData')
+      .stub(ObservationService.prototype, 'getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData')
       .resolves({
         surveyObservations: ([
           { survey_observation_id: 16 },
           { survey_observation_id: 17 }
-        ] as unknown) as ObservationRecord[],
-        supplementaryObservationData: { observationCount: 50 }
+        ] as unknown) as ObservationRecordWithSamplingDataWithAttributes[],
+        supplementaryObservationData: { observationCount: 50, measurementColumns: [] }
       });
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -938,13 +978,13 @@ describe('getSurveyObservations', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     const getSurveyObservationsStub = sinon
-      .stub(ObservationService.prototype, 'getSurveyObservationsWithSupplementaryAndSamplingData')
+      .stub(ObservationService.prototype, 'getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData')
       .resolves({
         surveyObservations: ([
           { survey_observation_id: 16 },
           { survey_observation_id: 17 }
-        ] as unknown) as ObservationRecord[],
-        supplementaryObservationData: { observationCount: 2 }
+        ] as unknown) as ObservationRecordWithSamplingDataWithAttributes[],
+        supplementaryObservationData: { observationCount: 2, measurementColumns: [] }
       });
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -979,7 +1019,7 @@ describe('getSurveyObservations', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     sinon
-      .stub(ObservationService.prototype, 'getSurveyObservationsWithSupplementaryAndSamplingData')
+      .stub(ObservationService.prototype, 'getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData')
       .rejects(new Error('a test error'));
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
