@@ -12,8 +12,8 @@ import {
   GetSurveyPurposeAndMethodologyData
 } from '../models/survey-view';
 import { getLogger } from '../utils/logger';
-import { BaseRepository } from './base-repository';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
+import { BaseRepository } from './base-repository';
 
 export interface IGetSpeciesData {
   itis_tsn: number;
@@ -615,7 +615,10 @@ export class SurveyRepository extends BaseRepository {
     const sortedPaginatedQuery =
       pagination?.sort && pagination.order ? paginatedQuery.orderBy(pagination.sort, pagination.order) : paginatedQuery;
 
-    const response = await this.connection.knex(sortedPaginatedQuery, SurveyBasicFields.omit({ focal_species_names: true }));
+    const response = await this.connection.knex(
+      sortedPaginatedQuery,
+      SurveyBasicFields.omit({ focal_species_names: true })
+    );
 
     return response.rows;
   }

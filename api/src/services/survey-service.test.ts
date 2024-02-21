@@ -18,7 +18,6 @@ import {
   SurveyObject
 } from '../models/survey-view';
 import { FundingSourceRepository } from '../repositories/funding-source-repository';
-import { PublishStatus } from '../repositories/history-publish-repository';
 import { IPermitModel } from '../repositories/permit-repository';
 import { SurveyLocationRecord, SurveyLocationRepository } from '../repositories/survey-location-repository';
 import {
@@ -1209,99 +1208,6 @@ describe('SurveyService', () => {
       } catch (actualError) {
         expect((actualError as ApiGeneralError).message).to.equal('Failed to delete survey occurrence submission');
       }
-    });
-  });
-
-  describe('surveyPublishStatus', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('returns NO_DATA when all survey data returned as no_data', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new SurveyService(dbConnection);
-
-      const surveyAttachmentsPublishStatusStub = sinon
-        .stub(HistoryPublishService.prototype, 'surveyAttachmentsPublishStatus')
-        .resolves(PublishStatus.NO_DATA);
-
-      const surveyReportsPublishStatusStub = sinon
-        .stub(HistoryPublishService.prototype, 'surveyReportsPublishStatus')
-        .resolves(PublishStatus.NO_DATA);
-
-      const observationPublishStatusStub = sinon
-        .stub(HistoryPublishService.prototype, 'observationPublishStatus')
-        .resolves(PublishStatus.NO_DATA);
-
-      const summaryPublishStatusStub = sinon
-        .stub(HistoryPublishService.prototype, 'summaryPublishStatus')
-        .resolves(PublishStatus.NO_DATA);
-
-      const response = await service.surveyPublishStatus(20);
-
-      expect(surveyAttachmentsPublishStatusStub).to.be.calledOnce;
-      expect(surveyReportsPublishStatusStub).to.be.calledOnce;
-      expect(observationPublishStatusStub).to.be.calledOnce;
-      expect(summaryPublishStatusStub).to.be.calledOnce;
-      expect(response).to.eql(PublishStatus.NO_DATA);
-    });
-
-    it('returns SUBMITTED when all survey data returned are submitted or no_data', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new SurveyService(dbConnection);
-
-      const surveyAttachmentsPublishStatusStub = sinon
-        .stub(HistoryPublishService.prototype, 'surveyAttachmentsPublishStatus')
-        .resolves(PublishStatus.SUBMITTED);
-
-      const surveyReportsPublishStatusStub = sinon
-        .stub(HistoryPublishService.prototype, 'surveyReportsPublishStatus')
-        .resolves(PublishStatus.NO_DATA);
-
-      const observationPublishStatusStub = sinon
-        .stub(HistoryPublishService.prototype, 'observationPublishStatus')
-        .resolves(PublishStatus.NO_DATA);
-
-      const summaryPublishStatusStub = sinon
-        .stub(HistoryPublishService.prototype, 'summaryPublishStatus')
-        .resolves(PublishStatus.NO_DATA);
-
-      const response = await service.surveyPublishStatus(20);
-
-      expect(surveyAttachmentsPublishStatusStub).to.be.calledOnce;
-      expect(surveyReportsPublishStatusStub).to.be.calledOnce;
-      expect(observationPublishStatusStub).to.be.calledOnce;
-      expect(summaryPublishStatusStub).to.be.calledOnce;
-      expect(response).to.eql(PublishStatus.SUBMITTED);
-    });
-
-    it('returns UNSUBMITTED when some survey data returned are unsubmitted', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new SurveyService(dbConnection);
-
-      const surveyAttachmentsPublishStatusStub = sinon
-        .stub(HistoryPublishService.prototype, 'surveyAttachmentsPublishStatus')
-        .resolves(PublishStatus.UNSUBMITTED);
-
-      const surveyReportsPublishStatusStub = sinon
-        .stub(HistoryPublishService.prototype, 'surveyReportsPublishStatus')
-        .resolves(PublishStatus.NO_DATA);
-
-      const observationPublishStatusStub = sinon
-        .stub(HistoryPublishService.prototype, 'observationPublishStatus')
-        .resolves(PublishStatus.NO_DATA);
-
-      const summaryPublishStatusStub = sinon
-        .stub(HistoryPublishService.prototype, 'summaryPublishStatus')
-        .resolves(PublishStatus.NO_DATA);
-
-      const response = await service.surveyPublishStatus(20);
-
-      expect(surveyAttachmentsPublishStatusStub).to.be.calledOnce;
-      expect(surveyReportsPublishStatusStub).to.be.calledOnce;
-      expect(observationPublishStatusStub).to.be.calledOnce;
-      expect(summaryPublishStatusStub).to.be.calledOnce;
-      expect(response).to.eql(PublishStatus.UNSUBMITTED);
     });
   });
 

@@ -2,11 +2,15 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
+import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../../../openapi/schemas/pagination';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { SurveyService } from '../../../../services/survey-service';
-import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../../../openapi/schemas/pagination';
 import { getLogger } from '../../../../utils/logger';
-import { ensureCompletePaginationOptions, getPaginationOptionsFromRequest, getPaginationResponse } from '../../../../utils/pagination';
+import {
+  ensureCompletePaginationOptions,
+  getPaginationOptionsFromRequest,
+  getPaginationResponse
+} from '../../../../utils/pagination';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/index');
 
@@ -60,7 +64,7 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
-            required: ['surveys', /*pagination*/], // TODO
+            required: ['surveys' /*pagination*/], // TODO
             properties: {
               pagination: { ...paginationResponseSchema },
               surveys: {
@@ -128,10 +132,10 @@ GET.apiDoc = {
 export function getSurveys(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
-    
+
     try {
       await connection.open();
-      
+
       const projectId = Number(req.params.projectId);
       const paginationOptions = getPaginationOptionsFromRequest(req);
 
@@ -145,7 +149,7 @@ export function getSurveys(): RequestHandler {
       const response = {
         surveys,
         pagination: getPaginationResponse(surveysTotalCount, paginationOptions)
-      }
+      };
 
       await connection.commit();
 

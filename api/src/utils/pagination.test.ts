@@ -1,3 +1,5 @@
+import { describe } from 'mocha';
+
 describe('pagination', () => {
   describe('getPaginationOptionsFromRequest', () => {
     // TODO

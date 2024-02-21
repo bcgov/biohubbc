@@ -3,11 +3,15 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { IProjectAdvancedFilters } from '../../models/project-view';
+import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
 import { ProjectService } from '../../services/project-service';
 import { getLogger } from '../../utils/logger';
-import { ensureCompletePaginationOptions, getPaginationOptionsFromRequest, getPaginationResponse } from '../../utils/pagination';
-import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
+import {
+  ensureCompletePaginationOptions,
+  getPaginationOptionsFromRequest,
+  getPaginationResponse
+} from '../../utils/pagination';
 
 const defaultLog = getLogger('paths/projects');
 
@@ -166,8 +170,6 @@ export function getProjectList(): RequestHandler {
     // const sort: string | undefined = req.query.sort ? String(req.query.sort) : undefined;
 
     const connection = getDBConnection(req['keycloak_token']);
-
-    
 
     try {
       await connection.open();
