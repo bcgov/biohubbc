@@ -83,6 +83,7 @@ describe('getSurveySampleLocationRecords', () => {
       sample_methods: []
     };
 
+    sinon.stub(SampleLocationService.prototype, 'getSampleLocationsCountBySurveyId').resolves(1);
     sinon.stub(SampleLocationService.prototype, 'getSampleLocationsForSurveyId').resolves([sampleLocation]);
 
     const requestHandler = get_survey_sample_site_record.getSurveySampleLocationRecords();
@@ -90,7 +91,15 @@ describe('getSurveySampleLocationRecords', () => {
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(mockRes.jsonValue).to.eql({
-      sampleSites: [sampleLocation]
+      sampleSites: [sampleLocation],
+      pagination: {
+        current_page: 1,
+        last_page: 1,
+        per_page: 1,
+        sort: undefined,
+        order: undefined,
+        total: 1
+      }
     });
   });
 });
