@@ -10,7 +10,7 @@ import { grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { useFormikContext } from 'formik';
-import { ICreateSurveyRequest } from 'interfaces/useSurveyApi.interface';
+import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import yup from 'utils/YupSchema';
@@ -29,13 +29,18 @@ export const BlockYupSchema = yup.object({
 
 export const SurveyBlockYupSchema = yup.array(BlockYupSchema);
 
-export interface IEditBlock {
+export interface ISurveyBlock {
   index: number;
   block: {
     survey_block_id: number | null;
     name: string;
     description: string;
+    sample_block_count?: number;
   };
+}
+
+export interface ISurveyBlockForm {
+  blocks: ISurveyBlock[];
 }
 
 const SurveyBlockSection: React.FC = () => {
@@ -43,9 +48,9 @@ const SurveyBlockSection: React.FC = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isYesNoDialogOpen, setIsYesNoDialogOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
-  const [editData, setEditData] = useState<IEditBlock | undefined>(undefined);
+  const [editData, setEditData] = useState<ISurveyBlock | undefined>(undefined);
 
-  const formikProps = useFormikContext<ICreateSurveyRequest>();
+  const formikProps = useFormikContext<IEditSurveyRequest>();
   const { values, handleSubmit, setFieldValue } = formikProps;
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
@@ -94,7 +99,7 @@ const SurveyBlockSection: React.FC = () => {
       {/* DELETE BLOCK ASSIGNED TO SAMPLE SITES CONFIRMATION DIALOG */}
       <YesNoDialog
         dialogTitle={'Delete Block assigned to Sampling Sites?'}
-        dialogText="Are you sure you want to delete this block? This will remove the block from Sampling Sites that currently reference it."
+        dialogText={`Are you sure you want to delete this Block? This will remove the Block from ${editData?.block.sample_block_count} Sampling Sites that currently reference it.`}
         yesButtonProps={{ color: 'error' }}
         yesButtonLabel={'Remove'}
         noButtonProps={{ color: 'primary', variant: 'outlined' }}
@@ -127,7 +132,7 @@ const SurveyBlockSection: React.FC = () => {
         </MenuItem>
         <MenuItem
           onClick={() => {
-            setIsYesNoDialogOpen(true);
+            editData?.block.sample_block_count ? setIsYesNoDialogOpen(true) : handleDelete();
           }}>
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />

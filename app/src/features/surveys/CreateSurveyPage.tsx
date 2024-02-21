@@ -47,7 +47,7 @@ import PurposeAndMethodologyForm, {
 } from './components/PurposeAndMethodologyForm';
 import SamplingStrategyForm from './components/SamplingStrategyForm';
 import StudyAreaForm, { SurveyLocationInitialValues, SurveyLocationYupSchema } from './components/StudyAreaForm';
-import { SurveyBlockInitialValues } from './components/SurveyBlockSection';
+import { SurveyBlockInitialValues } from './components/SurveyBlockForm';
 import SurveyFundingSourceForm, {
   SurveyFundingSourceFormInitialValues,
   SurveyFundingSourceFormYupSchema

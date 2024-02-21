@@ -1,5 +1,5 @@
 import { IDBConnection } from '../database/db';
-import { PostSurveyBlock, SurveyBlockRecord, SurveyBlockRepository } from '../repositories/survey-block-repository';
+import { PostSurveyBlock, SurveyBlockDetails, SurveyBlockRecord, SurveyBlockRepository } from '../repositories/survey-block-repository';
 import { DBService } from './db-service';
 import { SampleBlockService } from './sample-block-service';
 
@@ -18,7 +18,7 @@ export class SurveyBlockService extends DBService {
    * @return {*} {Promise<SurveyBlockRecord[]>}
    * @returns
    */
-  async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockRecord[]> {
+  async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockDetails[]> {
     return await this.surveyBlockRepository.getSurveyBlocksForSurveyId(surveyId);
   }
 
@@ -62,7 +62,7 @@ export class SurveyBlockService extends DBService {
     const blocksToDelete = existingBlocks.filter(
       (item) => !blocks.find((incoming) => incoming.survey_block_id === item.survey_block_id)
     );
-    
+
     blocksToDelete.forEach((block) => {
       promises.push(this.deleteSurveyBlock(block.survey_block_id));
     });

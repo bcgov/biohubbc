@@ -1,6 +1,6 @@
 import EditDialog from 'components/dialog/EditDialog';
 import BlockForm from './BlockForm';
-import { BlockYupSchema } from './SurveyBlockSection';
+import { BlockYupSchema } from './SurveyBlockForm';
 interface ICreateBlockProps {
   open: boolean;
   onSave: (data: any) => void;

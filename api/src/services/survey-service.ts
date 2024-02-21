@@ -19,7 +19,7 @@ import {
 } from '../models/survey-view';
 import { AttachmentRepository } from '../repositories/attachment-repository';
 import { PublishStatus } from '../repositories/history-publish-repository';
-import { PostSurveyBlock, SurveyBlockRecord } from '../repositories/survey-block-repository';
+import { PostSurveyBlock, SurveyBlockDetails } from '../repositories/survey-block-repository';
 import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import {
   IGetLatestSurveyOccurrenceSubmission,
@@ -107,7 +107,7 @@ export class SurveyService extends DBService {
     };
   }
 
-  async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockRecord[]> {
+  async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockDetails[]> {
     const service = new SurveyBlockService(this.connection);
     return service.getSurveyBlocksForSurveyId(surveyId);
   }
