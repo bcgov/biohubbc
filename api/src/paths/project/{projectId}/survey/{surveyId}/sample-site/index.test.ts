@@ -80,7 +80,8 @@ describe('getSurveySampleLocationRecords', () => {
       update_date: 'update_date',
       update_user: 2,
       revision_count: 1,
-      sample_methods: []
+      sample_methods: [],
+      sample_blocks: []
     };
 
     sinon.stub(SampleLocationService.prototype, 'getSampleLocationsForSurveyId').resolves([sampleLocation]);

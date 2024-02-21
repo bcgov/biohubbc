@@ -24,6 +24,8 @@ export const SurveyBlockRecord = z.object({
 });
 export type SurveyBlockRecord = z.infer<typeof SurveyBlockRecord>;
 
+export const SurveyBlockDetails = z.object({ sample_block_count: z.number() }).extend(SurveyBlockRecord.shape);
+export type SurveyBlockDetails = z.infer<typeof SurveyBlockDetails>;
 /**
  * A repository class for accessing Survey Block data.
  *

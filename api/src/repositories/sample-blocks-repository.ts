@@ -121,7 +121,32 @@ export class SampleBlockRepository extends BaseRepository {
   }
 
   /**
-   * Deletes a survey Sample block.
+   * Deletes all Sample Blocks referencing a given Survey Block
+   *
+   * @param {number} surveyBlockIds
+   * @return {*}  {Promise<SampleBlockRecord>}
+   * @memberof sampleBlockRepository
+   */
+  async deleteSampleBlockRecordsByBlockIds(surveyBlockIds: number[]): Promise<number> {
+    const queryBuilder = getKnex()
+      .delete()
+      .from('survey_sample_block')
+      .whereIn('survey_block_id', surveyBlockIds)
+      .returning('*');
+
+    const response = await this.connection.knex(queryBuilder, SampleBlockRecord);
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to delete sample block', [
+        'sampleBlockRepository->deleteSampleBlockRecord',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rowCount;
+  }
+  /**
+   * Deletes all Sample Block records in the array
    *
    * @param {number} surveySampleBlockIds
    * @return {*}  {Promise<SampleBlockRecord>}
@@ -134,7 +159,6 @@ export class SampleBlockRepository extends BaseRepository {
       .whereIn('survey_sample_block_id', surveySampleBlockIds)
       .returning('*');
 
-    // todo: reconcile types
     const response = await this.connection.knex(queryBuilder, SampleBlockRecord);
 
     if (!response.rowCount) {

@@ -1,5 +1,4 @@
 import { IDBConnection } from '../database/db';
-import { HTTP400 } from '../errors/http-error';
 import { PostSurveyBlock, SurveyBlockRecord, SurveyBlockRepository } from '../repositories/survey-block-repository';
 import { DBService } from './db-service';
 import { SampleBlockService } from './sample-block-service';
@@ -35,7 +34,8 @@ export class SurveyBlockService extends DBService {
 
     // Check if block is associated to any Sampling Sites
     if ((await sampleBlockService.getSampleBlocksCountForSurveyBlockId(surveyBlockId)).sampleCount > 0) {
-      throw new HTTP400('Cannot delete a sample block that is associated with a Sampling Site');
+      // When a Survey Block is deleted, also delete its associations to sampling sites to avoid orphaned Sample Block records
+      await sampleBlockService.deleteSampleBlockRecordsByBlockIds([surveyBlockId]);
     }
 
     return this.surveyBlockRepository.deleteSurveyBlockRecord(surveyBlockId);
@@ -58,13 +58,13 @@ export class SurveyBlockService extends DBService {
     // Get existing blocks
     const existingBlocks = await this.getSurveyBlocksForSurveyId(surveyId);
 
-    // Filter out any
+    // Filter out any blocks to delete
     const blocksToDelete = existingBlocks.filter(
       (item) => !blocks.find((incoming) => incoming.survey_block_id === item.survey_block_id)
     );
-
-    blocksToDelete.forEach((item) => {
-      promises.push(this.deleteSurveyBlock(item.survey_block_id));
+    
+    blocksToDelete.forEach((block) => {
+      promises.push(this.deleteSurveyBlock(block.survey_block_id));
     });
 
     // update or insert block data
