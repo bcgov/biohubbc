@@ -64,7 +64,7 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
-            required: ['surveys' /*pagination*/], // TODO
+            required: ['surveys', 'pagination'],
             properties: {
               pagination: { ...paginationResponseSchema },
               surveys: {
