@@ -127,6 +127,22 @@ PUT.apiDoc = {
                       }
                     }
                   }
+                },
+                blocks: {
+                  type: 'array',
+                  minItems: 0,
+                  items: {
+                    type: 'object',
+                    required: ['name', 'description'],
+                    properties: {
+                      name: {
+                        type: 'string'
+                      },
+                      description: {
+                        type: 'string'
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -156,38 +172,6 @@ PUT.apiDoc = {
     }
   }
 };
-
-// // todo: API docs for getSurveySampleSiteByIdRecord
-
-// export function getSurveySampleSiteRecord(): RequestHandler {
-//   return async (req, res) => {
-//     const surveySampleSiteId = Number(req.params.surveySampleSiteId);
-
-//     if (!surveySampleSiteId) {
-//       throw new HTTP400('Missing required param `surveySampleSiteId`');
-//     }
-
-//     const connection = getDBConnection(req['keycloak_token']);
-
-//     try {
-//       await connection.open();
-
-//       const sampleLocationService = new SampleLocationService(connection);
-
-//       await sampleLocationService.getSampleLocationById(surveySampleSiteId);
-
-//       await connection.commit();
-
-//       return res.status(204).send();
-//     } catch (error) {
-//       defaultLog.error({ label: 'getSurveySampleSiteRecord', message: 'error', error });
-//       await connection.rollback();
-//       throw error;
-//     } finally {
-//       connection.release();
-//     }
-//   };
-// }
 
 export function updateSurveySampleSite(): RequestHandler {
   return async (req, res) => {

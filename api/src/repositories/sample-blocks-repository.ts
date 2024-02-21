@@ -83,7 +83,7 @@ export class SampleBlockRepository extends BaseRepository {
     const response = await this.connection.sql(sql, SampleBlockRecord);
 
     const sampleCount = Number(response.rowCount);
-    
+
     return { sampleCount };
   }
 
@@ -95,7 +95,6 @@ export class SampleBlockRepository extends BaseRepository {
    * @memberof sampleBlockRepository
    */
   async insertSampleBlock(sampleBlock: InsertSampleBlockRecord): Promise<SampleBlockRecord> {
-
     const sqlStatement = SQL`
     INSERT INTO survey_sample_block (
       survey_sample_site_id,
@@ -109,7 +108,6 @@ export class SampleBlockRepository extends BaseRepository {
       `;
 
     const response = await this.connection.sql(sqlStatement, SampleBlockRecord);
-
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert sample block', [
@@ -128,18 +126,18 @@ export class SampleBlockRepository extends BaseRepository {
    * @return {*}  {Promise<SampleBlockRecord>}
    * @memberof sampleBlockRepository
    */
-  async deleteSampleBlockRecord(surveySampleBlockId: number): Promise<SampleBlockRecord> {
+  async deleteSampleBlockRecords(surveySampleBlockIds: number[]): Promise<SampleBlockRecord[]> {
     const sqlStatement = SQL`
       DELETE FROM
         survey_sample_block
       WHERE
-        survey_sample_block_id = ${surveySampleBlockId}
+        survey_sample_block_id in ${surveySampleBlockIds}
       RETURNING
         *;
     `;
 
     // todo: reconcile types
-    const response = await this.connection.sql(sqlStatement); //, SampleBlockRecord)
+    const response = await this.connection.sql(sqlStatement, SampleBlockRecord);
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete sample block', [
@@ -148,7 +146,7 @@ export class SampleBlockRepository extends BaseRepository {
       ]);
     }
 
-    return response.rows[0];
+    return response.rows;
   }
 
   /**
@@ -167,7 +165,7 @@ export class SampleBlockRepository extends BaseRepository {
 
     // todo: reconcile types
     const response = await this.connection.sql(sql); //, SampleBlockRecord
-  
+
     return response.rows;
   }
 }

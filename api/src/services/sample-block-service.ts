@@ -68,8 +68,8 @@ export class SampleBlockService extends DBService {
    * @return {*}  {Promise<SampleBlockRecord>}
    * @memberof SampleBlockService
    */
-  async deleteSampleBlockRecord(surveySampleBlockId: number): Promise<SampleBlockRecord> {
-    return await this.sampleBlockRepository.deleteSampleBlockRecord(surveySampleBlockId);
+  async deleteSampleBlockRecord(surveySampleBlockIds: number[]): Promise<SampleBlockRecord[]> {
+    return await this.sampleBlockRepository.deleteSampleBlockRecords(surveySampleBlockIds);
   }
 
   /**
@@ -106,12 +106,7 @@ export class SampleBlockService extends DBService {
     // Delete any blocks not found in the passed in array
     if (existingBlocksToDelete.length > 0) {
       const promises: Promise<any>[] = [];
-
-      // Check if any observations are associated with the blocks to be deleted
-      for (const block of existingBlocksToDelete) {
-        promises.push(this.deleteSampleBlockRecord(block.survey_sample_block_id));
-      }
-
+      promises.push(this.deleteSampleBlockRecord(existingBlocksToDelete.map((block) => block.survey_sample_site_id)));
       await Promise.all(promises);
     }
   }
@@ -136,7 +131,7 @@ export class SampleBlockService extends DBService {
 
   //   if (sampleBlock.survey_sample_block_id) {
   //     const result = await this.sampleBlockRepository.updateSampleBlock(sampleBlock);
- 
+
   //     return result;
   //   } else {
   //     const result = await sampleBlockService.insertSampleBlock(sampleBlock);
