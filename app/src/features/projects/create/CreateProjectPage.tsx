@@ -14,7 +14,7 @@ import { FormikProps } from 'formik';
 import * as History from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Prompt } from 'react-router-dom';
 import CreateProjectForm from './CreateProjectForm';
@@ -24,7 +24,7 @@ import CreateProjectForm from './CreateProjectForm';
  *
  * @return {*}
  */
-const CreateProjectPage: React.FC = () => {
+const CreateProjectPage = () => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
   const formikRef = useRef<FormikProps<ICreateProjectRequest>>(null);
@@ -161,15 +161,7 @@ const CreateProjectPage: React.FC = () => {
             sx={{
               p: 5
             }}>
-            <CreateProjectForm
-              handleSubmit={createProject}
-              codes={codes}
-              formikRef={formikRef}
-<<<<<<< HEAD
-=======
-              // initialValues={draftDataLoader.data?.data} // TODO should something else go here, or can it go undefined?
->>>>>>> dev
-            />
+            <CreateProjectForm handleSubmit={createProject} codes={codes} formikRef={formikRef} />
             <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
               <LoadingButton
                 loading={isLoading}
