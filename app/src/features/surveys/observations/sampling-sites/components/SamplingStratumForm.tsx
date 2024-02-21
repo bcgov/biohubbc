@@ -79,7 +79,6 @@ const SamplingStratumForm: React.FC = () => {
           const unselectedOptions = options.filter(
             (item) => !selectedStratums.some((existing) => existing.survey_stratum_id === item.survey_stratum_id)
           );
-          console.log(unselectedOptions, state);
           return searchFilter(unselectedOptions, state);
         }}
         getOptionLabel={(option) => option.name}

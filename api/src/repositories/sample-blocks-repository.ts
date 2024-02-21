@@ -81,36 +81,8 @@ export class SampleBlockRepository extends BaseRepository {
     const response = await this.connection.sql(sql, SampleBlockRecord);
 
     const sampleCount = Number(response.rowCount);
-  
+    
     return { sampleCount };
-  }
-
-  /**
-   * updates a survey Sample block.
-   *
-   * @param {UpdateSampleBlockRecord} sampleBlock
-   * @return {*}  {Promise<SampleBlockRecord>}
-   * @memberof sampleBlockRepository
-   */
-  async updateSampleBlock(sampleBlock: UpdateSampleBlockRecord): Promise<SampleBlockRecord> {
-    const sql = SQL`
-      UPDATE survey_sample_block
-      SET
-        survey_sample_site_id= ${sampleBlock.survey_sample_site_id},
-        survey_block_id = ${sampleBlock.survey_block_id}
-      RETURNING
-        *;`;
-
-    const response = await this.connection.sql(sql);
-
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to update sample block', [
-        'sampleBlockRepository->updateSampleBlock',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return response.rows[0];
   }
 
   /**
@@ -121,7 +93,7 @@ export class SampleBlockRepository extends BaseRepository {
    * @memberof sampleBlockRepository
    */
   async insertSampleBlock(sampleBlock: InsertSampleBlockRecord): Promise<SampleBlockRecord> {
-    console.log(sampleBlock);
+
     const sqlStatement = SQL`
     INSERT INTO survey_sample_block (
       survey_sample_site_id,
@@ -134,10 +106,8 @@ export class SampleBlockRepository extends BaseRepository {
         *;
       `;
 
-    console.log(sqlStatement);
-
     const response = await this.connection.sql(sqlStatement, SampleBlockRecord);
-    console.log(response);
+
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert sample block', [
@@ -145,8 +115,6 @@ export class SampleBlockRepository extends BaseRepository {
         'rows was null or undefined, expected rows != null'
       ]);
     }
-
-    console.log(response);
 
     return response.rows[0];
   }
@@ -195,11 +163,9 @@ export class SampleBlockRepository extends BaseRepository {
       WHERE survey_sample_site_id = ${surveySampleSiteId};
     `;
 
-    console.log(sql);
-
     // todo: reconcile types
     const response = await this.connection.sql(sql); //, SampleBlockRecord
-    console.log(response);
+  
     return response.rows;
   }
 }

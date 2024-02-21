@@ -1,6 +1,7 @@
 import { Feature } from '@turf/helpers';
 import { IDBConnection } from '../database/db';
 import {
+  SampleLocationDetails,
   SampleLocationRecord,
   SampleLocationRepository,
   UpdateSampleSiteRecord
@@ -46,40 +47,24 @@ export class SampleLocationService extends DBService {
    * @return {*}  {Promise<SampleLocationRecord[]>}
    * @memberof SampleLocationService
    */
-  async getSampleLocationsForSurveyId(surveyId: number): Promise<SampleLocationRecord[]> {
+  async getSampleLocationsForSurveyId(surveyId: number): Promise<SampleLocationDetails[]> {
     const results = await this.sampleLocationRepository.getSampleLocationsForSurveyId(surveyId);
 
-    // todo: could do this in sql
-    return results.map((site) => {
-      // if (!site.sample_stratums) {
-      //   site.sample_stratums = [];
-      // }
-      if (!site.sample_blocks) {
-        site.sample_blocks = [];
-      }
-      return site;
-    });
+    return results;
   }
 
-  /**
-   * Gets all survey Sample Locations.
-   *
-   * @param {number} sampleLocationId
-   * @return {*}  {Promise<SampleLocationRecord[]>}
-   * @memberof SampleLocationService
-   */
-  async getSampleLocationById(surveyId: number, sampleLocationId: number): Promise<SampleLocationRecord> {
-    const result = await this.sampleLocationRepository.getSampleLocationsById(surveyId, sampleLocationId);
+  // /**
+  //  * Gets all survey Sample Locations.
+  //  *
+  //  * @param {number} sampleLocationId
+  //  * @return {*}  {Promise<SampleLocationRecord[]>}
+  //  * @memberof SampleLocationService
+  //  */
+  // async getSampleLocationById(sampleLocationId: number): Promise<SampleLocationRecord> {
+  //   const result = await this.sampleLocationRepository.getSampleLocationById(sampleLocationId);
 
-    // todo: could do this in sql
-    if (!result.sample_stratums) {
-      result.sample_stratums = [];
-    }
-    if (!result.sample_blocks) {
-      result.sample_blocks = [];
-    }
-    return result;
-  }
+  //   return result;
+  // }
 
   /**
    * Deletes a survey Sample Location.
@@ -158,8 +143,6 @@ export class SampleLocationService extends DBService {
     const blockService = new SampleBlockService(this.connection);
     const stratumService = new SampleStratumService(this.connection);
 
-    console.log(sampleSite)
-
     // Update the main sample location
     await this.sampleLocationRepository.updateSampleLocation(sampleSite);
 
@@ -170,21 +153,14 @@ export class SampleLocationService extends DBService {
     await blockService.deleteSampleBlocksNotInArray(sampleSite.survey_sample_site_id, sampleSite.blocks);
 
     // Check for stratums to delete
-    await stratumService.deleteSampleStratumsNotInArray(sampleSite.survey_sample_site_id, sampleSite.stratums);
+    await stratumService.deleteSampleStratumsNotInArray(sampleSite.survey_id, sampleSite.stratums);
 
     // Loop through all blocks
     // For each block, check if it exists
     // If it exists, update it
     // If it does not exist, create it
     for (const item of sampleSite.blocks) {
-      if (item.survey_sample_block_id) {
-        const sampleBlock = {
-          survey_sample_site_id: sampleSite.survey_sample_site_id,
-          survey_sample_block_id: item.survey_sample_block_id,
-          survey_block_id: item.survey_block_id
-        };
-        await blockService.updateSampleBlock(sampleBlock);
-      } else {
+      if (!item.survey_sample_block_id) {
         const sampleBlock = {
           survey_sample_site_id: sampleSite.survey_sample_site_id,
           survey_block_id: item.survey_block_id
@@ -198,19 +174,12 @@ export class SampleLocationService extends DBService {
     // If it exists, update it
     // If it does not exist, create it
     for (const item of sampleSite.stratums) {
-      if (item.survey_sample_stratum_id) {
-        const sampleStratum = {
-          survey_sample_site_id: sampleSite.survey_sample_site_id,
-          survey_sample_stratum_id: item.survey_sample_stratum_id,
-          survey_stratum_id: item.survey_stratum_id
-        };
-        await stratumService.updateSampleStratum(sampleStratum);
-      } else {
-        const sampleStratum = {
+      if (!item.survey_sample_stratum_id) {
+        const sampleBlock = {
           survey_sample_site_id: sampleSite.survey_sample_site_id,
           survey_stratum_id: item.survey_stratum_id
         };
-        await stratumService.insertSampleStratum(sampleStratum);
+        await stratumService.insertSampleStratum(sampleBlock);
       }
     }
 

@@ -373,11 +373,11 @@ export type IEditSurveyRequest = IGeneralInformationForm &
   IParticipantsJobForm;
 
 export interface IGetSampleSiteResponse {
-  sampleSites: IGetSampleLocationRecord[];
+  sampleSites: IGetSampleLocationDetails[];
 }
 
 export interface IGetSampleSiteByIdResponse {
-  sampleSites: IGetSampleLocationRecord;
+  sampleSites: IGetSampleLocationDetails;
 }
 
 export interface IGetSampleLocationRecord {
@@ -392,8 +392,23 @@ export interface IGetSampleLocationRecord {
   update_date: string | null;
   update_user: number | null;
   revision_count: number;
+}
+
+export interface IGetSampleLocationDetails {
+  survey_sample_site_id: number;
+  survey_id: number;
+  name: string;
+  description: string;
+  geojson: Feature;
+  geography: string;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
   sample_methods: IGetSampleMethodRecord[] | undefined;
   sample_blocks: IGetSampleBlockDetails[] | undefined;
+  sample_stratums: IGetSampleStratumDetails[] | undefined;
 }
 
 export interface IGetSampleBlockDetails {

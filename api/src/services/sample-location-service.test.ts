@@ -72,8 +72,9 @@ describe('SampleLocationService', () => {
         create_user: 1,
         update_date: '',
         update_user: 1,
-        revision_count: 0,
-        sample_methods: []
+        revision_count: 0
+        // sample_methods: [],
+        // sample_blocks: []
       });
       const insertMethod = sinon.stub(SampleMethodService.prototype, 'insertSampleMethod').resolves();
 
@@ -102,6 +103,7 @@ describe('SampleLocationService', () => {
           update_date: '',
           update_user: 1,
           revision_count: 0,
+          sample_blocks: [],
           sample_methods: []
         }
       ]);
@@ -139,8 +141,9 @@ describe('SampleLocationService', () => {
         create_user: 1,
         update_date: '',
         update_user: 1,
-        revision_count: 0,
-        sample_methods: []
+        revision_count: 0
+        // sample_methods: [],
+        // sample_blocks: []
       });
 
       const { survey_sample_site_id } = await service.deleteSampleLocationRecord(1);
@@ -173,8 +176,9 @@ describe('SampleLocationService', () => {
         create_user: 1,
         update_date: '',
         update_user: 1,
-        revision_count: 0,
-        sample_methods: []
+        revision_count: 0
+        // sample_methods: [],
+        // sample_blocks: []
       });
       const insertSampleMethodStub = sinon.stub(SampleMethodService.prototype, 'insertSampleMethod').resolves();
       const updateSampleMethodStub = sinon.stub(SampleMethodService.prototype, 'updateSampleMethod').resolves();
@@ -188,7 +192,9 @@ describe('SampleLocationService', () => {
         name: 'Cool new site',
         description: 'Check out this description',
         geojson: { type: 'Feature', geometry: {}, properties: {} } as any,
-        methods: methods
+        methods: methods,
+        blocks: [],
+        stratums: []
       });
 
       expect(updateSampleLocationStub).to.be.calledOnceWith({

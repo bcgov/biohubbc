@@ -35,7 +35,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN survey_sample_block.create_user IS 'The user id of the sampling site block creator.';
     COMMENT ON COLUMN survey_sample_block.update_date IS 'The date the sampling site block was updated.';
     COMMENT ON COLUMN survey_sample_block.update_user IS 'The user id of the sampling site block updater.';
-    COMMENT ON TABLE survey_sample_block.revision_count IS 'Revision count used for concurrency control.';
+    COMMENT ON COLUMN survey_sample_block.revision_count IS 'Revision count used for concurrency control.';
     COMMENT ON TABLE survey_sample_block IS 'Sampling site block table.';
 
     ----------------------------------------------------------------------------------------
@@ -75,6 +75,7 @@ export async function up(knex: Knex): Promise<void> {
       update_date                             TIMESTAMPTZ(6),
       update_user                             INTEGER,
       revision_count                          int4              NOT NULL DEFAULT 0,
+      CONSTRAINT survey_sample_stratum_pk PRIMARY KEY (survey_sample_stratum_id)
     );
 
     COMMENT ON COLUMN survey_sample_stratum.survey_sample_stratum_id IS 'System generated surrogate primary key identifier.';
@@ -84,8 +85,8 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN survey_sample_stratum.create_user IS 'The user id of the sampling site stratum creator.';
     COMMENT ON COLUMN survey_sample_stratum.update_date IS 'The date the sampling site stratum was updated.';
     COMMENT ON COLUMN survey_sample_stratum.update_user IS 'The user id of the sampling site stratum updater.';
-    COMMENT ON TABLE survey_sample_stratum.revision_count IS 'Revision count used for concurrency control.';
-    COMMENT ON TABLE survey_sample_stratum IS 'Sampling site stratum table.';
+    COMMENT ON COLUMN survey_sample_stratum.revision_count IS 'Revision count used for concurrency control.';
+    COMMENT ON TABLE survey_sample_stratum IS 'Sampling site stratum table';
 
     ----------------------------------------------------------------------------------------
     -- Create new keys and indices

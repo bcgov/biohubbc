@@ -12,7 +12,7 @@ import { default as React, useContext, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { ICreateSamplingSiteRequest } from '../SamplingSitePage';
 
-const SamplingBlockForm = () => {
+export const SamplingBlockForm = () => {
   const { setFieldValue } = useFormikContext<ICreateSamplingSiteRequest>();
   const surveyContext = useContext(SurveyContext);
 
@@ -72,7 +72,6 @@ const SamplingBlockForm = () => {
         noOptionsText="No records found"
         options={options}
         filterOptions={(options, state) => {
-          console.log(state);
           const searchFilter = createFilterOptions<IGetSurveyBlock>({ ignoreCase: true });
           const unselectedOptions = options.filter((item) =>
             selectedBlocks.every((existing) => existing.survey_block_id !== item.survey_block_id)
@@ -86,7 +85,6 @@ const SamplingBlockForm = () => {
         clearOnBlur={false}
         value={null}
         onInputChange={(_, value, reason) => {
-          console.log(reason, value, _);
           if (reason === 'reset') {
             setSearchText('');
           } else {
@@ -100,7 +98,6 @@ const SamplingBlockForm = () => {
           }
         }}
         onClose={(value, reason) => {
-          console.log(value, reason);
           setSearchText('');
         }}
         renderInput={(params) => (
