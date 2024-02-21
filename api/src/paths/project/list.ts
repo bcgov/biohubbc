@@ -164,11 +164,6 @@ export function getProjectList(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'getProjectList' });
 
-    // const page: number | undefined = req.query.page ? Number(req.query.page) : undefined;
-    // const limit: number | undefined = req.query.limit ? Number(req.query.limit) : undefined;
-    // const order: 'asc' | 'desc' | undefined = req.query.order ? (String(req.query.order) as 'asc' | 'desc') : undefined;
-    // const sort: string | undefined = req.query.sort ? String(req.query.sort) : undefined;
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {

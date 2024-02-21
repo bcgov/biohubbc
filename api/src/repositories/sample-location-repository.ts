@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
 import { SampleMethodRecord, UpdateSampleMethodRecord } from './sample-method-repository';
 
@@ -53,15 +54,18 @@ export type UpdateSampleSiteRecord = {
  */
 export class SampleLocationRepository extends BaseRepository {
   /**
-   * Gets all survey Sample Locations.
+   * Gets a paginated set of survey Sample Locations for the given survey.
    *
    * @param {number} surveyId
    * @return {*}  {Promise<SampleLocationRecord[]>}
    * @memberof SampleLocationRepository
    */
-  async getSampleLocationsForSurveyId(surveyId: number): Promise<SampleLocationRecord[]> {
+  async getSampleLocationsForSurveyId(
+    surveyId: number,
+    pagination?: ApiPaginationOptions
+  ): Promise<SampleLocationRecord[]> {
     const knex = getKnex();
-    const queryBuilder = knex
+    const allRowsQuery = knex
       .queryBuilder()
       .with('json_sample_period', (qb) => {
         // aggregate all sample periods based on method id
@@ -96,11 +100,48 @@ export class SampleLocationRepository extends BaseRepository {
       .select('*')
       .from({ sss: 'survey_sample_site' })
       .leftJoin('json_sample_methods as jsm', 'jsm.survey_sample_site_id', 'sss.survey_sample_site_id')
-      .where('sss.survey_id', surveyId)
-      .orderBy('sss.survey_sample_site_id', 'asc');
+      .where('sss.survey_id', surveyId);
 
-    const response = await this.connection.knex(queryBuilder /*, SampleLocationRecord*/);
+    const paginatedQuery = !pagination
+      ? allRowsQuery
+      : allRowsQuery.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+    const sortedPaginatedQuery =
+      pagination?.sort && pagination.order ? paginatedQuery.orderBy(pagination.sort, pagination.order) : paginatedQuery;
+
+    const response = await this.connection.knex(sortedPaginatedQuery /*, SampleLocationRecord*/);
     return response.rows;
+  }
+
+  /**
+   * Returns the total count of sample locations belonging to the given survey.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<number>}
+   * @memberof SampleLocationRepository
+   */
+  async getSampleLocationsCountBySurveyId(surveyId: number): Promise<number> {
+    const sqlStatement = SQL`
+        SELECT
+          COUNT(*) as sample_site_count
+        FROM
+          survey_sample_site as sss
+        WHERE sss.survey_id = ${surveyId};
+      `;
+
+    const response = await this.connection.sql(
+      sqlStatement,
+      z.object({ sample_site_count: z.string().transform(Number) })
+    );
+
+    if (response?.rowCount < 1) {
+      throw new ApiExecuteSQLError('Failed to get sample site count', [
+        'SampleLocationRepository->getSampleLocationsCountBySurveyId',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0].sample_site_count;
   }
 
   /**

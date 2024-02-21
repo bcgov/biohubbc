@@ -4,9 +4,18 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/rol
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/http-error';
 import { GeoJSONFeature } from '../../../../../../openapi/schemas/geoJson';
+import {
+  paginationRequestQueryParamSchema,
+  paginationResponseSchema
+} from '../../../../../../openapi/schemas/pagination';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { PostSampleLocations, SampleLocationService } from '../../../../../../services/sample-location-service';
 import { getLogger } from '../../../../../../utils/logger';
+import {
+  ensureCompletePaginationOptions,
+  getPaginationOptionsFromRequest,
+  getPaginationResponse
+} from '../../../../../../utils/pagination';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/sample-site/');
 
@@ -59,7 +68,8 @@ GET.apiDoc = {
         minimum: 1
       },
       required: true
-    }
+    },
+    ...paginationRequestQueryParamSchema
   ],
   responses: {
     200: {
@@ -126,7 +136,8 @@ GET.apiDoc = {
                     }
                   }
                 }
-              }
+              },
+              pagination: { ...paginationResponseSchema }
             }
           }
         }
@@ -164,17 +175,24 @@ export function getSurveySampleLocationRecords(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const surveyId = Number(req.params.surveyId);
-
       await connection.open();
 
-      const sampleLocationService = new SampleLocationService(connection);
+      const surveyId = Number(req.params.surveyId);
+      const paginationOptions = getPaginationOptionsFromRequest(req);
 
-      const result = await sampleLocationService.getSampleLocationsForSurveyId(surveyId);
+      const sampleLocationService = new SampleLocationService(connection);
+      const sampleSites = await sampleLocationService.getSampleLocationsForSurveyId(
+        surveyId,
+        ensureCompletePaginationOptions(paginationOptions)
+      );
+      const sampleSitesTotalCount = await sampleLocationService.getSampleLocationsCountBySurveyId(surveyId);
 
       await connection.commit();
 
-      return res.status(200).json({ sampleSites: result });
+      return res.status(200).json({
+        sampleSites,
+        pagination: getPaginationResponse(sampleSitesTotalCount, paginationOptions)
+      });
     } catch (error) {
       defaultLog.error({ label: 'getSurveySampleLocationRecords', message: 'error', error });
       await connection.rollback();
