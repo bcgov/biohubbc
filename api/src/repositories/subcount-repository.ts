@@ -92,11 +92,12 @@ export class SubCountRepository extends BaseRepository {
    * @memberof SubCountRepository
    */
   async deleteObservationSubCount(surveyObservationIds: number[]) {
-    const deleteObservations = SQL`
-      DELETE FROM observation_subcount 
-      WHERE survey_observation_id IN (${surveyObservationIds.join(', ')});
-    `;
-    await this.connection.sql(deleteObservations);
+    const qb = getKnex().delete().from('observation_subcount').whereIn('survey_observation_id', surveyObservationIds);
+    try {
+      await this.connection.knex(qb);
+    } catch (error) {
+      throw new ApiExecuteSQLError('Issue deleting from `observation_subcount`');
+    }
   }
 
   /**
@@ -107,13 +108,18 @@ export class SubCountRepository extends BaseRepository {
    * @memberof SubCountRepository
    */
   async deleteSubCountAttributeForObservationId(surveyObservationIds: number[]) {
-    const deleteAttributes = SQL`
-      DELETE FROM subcount_attribute 
-      WHERE observation_subcount_id IN (SELECT observation_subcount_id FROM observation_subcount os WHERE survey_observation_id IN (${surveyObservationIds.join(
-        ', '
-      )}));
-    `;
-    await this.connection.sql(deleteAttributes);
+    const qb = getKnex()
+      .select('observation_subcount_id')
+      .from({ os: 'observation_subcount' })
+      .whereIn('survey_observation_id', surveyObservationIds);
+
+    const subCountQueryBuilder = getKnex().delete().from('subcount_attribute').whereIn('observation_subcount_id', qb);
+
+    try {
+      await this.connection.knex(subCountQueryBuilder);
+    } catch (error) {
+      throw new ApiExecuteSQLError('Issue deleting from `subcount_attribute`');
+    }
   }
 
   /**
