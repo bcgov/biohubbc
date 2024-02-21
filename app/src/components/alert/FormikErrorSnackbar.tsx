@@ -13,7 +13,7 @@ const FormikErrorSnackbar = () => {
       return;
     }
 
-    setOpenSnackbar({ open: true, msg: 'One or more required fields is invalid.' });
+    setOpenSnackbar({ open: true, msg: 'One or more fields is invalid.' });
   }, [errors, submitCount, isSubmitting]);
 
   const closeSnackBar = () =>
