@@ -29,9 +29,6 @@ const SamplingStratumEditForm = () => {
     }
   }, [values.sampleSite]);
 
-  console.log(selectedStratums);
-  console.log(values);
-
   interface IStratumCard {
     label: string;
     description: string;
@@ -67,7 +64,6 @@ const SamplingStratumEditForm = () => {
     setFieldValue(`sampleSite.stratums`, filteredStratums);
   };
 
-  console.log(searchText);
 
   return (
     <>

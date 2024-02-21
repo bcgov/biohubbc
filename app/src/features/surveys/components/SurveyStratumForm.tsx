@@ -11,6 +11,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
+import YesNoDialog from 'components/dialog/YesNoDialog';
 import { FormikProps, useFormikContext } from 'formik';
 import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import get from 'lodash-es/get';
@@ -54,6 +55,7 @@ export const StratumFormYupSchema = yup.object().shape({
 const SurveyStratumForm = () => {
   const [currentStratumForm, setCurrentStratumForm] = useState<IStratumForm>(StratumFormInitialValues);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [isYesNoDialogOpen, setIsYesNoDialogOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
 
   const formikProps = useFormikContext<IEditSurveyRequest>();
@@ -74,7 +76,10 @@ const SurveyStratumForm = () => {
       ]);
     } else {
       // Edit existing stratum
-      setFieldValue(`site_selection.stratums[${stratumForm.index}`, { name: stratumForm.stratum.name, description: stratumForm.stratum.description });
+      setFieldValue(`site_selection.stratums[${stratumForm.index}`, {
+        name: stratumForm.stratum.name,
+        description: stratumForm.stratum.description
+      });
     }
 
     setDialogOpen(false);
@@ -120,6 +125,24 @@ const SurveyStratumForm = () => {
         stratumFormInitialValues={currentStratumForm}
         onSave={handleSave}
       />
+
+      {/* DELETE BLOCK ASSIGNED TO SAMPLE SITES CONFIRMATION DIALOG */}
+      <YesNoDialog
+        dialogTitle={'Delete Stratum assigned to Sampling Sites?'}
+        dialogText={`Are you sure you want to delete this Stratum? This will remove the Stratum from ${currentStratumForm?.stratum.sample_stratum_count} Sampling Sites that currently reference it.`}
+        yesButtonProps={{ color: 'error' }}
+        yesButtonLabel={'Remove'}
+        noButtonProps={{ color: 'primary', variant: 'outlined' }}
+        noButtonLabel={'Cancel'}
+        open={isYesNoDialogOpen}
+        onYes={() => {
+          setIsYesNoDialogOpen(false);
+          handleDelete();
+        }}
+        onClose={() => setIsYesNoDialogOpen(false)}
+        onNo={() => setIsYesNoDialogOpen(false)}
+      />
+
       <Menu
         open={Boolean(anchorEl)}
         onClose={() => setAnchorEl(null)}
@@ -138,7 +161,10 @@ const SurveyStratumForm = () => {
           </ListItemIcon>
           Edit Details
         </MenuItem>
-        <MenuItem onClick={() => handleDelete()}>
+        <MenuItem
+          onClick={() =>
+            currentStratumForm?.stratum.sample_stratum_count === 0 ? handleDelete() : setIsYesNoDialogOpen(true)
+          }>
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />
           </ListItemIcon>

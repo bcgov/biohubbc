@@ -62,14 +62,25 @@ export class SampleStratumService extends DBService {
   }
 
   /**
-   * Deletes a survey Sample Stratum.
+   * Deletes all associations between a given Survey Stratum and any sampling site
    *
-   * @param {number} surveySampleStratumId
+   * @param {number} surveyStratumIds
    * @return {*}  {Promise<SampleStratumRecord>}
    * @memberof SampleStratumService
    */
-  async deleteSampleStratumRecord(surveySampleStratumId: number): Promise<SampleStratumRecord> {
-    return await this.sampleStratumRepository.deleteSampleStratumRecord(surveySampleStratumId);
+  async deleteSampleStratumRecordsByStratumIds(surveyStratumIds: number[]): Promise<number> {
+    return await this.sampleStratumRepository.deleteSampleStratumRecordsByStratumIds(surveyStratumIds);
+  }
+
+   /**
+   * Deletes specific Survey Sample Stratum records, removing the assignment of a Survey Stratum to a Sample Site
+   *
+   * @param {number} surveySampleStratumIds
+   * @return {*}  {Promise<SampleStratumRecord>}
+   * @memberof SampleStratumService
+   */
+   async deleteSampleStratumRecords(surveySampleStratumIds: number[]): Promise<number> {
+    return await this.sampleStratumRepository.deleteSampleStratumRecords(surveySampleStratumIds);
   }
 
   /**
@@ -109,39 +120,11 @@ export class SampleStratumService extends DBService {
 
       // Check if any observations are associated with the stratums to be deleted
       for (const stratum of existingStratumsToDelete) {
-        promises.push(this.deleteSampleStratumRecord(stratum.survey_sample_stratum_id));
+        promises.push(this.deleteSampleStratumRecords([stratum.survey_sample_stratum_id]));
       }
 
       await Promise.all(promises);
     }
   }
 
-  /**
-   * updates a survey Sample stratum.
-   *
-   * @param {InsertSampleStratumRecord} sampleStratum
-   * @return {*}  {Promise<SampleStratumRecord>}
-   * @memberof SampleStratumService
-   */
-  async updateSampleStratum(sampleStratum: UpdateSampleStratumRecord): Promise<SampleStratumRecord> {
-    // const samplePeriodService = new SamplePeriodService(this.connection);
-    const sampleStratumService = new SampleStratumService(this.connection);
-
-    // // Check for any sample periods to delete
-    // await samplePeriodService.deleteSamplePeriodsNotInArray(sampleStratum.survey_sample_stratum_id, sampleStratum.periods);
-
-    // Loop through all new sample periods
-    // For each sample period, check if it exists in the existing list
-    // If it does, update it, otherwise create it
-
-    if (sampleStratum.survey_sample_stratum_id) {
-      const result = await this.sampleStratumRepository.updateSampleStratum(sampleStratum);
-      console.log(result);
-      return result;
-    } else {
-      const result = await sampleStratumService.insertSampleStratum(sampleStratum);
-      console.log(result);
-      return result;
-    }
-  }
 }

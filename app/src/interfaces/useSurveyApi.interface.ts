@@ -116,6 +116,7 @@ export interface IGetSurveyBlock {
   update_date: string | null;
   update_user: number | null;
   revision_count: number;
+  sample_block_count: number
 }
 
 export interface IGetSurveyStratum {
@@ -370,7 +371,8 @@ export type IEditSurveyRequest = IGeneralInformationForm &
   ISurveyLocationForm &
   IProprietaryDataForm &
   IUpdateAgreementsForm & { partnerships: IGetSurveyForViewResponsePartnerships } & ISurveySiteSelectionForm &
-  IParticipantsJobForm;
+  IParticipantsJobForm &
+  ISurveyBlockForm;
 
 export interface IGetSampleSiteResponse {
   sampleSites: IGetSampleLocationDetails[];

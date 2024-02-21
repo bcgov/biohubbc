@@ -7,6 +7,7 @@ import {
 } from '../repositories/site-selection-strategy-repository';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
+import { SampleStratumService } from './sample-stratum-service';
 
 const defaultLog = getLogger('repositories/site-selection-strategy-repository');
 
@@ -144,6 +145,16 @@ export class SiteSelectionStrategyService extends DBService {
    * @memberof SiteSelectionStrategyService
    */
   async deleteSurveyStratums(stratumIds: number[]): Promise<any> {
+    const sampleStratumService = new SampleStratumService(this.connection);
+
+    // Check if stratum is associated to any Sampling Sites
+    for (const stratumId of stratumIds) {
+      if ((await sampleStratumService.getSampleStratumsCountForSurveyStratumId(stratumId)).sampleCount > 0) {
+        // When a Survey Stratum is deleted, also delete its associations to sampling sites to avoid orphaned Sample Stratum records
+        await sampleStratumService.deleteSampleStratumRecordsByStratumIds([stratumId]);
+      }
+    }
+
     return this.siteSelectionStrategyRepository.deleteSurveyStratums(stratumIds);
   }
 }

@@ -1,5 +1,6 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
 
@@ -81,7 +82,7 @@ export class SampleBlockRepository extends BaseRepository {
     const response = await this.connection.sql(sql, SampleBlockRecord);
 
     const sampleCount = Number(response.rowCount);
-    
+
     return { sampleCount };
   }
 
@@ -93,7 +94,6 @@ export class SampleBlockRepository extends BaseRepository {
    * @memberof sampleBlockRepository
    */
   async insertSampleBlock(sampleBlock: InsertSampleBlockRecord): Promise<SampleBlockRecord> {
-
     const sqlStatement = SQL`
     INSERT INTO survey_sample_block (
       survey_sample_site_id,
@@ -108,7 +108,6 @@ export class SampleBlockRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement, SampleBlockRecord);
 
-
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert sample block', [
         'sampleBlockRepository->insertSampleBlock',
@@ -120,24 +119,20 @@ export class SampleBlockRepository extends BaseRepository {
   }
 
   /**
-   * Deletes a survey Sample block.
+   * Deletes all Sample Blocks referencing a given Survey Block
    *
-   * @param {number} surveySampleBlockId
+   * @param {number} surveyBlockIds
    * @return {*}  {Promise<SampleBlockRecord>}
    * @memberof sampleBlockRepository
    */
-  async deleteSampleBlockRecord(surveySampleBlockId: number): Promise<SampleBlockRecord> {
-    const sqlStatement = SQL`
-      DELETE FROM
-        survey_sample_block
-      WHERE
-        survey_sample_block_id = ${surveySampleBlockId}
-      RETURNING
-        *;
-    `;
+  async deleteSampleBlockRecordsByBlockIds(surveyBlockIds: number[]): Promise<number> {
+    const queryBuilder = getKnex()
+      .delete()
+      .from('survey_sample_block')
+      .whereIn('survey_block_id', surveyBlockIds)
+      .returning('*');
 
-    // todo: reconcile types
-    const response = await this.connection.sql(sqlStatement); //, SampleBlockRecord)
+    const response = await this.connection.knex(queryBuilder, SampleBlockRecord);
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete sample block', [
@@ -146,7 +141,32 @@ export class SampleBlockRepository extends BaseRepository {
       ]);
     }
 
-    return response.rows[0];
+    return response.rowCount;
+  }
+  /**
+   * Deletes all Sample Block records in the array
+   *
+   * @param {number} surveySampleBlockIds
+   * @return {*}  {Promise<SampleBlockRecord>}
+   * @memberof sampleBlockRepository
+   */
+  async deleteSampleBlockRecords(surveySampleBlockIds: number[]): Promise<number> {
+    const queryBuilder = getKnex()
+      .delete()
+      .from('survey_sample_block')
+      .whereIn('survey_sample_block_id', surveySampleBlockIds)
+      .returning('*');
+
+    const response = await this.connection.knex(queryBuilder, SampleBlockRecord);
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to delete sample block', [
+        'sampleBlockRepository->deleteSampleBlockRecord',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rowCount;
   }
 
   /**
@@ -165,7 +185,7 @@ export class SampleBlockRepository extends BaseRepository {
 
     // todo: reconcile types
     const response = await this.connection.sql(sql); //, SampleBlockRecord
-  
+
     return response.rows;
   }
 }

@@ -29,7 +29,7 @@ export class SampleBlockService extends DBService {
   }
 
   /**
-   * Gets all survey Sample Blocks.
+   * Gets all survey blocks assigned to a given sample site
    *
    * @param {number} surveySampleSiteId
    * @return {*}  {Promise<SampleBlockRecord[]>}
@@ -40,9 +40,9 @@ export class SampleBlockService extends DBService {
   }
 
   /**
-   * Gets all survey Sample Blocks for a given Survey Block
+   * Gets all survey Sample Blocks for a given Survey Block that have been assigned to a sample site
    *
-   * @param {number} surveySampleBlockId
+   * @param {number} surveyBlockId
    * @return {*}  {Promise<SampleBlockRecord[]>}
    * @memberof SampleBlockService
    */
@@ -51,9 +51,9 @@ export class SampleBlockService extends DBService {
   }
 
   /**
-   * Gets count of all survey Sample Blocks for a given Survey Block
+   * Gets count of how many sampling sites a given survey block has been assigned to
    *
-   * @param {number} surveySampleBlockId
+   * @param {number} surveyBlockId
    * @return {*}  {Promise<SampleBlockRecord[]>}
    * @memberof SampleBlockService
    */
@@ -62,18 +62,29 @@ export class SampleBlockService extends DBService {
   }
 
   /**
-   * Deletes a survey Sample Block.
+   * Deletes all associations between a given Survey Block and any sampling site
    *
-   * @param {number} surveySampleBlockId
+   * @param {number} surveyBlockIds
    * @return {*}  {Promise<SampleBlockRecord>}
    * @memberof SampleBlockService
    */
-  async deleteSampleBlockRecord(surveySampleBlockId: number): Promise<SampleBlockRecord> {
-    return await this.sampleBlockRepository.deleteSampleBlockRecord(surveySampleBlockId);
+  async deleteSampleBlockRecordsByBlockIds(surveyBlockIds: number[]): Promise<number> {
+    return await this.sampleBlockRepository.deleteSampleBlockRecordsByBlockIds(surveyBlockIds);
+  }
+
+   /**
+   * Deletes specific Survey Sample Block records, removing the assignment of a Survey Block to a Sample Site
+   *
+   * @param {number} surveySampleBlockIds
+   * @return {*}  {Promise<SampleBlockRecord>}
+   * @memberof SampleBlockService
+   */
+   async deleteSampleBlockRecords(surveySampleBlockIds: number[]): Promise<number> {
+    return await this.sampleBlockRepository.deleteSampleBlockRecords(surveySampleBlockIds);
   }
 
   /**
-   * Inserts survey Sample Block
+   * Assigns a survey block to a sampling site
    *
    * @param {InsertSampleBlockRecord} sampleBlock
    * @return {*}  {Promise<SampleBlockRecord>}
@@ -106,42 +117,8 @@ export class SampleBlockService extends DBService {
     // Delete any blocks not found in the passed in array
     if (existingBlocksToDelete.length > 0) {
       const promises: Promise<any>[] = [];
-
-      // Check if any observations are associated with the blocks to be deleted
-      for (const block of existingBlocksToDelete) {
-        promises.push(this.deleteSampleBlockRecord(block.survey_sample_block_id));
-      }
-
+      promises.push(this.deleteSampleBlockRecords(existingBlocksToDelete.map((block) => block.survey_sample_block_id)));
       await Promise.all(promises);
     }
   }
-
-  // /**
-  //  * updates a survey Sample block.
-  //  *
-  //  * @param {InsertSampleBlockRecord} sampleBlock
-  //  * @return {*}  {Promise<SampleBlockRecord>}
-  //  * @memberof SampleBlockService
-  //  */
-  // async updateSampleBlock(sampleBlock: UpdateSampleBlockRecord): Promise<SampleBlockRecord> {
-  //   // const samplePeriodService = new SamplePeriodService(this.connection);
-  //   const sampleBlockService = new SampleBlockService(this.connection);
-
-  //   // // Check for any sample periods to delete
-  //   // await samplePeriodService.deleteSamplePeriodsNotInArray(sampleBlock.survey_sample_block_id, sampleBlock.periods);
-
-  //   // Loop through all new sample periods
-  //   // For each sample period, check if it exists in the existing list
-  //   // If it does, update it, otherwise create it
-
-  //   if (sampleBlock.survey_sample_block_id) {
-  //     const result = await this.sampleBlockRepository.updateSampleBlock(sampleBlock);
- 
-  //     return result;
-  //   } else {
-  //     const result = await sampleBlockService.insertSampleBlock(sampleBlock);
-
-  //     return result;
-  //   }
-  // }
 }

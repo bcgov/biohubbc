@@ -2,6 +2,7 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
+import { getKnex } from '../database/db';
 
 export type InsertSampleStratumRecord = Pick<SampleStratumRecord, 'survey_sample_site_id' | 'survey_stratum_id'>;
 
@@ -121,7 +122,7 @@ export class SampleStratumRepository extends BaseRepository {
    * @memberof sampleStratumRepository
    */
   async insertSampleStratum(sampleStratum: InsertSampleStratumRecord): Promise<SampleStratumRecord> {
-    console.log(sampleStratum);
+
     const sqlStatement = SQL`
     INSERT INTO survey_sample_stratum (
       survey_sample_site_id,
@@ -134,10 +135,8 @@ export class SampleStratumRepository extends BaseRepository {
         *;
       `;
 
-    console.log(sqlStatement);
-
     const response = await this.connection.sql(sqlStatement, SampleStratumRecord);
-    console.log(response);
+  
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert sample stratum', [
@@ -146,30 +145,24 @@ export class SampleStratumRepository extends BaseRepository {
       ]);
     }
 
-    console.log(response);
-
     return response.rows[0];
   }
 
   /**
-   * Deletes a survey Sample stratum.
+   * Deletes all Sample Stratums referencing a given Survey Stratum
    *
-   * @param {number} surveySampleStratumId
+   * @param {number} surveyStratumIds
    * @return {*}  {Promise<SampleStratumRecord>}
    * @memberof sampleStratumRepository
    */
-  async deleteSampleStratumRecord(surveySampleStratumId: number): Promise<SampleStratumRecord> {
-    const sqlStatement = SQL`
-      DELETE FROM
-        survey_sample_stratum
-      WHERE
-        survey_sample_stratum_id = ${surveySampleStratumId}
-      RETURNING
-        *;
-    `;
+  async deleteSampleStratumRecordsByStratumIds(surveyStratumIds: number[]): Promise<number> {
+    const queryBuilder = getKnex()
+      .delete()
+      .from('survey_sample_stratum')
+      .whereIn('survey_stratum_id', surveyStratumIds)
+      .returning('*');
 
-    // todo: reconcile types
-    const response = await this.connection.sql(sqlStatement); //, SampleStratumRecord)
+    const response = await this.connection.knex(queryBuilder, SampleStratumRecord);
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete sample stratum', [
@@ -178,7 +171,32 @@ export class SampleStratumRepository extends BaseRepository {
       ]);
     }
 
-    return response.rows[0];
+    return response.rowCount;
+  }
+  /**
+   * Deletes all Sample Stratum records in the array
+   *
+   * @param {number} surveySampleStratumIds
+   * @return {*}  {Promise<SampleStratumRecord>}
+   * @memberof sampleStratumRepository
+   */
+  async deleteSampleStratumRecords(surveySampleStratumIds: number[]): Promise<number> {
+    const queryBuilder = getKnex()
+      .delete()
+      .from('survey_sample_stratum')
+      .whereIn('survey_sample_stratum_id', surveySampleStratumIds)
+      .returning('*');
+
+    const response = await this.connection.knex(queryBuilder, SampleStratumRecord);
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to delete sample stratum', [
+        'sampleStratumRepository->deleteSampleStratumRecord',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rowCount;
   }
 
   /**
@@ -195,11 +213,10 @@ export class SampleStratumRepository extends BaseRepository {
       WHERE survey_sample_site_id = ${surveySampleSiteId};
     `;
 
-    console.log(sql);
 
     // todo: reconcile types
     const response = await this.connection.sql(sql); //, SampleStratumRecord
-    console.log(response);
+
     return response.rows;
   }
 }

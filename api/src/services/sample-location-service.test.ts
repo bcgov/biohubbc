@@ -104,7 +104,8 @@ describe('SampleLocationService', () => {
           update_user: 1,
           revision_count: 0,
           sample_blocks: [],
-          sample_methods: []
+          sample_methods: [],
+          sample_stratums: []
         }
       ]);
 
