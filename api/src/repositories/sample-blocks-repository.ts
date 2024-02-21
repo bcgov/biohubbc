@@ -1,5 +1,6 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
 
@@ -122,22 +123,19 @@ export class SampleBlockRepository extends BaseRepository {
   /**
    * Deletes a survey Sample block.
    *
-   * @param {number} surveySampleBlockId
+   * @param {number} surveySampleBlockIds
    * @return {*}  {Promise<SampleBlockRecord>}
    * @memberof sampleBlockRepository
    */
-  async deleteSampleBlockRecords(surveySampleBlockIds: number[]): Promise<SampleBlockRecord[]> {
-    const sqlStatement = SQL`
-      DELETE FROM
-        survey_sample_block
-      WHERE
-        survey_sample_block_id in ${surveySampleBlockIds}
-      RETURNING
-        *;
-    `;
+  async deleteSampleBlockRecords(surveySampleBlockIds: number[]): Promise<number> {
+    const queryBuilder = getKnex()
+      .delete()
+      .from('survey_sample_block')
+      .whereIn('survey_sample_block_id', surveySampleBlockIds)
+      .returning('*');
 
     // todo: reconcile types
-    const response = await this.connection.sql(sqlStatement, SampleBlockRecord);
+    const response = await this.connection.knex(queryBuilder, SampleBlockRecord);
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete sample block', [
@@ -146,7 +144,7 @@ export class SampleBlockRepository extends BaseRepository {
       ]);
     }
 
-    return response.rows;
+    return response.rowCount;
   }
 
   /**
