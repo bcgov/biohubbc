@@ -182,10 +182,6 @@ export const validateWorksheetHeaders = (worksheet: xlsx.WorkSheet, columnValida
 
   const worksheetHeaders = getWorksheetHeaders(worksheet);
 
-  if (worksheetHeaders.length !== columnNames.length) {
-    return false;
-  }
-
   return columnNames.every((expectedHeader) => {
     return (
       columnAliases?.[expectedHeader]?.some((alias) => worksheetHeaders.includes(alias)) ||
@@ -195,7 +191,7 @@ export const validateWorksheetHeaders = (worksheet: xlsx.WorkSheet, columnValida
 };
 
 /**
- * Return boolean indicating whether the worksheet has correct column types.
+ * Return boolean indicating whether the worksheet has correct column types. This only checks the required columns in the `columnValidator`
  *
  * @export
  * @param {xlsx.WorkSheet} worksheet
@@ -210,13 +206,9 @@ export const validateWorksheetColumnTypes = (
   const worksheetRows = getWorksheetRows(worksheet);
 
   return worksheetRows.every((row) => {
-    if (row.length !== rowValueTypes.length) {
-      return false;
-    }
-
-    return Object.values(row).every((value, index) => {
+    return Object.values(columnValidator.columnNames).every((_, index) => {
+      const value = row[index];
       const type = typeof value;
-
       if (rowValueTypes[index] === 'date') {
         return dayjs(value).isValid();
       }
@@ -298,6 +290,7 @@ export function validateCsvFile(
   columnValidator: IXLSXCSVValidator,
   sheet = 'Sheet1'
 ): boolean {
+  console.log('Validate');
   // Validate the worksheet headers
   if (!validateWorksheetHeaders(xlsxWorksheets[sheet], columnValidator)) {
     return false;
@@ -307,6 +300,8 @@ export function validateCsvFile(
   if (!validateWorksheetColumnTypes(xlsxWorksheets[sheet], columnValidator)) {
     return false;
   }
+
+  console.log('column types');
 
   return true;
 }
