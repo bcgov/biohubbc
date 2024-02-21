@@ -29,7 +29,15 @@ const SurveyRouter: React.FC = () => {
 
       {/* Survey Page Routes */}
       <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/details" title={getTitle('Surveys')}>
-        <SurveyPage />
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[
+            PROJECT_PERMISSION.COORDINATOR,
+            PROJECT_PERMISSION.COLLABORATOR,
+            PROJECT_PERMISSION.OBSERVER
+          ]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <SurveyPage />
+        </ProjectRoleRouteGuard>
       </RouteWithTitle>
 
       {/* Observations Routes */}

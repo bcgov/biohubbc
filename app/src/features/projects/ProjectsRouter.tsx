@@ -77,13 +77,21 @@ const ProjectsRouter: React.FC = () => {
 
             {/* Survey Routes */}
             <RouteWithTitle path="/admin/projects/:id/surveys/:survey_id" title={getTitle('Surveys')}>
-              <SurveyContextProvider>
-                <ObservationsContextProvider>
-                  <TelemetryDataContextProvider>
-                    <SurveyRouter />
-                  </TelemetryDataContextProvider>
-                </ObservationsContextProvider>
-              </SurveyContextProvider>
+              <ProjectRoleRouteGuard
+                validProjectPermissions={[
+                  PROJECT_PERMISSION.COORDINATOR,
+                  PROJECT_PERMISSION.COLLABORATOR,
+                  PROJECT_PERMISSION.OBSERVER
+                ]}
+                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                <SurveyContextProvider>
+                  <ObservationsContextProvider>
+                    <TelemetryDataContextProvider>
+                      <SurveyRouter />
+                    </TelemetryDataContextProvider>
+                  </ObservationsContextProvider>
+                </SurveyContextProvider>
+              </ProjectRoleRouteGuard>
             </RouteWithTitle>
 
             {/* Create Survey Route */}
