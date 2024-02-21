@@ -120,8 +120,17 @@ describe('SurveyService', () => {
     });
   });
 
-  describe('getSampleLocationsCountBySurveyId', () => {
-    // @TODO
+  describe('getSurveyCountByProjectId', () => {
+    it('should return the survey count successfully', async () => {
+      const dbConnectionObj = getMockDBConnection();
+
+      const repoStub = sinon.stub(SurveyRepository.prototype, 'getSurveyCountByProjectId').resolves(20);
+      const surveyService = new SurveyService(dbConnectionObj);
+      const response = await surveyService.getSurveyCountByProjectId(1001);
+
+      expect(repoStub).to.be.calledOnceWith(1001);
+      expect(response).to.equal(20);
+    })
   });
 
   describe('updateSurvey', () => {

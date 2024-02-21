@@ -115,6 +115,19 @@ describe('SampleLocationService', () => {
     });
   });
 
+  describe('getSampleLocationsCountBySurveyId', () => {
+    it('should return the sample site count successfully', async () => {
+      const dbConnectionObj = getMockDBConnection();
+
+      const repoStub = sinon.stub(SampleLocationRepository.prototype, 'getSampleLocationsCountBySurveyId').resolves(20);
+      const surveyService = new SampleLocationService(dbConnectionObj);
+      const response = await surveyService.getSampleLocationsCountBySurveyId(1001);
+
+      expect(repoStub).to.be.calledOnceWith(1001);
+      expect(response).to.equal(20);
+    })
+  });
+
   describe('deleteSampleLocationRecord', () => {
     it('should run without issue', async () => {
       const mockDBConnection = getMockDBConnection();

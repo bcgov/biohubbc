@@ -76,8 +76,6 @@ export const ProjectContextProvider = (props: PropsWithChildren<Record<never, an
   useEffect(() => {
     if (projectId) {
       projectDataLoader.refresh(projectId);
-      // TODO remove this and write a comment explaining why? THe survey list component will already refresh this when it mounts...
-      // surveysListDataLoader.refresh();
       artifactDataLoader.refresh(projectId);
     }
 

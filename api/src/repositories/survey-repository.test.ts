@@ -15,6 +15,7 @@ import {
   SurveyRepository,
   SurveyTypeRecord
 } from './survey-repository';
+import { ApiExecuteSQLError } from '../errors/api-error';
 
 chai.use(sinonChai);
 
@@ -36,7 +37,29 @@ describe('SurveyRepository', () => {
   });
 
   describe('getSurveyCountByProjectId', () => {
-    // @TODO
+    it('should return the survey count successfully', async () => {
+      const mockResponse = ({ rows: [{ survey_count: 69 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const dbConnectionObj = getMockDBConnection({ sql: () => mockResponse });
+
+      const repo = new SurveyRepository(dbConnectionObj);
+      const response = await repo.getSurveyCountByProjectId(1001);
+
+      expect(response).to.eql(69);
+    });
+
+    it('should throw an exception if row count is 0', async () => {
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
+
+      const repo = new SurveyRepository(dbConnectionObj);
+      
+      try {
+        await repo.getSurveyCountByProjectId(1001);
+      } catch (error) {
+        expect(dbConnectionObj.sql).to.have.been.calledOnce;
+        expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to get survey count');
+      }
+    })
   });
 
   describe('getSurveyIdsByProjectId', () => {
