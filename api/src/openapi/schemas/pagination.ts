@@ -33,7 +33,7 @@ export const paginationRequestQueryParamSchema: any[] = [
     description: `The column to be sorted on, e.g. 'name'`,
     schema: {
       type: 'string'
-    },
+    }
   },
   {
     in: 'query',

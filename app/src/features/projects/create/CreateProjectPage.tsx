@@ -165,6 +165,10 @@ const CreateProjectPage: React.FC = () => {
               handleSubmit={createProject}
               codes={codes}
               formikRef={formikRef}
+<<<<<<< HEAD
+=======
+              // initialValues={draftDataLoader.data?.data} // TODO should something else go here, or can it go undefined?
+>>>>>>> dev
             />
             <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
               <LoadingButton
