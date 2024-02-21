@@ -1,6 +1,7 @@
 import { Feature } from '@turf/helpers';
 import { IDBConnection } from '../database/db';
 import {
+  SampleLocationDetails,
   SampleLocationRecord,
   SampleLocationRepository,
   UpdateSampleSiteRecord
@@ -45,21 +46,10 @@ export class SampleLocationService extends DBService {
    * @return {*}  {Promise<SampleLocationRecord[]>}
    * @memberof SampleLocationService
    */
-  async getSampleLocationsForSurveyId(surveyId: number): Promise<SampleLocationRecord[]> {
+  async getSampleLocationsForSurveyId(surveyId: number): Promise<SampleLocationDetails[]> {
     const results = await this.sampleLocationRepository.getSampleLocationsForSurveyId(surveyId);
 
     return results;
-
-    // // todo: could do this in sql
-    // return results.map((site) => {
-    //   // if (!site.sample_stratums) {
-    //   //   site.sample_stratums = [];
-    //   // }
-    //   if (!site.sample_blocks) {
-    //     site.sample_blocks = [];
-    //   }
-    //   return site;
-    // });
   }
 
   // /**
@@ -160,22 +150,13 @@ export class SampleLocationService extends DBService {
     // Check for blocks to delete
     await blockService.deleteSampleBlocksNotInArray(sampleSite.survey_sample_site_id, sampleSite.blocks);
 
-    console.log(sampleSite);
-
     // Loop through all blocks
     // For each block, check if it exists
     // If it exists, update it
     // If it does not exist, create it
     for (const item of sampleSite.blocks) {
-      if (item.survey_sample_block_id) {
-        // const sampleBlock = {
-        //   survey_sample_site_id: sampleSite.survey_sample_site_id,
-        //   survey_sample_block_id: item.survey_sample_block_id,
-        //   survey_block_id: item.survey_block_id
-        // };
-        // // await blockService.updateSampleBlock(sampleBlock);
-        // do nothing
-      } else {
+      if (!item.survey_sample_block_id) {
+  
         const sampleBlock = {
           survey_sample_site_id: sampleSite.survey_sample_site_id,
           survey_block_id: item.survey_block_id

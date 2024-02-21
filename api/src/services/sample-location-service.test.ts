@@ -73,8 +73,8 @@ describe('SampleLocationService', () => {
         update_date: '',
         update_user: 1,
         revision_count: 0,
-        sample_methods: [],
-        sample_blocks: []
+        // sample_methods: [],
+        // sample_blocks: []
       });
       const insertMethod = sinon.stub(SampleMethodService.prototype, 'insertSampleMethod').resolves();
 
@@ -103,8 +103,8 @@ describe('SampleLocationService', () => {
           update_date: '',
           update_user: 1,
           revision_count: 0,
-          sample_methods: [],
-          sample_blocks: []
+          sample_blocks: [],
+          sample_methods: []
         }
       ]);
 
@@ -142,8 +142,8 @@ describe('SampleLocationService', () => {
         update_date: '',
         update_user: 1,
         revision_count: 0,
-        sample_methods: [],
-        sample_blocks: []
+        // sample_methods: [],
+        // sample_blocks: []
       });
 
       const { survey_sample_site_id } = await service.deleteSampleLocationRecord(1);
@@ -177,8 +177,8 @@ describe('SampleLocationService', () => {
         update_date: '',
         update_user: 1,
         revision_count: 0,
-        sample_methods: [],
-        sample_blocks: []
+        // sample_methods: [],
+        // sample_blocks: []
       });
       const insertSampleMethodStub = sinon.stub(SampleMethodService.prototype, 'insertSampleMethod').resolves();
       const updateSampleMethodStub = sinon.stub(SampleMethodService.prototype, 'updateSampleMethod').resolves();
