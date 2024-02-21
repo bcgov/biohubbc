@@ -290,7 +290,6 @@ export function validateCsvFile(
   columnValidator: IXLSXCSVValidator,
   sheet = 'Sheet1'
 ): boolean {
-  console.log('Validate');
   // Validate the worksheet headers
   if (!validateWorksheetHeaders(xlsxWorksheets[sheet], columnValidator)) {
     return false;
@@ -301,7 +300,27 @@ export function validateCsvFile(
     return false;
   }
 
-  console.log('column types');
-
   return true;
+}
+
+export function getMeasurementColumnNameFromWorksheet(
+  xlsxWorksheets: xlsx.WorkSheet,
+  columnValidator: IXLSXCSVValidator,
+  sheet = 'Sheet1'
+): string[] {
+  const columns = getWorksheetHeaders(xlsxWorksheets[sheet]);
+  let aliasColumns: string[] = [];
+  // Create a big ole list of column names and aliases
+  if (columnValidator.columnAliases) {
+    aliasColumns = Object.values(columnValidator.columnAliases).flat();
+  }
+  const requiredColumns = [...columnValidator.columnNames, ...aliasColumns];
+  return columns
+    .map((column) => {
+      // only return column names not in the validation CSV Column validator (extra/measurement columns)
+      if (!requiredColumns.includes(column)) {
+        return column;
+      }
+    })
+    .filter((c): c is string => Boolean(c)); // remove undefined/ nulls from the array
 }

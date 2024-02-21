@@ -16,7 +16,7 @@ import { parseS3File } from '../utils/media/media-utils';
 import {
   constructWorksheets,
   constructXLSXWorkbook,
-  getWorksheetHeaders,
+  getMeasurementColumnNameFromWorksheet,
   getWorksheetRowObjects,
   IXLSXCSVValidator,
   validateCsvFile,
@@ -418,14 +418,9 @@ export class ObservationService extends DBService {
 
     // Get the worksheet row objects
     const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheets['Sheet1']);
-    const columns = getWorksheetHeaders(xlsxWorksheets['Sheet1']);
 
-    // Find any 'extra' columns as measurements and process them accordingly
-    const requiredColumnSet = new Set(observationCSVColumnValidator.columnNames);
-    const measurementColumns = columns.filter((column) => !requiredColumnSet.delete(column));
-    console.log('__________');
-    console.log('__________');
-    console.log(measurementColumns);
+    const measurementColumns = getMeasurementColumnNameFromWorksheet(xlsxWorksheets, observationCSVColumnValidator);
+    console.log('Measurement Columns', measurementColumns);
 
     // Step 5. Merge all the table rows into an array of ObservationInsert[]
     const insertRows: InsertObservation[] = worksheetRowObjects.map((row) => ({
@@ -441,12 +436,14 @@ export class ObservationService extends DBService {
       observation_time: row['TIME'],
       observation_date: row['DATE']
     }));
-
+    console.log(`rows to add: ${insertRows.length}`);
     // Step 7. Insert new rows and return them
-    return this.observationRepository.insertUpdateSurveyObservations(
-      surveyId,
-      await this._attachItisScientificName(insertRows)
-    );
+    // return this.observationRepository.insertUpdateSurveyObservations(
+    //   surveyId,
+    //   await this._attachItisScientificName(insertRows)
+    // );
+
+    return [];
   }
 
   /**
