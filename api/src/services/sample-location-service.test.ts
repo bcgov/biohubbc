@@ -72,7 +72,7 @@ describe('SampleLocationService', () => {
         create_user: 1,
         update_date: '',
         update_user: 1,
-        revision_count: 0,
+        revision_count: 0
         // sample_methods: [],
         // sample_blocks: []
       });
@@ -141,7 +141,7 @@ describe('SampleLocationService', () => {
         create_user: 1,
         update_date: '',
         update_user: 1,
-        revision_count: 0,
+        revision_count: 0
         // sample_methods: [],
         // sample_blocks: []
       });
@@ -176,7 +176,7 @@ describe('SampleLocationService', () => {
         create_user: 1,
         update_date: '',
         update_user: 1,
-        revision_count: 0,
+        revision_count: 0
         // sample_methods: [],
         // sample_blocks: []
       });

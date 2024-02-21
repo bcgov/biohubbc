@@ -72,7 +72,6 @@ export const SamplingBlockForm = () => {
         noOptionsText="No records found"
         options={options}
         filterOptions={(options, state) => {
-      
           const searchFilter = createFilterOptions<IGetSurveyBlock>({ ignoreCase: true });
           const unselectedOptions = options.filter((item) =>
             selectedBlocks.every((existing) => existing.survey_block_id !== item.survey_block_id)
@@ -86,7 +85,6 @@ export const SamplingBlockForm = () => {
         clearOnBlur={false}
         value={null}
         onInputChange={(_, value, reason) => {
-    
           if (reason === 'reset') {
             setSearchText('');
           } else {
@@ -100,7 +98,6 @@ export const SamplingBlockForm = () => {
           }
         }}
         onClose={(value, reason) => {
-  
           setSearchText('');
         }}
         renderInput={(params) => (

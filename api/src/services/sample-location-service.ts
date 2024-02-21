@@ -156,7 +156,6 @@ export class SampleLocationService extends DBService {
     // If it does not exist, create it
     for (const item of sampleSite.blocks) {
       if (!item.survey_sample_block_id) {
-  
         const sampleBlock = {
           survey_sample_site_id: sampleSite.survey_sample_site_id,
           survey_block_id: item.survey_block_id
