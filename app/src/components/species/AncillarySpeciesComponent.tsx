@@ -32,6 +32,7 @@ const AncillarySpeciesComponent = () => {
         required={false}
         handleAddSpecies={handleAddSpecies}
       />
+      <SelectedSpecies selectedSpecies={selectedSpecies} handleRemoveSpecies={handleRemoveSpecies} />
       {errors && get(errors, 'species.ancillary_species') && (
         <Box mt={3}>
           <AlertBar
@@ -42,7 +43,6 @@ const AncillarySpeciesComponent = () => {
           />
         </Box>
       )}
-      <SelectedSpecies selectedSpecies={selectedSpecies} handleRemoveSpecies={handleRemoveSpecies} />
     </>
   );
 };
