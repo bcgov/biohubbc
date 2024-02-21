@@ -5,23 +5,14 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import YesNoDialog from 'components/dialog/YesNoDialog';
 import PageHeader from 'components/layout/PageHeader';
-import { CreateProjectDraftI18N, CreateProjectI18N, DeleteProjectDraftI18N } from 'constants/i18n';
+import { CreateProjectI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
-import ProjectDraftForm, {
-  IProjectDraftForm,
-  ProjectDraftFormYupSchema
-} from 'features/projects/components/ProjectDraftForm';
 import { FormikProps } from 'formik';
 import * as History from 'history';
-import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import useDataLoader from 'hooks/useDataLoader';
-import { useQuery } from 'hooks/useQuery';
 import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
@@ -38,8 +29,6 @@ const CreateProjectPage: React.FC = () => {
 
   const biohubApi = useBiohubApi();
 
-  const queryParams = useQuery();
-
   // Reference to pass to the formik component in order to access its state at any time
   // Used by the draft logic to fetch the values of a step form that has not been validated/completed
   const formikRef = useRef<FormikProps<ICreateProjectRequest>>(null);
@@ -55,20 +44,6 @@ const CreateProjectPage: React.FC = () => {
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
-
-  const draftId = Number(queryParams.draftId);
-
-  const draftDataLoader = useDataLoader(() => {
-    return biohubApi.draft.getDraft(draftId);
-  });
-
-  if (draftId) {
-    draftDataLoader.load();
-  }
-
-  // Whether or not to show the 'Save as draft' dialog
-  const [openDraftDialog, setOpenDraftDialog] = useState(false);
-  const [openDeleteDraftDialog, setOpenDeleteDraftDialog] = useState(false);
 
   const defaultCancelDialogProps = {
     dialogTitle: CreateProjectI18N.cancelTitle,
@@ -95,26 +70,6 @@ const CreateProjectPage: React.FC = () => {
     }
   };
 
-  const showDeleteDraftErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({
-      dialogTitle: DeleteProjectDraftI18N.draftErrorTitle,
-      dialogText: DeleteProjectDraftI18N.draftErrorText,
-      ...defaultErrorDialogProps,
-      ...textDialogProps,
-      open: true
-    });
-  };
-
-  const showDraftErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({
-      dialogTitle: CreateProjectDraftI18N.draftErrorTitle,
-      dialogText: CreateProjectDraftI18N.draftErrorText,
-      ...defaultErrorDialogProps,
-      ...textDialogProps,
-      open: true
-    });
-  };
-
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
       dialogTitle: CreateProjectI18N.createErrorTitle,
@@ -128,66 +83,6 @@ const CreateProjectPage: React.FC = () => {
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
     history.push('/admin/projects');
-  };
-
-  const handleSubmitDraft = async (values: IProjectDraftForm) => {
-    try {
-      let response;
-      setIsLoading(true);
-
-      // Get the form data for all steps
-      // Fetch the data from the formikRef for whichever step is the active step
-      // Why? WIP changes to the active step will not yet be updated into its respective stepForms[n].stepInitialValues
-
-      if (draftId) {
-        response = await biohubApi.draft.updateDraft(draftId, values.draft_name, formikRef.current?.values);
-      } else {
-        response = await biohubApi.draft.createDraft(values.draft_name, formikRef.current?.values);
-      }
-
-      setOpenDraftDialog(false);
-
-      if (!response?.webform_draft_id) {
-        showCreateErrorDialog({
-          dialogError: 'The response from the server was null, or did not contain a draft project ID.'
-        });
-        setIsLoading(false);
-        return;
-      }
-
-      setEnableCancelCheck(false);
-      setIsLoading(false);
-      history.push(`/admin/projects`);
-    } catch (error) {
-      setOpenDraftDialog(false);
-
-      const apiError = error as APIError;
-      showDraftErrorDialog({
-        dialogError: apiError?.message,
-        dialogErrorDetails: apiError?.errors
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  /**
-   * Deletes the draft record used when creating this project, if one exists.
-   *
-   * @param {number} draftId
-   * @returns {*}
-   */
-  const deleteDraft = async () => {
-    if (!draftId) {
-      return;
-    }
-
-    try {
-      await biohubApi.draft.deleteDraft(draftId);
-    } catch (error: any) {
-      showDeleteDraftErrorDialog({ dialogError: error });
-      return error;
-    }
   };
 
   /**
@@ -204,8 +99,6 @@ const CreateProjectPage: React.FC = () => {
       showCreateErrorDialog({ dialogError: 'The response from the server was null, or did not contain a project ID.' });
       return;
     }
-
-    await deleteDraft();
 
     setEnableCancelCheck(false);
     setIsLoading(false);
@@ -238,48 +131,13 @@ const CreateProjectPage: React.FC = () => {
     return true;
   };
 
-  const handleDeleteDraft = async () => {
-    await deleteDraft();
-
-    setEnableCancelCheck(false);
-
-    history.push(`/admin/projects/`);
-  };
-
-  if (!codes || (draftId && !draftDataLoader.data)) {
+  if (!codes) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
-      <EditDialog
-        dialogTitle="Save Draft"
-        dialogSaveButtonLabel="Save"
-        open={openDraftDialog}
-        component={{
-          element: <ProjectDraftForm />,
-          initialValues: {
-            draft_name: formikRef.current?.values.project.project_name || draftDataLoader.data?.name || ''
-          },
-          validationSchema: ProjectDraftFormYupSchema
-        }}
-        onCancel={() => setOpenDraftDialog(false)}
-        onSave={(values) => handleSubmitDraft(values)}
-      />
-
-      <YesNoDialog
-        dialogTitle="Delete Draft Project?"
-        dialogText="Are you sure you want to permanently delete this draft project? This action cannot be undone."
-        open={openDeleteDraftDialog}
-        yesButtonLabel="Delete Draft"
-        yesButtonProps={{ color: 'error' }}
-        noButtonLabel="Cancel"
-        onClose={() => setOpenDeleteDraftDialog(false)}
-        onNo={() => setOpenDeleteDraftDialog(false)}
-        onYes={() => handleDeleteDraft()}
-      />
-
       <PageHeader
         title="Create New Project"
         buttonJSX={
@@ -311,7 +169,7 @@ const CreateProjectPage: React.FC = () => {
               handleSubmit={createProject}
               codes={codes}
               formikRef={formikRef}
-              initialValues={draftDataLoader.data?.data}
+              // initialValues={draftDataLoader.data?.data} // TODO should something else go here, or can it go undefined?
             />
             <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
               <LoadingButton

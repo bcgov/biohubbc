@@ -78,6 +78,33 @@ describe('ProjectRepository', () => {
     });
   });
 
+  describe('getProjectCount', () => {
+    it('should return a project count', async () => {
+      const mockResponse = ({ rows: [{ project_count: 69 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+
+      const repository = new ProjectRepository(dbConnection);
+
+      const response = await repository.getProjectCount(false, 1001);
+
+      expect(response).to.eql(69);
+    });
+
+    it('should throw an error', async () => {
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+
+      const repository = new ProjectRepository(dbConnection);
+
+      try {
+        await repository.getProjectCount(true, 1001);
+        expect.fail();
+      } catch (error) {
+        expect((error as Error).message).to.equal('Failed to get project count');
+      }
+    });
+  });
+
   describe('getProjectData', () => {
     it('should return result', async () => {
       const mockResponse = ({ rows: [{ project_id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;

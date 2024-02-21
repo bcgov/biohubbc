@@ -258,7 +258,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
               sx={{
                 fontWeight: 400
               }}>
-              ({activeUsers?.length || 0})
+              ({Number(activeUsers?.length ?? 0).toLocaleString()})
             </Typography>
           </Typography>
           <Button

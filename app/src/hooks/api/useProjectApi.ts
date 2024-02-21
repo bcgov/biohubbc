@@ -17,6 +17,7 @@ import {
   UPDATE_GET_ENTITIES
 } from 'interfaces/useProjectApi.interface';
 import qs from 'qs';
+import { ApiPaginationOptions } from 'types/misc';
 
 /**
  * Returns a set of supported api methods for working with projects.
@@ -106,21 +107,36 @@ const useProjectApi = (axios: AxiosInstance) => {
   /**
    * Get projects list (potentially based on filter criteria).
    *
+   * @param {ApiPaginationOptions} [pagination]
    * @param {IProjectAdvancedFilterRequest} filterFieldData
    * @return {*}  {Promise<IGetProjectsListResponse[]>}
    */
   const getProjectsList = async (
+    pagination?: ApiPaginationOptions,
     filterFieldData?: IProjectAdvancedFilterRequest
-  ): Promise<IGetProjectsListResponse[]> => {
-    const { data } = await axios.get(`/api/project/list`, {
-      params: filterFieldData,
-      paramsSerializer: (params: any) => {
-        return qs.stringify(params, {
-          arrayFormat: 'repeat',
-          filter: (_prefix: any, value: any) => value || undefined
-        });
+  ): Promise<IGetProjectsListResponse> => {
+    const params = new URLSearchParams();
+
+    if (pagination) {
+      params.append('page', pagination.page.toString());
+      params.append('limit', pagination.limit.toString());
+      if (pagination.sort) {
+        params.append('sort', pagination.sort);
       }
-    });
+      if (pagination.order) {
+        params.append('order', pagination.order);
+      }
+    }
+
+    if (filterFieldData) {
+      Object.entries(filterFieldData).forEach(([key, value]) => {
+        params.append(key, value);
+      });
+    }
+
+    const urlParamsString = `?${params.toString()}`;
+
+    const { data } = await axios.get(`/api/project/list${urlParamsString}`);
 
     return data;
   };
