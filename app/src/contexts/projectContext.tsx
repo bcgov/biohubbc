@@ -59,7 +59,9 @@ export const ProjectContextProvider = (props: PropsWithChildren<Record<never, an
 
   const biohubApi = useBiohubApi();
   const projectDataLoader = useDataLoader(biohubApi.project.getProjectForView);
-  const surveysListDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions) => biohubApi.survey.getSurveysBasicFieldsByProjectId(projectId, pagination));
+  const surveysListDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions) =>
+    biohubApi.survey.getSurveysBasicFieldsByProjectId(projectId, pagination)
+  );
   const artifactDataLoader = useDataLoader(biohubApi.project.getProjectAttachments);
 
   if (!urlParams['id']) {
@@ -67,7 +69,6 @@ export const ProjectContextProvider = (props: PropsWithChildren<Record<never, an
       "The project ID found in ProjectContextProvider was invalid. Does your current React route provide an 'id' parameter?"
     );
   }
-
 
   /**
    * Refreshes the current project object whenever the current project ID changes

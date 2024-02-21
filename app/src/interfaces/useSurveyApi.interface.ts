@@ -257,7 +257,6 @@ export interface ISurveySupplementaryData {
 export interface IGetSurveyListResponse {
   surveys: SurveyBasicFieldsObject[];
   pagination: ApiPaginationResponseParams;
-
 }
 
 /**

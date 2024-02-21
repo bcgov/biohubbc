@@ -90,9 +90,11 @@ const ProjectsListPage = () => {
   const biohubApi = useBiohubApi();
 
   const codesContext = useContext(CodesContext);
-  const projectsDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions, filter?: IProjectAdvancedFilters) => {
-    return biohubApi.project.getProjectsList(pagination, filter);
-  });
+  const projectsDataLoader = useDataLoader(
+    (pagination: ApiPaginationRequestOptions, filter?: IProjectAdvancedFilters) => {
+      return biohubApi.project.getProjectsList(pagination, filter);
+    }
+  );
 
   const getProjectPrograms = (project: IProjectsListItemData) => {
     return (

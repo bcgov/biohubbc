@@ -3,8 +3,8 @@ import Icon from '@mdi/react';
 import { Link, Toolbar, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
 import { grey } from '@mui/material/colors';
+import Divider from '@mui/material/Divider';
 import { makeStyles } from '@mui/styles';
 import { DataGrid, GridColDef, GridOverlay, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import { ProjectRoleGuard } from 'components/security/Guards';
@@ -126,18 +126,13 @@ const SurveysListPage = () => {
       <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Typography variant="h4" component="h2">
           Surveys &zwnj;
-          <Typography
-            component="span"
-            color="textSecondary"
-            lineHeight="inherit"
-            fontSize="inherit"
-            fontWeight={400}>
-            ({Number(projectContext.surveysListDataLoader.data?.pagination.total || 0).toLocaleString()})
+          <Typography component="span" color="textSecondary" lineHeight="inherit" fontSize="inherit" fontWeight={400}>
+            ({Number(projectContext.surveysListDataLoader.data?.pagination?.total ?? 0).toLocaleString()})
           </Typography>
         </Typography>
         <ProjectRoleGuard
-            validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <Button
             variant="contained"
             color="primary"
@@ -157,7 +152,7 @@ const SurveysListPage = () => {
           columns={columns}
           autoHeight
           rows={projectContext.surveysListDataLoader.data?.surveys ?? []}
-          rowCount={projectContext.surveysListDataLoader.data?.pagination.total ?? 0}
+          rowCount={projectContext.surveysListDataLoader.data?.pagination?.total ?? 0}
           getRowId={(row) => row.survey_id}
           pageSizeOptions={[...pageSizeOptions]}
           paginationMode="server"

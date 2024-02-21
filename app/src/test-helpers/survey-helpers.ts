@@ -1,6 +1,6 @@
 import {
-  IGetSurveyListResponse,
   IGetSurveyForViewResponse,
+  IGetSurveyListResponse,
   SurveySupplementaryData,
   SurveyViewObject
 } from 'interfaces/useSurveyApi.interface';

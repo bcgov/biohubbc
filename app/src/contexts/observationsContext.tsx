@@ -15,11 +15,19 @@ export type IObservationsContext = {
   /**
    * Data Loader used for retrieving survey observations
    */
-  observationsDataLoader: DataLoader<[pagination?: ApiPaginationRequestOptions], IGetSurveyObservationsResponse, unknown>;
+  observationsDataLoader: DataLoader<
+    [pagination?: ApiPaginationRequestOptions],
+    IGetSurveyObservationsResponse,
+    unknown
+  >;
 };
 
 export const ObservationsContext = createContext<IObservationsContext>({
-  observationsDataLoader: {} as DataLoader<[pagination?: ApiPaginationRequestOptions], IGetSurveyObservationsResponse, unknown>
+  observationsDataLoader: {} as DataLoader<
+    [pagination?: ApiPaginationRequestOptions],
+    IGetSurveyObservationsResponse,
+    unknown
+  >
 });
 
 export const ObservationsContextProvider = (props: PropsWithChildren<Record<never, any>>) => {

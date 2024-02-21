@@ -9,9 +9,9 @@ import {
   IGetSurveyListResponse,
   SurveyBasicFieldsObject
 } from 'interfaces/useSurveyApi.interface';
+import { ApiPaginationResponseParams } from 'types/misc';
 import { v4 } from 'uuid';
 import useSurveyApi from './useSurveyApi';
-import { ApiPaginationResponseParams } from 'types/misc';
 
 describe('useSurveyApi', () => {
   let mock: any;
@@ -50,10 +50,7 @@ describe('useSurveyApi', () => {
       const projectId = 1;
 
       const res: IGetSurveyListResponse = {
-        surveys: [
-          { survey_id: 1 },
-          { survey_id: 2 },
-        ] as SurveyBasicFieldsObject[],
+        surveys: [{ survey_id: 1 }, { survey_id: 2 }] as SurveyBasicFieldsObject[],
         pagination: null as unknown as ApiPaginationResponseParams
       };
 
