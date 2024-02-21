@@ -3,6 +3,7 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { ApiExecuteSQLError } from '../errors/api-error';
 import { GetReportAttachmentsData } from '../models/project-view';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
@@ -15,7 +16,6 @@ import {
   SurveyRepository,
   SurveyTypeRecord
 } from './survey-repository';
-import { ApiExecuteSQLError } from '../errors/api-error';
 
 chai.use(sinonChai);
 
@@ -52,14 +52,14 @@ describe('SurveyRepository', () => {
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const repo = new SurveyRepository(dbConnectionObj);
-      
+
       try {
         await repo.getSurveyCountByProjectId(1001);
       } catch (error) {
         expect(dbConnectionObj.sql).to.have.been.calledOnce;
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to get survey count');
       }
-    })
+    });
   });
 
   describe('getSurveyIdsByProjectId', () => {

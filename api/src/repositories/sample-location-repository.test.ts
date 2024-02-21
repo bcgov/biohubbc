@@ -56,14 +56,14 @@ describe('SampleLocationRepository', () => {
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const repo = new SampleLocationRepository(dbConnectionObj);
-      
+
       try {
         await repo.getSampleLocationsCountBySurveyId(1001);
       } catch (error) {
         expect(dbConnectionObj.sql).to.have.been.calledOnce;
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to get sample site count');
       }
-    })
+    });
   });
 
   describe('updateSampleLocation', () => {

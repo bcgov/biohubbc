@@ -1,14 +1,14 @@
-import { describe } from 'mocha';
-import { ensureCompletePaginationOptions, getPaginationOptionsFromRequest, getPaginationResponse } from './pagination';
-import { Request } from 'express';
 import { expect } from 'chai';
+import { Request } from 'express';
+import { describe } from 'mocha';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
+import { ensureCompletePaginationOptions, getPaginationOptionsFromRequest, getPaginationResponse } from './pagination';
 
 describe('pagination', () => {
   describe('getPaginationOptionsFromRequest', () => {
     it('should return undefined options if the corresponding request params are undefined', () => {
       const mockRequst = {
-        query: { }
+        query: {}
       } as Request;
 
       const result = getPaginationOptionsFromRequest(mockRequst);
@@ -21,14 +21,14 @@ describe('pagination', () => {
     });
 
     it('should cast request params to number successfully', () => {
-      const mockRequst = {
+      const mockRequst = ({
         query: {
           limit: '100',
           page: '2',
           sort: 'name',
           order: 'desc'
         }
-      } as unknown as Request;
+      } as unknown) as Request;
 
       const result = getPaginationOptionsFromRequest(mockRequst);
       expect(result).to.eql({
@@ -132,7 +132,7 @@ describe('pagination', () => {
           sort: 'name',
           order: 'desc'
         };
-  
+
         const result = ensureCompletePaginationOptions(mockPagination);
         expect(result).to.eql({
           limit: 15,
@@ -141,6 +141,6 @@ describe('pagination', () => {
           order: 'desc'
         });
       });
-    })
+    });
   });
 });

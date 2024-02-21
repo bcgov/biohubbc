@@ -125,7 +125,7 @@ describe('SampleLocationService', () => {
 
       expect(repoStub).to.be.calledOnceWith(1001);
       expect(response).to.equal(20);
-    })
+    });
   });
 
   describe('deleteSampleLocationRecord', () => {

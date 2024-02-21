@@ -351,7 +351,7 @@ const insertSurveyData = (projectId: number, surveyName?: string) => `
     )
   VALUES (
     ${projectId},
-    '${surveyName ?? "Seed Survey"}',
+    '${surveyName ?? 'Seed Survey'}',
     $$${faker.lorem.sentences(2)}$$,
     $$${faker.date.between({ from: '2010-01-01T00:00:00-08:00', to: '2015-01-01T00:00:00-08:00' }).toISOString()}$$,
     $$${faker.date.between({ from: '2020-01-01T00:00:00-08:00', to: '2025-01-01T00:00:00-08:00' }).toISOString()}$$,
