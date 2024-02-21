@@ -32,7 +32,8 @@ const ProjectsRouter: React.FC = () => {
 
       {/* Create Project Route */}
       <RouteWithTitle exact path="/admin/projects/create" title={getTitle('Create Project')}>
-        <ProjectRoleRouteGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+        <ProjectRoleRouteGuard
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.PROJECT_CREATOR]}>
           <CreateProjectPage />
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
