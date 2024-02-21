@@ -1,7 +1,8 @@
 import { Knex } from 'knex';
 
 /**
- * @TODO doc
+ * Creates new join table to allow multiple intended outcomes per survey.
+ *
  * @export
  * @param {Knex} knex
  * @return {*}  {Promise<void>}

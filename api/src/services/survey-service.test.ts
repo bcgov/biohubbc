@@ -120,6 +120,10 @@ describe('SurveyService', () => {
     });
   });
 
+  describe('getSampleLocationsCountBySurveyId', () => {
+    // @TODO
+  });
+
   describe('updateSurvey', () => {
     afterEach(() => {
       sinon.restore();

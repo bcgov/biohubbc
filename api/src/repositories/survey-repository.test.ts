@@ -35,6 +35,10 @@ describe('SurveyRepository', () => {
     });
   });
 
+  describe('getSurveyCountByProjectId', () => {
+    // @TODO
+  });
+
   describe('getSurveyIdsByProjectId', () => {
     it('should return result', async () => {
       const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;

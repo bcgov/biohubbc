@@ -40,6 +40,10 @@ describe('SampleLocationRepository', () => {
     });
   });
 
+  describe('getSampleLocationsCountBySurveyId', () => {
+    // @TODO
+  });
+
   describe('updateSampleLocation', () => {
     it('should update the record and return a single row', async () => {
       const mockRow = {};
