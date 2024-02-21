@@ -3,7 +3,7 @@ export type StringBoolean = 'true' | 'false';
 /**
  * Represents server-side pagination options passed as request parameters
  */
-export type ApiPaginationOptions = {
+export type ApiPaginationRequestOptions = {
   page: number;
   limit: number;
   sort?: string;

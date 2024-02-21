@@ -6,6 +6,7 @@ import {
   UpdateSampleSiteRecord
 } from '../repositories/sample-location-repository';
 import { InsertSampleMethodRecord } from '../repositories/sample-method-repository';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
 import { SampleMethodService } from './sample-method-service';
 
@@ -38,14 +39,29 @@ export class SampleLocationService extends DBService {
   }
 
   /**
-   * Gets all survey Sample Locations.
+   * Gets a paginated set of survey Sample Locations for the given survey.
    *
    * @param {number} surveyId
+   * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<SampleLocationRecord[]>}
    * @memberof SampleLocationService
    */
-  async getSampleLocationsForSurveyId(surveyId: number): Promise<SampleLocationRecord[]> {
-    return await this.sampleLocationRepository.getSampleLocationsForSurveyId(surveyId);
+  async getSampleLocationsForSurveyId(
+    surveyId: number,
+    pagination?: ApiPaginationOptions
+  ): Promise<SampleLocationRecord[]> {
+    return this.sampleLocationRepository.getSampleLocationsForSurveyId(surveyId, pagination);
+  }
+
+  /**
+   * Returns the total count of sample locations belonging to the given survey.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<number>}
+   * @memberof SampleLocationService
+   */
+  async getSampleLocationsCountBySurveyId(surveyId: number): Promise<number> {
+    return this.sampleLocationRepository.getSampleLocationsCountBySurveyId(surveyId);
   }
 
   /**

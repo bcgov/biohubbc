@@ -3,6 +3,7 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { ApiExecuteSQLError } from '../errors/api-error';
 import { GetReportAttachmentsData } from '../models/project-view';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
@@ -32,6 +33,32 @@ describe('SurveyRepository', () => {
       const response = await repository.deleteSurvey(1);
 
       expect(response).to.eql(undefined);
+    });
+  });
+
+  describe('getSurveyCountByProjectId', () => {
+    it('should return the survey count successfully', async () => {
+      const mockResponse = ({ rows: [{ survey_count: 69 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const dbConnectionObj = getMockDBConnection({ sql: () => mockResponse });
+
+      const repo = new SurveyRepository(dbConnectionObj);
+      const response = await repo.getSurveyCountByProjectId(1001);
+
+      expect(response).to.eql(69);
+    });
+
+    it('should throw an exception if row count is 0', async () => {
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
+
+      const repo = new SurveyRepository(dbConnectionObj);
+
+      try {
+        await repo.getSurveyCountByProjectId(1001);
+      } catch (error) {
+        expect(dbConnectionObj.sql).to.have.been.calledOnce;
+        expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to get survey count');
+      }
     });
   });
 

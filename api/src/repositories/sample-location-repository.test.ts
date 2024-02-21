@@ -40,6 +40,32 @@ describe('SampleLocationRepository', () => {
     });
   });
 
+  describe('getSampleLocationsCountBySurveyId', () => {
+    it('should return the sample location count successfully', async () => {
+      const mockResponse = ({ rows: [{ sample_site_count: 69 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const dbConnectionObj = getMockDBConnection({ sql: () => mockResponse });
+
+      const repo = new SampleLocationRepository(dbConnectionObj);
+      const response = await repo.getSampleLocationsCountBySurveyId(1001);
+
+      expect(response).to.eql(69);
+    });
+
+    it('should throw an exception if row count is 0', async () => {
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
+
+      const repo = new SampleLocationRepository(dbConnectionObj);
+
+      try {
+        await repo.getSampleLocationsCountBySurveyId(1001);
+      } catch (error) {
+        expect(dbConnectionObj.sql).to.have.been.calledOnce;
+        expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to get sample site count');
+      }
+    });
+  });
+
   describe('updateSampleLocation', () => {
     it('should update the record and return a single row', async () => {
       const mockRow = {};
