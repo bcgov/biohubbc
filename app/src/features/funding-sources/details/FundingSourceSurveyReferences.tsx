@@ -119,7 +119,7 @@ const FundingSourceSurveyReferences = (props: IFundingSourceSurveyReferencesProp
           }}>
           Surveys &zwnj;
           <Typography component="span" variant="inherit" color="textSecondary">
-            ({fundingSourceSurveyReferences.length || 0})
+            ({Number(fundingSourceSurveyReferences.length ?? 0).toLocaleString()})
           </Typography>
         </Typography>
       </Box>

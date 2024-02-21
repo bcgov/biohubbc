@@ -18,6 +18,7 @@ const proxyRoutes = [
   '/api/critterbase/lookups/:key',
   '/api/critterbase/xref/taxon-marking-body-locations',
   '/api/critterbase/xref/taxon-measurements',
+  '/api/critterbase/xref/taxon-quantitative-measurements',
   '/api/critterbase/xref/taxon-qualitative-measurements',
   '/api/critterbase/xref/taxon-qualitative-measurement-options'
 ];

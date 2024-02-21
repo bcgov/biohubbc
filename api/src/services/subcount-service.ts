@@ -6,7 +6,7 @@ import {
   SubCountAttributeRecord,
   SubCountRepository
 } from '../repositories/subcount-repository';
-import { CritterbaseService } from './critterbase-service';
+import { CBMeasurement, CritterbaseService } from './critterbase-service';
 import { DBService } from './db-service';
 
 export class SubCountService extends DBService {
@@ -53,18 +53,10 @@ export class SubCountService extends DBService {
    * Returns all measurement event ids for all observations in a given survey.
    *
    * @param {number} surveyId
-   * @returns {*} {Promise<{id: string; name: string; type: string;}[]>}
+   * @return {*}  {Promise<CBMeasurement[]>}
    * @memberof SubCountService
    */
-  async getMeasurementColumnNamesForSurvey(
-    surveyId: number
-  ): Promise<
-    {
-      id: string;
-      name: string;
-      type: string;
-    }[]
-  > {
+  async getMeasurementColumnNamesForSurvey(surveyId: number): Promise<CBMeasurement[]> {
     const service = new CritterbaseService({
       keycloak_guid: this.connection.systemUserGUID(),
       username: this.connection.systemUserIdentifier()

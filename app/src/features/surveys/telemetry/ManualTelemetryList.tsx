@@ -510,7 +510,7 @@ const ManualTelemetryList = () => {
                   <Typography variant="h3" component="h2" flexGrow={1}>
                     Deployments &zwnj;
                     <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
-                      ({critterDeployments?.length ?? 0})
+                      ({Number(critterDeployments?.length ?? 0).toLocaleString()})
                     </Typography>
                   </Typography>
                   <Button

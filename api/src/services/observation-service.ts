@@ -1,5 +1,4 @@
 import xlsx from 'xlsx';
-import { z } from 'zod';
 import { IDBConnection } from '../database/db';
 import { ApiGeneralError } from '../errors/api-error';
 import {
@@ -25,7 +24,7 @@ import {
   validateWorksheetHeaders
 } from '../utils/xlsx-utils/worksheet-utils';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
-import { CritterbaseService } from './critterbase-service';
+import { CBMeasurement, CritterbaseService } from './critterbase-service';
 import { DBService } from './db-service';
 import { PlatformService } from './platform-service';
 import { SubCountService } from './subcount-service';
@@ -52,19 +51,10 @@ export interface InsertUpdateObservationsWithMeasurements {
   sub_count: number;
 }
 
-export const ObservationSupplementaryData = z.object({
-  observationCount: z.number(),
-  measurementColumns: z
-    .array(
-      z.object({
-        id: z.string(),
-        name: z.string()
-      })
-    )
-    .nullable()
-});
-
-export type ObservationSupplementaryData = z.infer<typeof ObservationSupplementaryData>;
+export type ObservationSupplementaryData = {
+  observationCount: number;
+  measurementColumns: CBMeasurement[];
+};
 
 export class ObservationService extends DBService {
   observationRepository: ObservationRepository;
@@ -229,6 +219,7 @@ export class ObservationService extends DBService {
       .flatMap((item) => item.observation_subcount_attributes)
       .filter((item) => item !== null);
 
+    // TODO wire this up to something, or remove it?
     await service.getMeasurementsForEventIds(eventIds);
 
     const supplementaryObservationData = await this.getSurveyObservationsSupplementaryData(surveyId);
