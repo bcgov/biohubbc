@@ -16,7 +16,6 @@ import { parseS3File } from '../utils/media/media-utils';
 import {
   constructWorksheets,
   constructXLSXWorkbook,
-  getMeasurementColumnNameFromWorksheet,
   getWorksheetRowObjects,
   IXLSXCSVValidator,
   validateCsvFile,
@@ -418,9 +417,6 @@ export class ObservationService extends DBService {
 
     // Get the worksheet row objects
     const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheets['Sheet1']);
-
-    const measurementColumns = getMeasurementColumnNameFromWorksheet(xlsxWorksheets, observationCSVColumnValidator);
-    console.log('Measurement Columns', measurementColumns);
 
     // Step 5. Merge all the table rows into an array of ObservationInsert[]
     const insertRows: InsertObservation[] = worksheetRowObjects.map((row) => ({

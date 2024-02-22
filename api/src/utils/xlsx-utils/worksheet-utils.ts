@@ -1,5 +1,10 @@
 import { default as dayjs } from 'dayjs';
 import xlsx, { CellObject } from 'xlsx';
+import {
+  CritterbaseService,
+  ICBQualitativeMeasurement,
+  ICBQuantitativeMeasurement
+} from '../../services/critterbase-service';
 import { MediaFile } from '../media/media-file';
 import { safeToLowerCase } from '../string-utils';
 import { replaceCellDates, trimCellWhitespace } from './cell-utils';
@@ -303,6 +308,100 @@ export function validateCsvFile(
   return true;
 }
 
+export async function validateCsvMeasurementColumns(
+  xlsxWorksheets: xlsx.WorkSheet,
+  columnValidator: IXLSXCSVValidator,
+  sheet = 'Sheet1'
+): Promise<any> {
+  const rows = getWorksheetRows(xlsxWorksheets[sheet]);
+  const measurementColumns = getMeasurementColumnNameFromWorksheet(xlsxWorksheets, columnValidator);
+  // get measurements from critter base
+  // need to search with tsn and column name to find proper measurement
+  // it would be best to get all measurements for a given set of TSN values I think...
+  // so it would search with tsn + ['column name', 'column name']
+
+  const service = new CritterbaseService({
+    keycloak_guid: '',
+    username: ''
+  });
+
+  const tsnMeasurements: Record<
+    string,
+    { qualitative: ICBQualitativeMeasurement[]; quantitative: ICBQuantitativeMeasurement[] }
+  > = {};
+
+  let isRowValid = true; // defaulting to true so as a column with no data is valid (taxon might not align with measurement column)
+  for (const row of rows) {
+    // fetch the tsn number
+    // TODO: make this a little more generic
+    const tsn = row[0];
+    // If measurements for the TSN haven't been fetched, grab them
+    if (!tsnMeasurements[tsn]) {
+      // TODO: wire this up for multiple TSNs instead of
+      const measurements = await service.getTaxonMeasurements(tsn);
+      console.log(measurements);
+      if (!measurements) {
+        // TODO: do we care if there are no measurements for a taxon?
+      }
+
+      tsnMeasurements[tsn] = measurements;
+    }
+
+    // for reach measurement column found
+    // validate data against taxon measurements collected from Critter Base
+    measurementColumns.forEach((mColumn) => {
+      const data = row[mColumn];
+      const measurements = tsnMeasurements[tsn];
+      // only validate if the column has data
+      if (data) {
+        // find the correct measurement
+        if (measurements.qualitative.length > 0) {
+          const measurement = measurements.qualitative.find((measurement) => measurement.measurement_name === mColumn);
+          if (measurement) {
+            // check if data is in the options for the
+            const foundOption = measurement.options.find(
+              (option) => option.option_value === data || option.option_label === data
+            );
+
+            isRowValid = Boolean(foundOption);
+          }
+        }
+
+        if (measurements.quantitative.length > 0) {
+          const measurement = measurements.quantitative.find((measurement) => measurement.measurement_name === mColumn);
+          if (measurement) {
+            isRowValid = isQuantitativeValueValid(Number(data), measurement);
+          }
+        }
+      }
+    });
+  }
+}
+
+export function isQuantitativeValueValid(value: number, measurement: ICBQuantitativeMeasurement): boolean {
+  const min_value = measurement.min_value;
+  const max_value = measurement.max_value;
+  let isValid = false;
+  if (min_value && max_value) {
+    if (min_value <= value && value <= max_value) {
+      isValid = true;
+    }
+  }
+
+  if (min_value && min_value <= value) {
+    isValid = true;
+  }
+
+  if (max_value && value <= max_value) {
+    isValid = true;
+  }
+
+  if (min_value === null && max_value === null) {
+    isValid = true;
+  }
+  return isValid;
+}
+
 export function getMeasurementColumnNameFromWorksheet(
   xlsxWorksheets: xlsx.WorkSheet,
   columnValidator: IXLSXCSVValidator,
@@ -310,7 +409,7 @@ export function getMeasurementColumnNameFromWorksheet(
 ): string[] {
   const columns = getWorksheetHeaders(xlsxWorksheets[sheet]);
   let aliasColumns: string[] = [];
-  // Create a big ole list of column names and aliases
+  // Create a list of all column names and aliases
   if (columnValidator.columnAliases) {
     aliasColumns = Object.values(columnValidator.columnAliases).flat();
   }
