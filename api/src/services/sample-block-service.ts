@@ -36,7 +36,7 @@ export class SampleBlockService extends DBService {
    * @memberof SampleBlockService
    */
   async getSampleBlocksForSurveySampleSiteId(surveySampleSiteId: number): Promise<SampleBlockRecord[]> {
-    return await this.sampleBlockRepository.getSampleBlocksForSurveySampleSiteId(surveySampleSiteId);
+    return this.sampleBlockRepository.getSampleBlocksForSurveySampleSiteId(surveySampleSiteId);
   }
 
   /**
@@ -47,7 +47,7 @@ export class SampleBlockService extends DBService {
    * @memberof SampleBlockService
    */
   async getSampleBlocksForSurveyBlockId(surveyBlockId: number): Promise<SampleBlockRecord[]> {
-    return await this.sampleBlockRepository.getSampleBlocksForSurveyBlockId(surveyBlockId);
+    return this.sampleBlockRepository.getSampleBlocksForSurveyBlockId(surveyBlockId);
   }
 
   /**
@@ -58,7 +58,7 @@ export class SampleBlockService extends DBService {
    * @memberof SampleBlockService
    */
   async getSampleBlocksCountForSurveyBlockId(surveyBlockId: number): Promise<{ sampleCount: number }> {
-    return await this.sampleBlockRepository.getSampleBlocksCountForSurveyBlockId(surveyBlockId);
+    return this.sampleBlockRepository.getSampleBlocksCountForSurveyBlockId(surveyBlockId);
   }
 
   /**
@@ -68,8 +68,8 @@ export class SampleBlockService extends DBService {
    * @return {*}  {Promise<SampleBlockRecord>}
    * @memberof SampleBlockService
    */
-  async deleteSampleBlockRecordsByBlockIds(surveyBlockIds: number[]): Promise<number> {
-    return await this.sampleBlockRepository.deleteSampleBlockRecordsByBlockIds(surveyBlockIds);
+  async deleteSampleBlockRecordsByBlockIds(surveyBlockIds: number[]): Promise<SampleBlockRecord[]> {
+    return this.sampleBlockRepository.deleteSampleBlockRecordsByBlockIds(surveyBlockIds);
   }
 
    /**
@@ -79,8 +79,8 @@ export class SampleBlockService extends DBService {
    * @return {*}  {Promise<SampleBlockRecord>}
    * @memberof SampleBlockService
    */
-   async deleteSampleBlockRecords(surveySampleBlockIds: number[]): Promise<number> {
-    return await this.sampleBlockRepository.deleteSampleBlockRecords(surveySampleBlockIds);
+   async deleteSampleBlockRecords(surveySampleBlockIds: number[]): Promise<SampleBlockRecord[]> {
+    return this.sampleBlockRepository.deleteSampleBlockRecords(surveySampleBlockIds);
   }
 
   /**
@@ -91,7 +91,7 @@ export class SampleBlockService extends DBService {
    * @memberof SampleBlockService
    */
   async insertSampleBlock(sampleBlock: InsertSampleBlockRecord): Promise<SampleBlockRecord> {
-    return await this.sampleBlockRepository.insertSampleBlock(sampleBlock);
+    return this.sampleBlockRepository.insertSampleBlock(sampleBlock);
   }
 
   /**

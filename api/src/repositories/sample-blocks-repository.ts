@@ -21,8 +21,6 @@ export const SampleBlockRecord = z.object({
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number()
-  // name: z.string(),
-  // description: z.string()
 });
 export type SampleBlockRecord = z.infer<typeof SampleBlockRecord>;
 
@@ -68,8 +66,8 @@ export class SampleBlockRepository extends BaseRepository {
   }
 
   /**
-   * Gets all survey Sample Blocks.
-   *
+   * Gets count of all Sample Block records for a given Survey Block 
+   * 
    * @param {number} surveyBlockId
    * @return {*}  {Promise<SampleBlockRecord[]>}
    * @memberof sampleBlockRepository
@@ -127,7 +125,7 @@ export class SampleBlockRepository extends BaseRepository {
    * @return {*}  {Promise<SampleBlockRecord>}
    * @memberof sampleBlockRepository
    */
-  async deleteSampleBlockRecordsByBlockIds(surveyBlockIds: number[]): Promise<number> {
+  async deleteSampleBlockRecordsByBlockIds(surveyBlockIds: number[]): Promise<SampleBlockRecord[]> {
     const queryBuilder = getKnex()
       .delete()
       .from('survey_sample_block')
@@ -136,14 +134,7 @@ export class SampleBlockRepository extends BaseRepository {
 
     const response = await this.connection.knex(queryBuilder, SampleBlockRecord);
 
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to delete sample block', [
-        'sampleBlockRepository->deleteSampleBlockRecord',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return response.rowCount;
+    return response.rows;
   }
   /**
    * Deletes all Sample Block records in the array
@@ -152,7 +143,7 @@ export class SampleBlockRepository extends BaseRepository {
    * @return {*}  {Promise<SampleBlockRecord>}
    * @memberof sampleBlockRepository
    */
-  async deleteSampleBlockRecords(surveySampleBlockIds: number[]): Promise<number> {
+  async deleteSampleBlockRecords(surveySampleBlockIds: number[]): Promise<SampleBlockRecord[]> {
     const queryBuilder = getKnex()
       .delete()
       .from('survey_sample_block')
@@ -161,14 +152,7 @@ export class SampleBlockRepository extends BaseRepository {
 
     const response = await this.connection.knex(queryBuilder, SampleBlockRecord);
 
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to delete sample block', [
-        'sampleBlockRepository->deleteSampleBlockRecord',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return response.rowCount;
+    return response.rows;
   }
 
   /**
@@ -185,8 +169,7 @@ export class SampleBlockRepository extends BaseRepository {
       WHERE survey_sample_site_id = ${surveySampleSiteId};
     `;
 
-    // todo: reconcile types
-    const response = await this.connection.sql(sql); //, SampleBlockRecord
+    const response = await this.connection.sql(sql, SampleBlockRecord)
 
     return response.rows;
   }

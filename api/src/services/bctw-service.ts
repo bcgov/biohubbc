@@ -252,7 +252,7 @@ export class BctwService {
    * @memberof BctwService
    */
   async deployDevice(device: IDeployDevice): Promise<IDeploymentRecord> {
-    return await this.axiosInstance.post(DEPLOY_DEVICE_ENDPOINT, device);
+    return this.axiosInstance.post(DEPLOY_DEVICE_ENDPOINT, device);
   }
 
   /**
@@ -289,7 +289,7 @@ export class BctwService {
    * @memberof BctwService
    */
   async getDeviceDeployments(deviceId: number): Promise<IDeploymentRecord[]> {
-    return await this._makeGetRequest(GET_DEPLOYMENTS_BY_DEVICE_ENDPOINT, { device_id: String(deviceId) });
+    return this._makeGetRequest(GET_DEPLOYMENTS_BY_DEVICE_ENDPOINT, { device_id: String(deviceId) });
   }
 
   /**

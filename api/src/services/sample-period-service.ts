@@ -32,7 +32,7 @@ export class SamplePeriodService extends DBService {
    * @memberof SamplePeriodService
    */
   async getSamplePeriodsForSurveyMethodId(surveySampleMethodId: number): Promise<SamplePeriodRecord[]> {
-    return await this.samplePeriodRepository.getSamplePeriodsForSurveyMethodId(surveySampleMethodId);
+    return this.samplePeriodRepository.getSamplePeriodsForSurveyMethodId(surveySampleMethodId);
   }
 
   /**
