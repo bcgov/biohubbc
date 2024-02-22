@@ -48,8 +48,8 @@ export interface InsertMeasurement {
 }
 
 export type InsertUpdateObservationsWithMeasurements = {
-  observation: InsertObservation | UpdateObservation;
-  measurements: InsertMeasurement[];
+  standardColumns: InsertObservation | UpdateObservation;
+  measurementColumns: InsertMeasurement[];
 };
 
 export type ObservationSupplementaryData = {
@@ -129,7 +129,7 @@ export class ObservationService extends DBService {
       // Upsert observation standard columns
       const upsertedObservationRecord = await this.observationRepository.insertUpdateSurveyObservations(
         surveyId,
-        await this._attachItisScientificName([observation.observation])
+        await this._attachItisScientificName([observation.standardColumns])
       );
 
       const surveyObservationId = upsertedObservationRecord[0].survey_observation_id;
@@ -140,17 +140,19 @@ export class ObservationService extends DBService {
       // Insert observation subcount record (event)
       const observationSubCountRecord = await subCountService.insertObservationSubCount({
         survey_observation_id: surveyObservationId,
-        subcount: observation.observation.count
+        subcount: observation.standardColumns.count
       });
 
       // Persist measurement records to Critterbase
-      if (observation.measurements.length) {
+      if (observation.measurementColumns.length) {
         const critterBaseService = new CritterbaseService({
           keycloak_guid: this.connection.systemUserGUID(),
           username: this.connection.systemUserIdentifier()
         });
 
-        const insertMeasurementResponse = await critterBaseService.insertMeasurementRecords(observation.measurements);
+        const insertMeasurementResponse = await critterBaseService.insertMeasurementRecords(
+          observation.measurementColumns
+        );
 
         // Insert observation subcount_event record to track the measurements persisted by Critterbase
         await subCountService.insertSubCountEvent({

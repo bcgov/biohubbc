@@ -117,22 +117,22 @@ export class SubCountRepository extends BaseRepository {
         'observation_subcount.survey_observation_id',
         'survey_observation.survey_observation_id'
       )
-      .whereIn('survey_observation_id', surveyObservationIds)
+      .whereIn('observation_subcount.survey_observation_id', surveyObservationIds)
       .andWhere('survey_observation.survey_id', surveyId);
 
     // Delete child subcount_critter records
     await this.deleteSubCountCritterRecordsForObservationId(surveyId, surveyObservationIds);
 
-    // Delete child subcount_evemt records
+    // Delete child subcount_event records
     await this.deleteSubCountEventRecordsForObservationId(surveyId, surveyObservationIds);
 
     // Delete observation_subcount records
     const response = await this.connection.knex(queryBuilder);
 
-    if (response[2].rowCount !== surveyObservationIds.length) {
+    if (response.rowCount !== surveyObservationIds.length) {
       throw new ApiExecuteSQLError('Failed to delete observation subcount records', [
         'SubCountRepository->deleteObservationSubCount',
-        `response[2].rowCount was ${response[2].rowCount}, expected rowCount = ${surveyObservationIds.length}`
+        `response.rowCount was ${response.rowCount}, expected rowCount = ${surveyObservationIds.length}`
       ]);
     }
   }
@@ -159,7 +159,7 @@ export class SubCountRepository extends BaseRepository {
         'observation_subcount.survey_observation_id',
         'survey_observation.survey_observation_id'
       )
-      .whereIn('survey_observation_id', surveyObservationIds)
+      .whereIn('observation_subcount.survey_observation_id', surveyObservationIds)
       .andWhere('survey_observation.survey_id', surveyId);
 
     return this.connection.knex(queryBuilder);
@@ -187,7 +187,7 @@ export class SubCountRepository extends BaseRepository {
         'observation_subcount.survey_observation_id',
         'survey_observation.survey_observation_id'
       )
-      .whereIn('survey_observation_id', surveyObservationIds)
+      .whereIn('observation_subcount.survey_observation_id', surveyObservationIds)
       .andWhere('survey_observation.survey_id', surveyId);
 
     return this.connection.knex(queryBuilder);
