@@ -9,6 +9,7 @@ import StartEndDateFields from 'components/fields/StartEndDateFields';
 import { CodesContext } from 'contexts/codesContext';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { debounce } from 'lodash-es';
 import { useContext, useMemo } from 'react';
 
@@ -51,14 +52,21 @@ const ProjectAdvancedFilters = () => {
   const codesContext = useContext(CodesContext);
   assert(codesContext.codesDataLoader.data);
 
-  const convertOptions = (value: any): IMultiAutocompleteFieldOption[] =>
+  const convertOptions = (value: ITaxonomy[]): IMultiAutocompleteFieldOption[] =>
     value.map((item: any) => {
-      return { value: parseInt(item.id), label: item.label };
+      return {
+        value: parseInt(item.tsn),
+        label: [item.commonName, `(${item.scientificName})`].filter(Boolean).join(' ')
+      };
     });
 
   const handleGetInitList = async (initialvalues: number[]) => {
+    if (!initialvalues.length) {
+      return [];
+    }
+
     const response = await biohubApi.taxonomy.getSpeciesFromIds(initialvalues);
-    return convertOptions(response.searchResponse);
+    return convertOptions(response);
   };
 
   const handleSearch = useMemo(
@@ -69,10 +77,9 @@ const ProjectAdvancedFilters = () => {
           existingValues: (string | number)[],
           callback: (searchedValues: IMultiAutocompleteFieldOption[]) => void
         ) => {
-          const response = await biohubApi.taxonomy.searchSpecies(inputValue.toLowerCase());
-          const newOptions = convertOptions(response.searchResponse).filter(
-            (item) => !existingValues?.includes(item.value)
-          );
+          const searchTerms = inputValue.split(' ').filter(Boolean);
+          const response = await biohubApi.taxonomy.searchSpeciesByTerms(searchTerms);
+          const newOptions = convertOptions(response).filter((item) => !existingValues?.includes(item.value));
           callback(newOptions);
         },
         500
@@ -114,7 +121,7 @@ const ProjectAdvancedFilters = () => {
         <Grid item xs={12} md={3}>
           <CustomTextField name="permit_number" label="Permit Number" />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} md={6}>
           <MultiAutocompleteFieldVariableSize
             id="species"
             label="Species"

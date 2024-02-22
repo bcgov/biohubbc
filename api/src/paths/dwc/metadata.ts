@@ -67,7 +67,7 @@ GET.apiDoc = {
 };
 
 /**
- * Retrieves dataset metadata from Elastic Search.
+ * Retrieves dataset metadata from DB and biohub.
  *
  * @returns {RequestHandler}
  */

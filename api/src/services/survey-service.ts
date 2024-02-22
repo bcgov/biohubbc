@@ -35,13 +35,12 @@ import { DBService } from './db-service';
 import { FundingSourceService } from './funding-source-service';
 import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
-import { PlatformService } from './platform-service';
+import { ITaxonomy, PlatformService } from './platform-service';
 import { RegionService } from './region-service';
 import { SiteSelectionStrategyService } from './site-selection-strategy-service';
 import { SurveyBlockService } from './survey-block-service';
 import { SurveyLocationService } from './survey-location-service';
 import { SurveyParticipationService } from './survey-participation-service';
-import { TaxonomyService } from './taxonomy-service';
 
 const defaultLog = getLogger('services/survey-service');
 
@@ -174,15 +173,25 @@ export class SurveyService extends DBService {
    * @memberof SurveyService
    */
   async getSpeciesData(surveyId: number): Promise<GetFocalSpeciesData & GetAncillarySpeciesData> {
-    const response = await this.surveyRepository.getSpeciesData(surveyId);
+    const studySpeciesResponse = await this.surveyRepository.getSpeciesData(surveyId);
 
-    const focalSpeciesIds = response.filter((item) => item.is_focal).map((item) => item.wldtaxonomic_units_id);
-    const ancillarySpeciesIds = response.filter((item) => !item.is_focal).map((item) => item.wldtaxonomic_units_id);
+    const [focalSpeciesIds, ancillarySpeciesIds] = studySpeciesResponse.reduce(
+      ([focal, ancillary]: [number[], number[]], studySpecies) => {
+        if (studySpecies.is_focal) {
+          focal.push(studySpecies.itis_tsn);
+        } else {
+          ancillary.push(studySpecies.itis_tsn);
+        }
+
+        return [focal, ancillary];
+      },
+      [[], []]
+    );
 
     const platformService = new PlatformService(this.connection);
 
-    const focalSpecies = await platformService.getTaxonomyFromBiohub(focalSpeciesIds);
-    const ancillarySpecies = await platformService.getTaxonomyFromBiohub(ancillarySpeciesIds);
+    const focalSpecies = await platformService.getTaxonomyByTsns(focalSpeciesIds);
+    const ancillarySpecies = await platformService.getTaxonomyByTsns(ancillarySpeciesIds);
 
     return { ...new GetFocalSpeciesData(focalSpecies), ...new GetAncillarySpeciesData(ancillarySpecies) };
   }
@@ -355,15 +364,15 @@ export class SurveyService extends DBService {
     );
 
     // Fetch focal species data for all species ids
-    const taxonomyService = new TaxonomyService();
-    const focalSpecies = await taxonomyService.getSpeciesFromIds(uniqueFocalSpeciesIds);
+    const platformService = new PlatformService(this.connection);
+    const focalSpecies = await platformService.getTaxonomyByTsns(uniqueFocalSpeciesIds);
 
     // Decorate the surveys response with their matching focal species labels
     const decoratedSurveys: SurveyBasicFields[] = [];
     for (const survey of surveys) {
       const matchingFocalSpeciesNames = focalSpecies
-        .filter((item) => survey.focal_species.includes(Number(item.id)))
-        .map((item) => item.label);
+        .filter((item) => survey.focal_species.includes(Number(item.tsn)))
+        .map((item) => [item.commonName, `(${item.scientificName})`].filter(Boolean).join(' '));
 
       decoratedSurveys.push({ ...survey, focal_species_names: matchingFocalSpeciesNames });
     }
@@ -394,15 +403,15 @@ export class SurveyService extends DBService {
     // Handle focal species associated to this survey
     promises.push(
       Promise.all(
-        postSurveyData.species.focal_species.map((speciesId: number) => this.insertFocalSpecies(speciesId, surveyId))
+        postSurveyData.species.focal_species.map((species: ITaxonomy) => this.insertFocalSpecies(species.tsn, surveyId))
       )
     );
 
     // Handle ancillary species associated to this survey
     promises.push(
       Promise.all(
-        postSurveyData.species.ancillary_species.map((speciesId: number) =>
-          this.insertAncillarySpecies(speciesId, surveyId)
+        postSurveyData.species.ancillary_species.map((species: ITaxonomy) =>
+          this.insertAncillarySpecies(species.tsn, surveyId)
         )
       )
     );
@@ -833,12 +842,12 @@ export class SurveyService extends DBService {
 
     const promises: Promise<any>[] = [];
 
-    surveyData.species.focal_species.forEach((focalSpeciesId: number) =>
-      promises.push(this.insertFocalSpecies(focalSpeciesId, surveyId))
+    surveyData.species.focal_species.forEach((focalSpecies: ITaxonomy) =>
+      promises.push(this.insertFocalSpecies(focalSpecies.tsn, surveyId))
     );
 
-    surveyData.species.ancillary_species.forEach((ancillarySpeciesId: number) =>
-      promises.push(this.insertAncillarySpecies(ancillarySpeciesId, surveyId))
+    surveyData.species.ancillary_species.forEach((ancillarySpecies: ITaxonomy) =>
+      promises.push(this.insertAncillarySpecies(ancillarySpecies.tsn, surveyId))
     );
 
     return Promise.all(promises);

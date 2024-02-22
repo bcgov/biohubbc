@@ -15,6 +15,7 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import FileUploadDialog from 'components/dialog/FileUploadDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
@@ -44,8 +45,21 @@ const ObservationComponent = () => {
   const biohubApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
 
+  const defaultErrorDialogProps = {
+    onClose: () => {
+      dialogContext.setErrorDialog({ open: false });
+    },
+    onOk: () => {
+      dialogContext.setErrorDialog({ open: false });
+    }
+  };
+
   const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
     dialogContext.setSnackbar({ ...textDialogProps, open: true });
+  };
+
+  const showErrorDialog = (errorDialogProps?: Partial<IErrorDialogProps>) => {
+    dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...errorDialogProps, open: true });
   };
 
   const handleCloseContextMenu = () => {
@@ -68,15 +82,21 @@ const ObservationComponent = () => {
           showSnackBar({
             snackbarMessage: (
               <Typography variant="body2" component="div">
-                Observations imported successfully.
+                {ObservationsTableI18N.importRecordsSuccessSnackbarMessage}
               </Typography>
             )
           });
-          observationsTableContext.refreshObservationRecords().then(() => {
-            setProcessingRecords(false);
+          return observationsTableContext.refreshObservationRecords();
+        })
+        .catch((apiError) => {
+          showErrorDialog({
+            dialogTitle: ObservationsTableI18N.importRecordsErrorDialogTitle,
+            dialogText: ObservationsTableI18N.importRecordsErrorDialogText,
+            dialogErrorDetails: [apiError.message],
+            open: true
           });
         })
-        .catch(() => {
+        .finally(() => {
           setProcessingRecords(false);
         });
     });

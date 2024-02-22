@@ -13,6 +13,7 @@ import {
   IGetProject,
   IProjectAdvancedFilters,
   ProjectData,
+  ProjectListData,
   ProjectSupplementaryData
 } from '../models/project-view';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
@@ -21,6 +22,7 @@ import { ProjectUser } from '../repositories/project-participation-repository';
 import { ProjectRepository } from '../repositories/project-repository';
 import { SystemUser } from '../repositories/user-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { AttachmentService } from './attachment-service';
 import { DBService } from './db-service';
 import { HistoryPublishService } from './history-publish-service';
@@ -47,26 +49,51 @@ export class ProjectService extends DBService {
     this.surveyService = new SurveyService(connection);
   }
 
+  /**
+   * Retrieves the paginated list of all projects that are available to the user.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IProjectAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {(Promise<(ProjectListData & { completion_status: COMPLETION_STATUS })[]>)}
+   * @memberof ProjectService
+   */
   async getProjectList(
     isUserAdmin: boolean,
     systemUserId: number | null,
-    filterFields: IProjectAdvancedFilters
-  ): Promise<any> {
-    const response = await this.projectRepository.getProjectList(isUserAdmin, systemUserId, filterFields);
+    filterFields: IProjectAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<(ProjectListData & { completion_status: COMPLETION_STATUS })[]> {
+    const response = await this.projectRepository.getProjectList(isUserAdmin, systemUserId, filterFields, pagination);
 
     return response.map((row) => ({
-      id: row.project_id,
-      name: row.project_name,
-      start_date: row.start_date,
-      end_date: row.end_date,
+      ...row,
       completion_status:
         (row.end_date && dayjs(row.end_date).endOf('day').isBefore(dayjs()) && COMPLETION_STATUS.COMPLETED) ||
-        COMPLETION_STATUS.ACTIVE,
-      project_programs: row.project_programs,
-      regions: row.regions
+        COMPLETION_STATUS.ACTIVE
     }));
   }
 
+  /**
+   * Returns the total count of projects that are visible to the given user.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @return {*}  {Promise<number>}
+   * @memberof ProjectService
+   */
+  async getProjectCount(isUserAdmin: boolean, systemUserId: number | null): Promise<number> {
+    return this.projectRepository.getProjectCount(isUserAdmin, systemUserId);
+  }
+
+  /**
+   * Retrieves a single project by its ID.
+   *
+   * @param {number} projectId
+   * @return {*}  {Promise<IGetProject>}
+   * @memberof ProjectService
+   */
   async getProjectById(projectId: number): Promise<IGetProject> {
     const [projectData, objectiveData, projectParticipantsData, iucnData] = await Promise.all([
       this.getProjectData(projectId),

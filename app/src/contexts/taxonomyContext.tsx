@@ -1,6 +1,6 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';
-import { ITaxonomy } from 'interfaces/useTaxonomy.interface';
+import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { get as getProperty, has as hasProperty } from 'lodash';
 import { createContext, PropsWithChildren, useCallback, useMemo, useRef, useState } from 'react';
 
@@ -46,8 +46,8 @@ export const TaxonomyContextProvider = (props: PropsWithChildren) => {
         .then((result) => {
           const newTaxonomyItems: Record<string, ITaxonomy> = {};
 
-          for (const item of result.searchResponse) {
-            newTaxonomyItems[item.id] = item;
+          for (const item of result) {
+            newTaxonomyItems[item.tsn] = item;
           }
 
           if (!isMounted()) {

@@ -35,7 +35,9 @@ const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
     };
   }
 
-  const { data: deviceDetails, refresh } = useDataLoader(() => telemetryApi.devices.getDeviceDetails(device.device_id));
+  const { data: deviceDetails, refresh } = useDataLoader(() =>
+    telemetryApi.devices.getDeviceDetails(device.device_id, device.device_make)
+  );
 
   const validateDeviceMake = async (value: number | '') => {
     const deviceMake = deviceDetails?.device?.device_make;
