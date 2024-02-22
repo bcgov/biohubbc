@@ -376,6 +376,7 @@ export async function validateCsvMeasurementColumns(
       }
     });
   }
+  return isRowValid;
 }
 
 export function isQuantitativeValueValid(value: number, measurement: ICBQuantitativeMeasurement): boolean {
