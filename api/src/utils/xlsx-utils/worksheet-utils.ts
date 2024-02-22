@@ -1,9 +1,9 @@
 import { default as dayjs } from 'dayjs';
 import xlsx, { CellObject } from 'xlsx';
 import {
-  CritterbaseService,
-  ICBQualitativeMeasurement,
-  ICBQuantitativeMeasurement
+  CBQualitativeMeasurementTypeDefinition,
+  CBQuantitativeMeasurementTypeDefinition,
+  CritterbaseService
 } from '../../services/critterbase-service';
 import { MediaFile } from '../media/media-file';
 import { safeToLowerCase } from '../string-utils';
@@ -327,7 +327,7 @@ export async function validateCsvMeasurementColumns(
 
   const tsnMeasurements: Record<
     string,
-    { qualitative: ICBQualitativeMeasurement[]; quantitative: ICBQuantitativeMeasurement[] }
+    { qualitative: CBQualitativeMeasurementTypeDefinition[]; quantitative: CBQuantitativeMeasurementTypeDefinition[] }
   > = {};
 
   let isRowValid = true; // defaulting to true so as a column with no data is valid (taxon might not align with measurement column)
@@ -379,7 +379,7 @@ export async function validateCsvMeasurementColumns(
   return isRowValid;
 }
 
-export function isQuantitativeValueValid(value: number, measurement: ICBQuantitativeMeasurement): boolean {
+export function isQuantitativeValueValid(value: number, measurement: CBQuantitativeMeasurementTypeDefinition): boolean {
   const min_value = measurement.min_value;
   const max_value = measurement.max_value;
   let isValid = false;

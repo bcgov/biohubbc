@@ -450,16 +450,18 @@ export class ObservationService extends DBService {
         observation_time: row['TIME'],
         observation_date: row['DATE']
       },
-      measurements: measurementColumns.map((mColumn) => {
-        const data = row[mColumn];
-        if (data) {
-          return {
-            count: Number(row['COUNT']),
-            measurement_id: 1,
-            value: String(data)
-          };
-        }
-      }),
+      measurements: measurementColumns
+        .map((mColumn) => {
+          const data = row[mColumn];
+          if (data) {
+            return {
+              id: '',
+              measurement_id: 1,
+              value: data
+            };
+          }
+        })
+        .filter((m): m is InsertMeasurement => Boolean(m)),
       subcount: row['COUNT']
     }));
     console.log(`rows to add: ${insertRows.length}`);
