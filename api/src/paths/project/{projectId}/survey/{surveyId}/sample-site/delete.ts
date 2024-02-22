@@ -122,7 +122,7 @@ export function deleteSurveySampleSiteRecords(): RequestHandler {
       }
 
       for (const surveySampleSiteId of surveySampleSiteIds) {
-        await sampleLocationService.deleteSampleLocationRecord(surveySampleSiteId);
+        await sampleLocationService.deleteSampleSiteRecord(surveySampleSiteId);
       }
 
       await connection.commit();

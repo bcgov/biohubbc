@@ -82,5 +82,6 @@ export const paginationResponseSchema: SchemaObject = {
       enum: ['asc', 'desc'],
       description: 'The sort order of the response'
     }
-  }
+  },
+  additionalProperties: false
 };

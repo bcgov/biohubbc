@@ -83,19 +83,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
-                  required: [
-                    'survey_sample_site_id',
-                    'survey_id',
-                    'name',
-                    'description',
-                    'geojson',
-                    'geography',
-                    'create_date',
-                    'create_user',
-                    'update_date',
-                    'update_user',
-                    'revision_count'
-                  ],
+                  required: ['survey_sample_site_id', 'survey_id', 'name', 'description', 'geojson'],
                   properties: {
                     survey_sample_site_id: {
                       type: 'integer',
@@ -106,39 +94,93 @@ GET.apiDoc = {
                       minimum: 1
                     },
                     name: {
-                      type: 'string'
+                      type: 'string',
+                      maxLength: 50
                     },
                     description: {
-                      type: 'string'
+                      type: 'string',
+                      maxLength: 250
                     },
                     geojson: {
                       ...(GeoJSONFeature as object)
                     },
-                    geography: {
-                      type: 'string'
-                    },
-                    create_date: {
-                      type: 'string'
-                    },
-                    create_user: {
-                      type: 'integer'
-                    },
-                    update_date: {
-                      type: 'string',
-                      nullable: true
-                    },
-                    update_user: {
-                      type: 'integer',
-                      nullable: true
-                    },
-                    revision_count: {
-                      type: 'number'
+                    sample_methods: {
+                      type: 'array',
+                      required: [
+                        'survey_sample_method_id',
+                        'survey_sample_site_id',
+                        'method_lookup_id',
+                        'sample_periods'
+                      ],
+                      items: {
+                        type: 'object',
+                        properties: {
+                          survey_sample_method_id: {
+                            type: 'integer',
+                            minimum: 1
+                          },
+                          survey_sample_site_id: {
+                            type: 'integer',
+                            minimum: 1
+                          },
+                          method_lookup_id: {
+                            type: 'integer',
+                            minimum: 1
+                          },
+                          description: {
+                            type: 'string',
+                            maxLength: 250
+                          },
+                          sample_periods: {
+                            type: 'array',
+                            required: [
+                              'survey_sample_period_id',
+                              'survey_sample_method_id',
+                              'start_date',
+                              'start_time',
+                              'end_date',
+                              'end_time'
+                            ],
+                            items: {
+                              type: 'object',
+                              properties: {
+                                survey_sample_period_id: {
+                                  type: 'integer',
+                                  minimum: 1
+                                },
+                                survey_sample_method_id: {
+                                  type: 'integer',
+                                  minimum: 1
+                                },
+                                start_date: {
+                                  type: 'string'
+                                },
+                                start_time: {
+                                  type: 'string',
+                                  nullable: true
+                                },
+                                end_date: {
+                                  type: 'string'
+                                },
+                                end_time: {
+                                  type: 'string',
+                                  nullable: true
+                                }
+                              },
+                              additionalProperties: false
+                            }
+                          }
+                        },
+                        additionalProperties: false
+                      }
                     }
-                  }
+                  },
+                  additionalProperties: false
                 }
               },
               pagination: { ...paginationResponseSchema }
-            }
+            },
+            additionalProperties: false
           }
         }
       }
@@ -309,7 +351,7 @@ POST.apiDoc = {
                   description: {
                     type: 'string'
                   },
-                  feature: { ...(GeoJSONFeature as object) }
+                  geojson: { ...(GeoJSONFeature as object) }
                 }
               }
             }
