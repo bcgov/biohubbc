@@ -122,7 +122,7 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {(progressEvent: ProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<{ submissionId: number }>}
    */
-  const uploadCsvForImport = async (
+  const uploadObservationFileForImport = async (
     projectId: number,
     surveyId: number,
     file: File,
@@ -153,7 +153,7 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} submissionId
    * @return {*}
    */
-  const processCsvSubmission = async (projectId: number, surveyId: number, submissionId: number) => {
+  const processObservationFileSubmission = async (projectId: number, surveyId: number, submissionId: number) => {
     const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/observations/process`, {
       observation_submission_id: submissionId
     });
@@ -188,8 +188,8 @@ const useObservationApi = (axios: AxiosInstance) => {
     getObservationRecord,
     getObservationsGeometry,
     deleteObservationRecords,
-    uploadCsvForImport,
-    processCsvSubmission
+    uploadObservationFileForImport,
+    processObservationFileSubmission
   };
 };
 

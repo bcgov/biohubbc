@@ -72,36 +72,6 @@ const ObservationComponent = () => {
 
   const { projectId, surveyId } = surveyContext;
 
-  const handleImportObservations = async (file: File) => {
-    return biohubApi.observation.uploadCsvForImport(projectId, surveyId, file).then((response) => {
-      setShowImportDialog(false);
-      setProcessingRecords(true);
-      biohubApi.observation
-        .processCsvSubmission(projectId, surveyId, response.submissionId)
-        .then(() => {
-          showSnackBar({
-            snackbarMessage: (
-              <Typography variant="body2" component="div">
-                {ObservationsTableI18N.importRecordsSuccessSnackbarMessage}
-              </Typography>
-            )
-          });
-          return observationsTableContext.refreshObservationRecords();
-        })
-        .catch((apiError) => {
-          showErrorDialog({
-            dialogTitle: ObservationsTableI18N.importRecordsErrorDialogTitle,
-            dialogText: ObservationsTableI18N.importRecordsErrorDialogText,
-            dialogErrorDetails: [apiError.message],
-            open: true
-          });
-        })
-        .finally(() => {
-          setProcessingRecords(false);
-        });
-    });
-  };
-
   /**
    * Toggles visibility for a particular column
    */
@@ -171,15 +141,45 @@ const ObservationComponent = () => {
   const { hasUnsavedChanges, validationModel, _muiDataGridApiRef } = observationsTableContext;
   const numSelectedRows = observationsTableContext.rowSelectionModel.length;
 
+  const handleImportObservationData = async (file: File) => {
+    return biohubApi.observation.uploadObservationFileForImport(projectId, surveyId, file).then((response) => {
+      setShowImportDialog(false);
+      setProcessingRecords(true);
+      biohubApi.observation
+        .processObservationFileSubmission(projectId, surveyId, response.submissionId)
+        .then(() => {
+          showSnackBar({
+            snackbarMessage: (
+              <Typography variant="body2" component="div">
+                {ObservationsTableI18N.importRecordsSuccessSnackbarMessage}
+              </Typography>
+            )
+          });
+          return observationsTableContext.refreshObservationRecords();
+        })
+        .catch((apiError) => {
+          showErrorDialog({
+            dialogTitle: ObservationsTableI18N.importRecordsErrorDialogTitle,
+            dialogText: ObservationsTableI18N.importRecordsErrorDialogText,
+            dialogErrorDetails: [apiError.message],
+            open: true
+          });
+        })
+        .finally(() => {
+          setProcessingRecords(false);
+        });
+    });
+  };
+
   return (
     <>
       <FileUploadDialog
         open={showImportDialog}
-        dialogTitle="Import Observation CSV"
+        dialogTitle="Import Observation Data"
         onClose={() => setShowImportDialog(false)}
-        onUpload={handleImportObservations}
+        onUpload={handleImportObservationData}
         FileUploadProps={{
-          dropZoneProps: { maxNumFiles: 1, acceptedFileExtensions: '.csv' },
+          dropZoneProps: { maxNumFiles: 10, acceptedFileExtensions: '.csv, .png, .jpg, .zip' },
           status: UploadFileStatus.STAGED
         }}></FileUploadDialog>
       <YesNoDialog

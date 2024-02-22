@@ -12,6 +12,7 @@ import {
 } from '../repositories/observation-repository';
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
+import { MediaFile } from '../utils/media/media-file';
 import { parseS3File } from '../utils/media/media-utils';
 import {
   constructWorksheets,
@@ -304,8 +305,56 @@ export class ObservationService extends DBService {
   }
 
   /**
-   * Processes a observation upload submission. This method receives an ID belonging to an
-   * observation submission, gets the CSV file associated with the submission, and appends
+   * Processes a observation submission. This method receives an ID belonging to an
+   * observation submission, validates the submission, and returns the results of the
+   * validation.
+   *
+   * valid submission types: .csv, .jpg, .jpeg, .png, .gif, .bmp, .tiff, .zip
+   *
+   * csv: processObservationCsvSubmission()
+   * image: processObservationImageSubmission()
+   * zip: processObservationZipSubmission()
+   *
+   * @param {number} submissionId
+   * @return {*}  {Promise<ObservationRecord[]>}
+   * @memberof ObservationService
+   */
+  async handleProcessObservationSubmission(surveyId: number, submissionId: number): Promise<ObservationRecord[]> {
+    // Step 1. Retrieve the observation submission record
+    const submission = await this.getObservationSubmissionById(submissionId);
+
+    // Step 2. Retrieve the S3 object containing the uploaded CSV file
+    const s3Object = await getFileFromS3(submission.key);
+
+    // Step 3. Get the contents of the S3 object
+    const mediaFile = parseS3File(s3Object);
+
+    // Step 4. Process the file based on its file extension
+    const fileExtension = mediaFile.mimetype;
+    console.log('fileExtension', fileExtension);
+
+    if (fileExtension === 'text/csv') {
+      return this.processObservationCsvSubmission(surveyId, mediaFile);
+    } else if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff'].includes(fileExtension)) {
+      return this.processObservationImageSubmission(surveyId, submissionId);
+    } else if (fileExtension === 'zip') {
+      return this.processObservationZipSubmission(surveyId, submissionId);
+    } else {
+      throw new Error('Failed to process file for importing observations. Invalid file type.');
+    }
+  }
+
+  async processObservationImageSubmission(surveyId: number, submissionId: number): Promise<ObservationRecord[]> {
+    return [];
+  }
+
+  async processObservationZipSubmission(surveyId: number, submissionId: number): Promise<ObservationRecord[]> {
+    return [];
+  }
+
+  /**
+   * Processes a observation upload submission.
+   * This method receives an CSV file associated with the submission, and appends
    * all of the records in the CSV file to the observations for the survey. If the CSV
    * file fails validation, this method fails.
    *
@@ -313,18 +362,8 @@ export class ObservationService extends DBService {
    * @return {*}  {Promise<ObservationRecord[]>}
    * @memberof ObservationService
    */
-  async processObservationCsvSubmission(submissionId: number): Promise<ObservationRecord[]> {
-    defaultLog.debug({ label: 'processObservationCsvSubmission', submissionId });
-
-    // Step 1. Retrieve the observation submission record
-    const submission = await this.getObservationSubmissionById(submissionId);
-    const surveyId = submission.survey_id;
-
-    // Step 2. Retrieve the S3 object containing the uploaded CSV file
-    const s3Object = await getFileFromS3(submission.key);
-
-    // Step 3. Get the contents of the S3 object
-    const mediaFile = parseS3File(s3Object);
+  async processObservationCsvSubmission(surveyId: number, mediaFile: MediaFile): Promise<ObservationRecord[]> {
+    defaultLog.debug({ label: 'processObservationCsvSubmission', mediaFile });
 
     // Step 4. Validate the CSV file
     if (mediaFile.mimetype !== 'text/csv') {

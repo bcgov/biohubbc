@@ -124,9 +124,9 @@ export function uploadMedia(): RequestHandler {
     try {
       const rawMediaFile = rawMediaArray[0];
 
-      if (!rawMediaFile?.originalname.endsWith('.csv')) {
-        throw new HTTP400('Invalid file type, expected a CSV file.');
-      }
+      // if (!rawMediaFile?.originalname.endsWith('.csv')) { TODO: Re-enable this check once we have a better list of file types
+      //   throw new HTTP400('Invalid file type, expected a CSV file.');
+      // }
 
       await connection.open();
 

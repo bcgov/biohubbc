@@ -15,7 +15,7 @@ export const POST: Operation = [
       or: [
         {
           validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
-          surveyId: Number(req.body.surveyId),
+          surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
         {
@@ -94,9 +94,16 @@ POST.apiDoc = {
   }
 };
 
+/**
+ * Processes and validates observation submission
+ *
+ * @export
+ * @return {*}  {RequestHandler}
+ */
 export function processFile(): RequestHandler {
   return async (req, res) => {
     const submissionId = req.body.observation_submission_id;
+    const surveyId = Number(req.params.surveyId);
 
     const connection = getDBConnection(req['keycloak_token']);
     try {
@@ -104,7 +111,7 @@ export function processFile(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      const response = await observationService.processObservationCsvSubmission(submissionId);
+      const response = await observationService.handleProcessObservationSubmission(surveyId, submissionId);
 
       res.status(200).json({ surveyObservations: response });
 
