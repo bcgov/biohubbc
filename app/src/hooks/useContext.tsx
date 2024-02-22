@@ -4,6 +4,7 @@ import { IObservationsContext, ObservationsContext } from 'contexts/observations
 import { IObservationsTableContext, ObservationsTableContext } from 'contexts/observationsTableContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
+import { ITaxonomyContext, TaxonomyContext } from 'contexts/taxonomyContext';
 import { useContext } from 'react';
 
 /**
@@ -102,6 +103,23 @@ export const useObservationsTableContext = (): IObservationsTableContext => {
   if (!context) {
     throw Error(
       'ObservationsTableContext is undefined, please verify you are calling useObservationsTableContext() as child of an <ObservationsTableContextProvider> component.'
+    );
+  }
+
+  return context;
+};
+
+/**
+ * Returns an instance of `ITaxonomyContext` from `SurveyContext`.
+ *
+ * @return {*}  {ITaxonomyContext}
+ */
+export const useTaxonomyContext = (): ITaxonomyContext => {
+  const context = useContext(TaxonomyContext);
+
+  if (!context) {
+    throw Error(
+      'TaxonomyContext is undefined, please verify you are calling useTaxonomyContext() as child of an <TaxonomyContextProvider> component.'
     );
   }
 

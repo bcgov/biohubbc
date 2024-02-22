@@ -8,7 +8,7 @@ import useTheme from '@mui/material/styles/useTheme';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { MeasurementsList } from 'features/surveys/observations/measurements/list/MeasurementsList';
 import { MeasurementsSearch } from 'features/surveys/observations/measurements/search/MeasurementsSearch';
-import { Measurement } from 'hooks/cb_api/useLookupApi';
+import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 
 export interface IrementsDialogProps {
@@ -22,16 +22,16 @@ export interface IrementsDialogProps {
   /**
    * The selected measurements.
    *
-   * @type {Measurement[]}
+   * @type {CBMeasurementType[]}
    * @memberof IrementsDialogProps
    */
-  selectedMeasurements: Measurement[];
+  selectedMeasurements: CBMeasurementType[];
   /**
    * Callback fired on save.
    *
    * @memberof IrementsDialogProps
    */
-  onSave: (measurements: Measurement[]) => void;
+  onSave: (measurements: CBMeasurementType[]) => void;
   /**
    * Callback fired on cancel.
    *
@@ -52,18 +52,21 @@ export const MeasurementsDialog = (props: IrementsDialogProps) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const [selectedMeasurements, setSelectedMeasurements] = useState<Measurement[]>(initialSelectedMeasurements);
+  const [selectedMeasurements, setSelectedMeasurements] = useState<CBMeasurementType[]>(initialSelectedMeasurements);
 
-  const onRemove = (measurementToRemove: Measurement) => {
+  const onRemove = (measurementToRemove: CBMeasurementType) => {
     setSelectedMeasurements((currentMeasurements) =>
-      currentMeasurements.filter((currentMeasurement) => currentMeasurement.uuid !== measurementToRemove.uuid)
+      currentMeasurements.filter(
+        (currentMeasurement) => currentMeasurement.taxon_measurement_id !== measurementToRemove.taxon_measurement_id
+      )
     );
   };
 
-  const onSelectOptions = (measurementsToAdd: Measurement[]) => {
+  const onSelectOptions = (measurementsToAdd: CBMeasurementType[]) => {
     setSelectedMeasurements((currentMeasurements) =>
       [...currentMeasurements, ...measurementsToAdd].filter(
-        (item1, index, self) => index === self.findIndex((item2) => item2.uuid === item1.uuid)
+        (item1, index, self) =>
+          index === self.findIndex((item2) => item2.taxon_measurement_id === item1.taxon_measurement_id)
       )
     );
   };

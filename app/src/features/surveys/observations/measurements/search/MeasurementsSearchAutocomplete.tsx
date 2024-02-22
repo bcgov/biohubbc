@@ -9,7 +9,7 @@ import ListItem from '@mui/material/ListItem';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { Measurement } from 'hooks/cb_api/useLookupApi';
+import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { debounce } from 'lodash-es';
 import { useMemo, useState } from 'react';
 
@@ -17,16 +17,16 @@ export interface IMeasurementsSearchAutocompleteProps {
   /**
    * The selected measurements.
    *
-   * @type {Measurement[]}
+   * @type {CBMeasurementType[]}
    * @memberof IMeasurementsSearchAutocompleteProps
    */
-  selectedOptions: Measurement[];
+  selectedOptions: CBMeasurementType[];
   /**
    * An async function that returns an array of options, based on the provided input value.
    *
    * @memberof IMeasurementsSearchAutocompleteProps
    */
-  getOptions: (inputValue: string) => Promise<Measurement[]>;
+  getOptions: (inputValue: string) => Promise<CBMeasurementType[]>;
   /**
    * Callback fired on selecting options.
    *
@@ -34,7 +34,7 @@ export interface IMeasurementsSearchAutocompleteProps {
    *
    * @memberof IMeasurementsSearchAutocompleteProps
    */
-  onSelectOptions: (measurements: Measurement[]) => void;
+  onSelectOptions: (measurements: CBMeasurementType[]) => void;
 }
 
 /**
@@ -47,13 +47,13 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
   const { selectedOptions, getOptions, onSelectOptions } = props;
 
   const [inputValue, setInputValue] = useState('');
-  const [options, setOptions] = useState<Measurement[]>([]);
+  const [options, setOptions] = useState<CBMeasurementType[]>([]);
 
-  const [pendingSelectedOptions, setPendingSelectedOptions] = useState<Measurement[]>([]);
+  const [pendingSelectedOptions, setPendingSelectedOptions] = useState<CBMeasurementType[]>([]);
 
   const handleSearch = useMemo(
     () =>
-      debounce(async (inputValue: string, callback: (searchedValues: Measurement[]) => void) => {
+      debounce(async (inputValue: string, callback: (searchedValues: CBMeasurementType[]) => void) => {
         const response = await getOptions(inputValue);
         callback(response);
       }, 500),
@@ -71,9 +71,10 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
       disableCloseOnSelect={true}
       blurOnSelect={false}
       clearOnBlur={false}
-      getOptionLabel={(option) => option.commonName || option.scientificName}
+      getOptionLabel={(option) => option.measurement_name}
+      //   getOptionLabel={(option) => option.commonName || option.scientificName}
       isOptionEqualToValue={(option, value) => {
-        return option.uuid === value.uuid;
+        return option.taxon_measurement_id === value.taxon_measurement_id;
       }}
       filterOptions={(options) => {
         if (!selectedOptions?.length) {
@@ -81,7 +82,9 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
         }
 
         const unselectedOptions = options.filter((option) => {
-          return !selectedOptions.some((selectedOption) => selectedOption.uuid === option.uuid);
+          return !selectedOptions.some(
+            (selectedOption) => selectedOption.taxon_measurement_id === option.taxon_measurement_id
+          );
         });
 
         return unselectedOptions;
@@ -124,18 +127,23 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
               px: 2
             }}
             {...renderProps}
-            key={renderOption.uuid}
+            key={renderOption.taxon_measurement_id}
             data-testid="measurements-autocomplete-option">
             <Checkbox
               icon={<CheckBoxOutlineBlank fontSize="small" />}
               checkedIcon={<CheckBox fontSize="small" />}
-              checked={pendingSelectedOptions.some((option) => option.uuid === renderOption.uuid)}
-              value={renderOption.uuid}
+              checked={pendingSelectedOptions.some(
+                (option) => option.taxon_measurement_id === renderOption.taxon_measurement_id
+              )}
+              value={renderOption.taxon_measurement_id}
               color="default"
             />
             <Stack gap={0.75} mt={-0.25}>
               <Box>
                 <Typography variant="body2">
+                  <em>{renderOption.itis_tsn}</em>
+                </Typography>
+                {/* <Typography variant="body2">
                   {renderOption.commonName ? (
                     <>
                       <span>{renderOption.commonName}</span>&nbsp;
@@ -146,11 +154,11 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
                   ) : (
                     <em>{renderOption.scientificName}</em>
                   )}
-                </Typography>
+                </Typography> */}
               </Box>
               <Box>
                 <Typography component="div" variant="body1" fontWeight={700}>
-                  {renderOption.measurementName}
+                  {renderOption.measurement_name}
                 </Typography>
                 <Typography
                   component="div"
@@ -163,7 +171,7 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
                     overflow: 'hidden',
                     textOverflow: 'ellipsis'
                   }}>
-                  {renderOption.measurementDescription}
+                  {renderOption.measurement_desc}
                 </Typography>
               </Box>
             </Stack>

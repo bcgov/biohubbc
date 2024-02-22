@@ -5,7 +5,7 @@ import Popover from '@mui/material/Popover';
 import { GridColDef } from '@mui/x-data-grid';
 import { IObservationTableRow, MeasurementColumn } from 'contexts/observationsTableContext';
 import { ConfigureColumnsPopoverContent } from 'features/surveys/observations/observations-table/configure-table/ConfigureColumnsPopoverContent';
-import { Measurement } from 'hooks/cb_api/useLookupApi';
+import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 
 export interface IConfigureColumnsProps {
@@ -74,7 +74,7 @@ export interface IConfigureColumnsProps {
    *
    * @memberof IConfigureColumnsProps
    */
-  onAddMeasurements: (measurements: Measurement[]) => void;
+  onAddMeasurements: (measurements: CBMeasurementType[]) => void;
 }
 
 /**

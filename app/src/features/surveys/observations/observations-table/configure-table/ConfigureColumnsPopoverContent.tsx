@@ -16,7 +16,7 @@ import Typography from '@mui/material/Typography';
 import { GridColDef } from '@mui/x-data-grid';
 import { IObservationTableRow, MeasurementColumn } from 'contexts/observationsTableContext';
 import { MeasurementsButton } from 'features/surveys/observations/measurements/dialog/MeasurementsButton';
-import { Measurement } from 'hooks/cb_api/useLookupApi';
+import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 
 export interface IConfigureColumnsPopoverContentProps {
   hideableColumns: GridColDef<IObservationTableRow>[];
@@ -27,7 +27,7 @@ export interface IConfigureColumnsPopoverContentProps {
   disabledRemoveMeasurements: boolean;
   measurementColumns: MeasurementColumn[];
   onRemoveMeasurements: (measurementFields: string[]) => void;
-  onAddMeasurements: (measurements: Measurement[]) => void;
+  onAddMeasurements: (measurements: CBMeasurementType[]) => void;
 }
 
 /**

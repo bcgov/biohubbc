@@ -7,12 +7,9 @@ import {
 import { IObservationTableRow, MeasurementColumn } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { ConfigureColumns } from 'features/surveys/observations/observations-table/configure-table/ConfigureColumns';
-import {
-  ObservationQualitativeMeasurementColDef,
-  ObservationQuantitativeMeasurementColDef
-} from 'features/surveys/observations/observations-table/GridColumnDefinitions';
-import { Measurement } from 'hooks/cb_api/useLookupApi';
+import { getMeasurementColumns } from 'features/surveys/observations/observations-table/GridColumnDefinitionsUtils';
 import { useObservationsTableContext } from 'hooks/useContext';
+import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { useCallback, useContext, useEffect, useMemo } from 'react';
 
 export interface IConfigureColumnsContainerProps {
@@ -117,38 +114,18 @@ export const ConfigureColumnsContainer = (props: IConfigureColumnsContainerProps
   /**
    * Handles the addition of measurement columns to the table.
    *
-   * @param {Measurement[]} measurements
+   * @param {CBMeasurementType[]} measurements
    * @return {*}
    */
-  const onAddMeasurements = (measurements: Measurement[]) => {
+  const onAddMeasurements = (measurements: CBMeasurementType[]) => {
     if (!measurements?.length) {
       return;
     }
 
-    const measurementColumnsToAdd: MeasurementColumn[] = [];
-
-    for (const measurement of measurements) {
-      if (measurement.measurementType === 'Quantitative') {
-        measurementColumnsToAdd.push({
-          measurement: measurement,
-          colDef: ObservationQuantitativeMeasurementColDef({
-            measurement: measurement,
-            hasError: observationsTableContext.hasError
-          })
-        });
-      }
-
-      if (measurement.measurementType === 'Qualitative') {
-        measurementColumnsToAdd.push({
-          measurement: measurement,
-          colDef: ObservationQualitativeMeasurementColDef({
-            measurement: measurement,
-            measurementOptions: measurement.measurementOptions,
-            hasError: observationsTableContext.hasError
-          })
-        });
-      }
-    }
+    const measurementColumnsToAdd: MeasurementColumn[] = getMeasurementColumns(
+      measurements,
+      observationsTableContext.hasError
+    );
 
     observationsTableContext.setMeasurementColumns((currentColumns) => {
       const newColumns = measurementColumnsToAdd.filter(

@@ -6,12 +6,8 @@ import {
   paginationRequestQueryParamSchema,
   paginationResponseSchema
 } from '../../../../../../openapi/schemas/pagination';
-import { InsertObservation, UpdateObservation } from '../../../../../../repositories/observation-repository';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import {
-  InsertUpdateObservationsWithMeasurements,
-  ObservationService
-} from '../../../../../../services/observation-service';
+import { ObservationService } from '../../../../../../services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
 import { ApiPaginationOptions } from '../../../../../../zod-schema/pagination';
 
@@ -119,6 +115,7 @@ GET.apiDoc = {
                     'survey_sample_method_name',
                     'survey_sample_period_start_datetime',
                     'subcount',
+                    'observation_subcount_events',
                     'observation_subcount_attributes',
                     'create_date',
                     'create_user',
@@ -184,12 +181,84 @@ GET.apiDoc = {
                       type: 'number',
                       nullable: true
                     },
-                    observation_subcount_attributes: {
+                    observation_subcount_events: {
                       type: 'array',
                       items: {
                         type: 'string'
-                      },
-                      nullable: true
+                      }
+                    },
+                    observation_subcount_attributes: {
+                      type: 'array',
+                      items: {
+                        anyOf: [
+                          {
+                            description: 'A quantitative (number) measurement.',
+                            type: 'object',
+                            required: [
+                              'event_id',
+                              'measurement_quantitative_id',
+                              'taxon_measurement_id',
+                              'value',
+                              'measurement_comment',
+                              'measured_timestamp'
+                            ],
+                            properties: {
+                              event_id: {
+                                type: 'string'
+                              },
+                              measurement_quantitative_id: {
+                                type: 'string'
+                              },
+                              taxon_measurement_id: {
+                                type: 'string'
+                              },
+                              value: {
+                                type: 'number'
+                              },
+                              measurement_comment: {
+                                type: 'string'
+                              },
+                              measured_timestamp: {
+                                type: 'string'
+                              }
+                            },
+                            additionalProperties: false
+                          },
+                          {
+                            description: 'A qualitative (string) measurement.',
+                            type: 'object',
+                            required: [
+                              'event_id',
+                              'measurement_qualitative_id',
+                              'taxon_measurement_id',
+                              'qualitative_option_id',
+                              'measurement_comment',
+                              'measured_timestamp'
+                            ],
+                            properties: {
+                              event_id: {
+                                type: 'string'
+                              },
+                              measurement_qualitative_id: {
+                                type: 'string'
+                              },
+                              taxon_measurement_id: {
+                                type: 'string'
+                              },
+                              qualitative_option_id: {
+                                type: 'string'
+                              },
+                              measurement_comment: {
+                                type: 'string'
+                              },
+                              measured_timestamp: {
+                                type: 'string'
+                              }
+                            },
+                            additionalProperties: false
+                          }
+                        ]
+                      }
                     },
                     create_date: {
                       oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
@@ -230,7 +299,8 @@ GET.apiDoc = {
                     items: {
                       anyOf: [
                         {
-                          description: 'A quantitative (number) measurement, with possible min/max constraint.',
+                          description:
+                            'A quantitative (number) measurement type definition, with possible min/max constraint.',
                           type: 'object',
                           required: [
                             'itis_tsn',
@@ -272,7 +342,8 @@ GET.apiDoc = {
                           additionalProperties: false
                         },
                         {
-                          description: 'A qualitative (string) measurement, with array of valid/accepted options',
+                          description:
+                            'A qualitative (string) measurement type definition, with array of valid/accepted options',
                           type: 'object',
                           required: [
                             'itis_tsn',
@@ -498,110 +569,7 @@ PUT.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Update OK',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            nullable: true,
-            required: ['surveyObservations'],
-            properties: {
-              surveyObservations: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  required: [
-                    'survey_observation_id',
-                    'survey_id',
-                    'itis_tsn',
-                    'itis_scientific_name',
-                    'survey_sample_site_id',
-                    'survey_sample_method_id',
-                    'survey_sample_period_id',
-                    'latitude',
-                    'longitude',
-                    'count',
-                    'observation_time',
-                    'observation_date',
-                    'create_date',
-                    'create_user',
-                    'update_date',
-                    'update_user',
-                    'revision_count'
-                  ],
-                  properties: {
-                    survey_observation_id: {
-                      type: 'integer'
-                    },
-                    survey_id: {
-                      type: 'integer',
-                      minimum: 1
-                    },
-                    itis_tsn: {
-                      type: 'integer'
-                    },
-                    itis_scientific_name: {
-                      type: 'string',
-                      nullable: true
-                    },
-                    survey_sample_site_id: {
-                      type: 'number',
-                      nullable: true
-                    },
-                    survey_sample_method_id: {
-                      type: 'number',
-                      nullable: true
-                    },
-                    survey_sample_period_id: {
-                      type: 'number',
-                      nullable: true
-                    },
-                    latitude: {
-                      type: 'number'
-                    },
-                    longitude: {
-                      type: 'number'
-                    },
-                    count: {
-                      type: 'integer'
-                    },
-                    observation_time: {
-                      type: 'string'
-                    },
-                    observation_date: {
-                      type: 'string'
-                    },
-                    create_date: {
-                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                      description: 'ISO 8601 date string for the project start date'
-                    },
-                    create_user: {
-                      type: 'integer',
-                      minimum: 1
-                    },
-                    update_date: {
-                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                      description: 'ISO 8601 date string for the project start date',
-                      nullable: true
-                    },
-                    update_user: {
-                      type: 'integer',
-                      minimum: 1,
-                      nullable: true
-                    },
-                    revision_count: {
-                      type: 'integer',
-                      minimum: 0
-                    }
-                  },
-                  additionalProperties: false
-                }
-              }
-            },
-            additionalProperties: false
-          }
-        }
-      }
+      description: 'Update OK'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -717,28 +685,13 @@ export function insertUpdateSurveyObservationsWithMeasurements(): RequestHandler
 
       const observationService = new ObservationService(connection);
 
-      // Sanitize incoming records
-      const newRecords: InsertUpdateObservationsWithMeasurements[] = req.body.surveyObservations.map((item: any) => {
-        return {
-          observation: { ...item.standardColumns } as InsertObservation | UpdateObservation,
-          measurements: item.measurementColumns.map((measurement: any) => {
-            return {
-              count: item.standardColumns.sub_count,
-              measurement_id: measurement.id,
-              value: measurement.value
-            };
-          })
-        };
-      });
+      const observationRows = req.body.surveyObservations;
 
-      const surveyObservations = await observationService.insertUpdateSurveyObservationsWithMeasurements(
-        surveyId,
-        newRecords
-      );
+      await observationService.insertUpdateSurveyObservationsWithMeasurements(surveyId, observationRows);
 
       await connection.commit();
 
-      return res.status(200).json({ surveyObservations });
+      return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'insertUpdateSurveyObservationsWithMeasurements', message: 'error', error });
       await connection.rollback();

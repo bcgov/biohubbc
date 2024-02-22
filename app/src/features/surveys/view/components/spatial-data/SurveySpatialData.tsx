@@ -2,12 +2,11 @@ import { mdiBroadcast, mdiEye } from '@mdi/js';
 import { Box, Paper } from '@mui/material';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import { TaxonomyContext } from 'contexts/taxonomyContext';
 import { TelemetryDataContext } from 'contexts/telemetryDataContext';
 import dayjs from 'dayjs';
 import { Position } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useObservationsContext } from 'hooks/useContext';
+import { useObservationsContext, useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { ITelemetry } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
@@ -23,7 +22,7 @@ const SurveySpatialData = () => {
 
   const observationsContext = useObservationsContext();
   const telemetryContext = useContext(TelemetryDataContext);
-  const taxonomyContext = useContext(TaxonomyContext);
+  const taxonomyContext = useTaxonomyContext();
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
   const { projectId, surveyId } = useContext(SurveyContext);

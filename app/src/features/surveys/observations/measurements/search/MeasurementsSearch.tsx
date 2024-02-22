@@ -1,24 +1,24 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import MeasurementsSearchAutocomplete from 'features/surveys/observations/measurements/search/MeasurementsSearchAutocomplete';
-import { Measurement } from 'hooks/cb_api/useLookupApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 
 export interface IMeasurementsSearchProps {
   /**
    * The selected measurements.
    *
-   * @type {Measurement[]}
+   * @type {CBMeasurementType[]}
    * @memberof IMeasurementsSearchProps
    */
-  selectedMeasurements: Measurement[];
+  selectedMeasurements: CBMeasurementType[];
   /**
    * Callback fired on select options.
    *
    * @memberof IMeasurementsSearchProps
    */
-  onSelectOptions: (measurements: Measurement[]) => void;
+  onSelectOptions: (measurements: CBMeasurementType[]) => void;
 }
 
 /**
@@ -32,7 +32,7 @@ export const MeasurementsSearch = (props: IMeasurementsSearchProps) => {
 
   const critterbaseApi = useCritterbaseApi();
 
-  const measurementsDataLoader = useDataLoader(critterbaseApi.lookup.getMeasurementsBySearachTerms);
+  const measurementsDataLoader = useDataLoader(critterbaseApi.lookup.getMeasurementTypeDefinitionsBySearachTerms);
 
   return (
     <Box>

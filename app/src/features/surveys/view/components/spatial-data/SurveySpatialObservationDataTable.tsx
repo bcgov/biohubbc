@@ -4,9 +4,9 @@ import Stack from '@mui/material/Stack';
 import { GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { SurveyContext } from 'contexts/surveyContext';
-import { TaxonomyContext } from 'contexts/taxonomyContext';
 import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useContext, useEffect, useState } from 'react';
 
@@ -68,7 +68,7 @@ const SkeletonRow = () => (
 const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataTableProps) => {
   const biohubApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
-  const taxonomyContext = useContext(TaxonomyContext);
+  const taxonomyContext = useTaxonomyContext();
 
   const [totalRows, setTotalRows] = useState<number>(0);
   const [page, setPage] = useState<number>(0);

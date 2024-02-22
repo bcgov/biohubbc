@@ -5,7 +5,7 @@ import {
   InsertObservation,
   ObservationGeometryRecord,
   ObservationRecord,
-  ObservationRecordWithSamplingDataWithAttributes,
+  ObservationRecordWithSamplingDataWithEventsWithAttributes,
   ObservationRepository,
   ObservationSubmissionRecord,
   UpdateObservation
@@ -23,7 +23,7 @@ import {
   validateWorksheetHeaders
 } from '../utils/xlsx-utils/worksheet-utils';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
-import { CBMeasurement, CritterbaseService } from './critterbase-service';
+import { CBMeasurementType, CritterbaseService } from './critterbase-service';
 import { DBService } from './db-service';
 import { PlatformService } from './platform-service';
 import { SubCountService } from './subcount-service';
@@ -40,19 +40,18 @@ const observationCSVColumnValidator: IXLSXCSVValidator = {
   }
 };
 
-export interface InsertUpdateObservationsWithMeasurements {
-  measurements: {
-    count: number | null;
-    measurement_id: number;
-    value: string;
-  }[];
+export type InsertUpdateObservationsWithMeasurements = {
   observation: InsertObservation | UpdateObservation;
-  sub_count: number;
-}
+  measurements: {
+    id: string;
+    measurement_id: number;
+    value: string | number;
+  }[];
+};
 
 export type ObservationSupplementaryData = {
   observationCount: number;
-  measurementColumns: CBMeasurement[];
+  measurementColumns: CBMeasurementType[];
 };
 
 export class ObservationService extends DBService {
@@ -110,61 +109,53 @@ export class ObservationService extends DBService {
   }
 
   /**
-   * Performs an upsert for all observation records belonging to the given survey, then
-   * returns the updated rows.
+   * Upserts the given observation records and their associated measurements.
    *
    * @param {number} surveyId
    * @param {((Observation | ObservationRecord)[])} observations
-   * @return {*}  {Promise<ObservationRecord[]>}
+   * @return {*}  {Promise<void>}
    * @memberof ObservationService
    */
   async insertUpdateSurveyObservationsWithMeasurements(
     surveyId: number,
     observations: InsertUpdateObservationsWithMeasurements[]
-  ): Promise<ObservationRecord[]> {
+  ): Promise<void> {
     const subCountService = new SubCountService(this.connection);
-    const finalResults: ObservationRecord[] = [];
-    // insert/ update observation data
-    // remove old sub count rows
-    // add observation subcount
-    // check for measurements
-    //  add them to critter base
-    //  add attribute subcount
-    for (const data of observations) {
-      const results = await this.observationRepository.insertUpdateSurveyObservations(
+
+    for (const observation of observations) {
+      // Upsert observation standard columns
+      const upsertedObservationRecord = await this.observationRepository.insertUpdateSurveyObservations(
         surveyId,
-        await this._attachItisScientificName([data.observation])
+        await this._attachItisScientificName([observation.observation])
       );
-      finalResults.push(results[0]);
-      const surveyObservationId = results[0].survey_observation_id;
 
-      // delete old observation and attribute sub counts
-      await subCountService.deleteObservationsAndAttributeSubCounts([surveyObservationId]);
+      const surveyObservationId = upsertedObservationRecord[0].survey_observation_id;
 
-      // insert observation sub count
-      const observationSubCount = await subCountService.insertObservationSubCount({
+      // Delete old observation subcount records (subcounts, events, and critters)
+      await subCountService.deleteObservationSubCountRecords(surveyId, [surveyObservationId]);
+
+      // Insert observation subcount record (event)
+      const observationSubCountRecord = await subCountService.insertObservationSubCount({
         survey_observation_id: surveyObservationId,
-        subcount: data.observation.count
+        subcount: observation.observation.count
       });
 
-      // need to add these to critter base
-      if (data.measurements.length > 0) {
+      // Persist measurement records to Critterbase
+      if (observation.measurements.length) {
         const critterBaseService = new CritterbaseService({
           keycloak_guid: this.connection.systemUserGUID(),
           username: this.connection.systemUserIdentifier()
         });
 
-        const ids = data.measurements.map((item) => item.measurement_id);
-        const eventId = await critterBaseService.addAttributeRecords(ids);
+        const insertMeasurementResponse = await critterBaseService.insertMeasurementRecords(observation.measurements);
 
-        // insert subcount attribute
-        await subCountService.insertSubCountAttribute({
-          observation_subcount_id: observationSubCount.observation_subcount_id,
-          critterbase_event_id: eventId
+        // Insert observation subcount_event record to track the measurements persisted by Critterbase
+        await subCountService.insertSubCountEvent({
+          observation_subcount_id: observationSubCountRecord.observation_subcount_id,
+          critterbase_event_id: insertMeasurementResponse.eventId
         });
       }
     }
-    return finalResults;
   }
 
   /**
@@ -194,36 +185,47 @@ export class ObservationService extends DBService {
    *
    * @param {number} surveyId
    * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {Promise<{ surveyObservations: ObservationRecord[]; supplementaryObservationData: ObservationSupplementaryData }>}
+   * @return {*}  {Promise<{
+   *     surveyObservations: ObservationRecordWithSamplingDataWithEventsWithAttributes[];
+   *     supplementaryObservationData: ObservationSupplementaryData;
+   *   }>}
    * @memberof ObservationService
    */
   async getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData(
     surveyId: number,
     pagination?: ApiPaginationOptions
   ): Promise<{
-    surveyObservations: ObservationRecordWithSamplingDataWithAttributes[];
+    surveyObservations: ObservationRecordWithSamplingDataWithEventsWithAttributes[];
     supplementaryObservationData: ObservationSupplementaryData;
   }> {
     const service = new CritterbaseService({
       keycloak_guid: this.connection.systemUserGUID(),
       username: this.connection.systemUserIdentifier()
     });
+
     const surveyObservations = await this.observationRepository.getSurveyObservationsWithSamplingData(
       surveyId,
       pagination
     );
 
-    // fetch data from critter base
-    const eventIds = surveyObservations
-      .flatMap((item) => item.observation_subcount_attributes)
-      .filter((item) => item !== null);
+    // Get all event ids from all survey observations
+    const eventIds = surveyObservations.flatMap((item) => item.observation_subcount_events).filter(Boolean) as string[];
 
-    // TODO wire this up to something, or remove it?
-    await service.getMeasurementsForEventIds(eventIds);
+    // Fetch all measurement values for the given event ids
+    const measurementValues = await service.getMeasurementValuesForEventIds(eventIds);
+
+    // Assign matching measurement records to their respective observation records
+    const surveyObservationsWithAttributes = surveyObservations.map((observation) => {
+      const matchingMeasurementValues = measurementValues.filter((measurement) =>
+        observation.observation_subcount_events?.includes(measurement.event_id)
+      );
+
+      return { ...observation, observation_subcount_attributes: matchingMeasurementValues };
+    });
 
     const supplementaryObservationData = await this.getSurveyObservationsSupplementaryData(surveyId);
 
-    return { surveyObservations, supplementaryObservationData };
+    return { surveyObservations: surveyObservationsWithAttributes, supplementaryObservationData };
   }
 
   /**
@@ -258,10 +260,12 @@ export class ObservationService extends DBService {
    */
   async getSurveyObservationsSupplementaryData(surveyId: number): Promise<ObservationSupplementaryData> {
     const service = new SubCountService(this.connection);
-    const observationCount = await this.observationRepository.getSurveyObservationCount(surveyId);
-    const measurementColumns = await service.getMeasurementColumnNamesForSurvey(surveyId);
 
-    return { observationCount, measurementColumns };
+    const observationCount = await this.observationRepository.getSurveyObservationCount(surveyId);
+
+    const measurementTypeDefinitions = await service.getMeasurementTypeDefinitionsForSurvey(surveyId);
+
+    return { observationCount, measurementColumns: measurementTypeDefinitions };
   }
 
   /**
@@ -472,16 +476,20 @@ export class ObservationService extends DBService {
   }
 
   /**
-   * Deletes all of the given survey observations by ID.
+   * Deletes all survey_observation records for the given survey observation ids.
    *
+   * @param {number} surveyId
    * @param {number[]} observationIds
    * @return {*}  {Promise<number>}
    * @memberof ObservationRepository
    */
-  async deleteObservationsByIds(observationIds: number[]): Promise<number> {
-    // Remove any existing sub count data before removing observations
+  async deleteObservationsByIds(surveyId: number, observationIds: number[]): Promise<number> {
+    // Remove any existing child subcount records (observation_subcount, subcount_event, subcount_critter) before
+    // deleteing survey_observation records
     const service = new SubCountService(this.connection);
-    await service.deleteObservationsAndAttributeSubCounts(observationIds);
-    return this.observationRepository.deleteObservationsByIds(observationIds);
+    await service.deleteObservationSubCountRecords(surveyId, observationIds);
+
+    // Delete survey_observation records
+    return this.observationRepository.deleteObservationsByIds(surveyId, observationIds);
   }
 }

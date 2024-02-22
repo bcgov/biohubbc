@@ -4,12 +4,13 @@ import sinonChai from 'sinon-chai';
 import {
   InsertObservation,
   ObservationRecord,
-  ObservationRecordWithSamplingDataWithAttributes,
+  ObservationRecordWithSamplingDataWithEvents,
   ObservationRepository,
   UpdateObservation
 } from '../repositories/observation-repository';
 import * as file_utils from '../utils/file-utils';
 import { getMockDBConnection } from '../__mocks__/db';
+import { CritterbaseService } from './critterbase-service';
 import { ObservationService } from './observation-service';
 
 chai.use(sinonChai);
@@ -117,7 +118,7 @@ describe('ObservationService', () => {
     it('Gets observations by survey id', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      const mockObservations: ObservationRecordWithSamplingDataWithAttributes[] = [
+      const mockObservations: ObservationRecordWithSamplingDataWithEvents[] = [
         {
           survey_observation_id: 11,
           survey_id: 1,
@@ -140,7 +141,7 @@ describe('ObservationService', () => {
           survey_sample_method_id: 1,
           survey_sample_period_id: 1,
           subcount: 5,
-          observation_subcount_attributes: []
+          observation_subcount_events: []
         },
         {
           survey_observation_id: 6,
@@ -164,7 +165,7 @@ describe('ObservationService', () => {
           survey_sample_method_id: 1,
           survey_sample_period_id: 1,
           subcount: 10,
-          observation_subcount_attributes: []
+          observation_subcount_events: []
         }
       ];
 
@@ -176,6 +177,10 @@ describe('ObservationService', () => {
       const getSurveyObservationsStub = sinon
         .stub(ObservationRepository.prototype, 'getSurveyObservationsWithSamplingData')
         .resolves(mockObservations);
+
+      const getMeasurementValuesForEventIdsStub = sinon
+        .stub(CritterbaseService.prototype, 'getMeasurementValuesForEventIds')
+        .resolves([]);
 
       const getSurveyObservationSupplementaryDataStub = sinon
         .stub(ObservationService.prototype, 'getSurveyObservationsSupplementaryData')
@@ -190,9 +195,19 @@ describe('ObservationService', () => {
       );
 
       expect(getSurveyObservationsStub).to.be.calledOnceWith(surveyId);
+      expect(getMeasurementValuesForEventIdsStub).to.be.calledOnceWith([]);
       expect(getSurveyObservationSupplementaryDataStub).to.be.calledOnceWith(surveyId);
       expect(response).to.eql({
-        surveyObservations: mockObservations,
+        surveyObservations: [
+          {
+            ...mockObservations[0],
+            observation_subcount_attributes: []
+          },
+          {
+            ...mockObservations[1],
+            observation_subcount_attributes: []
+          }
+        ],
         supplementaryObservationData: mockSupplementaryData
       });
     });
