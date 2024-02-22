@@ -16,6 +16,7 @@ import { parseS3File } from '../utils/media/media-utils';
 import {
   constructWorksheets,
   constructXLSXWorkbook,
+  getMeasurementColumnNameFromWorksheet,
   getWorksheetRowObjects,
   IXLSXCSVValidator,
   validateCsvFile,
@@ -415,6 +416,8 @@ export class ObservationService extends DBService {
       throw new Error('Failed to process file for importing observations. Column validator failed.');
     }
 
+    const measurementColumns = getMeasurementColumnNameFromWorksheet(xlsxWorksheets, observationCSVColumnValidator);
+
     // Get the worksheet row objects
     const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheets['Sheet1']);
 
@@ -432,11 +435,42 @@ export class ObservationService extends DBService {
       observation_time: row['TIME'],
       observation_date: row['DATE']
     }));
+
+    worksheetRowObjects.map((row) => ({
+      observation: {
+        survey_id: surveyId,
+        itis_tsn: row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES'],
+        itis_scientific_name: null,
+        survey_sample_site_id: null,
+        survey_sample_method_id: null,
+        survey_sample_period_id: null,
+        latitude: row['LATITUDE'] ?? row['LAT'],
+        longitude: row['LONGITUDE'] ?? row['LON'] ?? row['LONG'] ?? row['LNG'],
+        count: row['COUNT'],
+        observation_time: row['TIME'],
+        observation_date: row['DATE']
+      },
+      measurements: measurementColumns
+        .map((mColumn) => {
+          const data = row[mColumn];
+          if (data) {
+            return {
+              count: Number(row['COUNT']),
+              measurement_id: 1,
+              value: String(data)
+            };
+          }
+        })
+        .filter((m): m is InsertMeasurement => Boolean(m)),
+      subcount: row['COUNT']
+    }));
     console.log(`rows to add: ${insertRows.length}`);
+
     // Step 7. Insert new rows and return them
+    this.insertUpdateSurveyObservationsWithMeasurements(surveyId, []);
     // return this.observationRepository.insertUpdateSurveyObservations(
     //   surveyId,
-    //   await this._attachItisScientificName(insertRows)
+    await this._attachItisScientificName(insertRows);
     // );
 
     return [];
