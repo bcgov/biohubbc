@@ -63,7 +63,7 @@ export type UpdateSampleSiteRecord = {
  */
 export class SampleLocationRepository extends BaseRepository {
   /**
-   * Gets all survey Sample Locations.
+   * Gets all Sample Locations for a given Survey
    *
    * @param {number} surveyId
    * @return {*}  {Promise<SampleLocationRecord[]>}

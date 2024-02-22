@@ -40,7 +40,7 @@ export class SampleLocationService extends DBService {
   }
 
   /**
-   * Gets all survey Sample Locations.
+   * Gets all Sample Locations for a given Survey
    *
    * @param {number} surveyId
    * @return {*}  {Promise<SampleLocationRecord[]>}
@@ -51,19 +51,6 @@ export class SampleLocationService extends DBService {
 
     return results;
   }
-
-  // /**
-  //  * Gets all survey Sample Locations.
-  //  *
-  //  * @param {number} sampleLocationId
-  //  * @return {*}  {Promise<SampleLocationRecord[]>}
-  //  * @memberof SampleLocationService
-  //  */
-  // async getSampleLocationById(sampleLocationId: number): Promise<SampleLocationRecord> {
-  //   const result = await this.sampleLocationRepository.getSampleLocationById(sampleLocationId);
-
-  //   return result;
-  // }
 
   /**
    * Deletes a survey Sample Location.

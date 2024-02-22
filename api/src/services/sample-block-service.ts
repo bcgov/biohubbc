@@ -7,12 +7,6 @@ import {
 } from '../repositories/sample-blocks-repository';
 import { DBService } from './db-service';
 
-// export interface PostSampleBlock {
-//   survey_id: number;
-//   survey_sample_site_id: number;
-//   survey_block_id: number;
-// }
-
 /**
  * Sample Block Repository
  *
