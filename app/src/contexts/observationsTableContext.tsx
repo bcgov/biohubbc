@@ -14,18 +14,18 @@ import { ObservationsTableI18N } from 'constants/i18n';
 import { getSurveySessionStorageKey, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS } from 'constants/session-storage';
 import { DialogContext } from 'contexts/dialogContext';
 import { default as dayjs } from 'dayjs';
+import { getMeasurementColumns } from 'features/surveys/observations/observations-table/GridColumnDefinitionsUtils';
 import { APIError } from 'hooks/api/useAxios';
 import { IObservationTableRowToSave, MeasurementColumnToSave } from 'hooks/api/useObservationApi';
-import { Measurement } from 'hooks/cb_api/useLookupApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useObservationsContext } from 'hooks/useContext';
+import { useObservationsContext, useTaxonomyContext } from 'hooks/useContext';
+import { CBMeasurementType, CBMeasurementValue } from 'interfaces/useCritterApi.interface';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { firstOrNull } from 'utils/Utils';
 import { v4 as uuidv4 } from 'uuid';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
 import { SurveyContext } from './surveyContext';
-import { TaxonomyContext } from './taxonomyContext';
 
 export interface IStandardObservationColumns {
   survey_observation_id: number;
@@ -64,17 +64,19 @@ export interface IObservationRecordWithSamplingData {
 }
 
 export type MeasurementColumn = {
-  measurement: Measurement;
+  measurement: CBMeasurementType;
   colDef: GridColDef;
 };
 
-export interface IObservationRecordWithSamplingDataWithAttributes extends IObservationRecordWithSamplingData {
+export interface IObservationRecordWithSamplingDataWithEventsWithAttributes extends IObservationRecordWithSamplingData {
   subcount: number;
-  observation_subcount_attributes: string[];
+  observation_subcount_events: string[];
+  observation_subcount_attributes: CBMeasurementValue[];
 }
 
 export interface ISupplementaryObservationData {
   observationCount: number;
+  measurementColumns: CBMeasurementType[];
 }
 
 export interface IObservationTableRow extends Partial<IObservationRecord> {
@@ -142,9 +144,10 @@ export type IObservationsTableContext = {
    */
   deleteObservationRecords: (observationRecords: IObservationTableRow[]) => void;
   /**
-   * Reverts all changes made to observation records within the Observation Table
+   * discards all changes made to observation records within the Observation Table. Abandons all newly added rows that
+   * have not yet been saved, and reverts all edits to existing rows.
    */
-  revertObservationRecords: () => void;
+  discardChanges: () => void;
   /**
    * Refreshes the Observation Table with already existing records
    */
@@ -248,9 +251,18 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
   const _muiDataGridApiRef = useGridApiRef();
 
-  const observationsContext = useObservationsContext();
-  const taxonomyContext = useContext(TaxonomyContext);
-  const dialogContext = useContext(DialogContext);
+  const {
+    observationsDataLoader: {
+      data: observationsData,
+      isLoading: isLoadingObservationsData,
+      hasLoaded: hasLoadedObservationsData,
+      refresh: refreshObservationsData
+    }
+  } = useObservationsContext();
+
+  const { cacheSpeciesTaxonomyByIds } = useTaxonomyContext();
+
+  const { setYesNoDialog, setSnackbar, setErrorDialog } = useContext(DialogContext);
 
   const biohubApi = useBiohubApi();
 
@@ -285,15 +297,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   const [validationModel, setValidationModel] = useState<ObservationTableValidationModel>({});
 
   // Stores any measurement columns that are not part of the default observation table columns
-  const [measurementColumns, setMeasurementColumns] = useState<MeasurementColumn[]>(() => {
-    const measurementColumnStringified = sessionStorage.getItem(
-      getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS)
-    );
-    if (!measurementColumnStringified) {
-      return [];
-    }
-    return JSON.parse(measurementColumnStringified);
-  });
+  const [measurementColumns, setMeasurementColumns] = useState<MeasurementColumn[]>([]);
 
   // Global disabled state for the observations table
   const [disabled, setDisabled] = useState(false);
@@ -317,7 +321,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    */
   const refreshObservationRecords = useCallback(async () => {
     const sort = firstOrNull(sortModel);
-    return observationsContext.observationsDataLoader.refresh({
+    return refreshObservationsData({
       limit: paginationModel.pageSize,
       sort: sort?.field || undefined,
       order: sort?.sort || undefined,
@@ -325,7 +329,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
       page: paginationModel.page + 1
     });
-  }, [observationsContext.observationsDataLoader, paginationModel, sortModel]);
+  }, [paginationModel.page, paginationModel.pageSize, refreshObservationsData, sortModel]);
 
   /**
    * Gets all rows from the table, including values that have been edited in the table.
@@ -486,11 +490,17 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         // Updated editing rows, removing deleted rows
         setModifiedRowIds((current) => current.filter((id) => !allRowIdsToDelete.includes(id)));
 
+        // Updated row modes model, removing deleted rows
+        setRowModesModel((current) => {
+          allRowIdsToDelete.forEach((rowId) => delete current[rowId]);
+          return current;
+        });
+
         // Close yes-no dialog
-        dialogContext.setYesNoDialog({ open: false });
+        setYesNoDialog({ open: false });
 
         // Show snackbar for successful deletion
-        dialogContext.setSnackbar({
+        setSnackbar({
           snackbarMessage: (
             <Typography variant="body2" component="div">
               {observationRecords.length === 1
@@ -504,19 +514,29 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         refreshObservationRecords();
       } catch {
         // Close yes-no dialog
-        dialogContext.setYesNoDialog({ open: false });
+        setYesNoDialog({ open: false });
 
         // Show error dialog
-        dialogContext.setErrorDialog({
-          onOk: () => dialogContext.setErrorDialog({ open: false }),
-          onClose: () => dialogContext.setErrorDialog({ open: false }),
+        setErrorDialog({
+          onOk: () => setErrorDialog({ open: false }),
+          onClose: () => setErrorDialog({ open: false }),
           dialogTitle: ObservationsTableI18N.removeRecordsErrorDialogTitle,
           dialogText: ObservationsTableI18N.removeRecordsErrorDialogText,
           open: true
         });
       }
     },
-    [savedRows, stagedRows, dialogContext, refreshObservationRecords, biohubApi.observation, projectId, surveyId]
+    [
+      savedRows,
+      stagedRows,
+      setYesNoDialog,
+      setSnackbar,
+      refreshObservationRecords,
+      biohubApi.observation,
+      projectId,
+      surveyId,
+      setErrorDialog
+    ]
   );
 
   /**
@@ -549,7 +569,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         return;
       }
 
-      dialogContext.setYesNoDialog({
+      setYesNoDialog({
         dialogTitle:
           observationRecords.length === 1
             ? ObservationsTableI18N.removeSingleRecordDialogTitle
@@ -570,11 +590,11 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         noButtonLabel: 'Cancel',
         open: true,
         onYes: () => _deleteRecords(observationRecords),
-        onClose: () => dialogContext.setYesNoDialog({ open: false }),
-        onNo: () => dialogContext.setYesNoDialog({ open: false })
+        onClose: () => setYesNoDialog({ open: false }),
+        onNo: () => setYesNoDialog({ open: false })
       });
     },
-    [_deleteRecords, dialogContext]
+    [_deleteRecords, setYesNoDialog]
   );
 
   /**
@@ -666,14 +686,20 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   /**
    * Transition all rows tracked by `modifiedRowIds` to edit mode.
    */
-  const revertObservationRecords = useCallback(() => {
-    // Mark all rows as saved
+  const discardChanges = useCallback(() => {
+    // Reset any rows in edit mode back to view mode
+    for (const id of modifiedRowIds) {
+      _muiDataGridApiRef.current.stopRowEditMode({ id });
+    }
+    // Remove any rows from the modified rows array
     setModifiedRowIds([]);
-    // Remove any rows that are newly created
+    // Remove any newly created rows
     setStagedRows([]);
-    // Reset all validation errors
+    // Clear any validation errors
     setValidationModel({});
-  }, []);
+    // Refresh the table with the latest records
+    refreshObservationRecords();
+  }, [_muiDataGridApiRef, modifiedRowIds, refreshObservationRecords]);
 
   // True if the data grid contains at least 1 unsaved record
   const hasUnsavedChanges = modifiedRowIds.length > 0 || stagedRows.length > 0;
@@ -688,8 +714,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
         setModifiedRowIds([]);
         setStagedRows([]);
+        setValidationModel({});
 
-        dialogContext.setSnackbar({
+        setSnackbar({
           snackbarMessage: (
             <Typography variant="body2" component="div">
               {ObservationsTableI18N.saveRecordsSuccessSnackbarMessage}
@@ -702,9 +729,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       } catch (error) {
         _revertAllRowsEditMode();
         const apiError = error as APIError;
-        dialogContext.setErrorDialog({
-          onOk: () => dialogContext.setErrorDialog({ open: false }),
-          onClose: () => dialogContext.setErrorDialog({ open: false }),
+        setErrorDialog({
+          onOk: () => setErrorDialog({ open: false }),
+          onClose: () => setErrorDialog({ open: false }),
           dialogTitle: ObservationsTableI18N.submitRecordsErrorDialogTitle,
           dialogText: ObservationsTableI18N.submitRecordsErrorDialogText,
           dialogErrorDetails: apiError.errors,
@@ -714,14 +741,52 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         _isSavingData.current = false;
       }
     },
-    [biohubApi.observation, projectId, surveyId, dialogContext, refreshObservationRecords, _revertAllRowsEditMode]
+    [
+      biohubApi.observation,
+      projectId,
+      surveyId,
+      setSnackbar,
+      refreshObservationRecords,
+      _revertAllRowsEditMode,
+      setErrorDialog
+    ]
   );
 
   const isLoading: boolean = useMemo(() => {
-    return !taxonomyCacheStatus.isInitialized || observationsContext.observationsDataLoader.isLoading;
-  }, [observationsContext.observationsDataLoader.isLoading, taxonomyCacheStatus.isInitialized]);
+    return !taxonomyCacheStatus.isInitialized || isLoadingObservationsData;
+  }, [isLoadingObservationsData, taxonomyCacheStatus.isInitialized]);
 
   const isSaving: boolean = _isSavingData.current || _isStoppingEdit.current;
+
+  useEffect(() => {
+    if (isLoadingObservationsData || !observationsData) {
+      // Observations data is still loading
+      return;
+    }
+
+    if (measurementColumns.length) {
+      // Already loaded measurement columns from local storage or existing observations data
+      return;
+    }
+
+    setMeasurementColumns(() => {
+      if (!observationsData.supplementaryObservationData.measurementColumns.length) {
+        // Get measurement columns from local storage
+        const measurementColumnStringified = sessionStorage.getItem(
+          getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS)
+        );
+
+        if (!measurementColumnStringified) {
+          return [];
+        }
+
+        return JSON.parse(measurementColumnStringified);
+      }
+
+      // Get measurement columns from existing observations data
+      return [...getMeasurementColumns(observationsData.supplementaryObservationData.measurementColumns, hasError)];
+    });
+  }, [isLoadingObservationsData, observationsData, hasError, surveyId, measurementColumns.length]);
 
   /**
    * Fetch new rows based on sort/ pagination model changes
@@ -737,27 +802,38 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    * deleted; Only on initial page load, and whenever records are saved.
    */
   useEffect(() => {
-    if (!observationsContext.observationsDataLoader.hasLoaded) {
+    if (!hasLoadedObservationsData) {
       // Existing observation records have not yet loaded
       return;
     }
 
-    if (!observationsContext.observationsDataLoader.data) {
+    if (!observationsData) {
       // Existing observation data doesn't exist
       return;
     }
 
     // Collect rows from the observations data loader
-    const existingRows = observationsContext.observationsDataLoader.data.surveyObservations.map(
-      (row: IObservationRecord) => ({ ...row, id: String(row.survey_observation_id) })
-    );
+    const existingRows = observationsData.surveyObservations.map((row) => {
+      return {
+        ...row,
+        // Spread the measurement column key/values into the row
+        ...row.observation_subcount_attributes.reduce((acc, cur: any) => {
+          return {
+            ...acc,
+            // TODO update to be more type safe, etc
+            [cur.taxon_measurement_id]: cur.value || cur.qualitative_option_id
+          };
+        }, {} as CBMeasurementValue),
+        id: String(row.survey_observation_id)
+      };
+    });
 
     // Set initial rows for the table context
     setSavedRows(existingRows);
 
     // Set initial observations count
-    setObservationCount(observationsContext.observationsDataLoader.data.supplementaryObservationData.observationCount);
-  }, [observationsContext.observationsDataLoader.data, observationsContext.observationsDataLoader.hasLoaded]);
+    setObservationCount(observationsData.supplementaryObservationData.observationCount);
+  }, [observationsData, hasLoadedObservationsData]);
 
   /**
    * Runs onces on initial page load.
@@ -768,7 +844,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       return;
     }
 
-    if (!observationsContext.observationsDataLoader.data) {
+    if (!observationsData) {
       // No obserations data has laoded
       return;
     }
@@ -776,36 +852,32 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     // Only attempt to initialize the cache once
     setTaxonomyCacheStatus({ isInitializing: true, isInitialized: false });
 
-    if (!observationsContext.observationsDataLoader.data.surveyObservations.length) {
+    if (!observationsData.surveyObservations.length) {
       // No taxonomy records to fetch and cache
       setTaxonomyCacheStatus({ isInitializing: false, isInitialized: true });
       return;
     }
 
     const uniqueTaxonomicIds: number[] = Array.from(
-      observationsContext.observationsDataLoader.data.surveyObservations.reduce(
-        (acc: Set<number>, record: IObservationRecord) => {
-          if (record.itis_tsn) {
-            acc.add(record.itis_tsn);
-          }
-          return acc;
-        },
-        new Set<number>([])
-      )
+      observationsData.surveyObservations.reduce((acc: Set<number>, record: IObservationRecord) => {
+        if (record.itis_tsn) {
+          acc.add(record.itis_tsn);
+        }
+        return acc;
+      }, new Set<number>([]))
     );
 
     // Fetch and cache all unique taxonomic IDs
-    taxonomyContext
-      .cacheSpeciesTaxonomyByIds(uniqueTaxonomicIds)
+    cacheSpeciesTaxonomyByIds(uniqueTaxonomicIds)
       .catch(() => {})
       .finally(() => {
         setTaxonomyCacheStatus({ isInitializing: false, isInitialized: true });
       });
   }, [
-    observationsContext.observationsDataLoader.data,
+    cacheSpeciesTaxonomyByIds,
+    observationsData,
     taxonomyCacheStatus.isInitialized,
-    taxonomyCacheStatus.isInitializing,
-    taxonomyContext
+    taxonomyCacheStatus.isInitializing
   ]);
 
   /**
@@ -857,12 +929,12 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
       const rowEntries = Object.entries(row);
       rowEntries.forEach(([key, value]) => {
-        const matchingMeasurement = measurements.find((item) => item.uuid === key);
+        const matchingMeasurement = measurements.find((item) => item.taxon_measurement_id === key);
 
         if (matchingMeasurement) {
           measurementColumnsToSave.push({
-            id: matchingMeasurement.uuid,
-            field: matchingMeasurement.measurementName,
+            id: matchingMeasurement.taxon_measurement_id,
+            field: matchingMeasurement.measurement_name,
             value: (value as any) || null
           });
         }
@@ -891,7 +963,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       addObservationRecord,
       saveObservationRecords,
       deleteObservationRecords,
-      revertObservationRecords,
+      discardChanges,
       refreshObservationRecords,
       getSelectedObservationRecords,
       hasUnsavedChanges,
@@ -924,7 +996,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       addObservationRecord,
       saveObservationRecords,
       deleteObservationRecords,
-      revertObservationRecords,
+      discardChanges,
       refreshObservationRecords,
       getSelectedObservationRecords,
       hasUnsavedChanges,

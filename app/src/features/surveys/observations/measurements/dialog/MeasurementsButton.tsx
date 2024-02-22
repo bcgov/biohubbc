@@ -2,7 +2,7 @@ import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import Button from '@mui/material/Button';
 import { MeasurementsDialog } from 'features/surveys/observations/measurements/dialog/MeasurementsDialog';
-import { Measurement } from 'hooks/cb_api/useLookupApi';
+import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 
 export interface IMeasurementsButtonProps {
@@ -10,16 +10,16 @@ export interface IMeasurementsButtonProps {
   /**
    * The selected measurements.
    *
-   * @type {Measurement[]}
+   * @type {CBMeasurementType[]}
    * @memberof IMeasurementsButtonProps
    */
-  selectedMeasurements: Measurement[];
+  selectedMeasurements: CBMeasurementType[];
   /**
    * Callback fired on save.
    *
    * @memberof IMeasurementsButtonProps
    */
-  onAddMeasurements: (measurements: Measurement[]) => void;
+  onAddMeasurements: (measurements: CBMeasurementType[]) => void;
 }
 
 /**

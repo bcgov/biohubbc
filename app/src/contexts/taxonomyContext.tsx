@@ -17,10 +17,7 @@ export interface ITaxonomyContext {
   cacheSpeciesTaxonomyByIds: (ids: number[]) => Promise<void>;
 }
 
-export const TaxonomyContext = createContext<ITaxonomyContext>({
-  getCachedSpeciesTaxonomyById: () => null,
-  cacheSpeciesTaxonomyByIds: () => Promise.resolve()
-});
+export const TaxonomyContext = createContext<ITaxonomyContext | undefined>(undefined);
 
 export const TaxonomyContextProvider = (props: PropsWithChildren) => {
   const biohubApi = useBiohubApi();

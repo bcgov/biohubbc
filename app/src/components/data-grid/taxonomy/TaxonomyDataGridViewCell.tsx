@@ -1,8 +1,8 @@
 import Typography from '@mui/material/Typography';
 import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
-import { TaxonomyContext } from 'contexts/taxonomyContext';
+import { useTaxonomyContext } from 'hooks/useContext';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export interface ITaxonomyDataGridViewCellProps<DataGridType extends GridValidRowModel> {
   dataGridProps: GridRenderCellParams<DataGridType>;
@@ -21,7 +21,7 @@ const TaxonomyDataGridViewCell = <DataGridType extends GridValidRowModel>(
 ) => {
   const { dataGridProps } = props;
 
-  const taxonomyContext = useContext(TaxonomyContext);
+  const taxonomyContext = useTaxonomyContext();
 
   const [taxon, setTaxon] = useState<ITaxonomy | null>(null);
 

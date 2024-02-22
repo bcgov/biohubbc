@@ -34,13 +34,13 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {IObservationTableRowToSave[]} surveyObservations
-   * @return {*}  {Promise<IObservationRecord[]>}
+   * @return {*}  {Promise<void>}
    */
   const insertUpdateObservationRecords = async (
     projectId: number,
     surveyId: number,
     surveyObservations: IObservationTableRowToSave[]
-  ): Promise<IObservationRecord[]> => {
+  ): Promise<void> => {
     // TODO: There is currently no way in the UI to add a sub count value
     // TODO: Business requirement to use sub counts as the primary count value
     const dataToSave = surveyObservations.map((item: IObservationTableRowToSave) => {
@@ -49,12 +49,9 @@ const useObservationApi = (axios: AxiosInstance) => {
     });
 
     // TODO `IObservationRecord[]` might not be the actual return value once measurements are being returned
-    const { data } = await axios.put<IGetSurveyObservationsResponse>(
-      `/api/project/${projectId}/survey/${surveyId}/observations`,
-      { surveyObservations: dataToSave }
-    );
-
-    return data.surveyObservations;
+    await axios.put<IGetSurveyObservationsResponse>(`/api/project/${projectId}/survey/${surveyId}/observations`, {
+      surveyObservations: dataToSave
+    });
   };
 
   /**

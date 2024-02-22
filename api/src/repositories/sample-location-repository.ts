@@ -20,7 +20,7 @@ export const SampleLocationRecord = z.object({
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number(),
-  sample_methods: z.array(SampleMethodRecord).default([])
+  sample_methods: z.array(SampleMethodRecord)
 });
 export type SampleLocationRecord = z.infer<typeof SampleLocationRecord>;
 
@@ -76,7 +76,7 @@ export class SampleLocationRepository extends BaseRepository {
           'survey_sample_site_id',
           knex.raw(`
           json_agg(json_build_object(
-            'sample_periods', jsp.sample_periods,
+            'sample_periods', COALESCE(jsp.sample_periods, '[]'::json),
             'survey_sample_method_id', ssm.survey_sample_method_id,
             'method_lookup_id', ssm.method_lookup_id,
             'description', ssm.description,

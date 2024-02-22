@@ -17,8 +17,8 @@ export const ObservationSubCountRecord = z.object({
 export type ObservationSubCountRecord = z.infer<typeof ObservationSubCountRecord>;
 export type InsertObservationSubCount = Pick<ObservationSubCountRecord, 'survey_observation_id' | 'subcount'>;
 
-export const SubCountAttributeRecord = z.object({
-  subcount_attribute_id: z.number(),
+export const SubCountEventRecord = z.object({
+  subcount_event_id: z.number(),
   observation_subcount_id: z.number(),
   critterbase_event_id: z.string(),
   create_date: z.string(),
@@ -27,20 +27,21 @@ export const SubCountAttributeRecord = z.object({
   update_user: z.number().nullable(),
   revision_count: z.number()
 });
-export type SubCountAttributeRecord = z.infer<typeof SubCountAttributeRecord>;
-export type InsertSubCountAttribute = Pick<SubCountAttributeRecord, 'observation_subcount_id' | 'critterbase_event_id'>;
+export type SubCountEventRecord = z.infer<typeof SubCountEventRecord>;
+export type InsertSubCountEvent = Pick<SubCountEventRecord, 'observation_subcount_id' | 'critterbase_event_id'>;
 
 export class SubCountRepository extends BaseRepository {
   /**
-   * Inserts a new observation sub count
+   * Inserts a new observation_subcount record
    *
    * @param {InsertObservationSubCount} record
    * @returns {*} {Promise<ObservationSubCountRecord>}
    * @memberof SubCountRepository
    */
   async insertObservationSubCount(record: InsertObservationSubCount): Promise<ObservationSubCountRecord> {
-    const qb = getKnex().insert(record).into('observation_subcount').returning('*');
-    const response = await this.connection.knex(qb, ObservationSubCountRecord);
+    const queryBuilder = getKnex().insert(record).into('observation_subcount').returning('*');
+
+    const response = await this.connection.knex(queryBuilder, ObservationSubCountRecord);
 
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to insert observation subcount', [
@@ -53,19 +54,20 @@ export class SubCountRepository extends BaseRepository {
   }
 
   /**
-   * Inserts a new sub count attribute
+   * Inserts a new subcount_event record.
    *
-   * @param {InsertSubCountAttribute} record
-   * @returns {*} {Promise<SubCountAttributeRecord>}
+   * @param {InsertSubCountEvent} record
+   * @returns {*} {Promise<SubCountEventRecord>}
    * @memberof SubCountRepository
    */
-  async insertSubCountAttribute(record: InsertSubCountAttribute): Promise<SubCountAttributeRecord> {
-    const qb = getKnex().insert(record).into('subcount_attribute').returning('*');
-    const response = await this.connection.knex(qb, SubCountAttributeRecord);
+  async insertSubCountEvent(record: InsertSubCountEvent): Promise<SubCountEventRecord> {
+    const queryBuilder = getKnex().insert(record).into('subcount_event').returning('*');
+
+    const response = await this.connection.knex(queryBuilder, SubCountEventRecord);
 
     if (response.rowCount !== 1) {
-      throw new ApiExecuteSQLError('Failed to insert subcount attribute', [
-        'SubCountRepository->insertSubCountAttribute',
+      throw new ApiExecuteSQLError('Failed to insert subcount event', [
+        'SubCountRepository->insertSubCountEvent',
         `rowCount was ${response.rowCount}, expected rowCount = 1`
       ]);
     }
@@ -74,71 +76,148 @@ export class SubCountRepository extends BaseRepository {
   }
 
   /**
-   * Deletes both sub attributes and survey sub counts for a given set of survey observation ids.
+   * Inserts a new subcount_critter record.
    *
-   * @param surveyObservationIds
+   * TODO: Implement this function fully. The incoming `record` parameter and the return value are of type `unknown`.
+   *
+   * @param {unknown} record
+   * @return {*}  {Promise<unknown>}
    * @memberof SubCountRepository
    */
-  async deleteObservationsAndAttributeSubCounts(surveyObservationIds: number[]) {
-    await this.deleteSubCountAttributeForObservationId(surveyObservationIds);
-    await this.deleteObservationSubCount(surveyObservationIds);
-  }
+  async insertSubCountCritter(record: unknown): Promise<unknown> {
+    const queryBuilder = getKnex().insert(record).into('subcount_critter').returning('*');
 
-  /**
-   * Deletes observation sub counts for a given set of survey observation ids.
-   * `deleteSubCountAttributeForObservationId` should be run first to avoid foreign key constraints when deleting
-   *
-   * @param surveyObservationIds
-   * @memberof SubCountRepository
-   */
-  async deleteObservationSubCount(surveyObservationIds: number[]) {
-    const qb = getKnex().delete().from('observation_subcount').whereIn('survey_observation_id', surveyObservationIds);
-    try {
-      await this.connection.knex(qb);
-    } catch (error) {
-      throw new ApiExecuteSQLError('Issue deleting from `observation_subcount`');
+    const response = await this.connection.knex(queryBuilder);
+
+    if (response.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to insert subcount critter', [
+        'SubCountRepository->insertSubCountCritter',
+        `rowCount was ${response.rowCount}, expected rowCount = 1`
+      ]);
     }
+
+    return response.rows[0];
   }
 
   /**
-   * Deletes sub count attributes for a given set of survey observation ids.
-   * This delete action should be taken before `deleteObservationSubCount`
+   * Delete observation_subcount records for the given set of survey observation ids.
    *
+   * Note: Also deletes all related child records (subcount_critter, subcount_event).
+   *
+   * @param {number} surveyId
    * @param {number[]} surveyObservationIds
    * @memberof SubCountRepository
    */
-  async deleteSubCountAttributeForObservationId(surveyObservationIds: number[]) {
-    const qb = getKnex()
-      .select('observation_subcount_id')
-      .from({ os: 'observation_subcount' })
-      .whereIn('survey_observation_id', surveyObservationIds);
+  async deleteObservationSubCountRecords(surveyId: number, surveyObservationIds: number[]) {
+    const queryBuilder = getKnex()
+      .delete()
+      .from('observation_subcount')
+      .innerJoin(
+        'survey_observation',
+        'observation_subcount.survey_observation_id',
+        'survey_observation.survey_observation_id'
+      )
+      .whereIn('survey_observation_id', surveyObservationIds)
+      .andWhere('survey_observation.survey_id', surveyId);
 
-    const subCountQueryBuilder = getKnex().delete().from('subcount_attribute').whereIn('observation_subcount_id', qb);
+    // Delete child subcount_critter records
+    await this.deleteSubCountCritterRecordsForObservationId(surveyId, surveyObservationIds);
 
-    try {
-      await this.connection.knex(subCountQueryBuilder);
-    } catch (error) {
-      throw new ApiExecuteSQLError('Issue deleting from `subcount_attribute`');
+    // Delete child subcount_evemt records
+    await this.deleteSubCountEventRecordsForObservationId(surveyId, surveyObservationIds);
+
+    // Delete observation_subcount records
+    const response = await this.connection.knex(queryBuilder);
+
+    if (response[2].rowCount !== surveyObservationIds.length) {
+      throw new ApiExecuteSQLError('Failed to delete observation subcount records', [
+        'SubCountRepository->deleteObservationSubCount',
+        `response[2].rowCount was ${response[2].rowCount}, expected rowCount = ${surveyObservationIds.length}`
+      ]);
     }
   }
 
   /**
-   * Returns all measurement event ids for all observations in a given survey.
+   * Delete subcount_event records for the given set of survey observation ids.
    *
    * @param {number} surveyId
-   * @returns {*} {Promise<string[]>}
+   * @param {number[]} surveyObservationIds
+   * @return {*}
    * @memberof SubCountRepository
    */
-  async getAllAttributesForSurveyId(surveyId: number): Promise<string[]> {
+  async deleteSubCountEventRecordsForObservationId(surveyId: number, surveyObservationIds: number[]) {
+    const queryBuilder = getKnex()
+      .delete()
+      .from('subcount_event')
+      .innerJoin(
+        'observation_subcount',
+        'observation_subcount.observation_subcount_id',
+        'subcount_event.observation_subcount_id'
+      )
+      .innerJoin(
+        'survey_observation',
+        'observation_subcount.survey_observation_id',
+        'survey_observation.survey_observation_id'
+      )
+      .whereIn('survey_observation_id', surveyObservationIds)
+      .andWhere('survey_observation.survey_id', surveyId);
+
+    return this.connection.knex(queryBuilder);
+  }
+
+  /**
+   * Delete subcount_critter records for a given set of survey observation ids.
+   *
+   * @param {number} surveyId
+   * @param {number[]} surveyObservationIds
+   * @return {*}
+   * @memberof SubCountRepository
+   */
+  async deleteSubCountCritterRecordsForObservationId(surveyId: number, surveyObservationIds: number[]) {
+    const queryBuilder = getKnex()
+      .delete()
+      .from('subcount_critter')
+      .innerJoin(
+        'observation_subcount',
+        'observation_subcount.observation_subcount_id',
+        'subcount_critter.observation_subcount_id'
+      )
+      .innerJoin(
+        'survey_observation',
+        'observation_subcount.survey_observation_id',
+        'survey_observation.survey_observation_id'
+      )
+      .whereIn('survey_observation_id', surveyObservationIds)
+      .andWhere('survey_observation.survey_id', surveyId);
+
+    return this.connection.knex(queryBuilder);
+  }
+
+  /**
+   * Returns all subcount event records for all observations in a given survey.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<SubCountEventRecord[]>}
+   * @memberof SubCountRepository
+   */
+  async getSubCountEventRecordsBySurveyId(surveyId: number): Promise<SubCountEventRecord[]> {
     const sql = SQL`
-      SELECT sa.critterbase_event_id
-      FROM survey_observation so, observation_subcount os, subcount_attribute sa
-      WHERE so.survey_observation_id = os.survey_observation_id 
-      AND os.observation_subcount_id = sa.observation_subcount_id
-      AND so.survey_id = ${surveyId};
+      SELECT 
+        subcount_event.*
+      FROM 
+        survey_observation, 
+        observation_subcount, 
+        subcount_event
+      WHERE 
+        survey_observation.survey_observation_id = observation_subcount.survey_observation_id 
+      AND 
+        observation_subcount.observation_subcount_id = subcount_event.observation_subcount_id
+      AND 
+        survey_observation.survey_id = ${surveyId};
     `;
 
-    const response = await this.connection.sql(sql);
+    const response = await this.connection.sql(sql, SubCountEventRecord);
+
     return response.rows;
   }
 }

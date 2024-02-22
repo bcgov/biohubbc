@@ -146,7 +146,7 @@ const ObservationComponent = () => {
                   disabled={observationsTableContext.isSaving}>
                   Save
                 </LoadingButton>
-                <DiscardChangesButton />
+                <DiscardChangesButton onDiscard={() => observationsTableContext.discardChanges()} />
               </Box>
             </Collapse>
             <ConfigureColumnsContainer disabled={observationsTableContext.isSaving} columns={columns} />

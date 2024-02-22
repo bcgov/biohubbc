@@ -1,5 +1,6 @@
 import { GridSortDirection } from '@mui/x-data-grid/models';
 import { AxiosInstance } from 'axios';
+import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 
 export type OrderBy = 'asc' | 'desc';
 
@@ -26,25 +27,6 @@ export interface IMeasurementStub {
   max_value?: number;
   unit?: string;
 }
-
-export type MeasurementOption = {
-  value: string;
-  label: string;
-};
-
-// TODO finalize this type based on actual Critterbase values. Combine with above `IMeasurementStub`?
-export type Measurement = {
-  uuid: string;
-  scientificName: string;
-  commonName?: string;
-  measurementId: number;
-  measurementName: string;
-  measurementType: 'Quantitative' | 'Qualitative';
-  measurementDescription: string;
-} & (
-  | { measurementType: 'Quantitative'; measurementOptions?: MeasurementOption[] }
-  | { measurementType: 'Qualitative'; measurementOptions: MeasurementOption[] }
-);
 
 const useLookupApi = (axios: AxiosInstance) => {
   const getSelectOptions = async ({ route, param, query, orderBy }: SelectOptionsProps) => {
@@ -84,35 +66,25 @@ const useLookupApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get measurements by search terms.
+   * Get measurement definitions by search terms.
    *
-   * TODO: Implement this method.
+   * TODO: Update this method to use the search terms to filter the measurement definitions.
    *
    * @param {string[]} searchTerms
-   * @return {*}  {Measurement[]}
+   * @return {*}  {Promise<CBMeasurementType[]>}
    */
-  const getMeasurementsBySearachTerms = async (searchTerms: string[]): Promise<Measurement[]> => {
+  const getMeasurementTypeDefinitionsBySearachTerms = async (searchTerms: string[]): Promise<CBMeasurementType[]> => {
     // TODO: this needs to be updated when itis_tsn is swapped over in critter base
     const { data } = await axios.get(`/api/critterbase/xref/taxon-measurements`);
 
-    return data.map((item: any, index: number) => {
-      return {
-        uuid: item.taxon_measurement_id,
-        scientificName: '',
-        commonName: '',
-        measurementId: index,
-        measurementType: 'Quantitative',
-        measurementName: item.measurement_name,
-        measurementDescription: item.measurement_desc ?? ''
-      };
-    });
+    return data;
   };
 
   return {
     getSelectOptions,
     getTaxonMeasurements,
     getTaxonMarkingBodyLocations,
-    getMeasurementsBySearachTerms
+    getMeasurementTypeDefinitionsBySearachTerms
   };
 };
 

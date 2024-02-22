@@ -4,7 +4,18 @@ import { ObservationsTableI18N } from 'constants/i18n';
 import { useObservationsTableContext } from 'hooks/useContext';
 import { useState } from 'react';
 
-export const DiscardChangesButton = () => {
+export interface IDiscardChangesButtonProps {
+  /**
+   * Callback fired when the user clicks the discard changes button.
+   *
+   * @memberof IDiscardChangesButtonProps
+   */
+  onDiscard: () => void;
+}
+
+export const DiscardChangesButton = (props: IDiscardChangesButtonProps) => {
+  const { onDiscard } = props;
+
   const observationsTableContext = useObservationsTableContext();
 
   const [open, setOpen] = useState<boolean>(false);
@@ -28,7 +39,7 @@ export const DiscardChangesButton = () => {
         open={open}
         onYes={() => {
           setOpen(false);
-          observationsTableContext.revertObservationRecords();
+          onDiscard();
         }}
         onClose={() => setOpen(false)}
         onNo={() => setOpen(false)}

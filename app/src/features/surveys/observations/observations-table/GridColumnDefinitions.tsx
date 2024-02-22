@@ -14,7 +14,7 @@ import TimePickerDataGrid from 'components/data-grid/TimePickerDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { default as dayjs } from 'dayjs';
-import { Measurement, MeasurementOption } from 'hooks/cb_api/useLookupApi';
+import { CBMeasurementType, CBQualitativeOption } from 'interfaces/useCritterApi.interface';
 import { getFormattedDate } from 'utils/Utils';
 
 export type ISampleSiteOption = {
@@ -501,14 +501,14 @@ export const ObservationActionsColDef = (props: {
 };
 
 export const ObservationQuantitativeMeasurementColDef = (props: {
-  measurement: Measurement;
+  measurement: CBMeasurementType;
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
   const { measurement, hasError } = props;
 
   return {
-    field: measurement.uuid,
-    headerName: measurement.measurementName,
+    field: measurement.taxon_measurement_id,
+    headerName: measurement.measurement_name,
     editable: true,
     hideable: true,
     type: 'number',
@@ -550,15 +550,20 @@ export const ObservationQuantitativeMeasurementColDef = (props: {
 };
 
 export const ObservationQualitativeMeasurementColDef = (props: {
-  measurement: Measurement;
-  measurementOptions: MeasurementOption[];
+  measurement: CBMeasurementType;
+  measurementOptions: CBQualitativeOption[];
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
   const { measurement, measurementOptions, hasError } = props;
 
+  const qualitativeOptions = measurementOptions.map((item) => ({
+    label: item.option_label,
+    value: item.qualitative_option_id
+  }));
+
   return {
-    field: measurement.uuid,
-    headerName: measurement.measurementName,
+    field: measurement.taxon_measurement_id,
+    headerName: measurement.measurement_name,
     editable: true,
     hideable: true,
     flex: 1,
@@ -568,13 +573,13 @@ export const ObservationQualitativeMeasurementColDef = (props: {
     align: 'left',
     renderCell: (params) => {
       return (
-        <AutocompleteDataGridViewCell dataGridProps={params} options={measurementOptions} error={hasError(params)} />
+        <AutocompleteDataGridViewCell dataGridProps={params} options={qualitativeOptions} error={hasError(params)} />
       );
     },
     renderEditCell: (params) => {
       const error = hasError(params);
 
-      return <AutocompleteDataGridEditCell dataGridProps={params} options={measurementOptions} error={error} />;
+      return <AutocompleteDataGridEditCell dataGridProps={params} options={qualitativeOptions} error={error} />;
     }
   };
 };

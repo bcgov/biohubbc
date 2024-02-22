@@ -229,7 +229,7 @@ POST.apiDoc = {
 };
 
 /**
- * Fetch all observations for a survey.
+ * Deletes survey observations.
  *
  * @export
  * @return {*}  {RequestHandler}
@@ -250,7 +250,8 @@ export function deleteSurveyObservations(): RequestHandler {
       const deleteObservationIds =
         req.body?.surveyObservationIds?.map((observationId: string | number) => Number(observationId)) ?? [];
 
-      await observationService.deleteObservationsByIds(deleteObservationIds);
+      await observationService.deleteObservationsByIds(surveyId, deleteObservationIds);
+
       const supplementaryObservationData = await observationService.getSurveyObservationsSupplementaryData(surveyId);
 
       await connection.commit();

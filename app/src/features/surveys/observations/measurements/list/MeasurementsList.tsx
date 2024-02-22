@@ -1,23 +1,23 @@
 import Collapse from '@mui/material/Collapse';
 import Stack from '@mui/material/Stack';
 import { MeasurementsListCard } from 'features/surveys/observations/measurements/list/MeasurementsListCard';
-import { Measurement } from 'hooks/cb_api/useLookupApi';
+import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { TransitionGroup } from 'react-transition-group';
 
 export interface IMeasurementsListProps {
   /**
    * The selected measurements.
    *
-   * @type {Measurement[]}
+   * @type {CBMeasurementType[]}
    * @memberof IMeasurementsListProps
    */
-  selectedMeasurements: Measurement[];
+  selectedMeasurements: CBMeasurementType[];
   /**
    * Callback fired on remove.
    *
    * @memberof IMeasurementsListProps
    */
-  onRemove: (measurement: Measurement) => void;
+  onRemove: (measurement: CBMeasurementType) => void;
 }
 
 /**
@@ -33,7 +33,7 @@ export const MeasurementsList = (props: IMeasurementsListProps) => {
     <Stack component={TransitionGroup} gap={1} mt={1} data-testid="measurements-list">
       {selectedMeasurements.map((measurement) => {
         return (
-          <Collapse key={measurement.uuid}>
+          <Collapse key={measurement.taxon_measurement_id}>
             <MeasurementsListCard measurement={measurement} onRemove={() => onRemove(measurement)} />
           </Collapse>
         );

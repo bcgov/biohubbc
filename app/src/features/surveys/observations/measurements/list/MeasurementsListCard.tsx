@@ -6,16 +6,16 @@ import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { Measurement } from 'hooks/cb_api/useLookupApi';
+import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 
 export interface IMeasurementsListCardProps {
   /**
    * The measurement to display.
    *
-   * @type {Measurement}
+   * @type {CBMeasurementType}
    * @memberof IMeasurementsListCardProps
    */
-  measurement: Measurement;
+  measurement: CBMeasurementType;
   /**
    * Callback fired on remove.
    *
@@ -48,6 +48,9 @@ export const MeasurementsListCard = (props: IMeasurementsListCardProps) => {
       <Stack gap={0.75} mt={-0.25}>
         <Box>
           <Typography variant="body2">
+            <em>{props.measurement.itis_tsn}</em>
+          </Typography>
+          {/* <Typography variant="body2">
             {props.measurement.commonName ? (
               <>
                 <span>{props.measurement.commonName}</span>&nbsp;
@@ -58,11 +61,11 @@ export const MeasurementsListCard = (props: IMeasurementsListCardProps) => {
             ) : (
               <em>{props.measurement.scientificName}</em>
             )}
-          </Typography>
+          </Typography> */}
         </Box>
         <Box>
           <Typography component="div" variant="body1" fontWeight={700}>
-            {props.measurement.measurementName}
+            {props.measurement.measurement_name}
           </Typography>
           <Typography
             component="div"
@@ -76,7 +79,7 @@ export const MeasurementsListCard = (props: IMeasurementsListCardProps) => {
               overflow: 'hidden',
               textOverflow: 'ellipsis'
             }}>
-            {props.measurement.measurementDescription}
+            {props.measurement.measurement_desc}
           </Typography>
         </Box>
       </Stack>
