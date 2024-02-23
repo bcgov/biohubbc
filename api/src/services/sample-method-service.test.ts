@@ -42,8 +42,7 @@ describe('SampleMethodService', () => {
           create_user: 1,
           update_date: null,
           update_user: null,
-          revision_count: 0,
-          sample_periods: []
+          revision_count: 0
         }
       ];
       const getSampleMethodsForSurveySampleSiteIdStub = sinon
@@ -78,8 +77,7 @@ describe('SampleMethodService', () => {
         create_user: 1,
         update_date: null,
         update_user: null,
-        revision_count: 0,
-        sample_periods: []
+        revision_count: 0
       };
       const deleteSampleMethodRecordStub = sinon
         .stub(SampleMethodRepository.prototype, 'deleteSampleMethodRecord')
@@ -119,8 +117,7 @@ describe('SampleMethodService', () => {
         create_user: 1,
         update_date: null,
         update_user: null,
-        revision_count: 0,
-        sample_periods: []
+        revision_count: 0
       };
       const insertSampleMethodStub = sinon
         .stub(SampleMethodRepository.prototype, 'insertSampleMethod')
@@ -203,8 +200,7 @@ describe('SampleMethodService', () => {
         create_user: 1,
         update_date: null,
         update_user: null,
-        revision_count: 0,
-        sample_periods: []
+        revision_count: 0
       };
       const updateSampleMethodStub = sinon
         .stub(SampleMethodRepository.prototype, 'updateSampleMethod')
@@ -259,7 +255,6 @@ describe('SampleMethodService', () => {
         survey_sample_site_id: 2,
         method_lookup_id: 3,
         description: 'description',
-        sample_periods: [],
         create_date: '2023-05-06',
         create_user: 1,
         update_date: null,

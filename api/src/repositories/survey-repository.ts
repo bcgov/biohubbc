@@ -589,7 +589,7 @@ export class SurveyRepository extends BaseRepository {
   ): Promise<Omit<SurveyBasicFields, 'focal_species_names'>[]> {
     const knex = getKnex();
 
-    const allRowsQuery = knex
+    const queryBuilder = knex
       .queryBuilder()
       .select(
         'survey.survey_id',
@@ -608,17 +608,15 @@ export class SurveyRepository extends BaseRepository {
       .groupBy('survey.start_date')
       .groupBy('survey.end_date');
 
-    const paginatedQuery = !pagination
-      ? allRowsQuery
-      : allRowsQuery.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+    if (pagination) {
+      queryBuilder.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
 
-    const sortedPaginatedQuery =
-      pagination?.sort && pagination.order ? paginatedQuery.orderBy(pagination.sort, pagination.order) : paginatedQuery;
+      if (pagination.sort && pagination.order) {
+        queryBuilder.orderBy(pagination.sort, pagination.order);
+      }
+    }
 
-    const response = await this.connection.knex(
-      sortedPaginatedQuery,
-      SurveyBasicFields.omit({ focal_species_names: true })
-    );
+    const response = await this.connection.knex(queryBuilder, SurveyBasicFields.omit({ focal_species_names: true }));
 
     return response.rows;
   }
