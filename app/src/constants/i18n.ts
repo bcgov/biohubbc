@@ -54,18 +54,6 @@ export const AttachmentsI18N = {
     'An error has occurred while attempting to download an attachment, please try again. If the error persists, please contact your system administrator.'
 };
 
-export const CreateProjectDraftI18N = {
-  draftErrorTitle: 'Error Saving Draft',
-  draftErrorText:
-    'An error has occurred while attempting to save your draft, please try again. If the error persists, please contact your system administrator.'
-};
-
-export const DeleteProjectDraftI18N = {
-  draftErrorTitle: 'Error Deleting Draft',
-  draftErrorText:
-    'An error has occurred while attempting to delete your draft, please try again. If the error persists, please contact your system administrator.'
-};
-
 export const EditPartnershipsI18N = {
   editTitle: 'Edit Partnerships',
   editErrorTitle: 'Error Editing Partnerships',
