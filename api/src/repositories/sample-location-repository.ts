@@ -20,7 +20,7 @@ export const SampleLocationRecord = z.object({
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number(),
-  sample_methods: z.array(SampleMethodRecord)
+  sample_methods: z.array(SampleMethodRecord).default([])
 });
 export type SampleLocationRecord = z.infer<typeof SampleLocationRecord>;
 

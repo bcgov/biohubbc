@@ -93,6 +93,7 @@ const ObservationComponent = () => {
     ObservationTimeColDef({ hasError: observationsTableContext.hasError }),
     ObservationLatitudeColDef({ hasError: observationsTableContext.hasError }),
     ObservationLongitudeColDef({ hasError: observationsTableContext.hasError }),
+    // Add measurement columns to the table
     ...observationsTableContext.measurementColumns.map((item) => item.colDef),
     ObservationActionsColDef({
       disabled: observationsTableContext.isSaving,
@@ -146,7 +147,10 @@ const ObservationComponent = () => {
                   disabled={observationsTableContext.isSaving}>
                   Save
                 </LoadingButton>
-                <DiscardChangesButton onDiscard={() => observationsTableContext.discardChanges()} />
+                <DiscardChangesButton
+                  disabled={observationsTableContext.isSaving}
+                  onDiscard={() => observationsTableContext.discardChanges()}
+                />
               </Box>
             </Collapse>
             <ConfigureColumnsContainer disabled={observationsTableContext.isSaving} columns={columns} />
