@@ -64,7 +64,7 @@ export type SampleSiteRecord = z.infer<typeof SampleSiteRecord>;
 /**
  * Insert object for a single sample site record.
  */
-export type InsertSampleSiteRecord = Pick<SampleSiteRecord, 'survey_id' | 'name' | 'description' | 'geojson'>;
+export type InsertSampleSiteRecord = Pick<SampleSiteRecord, 'name' | 'description' | 'geojson'>;
 
 /**
  * Update object for a single sample site record.
@@ -246,11 +246,12 @@ export class SampleLocationRepository extends BaseRepository {
    * Business requirement to default all names to Sample Site #.
    * The # is based on the current number of sample sites associated to a survey.
    *
+   * @param {number} surveyId
    * @param {InsertSampleSiteRecord} sampleSite
    * @return {*}  {Promise<SampleSiteRecord>}
    * @memberof SampleLocationRepository
    */
-  async insertSampleSite(sampleSite: InsertSampleSiteRecord): Promise<SampleSiteRecord> {
+  async insertSampleSite(surveyId: number, sampleSite: InsertSampleSiteRecord): Promise<SampleSiteRecord> {
     const sqlStatement = SQL`
     INSERT INTO survey_sample_site (
       survey_id,
@@ -259,7 +260,7 @@ export class SampleLocationRepository extends BaseRepository {
       geojson,
       geography
     ) VALUES (
-      ${sampleSite.survey_id},
+      ${surveyId},
       ${sampleSite.name},
       ${sampleSite.description},
       ${sampleSite.geojson},
@@ -284,7 +285,7 @@ export class SampleLocationRepository extends BaseRepository {
         *;
     `);
 
-    const response = await this.connection.sql(sqlStatement, SampleSiteRecord);
+    const response = await this.connection.sql(sqlStatement /*SampleSiteRecord*/);
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert sample location', [

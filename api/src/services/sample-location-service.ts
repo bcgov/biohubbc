@@ -7,6 +7,7 @@ import {
   UpdateSampleLocationRecord
 } from '../repositories/sample-location-repository';
 import { InsertSampleMethodRecord } from '../repositories/sample-method-repository';
+import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
 import { SampleMethodService } from './sample-method-service';
@@ -17,6 +18,8 @@ export interface PostSampleLocations {
   survey_sample_sites: InsertSampleSiteRecord[];
   methods: InsertSampleMethodRecord[];
 }
+
+const defaultLog = getLogger('services/sample-location-service');
 
 /**
  * Sample Location Repository
@@ -94,9 +97,11 @@ export class SampleLocationService extends DBService {
    * @memberof SampleLocationService
    */
   async insertSampleLocations(sampleLocations: PostSampleLocations): Promise<SampleSiteRecord[]> {
+    defaultLog.debug({ label: 'insertSampleLocations' });
+
     // Create a sample site record for each feature found
     const promises = sampleLocations.survey_sample_sites.map((sampleLocation) => {
-      return this.sampleLocationRepository.insertSampleSite(sampleLocation);
+      return this.sampleLocationRepository.insertSampleSite(sampleLocations.survey_id, sampleLocation);
     });
 
     const sampleSiteRecords = await Promise.all(promises);
