@@ -75,7 +75,7 @@ const AppRouter: React.FC = () => {
       <RouteWithTitle path="/admin/users" title={getTitle('Users')}>
         <BaseLayout>
           <AuthenticatedRouteGuard>
-            <SystemRoleRouteGuard validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+            <SystemRoleRouteGuard validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
               <AdminUsersRouter />
             </SystemRoleRouteGuard>
           </AuthenticatedRouteGuard>
