@@ -16,6 +16,8 @@ import { parseS3File } from '../utils/media/media-utils';
 import {
   constructWorksheets,
   constructXLSXWorkbook,
+  findMeasurementFromTsnMeasurements,
+  getCBMeasurementsFromWorksheet,
   getMeasurementColumnNameFromWorksheet,
   getWorksheetRowObjects,
   IXLSXCSVValidator,
@@ -122,8 +124,12 @@ export class ObservationService extends DBService {
     observations: InsertUpdateObservationsWithMeasurements[]
   ): Promise<void> {
     const subCountService = new SubCountService(this.connection);
-
     for (const observation of observations) {
+      console.log('______________');
+      console.log('______________');
+      console.log('______________');
+      console.log('______________');
+      console.log(observation.measurementColumns);
       // Upsert observation standard columns
       const upsertedObservationRecord = await this.observationRepository.insertUpdateSurveyObservations(
         surveyId,
@@ -417,6 +423,11 @@ export class ObservationService extends DBService {
     }
 
     const measurementColumns = getMeasurementColumnNameFromWorksheet(xlsxWorksheets, observationCSVColumnValidator);
+    const service = new CritterbaseService({
+      keycloak_guid: this.connection.systemUserGUID(),
+      username: this.connection.systemUserIdentifier()
+    });
+    const tsnMeasurements = await getCBMeasurementsFromWorksheet(xlsxWorksheets, service);
 
     // Get the worksheet row objects
     const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheets['Sheet1']);
@@ -435,7 +446,8 @@ export class ObservationService extends DBService {
       observation_time: row['TIME'],
       observation_date: row['DATE']
     }));
-
+    // this will need to change a bit...
+    // measurements that are fetch for the validation are also useful for
     worksheetRowObjects.map((row) => ({
       observation: {
         survey_id: surveyId,
@@ -452,7 +464,15 @@ export class ObservationService extends DBService {
       },
       measurements: measurementColumns
         .map((mColumn) => {
+          const measurement = findMeasurementFromTsnMeasurements(
+            String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']),
+            mColumn,
+            tsnMeasurements
+          );
+
+          // if measurement is qualitative then we need to find the option Id as the value instead of the string representation
           const data = row[mColumn];
+
           if (data) {
             return {
               count: Number(row['COUNT']),
