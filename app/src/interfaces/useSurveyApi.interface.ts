@@ -8,7 +8,7 @@ import { ISurveyFundingSource, ISurveyFundingSourceForm } from 'features/surveys
 import { ISurveySiteSelectionForm } from 'features/surveys/components/SurveySiteSelectionForm';
 import { Feature } from 'geojson';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
-import { StringBoolean } from 'types/misc';
+import { ApiPaginationResponseParams, StringBoolean } from 'types/misc';
 import { ICritterDetailedResponse } from './useCritterApi.interface';
 
 /**
@@ -195,6 +195,7 @@ export interface SurveyUpdateObject extends ISurveyLocationForm {
   }[];
 }
 
+// TODO remove in subsequent PR
 export interface SurveySupplementaryData {
   occurrence_submission: {
     occurrence_submission_id: number | null;
@@ -251,11 +252,11 @@ export interface ISurveySupplementaryData {
  * Get survey basic fields response object.
  *
  * @export
- * @interface IGetSurveyForListResponse
+ * @interface IGetSurveyListResponse
  */
-export interface IGetSurveyForListResponse {
-  surveyData: SurveyBasicFieldsObject;
-  surveySupplementaryData: ISurveySupplementaryData;
+export interface IGetSurveyListResponse {
+  surveys: SurveyBasicFieldsObject[];
+  pagination: ApiPaginationResponseParams;
 }
 
 /**

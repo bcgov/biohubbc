@@ -61,7 +61,7 @@ export const paginationResponseSchema: SchemaObject = {
     },
     per_page: {
       type: 'integer',
-      minimum: 1,
+      minimum: 0,
       description: 'The number of records shown per page'
     },
     current_page: {
@@ -82,5 +82,6 @@ export const paginationResponseSchema: SchemaObject = {
       enum: ['asc', 'desc'],
       description: 'The sort order of the response'
     }
-  }
+  },
+  additionalProperties: false
 };
