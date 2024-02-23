@@ -20,9 +20,11 @@ import {
   getCBMeasurementsFromWorksheet,
   getMeasurementColumnNameFromWorksheet,
   getWorksheetRowObjects,
+  getWorksheetRows,
   isMeasurementCBQualitativeTypeDefinition,
   IXLSXCSVValidator,
   validateCsvFile,
+  validateCsvMeasurementColumns,
   validateWorksheetColumnTypes,
   validateWorksheetHeaders
 } from '../utils/xlsx-utils/worksheet-utils';
@@ -423,31 +425,25 @@ export class ObservationService extends DBService {
       throw new Error('Failed to process file for importing observations. Column validator failed.');
     }
 
-    const measurementColumns = getMeasurementColumnNameFromWorksheet(xlsxWorksheets, observationCSVColumnValidator);
+    // Step 5. Validate Measurement data in CSV file
     const service = new CritterbaseService({
       keycloak_guid: this.connection.systemUserGUID(),
       username: this.connection.systemUserIdentifier()
     });
+    // reach out to critterbase for TSN Measurement data
     const tsnMeasurements = await getCBMeasurementsFromWorksheet(xlsxWorksheets, service);
+    // collection additional measurement columns
+    const measurementColumns = getMeasurementColumnNameFromWorksheet(xlsxWorksheets, observationCSVColumnValidator);
+    const rows = getWorksheetRows(xlsxWorksheets);
+    // Validate measurement data against
+    if (!validateCsvMeasurementColumns(rows, measurementColumns, tsnMeasurements)) {
+      throw new Error('Failed to process file for importing observations. Measurement column validator failed.');
+    }
 
     // Get the worksheet row objects
     const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheets['Sheet1']);
 
-    // Step 5. Merge all the table rows into an array of ObservationInsert[]
-    const insertRows: InsertObservation[] = worksheetRowObjects.map((row) => ({
-      survey_id: surveyId,
-      itis_tsn: row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES'],
-      itis_scientific_name: null,
-      survey_sample_site_id: null,
-      survey_sample_method_id: null,
-      survey_sample_period_id: null,
-      latitude: row['LATITUDE'] ?? row['LAT'],
-      longitude: row['LONGITUDE'] ?? row['LON'] ?? row['LONG'] ?? row['LNG'],
-      count: row['COUNT'],
-      observation_time: row['TIME'],
-      observation_date: row['DATE']
-    }));
-
+    // Step 6. Merge all the table rows into an array of InsertUpdateObservationsWithMeasurements[]
     const newRowData = worksheetRowObjects.map((row) => ({
       standardColumns: {
         survey_id: surveyId,
@@ -471,7 +467,7 @@ export class ObservationService extends DBService {
           );
 
           let data = row[mColumn];
-          // if measurement is qualitative then we need to find the option Id as the value instead of the string representation
+          // if measurement is qualitative then we need to find the option Id as the value instead of the string/ number representation
           if (measurement) {
             if (isMeasurementCBQualitativeTypeDefinition(measurement)) {
               const foundOption = measurement.options.find((option) => option.option_label === String(data));
@@ -493,8 +489,6 @@ export class ObservationService extends DBService {
         .filter((m): m is InsertMeasurement => Boolean(m)),
       subcount: row['COUNT']
     }));
-    console.log(`rows to add: ${insertRows.length}`);
-    console.log(newRowData);
 
     // Step 7. Insert new rows and return them
     this.insertUpdateSurveyObservationsWithMeasurements(surveyId, newRowData);
