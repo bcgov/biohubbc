@@ -23,9 +23,10 @@ describe('SampleLocationService', () => {
         survey_id: 1,
         survey_sample_sites: [
           {
+            survey_id: 1,
             name: `Sample Site 1`,
             description: ``,
-            feature: {
+            geojson: {
               type: 'Feature',
               geometry: {
                 type: 'Polygon',
@@ -61,7 +62,7 @@ describe('SampleLocationService', () => {
         ]
       };
 
-      const insertSample = sinon.stub(SampleLocationRepository.prototype, 'insertSampleLocation').resolves({
+      const insertSample = sinon.stub(SampleLocationRepository.prototype, 'insertSampleSite').resolves({
         survey_sample_site_id: 1,
         survey_id: 1,
         name: 'Sample Site 1',
@@ -72,8 +73,7 @@ describe('SampleLocationService', () => {
         create_user: 1,
         update_date: '',
         update_user: 1,
-        revision_count: 0,
-        sample_methods: []
+        revision_count: 0
       });
       const insertMethod = sinon.stub(SampleMethodService.prototype, 'insertSampleMethod').resolves();
 
@@ -96,12 +96,6 @@ describe('SampleLocationService', () => {
           name: 'Sample Site 1',
           description: '',
           geojson: [],
-          geography: [],
-          create_date: '',
-          create_user: 1,
-          update_date: '',
-          update_user: 1,
-          revision_count: 0,
           sample_methods: []
         }
       ]);
@@ -128,7 +122,7 @@ describe('SampleLocationService', () => {
     });
   });
 
-  describe('deleteSampleLocationRecord', () => {
+  describe('deleteSampleSiteRecord', () => {
     it('should run without issue', async () => {
       const mockDBConnection = getMockDBConnection();
       const service = new SampleLocationService(mockDBConnection);
@@ -141,7 +135,7 @@ describe('SampleLocationService', () => {
         .stub(SampleMethodService.prototype, 'deleteSampleMethodRecord')
         .resolves();
 
-      sinon.stub(SampleLocationRepository.prototype, 'deleteSampleLocationRecord').resolves({
+      sinon.stub(SampleLocationRepository.prototype, 'deleteSampleSiteRecord').resolves({
         survey_sample_site_id: 1,
         survey_id: 1,
         name: 'Sample Site 1',
@@ -152,11 +146,10 @@ describe('SampleLocationService', () => {
         create_user: 1,
         update_date: '',
         update_user: 1,
-        revision_count: 0,
-        sample_methods: []
+        revision_count: 0
       });
 
-      const { survey_sample_site_id } = await service.deleteSampleLocationRecord(1);
+      const { survey_sample_site_id } = await service.deleteSampleSiteRecord(1);
 
       expect(survey_sample_site_id).to.be.eq(1);
       expect(getSampleMethodsForSurveySampleSiteIdStub).to.be.calledOnceWith(1);
@@ -175,7 +168,7 @@ describe('SampleLocationService', () => {
         { method_lookup_id: 4, description: 'Cool method', periods: [] } as any
       ];
 
-      const updateSampleLocationStub = sinon.stub(SampleLocationRepository.prototype, 'updateSampleLocation').resolves({
+      const updateSampleLocationStub = sinon.stub(SampleLocationRepository.prototype, 'updateSampleSite').resolves({
         survey_sample_site_id: survey_sample_site_id,
         survey_id: 1,
         name: 'Cool new site',
@@ -186,8 +179,7 @@ describe('SampleLocationService', () => {
         create_user: 1,
         update_date: '',
         update_user: 1,
-        revision_count: 0,
-        sample_methods: []
+        revision_count: 0
       });
       const insertSampleMethodStub = sinon.stub(SampleMethodService.prototype, 'insertSampleMethod').resolves();
       const updateSampleMethodStub = sinon.stub(SampleMethodService.prototype, 'updateSampleMethod').resolves();

@@ -2,19 +2,27 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
-import { InsertSamplePeriodRecord, SamplePeriodRecord, UpdateSamplePeriodRecord } from './sample-period-repository';
+import { InsertSamplePeriodRecord, UpdateSamplePeriodRecord } from './sample-period-repository';
 
+/**
+ * Insert object for a single sample method record.
+ */
 export type InsertSampleMethodRecord = Pick<
   SampleMethodRecord,
   'survey_sample_site_id' | 'method_lookup_id' | 'description'
 > & { periods: InsertSamplePeriodRecord[] };
 
+/**
+ * Update object for a single sample method record.
+ */
 export type UpdateSampleMethodRecord = Pick<
   SampleMethodRecord,
   'survey_sample_method_id' | 'survey_sample_site_id' | 'method_lookup_id' | 'description'
 > & { periods: UpdateSamplePeriodRecord[] };
 
-// This describes a row in the database for Survey Sample Method
+/**
+ * A survey_sample_method record.
+ */
 export const SampleMethodRecord = z.object({
   survey_sample_method_id: z.number(),
   survey_sample_site_id: z.number(),
@@ -24,8 +32,7 @@ export const SampleMethodRecord = z.object({
   create_user: z.number(),
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
-  revision_count: z.number(),
-  sample_periods: z.array(SamplePeriodRecord).default([])
+  revision_count: z.number()
 });
 export type SampleMethodRecord = z.infer<typeof SampleMethodRecord>;
 

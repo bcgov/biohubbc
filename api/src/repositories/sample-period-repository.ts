@@ -4,17 +4,25 @@ import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
 
+/**
+ * Insert object for a single sample period record.
+ */
 export type InsertSamplePeriodRecord = Pick<
   SamplePeriodRecord,
   'survey_sample_method_id' | 'start_date' | 'end_date' | 'start_time' | 'end_time'
 >;
 
+/**
+ * Update object for a single sample period record.
+ */
 export type UpdateSamplePeriodRecord = Pick<
   SamplePeriodRecord,
   'survey_sample_period_id' | 'survey_sample_method_id' | 'start_date' | 'end_date' | 'start_time' | 'end_time'
 >;
 
-// This describes a row in the database for Survey Sample Period
+/**
+ * A survey_sample_period record.
+ */
 export const SamplePeriodRecord = z.object({
   survey_sample_period_id: z.number(),
   survey_sample_method_id: z.number(),
