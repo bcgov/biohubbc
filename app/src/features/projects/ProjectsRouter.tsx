@@ -1,4 +1,4 @@
-import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
+import { ProjectRoleRouteGuard, SystemRoleRouteGuard } from 'components/security/RouteGuards';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { ObservationsContextProvider } from 'contexts/observationsContext';
 import { ProjectAuthStateContextProvider } from 'contexts/projectAuthStateContext';
@@ -32,10 +32,10 @@ const ProjectsRouter: React.FC = () => {
 
       {/* Create Project Route */}
       <RouteWithTitle exact path="/admin/projects/create" title={getTitle('Create Project')}>
-        <ProjectRoleRouteGuard
-          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.PROJECT_CREATOR]}>
+        <SystemRoleRouteGuard
+          validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.PROJECT_CREATOR]}>
           <CreateProjectPage />
-        </ProjectRoleRouteGuard>
+        </SystemRoleRouteGuard>
       </RouteWithTitle>
 
       <Redirect exact from="/admin/projects/:id" to="/admin/projects/:id/details" />
