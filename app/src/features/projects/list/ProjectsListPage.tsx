@@ -105,8 +105,6 @@ const ProjectsListPage = () => {
     );
   };
 
-  codesContext.codesDataLoader.load();
-
   const refreshProjectsList = (filterValues?: IProjectAdvancedFilters) => {
     const sort = firstOrNull(sortModel);
     const pagination = {
