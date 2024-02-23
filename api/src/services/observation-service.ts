@@ -20,6 +20,7 @@ import {
   getCBMeasurementsFromWorksheet,
   getMeasurementColumnNameFromWorksheet,
   getWorksheetRowObjects,
+  isMeasurementCBQualitativeTypeDefinition,
   IXLSXCSVValidator,
   validateCsvFile,
   validateWorksheetColumnTypes,
@@ -447,10 +448,9 @@ export class ObservationService extends DBService {
       observation_time: row['TIME'],
       observation_date: row['DATE']
     }));
-    // this will need to change a bit...
-    // measurements that are fetch for the validation are also useful for
-    worksheetRowObjects.map((row) => ({
-      observation: {
+
+    const newRowData = worksheetRowObjects.map((row) => ({
+      standardColumns: {
         survey_id: surveyId,
         itis_tsn: row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES'],
         itis_scientific_name: null,
@@ -463,7 +463,7 @@ export class ObservationService extends DBService {
         observation_time: row['TIME'],
         observation_date: row['DATE']
       },
-      measurements: measurementColumns
+      measurementColumns: measurementColumns
         .map((mColumn) => {
           const measurement = findMeasurementFromTsnMeasurements(
             String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']),
@@ -471,8 +471,17 @@ export class ObservationService extends DBService {
             tsnMeasurements
           );
 
+          let data = row[mColumn];
           // if measurement is qualitative then we need to find the option Id as the value instead of the string representation
-          const data = row[mColumn];
+          if (measurement) {
+            if (isMeasurementCBQualitativeTypeDefinition(measurement)) {
+              const foundOption = measurement.options.find((option) => option.option_label === String(data));
+
+              if (foundOption) {
+                data = foundOption.qualitative_option_id;
+              }
+            }
+          }
 
           if (data) {
             return {
@@ -485,13 +494,10 @@ export class ObservationService extends DBService {
       subcount: row['COUNT']
     }));
     console.log(`rows to add: ${insertRows.length}`);
+    console.log(newRowData);
 
     // Step 7. Insert new rows and return them
-    this.insertUpdateSurveyObservationsWithMeasurements(surveyId, []);
-    // return this.observationRepository.insertUpdateSurveyObservations(
-    //   surveyId,
-    await this._attachItisScientificName(insertRows);
-    // );
+    this.insertUpdateSurveyObservationsWithMeasurements(surveyId, newRowData);
 
     return [];
   }
