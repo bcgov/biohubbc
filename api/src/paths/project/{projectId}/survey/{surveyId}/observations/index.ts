@@ -340,11 +340,11 @@ export function getSurveyObservations(): RequestHandler {
     const sortQuery: string | undefined = req.query.sort ? String(req.query.sort) : undefined;
     let sort = sortQuery;
 
-    const paginationOptions: Partial<ApiPaginationOptions> = { page, limit, order, sort };
-
     if (sortQuery && samplingSiteSortingColumnName[sortQuery]) {
       sort = samplingSiteSortingColumnName[sortQuery];
     }
+
+    const paginationOptions: Partial<ApiPaginationOptions> = { page, limit, order, sort };
 
     const connection = getDBConnection(req['keycloak_token']);
 
