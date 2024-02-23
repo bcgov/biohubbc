@@ -11,6 +11,7 @@ import { InsertObservation, UpdateObservation } from '../../../../../../reposito
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ObservationService } from '../../../../../../services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
+import { ensureCompletePaginationOptions, getPaginationResponse } from '../../../../../../utils/pagination';
 import { ApiPaginationOptions } from '../../../../../../zod-schema/pagination';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation');
@@ -339,6 +340,8 @@ export function getSurveyObservations(): RequestHandler {
     const sortQuery: string | undefined = req.query.sort ? String(req.query.sort) : undefined;
     let sort = sortQuery;
 
+    const paginationOptions: Partial<ApiPaginationOptions> = { page, limit, order, sort };
+
     if (sortQuery && samplingSiteSortingColumnName[sortQuery]) {
       sort = samplingSiteSortingColumnName[sortQuery];
     }
@@ -350,26 +353,16 @@ export function getSurveyObservations(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      const paginationOptions: ApiPaginationOptions | undefined =
-        limit !== undefined && page !== undefined ? { limit, page, sort, order } : undefined;
-
       const observationData = await observationService.getSurveyObservationsWithSupplementaryAndSamplingData(
         surveyId,
-        paginationOptions
+        ensureCompletePaginationOptions(paginationOptions)
       );
 
       const { observationCount } = observationData.supplementaryObservationData;
 
       return res.status(200).json({
         ...observationData,
-        pagination: {
-          total: observationCount,
-          per_page: limit,
-          current_page: page ?? 1,
-          last_page: limit ? Math.max(1, Math.ceil(observationCount / limit)) : 1,
-          sort,
-          order
-        }
+        pagination: getPaginationResponse(observationCount, paginationOptions)
       });
     } catch (error) {
       defaultLog.error({ label: 'getSurveyObservations', message: 'error', error });
