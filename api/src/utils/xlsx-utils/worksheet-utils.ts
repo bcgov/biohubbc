@@ -313,70 +313,44 @@ export function validateCsvFile(
   return true;
 }
 
-export async function validateCsvMeasurementColumns(
-  xlsxWorksheets: xlsx.WorkSheet,
-  columnValidator: IXLSXCSVValidator,
-  sheet = 'Sheet1'
-): Promise<any> {
-  const rows = getWorksheetRows(xlsxWorksheets[sheet]);
-  const measurementColumns = getMeasurementColumnNameFromWorksheet(xlsxWorksheets, columnValidator);
-  // get measurements from critter base
-  // need to search with tsn and column name to find proper measurement
-  // it would be best to get all measurements for a given set of TSN values I think...
-  // so it would search with tsn + ['column name', 'column name']
-
-  const service = new CritterbaseService({
-    keycloak_guid: '',
-    username: ''
-  });
-
-  const tsnMeasurements: Record<
-    string,
-    { qualitative: CBQualitativeMeasurementTypeDefinition[]; quantitative: CBQuantitativeMeasurementTypeDefinition[] }
-  > = {};
-
-  let isRowValid = true; // defaulting to true so as a column with no data is valid (taxon might not align with measurement column)
-  for (const row of rows) {
-    // fetch the tsn number
-    // TODO: make this a little more generic
-    const tsn = row[0];
-    // If measurements for the TSN haven't been fetched, grab them
-    if (!tsnMeasurements[tsn]) {
-      // TODO: wire this up for multiple TSNs instead of
-      const measurements = await service.getTaxonMeasurements(tsn);
-      console.log(measurements);
-      if (!measurements) {
-        // TODO: do we care if there are no measurements for a taxon?
-      }
-
-      tsnMeasurements[tsn] = measurements;
-    }
-
+export function validateCsvMeasurementColumns(
+  rows: string[][],
+  measurementColumns: string[],
+  tsnMeasurementMap: TsnMeasurementMap
+): boolean {
+  return rows.every((row) => {
+    // Fetch the TSN of the row we are validating
+    const tsn = String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']);
     // for reach measurement column found
     // validate data against taxon measurements collected from Critter Base
-    measurementColumns.forEach((mColumn) => {
+    return measurementColumns.every((mColumn) => {
       const data = row[mColumn];
-      const measurements = tsnMeasurements[tsn];
-      // only validate if the column has data
-      if (data) {
-        // find the correct measurement
-        if (measurements.qualitative.length > 0) {
-          const measurement = measurements.qualitative.find((measurement) => measurement.measurement_name === mColumn);
-          if (measurement) {
-            isRowValid = isQualitativeValueValid(data, measurement);
+      const measurements = tsnMeasurementMap[tsn];
+      if (measurements) {
+        // only validate if the column has data
+        if (data) {
+          // find the correct measurement
+          if (measurements.qualitative.length > 0) {
+            const measurement = measurements.qualitative.find(
+              (measurement) => measurement.measurement_name === mColumn
+            );
+            if (measurement) {
+              return isQualitativeValueValid(data, measurement);
+            }
           }
-        }
 
-        if (measurements.quantitative.length > 0) {
-          const measurement = measurements.quantitative.find((measurement) => measurement.measurement_name === mColumn);
-          if (measurement) {
-            isRowValid = isQuantitativeValueValid(Number(data), measurement);
+          if (measurements.quantitative.length > 0) {
+            const measurement = measurements.quantitative.find(
+              (measurement) => measurement.measurement_name === mColumn
+            );
+            if (measurement) {
+              return isQuantitativeValueValid(Number(data), measurement);
+            }
           }
         }
       }
     });
-  }
-  return isRowValid;
+  });
 }
 
 export function isQuantitativeValueValid(value: number, measurement: CBQuantitativeMeasurementTypeDefinition): boolean {
