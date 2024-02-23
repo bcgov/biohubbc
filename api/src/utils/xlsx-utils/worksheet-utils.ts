@@ -363,12 +363,7 @@ export async function validateCsvMeasurementColumns(
         if (measurements.qualitative.length > 0) {
           const measurement = measurements.qualitative.find((measurement) => measurement.measurement_name === mColumn);
           if (measurement) {
-            // check if data is in the options for the
-            const foundOption = measurement.options.find(
-              (option) => option.option_value === data || option.option_label === data
-            );
-
-            isRowValid = Boolean(foundOption);
+            isRowValid = isQualitativeValueValid(data, measurement);
           }
         }
 
@@ -408,6 +403,18 @@ export function isQuantitativeValueValid(value: number, measurement: CBQuantitat
   return isValid;
 }
 
+export function isQualitativeValueValid(
+  value: string | number,
+  measurement: CBQualitativeMeasurementTypeDefinition
+): boolean {
+  // check if data is in the options for the
+  const foundOption = measurement.options.find(
+    (option) => option.option_value === value || option.option_label === value
+  );
+
+  return Boolean(foundOption);
+}
+
 export function getMeasurementColumnNameFromWorksheet(
   xlsxWorksheets: xlsx.WorkSheet,
   columnValidator: IXLSXCSVValidator,
@@ -445,19 +452,23 @@ export async function getCBMeasurementsFromWorksheet(
 ): Promise<TsnMeasurementMap> {
   const tsnMeasurements: TsnMeasurementMap = {};
   const rows = getWorksheetRowObjects(xlsxWorksheets[sheet]);
+  try {
+    for (const row of rows) {
+      const tsn = String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']);
+      if (!tsnMeasurements[tsn]) {
+        // TODO: modify Critter Base to accept multiple TSN at once
+        const measurements = await critterBaseService.getTaxonMeasurements(tsn);
+        console.log(measurements);
+        if (!measurements) {
+          // TODO: do we care if there are no measurements for a taxon?
+        }
 
-  for (const row of rows) {
-    const tsn = String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']);
-    if (!tsnMeasurements[tsn]) {
-      // TODO: modify Critter Base to accept multiple TSN at once
-      const measurements = await critterBaseService.getTaxonMeasurements(tsn);
-      console.log(measurements);
-      if (!measurements) {
-        // TODO: do we care if there are no measurements for a taxon?
+        tsnMeasurements[tsn] = measurements;
       }
-
-      tsnMeasurements[tsn] = measurements;
     }
+  } catch (error) {
+    // TODO: should this throw an error?
+    // throw new ApiGeneralError('Error connecting to the Critterbase API');
   }
 
   return tsnMeasurements;
@@ -483,17 +494,25 @@ export function findMeasurementFromTsnMeasurements(
     | undefined = null;
   const measurements = tsnMeasurements[tsn];
 
-  // find the correct measurement
-  if (measurements.qualitative.length > 0) {
-    foundMeasurement = measurements.qualitative.find(
-      (measurement) => measurement.measurement_name === measurementColumnName
-    );
-  }
+  if (measurements) {
+    // find the correct measurement
+    if (measurements.qualitative.length > 0) {
+      foundMeasurement = measurements.qualitative.find(
+        (measurement) => measurement.measurement_name === measurementColumnName
+      );
+    }
 
-  if (measurements.quantitative.length > 0) {
-    foundMeasurement = measurements.quantitative.find(
-      (measurement) => measurement.measurement_name === measurementColumnName
-    );
+    if (measurements.quantitative.length > 0) {
+      foundMeasurement = measurements.quantitative.find(
+        (measurement) => measurement.measurement_name === measurementColumnName
+      );
+    }
   }
   return foundMeasurement;
+}
+
+export function isMeasurementCBQualitativeTypeDefinition(
+  item: CBQuantitativeMeasurementTypeDefinition | CBQualitativeMeasurementTypeDefinition
+): item is CBQualitativeMeasurementTypeDefinition {
+  return 'options' in item;
 }
