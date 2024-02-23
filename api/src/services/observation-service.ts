@@ -128,11 +128,6 @@ export class ObservationService extends DBService {
   ): Promise<void> {
     const subCountService = new SubCountService(this.connection);
     for (const observation of observations) {
-      console.log('______________');
-      console.log('______________');
-      console.log('______________');
-      console.log('______________');
-      console.log(observation.measurementColumns);
       // Upsert observation standard columns
       const upsertedObservationRecord = await this.observationRepository.insertUpdateSurveyObservations(
         surveyId,
@@ -491,8 +486,7 @@ export class ObservationService extends DBService {
     }));
 
     // Step 7. Insert new rows and return them
-    this.insertUpdateSurveyObservationsWithMeasurements(surveyId, newRowData);
-
+    await this.insertUpdateSurveyObservationsWithMeasurements(surveyId, newRowData);
     return [];
   }
 
