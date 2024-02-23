@@ -21,12 +21,10 @@ import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { APIError } from 'hooks/api/useAxios';
-import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
-import { hasAtLeastOneValidValue } from 'utils/authUtils';
 import { getFormattedDateRangeString } from 'utils/Utils';
 
 /**
@@ -47,8 +45,6 @@ const SurveyHeader = () => {
   const biohubApi = useBiohubApi();
 
   const dialogContext = useContext(DialogContext);
-
-  const authStateContext = useAuthStateContext();
 
   const defaultYesNoDialogProps = {
     dialogTitle: 'Delete Survey?',
@@ -116,12 +112,6 @@ const SurveyHeader = () => {
     dialogContext.setErrorDialog({ ...deleteErrorDialogProps, ...textDialogProps, open: true });
   };
 
-  // Enable delete button if you a system admin or a project admin
-  const enableDeleteSurveyButton = hasAtLeastOneValidValue(
-    [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.PROJECT_CREATOR],
-    authStateContext.simsUserWrapper.roleNames
-  );
-
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
   const [publishSurveyDialogOpen, setPublishSurveyDialogOpen] = useState<boolean>(false);
 
@@ -169,7 +159,9 @@ const SurveyHeader = () => {
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <Stack flexDirection="row" alignItems="center" gap={1}>
               {BIOHUB_FEATURE_FLAG && (
-                <>
+                <ProjectRoleGuard
+                  validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}
+                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <Typography
                     component="span"
                     variant="subtitle2"
@@ -202,20 +194,11 @@ const SurveyHeader = () => {
                     style={{ minWidth: '7rem' }}>
                     Publish
                   </Button>
-                </>
+                </ProjectRoleGuard>
               )}
-              <Button
-                component={RouterLink}
-                to={`/admin/projects/${projectContext.projectId}/surveys/${surveyContext.surveyId}/edit`}
-                variant="outlined"
-                color="primary"
-                startIcon={<Icon path={mdiPencil} size={0.75} />}>
-                Edit
-              </Button>
             </Stack>
 
             <Button
-              sx={{ display: 'none' }}
               id="survey_settings_button"
               aria-label="Survey Settings"
               aria-controls="surveySettingsMenu"
@@ -251,17 +234,16 @@ const SurveyHeader = () => {
                 </ListItemIcon>
                 <Typography variant="inherit">Edit Survey Details</Typography>
               </MenuItem>
-              {enableDeleteSurveyButton && (
-                <MenuItem
-                  data-testid="delete-survey-button"
-                  onClick={showDeleteSurveyDialog}
-                  disabled={!enableDeleteSurveyButton}>
+              <ProjectRoleGuard
+                validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}
+                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                <MenuItem data-testid="delete-survey-button" onClick={showDeleteSurveyDialog}>
                   <ListItemIcon>
                     <Icon path={mdiTrashCanOutline} size={1} />
                   </ListItemIcon>
                   <Typography variant="inherit">Delete Survey</Typography>
                 </MenuItem>
-              )}
+              </ProjectRoleGuard>
             </Menu>
           </ProjectRoleGuard>
         }
