@@ -3,7 +3,7 @@ import { MeasurementColumn } from 'contexts/observationsTableContext';
 import {
   ObservationQualitativeMeasurementColDef,
   ObservationQuantitativeMeasurementColDef
-} from 'features/surveys/observations/observations-table/GridColumnDefinitions';
+} from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitions';
 import {
   CBMeasurementType,
   CBQualitativeMeasurementTypeDefinition,

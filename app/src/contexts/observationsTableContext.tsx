@@ -14,7 +14,7 @@ import { ObservationsTableI18N } from 'constants/i18n';
 import { getSurveySessionStorageKey, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS } from 'constants/session-storage';
 import { DialogContext } from 'contexts/dialogContext';
 import { default as dayjs } from 'dayjs';
-import { getMeasurementColumns } from 'features/surveys/observations/observations-table/GridColumnDefinitionsUtils';
+import { getMeasurementColumns } from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitionsUtils';
 import { APIError } from 'hooks/api/useAxios';
 import { IObservationTableRowToSave, MeasurementColumnToSave } from 'hooks/api/useObservationApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';

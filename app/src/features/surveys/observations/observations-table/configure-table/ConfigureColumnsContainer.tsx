@@ -7,7 +7,7 @@ import {
 import { IObservationTableRow, MeasurementColumn } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { ConfigureColumns } from 'features/surveys/observations/observations-table/configure-table/ConfigureColumns';
-import { getMeasurementColumns } from 'features/surveys/observations/observations-table/GridColumnDefinitionsUtils';
+import { getMeasurementColumns } from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitionsUtils';
 import { useObservationsTableContext } from 'hooks/useContext';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { useCallback, useContext, useEffect, useMemo } from 'react';
