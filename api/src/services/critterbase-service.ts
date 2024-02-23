@@ -399,31 +399,33 @@ export class CritterbaseService {
   /**
    * Get measurement values for a given set of event ids.
    *
-   * @param {string[]} measurementIds
+   * @param {string[]} eventIds
    * @return {*}  {Promise<CBMeasurementValue[]>}
    * @memberof CritterbaseService
    */
-  async getMeasurementValuesForEventIds(measurementIds: string[]): Promise<CBMeasurementValue[]> {
+  async getMeasurementValuesForEventIds(eventIds: string[]): Promise<CBMeasurementValue[]> {
     // TODO: wire up to critter base api when available
     // const response = await this.axiosInstance.post('', ids);F
-    return [
+    const mockMeasurements = (eventId: string) => [
       {
-        event_id: measurementIds[0],
-        measurement_quantitative_id: '',
+        event_id: eventId,
+        measurement_quantitative_id: 'b73097cd-06bc-4fb3-9f69-ed471abc6a94',
         taxon_measurement_id: 'c38c3d61-833f-47d4-a173-6a01a19a7a13',
         value: 5,
-        measurement_comment: '',
+        measurement_comment: 'This is a comment about the measurement.',
         measured_timestamp: ''
       },
       {
-        event_id: measurementIds[0],
-        measurement_qualitative_id: '',
+        event_id: eventId,
+        measurement_qualitative_id: 'd78991d8-806f-4b4c-802c-aaadbf21c381',
         taxon_measurement_id: 'd47568e6-e7ef-49fd-bbac-7e4ad47418be',
         qualitative_option_id: '2272abee-8161-4887-a5e4-b842524e48c8',
-        measurement_comment: '',
+        measurement_comment: 'This is a comment about the measurement.',
         measured_timestamp: ''
       }
     ];
+
+    return eventIds.flatMap((eventId) => mockMeasurements(eventId));
   }
 
   /**

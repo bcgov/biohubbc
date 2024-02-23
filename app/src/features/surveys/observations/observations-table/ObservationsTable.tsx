@@ -68,13 +68,13 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       // Update the row modes model in the context
       observationsTableContext.setRowModesModel((currentModel) => {
         if (observationsTableContext._isStoppingEdit.current) {
-          // If in the process of stopping edit, only 'view' models should be added
+          // If in the process of stopping edit, only 'view' models should be added.
           // Why? The data-grid 'onRowModesModelChange' callback is designed to work for a single row at a time (the
           // counterpart to editing a row, which is started on a row-by-row basis by double-clicking a row). Because we
           // are doing one bulk save action, we trigger the transition from view mode to edit mode for all rows at once.
           // The 'onRowModesModelChange' callback is fired once for each row in the table, and we need to ensure that
           // only 'view' models are added to the rowModesModel during this transition. If you don't, then each trigger
-          // of this function will receive  slightly outdated copy of the rowModesModel, and they will overwrite
+          // of this function will receive a slightly outdated copy of the rowModesModel, and they will overwrite
           // one-another, resulting in at least some rows being left in 'edit' mode.
           const onlyViewModels: GridRowModesModel = {};
           for (const [id, modelItem] of Object.entries(model)) {
@@ -85,6 +85,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
           return { ...currentModel, ...onlyViewModels };
         }
 
+        // Normal path, return updated model
         return { ...currentModel, ...model };
       });
     },
@@ -114,11 +115,11 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         rowCount={observationsTableContext.observationCount}
         pageSizeOptions={[25, 50, 100]}
         paginationModel={observationsTableContext.paginationModel}
-        onPaginationModelChange={(model) => observationsTableContext.setPaginationModel(model)}
+        onPaginationModelChange={observationsTableContext.setPaginationModel}
         // Sorting
         sortingMode="server"
         sortModel={observationsTableContext.sortModel}
-        onSortModelChange={(model) => observationsTableContext.setSortModel(model)}
+        onSortModelChange={observationsTableContext.setSortModel}
         // Row editing
         onRowEditStart={(params) => observationsTableContext.onRowEditStart(params.id)}
         onRowEditStop={(_params, event) => {
