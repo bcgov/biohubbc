@@ -28,9 +28,6 @@ const SamplingBlockEditForm = () => {
     }
   }, [values.sampleSite]);
 
-  console.log(selectedBlocks);
-  console.log(values);
-
   interface IBlockCard {
     label: string;
     description: string;
@@ -63,8 +60,6 @@ const SamplingBlockEditForm = () => {
     setSelectedBlocks(filteredBlocks);
     setFieldValue(`sampleSite.blocks`, filteredBlocks);
   };
-
-  console.log(searchText);
 
   return (
     <>

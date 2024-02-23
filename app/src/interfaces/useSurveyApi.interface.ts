@@ -117,7 +117,7 @@ export interface IGetSurveyBlock {
   update_date: string | null;
   update_user: number | null;
   revision_count: number;
-  sample_block_count: number
+  sample_block_count: number;
 }
 
 export interface SurveyViewObject {

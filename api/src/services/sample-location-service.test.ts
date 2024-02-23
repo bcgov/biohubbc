@@ -213,7 +213,7 @@ describe('SampleLocationService', () => {
       expect(checkSampleBlocksToDeleteStub).to.be.calledOnceWith(survey_sample_site_id, blocks);
       expect(insertSampleBlockStub).to.be.calledOnceWith({
         survey_sample_site_id: survey_sample_site_id,
-        survey_block_id: 3,
+        survey_block_id: 3
       });
       expect(insertSampleMethodStub).to.be.calledOnceWith({
         survey_sample_site_id: survey_sample_site_id,

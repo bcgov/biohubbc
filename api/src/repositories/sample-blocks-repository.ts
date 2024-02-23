@@ -66,8 +66,8 @@ export class SampleBlockRepository extends BaseRepository {
   }
 
   /**
-   * Gets count of all Sample Block records for a given Survey Block 
-   * 
+   * Gets count of all Sample Block records for a given Survey Block
+   *
    * @param {number} surveyBlockId
    * @return {*}  {Promise<SampleBlockRecord[]>}
    * @memberof sampleBlockRepository
@@ -169,7 +169,7 @@ export class SampleBlockRepository extends BaseRepository {
       WHERE survey_sample_site_id = ${surveySampleSiteId};
     `;
 
-    const response = await this.connection.sql(sql, SampleBlockRecord)
+    const response = await this.connection.sql(sql, SampleBlockRecord);
 
     return response.rows;
   }
