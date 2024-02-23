@@ -25,7 +25,7 @@ export const SampleMethodRecord = z.object({
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number(),
-  sample_periods: z.array(SamplePeriodRecord)
+  sample_periods: z.array(SamplePeriodRecord).default([])
 });
 export type SampleMethodRecord = z.infer<typeof SampleMethodRecord>;
 

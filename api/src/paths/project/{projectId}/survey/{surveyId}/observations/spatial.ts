@@ -325,7 +325,8 @@ GET.apiDoc = {
                   additionalProperties: false
                 }
               }
-            }
+            },
+            additionalProperties: false
           }
         }
       }

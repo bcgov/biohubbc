@@ -1,10 +1,16 @@
 import Button from '@mui/material/Button';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { ObservationsTableI18N } from 'constants/i18n';
-import { useObservationsTableContext } from 'hooks/useContext';
 import { useState } from 'react';
 
 export interface IDiscardChangesButtonProps {
+  /**
+   * Controls the disabled state of the button.
+   *
+   * @type {boolean}
+   * @memberof IBulkActionsButtonProps
+   */
+  disabled: boolean;
   /**
    * Callback fired when the user clicks the discard changes button.
    *
@@ -14,19 +20,13 @@ export interface IDiscardChangesButtonProps {
 }
 
 export const DiscardChangesButton = (props: IDiscardChangesButtonProps) => {
-  const { onDiscard } = props;
-
-  const observationsTableContext = useObservationsTableContext();
+  const { disabled, onDiscard } = props;
 
   const [open, setOpen] = useState<boolean>(false);
 
   return (
     <>
-      <Button
-        variant="outlined"
-        color="primary"
-        onClick={() => setOpen(true)}
-        disabled={observationsTableContext.isSaving}>
+      <Button variant="outlined" color="primary" onClick={() => setOpen(true)} disabled={disabled}>
         Discard Changes
       </Button>
       <YesNoDialog

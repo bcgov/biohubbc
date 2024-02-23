@@ -106,9 +106,10 @@ export class SubCountRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number[]} surveyObservationIds
+   * @return {*}  {Promise<void>}
    * @memberof SubCountRepository
    */
-  async deleteObservationSubCountRecords(surveyId: number, surveyObservationIds: number[]) {
+  async deleteObservationSubCountRecords(surveyId: number, surveyObservationIds: number[]): Promise<void> {
     const queryBuilder = getKnex()
       .delete()
       .from('observation_subcount')
@@ -120,21 +121,14 @@ export class SubCountRepository extends BaseRepository {
       .whereIn('observation_subcount.survey_observation_id', surveyObservationIds)
       .andWhere('survey_observation.survey_id', surveyId);
 
-    // Delete child subcount_critter records
+    // Delete child subcount_critter records, if any
     await this.deleteSubCountCritterRecordsForObservationId(surveyId, surveyObservationIds);
 
-    // Delete child subcount_event records
+    // Delete child subcount_event records, if any
     await this.deleteSubCountEventRecordsForObservationId(surveyId, surveyObservationIds);
 
-    // Delete observation_subcount records
-    const response = await this.connection.knex(queryBuilder);
-
-    if (response.rowCount !== surveyObservationIds.length) {
-      throw new ApiExecuteSQLError('Failed to delete observation subcount records', [
-        'SubCountRepository->deleteObservationSubCount',
-        `response.rowCount was ${response.rowCount}, expected rowCount = ${surveyObservationIds.length}`
-      ]);
-    }
+    // Delete observation_subcount records, if any
+    await this.connection.knex(queryBuilder);
   }
 
   /**
