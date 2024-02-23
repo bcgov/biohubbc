@@ -41,7 +41,7 @@ export class SampleLocationService extends DBService {
   }
 
   /**
-   * Gets all survey Sample Locations.
+   * Gets all Sample Locations for a given Survey
    *
    * @param {number} surveyId
    * @return {*}  {Promise<SampleLocationRecord[]>}
@@ -52,19 +52,6 @@ export class SampleLocationService extends DBService {
 
     return results;
   }
-
-  // /**
-  //  * Gets all survey Sample Locations.
-  //  *
-  //  * @param {number} sampleLocationId
-  //  * @return {*}  {Promise<SampleLocationRecord[]>}
-  //  * @memberof SampleLocationService
-  //  */
-  // async getSampleLocationById(sampleLocationId: number): Promise<SampleLocationRecord> {
-  //   const result = await this.sampleLocationRepository.getSampleLocationById(sampleLocationId);
-
-  //   return result;
-  // }
 
   /**
    * Deletes a survey Sample Location.
@@ -159,13 +146,15 @@ export class SampleLocationService extends DBService {
     // For each block, check if it exists
     // If it exists, update it
     // If it does not exist, create it
-    for (const item of sampleSite.blocks) {
-      if (!item.survey_sample_block_id) {
-        const sampleBlock = {
-          survey_sample_site_id: sampleSite.survey_sample_site_id,
-          survey_block_id: item.survey_block_id
-        };
-        await blockService.insertSampleBlock(sampleBlock);
+    if (sampleSite.blocks) {
+      for (const item of sampleSite.blocks) {
+        if (!item.survey_sample_block_id) {
+          const sampleBlock = {
+            survey_sample_site_id: sampleSite.survey_sample_site_id,
+            survey_block_id: item.survey_block_id
+          };
+          await blockService.insertSampleBlock(sampleBlock);
+        }
       }
     }
 

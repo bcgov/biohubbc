@@ -1,33 +1,59 @@
-import { AxiosInstance } from 'axios';
-import { ITaxonomySearchResult } from 'interfaces/useTaxonomy.interface';
+import { useConfigContext } from 'hooks/useContext';
+import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import qs from 'qs';
+import useAxios from './useAxios';
 
-const useTaxonomyApi = (axios: AxiosInstance) => {
-  const searchSpecies = async (value: string): Promise<ITaxonomySearchResult> => {
-    const { data } = await axios.get<ITaxonomySearchResult>(`/api/taxonomy/species/search`, {
-      params: { terms: value },
+const useTaxonomyApi = () => {
+  const config = useConfigContext();
+  const apiAxios = useAxios(config.BACKBONE_PUBLIC_API_HOST);
+
+  /**
+   * Searches for taxon records based on ITIS TSNs.
+   *
+   * @param {number[]} tsns
+   * @return {*}  {Promise<ITaxonomy[]>}
+   */
+  const getSpeciesFromIds = async (tsns: number[]): Promise<ITaxonomy[]> => {
+    const { data } = await apiAxios.get<{ searchResponse: ITaxonomy[] }>(config.BIOHUB_TAXON_TSN_PATH, {
+      params: {
+        tsn: [...new Set(tsns)]
+      },
       paramsSerializer: (params) => {
         return qs.stringify(params);
       }
     });
 
-    return data;
+    return data.searchResponse;
   };
 
-  const getSpeciesFromIds = async (ids: number[]): Promise<ITaxonomySearchResult> => {
-    const { data } = await axios.get<ITaxonomySearchResult>(`/api/taxonomy/species/list`, {
-      params: { ids: qs.stringify(ids) },
-      paramsSerializer: (params) => {
-        return qs.stringify(params);
-      }
-    });
+  /**
+   * Search for taxon records by search terms.
+   *
+   * @param {string[]} searchTerms
+   * @return {*}  {(Promise<ITaxonomy[]>)}
+   */
+  const searchSpeciesByTerms = async (searchTerms: string[]): Promise<ITaxonomy[]> => {
+    try {
+      const { data } = await apiAxios.get<{ searchResponse: ITaxonomy[] }>(config.BIOHUB_TAXON_PATH, {
+        params: { terms: searchTerms },
+        paramsSerializer: (params) => {
+          return qs.stringify(params);
+        }
+      });
 
-    return data;
+      if (!data.searchResponse) {
+        return [];
+      }
+
+      return data.searchResponse;
+    } catch (error) {
+      throw new Error('Failed to fetch Taxon records.');
+    }
   };
 
   return {
-    searchSpecies,
-    getSpeciesFromIds
+    getSpeciesFromIds,
+    searchSpeciesByTerms
   };
 };
 

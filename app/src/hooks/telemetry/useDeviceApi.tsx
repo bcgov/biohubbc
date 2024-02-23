@@ -62,11 +62,12 @@ const useDeviceApi = (axios: AxiosInstance) => {
    * Returns details for a given device.
    *
    * @param {number} deviceId
+   * @param {string} deviceMake
    * @return {*}  {Promise<IGetDeviceDetailsResponse>}
    */
-  const getDeviceDetails = async (deviceId: number): Promise<IGetDeviceDetailsResponse> => {
+  const getDeviceDetails = async (deviceId: number, deviceMake: string): Promise<IGetDeviceDetailsResponse> => {
     try {
-      const { data } = await axios.get(`/api/telemetry/device/${deviceId}`);
+      const { data } = await axios.get(`/api/telemetry/device/${deviceId}?make=${deviceMake}`);
       return data;
     } catch (e) {
       if (e instanceof Error) {

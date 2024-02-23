@@ -64,7 +64,7 @@ const SurveysList: React.FC = () => {
                       {row.surveyData.name}
                     </Link>
                   </TableCell>
-                  <TableCell>{row.surveyData.focal_species_names.join('; ')}</TableCell>
+                  <TableCell>{row.surveyData.focal_species_names.join(', ')}</TableCell>
                   <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
                     <TableCell>
                       <SubmitStatusChip status={row.surveySupplementaryData.publishStatus} />

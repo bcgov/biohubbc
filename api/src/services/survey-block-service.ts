@@ -1,5 +1,10 @@
 import { IDBConnection } from '../database/db';
-import { PostSurveyBlock, SurveyBlockDetails, SurveyBlockRecord, SurveyBlockRepository } from '../repositories/survey-block-repository';
+import {
+  PostSurveyBlock,
+  SurveyBlockDetails,
+  SurveyBlockRecord,
+  SurveyBlockRepository
+} from '../repositories/survey-block-repository';
 import { DBService } from './db-service';
 import { SampleBlockService } from './sample-block-service';
 
@@ -19,7 +24,7 @@ export class SurveyBlockService extends DBService {
    * @returns
    */
   async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockDetails[]> {
-    return await this.surveyBlockRepository.getSurveyBlocksForSurveyId(surveyId);
+    return this.surveyBlockRepository.getSurveyBlocksForSurveyId(surveyId);
   }
 
   /**
@@ -32,11 +37,8 @@ export class SurveyBlockService extends DBService {
   async deleteSurveyBlock(surveyBlockId: number): Promise<SurveyBlockRecord> {
     const sampleBlockService = new SampleBlockService(this.connection);
 
-    // Check if block is associated to any Sampling Sites
-    if ((await sampleBlockService.getSampleBlocksCountForSurveyBlockId(surveyBlockId)).sampleCount > 0) {
-      // When a Survey Block is deleted, also delete its associations to sampling sites to avoid orphaned Sample Block records
-      await sampleBlockService.deleteSampleBlockRecordsByBlockIds([surveyBlockId]);
-    }
+    // When a Survey Block is deleted, also delete its associations to sampling sites to avoid orphaned Sample Block records
+    await sampleBlockService.deleteSampleBlockRecordsByBlockIds([surveyBlockId]);
 
     return this.surveyBlockRepository.deleteSurveyBlockRecord(surveyBlockId);
   }

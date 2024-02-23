@@ -55,13 +55,13 @@ describe('useDeviceApi', () => {
   describe('getDeviceDetails', () => {
     it('should return device deployment details', async () => {
       mock.onGet(`/api/telemetry/device/${123}`).reply(200, { device: undefined, deployments: [] });
-      const result = await useDeviceApi(axios).getDeviceDetails(123);
+      const result = await useDeviceApi(axios).getDeviceDetails(123, 'Vectronic');
       expect(result.deployments.length).toBe(0);
     });
 
     it('should catch errors', async () => {
       mock.onGet(`/api/telemetry/device/${123}`).reply(500, 'error');
-      const result = await useDeviceApi(axios).getDeviceDetails(123);
+      const result = await useDeviceApi(axios).getDeviceDetails(123, 'Vectronic');
       expect(result.deployments.length).toBe(0);
       expect(result.device).toBeUndefined();
       expect(result.keyXStatus).toBe(false);

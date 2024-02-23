@@ -16,8 +16,8 @@ const rowHeight = 52;
 
 interface IObservationTableRow {
   survey_observation_id: number;
-  itis_scientific_name: string | undefined;
-  wldtaxonomic_units_id: number;
+  itis_tsn: number | null;
+  itis_scientific_name: string | null;
   count: number | null;
   survey_sample_site_name: string | null;
   survey_sample_method_name: string | null;
@@ -107,8 +107,10 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
   const tableData: IObservationTableRow[] = data.map((item) => {
     return {
       survey_observation_id: item.survey_observation_id,
-      itis_scientific_name: taxonomyContext.getCachedSpeciesTaxonomyById(item.wldtaxonomic_units_id)?.label,
-      wldtaxonomic_units_id: item.wldtaxonomic_units_id,
+      itis_scientific_name: item.itis_tsn
+        ? taxonomyContext.getCachedSpeciesTaxonomyById(item.itis_tsn)?.scientificName ?? null
+        : null,
+      itis_tsn: item.itis_tsn,
       count: item.count,
       survey_sample_site_name: item.survey_sample_site_name,
       survey_sample_method_name: item.survey_sample_method_name,

@@ -130,15 +130,17 @@ PUT.apiDoc = {
                 },
                 blocks: {
                   type: 'array',
-                  minItems: 0,
                   items: {
                     type: 'object',
-                    required: ['name', 'description'],
+                    required: ['survey_sample_block_id', 'survey_sample_site_id', 'survey_block_id'],
                     properties: {
                       name: {
                         type: 'string'
                       },
                       description: {
+                        type: 'string'
+                      },
+                      survey_block_id: {
                         type: 'string'
                       }
                     }

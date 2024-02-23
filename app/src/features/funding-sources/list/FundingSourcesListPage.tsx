@@ -122,7 +122,7 @@ const FundingSourcesListPage: React.FC = () => {
                   lineHeight="inherit"
                   fontSize="inherit"
                   fontWeight={400}>
-                  ({fundingSourceDataLoader.data?.length || 0})
+                  ({Number(fundingSourceDataLoader.data?.length ?? 0).toLocaleString()})
                 </Typography>
               </Typography>
             </Toolbar>

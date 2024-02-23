@@ -6,6 +6,7 @@ import TextField from '@mui/material/TextField';
 import SpeciesCard from 'components/species/components/SpeciesCard';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { debounce } from 'lodash-es';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -13,34 +14,28 @@ export interface ISpeciesAutocompleteFieldProps {
   formikFieldName: string;
   label: string;
   required?: boolean;
-  handleAddSpecies: (species: ISpeciesAutocompleteField) => void;
+  handleAddSpecies: (species: ITaxonomy) => void;
 }
-
-export type ISpeciesAutocompleteField = {
-  tsn: number;
-  commonName?: string;
-  scientificName: string;
-};
 
 const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
   const { formikFieldName, label, required, handleAddSpecies } = props;
   const biohubApi = useBiohubApi();
 
-  const { values } = useFormikContext<ISpeciesAutocompleteField[]>();
+  const { values } = useFormikContext<ITaxonomy[]>();
 
   const [inputValue, setInputValue] = useState('');
-  const [options, setOptions] = useState<ISpeciesAutocompleteField[]>([]);
+  const [options, setOptions] = useState<ITaxonomy[]>([]);
 
   const handleSearch = useMemo(
     () =>
-      debounce(async (inputValue: string, callback: (searchedValues: ISpeciesAutocompleteField[]) => void) => {
+      debounce(async (inputValue: string, callback: (searchedValues: ITaxonomy[]) => void) => {
         const searchTerms = inputValue.split(' ').filter(Boolean);
         // TODO: Add error handling if this call throws an error
-        const response = await biohubApi.itis.itisSearch(searchTerms);
+        const response = await biohubApi.taxonomy.searchSpeciesByTerms(searchTerms);
 
         callback(response);
       }, 500),
-    [biohubApi.itis]
+    [biohubApi.taxonomy]
   );
 
   const searchSpecies = async () => {
@@ -71,7 +66,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
         return option.tsn === value.tsn;
       }}
       filterOptions={(options, state) => {
-        const searchFilter = createFilterOptions<ISpeciesAutocompleteField>({ ignoreCase: true });
+        const searchFilter = createFilterOptions<ITaxonomy>({ ignoreCase: true });
         if (!values?.length) {
           return options;
         }

@@ -5,6 +5,23 @@ const DB_SCHEMA = process.env.DB_SCHEMA;
 const DB_SCHEMA_DAPI_V1 = process.env.DB_SCHEMA_DAPI_V1;
 const PROJECT_SEEDER_USER_IDENTIFIER = process.env.PROJECT_SEEDER_USER_IDENTIFIER;
 
+const NUM_SEED_PROJECTS = Number(process.env.NUM_SEED_PROJECTS ?? 1);
+const NUM_SEED_SURVEYS_PER_PROJECT = Number(process.env.NUM_SEED_SURVEYS_PER_PROJECT ?? 1);
+
+const focalTaxonIdOptions = [
+  { itis_tsn: 180703, itis_scientific_name: 'Alces alces' }, // Moose
+  { itis_tsn: 180596, itis_scientific_name: 'Canis lupus' }, // Wolf
+  { itis_tsn: 180713, itis_scientific_name: 'Oreamnos americanus' }, // Rocky Mountain goat
+  { itis_tsn: 180543, itis_scientific_name: 'Ursus arctos' } // Grizzly bear
+];
+
+const ancillaryTaxonIdOptions = [
+  { itis_tsn: 180703, itis_scientific_name: 'Alces alces' }, // Moose
+  { itis_tsn: 180596, itis_scientific_name: 'Canis lupus' }, // Wolf
+  { itis_tsn: 180713, itis_scientific_name: 'Oreamnos americanus' }, // Rocky Mountain goat
+  { itis_tsn: 180543, itis_scientific_name: 'Ursus arctos' } // Grizzly bear
+];
+
 /**
  * Add spatial transform
  *
@@ -19,11 +36,9 @@ export async function seed(knex: Knex): Promise<void> {
   `);
 
   // Check if at least 1 funding sources already exists
-  const response1 = await knex.raw(`
-    ${checkAnyFundingSourceExists()}
-  `);
+  const checkFundingResponse = await knex.raw(checkAnyFundingSourceExists());
 
-  if (!response1.rows.length) {
+  if (!checkFundingResponse.rows.length) {
     // Insert funding source data
     await knex.raw(`
       ${insertFundingData()}
@@ -31,46 +46,47 @@ export async function seed(knex: Knex): Promise<void> {
   }
 
   // Check if at least 1 project already exists
-  const response2 = await knex.raw(`
-    ${checkAnyProjectExists()}
-  `);
+  const checkProjectsResponse = await knex.raw(checkAnyProjectExists());
 
-  if (!response2.rows.length) {
-    // Insert project data
-    const response3 = await knex.raw(`
-      ${insertProjectData()}
-    `);
-    const projectId = response3.rows[0].project_id;
-    await knex.raw(`
-      ${insertProjectIUCNData(projectId)}
-      ${insertProjectParticipationData(projectId)}
-      ${insertProjectProgramData(projectId)}
-    `);
+  if (!checkProjectsResponse.rows.length) {
+    for (let i = 0; i < NUM_SEED_PROJECTS; i++) {
+      // Insert project data
+      const createProjectResponse = await knex.raw(insertProjectData(`Seed Project ${i + 1}`));
+      const projectId = createProjectResponse.rows[0].project_id;
 
-    // Insert survey data
-    const response4 = await knex.raw(`
-      ${insertSurveyData(projectId)}
-    `);
-    const surveyId = response4.rows[0].survey_id;
-    await knex.raw(`
-      ${insertSurveyTypeData(surveyId)}
-      ${insertSurveyPermitData(surveyId)}
-      ${insertSurveyFocalSpeciesData(surveyId)}
-      ${insertSurveyAncillarySpeciesData(surveyId)}
-      ${insertSurveyFundingData(surveyId)}
-      ${insertSurveyProprietorData(surveyId)}
-      ${insertSurveyFirstNationData(surveyId)}
-      ${insertSurveyStakeholderData(surveyId)}
-      ${insertSurveyVantageData(surveyId)}
-      ${insertSurveyParticipationData(surveyId)}
-      ${insertSurveyLocationData(surveyId)}
-      ${insertSurveySiteStrategy(surveyId)}
-      ${insertSurveyIntendedOutcome(surveyId)}
-      ${insertSurveySamplingSiteData(surveyId)}
-      ${insertSurveySamplingMethodData()}
-      ${insertSurveySamplePeriodData()}
-      ${insertSurveyObservationData(surveyId)}
-    `);
+      // Insert project IUCN, participant and program data
+      await knex.raw(`
+        ${insertProjectIUCNData(projectId)}
+        ${insertProjectParticipationData(projectId)}
+        ${insertProjectProgramData(projectId)}
+      `);
+
+      // Insert survey data
+      for (let j = 0; j < NUM_SEED_SURVEYS_PER_PROJECT; j++) {
+        const createSurveyResponse = await knex.raw(insertSurveyData(projectId));
+        const surveyId = createSurveyResponse.rows[0].survey_id;
+
+        await knex.raw(`
+          ${insertSurveyTypeData(surveyId)}
+          ${insertSurveyPermitData(surveyId)}
+          ${insertSurveyFocalSpeciesData(surveyId)}
+          ${insertSurveyAncillarySpeciesData(surveyId)}
+          ${insertSurveyFundingData(surveyId)}
+          ${insertSurveyProprietorData(surveyId)}
+          ${insertSurveyFirstNationData(surveyId)}
+          ${insertSurveyStakeholderData(surveyId)}
+          ${insertSurveyVantageData(surveyId)}
+          ${insertSurveyParticipationData(surveyId)}
+          ${insertSurveyLocationData(surveyId)}
+          ${insertSurveySiteStrategy(surveyId)}
+          ${insertSurveyIntendedOutcome(surveyId)}
+          ${insertSurveySamplingSiteData(surveyId)}
+          ${insertSurveySamplingMethodData()}
+          ${insertSurveySamplePeriodData()}
+          ${insertSurveyObservationData(surveyId)}
+        `);
+      }
+    }
   }
 }
 
@@ -211,34 +227,40 @@ const insertSurveyFundingData = (surveyId: number) => `
  * SQL to insert Survey study species data
  *
  */
-const focalTaxonIdOptions = [2065, 2066, 2067, 2068];
-const insertSurveyFocalSpeciesData = (surveyId: number) => `
-  INSERT into study_species
-    (
-      survey_id,
-      wldtaxonomic_units_id,
-      is_focal
-    )
-  VALUES (
-    ${surveyId},
-    ${focalTaxonIdOptions[Math.floor(Math.random() * focalTaxonIdOptions.length)]},
-    'Y'
-  );
-`;
-const ancillaryTaxonIdOptions = [1666, 1667, 1668, 1669];
-const insertSurveyAncillarySpeciesData = (surveyId: number) => `
-  INSERT into study_species
-    (
-      survey_id,
-      wldtaxonomic_units_id,
-      is_focal
-    )
-  VALUES (
-    ${surveyId},
-    ${ancillaryTaxonIdOptions[Math.floor(Math.random() * ancillaryTaxonIdOptions.length)]},
-    'N'
-  );
-`;
+const insertSurveyFocalSpeciesData = (surveyId: number) => {
+  const focalSpecies = focalTaxonIdOptions[Math.floor(Math.random() * focalTaxonIdOptions.length)];
+
+  return `
+    INSERT into study_species
+      (
+        survey_id,
+        itis_tsn,
+        is_focal
+      )
+    VALUES (
+      ${surveyId},
+      ${focalSpecies.itis_tsn},
+      'Y'
+    );
+  `;
+};
+
+const insertSurveyAncillarySpeciesData = (surveyId: number) => {
+  const ancillarySpecies = ancillaryTaxonIdOptions[Math.floor(Math.random() * ancillaryTaxonIdOptions.length)];
+  return `
+    INSERT into study_species
+      (
+        survey_id,
+        itis_tsn,
+        is_focal
+      )
+    VALUES (
+      ${surveyId},
+      ${ancillarySpecies.itis_tsn},
+      'N'
+    );
+  `;
+};
 
 /**
  * SQL to insert Survey permit data
@@ -562,7 +584,8 @@ const insertSurveyObservationData = (surveyId: number) => `
   INSERT INTO survey_observation
   (
     survey_id,
-    wldtaxonomic_units_id,
+    itis_tsn,
+    itis_scientific_name,
     latitude,
     longitude,
     count,
@@ -575,7 +598,8 @@ const insertSurveyObservationData = (surveyId: number) => `
   VALUES
   (
     ${surveyId},
-    $$${faker.number.int({ min: 30000, max: 32000 })}$$,
+    $$${focalTaxonIdOptions[0].itis_tsn}$$,
+    $$${focalTaxonIdOptions[0].itis_scientific_name}$$,
     $$${faker.number.int({ min: 48, max: 60 })}$$,
     $$${faker.number.int({ min: -132, max: -116 })}$$,
     $$${faker.number.int({ min: 1, max: 20 })}$$,
@@ -591,7 +615,8 @@ const insertSurveyObservationData = (surveyId: number) => `
   ),
   (
     ${surveyId},
-    $$${faker.number.int({ min: 30000, max: 32000 })}$$,
+    $$${focalTaxonIdOptions[0].itis_tsn}$$,
+    $$${focalTaxonIdOptions[0].itis_scientific_name}$$,
     $$${faker.number.int({ min: 48, max: 60 })}$$,
     $$${faker.number.int({ min: -132, max: -116 })}$$,
     $$${faker.number.int({ min: 1, max: 20 })}$$,
@@ -607,7 +632,8 @@ const insertSurveyObservationData = (surveyId: number) => `
   ),
   (
     ${surveyId},
-    $$${faker.number.int({ min: 30000, max: 32000 })}$$,
+    $$${focalTaxonIdOptions[0].itis_tsn}$$,
+    $$${focalTaxonIdOptions[0].itis_scientific_name}$$,
     $$${faker.number.int({ min: 48, max: 60 })}$$,
     $$${faker.number.int({ min: -132, max: -116 })}$$,
     $$${faker.number.int({ min: 1, max: 20 })}$$,
@@ -627,7 +653,7 @@ const insertSurveyObservationData = (surveyId: number) => `
  * SQL to insert Project data
  *
  */
-const insertProjectData = () => `
+const insertProjectData = (projectName?: string) => `
   INSERT into project
     (
       name,
@@ -639,7 +665,7 @@ const insertProjectData = () => `
       geojson
     )
   VALUES (
-    'Seed Project',
+    '${projectName ?? 'Seed Project'}',
     $$${faker.lorem.sentences(2)}$$,
     $$${faker.lorem.sentences(2)}$$,
     $$${faker.date.between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' }).toISOString()}$$,

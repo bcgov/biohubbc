@@ -7,12 +7,6 @@ import {
 } from '../repositories/sample-blocks-repository';
 import { DBService } from './db-service';
 
-// export interface PostSampleBlock {
-//   survey_id: number;
-//   survey_sample_site_id: number;
-//   survey_block_id: number;
-// }
-
 /**
  * Sample Block Repository
  *
@@ -36,7 +30,7 @@ export class SampleBlockService extends DBService {
    * @memberof SampleBlockService
    */
   async getSampleBlocksForSurveySampleSiteId(surveySampleSiteId: number): Promise<SampleBlockRecord[]> {
-    return await this.sampleBlockRepository.getSampleBlocksForSurveySampleSiteId(surveySampleSiteId);
+    return this.sampleBlockRepository.getSampleBlocksForSurveySampleSiteId(surveySampleSiteId);
   }
 
   /**
@@ -47,7 +41,7 @@ export class SampleBlockService extends DBService {
    * @memberof SampleBlockService
    */
   async getSampleBlocksForSurveyBlockId(surveyBlockId: number): Promise<SampleBlockRecord[]> {
-    return await this.sampleBlockRepository.getSampleBlocksForSurveyBlockId(surveyBlockId);
+    return this.sampleBlockRepository.getSampleBlocksForSurveyBlockId(surveyBlockId);
   }
 
   /**
@@ -58,7 +52,7 @@ export class SampleBlockService extends DBService {
    * @memberof SampleBlockService
    */
   async getSampleBlocksCountForSurveyBlockId(surveyBlockId: number): Promise<{ sampleCount: number }> {
-    return await this.sampleBlockRepository.getSampleBlocksCountForSurveyBlockId(surveyBlockId);
+    return this.sampleBlockRepository.getSampleBlocksCountForSurveyBlockId(surveyBlockId);
   }
 
   /**
@@ -68,19 +62,19 @@ export class SampleBlockService extends DBService {
    * @return {*}  {Promise<SampleBlockRecord>}
    * @memberof SampleBlockService
    */
-  async deleteSampleBlockRecordsByBlockIds(surveyBlockIds: number[]): Promise<number> {
-    return await this.sampleBlockRepository.deleteSampleBlockRecordsByBlockIds(surveyBlockIds);
+  async deleteSampleBlockRecordsByBlockIds(surveyBlockIds: number[]): Promise<SampleBlockRecord[]> {
+    return this.sampleBlockRepository.deleteSampleBlockRecordsByBlockIds(surveyBlockIds);
   }
 
-   /**
+  /**
    * Deletes specific Survey Sample Block records, removing the assignment of a Survey Block to a Sample Site
    *
    * @param {number} surveySampleBlockIds
    * @return {*}  {Promise<SampleBlockRecord>}
    * @memberof SampleBlockService
    */
-   async deleteSampleBlockRecords(surveySampleBlockIds: number[]): Promise<number> {
-    return await this.sampleBlockRepository.deleteSampleBlockRecords(surveySampleBlockIds);
+  async deleteSampleBlockRecords(surveySampleBlockIds: number[]): Promise<SampleBlockRecord[]> {
+    return this.sampleBlockRepository.deleteSampleBlockRecords(surveySampleBlockIds);
   }
 
   /**
@@ -91,7 +85,7 @@ export class SampleBlockService extends DBService {
    * @memberof SampleBlockService
    */
   async insertSampleBlock(sampleBlock: InsertSampleBlockRecord): Promise<SampleBlockRecord> {
-    return await this.sampleBlockRepository.insertSampleBlock(sampleBlock);
+    return this.sampleBlockRepository.insertSampleBlock(sampleBlock);
   }
 
   /**
@@ -116,9 +110,7 @@ export class SampleBlockService extends DBService {
 
     // Delete any blocks not found in the passed in array
     if (existingBlocksToDelete.length > 0) {
-      const promises: Promise<any>[] = [];
-      promises.push(this.deleteSampleBlockRecords(existingBlocksToDelete.map((block) => block.survey_sample_block_id)));
-      await Promise.all(promises);
+      await this.deleteSampleBlockRecords(existingBlocksToDelete.map((block) => block.survey_sample_block_id));
     }
   }
 }

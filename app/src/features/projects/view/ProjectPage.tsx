@@ -44,12 +44,12 @@ const ProjectPage = () => {
       <Container maxWidth="xl">
         <Box py={3}>
           <Grid container spacing={3}>
-            <Grid item md={12} lg={4}>
+            <Grid item xs={12} lg={4}>
               <Paper elevation={0}>
                 <ProjectDetails />
               </Paper>
             </Grid>
-            <Grid item md={12} lg={8}>
+            <Grid item xs={12} lg={8}>
               <Box mb={3}>
                 <Paper elevation={0}>
                   <SurveysListPage />

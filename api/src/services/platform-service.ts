@@ -48,8 +48,14 @@ export interface IItisSearchResult {
   scientificName: string;
 }
 
+export interface ITaxonomy {
+  tsn: number;
+  commonName?: string;
+  scientificName: string;
+}
+
 const getBackboneIntakeEnabled = () => process.env.BACKBONE_INTAKE_ENABLED === 'true' || false;
-const getBackboneApiHost = () => process.env.BACKBONE_API_HOST || '';
+const getBackboneInternalApiHost = () => process.env.BACKBONE_INTERNAL_API_HOST || '';
 const getBackboneArtifactIntakePath = () => process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '';
 const getBackboneSurveyIntakePath = () => process.env.BACKBONE_INTAKE_PATH || '';
 const getBackboneTaxonTsnPath = () => process.env.BIOHUB_TAXON_TSN_PATH || '';
@@ -72,19 +78,25 @@ export class PlatformService extends DBService {
    * @return {*}  {Promise<IItisSearchResult[]>}
    * @memberof PlatformService
    */
-  async getTaxonomyFromBiohub(ids: (string | number)[]): Promise<IItisSearchResult[]> {
+  async getTaxonomyByTsns(tsns: (string | number)[]): Promise<IItisSearchResult[]> {
+    defaultLog.debug({ label: 'getTaxonomyByTsns', tsns });
+
+    if (!tsns.length) {
+      return [];
+    }
+
     const keycloakService = new KeycloakService();
 
     const token = await keycloakService.getKeycloakServiceToken();
 
-    const backboneTaxonTsnUrl = new URL(getBackboneTaxonTsnPath(), getBackboneApiHost()).href;
+    const backboneTaxonTsnUrl = new URL(getBackboneTaxonTsnPath(), getBackboneInternalApiHost()).href;
 
     const { data } = await axios.get<{ searchResponse: IItisSearchResult[] }>(backboneTaxonTsnUrl, {
       headers: {
         authorization: `Bearer ${token}`
       },
       params: {
-        tsn: [...new Set(ids)]
+        tsn: [...new Set(tsns)]
       },
       paramsSerializer: (params) => {
         return qs.stringify(params);
@@ -118,7 +130,7 @@ export class PlatformService extends DBService {
     const token = await keycloakService.getKeycloakServiceToken();
 
     // Create intake url
-    const backboneSurveyIntakeUrl = new URL(getBackboneSurveyIntakePath(), getBackboneApiHost()).href;
+    const backboneSurveyIntakeUrl = new URL(getBackboneSurveyIntakePath(), getBackboneInternalApiHost()).href;
 
     // Get survey attachments
     const surveyAttachments = await this.attachmentService.getSurveyAttachmentsForBioHubSubmission(surveyId);
@@ -343,7 +355,7 @@ export class PlatformService extends DBService {
     formData.append('submission_uuid', artifact.submission_uuid);
     formData.append('artifact_upload_key', String(artifact.artifact_upload_key));
 
-    const backboneArtifactIntakeUrl = new URL(getBackboneArtifactIntakePath(), getBackboneApiHost()).href;
+    const backboneArtifactIntakeUrl = new URL(getBackboneArtifactIntakePath(), getBackboneInternalApiHost()).href;
 
     const { data } = await axios.post<{ artifact_uuid: string }>(backboneArtifactIntakeUrl, formData.getBuffer(), {
       headers: {

@@ -78,10 +78,6 @@ describe('GetFocalSpeciesData', () => {
     it('sets focal_species', () => {
       expect(data.focal_species).to.eql([]);
     });
-
-    it('sets focal_species_names', () => {
-      expect(data.focal_species_names).to.eql([]);
-    });
   });
 
   describe('All values provided', () => {
@@ -97,11 +93,10 @@ describe('GetFocalSpeciesData', () => {
     });
 
     it('sets focal_species', () => {
-      expect(data.focal_species).to.eql([1, 2]);
-    });
-
-    it('sets focal_species_names', () => {
-      expect(data.focal_species_names).to.eql(['species1', 'species2']);
+      expect(data.focal_species).to.eql([
+        { tsn: 1, commonName: 'species1' },
+        { tsn: 2, commonName: 'species2' }
+      ]);
     });
   });
 });
@@ -116,10 +111,6 @@ describe('GetAncillarySpeciesData', () => {
 
     it('sets ancillary_species', () => {
       expect(data.ancillary_species).to.eql([]);
-    });
-
-    it('sets ancillary_species_names', () => {
-      expect(data.ancillary_species_names).to.eql([]);
     });
   });
 
@@ -136,11 +127,10 @@ describe('GetAncillarySpeciesData', () => {
     });
 
     it('sets ancillary_species', () => {
-      expect(data.ancillary_species).to.eql([1, 2]);
-    });
-
-    it('sets ancillary_species_names', () => {
-      expect(data.ancillary_species_names).to.eql(['species1', 'species2']);
+      expect(data.ancillary_species).to.eql([
+        { tsn: 1, commonName: 'species1' },
+        { tsn: 2, commonName: 'species2' }
+      ]);
     });
   });
 });

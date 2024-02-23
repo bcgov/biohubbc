@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import { makeStyles } from '@mui/styles';
+import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { Formik, FormikProps } from 'formik';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
@@ -57,11 +58,12 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
         innerRef={formikRef}
         initialValues={initialProjectFieldData as unknown as IUpdateProjectRequest}
         validationSchema={validationProjectYupSchema}
-        validateOnBlur={true}
+        validateOnBlur={false}
         validateOnChange={false}
         enableReinitialize={true}
         onSubmit={handleSubmit}>
         <>
+          <FormikErrorSnackbar />
           <HorizontalSplitFormComponent
             title="General Information"
             summary="Enter general information, objectives and timelines for the project."

@@ -63,7 +63,7 @@ GET.apiDoc = {
               properties: {
                 surveyData: {
                   type: 'object',
-                  required: ['survey_id', 'name', 'start_date', 'end_date', 'focal_species', 'focal_species_names'],
+                  required: ['survey_id', 'name', 'start_date', 'end_date', 'focal_species'],
                   properties: {
                     survey_id: {
                       type: 'integer',
@@ -88,12 +88,6 @@ GET.apiDoc = {
                       type: 'array',
                       items: {
                         type: 'integer'
-                      }
-                    },
-                    focal_species_names: {
-                      type: 'array',
-                      items: {
-                        type: 'string'
                       }
                     }
                   }
