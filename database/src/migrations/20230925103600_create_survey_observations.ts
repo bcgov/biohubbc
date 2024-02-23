@@ -1,7 +1,8 @@
 import { Knex } from 'knex';
 
 /**
- * @TODO doc
+ * Creates the survey_observation table
+ *
  * @export
  * @param {Knex} knex
  * @return {*}  {Promise<void>}

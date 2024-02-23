@@ -17,7 +17,7 @@ import {
   UPDATE_GET_ENTITIES
 } from 'interfaces/useProjectApi.interface';
 import qs from 'qs';
-import { ApiPaginationOptions } from 'types/misc';
+import { ApiPaginationRequestOptions } from 'types/misc';
 
 /**
  * Returns a set of supported api methods for working with projects.
@@ -107,12 +107,12 @@ const useProjectApi = (axios: AxiosInstance) => {
   /**
    * Get projects list (potentially based on filter criteria).
    *
-   * @param {ApiPaginationOptions} [pagination]
+   * @param {ApiPaginationRequestOptions} [pagination]
    * @param {IProjectAdvancedFilterRequest} filterFieldData
    * @return {*}  {Promise<IGetProjectsListResponse[]>}
    */
   const getProjectsList = async (
-    pagination?: ApiPaginationOptions,
+    pagination?: ApiPaginationRequestOptions,
     filterFieldData?: IProjectAdvancedFilterRequest
   ): Promise<IGetProjectsListResponse> => {
     const params = new URLSearchParams();

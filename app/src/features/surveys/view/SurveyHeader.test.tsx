@@ -73,6 +73,15 @@ const mockProjectAuthStateContext: IProjectAuthStateContext = {
   hasLoadedParticipantInfo: true
 };
 
+const mockProjectUnAuthStateContext: IProjectAuthStateContext = {
+  getProjectParticipant: () => null,
+  hasProjectRole: () => false,
+  hasProjectPermission: () => false,
+  hasSystemRole: () => false,
+  getProjectId: () => 1,
+  hasLoadedParticipantInfo: false
+};
+
 const surveyForView = getSurveyForViewResponse;
 
 describe('SurveyHeader', () => {
@@ -86,13 +95,13 @@ describe('SurveyHeader', () => {
     cleanup();
   });
 
-  const renderComponent = (authState: IAuthState) => {
+  const renderComponent = (authState: IAuthState, projectAuthState: IProjectAuthStateContext) => {
     return render(
       <Router history={history}>
         <ProjectContext.Provider value={mockProjectContext}>
           <SurveyContext.Provider value={mockSurveyContext}>
             <AuthStateContext.Provider value={authState}>
-              <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+              <ProjectAuthStateContext.Provider value={projectAuthState}>
                 <DialogContextProvider>
                   <SurveyHeader />
                 </DialogContextProvider>
@@ -109,7 +118,7 @@ describe('SurveyHeader', () => {
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
-    const { getByTestId, findByText, getByText } = renderComponent(authState);
+    const { getByTestId, findByText, getByText } = renderComponent(authState, mockProjectAuthStateContext);
 
     const surveyHeaderText = await findByText('survey name', { selector: 'span' });
     expect(surveyHeaderText).toBeVisible();
@@ -140,7 +149,7 @@ describe('SurveyHeader', () => {
   it('does not see the delete button when accessing survey as non admin user', async () => {
     const authState = getMockAuthState({ base: SystemUserAuthState });
 
-    const { queryByTestId, findByText } = renderComponent(authState);
+    const { queryByTestId, findByText } = renderComponent(authState, mockProjectUnAuthStateContext);
 
     const surveyHeaderText = await findByText('survey name', { selector: 'span' });
     expect(surveyHeaderText).toBeVisible();

@@ -8,9 +8,9 @@ import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
-import { ScrollToFormikError } from 'components/formik/ScrollToFormikError';
 import PageHeader from 'components/layout/PageHeader';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import { CreateSurveyI18N } from 'constants/i18n';
@@ -272,11 +272,11 @@ const CreateSurveyPage = () => {
               innerRef={formikRef}
               initialValues={surveyInitialValues}
               validationSchema={surveyYupSchemas}
-              validateOnBlur={true}
+              validateOnBlur={false}
               validateOnChange={false}
               onSubmit={handleSubmit}>
               <>
-                <ScrollToFormikError fieldOrder={Object.keys(surveyInitialValues)} />
+                <FormikErrorSnackbar />
                 <Stack gap={5} divider={<Divider flexItem />}>
                   <HorizontalSplitFormComponent
                     title="General Information"

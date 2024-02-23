@@ -304,7 +304,7 @@ const SamplingSiteList = () => {
             {surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading ? (
               <SkeletonList />
             ) : (
-              <Stack height="100%" position="relative">
+              <Stack height="100%" position="relative" sx={{ overflowY: 'auto' }}>
                 <Box flex="0 0 auto" display="flex" alignItems="center" px={2} height={55}>
                   <FormGroup>
                     <FormControlLabel
@@ -345,7 +345,7 @@ const SamplingSiteList = () => {
                 <Divider flexItem></Divider>
                 <Box
                   flex="1 1 auto"
-                  overflow="hidden"
+                  // overflow="hidden"
                   sx={{
                     background: grey[100]
                   }}>
@@ -369,7 +369,7 @@ const SamplingSiteList = () => {
                     </Stack>
                   )}
 
-                  {surveyContext.sampleSiteDataLoader.data?.sampleSites.map((sampleSite, index) => {
+                  {surveyContext.sampleSiteDataLoader.data?.sampleSites.map((sampleSite) => {
                     return (
                       <Accordion
                         disableGutters
@@ -516,6 +516,17 @@ const SamplingSiteList = () => {
                     );
                   })}
                 </Box>
+                {/* TODO how should we handle controlling pagination? */}
+                {/* <Paper square sx={{ position: 'sticky', bottom: 0, marginTop: '-1px' }}>
+                <Divider flexItem></Divider>
+                  <TablePagination
+                    rowsPerPage={10}
+                    page={1}
+                    onPageChange={(event) => {}}
+                    rowsPerPageOptions={[10, 50]}
+                    count={69}
+                  />
+                </Paper> */}
               </Stack>
             )}
           </Box>

@@ -8,7 +8,7 @@ import {
   IGetSurveyObservationsGeometryResponse,
   IGetSurveyObservationsResponse
 } from 'interfaces/useObservationApi.interface';
-import { ApiPaginationOptions } from 'types/misc';
+import { ApiPaginationRequestOptions } from 'types/misc';
 
 export interface MeasurementColumnToSave {
   id: string;
@@ -59,13 +59,13 @@ const useObservationApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {ApiPaginationOptions} [pagination]
+   * @param {ApiPaginationRequestOptions} [pagination]
    * @return {*}  {Promise<IObservationTableRow[]>}
    */
   const getObservationRecords = async (
     projectId: number,
     surveyId: number,
-    pagination?: ApiPaginationOptions
+    pagination?: ApiPaginationRequestOptions
   ): Promise<IGetSurveyObservationsResponse> => {
     let urlParamsString = '';
 
@@ -100,7 +100,7 @@ const useObservationApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {ApiPaginationOptions} [pagination]
+   * @param {ApiPaginationRequestOptions} [pagination]
    * @return {*}  {Promise<IObservationTableRow[]>}
    */
   const getObservationRecord = async (
