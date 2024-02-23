@@ -285,7 +285,7 @@ export class SampleLocationRepository extends BaseRepository {
         *;
     `);
 
-    const response = await this.connection.sql(sqlStatement /*SampleSiteRecord*/);
+    const response = await this.connection.sql(sqlStatement, SampleSiteRecord);
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert sample location', [
