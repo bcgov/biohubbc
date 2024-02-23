@@ -90,6 +90,11 @@ const ProjectsListPage = () => {
   const biohubApi = useBiohubApi();
 
   const codesContext = useContext(CodesContext);
+
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
+
   const projectsDataLoader = useDataLoader((pagination: ApiPaginationOptions, filter?: IProjectAdvancedFilters) => {
     return biohubApi.project.getProjectsList(pagination, filter);
   });
@@ -102,8 +107,6 @@ const ProjectsListPage = () => {
         .join(', ') || ''
     );
   };
-
-  codesContext.codesDataLoader.load();
 
   const refreshProjectsList = (filterValues?: IProjectAdvancedFilters) => {
     const sort = firstOrNull(sortModel);
