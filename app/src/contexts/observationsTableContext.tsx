@@ -510,8 +510,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
           ),
           open: true
         });
-
-        refreshObservationRecords();
       } catch {
         // Close yes-no dialog
         setYesNoDialog({ open: false });
@@ -526,17 +524,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         });
       }
     },
-    [
-      savedRows,
-      stagedRows,
-      setYesNoDialog,
-      setSnackbar,
-      refreshObservationRecords,
-      biohubApi.observation,
-      projectId,
-      surveyId,
-      setErrorDialog
-    ]
+    [savedRows, stagedRows, setYesNoDialog, setSnackbar, biohubApi.observation, projectId, surveyId, setErrorDialog]
   );
 
   /**
@@ -697,9 +685,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     setStagedRows([]);
     // Clear any validation errors
     setValidationModel({});
-    // Refresh the table with the latest records
-    refreshObservationRecords();
-  }, [_muiDataGridApiRef, modifiedRowIds, refreshObservationRecords]);
+  }, [_muiDataGridApiRef, modifiedRowIds]);
 
   // True if the data grid contains at least 1 unsaved record
   const hasUnsavedChanges = modifiedRowIds.length > 0 || stagedRows.length > 0;
