@@ -15,6 +15,11 @@ export interface IXLSXCSVValidator {
   columnAliases?: Record<string, string[]>;
 }
 
+export type TsnMeasurementMap = Record<
+  string,
+  { qualitative: CBQualitativeMeasurementTypeDefinition[]; quantitative: CBQuantitativeMeasurementTypeDefinition[] }
+>;
+
 /**
  * Returns true if the given cell is a date type cell.
  *
@@ -423,4 +428,72 @@ export function getMeasurementColumnNameFromWorksheet(
       }
     })
     .filter((c): c is string => Boolean(c)); // remove undefined/ nulls from the array
+}
+
+/**
+ * Fetch all measurements from critter base for TSN numbers found in provided worksheet
+ *
+ * @param xlsxWorksheets
+ * @param critterBaseService
+ * @param sheet
+ * @returns
+ */
+export async function getCBMeasurementsFromWorksheet(
+  xlsxWorksheets: xlsx.WorkSheet,
+  critterBaseService: CritterbaseService,
+  sheet = 'Sheet1'
+): Promise<TsnMeasurementMap> {
+  const tsnMeasurements: TsnMeasurementMap = {};
+  const rows = getWorksheetRowObjects(xlsxWorksheets[sheet]);
+
+  for (const row of rows) {
+    const tsn = String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']);
+    if (!tsnMeasurements[tsn]) {
+      // TODO: modify Critter Base to accept multiple TSN at once
+      const measurements = await critterBaseService.getTaxonMeasurements(tsn);
+      console.log(measurements);
+      if (!measurements) {
+        // TODO: do we care if there are no measurements for a taxon?
+      }
+
+      tsnMeasurements[tsn] = measurements;
+    }
+  }
+
+  return tsnMeasurements;
+}
+
+/**
+ * Search for a measurement given xlsx column name and tsn id
+ *
+ * @param tsn
+ * @param measurementColumnName
+ * @param tsnMeasurements
+ * @returns
+ */
+export function findMeasurementFromTsnMeasurements(
+  tsn: string,
+  measurementColumnName: string,
+  tsnMeasurements: TsnMeasurementMap
+): CBQuantitativeMeasurementTypeDefinition | CBQualitativeMeasurementTypeDefinition | null | undefined {
+  let foundMeasurement:
+    | CBQuantitativeMeasurementTypeDefinition
+    | CBQualitativeMeasurementTypeDefinition
+    | null
+    | undefined = null;
+  const measurements = tsnMeasurements[tsn];
+
+  // find the correct measurement
+  if (measurements.qualitative.length > 0) {
+    foundMeasurement = measurements.qualitative.find(
+      (measurement) => measurement.measurement_name === measurementColumnName
+    );
+  }
+
+  if (measurements.quantitative.length > 0) {
+    foundMeasurement = measurements.quantitative.find(
+      (measurement) => measurement.measurement_name === measurementColumnName
+    );
+  }
+  return foundMeasurement;
 }
