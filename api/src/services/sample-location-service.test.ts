@@ -23,7 +23,6 @@ describe('SampleLocationService', () => {
         survey_id: 1,
         survey_sample_sites: [
           {
-            survey_id: 1,
             name: `Sample Site 1`,
             description: ``,
             geojson: {

@@ -5,7 +5,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { getMockDBConnection } from '../__mocks__/db';
-import { SampleLocationRepository, UpdateSampleSiteRecord } from './sample-location-repository';
+import { InsertSampleSiteRecord, SampleLocationRepository, UpdateSampleSiteRecord } from './sample-location-repository';
 
 chai.use(sinonChai);
 
@@ -114,15 +114,13 @@ describe('SampleLocationRepository', () => {
       const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const sampleLocation: UpdateSampleSiteRecord = {
-        survey_sample_site_id: 1,
-        survey_id: 2,
+      const sampleLocation: InsertSampleSiteRecord = {
         name: 'name',
         description: 'description',
         geojson: {}
       };
       const repo = new SampleLocationRepository(dbConnectionObj);
-      const response = await repo.insertSampleSite(sampleLocation);
+      const response = await repo.insertSampleSite(2, sampleLocation);
 
       expect(dbConnectionObj.sql).to.have.been.calledOnce;
       expect(response).to.eql(mockRow);
@@ -132,9 +130,7 @@ describe('SampleLocationRepository', () => {
       const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const sampleLocation: UpdateSampleSiteRecord = {
-        survey_sample_site_id: 1,
-        survey_id: 2,
+      const sampleLocation: InsertSampleSiteRecord = {
         name: 'name',
         description: 'description',
         geojson: {}
@@ -142,7 +138,7 @@ describe('SampleLocationRepository', () => {
       const repo = new SampleLocationRepository(dbConnectionObj);
 
       try {
-        await repo.insertSampleSite(sampleLocation);
+        await repo.insertSampleSite(2, sampleLocation);
       } catch (error) {
         expect(dbConnectionObj.sql).to.have.been.calledOnce;
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to insert sample location');
