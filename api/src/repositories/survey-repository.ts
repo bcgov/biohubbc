@@ -12,6 +12,7 @@ import {
   GetSurveyPurposeAndMethodologyData
 } from '../models/survey-view';
 import { getLogger } from '../utils/logger';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
 
 export interface IGetSpeciesData {
@@ -578,10 +579,14 @@ export class SurveyRepository extends BaseRepository {
    * Fetches a subset of survey fields for all surveys under a project.
    *
    * @param {number} projectId
+   * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<Omit<SurveyBasicFields, 'focal_species_names'>[]>}
    * @memberof SurveyRepository
    */
-  async getSurveysBasicFieldsByProjectId(projectId: number): Promise<Omit<SurveyBasicFields, 'focal_species_names'>[]> {
+  async getSurveysBasicFieldsByProjectId(
+    projectId: number,
+    pagination?: ApiPaginationOptions
+  ): Promise<Omit<SurveyBasicFields, 'focal_species_names'>[]> {
     const knex = getKnex();
 
     const queryBuilder = knex
@@ -603,9 +608,47 @@ export class SurveyRepository extends BaseRepository {
       .groupBy('survey.start_date')
       .groupBy('survey.end_date');
 
+    if (pagination) {
+      queryBuilder.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        queryBuilder.orderBy(pagination.sort, pagination.order);
+      }
+    }
+
     const response = await this.connection.knex(queryBuilder, SurveyBasicFields.omit({ focal_species_names: true }));
 
     return response.rows;
+  }
+
+  /**
+   * Returns the total number of surveys belonging to the given project.
+   *
+   * @param {number} projectId
+   * @return {*}  {Promise<number>}
+   * @memberof SurveyService
+   */
+  async getSurveyCountByProjectId(projectId: number): Promise<number> {
+    const sqlStatement = SQL`
+      SELECT
+        COUNT(*) as survey_count
+      FROM
+        survey as s
+      WHERE
+        s.project_id = ${projectId}
+      ;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, z.object({ survey_count: z.string().transform(Number) }));
+
+    if (response?.rowCount < 1) {
+      throw new ApiExecuteSQLError('Failed to get survey count', [
+        'SurveyRepository->getSurveyCountByProjectId',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0].survey_count;
   }
 
   /**

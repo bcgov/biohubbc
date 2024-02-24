@@ -14,7 +14,7 @@ import { FormikProps } from 'formik';
 import * as History from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Prompt } from 'react-router-dom';
 import CreateProjectForm from './CreateProjectForm';
@@ -24,13 +24,9 @@ import CreateProjectForm from './CreateProjectForm';
  *
  * @return {*}
  */
-const CreateProjectPage: React.FC = () => {
+const CreateProjectPage = () => {
   const history = useHistory();
-
   const biohubApi = useBiohubApi();
-
-  // Reference to pass to the formik component in order to access its state at any time
-  // Used by the draft logic to fetch the values of a step form that has not been validated/completed
   const formikRef = useRef<FormikProps<ICreateProjectRequest>>(null);
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
@@ -165,12 +161,7 @@ const CreateProjectPage: React.FC = () => {
             sx={{
               p: 5
             }}>
-            <CreateProjectForm
-              handleSubmit={createProject}
-              codes={codes}
-              formikRef={formikRef}
-              // initialValues={draftDataLoader.data?.data} // TODO should something else go here, or can it go undefined?
-            />
+            <CreateProjectForm handleSubmit={createProject} codes={codes} formikRef={formikRef} />
             <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
               <LoadingButton
                 loading={isLoading}
@@ -181,23 +172,6 @@ const CreateProjectPage: React.FC = () => {
                 data-testid="submit-project-button">
                 Save and Exit
               </LoadingButton>
-
-              {/* TODO: DEPRICATE DRAFT FUNCTIONALITY */}
-              {/* <Button
-                color="primary"
-                variant="contained"
-                onClick={() => setOpenDraftDialog(true)}
-                data-testid="save-draft-button">
-                Save Draft
-              </Button>
-              <Button
-                color="primary"
-                variant="outlined"
-                onClick={() => setOpenDeleteDraftDialog(true)}
-                data-testid="delete-draft-button">
-                Delete Draft
-              </Button> */}
-
               <Button color="primary" variant="outlined" onClick={handleCancel}>
                 Cancel
               </Button>

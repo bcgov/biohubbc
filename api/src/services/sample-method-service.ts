@@ -64,13 +64,14 @@ export class SampleMethodService extends DBService {
    */
   async insertSampleMethod(sampleMethod: InsertSampleMethodRecord): Promise<SampleMethodRecord> {
     // Create new sample method
-    const record = await this.sampleMethodRepository.insertSampleMethod(sampleMethod);
+    const sampleMethodRecord = await this.sampleMethodRepository.insertSampleMethod(sampleMethod);
 
     const samplePeriodService = new SamplePeriodService(this.connection);
-    // Loop through and create periods, associating the newly created sample method id to each
+
+    // Loop through and create associated sample periods
     const promises = sampleMethod.periods.map((item) => {
       const samplePeriod = {
-        survey_sample_method_id: record.survey_sample_method_id,
+        survey_sample_method_id: sampleMethodRecord.survey_sample_method_id,
         start_date: item.start_date,
         end_date: item.end_date,
         start_time: item.start_time,
@@ -80,7 +81,8 @@ export class SampleMethodService extends DBService {
     });
 
     await Promise.all(promises);
-    return record;
+
+    return sampleMethodRecord;
   }
 
   /**
