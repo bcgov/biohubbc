@@ -101,8 +101,6 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
 
     const stratums = stratumsResponse.rows;
 
-    console.log(stratums);
-
     return { strategies, stratums };
   }
 
@@ -203,8 +201,6 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
       .returning('*');
 
     const response = await this.connection.knex(deleteQuery, SurveyStratumRecord);
-
-    console.log(response);
 
     return response.rowCount;
   }

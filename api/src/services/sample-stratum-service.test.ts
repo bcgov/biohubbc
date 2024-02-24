@@ -252,7 +252,9 @@ describe('SampleStratumService', () => {
       await sampleStratumService.getSampleStratumsForSurveySampleSiteId(surveySampleSiteId);
 
       expect(getSampleStratumsForSurveySampleSiteIdStub).to.be.calledOnceWith(surveySampleSiteId);
-      expect(deleteSampleStratumRecordsNotInArrayStub).to.be.calledOnceWith(mockSampleStratumRecord.survey_sample_stratum_id);
+      expect(deleteSampleStratumRecordsNotInArrayStub).to.be.calledOnceWith(
+        mockSampleStratumRecord.survey_sample_stratum_id
+      );
     });
   });
 });

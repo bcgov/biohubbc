@@ -11,7 +11,7 @@ export interface IStratum {
   survey_stratum_id?: number;
   name: string;
   description: string | null;
-  sample_stratum_count?: number
+  sample_stratum_count?: number;
 }
 
 export interface ISurveySiteSelectionForm {

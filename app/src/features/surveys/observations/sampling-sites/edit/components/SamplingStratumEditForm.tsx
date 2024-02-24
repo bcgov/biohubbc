@@ -64,7 +64,6 @@ const SamplingStratumEditForm = () => {
     setFieldValue(`sampleSite.stratums`, filteredStratums);
   };
 
-
   return (
     <>
       <Typography component="legend">Assign to Stratum</Typography>

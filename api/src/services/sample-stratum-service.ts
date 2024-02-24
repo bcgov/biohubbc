@@ -72,14 +72,14 @@ export class SampleStratumService extends DBService {
     return this.sampleStratumRepository.deleteSampleStratumRecordsByStratumIds(surveyStratumIds);
   }
 
-   /**
+  /**
    * Deletes specific Survey Sample Stratum records, removing the assignment of a Survey Stratum to a Sample Site
    *
    * @param {number} surveySampleStratumIds
    * @return {*}  {Promise<SampleStratumRecord>}
    * @memberof SampleStratumService
    */
-   async deleteSampleStratumRecords(surveySampleStratumIds: number[]): Promise<SampleStratumRecord[]> {
+  async deleteSampleStratumRecords(surveySampleStratumIds: number[]): Promise<SampleStratumRecord[]> {
     return this.sampleStratumRepository.deleteSampleStratumRecords(surveySampleStratumIds);
   }
 
@@ -126,5 +126,4 @@ export class SampleStratumService extends DBService {
       await Promise.all(promises);
     }
   }
-
 }

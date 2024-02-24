@@ -160,9 +160,7 @@ export class SampleStratumRepository extends BaseRepository {
       .whereIn('survey_stratum_id', surveyStratumIds)
       .returning('*');
 
-    const response = await this.connection.knex(queryBuilder) //, SampleStratumRecord);
-
-    console.log(response);
+    const response = await this.connection.knex(queryBuilder); //, SampleStratumRecord);
 
     return response.rows;
   }

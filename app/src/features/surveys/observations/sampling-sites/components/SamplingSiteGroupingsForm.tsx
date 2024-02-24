@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box';
 import { useParams } from 'react-router';
 import SamplingBlockEditForm from '../edit/components/SamplingBlockEditForm';
+import SamplingStratumEditForm from '../edit/components/SamplingStratumEditForm';
 import SamplingBlockForm from './SamplingBlockForm';
 import SamplingStratumForm from './SamplingStratumForm';
-import SamplingStratumEditForm from '../edit/components/SamplingStratumEditForm';
 
 const SamplingSiteGroupingsForm = () => {
   const urlParams: Record<string, string | number | undefined> = useParams();
@@ -12,9 +12,7 @@ const SamplingSiteGroupingsForm = () => {
   return (
     <>
       {surveySampleSiteId ? <SamplingBlockEditForm /> : <SamplingBlockForm />}
-      <Box mt={5}>
-      {surveySampleSiteId ? <SamplingStratumEditForm /> : <SamplingStratumForm />}
-      </Box>
+      <Box mt={5}>{surveySampleSiteId ? <SamplingStratumEditForm /> : <SamplingStratumForm />}</Box>
     </>
   );
 };
