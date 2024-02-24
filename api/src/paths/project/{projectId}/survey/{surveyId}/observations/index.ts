@@ -476,7 +476,6 @@ PUT.apiDoc = {
                     type: 'object',
                     required: [
                       'itis_tsn',
-                      'itis_scientific_name',
                       'survey_sample_site_id',
                       'survey_sample_method_id',
                       'survey_sample_period_id',
@@ -500,7 +499,8 @@ PUT.apiDoc = {
                         type: 'integer'
                       },
                       itis_scientific_name: {
-                        type: 'string'
+                        type: 'string',
+                        nullable: true
                       },
                       survey_sample_site_id: {
                         type: 'number'
