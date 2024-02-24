@@ -476,7 +476,7 @@ export class ObservationRepository extends BaseRepository {
   }
 
   /**
-   * Deletes all survey observations for the given obseration ids.
+   * Deletes all survey observation records for the given observation ids.
    *
    * @param {number} surveyId
    * @param {number[]} observationIds

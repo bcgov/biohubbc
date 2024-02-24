@@ -50,6 +50,13 @@ export class SubCountService extends DBService {
    * @memberof SubCountService
    */
   async deleteObservationSubCountRecords(surveyId: number, surveyObservationIds: number[]): Promise<void> {
+    // Delete child subcount_critter records, if any
+    await this.subCountRepository.deleteSubCountCritterRecordsForObservationId(surveyId, surveyObservationIds);
+
+    // Delete child subcount_event records, if any
+    await this.subCountRepository.deleteSubCountEventRecordsForObservationId(surveyId, surveyObservationIds);
+
+    // Delete observation_subcount records, if any
     return this.subCountRepository.deleteObservationSubCountRecords(surveyId, surveyObservationIds);
   }
 
