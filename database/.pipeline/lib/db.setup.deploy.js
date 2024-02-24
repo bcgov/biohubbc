@@ -72,6 +72,11 @@ const dbSetupDeploy = async (settings) => {
         DB_SCHEMA: 'biohub',
         DB_SCHEMA_DAPI_V1: 'biohub_dapi_v1',
         IMAGE: dbSetupImageStream.image.dockerImageReference,
+        // Development Seeding
+        PROJECT_SEEDER_USER_IDENTIFIER: phases[env][phase].projectSeederUserIdentifier,
+        NUM_SEED_PROJECTS: phases[env][phase].numSeedProjects,
+        NUM_SEED_SURVEYS_PER_PROJECT: phases[env][phase].numSeedSurveysPerProject,
+        // Openshift Resources
         CPU_REQUEST: phases[env][phase].cpuRequest,
         CPU_LIMIT: phases[env][phase].cpuLimit,
         MEMORY_REQUEST: phases[env][phase].memoryRequest,

@@ -36,6 +36,7 @@ const dbDeploy = async (settings) => {
         TZ: phases[env][phase].tz,
         IMAGE_STREAM_NAMESPACE: phases[env].build.namespace,
         VOLUME_CAPACITY: phases[env][phase].volumeCapacity,
+        // Openshift Resources
         CPU_REQUEST: phases[env][phase].cpuRequest,
         CPU_LIMIT: phases[env][phase].cpuLimit,
         MEMORY_REQUEST: phases[env][phase].memoryRequest,
