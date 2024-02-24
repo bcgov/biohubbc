@@ -1,33 +1,27 @@
 import { Box } from '@mui/material';
 import AlertBar from 'components/alert/AlertBar';
 import { useFormikContext } from 'formik';
+import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import get from 'lodash-es/get';
 import SelectedSpecies from './components/SelectedSpecies';
-import SpeciesAutocompleteField, { ISpeciesAutocompleteField } from './components/SpeciesAutocompleteField';
+import SpeciesAutocompleteField from './components/SpeciesAutocompleteField';
 
 const AncillarySpeciesComponent = () => {
-  const { values, setFieldValue, setErrors, errors } = useFormikContext<ISpeciesAutocompleteField[]>();
+  const { values, setFieldValue, setErrors, errors } = useFormikContext<ITaxonomy[]>();
 
-  const selectedSpecies: ISpeciesAutocompleteField[] = get(values, 'species.ancillary_species_object') || [];
+  const selectedSpecies: ITaxonomy[] = get(values, 'species.ancillary_species') || [];
 
-  const handleAddSpecies = (species: ISpeciesAutocompleteField) => {
-    setFieldValue(`species.ancillary_species_object[${selectedSpecies.length}]`, species);
-    setFieldValue(`species.ancillary_species[${selectedSpecies.length}]`, species.tsn);
+  const handleAddSpecies = (species: ITaxonomy) => {
+    setFieldValue(`species.ancillary_species[${selectedSpecies.length}]`, species);
     setErrors([]);
   };
 
   const handleRemoveSpecies = (species_id: number) => {
-    const speciesIds = get(values, 'species.ancillary_species') || [];
-    const filteredSpeciesIds = speciesIds.filter((value: number) => {
-      return value !== species_id;
-    });
-
-    const filteredValues = selectedSpecies.filter((value: ISpeciesAutocompleteField) => {
+    const filteredValues = selectedSpecies.filter((value: ITaxonomy) => {
       return value.tsn !== species_id;
     });
 
-    setFieldValue('species.ancillary_species_object', filteredValues);
-    setFieldValue('species.ancillary_species', filteredSpeciesIds);
+    setFieldValue('species.ancillary_species', filteredValues);
   };
 
   return (
@@ -38,6 +32,7 @@ const AncillarySpeciesComponent = () => {
         required={false}
         handleAddSpecies={handleAddSpecies}
       />
+      <SelectedSpecies selectedSpecies={selectedSpecies} handleRemoveSpecies={handleRemoveSpecies} />
       {errors && get(errors, 'species.ancillary_species') && (
         <Box mt={3}>
           <AlertBar
@@ -48,7 +43,6 @@ const AncillarySpeciesComponent = () => {
           />
         </Box>
       )}
-      <SelectedSpecies selectedSpecies={selectedSpecies} handleRemoveSpecies={handleRemoveSpecies} />
     </>
   );
 };

@@ -1,5 +1,7 @@
 import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { ProjectRoleGuard } from 'components/security/Guards';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { default as dayjs } from 'dayjs';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import SurveyAnimalsTableActions from './SurveyAnimalsTableActions';
@@ -93,14 +95,18 @@ export const SurveyAnimalsTable = ({
       align: 'right',
       maxWidth: 50,
       renderCell: (params) => (
-        <SurveyAnimalsTableActions
-          critter_id={params.row.survey_critter_id}
-          devices={params.row?.deployments}
-          onMenuOpen={onMenuOpen}
-          onEditCritter={onEditCritter}
-          onRemoveCritter={onRemoveCritter}
-          onMapOpen={onMapOpen}
-        />
+        <ProjectRoleGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <SurveyAnimalsTableActions
+            critter_id={params.row.survey_critter_id}
+            devices={params.row?.deployments}
+            onMenuOpen={onMenuOpen}
+            onEditCritter={onEditCritter}
+            onRemoveCritter={onRemoveCritter}
+            onMapOpen={onMapOpen}
+          />
+        </ProjectRoleGuard>
       )
     }
   ];

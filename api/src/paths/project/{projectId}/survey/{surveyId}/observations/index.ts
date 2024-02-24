@@ -3,10 +3,15 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
+import {
+  paginationRequestQueryParamSchema,
+  paginationResponseSchema
+} from '../../../../../../openapi/schemas/pagination';
 import { InsertObservation, UpdateObservation } from '../../../../../../repositories/observation-repository';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ObservationService } from '../../../../../../services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
+import { ensureCompletePaginationOptions, getPaginationResponse } from '../../../../../../utils/pagination';
 import { ApiPaginationOptions } from '../../../../../../zod-schema/pagination';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation');
@@ -75,10 +80,11 @@ export const surveyObservationsResponseSchema: SchemaObject = {
         type: 'object',
         required: [
           'survey_observation_id',
-          'wldtaxonomic_units_id',
           'latitude',
           'longitude',
           'count',
+          'itis_tsn',
+          'itis_scientific_name',
           'observation_date',
           'observation_time',
           'create_user',
@@ -91,9 +97,6 @@ export const surveyObservationsResponseSchema: SchemaObject = {
           survey_observation_id: {
             type: 'integer'
           },
-          wldtaxonomic_units_id: {
-            type: 'integer'
-          },
           latitude: {
             type: 'number'
           },
@@ -102,6 +105,12 @@ export const surveyObservationsResponseSchema: SchemaObject = {
           },
           count: {
             type: 'integer'
+          },
+          itis_tsn: {
+            type: 'integer'
+          },
+          itis_scientific_name: {
+            type: 'string'
           },
           observation_date: {
             type: 'string'
@@ -137,40 +146,6 @@ export const surveyObservationsResponseSchema: SchemaObject = {
   }
 };
 
-const paginationResponseSchema: SchemaObject = {
-  type: 'object',
-  required: ['total', 'current_page', 'last_page'],
-  properties: {
-    total: {
-      type: 'integer',
-      description: 'The total number of observation records belonging to the survey'
-    },
-    per_page: {
-      type: 'integer',
-      minimum: 1,
-      description: 'The number of records shown per page'
-    },
-    current_page: {
-      type: 'integer',
-      description: 'The current page being fetched'
-    },
-    last_page: {
-      type: 'integer',
-      minimum: 1,
-      description: 'The total number of pages'
-    },
-    sort: {
-      type: 'string',
-      description: 'The column that is being sorted on'
-    },
-    order: {
-      type: 'string',
-      enum: ['asc', 'desc'],
-      description: 'The sort order of the response'
-    }
-  }
-};
-
 GET.apiDoc = {
   description: 'Get all observations for the survey.',
   tags: ['observation'],
@@ -198,39 +173,7 @@ GET.apiDoc = {
       },
       required: true
     },
-    {
-      in: 'query',
-      name: 'page',
-      required: false,
-      schema: {
-        type: 'integer',
-        minimum: 1,
-        description: 'The current page number being fetched'
-      }
-    },
-    {
-      in: 'query',
-      name: 'limit',
-      required: false,
-      schema: {
-        type: 'integer',
-        minimum: 1,
-        maximum: 100,
-        description: 'The number of records per page'
-      }
-    },
-    {
-      in: 'query',
-      name: 'sort',
-      required: false,
-      description: 'The column being sorted on'
-    },
-    {
-      in: 'query',
-      name: 'order',
-      required: false,
-      description: 'The order of the sort, i.e. asc or desc'
-    }
+    ...paginationRequestQueryParamSchema
   ],
   responses: {
     200: {
@@ -301,17 +244,15 @@ PUT.apiDoc = {
               items: {
                 type: 'object',
                 required: [
-                  'wldtaxonomic_units_id',
                   'count',
                   'latitude',
                   'longitude',
                   'observation_date',
-                  'observation_time'
+                  'observation_time',
+                  'itis_tsn',
+                  'itis_scientific_name'
                 ],
                 properties: {
-                  wldtaxonomic_units_id: {
-                    oneOf: [{ type: 'integer' }, { type: 'string' }]
-                  },
                   count: {
                     type: 'integer'
                   },
@@ -325,6 +266,12 @@ PUT.apiDoc = {
                     type: 'string'
                   },
                   observation_time: {
+                    type: 'string'
+                  },
+                  itis_tsn: {
+                    type: 'integer'
+                  },
+                  itis_scientific_name: {
                     type: 'string'
                   }
                 }
@@ -384,6 +331,7 @@ const samplingSiteSortingColumnName: Record<string, string> = {
 export function getSurveyObservations(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
+    defaultLog.debug({ label: 'getSurveyObservations', surveyId });
 
     const page: number | undefined = req.query.page ? Number(req.query.page) : undefined;
     const limit: number | undefined = req.query.limit ? Number(req.query.limit) : undefined;
@@ -396,7 +344,7 @@ export function getSurveyObservations(): RequestHandler {
       sort = samplingSiteSortingColumnName[sortQuery];
     }
 
-    defaultLog.debug({ label: 'getSurveyObservations', surveyId });
+    const paginationOptions: Partial<ApiPaginationOptions> = { page, limit, order, sort };
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -405,25 +353,16 @@ export function getSurveyObservations(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      const paginationOptions: ApiPaginationOptions | undefined =
-        limit !== undefined && page !== undefined ? { limit, page, sort, order } : undefined;
-
       const observationData = await observationService.getSurveyObservationsWithSupplementaryAndSamplingData(
         surveyId,
-        paginationOptions
+        ensureCompletePaginationOptions(paginationOptions)
       );
+
       const { observationCount } = observationData.supplementaryObservationData;
 
       return res.status(200).json({
         ...observationData,
-        pagination: {
-          total: observationCount,
-          per_page: limit,
-          current_page: page ?? 1,
-          last_page: limit ? Math.ceil(observationCount / limit) : 1,
-          sort,
-          order
-        }
+        pagination: getPaginationResponse(observationCount, paginationOptions)
       });
     } catch (error) {
       defaultLog.error({ label: 'getSurveyObservations', message: 'error', error });
@@ -456,20 +395,23 @@ export function insertUpdateSurveyObservations(): RequestHandler {
       const observationService = new ObservationService(connection);
 
       // Sanitize all incoming records
-      const records: (InsertObservation | UpdateObservation)[] = req.body.surveyObservations.map((record: any) => {
-        return {
-          survey_observation_id: record.survey_observation_id,
-          wldtaxonomic_units_id: Number(record.wldtaxonomic_units_id),
-          survey_sample_site_id: record.survey_sample_site_id,
-          survey_sample_method_id: record.survey_sample_method_id,
-          survey_sample_period_id: record.survey_sample_period_id,
-          latitude: record.latitude,
-          longitude: record.longitude,
-          count: record.count,
-          observation_date: record.observation_date,
-          observation_time: record.observation_time
-        } as InsertObservation | UpdateObservation;
-      });
+      const records: (InsertObservation | UpdateObservation)[] = req.body.surveyObservations.map(
+        (record: Record<string, unknown>) => {
+          return {
+            survey_observation_id: record.survey_observation_id,
+            survey_sample_site_id: record.survey_sample_site_id,
+            survey_sample_method_id: record.survey_sample_method_id,
+            survey_sample_period_id: record.survey_sample_period_id,
+            latitude: record.latitude,
+            longitude: record.longitude,
+            count: record.count,
+            observation_date: record.observation_date,
+            observation_time: record.observation_time,
+            itis_tsn: record.itis_tsn,
+            itis_scientific_name: null
+          } as InsertObservation | UpdateObservation;
+        }
+      );
 
       const surveyObservations = await observationService.insertUpdateSurveyObservations(surveyId, records);
 

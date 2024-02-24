@@ -5,7 +5,6 @@ import sinonChai from 'sinon-chai';
 import { getSurveys } from '.';
 import * as db from '../../../../database/db';
 import { HTTPError } from '../../../../errors/http-error';
-import { PublishStatus } from '../../../../repositories/history-publish-repository';
 import { SurveyService } from '../../../../services/survey-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
 
@@ -44,9 +43,8 @@ describe('survey list', () => {
     const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    const surveyId1 = 1;
-    const mockSurveyResponse1 = {
-      survey_id: surveyId1,
+    const mockSurveyA = {
+      survey_id: 1001,
       name: 'Survey 1',
       start_date: '2023-01-01',
       end_date: null,
@@ -54,9 +52,8 @@ describe('survey list', () => {
       focal_species_names: ['Species 1']
     };
 
-    const surveyId2 = 2;
-    const mockSurveyResponse2 = {
-      survey_id: surveyId2,
+    const mockSurveyB = {
+      survey_id: 1002,
       name: 'Survey 2',
       start_date: '2023-04-04',
       end_date: '2024-05-05',
@@ -66,14 +63,9 @@ describe('survey list', () => {
 
     const getSurveysBasicFieldsByProjectIdStub = sinon
       .stub(SurveyService.prototype, 'getSurveysBasicFieldsByProjectId')
-      .resolves([mockSurveyResponse1, mockSurveyResponse2]);
+      .resolves([mockSurveyA, mockSurveyB]);
 
-    const surveyPublishStatusStub = sinon
-      .stub(SurveyService.prototype, 'surveyPublishStatus')
-      .onFirstCall()
-      .resolves(PublishStatus.SUBMITTED)
-      .onSecondCall()
-      .resolves(PublishStatus.UNSUBMITTED);
+    sinon.stub(SurveyService.prototype, 'getSurveyCountByProjectId').resolves(2);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -83,24 +75,23 @@ describe('survey list', () => {
       projectId: String(projectId)
     };
 
-    const expectedResponse = [
-      {
-        surveyData: mockSurveyResponse1,
-        surveySupplementaryData: { publishStatus: PublishStatus.SUBMITTED }
+    const expectedResponse = {
+      pagination: {
+        current_page: 1,
+        last_page: 1,
+        total: 2,
+        sort: undefined,
+        order: undefined,
+        per_page: 2
       },
-      {
-        surveyData: mockSurveyResponse2,
-        surveySupplementaryData: { publishStatus: PublishStatus.UNSUBMITTED }
-      }
-    ];
+      surveys: [mockSurveyA, mockSurveyB]
+    };
 
     const result = getSurveys();
 
     await result(mockReq, mockRes, mockNext);
 
     expect(getSurveysBasicFieldsByProjectIdStub).to.be.calledOnceWith(projectId);
-    expect(surveyPublishStatusStub).to.be.calledWith(surveyId1);
-    expect(surveyPublishStatusStub).to.be.calledWith(surveyId2);
     expect(mockRes.jsonValue).to.eql(expectedResponse);
   });
 });

@@ -54,18 +54,6 @@ export const AttachmentsI18N = {
     'An error has occurred while attempting to download an attachment, please try again. If the error persists, please contact your system administrator.'
 };
 
-export const CreateProjectDraftI18N = {
-  draftErrorTitle: 'Error Saving Draft',
-  draftErrorText:
-    'An error has occurred while attempting to save your draft, please try again. If the error persists, please contact your system administrator.'
-};
-
-export const DeleteProjectDraftI18N = {
-  draftErrorTitle: 'Error Deleting Draft',
-  draftErrorText:
-    'An error has occurred while attempting to delete your draft, please try again. If the error persists, please contact your system administrator.'
-};
-
 export const EditPartnershipsI18N = {
   editTitle: 'Edit Partnerships',
   editErrorTitle: 'Error Editing Partnerships',
@@ -411,7 +399,10 @@ export const ObservationsTableI18N = {
   saveRecordsSuccessSnackbarMessage: 'Observations updated successfully.',
   deleteSingleRecordSuccessSnackbarMessage: 'Deleted observation record successfully.',
   deleteMultipleRecordSuccessSnackbarMessage: (count: number) =>
-    `Deleted ${count} observation ${p(count, 'record')} successfully.`
+    `Deleted ${count} observation ${p(count, 'record')} successfully.`,
+  importRecordsSuccessSnackbarMessage: 'Observations imported successfully.',
+  importRecordsErrorDialogTitle: 'Error Importing Observation Records',
+  importRecordsErrorDialogText: 'An error occurred while importing observation records.'
 };
 
 export const TelemetryTableI18N = {

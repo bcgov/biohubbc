@@ -77,7 +77,7 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
 
   // Array of sampling site features
   const samplingSiteGeoJsonFeatures: Feature[] = useMemo(
-    () => get(values, name).map((site: ISurveySampleSite) => site.feature),
+    () => get(values, name).map((site: ISurveySampleSite) => site.geojson),
     [name, values]
   );
 
@@ -108,7 +108,7 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
                   features.map((feature) => ({
                     name: shapeFileFeatureName(feature) ?? `Sample Site ${++numSites}`,
                     description: shapeFileFeatureDesc(feature) ?? '',
-                    feature: feature
+                    geojson: feature
                   }))
                 );
               },
@@ -166,7 +166,10 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
                     layers={[
                       {
                         layerName: 'Sampling Sites',
-                        features: samplingSiteGeoJsonFeatures.map((feature: Feature) => ({ geoJSON: feature }))
+                        features: samplingSiteGeoJsonFeatures.map((feature: Feature, index) => ({
+                          geoJSON: feature,
+                          key: index
+                        }))
                       }
                     ]}
                   />

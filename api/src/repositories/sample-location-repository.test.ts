@@ -5,7 +5,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { getMockDBConnection } from '../__mocks__/db';
-import { SampleLocationRepository, UpdateSampleLocationRecord } from './sample-location-repository';
+import { InsertSampleSiteRecord, SampleLocationRepository, UpdateSampleSiteRecord } from './sample-location-repository';
 
 chai.use(sinonChai);
 
@@ -40,13 +40,39 @@ describe('SampleLocationRepository', () => {
     });
   });
 
-  describe('updateSampleLocation', () => {
+  describe('getSampleLocationsCountBySurveyId', () => {
+    it('should return the sample location count successfully', async () => {
+      const mockResponse = ({ rows: [{ sample_site_count: 69 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const dbConnectionObj = getMockDBConnection({ sql: () => mockResponse });
+
+      const repo = new SampleLocationRepository(dbConnectionObj);
+      const response = await repo.getSampleLocationsCountBySurveyId(1001);
+
+      expect(response).to.eql(69);
+    });
+
+    it('should throw an exception if row count is 0', async () => {
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
+
+      const repo = new SampleLocationRepository(dbConnectionObj);
+
+      try {
+        await repo.getSampleLocationsCountBySurveyId(1001);
+      } catch (error) {
+        expect(dbConnectionObj.sql).to.have.been.calledOnce;
+        expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to get sample site count');
+      }
+    });
+  });
+
+  describe('updateSampleSite', () => {
     it('should update the record and return a single row', async () => {
       const mockRow = {};
       const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const sampleLocation: UpdateSampleLocationRecord = {
+      const sampleLocation: UpdateSampleSiteRecord = {
         survey_sample_site_id: 1,
         survey_id: 2,
         name: 'name',
@@ -54,7 +80,7 @@ describe('SampleLocationRepository', () => {
         geojson: {}
       };
       const repo = new SampleLocationRepository(dbConnectionObj);
-      const response = await repo.updateSampleLocation(sampleLocation);
+      const response = await repo.updateSampleSite(sampleLocation);
 
       expect(dbConnectionObj.sql).to.have.been.calledOnce;
       expect(response).to.eql(mockRow);
@@ -64,7 +90,7 @@ describe('SampleLocationRepository', () => {
       const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const sampleLocation: UpdateSampleLocationRecord = {
+      const sampleLocation: UpdateSampleSiteRecord = {
         survey_sample_site_id: 1,
         survey_id: 2,
         name: 'name',
@@ -74,7 +100,7 @@ describe('SampleLocationRepository', () => {
       const repo = new SampleLocationRepository(dbConnectionObj);
 
       try {
-        await repo.updateSampleLocation(sampleLocation);
+        await repo.updateSampleSite(sampleLocation);
       } catch (error) {
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to update sample location record');
         expect(dbConnectionObj.sql).to.have.been.calledOnce;
@@ -82,21 +108,19 @@ describe('SampleLocationRepository', () => {
     });
   });
 
-  describe('insertSampleLocation', () => {
+  describe('insertSampleSite', () => {
     it('should insert a record and return a single row', async () => {
       const mockRow = {};
       const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const sampleLocation: UpdateSampleLocationRecord = {
-        survey_sample_site_id: 1,
-        survey_id: 2,
+      const sampleLocation: InsertSampleSiteRecord = {
         name: 'name',
         description: 'description',
         geojson: {}
       };
       const repo = new SampleLocationRepository(dbConnectionObj);
-      const response = await repo.insertSampleLocation(sampleLocation);
+      const response = await repo.insertSampleSite(2, sampleLocation);
 
       expect(dbConnectionObj.sql).to.have.been.calledOnce;
       expect(response).to.eql(mockRow);
@@ -106,9 +130,7 @@ describe('SampleLocationRepository', () => {
       const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const sampleLocation: UpdateSampleLocationRecord = {
-        survey_sample_site_id: 1,
-        survey_id: 2,
+      const sampleLocation: InsertSampleSiteRecord = {
         name: 'name',
         description: 'description',
         geojson: {}
@@ -116,7 +138,7 @@ describe('SampleLocationRepository', () => {
       const repo = new SampleLocationRepository(dbConnectionObj);
 
       try {
-        await repo.insertSampleLocation(sampleLocation);
+        await repo.insertSampleSite(2, sampleLocation);
       } catch (error) {
         expect(dbConnectionObj.sql).to.have.been.calledOnce;
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to insert sample location');
@@ -124,7 +146,7 @@ describe('SampleLocationRepository', () => {
     });
   });
 
-  describe('deleteSampleLocationRecord', () => {
+  describe('deleteSampleSiteRecord', () => {
     it('should delete a record and return a single row', async () => {
       const mockRow = {};
       const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
@@ -132,7 +154,7 @@ describe('SampleLocationRepository', () => {
 
       const surveySampleLocationId = 1;
       const repo = new SampleLocationRepository(dbConnectionObj);
-      const response = await repo.deleteSampleLocationRecord(surveySampleLocationId);
+      const response = await repo.deleteSampleSiteRecord(surveySampleLocationId);
 
       expect(dbConnectionObj.sql).to.have.been.calledOnce;
       expect(response).to.eql(mockRow);
@@ -146,7 +168,7 @@ describe('SampleLocationRepository', () => {
       const repo = new SampleLocationRepository(dbConnectionObj);
 
       try {
-        await repo.deleteSampleLocationRecord(surveySampleLocationId);
+        await repo.deleteSampleSiteRecord(surveySampleLocationId);
       } catch (error) {
         expect(dbConnectionObj.sql).to.have.been.calledOnce;
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to delete survey block record');

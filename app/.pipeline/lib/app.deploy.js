@@ -46,7 +46,10 @@ const appDeploy = async (settings) => {
         MEMORY_LIMIT: phases[env][phase].memoryLimit,
         REPLICAS: phases[env][phase].replicas,
         REPLICAS_MAX: phases[env][phase].replicasMax,
-        REACT_APP_BIOHUB_FEATURE_FLAG: phases[env][phase].biohubFeatureFlag
+        REACT_APP_BIOHUB_FEATURE_FLAG: phases[env][phase].biohubFeatureFlag,
+        REACT_APP_BACKBONE_PUBLIC_API_HOST: phases[env][phase].backbonePublicApiHost,
+        REACT_APP_BIOHUB_TAXON_PATH: phases[env][phase].biohubTaxonPath,
+        REACT_APP_BIOHUB_TAXON_TSN_PATH: phases[env][phase].biohubTaxonTsnPath
       }
     })
   );

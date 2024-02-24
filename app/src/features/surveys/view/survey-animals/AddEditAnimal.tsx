@@ -131,7 +131,10 @@ export const AddEditAnimal = (props: IAddEditAnimalProps) => {
     const vals = formMode === ANIMAL_FORM_MODE.ADD ? [saveValues.device[selectedIndex]] : saveValues.device;
     try {
       await telemetrySaveAction(vals, formMode);
-      refreshDeviceDetails(Number(saveValues.device[selectedIndex].device_id));
+      refreshDeviceDetails(
+        Number(saveValues.device[selectedIndex].device_id),
+        saveValues.device[selectedIndex].device_make
+      );
     } catch (err) {
       setMessageSnackbar('Telemetry save failed!', dialogContext);
     }

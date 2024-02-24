@@ -25,8 +25,7 @@ import {
   IGetSamplePeriodRecord
 } from 'interfaces/useSurveyApi.interface';
 import { has } from 'lodash-es';
-import { useCallback, useContext, useEffect, useMemo } from 'react';
-import { useLocation } from 'react-router';
+import { useCallback, useContext, useMemo } from 'react';
 import { getCodesName, getFormattedDate } from 'utils/Utils';
 
 type ISampleSiteOption = {
@@ -50,7 +49,6 @@ export interface ISpeciesObservationTableProps {
 }
 
 const ObservationsTable = (props: ISpeciesObservationTableProps) => {
-  const location = useLocation();
   const observationsTableContext = useContext(ObservationsTableContext);
   const observationsContext = useContext(ObservationsContext);
   const surveyContext = useContext(SurveyContext);
@@ -124,7 +122,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
 
   const observationColumns: GridColDef<IObservationTableRow>[] = [
     {
-      field: 'wldtaxonomic_units_id',
+      field: 'itis_tsn',
       headerName: 'Species',
       editable: true,
       hideable: true,
@@ -133,9 +131,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
-      valueSetter: (params) => {
-        return { ...params.row, wldtaxonomic_units_id: Number(params.value) };
-      },
       renderCell: (params) => {
         return <TaxonomyDataGridViewCell dataGridProps={params} error={hasError(params)} />;
       },
@@ -515,16 +510,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       ]
     }
   ];
-
-  /**
-   * On first render, pre-selected the observation row based on the URL
-   */
-  useEffect(() => {
-    if (location.hash.startsWith('#view-')) {
-      const selectedId = location.hash.split('-')[1];
-      observationsTableContext.onRowSelectionModelChange([selectedId]);
-    }
-  }, [location.hash, observationsTableContext]);
 
   return (
     <>
