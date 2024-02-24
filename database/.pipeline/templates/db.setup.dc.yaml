@@ -34,11 +34,11 @@ parameters:
     value: 'development'
   # Development Seeding
   - name: PROJECT_SEEDER_USER_IDENTIFIER
-    value: 1
+    value: '1'
   - name: NUM_SEED_PROJECTS
-    value: 0
+    value: '0'
   - name: NUM_SEED_SURVEYS_PER_PROJECT
-    value: 0
+    value: '0'
   # Openshift Resources
   - name: CPU_REQUEST
     value: '50m'
