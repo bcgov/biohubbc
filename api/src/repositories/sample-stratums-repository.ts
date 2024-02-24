@@ -155,12 +155,12 @@ export class SampleStratumRepository extends BaseRepository {
    */
   async deleteSampleStratumRecordsByStratumIds(surveyStratumIds: number[]): Promise<SampleStratumRecord[]> {
     const queryBuilder = getKnex()
-      .delete()
+      .del()
       .from('survey_sample_stratum')
       .whereIn('survey_stratum_id', surveyStratumIds)
       .returning('*');
 
-    const response = await this.connection.knex(queryBuilder, SampleStratumRecord);
+    const response = await this.connection.knex(queryBuilder) //, SampleStratumRecord);
 
     console.log(response);
 

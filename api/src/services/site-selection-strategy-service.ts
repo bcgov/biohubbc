@@ -152,7 +152,7 @@ export class SiteSelectionStrategyService extends DBService {
     const sampleStratumService = new SampleStratumService(this.connection);
 
     // Deletes the joins between survey_stratum and survey_sample_stratum
-    await sampleStratumService.deleteSampleStratumRecordsByStratumIds(stratumIds);
+    await sampleStratumService.deleteSampleStratumRecordsByStratumIds(stratumIds); // PROBLEM HERE
 
     // Deletes the Survey Stratum
     return this.siteSelectionStrategyRepository.deleteSurveyStratums(stratumIds);

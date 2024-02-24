@@ -25,7 +25,7 @@ export type SurveyStratumRecord = z.infer<typeof SurveyStratumRecord>;
 
 export const SurveyStratumDetails = z
   .object({
-    sample_stratum_count: z.string()
+    sample_stratum_count: z.number()
   })
   .extend(SurveyStratumRecord.shape);
 
@@ -74,10 +74,10 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
         'ss.create_user',
         'ss.update_date',
         'ss.update_user',
-        'ss.revision_count'
+        'ss.revision_count',
+        getKnex().raw('COUNT(sss.survey_stratum_id)::INTEGER AS sample_stratum_count')
       )
       .from('survey_stratum as ss')
-      .count('sss.survey_stratum_id as sample_stratum_count')
       .leftJoin('survey_sample_stratum as sss', 'ss.survey_stratum_id', 'sss.survey_stratum_id')
       .where('ss.survey_id', surveyId)
       .groupBy(
