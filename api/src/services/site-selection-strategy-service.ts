@@ -103,7 +103,7 @@ export class SiteSelectionStrategyService extends DBService {
           !updateStratums.some((updateStratum) => updateStratum.survey_stratum_id === stratum.survey_stratum_id)
       )
       .map((stratum) => stratum.survey_stratum_id);
-
+      
     if (removeStratums.length) {
       await this.deleteSurveyStratums(removeStratums);
     }

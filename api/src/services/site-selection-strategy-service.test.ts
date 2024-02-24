@@ -8,7 +8,6 @@ import {
 import { getMockDBConnection } from '../__mocks__/db';
 import { SampleStratumService } from './sample-stratum-service';
 import { SiteSelectionStrategyService } from './site-selection-strategy-service';
-import { SampleStratumRecord } from '../repositories/sample-stratums-repository';
 
 describe('SiteSelectionStrategyService', () => {
   afterEach(() => {
@@ -141,19 +140,6 @@ describe('SiteSelectionStrategyService', () => {
   describe('replaceSurveySiteSelectionStratums', () => {
     it('should sort stratums into insert, update and delete lists', async () => {
       // Setup
-      const mockSampleStratumRecords: SampleStratumRecord[] = [
-        {
-          survey_sample_stratum_id: 1,
-          survey_sample_site_id: 2,
-          survey_stratum_id: 3,
-          create_date: '2023-05-06',
-          create_user: 1,
-          update_date: null,
-          update_user: null,
-          revision_count: 0
-        }
-      ];
-
       const mockDbConnection = getMockDBConnection();
       const siteSelectionStrategyService = new SiteSelectionStrategyService(mockDbConnection);
 
@@ -166,17 +152,19 @@ describe('SiteSelectionStrategyService', () => {
         { name: 'F', description: '', survey_stratum_id: 3 } as SurveyStratumRecord
       ];
 
-      sinon.stub(SiteSelectionStrategyRepository.prototype, 'getSiteSelectionDataBySurveyId').resolves({
-        strategies: ['Stratified'],
-        stratums: [
-          { name: 'B', description: '', survey_stratum_id: 1 },
-          { name: 'D', description: '', survey_stratum_id: 2 },
-          { name: 'F', description: '', survey_stratum_id: 3 },
-          { name: 'G', description: '', survey_stratum_id: 4 },
-          { name: 'H', description: '', survey_stratum_id: 5 }
-        ] as SurveyStratumRecord[]
-      });
-      
+      const getSiteSelectionDataBySurveyId = sinon
+        .stub(SiteSelectionStrategyRepository.prototype, 'getSiteSelectionDataBySurveyId')
+        .resolves({
+          strategies: ['Stratified'],
+          stratums: [
+            { name: 'B', description: '', survey_stratum_id: 1 },
+            { name: 'D', description: '', survey_stratum_id: 2 },
+            { name: 'F', description: '', survey_stratum_id: 3 },
+            { name: 'G', description: '', survey_stratum_id: 4 },
+            { name: 'H', description: '', survey_stratum_id: 5 }
+          ] as SurveyStratumRecord[]
+        });
+
       const insertStratumStub = sinon
         .stub(SiteSelectionStrategyRepository.prototype, 'insertSurveyStratums')
         .resolves();
@@ -189,10 +177,16 @@ describe('SiteSelectionStrategyService', () => {
         .stub(SiteSelectionStrategyRepository.prototype, 'deleteSurveyStratums')
         .resolves();
 
+      const deleteSampleStratumRecordsByStratumIdsStub = sinon
+        .stub(SampleStratumService.prototype, 'deleteSampleStratumRecordsByStratumIds')
+        .resolves();
+
       // Act
       await siteSelectionStrategyService.replaceSurveySiteSelectionStratums(10, stratums);
 
       // Assert
+      expect(getSiteSelectionDataBySurveyId).to.be.calledOnceWith(10);
+
       expect(insertStratumStub).to.be.calledOnceWith(10, [
         { name: 'A', description: '' },
         { name: 'C', description: '' },
@@ -205,7 +199,11 @@ describe('SiteSelectionStrategyService', () => {
         { name: 'F', description: '', survey_stratum_id: 3 }
       ]);
 
-      expect(deleteStratumStub).to.be.calledOnceWith([4, 5]);
+      const stratumsToDelete = [4, 5];
+
+      expect(deleteSampleStratumRecordsByStratumIdsStub).to.be.calledOnceWith(stratumsToDelete);
+
+      expect(deleteStratumStub).to.be.calledOnceWith(stratumsToDelete);
     });
   });
 });
