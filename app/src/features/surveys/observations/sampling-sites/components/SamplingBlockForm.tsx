@@ -43,14 +43,15 @@ export const SamplingBlockForm = () => {
   const [searchText, setSearchText] = useState('');
 
   const handleAddBlock = (block: IGetSurveyBlock) => {
-    selectedBlocks.push(block);
+    setSelectedBlocks((prev) => [...prev, block]);
     setFieldValue(`blocks[${selectedBlocks.length - 1}]`, block);
   };
 
   const handleRemoveItem = (block: IGetSurveyBlock | IGetSampleBlockRecord) => {
-    const filteredBlocks = selectedBlocks.filter((existing) => existing.survey_block_id !== block.survey_block_id);
-    setSelectedBlocks(filteredBlocks);
-    setFieldValue(`blocks`, filteredBlocks);
+    setSelectedBlocks((prev) => {
+      return prev.filter((existing) => existing.survey_block_id !== block.survey_block_id);
+    });
+    setFieldValue(`blocks`, selectedBlocks);
   };
 
   return (
