@@ -34,12 +34,12 @@ const apiDeploy = async (settings) => {
         NODE_ENV: phases[env][phase].nodeEnv,
         NODE_OPTIONS: phases[env][phase].nodeOptions,
         // BioHub Platform (aka: Backbone)
-        BACKBONE_API_HOST: phases[env][phase].backboneApiHost,
+        BACKBONE_INTERNAL_API_HOST: phases[env][phase].backboneInternalApiHost,
         BACKBONE_INTAKE_PATH: phases[env][phase].backboneIntakePath,
         BACKBONE_ARTIFACT_INTAKE_PATH: phases[env][phase].backboneArtifactIntakePath,
         BACKBONE_INTAKE_ENABLED: phases[env][phase].backboneIntakeEnabled,
-        BIOHUB_TAXON_TSN_PATH: phases[env][phase].biohubTaxonTsnPath,        
         BIOHUB_TAXON_PATH: phases[env][phase].biohubTaxonPath,
+        BIOHUB_TAXON_TSN_PATH: phases[env][phase].biohubTaxonTsnPath,
         // BCTW / Critterbase
         BCTW_API_HOST: phases[env][phase].bctwApiHost,
         CB_API_HOST: phases[env][phase].critterbaseApiHost,
