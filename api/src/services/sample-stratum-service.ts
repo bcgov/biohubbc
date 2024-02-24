@@ -36,7 +36,7 @@ export class SampleStratumService extends DBService {
    * @memberof SampleStratumService
    */
   async getSampleStratumsForSurveySampleSiteId(surveySampleSiteId: number): Promise<SampleStratumRecord[]> {
-    return await this.sampleStratumRepository.getSampleStratumsForSurveySampleSiteId(surveySampleSiteId);
+    return this.sampleStratumRepository.getSampleStratumsForSurveySampleSiteId(surveySampleSiteId);
   }
 
   /**
@@ -47,18 +47,18 @@ export class SampleStratumService extends DBService {
    * @memberof SampleStratumService
    */
   async getSampleStratumsForSurveyStratumId(surveyStratumId: number): Promise<SampleStratumRecord[]> {
-    return await this.sampleStratumRepository.getSampleStratumsForSurveyStratumId(surveyStratumId);
+    return this.sampleStratumRepository.getSampleStratumsForSurveyStratumId(surveyStratumId);
   }
 
   /**
    * Gets count of all survey Sample Stratums for a given Survey Stratum
    *
-   * @param {number} surveySampleStratumId
+   * @param {number} surveyStratumId
    * @return {*}  {Promise<SampleStratumRecord[]>}
    * @memberof SampleStratumService
    */
   async getSampleStratumsCountForSurveyStratumId(surveyStratumId: number): Promise<{ sampleCount: number }> {
-    return await this.sampleStratumRepository.getSampleStratumsCountForSurveyStratumId(surveyStratumId);
+    return this.sampleStratumRepository.getSampleStratumsCountForSurveyStratumId(surveyStratumId);
   }
 
   /**
@@ -68,8 +68,8 @@ export class SampleStratumService extends DBService {
    * @return {*}  {Promise<SampleStratumRecord>}
    * @memberof SampleStratumService
    */
-  async deleteSampleStratumRecordsByStratumIds(surveyStratumIds: number[]): Promise<number> {
-    return await this.sampleStratumRepository.deleteSampleStratumRecordsByStratumIds(surveyStratumIds);
+  async deleteSampleStratumRecordsByStratumIds(surveyStratumIds: number[]): Promise<SampleStratumRecord[]> {
+    return this.sampleStratumRepository.deleteSampleStratumRecordsByStratumIds(surveyStratumIds);
   }
 
    /**
@@ -79,8 +79,8 @@ export class SampleStratumService extends DBService {
    * @return {*}  {Promise<SampleStratumRecord>}
    * @memberof SampleStratumService
    */
-   async deleteSampleStratumRecords(surveySampleStratumIds: number[]): Promise<number> {
-    return await this.sampleStratumRepository.deleteSampleStratumRecords(surveySampleStratumIds);
+   async deleteSampleStratumRecords(surveySampleStratumIds: number[]): Promise<SampleStratumRecord[]> {
+    return this.sampleStratumRepository.deleteSampleStratumRecords(surveySampleStratumIds);
   }
 
   /**
@@ -91,7 +91,7 @@ export class SampleStratumService extends DBService {
    * @memberof SampleStratumService
    */
   async insertSampleStratum(sampleStratum: InsertSampleStratumRecord): Promise<SampleStratumRecord> {
-    return await this.sampleStratumRepository.insertSampleStratum(sampleStratum);
+    return this.sampleStratumRepository.insertSampleStratum(sampleStratum);
   }
 
   /**

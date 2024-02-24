@@ -164,11 +164,11 @@ export class SampleLocationService extends DBService {
     // If it does not exist, create it
     for (const item of sampleSite.stratums) {
       if (!item.survey_sample_stratum_id) {
-        const sampleBlock = {
+        const sampleStratum = {
           survey_sample_site_id: sampleSite.survey_sample_site_id,
           survey_stratum_id: item.survey_stratum_id
         };
-        await stratumService.insertSampleStratum(sampleBlock);
+        await stratumService.insertSampleStratum(sampleStratum);
       }
     }
 

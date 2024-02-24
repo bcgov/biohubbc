@@ -62,6 +62,7 @@ export class SampleBlockRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sql, SampleBlockRecord);
+    
     return response.rows;
   }
 

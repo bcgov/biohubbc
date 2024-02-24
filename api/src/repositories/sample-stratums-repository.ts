@@ -1,8 +1,8 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
-import { getKnex } from '../database/db';
 
 export type InsertSampleStratumRecord = Pick<SampleStratumRecord, 'survey_sample_site_id' | 'survey_stratum_id'>;
 
@@ -82,7 +82,7 @@ export class SampleStratumRepository extends BaseRepository {
     const response = await this.connection.sql(sql, SampleStratumRecord);
 
     const sampleCount = Number(response.rowCount);
-  
+
     return { sampleCount };
   }
 
@@ -122,7 +122,6 @@ export class SampleStratumRepository extends BaseRepository {
    * @memberof sampleStratumRepository
    */
   async insertSampleStratum(sampleStratum: InsertSampleStratumRecord): Promise<SampleStratumRecord> {
-
     const sqlStatement = SQL`
     INSERT INTO survey_sample_stratum (
       survey_sample_site_id,
@@ -136,7 +135,6 @@ export class SampleStratumRepository extends BaseRepository {
       `;
 
     const response = await this.connection.sql(sqlStatement, SampleStratumRecord);
-  
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert sample stratum', [
@@ -155,7 +153,7 @@ export class SampleStratumRepository extends BaseRepository {
    * @return {*}  {Promise<SampleStratumRecord>}
    * @memberof sampleStratumRepository
    */
-  async deleteSampleStratumRecordsByStratumIds(surveyStratumIds: number[]): Promise<number> {
+  async deleteSampleStratumRecordsByStratumIds(surveyStratumIds: number[]): Promise<SampleStratumRecord[]> {
     const queryBuilder = getKnex()
       .delete()
       .from('survey_sample_stratum')
@@ -164,14 +162,9 @@ export class SampleStratumRepository extends BaseRepository {
 
     const response = await this.connection.knex(queryBuilder, SampleStratumRecord);
 
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to delete sample stratum', [
-        'sampleStratumRepository->deleteSampleStratumRecord',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
+    console.log(response);
 
-    return response.rowCount;
+    return response.rows;
   }
   /**
    * Deletes all Sample Stratum records in the array
@@ -180,7 +173,7 @@ export class SampleStratumRepository extends BaseRepository {
    * @return {*}  {Promise<SampleStratumRecord>}
    * @memberof sampleStratumRepository
    */
-  async deleteSampleStratumRecords(surveySampleStratumIds: number[]): Promise<number> {
+  async deleteSampleStratumRecords(surveySampleStratumIds: number[]): Promise<SampleStratumRecord[]> {
     const queryBuilder = getKnex()
       .delete()
       .from('survey_sample_stratum')
@@ -196,7 +189,7 @@ export class SampleStratumRepository extends BaseRepository {
       ]);
     }
 
-    return response.rowCount;
+    return response.rows;
   }
 
   /**
@@ -212,7 +205,6 @@ export class SampleStratumRepository extends BaseRepository {
       FROM survey_sample_stratum
       WHERE survey_sample_site_id = ${surveySampleSiteId};
     `;
-
 
     // todo: reconcile types
     const response = await this.connection.sql(sql); //, SampleStratumRecord

@@ -109,7 +109,8 @@ describe('updateSurveySampleSite', () => {
         update_user: 2,
         revision_count: 1,
         methods: [],
-        blocks: []
+        blocks: [],
+        stratums: []
       } as UpdateSampleSiteRecord
     };
 
@@ -156,7 +157,8 @@ describe('updateSurveySampleSite', () => {
         update_user: 2,
         revision_count: 1,
         methods: [],
-        blocks: []
+        blocks: [],
+        stratums: []
       } as UpdateSampleSiteRecord
     };
 

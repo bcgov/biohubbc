@@ -89,7 +89,7 @@ export class SampleLocationRepository extends BaseRepository {
           'survey_sample_site_id',
           knex.raw(`
           json_agg(json_build_object(
-            'sample_periods', jsp.sample_periods,
+            'sample_periods', COALESCE(jsp.sample_periods, '[]'::json),
             'survey_sample_method_id', ssm.survey_sample_method_id,
             'method_lookup_id', ssm.method_lookup_id,
             'description', ssm.description,
@@ -164,9 +164,8 @@ export class SampleLocationRepository extends BaseRepository {
       // join aggregated methods and blocks to sampling sites
       .select(
         'sss.*',
-        'sample_methods',
         knex.raw(
-          "COALESCE(sample_blocks, '[]'::json) as sample_blocks, COALESCE(sample_stratums, '[]'::json) as sample_stratums"
+          "COALESCE(sample_methods, '[]'::json) as sample_methods, COALESCE(sample_blocks, '[]'::json) as sample_blocks, COALESCE(sample_stratums, '[]'::json) as sample_stratums"
         )
       )
       .from({ sss: 'survey_sample_site' })

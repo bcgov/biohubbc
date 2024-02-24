@@ -6,6 +6,7 @@ import {
   SurveyStratumRecord
 } from '../repositories/site-selection-strategy-repository';
 import { getMockDBConnection } from '../__mocks__/db';
+import { SampleStratumService } from './sample-stratum-service';
 import { SiteSelectionStrategyService } from './site-selection-strategy-service';
 
 describe('SiteSelectionStrategyService', () => {
@@ -123,9 +124,16 @@ describe('SiteSelectionStrategyService', () => {
         .stub(SiteSelectionStrategyRepository.prototype, 'deleteSurveyStratums')
         .resolves();
 
-      await siteSelectionStrategyService.deleteSurveyStratums([9]);
+      const deleteSampleStratumRecordsByStratumIdsStub = sinon
+        .stub(SampleStratumService.prototype, 'deleteSampleStratumRecordsByStratumIds')
+        .resolves();
 
-      expect(siteSelectionStrategyRepoStub).to.be.calledOnceWith([9]);
+      const surveyStratumId = 9;
+
+      await siteSelectionStrategyService.deleteSurveyStratums([surveyStratumId]);
+
+      expect(deleteSampleStratumRecordsByStratumIdsStub).to.be.calledOnceWith([surveyStratumId]);
+      expect(siteSelectionStrategyRepoStub).to.be.calledOnceWith([surveyStratumId]);
     });
   });
 
@@ -144,6 +152,17 @@ describe('SiteSelectionStrategyService', () => {
         { name: 'F', description: '', survey_stratum_id: 3 } as SurveyStratumRecord
       ];
 
+      sinon.stub(SiteSelectionStrategyRepository.prototype, 'getSiteSelectionDataBySurveyId').resolves({
+        strategies: ['Stratified'],
+        stratums: [
+          { name: 'B', description: '', survey_stratum_id: 1 },
+          { name: 'D', description: '', survey_stratum_id: 2 },
+          { name: 'F', description: '', survey_stratum_id: 3 },
+          { name: 'G', description: '', survey_stratum_id: 4 },
+          { name: 'H', description: '', survey_stratum_id: 5 }
+        ] as SurveyStratumRecord[]
+      });
+      
       const insertStratumStub = sinon
         .stub(SiteSelectionStrategyRepository.prototype, 'insertSurveyStratums')
         .resolves();
@@ -155,17 +174,6 @@ describe('SiteSelectionStrategyService', () => {
       const deleteStratumStub = sinon
         .stub(SiteSelectionStrategyRepository.prototype, 'deleteSurveyStratums')
         .resolves();
-
-      sinon.stub(SiteSelectionStrategyRepository.prototype, 'getSiteSelectionDataBySurveyId').resolves({
-        strategies: ['Stratified'],
-        stratums: [
-          { name: 'B', description: '', survey_stratum_id: 1 },
-          { name: 'D', description: '', survey_stratum_id: 2 },
-          { name: 'F', description: '', survey_stratum_id: 3 },
-          { name: 'G', description: '', survey_stratum_id: 4 },
-          { name: 'H', description: '', survey_stratum_id: 5 }
-        ] as SurveyStratumRecord[]
-      });
 
       // Act
       await siteSelectionStrategyService.replaceSurveySiteSelectionStratums(10, stratums);
