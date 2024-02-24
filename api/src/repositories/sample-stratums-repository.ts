@@ -72,18 +72,23 @@ export class SampleStratumRepository extends BaseRepository {
    * @return {*}  {Promise<SampleStratumRecord[]>}
    * @memberof sampleStratumRepository
    */
-  async getSampleStratumsCountForSurveyStratumId(surveyStratumId: number): Promise<{ sampleCount: number }> {
+  async getSampleStratumsCountForSurveyStratumId(surveyStratumId: number): Promise<number> {
     const sql = SQL`
-      SELECT *
+      SELECT COUNT(*)
       FROM survey_sample_stratum
       WHERE survey_stratum_id = ${surveyStratumId};
     `;
 
-    const response = await this.connection.sql(sql, SampleStratumRecord);
+    const response = await this.connection.sql(sql, z.object({ sample_stratums_count: z.string().transform(Number) }));
 
-    const sampleCount = Number(response.rowCount);
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to count sample stratums', [
+        'sampleStratumRepository->getSampleStratumsCountForSurveyStratumId',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
 
-    return { sampleCount };
+    return response.rows[0].sample_stratums_count;
   }
 
   /**

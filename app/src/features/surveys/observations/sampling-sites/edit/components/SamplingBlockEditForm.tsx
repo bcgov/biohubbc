@@ -51,7 +51,7 @@ const SamplingBlockEditForm = () => {
   const [searchText, setSearchText] = useState('');
 
   const handleAddBlock = (block: IGetSurveyBlock) => {
-    selectedBlocks.push(block);
+    setSelectedBlocks((prev) => [...prev, block]);
     setFieldValue(`sampleSite.blocks[${selectedBlocks.length - 1}]`, block);
   };
 

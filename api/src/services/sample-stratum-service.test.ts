@@ -95,7 +95,7 @@ describe('SampleStratumService', () => {
     it('gets count of survey stratums for a given stratum', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      const mockSampleStratumCount = { sampleCount: 2 };
+      const mockSampleStratumCount = 2
 
       const getSampleStratumsCountForSurveyStratumIdStub = sinon
         .stub(SampleStratumRepository.prototype, 'getSampleStratumsCountForSurveyStratumId')

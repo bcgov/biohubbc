@@ -42,7 +42,7 @@ export class SampleStratumService extends DBService {
   /**
    * Gets all survey Sample Stratums for a given Survey Stratum
    *
-   * @param {number} surveySampleStratumId
+   * @param {number} surveyStratumId
    * @return {*}  {Promise<SampleStratumRecord[]>}
    * @memberof SampleStratumService
    */
@@ -57,7 +57,7 @@ export class SampleStratumService extends DBService {
    * @return {*}  {Promise<SampleStratumRecord[]>}
    * @memberof SampleStratumService
    */
-  async getSampleStratumsCountForSurveyStratumId(surveyStratumId: number): Promise<{ sampleCount: number }> {
+  async getSampleStratumsCountForSurveyStratumId(surveyStratumId: number): Promise<number> {
     return this.sampleStratumRepository.getSampleStratumsCountForSurveyStratumId(surveyStratumId);
   }
 
@@ -108,22 +108,17 @@ export class SampleStratumService extends DBService {
 
     // Compare input and existing for stratums to delete
     // Any existing stratums that are not found in the new stratums being passed in will be collected for deletion
-    const existingStratumsToDelete = existingStratums.filter((existingStratum) => {
-      return !newStratums.find(
-        (incomingStratum) => incomingStratum.survey_sample_stratum_id === existingStratum.survey_sample_stratum_id
-      );
-    });
+    const existingStratumsToDelete = existingStratums
+      .filter((existingStratum) => {
+        return !newStratums.find(
+          (incomingStratum) => incomingStratum.survey_sample_stratum_id === existingStratum.survey_sample_stratum_id
+        );
+      })
+      .map((item) => item.survey_sample_stratum_id);
 
     // Delete any stratums not found in the passed in array
     if (existingStratumsToDelete.length > 0) {
-      const promises: Promise<any>[] = [];
-
-      // Check if any observations are associated with the stratums to be deleted
-      for (const stratum of existingStratumsToDelete) {
-        promises.push(this.deleteSampleStratumRecords([stratum.survey_sample_stratum_id]));
-      }
-
-      await Promise.all(promises);
+      await this.deleteSampleStratumRecords(existingStratumsToDelete);
     }
   }
 }

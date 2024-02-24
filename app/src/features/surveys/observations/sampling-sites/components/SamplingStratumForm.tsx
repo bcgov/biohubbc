@@ -43,16 +43,13 @@ const SamplingStratumForm: React.FC = () => {
   const [searchText, setSearchText] = useState('');
 
   const handleAddStratum = (stratum: IStratum) => {
-    selectedStratums.push(stratum);
+    setSelectedStratums((prev) => [...prev, stratum]);
     setFieldValue(`stratums[${selectedStratums.length - 1}]`, stratum);
   };
 
   const handleRemoveItem = (stratum: IStratum, index: number) => {
-    const filteredStratums = selectedStratums.filter(
-      (existing) => existing.survey_stratum_id !== stratum.survey_stratum_id
-    );
-    setSelectedStratums(filteredStratums);
-    setFieldValue(`stratums`, filteredStratums);
+    setSelectedStratums((prev) => prev.filter((existing) => existing.survey_stratum_id !== stratum.survey_stratum_id));
+    setFieldValue(`stratums`, selectedStratums);
   };
 
   return (

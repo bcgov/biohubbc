@@ -8,7 +8,7 @@ import {
 import { DBService } from './db-service';
 
 /**
- * Sample Block Repository
+ * Sample Block Service
  *
  * @export
  * @class SampleBlockService
@@ -51,7 +51,7 @@ export class SampleBlockService extends DBService {
    * @return {*}  {Promise<SampleBlockRecord[]>}
    * @memberof SampleBlockService
    */
-  async getSampleBlocksCountForSurveyBlockId(surveyBlockId: number): Promise<{ sampleCount: number }> {
+  async getSampleBlocksCountForSurveyBlockId(surveyBlockId: number): Promise<number> {
     return this.sampleBlockRepository.getSampleBlocksCountForSurveyBlockId(surveyBlockId);
   }
 
