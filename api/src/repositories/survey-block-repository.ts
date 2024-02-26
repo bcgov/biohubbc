@@ -20,7 +20,7 @@ export const SurveyBlockRecord = z.object({
   create_user: z.number(),
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
-  revision_count: z.number(),
+  revision_count: z.number()
 });
 export type SurveyBlockRecord = z.infer<typeof SurveyBlockRecord>;
 

@@ -357,7 +357,7 @@ PUT.apiDoc = {
                   },
                   description: {
                     type: 'string'
-                  },
+                  }
                 }
               }
             }

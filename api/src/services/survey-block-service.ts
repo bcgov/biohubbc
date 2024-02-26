@@ -1,9 +1,5 @@
 import { IDBConnection } from '../database/db';
-import {
-  PostSurveyBlock,
-  SurveyBlockRecord,
-  SurveyBlockRepository
-} from '../repositories/survey-block-repository';
+import { PostSurveyBlock, SurveyBlockRecord, SurveyBlockRepository } from '../repositories/survey-block-repository';
 import { DBService } from './db-service';
 import { SampleBlockService } from './sample-block-service';
 
