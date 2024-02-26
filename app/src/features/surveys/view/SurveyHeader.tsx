@@ -1,4 +1,4 @@
-import { mdiChevronDown, mdiCog, mdiPencil, mdiTrashCanOutline } from '@mdi/js';
+import { mdiChevronDown, mdiCogOutline, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
@@ -205,8 +205,8 @@ const SurveyHeader = () => {
               variant="outlined"
               color="primary"
               data-testid="settings-survey-button"
-              startIcon={<Icon path={mdiCog} size={1} />}
-              endIcon={<Icon path={mdiChevronDown} size={1} />}
+              startIcon={<Icon path={mdiCogOutline} size={0.75} />}
+              endIcon={<Icon path={mdiChevronDown} size={0.75} />}
               onClick={(event: React.MouseEvent<HTMLButtonElement>) => setMenuAnchorEl(event.currentTarget)}>
               Settings
             </Button>
@@ -229,7 +229,7 @@ const SurveyHeader = () => {
               onClose={() => setMenuAnchorEl(null)}>
               <MenuItem onClick={() => history.push('edit')}>
                 <ListItemIcon>
-                  <Icon path={mdiPencil} size={1} />
+                  <Icon path={mdiPencilOutline} size={1} />
                 </ListItemIcon>
                 <Typography variant="inherit">Edit Survey Details</Typography>
               </MenuItem>
