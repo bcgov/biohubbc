@@ -46,12 +46,10 @@ export const SampleLocationRecord = z.object({
       survey_sample_block_id: true,
       survey_block_id: true,
       survey_sample_site_id: true
-    }).extend(
-      {
-        name: z.string(),
-        description: z.string()
-      }
-    )
+    }).extend({
+      name: z.string(),
+      description: z.string()
+    })
   )
 });
 export type SampleLocationRecord = z.infer<typeof SampleLocationRecord>;
