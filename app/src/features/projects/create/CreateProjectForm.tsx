@@ -9,7 +9,7 @@ import { Formik, FormikProps } from 'formik';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ICreateProjectRequest, IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { alphabetizeObjects } from 'utils/Utils';
 import ProjectDetailsForm, {
   ProjectDetailsFormInitialValues,
@@ -48,10 +48,7 @@ export const initialProjectFieldData: ICreateProjectRequest = {
 
 export const validationProjectYupSchema =
   ProjectDetailsFormYupSchema.concat(ProjectObjectivesFormYupSchema).concat(ProjectUserRoleYupSchema);
-// TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-162) Commenting out IUCN form (yup schema) temporarily, while its decided if IUCN information is desired
-// .concat(ProjectIUCNFormYupSchema)
 
-//Function to get the list of coordinator agencies from the code set
 export const getCoordinatorAgencyOptions = (codes: IGetAllCodeSetsResponse): string[] => {
   const options = [...(codes?.agency || []), ...(codes?.first_nations || [])];
   return alphabetizeObjects(options, 'name').map((item) => item.name);
@@ -73,8 +70,9 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
 
   const authStateContext = useAuthStateContext();
 
-  const getProjectParticipants = (): IGetProjectParticipant[] => {
-    const participants: IGetProjectParticipant[] = [
+  const initialProjectParticipants: IGetProjectParticipant[] = useMemo(() => {
+    // Adds the logged in user as a participant
+    return [
       {
         system_user_id: authStateContext.simsUserWrapper?.systemUserId,
         display_name: authStateContext.simsUserWrapper?.displayName,
@@ -84,9 +82,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
         project_role_names: [PROJECT_ROLE.COORDINATOR]
       } as IGetProjectParticipant
     ];
-
-    return participants;
-  };
+  }, [authStateContext.simsUserWrapper?.systemUserId]);
 
   return (
     <Formik
@@ -114,36 +110,6 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
               <Box mt={3}>
                 <ProjectObjectivesForm />
               </Box>
-              {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-162) Commenting out IUCN form temporarily, while its decided if IUCN information is desired */}
-              {/* <Box component="fieldset" mt={5}>
-                <Typography component="legend" variant="h5">
-                  IUCN Conservation Actions Classification
-                </Typography>
-                <Typography variant="body1" color="textSecondary" style={{ maxWidth: '90ch' }}>
-                  Conservation actions are specific actions or sets of tasks undertaken by project staff designed to
-                  reach each of the project's objectives.
-                </Typography>
-
-                <Box mt={3}>
-                  <ProjectIUCNForm
-                    classifications={
-                      codes?.iucn_conservation_action_level_1_classification?.map((item) => {
-                        return { value: item.id, label: item.name };
-                      }) || []
-                    }
-                    subClassifications1={
-                      codes?.iucn_conservation_action_level_2_subclassification?.map((item) => {
-                        return { value: item.id, iucn1_id: item.iucn1_id, label: item.name };
-                      }) || []
-                    }
-                    subClassifications2={
-                      codes?.iucn_conservation_action_level_3_subclassification?.map((item) => {
-                        return { value: item.id, iucn2_id: item.iucn2_id, label: item.name };
-                      }) || []
-                    }
-                  />
-                </Box>
-              </Box> */}
             </>
           }></HorizontalSplitFormComponent>
 
@@ -152,7 +118,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
         <HorizontalSplitFormComponent
           title="Team Members"
           summary="Specify team members and their associated role for this project."
-          component={<ProjectUserForm users={getProjectParticipants()} roles={codes.project_roles} />}
+          component={<ProjectUserForm users={initialProjectParticipants} roles={codes.project_roles} />}
         />
         <Divider className={classes.sectionDivider} />
       </>
