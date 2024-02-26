@@ -310,19 +310,21 @@ const appTheme = createTheme({
           '& tr:last-of-type td': {
             borderBottom: 'none'
           },
-          '& .MuiLink-root': {
-            fontFamily: 'inherit',
-            fontSize: 'inherit'
+          '& tbody tr:nth-of-type(odd)': {
+            backgroundColor: grey[50]
           }
         }
       }
     },
     MuiTableCell: {
       styleOverrides: {
+        root: {
+          paddingRight: '8px',
+          paddingLeft: '8px'
+        },
         head: {
           fontSize: '0.875rem',
-          fontWeight: 700,
-          color: grey[600]
+          fontWeight: 700
         }
       }
     },

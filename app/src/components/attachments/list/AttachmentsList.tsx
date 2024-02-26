@@ -11,8 +11,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { makeStyles } from '@mui/styles';
-import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
-import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
+import { ProjectRoleGuard } from 'components/security/Guards';
 import { PublishStatus } from 'constants/attachments';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import NoSurveySectionData from 'features/surveys/components/NoSurveySectionData';
@@ -42,8 +41,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   noDocuments: {
     height: '66px',
-    color: theme.palette.text.secondary,
-    fontWeight: 700
+    color: theme.palette.text.secondary
   }
 }));
 
@@ -69,15 +67,12 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
   }
 
   return (
-    <TableContainer>
+    <TableContainer sx={{ mt: -1 }}>
       <Table className={classes.attachmentsTable} aria-label="attachments-list-table">
         <TableHead>
           <TableRow>
             <TableCell>Name</TableCell>
             <TableCell width="130">Type</TableCell>
-            <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-              <TableCell width="150">Status</TableCell>
-            </SystemRoleGuard>
             <TableCell width="75"></TableCell>
           </TableRow>
         </TableHead>
@@ -100,7 +95,6 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
                       style={{ marginRight: '16px', marginLeft: '4px' }}
                     />
                     <Link
-                      style={{ fontWeight: 'bold' }}
                       underline="always"
                       onClick={() => handleDownload(attachment)}
                       tabIndex={0}>
@@ -109,11 +103,6 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
                   </Box>
                 </TableCell>
                 <TableCell>{attachment.fileType}</TableCell>
-                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-                  <TableCell>
-                    <SubmitStatusChip status={attachmentStatus} />
-                  </TableCell>
-                </SystemRoleGuard>
                 <ProjectRoleGuard
                   validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>

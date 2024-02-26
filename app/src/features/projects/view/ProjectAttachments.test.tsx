@@ -128,7 +128,7 @@ describe('ProjectAttachments', () => {
       </AuthStateContext.Provider>
     );
     await waitFor(() => {
-      expect(getByText('No Shared Files')).toBeInTheDocument();
+      expect(getByText('No shared files found')).toBeInTheDocument();
     });
   });
 
