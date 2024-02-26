@@ -165,12 +165,12 @@ objects:
           containers:
             - name: postgresql
               env:
-                - name: POSTGRESQL_USER
+                - name: POSTGRES_USER
                   valueFrom:
                     secretKeyRef:
                       key: database-user
                       name: '${DATABASE_SERVICE_NAME}'
-                - name: POSTGRESQL_PASSWORD
+                - name: POSTGRES_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       key: database-user-password
@@ -180,7 +180,7 @@ objects:
                     secretKeyRef:
                       key: database-admin-password
                       name: '${DATABASE_SERVICE_NAME}'
-                - name: POSTGRESQL_DATABASE
+                - name: POSTGRES_DB
                   valueFrom:
                     secretKeyRef:
                       key: database-name
@@ -189,6 +189,8 @@ objects:
                   value: '-c maintenance_work_mem=128MB'
                 - name: PGTZ
                   value: '${TZ}'
+                - name: PGDATA
+                  value: '/var/lib/pgsql/data'
               image: ' '
               imagePullPolicy: IfNotPresent
               livenessProbe:
