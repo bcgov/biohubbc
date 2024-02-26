@@ -59,6 +59,12 @@ describe('SampleLocationService', () => {
               }
             ]
           }
+        ],
+        blocks: [
+          {
+            survey_sample_site_id: 1,
+            survey_block_id: 1
+          }
         ]
       };
 
@@ -73,7 +79,6 @@ describe('SampleLocationService', () => {
         create_user: 1,
         update_date: '',
         update_user: 1,
-        revision_count: 0
         revision_count: 0
       });
       const insertMethod = sinon.stub(SampleMethodService.prototype, 'insertSampleMethod').resolves();
