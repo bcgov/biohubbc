@@ -139,6 +139,18 @@ PUT.apiDoc = {
                       }
                     }
                   }
+                },
+                stratums: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    required: ['survey_stratum_id'],
+                    properties: {
+                      survey_stratum_id: {
+                        type: 'number'
+                      }
+                    }
+                  }
                 }
               }
             }

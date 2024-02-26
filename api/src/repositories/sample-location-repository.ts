@@ -13,7 +13,7 @@ import { SampleStratumRecord, UpdateSampleStratumRecord } from './sample-stratum
 
 /**
  * An aggregate record that includes a single sample site, all of its child sample methods, and for each child sample
- * method, all of its child sample periods.
+ * method, all of its child sample periods. Also includes any survey blocks or survey stratums that this site belongs to.
  */
 export const SampleLocationRecord = z.object({
   survey_sample_site_id: z.number(),
@@ -156,7 +156,6 @@ export class SampleLocationRepository extends BaseRepository {
           'ssm.survey_sample_site_id',
           knex.raw(`
           json_agg(json_build_object(
-            'sample_periods', jsp.sample_periods,
             'survey_sample_method_id', ssm.survey_sample_method_id,
             'survey_sample_site_id', ssm.survey_sample_site_id,
             'method_lookup_id', ssm.method_lookup_id,
@@ -202,7 +201,7 @@ export class SampleLocationRepository extends BaseRepository {
           .leftJoin('survey_stratum as ss', 'ss.survey_stratum_id', 'ssst.survey_stratum_id')
           .groupBy('ssst.survey_sample_site_id');
       })
-      // Fetch sample sites and include the corresponding sample methods
+      // Fetch sample sites and include the corresponding sample methods, blocks, and stratums
       .select(
         'sss.survey_sample_site_id',
         'sss.survey_id',
@@ -210,7 +209,8 @@ export class SampleLocationRepository extends BaseRepository {
         'sss.description',
         'sss.geojson',
         knex.raw(`COALESCE(wssm.sample_methods, '[]'::json) as sample_methods,
-      COALESCE(wssb.sample_blocks, '[]'::json) as sample_blocks`)
+      COALESCE(wssb.sample_blocks, '[]'::json) as sample_blocks,
+      COALESCE(wssst.sample_stratums, '[]'::json) as sample_stratums`)
       )
       .from({ sss: 'survey_sample_site' })
       .leftJoin('w_survey_sample_method as wssm', 'wssm.survey_sample_site_id', 'sss.survey_sample_site_id')

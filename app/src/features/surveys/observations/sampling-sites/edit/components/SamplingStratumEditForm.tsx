@@ -8,9 +8,10 @@ import TextField from '@mui/material/TextField';
 import { SurveyContext } from 'contexts/surveyContext';
 import { IStratum } from 'features/surveys/components/SurveySiteSelectionForm';
 import { useFormikContext } from 'formik';
-import { IGetSampleStratumDetails } from 'interfaces/useSurveyApi.interface';
+import { IGetSampleStratumDetails, IGetSurveyStratum } from 'interfaces/useSurveyApi.interface';
 import { default as React, useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
+import BlockStratumCard from './BlockStratumCard';
 import { IEditSamplingSiteRequest } from './SampleSiteEditForm';
 
 const SamplingStratumEditForm = () => {
@@ -19,7 +20,7 @@ const SamplingStratumEditForm = () => {
 
   const options = surveyContext.surveyDataLoader?.data?.surveyData?.site_selection?.stratums || [];
 
-  const [selectedStratums, setSelectedStratums] = useState<(IGetSampleStratumDetails | IStratum)[]>(
+  const [selectedStratums, setSelectedStratums] = useState<(IGetSampleStratumDetails | IGetSurveyStratum)[]>(
     values.sampleSite.stratums
   );
 
@@ -29,29 +30,9 @@ const SamplingStratumEditForm = () => {
     }
   }, [values.sampleSite]);
 
-  interface IStratumCard {
-    label: string;
-    description: string;
-  }
-
-  const StratumCard: React.FC<IStratumCard> = (props) => (
-    <Box>
-      <Box>
-        <Typography variant="subtitle1" fontWeight="bold">
-          {props.label}
-        </Typography>
-      </Box>
-      <Box my={0.25}>
-        <Typography variant="subtitle2" color="textSecondary">
-          {props.description}
-        </Typography>
-      </Box>
-    </Box>
-  );
-
   const [searchText, setSearchText] = useState('');
 
-  const handleAddStratum = (stratum: IStratum) => {
+  const handleAddStratum = (stratum: IGetSurveyStratum) => {
     setSelectedStratums((prev) => [...prev, stratum]);
   };
 
@@ -59,7 +40,7 @@ const SamplingStratumEditForm = () => {
     setFieldValue(`sampleSite.stratums[${selectedStratums.length - 1}]`, selectedStratums);
   }, [selectedStratums]);
 
-  const handleRemoveItem = (stratum: IStratum | IGetSampleStratumDetails) => {
+  const handleRemoveItem = (stratum: IGetSurveyStratum | IGetSampleStratumDetails) => {
     setSelectedStratums((prev) => prev.filter((existing) => existing.survey_stratum_id !== stratum.survey_stratum_id));
     setFieldValue(`sampleSite.stratums`, selectedStratums);
   };
@@ -83,7 +64,7 @@ const SamplingStratumEditForm = () => {
         noOptionsText="No records found"
         options={options}
         filterOptions={(options, state) => {
-          const searchFilter = createFilterOptions<IStratum>({ ignoreCase: true });
+          const searchFilter = createFilterOptions<IGetSurveyStratum>({ ignoreCase: true });
           const unselectedOptions = options.filter((item) =>
             selectedStratums.every((existing) => existing.survey_stratum_id !== item.survey_stratum_id)
           );
@@ -130,7 +111,7 @@ const SamplingStratumEditForm = () => {
         renderOption={(renderProps, renderOption) => {
           return (
             <Box component="li" {...renderProps} key={renderOption?.survey_stratum_id}>
-              <StratumCard label={renderOption.name} description={renderOption.description || ''} />
+              <BlockStratumCard label={renderOption.name} description={renderOption.description || ''} />
             </Box>
           );
         }}
