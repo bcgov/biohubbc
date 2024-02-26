@@ -314,10 +314,13 @@ export function validateCsvFile(
 }
 
 export function validateCsvMeasurementColumns(
-  rows: string[][],
+  rows: Record<string, any>[],
   measurementColumns: string[],
   tsnMeasurementMap: TsnMeasurementMap
 ): boolean {
+  console.log('VALIDATING THE MEASUREMENT COLUMNS');
+  console.log(`Rows to validate: ${rows.length}`);
+  console.log(`Columns to validate: ${measurementColumns.length}`);
   return rows.every((row) => {
     // Fetch the TSN of the row we are validating
     const tsn = String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']);
@@ -326,13 +329,15 @@ export function validateCsvMeasurementColumns(
     return measurementColumns.every((mColumn) => {
       const data = row[mColumn];
       const measurements = tsnMeasurementMap[tsn];
+
       if (measurements) {
         // only validate if the column has data
         if (data) {
           // find the correct measurement
           if (measurements.qualitative.length > 0) {
+            console.log('Has Qualitative');
             const measurement = measurements.qualitative.find(
-              (measurement) => measurement.measurement_name === mColumn
+              (measurement) => measurement.measurement_name.toLowerCase() === mColumn.toLowerCase()
             );
             if (measurement) {
               return isQualitativeValueValid(data, measurement);
@@ -341,12 +346,14 @@ export function validateCsvMeasurementColumns(
 
           if (measurements.quantitative.length > 0) {
             const measurement = measurements.quantitative.find(
-              (measurement) => measurement.measurement_name === mColumn
+              (measurement) => measurement.measurement_name.toLowerCase() === mColumn.toLowerCase()
             );
             if (measurement) {
               return isQuantitativeValueValid(Number(data), measurement);
             }
           }
+        } else {
+          return true;
         }
       }
     });
@@ -357,23 +364,25 @@ export function isQuantitativeValueValid(value: number, measurement: CBQuantitat
   const min_value = measurement.min_value;
   const max_value = measurement.max_value;
   let isValid = false;
+
   if (min_value && max_value) {
     if (min_value <= value && value <= max_value) {
       isValid = true;
     }
+  } else {
+    if (min_value && min_value <= value) {
+      isValid = true;
+    }
+
+    if (max_value && value <= max_value) {
+      isValid = true;
+    }
+
+    if (min_value === null && max_value === null) {
+      isValid = true;
+    }
   }
 
-  if (min_value && min_value <= value) {
-    isValid = true;
-  }
-
-  if (max_value && value <= max_value) {
-    isValid = true;
-  }
-
-  if (min_value === null && max_value === null) {
-    isValid = true;
-  }
   return isValid;
 }
 
@@ -381,6 +390,8 @@ export function isQualitativeValueValid(
   value: string | number,
   measurement: CBQualitativeMeasurementTypeDefinition
 ): boolean {
+  console.log(measurement.options);
+  console.log(`Check options: ${value}`);
   // check if data is in the options for the
   const foundOption = measurement.options.find(
     (option) => option.option_value === value || option.option_label === value

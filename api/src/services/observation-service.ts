@@ -20,7 +20,6 @@ import {
   getCBMeasurementsFromWorksheet,
   getMeasurementColumnNameFromWorksheet,
   getWorksheetRowObjects,
-  getWorksheetRows,
   isMeasurementCBQualitativeTypeDefinition,
   IXLSXCSVValidator,
   validateCsvFile,
@@ -428,16 +427,16 @@ export class ObservationService extends DBService {
     });
     // reach out to critterbase for TSN Measurement data
     const tsnMeasurements = await getCBMeasurementsFromWorksheet(xlsxWorksheets, service);
+
     // collection additional measurement columns
     const measurementColumns = getMeasurementColumnNameFromWorksheet(xlsxWorksheets, observationCSVColumnValidator);
-    const rows = getWorksheetRows(xlsxWorksheets);
-    // Validate measurement data against
-    if (!validateCsvMeasurementColumns(rows, measurementColumns, tsnMeasurements)) {
-      throw new Error('Failed to process file for importing observations. Measurement column validator failed.');
-    }
-
     // Get the worksheet row objects
     const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheets['Sheet1']);
+
+    // Validate measurement data against
+    if (!validateCsvMeasurementColumns(worksheetRowObjects, measurementColumns, tsnMeasurements)) {
+      throw new Error('Failed to process file for importing observations. Measurement column validator failed.');
+    }
 
     // Step 6. Merge all the table rows into an array of InsertUpdateObservationsWithMeasurements[]
     const newRowData = worksheetRowObjects.map((row) => ({
@@ -484,9 +483,9 @@ export class ObservationService extends DBService {
         .filter((m): m is InsertMeasurement => Boolean(m)),
       subcount: row['COUNT']
     }));
-
+    console.log(newRowData.length);
     // Step 7. Insert new rows and return them
-    await this.insertUpdateSurveyObservationsWithMeasurements(surveyId, newRowData);
+    // await this.insertUpdateSurveyObservationsWithMeasurements(surveyId, newRowData);
     return [];
   }
 
