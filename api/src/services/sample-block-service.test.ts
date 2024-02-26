@@ -94,15 +94,16 @@ describe('SampleBlockService', () => {
 
     it('gets count of survey blocks for a given block', async () => {
       const mockDBConnection = getMockDBConnection();
+      const sampleBlockService = new SampleBlockService(mockDBConnection);
 
-      const mockSampleBlockCount = { sampleCount: 2 };
+      const mockSampleBlockCount = 2;
 
       const getSampleBlocksCountForSurveyBlockIdStub = sinon
         .stub(SampleBlockRepository.prototype, 'getSampleBlocksCountForSurveyBlockId')
         .resolves(mockSampleBlockCount);
 
       const surveyBlockId = 1;
-      const sampleBlockService = new SampleBlockService(mockDBConnection);
+
       const response = await sampleBlockService.getSampleBlocksCountForSurveyBlockId(surveyBlockId);
 
       expect(getSampleBlocksCountForSurveyBlockIdStub).to.be.calledOnceWith(surveyBlockId);

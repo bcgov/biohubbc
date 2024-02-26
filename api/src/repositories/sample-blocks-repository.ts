@@ -48,7 +48,7 @@ export type SampleBlockDetails = z.infer<typeof SampleBlockDetails>;
  */
 export class SampleBlockRepository extends BaseRepository {
   /**
-   * Gets all survey Sample Blocks.
+   * Gets all Sample Blocks for the given Survey Block
    *
    * @param {number} surveyBlockId
    * @return {*}  {Promise<SampleBlockRecord[]>}
@@ -72,18 +72,23 @@ export class SampleBlockRepository extends BaseRepository {
    * @return {*}  {Promise<SampleBlockRecord[]>}
    * @memberof sampleBlockRepository
    */
-  async getSampleBlocksCountForSurveyBlockId(surveyBlockId: number): Promise<{ sampleCount: number }> {
+  async getSampleBlocksCountForSurveyBlockId(surveyBlockId: number): Promise<number> {
     const sql = SQL`
-      SELECT *
+      SELECT COUNT(*) AS sample_blocks_count
       FROM survey_sample_block
       WHERE survey_block_id = ${surveyBlockId};
     `;
 
-    const response = await this.connection.sql(sql, SampleBlockRecord);
+    const response = await this.connection.sql(sql, z.object({ sample_blocks_count: z.string().transform(Number) }));
 
-    const sampleCount = Number(response.rowCount);
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to count sample blocks', [
+        'sampleBlockRepository->getSampleBlocksCountForSurveyBlockId',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
 
-    return { sampleCount };
+    return response.rows[0].sample_blocks_count;
   }
 
   /**

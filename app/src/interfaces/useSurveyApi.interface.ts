@@ -367,10 +367,6 @@ export interface IGetSampleSiteResponse {
   sampleSites: IGetSampleLocationRecord[];
 }
 
-export interface IGetSampleSiteByIdResponse {
-  sampleSites: IGetSampleLocationRecord;
-}
-
 export interface IGetSampleLocationRecord {
   survey_sample_site_id: number;
   survey_id: number;

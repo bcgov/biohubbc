@@ -39,7 +39,7 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get Sample Sites
+   * Get Sample Site by ID
    *
    * @param {number} projectId
    * @param {number} surveyId

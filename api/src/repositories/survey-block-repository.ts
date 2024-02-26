@@ -74,8 +74,6 @@ export class SurveyBlockRepository extends BaseRepository {
 
     const response = await this.connection.sql(sql, SurveyBlockDetails);
 
-    console.log(response.rows);
-
     return response.rows;
   }
 
