@@ -1,17 +1,14 @@
 import { mdiFilterOutline, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import { grey } from '@mui/material/colors';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
-import { DataGrid, GridColDef, GridOverlay, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
+import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import PageHeader from 'components/layout/PageHeader';
 import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
 import { SystemRoleGuard } from 'components/security/Guards';
@@ -21,55 +18,16 @@ import { CodesContext } from 'contexts/codesContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IProjectsListItemData } from 'interfaces/useProjectApi.interface';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull, getFormattedDate } from 'utils/Utils';
 import ProjectsListFilterForm from './ProjectsListFilterForm';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  projectsTable: {
-    tableLayout: 'fixed'
-  },
-  linkButton: {
-    textAlign: 'left',
-    fontWeight: 700
-  },
-  noDataText: {
-    fontFamily: 'inherit !important',
-    fontSize: '0.875rem',
-    fontWeight: 700
-  },
-  dataGrid: {
-    border: 'none !important',
-    fontFamily: 'inherit !important',
-    '& .MuiDataGrid-columnHeaderTitle': {
-      textTransform: 'uppercase',
-      fontSize: '0.875rem',
-      fontWeight: 700,
-      color: grey[600]
-    },
-    '& .MuiDataGrid-cell:focus-within, & .MuiDataGrid-cellCheckbox:focus-within, & .MuiDataGrid-columnHeader:focus-within':
-      {
-        outline: 'none !important'
-      },
-    '& .MuiDataGrid-row:hover': {
-      backgroundColor: 'transparent !important'
-    }
-  }
-}));
+import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 
 interface IProjectsListTableRow extends Omit<IProjectsListItemData, 'project_programs'> {
   project_programs: string;
 }
-
-const NoRowsOverlay = (props: { className: string }) => (
-  <GridOverlay>
-    <Typography className={props.className} color="textSecondary">
-      No projects found
-    </Typography>
-  </GridOverlay>
-);
 
 const pageSizeOptions = [10, 25, 50];
 
@@ -79,7 +37,6 @@ const pageSizeOptions = [10, 25, 50];
  * @return {*}
  */
 const ProjectsListPage = () => {
-  const classes = useStyles();
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
     pageSize: pageSizeOptions[0]
@@ -171,8 +128,6 @@ const ProjectsListPage = () => {
     }
   ];
 
-  const NoRowsOverlayStyled = useCallback(() => <NoRowsOverlay className={classes.noDataText} />, [classes.noDataText]);
-
   // Refresh projects when pagination or sort changes
   useEffect(() => {
     refreshProjectsList();
@@ -231,8 +186,8 @@ const ProjectsListPage = () => {
               />
             )}
             <Box py={1} pb={2} px={3}>
-              <DataGrid
-                className={classes.dataGrid}
+              <StyledDataGrid
+                noRowsMessage='No projects found'
                 autoHeight
                 rows={projectRows}
                 rowCount={projectsDataLoader.data?.pagination.total ?? 0}
@@ -252,9 +207,6 @@ const ProjectsListPage = () => {
                 disableColumnFilter
                 disableColumnMenu
                 sortingOrder={['asc', 'desc']}
-                slots={{
-                  noRowsOverlay: NoRowsOverlayStyled
-                }}
               />
             </Box>
           </Paper>
