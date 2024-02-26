@@ -20,12 +20,25 @@ export const SurveyBlockRecord = z.object({
   create_user: z.number(),
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
-  revision_count: z.number()
+  revision_count: z.number(),
 });
 export type SurveyBlockRecord = z.infer<typeof SurveyBlockRecord>;
 
-export const SurveyBlockDetails = z.object({ sample_block_count: z.number() }).extend(SurveyBlockRecord.shape);
-export type SurveyBlockDetails = z.infer<typeof SurveyBlockDetails>;
+// This describes the a row in the database for Survey Block
+export const SurveyBlockRecordWithCount = z.object({
+  survey_block_id: z.number(),
+  survey_id: z.number(),
+  name: z.string(),
+  description: z.string(),
+  create_date: z.string(),
+  create_user: z.number(),
+  update_date: z.string().nullable(),
+  update_user: z.number().nullable(),
+  revision_count: z.number(),
+  sample_block_count: z.number()
+});
+export type SurveyBlockRecordWithCount = z.infer<typeof SurveyBlockRecordWithCount>;
+
 /**
  * A repository class for accessing Survey Block data.
  *
@@ -41,7 +54,7 @@ export class SurveyBlockRepository extends BaseRepository {
    * @return {*}  {Promise<SurveyBlockRecord[]>}
    * @memberof SurveyBlockRepository
    */
-  async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockDetails[]> {
+  async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockRecordWithCount[]> {
     const sql = SQL`
     SELECT
         sb.survey_block_id,
@@ -72,7 +85,7 @@ export class SurveyBlockRepository extends BaseRepository {
         sb.revision_count;
     `;
 
-    const response = await this.connection.sql(sql, SurveyBlockDetails);
+    const response = await this.connection.sql(sql, SurveyBlockRecordWithCount);
 
     return response.rows;
   }

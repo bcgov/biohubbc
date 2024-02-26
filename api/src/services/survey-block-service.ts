@@ -1,7 +1,6 @@
 import { IDBConnection } from '../database/db';
 import {
   PostSurveyBlock,
-  SurveyBlockDetails,
   SurveyBlockRecord,
   SurveyBlockRepository
 } from '../repositories/survey-block-repository';
@@ -23,7 +22,7 @@ export class SurveyBlockService extends DBService {
    * @return {*} {Promise<SurveyBlockRecord[]>}
    * @returns
    */
-  async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockDetails[]> {
+  async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockRecord[]> {
     return this.surveyBlockRepository.getSurveyBlocksForSurveyId(surveyId);
   }
 

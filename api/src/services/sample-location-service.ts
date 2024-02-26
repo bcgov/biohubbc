@@ -164,6 +164,8 @@ export class SampleLocationService extends DBService {
     // Check for blocks to delete
     await blockService.deleteSampleBlocksNotInArray(sampleSite.survey_sample_site_id, sampleSite.blocks);
 
+    console.log(sampleSite)
+
     // Loop through all blocks
     // For each block, check if it exists
     // If it exists, update it

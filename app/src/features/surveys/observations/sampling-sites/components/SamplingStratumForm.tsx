@@ -10,8 +10,8 @@ import { IStratum } from 'features/surveys/components/SurveySiteSelectionForm';
 import { useFormikContext } from 'formik';
 import { default as React, useContext, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
-import { ICreateSamplingSiteRequest } from '../SamplingSitePage';
 import BlockStratumCard from '../edit/components/BlockStratumCard';
+import { ICreateSamplingSiteRequest } from '../SamplingSitePage';
 
 const SamplingStratumForm: React.FC = () => {
   const { values, setFieldValue } = useFormikContext<ICreateSamplingSiteRequest>();

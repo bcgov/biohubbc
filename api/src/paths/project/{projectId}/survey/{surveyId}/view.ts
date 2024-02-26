@@ -376,6 +376,25 @@ GET.apiDoc = {
                         }
                       }
                     }
+                  },
+                  blocks: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      required: ['name', 'description', 'sample_block_count'],
+                      properties: {
+                        name: {
+                          type: 'string'
+                        },
+                        description: {
+                          type: 'string',
+                          nullable: true
+                        },
+                        sample_block_count: {
+                          type: 'number'
+                        }
+                      }
+                    }
                   }
                 }
               },
