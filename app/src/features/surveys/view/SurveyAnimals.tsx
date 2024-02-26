@@ -136,7 +136,7 @@ const SurveyAnimals: React.FC = () => {
         </ProjectRoleGuard>
       </Toolbar>
       <Divider flexItem></Divider>
-      <Box py={1} px={2}>
+      <Box p={2}>
         {critterData?.length ? (
           <SurveyAnimalsTable
             animalData={critterData}
@@ -153,7 +153,7 @@ const SurveyAnimals: React.FC = () => {
             }}
           />
         ) : (
-          <NoSurveySectionData text={'No Marked or Known Animals'} paperVariant={'outlined'} />
+          <NoSurveySectionData text={'No Marked or Known Animals'} />
         )}
       </Box>
       <ComponentDialog
