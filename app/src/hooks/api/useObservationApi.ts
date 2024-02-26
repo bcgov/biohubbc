@@ -1,4 +1,4 @@
-import { AxiosInstance, CancelTokenSource } from 'axios';
+import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import {
   IObservationRecord,
   IStandardObservationColumns,
@@ -141,7 +141,7 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} surveyId
    * @param {File} file
    * @param {CancelTokenSource} [cancelTokenSource]
-   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<{ submissionId: number }>}
    */
   const uploadCsvForImport = async (
@@ -149,7 +149,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     surveyId: number,
     file: File,
     cancelTokenSource?: CancelTokenSource,
-    onProgress?: (progressEvent: ProgressEvent) => void
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
   ): Promise<{ submissionId: number }> => {
     const formData = new FormData();
 
@@ -160,6 +160,7 @@ const useObservationApi = (axios: AxiosInstance) => {
       formData,
       {
         cancelToken: cancelTokenSource?.token,
+
         onUploadProgress: onProgress
       }
     );

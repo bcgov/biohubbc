@@ -178,7 +178,7 @@ export class BctwService {
             new HTTP500('Connection to the BCTW API server was refused. Please try again later.', [error?.message])
           );
         }
-        const data = error.response?.data;
+        const data = error.response?.data as any;
         const errMsg = data?.error ?? data?.errors ?? data ?? 'Unknown error';
 
         return Promise.reject(
