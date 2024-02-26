@@ -127,7 +127,7 @@ const FundingSourcesListPage: React.FC = () => {
               </Typography>
             </Toolbar>
             <Divider></Divider>
-            <Box py={1} pb={3} px={3}>
+            <Box p={2}>
               <FundingSourcesTable
                 fundingSources={fundingSourceDataLoader.data ?? []}
                 onView={(fundingSourceId) => {

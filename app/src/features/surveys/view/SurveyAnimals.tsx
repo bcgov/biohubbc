@@ -129,7 +129,7 @@ const SurveyAnimals: React.FC = () => {
             variant="contained"
             startIcon={<Icon path={mdiCog} size={0.75} />}
             sx={{
-              m: -1
+              my: -1
             }}>
             Manage Animals
           </Button>

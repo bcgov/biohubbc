@@ -203,9 +203,8 @@ const SurveySpatialData = () => {
         activeView={activeView}
         views={[
           {
-            label: `Observations (${
-              observationsGeometryDataLoader.data?.supplementaryObservationData?.observationCount ?? 0
-            })`,
+            label: `Observations (${observationsGeometryDataLoader.data?.supplementaryObservationData?.observationCount ?? 0
+              })`,
             value: SurveySpatialDatasetViewEnum.OBSERVATIONS,
             icon: mdiEye,
             isLoading: false
@@ -223,7 +222,7 @@ const SurveySpatialData = () => {
       <Box height={{ sm: 300, md: 500 }} position="relative">
         <SurveyMap supplementaryLayers={supplementaryLayers} isLoading={isLoading} />
       </Box>
-      <Box py={1} px={2} position="relative">
+      <Box p={2} position="relative">
         {activeView === SurveySpatialDatasetViewEnum.OBSERVATIONS && (
           <SurveySpatialObservationDataTable isLoading={isLoading} />
         )}

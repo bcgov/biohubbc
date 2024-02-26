@@ -57,7 +57,7 @@ const SurveysListPage = () => {
       disableColumnMenu: true,
       renderCell: (params) => (
         <Link
-          style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
+          style={{ overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700 }}
           data-testid={params.row.name}
           underline="always"
           title={params.row.name}
@@ -102,7 +102,7 @@ const SurveysListPage = () => {
         </ProjectRoleGuard>
       </Toolbar>
       <Divider></Divider>
-      <Box py={1} pb={2} px={3}>
+      <Box p={2}>
         <StyledDataGrid
           noRowsMessage='No surveys found'
           columns={columns}

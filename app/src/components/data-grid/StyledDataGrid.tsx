@@ -25,17 +25,26 @@ export const StyledDataGrid = (props: StyledDataGridProps) => {
         '& *:focus-within': {
           outline: 'none !important'
         },
+        '& .MuiDataGrid-columnHeaders': {
+          background: grey[50]
+        },
         '& .MuiDataGrid-columnHeaderTitle': {
           textTransform: 'uppercase',
           fontWeight: 700
-        },
-        '& .MuiDataGrid-row:nth-of-type(odd)': {
-          backgroundColor: grey[50]
         },
         '& .MuiDataGrid-row:last-of-type': {
           '& .MuiDataGrid-cell': {
             borderBottom: 'none'
           }
+        },
+        "& .MuiDataGrid-row:hover": {
+          backgroundColor: "transparent",
+        },
+        '& .MuiDataGrid-columnHeader:first-of-type, .MuiDataGrid-cell:first-of-type': {
+          pl: 2
+        },
+        '& .MuiDataGrid-columnHeader:last-of-type, .MuiDataGrid-cell:last-of-type': {
+          pr: 2
         }
       }}
     />
