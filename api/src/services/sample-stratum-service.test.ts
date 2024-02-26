@@ -95,7 +95,7 @@ describe('SampleStratumService', () => {
     it('gets count of survey stratums for a given stratum', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      const mockSampleStratumCount = 2
+      const mockSampleStratumCount = 2;
 
       const getSampleStratumsCountForSurveyStratumIdStub = sinon
         .stub(SampleStratumRepository.prototype, 'getSampleStratumsCountForSurveyStratumId')
@@ -247,7 +247,7 @@ describe('SampleStratumService', () => {
       const sampleStratumService = new SampleStratumService(mockDBConnection);
 
       await sampleStratumService.deleteSampleStratumsNotInArray(surveySampleSiteId, [
-        { survey_sample_stratum_id: survey_sample_stratum_id } as UpdateSampleStratumRecord
+        { survey_sample_stratum_id } as UpdateSampleStratumRecord
       ]);
       await sampleStratumService.getSampleStratumsForSurveySampleSiteId(surveySampleSiteId);
 

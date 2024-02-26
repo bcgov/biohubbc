@@ -52,8 +52,11 @@ const SamplingBlockEditForm = () => {
 
   const handleAddBlock = (block: IGetSurveyBlock) => {
     setSelectedBlocks((prev) => [...prev, block]);
-    setFieldValue(`sampleSite.blocks[${selectedBlocks.length - 1}]`, block);
   };
+
+  useEffect(() => {
+    setFieldValue(`sampleSite.blocks[${selectedBlocks.length - 1}]`, selectedBlocks);
+  }, [selectedBlocks]);
 
   const handleRemoveItem = (block: IGetSurveyBlock | IGetSampleBlockDetails) => {
     const filteredBlocks = selectedBlocks.filter((existing) => existing.survey_block_id !== block.survey_block_id);

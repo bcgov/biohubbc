@@ -53,8 +53,11 @@ const SamplingStratumEditForm = () => {
 
   const handleAddStratum = (stratum: IStratum) => {
     setSelectedStratums((prev) => [...prev, stratum]);
-    setFieldValue(`sampleSite.stratums[${selectedStratums.length - 1}]`, stratum);
   };
+
+  useEffect(() => {
+    setFieldValue(`sampleSite.stratums[${selectedStratums.length - 1}]`, selectedStratums);
+  }, [selectedStratums]);
 
   const handleRemoveItem = (stratum: IStratum | IGetSampleStratumDetails) => {
     setSelectedStratums((prev) => prev.filter((existing) => existing.survey_stratum_id !== stratum.survey_stratum_id));
