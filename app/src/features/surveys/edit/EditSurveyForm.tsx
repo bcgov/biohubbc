@@ -160,7 +160,6 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
           <FormikErrorSnackbar />
           <HorizontalSplitFormComponent
             title="General Information"
-            summary=""
             component={
               <GeneralInformationForm
                 type={
@@ -177,7 +176,6 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
 
           <HorizontalSplitFormComponent
             title="Purpose and Methodology"
-            summary=""
             component={
               <PurposeAndMethodologyForm
                 intended_outcomes={
@@ -236,7 +234,6 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
 
           <HorizontalSplitFormComponent
             title="Study Area"
-            summary=""
             component={
               <Box component="fieldset">
                 <Typography component="legend">Define Survey Study Area</Typography>
@@ -254,7 +251,6 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
 
           <HorizontalSplitFormComponent
             title="Proprietary Data"
-            summary=""
             component={
               <ProprietaryDataForm
                 proprietary_data_category={
@@ -274,7 +270,6 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
 
           <HorizontalSplitFormComponent
             title="Agreements"
-            summary=""
             component={<AgreementsForm />}></HorizontalSplitFormComponent>
           <Divider className={classes.sectionDivider} />
 

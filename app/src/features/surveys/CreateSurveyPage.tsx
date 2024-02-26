@@ -280,7 +280,6 @@ const CreateSurveyPage = () => {
                 <Stack gap={5} divider={<Divider flexItem />}>
                   <HorizontalSplitFormComponent
                     title="General Information"
-                    summary=""
                     component={
                       <GeneralInformationForm
                         type={
@@ -295,7 +294,6 @@ const CreateSurveyPage = () => {
 
                   <HorizontalSplitFormComponent
                     title="Purpose and Methodology"
-                    summary=""
                     component={
                       <PurposeAndMethodologyForm
                         intended_outcomes={
@@ -346,12 +344,10 @@ const CreateSurveyPage = () => {
 
                   <HorizontalSplitFormComponent
                     title="Study Area"
-                    summary=""
                     component={<StudyAreaForm />}></HorizontalSplitFormComponent>
 
                   <HorizontalSplitFormComponent
                     title="Proprietary Data"
-                    summary=""
                     component={
                       <ProprietaryDataForm
                         proprietary_data_category={
@@ -369,7 +365,6 @@ const CreateSurveyPage = () => {
 
                   <HorizontalSplitFormComponent
                     title="Agreements"
-                    summary=""
                     component={<AgreementsForm />}></HorizontalSplitFormComponent>
 
                   <Stack flexDirection="row" justifyContent="flex-end" gap={1}>
