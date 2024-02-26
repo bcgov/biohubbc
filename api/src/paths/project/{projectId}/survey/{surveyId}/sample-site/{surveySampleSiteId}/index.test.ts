@@ -215,7 +215,7 @@ describe('deleteSurveySampleSiteRecord', () => {
       .resolves({ observationCount: 0 });
 
     const deleteSampleLocationRecordStub = sinon
-      .stub(SampleLocationService.prototype, 'deleteSampleLocationRecord')
+      .stub(SampleLocationService.prototype, 'deleteSampleSiteRecord')
       .resolves();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();

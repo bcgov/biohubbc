@@ -232,7 +232,7 @@ export class ObservationRepository extends BaseRepository {
 
     const knex = getKnex();
 
-    const allRowsQuery = knex
+    const queryBuilder = knex
       .with(
         'survey_sample_method_with_name',
         knex
@@ -254,7 +254,7 @@ export class ObservationRepository extends BaseRepository {
 
         // Select columns from the joined survey_sample_period table
         'ssp.survey_sample_period_id',
-        knex.raw('(??::date + ??::time)::timestamp as survey_sample_period_start_datetime', [
+        knex.raw(`(??::date + COALESCE(??, '00:00:00')::time)::timestamp as survey_sample_period_start_datetime`, [
           'ssp.start_date',
           'ssp.start_time'
         ])
@@ -276,14 +276,15 @@ export class ObservationRepository extends BaseRepository {
       .leftJoin({ ssp: 'survey_sample_period' }, 'so.survey_sample_period_id', 'ssp.survey_sample_period_id') // Join survey_sample_period
       .where('so.survey_id', surveyId);
 
-    const paginatedQuery = !pagination
-      ? allRowsQuery
-      : allRowsQuery.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+    if (pagination) {
+      queryBuilder.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
 
-    const query =
-      pagination?.sort && pagination.order ? paginatedQuery.orderBy(pagination.sort, pagination.order) : paginatedQuery;
+      if (pagination.sort && pagination.order) {
+        queryBuilder.orderBy(pagination.sort, pagination.order);
+      }
+    }
 
-    const response = await this.connection.knex(query, ObservationRecordWithSamplingData);
+    const response = await this.connection.knex(queryBuilder, ObservationRecordWithSamplingData);
 
     return response.rows;
   }

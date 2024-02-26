@@ -132,16 +132,10 @@ PUT.apiDoc = {
                   type: 'array',
                   items: {
                     type: 'object',
-                    required: ['survey_sample_block_id', 'survey_sample_site_id', 'survey_block_id'],
+                    required: ['survey_block_id'],
                     properties: {
-                      name: {
-                        type: 'string'
-                      },
-                      description: {
-                        type: 'string'
-                      },
                       survey_block_id: {
-                        type: 'string'
+                        type: 'number'
                       }
                     }
                   }
@@ -317,7 +311,7 @@ export function deleteSurveySampleSiteRecord(): RequestHandler {
 
       const sampleLocationService = new SampleLocationService(connection);
 
-      await sampleLocationService.deleteSampleLocationRecord(surveySampleSiteId);
+      await sampleLocationService.deleteSampleSiteRecord(surveySampleSiteId);
 
       await connection.commit();
 
