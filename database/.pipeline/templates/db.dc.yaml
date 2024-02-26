@@ -134,7 +134,7 @@ objects:
   - kind: ImageStream
     apiVersion: image.openshift.io/v1
     metadata:
-      name: '${IMAGE_STREAM_NAME}'
+      name: 'postgis-postgres'
       labels:
         shared: 'true'
       annotations: {}
@@ -185,10 +185,6 @@ objects:
                     secretKeyRef:
                       key: database-name
                       name: '${DATABASE_SERVICE_NAME}'
-                - name: PGCRYPTO_EXTENSION
-                  value: 'N'
-                - name: POSTGIS_EXTENSION
-                  value: 'N'
                 - name: PGOPTIONS
                   value: '-c maintenance_work_mem=128MB'
                 - name: PGTZ
@@ -243,8 +239,8 @@ objects:
               - postgresql
             from:
               kind: ImageStreamTag
-              name: '${IMAGE_STREAM_NAME}:${IMAGE_STREAM_VERSION}'
-              namespace: '${IMAGE_STREAM_NAMESPACE}'
+              name: 'postgis-postgres:15-3.4-alpine'
+              namespace: 'af2668-dev'
             lastTriggeredImage: ''
           type: ImageChange
         - type: ConfigChange
