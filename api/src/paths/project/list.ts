@@ -7,7 +7,11 @@ import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
 import { ProjectService } from '../../services/project-service';
 import { getLogger } from '../../utils/logger';
-import { ApiPaginationOptions } from '../../zod-schema/pagination';
+import {
+  ensureCompletePaginationOptions,
+  getPaginationOptionsFromRequest,
+  getPaginationResponse
+} from '../../utils/pagination';
 
 const defaultLog = getLogger('paths/projects');
 
@@ -160,11 +164,6 @@ export function getProjectList(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'getProjectList' });
 
-    const page: number | undefined = req.query.page ? Number(req.query.page) : undefined;
-    const limit: number | undefined = req.query.limit ? Number(req.query.limit) : undefined;
-    const order: 'asc' | 'desc' | undefined = req.query.order ? (String(req.query.order) as 'asc' | 'desc') : undefined;
-    const sort: string | undefined = req.query.sort ? String(req.query.sort) : undefined;
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
@@ -176,25 +175,20 @@ export function getProjectList(): RequestHandler {
       );
       const systemUserId = connection.systemUserId();
       const filterFields: IProjectAdvancedFilters = req.query || {};
+      const paginationOptions = getPaginationOptionsFromRequest(req);
 
       const projectService = new ProjectService(connection);
-
-      const paginationOptions: ApiPaginationOptions | undefined =
-        limit !== undefined && page !== undefined ? { limit, page, sort, order } : undefined;
-
-      const projects = await projectService.getProjectList(isUserAdmin, systemUserId, filterFields, paginationOptions);
+      const projects = await projectService.getProjectList(
+        isUserAdmin,
+        systemUserId,
+        filterFields,
+        ensureCompletePaginationOptions(paginationOptions)
+      );
       const projectsTotalCount = await projectService.getProjectCount(isUserAdmin, systemUserId);
 
       const response = {
         projects,
-        pagination: {
-          total: projectsTotalCount,
-          per_page: limit,
-          current_page: page ?? 1,
-          last_page: limit ? Math.max(1, Math.ceil(projectsTotalCount / limit)) : 1,
-          sort,
-          order
-        }
+        pagination: getPaginationResponse(projectsTotalCount, paginationOptions)
       };
 
       await connection.commit();

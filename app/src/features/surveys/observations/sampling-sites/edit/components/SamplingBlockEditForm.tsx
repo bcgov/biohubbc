@@ -10,6 +10,7 @@ import { useFormikContext } from 'formik';
 import { IGetSampleBlockDetails, IGetSurveyBlock } from 'interfaces/useSurveyApi.interface';
 import { default as React, useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
+import BlockStratumCard from './BlockStratumCard';
 import { IEditSamplingSiteRequest } from './SampleSiteEditForm';
 
 const SamplingBlockEditForm = () => {
@@ -27,26 +28,6 @@ const SamplingBlockEditForm = () => {
       setSelectedBlocks(values.sampleSite.blocks);
     }
   }, [values.sampleSite]);
-
-  interface IBlockCard {
-    label: string;
-    description: string;
-  }
-
-  const BlockCard: React.FC<IBlockCard> = (props) => (
-    <Box>
-      <Box>
-        <Typography variant="subtitle1" fontWeight="bold">
-          {props.label}
-        </Typography>
-      </Box>
-      <Box my={0.25}>
-        <Typography variant="subtitle2" color="textSecondary">
-          {props.description}
-        </Typography>
-      </Box>
-    </Box>
-  );
 
   const [searchText, setSearchText] = useState('');
 
@@ -130,7 +111,7 @@ const SamplingBlockEditForm = () => {
         renderOption={(renderProps, renderOption) => {
           return (
             <Box component="li" {...renderProps} key={renderOption?.survey_block_id}>
-              <BlockCard label={renderOption.name} description={renderOption.description || ''} />
+              <BlockStratumCard label={renderOption.name} description={renderOption.description || ''} />
             </Box>
           );
         }}

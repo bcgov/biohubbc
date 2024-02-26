@@ -29,7 +29,7 @@ describe('SampleLocationService', () => {
           {
             name: `Sample Site 1`,
             description: ``,
-            feature: {
+            geojson: {
               type: 'Feature',
               geometry: {
                 type: 'Polygon',
@@ -62,10 +62,16 @@ describe('SampleLocationService', () => {
               }
             ]
           }
+        ],
+        blocks: [
+          {
+            survey_sample_site_id: 1,
+            survey_block_id: 1
+          }
         ]
       };
 
-      const insertSample = sinon.stub(SampleLocationRepository.prototype, 'insertSampleLocation').resolves({
+      const insertSample = sinon.stub(SampleLocationRepository.prototype, 'insertSampleSite').resolves({
         survey_sample_site_id: 1,
         survey_id: 1,
         name: 'Sample Site 1',
@@ -99,12 +105,6 @@ describe('SampleLocationService', () => {
           name: 'Sample Site 1',
           description: '',
           geojson: [],
-          geography: [],
-          create_date: '',
-          create_user: 1,
-          update_date: '',
-          update_user: 1,
-          revision_count: 0,
           sample_blocks: [],
           sample_methods: [],
           sample_stratums: []
@@ -120,7 +120,20 @@ describe('SampleLocationService', () => {
     });
   });
 
-  describe('deleteSampleLocationRecord', () => {
+  describe('getSampleLocationsCountBySurveyId', () => {
+    it('should return the sample site count successfully', async () => {
+      const dbConnectionObj = getMockDBConnection();
+
+      const repoStub = sinon.stub(SampleLocationRepository.prototype, 'getSampleLocationsCountBySurveyId').resolves(20);
+      const surveyService = new SampleLocationService(dbConnectionObj);
+      const response = await surveyService.getSampleLocationsCountBySurveyId(1001);
+
+      expect(repoStub).to.be.calledOnceWith(1001);
+      expect(response).to.equal(20);
+    });
+  });
+
+  describe('deleteSampleSiteRecord', () => {
     it('should run without issue', async () => {
       const mockDBConnection = getMockDBConnection();
       const service = new SampleLocationService(mockDBConnection);
@@ -133,7 +146,7 @@ describe('SampleLocationService', () => {
         .stub(SampleMethodService.prototype, 'deleteSampleMethodRecord')
         .resolves();
 
-      sinon.stub(SampleLocationRepository.prototype, 'deleteSampleLocationRecord').resolves({
+      sinon.stub(SampleLocationRepository.prototype, 'deleteSampleSiteRecord').resolves({
         survey_sample_site_id: 1,
         survey_id: 1,
         name: 'Sample Site 1',
@@ -147,7 +160,7 @@ describe('SampleLocationService', () => {
         revision_count: 0
       });
 
-      const { survey_sample_site_id } = await service.deleteSampleLocationRecord(1);
+      const { survey_sample_site_id } = await service.deleteSampleSiteRecord(1);
 
       expect(survey_sample_site_id).to.be.eq(1);
       expect(getSampleMethodsForSurveySampleSiteIdStub).to.be.calledOnceWith(1);
@@ -199,7 +212,7 @@ describe('SampleLocationService', () => {
         } as UpdateSampleStratumRecord
       ];
 
-      const updateSampleLocationStub = sinon.stub(SampleLocationRepository.prototype, 'updateSampleLocation').resolves({
+      const updateSampleLocationStub = sinon.stub(SampleLocationRepository.prototype, 'updateSampleSite').resolves({
         survey_sample_site_id: survey_sample_site_id,
         survey_id: 1,
         name: 'Cool new site',

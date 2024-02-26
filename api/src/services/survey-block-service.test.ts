@@ -28,7 +28,8 @@ describe('SurveyBlockService', () => {
             create_user: 1,
             update_date: '',
             update_user: 1,
-            revision_count: 1
+            revision_count: 1,
+            sample_block_count: 1
           }
         ],
         rowCount: 1
@@ -96,8 +97,7 @@ describe('SurveyBlockService', () => {
           create_user: 1,
           update_date: '',
           update_user: 1,
-          revision_count: 1,
-          sample_block_count: 1
+          revision_count: 1
         },
         {
           survey_block_id: 11,
@@ -108,8 +108,7 @@ describe('SurveyBlockService', () => {
           create_user: 1,
           update_date: '',
           update_user: 1,
-          revision_count: 1,
-          sample_block_count: 0
+          revision_count: 1
         }
       ]);
       const deleteBlock = sinon.stub(SurveyBlockService.prototype, 'deleteSurveyBlock').resolves();

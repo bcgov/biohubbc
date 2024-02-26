@@ -1,4 +1,4 @@
-import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
+import { ProjectRoleRouteGuard, SystemRoleRouteGuard } from 'components/security/RouteGuards';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { ObservationsContextProvider } from 'contexts/observationsContext';
 import { ProjectAuthStateContextProvider } from 'contexts/projectAuthStateContext';
@@ -25,19 +25,26 @@ import ProjectParticipantsPage from './participants/ProjectParticipantsPage';
 const ProjectsRouter: React.FC = () => {
   return (
     <Switch>
+      {/* Project List Routes */}
       <RouteWithTitle exact path="/admin/projects" title={getTitle('Projects')}>
         <ProjectsListPage />
       </RouteWithTitle>
 
+      {/* Create Project Route */}
       <RouteWithTitle exact path="/admin/projects/create" title={getTitle('Create Project')}>
-        <CreateProjectPage />
+        <SystemRoleRouteGuard
+          validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.PROJECT_CREATOR]}>
+          <CreateProjectPage />
+        </SystemRoleRouteGuard>
       </RouteWithTitle>
 
       <Redirect exact from="/admin/projects/:id" to="/admin/projects/:id/details" />
 
+      {/* Project Routes */}
       <RouteWithTitle path="/admin/projects/:id" title={getTitle('Project Details')}>
         <ProjectAuthStateContextProvider>
           <ProjectContextProvider>
+            {/* Project Details Routes */}
             <RouteWithTitle exact path="/admin/projects/:id/details" title={getTitle('Projects')}>
               <ProjectRoleRouteGuard
                 validProjectPermissions={[
@@ -50,6 +57,7 @@ const ProjectsRouter: React.FC = () => {
               </ProjectRoleRouteGuard>
             </RouteWithTitle>
 
+            {/* Edit Project Route */}
             <RouteWithTitle exact path="/admin/projects/:id/edit" title={getTitle('Edit Project')}>
               <ProjectRoleRouteGuard
                 validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
@@ -58,6 +66,7 @@ const ProjectsRouter: React.FC = () => {
               </ProjectRoleRouteGuard>
             </RouteWithTitle>
 
+            {/* Project Team Route */}
             <RouteWithTitle exact path="/admin/projects/:id/users" title={getTitle('Project Team')}>
               <ProjectRoleRouteGuard
                 validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}
@@ -66,6 +75,7 @@ const ProjectsRouter: React.FC = () => {
               </ProjectRoleRouteGuard>
             </RouteWithTitle>
 
+            {/* Survey Routes */}
             <RouteWithTitle path="/admin/projects/:id/surveys/:survey_id" title={getTitle('Surveys')}>
               <ProjectRoleRouteGuard
                 validProjectPermissions={[
@@ -84,6 +94,7 @@ const ProjectsRouter: React.FC = () => {
               </ProjectRoleRouteGuard>
             </RouteWithTitle>
 
+            {/* Create Survey Route */}
             <RouteWithTitle exact path="/admin/projects/:id/survey/create" title={getTitle('Create Survey')}>
               <ProjectRoleRouteGuard
                 validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}

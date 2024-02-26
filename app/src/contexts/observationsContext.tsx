@@ -2,7 +2,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
 import { createContext, PropsWithChildren, useContext } from 'react';
-import { ApiPaginationOptions } from 'types/misc';
+import { ApiPaginationRequestOptions } from 'types/misc';
 import { SurveyContext } from './surveyContext';
 
 /**
@@ -15,11 +15,19 @@ export type IObservationsContext = {
   /**
    * Data Loader used for retrieving survey observations
    */
-  observationsDataLoader: DataLoader<[pagination?: ApiPaginationOptions], IGetSurveyObservationsResponse, unknown>;
+  observationsDataLoader: DataLoader<
+    [pagination?: ApiPaginationRequestOptions],
+    IGetSurveyObservationsResponse,
+    unknown
+  >;
 };
 
 export const ObservationsContext = createContext<IObservationsContext>({
-  observationsDataLoader: {} as DataLoader<[pagination?: ApiPaginationOptions], IGetSurveyObservationsResponse, unknown>
+  observationsDataLoader: {} as DataLoader<
+    [pagination?: ApiPaginationRequestOptions],
+    IGetSurveyObservationsResponse,
+    unknown
+  >
 });
 
 export const ObservationsContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
@@ -27,7 +35,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
 
   const biohubApi = useBiohubApi();
 
-  const observationsDataLoader = useDataLoader((pagination?: ApiPaginationOptions) =>
+  const observationsDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions) =>
     biohubApi.observation.getObservationRecords(projectId, surveyId, pagination)
   );
 

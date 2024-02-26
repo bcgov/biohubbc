@@ -10,6 +10,7 @@ import { IStratum } from 'features/surveys/components/SurveySiteSelectionForm';
 import { useFormikContext } from 'formik';
 import { default as React, useContext, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
+import BlockStratumCard from '../edit/components/BlockStratumCard';
 import { ICreateSamplingSiteRequest } from '../SamplingSitePage';
 
 const SamplingStratumForm: React.FC = () => {
@@ -19,26 +20,6 @@ const SamplingStratumForm: React.FC = () => {
 
   const options = surveyContext.surveyDataLoader?.data?.surveyData?.site_selection?.stratums || [];
   const [selectedStratums, setSelectedStratums] = useState<IStratum[]>([]);
-
-  interface IStratumCard {
-    label: string;
-    description: string;
-  }
-
-  const StratumCard: React.FC<IStratumCard> = (props) => (
-    <Box>
-      <Box>
-        <Typography variant="subtitle1" fontWeight="bold">
-          {props.label}
-        </Typography>
-      </Box>
-      <Box my={0.25}>
-        <Typography variant="subtitle2" color="textSecondary">
-          {props.description}
-        </Typography>
-      </Box>
-    </Box>
-  );
 
   const [searchText, setSearchText] = useState('');
 
@@ -111,7 +92,7 @@ const SamplingStratumForm: React.FC = () => {
         renderOption={(renderProps, renderOption) => {
           return (
             <Box component="li" {...renderProps} key={renderOption?.survey_stratum_id}>
-              <StratumCard label={renderOption.name} description={renderOption.description || ''} />
+              <BlockStratumCard label={renderOption.name} description={renderOption.description || ''} />
             </Box>
           );
         }}
