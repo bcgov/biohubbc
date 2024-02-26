@@ -15,7 +15,7 @@ parameters:
   - description: The OpenShift ImageStream name.
     displayName: IMAGE_STREAM_NAME
     name: IMAGE_STREAM_NAME
-    value: 'postgis-postgres'
+    value: 'postgres-postgis'
   - description: The OpenShift Namespace where the ImageStream resides.
     displayName: Namespace
     name: IMAGE_STREAM_NAMESPACE
@@ -65,7 +65,7 @@ parameters:
     displayName: Version of PostgreSQL Image
     name: IMAGE_STREAM_VERSION
     required: true
-    value: '12-31'
+    value: '15-3.4-alpine'
   - description: Indicator to enable pgcrypto extension (provided out-of-the-box with PostgreSQL).
     displayName: Flag to enable pgcrypto PostgreSQL extension.
     name: PGCRYPTO_EXTENSION
@@ -134,7 +134,7 @@ objects:
   - kind: ImageStream
     apiVersion: image.openshift.io/v1
     metadata:
-      name: 'postgis-postgres'
+      name: '${IMAGE_STREAM_NAME}'
       labels:
         shared: 'true'
       annotations: {}
@@ -239,8 +239,8 @@ objects:
               - postgresql
             from:
               kind: ImageStreamTag
-              name: 'postgis-postgres:15-3.4-alpine'
-              namespace: 'af2668-dev'
+              name: '${IMAGE_STREAM_NAME}:${IMAGE_STREAM_VERSION}'
+              namespace: '${IMAGE_STREAM_NAMESPACE}'
             lastTriggeredImage: ''
           type: ImageChange
         - type: ConfigChange
