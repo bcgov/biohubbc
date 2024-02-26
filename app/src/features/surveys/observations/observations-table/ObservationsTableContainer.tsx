@@ -102,83 +102,81 @@ const ObservationComponent = () => {
   ];
 
   return (
-    <>
-      <Paper component={Stack} flexDirection="column" flex="1 1 auto" height="100%">
-        <Toolbar
-          disableGutters
+    <Paper component={Stack} flexDirection="column" flex="1 1 auto" height="100%">
+      <Toolbar
+        disableGutters
+        sx={{
+          pl: 2,
+          pr: 3
+        }}>
+        <Typography
           sx={{
-            pl: 2,
-            pr: 3
+            flexGrow: '1',
+            fontSize: '1.125rem',
+            fontWeight: 700
           }}>
-          <Typography
-            sx={{
-              flexGrow: '1',
-              fontSize: '1.125rem',
-              fontWeight: 700
-            }}>
-            Observations &zwnj;
-            <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
-              ({observationsTableContext.observationCount})
-            </Typography>
+          Observations &zwnj;
+          <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
+            ({observationsTableContext.observationCount})
           </Typography>
+        </Typography>
 
-          <Stack flexDirection="row" alignItems="center" gap={1} whiteSpace="nowrap">
-            <ImportObservationsButton
-              disabled={observationsTableContext.isSaving}
-              onStart={() => observationsTableContext.setDisabled(true)}
-              onSuccess={() => observationsTableContext.refreshObservationRecords()}
-              onFinish={() => observationsTableContext.setDisabled(false)}
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<Icon path={mdiPlus} size={1} />}
-              onClick={() => observationsTableContext.addObservationRecord()}
-              disabled={observationsTableContext.isSaving}>
-              Add Record
-            </Button>
-            <Collapse in={observationsTableContext.hasUnsavedChanges} orientation="horizontal" sx={{ mr: -1 }}>
-              <Box whiteSpace="nowrap" display="flex" sx={{ gap: 1, pr: 1 }}>
-                <LoadingButton
-                  loading={observationsTableContext.isSaving}
-                  variant="contained"
-                  color="primary"
-                  onClick={() => observationsTableContext.saveObservationRecords()}
-                  disabled={observationsTableContext.isSaving}>
-                  Save
-                </LoadingButton>
-                <DiscardChangesButton
-                  disabled={observationsTableContext.isSaving}
-                  onDiscard={() => observationsTableContext.discardChanges()}
-                />
-              </Box>
-            </Collapse>
-            <ConfigureColumnsContainer disabled={observationsTableContext.isSaving} columns={columns} />
-            <BulkActionsButton disabled={observationsTableContext.isSaving} />
-          </Stack>
-        </Toolbar>
+        <Stack flexDirection="row" alignItems="center" gap={1} whiteSpace="nowrap">
+          <ImportObservationsButton
+            disabled={observationsTableContext.isSaving}
+            onStart={() => observationsTableContext.setDisabled(true)}
+            onSuccess={() => observationsTableContext.refreshObservationRecords()}
+            onFinish={() => observationsTableContext.setDisabled(false)}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Icon path={mdiPlus} size={1} />}
+            onClick={() => observationsTableContext.addObservationRecord()}
+            disabled={observationsTableContext.isSaving}>
+            Add Record
+          </Button>
+          <Collapse in={observationsTableContext.hasUnsavedChanges} orientation="horizontal" sx={{ mr: -1 }}>
+            <Box whiteSpace="nowrap" display="flex" sx={{ gap: 1, pr: 1 }}>
+              <LoadingButton
+                loading={observationsTableContext.isSaving}
+                variant="contained"
+                color="primary"
+                onClick={() => observationsTableContext.saveObservationRecords()}
+                disabled={observationsTableContext.isSaving}>
+                Save
+              </LoadingButton>
+              <DiscardChangesButton
+                disabled={observationsTableContext.isSaving}
+                onDiscard={() => observationsTableContext.discardChanges()}
+              />
+            </Box>
+          </Collapse>
+          <ConfigureColumnsContainer disabled={observationsTableContext.isSaving} columns={columns} />
+          <BulkActionsButton disabled={observationsTableContext.isSaving} />
+        </Stack>
+      </Toolbar>
 
-        <Divider flexItem></Divider>
+      <Divider flexItem></Divider>
 
-        <DataGridValidationAlert
-          validationModel={observationsTableContext.validationModel}
-          muiDataGridApiRef={observationsTableContext._muiDataGridApiRef.current}
-        />
+      <DataGridValidationAlert
+        validationModel={observationsTableContext.validationModel}
+        muiDataGridApiRef={observationsTableContext._muiDataGridApiRef.current}
+      />
 
-        <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
-          <Box position="absolute" width="100%" height="100%">
-            <ObservationsTable
-              isLoading={
-                observationsTableContext.isLoading ||
-                observationsTableContext.isSaving ||
-                observationsTableContext.disabled
-              }
-              columns={columns}
-            />
-          </Box>
+      <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
+        <Box position="absolute" width="100%" height="100%">
+          <ObservationsTable
+            isLoading={
+              observationsTableContext.isLoading ||
+              observationsTableContext.isSaving ||
+              observationsTableContext.disabled
+            }
+            columns={columns}
+          />
         </Box>
-      </Paper>
-    </>
+      </Box>
+    </Paper>
   );
 };
 

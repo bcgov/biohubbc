@@ -9,6 +9,7 @@ import {
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ObservationService } from '../../../../../../services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
+import { ensureCompletePaginationOptions, getPaginationResponse } from '../../../../../../utils/pagination';
 import { ApiPaginationOptions } from '../../../../../../zod-schema/pagination';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation');
@@ -475,7 +476,6 @@ PUT.apiDoc = {
                     type: 'object',
                     required: [
                       'itis_tsn',
-                      'itis_scientific_name',
                       'survey_sample_site_id',
                       'survey_sample_method_id',
                       'survey_sample_period_id',
@@ -499,7 +499,8 @@ PUT.apiDoc = {
                         type: 'integer'
                       },
                       itis_scientific_name: {
-                        type: 'string'
+                        type: 'string',
+                        nullable: true
                       },
                       survey_sample_site_id: {
                         type: 'number'
@@ -624,6 +625,8 @@ export function getSurveyObservations(): RequestHandler {
       sort = samplingSiteSortingColumnName[sortQuery];
     }
 
+    const paginationOptions: Partial<ApiPaginationOptions> = { page, limit, order, sort };
+
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
@@ -631,29 +634,17 @@ export function getSurveyObservations(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      const paginationOptions: ApiPaginationOptions | undefined =
-        limit !== undefined && page !== undefined ? { limit, page, sort, order } : undefined;
-
       const observationData = await observationService.getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData(
         surveyId,
-        paginationOptions
+        ensureCompletePaginationOptions(paginationOptions)
       );
 
       const observationCount = observationData.supplementaryObservationData.observationCount;
 
-      const pagination = {
-        total: observationCount,
-        per_page: limit,
-        current_page: page ?? 1,
-        last_page: limit ? Math.max(1, Math.ceil(observationCount / limit)) : 1,
-        sort,
-        order
-      };
-
       return res.status(200).json({
         surveyObservations: observationData.surveyObservations,
         supplementaryObservationData: observationData.supplementaryObservationData,
-        pagination
+        pagination: getPaginationResponse(observationCount, paginationOptions)
       });
     } catch (error) {
       defaultLog.error({ label: 'getSurveyObservations', message: 'error', error });

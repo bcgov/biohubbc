@@ -102,8 +102,6 @@ export class SubCountRepository extends BaseRepository {
   /**
    * Delete observation_subcount records for the given set of survey observation ids.
    *
-   * Note: Also deletes all related child records (subcount_critter, subcount_event).
-   *
    * @param {number} surveyId
    * @param {number[]} surveyObservationIds
    * @return {*}  {Promise<void>}
@@ -120,12 +118,6 @@ export class SubCountRepository extends BaseRepository {
       )
       .whereIn('observation_subcount.survey_observation_id', surveyObservationIds)
       .andWhere('survey_observation.survey_id', surveyId);
-
-    // Delete child subcount_critter records, if any
-    await this.deleteSubCountCritterRecordsForObservationId(surveyId, surveyObservationIds);
-
-    // Delete child subcount_event records, if any
-    await this.deleteSubCountEventRecordsForObservationId(surveyId, surveyObservationIds);
 
     // Delete observation_subcount records, if any
     await this.connection.knex(queryBuilder);

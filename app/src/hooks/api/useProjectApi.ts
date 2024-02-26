@@ -1,4 +1,4 @@
-import { AxiosInstance, CancelTokenSource } from 'axios';
+import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import {
@@ -17,7 +17,7 @@ import {
   UPDATE_GET_ENTITIES
 } from 'interfaces/useProjectApi.interface';
 import qs from 'qs';
-import { ApiPaginationOptions } from 'types/misc';
+import { ApiPaginationRequestOptions } from 'types/misc';
 
 /**
  * Returns a set of supported api methods for working with projects.
@@ -107,12 +107,12 @@ const useProjectApi = (axios: AxiosInstance) => {
   /**
    * Get projects list (potentially based on filter criteria).
    *
-   * @param {ApiPaginationOptions} [pagination]
+   * @param {ApiPaginationRequestOptions} [pagination]
    * @param {IProjectAdvancedFilterRequest} filterFieldData
    * @return {*}  {Promise<IGetProjectsListResponse[]>}
    */
   const getProjectsList = async (
-    pagination?: ApiPaginationOptions,
+    pagination?: ApiPaginationRequestOptions,
     filterFieldData?: IProjectAdvancedFilterRequest
   ): Promise<IGetProjectsListResponse> => {
     const params = new URLSearchParams();
@@ -205,14 +205,14 @@ const useProjectApi = (axios: AxiosInstance) => {
    * @param {File} file
    * @param {string} attachmentType
    * @param {CancelTokenSource} [cancelTokenSource]
-   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<string[]>}
    */
   const uploadProjectAttachments = async (
     projectId: number,
     file: File,
     cancelTokenSource?: CancelTokenSource,
-    onProgress?: (progressEvent: ProgressEvent) => void
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
   ): Promise<IUploadAttachmentResponse> => {
     const req_message = new FormData();
 
@@ -233,7 +233,7 @@ const useProjectApi = (axios: AxiosInstance) => {
    * @param {File} file
    * @param {IReportMetaForm} attachmentMeta
    * @param {CancelTokenSource} [cancelTokenSource]
-   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<IUploadAttachmentResponse>}
    */
   const uploadProjectReports = async (
@@ -241,7 +241,7 @@ const useProjectApi = (axios: AxiosInstance) => {
     file: File,
     attachmentMeta: IReportMetaForm,
     cancelTokenSource?: CancelTokenSource,
-    onProgress?: (progressEvent: ProgressEvent) => void
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
   ): Promise<IUploadAttachmentResponse> => {
     const req_message = new FormData();
 

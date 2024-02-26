@@ -7,13 +7,11 @@ import SelectedSpecies from './components/SelectedSpecies';
 import SpeciesAutocompleteField from './components/SpeciesAutocompleteField';
 
 const FocalSpeciesComponent = () => {
-  const { values, setFieldValue, setErrors, errors } = useFormikContext<ITaxonomy[]>();
+  const { values, setFieldValue, errors, submitCount } = useFormikContext<ITaxonomy[]>();
 
   const selectedSpecies: ITaxonomy[] = get(values, 'species.focal_species') || [];
-
   const handleAddSpecies = (species: ITaxonomy) => {
     setFieldValue(`species.focal_species[${selectedSpecies.length}]`, species);
-    setErrors([]);
   };
 
   const handleRemoveSpecies = (species_id: number) => {
@@ -32,7 +30,8 @@ const FocalSpeciesComponent = () => {
         required={true}
         handleAddSpecies={handleAddSpecies}
       />
-      {errors && get(errors, 'species.focal_species') && (
+      <SelectedSpecies selectedSpecies={selectedSpecies} handleRemoveSpecies={handleRemoveSpecies} />
+      {submitCount > 0 && errors && get(errors, 'species.focal_species') && (
         <Box mt={3}>
           <AlertBar
             severity="error"
@@ -42,7 +41,6 @@ const FocalSpeciesComponent = () => {
           />
         </Box>
       )}
-      <SelectedSpecies selectedSpecies={selectedSpecies} handleRemoveSpecies={handleRemoveSpecies} />
     </>
   );
 };

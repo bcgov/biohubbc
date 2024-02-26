@@ -27,6 +27,16 @@ const defaultLog = getLogger('repositories/project-repository');
  * @extends {BaseRepository}
  */
 export class ProjectRepository extends BaseRepository {
+  /**
+   * Retrieves the paginated list of all projects that are available to the user.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IProjectAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {Promise<ProjectListData[]>}
+   * @memberof ProjectRepository
+   */
   async getProjectList(
     isUserAdmin: boolean,
     systemUserId: number | null,

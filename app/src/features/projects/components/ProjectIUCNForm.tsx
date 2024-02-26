@@ -70,6 +70,8 @@ export interface IProjectIUCNFormProps {
 /**
  * Create project - IUCN classification section
  *
+ * TODO This component is deprecated and should be removed
+ *
  * @return {*}
  */
 const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {

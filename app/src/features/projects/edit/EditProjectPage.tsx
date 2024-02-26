@@ -25,14 +25,10 @@ import EditProjectForm from './EditProjectForm';
  */
 const EditProjectPage: React.FC = (props) => {
   const history = useHistory();
-
   const biohubApi = useBiohubApi();
+  const formikRef = useRef<FormikProps<IUpdateProjectRequest>>(null);
 
   const { projectId } = useContext(ProjectContext);
-
-  // Reference to pass to the formik component in order to access its state at any time
-  // Used by the draft logic to fetch the values of a step form that has not been validated/completed
-  const formikRef = useRef<FormikProps<IUpdateProjectRequest>>(null);
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);

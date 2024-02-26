@@ -91,7 +91,7 @@ export const getCritterbaseProxyMiddleware = () =>
     pathRewrite: async (path) => {
       defaultLog.debug({ label: 'pathRewrite', message: 'path', req: path });
 
-      const matchRoutePrefix = new RegExp(`/api/critterbase(/?)(.*)`);
+      const matchRoutePrefix = /\/api\/critterbase(\/?)(.*)/;
       return path.replace(matchRoutePrefix, '/$2');
     },
     onProxyReq: (client, req) => {
@@ -111,7 +111,6 @@ export const getCritterbaseProxyMiddleware = () =>
         // Return 401 and 403 errors as 500 so as not to confuse SIMS, which has special logic for handling 401 and 403
         // errors from its own API calls.
         res.status(500).send('Access Denied').end();
-        return;
       }
     }
   });
