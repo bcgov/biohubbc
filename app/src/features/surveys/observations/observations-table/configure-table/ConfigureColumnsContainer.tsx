@@ -45,9 +45,7 @@ export const ConfigureColumnsContainer = (props: IConfigureColumnsContainerProps
 
   // The array of columns that may be toggled as hidden or visible
   const hideableColumns = useMemo(() => {
-    return columns.filter((column) => {
-      return column && column.hideable;
-    });
+    return columns.filter((column) => column?.hideable);
   }, [columns]);
 
   /**

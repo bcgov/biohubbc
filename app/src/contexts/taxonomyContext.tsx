@@ -2,7 +2,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { get as getProperty, has as hasProperty } from 'lodash';
-import { createContext, PropsWithChildren, useCallback, useRef, useState } from 'react';
+import { createContext, PropsWithChildren, useCallback, useMemo, useRef, useState } from 'react';
 
 export interface ITaxonomyContext {
   /**
@@ -79,10 +79,13 @@ export const TaxonomyContextProvider = (props: PropsWithChildren) => {
     [_taxonomyCache, cacheSpeciesTaxonomyByIds]
   );
 
-  const taxonomyContext: ITaxonomyContext = {
-    getCachedSpeciesTaxonomyById,
-    cacheSpeciesTaxonomyByIds
-  };
+  const taxonomyContext: ITaxonomyContext = useMemo(
+    () => ({
+      getCachedSpeciesTaxonomyById,
+      cacheSpeciesTaxonomyByIds
+    }),
+    [cacheSpeciesTaxonomyByIds, getCachedSpeciesTaxonomyById]
+  );
 
   return <TaxonomyContext.Provider value={taxonomyContext}>{props.children}</TaxonomyContext.Provider>;
 };
