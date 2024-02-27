@@ -59,7 +59,7 @@ USER 0
 # This image must forever use UID 26 for postgres user so our volumes are
 # safe in the future. This should *never* change, the last test is there
 # to make sure of that.
-# RUN yum -y module enable postgresql:15
+RUN yum -y module enable postgresql:15
 # INSTALL_PKGS="rsync tar gettext bind-utils nss_wrapper postgresql-server postgresql-contrib" && \
 ENV INSTALL_PKGS="rsync tar yum-utils gettext bind-utils nss_wrapper postgresql-server postgresql-contrib pgaudit"
 RUN yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS
