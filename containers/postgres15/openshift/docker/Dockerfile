@@ -4,7 +4,12 @@
 ARG BASE_IMAGE=postgres:15-alpine3.18
 FROM ${BASE_IMAGE}
 
-RUN mkdir -p /var/lib/pgsql /var/run/postgresql \
+# USER 0
+
+# RUN usermod -G "" postgres
+# RUN test "$(id postgres)" = "uid=26(postgres) gid=26(postgres) groups=26(postgres)"
+
+RUN mkdir -p /var/lib/pgsql/data /var/run/postgresql \
     && chgrp -R 0 /var/lib/pgsql /var/run/postgresql \
     && chmod -R g=u /var/lib/pgsql /var/run/postgresql
 
