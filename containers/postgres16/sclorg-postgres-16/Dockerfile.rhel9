@@ -56,9 +56,9 @@ RUN rm /etc/rhsm-host && \
     yum repolist > /dev/null && \
     yum install -y yum-utils gettext && \
     yum-config-manager --disable \* &> /dev/null && \
-    # yum-config-manager --enable rhel-server-rhscl-9-rpms && \
-    yum-config-manager --enable rhel-9-server-rpms && \
-    yum-config-manager --enable rhel-9-server-optional-rpms && \
+    yum-config-manager --enable rhel-server-rhscl-7-rpms && \
+    yum-config-manager --enable rhel-7-server-rpms && \
+    yum-config-manager --enable rhel-7-server-optional-rpms && \
     { yum -y module enable postgresql:16 || :; } && \
     INSTALL_PKGS="rsync tar gettext bind-utils nss_wrapper postgresql-server postgresql-contrib" && \
     INSTALL_PKGS="$INSTALL_PKGS pgaudit" && \
