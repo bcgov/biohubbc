@@ -11,7 +11,7 @@ FROM ubi9/s2i-core
 #                           PostgreSQL administrative account
 
 ENV POSTGRESQL_VERSION=15 \
-    POSTGRESQL_PREV_VERSION=13 \
+    # POSTGRESQL_PREV_VERSION=13 \
     HOME=/var/lib/pgsql \
     PGUSER=postgres \
     APP_DATA=/opt/app-root
@@ -30,7 +30,7 @@ LABEL summary="$SUMMARY" \
     io.k8s.description="$DESCRIPTION" \
     io.k8s.display-name="PostgreSQL 15" \
     io.openshift.expose-services="5432:postgresql" \
-    io.openshift.tags="database,postgresql,postgresql15,postgresql-15,postgis,postgis$POSTGISV" \
+    io.openshift.tags="database,postgresql,postgresql15,postgresql-15" \
     io.openshift.s2i.assemble-user="26" \
     name="rhel9/postgresql-15" \
     com.redhat.component="postgresql-15-container" \
@@ -52,27 +52,33 @@ EXPOSE 5432
 COPY root/usr/libexec/fix-permissions /usr/libexec/fix-permissions
 
 # RUN yum repolist > /dev/null && \
-#     yum install -y yum-utils gettext && \
-#     yum-config-manager --disable \* &> /dev/null && \
-#     yum-config-manager --enable rhel-9-for-x86_64-baseos-rpms && \
-#     yum-config-manager --enable rhel-9-for-x86_64-appstream-rpms && \
-#     yum-config-manager --enable codeready-builder-for-rhel-9-x86_64-rpms
+RUN yum install -y yum-utils gettext
+# yum-config-manager --disable \* &> /dev/null && \
+# yum-config-manager --enable rhel-9-for-x86_64-baseos-rpms && \
+# yum-config-manager --enable rhel-9-for-x86_64-appstream-rpms && \
+# yum-config-manager --enable codeready-builder-for-rhel-9-x86_64-rpms
 
 # This image must forever use UID 26 for postgres user so our volumes are
 # safe in the future. This should *never* change, the last test is there
 # to make sure of that.
-RUN { yum -y module enable postgresql:15 || :; } && \
-    INSTALL_PKGS="rsync tar gettext bind-utils nss_wrapper postgresql-server postgresql-contrib" && \
-    INSTALL_PKGS="$INSTALL_PKGS pgaudit" && \
-    yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS && \
-    rpm -V $INSTALL_PKGS
+# RUN yum -y module enable postgresql:15
+# INSTALL_PKGS="rsync tar gettext bind-utils nss_wrapper postgresql-server postgresql-contrib" && \
+RUN INSTALL_PKGS="rsync tar gettext bind-utils nss_wrapper pgaudit"
+RUN yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS
+RUN rpm -V $INSTALL_PKGS
 RUN postgres -V | grep -qe "$POSTGRESQL_VERSION\." && echo "Found VERSION $POSTGRESQL_VERSION" && \
-    (yum -y reinstall tzdata || yum -y update tzdata ) && \
-    yum -y clean all --enablerepo='*' && \
-    localedef -f UTF-8 -i en_US en_US.UTF-8
+    (yum -y reinstall tzdata || yum -y update tzdata )
+
+RUN yum -y clean all --enablerepo='*'
+# RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN localedef -f UTF-8 -i en_US en_US.UTF-8
+
 RUN test "$(id postgres)" = "uid=26(postgres) gid=26(postgres) groups=26(postgres)"
 RUN mkdir -p /var/lib/pgsql/data
 RUN /usr/libexec/fix-permissions /var/lib/pgsql /var/run/postgresql
+
+# RUN touch /etc/yum/pluginconf.d/rhnplugin.conf && \
+#     echo  exclude=postgresql* >> /etc/yum/pluginconf.d/rhnplugin.conf    
 
 # Get prefix path and path to scripts rather than hard-code them in scripts
 ENV CONTAINER_SCRIPTS_PATH=/usr/share/container-scripts/postgresql \
@@ -86,7 +92,7 @@ RUN cd /tmp && \
     rpm -ivh https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm && \
     yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm 
 
-RUN yum -y remove rh-postgresql15-postgresql-server-syspaths rh-postgresql15-postgresql-contrib-syspaths rh-postgresql15-postgresql-syspaths
+# RUN yum -y remove rh-postgresql15-postgresql-server-syspaths rh-postgresql15-postgresql-contrib-syspaths rh-postgresql15-postgresql-syspaths
 RUN yum install -y postgis34_15
 RUN yum install -y postgis34_15-client
 RUN yum install -y pgrouting_15
