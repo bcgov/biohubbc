@@ -1,4 +1,4 @@
-FROM ubi8/s2i-core
+FROM ubi9/s2i-core
 
 # PostgreSQL image for OpenShift with PostGIS extension.
 # Volumes:
@@ -32,11 +32,11 @@ LABEL summary="$SUMMARY" \
     io.openshift.expose-services="5432:postgresql" \
     io.openshift.tags="database,postgresql,postgresql16,postgresql-16,postgis,postgis$POSTGISV" \
     io.openshift.s2i.assemble-user="26" \
-    name="rhel8/postgresql-16" \
+    name="rhel9/postgresql-16" \
     com.redhat.component="postgresql-16-container" \
     version="1" \
     com.redhat.license_terms="https://www.redhat.com/en/about/red-hat-end-user-license-agreements#rhel" \
-    usage="podman run -d --name postgresql_database -e POSTGRESQL_USER=user -e POSTGRESQL_PASSWORD=pass -e POSTGRESQL_DATABASE=db -p 5432:5432 rhel8/postgresql-16" \
+    usage="podman run -d --name postgresql_database -e POSTGRESQL_USER=user -e POSTGRESQL_PASSWORD=pass -e POSTGRESQL_DATABASE=db -p 5432:5432 rhel9/postgresql-16" \
     maintainer="SoftwareCollections.org <sclorg@redhat.com>"
 
 # USER 0
@@ -52,13 +52,16 @@ COPY ./rhsm-ca /etc/rhsm/ca
 # This image must forever use UID 26 for postgres user so our volumes are
 # safe in the future. This should *never* change, the last test is there
 # to make sure of that.
-RUN rm /etc/rhsm-host
-# yum repolist > /dev/null && \
-# yum install -y yum-utils gettext && \
-# yum-config-manager --disable \* &> /dev/null && \
+RUN rm /etc/rhsm-host && \
+    yum repolist > /dev/null && \
+    yum install -y yum-utils gettext && \
+    yum-config-manager --disable \* &> /dev/null && \
+    yum-config-manager --enable rhel-9-for-x86_64-baseos-rpms && \
+    yum-config-manager --enable rhel-9-for-x86_64-appstream-rpms && \
+    yum-config-manager --enable codeready-builder-for-rhel-9-x86_64-rpms
 # yum-config-manager --enable rhel-server-rhscl-7-rpms && \
 # yum-config-manager --enable rhel-7-server-rpms && \
-# yum-config-manager --enable rhel-7-server-optional-rpms && \
+# yum-config-manager --enable rhel-7-server-optional-rpms
 
 RUN yum -y module enable postgresql:16
 RUN INSTALL_PKGS="rsync tar gettext bind-utils nss_wrapper postgresql-server postgresql-contrib" && \

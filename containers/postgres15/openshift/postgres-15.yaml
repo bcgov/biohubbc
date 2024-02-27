@@ -53,16 +53,16 @@ parameters:
     description: The 'kind' (type) of the source image; typically ImageStreamTag, or DockerImage.
     required: false
     value: DockerImage
-  # - name: SOURCE_IMAGE_NAME
-  #   displayName: Source Image Name
-  #   description: The name of the source image. If specified, this overrides the 'FROM' spec in the Docker file.
-  #   required: false
-  #   value:
-  # - name: SOURCE_IMAGE_TAG
-  #   displayName: Source Image Tag
-  #   description: The tag of the source image. If specified, this overrides the 'FROM' spec in the Docker file.
-  #   required: false
-  #   value:
+  - name: SOURCE_IMAGE_NAME
+    displayName: Source Image Name
+    description: The name of the source image. If specified, this overrides the 'FROM' spec in the Docker file.
+    required: false
+    value: registry.redhat.io/rhel9/postgresql-15
+  - name: SOURCE_IMAGE_TAG
+    displayName: Source Image Tag
+    description: The tag of the source image. If specified, this overrides the 'FROM' spec in the Docker file.
+    required: false
+    value: latest
   - name: CPU_LIMIT
     displayName: Resources CPU Limit
     description: The resources CPU limit (in cores) for this build; 0 = use default.
@@ -126,9 +126,9 @@ objects:
           noCache: true
           imageOptimizationPolicy: SkipLayers
           dockerfilePath: ${DOCKER_FILE_PATH}
-          # from:
-          #   kind: ${SOURCE_IMAGE_KIND}
-          #   name: ${SOURCE_IMAGE_NAME}:${SOURCE_IMAGE_TAG}
+          from:
+            kind: ${SOURCE_IMAGE_KIND}
+            name: ${SOURCE_IMAGE_NAME}:${SOURCE_IMAGE_TAG}
       output:
         to:
           kind: ImageStreamTag

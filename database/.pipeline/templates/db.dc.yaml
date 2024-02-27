@@ -65,7 +65,7 @@ parameters:
     displayName: Version of PostgreSQL Image
     name: IMAGE_STREAM_VERSION
     required: true
-    value: '16'
+    value: '15'
   - name: CPU_REQUEST
     value: '50m'
   - name: CPU_LIMIT
