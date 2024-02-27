@@ -126,7 +126,8 @@ GET.apiDoc = {
                   ],
                   properties: {
                     survey_observation_id: {
-                      type: 'integer'
+                      type: 'integer',
+                      minimum: 1
                     },
                     survey_id: {
                       type: 'integer',
@@ -140,15 +141,18 @@ GET.apiDoc = {
                       nullable: true
                     },
                     survey_sample_site_id: {
-                      type: 'number',
+                      type: 'integer',
+                      minimum: 1,
                       nullable: true
                     },
                     survey_sample_method_id: {
-                      type: 'number',
+                      type: 'integer',
+                      minimum: 1,
                       nullable: true
                     },
                     survey_sample_period_id: {
-                      type: 'number',
+                      type: 'integer',
+                      minimum: 1,
                       nullable: true
                     },
                     latitude: {
@@ -179,7 +183,7 @@ GET.apiDoc = {
                       nullable: true
                     },
                     subcount: {
-                      type: 'number',
+                      type: 'integer',
                       nullable: true
                     },
                     observation_subcount_events: {
@@ -314,7 +318,7 @@ GET.apiDoc = {
                           ],
                           properties: {
                             itis_tsn: {
-                              type: 'number',
+                              type: 'integer',
                               nullable: true
                             },
                             taxon_measurement_id: {
@@ -355,7 +359,7 @@ GET.apiDoc = {
                           ],
                           properties: {
                             itis_tsn: {
-                              type: 'number',
+                              type: 'integer',
                               nullable: true
                             },
                             taxon_measurement_id: {
@@ -488,7 +492,7 @@ PUT.apiDoc = {
                     ],
                     properties: {
                       survey_observation_id: {
-                        type: 'number',
+                        type: 'integer',
                         nullable: true
                       },
                       survey_id: {
@@ -503,13 +507,13 @@ PUT.apiDoc = {
                         nullable: true
                       },
                       survey_sample_site_id: {
-                        type: 'number'
+                        type: 'integer'
                       },
                       survey_sample_method_id: {
-                        type: 'number'
+                        type: 'integer'
                       },
                       survey_sample_period_id: {
-                        type: 'number'
+                        type: 'integer'
                       },
                       count: {
                         type: 'integer'
