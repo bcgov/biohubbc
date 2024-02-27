@@ -169,14 +169,14 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
                   <DrawControls
                     options={{
                       // Always disable circle, circlemarker and line
-                      draw: { circle: false, circlemarker: false, polyline: false, marker: false }
+                      draw: { circle: false, circlemarker: false,  marker: false }
                     }}
                     onLayerAdd={(event: DrawEvents.Created) => {
                       const feature = event.layer.toGeoJSON();
                       setFieldValue(name, [{
                         name: `Sample Site ${++numSites}`,
                         description: '',
-                        feature: feature}]);
+                        geojson: feature}]);
                     }}
                     onLayerEdit={(event: DrawEvents.Edited) => {
                       event.layers.getLayers().forEach((layer: any) => {
@@ -184,7 +184,7 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
                         setFieldValue(name, [{
                           name: `Sample Site ${++numSites}`,
                           description: '',
-                          feature: feature}]);
+                          geojson: feature}]);
                       });
                     }}
                     onLayerDelete={(event: DrawEvents.Deleted) => {
