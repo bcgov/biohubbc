@@ -77,8 +77,8 @@ const ObservationComponent = () => {
     .map((samplePeriod: IGetSamplePeriodRecord) => ({
       survey_sample_period_id: samplePeriod.survey_sample_period_id,
       survey_sample_method_id: samplePeriod.survey_sample_method_id,
-      sample_period_name: `${samplePeriod.start_date} ${samplePeriod.start_time || ''} - ${samplePeriod.end_date} ${
-        samplePeriod.end_time || ''
+      sample_period_name: `${samplePeriod.start_date} ${samplePeriod.start_time ?? ''} - ${samplePeriod.end_date} ${
+        samplePeriod.end_time ?? ''
       }`
     }));
 

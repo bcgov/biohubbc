@@ -52,8 +52,13 @@ export const ConfigureColumnsContainer = (props: IConfigureColumnsContainerProps
    * Toggles visibility for a particular column
    */
   const onToggleColumnVisibility = (field: string) => {
-    const isColumnVisible = observationsTableContext.columnVisibilityModel[field];
+    // Get the current visibility model for the column
+    const columnVisibility = observationsTableContext.columnVisibilityModel[field];
 
+    // If model is undefined, then no visibility model has been set for this column, default to true
+    const isColumnVisible = columnVisibility === undefined ? true : columnVisibility;
+
+    // Toggle the visibility of the column
     observationsTableContext._muiDataGridApiRef.current.setColumnVisibility(field, !isColumnVisible);
   };
 
@@ -146,15 +151,17 @@ export const ConfigureColumnsContainer = (props: IConfigureColumnsContainerProps
    */
   useEffect(() => {
     if (JSON.stringify(observationsTableContext.columnVisibilityModel) !== '{}') {
-      // TODO is there a better way to prevent this useEffect from running repeatedly after trying once to load from session storage?
+      // The column visibility model has already been initialized
       return;
     }
 
+    // Get visibility model from session storage, if it exists
     const stringifiedModel: string | null = sessionStorage.getItem(
       getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_HIDDEN_COLUMNS)
     );
 
     if (!stringifiedModel) {
+      // No visibility model found in session storage, leave the model in its default initial state
       return;
     }
 
@@ -163,6 +170,7 @@ export const ConfigureColumnsContainer = (props: IConfigureColumnsContainerProps
 
       observationsTableContext.setColumnVisibilityModel(model);
     } catch {
+      // An error occurred parsing the visibility model from session storage, do nothing
       return;
     }
   }, [observationsTableContext, surveyId]);
