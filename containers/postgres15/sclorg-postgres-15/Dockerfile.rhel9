@@ -95,7 +95,7 @@ RUN cd /tmp && \
 
 # RUN yum -y remove rh-postgresql15-postgresql-server-syspaths rh-postgresql15-postgresql-contrib-syspaths rh-postgresql15-postgresql-syspaths
 RUN yum install -y epel-release
-RUN yum install -y --nobest postgresql15-contrib
+RUN yum -y module enable postgresql:15 && yum install -y --nobest postgresql-contrib
 RUN yum install -y --nobest postgis34_15
 RUN yum install -y --nobest postgis34_15-client
 RUN yum install -y --nobest pgrouting_15
