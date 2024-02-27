@@ -569,7 +569,7 @@ PUT.apiDoc = {
     }
   },
   responses: {
-    200: {
+    204: {
       description: 'Update OK'
     },
     400: {
@@ -682,7 +682,7 @@ export function insertUpdateSurveyObservationsWithMeasurements(): RequestHandler
 
       await connection.commit();
 
-      return res.status(200).send();
+      return res.status(204).send();
     } catch (error) {
       defaultLog.error({ label: 'insertUpdateSurveyObservationsWithMeasurements', message: 'error', error });
       await connection.rollback();

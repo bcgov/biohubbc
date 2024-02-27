@@ -71,7 +71,7 @@ export class XLSXCSV {
   }
 
   /**
-   * Runs all content and _workbook-related validation for this CSV file, based on the given validation
+   * Runs all content and workbook-related validation for this CSV file, based on the given validation
    * schema parser.
    *
    * @param {ValidationSchemaParser} validationSchemaParser The validation schema
@@ -79,7 +79,7 @@ export class XLSXCSV {
    * @memberof XLSXCSV
    */
   validateContent(validationSchemaParser: ValidationSchemaParser): void {
-    // Run _workbook validators.
+    // Run workbook validators.
     const workbookValidators = validationSchemaParser.getWorkbookValidations();
     this._workbook.validate(workbookValidators);
 
