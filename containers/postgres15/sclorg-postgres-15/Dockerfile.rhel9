@@ -61,7 +61,7 @@ USER 0
 # to make sure of that.
 RUN yum -y module enable postgresql:15 && \
     # INSTALL_PKGS="rsync tar gettext bind-utils nss_wrapper postgresql-server postgresql-contrib" && \
-    INSTALL_PKGS="rsync tar yum-utils gettext bind-utils nss_wrapper postgresql-server postgresql-contrib pgaudit" && \
+    INSTALL_PKGS="rsync tar yum-utils gettext bind-utils nss_wrapper postgresql15-server postgresql15-contrib pgaudit" && \
     yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS
 # rpm -V $INSTALL_PKGS
 RUN postgres -V | grep -qe "$POSTGRESQL_VERSION\." && echo "Found VERSION $POSTGRESQL_VERSION" && \
@@ -94,7 +94,7 @@ RUN cd /tmp && \
     yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm 
 
 # RUN yum -y remove rh-postgresql15-postgresql-server-syspaths rh-postgresql15-postgresql-contrib-syspaths rh-postgresql15-postgresql-syspaths
-RUN yum install -y --nobest postgresql15-contrib
+# RUN yum install -y --nobest postgresql15-contrib
 RUN yum install -y --nobest postgis34_15
 RUN yum install -y --nobest postgis34_15-client
 RUN yum install -y --nobest pgrouting_15
