@@ -52,12 +52,19 @@ COPY root/usr/libexec/fix-permissions /usr/libexec/fix-permissions
 # This image must forever use UID 26 for postgres user so our volumes are
 # safe in the future. This should *never* change, the last test is there
 # to make sure of that.
-RUN { yum -y module enable postgresql:16 || :; }
-RUN INSTALL_PKGS="rsync tar gettext bind-utils nss_wrapper postgresql-server postgresql-contrib"
-RUN INSTALL_PKGS="$INSTALL_PKGS pgaudit"
-RUN yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS
-RUN rpm -V $INSTALL_PKGS
-RUN postgres -V | grep -qe "$POSTGRESQL_VERSION\." && echo "Found VERSION $POSTGRESQL_VERSION" && \
+RUN rm /etc/rhsm-host && \
+    yum repolist > /dev/null && \
+    yum install -y yum-utils gettext && \
+    yum-config-manager --disable \* &> /dev/null && \
+    yum-config-manager --enable rhel-server-rhscl-9-rpms && \
+    yum-config-manager --enable rhel-9-server-rpms && \
+    yum-config-manager --enable rhel-9-server-optional-rpms && \
+    { yum -y module enable postgresql:16 || :; } && \
+    INSTALL_PKGS="rsync tar gettext bind-utils nss_wrapper postgresql-server postgresql-contrib" && \
+    INSTALL_PKGS="$INSTALL_PKGS postgresql$POSTGRESQL_VERSION-pgaudit" && \
+    yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS && \
+    rpm -V $INSTALL_PKGS && \
+    postgres -V | grep -qe "$POSTGRESQL_VERSION\." && echo "Found VERSION $POSTGRESQL_VERSION" && \
     (yum -y reinstall tzdata || yum -y update tzdata )
 
 RUN yum -y clean all --enablerepo='*'
