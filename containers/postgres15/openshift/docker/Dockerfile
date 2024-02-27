@@ -4,7 +4,9 @@
 ARG BASE_IMAGE=postgres:15-alpine3.18
 FROM ${BASE_IMAGE}
 
-RUN chgrp -R 0 /var/lib/pgsql /var/run/postgresql && chmod -R g=u /var/lib/pgsql /var/run/postgresql
+RUN mkdir -p /var/lib/pgsql /var/run/postgresql \
+    && chgrp -R 0 /var/lib/pgsql /var/run/postgresql \
+    && chmod -R g=u /var/lib/pgsql /var/run/postgresql
 
 LABEL maintainer="PostGIS Project - https://postgis.net" \
     org.opencontainers.image.description="PostGIS 3.4.2 spatial database extension with PostgreSQL 15 Alpine" \
