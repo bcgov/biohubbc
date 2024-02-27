@@ -81,8 +81,8 @@ export async function seed(knex: Knex): Promise<void> {
           ${insertSurveySiteStrategy(surveyId)}
           ${insertSurveyIntendedOutcome(surveyId)}
           ${insertSurveySamplingSiteData(surveyId)}
-          ${insertSurveySamplingMethodData()}
-          ${insertSurveySamplePeriodData()}
+          ${insertSurveySamplingMethodData(surveyId)}
+          ${insertSurveySamplePeriodData(surveyId)}
           ${insertSurveyObservationData(surveyId)}
         `);
       }
@@ -536,7 +536,7 @@ const insertSurveySamplingSiteData = (surveyId: number) =>
  * SQL to insert survey sampling method data. Requires sampling site.
  *
  */
-const insertSurveySamplingMethodData = () =>
+const insertSurveySamplingMethodData = (surveyId: number) =>
   `
  INSERT INTO survey_sample_method
  (
@@ -546,7 +546,7 @@ const insertSurveySamplingMethodData = () =>
  )
  VALUES
  (
-    (SELECT survey_sample_site_id FROM survey_sample_site LIMIT 1),
+    (SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1),
     (SELECT method_lookup_id FROM method_lookup ORDER BY random() LIMIT 1),
     $$${faker.lorem.sentences(2)}$$
  );
@@ -556,7 +556,7 @@ const insertSurveySamplingMethodData = () =>
  * SQL to insert survey sampling period data. Requires sampling method.
  *
  */
-const insertSurveySamplePeriodData = () =>
+const insertSurveySamplePeriodData = (surveyId: number) =>
   `
   INSERT INTO survey_sample_period
   (
@@ -566,7 +566,11 @@ const insertSurveySamplePeriodData = () =>
   )
   VALUES
   (
-    (SELECT survey_sample_method_id FROM survey_sample_method LIMIT 1),
+    (SELECT survey_sample_method_id FROM survey_sample_method WHERE survey_sample_method_id = (
+      SELECT survey_sample_method_id FROM survey_sample_method WHERE survey_sample_site_id = (
+        SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1
+      ) LIMIT 1
+    ) LIMIT 1),
     $$${faker.date
       .between({ from: '2000-01-01T00:00:00-08:00', to: '2001-01-01T00:00:00-08:00' })
       .toISOString()}$$::date,

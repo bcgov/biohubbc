@@ -13,8 +13,8 @@ import {
 
 const animal: IAnimal = {
   general: {
-    taxon_id: 'a',
-    taxon_name: 'taxon',
+    itis_tsn: 'a',
+    itis_scientific_name: 'taxon',
     animal_id: 'animal',
     wlh_id: 'a',
     sex: AnimalSex.MALE,

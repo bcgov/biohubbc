@@ -106,7 +106,7 @@ type IFamilyChildResponse = {
 
 export type ICritterDetailedResponse = {
   critter_id: string;
-  taxon_id: string;
+  itis_tsn: string;
   wlh_id: string | null;
   animal_id: string | null;
   sex: string;
@@ -116,7 +116,7 @@ export type ICritterDetailedResponse = {
   create_timestamp: string;
   update_timestamp: string;
   critter_comment: string;
-  taxon: string;
+  itis_scientific_name: string;
   responsible_region: string;
   mortality_timestamp: string | null;
   collection_units: ICollectionUnitResponse[];

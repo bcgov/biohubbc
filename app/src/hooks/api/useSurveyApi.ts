@@ -483,7 +483,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
               critter_id: critter.critter_id,
               animal_id: critter.animal_id,
               sex: critter.sex,
-              taxon_id: critter.taxon_id,
+              itis_tsn: critter.itis_tsn,
               wlh_id: critter.wlh_id
             }
           ],

@@ -9,7 +9,7 @@ interface ISurveyAnimalsTableEntry {
   survey_critter_id: number;
   critter_id: string;
   animal_id: string | null;
-  taxon: string;
+  itis_scientific_name: string;
   deployments?: IAnimalDeployment[];
 }
 
@@ -44,7 +44,7 @@ export const SurveyAnimalsTable = ({
 
   const columns: GridColDef<ISurveyAnimalsTableEntry>[] = [
     {
-      field: 'taxon',
+      field: 'itis_scientific_name',
       headerName: 'Species',
       flex: 1
     },

@@ -29,6 +29,7 @@ const FocalSpeciesComponent = () => {
         label={'Focal Species'}
         required={true}
         handleAddSpecies={handleAddSpecies}
+        clearOnSelect={true}
       />
       <SelectedSpecies selectedSpecies={selectedSpecies} handleRemoveSpecies={handleRemoveSpecies} />
       {submitCount > 0 && errors && get(errors, 'species.focal_species') && (

@@ -67,8 +67,8 @@ describe('useSurveyApi', () => {
       const animal: IAnimal = {
         general: {
           animal_id: '1',
-          taxon_id: v4(),
-          taxon_name: '1',
+          itis_tsn: v4(),
+          itis_scientific_name: '1',
           wlh_id: 'a',
           sex: AnimalSex.UNKNOWN,
           critter_id: v4()
