@@ -1,4 +1,3 @@
-import LoadingButton from '@mui/lab/LoadingButton';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -88,8 +87,7 @@ export const MeasurementsDialog = (props: IrementsDialogProps) => {
         <MeasurementsList selectedMeasurements={selectedMeasurements} onRemove={onRemove} />
       </DialogContent>
       <DialogActions>
-        <LoadingButton
-          loading={false}
+        <Button
           disabled={false}
           onClick={() => onSave(selectedMeasurements)}
           color="primary"
@@ -97,7 +95,7 @@ export const MeasurementsDialog = (props: IrementsDialogProps) => {
           autoFocus
           data-testid="observation-measurements-dialog-add-button">
           Add
-        </LoadingButton>
+        </Button>
         <Button
           onClick={onCancel}
           color="primary"

@@ -770,6 +770,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         return JSON.parse(measurementColumnStringified);
       }
 
+      // Measurement columns are available in the observations data, remove measurement columns from local storage
+      sessionStorage.removeItem(getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS));
+
       // Get measurement columns from existing observations data
       return [...getMeasurementColumns(observationsData.supplementaryObservationData.measurementColumns, hasError)];
     });
