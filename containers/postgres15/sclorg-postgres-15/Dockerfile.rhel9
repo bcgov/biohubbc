@@ -52,7 +52,7 @@ EXPOSE 5432
 COPY root/usr/libexec/fix-permissions /usr/libexec/fix-permissions
 
 # RUN yum repolist > /dev/null && \
-RUN yum install -y yum-utils gettext
+# RUN yum install -y yum-utils gettext
 # yum-config-manager --disable \* &> /dev/null && \
 # yum-config-manager --enable rhel-9-for-x86_64-baseos-rpms && \
 # yum-config-manager --enable rhel-9-for-x86_64-appstream-rpms && \
@@ -63,7 +63,7 @@ RUN yum install -y yum-utils gettext
 # to make sure of that.
 # RUN yum -y module enable postgresql:15
 # INSTALL_PKGS="rsync tar gettext bind-utils nss_wrapper postgresql-server postgresql-contrib" && \
-RUN INSTALL_PKGS="rsync tar gettext bind-utils nss_wrapper pgaudit"
+ENV INSTALL_PKGS="rsync tar yum-utils gettext bind-utils nss_wrapper pgaudit"
 RUN yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS
 RUN rpm -V $INSTALL_PKGS
 RUN postgres -V | grep -qe "$POSTGRESQL_VERSION\." && echo "Found VERSION $POSTGRESQL_VERSION" && \
