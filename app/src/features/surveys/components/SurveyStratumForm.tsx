@@ -13,25 +13,32 @@ import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { FormikProps, useFormikContext } from 'formik';
-import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
+import { IEditSurveyRequest, IGetSurveyStratum } from 'interfaces/useSurveyApi.interface';
 import get from 'lodash-es/get';
 import { useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import yup from 'utils/YupSchema';
 import StratumCreateOrEditDialog from './StratumCreateOrEditDialog';
-import { IStratum } from './SurveySiteSelectionForm';
 
-export interface IStratumForm {
+export interface IGetSurveyStratumForm {
   index: number | null;
-  stratum: IStratum;
+  stratum: IPostSurveyStratum | IGetSurveyStratum
 }
 
-export const StratumFormInitialValues: IStratumForm = {
+export interface IPostSurveyStratum {
+  survey_stratum_id: number;
+  name: string;
+  description?: string;
+  sample_stratum_count: number;
+}
+
+export const StratumFormInitialValues: IGetSurveyStratumForm = {
   index: null,
   stratum: {
     survey_stratum_id: 0,
     name: '',
-    description: ''
+    description: '',
+    sample_stratum_count: 0
   }
 };
 
@@ -53,7 +60,7 @@ export const StratumFormYupSchema = yup.object().shape({
  * @return {*}
  */
 const SurveyStratumForm = () => {
-  const [currentStratumForm, setCurrentStratumForm] = useState<IStratumForm>(StratumFormInitialValues);
+  const [currentStratumForm, setCurrentStratumForm] = useState<IGetSurveyStratumForm>(StratumFormInitialValues);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [isYesNoDialogOpen, setIsYesNoDialogOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
@@ -61,7 +68,7 @@ const SurveyStratumForm = () => {
   const formikProps = useFormikContext<IEditSurveyRequest>();
   const { values, errors, handleSubmit, setFieldValue } = formikProps;
 
-  const handleSave = (formikProps: FormikProps<IStratumForm> | null) => {
+  const handleSave = (formikProps: FormikProps<IGetSurveyStratumForm> | null) => {
     if (!formikProps) {
       return;
     }
@@ -181,7 +188,7 @@ const SurveyStratumForm = () => {
           </Box>
         )}
         <TransitionGroup>
-          {values.site_selection.stratums.map((stratum: IStratum, index: number) => {
+          {values.site_selection.stratums.map((stratum: IGetSurveyStratum, index: number) => {
             const key = `${stratum.name}-${index}`;
 
             return (

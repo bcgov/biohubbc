@@ -6,8 +6,8 @@ import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
 import TextField from '@mui/material/TextField';
 import { SurveyContext } from 'contexts/surveyContext';
-import { IStratum } from 'features/surveys/components/SurveySiteSelectionForm';
 import { useFormikContext } from 'formik';
+import { IGetSurveyStratum } from 'interfaces/useSurveyApi.interface';
 import { default as React, useContext, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import BlockStratumCard from '../edit/components/BlockStratumCard';
@@ -19,18 +19,18 @@ const SamplingStratumForm: React.FC = () => {
   const surveyContext = useContext(SurveyContext);
 
   const options = surveyContext.surveyDataLoader?.data?.surveyData?.site_selection?.stratums || [];
-  const [selectedStratums, setSelectedStratums] = useState<IStratum[]>([]);
 
   const [searchText, setSearchText] = useState('');
 
-  const handleAddStratum = (stratum: IStratum) => {
-    setSelectedStratums((prev) => [...prev, stratum]);
-    setFieldValue(`stratums[${selectedStratums.length - 1}]`, stratum);
+  const handleAddStratum = (stratum: IGetSurveyStratum) => {
+    setFieldValue(`stratums[${values.stratums.length}]`, stratum);
   };
 
-  const handleRemoveItem = (stratum: IStratum, index: number) => {
-    setSelectedStratums((prev) => prev.filter((existing) => existing.survey_stratum_id !== stratum.survey_stratum_id));
-    setFieldValue(`stratums`, selectedStratums);
+  const handleRemoveItem = (stratum: IGetSurveyStratum, index: number) => {
+    setFieldValue(
+      `stratums`,
+      values.stratums.filter((existing) => existing.survey_stratum_id !== stratum.survey_stratum_id)
+    );
   };
 
   return (
@@ -53,9 +53,9 @@ const SamplingStratumForm: React.FC = () => {
         value={null}
         options={options}
         filterOptions={(options, state) => {
-          const searchFilter = createFilterOptions<IStratum>({ ignoreCase: true });
+          const searchFilter = createFilterOptions<IGetSurveyStratum>({ ignoreCase: true });
           const unselectedOptions = options.filter(
-            (item) => !selectedStratums.some((existing) => existing.survey_stratum_id === item.survey_stratum_id)
+            (item) => !values.stratums.some((existing) => existing.survey_stratum_id === item.survey_stratum_id)
           );
           return searchFilter(unselectedOptions, state);
         }}

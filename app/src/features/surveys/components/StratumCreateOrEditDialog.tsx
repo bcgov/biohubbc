@@ -8,17 +8,17 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import CustomTextField from 'components/fields/CustomTextField';
 import { Formik, FormikProps } from 'formik';
 import { useRef } from 'react';
-import { IStratumForm, StratumFormYupSchema } from './SurveyStratumForm';
+import { IGetSurveyStratumForm, StratumFormYupSchema } from './SurveyStratumForm';
 
-interface IStratumDialogProps {
+interface IGetSurveyStratumDialogProps {
   open: boolean;
-  stratumFormInitialValues: IStratumForm;
+  stratumFormInitialValues: IGetSurveyStratumForm;
   onCancel: () => void;
-  onSave: (formikProps: FormikProps<IStratumForm> | null) => void;
+  onSave: (formikProps: FormikProps<IGetSurveyStratumForm> | null) => void;
 }
 
-const StratumCreateOrEditDialog = (props: IStratumDialogProps) => {
-  const formikRef = useRef<FormikProps<IStratumForm>>(null);
+const StratumCreateOrEditDialog = (props: IGetSurveyStratumDialogProps) => {
+  const formikRef = useRef<FormikProps<IGetSurveyStratumForm>>(null);
 
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -30,7 +30,7 @@ const StratumCreateOrEditDialog = (props: IStratumDialogProps) => {
   const editing = props.stratumFormInitialValues.index !== null;
 
   return (
-    <Formik<IStratumForm>
+    <Formik<IGetSurveyStratumForm>
       initialValues={props.stratumFormInitialValues}
       innerRef={formikRef}
       enableReinitialize={true}

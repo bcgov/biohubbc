@@ -8,7 +8,7 @@ import TextField from '@mui/material/TextField';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useFormikContext } from 'formik';
 import { IGetSampleBlockDetails, IGetSurveyBlock } from 'interfaces/useSurveyApi.interface';
-import { default as React, useContext, useEffect, useState } from 'react';
+import { default as React, useContext, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import BlockStratumCard from './BlockStratumCard';
 import { IEditSamplingSiteRequest } from './SampleSiteEditForm';
@@ -19,30 +19,17 @@ const SamplingBlockEditForm = () => {
 
   const options = surveyContext.surveyDataLoader?.data?.surveyData?.blocks || [];
 
-  const [selectedBlocks, setSelectedBlocks] = useState<(IGetSampleBlockDetails | IGetSurveyBlock)[]>(
-    values.sampleSite.blocks
-  );
-
-  useEffect(() => {
-    if (selectedBlocks.length < 1) {
-      setSelectedBlocks(values.sampleSite.blocks);
-    }
-  }, [values.sampleSite]);
-
   const [searchText, setSearchText] = useState('');
 
   const handleAddBlock = (block: IGetSurveyBlock) => {
-    setSelectedBlocks((prev) => [...prev, block]);
+    setFieldValue(`sampleSite.blocks[${values.sampleSite.blocks.length}]`, block);
   };
 
-  useEffect(() => {
-    setFieldValue(`sampleSite.blocks[${selectedBlocks.length - 1}]`, selectedBlocks);
-  }, [selectedBlocks]);
-
   const handleRemoveItem = (block: IGetSurveyBlock | IGetSampleBlockDetails) => {
-    const filteredBlocks = selectedBlocks.filter((existing) => existing.survey_block_id !== block.survey_block_id);
-    setSelectedBlocks(filteredBlocks);
-    setFieldValue(`sampleSite.blocks`, filteredBlocks);
+    setFieldValue(
+      `sampleSite.blocks`,
+      values.sampleSite.blocks.filter((existing) => existing.survey_block_id !== block.survey_block_id)
+    );
   };
 
   return (
@@ -66,7 +53,7 @@ const SamplingBlockEditForm = () => {
         filterOptions={(options, state) => {
           const searchFilter = createFilterOptions<IGetSurveyBlock>({ ignoreCase: true });
           const unselectedOptions = options.filter((item) =>
-            selectedBlocks.every((existing) => existing.survey_block_id !== item.survey_block_id)
+            values.sampleSite.blocks.every((existing) => existing.survey_block_id !== item.survey_block_id)
           );
           return searchFilter(unselectedOptions, state);
         }}
@@ -117,7 +104,7 @@ const SamplingBlockEditForm = () => {
         }}
       />
       <TransitionGroup>
-        {selectedBlocks.map((item, index) => {
+        {values.sampleSite.blocks.map((item, index) => {
           return (
             <Collapse key={`${item.name}-${item.description}-${index}`}>
               <Card

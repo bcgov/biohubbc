@@ -14,25 +14,22 @@ import BlockStratumCard from '../edit/components/BlockStratumCard';
 import { ICreateSamplingSiteRequest } from '../SamplingSitePage';
 
 export const SamplingBlockForm = () => {
-  const { setFieldValue } = useFormikContext<ICreateSamplingSiteRequest>();
+  const { setFieldValue, values } = useFormikContext<ICreateSamplingSiteRequest>();
   const surveyContext = useContext(SurveyContext);
 
   const options = surveyContext.surveyDataLoader?.data?.surveyData?.blocks || [];
 
-  const [selectedBlocks, setSelectedBlocks] = useState<IGetSurveyBlock[]>([]);
-
   const [searchText, setSearchText] = useState('');
 
   const handleAddBlock = (block: IGetSurveyBlock) => {
-    setSelectedBlocks((prev) => [...prev, block]);
-    setFieldValue(`blocks[${selectedBlocks.length - 1}]`, block);
+    setFieldValue(`blocks[${values.blocks.length}]`, block);
   };
 
   const handleRemoveItem = (block: IGetSurveyBlock) => {
-    setSelectedBlocks((prev) => {
-      return prev.filter((existing) => existing.survey_block_id !== block.survey_block_id);
-    });
-    setFieldValue(`blocks`, selectedBlocks);
+    setFieldValue(
+      `blocks`,
+      values.blocks.filter((existing) => existing.survey_block_id !== block.survey_block_id)
+    );
   };
 
   return (
@@ -56,7 +53,7 @@ export const SamplingBlockForm = () => {
         filterOptions={(options, state) => {
           const searchFilter = createFilterOptions<IGetSurveyBlock>({ ignoreCase: true });
           const unselectedOptions = options.filter((item) =>
-            selectedBlocks.every((existing) => existing.survey_block_id !== item.survey_block_id)
+            values.blocks.every((existing) => existing.survey_block_id !== item.survey_block_id)
           );
           return searchFilter(unselectedOptions, state);
         }}
@@ -107,7 +104,7 @@ export const SamplingBlockForm = () => {
         }}
       />
       <TransitionGroup>
-        {selectedBlocks.map((item, index) => {
+        {values.blocks.map((item, index) => {
           return (
             <Collapse key={`${item.name}-${item.description}-${index}`}>
               <Card

@@ -129,6 +129,7 @@ export interface IGetSurveyStratum {
   update_date: string | null;
   update_user: number | null;
   revision_count: number;
+  sample_stratum_count: number;
 }
 
 export interface SurveyViewObject {
