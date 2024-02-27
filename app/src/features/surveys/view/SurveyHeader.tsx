@@ -156,33 +156,24 @@ const SurveyHeader = () => {
           <ProjectRoleGuard
             validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-            <Stack flexDirection="row" alignItems="center" gap={1}>
+            <Stack flexDirection="row" alignItems="center" gap={2}>
               {BIOHUB_FEATURE_FLAG && (
                 <ProjectRoleGuard
                   validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <Typography
                     component="span"
-                    variant="subtitle2"
-                    fontSize="0.9rem"
+                    variant="body2"
+                    color="textSecondary"
                     sx={{
                       flex: '0 0 auto',
                       mr: { sm: 0, md: 0.5 },
                       order: { sm: 3, md: 0 }
                     }}>
                     {publishDate ? (
-                      <>
-                        <Typography component="span" color="textSecondary" variant="inherit" sx={{ mr: 0.5 }}>
-                          Published:
-                        </Typography>
-                        <Typography component="span" variant="inherit">
-                          {publishDate}
-                        </Typography>
-                      </>
+                      <span>Status:&nbsp;&nbsp;<b>Published ({publishDate})</b></span>
                     ) : (
-                      <Typography component="span" color="textSecondary" variant="inherit" sx={{ mr: 0.5 }}>
-                        Never Published
-                      </Typography>
+                      <span>Status:&nbsp;&nbsp;<b>Unpublished</b></span>
                     )}
                   </Typography>
                   <Button

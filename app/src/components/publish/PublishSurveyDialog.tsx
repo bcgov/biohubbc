@@ -146,11 +146,14 @@ const PublishSurveyDialog = (props: IPublishSurveyIdDialogProps) => {
                 <PublishSurveyIdContent />
               </DialogContent>
               <DialogActions>
-                <Typography component="span" variant="subtitle2" fontWeight="700" sx={{ mr: 2 }}>
+                <Typography component="span" variant="subtitle2" sx={{ mr: 2 }}>
                   <Typography component="span" color="textSecondary" variant="inherit">
-                    Last Published:
-                  </Typography>{' '}
-                  {publishDate}
+                    {publishDate ? (
+                      <span>Status:&nbsp;&nbsp;<b>Published ({publishDate})</b></span>
+                    ) : (
+                      <span>Status:&nbsp;&nbsp;<b>Unpublished</b></span>
+                    )}
+                  </Typography>
                 </Typography>
                 <LoadingButton
                   onClick={formikProps.submitForm}
