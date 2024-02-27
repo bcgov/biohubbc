@@ -1,6 +1,6 @@
 FROM quay.io/fedora/s2i-core:39
 
-# PostgreSQL image for OpenShift.
+# PostgreSQL image for OpenShift with PostGIS extension.
 # Volumes:
 #  * /var/lib/psql/data   - Database cluster for PostgreSQL
 # Environment:
@@ -20,22 +20,26 @@ ENV NAME=postgresql \
     PGUSER=postgres \
     APP_DATA=/opt/app-root
 
+ENV POSTGISV 3.4
+ENV TZ America/Vancouver
+ENV PORT 5432 
+
 ENV SUMMARY="PostgreSQL is an advanced Object-Relational database management system" \
     DESCRIPTION="PostgreSQL is an advanced Object-Relational database management system (DBMS). \
-The image contains the client and server programs that you'll need to \
-create, run, maintain and access a PostgreSQL DBMS server."
+    The image contains the client and server programs that you'll need to \
+    create, run, maintain and access a PostgreSQL DBMS server."
 
 LABEL summary="$SUMMARY" \
-      description="$DESCRIPTION" \
-      io.k8s.description="$DESCRIPTION" \
-      io.k8s.display-name="PostgreSQL 16" \
-      io.openshift.expose-services="5432:postgresql" \
-      io.openshift.tags="database,postgresql,postgresql16" \
-      com.redhat.component="$NAME" \
-      maintainer="SoftwareCollections.org <sclorg@redhat.com>" \
-      name="fedora/$NAME-16" \
-      version="0" \
-      usage="docker run -d --name postgresql_database -e POSTGRESQL_USER=user -e POSTGRESQL_PASSWORD=pass -e POSTGRESQL_DATABASE=db -p 5432:5432 quay.io/fedora/$NAME-16"
+    description="$DESCRIPTION" \
+    io.k8s.description="$DESCRIPTION" \
+    io.k8s.display-name="PostgreSQL 16" \
+    io.openshift.expose-services="5432:postgresql" \
+    io.openshift.tags="database,postgresql,postgresql16,postgis,postgis$POSTGISV" \
+    com.redhat.component="$NAME" \
+    maintainer="SoftwareCollections.org <sclorg@redhat.com>" \
+    name="fedora/$NAME-16" \
+    version="0" \
+    usage="docker run -d --name postgresql_database -e POSTGRESQL_USER=user -e POSTGRESQL_PASSWORD=pass -e POSTGRESQL_DATABASE=db -p 5432:5432 quay.io/fedora/$NAME-16"
 
 EXPOSE 5432
 
@@ -62,6 +66,32 @@ COPY root /
 COPY ./s2i/bin/ $STI_SCRIPTS_PATH
 
 VOLUME ["/var/lib/pgsql/data"]
+
+# Aquire and build PostGIS 3.4, for PostgreSQL 16.x
+RUN cd /tmp && \
+    rpm -ivh https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm && \
+    yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm 
+
+# RUN yum -y remove rh-postgresql16-postgresql-server-syspaths rh-postgresql16-postgresql-contrib-syspaths rh-postgresql16-postgresql-syspaths
+RUN yum install -y postgis34_16
+RUN yum install -y postgis34_16-client
+RUN yum install -y pgrouting_16
+
+RUN /usr/bin/install -c -m 755  /usr/pgsql-16/lib/postgis* '/opt/rh/rh-postgresql16/root/usr/lib64/pgsql/' && \
+    /usr/bin/install -c -m 755  /usr/pgsql-16/lib/libpgrouting* '/opt/rh/rh-postgresql16/root/usr/lib64/pgsql/' && \
+    /usr/bin/install -c -m 755  /usr/pgsql-16/lib/pgcrypto* '/opt/rh/rh-postgresql16/root/usr/lib64/pgsql/' && \
+    /usr/bin/install -c -m 755  /usr/pgsql-16/lib/fuzzystrmatch* '/opt/rh/rh-postgresql16/root/usr/lib64/pgsql/' && \    
+    /usr/bin/install -c -m 644 /usr/pgsql-16/share/extension/postgis* '/opt/rh/rh-postgresql16/root/usr/share/pgsql/extension/' && \
+    /usr/bin/install -c -m 644 /usr/pgsql-16/share/extension/pgrouting* '/opt/rh/rh-postgresql16/root/usr/share/pgsql/extension/' && \
+    /usr/bin/install -c -m 644 /usr/pgsql-16/share/extension/pgcrypto* '/opt/rh/rh-postgresql16/root/usr/share/pgsql/extension/' && \
+    /usr/bin/install -c -m 644 /usr/pgsql-16/share/extension/fuzzystrmatch* '/opt/rh/rh-postgresql16/root/usr/share/pgsql/extension/' && \
+    mv /usr/pgsql-16/share/contrib/postgis-3.4/ /opt/rh/rh-postgresql16/root/usr/share/pgsql/contrib/ 
+
+RUN rm -rf /tmp/pgdg-redhat-repo-latest.noarch.rpm /var/cache/yum
+
+# Remove entitlements and Subscription Manager configs
+RUN rm -rf /etc/pki/entitlement && \
+    rm -rf /etc/rhsm/rhsm-conf && rm -fr /etc/rhsm/ca
 
 # S2I permission fixes
 # --------------------

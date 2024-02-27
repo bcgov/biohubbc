@@ -47,7 +47,7 @@ parameters:
     displayName: Docker File Path
     description: The path to the docker file.
     required: true
-    value: Dockerfile
+    value: Dockerfile.rhel9
   - name: SOURCE_IMAGE_KIND
     displayName: Source Image Kind
     description: The 'kind' (type) of the source image; typically ImageStreamTag, or DockerImage.
@@ -109,17 +109,17 @@ objects:
           ref: ${GIT_REF}
           uri: ${GIT_REPO_URL}
         contextDir: ${SOURCE_CONTEXT_DIR}
-        # secrets:
-        #   - secret:
-        #       name: platform-services-controlled-etc-pki-entitlement
-        #     destinationDir: etc-pki-entitlement
-        # configMaps:
-        #   - configMap:
-        #       name: platform-services-controlled-rhsm-conf
-        #     destinationDir: rhsm-conf
-        #   - configMap:
-        #       name: platform-services-controlled-rhsm-ca
-        #     destinationDir: rhsm-ca
+        secrets:
+          - secret:
+              name: platform-services-controlled-etc-pki-entitlement
+            destinationDir: etc-pki-entitlement
+        configMaps:
+          - configMap:
+              name: platform-services-controlled-rhsm-conf
+            destinationDir: rhsm-conf
+          - configMap:
+              name: platform-services-controlled-rhsm-ca
+            destinationDir: rhsm-ca
       strategy:
         type: Docker
         dockerStrategy:
