@@ -91,11 +91,8 @@ COPY ./s2i/bin/ $STI_SCRIPTS_PATH
 # Aquire and build PostGIS 3.4, for PostgreSQL 15.x
 RUN cd /tmp && \
     rpm -ivh https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm && \
-    rpm -ivh https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-9.12-x86_64/gdal33-3.3.3-7PGDG.rhel9.x86_64.rpm && \
-    rpm -ivh https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-9.12-x86_64/gdal33-libs-3.3.3-7PGDG.rhel9.x86_64.rpm && \
-    rpm -ivh https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-9.12-x86_64/gdal36-3.6.4-4PGDG.rhel9.x86_64.rpm && \
-    rpm -ivh https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-9.12-x86_64/gdal36-3.6.4-5PGDG.rhel9.x86_64.rpm && \
     rpm -ivh https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-9.12-x86_64/gdal36-3.6.4-6PGDG.rhel9.x86_64.rpm && \
+    rpm -ivh https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-9.12-x86_64/gdal36-libs-3.6.4-6PGDG.rhel9.x86_64.rpm  && \
     yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
 
 # RUN yum -y remove rh-postgresql15-postgresql-server-syspaths rh-postgresql15-postgresql-contrib-syspaths rh-postgresql15-postgresql-syspaths
