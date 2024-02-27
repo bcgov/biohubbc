@@ -5,8 +5,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import { IGetSurveyStratum } from 'interfaces/useSurveyApi.interface';
-import { IGetSurveyBlock } from 'interfaces/useSurveyApi.interface';
+import { IGetSurveyBlock, IGetSurveyStratum } from 'interfaces/useSurveyApi.interface';
 import { useContext } from 'react';
 
 /**

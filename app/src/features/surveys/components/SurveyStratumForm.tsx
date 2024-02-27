@@ -22,7 +22,7 @@ import StratumCreateOrEditDialog from './StratumCreateOrEditDialog';
 
 export interface IGetSurveyStratumForm {
   index: number | null;
-  stratum: IPostSurveyStratum | IGetSurveyStratum
+  stratum: IPostSurveyStratum | IGetSurveyStratum;
 }
 
 export interface IPostSurveyStratum {
