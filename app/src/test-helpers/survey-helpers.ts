@@ -1,7 +1,6 @@
-import { PublishStatus } from 'constants/attachments';
 import {
-  IGetSurveyForListResponse,
   IGetSurveyForViewResponse,
+  IGetSurveyListResponse,
   SurveySupplementaryData,
   SurveyViewObject
 } from 'interfaces/useSurveyApi.interface';
@@ -58,10 +57,8 @@ export const surveyObject: SurveyViewObject = {
     stakeholder_partnerships: ['partner 3', 'partner 4']
   },
   species: {
-    focal_species: [1],
-    focal_species_names: ['focal species 1'],
-    ancillary_species: [2],
-    ancillary_species_names: ['ancillary species 2']
+    focal_species: [{ tsn: 1, commonName: 'focal species 1', scientificName: 'scientific name 1' }],
+    ancillary_species: [{ tsn: 2, commonName: 'focal species 2', scientificName: 'scientific name 2' }]
   },
   site_selection: {
     strategies: [],
@@ -128,9 +125,9 @@ export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
   surveySupplementaryData: surveySupplementaryData
 };
 
-export const getSurveyForListResponse: IGetSurveyForListResponse[] = [
-  {
-    surveyData: {
+export const getSurveyForListResponse: IGetSurveyListResponse = {
+  surveys: [
+    {
       survey_id: 1,
       name: 'Moose Survey 1',
       start_date: '2021-04-09 11:53:53',
@@ -138,21 +135,21 @@ export const getSurveyForListResponse: IGetSurveyForListResponse[] = [
       focal_species: [1],
       focal_species_names: ['species 1']
     },
-    surveySupplementaryData: {
-      publishStatus: PublishStatus.NO_DATA
-    }
-  },
-  {
-    surveyData: {
+    {
       survey_id: 2,
       name: 'Moose Survey 2',
       start_date: '2021-04-09 11:53:53',
       end_date: '2021-06-10 11:53:53',
       focal_species: [3],
       focal_species_names: ['species 3']
-    },
-    surveySupplementaryData: {
-      publishStatus: PublishStatus.NO_DATA
     }
+  ],
+  pagination: {
+    current_page: 1,
+    last_page: 1,
+    total: 2,
+    order: undefined,
+    sort: undefined,
+    per_page: 15
   }
-];
+};

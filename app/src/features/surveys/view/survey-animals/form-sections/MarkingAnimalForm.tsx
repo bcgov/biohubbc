@@ -48,7 +48,6 @@ export const MarkingAnimalForm = (props: MarkingAnimalFormProps) => {
         onCancel={() => setDialogMode(null)}
         onSave={(values) => {
           setDialogMode(null);
-          console.log(values);
         }}
       />
       {props.display === 'button' ? (

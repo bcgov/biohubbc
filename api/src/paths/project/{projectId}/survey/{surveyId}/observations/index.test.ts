@@ -8,6 +8,7 @@ import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
 import { ObservationRecord } from '../../../../../../repositories/observation-repository';
 import { ObservationService } from '../../../../../../services/observation-service';
+import { PlatformService } from '../../../../../../services/platform-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import * as observationRecords from './index';
 
@@ -50,7 +51,8 @@ describe('insertUpdateSurveyObservations', () => {
               surveyObservations: [
                 {
                   survey_observation_id: 1,
-                  wldtaxonomic_units_id: 1234,
+                  itis_tsn: 1234,
+                  itis_scientific_name: 'scientific name',
                   count: 99,
                   latitude: 48.103322,
                   longitude: -122.798892,
@@ -78,7 +80,8 @@ describe('insertUpdateSurveyObservations', () => {
             body: {
               surveyObservations: [
                 {
-                  wldtaxonomic_units_id: 1234,
+                  itis_tsn: 1234,
+                  itis_scientific_name: 'scientific name',
                   count: 99,
                   latitude: 48.103322,
                   longitude: -122.798892,
@@ -107,7 +110,8 @@ describe('insertUpdateSurveyObservations', () => {
             body: {
               surveyObservations: [
                 {
-                  wldtaxonomic_units_id: 1234,
+                  itis_tsn: 1234,
+                  itis_scientific_name: 'scientific name',
                   count: 99,
                   latitude: 48.103322,
                   longitude: -122.798892,
@@ -138,7 +142,8 @@ describe('insertUpdateSurveyObservations', () => {
             body: {
               surveyObservations: [
                 {
-                  wldtaxonomic_units_id: 1234,
+                  itis_tsn: 1234,
+                  itis_scientific_name: 'scientific name',
                   count: 99,
                   // latitude: 48.103322,
                   longitude: -122.798892,
@@ -169,7 +174,8 @@ describe('insertUpdateSurveyObservations', () => {
             body: {
               surveyObservations: [
                 {
-                  wldtaxonomic_units_id: 1234,
+                  itis_tsn: 1234,
+                  itis_scientific_name: 'scientific name',
                   count: 99,
                   latitude: 48.103322,
                   // longitude: -122.798892,
@@ -188,37 +194,6 @@ describe('insertUpdateSurveyObservations', () => {
           expect(response.errors[0].message).to.equal(`must have required property 'longitude'`);
         });
 
-        it('is missing wldtaxonomic_units_id', async () => {
-          const request = {
-            headers: {
-              'content-type': 'application/json'
-            },
-            params: {
-              projectId: 4,
-              surveyId: 5
-            },
-            body: {
-              surveyObservations: [
-                {
-                  // wldtaxonomic_units_id: 1234,
-                  count: 99,
-                  latitude: 48.103322,
-                  longitude: -122.798892,
-                  observation_date: '1970-01-01',
-                  observation_time: '00:00:00'
-                }
-              ]
-            }
-          };
-
-          const response = requestValidator.validateRequest(request);
-
-          expect(response.status).to.equal(400);
-          expect(response.errors.length).to.equal(1);
-          expect(response.errors[0].path).to.equal('surveyObservations.0.wldtaxonomic_units_id');
-          expect(response.errors[0].message).to.equal(`must have required property 'wldtaxonomic_units_id'`);
-        });
-
         it('is missing count', async () => {
           const request = {
             headers: {
@@ -231,7 +206,8 @@ describe('insertUpdateSurveyObservations', () => {
             body: {
               surveyObservations: [
                 {
-                  wldtaxonomic_units_id: 1234,
+                  itis_tsn: 1234,
+                  itis_scientific_name: 'scientific name',
                   // count: 99,
                   latitude: 48.103322,
                   longitude: -122.798892,
@@ -272,7 +248,8 @@ describe('insertUpdateSurveyObservations', () => {
             surveyObservations: [
               {
                 survey_observation_id: 1,
-                wldtaxonomic_units_id: 1234,
+                itis_tsn: 1234,
+                itis_scientific_name: 'scientific name',
                 count: 99,
                 latitude: 48.103322,
                 longitude: -122.798892,
@@ -299,7 +276,8 @@ describe('insertUpdateSurveyObservations', () => {
             surveyObservations: [
               {
                 // survey_observation_id: 1,
-                wldtaxonomic_units_id: 1234,
+                itis_tsn: 1234,
+                itis_scientific_name: 'scientific name',
                 count: 99,
                 latitude: 48.103322,
                 longitude: -122.798892,
@@ -327,7 +305,8 @@ describe('insertUpdateSurveyObservations', () => {
             surveyObservations: [
               {
                 survey_observation_id: 1,
-                wldtaxonomic_units_id: 1234,
+                itis_tsn: 1234,
+                itis_scientific_name: 'scientific name',
                 count: 99,
                 // latitude: 48.103322,
                 longitude: -122.798892,
@@ -355,7 +334,8 @@ describe('insertUpdateSurveyObservations', () => {
             surveyObservations: [
               {
                 survey_observation_id: 1,
-                wldtaxonomic_units_id: 1234,
+                itis_tsn: 1234,
+                itis_scientific_name: 'scientific name',
                 count: 99,
                 latitude: 48.103322,
                 // longitude: -122.798892,
@@ -378,40 +358,13 @@ describe('insertUpdateSurveyObservations', () => {
           expect(response.errors[0].message).to.equal(`must have required property 'longitude'`);
         });
 
-        it('is missing wldtaxonomic_units_id', async () => {
-          const apiResponse = {
-            surveyObservations: [
-              {
-                survey_observation_id: 1,
-                // wldtaxonomic_units_id: 1234,
-                count: 99,
-                latitude: 48.103322,
-                longitude: -122.798892,
-                observation_date: '1970-01-01',
-                observation_time: '00:00:00',
-                create_user: 1,
-                create_date: '1970-01-01',
-                update_user: 1,
-                update_date: '1970-01-01',
-                revision_count: 1
-              }
-            ]
-          };
-
-          const response = responseValidator.validateResponse(200, apiResponse);
-
-          expect(response.message).to.equal('The response was not valid.');
-          expect(response.errors.length).to.equal(1);
-          expect(response.errors[0].path).to.equal('surveyObservations/0');
-          expect(response.errors[0].message).to.equal(`must have required property 'wldtaxonomic_units_id'`);
-        });
-
         it('is missing count', async () => {
           const apiResponse = {
             surveyObservations: [
               {
                 survey_observation_id: 1,
-                wldtaxonomic_units_id: 1234,
+                itis_tsn: 1234,
+                itis_scientific_name: 'scientific name',
                 // count: 99,
                 latitude: 48.103322,
                 longitude: -122.798892,
@@ -457,7 +410,7 @@ describe('insertUpdateSurveyObservations', () => {
       surveyObservations: [
         {
           survey_observation_id: 1,
-          wldtaxonomic_units_id: 1234,
+          itis_tsn: 1234,
           count: 99,
           latitude: 48.103322,
           longitude: -122.798892,
@@ -468,7 +421,7 @@ describe('insertUpdateSurveyObservations', () => {
           survey_sample_period_id: 1
         },
         {
-          wldtaxonomic_units_id: 1234,
+          itis_tsn: 1234,
           count: 99,
           latitude: 48.103322,
           longitude: -122.798892,
@@ -487,7 +440,8 @@ describe('insertUpdateSurveyObservations', () => {
     expect(insertUpdateSurveyObservationsStub).to.have.been.calledOnceWith(2, [
       {
         survey_observation_id: 1,
-        wldtaxonomic_units_id: 1234,
+        itis_tsn: 1234,
+        itis_scientific_name: null,
         latitude: 48.103322,
         longitude: -122.798892,
         count: 99,
@@ -499,7 +453,8 @@ describe('insertUpdateSurveyObservations', () => {
       },
       {
         survey_observation_id: undefined,
-        wldtaxonomic_units_id: 1234,
+        itis_tsn: 1234,
+        itis_scientific_name: null,
         latitude: 48.103322,
         longitude: -122.798892,
         count: 99,
@@ -522,6 +477,10 @@ describe('insertUpdateSurveyObservations', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     sinon.stub(ObservationService.prototype, 'insertUpdateSurveyObservations').rejects(new Error('a test error'));
+    sinon.stub(PlatformService.prototype, 'getTaxonomyByTsns').resolves([
+      { tsn: '1234', scientificName: 'scientific name' },
+      { tsn: '1234', scientificName: 'scientific name' }
+    ]);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -534,7 +493,8 @@ describe('insertUpdateSurveyObservations', () => {
       surveyObservations: [
         {
           survey_observation_id: 1,
-          wldtaxonomic_units_id: 1234,
+          itis_tsn: 1234,
+          itis_scientific_name: 'scientific name',
           count: 99,
           latitude: 48.103322,
           longitude: -122.798892,
@@ -578,7 +538,8 @@ describe('getSurveyObservations', () => {
             body: {
               surveyObservations: [
                 {
-                  wldtaxonomic_units_id: 1234,
+                  itis_tsn: 1234,
+                  itis_scientific_name: 'scientific name',
                   count: 99,
                   latitude: 48.103322,
                   longitude: -122.798892,
@@ -608,7 +569,8 @@ describe('getSurveyObservations', () => {
             body: {
               surveyObservations: [
                 {
-                  wldtaxonomic_units_id: 1234,
+                  itis_tsn: 1234,
+                  itis_scientific_name: 'scientific name',
                   count: 99,
                   latitude: 48.103322,
                   longitude: -122.798892,
@@ -659,7 +621,8 @@ describe('getSurveyObservations', () => {
             surveyObservations: [
               {
                 survey_observation_id: 1,
-                wldtaxonomic_units_id: 1234,
+                itis_tsn: 1234,
+                itis_scientific_name: 'scientific name',
                 count: 99,
                 latitude: 48.103322,
                 longitude: -122.798892,
@@ -695,7 +658,8 @@ describe('getSurveyObservations', () => {
             surveyObservations: [
               {
                 // survey_observation_id: 1,
-                wldtaxonomic_units_id: 1234,
+                itis_tsn: 1234,
+                itis_scientific_name: 'scientific name',
                 count: 99,
                 latitude: 48.103322,
                 longitude: -122.798892,
@@ -732,7 +696,8 @@ describe('getSurveyObservations', () => {
             surveyObservations: [
               {
                 survey_observation_id: 1,
-                wldtaxonomic_units_id: 1234,
+                itis_tsn: 1234,
+                itis_scientific_name: 'scientific name',
                 count: 99,
                 // latitude: 48.103322,
                 longitude: -122.798892,
@@ -769,7 +734,8 @@ describe('getSurveyObservations', () => {
             surveyObservations: [
               {
                 survey_observation_id: 1,
-                wldtaxonomic_units_id: 1234,
+                itis_tsn: 1234,
+                itis_scientific_name: 'scientific name',
                 count: 99,
                 latitude: 48.103322,
                 // longitude: -122.798892,
@@ -801,49 +767,13 @@ describe('getSurveyObservations', () => {
           expect(response.errors[0].message).to.equal(`must have required property 'longitude'`);
         });
 
-        it('is missing wldtaxonomic_units_id', async () => {
-          const apiResponse = {
-            surveyObservations: [
-              {
-                survey_observation_id: 1,
-                // wldtaxonomic_units_id: 1234,
-                count: 99,
-                latitude: 48.103322,
-                longitude: -122.798892,
-                observation_date: '1970-01-01',
-                observation_time: '00:00:00',
-                create_user: 1,
-                create_date: '1970-01-01',
-                update_user: 1,
-                update_date: '1970-01-01',
-                revision_count: 1
-              }
-            ],
-            supplementaryObservationData: { observationCount: 1 },
-            pagination: {
-              total: 1,
-              per_page: undefined,
-              current_page: 1,
-              last_page: 1,
-              sort: undefined,
-              order: undefined
-            }
-          };
-
-          const response = responseValidator.validateResponse(200, apiResponse);
-
-          expect(response.message).to.equal('The response was not valid.');
-          expect(response.errors.length).to.equal(1);
-          expect(response.errors[0].path).to.equal('surveyObservations/0');
-          expect(response.errors[0].message).to.equal(`must have required property 'wldtaxonomic_units_id'`);
-        });
-
         it('is missing count', async () => {
           const apiResponse = {
             surveyObservations: [
               {
                 survey_observation_id: 1,
-                wldtaxonomic_units_id: 1234,
+                itis_tsn: 1234,
+                itis_scientific_name: 'scientific name',
                 // count: 99,
                 latitude: 48.103322,
                 longitude: -122.798892,
@@ -880,7 +810,8 @@ describe('getSurveyObservations', () => {
             surveyObservations: [
               {
                 survey_observation_id: 1,
-                wldtaxonomic_units_id: 1234,
+                itis_tsn: 1234,
+                itis_scientific_name: 'scientific name',
                 count: 99,
                 latitude: 48.103322,
                 longitude: -122.798892,
@@ -1035,8 +966,8 @@ describe('getSurveyObservations', () => {
         total: 2,
         current_page: 1,
         last_page: 1,
+        per_page: 2,
         order: undefined,
-        per_page: undefined,
         sort: undefined
       }
     });

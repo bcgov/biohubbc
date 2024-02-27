@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography';
 import { default as dayjs } from 'dayjs';
 export interface ManualTelemetryCardProps {
   device_id: number;
+  device_make: string;
   name: string; // should be animal alias
   start_date: string;
   end_date?: string;
@@ -52,7 +53,7 @@ const ManualTelemetryCard = (props: ManualTelemetryCardProps) => {
               {props.name}
             </Typography>
             <Typography variant="body2" color="textSecondary">
-              Device ID: {props.device_id}
+              {props.device_make} Device ID: {props.device_id}
             </Typography>
           </Box>
         </AccordionSummary>

@@ -4,9 +4,9 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { SYSTEM_ROLE } from '../../constants/roles';
+import { COMPLETION_STATUS } from '../../constants/status';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
-import { PublishStatus } from '../../repositories/history-publish-repository';
 import * as authorization from '../../request-handlers/security/authorization';
 import { ProjectService } from '../../services/project-service';
 import { getMockDBConnection } from '../../__mocks__/db';
@@ -33,6 +33,11 @@ describe('list', () => {
       }
     } as any;
 
+    sampleReq.query = {
+      page: '1',
+      limit: '10'
+    };
+
     let actualResult: any = null;
 
     const sampleRes = {
@@ -58,12 +63,23 @@ describe('list', () => {
       });
       sinon.stub(authorization, 'userHasValidRole').returns(true);
       sinon.stub(ProjectService.prototype, 'getProjectList').resolves([]);
+      sinon.stub(ProjectService.prototype, 'getProjectCount').resolves(0);
 
       const result = list.getProjectList();
 
       await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
-      expect(actualResult).to.eql([]);
+      expect(actualResult).to.eql({
+        pagination: {
+          current_page: 1,
+          last_page: 1,
+          total: 0,
+          sort: undefined,
+          order: undefined,
+          per_page: 10
+        },
+        projects: []
+      });
     });
 
     it('returns an array of projects', async () => {
@@ -75,34 +91,45 @@ describe('list', () => {
       });
       sinon.stub(authorization, 'userHasValidRole').returns(true);
 
-      const expectedResponse1 = [
+      const getProjectListStub = sinon.stub(ProjectService.prototype, 'getProjectList').resolves([
         {
-          projectData: {
-            id: 1,
-            name: 'myproject',
-            project_programs: [1],
-            start_date: '2022-02-02',
-            end_date: null,
-            completion_status: 'done'
-          },
-          projectSupplementaryData: { publishStatus: 'SUBMITTED' }
+          project_id: 1,
+          name: 'myproject',
+          project_programs: [1],
+          start_date: '2022-02-02',
+          end_date: null,
+          regions: [],
+          completion_status: COMPLETION_STATUS.COMPLETED
         }
-      ];
-
-      const getProjectListStub = sinon
-        .stub(ProjectService.prototype, 'getProjectList')
-        .resolves([expectedResponse1[0].projectData]);
-      const getSurveyHasUnpublishedContentStub = sinon
-        .stub(ProjectService.prototype, 'projectPublishStatus')
-        .resolves(PublishStatus.SUBMITTED);
+      ]);
+      sinon.stub(ProjectService.prototype, 'getProjectCount').resolves(1);
 
       const result = list.getProjectList();
 
       await result(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
 
-      expect(actualResult).to.eql(expectedResponse1);
+      expect(actualResult).to.eql({
+        pagination: {
+          current_page: 1,
+          last_page: 1,
+          total: 1,
+          sort: undefined,
+          order: undefined,
+          per_page: 10
+        },
+        projects: [
+          {
+            project_id: 1,
+            name: 'myproject',
+            project_programs: [1],
+            start_date: '2022-02-02',
+            end_date: null,
+            regions: [],
+            completion_status: COMPLETION_STATUS.COMPLETED
+          }
+        ]
+      });
       expect(getProjectListStub).to.be.calledOnce;
-      expect(getSurveyHasUnpublishedContentStub).to.be.calledOnce;
     });
 
     it('catches error, calls rollback, and re-throws error', async () => {

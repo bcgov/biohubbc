@@ -46,7 +46,10 @@ const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel, ValueT
       return null;
     }
 
-    return { value: Number(response.id) as ValueType, label: response.label };
+    return {
+      value: Number(response.tsn) as ValueType,
+      label: [response.commonName, `(${response.scientificName})`].filter(Boolean).join(' ')
+    };
   };
 
   const getOptions = useMemo(
@@ -61,10 +64,10 @@ const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel, ValueT
             return;
           }
 
-          const response = await biohubApi.taxonomy.searchSpecies(searchTerm);
-          const options = response.searchResponse.map((item) => ({
-            value: parseInt(item.id) as ValueType,
-            label: item.label
+          const response = await biohubApi.taxonomy.searchSpeciesByTerms([searchTerm]);
+          const options = response.map((item) => ({
+            value: item.tsn as ValueType,
+            label: [item.commonName, `(${item.scientificName})`].filter(Boolean).join(' ')
           }));
           onSearchResults(options);
         },

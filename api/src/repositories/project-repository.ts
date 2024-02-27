@@ -1,5 +1,6 @@
 import { isArray } from 'lodash';
 import SQL, { SQLStatement } from 'sql-template-strings';
+import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostProjectObject } from '../models/project-create';
 import { PutObjectivesData, PutProjectData } from '../models/project-update';
@@ -12,7 +13,11 @@ import {
   ProjectData,
   ProjectListData
 } from '../models/project-view';
+import { getLogger } from '../utils/logger';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
+
+const defaultLog = getLogger('repositories/project-repository');
 
 /**
  * A repository class for accessing project data.
@@ -22,19 +27,30 @@ import { BaseRepository } from './base-repository';
  * @extends {BaseRepository}
  */
 export class ProjectRepository extends BaseRepository {
+  /**
+   * Retrieves the paginated list of all projects that are available to the user.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IProjectAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {Promise<ProjectListData[]>}
+   * @memberof ProjectRepository
+   */
   async getProjectList(
     isUserAdmin: boolean,
     systemUserId: number | null,
-    filterFields: IProjectAdvancedFilters
+    filterFields: IProjectAdvancedFilters,
+    pagination?: ApiPaginationOptions
   ): Promise<ProjectListData[]> {
+    defaultLog.debug({ label: 'getProjectList', pagination });
+
     const sqlStatement = SQL`
       SELECT
         p.project_id,
-        p.name as project_name,
-        p.uuid,
+        p.name,
         p.start_date,
         p.end_date,
-        p.revision_count,
         array_remove(array_agg(DISTINCT rl.region_name), null) as regions,
         array_agg(distinct p2.program_id) as project_programs
       FROM
@@ -45,12 +61,8 @@ export class ProjectRepository extends BaseRepository {
         ON p2.program_id = pp.program_id
       LEFT OUTER JOIN survey as s
         ON s.project_id = p.project_id
-      LEFT OUTER JOIN study_species as sp
-        ON sp.survey_id = s.survey_id
-      LEFT JOIN survey_funding_source as sfs
-        ON s.survey_id = sfs.survey_id
-      LEFT JOIN funding_source as fs
-        ON sfs.funding_source_id = fs.funding_source_id
+
+        
       LEFT JOIN project_region pr
         ON p.project_id = pr.project_id
       LEFT JOIN region_lookup rl
@@ -107,9 +119,7 @@ export class ProjectRepository extends BaseRepository {
         p.project_id,
         p.name,
         p.start_date,
-        p.end_date,
-        p.uuid,
-        p.revision_count
+        p.end_date
     `);
 
     /*
@@ -137,11 +147,75 @@ export class ProjectRepository extends BaseRepository {
       sqlStatement.append(SQL`}'`);
     }
 
+    if (pagination?.sort) {
+      sqlStatement
+        .append(SQL`ORDER BY `)
+        .append(pagination.sort)
+        .append(SQL` `);
+
+      if (pagination.order) {
+        sqlStatement.append(pagination.order === 'asc' ? SQL`ASC` : SQL`DESC`);
+      }
+    }
+
+    if (pagination) {
+      sqlStatement.append(SQL`
+        LIMIT
+          ${pagination.limit}
+        OFFSET
+          ${(pagination.page - 1) * pagination.limit}
+      `);
+    }
+
     sqlStatement.append(';');
 
     const response = await this.connection.sql(sqlStatement, ProjectListData);
 
     return response.rows;
+  }
+
+  /**
+   * Returns the total count of projects that are visible to the given user.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @return {*}  {Promise<number>}
+   * @memberof ProjectRepository
+   */
+  async getProjectCount(isUserAdmin: boolean, systemUserId: number | null): Promise<number> {
+    const sqlStatement = SQL`
+      SELECT
+        COUNT(*) as project_count
+      FROM
+        project as p
+      WHERE 1 = 1
+    `;
+
+    if (!isUserAdmin) {
+      sqlStatement.append(SQL`
+        AND p.project_id IN (
+          SELECT
+            project_id
+          FROM
+            project_participation
+          where
+            system_user_id = ${systemUserId}
+        )
+      `);
+    }
+
+    sqlStatement.append(';');
+
+    const response = await this.connection.sql(sqlStatement, z.object({ project_count: z.string().transform(Number) }));
+
+    if (response?.rowCount < 1) {
+      throw new ApiExecuteSQLError('Failed to get project count', [
+        'ProjectRepository->getProjectCount',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0].project_count;
   }
 
   async getProjectData(projectId: number): Promise<ProjectData> {
