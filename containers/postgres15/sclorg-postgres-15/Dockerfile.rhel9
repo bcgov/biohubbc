@@ -102,7 +102,7 @@ RUN cd /tmp && \
 RUN yum -y module enable postgresql:15 && \
     # INSTALL_PKGS="rsync tar gettext bind-utils nss_wrapper postgresql-server postgresql-contrib" && \
     INSTALL_PKGS="postgresql-contrib postgis34_15 postgis34_15-client pgrouting_15" && \
-    yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS
+    yum -y --setopt=tsflags=nodocs --nobest install $INSTALL_PKGS
 
 RUN /usr/bin/install -c -m 755  /usr/pgsql-15/lib/postgis* '/opt/rh/rh-postgresql15/root/usr/lib64/pgsql/' && \
     /usr/bin/install -c -m 755  /usr/pgsql-15/lib/libpgrouting* '/opt/rh/rh-postgresql15/root/usr/lib64/pgsql/' && \
