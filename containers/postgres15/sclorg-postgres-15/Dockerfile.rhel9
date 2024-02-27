@@ -39,28 +39,24 @@ LABEL summary="$SUMMARY" \
     usage="podman run -d --name postgresql_database -e POSTGRESQL_USER=user -e POSTGRESQL_PASSWORD=pass -e POSTGRESQL_DATABASE=db -p 5432:5432 rhel9/postgresql-15" \
     maintainer="SoftwareCollections.org <sclorg@redhat.com>"
 
-USER 0
+# USER 0
 
 # Copy entitlements and subscription manager configurations
 # https://github.com/BCDevOps/OpenShift4-Migration/issues/15
-COPY ./etc-pki-entitlement /etc/pki/entitlement
-COPY ./rhsm-conf /etc/rhsm
-COPY ./rhsm-ca /etc/rhsm/ca
+# COPY ./etc-pki-entitlement /etc/pki/entitlement
+# COPY ./rhsm-conf /etc/rhsm
+# COPY ./rhsm-ca /etc/rhsm/ca
 
 EXPOSE 5432
 
 COPY root/usr/libexec/fix-permissions /usr/libexec/fix-permissions
 
-# This image must forever use UID 26 for postgres user so our volumes are
-# safe in the future. This should *never* change, the last test is there
-# to make sure of that.
-RUN rm /etc/rhsm-host && \
-    yum repolist > /dev/null && \
-    yum install -y yum-utils gettext && \
-    yum-config-manager --disable \* &> /dev/null && \
-    yum-config-manager --enable rhel-9-for-x86_64-baseos-rpms && \
-    yum-config-manager --enable rhel-9-for-x86_64-appstream-rpms && \
-    yum-config-manager --enable codeready-builder-for-rhel-9-x86_64-rpms
+# RUN yum repolist > /dev/null && \
+#     yum install -y yum-utils gettext && \
+#     yum-config-manager --disable \* &> /dev/null && \
+#     yum-config-manager --enable rhel-9-for-x86_64-baseos-rpms && \
+#     yum-config-manager --enable rhel-9-for-x86_64-appstream-rpms && \
+#     yum-config-manager --enable codeready-builder-for-rhel-9-x86_64-rpms
 
 # This image must forever use UID 26 for postgres user so our volumes are
 # safe in the future. This should *never* change, the last test is there
@@ -108,8 +104,8 @@ RUN /usr/bin/install -c -m 755  /usr/pgsql-15/lib/postgis* '/opt/rh/rh-postgresq
 RUN rm -rf /tmp/pgdg-redhat-repo-latest.noarch.rpm /var/cache/yum
 
 # Remove entitlements and Subscription Manager configs
-RUN rm -rf /etc/pki/entitlement && \
-    rm -rf /etc/rhsm/rhsm-conf && rm -fr /etc/rhsm/ca
+# RUN rm -rf /etc/pki/entitlement && \
+#     rm -rf /etc/rhsm/rhsm-conf && rm -fr /etc/rhsm/ca
 
 # Not using VOLUME statement since it's not working in OpenShift Online:
 # https://github.com/sclorg/httpd-container/issues/30

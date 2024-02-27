@@ -109,17 +109,17 @@ objects:
           ref: ${GIT_REF}
           uri: ${GIT_REPO_URL}
         contextDir: ${SOURCE_CONTEXT_DIR}
-        secrets:
-          - secret:
-              name: platform-services-controlled-etc-pki-entitlement
-            destinationDir: etc-pki-entitlement
-        configMaps:
-          - configMap:
-              name: platform-services-controlled-rhsm-conf
-            destinationDir: rhsm-conf
-          - configMap:
-              name: platform-services-controlled-rhsm-ca
-            destinationDir: rhsm-ca
+        # secrets:
+        #   - secret:
+        #       name: platform-services-controlled-etc-pki-entitlement
+        #     destinationDir: etc-pki-entitlement
+        # configMaps:
+        #   - configMap:
+        #       name: platform-services-controlled-rhsm-conf
+        #     destinationDir: rhsm-conf
+        #   - configMap:
+        #       name: platform-services-controlled-rhsm-ca
+        #     destinationDir: rhsm-ca
       strategy:
         type: Docker
         dockerStrategy:
@@ -129,6 +129,14 @@ objects:
           # from:
           #   kind: ${SOURCE_IMAGE_KIND}
           #   name: ${SOURCE_IMAGE_NAME}:${SOURCE_IMAGE_TAG}
+          volumes:
+            - name: etc-pki-entitlement
+              mounts:
+                - destinationPath: /etc/pki/entitlement
+              source:
+                type: Secret
+                secret:
+                  secretName: platform-services-controlled-etc-pki-entitlement
       output:
         to:
           kind: ImageStreamTag
