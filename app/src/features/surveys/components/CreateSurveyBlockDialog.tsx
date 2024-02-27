@@ -20,7 +20,8 @@ const CreateSurveyBlockDialog: React.FC<ICreateBlockProps> = (props) => {
           initialValues: {
             survey_block_id: null,
             name: '',
-            description: ''
+            description: '',
+            sample_block_count: 0
           },
           validationSchema: BlockYupSchema
         }}

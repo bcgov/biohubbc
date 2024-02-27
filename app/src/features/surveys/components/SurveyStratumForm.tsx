@@ -17,6 +17,7 @@ import { IEditSurveyRequest, IGetSurveyStratum } from 'interfaces/useSurveyApi.i
 import get from 'lodash-es/get';
 import { useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
+import { pluralize as p } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import StratumCreateOrEditDialog from './StratumCreateOrEditDialog';
 
@@ -50,7 +51,8 @@ export const StratumFormYupSchema = yup.object().shape({
     description: yup
       .string()
       .required('Must provide a Stratum description')
-      .max(3000, 'Description cannot exceed 3000 characters')
+      .max(3000, 'Description cannot exceed 3000 characters'),
+    sample_stratum_count: yup.number().required('Sample stratum count is required.').min(0)
   })
 });
 
@@ -79,13 +81,18 @@ const SurveyStratumForm = () => {
       // Create new stratum
       setFieldValue('site_selection.stratums', [
         ...values.site_selection.stratums,
-        { name: stratumForm.stratum.name, description: stratumForm.stratum.description }
+        {
+          name: stratumForm.stratum.name,
+          description: stratumForm.stratum.description,
+          sample_stratum_count: stratumForm.stratum.sample_stratum_count
+        }
       ]);
     } else {
       // Edit existing stratum
       setFieldValue(`site_selection.stratums[${stratumForm.index}`, {
         name: stratumForm.stratum.name,
-        description: stratumForm.stratum.description
+        description: stratumForm.stratum.description,
+        sample_stratum_count: stratumForm.stratum.sample_stratum_count
       });
     }
 
@@ -136,7 +143,11 @@ const SurveyStratumForm = () => {
       {/* DELETE BLOCK ASSIGNED TO SAMPLE SITES CONFIRMATION DIALOG */}
       <YesNoDialog
         dialogTitle={'Delete Stratum assigned to Sampling Sites?'}
-        dialogText={`Are you sure you want to delete this Stratum? This will remove the Stratum from ${currentStratumForm?.stratum.sample_stratum_count} Sampling Sites that currently reference it.`}
+        dialogText={`Are you sure you want to delete this Block? This will remove the Block from ${
+          currentStratumForm.stratum.sample_stratum_count
+        } sampling ${p(currentStratumForm.stratum.sample_stratum_count, 'site')} that currently ${
+          currentStratumForm.stratum.sample_stratum_count > 1 ? 'reference' : 'references'
+        } it.`}
         yesButtonProps={{ color: 'error' }}
         yesButtonLabel={'Remove'}
         noButtonProps={{ color: 'primary', variant: 'outlined' }}

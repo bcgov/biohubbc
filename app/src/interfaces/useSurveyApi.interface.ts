@@ -41,6 +41,7 @@ export interface ISurveyBlockForm {
     survey_block_id: number | null;
     name: string;
     description: string;
+    sample_block_count: number;
   }[];
 }
 
