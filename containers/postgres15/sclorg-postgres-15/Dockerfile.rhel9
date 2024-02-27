@@ -47,9 +47,7 @@ USER 0
 # COPY ./rhsm-conf /etc/rhsm
 # COPY ./rhsm-ca /etc/rhsm/ca
 
-EXPOSE 5432
-
-COPY root/usr/libexec/fix-permissions /usr/libexec/fix-permissions
+# COPY root/usr/libexec/fix-permissions /usr/libexec/fix-permissions
 
 # RUN yum repolist > /dev/null && \
 # RUN yum install -y yum-utils gettext
@@ -86,6 +84,8 @@ ENV CONTAINER_SCRIPTS_PATH=/usr/share/container-scripts/postgresql \
     ENABLED_COLLECTIONS=
 
 COPY root /
+# ENV PGCONFIG /opt/rh/rh-postgresql12/root/usr/bin
+# ENV PATH /opt/rh/rh-postgresql12/root/usr/bin/:/usr/bin/:${PATH}
 COPY ./s2i/bin/ $STI_SCRIPTS_PATH
 
 # Aquire and build PostGIS 3.4, for PostgreSQL 15.x
@@ -133,6 +133,8 @@ RUN usermod -a -G root postgres && \
     /usr/libexec/fix-permissions --read-only "$APP_DATA"
 
 USER 26
+
+EXPOSE ${PORT}
 
 ENTRYPOINT ["container-entrypoint"]
 CMD ["run-postgresql"]
