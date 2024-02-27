@@ -62,8 +62,8 @@ USER 0
 RUN yum -y module enable postgresql:15 && \
     # INSTALL_PKGS="rsync tar gettext bind-utils nss_wrapper postgresql-server postgresql-contrib" && \
     INSTALL_PKGS="rsync tar yum-utils gettext bind-utils nss_wrapper postgresql-server postgresql-contrib pgaudit" && \
-    yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS && \
-    rpm -V $INSTALL_PKGS
+    yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS
+# rpm -V $INSTALL_PKGS
 RUN postgres -V | grep -qe "$POSTGRESQL_VERSION\." && echo "Found VERSION $POSTGRESQL_VERSION" && \
     (yum -y reinstall tzdata || yum -y update tzdata )
 
