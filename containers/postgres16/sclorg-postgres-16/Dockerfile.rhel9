@@ -47,7 +47,7 @@ COPY ./etc-pki-entitlement /etc/pki/entitlement
 COPY ./rhsm-conf /etc/rhsm
 COPY ./rhsm-ca /etc/rhsm/ca
 
-COPY root/usr/libexec/fix-permissions /usr/libexec/fix-permissions
+# COPY root/usr/libexec/fix-permissions /usr/libexec/fix-permissions
 
 # This image must forever use UID 26 for postgres user so our volumes are
 # safe in the future. This should *never* change, the last test is there
@@ -56,12 +56,12 @@ RUN rm /etc/rhsm-host && \
     yum repolist > /dev/null && \
     yum install -y yum-utils gettext && \
     yum-config-manager --disable \* &> /dev/null && \
-    yum-config-manager --enable rhel-server-rhscl-9-rpms && \
+    # yum-config-manager --enable rhel-server-rhscl-9-rpms && \
     yum-config-manager --enable rhel-9-server-rpms && \
     yum-config-manager --enable rhel-9-server-optional-rpms && \
     { yum -y module enable postgresql:16 || :; } && \
     INSTALL_PKGS="rsync tar gettext bind-utils nss_wrapper postgresql-server postgresql-contrib" && \
-    INSTALL_PKGS="$INSTALL_PKGS postgresql$POSTGRESQL_VERSION-pgaudit" && \
+    INSTALL_PKGS="$INSTALL_PKGS pgaudit" && \
     yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
     postgres -V | grep -qe "$POSTGRESQL_VERSION\." && echo "Found VERSION $POSTGRESQL_VERSION" && \
@@ -72,13 +72,26 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN localedef -f UTF-8 -i en_US en_US.UTF-8
 
 RUN usermod -G "" postgres
+# RUN usermod -a -G root postgres
 RUN test "$(id postgres)" = "uid=26(postgres) gid=26(postgres) groups=26(postgres)"
 RUN mkdir -p /var/lib/pgsql/data
 RUN /usr/libexec/fix-permissions /var/lib/pgsql /var/run/postgresql
 
+RUN touch /etc/yum/pluginconf.d/rhnplugin.conf && \
+    echo  exclude=postgresql* >> /etc/yum/pluginconf.d/rhnplugin.conf    
+
+RUN bash /usr/libexec/fix-permissions /var/run/postgresql
+
 # Get prefix path and path to scripts rather than hard-code them in scripts
 ENV CONTAINER_SCRIPTS_PATH=/usr/share/container-scripts/postgresql \
     ENABLED_COLLECTIONS=rh-postgresql16
+
+# When bash is started non-interactively, to run a shell script, for example it
+# looks for this variable and source the content of this file. This will enable
+# the SCL for all scripts without need to do 'scl enable'.
+ENV BASH_ENV=${CONTAINER_SCRIPTS_PATH}/scl_enable \
+    ENV=${CONTAINER_SCRIPTS_PATH}/scl_enable \
+    PROMPT_COMMAND=". ${CONTAINER_SCRIPTS_PATH}/scl_enable"
 
 COPY root /
 COPY ./s2i/bin/ $STI_SCRIPTS_PATH
@@ -125,7 +138,7 @@ RUN rm -rf /etc/pki/entitlement && \
 #    anyways) to assure that s2i process is actually able to _read_ the
 #    user-specified scripting.
 RUN usermod -a -G root postgres
-RUN /usr/libexec/fix-permissions --read-only "$APP_DATA"
+RUN bash /usr/libexec/fix-permissions --read-only "$APP_DATA"
 
 USER 26
 
