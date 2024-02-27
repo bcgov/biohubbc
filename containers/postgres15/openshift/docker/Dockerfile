@@ -4,14 +4,14 @@
 ARG BASE_IMAGE=postgres:15-alpine3.18
 FROM ${BASE_IMAGE}
 
+RUN chgrp -R 0 /var/lib/pgsql /var/run/postgresql && chmod -R g=u /var/lib/pgsql /var/run/postgresql
+
 LABEL maintainer="PostGIS Project - https://postgis.net" \
     org.opencontainers.image.description="PostGIS 3.4.2 spatial database extension with PostgreSQL 15 Alpine" \
     org.opencontainers.image.source="https://github.com/postgis/docker-postgis"
 
 ENV POSTGIS_VERSION 3.4.2
 ENV POSTGIS_SHA256 17aa8760a5c4fcb9a1fdc750c1c9aca0198a35dd1e320628064c43f178eefed2
-
-USER 0
 
 RUN set -eux \
     && apk add --no-cache --virtual .fetch-deps \
@@ -124,5 +124,3 @@ RUN set -eux \
 
 COPY ./initdb-postgis.sh /docker-entrypoint-initdb.d/10_postgis.sh
 COPY ./update-postgis.sh /usr/local/bin
-
-USER 26
