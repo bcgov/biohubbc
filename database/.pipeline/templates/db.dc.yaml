@@ -65,15 +65,7 @@ parameters:
     displayName: Version of PostgreSQL Image
     name: IMAGE_STREAM_VERSION
     required: true
-    value: '15-3.4-alpine'
-  - description: Indicator to enable pgcrypto extension (provided out-of-the-box with PostgreSQL).
-    displayName: Flag to enable pgcrypto PostgreSQL extension.
-    name: PGCRYPTO_EXTENSION
-    value: 'Y'
-  - description: Indicator to enable postgis extension (from official PostgeSQL YUM repo).
-    displayName: Flag to enable postgis PostgreSQL extension.
-    name: POSTGIS_EXTENSION
-    value: 'Y'
+    value: '16'
   - name: CPU_REQUEST
     value: '50m'
   - name: CPU_LIMIT

@@ -27,17 +27,17 @@ parameters:
     displayName: Git Repo URL
     description: The URL to your GIT repo.
     required: true
-    value: https://github.com/bcgov/biohubbc.git
+    value: https://github.com/postgis/docker-postgis.git
   - name: GIT_REF
     displayName: Git Reference
     description: The git reference or branch.
     required: true
-    value: postgres_upgrade
+    value: master
   - name: SOURCE_CONTEXT_DIR
     displayName: Source Context Directory
     description: The source context directory.
     required: false
-    value: containers/postgres15/openshift/docker
+    value: 15-3.4/alpine
   - name: OUTPUT_IMAGE_TAG
     displayName: Output Image Tag
     description: The tag given to the built image.

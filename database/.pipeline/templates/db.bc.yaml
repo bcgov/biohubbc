@@ -29,7 +29,7 @@ objects:
           annotations:
           from:
             kind: ImageStreamTag
-            name: postgres-postgis:15-3.4-alpine
+            name: postgres-postgis:16
             namespace: af2668-tools
           generation: 1
           importPolicy: {}
