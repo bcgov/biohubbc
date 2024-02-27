@@ -39,7 +39,7 @@ LABEL summary="$SUMMARY" \
     usage="podman run -d --name postgresql_database -e POSTGRESQL_USER=user -e POSTGRESQL_PASSWORD=pass -e POSTGRESQL_DATABASE=db -p 5432:5432 rhel9/postgresql-15" \
     maintainer="SoftwareCollections.org <sclorg@redhat.com>"
 
-# USER 0
+USER 0
 
 # Copy entitlements and subscription manager configurations
 # https://github.com/BCDevOps/OpenShift4-Migration/issues/15
