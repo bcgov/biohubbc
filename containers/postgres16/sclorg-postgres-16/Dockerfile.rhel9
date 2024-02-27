@@ -53,13 +53,13 @@ COPY ./rhsm-ca /etc/rhsm/ca
 # safe in the future. This should *never* change, the last test is there
 # to make sure of that.
 RUN rm /etc/rhsm-host && \
-    yum repolist > /dev/null && \
-    yum install -y yum-utils gettext && \
+    # yum repolist > /dev/null && \
+    # yum install -y yum-utils gettext && \
     # yum-config-manager --disable \* &> /dev/null && \
     # yum-config-manager --enable rhel-server-rhscl-7-rpms && \
     # yum-config-manager --enable rhel-7-server-rpms && \
     # yum-config-manager --enable rhel-7-server-optional-rpms && \
-    { yum -y module enable postgresql:16 || :; } && \
+    yum -y module enable postgresql:16 && \
     INSTALL_PKGS="rsync tar gettext bind-utils nss_wrapper postgresql-server postgresql-contrib" && \
     INSTALL_PKGS="$INSTALL_PKGS pgaudit" && \
     yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS && \
