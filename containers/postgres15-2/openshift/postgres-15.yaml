@@ -37,17 +37,17 @@ parameters:
     displayName: Source Context Directory
     description: The source context directory.
     required: false
-    value: containers/postgres15/sclorg-postgres-15
+    value: containers/postgres15/openshift/docker
   - name: OUTPUT_IMAGE_TAG
     displayName: Output Image Tag
     description: The tag given to the built image.
     required: true
-    value: "15"
+    value: "15-3.4-alpine"
   - name: DOCKER_FILE_PATH
     displayName: Docker File Path
     description: The path to the docker file.
     required: true
-    value: Dockerfile.rhel9
+    value: Dockerfile
   - name: SOURCE_IMAGE_KIND
     displayName: Source Image Kind
     description: The 'kind' (type) of the source image; typically ImageStreamTag, or DockerImage.
@@ -109,17 +109,17 @@ objects:
           ref: ${GIT_REF}
           uri: ${GIT_REPO_URL}
         contextDir: ${SOURCE_CONTEXT_DIR}
-        secrets:
-          - secret:
-              name: platform-services-controlled-etc-pki-entitlement
-            destinationDir: etc-pki-entitlement
-        configMaps:
-          - configMap:
-              name: platform-services-controlled-rhsm-conf
-            destinationDir: rhsm-conf
-          - configMap:
-              name: platform-services-controlled-rhsm-ca
-            destinationDir: rhsm-ca
+        # secrets:
+        #   - secret:
+        #       name: platform-services-controlled-etc-pki-entitlement
+        #     destinationDir: etc-pki-entitlement
+        # configMaps:
+        #   - configMap:
+        #       name: platform-services-controlled-rhsm-conf
+        #     destinationDir: rhsm-conf
+        #   - configMap:
+        #       name: platform-services-controlled-rhsm-ca
+        #     destinationDir: rhsm-ca
       strategy:
         type: Docker
         dockerStrategy:
