@@ -46,11 +46,6 @@ export interface ISurveyBlockForm {
 
 export interface IParticipantsJobForm {
   participants: IGetSurveyParticipant[];
-  // TODO remove
-  // participants: {
-  //   system_user_id: number;
-  //   survey_job_name: string;
-  // }[];
 }
 
 export interface IGetSurveyForViewResponseDetails {

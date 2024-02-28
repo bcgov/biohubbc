@@ -38,8 +38,8 @@ export const ProjectUserRoleYupSchema = yup.object().shape({
     )
 });
 
-interface IProjectUser {
-  users: (ISystemUser | IGetProjectParticipant)[];
+interface IProjectUserFormProps {
+  initialUsers: (ISystemUser | IGetProjectParticipant)[];
   roles: ICode[];
 }
 
@@ -47,18 +47,18 @@ export const ProjectUserRoleFormInitialValues = {
   participants: []
 };
 
-const ProjectUserForm: React.FC<IProjectUser> = (props) => {
+const ProjectUserForm = (props: IProjectUserFormProps) => {
   const { handleSubmit, values, setFieldValue, errors, setErrors } = useFormikContext<ICreateProjectRequest>();
   const biohubApi = useBiohubApi();
 
   const searchUserDataLoader = useDataLoader(() => biohubApi.user.searchSystemUser(''));
   searchUserDataLoader.load();
 
-  const [selectedUsers, setSelectedUsers] = useState<(ISystemUser | IGetProjectParticipant)[]>(props.users);
+  const [selectedUsers, setSelectedUsers] = useState<(ISystemUser | IGetProjectParticipant)[]>(props.initialUsers);
   const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
-    props.users.forEach((user, index) => {
+    props.initialUsers.forEach((user, index) => {
       setFieldValue(`participants[${index}].system_user_id`, user.system_user_id);
       setFieldValue(`participants[${index}].display_name`, user.display_name);
       setFieldValue(`participants[${index}].email`, user.email);
@@ -66,7 +66,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
       setFieldValue(`participants[${index}].identity_source`, user.identity_source);
       setFieldValue(`participants[${index}].project_role_names`, (user as IGetProjectParticipant).project_role_names);
     });
-  }, [props.users, setFieldValue]);
+  }, [props.initialUsers, setFieldValue]);
 
   const handleAddUser = (user: ISystemUser | IGetProjectParticipant) => {
     selectedUsers.push(user);

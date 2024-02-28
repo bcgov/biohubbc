@@ -61,7 +61,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
   const codes = codesContext.codesDataLoader.data;
 
   if (!projectData || !codes) {
-    return <></>; // TODO confirm if this is an OK approach
+    return <></>;
   }
 
   const surveyEditYupSchemas = GeneralInformationYupSchema({
@@ -112,8 +112,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
   return (
     <Formik
       innerRef={props.formikRef}
-      initialValues={props.initialSurveyData as unknown as IEditSurveyRequest} // TODO use correct type
-      // initialValues={props.initialSurveyData ?? defaultSurveyDataFormValues}
+      initialValues={props.initialSurveyData as unknown as IEditSurveyRequest}
       validationSchema={surveyEditYupSchemas}
       validateOnBlur={false}
       validateOnChange={false}
@@ -158,8 +157,9 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
         <HorizontalSplitFormComponent
           title="Survey Participants"
           summary="Specify the people who participated in this survey."
-          // TODO does this users prop need to be renamed as something like `initialUsers`?
-          component={<SurveyUserForm users={props.initialSurveyData.participants || []} jobs={codes.survey_jobs} />}
+          component={<SurveyUserForm
+            initialUsers={props.initialSurveyData.participants || []}
+            jobs={codes.survey_jobs} />}
         />
 
         <Divider className={classes.sectionDivider} />

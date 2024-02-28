@@ -29,8 +29,8 @@ export const SurveyUserJobYupSchema = yup.object().shape({
   )
 });
 
-interface ISurveyUser {
-  users: (ISystemUser | IGetSurveyParticipant)[];
+interface ISurveyUserFormProps {
+  initialUsers: (ISystemUser | IGetSurveyParticipant)[];
   jobs: ICode[];
 }
 
@@ -38,7 +38,7 @@ export const SurveyUserJobFormInitialValues = {
   participants: []
 };
 
-const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
+const SurveyUserForm = (props: ISurveyUserFormProps) => {
   const { handleSubmit, values, setFieldValue, errors, setErrors } = useFormikContext<ICreateSurveyRequest>();
   const biohubApi = useBiohubApi();
 
@@ -46,10 +46,10 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
   searchUserDataLoader.load();
 
   const [searchText, setSearchText] = useState('');
-  const [selectedUsers, setSelectedUsers] = useState<(ISystemUser | IGetSurveyParticipant)[]>(props.users);
+  const [selectedUsers, setSelectedUsers] = useState<(ISystemUser | IGetSurveyParticipant)[]>(props.initialUsers);
 
   useEffect(() => {
-    props.users.forEach((user, index) => {
+    props.initialUsers.forEach((user, index) => {
       setFieldValue(`participants[${index}].system_user_id`, user.system_user_id);
       setFieldValue(`participants[${index}].display_name`, user.display_name);
       setFieldValue(`participants[${index}].email`, user.email);
@@ -58,7 +58,7 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
       setFieldValue(`participants[${index}].system_user_id`, user.system_user_id);
       setFieldValue(`participants[${index}].survey_job_name`, (user as IGetSurveyParticipant).survey_job_name);
     });
-  }, [props.users, setFieldValue]);
+  }, [props.initialUsers, setFieldValue]);
 
   const handleAddUser = (user: ISystemUser | IGetSurveyParticipant) => {
     selectedUsers.push(user);

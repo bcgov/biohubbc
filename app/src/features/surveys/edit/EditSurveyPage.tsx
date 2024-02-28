@@ -224,9 +224,6 @@ const EditSurveyPage = () => {
         <Container maxWidth="xl">
           <Box p={5} component={Paper} display="block">
             <EditSurveyForm
-              // codes={codes} // TODO remove unused props
-              // projectData={projectData}
-              // handleCancel={handleCancel}
               initialSurveyData={surveyData}
               handleSubmit={handleSubmit}
               formikRef={formikRef}
