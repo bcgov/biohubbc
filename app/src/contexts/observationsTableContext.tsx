@@ -686,6 +686,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     setStagedRows([]);
     // Clear any validation errors
     setValidationModel({});
+    // Reset row modes model to default (all rows in view mode)
+    setRowModesModel({});
   }, [_muiDataGridApiRef, modifiedRowIds]);
 
   // True if the data grid contains at least 1 unsaved record
