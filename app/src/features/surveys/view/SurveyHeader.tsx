@@ -171,9 +171,13 @@ const SurveyHeader = () => {
                       order: { sm: 3, md: 0 }
                     }}>
                     {publishDate ? (
-                      <span>Status:&nbsp;&nbsp;<b>Published ({publishDate})</b></span>
+                      <span>
+                        Status:&nbsp;&nbsp;<b>Published ({publishDate})</b>
+                      </span>
                     ) : (
-                      <span>Status:&nbsp;&nbsp;<b>Unpublished</b></span>
+                      <span>
+                        Status:&nbsp;&nbsp;<b>Unpublished</b>
+                      </span>
                     )}
                   </Typography>
                   <Button

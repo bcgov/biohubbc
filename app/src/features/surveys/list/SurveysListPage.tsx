@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
+import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { ProjectContext } from 'contexts/projectContext';
@@ -13,7 +14,6 @@ import { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
-import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 
 const pageSizeOptions = [10, 25, 50];
 
@@ -104,7 +104,7 @@ const SurveysListPage = () => {
       <Divider></Divider>
       <Box p={2}>
         <StyledDataGrid
-          noRowsMessage='No surveys found'
+          noRowsMessage="No surveys found"
           columns={columns}
           autoHeight
           rows={projectContext.surveysListDataLoader.data?.surveys ?? []}

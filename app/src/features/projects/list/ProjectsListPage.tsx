@@ -9,6 +9,7 @@ import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
+import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import PageHeader from 'components/layout/PageHeader';
 import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
 import { SystemRoleGuard } from 'components/security/Guards';
@@ -23,7 +24,6 @@ import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull, getFormattedDate } from 'utils/Utils';
 import ProjectsListFilterForm from './ProjectsListFilterForm';
-import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 
 interface IProjectsListTableRow extends Omit<IProjectsListItemData, 'project_programs'> {
   project_programs: string;
@@ -187,7 +187,7 @@ const ProjectsListPage = () => {
             )}
             <Box p={2}>
               <StyledDataGrid
-                noRowsMessage='No projects found'
+                noRowsMessage="No projects found"
                 autoHeight
                 rows={projectRows}
                 rowCount={projectsDataLoader.data?.pagination.total ?? 0}

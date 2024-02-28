@@ -37,8 +37,8 @@ export const StyledDataGrid = (props: StyledDataGridProps) => {
             borderBottom: 'none'
           }
         },
-        "& .MuiDataGrid-row:hover": {
-          backgroundColor: "transparent",
+        '& .MuiDataGrid-row:hover': {
+          backgroundColor: 'transparent'
         },
         '& .MuiDataGrid-columnHeader:first-of-type, .MuiDataGrid-cell:first-of-type': {
           pl: 2

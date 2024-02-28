@@ -149,9 +149,13 @@ const PublishSurveyDialog = (props: IPublishSurveyIdDialogProps) => {
                 <Typography component="span" variant="subtitle2" sx={{ mr: 2 }}>
                   <Typography component="span" color="textSecondary" variant="inherit">
                     {publishDate ? (
-                      <span>Status:&nbsp;&nbsp;<b>Published ({publishDate})</b></span>
+                      <span>
+                        Status:&nbsp;&nbsp;<b>Published ({publishDate})</b>
+                      </span>
                     ) : (
-                      <span>Status:&nbsp;&nbsp;<b>Unpublished</b></span>
+                      <span>
+                        Status:&nbsp;&nbsp;<b>Unpublished</b>
+                      </span>
                     )}
                   </Typography>
                 </Typography>

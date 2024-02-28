@@ -1,7 +1,7 @@
 import { mdiFileOutline, mdiLockOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import Stack from '@mui/material/Stack';
 import Link from '@mui/material/Link';
+import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -43,7 +43,7 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
       <Table
         aria-label="attachments-list-table"
         sx={{
-          tableLayout: 'fixed',
+          tableLayout: 'fixed'
         }}>
         <TableHead>
           <TableRow>
@@ -62,27 +62,26 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
 
             return (
               <TableRow hover={false} key={`${attachment.fileName}-${attachment.id}`}>
-                <TableCell scope="row"
+                <TableCell
+                  scope="row"
                   sx={{
                     overflow: 'hidden',
                     textOverflow: 'ellipsis'
-                  }}
-                >
-                  <Stack flexDirection="row" alignItems="center" gap={2}
+                  }}>
+                  <Stack
+                    flexDirection="row"
+                    alignItems="center"
+                    gap={2}
                     sx={{
                       '& svg': {
-                        color: '#1a5a96',
+                        color: '#1a5a96'
                       },
                       '& a': {
                         fontWeight: 700
                       }
-                    }}
-                  >
+                    }}>
                     <Icon path={icon} size={1} />
-                    <Link
-                      underline="always"
-                      onClick={() => handleDownload(attachment)}
-                      tabIndex={0}>
+                    <Link underline="always" onClick={() => handleDownload(attachment)} tabIndex={0}>
                       {attachment.fileName}
                     </Link>
                   </Stack>
