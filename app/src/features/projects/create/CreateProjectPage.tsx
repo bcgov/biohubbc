@@ -13,8 +13,8 @@ import { DialogContext } from 'contexts/dialogContext';
 import { FormikProps } from 'formik';
 import * as History from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { ICreateProjectRequest, IUpdateProjectRequest } from 'interfaces/useProjectApi.interface';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { ICreateProjectRequest, IGetProjectParticipant, IUpdateProjectRequest } from 'interfaces/useProjectApi.interface';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Prompt } from 'react-router-dom';
 import EditProjectForm from '../edit/EditProjectForm';
@@ -23,8 +23,10 @@ import { ProjectDetailsFormInitialValues } from '../components/ProjectDetailsFor
 import { ProjectIUCNFormInitialValues } from '../components/ProjectIUCNForm';
 import { ProjectObjectivesFormInitialValues } from '../components/ProjectObjectivesForm';
 import { ProjectUserRoleFormInitialValues } from '../components/ProjectUserForm';
+import { useAuthStateContext } from 'hooks/useAuthStateContext';
+import { PROJECT_ROLE } from 'constants/roles';
 
-export const initialProjectData: ICreateProjectRequest = {
+export const defaultProjectDataFormValues: ICreateProjectRequest = {
   ...ProjectDetailsFormInitialValues,
   ...ProjectObjectivesFormInitialValues,
   ...ProjectIUCNFormInitialValues,
@@ -51,6 +53,28 @@ const CreateProjectPage = () => {
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
+
+  const authStateContext = useAuthStateContext();
+
+  const initialParticipants: IGetProjectParticipant[] = useMemo(() => {
+    return [
+      {
+        system_user_id: authStateContext.simsUserWrapper?.systemUserId,
+        display_name: authStateContext.simsUserWrapper?.displayName,
+        email: authStateContext.simsUserWrapper?.email,
+        agency: authStateContext.simsUserWrapper?.agency,
+        identity_source: authStateContext.simsUserWrapper?.identitySource,
+        project_role_names: [PROJECT_ROLE.COORDINATOR]
+      } as IGetProjectParticipant
+    ];
+  }, [authStateContext.simsUserWrapper]);
+
+  const initialProjectData: ICreateProjectRequest  = useMemo(() => {
+    return { 
+      ...defaultProjectDataFormValues,
+      participants: initialParticipants
+    }
+  }, [initialParticipants])
 
   const defaultCancelDialogProps = {
     dialogTitle: CreateProjectI18N.cancelTitle,

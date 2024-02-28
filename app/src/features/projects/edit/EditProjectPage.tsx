@@ -20,7 +20,7 @@ import EditProjectForm from './EditProjectForm';
 import { CodesContext } from 'contexts/codesContext';
 import { Stack } from '@mui/system';
 import { LoadingButton } from '@mui/lab';
-import { initialProjectData } from '../create/CreateProjectPage';
+import { defaultProjectDataFormValues } from '../create/CreateProjectPage';
 
 /**
  * Page for creating a new project.
@@ -176,7 +176,7 @@ const EditProjectPage = () => {
         <Box py={3}>
           <Paper elevation={0} sx={{p: 5}}>
             <EditProjectForm
-              initialProjectData={editProjectDataLoader.data ?? initialProjectData}
+              initialProjectData={editProjectDataLoader.data ?? defaultProjectDataFormValues}
               handleSubmit={updateProject}
               formikRef={formikRef}
             />
