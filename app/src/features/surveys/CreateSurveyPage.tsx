@@ -54,6 +54,7 @@ import SurveyFundingSourceForm, {
 } from './components/SurveyFundingSourceForm';
 import { SurveySiteSelectionInitialValues, SurveySiteSelectionYupSchema } from './components/SurveySiteSelectionForm';
 import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from './components/SurveyUserForm';
+import { LoadingButton } from '@mui/lab';
 
 export const defaultSurveyDataFormValues: ICreateSurveyRequest = {
   ...GeneralInformationInitialValues,
@@ -89,10 +90,12 @@ const CreateSurveyPage = () => {
   }, [projectContext.projectDataLoader, projectContext.projectId]);
   const projectData = projectContext.projectDataLoader.data?.projectData;
 
+  // TODO remove useState
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
+  const [isSaving, setIsSaving] = useState(false);
 
   const dialogContext = useContext(DialogContext);
 
@@ -185,6 +188,7 @@ const CreateSurveyPage = () => {
    * @return {*}
    */
   const handleSubmit = async (values: ICreateSurveyRequest) => {
+    setIsSaving(true);
     try {
       const response = await biohubApi.survey.createSurvey(Number(projectData?.project.project_id), values);
 
@@ -205,6 +209,8 @@ const CreateSurveyPage = () => {
         dialogError: apiError?.message,
         dialogErrorDetails: apiError?.errors
       });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -255,10 +261,14 @@ const CreateSurveyPage = () => {
         }
         buttonJSX={
           <Stack flexDirection="row" gap={1}>
-            <Button color="primary" variant="contained" onClick={() => formikRef.current?.submitForm()}>
+            <LoadingButton
+              loading={isSaving}
+              color="primary"
+              variant="contained"
+              onClick={() => formikRef.current?.submitForm()}>
               Save and Exit
-            </Button>
-            <Button color="primary" variant="outlined" onClick={handleCancel}>
+            </LoadingButton>
+            <Button disabled={isSaving} color="primary" variant="outlined" onClick={handleCancel}>
               Cancel
             </Button>
           </Stack>
@@ -368,7 +378,8 @@ const CreateSurveyPage = () => {
                     component={<AgreementsForm />}></HorizontalSplitFormComponent>
 
                   <Stack flexDirection="row" justifyContent="flex-end" gap={1}>
-                    <Button
+                    <LoadingButton
+                      loading={isSaving}
                       type="submit"
                       variant="contained"
                       color="primary"
@@ -376,8 +387,8 @@ const CreateSurveyPage = () => {
                         formikRef.current?.submitForm();
                       }}>
                       Save and Exit
-                    </Button>
-                    <Button variant="outlined" color="primary" onClick={handleCancel}>
+                    </LoadingButton>
+                    <Button disabled={isSaving} variant="outlined" color="primary" onClick={handleCancel}>
                       Cancel
                     </Button>
                   </Stack>

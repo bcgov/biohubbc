@@ -57,7 +57,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 export interface IEditSurveyForm {
   initialSurveyData: SurveyUpdateObject;
   handleSubmit: (formikData: IEditSurveyRequest) => void;
-  handleCancel: () => void;
   formikRef: React.RefObject<FormikProps<IEditSurveyRequest>>;
 }
 
@@ -68,42 +67,6 @@ export interface IEditSurveyForm {
  */
 const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
   const classes = useStyles();
-
-  // TODO import defaultSurveyDataFormValues?
-  // const surveyInitialValues: IEditSurveyRequest = useMemo(() => {
-  //   return {
-  //     ...GeneralInformationInitialValues,
-  //     ...{
-  //       purpose_and_methodology: {
-  //         intended_outcome_ids: [],
-  //         additional_details: '',
-  //         vantage_code_ids: []
-  //       }
-  //     },
-  //     ...SurveyLocationInitialValues,
-  //     ...SurveyFundingSourceFormInitialValues,
-  //     ...SurveyPartnershipsFormInitialValues,
-  //     ...SurveySiteSelectionInitialValues,
-  //     ...{
-  //       proprietor: {
-  //         survey_data_proprietary: '' as unknown as StringBoolean,
-  //         proprietary_data_category: 0,
-  //         proprietor_name: '',
-  //         first_nations_id: 0,
-  //         category_rationale: '',
-  //         disa_required: '' as unknown as StringBoolean
-  //       }
-  //     },
-  //     ...{
-  //       agreements: {
-  //         sedis_procedures_accepted: 'true' as unknown as StringBoolean,
-  //         foippa_requirements_accepted: 'true' as unknown as StringBoolean
-  //       }
-  //     },
-  //     ...SurveyUserJobFormInitialValues,
-  //     ...SurveyBlockInitialValues
-  //   }
-  // }, []); // TODO which deps?
 
   const projectContext = useContext(ProjectContext);
   const projectData = projectContext.projectDataLoader.data?.projectData;
@@ -161,149 +124,133 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
     .concat(SurveyPartnershipsFormYupSchema);
 
   return (
-    <Box p={5} component={Paper} display="block">
-      <Formik
-        innerRef={props.formikRef}
-        initialValues={props.initialSurveyData as unknown as IEditSurveyRequest} // TODO hack
-        // initialValues={props.initialSurveyData ?? defaultSurveyDataFormValues}
-        validationSchema={surveyEditYupSchemas}
-        validateOnBlur={false}
-        validateOnChange={false}
-        onSubmit={props.handleSubmit}>
-        <>
-          <FormikErrorSnackbar />
-          <HorizontalSplitFormComponent
-            title="General Information"
-            component={
-              <GeneralInformationForm
-                type={
-                  codes?.type?.map((item) => {
-                    return { value: item.id, label: item.name };
-                  }) || []
-                }
-                projectStartDate={projectData.project.start_date}
-                projectEndDate={projectData.project.end_date}
-              />
-            }></HorizontalSplitFormComponent>
+    <Formik
+      innerRef={props.formikRef}
+      initialValues={props.initialSurveyData as unknown as IEditSurveyRequest} // TODO hack
+      // initialValues={props.initialSurveyData ?? defaultSurveyDataFormValues}
+      validationSchema={surveyEditYupSchemas}
+      validateOnBlur={false}
+      validateOnChange={false}
+      onSubmit={props.handleSubmit}>
+      <>
+        <FormikErrorSnackbar />
+        <HorizontalSplitFormComponent
+          title="General Information"
+          component={
+            <GeneralInformationForm
+              type={
+                codes?.type?.map((item) => {
+                  return { value: item.id, label: item.name };
+                }) || []
+              }
+              projectStartDate={projectData.project.start_date}
+              projectEndDate={projectData.project.end_date}
+            />
+          }></HorizontalSplitFormComponent>
 
-          <Divider className={classes.sectionDivider} />
+        <Divider className={classes.sectionDivider} />
 
-          <HorizontalSplitFormComponent
-            title="Purpose and Methodology"
-            component={
-              <PurposeAndMethodologyForm
-                intended_outcomes={
-                  codes.intended_outcomes.map((item) => {
-                    return { value: item.id, label: item.name, subText: item.description };
-                  }) || []
-                }
-                vantage_codes={
-                  codes.vantage_codes.map((item) => {
-                    return { value: item.id, label: item.name };
-                  }) || []
-                }
-              />
-            }></HorizontalSplitFormComponent>
+        <HorizontalSplitFormComponent
+          title="Purpose and Methodology"
+          component={
+            <PurposeAndMethodologyForm
+              intended_outcomes={
+                codes.intended_outcomes.map((item) => {
+                  return { value: item.id, label: item.name, subText: item.description };
+                }) || []
+              }
+              vantage_codes={
+                codes.vantage_codes.map((item) => {
+                  return { value: item.id, label: item.name };
+                }) || []
+              }
+            />
+          }></HorizontalSplitFormComponent>
 
-          <Divider className={classes.sectionDivider} />
+        <Divider className={classes.sectionDivider} />
 
-          <HorizontalSplitFormComponent
-            title="Survey Participants"
-            summary="Specify the people who participated in this survey."
-            // TODO does this users prop need to be renamed as something like `initialUsers`?
-            component={<SurveyUserForm users={props.initialSurveyData.participants || []} jobs={codes.survey_jobs} />}
-          />
+        <HorizontalSplitFormComponent
+          title="Survey Participants"
+          summary="Specify the people who participated in this survey."
+          // TODO does this users prop need to be renamed as something like `initialUsers`?
+          component={<SurveyUserForm users={props.initialSurveyData.participants || []} jobs={codes.survey_jobs} />}
+        />
 
-          <Divider className={classes.sectionDivider} />
+        <Divider className={classes.sectionDivider} />
 
-          <HorizontalSplitFormComponent
-            title="Funding Sources"
-            summary="Specify funding sources for this survey."
-            component={
-              <Box>
-                <Box component="fieldset">
-                  <Typography component="legend">Add Funding Sources</Typography>
-                  <Box mt={1}>
-                    <SurveyFundingSourceForm />
-                  </Box>
-                </Box>
-                <Box component="fieldset" mt={5}>
-                  <Typography component="legend">Additional Partnerships</Typography>
-                  <Box mt={1}>
-                    <SurveyPartnershipsForm />
-                  </Box>
-                </Box>
-              </Box>
-            }
-          />
-
-          <Divider className={classes.sectionDivider} />
-
-          <HorizontalSplitFormComponent
-            title="Sampling Strategy"
-            summary="Specify site selection methods, stratums and optional sampling blocks for this survey."
-            component={<SamplingStrategyForm />}
-          />
-
-          <Divider className={classes.sectionDivider} />
-
-          <HorizontalSplitFormComponent
-            title="Study Area"
-            component={
+        <HorizontalSplitFormComponent
+          title="Funding Sources"
+          summary="Specify funding sources for this survey."
+          component={
+            <Box>
               <Box component="fieldset">
-                <Typography component="legend">Define Survey Study Area</Typography>
-                <Stack gap={3}>
-                  <Typography variant="body1" color="textSecondary">
-                    Import, draw or select a feature from an existing layer to define the study areas for this survey.
-                  </Typography>
-                  <StudyAreaForm />
-                </Stack>
+                <Typography component="legend">Add Funding Sources</Typography>
+                <Box mt={1}>
+                  <SurveyFundingSourceForm />
+                </Box>
               </Box>
-            }
-          />
+              <Box component="fieldset" mt={5}>
+                <Typography component="legend">Additional Partnerships</Typography>
+                <Box mt={1}>
+                  <SurveyPartnershipsForm />
+                </Box>
+              </Box>
+            </Box>
+          }
+        />
 
-          <Divider className={classes.sectionDivider} />
+        <Divider className={classes.sectionDivider} />
 
-          <HorizontalSplitFormComponent
-            title="Proprietary Data"
-            component={
-              <ProprietaryDataForm
-                proprietary_data_category={
-                  codes.proprietor_type?.map((item) => {
-                    return { value: item.id, label: item.name, is_first_nation: item.is_first_nation };
-                  }) || []
-                }
-                first_nations={
-                  codes.first_nations?.map((item) => {
-                    return { value: item.id, label: item.name };
-                  }) || []
-                }
-              />
-            }></HorizontalSplitFormComponent>
+        <HorizontalSplitFormComponent
+          title="Sampling Strategy"
+          summary="Specify site selection methods, stratums and optional sampling blocks for this survey."
+          component={<SamplingStrategyForm />}
+        />
 
-          <Divider className={classes.sectionDivider} />
+        <Divider className={classes.sectionDivider} />
 
-          <HorizontalSplitFormComponent
-            title="Agreements"
-            component={<AgreementsForm />}></HorizontalSplitFormComponent>
-          <Divider className={classes.sectionDivider} />
+        <HorizontalSplitFormComponent
+          title="Study Area"
+          component={
+            <Box component="fieldset">
+              <Typography component="legend">Define Survey Study Area</Typography>
+              <Stack gap={3}>
+                <Typography variant="body1" color="textSecondary">
+                  Import, draw or select a feature from an existing layer to define the study areas for this survey.
+                </Typography>
+                <StudyAreaForm />
+              </Stack>
+            </Box>
+          }
+        />
 
-          <Box display="flex" justifyContent="flex-end">
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              onClick={() => props.formikRef.current?.submitForm()}
-              className={classes.actionButton}>
-              Save and Exit
-            </Button>
-            <Button variant="outlined" color="primary" onClick={props.handleCancel} className={classes.actionButton}>
-              Cancel
-            </Button>
-          </Box>
-        </>
-      </Formik>
-    </Box>
+        <Divider className={classes.sectionDivider} />
+
+        <HorizontalSplitFormComponent
+          title="Proprietary Data"
+          component={
+            <ProprietaryDataForm
+              proprietary_data_category={
+                codes.proprietor_type?.map((item) => {
+                  return { value: item.id, label: item.name, is_first_nation: item.is_first_nation };
+                }) || []
+              }
+              first_nations={
+                codes.first_nations?.map((item) => {
+                  return { value: item.id, label: item.name };
+                }) || []
+              }
+            />
+          }></HorizontalSplitFormComponent>
+
+        <Divider className={classes.sectionDivider} />
+
+        <HorizontalSplitFormComponent
+          title="Agreements"
+          component={<AgreementsForm />}></HorizontalSplitFormComponent>
+        <Divider className={classes.sectionDivider} />
+      </>
+    </Formik>
   );
 };
 

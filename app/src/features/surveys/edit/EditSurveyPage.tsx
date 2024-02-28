@@ -5,6 +5,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { EditSurveyI18N } from 'constants/i18n';
@@ -22,6 +24,7 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import EditSurveyForm from './EditSurveyForm';
+import { LoadingButton } from '@mui/lab';
 
 /**
  * Page to create a survey.
@@ -39,6 +42,7 @@ const EditSurveyPage = () => {
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
   const dialogContext = useContext(DialogContext);
 
@@ -117,6 +121,7 @@ const EditSurveyPage = () => {
    * @return {*}
    */
   const handleSubmit = async (values: IEditSurveyRequest) => {
+    setIsSaving(true);
     try {
       const response = await biohubApi.survey.updateSurvey(
         projectContext.projectId,
@@ -143,6 +148,8 @@ const EditSurveyPage = () => {
         dialogError: apiError?.message,
         dialogErrorDetails: apiError?.errors
       });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -199,10 +206,14 @@ const EditSurveyPage = () => {
         }
         buttonJSX={
           <>
-            <Button color="primary" variant="contained" onClick={() => formikRef.current?.submitForm()}>
+            <LoadingButton
+              loading={isSaving}
+              color="primary"
+              variant="contained"
+              onClick={() => formikRef.current?.submitForm()}>
               Save and Exit
-            </Button>
-            <Button color="primary" variant="outlined" onClick={handleCancel}>
+            </LoadingButton>
+            <Button disabled={isSaving} color="primary" variant="outlined" onClick={handleCancel}>
               Cancel
             </Button>
           </>
@@ -211,14 +222,31 @@ const EditSurveyPage = () => {
 
       <Box my={3}>
         <Container maxWidth="xl">
-          <EditSurveyForm
-            // codes={codes} // TODO remove unused props
-            // projectData={projectData}
-            initialSurveyData={surveyData}
-            handleSubmit={handleSubmit}
-            handleCancel={handleCancel}
-            formikRef={formikRef}
-          />
+          <Box p={5} component={Paper} display="block">
+            <EditSurveyForm
+              // codes={codes} // TODO remove unused props
+              // projectData={projectData}
+              // handleCancel={handleCancel}
+              initialSurveyData={surveyData}
+              handleSubmit={handleSubmit}
+              formikRef={formikRef}
+            />
+            <Stack mt={5} flexDirection="row" justifyContent="flex-end" gap={1}>
+              <LoadingButton
+                loading={isSaving}
+                type="submit"
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  formikRef.current?.submitForm();
+                }}>
+                Save and Exit
+              </LoadingButton>
+              <Button disabled={isSaving} variant="outlined" color="primary" onClick={handleCancel}>
+                Cancel
+              </Button>
+            </Stack>
+          </Box>
         </Container>
       </Box>
     </>
