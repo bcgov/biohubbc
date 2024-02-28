@@ -312,7 +312,10 @@ const appTheme = createTheme({
             textTransform: 'uppercase',
             paddingTop: '12px',
             paddingBottom: '12px',
-            height: '56px'
+            height: '52px'
+          },
+          '& td': {
+            height: '52px'
           },
           '& th:first-of-type, td:first-of-type': {
             paddingLeft: '16px'
