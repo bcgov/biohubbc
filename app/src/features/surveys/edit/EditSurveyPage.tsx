@@ -46,13 +46,12 @@ const EditSurveyPage = () => {
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
-  const codes = codesContext.codesDataLoader.data;
 
   const projectContext = useContext(ProjectContext);
+
   useEffect(() => {
     projectContext.projectDataLoader.load(projectContext.projectId);
   }, [projectContext.projectDataLoader, projectContext.projectId]);
-  const projectData = projectContext.projectDataLoader.data?.projectData;
 
   const surveyContext = useContext(SurveyContext);
 
@@ -136,7 +135,7 @@ const EditSurveyPage = () => {
 
       surveyContext.surveyDataLoader.refresh(projectContext.projectId, surveyContext.surveyId);
 
-      history.push(`/admin/projects/${projectData?.project.project_id}/surveys/${response.id}/details`);
+      history.push(`/admin/projects/${projectContext.projectId}/surveys/${response.id}/details`);
     } catch (error) {
       const apiError = error as APIError;
       showEditErrorDialog({
@@ -173,7 +172,7 @@ const EditSurveyPage = () => {
     return true;
   };
 
-  if (!codes || !projectData || !surveyData) {
+  if (!codesContext.codesDataLoader.data || !projectContext.projectDataLoader.data || !surveyData) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -184,13 +183,13 @@ const EditSurveyPage = () => {
         title="Edit Survey Details"
         breadCrumbJSX={
           <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
-            <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectData.project.project_id}/`}>
-              {projectData.project.project_name}
+            <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectContext.projectId}/`}>
+              {projectContext.projectDataLoader.data.projectData.project.project_name}
             </Link>
             <Link
               component={RouterLink}
               underline="hover"
-              to={`/admin/projects/${projectData.project.project_id}/surveys/${surveyId}/details`}>
+              to={`/admin/projects/${projectContext.projectId}/surveys/${surveyId}/details`}>
               {surveyData && surveyData.survey_details && surveyData.survey_details.survey_name}
             </Link>
             <Typography component="a" color="textSecondary" aria-current="page">
@@ -213,9 +212,9 @@ const EditSurveyPage = () => {
       <Box my={3}>
         <Container maxWidth="xl">
           <EditSurveyForm
-            codes={codes}
-            projectData={projectData}
-            surveyData={surveyData}
+            // codes={codes} // TODO remove unused props
+            // projectData={projectData}
+            initialSurveyData={surveyData}
             handleSubmit={handleSubmit}
             handleCancel={handleCancel}
             formikRef={formikRef}

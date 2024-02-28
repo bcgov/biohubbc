@@ -17,7 +17,7 @@ import { Formik, FormikProps } from 'formik';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ProjectViewObject } from 'interfaces/useProjectApi.interface';
 import { IEditSurveyRequest, SurveyUpdateObject } from 'interfaces/useSurveyApi.interface';
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { StringBoolean } from 'types/misc';
 import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
@@ -36,6 +36,9 @@ import SurveyFundingSourceForm, {
 } from '../components/SurveyFundingSourceForm';
 import { SurveySiteSelectionInitialValues, SurveySiteSelectionYupSchema } from '../components/SurveySiteSelectionForm';
 import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from '../components/SurveyUserForm';
+import { ProjectContext } from 'contexts/projectContext';
+import { defaultSurveyDataFormValues } from '../CreateSurveyPage';
+import { CodesContext } from 'contexts/codesContext';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -52,9 +55,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export interface IEditSurveyForm {
-  codes: IGetAllCodeSetsResponse;
-  projectData: ProjectViewObject;
-  surveyData: SurveyUpdateObject;
+  initialSurveyData: SurveyUpdateObject;
   handleSubmit: (formikData: IEditSurveyRequest) => void;
   handleCancel: () => void;
   formikRef: React.RefObject<FormikProps<IEditSurveyRequest>>;
@@ -68,50 +69,61 @@ export interface IEditSurveyForm {
 const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
   const classes = useStyles();
 
-  // Initial values for the survey form sections
-  const [surveyInitialValues] = useState<IEditSurveyRequest>({
-    ...GeneralInformationInitialValues,
-    ...{
-      purpose_and_methodology: {
-        intended_outcome_ids: [],
-        additional_details: '',
-        vantage_code_ids: []
-      }
-    },
-    ...SurveyLocationInitialValues,
-    ...SurveyFundingSourceFormInitialValues,
-    ...SurveyPartnershipsFormInitialValues,
-    ...SurveySiteSelectionInitialValues,
-    ...{
-      proprietor: {
-        survey_data_proprietary: '' as unknown as StringBoolean,
-        proprietary_data_category: 0,
-        proprietor_name: '',
-        first_nations_id: 0,
-        category_rationale: '',
-        disa_required: '' as unknown as StringBoolean
-      }
-    },
-    ...{
-      agreements: {
-        sedis_procedures_accepted: 'true' as unknown as StringBoolean,
-        foippa_requirements_accepted: 'true' as unknown as StringBoolean
-      }
-    },
-    ...SurveyUserJobFormInitialValues,
-    ...SurveyBlockInitialValues
-  });
+  // TODO import defaultSurveyDataFormValues?
+  // const surveyInitialValues: IEditSurveyRequest = useMemo(() => {
+  //   return {
+  //     ...GeneralInformationInitialValues,
+  //     ...{
+  //       purpose_and_methodology: {
+  //         intended_outcome_ids: [],
+  //         additional_details: '',
+  //         vantage_code_ids: []
+  //       }
+  //     },
+  //     ...SurveyLocationInitialValues,
+  //     ...SurveyFundingSourceFormInitialValues,
+  //     ...SurveyPartnershipsFormInitialValues,
+  //     ...SurveySiteSelectionInitialValues,
+  //     ...{
+  //       proprietor: {
+  //         survey_data_proprietary: '' as unknown as StringBoolean,
+  //         proprietary_data_category: 0,
+  //         proprietor_name: '',
+  //         first_nations_id: 0,
+  //         category_rationale: '',
+  //         disa_required: '' as unknown as StringBoolean
+  //       }
+  //     },
+  //     ...{
+  //       agreements: {
+  //         sedis_procedures_accepted: 'true' as unknown as StringBoolean,
+  //         foippa_requirements_accepted: 'true' as unknown as StringBoolean
+  //       }
+  //     },
+  //     ...SurveyUserJobFormInitialValues,
+  //     ...SurveyBlockInitialValues
+  //   }
+  // }, []); // TODO which deps?
 
-  // Yup schemas for the survey form sections
+  const projectContext = useContext(ProjectContext);
+  const projectData = projectContext.projectDataLoader.data?.projectData;
+
+  const codesContext = useContext(CodesContext);
+  const codes = codesContext.codesDataLoader.data;
+
+  if (!projectData || !codes) {
+    return <></>; // TODO confirm if this is an OK approach
+  }
+
   const surveyEditYupSchemas = GeneralInformationYupSchema({
     start_date: yup
       .string()
       .isValidDateString()
       .isAfterDate(
-        props.projectData.project.start_date,
+        projectData.project.start_date,
         DATE_FORMAT.ShortDateFormat,
         `Survey start date cannot be before project start date ${
-          props.projectData && getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, props.projectData.project.start_date)
+          projectData && getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, projectData.project.start_date)
         }`
       )
       .isAfterDate(
@@ -125,10 +137,10 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
       .isValidDateString()
       .isEndDateSameOrAfterStartDate('start_date')
       .isBeforeDate(
-        props.projectData.project.end_date,
+        projectData.project.end_date,
         DATE_FORMAT.ShortDateFormat,
         `Survey end date cannot be after project end date ${
-          props.projectData && getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, props.projectData.project.end_date)
+          projectData && getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, projectData.project.end_date)
         }`
       )
       .isBeforeDate(
@@ -137,13 +149,14 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
         `Survey end date cannot be after ${getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, DATE_LIMIT.max)}`
       )
       .nullable()
+      .optional()
   })
-    .concat(SurveyLocationYupSchema)
     .concat(PurposeAndMethodologyYupSchema)
     .concat(ProprietaryDataYupSchema)
     .concat(SurveyFundingSourceFormYupSchema)
     .concat(AgreementsYupSchema)
     .concat(SurveyUserJobYupSchema)
+    .concat(SurveyLocationYupSchema)
     .concat(SurveySiteSelectionYupSchema)
     .concat(SurveyPartnershipsFormYupSchema);
 
@@ -151,7 +164,8 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
     <Box p={5} component={Paper} display="block">
       <Formik
         innerRef={props.formikRef}
-        initialValues={surveyInitialValues}
+        initialValues={props.initialSurveyData as unknown as IEditSurveyRequest} // TODO hack
+        // initialValues={props.initialSurveyData ?? defaultSurveyDataFormValues}
         validationSchema={surveyEditYupSchemas}
         validateOnBlur={false}
         validateOnChange={false}
@@ -163,12 +177,12 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
             component={
               <GeneralInformationForm
                 type={
-                  props.codes?.type?.map((item) => {
+                  codes?.type?.map((item) => {
                     return { value: item.id, label: item.name };
                   }) || []
                 }
-                projectStartDate={props.projectData.project.start_date}
-                projectEndDate={props.projectData.project.end_date}
+                projectStartDate={projectData.project.start_date}
+                projectEndDate={projectData.project.end_date}
               />
             }></HorizontalSplitFormComponent>
 
@@ -179,12 +193,12 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
             component={
               <PurposeAndMethodologyForm
                 intended_outcomes={
-                  props.codes.intended_outcomes.map((item) => {
+                  codes.intended_outcomes.map((item) => {
                     return { value: item.id, label: item.name, subText: item.description };
                   }) || []
                 }
                 vantage_codes={
-                  props.codes.vantage_codes.map((item) => {
+                  codes.vantage_codes.map((item) => {
                     return { value: item.id, label: item.name };
                   }) || []
                 }
@@ -196,7 +210,8 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
           <HorizontalSplitFormComponent
             title="Survey Participants"
             summary="Specify the people who participated in this survey."
-            component={<SurveyUserForm users={props?.surveyData?.participants || []} jobs={props.codes.survey_jobs} />}
+            // TODO does this users prop need to be renamed as something like `initialUsers`?
+            component={<SurveyUserForm users={props.initialSurveyData.participants || []} jobs={codes.survey_jobs} />}
           />
 
           <Divider className={classes.sectionDivider} />
@@ -254,12 +269,12 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
             component={
               <ProprietaryDataForm
                 proprietary_data_category={
-                  props.codes.proprietor_type?.map((item) => {
+                  codes.proprietor_type?.map((item) => {
                     return { value: item.id, label: item.name, is_first_nation: item.is_first_nation };
                   }) || []
                 }
                 first_nations={
-                  props.codes.first_nations?.map((item) => {
+                  codes.first_nations?.map((item) => {
                     return { value: item.id, label: item.name };
                   }) || []
                 }

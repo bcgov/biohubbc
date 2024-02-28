@@ -55,6 +55,19 @@ import SurveyFundingSourceForm, {
 import { SurveySiteSelectionInitialValues, SurveySiteSelectionYupSchema } from './components/SurveySiteSelectionForm';
 import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from './components/SurveyUserForm';
 
+export const defaultSurveyDataFormValues: ICreateSurveyRequest = {
+  ...GeneralInformationInitialValues,
+  ...PurposeAndMethodologyInitialValues,
+  ...SurveyFundingSourceFormInitialValues,
+  ...SurveyPartnershipsFormInitialValues,
+  ...ProprietaryDataInitialValues,
+  ...AgreementsInitialValues,
+  ...SurveyLocationInitialValues,
+  ...SurveySiteSelectionInitialValues,
+  ...SurveyUserJobFormInitialValues,
+  ...SurveyBlockInitialValues
+};
+
 /**
  * Page to create a survey.
  *
@@ -99,21 +112,8 @@ const CreateSurveyPage = () => {
     }
   };
 
-  // Initial values for the survey form sections
-  const [surveyInitialValues] = useState<ICreateSurveyRequest>({
-    ...GeneralInformationInitialValues,
-    ...PurposeAndMethodologyInitialValues,
-    ...SurveyFundingSourceFormInitialValues,
-    ...SurveyPartnershipsFormInitialValues,
-    ...ProprietaryDataInitialValues,
-    ...AgreementsInitialValues,
-    ...SurveyLocationInitialValues,
-    ...SurveySiteSelectionInitialValues,
-    ...SurveyUserJobFormInitialValues,
-    ...SurveyBlockInitialValues
-  });
 
-  // Yup schemas for the survey form sections
+  // TODO delete this yup schema.
   const surveyYupSchemas = GeneralInformationYupSchema({
     start_date: yup
       .string()
@@ -270,7 +270,7 @@ const CreateSurveyPage = () => {
           <Box p={5} component={Paper} display="block">
             <Formik
               innerRef={formikRef}
-              initialValues={surveyInitialValues}
+              initialValues={defaultSurveyDataFormValues}
               validationSchema={surveyYupSchemas}
               validateOnBlur={false}
               validateOnChange={false}
