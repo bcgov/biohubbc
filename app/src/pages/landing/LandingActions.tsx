@@ -131,7 +131,7 @@ const LandingActions = () => {
           )}
         </Typography>
         {mayMakeAccessRequest && (
-          <Typography variant="body2">You have not been granted permission to access this application.</Typography>
+          <Typography variant="body2">You have not yet been granted access to this application.</Typography>
         )}
         {isAwaitingAccessApproval && (
           <Alert
