@@ -18,7 +18,6 @@ import {
   SurveySupplementaryData
 } from '../models/survey-view';
 import { AttachmentRepository } from '../repositories/attachment-repository';
-import { PublishStatus } from '../repositories/history-publish-repository';
 import { PostSurveyBlock, SurveyBlockRecord } from '../repositories/survey-block-repository';
 import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import {
@@ -31,6 +30,7 @@ import {
   SurveyRepository
 } from '../repositories/survey-repository';
 import { getLogger } from '../utils/logger';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
 import { FundingSourceService } from './funding-source-service';
 import { HistoryPublishService } from './history-publish-service';
@@ -349,14 +349,19 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Fetches a subset of survey fields for all surveys under a project.
+   * Fetches a subset of survey fields for a paginated list of surveys under
+   * a given project.
    *
    * @param {number} projectId
+   * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<SurveyBasicFields[]>}
    * @memberof SurveyService
    */
-  async getSurveysBasicFieldsByProjectId(projectId: number): Promise<SurveyBasicFields[]> {
-    const surveys = await this.surveyRepository.getSurveysBasicFieldsByProjectId(projectId);
+  async getSurveysBasicFieldsByProjectId(
+    projectId: number,
+    pagination?: ApiPaginationOptions
+  ): Promise<SurveyBasicFields[]> {
+    const surveys = await this.surveyRepository.getSurveysBasicFieldsByProjectId(projectId, pagination);
 
     // Build an array of all unique focal species ids from all surveys
     const uniqueFocalSpeciesIds = Array.from(
@@ -379,6 +384,18 @@ export class SurveyService extends DBService {
 
     return decoratedSurveys;
   }
+
+  /**
+   * Returns the total number of surveys belonging to the given project.
+   *
+   * @param {number} projectId
+   * @return {*}  {Promise<number>}
+   * @memberof SurveyService
+   */
+  async getSurveyCountByProjectId(projectId: number): Promise<number> {
+    return this.surveyRepository.getSurveyCountByProjectId(projectId);
+  }
+
   /**
    * Creates the survey
    *
@@ -1234,42 +1251,5 @@ export class SurveyService extends DBService {
    */
   async deleteOccurrenceSubmission(submissionId: number): Promise<number> {
     return this.surveyRepository.deleteOccurrenceSubmission(submissionId);
-  }
-
-  /**
-   * Publish status for a given survey id
-   *
-   * @param {number} surveyId
-   * @return {*}  {Promise<PublishStatus>}
-   * @memberof SurveyService
-   */
-  async surveyPublishStatus(surveyId: number): Promise<PublishStatus> {
-    const surveyAttachmentsPublishStatus = await this.historyPublishService.surveyAttachmentsPublishStatus(surveyId);
-
-    const surveyReportsPublishStatus = await this.historyPublishService.surveyReportsPublishStatus(surveyId);
-
-    const observationPublishStatus = await this.historyPublishService.observationPublishStatus(surveyId);
-
-    const summaryPublishStatus = await this.historyPublishService.summaryPublishStatus(surveyId);
-
-    if (
-      surveyAttachmentsPublishStatus === PublishStatus.NO_DATA &&
-      surveyReportsPublishStatus === PublishStatus.NO_DATA &&
-      observationPublishStatus === PublishStatus.NO_DATA &&
-      summaryPublishStatus === PublishStatus.NO_DATA
-    ) {
-      return PublishStatus.NO_DATA;
-    }
-
-    if (
-      surveyAttachmentsPublishStatus === PublishStatus.UNSUBMITTED ||
-      surveyReportsPublishStatus === PublishStatus.UNSUBMITTED ||
-      observationPublishStatus === PublishStatus.UNSUBMITTED ||
-      summaryPublishStatus === PublishStatus.UNSUBMITTED
-    ) {
-      return PublishStatus.UNSUBMITTED;
-    }
-
-    return PublishStatus.SUBMITTED;
   }
 }

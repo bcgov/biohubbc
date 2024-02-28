@@ -86,17 +86,21 @@ const AttachmentsListItemMenuButton = (props: IAttachmentsListItemMenuButtonProp
             )}
 
             {props.attachmentStatus === PublishStatus.UNSUBMITTED && (
-              <MenuItem
-                onClick={() => {
-                  props.onDeleteFile();
-                  handleClose();
-                }}
-                data-testid="attachment-action-menu-delete">
-                <ListItemIcon>
-                  <Icon path={mdiTrashCanOutline} size={1} />
-                </ListItemIcon>
-                Delete
-              </MenuItem>
+              <ProjectRoleGuard
+                validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                <MenuItem
+                  onClick={() => {
+                    props.onDeleteFile();
+                    handleClose();
+                  }}
+                  data-testid="attachment-action-menu-delete">
+                  <ListItemIcon>
+                    <Icon path={mdiTrashCanOutline} size={1} />
+                  </ListItemIcon>
+                  Delete
+                </MenuItem>
+              </ProjectRoleGuard>
             )}
 
             {props.attachmentStatus === PublishStatus.SUBMITTED && (
