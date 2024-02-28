@@ -19,18 +19,12 @@ import { useHistory } from 'react-router';
 import { Prompt } from 'react-router-dom';
 import EditProjectForm from '../edit/EditProjectForm';
 
-import {
-  ProjectDetailsFormInitialValues
-} from '../components/ProjectDetailsForm';
+import { ProjectDetailsFormInitialValues } from '../components/ProjectDetailsForm';
 import { ProjectIUCNFormInitialValues } from '../components/ProjectIUCNForm';
-import {
-  ProjectObjectivesFormInitialValues
-} from '../components/ProjectObjectivesForm';
-import {
-  ProjectUserRoleFormInitialValues,
-} from '../components/ProjectUserForm';
+import { ProjectObjectivesFormInitialValues } from '../components/ProjectObjectivesForm';
+import { ProjectUserRoleFormInitialValues } from '../components/ProjectUserForm';
 
-const initialProjectData: ICreateProjectRequest = {
+export const initialProjectData: ICreateProjectRequest = {
   ...ProjectDetailsFormInitialValues,
   ...ProjectObjectivesFormInitialValues,
   ...ProjectIUCNFormInitialValues,
@@ -49,12 +43,11 @@ const CreateProjectPage = () => {
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const dialogContext = useContext(DialogContext);
   const codesContext = useContext(CodesContext);
 
-  const codes = codesContext.codesDataLoader.data;
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
@@ -106,17 +99,20 @@ const CreateProjectPage = () => {
    * @return {*}
    */
   const createProject = async (projectPostObject: ICreateProjectRequest) => {
-    setIsLoading(true);
-    const response = await biohubApi.project.createProject(projectPostObject);
+    setIsSaving(true);
+    try {
+      const response = await biohubApi.project.createProject(projectPostObject);
 
-    if (!response?.id) {
-      showCreateErrorDialog({ dialogError: 'The response from the server was null, or did not contain a project ID.' });
-      return;
+      if (!response?.id) {
+        showCreateErrorDialog({ dialogError: 'The response from the server was null, or did not contain a project ID.' });
+        return;
+      }
+
+      setEnableCancelCheck(false);
+      history.push(`/admin/projects/${response.id}`);
+    } finally {
+      setIsSaving(false);
     }
-
-    setEnableCancelCheck(false);
-    setIsLoading(false);
-    history.push(`/admin/projects/${response.id}`);
   };
 
   /**
@@ -145,7 +141,7 @@ const CreateProjectPage = () => {
     return true;
   };
 
-  if (!codes) {
+  if (!codesContext.codesDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -157,7 +153,7 @@ const CreateProjectPage = () => {
         buttonJSX={
           <>
             <LoadingButton
-              loading={isLoading}
+              loading={isSaving}
               type="submit"
               color="primary"
               variant="contained"
@@ -165,7 +161,7 @@ const CreateProjectPage = () => {
               data-testid="submit-project-button">
               Save and Exit
             </LoadingButton>
-            <Button color="primary" variant="outlined" onClick={handleCancel}>
+            <Button disabled={isSaving} color="primary" variant="outlined" onClick={handleCancel}>
               Cancel
             </Button>
           </>
@@ -174,25 +170,15 @@ const CreateProjectPage = () => {
 
       <Container maxWidth="xl">
         <Box py={3}>
-          <Paper
-            elevation={0}
-            sx={{
-              p: 5
-            }}>
+          <Paper elevation={0} sx={{p: 5}}>
             <EditProjectForm
-
-              // TODO remove cast
-              projectData={initialProjectData as IUpdateProjectRequest} 
+              initialProjectData={initialProjectData as IUpdateProjectRequest} 
               handleSubmit={(formikData) => createProject(formikData as ICreateProjectRequest)}
               formikRef={formikRef as unknown as React.RefObject<FormikProps<IUpdateProjectRequest>>}
-              handleCancel={() => {
-                // TODO
-                throw new Error("Not implemented.")}
-              }
             />
             <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
               <LoadingButton
-                loading={isLoading}
+                loading={isSaving}
                 type="submit"
                 color="primary"
                 variant="contained"
@@ -200,7 +186,7 @@ const CreateProjectPage = () => {
                 data-testid="submit-project-button">
                 Save and Exit
               </LoadingButton>
-              <Button color="primary" variant="outlined" onClick={handleCancel}>
+              <Button disabled={isSaving} color="primary" variant="outlined" onClick={handleCancel}>
                 Cancel
               </Button>
             </Stack>
