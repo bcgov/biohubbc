@@ -1,4 +1,4 @@
-FROM registry.redhat.io/rhel9/postgresql-15
+FROM ubi9/s2i-core
 
 # PostgreSQL image for OpenShift.
 # Volumes:
@@ -100,8 +100,12 @@ COPY ./s2i/bin/ $STI_SCRIPTS_PATH
 # Aquire and build PostGIS 3.4, for PostgreSQL 15.x
 RUN cd /tmp && \
     rpm -ivh https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm && \
+    rpm -ivh https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm && \
+    rpm -ivh https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm && \
     # rpm -ivh https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-9.12-x86_64/gdal36-libs-3.6.4-6PGDG.rhel9.x86_64.rpm  && \
     # rpm -ivh https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-9.12-x86_64/gdal36-3.6.4-6PGDG.rhel9.x86_64.rpm && \
+    yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && \
+    yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm && \
     yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
 
 RUN yum -y remove rh-postgresql15-postgresql-server-syspaths rh-postgresql15-postgresql-contrib-syspaths rh-postgresql15-postgresql-syspaths
@@ -110,10 +114,10 @@ RUN yum -y remove rh-postgresql15-postgresql-server-syspaths rh-postgresql15-pos
 # RUN yum install -y --nobest postgis34_15
 # RUN yum install -y --nobest postgis34_15-client
 # RUN yum install -y --nobest pgrouting_15
-RUN yum -y module enable postgresql:15 && \
-    # INSTALL_PKGS="rsync tar gettext bind-utils nss_wrapper postgresql-server postgresql-contrib" && \
-    # INSTALL_PKGS="postgresql15 postgresql15-contrib postgis32_15 postgis32_15-client pgrouting_15" && \
-    INSTALL_PKGS="postgis32_15 postgis32_15-client pgrouting_15" && \
+# RUN yum -y module enable postgresql:15
+# INSTALL_PKGS="rsync tar gettext bind-utils nss_wrapper postgresql-server postgresql-contrib" && \
+# INSTALL_PKGS="postgresql15 postgresql15-contrib postgis32_15 postgis32_15-client pgrouting_15" && \
+RUN INSTALL_PKGS="postgis32_15 postgis32_15-client pgrouting_15" && \
     yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS
 
 RUN /usr/bin/install -c -m 755  /usr/pgsql-15/lib/postgis* '/opt/rh/rh-postgresql15/root/usr/lib64/pgsql/' && \
