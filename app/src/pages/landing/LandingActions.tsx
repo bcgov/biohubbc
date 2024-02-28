@@ -165,20 +165,6 @@ const LandingActions = () => {
               data-testid="landing_page_request_access_button"
             />
           )}
-          {(hasAdministrativeRole || (!hasAdministrativeRole && hasProjectCreationRole)) && (
-            <Typography component="span">OR</Typography>
-          )}
-          {hasAdministrativeRole && (
-            <Button
-              component={Link}
-              to="/admin/users"
-              variant="contained"
-              className={classes.heroButton}
-              size="large"
-              children={<>Manage&nbsp;Users</>}
-              data-testid="landing_page_manage_users_button"
-            />
-          )}
           {!hasAdministrativeRole && hasProjectCreationRole && (
             <Button
               component={Link}
