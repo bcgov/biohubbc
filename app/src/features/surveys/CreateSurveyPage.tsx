@@ -55,6 +55,7 @@ import SurveyFundingSourceForm, {
 import { SurveySiteSelectionInitialValues, SurveySiteSelectionYupSchema } from './components/SurveySiteSelectionForm';
 import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from './components/SurveyUserForm';
 import { LoadingButton } from '@mui/lab';
+import EditSurveyForm from './edit/EditSurveyForm';
 
 export const defaultSurveyDataFormValues: ICreateSurveyRequest = {
   ...GeneralInformationInitialValues,
@@ -278,7 +279,15 @@ const CreateSurveyPage = () => {
       <Box my={3}>
         <Container maxWidth="xl">
           <Box p={5} component={Paper} display="block">
-            <Formik
+            <EditSurveyForm
+              // codes={codes} // TODO remove unused props
+              // projectData={projectData}
+              // handleCancel={handleCancel}
+              initialSurveyData={defaultSurveyDataFormValues}
+              handleSubmit={handleSubmit}
+              formikRef={formikRef}
+            />
+            {/* <Formik
               innerRef={formikRef}
               initialValues={defaultSurveyDataFormValues}
               validationSchema={surveyYupSchemas}
@@ -394,7 +403,7 @@ const CreateSurveyPage = () => {
                   </Stack>
                 </Stack>
               </>
-            </Formik>
+            </Formik> */}
           </Box>
         </Container>
       </Box>

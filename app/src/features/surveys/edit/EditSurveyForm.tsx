@@ -15,8 +15,8 @@ import SurveyPartnershipsForm, {
 } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { Formik, FormikProps } from 'formik';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { ProjectViewObject } from 'interfaces/useProjectApi.interface';
-import { IEditSurveyRequest, SurveyUpdateObject } from 'interfaces/useSurveyApi.interface';
+import { ICreateProjectRequest, ProjectViewObject } from 'interfaces/useProjectApi.interface';
+import { ICreateSurveyRequest, IEditSurveyRequest, SurveyUpdateObject } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useEffect, useState } from 'react';
 import { StringBoolean } from 'types/misc';
 import { getFormattedDate } from 'utils/Utils';
@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export interface IEditSurveyForm {
-  initialSurveyData: SurveyUpdateObject;
+  initialSurveyData: SurveyUpdateObject | ICreateSurveyRequest;
   handleSubmit: (formikData: IEditSurveyRequest) => void;
   formikRef: React.RefObject<FormikProps<IEditSurveyRequest>>;
 }
@@ -126,7 +126,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
   return (
     <Formik
       innerRef={props.formikRef}
-      initialValues={props.initialSurveyData as unknown as IEditSurveyRequest} // TODO hack
+      initialValues={props.initialSurveyData as unknown as IEditSurveyRequest} // TODO use correct type
       // initialValues={props.initialSurveyData ?? defaultSurveyDataFormValues}
       validationSchema={surveyEditYupSchemas}
       validateOnBlur={false}
