@@ -1,12 +1,11 @@
 import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
-// import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import { makeStyles } from '@mui/styles';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { Formik, FormikProps } from 'formik';
-import { IUpdateProjectRequest } from 'interfaces/useProjectApi.interface';
+import { ICreateProjectRequest, IUpdateProjectRequest } from 'interfaces/useProjectApi.interface';
 import ProjectDetailsForm, { ProjectDetailsFormYupSchema } from '../components/ProjectDetailsForm';
 import ProjectObjectivesForm, { ProjectObjectivesFormYupSchema } from '../components/ProjectObjectivesForm';
 import ProjectUserForm, { ProjectUserRoleYupSchema } from '../components/ProjectUserForm';
@@ -27,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export interface IEditProjectForm {
-  initialProjectData: IUpdateProjectRequest; // TODO change this interface to support create or edit
+  initialProjectData: IUpdateProjectRequest | ICreateProjectRequest;
   handleSubmit: (formikData: IUpdateProjectRequest) => void;
   formikRef: React.RefObject<FormikProps<IUpdateProjectRequest>>;
 }
@@ -88,7 +87,6 @@ const EditProjectForm = (props: IEditProjectForm) => {
         <HorizontalSplitFormComponent
           title="Team Members"
           summary="Specify team members and their associated role for this project."
-          // TODO ProjectUserForm (and/or its child components) should not takes roles as a prop and should instead derive roles through `useContext(CodesContext)`
           component={<ProjectUserForm users={props.initialProjectData.participants || []} roles={codes?.project_roles ?? []} />}
         />
 

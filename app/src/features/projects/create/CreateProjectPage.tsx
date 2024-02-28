@@ -172,7 +172,7 @@ const CreateProjectPage = () => {
         <Box py={3}>
           <Paper elevation={0} sx={{p: 5}}>
             <EditProjectForm
-              initialProjectData={initialProjectData as IUpdateProjectRequest} 
+              initialProjectData={initialProjectData} 
               handleSubmit={(formikData) => createProject(formikData as ICreateProjectRequest)}
               formikRef={formikRef as unknown as React.RefObject<FormikProps<IUpdateProjectRequest>>}
             />
