@@ -6,12 +6,13 @@ import { makeStyles } from '@mui/styles';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { Formik, FormikProps } from 'formik';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IUpdateProjectRequest } from 'interfaces/useProjectApi.interface';
 import ProjectDetailsForm from '../components/ProjectDetailsForm';
 import ProjectObjectivesForm from '../components/ProjectObjectivesForm';
 import ProjectUserForm from '../components/ProjectUserForm';
 import { initialProjectFieldData, validationProjectYupSchema } from '../create/CreateProjectForm';
+import { useContext } from 'react';
+import { CodesContext } from 'contexts/codesContext';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -27,7 +28,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export interface IEditProjectForm {
-  codes: IGetAllCodeSetsResponse;
   projectData: IUpdateProjectRequest;
   handleSubmit: (formikData: IUpdateProjectRequest) => void;
   handleCancel: () => void;
@@ -39,8 +39,11 @@ export interface IEditProjectForm {
  *
  * @return {*}
  */
-const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
-  const { codes, formikRef } = props;
+const EditProjectForm = (props: IEditProjectForm) => {
+  const { formikRef } = props;
+
+  const codesContext = useContext(CodesContext);
+  const codes = codesContext.codesDataLoader.data
 
   const classes = useStyles();
 
@@ -79,36 +82,6 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
                 <Box mt={3}>
                   <ProjectObjectivesForm />
                 </Box>
-                {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-162) Commenting out IUCN form temporarily, while its decided if IUCN information is desired */}
-                {/* <Box component="fieldset" mt={5}>
-                  <Typography component="legend" variant="h5">
-                    IUCN Conservation Actions Classification
-                  </Typography>
-                  <Typography variant="body1" color="textSecondary" style={{ maxWidth: '90ch' }}>
-                    Conservation actions are specific actions or sets of tasks undertaken by project staff designed to
-                    reach each of the project's objectives.
-                  </Typography>
-
-                  <Box mt={3}>
-                    <ProjectIUCNForm
-                      classifications={
-                        codes?.iucn_conservation_action_level_1_classification?.map((item) => {
-                          return { value: item.id, label: item.name };
-                        }) || []
-                      }
-                      subClassifications1={
-                        codes?.iucn_conservation_action_level_2_subclassification?.map((item) => {
-                          return { value: item.id, iucn1_id: item.iucn1_id, label: item.name };
-                        }) || []
-                      }
-                      subClassifications2={
-                        codes?.iucn_conservation_action_level_3_subclassification?.map((item) => {
-                          return { value: item.id, iucn2_id: item.iucn2_id, label: item.name };
-                        }) || []
-                      }
-                    />
-                  </Box>
-                </Box> */}
               </>
             }></HorizontalSplitFormComponent>
 
@@ -117,7 +90,8 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
           <HorizontalSplitFormComponent
             title="Team Members"
             summary="Specify team members and their associated role for this project."
-            component={<ProjectUserForm users={props.projectData.participants || []} roles={codes.project_roles} />}
+            // TODO ProjectUserForm (and/or its child components) should not takes roles as a prop and should instead derive roles through `useContext(CodesContext)`
+            component={<ProjectUserForm users={props.projectData.participants || []} roles={codes?.project_roles ?? []} />}
           />
 
           <Divider className={classes.sectionDivider} />

@@ -13,11 +13,29 @@ import { DialogContext } from 'contexts/dialogContext';
 import { FormikProps } from 'formik';
 import * as History from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
+import { ICreateProjectRequest, IUpdateProjectRequest } from 'interfaces/useProjectApi.interface';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Prompt } from 'react-router-dom';
-import CreateProjectForm from './CreateProjectForm';
+import EditProjectForm from '../edit/EditProjectForm';
+
+import {
+  ProjectDetailsFormInitialValues
+} from '../components/ProjectDetailsForm';
+import { ProjectIUCNFormInitialValues } from '../components/ProjectIUCNForm';
+import {
+  ProjectObjectivesFormInitialValues
+} from '../components/ProjectObjectivesForm';
+import {
+  ProjectUserRoleFormInitialValues,
+} from '../components/ProjectUserForm';
+
+const initialProjectData: ICreateProjectRequest = {
+  ...ProjectDetailsFormInitialValues,
+  ...ProjectObjectivesFormInitialValues,
+  ...ProjectIUCNFormInitialValues,
+  ...ProjectUserRoleFormInitialValues
+};
 
 /**
  * Page for creating a new project.
@@ -161,7 +179,17 @@ const CreateProjectPage = () => {
             sx={{
               p: 5
             }}>
-            <CreateProjectForm handleSubmit={createProject} codes={codes} formikRef={formikRef} />
+            <EditProjectForm
+
+              // TODO remove cast
+              projectData={initialProjectData as IUpdateProjectRequest} 
+              handleSubmit={(formikData) => createProject(formikData as ICreateProjectRequest)}
+              formikRef={formikRef as unknown as React.RefObject<FormikProps<IUpdateProjectRequest>>}
+              handleCancel={() => {
+                // TODO
+                throw new Error("Not implemented.")}
+              }
+            />
             <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
               <LoadingButton
                 loading={isLoading}

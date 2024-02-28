@@ -17,6 +17,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Prompt } from 'react-router-dom';
 import EditProjectForm from './EditProjectForm';
+import { CodesContext } from 'contexts/codesContext';
 
 /**
  * Page for creating a new project.
@@ -35,8 +36,7 @@ const EditProjectPage: React.FC = (props) => {
 
   const dialogContext = useContext(DialogContext);
 
-  const codesDataLoader = useDataLoader(() => biohubApi.codes.getAllCodeSets());
-  codesDataLoader.load();
+  const codesContext = useContext(CodesContext);
 
   const editProjectDataLoader = useDataLoader((projectId: number) =>
     biohubApi.project.getProjectForUpdate(projectId, [
@@ -146,7 +146,7 @@ const EditProjectPage: React.FC = (props) => {
     return true;
   };
 
-  if (!codesDataLoader.data || !editProjectDataLoader.data) {
+  if (!codesContext.codesDataLoader.data || !editProjectDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -172,7 +172,7 @@ const EditProjectPage: React.FC = (props) => {
         <Box py={3}>
           <Paper elevation={0}>
             <EditProjectForm
-              codes={codesDataLoader.data}
+              // codes={codesDataLoader.data} // TODO remove
               projectData={editProjectDataLoader.data}
               handleSubmit={updateProject}
               handleCancel={handleCancel}
