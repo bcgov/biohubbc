@@ -208,7 +208,7 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
               <LayersControl position="bottomright">
                 <FullScreenScrollingEventHandler bounds={updatedBounds} scrollWheelZoom={false} />
                 <SetMapBounds bounds={updatedBounds} />
-                {lastDrawn ?? <StaticLayers layers={staticLayers} />}
+                {!lastDrawn && <StaticLayers layers={staticLayers} />}
                 <BaseLayerControls />
               </LayersControl>
             </LeafletMapContainer>
