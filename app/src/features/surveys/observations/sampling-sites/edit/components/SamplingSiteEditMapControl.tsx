@@ -12,6 +12,7 @@ import FileUpload from 'components/file-upload/FileUpload';
 import FileUploadItem from 'components/file-upload/FileUploadItem';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
+import DrawControls, { IDrawControlsRef } from 'components/map/components/DrawControls';
 import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
 import StaticLayers, { IStaticLayer } from 'components/map/components/StaticLayers';
 import { MapBaseCss } from 'components/map/styles/MapBaseCss';
@@ -24,12 +25,11 @@ import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
 import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
 import get from 'lodash-es/get';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { useParams } from 'react-router';
 import { boundaryUploadHelper, calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { pluralize } from 'utils/Utils';
-import DrawControls from 'components/map/components/DrawControls';
 
 const useStyles = makeStyles(() => ({
   zoomToBoundaryExtentBtn: {
@@ -67,6 +67,10 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
     ? surveyContext.sampleSiteDataLoader.data.sampleSites.find((x) => x.survey_sample_site_id === surveySampleSiteId)
     : undefined;
 
+  const drawControlsRef = useRef<IDrawControlsRef>();
+
+  const [lastDrawn, setLastDrawn] = useState<null | number>(null);
+
   const { name, mapId, formikProps } = props;
 
   const { values, errors, setFieldValue, setFieldError } = formikProps;
@@ -80,7 +84,7 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
   };
 
   // Array of sampling site features
-  const samplingSiteGeoJsonFeatures: Feature[] = get(values, name);
+  const samplingSiteGeoJsonFeatures: Feature[] = useMemo(() => get(values, name), [values, name]);
 
   const updateStaticLayers = (geoJsonFeatures: Feature[]) => {
     setUpdatedBounds(calculateUpdatedMapBounds(geoJsonFeatures));
@@ -93,18 +97,18 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
     ];
 
     setStaticLayers(staticLayers);
-  }
+  };
 
-  const [editedGeometry, setEditedGeometry] = useState<Feature[] | undefined>(undefined)
+  const [editedGeometry, setEditedGeometry] = useState<Feature[] | undefined>(undefined);
 
   useEffect(() => {
-     if (editedGeometry){
-      updateStaticLayers(editedGeometry)
+    if (editedGeometry) {
+      updateStaticLayers(editedGeometry);
     }
-  }, [editedGeometry])
+  }, [editedGeometry]);
 
   useEffect(() => {
-    updateStaticLayers(samplingSiteGeoJsonFeatures)
+    updateStaticLayers(samplingSiteGeoJsonFeatures);
   }, [samplingSiteGeoJsonFeatures]);
 
   return (
@@ -168,36 +172,43 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
               fullscreenControl={true}
               scrollWheelZoom={false}>
               <MapBaseCss />
-              
+
               <FeatureGroup data-id="draw-control-feature-group" key="draw-control-feature-group">
-                  <DrawControls
-                    options={{
-                      // Always disable circle, circlemarker and line
-                      draw: { circle: false, circlemarker: false, polyline: false, marker: false }
-                    }}
-                    onLayerAdd={(event: DrawEvents.Created) => {
-                      const feature = event.layer.toGeoJSON();
-                      console.log(feature)
+                <DrawControls
+                  ref={drawControlsRef}
+                  options={{
+                    // Always disable circle, circlemarker and line
+                    draw: { circle: false, circlemarker: false }
+                  }}
+                  onLayerAdd={(event: DrawEvents.Created, id: number) => {
+                    if (lastDrawn) {
+                      drawControlsRef?.current?.deleteLayer(lastDrawn);
+                    }
+
+                    const feature = event.layer.toGeoJSON();
+
+                    setFieldValue(name, [feature]);
+                    setEditedGeometry([feature]);
+
+                    setLastDrawn(id);
+                  }}
+                  onLayerEdit={(event: DrawEvents.Edited) => {
+                    event.layers.getLayers().forEach((layer: any) => {
+                      const feature = layer.toGeoJSON() as Feature;
                       setFieldValue(name, [feature]);
-                      setEditedGeometry([feature])
-                    }}
-                    onLayerEdit={(event: DrawEvents.Edited) => {
-                      event.layers.getLayers().forEach((layer: any) => {
-                        const feature = layer.toGeoJSON() as Feature;
-                        setFieldValue(name, [feature]);
-                        setEditedGeometry([feature])
-                      });
-                    }}
-                    onLayerDelete={(event: DrawEvents.Deleted) => {
-                      setFieldValue(name, sampleSiteData?.geojson ? [sampleSiteData?.geojson] : [])
-                    }}
-                  />
-                </FeatureGroup>
-              
+                      setEditedGeometry([feature]);
+                    });
+                  }}
+                  onLayerDelete={(event: DrawEvents.Deleted) => {
+                    setFieldValue(name, sampleSiteData?.geojson ? [sampleSiteData?.geojson] : []);
+                  }}
+                />
+              </FeatureGroup>
+
               <LayersControl position="bottomright">
                 <FullScreenScrollingEventHandler bounds={updatedBounds} scrollWheelZoom={false} />
                 <SetMapBounds bounds={updatedBounds} />
-                <StaticLayers layers={staticLayers} />
+                {lastDrawn ?? <StaticLayers layers={staticLayers} />}
                 <BaseLayerControls />
               </LayersControl>
             </LeafletMapContainer>
