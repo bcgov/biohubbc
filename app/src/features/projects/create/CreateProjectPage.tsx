@@ -8,23 +8,26 @@ import Stack from '@mui/material/Stack';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { CreateProjectI18N } from 'constants/i18n';
+import { PROJECT_ROLE } from 'constants/roles';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { FormikProps } from 'formik';
 import * as History from 'history';
+import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { ICreateProjectRequest, IGetProjectParticipant, IUpdateProjectRequest } from 'interfaces/useProjectApi.interface';
+import {
+  ICreateProjectRequest,
+  IGetProjectParticipant,
+  IUpdateProjectRequest
+} from 'interfaces/useProjectApi.interface';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Prompt } from 'react-router-dom';
-import EditProjectForm from '../edit/EditProjectForm';
-
 import { ProjectDetailsFormInitialValues } from '../components/ProjectDetailsForm';
 import { ProjectIUCNFormInitialValues } from '../components/ProjectIUCNForm';
 import { ProjectObjectivesFormInitialValues } from '../components/ProjectObjectivesForm';
 import { ProjectUserRoleFormInitialValues } from '../components/ProjectUserForm';
-import { useAuthStateContext } from 'hooks/useAuthStateContext';
-import { PROJECT_ROLE } from 'constants/roles';
+import EditProjectForm from '../edit/EditProjectForm';
 
 export const defaultProjectDataFormValues: ICreateProjectRequest = {
   ...ProjectDetailsFormInitialValues,
@@ -69,12 +72,12 @@ const CreateProjectPage = () => {
     ];
   }, [authStateContext.simsUserWrapper]);
 
-  const initialProjectData: ICreateProjectRequest  = useMemo(() => {
-    return { 
+  const initialProjectData: ICreateProjectRequest = useMemo(() => {
+    return {
       ...defaultProjectDataFormValues,
       participants: initialParticipants
-    }
-  }, [initialParticipants])
+    };
+  }, [initialParticipants]);
 
   const defaultCancelDialogProps = {
     dialogTitle: CreateProjectI18N.cancelTitle,
@@ -128,7 +131,9 @@ const CreateProjectPage = () => {
       const response = await biohubApi.project.createProject(projectPostObject);
 
       if (!response?.id) {
-        showCreateErrorDialog({ dialogError: 'The response from the server was null, or did not contain a project ID.' });
+        showCreateErrorDialog({
+          dialogError: 'The response from the server was null, or did not contain a project ID.'
+        });
         return;
       }
 
@@ -194,9 +199,9 @@ const CreateProjectPage = () => {
 
       <Container maxWidth="xl">
         <Box py={3}>
-          <Paper elevation={0} sx={{p: 5}}>
+          <Paper elevation={0} sx={{ p: 5 }}>
             <EditProjectForm
-              initialProjectData={initialProjectData} 
+              initialProjectData={initialProjectData}
               handleSubmit={(formikData) => createProject(formikData as ICreateProjectRequest)}
               formikRef={formikRef as unknown as React.RefObject<FormikProps<IUpdateProjectRequest>>}
             />

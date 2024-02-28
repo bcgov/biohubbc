@@ -5,6 +5,8 @@ import { makeStyles } from '@mui/styles';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
+import { CodesContext } from 'contexts/codesContext';
+import { ProjectContext } from 'contexts/projectContext';
 import { default as dayjs } from 'dayjs';
 import SamplingStrategyForm from 'features/surveys/components/SamplingStrategyForm';
 import SurveyPartnershipsForm, {
@@ -16,19 +18,13 @@ import React, { useContext } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import AgreementsForm, { AgreementsYupSchema } from '../components/AgreementsForm';
-import GeneralInformationForm, {
-  GeneralInformationYupSchema
-} from '../components/GeneralInformationForm';
+import GeneralInformationForm, { GeneralInformationYupSchema } from '../components/GeneralInformationForm';
 import ProprietaryDataForm, { ProprietaryDataYupSchema } from '../components/ProprietaryDataForm';
 import PurposeAndMethodologyForm, { PurposeAndMethodologyYupSchema } from '../components/PurposeAndMethodologyForm';
 import StudyAreaForm, { SurveyLocationYupSchema } from '../components/StudyAreaForm';
-import SurveyFundingSourceForm, {
-  SurveyFundingSourceFormYupSchema
-} from '../components/SurveyFundingSourceForm';
+import SurveyFundingSourceForm, { SurveyFundingSourceFormYupSchema } from '../components/SurveyFundingSourceForm';
 import { SurveySiteSelectionYupSchema } from '../components/SurveySiteSelectionForm';
 import SurveyUserForm, { SurveyUserJobYupSchema } from '../components/SurveyUserForm';
-import { ProjectContext } from 'contexts/projectContext';
-import { CodesContext } from 'contexts/codesContext';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -235,9 +231,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
 
         <Divider className={classes.sectionDivider} />
 
-        <HorizontalSplitFormComponent
-          title="Agreements"
-          component={<AgreementsForm />}></HorizontalSplitFormComponent>
+        <HorizontalSplitFormComponent title="Agreements" component={<AgreementsForm />}></HorizontalSplitFormComponent>
         <Divider className={classes.sectionDivider} />
       </>
     </Formik>

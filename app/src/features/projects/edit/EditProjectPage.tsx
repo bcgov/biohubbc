@@ -1,11 +1,14 @@
+import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
+import { Stack } from '@mui/system';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { EditProjectI18N } from 'constants/i18n';
+import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
 import { FormikProps } from 'formik';
@@ -16,11 +19,8 @@ import { IUpdateProjectRequest, UPDATE_GET_ENTITIES } from 'interfaces/useProjec
 import { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Prompt } from 'react-router-dom';
-import EditProjectForm from './EditProjectForm';
-import { CodesContext } from 'contexts/codesContext';
-import { Stack } from '@mui/system';
-import { LoadingButton } from '@mui/lab';
 import { defaultProjectDataFormValues } from '../create/CreateProjectPage';
+import EditProjectForm from './EditProjectForm';
 
 /**
  * Page for creating a new project.
@@ -110,7 +110,9 @@ const EditProjectPage = () => {
       const response = await biohubApi.project.updateProject(projectId, projectPostObject);
 
       if (!response?.id) {
-        showCreateErrorDialog({ dialogError: 'The response from the server was null, or did not contain a project ID.' });
+        showCreateErrorDialog({
+          dialogError: 'The response from the server was null, or did not contain a project ID.'
+        });
         return;
       }
 
@@ -159,10 +161,10 @@ const EditProjectPage = () => {
         buttonJSX={
           <>
             <LoadingButton
-                loading={isSaving}
-                color="primary"
-                variant="contained"
-                onClick={() => formikRef.current?.submitForm()}>
+              loading={isSaving}
+              color="primary"
+              variant="contained"
+              onClick={() => formikRef.current?.submitForm()}>
               Save Project
             </LoadingButton>
             <Button disabled={isSaving} color="primary" variant="outlined" onClick={handleCancel}>
@@ -174,7 +176,7 @@ const EditProjectPage = () => {
 
       <Container maxWidth="xl">
         <Box py={3}>
-          <Paper elevation={0} sx={{p: 5}}>
+          <Paper elevation={0} sx={{ p: 5 }}>
             <EditProjectForm
               initialProjectData={editProjectDataLoader.data ?? defaultProjectDataFormValues}
               handleSubmit={updateProject}

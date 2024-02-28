@@ -1,3 +1,4 @@
+import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
@@ -13,9 +14,7 @@ import { CreateSurveyI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
-import {
-  SurveyPartnershipsFormInitialValues,
-} from 'features/surveys/view/components/SurveyPartnershipsForm';
+import { SurveyPartnershipsFormInitialValues } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
@@ -25,23 +24,14 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { AgreementsInitialValues } from './components/AgreementsForm';
-import {
-  GeneralInformationInitialValues,
-} from './components/GeneralInformationForm';
-import {
-  ProprietaryDataInitialValues,
-} from './components/ProprietaryDataForm';
-import {
-  PurposeAndMethodologyInitialValues,
-} from './components/PurposeAndMethodologyForm';
+import { GeneralInformationInitialValues } from './components/GeneralInformationForm';
+import { ProprietaryDataInitialValues } from './components/ProprietaryDataForm';
+import { PurposeAndMethodologyInitialValues } from './components/PurposeAndMethodologyForm';
 import { SurveyLocationInitialValues } from './components/StudyAreaForm';
 import { SurveyBlockInitialValues } from './components/SurveyBlockSection';
-import {
-  SurveyFundingSourceFormInitialValues,
-} from './components/SurveyFundingSourceForm';
+import { SurveyFundingSourceFormInitialValues } from './components/SurveyFundingSourceForm';
 import { SurveySiteSelectionInitialValues } from './components/SurveySiteSelectionForm';
 import { SurveyUserJobFormInitialValues } from './components/SurveyUserForm';
-import { LoadingButton } from '@mui/lab';
 import EditSurveyForm from './edit/EditSurveyForm';
 
 export const defaultSurveyDataFormValues: ICreateSurveyRequest = {
