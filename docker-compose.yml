@@ -9,8 +9,6 @@ services:
       context: ./database/.docker/db
       dockerfile: Dockerfile
       args:
-        - POSTGRES_VERSION=${POSTGRES_VERSION}
-        - POSTGIS_VERSION=${POSTGIS_VERSION}
         - TZ=${DB_TZ}
     ports:
       - ${DB_PORT}:5432
