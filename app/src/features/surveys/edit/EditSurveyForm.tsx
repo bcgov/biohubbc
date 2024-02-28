@@ -1,8 +1,6 @@
 import { Stack, Theme, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
-import Paper from '@mui/material/Paper';
 import { makeStyles } from '@mui/styles';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
@@ -10,34 +8,26 @@ import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
 import SamplingStrategyForm from 'features/surveys/components/SamplingStrategyForm';
 import SurveyPartnershipsForm, {
-  SurveyPartnershipsFormInitialValues,
   SurveyPartnershipsFormYupSchema
 } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { Formik, FormikProps } from 'formik';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { ICreateProjectRequest, ProjectViewObject } from 'interfaces/useProjectApi.interface';
 import { ICreateSurveyRequest, IEditSurveyRequest, SurveyUpdateObject } from 'interfaces/useSurveyApi.interface';
-import React, { useContext, useEffect, useState } from 'react';
-import { StringBoolean } from 'types/misc';
+import React, { useContext } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import AgreementsForm, { AgreementsYupSchema } from '../components/AgreementsForm';
 import GeneralInformationForm, {
-  GeneralInformationInitialValues,
   GeneralInformationYupSchema
 } from '../components/GeneralInformationForm';
 import ProprietaryDataForm, { ProprietaryDataYupSchema } from '../components/ProprietaryDataForm';
 import PurposeAndMethodologyForm, { PurposeAndMethodologyYupSchema } from '../components/PurposeAndMethodologyForm';
-import StudyAreaForm, { SurveyLocationInitialValues, SurveyLocationYupSchema } from '../components/StudyAreaForm';
-import { SurveyBlockInitialValues } from '../components/SurveyBlockSection';
+import StudyAreaForm, { SurveyLocationYupSchema } from '../components/StudyAreaForm';
 import SurveyFundingSourceForm, {
-  SurveyFundingSourceFormInitialValues,
   SurveyFundingSourceFormYupSchema
 } from '../components/SurveyFundingSourceForm';
-import { SurveySiteSelectionInitialValues, SurveySiteSelectionYupSchema } from '../components/SurveySiteSelectionForm';
-import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from '../components/SurveyUserForm';
+import { SurveySiteSelectionYupSchema } from '../components/SurveySiteSelectionForm';
+import SurveyUserForm, { SurveyUserJobYupSchema } from '../components/SurveyUserForm';
 import { ProjectContext } from 'contexts/projectContext';
-import { defaultSurveyDataFormValues } from '../CreateSurveyPage';
 import { CodesContext } from 'contexts/codesContext';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -65,7 +55,7 @@ export interface IEditSurveyForm {
  *
  * @return {*}
  */
-const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
+const EditSurveyForm = (props: IEditSurveyForm) => {
   const classes = useStyles();
 
   const projectContext = useContext(ProjectContext);
