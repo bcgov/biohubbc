@@ -223,11 +223,7 @@ const EditSurveyPage = () => {
       <Box my={3}>
         <Container maxWidth="xl">
           <Box p={5} component={Paper} display="block">
-            <EditSurveyForm
-              initialSurveyData={surveyData}
-              handleSubmit={handleSubmit}
-              formikRef={formikRef}
-            />
+            <EditSurveyForm initialSurveyData={surveyData} handleSubmit={handleSubmit} formikRef={formikRef} />
             <Stack mt={5} flexDirection="row" justifyContent="flex-end" gap={1}>
               <LoadingButton
                 loading={isSaving}
