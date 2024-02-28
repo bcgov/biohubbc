@@ -91,8 +91,6 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
     setUpdatedBounds(calculateUpdatedMapBounds(samplingSiteGeoJsonFeatures));
   }, [samplingSiteGeoJsonFeatures]);
 
-  console.log(samplingSiteGeoJsonFeatures);
-
   return (
     <>
       <Grid item xs={12}>
