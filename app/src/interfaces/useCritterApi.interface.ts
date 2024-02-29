@@ -106,7 +106,7 @@ type IFamilyChildResponse = {
 
 export type ICritterDetailedResponse = {
   critter_id: string;
-  taxon_id: string;
+  //taxon_id: string;
   wlh_id: string | null;
   animal_id: string | null;
   sex: string;

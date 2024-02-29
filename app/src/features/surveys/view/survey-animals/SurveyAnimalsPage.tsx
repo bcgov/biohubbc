@@ -6,6 +6,7 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { SurveySectionFullPageLayout } from 'features/surveys/components/SurveySectionFullPageLayout';
 import { FieldArray, FieldArrayRenderProps, Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useQuery } from 'hooks/useQuery';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
@@ -31,6 +32,7 @@ export const SurveyAnimalsPage = () => {
   const { cid: survey_critter_id } = useQuery();
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const bhApi = useBiohubApi();
+  const cbApi = useCritterbaseApi();
   const telemetryApi = useTelemetryApi();
   const dialogContext = useContext(DialogContext);
   const { surveyId, projectId, artifactDataLoader } = useContext(SurveyContext);
@@ -65,14 +67,25 @@ export const SurveyAnimalsPage = () => {
     };
   }, []);
 
-  const critterAsFormikValues = useMemo(() => {
+  // const foundCritter = useMemo(() => {
+  //   const critter = critterData?.find(
+  //     (critter: IDetailedCritterWithInternalId) => Number(survey_critter_id) === Number(critter.survey_critter_id)
+  //   );
+  //   return critter;
+  // }, [survey_critter_id, critterData]);
+
+  const critterAsFormikValues = useMemo(async () => {
     const existingCritter = critterData?.find(
       (critter: IDetailedCritterWithInternalId) => Number(survey_critter_id) === Number(critter.survey_critter_id)
     );
+
     if (!existingCritter) {
       return defaultFormValues;
     }
-    const animal = transformCritterbaseAPIResponseToForm(existingCritter);
+
+    const detailedCritter = await cbApi.critters.getDetailedCritter(existingCritter.critter_id);
+
+    const animal = transformCritterbaseAPIResponseToForm(detailedCritter);
     const crittersDeployments = deploymentData?.filter((a) => a.critter_id === existingCritter.critter_id);
     let deployments: IAnimalTelemetryDevice[] = [];
     if (crittersDeployments) {
@@ -123,7 +136,7 @@ export const SurveyAnimalsPage = () => {
       await bhApi.survey.createCritterAndAddToSurvey(projectId, surveyId, critter);
     };
     const patchCritterPayload = async () => {
-      const initialFormValues = critterAsFormikValues;
+      const initialFormValues = await critterAsFormikValues;
       if (!initialFormValues) {
         throw Error('Could not obtain initial form values.');
       }
@@ -271,7 +284,7 @@ export const SurveyAnimalsPage = () => {
         validateOnBlur={false}
         validateOnChange={true}
         onSubmit={async (values, actions) => {
-          const status = await handleCritterSave(values, ANIMAL_FORM_MODE.EDIT);
+          const status = await handleCritterSave(await values, ANIMAL_FORM_MODE.EDIT);
           actions.setStatus(status);
         }}>
         <SurveySectionFullPageLayout
