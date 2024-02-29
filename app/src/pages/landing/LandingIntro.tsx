@@ -17,7 +17,7 @@ export const LandingIntro = () => {
           <QuestionAnswer
             title="Who can gain access?"
             subtext="Staff, contractors, and partners of the Province who collect 
-            and manage fish and wildlife data. You must have an IDIR or BCeID to login."
+            and manage fish and wildlife data. You must have an IDIR or BCeID to log in."
           />
         </Grid>
         <Grid item xs={10} md={6} xl={4}>
