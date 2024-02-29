@@ -164,7 +164,7 @@ describe('SurveyAttachments', () => {
       </AuthStateContext.Provider>
     );
     await waitFor(() => {
-      expect(getByText('No Documents')).toBeInTheDocument();
+      expect(getByText('No documents found')).toBeInTheDocument();
     });
   });
 
