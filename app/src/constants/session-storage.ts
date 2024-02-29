@@ -23,5 +23,5 @@ export const SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS = 'SIMS_OBSERVATIONS_MEASUREM
  * @return {*}  {string}
  */
 export const getSurveySessionStorageKey = (surveyId: number, sessionStorageKey: string): string => {
-  return `${sessionStorageKey}_${surveyId}`;
+  return `${sessionStorageKey}_survey_${surveyId}`;
 };

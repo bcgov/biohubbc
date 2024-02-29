@@ -75,7 +75,7 @@ describe('insertUpdateSurveyObservationsWithMeasurements', () => {
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(insertUpdateSurveyObservationsStub).to.have.been.calledOnceWith(2, surveyObservations);
-    expect(mockRes.statusValue).to.equal(200);
+    expect(mockRes.statusValue).to.equal(204);
     expect(mockRes.jsonValue).to.eql(undefined);
   });
 

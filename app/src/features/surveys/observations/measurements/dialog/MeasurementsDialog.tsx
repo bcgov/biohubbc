@@ -1,4 +1,3 @@
-import LoadingButton from '@mui/lab/LoadingButton';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -11,31 +10,31 @@ import { MeasurementsSearch } from 'features/surveys/observations/measurements/s
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 
-export interface IrementsDialogProps {
+export interface IMeasurementsDialogProps {
   /**
    * Controls whether the dialog is open or not.
    *
    * @type {boolean}
-   * @memberof IrementsDialogProps
+   * @memberof IMeasurementsDialogProps
    */
   open: boolean;
   /**
    * The selected measurements.
    *
    * @type {CBMeasurementType[]}
-   * @memberof IrementsDialogProps
+   * @memberof IMeasurementsDialogProps
    */
   selectedMeasurements: CBMeasurementType[];
   /**
    * Callback fired on save.
    *
-   * @memberof IrementsDialogProps
+   * @memberof IMeasurementsDialogProps
    */
   onSave: (measurements: CBMeasurementType[]) => void;
   /**
    * Callback fired on cancel.
    *
-   * @memberof IrementsDialogProps
+   * @memberof IMeasurementsDialogProps
    */
   onCancel: () => void;
 }
@@ -43,10 +42,10 @@ export interface IrementsDialogProps {
 /**
  * Renders a dialog to manage measurements.
  *
- * @param {IrementsDialogProps} props
+ * @param {IMeasurementsDialogProps} props
  * @return {*}
  */
-export const MeasurementsDialog = (props: IrementsDialogProps) => {
+export const MeasurementsDialog = (props: IMeasurementsDialogProps) => {
   const { open, selectedMeasurements: initialSelectedMeasurements, onSave, onCancel } = props;
 
   const theme = useTheme();
@@ -88,8 +87,7 @@ export const MeasurementsDialog = (props: IrementsDialogProps) => {
         <MeasurementsList selectedMeasurements={selectedMeasurements} onRemove={onRemove} />
       </DialogContent>
       <DialogActions>
-        <LoadingButton
-          loading={false}
+        <Button
           disabled={false}
           onClick={() => onSave(selectedMeasurements)}
           color="primary"
@@ -97,7 +95,7 @@ export const MeasurementsDialog = (props: IrementsDialogProps) => {
           autoFocus
           data-testid="observation-measurements-dialog-add-button">
           Add
-        </LoadingButton>
+        </Button>
         <Button
           onClick={onCancel}
           color="primary"

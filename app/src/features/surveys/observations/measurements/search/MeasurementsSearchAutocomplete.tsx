@@ -72,7 +72,6 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
       blurOnSelect={false}
       clearOnBlur={false}
       getOptionLabel={(option) => option.measurement_name}
-      //   getOptionLabel={(option) => option.commonName || option.scientificName}
       isOptionEqualToValue={(option, value) => {
         return option.taxon_measurement_id === value.taxon_measurement_id;
       }}

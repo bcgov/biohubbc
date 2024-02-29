@@ -2,6 +2,7 @@ import Typography from '@mui/material/Typography';
 import {
   GridCellParams,
   GridColDef,
+  GridColumnVisibilityModel,
   GridPaginationModel,
   GridRowId,
   GridRowModesModel,
@@ -126,11 +127,11 @@ export type IObservationsTableContext = {
   /**
    * The column visibility model, which defines which columns are visible or hidden.
    */
-  columnVisibilityModel: Record<string, boolean>;
+  columnVisibilityModel: GridColumnVisibilityModel;
   /**
    * Sets the column visibility model.
    */
-  setColumnVisibilityModel: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+  setColumnVisibilityModel: React.Dispatch<React.SetStateAction<GridColumnVisibilityModel>>;
   /**
    * Appends a new blank record to the observation rows
    */
@@ -303,7 +304,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   const [disabled, setDisabled] = useState(false);
 
   // Column visibility model
-  const [columnVisibilityModel, setColumnVisibilityModel] = useState<Record<string, boolean>>({});
+  const [columnVisibilityModel, setColumnVisibilityModel] = useState<GridColumnVisibilityModel>({});
 
   // Pagination model
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
@@ -768,6 +769,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
         return JSON.parse(measurementColumnStringified);
       }
+
+      // Measurement columns are available in the observations data, remove measurement columns from local storage
+      sessionStorage.removeItem(getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS));
 
       // Get measurement columns from existing observations data
       return [...getMeasurementColumns(observationsData.supplementaryObservationData.measurementColumns, hasError)];
