@@ -84,7 +84,7 @@ describe('ProjectUserForm', () => {
           project_role_names: [PROJECT_ROLE.COORDINATOR]
         }
       ]
-    }
+    };
 
     const { getByTestId, getByText } = render(
       <AuthStateContext.Provider value={authState}>

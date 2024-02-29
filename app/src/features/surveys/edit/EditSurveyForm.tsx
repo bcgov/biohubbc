@@ -52,7 +52,6 @@ export interface IEditSurveyForm {
  * @return {*}
  */
 const EditSurveyForm = (props: IEditSurveyForm) => {
-  console.log('props.initialSurveyData:', props.initialSurveyData)
   const classes = useStyles();
 
   const projectContext = useContext(ProjectContext);
@@ -158,9 +157,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
         <HorizontalSplitFormComponent
           title="Survey Participants"
           summary="Specify the people who participated in this survey."
-          component={
-            <SurveyUserForm jobs={codes.survey_jobs} />
-          }
+          component={<SurveyUserForm jobs={codes.survey_jobs} />}
         />
 
         <Divider className={classes.sectionDivider} />

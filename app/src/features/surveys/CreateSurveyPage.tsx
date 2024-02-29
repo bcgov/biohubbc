@@ -53,7 +53,6 @@ export const defaultSurveyDataFormValues: ICreateSurveyRequest = {
  * @return {*}
  */
 const CreateSurveyPage = () => {
-  console.log('defaultSurveyDataFormValues.participants:', defaultSurveyDataFormValues.participants)
   const biohubApi = useBiohubApi();
   const history = useHistory();
 

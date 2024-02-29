@@ -80,7 +80,7 @@ describe('SurveyUserForm', () => {
           survey_job_name: 'Pilot'
         }
       ]
-    }
+    };
 
     const { getByTestId, getByText } = render(
       <AuthStateContext.Provider value={authState}>
@@ -139,7 +139,7 @@ describe('SurveyUserForm', () => {
 
   it('renders removing a user', async () => {
     const authState = getMockAuthState({ base: SystemAdminAuthState });
-  
+
     const formikInitialValues = {
       participants: [
         {
