@@ -263,6 +263,7 @@ export class ObservationService extends DBService {
     surveyId: number,
     sampleSiteId: number
   ): Promise<{ observationCount: number }> {
+    /* @TODO just return number. */
     return this.observationRepository.getObservationsCountBySampleSiteId(surveyId, sampleSiteId);
   }
 

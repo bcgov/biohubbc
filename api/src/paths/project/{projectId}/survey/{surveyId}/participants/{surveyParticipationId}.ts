@@ -112,6 +112,7 @@ export function updateSurveyParticipantRole(): RequestHandler {
 
       const surveyParticipationService = new SurveyParticipationService(connection);
 
+      // @TODO SIMSBIOHUB-494 audit
       await surveyParticipationService.updateSurveyParticipant(surveyParticipationId, surveyJobName);
 
       await connection.commit();
@@ -216,6 +217,7 @@ export function deleteSurveyParticipant(): RequestHandler {
 
       const surveyParticipationService = new SurveyParticipationService(connection);
 
+      // @TODO SIMSBIOHUB-494 audit
       await surveyParticipationService.deleteSurveyParticipationRecord(surveyParticipationId);
 
       await connection.commit();

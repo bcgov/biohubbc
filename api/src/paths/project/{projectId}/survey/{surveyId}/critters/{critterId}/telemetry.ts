@@ -270,11 +270,13 @@ export function getCritterTelemetry(): RequestHandler {
       if (!thisCritter) {
         throw new HTTP400('Specified critter was not part of this survey.');
       }
+      // @TODO SIMSBIOHUB-494 audit
       const points = await bctw.getCritterTelemetryPoints(
         thisCritter.critterbase_critter_id,
         new Date(startDate),
         new Date(endDate)
       );
+      // @TODO SIMSBIOHUB-494 audit
       const tracks = await bctw.getCritterTelemetryTracks(
         thisCritter.critterbase_critter_id,
         new Date(startDate),

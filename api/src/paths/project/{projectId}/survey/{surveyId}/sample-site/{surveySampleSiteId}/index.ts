@@ -182,6 +182,7 @@ export function updateSurveySampleSite(): RequestHandler {
       await connection.open();
 
       const sampleLocationService = new SampleLocationService(connection);
+      // @TODO SIMSBIOHUB-494 audit
       await sampleLocationService.updateSampleLocationMethodPeriod(sampleSite);
 
       await connection.commit();

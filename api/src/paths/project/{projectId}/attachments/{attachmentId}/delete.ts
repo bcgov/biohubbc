@@ -102,6 +102,7 @@ export function deleteAttachment(): RequestHandler {
 
       const attachmentService = new AttachmentService(connection);
 
+      // @TODO rename method
       await attachmentService.handleDeleteProjectAttachment(
         Number(req.params.projectId),
         Number(req.params.attachmentId),

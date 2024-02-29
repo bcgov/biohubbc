@@ -156,6 +156,7 @@ export function removeCritterFromSurvey(): RequestHandler {
     const surveyService = new SurveyCritterService(connection);
     try {
       await connection.open();
+      // @TODO SIMSBIOHUB-494 audit
       const result = await surveyService.removeCritterFromSurvey(critterId);
       await connection.commit();
       return res.status(200).json(result);

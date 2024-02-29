@@ -175,6 +175,7 @@ export function getSurveyReportDetails(): RequestHandler {
         Number(req.params.attachmentId)
       );
 
+      // @TODO SIMSBIOHUB-494 audit
       const surveyReportAuthors = await attachmentService.getSurveyAttachmentAuthors(Number(req.params.attachmentId));
 
       await connection.commit();

@@ -160,6 +160,7 @@ export function getSurveySampleMethodRecords(): RequestHandler {
 
       const sampleMethodService = new SampleMethodService(connection);
 
+      // @TODO SIMSBIOHUB-494 audit
       const result = await sampleMethodService.getSampleMethodsForSurveySampleSiteId(surveySampleSiteId);
 
       await connection.commit();
@@ -296,6 +297,7 @@ export function createSurveySampleSiteRecord(): RequestHandler {
 
       const sampleMethodService = new SampleMethodService(connection);
 
+      // @TODO SIMSBIOHUB-494 audit
       await sampleMethodService.insertSampleMethod(sampleMethod);
 
       await connection.commit();

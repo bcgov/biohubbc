@@ -84,6 +84,7 @@ GET.apiDoc = {
   }
 };
 
+// @TODO clean up.
 export function getDeploymentsInSurvey(): RequestHandler {
   return async (req, res) => {
     const user: ICritterbaseUser = {
@@ -99,6 +100,7 @@ export function getDeploymentsInSurvey(): RequestHandler {
       const critter_ids = (await surveyCritterService.getCrittersInSurvey(surveyId)).map(
         (a) => a.critterbase_critter_id
       );
+      // @TODO SIMSBIOHUB-494 audit
       const results = critter_ids.length ? await bctw.getDeploymentsByCritterId(critter_ids) : [];
       return res.status(200).json(results);
     } catch (error) {

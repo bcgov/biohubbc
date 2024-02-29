@@ -137,6 +137,7 @@ export function updateSurveySampleMethod(): RequestHandler {
 
       const sampleMethodService = new SampleMethodService(connection);
 
+      // @TODO SIMSBIOHUB-494 audit
       await sampleMethodService.updateSampleMethod(sampleMethod);
 
       await connection.commit();
@@ -244,6 +245,7 @@ export function deleteSurveySampleMethodRecord(): RequestHandler {
 
       const sampleMethodService = new SampleMethodService(connection);
 
+      // @TODO SIMSBIOHUB-494 audit
       await sampleMethodService.deleteSampleMethodRecord(surveySampleMethodId);
 
       await connection.commit();

@@ -245,6 +245,7 @@ export function deployDevice(): RequestHandler {
       await connection.open();
       const override_deployment_id = v4();
       req.body.deployment_id = override_deployment_id;
+      // @TODO SIMSBIOHUB-494 audit
       await surveyCritterService.upsertDeployment(critterId, req.body.deployment_id);
       await bctw.deployDevice(req.body);
       await connection.commit();

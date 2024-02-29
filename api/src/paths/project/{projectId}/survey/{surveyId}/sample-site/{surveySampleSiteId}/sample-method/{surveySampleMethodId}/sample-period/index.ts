@@ -169,6 +169,7 @@ export function getSurveySamplePeriodRecords(): RequestHandler {
 
       const samplePeriodService = new SamplePeriodService(connection);
 
+      // @TODO SIMSBIOHUB-494 audit
       const result = await samplePeriodService.getSamplePeriodsForSurveyMethodId(surveySampleMethodId);
 
       await connection.commit();
@@ -309,6 +310,7 @@ export function createSurveySamplePeriodRecord(): RequestHandler {
 
       const samplePeriodService = new SamplePeriodService(connection);
 
+      // @TODO SIMSBIOHUB-494 audit
       await samplePeriodService.insertSamplePeriod(samplePeriod);
 
       await connection.commit();

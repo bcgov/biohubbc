@@ -114,7 +114,9 @@ export function deleteDeployment(): RequestHandler {
     const bctw = new BctwService(user);
     try {
       await connection.open();
+      // @TODO SIMSBIOHUB-494 audit
       await surveyCritterService.removeDeployment(critterId, deploymentId);
+      // @TODO SIMSBIOHUB-494 audit
       await bctw.deleteDeployment(deploymentId);
       await connection.commit();
       return res.status(200).json({ message: 'Deployment deleted.' });

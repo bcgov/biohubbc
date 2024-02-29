@@ -391,6 +391,9 @@ GET.apiDoc = {
   }
 };
 
+/**
+ * @TODO this endpoint probably isn't needed. Investigate how this endpoint is different from /{surveyId}/view.ts
+ */
 export function getSurveyForUpdate(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);

@@ -155,6 +155,7 @@ export function updateSurveySamplePeriod(): RequestHandler {
 
       const samplePeriodService = new SamplePeriodService(connection);
 
+      // @TODO SIMSBIOHUB-494 audit
       await samplePeriodService.updateSamplePeriod(samplePeriod);
 
       await connection.commit();
@@ -281,6 +282,7 @@ export function deleteSurveySamplePeriodRecord(): RequestHandler {
 
       const samplePeriodService = new SamplePeriodService(connection);
 
+      // @TODO SIMSBIOHUB-494 audit
       await samplePeriodService.deleteSamplePeriodRecord(surveySamplePeriodId);
 
       await connection.commit();

@@ -108,14 +108,17 @@ export function putProjectParticipantRole(): RequestHandler {
       const projectParticipationService = new ProjectParticipationService(connection);
 
       // Get project participant state before updates are made
+      // @TODO rename these variables
+      // @TODO SIMSBIOHUB-494 audit
       const projectParticipantsResponse1 = await projectParticipationService.getProjectParticipants(
-        Number(req.params.projectId)
+        projectId
       );
       const projectHasLeadResponse1 = projectParticipationService.doAllProjectsHaveAProjectLead(
         projectParticipantsResponse1
       );
 
       // Delete the user's old participation record, returning the old record
+      // @TODO SIMSBIOHUB-494 audit
       const result = await projectParticipationService.deleteProjectParticipationRecord(projectParticipationId);
 
       if (!result || !result.system_user_id) {
@@ -134,7 +137,7 @@ export function putProjectParticipantRole(): RequestHandler {
       if (projectHasLeadResponse1) {
         // Get project participant state after updates were made
         const projectParticipantsResponse2 = await projectParticipationService.getProjectParticipants(
-          Number(req.params.projectId)
+          projectId
         );
         const projectHasLeadResponse2 = projectParticipationService.doAllProjectsHaveAProjectLead(
           projectParticipantsResponse2
@@ -245,10 +248,12 @@ export function deleteProjectParticipant(): RequestHandler {
 
       // Check coordinator roles before deleting user
       const projectParticipantsResponse1 = await projectParticipationService.getProjectParticipants(projectId);
+      // @TODO SIMSBIOHUB-494 audit
       const projectHasLeadResponse1 = projectParticipationService.doAllProjectsHaveAProjectLead(
         projectParticipantsResponse1
       );
 
+      // @TODO SIMSBIOHUB-494 audit
       const result = await projectParticipationService.deleteProjectParticipationRecord(projectParticipationId);
 
       if (!result || !result.system_user_id) {

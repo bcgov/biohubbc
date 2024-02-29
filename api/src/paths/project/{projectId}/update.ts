@@ -230,6 +230,7 @@ GET.apiDoc = {
 
 /**
  * Get a project, for update purposes.
+ * @TODO investivate if this endpoint is needed.
  *
  * @returns {RequestHandler}
  */

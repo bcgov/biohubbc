@@ -362,6 +362,7 @@ export function getSurveyObservations(): RequestHandler {
 
       return res.status(200).json({
         ...observationData,
+        // @TODO rename to makePaginatedResponse
         pagination: getPaginationResponse(observationCount, paginationOptions)
       });
     } catch (error) {

@@ -399,6 +399,7 @@ export function createSurveySampleSiteRecord(): RequestHandler {
 
       const sampleLocationService = new SampleLocationService(connection);
 
+      // @TODO SIMSBIOHUB-494 audit
       await sampleLocationService.insertSampleLocations(sampleSite);
 
       await connection.commit();

@@ -129,6 +129,7 @@ export function deleteSurveyObservations(): RequestHandler {
       const deleteObservationIds =
         req.body?.surveyObservationIds?.map((observationId: string | number) => Number(observationId)) ?? [];
 
+      // @TODO SIMSBIOHUB-494 audit
       await observationService.deleteObservationsByIds(deleteObservationIds);
       const supplementaryObservationData = await observationService.getSurveyObservationsSupplementaryData(surveyId);
 
