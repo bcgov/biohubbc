@@ -150,8 +150,8 @@ export const ConfigureColumnsContainer = (props: IConfigureColumnsContainerProps
    * On first mount, load visibility state from session storage, if it exists.
    */
   useEffect(() => {
-    if (JSON.stringify(observationsTableContext.columnVisibilityModel) !== '{}') {
-      // The column visibility model has already been initialized
+    if (Object.keys(observationsTableContext.columnVisibilityModel).length) {
+      // The column visibility model is not empty (has already been initialized)
       return;
     }
 
