@@ -1,6 +1,5 @@
 import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
-import { grey } from '@mui/material/colors';
 import Divider from '@mui/material/Divider';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -38,7 +37,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontWeight: 700,
     letterSpacing: '0.02rem',
     textTransform: 'uppercase',
-    color: grey[600],
     '& + hr': {
       marginTop: theme.spacing(1.5),
       marginBottom: theme.spacing(1.5)

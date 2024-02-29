@@ -23,8 +23,8 @@ const ManualTelemetrySection = () => {
         </Button>
       </Toolbar>
       <Divider></Divider>
-      <Box p={3}>
-        <NoSurveySectionData text="No telemetry data available" paperVariant="outlined" />
+      <Box p={2}>
+        <NoSurveySectionData text="No telemetry data available" />
       </Box>
     </Box>
   );
