@@ -142,7 +142,7 @@ export function createAdministrativeActivity(): RequestHandler {
       const response = await administrativeActivityService.createPendingAccessRequest(systemUserId, accessRequestData);
 
       await connection.commit();
-      
+
       try {
         await administrativeActivityService.sendAccessRequestNotificationEmailToAdmin();
       } catch (error) {
