@@ -23,8 +23,13 @@ export const LandingIntro = () => {
         <Grid item xs={10} md={6} xl={4}>
           <QuestionAnswer
             title="What's the benefit?"
-            subtext="Simple screens let teams organize ecological survey information in an intuitive way. Keep track of when,
-            where, and how you surveyed, and your findings, in a workspace that your whole team--and only your team--can access."
+            subtext={
+              <>
+                Simple screens let teams organize ecological survey information in an intuitive way. Keep track of when,
+                where, and how you surveyed, and your findings, in a workspace that your whole team&mdash;and only your
+                team&mdash;can access.
+              </>
+            }
           />
         </Grid>
         <Grid item xs={10} md={6} xl={4}>
@@ -32,9 +37,9 @@ export const LandingIntro = () => {
             title="How can I get started?"
             subtext={
               <>
-                Request access using an IDIR or BCeID. If you have neither credential, you can request a Basic
-                BCeID from <a href='https://www.bceid.ca/'>bceid.ca</a>. After gaining access, create a new Project or ask your team to invite you to an
-                existing Project.
+                Request access using an IDIR or BCeID. If you have neither credential, you can request a Basic BCeID
+                from <a href="https://www.bceid.ca/">bceid.ca</a>. After gaining access, create a new Project or ask
+                your team to invite you to an existing Project.
               </>
             }
           />
