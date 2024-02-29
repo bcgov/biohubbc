@@ -76,7 +76,7 @@ describe('ProjectUserForm', () => {
           validateOnChange={false}
           onSubmit={async () => {}}>
           <ProjectUserForm
-            users={[
+            initialUsers={[
               {
                 system_user_id: 1,
                 user_identifier: 'identifier',
@@ -113,7 +113,7 @@ describe('ProjectUserForm', () => {
           validateOnBlur={true}
           validateOnChange={false}
           onSubmit={async () => {}}>
-          <ProjectUserForm users={[]} roles={roles} />
+          <ProjectUserForm initialUsers={[]} roles={roles} />
         </Formik>
       </AuthStateContext.Provider>
     );
@@ -145,7 +145,7 @@ describe('ProjectUserForm', () => {
           validateOnChange={false}
           onSubmit={async () => {}}>
           <ProjectUserForm
-            users={[
+            initialUsers={[
               {
                 system_user_id: 1,
                 user_identifier: 'identifier',

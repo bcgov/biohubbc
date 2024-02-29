@@ -71,7 +71,7 @@ describe('SurveyUserForm', () => {
           validateOnChange={false}
           onSubmit={async () => {}}>
           <SurveyUserForm
-            users={[
+            initialUsers={[
               {
                 system_user_id: 1,
                 user_identifier: 'identifier',
@@ -109,7 +109,7 @@ describe('SurveyUserForm', () => {
           validateOnBlur={true}
           validateOnChange={false}
           onSubmit={async () => {}}>
-          <SurveyUserForm users={[]} jobs={roles} />
+          <SurveyUserForm initialUsers={[]} jobs={roles} />
         </Formik>
       </AuthStateContext.Provider>
     );
@@ -141,7 +141,7 @@ describe('SurveyUserForm', () => {
           validateOnChange={false}
           onSubmit={async () => {}}>
           <SurveyUserForm
-            users={[
+            initialUsers={[
               {
                 system_user_id: 1,
                 user_identifier: 'identifier',
