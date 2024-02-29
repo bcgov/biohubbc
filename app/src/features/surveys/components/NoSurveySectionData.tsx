@@ -1,29 +1,17 @@
-import Paper, { PaperProps } from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 interface NoSurveySectionDataProps {
   text: string;
-  paperVariant?: PaperProps['variant'];
 }
 
-const NoSurveySectionData = ({ text, paperVariant }: NoSurveySectionDataProps) => {
+const NoSurveySectionData = ({ text }: NoSurveySectionDataProps) => {
   return (
-    <>
-      <Paper
-        variant={paperVariant}
-        elevation={0}
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '66px',
-          p: 2
-        }}>
-        <Typography component="span" color="textSecondary" variant="body2" data-testid="no-summary-section-data">
-          {text}
-        </Typography>
-      </Paper>
-    </>
+    <Stack alignItems="center" justifyContent="center" p={2} minHeight="66px">
+      <Typography component="span" color="textSecondary" variant="body2" data-testid="no-summary-section-data">
+        {text}
+      </Typography>
+    </Stack>
   );
 };
 
