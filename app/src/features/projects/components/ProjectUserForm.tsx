@@ -16,7 +16,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { ICode } from 'interfaces/useCodesApi.interface';
 import { ICreateProjectRequest, IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { alphabetizeObjects } from 'utils/Utils';
 import yup from 'utils/YupSchema';
@@ -39,7 +39,6 @@ export const ProjectUserRoleYupSchema = yup.object().shape({
 });
 
 interface IProjectUserFormProps {
-  initialUsers: (ISystemUser | IGetProjectParticipant)[];
   roles: ICode[];
 }
 
@@ -54,24 +53,10 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
   const searchUserDataLoader = useDataLoader(() => biohubApi.user.searchSystemUser(''));
   searchUserDataLoader.load();
 
-  const [selectedUsers, setSelectedUsers] = useState<(ISystemUser | IGetProjectParticipant)[]>(props.initialUsers);
   const [searchText, setSearchText] = useState('');
 
-  useEffect(() => {
-    props.initialUsers.forEach((user, index) => {
-      setFieldValue(`participants[${index}].system_user_id`, user.system_user_id);
-      setFieldValue(`participants[${index}].display_name`, user.display_name);
-      setFieldValue(`participants[${index}].email`, user.email);
-      setFieldValue(`participants[${index}].agency`, user.agency);
-      setFieldValue(`participants[${index}].identity_source`, user.identity_source);
-      setFieldValue(`participants[${index}].project_role_names`, (user as IGetProjectParticipant).project_role_names);
-    });
-  }, [props.initialUsers, setFieldValue]);
-
   const handleAddUser = (user: ISystemUser | IGetProjectParticipant) => {
-    selectedUsers.push(user);
-
-    setFieldValue(`participants[${selectedUsers.length - 1}]`, {
+    setFieldValue(`participants[${values.participants.length}]`, {
       system_user_id: user.system_user_id,
       display_name: user.display_name,
       email: user.email,
@@ -88,22 +73,16 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
   };
 
   const handleRemoveUser = (systemUserId: number) => {
-    const filteredUsers = selectedUsers.filter(
+    const filteredUsers = values.participants.filter(
       (item: ISystemUser | IGetProjectParticipant) => item.system_user_id !== systemUserId
     );
-    const filteredValues = values.participants.filter((item) => item.system_user_id !== systemUserId);
 
-    setSelectedUsers(filteredUsers);
-    setFieldValue(`participants`, filteredValues);
+    setFieldValue(`participants`, filteredUsers);
     clearErrors();
   };
 
-  // Clear all errors for any modify action
-  // setting to undefined keeps the formik form from submitting
   const clearErrors = () => {
-    const tempErrors = errors;
-    delete tempErrors.participants;
-    setErrors(tempErrors);
+    setErrors({ ...errors, participants: undefined });
   };
 
   const alertBarText = (): { title: string; text: string } => {
@@ -114,7 +93,7 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
         title = 'Missing Roles';
         text = 'All team members must be assigned a role.';
       } else {
-        if (selectedUsers.length > 0) {
+        if (values.participants.length > 0) {
           title = 'A coordinator role is required';
         } else {
           title = 'Missing Team Member';
@@ -161,7 +140,7 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
           }}>
           A minimum of one team member must be assigned the coordinator role.
         </Typography>
-        {errors?.['participants'] && !selectedUsers.length && (
+        {errors?.['participants'] && !values.participants.length && (
           <Box mt={3}>
             <AlertBar
               severity="error"
@@ -171,7 +150,7 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
             />
           </Box>
         )}
-        {errors?.['participants'] && selectedUsers.length > 0 && (
+        {errors?.['participants'] && values.participants.length > 0 && (
           <Box mt={3}>
             <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
           </Box>
@@ -186,7 +165,7 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
             filterOptions={(options, state) => {
               const searchFilter = createFilterOptions<ISystemUser>({ ignoreCase: true });
               const unselectedOptions = options.filter(
-                (item) => !selectedUsers.some((existing) => existing.system_user_id === item.system_user_id)
+                (item) => !values.participants.some((existing) => existing.system_user_id === item.system_user_id)
               );
               return searchFilter(unselectedOptions, state);
             }}
@@ -242,7 +221,7 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
               }
             }}>
             <TransitionGroup>
-              {selectedUsers.map((user: ISystemUser | IGetProjectParticipant, index: number) => {
+              {values.participants.map((user: ISystemUser | IGetProjectParticipant, index: number) => {
                 const error = rowItemError(index);
                 return (
                   <Collapse key={user.system_user_id}>

@@ -140,22 +140,24 @@ describe('SurveyUserForm', () => {
   it('renders removing a user', async () => {
     const authState = getMockAuthState({ base: SystemAdminAuthState });
   
-    const formikInitialValues = [
-      {
-        system_user_id: 1,
-        user_identifier: 'identifier',
-        user_guid: '',
-        identity_source: 'IDIR',
-        record_end_date: '',
-        role_ids: [],
-        role_names: [],
-        email: 'user@email.com',
-        display_name: 'Test User',
-        agency: 'Business',
-        survey_job_id: 1,
-        survey_job_name: ''
-      }
-    ];
+    const formikInitialValues = {
+      participants: [
+        {
+          system_user_id: 1,
+          user_identifier: 'identifier',
+          user_guid: '',
+          identity_source: 'IDIR',
+          record_end_date: '',
+          role_ids: [],
+          role_names: [],
+          email: 'user@email.com',
+          display_name: 'Test User',
+          agency: 'Business',
+          survey_job_id: 1,
+          survey_job_name: ''
+        }
+      ]
+    };
 
     const { getByTestId } = render(
       <AuthStateContext.Provider value={authState}>
