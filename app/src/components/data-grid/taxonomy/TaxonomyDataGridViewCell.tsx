@@ -40,9 +40,33 @@ const TaxonomyDataGridViewCell = <DataGridType extends GridValidRowModel>(
         overflow: 'hidden',
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
-        color: props.error ? 'error' : undefined
+        color: props.error ? 'error' : undefined,
+        '& .speciesCommonName': {
+          display: 'inline-block',
+          '&::first-letter': {
+            textTransform: 'capitalize'
+          }
+        }
       }}>
-      {[response.commonName, `(${response.scientificName})`].filter(Boolean).join(' ')}
+      {response.commonName ? (
+        <>
+          <Typography
+            component="span"
+            variant="body2"
+            className="speciesCommonName"
+            sx={{
+              display: 'inline-block',
+              '&::first-letter': {
+                textTransform: 'capitalize'
+              }
+            }}>
+            {response.commonName}
+          </Typography>
+          &nbsp;(<em>{response.scientificName}</em>)
+        </>
+      ) : (
+        <em>{response.scientificName}</em>
+      )}
     </Typography>
   );
 };

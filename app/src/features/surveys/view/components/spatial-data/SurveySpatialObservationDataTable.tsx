@@ -127,7 +127,10 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
       field: 'itis_scientific_name',
       headerName: 'Species',
       flex: 1,
-      minWidth: 200
+      minWidth: 200,
+      renderCell: (params) => {
+        return <em>{params.row.itis_scientific_name}</em>;
+      }
     },
     {
       field: 'survey_sample_site_name',
