@@ -8,6 +8,7 @@ import {
   UpdateSampleLocationRecord
 } from '../repositories/sample-location-repository';
 import { InsertSampleMethodRecord } from '../repositories/sample-method-repository';
+import { InsertSampleStratumRecord } from '../repositories/sample-stratums-repository';
 import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
@@ -21,6 +22,7 @@ export interface PostSampleLocations {
   survey_sample_sites: InsertSampleSiteRecord[];
   methods: InsertSampleMethodRecord[];
   blocks: InsertSampleBlockRecord[];
+  stratums: InsertSampleStratumRecord[];
 }
 
 const defaultLog = getLogger('services/sample-location-service');
@@ -112,6 +114,7 @@ export class SampleLocationService extends DBService {
 
     const methodService = new SampleMethodService(this.connection);
     const blockService = new SampleBlockService(this.connection);
+    const stratumService = new SampleStratumService(this.connection);
 
     // Loop through all newly created sample sites
     // For reach sample site, create associated sample methods
@@ -142,6 +145,20 @@ export class SampleLocationService extends DBService {
     );
 
     await Promise.all(blockPromises);
+
+    // Loop through all newly created sample sites
+    // For reach sample site, create associated sample stratums
+    const stratumPromises = sampleSiteRecords.map((sampleSiteRecord) =>
+      sampleLocations.stratums.map((item) => {
+        const sampleStratum = {
+          survey_sample_site_id: sampleSiteRecord.survey_sample_site_id,
+          survey_stratum_id: item.survey_stratum_id
+        };
+        return stratumService.insertSampleStratum(sampleStratum);
+      })
+    );
+
+    await Promise.all(stratumPromises);
 
     return sampleSiteRecords;
   }
