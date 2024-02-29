@@ -146,7 +146,7 @@ const ProjectAttachmentsList = () => {
         handleDelete={handleDelete}
         handleViewDetails={handleViewDetailsOpen}
         handleRemoveOrResubmit={handleRemoveOrResubmit}
-        emptyStateText="No Shared Files"
+        emptyStateText="No shared files found"
       />
     </>
   );

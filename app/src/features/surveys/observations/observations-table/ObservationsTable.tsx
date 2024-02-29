@@ -561,7 +561,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             borderLeft: '1px solid' + grey[300]
           },
           '& .MuiDataGrid-columnHeaders': {
-            position: 'relative'
+            position: 'relative',
+            background: grey[50]
           },
           '& .MuiDataGrid-columnHeader:focus-within': {
             outline: 'none',
