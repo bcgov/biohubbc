@@ -222,7 +222,7 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
           </Typography>
         </Toolbar>
         <Divider></Divider>
-        <Box p={1}>
+        <Box p={2}>
           <TableContainer>
             <Table
               sx={{
