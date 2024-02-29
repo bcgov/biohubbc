@@ -12,6 +12,7 @@ import FileUpload from 'components/file-upload/FileUpload';
 import FileUploadItem from 'components/file-upload/FileUploadItem';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
+import DrawControls, { IDrawControlsRef } from 'components/map/components/DrawControls';
 import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
 import StaticLayers from 'components/map/components/StaticLayers';
 import { MapBaseCss } from 'components/map/styles/MapBaseCss';
@@ -22,13 +23,13 @@ import SampleSiteFileUploadItemProgressBar from 'features/surveys/observations/s
 import SampleSiteFileUploadItemSubtext from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemSubtext';
 import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
-import { LatLngBoundsExpression } from 'leaflet';
+import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
 import 'leaflet/dist/leaflet.css';
 import get from 'lodash-es/get';
-import { useContext, useEffect, useMemo, useState } from 'react';
-import { LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { boundaryUploadHelper, calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { pluralize, shapeFileFeatureDesc, shapeFileFeatureName } from 'utils/Utils';
 import { ISurveySampleSite } from '../SamplingSitePage';
@@ -64,10 +65,15 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
   const classes = useStyles();
 
   const surveyContext = useContext(SurveyContext);
+  const [lastDrawn, setLastDrawn] = useState<null | number>(null);
+
+  const drawControlsRef = useRef<IDrawControlsRef>();
 
   const { name, mapId, formikProps } = props;
 
   const { values, errors, setFieldValue, setFieldError } = formikProps;
+
+  let numSites = surveyContext.sampleSiteDataLoader.data?.sampleSites.length ?? 0;
 
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
 
@@ -102,7 +108,6 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
           <FileUpload
             uploadHandler={boundaryUploadHelper({
               onSuccess: (features: Feature[]) => {
-                let numSites = surveyContext.sampleSiteDataLoader.data?.sampleSites.length ?? 0;
                 setFieldValue(
                   name,
                   features.map((feature) => ({
@@ -161,15 +166,55 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
                 {/* Programmatically set map bounds */}
                 <SetMapBounds bounds={updatedBounds} />
 
+                <FeatureGroup data-id="draw-control-feature-group" key="draw-control-feature-group">
+                  <DrawControls
+                    ref={drawControlsRef}
+                    options={{
+                      // Always disable circle, circlemarker and line
+                      draw: { circle: false, circlemarker: false }
+                    }}
+                    onLayerAdd={(event: DrawEvents.Created, id: number) => {
+                      if (lastDrawn) {
+                        drawControlsRef?.current?.deleteLayer(lastDrawn);
+                      }
+
+                      const feature = event.layer.toGeoJSON();
+                      setFieldValue(name, [
+                        {
+                          name: `Sample Site ${++numSites}`,
+                          description: '',
+                          geojson: feature
+                        }
+                      ]);
+                      // Set last drawn to remove it if a subsequent shape is added. There can only be one shape.
+                      setLastDrawn(id);
+                    }}
+                    onLayerEdit={(event: DrawEvents.Edited) => {
+                      event.layers.getLayers().forEach((layer: any) => {
+                        const feature = layer.toGeoJSON() as Feature;
+                        setFieldValue(name, [
+                          {
+                            name: `Sample Site ${++numSites}`,
+                            description: '',
+                            geojson: feature
+                          }
+                        ]);
+                      });
+                    }}
+                    onLayerDelete={(event: DrawEvents.Deleted) => {
+                      setFieldValue(name, []);
+                    }}
+                  />
+                </FeatureGroup>
+
                 <LayersControl position="bottomright">
                   <StaticLayers
                     layers={[
                       {
                         layerName: 'Sampling Sites',
-                        features: samplingSiteGeoJsonFeatures.map((feature: Feature, index) => ({
-                          geoJSON: feature,
-                          key: index
-                        }))
+                        features: samplingSiteGeoJsonFeatures
+                          .filter((item) => item?.id) // Filter for only drawn features
+                          .map((feature, index) => ({ geoJSON: feature, key: index }))
                       }
                     ]}
                   />
