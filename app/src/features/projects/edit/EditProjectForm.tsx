@@ -86,10 +86,7 @@ const EditProjectForm = (props: IEditProjectForm) => {
           title="Team Members"
           summary="Specify team members and their associated role for this project."
           component={
-            <ProjectUserForm
-              initialUsers={props.initialProjectData.participants || []}
-              roles={codes?.project_roles ?? []}
-            />
+            <ProjectUserForm roles={codes?.project_roles ?? []} />
           }
         />
 
