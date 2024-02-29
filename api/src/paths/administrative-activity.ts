@@ -147,7 +147,7 @@ export function createAdministrativeActivity(): RequestHandler {
         await administrativeActivityService.sendAccessRequestNotificationEmailToAdmin();
       } catch (error) {
         // If email notifiation fails to send, simply log the error and continue.
-        defaultLog.error({ label: 'administrativeActivity', error });
+        defaultLog.error({ label: 'administrativeActivity', message: 'createAdministrativeActivity', error });
       }
 
       return res.status(200).json(response);
