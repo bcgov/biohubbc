@@ -118,7 +118,7 @@ describe('AttachmentsList', () => {
                 handleDelete={jest.fn()}
                 handleViewDetails={jest.fn()}
                 handleRemoveOrResubmit={jest.fn()}
-                emptyStateText="No Shared Files"
+                emptyStateText="No shared files found"
               />
             </SurveyContext.Provider>
           </ProjectContext.Provider>
@@ -126,7 +126,7 @@ describe('AttachmentsList', () => {
       </AuthStateContext.Provider>
     );
 
-    expect(getByText('No Shared Files')).toBeInTheDocument();
+    expect(getByText('No shared files found')).toBeInTheDocument();
   });
 
   it('renders correctly with attachments (of various sizes)', async () => {
