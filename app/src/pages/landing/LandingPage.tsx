@@ -60,7 +60,7 @@ export const LandingPage = () => {
               Species Inventory Management System
             </Typography>
             <Typography className={classes.heroSubtitle}>
-              Collaboratively manage fish and wildlife data and information to help protect biodiversity in British Columbia.
+              Collaboratively manage fish and wildlife projects to help protect biodiversity in British Columbia.
             </Typography>
             <LandingActions />
           </Box>
