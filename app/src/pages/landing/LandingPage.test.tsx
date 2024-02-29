@@ -63,7 +63,7 @@ describe('LandingPage', () => {
       expect(queryByTestId('landing_page_login_button')).not.toBeInTheDocument();
 
       // Should see the no-access message
-      expect(getByText('You have not been granted access to this application.')).toBeVisible();
+      expect(getByText('You have not yet been granted access to this application.')).toBeVisible();
 
       // Should see the Request Access button
       const requestAccessButton = getByTestId('landing_page_request_access_button');

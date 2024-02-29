@@ -5,12 +5,13 @@ import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import BaseLayout from 'layouts/BaseLayout';
 import LandingActions from './LandingActions';
+import { LandingIntro } from './LandingIntro';
 
 const useStyles = makeStyles((theme: Theme) => ({
   heroContainer: {
     display: 'flex',
     alignItems: 'center',
-    height: '100%',
+    height: '93vh',
     paddingTop: theme.spacing(6),
     paddingBottom: theme.spacing(6),
     color: theme.palette.primary.contrastText,
@@ -45,6 +46,19 @@ const useStyles = makeStyles((theme: Theme) => ({
     maxWidth: '50ch',
     fontSize: '0.9em',
     textShadow: '0px 0px 10px rgba(0,13,26,1)'
+  },
+  introContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    paddingTop: theme.spacing(6),
+    paddingBottom: theme.spacing(6),
+    fontSize: '1.25rem',
+    [theme.breakpoints.up('lg')]: {
+      fontSize: '1.5rem'
+    },
+    [theme.breakpoints.up('xl')]: {
+      fontSize: '1.75rem'
+    }
   }
 }));
 
@@ -60,9 +74,16 @@ export const LandingPage = () => {
               Species Inventory Management System
             </Typography>
             <Typography className={classes.heroSubtitle}>
-              Collaboratively manage fish and wildlife projects to help protect biodiversity in British Columbia.
+              Collaboratively manage fish and wildlife data and information to help protect biodiversity in British Columbia.
             </Typography>
             <LandingActions />
+          </Box>
+        </Container>
+      </Box>
+      <Box className={classes.introContainer}>
+        <Container maxWidth="xl">
+          <Box className={classes.heroContainerInner}>
+            <LandingIntro />
           </Box>
         </Container>
       </Box>

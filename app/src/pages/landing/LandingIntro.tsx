@@ -1,0 +1,40 @@
+import { Grid } from '@mui/material';
+import { QuestionAnswer } from './components/QuestionAnswer';
+
+export const LandingIntro = () => {
+  return (
+    <>
+      <Grid container spacing={5} justifyContent="space-between">
+        <Grid item xs={10} md={6} xl={4}>
+          <QuestionAnswer
+            title="What is the Species Inventory Management System?"
+            subtext="A space to manage fish and wildlife data with collaborators from multiple organizations.
+            Upload species observations, animal telemetry, and animal captures, among other information, 
+            and invite collaborators to do the same."
+          />
+        </Grid>
+        <Grid item xs={10} md={6} xl={4}>
+          <QuestionAnswer
+            title="Who can gain access?"
+            subtext="Staff, contractors, and partners of the Province who collect 
+            and manage fish and wildlife data. You must have an IDIR or BCeID to login."
+          />
+        </Grid>
+        <Grid item xs={10} md={6} xl={4}>
+          <QuestionAnswer
+            title="What's the benefit?"
+            subtext="Simple screens let teams organize ecological survey information in an intuitive way. Keep track of when,
+            where, and how you surveyed, and your findings, in a workspace that your whole team can access."
+          />
+        </Grid>
+        <Grid item xs={10} md={6} xl={4}>
+          <QuestionAnswer
+            title="How can I get started?"
+            subtext="Request access using an IDIR or BCeID. If you don't have either, you can request a Basic BCeID from bceid.ca. After gaining access, 
+            create a new Project or ask your team to invite you to an existing Project."
+          />
+        </Grid>
+      </Grid>
+    </>
+  );
+};
