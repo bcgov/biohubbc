@@ -1,4 +1,4 @@
-import { grey } from '@mui/material/colors';
+import grey from '@mui/material/colors/grey';
 import { createTheme } from '@mui/material/styles';
 import 'styles.scss';
 import 'styles/fonts.scss';
@@ -300,29 +300,41 @@ const appTheme = createTheme({
     MuiTable: {
       styleOverrides: {
         root: {
-          fontSize: '0.9rem',
+          fontSize: '0.875rem',
+          '& tr:last-of-type td': {
+            borderBottom: 'none'
+          },
+          '& thead': {
+            background: grey[50]
+          },
           '& th': {
             letterSpacing: '0.02rem',
             textTransform: 'uppercase',
             paddingTop: '12px',
-            paddingBottom: '12px'
+            paddingBottom: '12px',
+            height: '52px'
           },
-          '& tr:last-of-type td': {
-            borderBottom: 'none'
+          '& td': {
+            height: '52px'
           },
-          '& .MuiLink-root': {
-            fontFamily: 'inherit',
-            fontSize: 'inherit'
+          '& th:first-of-type, td:first-of-type': {
+            paddingLeft: '16px'
+          },
+          '& th:last-of-type, td:last-of-type': {
+            paddingRight: '16px'
           }
         }
       }
     },
     MuiTableCell: {
       styleOverrides: {
+        root: {
+          paddingRight: '8px',
+          paddingLeft: '8px'
+        },
         head: {
           fontSize: '0.875rem',
-          fontWeight: 700,
-          color: grey[600]
+          fontWeight: 700
         }
       }
     },

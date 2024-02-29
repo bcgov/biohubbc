@@ -129,14 +129,14 @@ const SurveyAnimals: React.FC = () => {
             variant="contained"
             startIcon={<Icon path={mdiCog} size={0.75} />}
             sx={{
-              m: -1
+              my: -1
             }}>
             Manage Animals
           </Button>
         </ProjectRoleGuard>
       </Toolbar>
       <Divider flexItem></Divider>
-      <Box p={3}>
+      <Box p={2}>
         {critterData?.length ? (
           <SurveyAnimalsTable
             animalData={critterData}
@@ -153,7 +153,7 @@ const SurveyAnimals: React.FC = () => {
             }}
           />
         ) : (
-          <NoSurveySectionData text={'No Marked or Known Animals'} paperVariant={'outlined'} />
+          <NoSurveySectionData text={'No Marked or Known Animals'} />
         )}
       </Box>
       <ComponentDialog
