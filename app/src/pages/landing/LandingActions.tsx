@@ -29,8 +29,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     gap: '0.5em'
   },
   heroButton: {
-    minWidth: '200px',
-    padding: '1.25em 1.75em',
+    minWidth: '175px',
+    padding: '1em 1.5em',
     color: theme.palette.primary.main,
     backgroundColor: '#fcba19',
     fontWeight: 700,
@@ -93,9 +93,6 @@ const LandingActions = () => {
     <Box className={classes.actionsContainer}>
       <UnAuthGuard>
         <>
-          <Typography>
-            To access this application, you must use a valid government-issued IDIR or BCeID account.
-          </Typography>
           <Box className={classes.heroActions}>
             <Button
               component="a"
@@ -108,7 +105,7 @@ const LandingActions = () => {
             </Button>
           </Box>
           <Typography>
-            Don't have an account? &zwnj;
+            You need a valid government-issued IDIR or BCeID account to log in. Don't have an account? &zwnj;
             <a
               className={classes.heroLink}
               title="Register a BCeID Account"

@@ -2,7 +2,7 @@ import { Typography } from '@mui/material';
 
 interface IQuestionAnswerProps {
   title: string;
-  subtext: JSX.Element | string
+  subtext: JSX.Element | string;
 }
 
 export const QuestionAnswer = (props: IQuestionAnswerProps) => {
@@ -11,7 +11,7 @@ export const QuestionAnswer = (props: IQuestionAnswerProps) => {
       <Typography variant="h2" mb={2} color="primary">
         {props.title}
       </Typography>
-      <Typography sx={{ fontSize: '0.8em' }} color='textSecondary'>
+      <Typography sx={{ fontSize: '0.8em' }} color="textSecondary">
         {props.subtext}
       </Typography>
     </>

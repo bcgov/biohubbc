@@ -1,4 +1,4 @@
-import { Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { QuestionAnswer } from './components/QuestionAnswer';
 
 export const LandingIntro = () => {
@@ -44,7 +44,18 @@ export const LandingIntro = () => {
             }
           />
         </Grid>
+        <Grid item xs={12} my={5}>
+          <Box maxWidth="100%" component="img" src="/assets/manage-observations.jpg" />
+        </Grid>
       </Grid>
+      <QuestionAnswer
+        title="Looking for more information?"
+        subtext={
+          <>
+            Contact <a href="mailto:biohub@gov.bc.ca">biohub@gov.bc.ca</a> to request a demo, ask questions, and learn more.
+          </>
+        }
+      />
     </>
   );
 };
