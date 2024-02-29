@@ -116,7 +116,7 @@ const SurveySpatialToolbar = (props: ISurveySptialToolbarProps) => {
               startIcon={<Icon path={mdiCog} size={0.75}></Icon>}
               endIcon={<Icon path={mdiChevronDown} size={0.75}></Icon>}
               sx={{
-                m: -1
+                my: -1
               }}>
               Manage
             </Button>

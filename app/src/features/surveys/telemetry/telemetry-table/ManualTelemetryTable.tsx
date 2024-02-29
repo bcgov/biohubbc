@@ -336,7 +336,8 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
         border: 'none',
         borderRadius: 0,
         '& .MuiDataGrid-columnHeaders': {
-          position: 'relative'
+          position: 'relative',
+          background: grey[50]
         },
         '& .MuiDataGrid-columnHeader:focus-within': {
           outline: 'none',

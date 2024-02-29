@@ -185,10 +185,7 @@ export function getCrittersFromSurvey(): RequestHandler {
       }
 
       const critterIds = surveyCritters.map((critter) => String(critter.critterbase_critter_id));
-      const result = await critterbaseService.filterCritters(
-        { critter_ids: { body: critterIds, negate: false } },
-        'detailed'
-      );
+      const result = await critterbaseService.getMultipleCrittersByIds(critterIds);
 
       const critterMap = new Map();
       for (const item of result) {

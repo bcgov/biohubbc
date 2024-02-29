@@ -5,6 +5,7 @@ import {
   GridColumnVisibilityModel,
   GridPaginationModel,
   GridRowId,
+  GridRowModes,
   GridRowModesModel,
   GridRowSelectionModel,
   GridSortModel,
@@ -621,8 +622,11 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     setStagedRows([...stagedRows, newRecord]);
 
     // Set edit mode for the new row
-    _muiDataGridApiRef.current.startRowEditMode({ id, fieldToFocus: 'wldtaxonomic_units' });
-  }, [_muiDataGridApiRef, stagedRows]);
+    setRowModesModel((current) => ({
+      ...current,
+      [id]: { mode: GridRowModes.Edit }
+    }));
+  }, [stagedRows]);
 
   /**
    * Transition all editable rows from edit mode to view mode.
@@ -657,9 +661,13 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     }
 
     // Transition all rows in edit mode to view mode
-    for (const id of editingIdsToSave) {
-      _muiDataGridApiRef.current.stopRowEditMode({ id });
-    }
+    setRowModesModel(() => {
+      const newModel: GridRowModesModel = {};
+      for (const id of editingIdsToSave) {
+        newModel[id] = { mode: GridRowModes.View };
+      }
+      return newModel;
+    });
 
     // Store ids of rows that were in edit mode
     setModifiedRowIds(editingIdsToSave);
@@ -676,10 +684,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    * Transition all rows tracked by `modifiedRowIds` to edit mode.
    */
   const discardChanges = useCallback(() => {
-    // Reset any rows in edit mode back to view mode
-    for (const id of modifiedRowIds) {
-      _muiDataGridApiRef.current.stopRowEditMode({ id });
-    }
     // Remove any rows from the modified rows array
     setModifiedRowIds([]);
     // Remove any newly created rows
@@ -687,8 +691,14 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     // Clear any validation errors
     setValidationModel({});
     // Reset row modes model to default (all rows in view mode)
-    setRowModesModel({});
-  }, [_muiDataGridApiRef, modifiedRowIds]);
+    setRowModesModel(() => {
+      const newModel: GridRowModesModel = {};
+      for (const id of modifiedRowIds) {
+        newModel[id] = { mode: GridRowModes.View, ignoreModifications: true };
+      }
+      return newModel;
+    });
+  }, [modifiedRowIds]);
 
   // True if the data grid contains at least 1 unsaved record
   const hasUnsavedChanges = modifiedRowIds.length > 0 || stagedRows.length > 0;

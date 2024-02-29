@@ -272,7 +272,6 @@ export type CbRouteKey = keyof typeof CbRoutes;
 
 export const CRITTERBASE_API_HOST = process.env.CB_API_HOST || ``;
 const CRITTER_ENDPOINT = '/critters';
-const FILTER_ENDPOINT = `${CRITTER_ENDPOINT}/filter`;
 const BULK_ENDPOINT = '/bulk';
 const SIGNUP_ENDPOINT = '/signup';
 const FAMILY_ENDPOINT = '/family';
@@ -386,8 +385,13 @@ export class CritterbaseService {
     return response.data;
   }
 
-  async filterCritters(data: IFilterCritters, format: 'default' | 'detailed' = 'default') {
-    const response = await this.axiosInstance.post(`${FILTER_ENDPOINT}?format=${format}`, data);
+  //TODO: DEPRECATED remove + remove tests
+  // async filterCritters(data: IFilterCritters, format: 'default' | 'detailed' = 'default') {
+  //   const response = await this.axiosInstance.post(`${FILTER_ENDPOINT}?format=${format}`, data);
+  //   return response.data;
+  // }
+  async getMultipleCrittersByIds(critter_ids: string[]) {
+    const response = await this.axiosInstance.post(CRITTER_ENDPOINT, { critter_ids });
     return response.data;
   }
 

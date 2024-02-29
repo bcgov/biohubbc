@@ -13,6 +13,7 @@ const defaultLog = getLogger('middleware/critterbase-proxy');
  */
 const proxyRoutes = [
   '/api/critterbase/signup',
+  '/api/critterbase/critters',
   '/api/critterbase/family',
   '/api/critterbase/family/:familyId',
   '/api/critterbase/lookups/:key',
