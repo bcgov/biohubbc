@@ -85,9 +85,7 @@ const EditProjectForm = (props: IEditProjectForm) => {
         <HorizontalSplitFormComponent
           title="Team Members"
           summary="Specify team members and their associated role for this project."
-          component={
-            <ProjectUserForm roles={codes?.project_roles ?? []} />
-          }
+          component={<ProjectUserForm roles={codes?.project_roles ?? []} />}
         />
 
         <Divider className={classes.sectionDivider} />
