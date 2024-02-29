@@ -187,7 +187,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
         </Typography>
       </Toolbar>
       <Divider></Divider>
-      <Box p={1}>
+      <Box p={2}>
         <Table className={classes.projectMembersTable}>
           <TableHead>
             <TableRow>
