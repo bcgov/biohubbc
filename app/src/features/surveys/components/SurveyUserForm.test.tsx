@@ -5,9 +5,9 @@ import { ICode } from 'interfaces/useCodesApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { fireEvent, render, waitFor, within } from 'test-helpers/test-utils';
-import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from './SurveyUserForm';
+import SurveyUserForm, { SurveyUserJobYupSchema } from './SurveyUserForm';
 
-const roles: ICode[] = [
+const mockJobs: ICode[] = [
   {
     id: 1,
     name: 'Pilot'
@@ -62,33 +62,35 @@ describe('SurveyUserForm', () => {
 
   it('renders correctly with default values', async () => {
     const authState = getMockAuthState({ base: SystemAdminAuthState });
+
+    const formikInitialValues = {
+      participants: [
+        {
+          system_user_id: 1,
+          user_identifier: 'identifier',
+          user_guid: '',
+          identity_source: 'IDIR',
+          record_end_date: '',
+          role_ids: [],
+          role_names: [],
+          email: 'user@email.com',
+          display_name: 'Test User',
+          agency: 'Business',
+          survey_job_id: 1,
+          survey_job_name: 'Pilot'
+        }
+      ]
+    }
+
     const { getByTestId, getByText } = render(
       <AuthStateContext.Provider value={authState}>
         <Formik
-          initialValues={SurveyUserJobFormInitialValues}
+          initialValues={formikInitialValues}
           validationSchema={SurveyUserJobYupSchema}
           validateOnBlur={true}
           validateOnChange={false}
           onSubmit={async () => {}}>
-          <SurveyUserForm
-            initialUsers={[
-              {
-                system_user_id: 1,
-                user_identifier: 'identifier',
-                user_guid: '',
-                identity_source: 'IDIR',
-                record_end_date: '',
-                role_ids: [],
-                role_names: [],
-                email: 'user@email.com',
-                display_name: 'Test User',
-                agency: 'Business',
-                survey_job_id: 1,
-                survey_job_name: 'Pilot'
-              }
-            ]}
-            jobs={roles}
-          />
+          <SurveyUserForm jobs={mockJobs} />
         </Formik>
       </AuthStateContext.Provider>
     );
@@ -101,15 +103,20 @@ describe('SurveyUserForm', () => {
 
   it('renders newly added users properly', async () => {
     const authState = getMockAuthState({ base: SystemAdminAuthState });
+
+    const formikInitialValues = {
+      participants: []
+    };
+
     const { getByTestId, getByText } = render(
       <AuthStateContext.Provider value={authState}>
         <Formik
-          initialValues={SurveyUserJobFormInitialValues}
+          initialValues={formikInitialValues}
           validationSchema={SurveyUserJobYupSchema}
           validateOnBlur={true}
           validateOnChange={false}
           onSubmit={async () => {}}>
-          <SurveyUserForm initialUsers={[]} jobs={roles} />
+          <SurveyUserForm jobs={mockJobs} />
         </Formik>
       </AuthStateContext.Provider>
     );
@@ -132,33 +139,33 @@ describe('SurveyUserForm', () => {
 
   it('renders removing a user', async () => {
     const authState = getMockAuthState({ base: SystemAdminAuthState });
+  
+    const formikInitialValues = [
+      {
+        system_user_id: 1,
+        user_identifier: 'identifier',
+        user_guid: '',
+        identity_source: 'IDIR',
+        record_end_date: '',
+        role_ids: [],
+        role_names: [],
+        email: 'user@email.com',
+        display_name: 'Test User',
+        agency: 'Business',
+        survey_job_id: 1,
+        survey_job_name: ''
+      }
+    ];
+
     const { getByTestId } = render(
       <AuthStateContext.Provider value={authState}>
         <Formik
-          initialValues={SurveyUserJobFormInitialValues}
+          initialValues={formikInitialValues}
           validationSchema={SurveyUserJobYupSchema}
           validateOnBlur={true}
           validateOnChange={false}
           onSubmit={async () => {}}>
-          <SurveyUserForm
-            initialUsers={[
-              {
-                system_user_id: 1,
-                user_identifier: 'identifier',
-                user_guid: '',
-                identity_source: 'IDIR',
-                record_end_date: '',
-                role_ids: [],
-                role_names: [],
-                email: 'user@email.com',
-                display_name: 'Test User',
-                agency: 'Business',
-                survey_job_id: 1,
-                survey_job_name: ''
-              }
-            ]}
-            jobs={roles}
-          />
+          <SurveyUserForm jobs={mockJobs} />
         </Formik>
       </AuthStateContext.Provider>
     );
