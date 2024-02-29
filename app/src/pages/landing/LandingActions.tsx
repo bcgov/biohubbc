@@ -29,8 +29,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     gap: '0.5em'
   },
   heroButton: {
-    minWidth: '120px',
-    padding: '0.75em 1.5em',
+    minWidth: '200px',
+    padding: '1.25em 1.75em',
     color: theme.palette.primary.main,
     backgroundColor: '#fcba19',
     fontWeight: 700,

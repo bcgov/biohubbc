@@ -11,12 +11,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   heroContainer: {
     display: 'flex',
     alignItems: 'center',
-    height: '93vh',
+    height: '80vh',
     paddingTop: theme.spacing(6),
     paddingBottom: theme.spacing(6),
     color: theme.palette.primary.contrastText,
     background: '#00438A linear-gradient(to bottom, #00438A, #00274D)',
-    backgroundImage: `url('/assets/sims-hero-banner.jpg')`,
+    backgroundImage: `url('/assets/golden-crowned-kinglet.jpg')`,
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',
@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   heroTitle: {
     maxWidth: '19ch',
-    fontSize: '2.25em',
+    fontSize: '2.5em',
     textShadow: '0px 0px 15px rgba(0,13,26,0.5)'
   },
   heroSubtitle: {
@@ -74,7 +74,8 @@ export const LandingPage = () => {
               Species Inventory Management System
             </Typography>
             <Typography className={classes.heroSubtitle}>
-              Collaboratively manage fish and wildlife data and information to help protect biodiversity in British Columbia.
+              Collaboratively manage fish and wildlife data and information to help protect biodiversity in British
+              Columbia.
             </Typography>
             <LandingActions />
           </Box>

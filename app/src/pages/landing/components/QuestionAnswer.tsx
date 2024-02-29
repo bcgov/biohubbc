@@ -2,7 +2,7 @@ import { Typography } from '@mui/material';
 
 interface IQuestionAnswerProps {
   title: string;
-  subtext: string;
+  subtext: JSX.Element | string
 }
 
 export const QuestionAnswer = (props: IQuestionAnswerProps) => {

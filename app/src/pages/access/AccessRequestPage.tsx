@@ -168,10 +168,8 @@ export const AccessRequestPage: React.FC = () => {
               <Box mt={3}>
                 <Typography variant="body1" color="textSecondary">
                   The Species Inventory Management System is intended for staff, contractors, and other partners who
-                  manage fish and wildlife data in collaboration with the Province. The application allows multiple
-                  organizations to collaboratively manage and securely share fish and wildlife data relating to species
-                  observations, animal telemetry, and animal captures. If you are instead looking to download data,
-                  please visit BiodiversityHub BC (coming soon).
+                  manage fish and wildlife data in collaboration with the Province. If you are instead looking to
+                  download data, please visit BiodiversityHub BC (coming soon).
                   <br />
                   <br />
                   Please briefly describe why you are requesting access and how you will be using the Species Inventory
