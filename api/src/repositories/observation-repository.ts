@@ -347,16 +347,18 @@ export class ObservationRepository extends BaseRepository {
    * Retrieves a single observation record
    *
    * @param {number} surveyId
+   * @param {number} surveyObservationId
    * @return {*}  {Promise<ObservationRecord[]>}
    * @memberof ObservationRepository
    */
-  async getSurveyObservationById(surveyObservationId: number): Promise<ObservationRecord> {
+  async getSurveyObservationById(surveyId: number, surveyObservationId: number): Promise<ObservationRecord> {
     const knex = getKnex();
     const query = knex
       .queryBuilder()
       .select('*')
       .from('survey_observation')
-      .where('survey_observation_id', surveyObservationId);
+      .where('survey_observation_id', surveyObservationId)
+      .andWhere('survey_id', surveyId)
 
     const response = await this.connection.knex(query, ObservationRecord);
 

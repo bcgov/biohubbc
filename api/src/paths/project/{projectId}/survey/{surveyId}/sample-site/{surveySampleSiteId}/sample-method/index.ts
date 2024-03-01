@@ -151,17 +151,18 @@ export function getSurveySampleMethodRecords(): RequestHandler {
       throw new HTTP400('Missing required param `surveySampleSiteId`');
     }
 
+    const surveySampleSiteId = Number(req.params.surveySampleSiteId);
+    const surveyId = Number(req.params.surveyId);
+
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const surveySampleSiteId = Number(req.params.surveySampleSiteId);
 
       await connection.open();
 
       const sampleMethodService = new SampleMethodService(connection);
 
-      // @TODO SIMSBIOHUB-494 audit
-      const result = await sampleMethodService.getSampleMethodsForSurveySampleSiteId(surveySampleSiteId);
+      const result = await sampleMethodService.getSampleMethodsForSurveySampleSiteId(surveyId, surveySampleSiteId);
 
       await connection.commit();
 

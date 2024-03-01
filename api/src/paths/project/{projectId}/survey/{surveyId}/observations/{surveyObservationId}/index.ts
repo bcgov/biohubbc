@@ -169,6 +169,7 @@ GET.apiDoc = {
  */
 export function getSurveyObservation(): RequestHandler {
   return async (req, res) => {
+    const surveyId = Number(req.params.surveyId);
     const surveyObservationId = Number(req.params.surveyObservationId);
 
     defaultLog.debug({ label: 'getSurveyObservation', surveyObservationId });
@@ -181,7 +182,7 @@ export function getSurveyObservation(): RequestHandler {
       const observationService = new ObservationService(connection);
 
       // @TODO SIMSBIOHUB-494 audit
-      const observationData = await observationService.getSurveyObservationById(surveyObservationId);
+      const observationData = await observationService.getSurveyObservationById(surveyId, surveyObservationId);
 
       return res.status(200).json(observationData);
     } catch (error) {

@@ -167,7 +167,6 @@ export function updateSurveyReportMetadata(): RequestHandler {
         );
 
         // Delete any existing attachment author records
-        // @TODO SIMSBIOHUB-494 audit
         await attachmentService.deleteSurveyReportAttachmentAuthors(Number(req.params.attachmentId));
 
         const promises = [];

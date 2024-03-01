@@ -300,7 +300,7 @@ export function deleteSurveySampleSiteRecord(): RequestHandler {
 
       const sampleLocationService = new SampleLocationService(connection);
 
-      await sampleLocationService.deleteSampleSiteRecord(surveySampleSiteId);
+      await sampleLocationService.deleteSampleSiteRecord(surveyId, surveySampleSiteId);
 
       await connection.commit();
 
