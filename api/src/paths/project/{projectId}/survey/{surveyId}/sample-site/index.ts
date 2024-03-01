@@ -13,8 +13,8 @@ import { PostSampleLocations, SampleLocationService } from '../../../../../../se
 import { getLogger } from '../../../../../../utils/logger';
 import {
   ensureCompletePaginationOptions,
-  getPaginationOptionsFromRequest,
-  getPaginationResponse
+  makePaginationOptionsFromRequest,
+  makePaginationResponse
 } from '../../../../../../utils/pagination';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/sample-site/');
@@ -220,7 +220,7 @@ export function getSurveySampleLocationRecords(): RequestHandler {
       await connection.open();
 
       const surveyId = Number(req.params.surveyId);
-      const paginationOptions = getPaginationOptionsFromRequest(req);
+      const paginationOptions = makePaginationOptionsFromRequest(req);
 
       const sampleLocationService = new SampleLocationService(connection);
       const sampleSites = await sampleLocationService.getSampleLocationsForSurveyId(
@@ -233,7 +233,7 @@ export function getSurveySampleLocationRecords(): RequestHandler {
 
       return res.status(200).json({
         sampleSites,
-        pagination: getPaginationResponse(sampleSitesTotalCount, paginationOptions)
+        pagination: makePaginationResponse(sampleSitesTotalCount, paginationOptions)
       });
     } catch (error) {
       defaultLog.error({ label: 'getSurveySampleLocationRecords', message: 'error', error });
