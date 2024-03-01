@@ -1,7 +1,8 @@
 import Typography from '@mui/material/Typography';
 import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
-import { TaxonomyContext } from 'contexts/taxonomyContext';
-import { useContext } from 'react';
+import { useTaxonomyContext } from 'hooks/useContext';
+import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
+import { useEffect, useState } from 'react';
 
 export interface ITaxonomyDataGridViewCellProps<DataGridType extends GridValidRowModel> {
   dataGridProps: GridRenderCellParams<DataGridType>;
@@ -20,15 +21,25 @@ const TaxonomyDataGridViewCell = <DataGridType extends GridValidRowModel>(
 ) => {
   const { dataGridProps } = props;
 
-  const taxonomyContext = useContext(TaxonomyContext);
+  const taxonomyContext = useTaxonomyContext();
+
+  const [taxon, setTaxon] = useState<ITaxonomy | null>(null);
+
+  useEffect(() => {
+    const response = taxonomyContext.getCachedSpeciesTaxonomyById(dataGridProps.value);
+
+    if (!response) {
+      return;
+    }
+
+    setTaxon(response);
+  }, [taxonomyContext, dataGridProps.value]);
 
   if (!dataGridProps.value) {
     return null;
   }
 
-  const response = taxonomyContext.getCachedSpeciesTaxonomyById(dataGridProps.value);
-
-  if (!response) {
+  if (!taxon) {
     return null;
   }
 
@@ -48,7 +59,7 @@ const TaxonomyDataGridViewCell = <DataGridType extends GridValidRowModel>(
           }
         }
       }}>
-      {response.commonName ? (
+      {taxon.commonName ? (
         <>
           <Typography
             component="span"
@@ -60,12 +71,12 @@ const TaxonomyDataGridViewCell = <DataGridType extends GridValidRowModel>(
                 textTransform: 'capitalize'
               }
             }}>
-            {response.commonName}
+            {taxon.commonName}
           </Typography>
-          &nbsp;(<em>{response.scientificName}</em>)
+          &nbsp;(<em>{taxon.scientificName}</em>)
         </>
       ) : (
-        <em>{response.scientificName}</em>
+        <em>{taxon.scientificName}</em>
       )}
     </Typography>
   );

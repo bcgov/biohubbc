@@ -16,6 +16,7 @@ const SpeciesCard = (props: ISpeciesCard) => {
               sx={{
                 display: 'inline-block',
                 fontWeight: 700,
+                whiteSpace: 'nowrap',
                 '&::first-letter': {
                   textTransform: 'capitalize'
                 }
