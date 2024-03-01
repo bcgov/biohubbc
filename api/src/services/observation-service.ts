@@ -45,13 +45,14 @@ const observationCSVColumnValidator: IXLSXCSVValidator = {
   }
 };
 
+export interface InsertMeasurement {
+  id: string;
+  value: string | number;
+}
+
 export type InsertUpdateObservationsWithMeasurements = {
   standardColumns: InsertObservation | UpdateObservation;
-  measurementColumns: {
-    id: string;
-    measurement_id: number;
-    value: string | number;
-  }[];
+  measurementColumns: InsertMeasurement[];
 };
 
 export type ObservationSupplementaryData = {
@@ -474,9 +475,8 @@ export class ObservationService extends DBService {
 
           if (data) {
             return {
-              count: Number(row['COUNT']),
-              measurement_id: 1,
-              value: String(data)
+              id: String(measurement?.taxon_measurement_id),
+              value: data
             };
           }
         })
