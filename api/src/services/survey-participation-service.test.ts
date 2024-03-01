@@ -182,7 +182,7 @@ describe('SurveyParticipationService', () => {
     });
   });
 
-  describe('updateSurveyParticipant', () => {
+  describe('updateSurveyParticipantJob', () => {
     it('succeeds with valid data', async () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyParticipationService(dbConnection);
@@ -192,9 +192,9 @@ describe('SurveyParticipationService', () => {
         surveyJobName: 'name'
       };
 
-      const repoStub = sinon.stub(SurveyParticipationRepository.prototype, 'updateSurveyParticipant').resolves();
+      const repoStub = sinon.stub(SurveyParticipationRepository.prototype, 'updateSurveyParticipantJob').resolves();
 
-      const response = await service.updateSurveyParticipant(data.surveyParticipationId, data.surveyJobName);
+      const response = await service.updateSurveyParticipantJob(data.surveyParticipationId, data.surveyJobName);
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(undefined);

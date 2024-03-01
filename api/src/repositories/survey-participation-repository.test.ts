@@ -119,7 +119,7 @@ describe('SurveyParticipationRepository', () => {
     });
   });
 
-  describe('updateSurveyParticipant', () => {
+  describe('updateSurveyParticipantJob', () => {
     describe('with job name', () => {
       it('should return result', async () => {
         const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
@@ -127,7 +127,7 @@ describe('SurveyParticipationRepository', () => {
 
         const repository = new SurveyParticipationRepository(dbConnection);
 
-        const response = await repository.updateSurveyParticipant(1, 'string');
+        const response = await repository.updateSurveyParticipantJob(1, 'string');
 
         expect(response).to.eql(undefined);
       });
@@ -139,7 +139,7 @@ describe('SurveyParticipationRepository', () => {
         const repository = new SurveyParticipationRepository(dbConnection);
 
         try {
-          await repository.updateSurveyParticipant(1, 'string');
+          await repository.updateSurveyParticipantJob(1, 'string');
           expect.fail();
         } catch (error) {
           expect((error as Error).message).to.equal('Failed to update survey participant');
