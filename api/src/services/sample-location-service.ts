@@ -77,6 +77,8 @@ export class SampleLocationService extends DBService {
    */
   async deleteSampleSiteRecord(surveySampleSiteId: number): Promise<SampleSiteRecord> {
     const sampleMethodService = new SampleMethodService(this.connection);
+    const sampleBlockService = new SampleBlockService(this.connection);
+    const sampleStratumService = new SampleStratumService(this.connection);
 
     // Delete all methods associated with the sample location
     const existingSampleMethods = await sampleMethodService.getSampleMethodsForSurveySampleSiteId(surveySampleSiteId);
@@ -84,6 +86,20 @@ export class SampleLocationService extends DBService {
       await sampleMethodService.deleteSampleMethodRecord(item.survey_sample_method_id);
     }
 
+    // Delete all blocks associated with the sample location
+    const existingSampleBlocks = await sampleBlockService.getSampleBlocksForSurveySampleSiteId(surveySampleSiteId);
+    console.log(existingSampleBlocks)
+
+    await sampleBlockService.deleteSampleBlockRecords(existingSampleBlocks.map((item) => item.survey_sample_block_id));
+
+    // Delete all stratums associated with a sample location
+    const existingSampleStratums = await sampleStratumService.getSampleStratumsForSurveySampleSiteId(surveySampleSiteId);
+
+    await sampleStratumService.deleteSampleStratumRecords(
+      existingSampleStratums.map((item) => item.survey_sample_stratum_id)
+    );
+
+    // Delete the site itself
     return this.sampleLocationRepository.deleteSampleSiteRecord(surveySampleSiteId);
   }
 

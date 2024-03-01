@@ -68,6 +68,12 @@ describe('SampleLocationService', () => {
             survey_sample_site_id: 1,
             survey_block_id: 1
           }
+        ],
+        stratums: [
+          {
+            survey_sample_site_id: 1,
+            survey_stratum_id: 1
+          }
         ]
       };
 
@@ -138,12 +144,31 @@ describe('SampleLocationService', () => {
       const mockDBConnection = getMockDBConnection();
       const service = new SampleLocationService(mockDBConnection);
 
+      // Methods
       const getSampleMethodsForSurveySampleSiteIdStub = sinon
         .stub(SampleMethodService.prototype, 'getSampleMethodsForSurveySampleSiteId')
         .resolves([{ survey_sample_method_id: 1 } as any]);
 
       const deleteSampleMethodRecordStub = sinon
         .stub(SampleMethodService.prototype, 'deleteSampleMethodRecord')
+        .resolves();
+
+      // Blocks
+      const getSampleBlocksForSurveySampleSiteIdStub = sinon
+        .stub(SampleBlockService.prototype, 'getSampleBlocksForSurveySampleSiteId')
+        .resolves([{ survey_sample_block_id: 1 } as any]);
+
+      const deleteSampleBlockRecordsStub = sinon
+        .stub(SampleBlockService.prototype, 'deleteSampleBlockRecords')
+        .resolves();
+
+      // Stratums
+      const getSampleStratumsForSurveyStratumIdStub = sinon
+        .stub(SampleStratumService.prototype, 'getSampleStratumsForSurveyStratumId')
+        .resolves([{ survey_sample_stratum_id: 1 } as any]);
+
+      const deleteSampleStratumRecordsStub = sinon
+        .stub(SampleStratumService.prototype, 'deleteSampleStratumRecords')
         .resolves();
 
       sinon.stub(SampleLocationRepository.prototype, 'deleteSampleSiteRecord').resolves({
@@ -161,6 +186,12 @@ describe('SampleLocationService', () => {
       });
 
       const { survey_sample_site_id } = await service.deleteSampleSiteRecord(1);
+
+      expect(getSampleBlocksForSurveySampleSiteIdStub).to.be.calledOnceWith(1);
+      expect(deleteSampleBlockRecordsStub).to.be.calledOnceWith([1]);
+
+      expect(getSampleStratumsForSurveyStratumIdStub).to.be.calledOnceWith(1);
+      expect(deleteSampleStratumRecordsStub).to.be.calledOnceWith([1]);
 
       expect(survey_sample_site_id).to.be.eq(1);
       expect(getSampleMethodsForSurveySampleSiteIdStub).to.be.calledOnceWith(1);

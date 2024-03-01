@@ -185,13 +185,6 @@ export class SampleStratumRepository extends BaseRepository {
 
     const response = await this.connection.knex(queryBuilder, SampleStratumRecord);
 
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to delete sample stratum', [
-        'sampleStratumRepository->deleteSampleStratumRecord',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
     return response.rows;
   }
 
