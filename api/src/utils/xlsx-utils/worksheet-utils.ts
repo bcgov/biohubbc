@@ -313,51 +313,63 @@ export function validateCsvFile(
   return true;
 }
 
+export interface IMeasurementDataToValidate {
+  tsn: string;
+  measurement_name: string;
+  measurement_value: string | number;
+}
+
+export function validateMeasurements(
+  data: IMeasurementDataToValidate[],
+  tsnMeasurementMap: TsnMeasurementMap
+): boolean {
+  return data.every((item) => {
+    const measurements = tsnMeasurementMap[item.tsn];
+    if (measurements) {
+      // only validate if the column has data
+      if (data) {
+        // find the correct measurement
+        if (measurements.qualitative.length > 0) {
+          const measurement = measurements.qualitative.find(
+            (measurement) => measurement.measurement_name.toLowerCase() === item.measurement_name.toLowerCase()
+          );
+          if (measurement) {
+            return isQualitativeValueValid(item.measurement_value, measurement);
+          }
+        }
+
+        if (measurements.quantitative.length > 0) {
+          const measurement = measurements.quantitative.find(
+            (measurement) => measurement.measurement_name.toLowerCase() === item.measurement_name.toLowerCase()
+          );
+          if (measurement) {
+            return isQuantitativeValueValid(Number(item.measurement_value), measurement);
+          }
+        }
+        // Has measurements for tsn
+        // Has data but no matches found, return false
+        return false;
+      } else {
+        return true;
+      }
+    }
+    return false;
+  });
+}
+
 export function validateCsvMeasurementColumns(
   rows: Record<string, any>[],
   measurementColumns: string[],
   tsnMeasurementMap: TsnMeasurementMap
 ): boolean {
-  console.log('VALIDATING THE MEASUREMENT COLUMNS');
-  console.log(`Rows to validate: ${rows.length}`);
-  console.log(`Columns to validate: ${measurementColumns.length}`);
-  return rows.every((row) => {
-    // Fetch the TSN of the row we are validating
-    const tsn = String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']);
-    // for reach measurement column found
-    // validate data against taxon measurements collected from Critter Base
-    return measurementColumns.every((mColumn) => {
-      const data = row[mColumn];
-      const measurements = tsnMeasurementMap[tsn];
-
-      if (measurements) {
-        // only validate if the column has data
-        if (data) {
-          // find the correct measurement
-          if (measurements.qualitative.length > 0) {
-            console.log('Has Qualitative');
-            const measurement = measurements.qualitative.find(
-              (measurement) => measurement.measurement_name.toLowerCase() === mColumn.toLowerCase()
-            );
-            if (measurement) {
-              return isQualitativeValueValid(data, measurement);
-            }
-          }
-
-          if (measurements.quantitative.length > 0) {
-            const measurement = measurements.quantitative.find(
-              (measurement) => measurement.measurement_name.toLowerCase() === mColumn.toLowerCase()
-            );
-            if (measurement) {
-              return isQuantitativeValueValid(Number(data), measurement);
-            }
-          }
-        } else {
-          return true;
-        }
-      }
-    });
+  const mappedData: IMeasurementDataToValidate[] = rows.flatMap((row) => {
+    return measurementColumns.map((mColumn) => ({
+      tsn: String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']),
+      measurement_name: mColumn,
+      measurement_value: row[mColumn]
+    }));
   });
+  return validateMeasurements(mappedData, tsnMeasurementMap);
 }
 
 export function isQuantitativeValueValid(value: number, measurement: CBQuantitativeMeasurementTypeDefinition): boolean {
