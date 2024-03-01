@@ -266,8 +266,6 @@ const SurveyMap = (props: ISurveyMapProps) => {
     })
   ];
 
-  // console.log('staticlayers:', staticLayers)
-
   return (
     <>
       {props.isLoading ? (
