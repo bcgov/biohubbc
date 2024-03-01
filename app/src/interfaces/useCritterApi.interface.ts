@@ -15,15 +15,15 @@ type ILocationResponse = {
   region_env_id: string | null;
   region_nr_id: string | null;
   wmu_id: string | null;
-  region_env_name: string | null;
-  region_nr_name: string | null;
-  wmu_name: string | null;
+  region_env_name: string | null; // Deprecated
+  region_nr_name: string | null; // Deprecated
+  wmu_name: string | null; // Deprecated
 };
 
 type ICaptureResponse = {
   capture_id: string;
-  capture_location_id: string | null;
-  release_location_id: string | null;
+  capture_location_id: string | null; // Deprecated -> Now included in capture_location
+  release_location_id: string | null; // Deprecated -> Now included in release_location
   capture_timestamp: string;
   release_timestamp: string | null;
   capture_comment: string | null;
@@ -106,19 +106,21 @@ type IFamilyChildResponse = {
 
 export type ICritterDetailedResponse = {
   critter_id: string;
-  //taxon_id: string;
+  taxon_id: string; // Deprecated
+  //itis_tsn: number; -> New
+  //itis_scientific_name: string -> New
   wlh_id: string | null;
   animal_id: string | null;
   sex: string;
   responsible_region_nr_id: string;
-  create_user: string;
-  update_user: string;
-  create_timestamp: string;
-  update_timestamp: string;
+  create_user: string; // Deprecated
+  update_user: string; // Deprecated
+  create_timestamp: string; // Deprecated
+  update_timestamp: string; // Deprecated
   critter_comment: string;
-  taxon: string;
-  responsible_region: string;
-  mortality_timestamp: string | null;
+  taxon: string; // Deprecated
+  responsible_region: string; // Deprecated
+  mortality_timestamp: string | null; // Deprecated
   collection_units: ICollectionUnitResponse[];
   mortality: IMortalityResponse[];
   capture: ICaptureResponse[];
@@ -136,9 +138,16 @@ export interface ICritterSimpleResponse {
   wlh_id: string;
   animal_id: string;
   sex: string;
-  taxon: string;
-  collection_units: ICollectionUnitResponse[];
-  mortality_timestamp?: string;
+  taxon: string; // Deprecated
+  //itis_tsn: number; -> New
+  //itis_scientific_name: string -> New
+  /**
+   * These two properties are available in the detailed critter response.
+   * Business rules allowed multiple mortality records.
+   * mortality_timestamp == mortality[0].mortality_timestamp
+   */
+  collection_units: ICollectionUnitResponse[]; // Deprecated - This can come back if needed though
+  mortality_timestamp?: string; // Deprecated - This can comeback if needed through.
 }
 
 /**

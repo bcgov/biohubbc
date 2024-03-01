@@ -17,7 +17,7 @@ export const transformCritterbaseAPIResponseToForm = (existingCritter: IDetailed
   return {
     general: {
       wlh_id: existingCritter.wlh_id ?? '',
-      //taxon_id: existingCritter.taxon_id,
+      taxon_id: existingCritter.taxon_id,
       animal_id: existingCritter.animal_id ?? '',
       sex: existingCritter.sex as AnimalSex,
       taxon_name: existingCritter.taxon,

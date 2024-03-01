@@ -6,7 +6,6 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { SurveySectionFullPageLayout } from 'features/surveys/components/SurveySectionFullPageLayout';
 import { FieldArray, FieldArrayRenderProps, Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useQuery } from 'hooks/useQuery';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
@@ -32,10 +31,17 @@ export const SurveyAnimalsPage = () => {
   const { cid: survey_critter_id } = useQuery();
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const bhApi = useBiohubApi();
-  const cbApi = useCritterbaseApi();
+  //const cbApi = useCritterbaseApi();
   const telemetryApi = useTelemetryApi();
   const dialogContext = useContext(DialogContext);
   const { surveyId, projectId, artifactDataLoader } = useContext(SurveyContext);
+
+  /**
+   * On click of the critter inside the AnimalList component.
+   * Query the detailed Critter and generate default formik values. (critterAsFormikValues)
+   * Pass to AddEditAnimal component.
+   * await cbApi.critters.getDetailedCritter()
+   */
 
   const {
     data: critterData,
@@ -67,14 +73,7 @@ export const SurveyAnimalsPage = () => {
     };
   }, []);
 
-  // const foundCritter = useMemo(() => {
-  //   const critter = critterData?.find(
-  //     (critter: IDetailedCritterWithInternalId) => Number(survey_critter_id) === Number(critter.survey_critter_id)
-  //   );
-  //   return critter;
-  // }, [survey_critter_id, critterData]);
-
-  const critterAsFormikValues = useMemo(async () => {
+  const critterAsFormikValues = useMemo(() => {
     const existingCritter = critterData?.find(
       (critter: IDetailedCritterWithInternalId) => Number(survey_critter_id) === Number(critter.survey_critter_id)
     );
@@ -83,9 +82,7 @@ export const SurveyAnimalsPage = () => {
       return defaultFormValues;
     }
 
-    const detailedCritter = await cbApi.critters.getDetailedCritter(existingCritter.critter_id);
-
-    const animal = transformCritterbaseAPIResponseToForm(detailedCritter);
+    const animal = transformCritterbaseAPIResponseToForm(existingCritter);
     const crittersDeployments = deploymentData?.filter((a) => a.critter_id === existingCritter.critter_id);
     let deployments: IAnimalTelemetryDevice[] = [];
     if (crittersDeployments) {
@@ -284,7 +281,7 @@ export const SurveyAnimalsPage = () => {
         validateOnBlur={false}
         validateOnChange={true}
         onSubmit={async (values, actions) => {
-          const status = await handleCritterSave(await values, ANIMAL_FORM_MODE.EDIT);
+          const status = await handleCritterSave(values, ANIMAL_FORM_MODE.EDIT);
           actions.setStatus(status);
         }}>
         <SurveySectionFullPageLayout
