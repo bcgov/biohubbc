@@ -1,15 +1,16 @@
 import { Chip, Stack, Typography } from '@mui/material';
 
 interface ISpeciesCard {
-  name: string;
+  commonName: string | null;
   scientificName: string;
   tsn: number;
 }
+
 const SpeciesCard = (props: ISpeciesCard) => {
   return (
     <Stack flexDirection="row" justifyContent="space-between" width="100%">
       <Typography component="span" variant="body1">
-        {props.name ? (
+        {props.commonName ? (
           <>
             <Typography
               component="strong"
@@ -21,7 +22,7 @@ const SpeciesCard = (props: ISpeciesCard) => {
                   textTransform: 'capitalize'
                 }
               }}>
-              {props.name}
+              {props.commonName}
             </Typography>
             &nbsp;(<em>{props.scientificName}</em>)
           </>
