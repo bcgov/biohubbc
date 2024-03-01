@@ -1,4 +1,4 @@
-import { AxiosInstance, CancelTokenSource } from 'axios';
+import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { GeoJsonProperties } from 'geojson';
 import { ISpatialData, IUploadObservationSubmissionResponse } from 'interfaces/useDwcaApi.interface';
 
@@ -16,7 +16,7 @@ const useDwcaApi = (axios: AxiosInstance) => {
    * @param {number} surveyId
    * @param {File} file
    * @param {CancelTokenSource} [cancelTokenSource]
-   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<string[]>}
    */
   const uploadObservationSubmission = async (
@@ -24,7 +24,7 @@ const useDwcaApi = (axios: AxiosInstance) => {
     surveyId: number,
     file: File,
     cancelTokenSource?: CancelTokenSource,
-    onProgress?: (progressEvent: ProgressEvent) => void
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
   ): Promise<IUploadObservationSubmissionResponse> => {
     const req_message = new FormData();
 

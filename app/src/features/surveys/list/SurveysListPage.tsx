@@ -73,7 +73,19 @@ const SurveysListPage = () => {
       flex: 1,
       disableColumnMenu: true,
       sortable: false,
-      renderCell: (params) => <span>{params.value.join(', ')}</span>
+      renderCell: (params) => (
+        <Typography
+          component="span"
+          variant="body2"
+          sx={{
+            display: 'inline-block',
+            '&::first-letter': {
+              textTransform: 'capitalize'
+            }
+          }}>
+          {params.value.join(', ')}
+        </Typography>
+      )
     }
   ];
 
