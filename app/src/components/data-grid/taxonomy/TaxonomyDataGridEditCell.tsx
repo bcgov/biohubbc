@@ -1,4 +1,3 @@
-import { Box } from '@mui/system';
 import { GridRenderEditCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import AsyncAutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AsyncAutocompleteDataGridEditCell';
 import { IAutocompleteDataGridOption } from 'components/data-grid/autocomplete/AutocompleteDataGrid.interface';
@@ -85,15 +84,13 @@ const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel, ValueT
       getCurrentOption={getCurrentOption}
       getOptions={getOptions}
       error={props.error}
-      renderOption={(renderProps, renderOption) => {
+      renderOption={(renderOption) => {
         return (
-          <Box component="li" {...renderProps} key={renderOption.value}>
-            <SpeciesCard
-              tsn={renderOption.value as number}
-              scientificName={renderOption.label}
-              commonName={renderOption.subtext || null}
-            />
-          </Box>
+          <SpeciesCard
+            tsn={renderOption.value as number}
+            scientificName={renderOption.label}
+            commonName={renderOption.subtext || null}
+          />
         );
       }}
     />
