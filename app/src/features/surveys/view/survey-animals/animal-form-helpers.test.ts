@@ -16,7 +16,7 @@ describe('animal form helpers', () => {
       const detailedResponse: IDetailedCritterWithInternalId = {
         survey_critter_id: 1,
         critter_id: 'c8601a4a-3946-4d1a-8c3f-a07088112284',
-        taxon_id: '93ced109-d806-4851-90d7-064951cfc4f5',
+        itis_tsn: '93ced109-d806-4851-90d7-064951cfc4f5',
         wlh_id: 'abc',
         animal_id: 'def',
         sex: 'Male',
@@ -26,7 +26,7 @@ describe('animal form helpers', () => {
         create_timestamp: '2022-02-02',
         update_timestamp: '2022-02-02',
         critter_comment: '',
-        taxon: 'Caribou',
+        itis_scientific_name: 'Caribou',
         responsible_region: 'Montana',
         mortality_timestamp: null,
         collection_units: [
@@ -175,7 +175,7 @@ describe('animal form helpers', () => {
       expect(result.general.critter_id).toBe('c8601a4a-3946-4d1a-8c3f-a07088112284');
       expect(result.general.sex).toBe('Male');
       expect(result.general.animal_id).toBe('def');
-      expect(result.general.taxon_id).toBe('93ced109-d806-4851-90d7-064951cfc4f5');
+      expect(result.general.itis_tsn).toBe('93ced109-d806-4851-90d7-064951cfc4f5');
       expect(result.captures.length).toBe(1);
       expect(result.markings.length).toBe(1);
       expect(result.mortality.length).toBe(1);
@@ -267,9 +267,9 @@ describe('animal form helpers', () => {
       const initialFormValues: IAnimal = {
         general: {
           wlh_id: 'wlh-a',
-          taxon_id: '',
+          itis_tsn: '',
           animal_id: '',
-          taxon_name: undefined,
+          itis_scientific_name: undefined,
           sex: undefined,
           critter_id: undefined
         },
@@ -288,9 +288,9 @@ describe('animal form helpers', () => {
 
       const currentFormValues: IAnimal = {
         general: {
-          taxon_id: '',
+          itis_tsn: '',
           animal_id: '',
-          taxon_name: undefined,
+          itis_scientific_name: undefined,
           wlh_id: 'wlh-b',
           sex: undefined,
           critter_id: undefined

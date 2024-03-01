@@ -1,6 +1,7 @@
 import { GridRenderEditCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import AsyncAutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AsyncAutocompleteDataGridEditCell';
 import { IAutocompleteDataGridOption } from 'components/data-grid/autocomplete/AutocompleteDataGrid.interface';
+import SpeciesCard from 'components/species/components/SpeciesCard';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTaxonomyContext } from 'hooks/useContext';
 import debounce from 'lodash-es/debounce';
@@ -67,7 +68,8 @@ const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel, ValueT
           const response = await biohubApi.taxonomy.searchSpeciesByTerms([searchTerm]);
           const options = response.map((item) => ({
             value: item.tsn as ValueType,
-            label: item.commonName ? `${item.commonName} (${item.scientificName})` : item.scientificName
+            label: item.scientificName,
+            subtext: item.commonName || undefined
           }));
           onSearchResults(options);
         },
@@ -82,6 +84,15 @@ const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel, ValueT
       getCurrentOption={getCurrentOption}
       getOptions={getOptions}
       error={props.error}
+      renderOption={(renderOption) => {
+        return (
+          <SpeciesCard
+            tsn={renderOption.value as number}
+            scientificName={renderOption.label}
+            commonName={renderOption.subtext || null}
+          />
+        );
+      }}
     />
   );
 };

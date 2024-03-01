@@ -8,4 +8,5 @@
 export interface IAutocompleteDataGridOption<ValueType extends string | number> {
   value: ValueType;
   label: string;
+  subtext?: string;
 }
