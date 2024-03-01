@@ -1,5 +1,6 @@
 import { gpx, kml } from '@tmcw/togeojson';
 import bbox from '@turf/bbox';
+import truncate from '@turf/truncate';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { BBox, Feature, GeoJsonProperties, Geometry } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
@@ -58,6 +59,9 @@ export const parseShapeFile = async (file: File): Promise<Feature[]> => {
           } else {
             features = geojson.features;
           }
+
+          // Truncate lat/lng decimal precision to 6 decimal places (111 mm precision at equator).
+          features.forEach((item) => truncate<Feature<any, any>>(item, { precision: 6, coordinates: 3, mutate: true }));
 
           // Ensure each Feature has a non-null ID
           // This will allow the map to re render newly uploaded features properly
@@ -121,6 +125,9 @@ export const handleGPXUpload = async (file: File) => {
     const sanitizedGeoJSON: Feature[] = [];
     geoJson.features.forEach((feature: Feature) => {
       if (feature.geometry) {
+        // Truncate lat/lng decimal precision to 6 decimal places (111 mm precision at equator).
+        truncate<Feature<any, any>>(feature, { precision: 6, coordinates: 3, mutate: true });
+
         sanitizedGeoJSON.push(feature);
       }
     });
@@ -152,6 +159,9 @@ export const handleKMLUpload = async (file: File) => {
   const sanitizedGeoJSON: Feature[] = [];
   geojson.features.forEach((feature: Feature) => {
     if (feature.geometry) {
+      // Truncate lat/lng decimal precision to 6 decimal places (111 mm precision at equator).
+      truncate<Feature<any, any>>(feature, { precision: 6, coordinates: 3, mutate: true });
+
       sanitizedGeoJSON.push(feature);
     }
   });

@@ -140,3 +140,77 @@ export interface ICritterSimpleResponse {
   collection_units: ICollectionUnitResponse[];
   mortality_timestamp?: string;
 }
+
+/**
+ * A Critterbase quantitative measurement.
+ */
+export type CBQuantitativeMeasurement = {
+  event_id: string;
+  measurement_quantitative_id: string;
+  taxon_measurement_id: string;
+  value: number;
+  measurement_comment: string;
+  measured_timestamp: string;
+};
+
+/**
+ * A Critterbase qualitative measurement value.
+ */
+export type CBQualitativeMeasurement = {
+  event_id: string;
+  measurement_qualitative_id: string;
+  taxon_measurement_id: string;
+  qualitative_option_id: string;
+  measurement_comment: string;
+  measured_timestamp: string;
+};
+
+/**
+ * Any Critterbase measurement value.
+ */
+export type CBMeasurementValue = CBQuantitativeMeasurement | CBQualitativeMeasurement;
+
+/**
+ * A Critterbase qualitative measurement unit.
+ */
+export type CBMeasurementUnit = 'millimeter' | 'centimeter' | 'meter' | 'milligram' | 'gram' | 'kilogram';
+
+/**
+ * A Critterbase quantitative measurement type definition.
+ */
+export type CBQuantitativeMeasurementTypeDefinition = {
+  itis_tsn: number | null;
+  taxon_measurement_id: string;
+  measurement_name: string;
+  measurement_desc: string | null;
+  min_value: number | null;
+  max_value: number | null;
+  unit: CBMeasurementUnit | null;
+};
+
+/**
+ * A Critterbase qualitative measurement option definition (ie. drop-down option).
+ */
+export type CBQualitativeOption = {
+  taxon_measurement_id: string;
+  qualitative_option_id: string;
+  option_label: string;
+  option_value: number;
+  option_desc: string | null;
+};
+
+/**
+ * A Critterbase qualitative measurement type definition.
+ */
+export type CBQualitativeMeasurementTypeDefinition = {
+  itis_tsn: number | null;
+  taxon_measurement_id: string;
+  measurement_name: string;
+  measurement_desc: string | null;
+  options: CBQualitativeOption[];
+};
+
+/**
+ * Any Critterbase measurement type definition.
+ */
+export type CBMeasurementType = CBQuantitativeMeasurementTypeDefinition | CBQualitativeMeasurementTypeDefinition;

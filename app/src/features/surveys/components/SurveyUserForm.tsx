@@ -4,6 +4,7 @@ import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Collapse from '@mui/material/Collapse';
+import grey from '@mui/material/colors/grey';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import AlertBar from 'components/alert/AlertBar';
@@ -196,13 +197,23 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
           )}
           renderOption={(renderProps, renderOption) => {
             return (
-              <Box component="li" {...renderProps} key={renderOption.system_user_id}>
-                <UserCard
-                  name={renderOption.display_name}
-                  email={renderOption.email}
-                  agency={renderOption.agency}
-                  type={renderOption.identity_source}
-                />
+              <Box
+                component="li"
+                sx={{
+                  '& + li': {
+                    borderTop: '1px solid' + grey[300]
+                  }
+                }}
+                key={renderOption.system_user_id}
+                {...renderProps}>
+                <Box py={0.5} width="100%">
+                  <UserCard
+                    name={renderOption.display_name}
+                    email={renderOption.email}
+                    agency={renderOption.agency}
+                    type={renderOption.identity_source}
+                  />
+                </Box>
               </Box>
             );
           }}

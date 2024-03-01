@@ -1,8 +1,9 @@
-import { IObservationRecordWithSamplingData, ISupplementaryObservationData } from 'contexts/observationsTableContext';
+import { ISupplementaryObservationData } from 'contexts/observationsTableContext';
 import { ApiPaginationResponseParams } from 'types/misc';
+import { IObservationRecordWithSamplingDataWithEventsWithAttributes } from '../contexts/observationsTableContext';
 
 export interface IGetSurveyObservationsResponse {
-  surveyObservations: IObservationRecordWithSamplingData[];
+  surveyObservations: IObservationRecordWithSamplingDataWithEventsWithAttributes[];
   supplementaryObservationData: ISupplementaryObservationData;
   pagination: ApiPaginationResponseParams;
 }

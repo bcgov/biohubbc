@@ -5,7 +5,7 @@ import { grey } from '@mui/material/colors';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import axios, { CancelTokenSource } from 'axios';
+import axios, { AxiosProgressEvent, CancelTokenSource } from 'axios';
 import FileUploadItemErrorDetails from 'components/file-upload/FileUploadItemErrorDetails';
 import FileUploadItemSubtext from 'components/file-upload/FileUploadItemSubtext';
 import { APIError } from 'hooks/api/useAxios';
@@ -35,7 +35,7 @@ export interface IUploadFile {
 export type IUploadHandler<T = any> = (
   file: File,
   cancelToken: CancelTokenSource,
-  handleFileUploadProgress: (progressEvent: ProgressEvent) => void
+  handleFileUploadProgress: (progressEvent: AxiosProgressEvent) => void
 ) => Promise<T>;
 
 export type IFileHandler = (file: File | null) => void;
@@ -195,13 +195,13 @@ const FileUploadItem = (props: IFileUploadItemProps) => {
       return;
     }
 
-    const handleFileUploadProgress = (progressEvent: ProgressEvent) => {
+    const handleFileUploadProgress = (progressEvent: AxiosProgressEvent) => {
       if (!isMounted()) {
         // component is unmounted, don't perform any state changes when the upload request emits progress
         return;
       }
 
-      setProgress(Math.round((progressEvent.loaded / progressEvent.total) * 100));
+      setProgress(Math.round((progressEvent.loaded / (progressEvent.total || file.size)) * 100));
 
       if (progressEvent.loaded === progressEvent.total) {
         setStatus(UploadFileStatus.FINISHING_UPLOAD);

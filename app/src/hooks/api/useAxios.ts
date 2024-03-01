@@ -8,11 +8,11 @@ export class APIError extends Error {
   errors?: (string | object)[];
   requestURL?: string;
 
-  constructor(error: AxiosError) {
+  constructor(error: AxiosError<any, any>) {
     super(error.response?.data?.message || error.message);
 
     this.name = error.response?.data?.name || error.name;
-    this.status = error.response?.data?.status || error.response?.status;
+    this.status = error.response?.data?.status || error.response?.status || 500;
     this.errors = error.response?.data?.errors || [];
 
     this.requestURL = `${error?.config?.baseURL}${error?.config?.url}`;
@@ -50,7 +50,7 @@ const useAxios = (baseUrl?: string): AxiosInstance => {
         return response;
       },
       async (error: AxiosError) => {
-        if (error.response?.status !== 401 && error.response?.status !== 403) {
+        if (error.response?.status !== 401) {
           // Error is unrelated to an expiring token, throw original error
           throw new APIError(error);
         }
@@ -75,7 +75,7 @@ const useAxios = (baseUrl?: string): AxiosInstance => {
         return instance.request({
           ...error.config,
           headers: {
-            ...error.config.headers,
+            ...error.config?.headers,
             Authorization: `Bearer ${user?.access_token}`
           }
         });

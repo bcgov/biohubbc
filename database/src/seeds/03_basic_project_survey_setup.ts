@@ -83,8 +83,16 @@ export async function seed(knex: Knex): Promise<void> {
           ${insertSurveySamplingSiteData(surveyId)}
           ${insertSurveySamplingMethodData(surveyId)}
           ${insertSurveySamplePeriodData(surveyId)}
-          ${insertSurveyObservationData(surveyId)}
         `);
+
+        const response1 = await knex.raw(insertSurveyObservationData(surveyId));
+        await knex.raw(insertObservationSubCount(response1.rows[0].survey_observation_id));
+
+        const response2 = await knex.raw(insertSurveyObservationData(surveyId));
+        await knex.raw(insertObservationSubCount(response2.rows[0].survey_observation_id));
+
+        const response3 = await knex.raw(insertSurveyObservationData(surveyId));
+        await knex.raw(insertObservationSubCount(response3.rows[0].survey_observation_id));
       }
     }
   }
@@ -566,10 +574,8 @@ const insertSurveySamplePeriodData = (surveyId: number) =>
   )
   VALUES
   (
-    (SELECT survey_sample_method_id FROM survey_sample_method WHERE survey_sample_method_id = (
-      SELECT survey_sample_method_id FROM survey_sample_method WHERE survey_sample_site_id = (
-        SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1
-      ) LIMIT 1
+    (SELECT survey_sample_method_id FROM survey_sample_method WHERE survey_sample_site_id = (
+      SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1
     ) LIMIT 1),
     $$${faker.date
       .between({ from: '2000-01-01T00:00:00-08:00', to: '2001-01-01T00:00:00-08:00' })
@@ -577,6 +583,19 @@ const insertSurveySamplePeriodData = (surveyId: number) =>
     $$${faker.date
       .between({ from: '2002-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
       .toISOString()}$$::date
+  );
+`;
+
+const insertObservationSubCount = (surveyObservationId: number) => `
+  INSERT INTO observation_subcount 
+  (
+    survey_observation_id,
+    subcount
+  )
+  VALUES
+  (
+    ${surveyObservationId},
+    $$${faker.number.int({ min: 1, max: 20 })}$$
   );
 `;
 
@@ -616,41 +635,8 @@ const insertSurveyObservationData = (surveyId: number) => `
     (SELECT survey_sample_site_id FROM survey_sample_site LIMIT 1),
     (SELECT survey_sample_method_id FROM survey_sample_method LIMIT 1),
     (SELECT survey_sample_period_id FROM survey_sample_period LIMIT 1)
-  ),
-  (
-    ${surveyId},
-    $$${focalTaxonIdOptions[0].itis_tsn}$$,
-    $$${focalTaxonIdOptions[0].itis_scientific_name}$$,
-    $$${faker.number.int({ min: 48, max: 60 })}$$,
-    $$${faker.number.int({ min: -132, max: -116 })}$$,
-    $$${faker.number.int({ min: 1, max: 20 })}$$,
-    $$${faker.date
-      .between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
-      .toISOString()}$$::date,
-    timestamp $$${faker.date
-      .between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
-      .toISOString()}$$::time,
-    (SELECT survey_sample_site_id FROM survey_sample_site LIMIT 1),
-    (SELECT survey_sample_method_id FROM survey_sample_method LIMIT 1),
-    (SELECT survey_sample_period_id FROM survey_sample_period LIMIT 1)
-  ),
-  (
-    ${surveyId},
-    $$${focalTaxonIdOptions[0].itis_tsn}$$,
-    $$${focalTaxonIdOptions[0].itis_scientific_name}$$,
-    $$${faker.number.int({ min: 48, max: 60 })}$$,
-    $$${faker.number.int({ min: -132, max: -116 })}$$,
-    $$${faker.number.int({ min: 1, max: 20 })}$$,
-    $$${faker.date
-      .between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
-      .toISOString()}$$::date,
-    timestamp $$${faker.date
-      .between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
-      .toISOString()}$$::time,
-    (SELECT survey_sample_site_id FROM survey_sample_site LIMIT 1),
-    (SELECT survey_sample_method_id FROM survey_sample_method LIMIT 1),
-    (SELECT survey_sample_period_id FROM survey_sample_period LIMIT 1)
   )
+  RETURNING survey_observation_id;
 `;
 
 /**
