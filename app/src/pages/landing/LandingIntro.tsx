@@ -1,10 +1,10 @@
-import { Box, Grid } from '@mui/material';
+import { Box, Divider, Grid } from '@mui/material';
 import { QuestionAnswer } from './components/QuestionAnswer';
 
 export const LandingIntro = () => {
   return (
     <>
-      <Grid container spacing={5} justifyContent="space-between">
+      <Grid container spacing={5} justifyContent="space-between" mb={5}>
         <Grid item xs={10} md={6}>
           <QuestionAnswer
             title="What is the Species Inventory Management System?"
@@ -16,8 +16,12 @@ export const LandingIntro = () => {
         <Grid item xs={10} md={6}>
           <QuestionAnswer
             title="Who can gain access?"
-            subtext="Staff, contractors, and partners of the Province who collect 
-            and manage fish and wildlife data. You must have an IDIR or BCeID to log in."
+            subtext={
+              <>
+                Staff, contractors, and partners of the Province who collect and manage fish and wildlife data. You must
+                have an IDIR or <a href="https://www.bceid.ca/">BCeID</a> to log in.
+              </>
+            }
           />
         </Grid>
         <Grid item xs={10} md={6}>
@@ -25,9 +29,9 @@ export const LandingIntro = () => {
             title="What's the benefit?"
             subtext={
               <>
-                Simple screens let teams organize ecological survey information in an intuitive way. Keep track of where,
-                when, and how you surveyed, and your findings, in a workspace that your whole team&mdash;and only your
-                team&mdash;can access.
+                Simple screens let teams organize and collaboratively manage ecological survey information in an
+                intuitive way. Keep track of where, when, and how you surveyed, along with your findings, in a shared
+                workspace that is private to your team.
               </>
             }
           />
@@ -37,27 +41,32 @@ export const LandingIntro = () => {
             title="How can I get started?"
             subtext={
               <>
-                Request access using an IDIR or BCeID. If you have neither credential, you can request a Basic BCeID
-                from <a href="https://www.bceid.ca/">bceid.ca</a>. After gaining access, create a new Project or ask
-                your team to invite you to an existing Project.
+                Request access to the Species Inventory Management System using an IDIR or BCeID. If you have neither
+                credential, you can request a Basic BCeID from <a href="https://www.bceid.ca/">bceid.ca</a>. After
+                gaining access, create a new Project or ask your team to invite you to an existing Project.
               </>
             }
           />
         </Grid>
-        <Grid item xs={12} mt={5}>
+
+        {/* <Grid item xs={12} mt={5}>
           <Box maxWidth="100%" component="img" src="/assets/manage-observations.jpg" />
-        </Grid>
+        </Grid> */}
       </Grid>
-      <Box mt={5}>
-      <QuestionAnswer
-        title="Looking for more information?"
-        subtext={
-          <>
-            Contact <a href="mailto:biohub@gov.bc.ca">biohub@gov.bc.ca</a> to request a demo, ask questions, and learn
-            more.
-          </>
-        }
-      /></Box>
+
+      <Divider sx={{ my: 5 }} />
+      <Box mt={4} display="flex" justifyContent="center">
+        <QuestionAnswer
+          title="Looking for more information?"
+          subtext={
+            <>
+              Contact <a href="mailto:biohub@gov.bc.ca">biohub@gov.bc.ca</a> to request a demo, ask questions, and learn
+              more.
+            </>
+          }
+          textAlign="center"
+        />
+      </Box>
     </>
   );
 };
