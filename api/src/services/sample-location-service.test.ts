@@ -174,8 +174,8 @@ describe('SampleLocationService', () => {
         ]);
 
       // Stratums
-      const getSampleStratumsForSurveyStratumIdStub = sinon
-        .stub(SampleStratumService.prototype, 'getSampleStratumsForSurveyStratumId')
+      const getSampleStratumsForSurveySampleSiteIdStub = sinon
+        .stub(SampleStratumService.prototype, 'getSampleStratumsForSurveySampleSiteId')
         .resolves([{ survey_sample_stratum_id: 1 } as any]);
 
       const deleteSampleStratumRecordsStub = sinon
@@ -213,7 +213,7 @@ describe('SampleLocationService', () => {
       expect(getSampleBlocksForSurveySampleSiteIdStub).to.be.calledOnceWith(survey_sample_site_id);
       expect(deleteSampleBlockRecordsStub).to.be.calledOnceWith([survey_sample_site_id]);
 
-      expect(getSampleStratumsForSurveyStratumIdStub).to.be.calledOnceWith(survey_sample_site_id);
+      expect(getSampleStratumsForSurveySampleSiteIdStub).to.be.calledOnceWith(survey_sample_site_id);
       expect(deleteSampleStratumRecordsStub).to.be.calledOnceWith([survey_sample_site_id]);
 
       expect(survey_sample_site_id).to.be.eq(survey_sample_site_id);
