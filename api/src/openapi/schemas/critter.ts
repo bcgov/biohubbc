@@ -13,7 +13,7 @@ const critterSchema: OpenAPIV3.SchemaObject = {
     wlh_id: {
       type: 'string'
     },
-    taxon_id: {
+    itis_tsn: {
       type: 'string'
     },
     sex: {

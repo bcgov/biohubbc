@@ -85,7 +85,7 @@ export const AnimalSectionDataCards = (props: IAnimalSectionDataCardsProps) => {
         {
           header: `General: ${initialValues.general.animal_id}`,
           subHeader: formatSubHeader({
-            Taxon: initialValues.general.taxon_name,
+            Taxon: initialValues.general.itis_scientific_name,
             Sex: initialValues.general.sex,
             'WLH ID': initialValues.general.wlh_id
           }),
@@ -141,7 +141,7 @@ export const AnimalSectionDataCards = (props: IAnimalSectionDataCardsProps) => {
     return sectionData[section];
   }, [
     initialValues.general.animal_id,
-    initialValues.general.taxon_name,
+    initialValues.general.itis_scientific_name,
     initialValues.general.sex,
     initialValues.markings,
     initialValues.measurements,
