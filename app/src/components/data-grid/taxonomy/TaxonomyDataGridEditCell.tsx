@@ -64,7 +64,8 @@ const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel, ValueT
             return;
           }
 
-          const response = await biohubApi.taxonomy.searchSpeciesByTerms([searchTerm]);
+          const searchTermsSplit = searchTerm.split(' ').filter(Boolean);
+          const response = await biohubApi.taxonomy.searchSpeciesByTerms(searchTermsSplit);
           const options = response.map((item) => ({
             value: item.tsn as ValueType,
             label: item.commonName ? `${item.commonName} (${item.scientificName})` : item.scientificName
