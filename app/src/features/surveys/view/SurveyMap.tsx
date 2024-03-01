@@ -154,8 +154,15 @@ const SurveyMap = (props: ISurveyMapProps) => {
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
 
-  const studyAreaLocations = surveyContext.surveyDataLoader.data?.surveyData.locations ?? [];
-  const sampleSites = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
+  const studyAreaLocations = useMemo(
+    () => surveyContext.surveyDataLoader.data?.surveyData.locations ?? [],
+    [surveyContext.surveyDataLoader.data]
+  );
+
+  const sampleSites = useMemo(
+    () => surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [],
+    [surveyContext.sampleSiteDataLoader.data]
+  );
 
   const bounds: LatLngBoundsExpression | undefined = useMemo(() => {
     const allMapFeatures: Feature[] = [
@@ -258,8 +265,6 @@ const SurveyMap = (props: ISurveyMapProps) => {
       };
     })
   ];
-
-  // console.log('staticlayers:', staticLayers)
 
   return (
     <>

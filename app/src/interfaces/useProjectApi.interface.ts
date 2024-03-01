@@ -114,10 +114,7 @@ export interface IProjectsListItemData {
 }
 
 export interface IProjectUserRoles {
-  participants: {
-    system_user_id: number;
-    project_role_names: string[];
-  }[];
+  participants: IGetProjectParticipant[];
 }
 
 /**

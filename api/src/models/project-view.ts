@@ -36,8 +36,8 @@ export type ProjectData = z.infer<typeof ProjectData>;
 export const ProjectListData = z.object({
   project_id: z.number(),
   name: z.string(),
-  project_programs: z.array(z.number()).default([]),
-  regions: z.array(z.string()).default([]),
+  project_programs: z.array(z.number()),
+  regions: z.array(z.string()),
   start_date: z.string(),
   end_date: z.string().nullable().optional()
 });
