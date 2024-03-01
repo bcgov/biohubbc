@@ -45,10 +45,7 @@ export interface ISurveyBlockForm {
 }
 
 export interface IParticipantsJobForm {
-  participants: {
-    system_user_id: number;
-    survey_job_name: string;
-  }[];
+  participants: IGetSurveyParticipant[];
 }
 
 export interface IGetSurveyForViewResponseDetails {
@@ -184,15 +181,7 @@ export interface SurveyUpdateObject extends ISurveyLocationForm {
     category_rationale: string;
     disa_required: StringBoolean;
   };
-  participants?: {
-    identity_source: string;
-    email: string | null;
-    display_name: string;
-    agency: string | null;
-    survey_job_id: number;
-    system_user_id: number;
-    survey_job_name: string;
-  }[];
+  participants?: IGetSurveyParticipant[];
 }
 
 // TODO remove in subsequent PR

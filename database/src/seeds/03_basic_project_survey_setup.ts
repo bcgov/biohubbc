@@ -5,8 +5,8 @@ const DB_SCHEMA = process.env.DB_SCHEMA;
 const DB_SCHEMA_DAPI_V1 = process.env.DB_SCHEMA_DAPI_V1;
 const PROJECT_SEEDER_USER_IDENTIFIER = process.env.PROJECT_SEEDER_USER_IDENTIFIER;
 
-const NUM_SEED_PROJECTS = Number(process.env.NUM_SEED_PROJECTS ?? 1);
-const NUM_SEED_SURVEYS_PER_PROJECT = Number(process.env.NUM_SEED_SURVEYS_PER_PROJECT ?? 1);
+const NUM_SEED_PROJECTS = Number(process.env.NUM_SEED_PROJECTS ?? 2);
+const NUM_SEED_SURVEYS_PER_PROJECT = Number(process.env.NUM_SEED_SURVEYS_PER_PROJECT ?? 2);
 
 const focalTaxonIdOptions = [
   { itis_tsn: 180703, itis_scientific_name: 'Alces alces' }, // Moose
