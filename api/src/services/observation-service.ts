@@ -318,12 +318,13 @@ export class ObservationService extends DBService {
   /**
    * Retrieves the observation submission record by the given submission ID.
    *
+   * @param {number} surveyId
    * @param {number} submissionId
    * @return {*}  {Promise<ObservationSubmissionRecord>}
    * @memberof ObservationService
    */
-  async getObservationSubmissionById(submissionId: number): Promise<ObservationSubmissionRecord> {
-    return this.observationRepository.getObservationSubmissionById(submissionId);
+  async getObservationSubmissionById(surveyId: number, submissionId: number): Promise<ObservationSubmissionRecord> {
+    return this.observationRepository.getObservationSubmissionById(surveyId, submissionId);
   }
 
   /**
@@ -385,16 +386,16 @@ export class ObservationService extends DBService {
    * all of the records in the CSV file to the observations for the survey. If the CSV
    * file fails validation, this method fails.
    *
+   * @param {number} surveyId
    * @param {number} submissionId
    * @return {*}  {Promise<ObservationRecord[]>}
    * @memberof ObservationService
    */
-  async processObservationCsvSubmission(submissionId: number): Promise<ObservationRecord[]> {
+  async processObservationCsvSubmission(surveyId: number, submissionId: number): Promise<ObservationRecord[]> {
     defaultLog.debug({ label: 'processObservationCsvSubmission', submissionId });
 
     // Step 1. Retrieve the observation submission record
-    const submission = await this.getObservationSubmissionById(submissionId);
-    const surveyId = submission.survey_id;
+    const submission = await this.getObservationSubmissionById(surveyId, submissionId);
 
     // Step 2. Retrieve the S3 object containing the uploaded CSV file
     const s3Object = await getFileFromS3(submission.key);

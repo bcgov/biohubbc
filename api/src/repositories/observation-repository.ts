@@ -458,12 +458,13 @@ export class ObservationRepository extends BaseRepository {
    * @return {*}  {Promise<ObservationSubmissionRecord>}
    * @memberof ObservationService
    */
-  async getObservationSubmissionById(submissionId: number): Promise<ObservationSubmissionRecord> {
+  async getObservationSubmissionById(surveyId: number, submissionId: number): Promise<ObservationSubmissionRecord> {
     const queryBuilder = getKnex()
       .queryBuilder()
       .select('*')
       .from('survey_observation_submission')
-      .where('submission_id', submissionId);
+      .where('submission_id', submissionId)
+      .andWhere('survey_id', surveyId);
 
     const response = await this.connection.knex(queryBuilder, ObservationSubmissionRecord);
 
