@@ -391,15 +391,15 @@ export function createSurveySampleSiteRecord(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const sampleSite: PostSampleLocations = req.body;
-
-      sampleSite.survey_id = Number(req.params.surveyId);
+      const sampleSite: PostSampleLocations = {
+        ...req.body,
+        survey_id: Number(req.params.surveyId)
+      };
 
       await connection.open();
 
       const sampleLocationService = new SampleLocationService(connection);
 
-      // @TODO SIMSBIOHUB-494 audit
       await sampleLocationService.insertSampleLocations(sampleSite);
 
       await connection.commit();

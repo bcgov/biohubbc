@@ -169,7 +169,6 @@ export function getSurveySamplePeriodRecords(): RequestHandler {
 
       const samplePeriodService = new SamplePeriodService(connection);
 
-      // @TODO SIMSBIOHUB-494 audit
       const result = await samplePeriodService.getSamplePeriodsForSurveyMethodId(surveySampleMethodId);
 
       await connection.commit();
@@ -303,14 +302,15 @@ export function createSurveySamplePeriodRecord(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const samplePeriod: InsertSamplePeriodRecord = req.body.samplePeriod;
-      samplePeriod.survey_sample_method_id = Number(req.params.surveySampleMethodId);
+      const samplePeriod: InsertSamplePeriodRecord = {
+        ...req.body.samplePeriod,
+        survey_sample_method_id: Number(req.params.surveySampleMethodId)
+      };
 
       await connection.open();
 
       const samplePeriodService = new SamplePeriodService(connection);
 
-      // @TODO SIMSBIOHUB-494 audit
       await samplePeriodService.insertSamplePeriod(samplePeriod);
 
       await connection.commit();

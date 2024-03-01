@@ -181,7 +181,6 @@ export function getSurveyObservation(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      // @TODO SIMSBIOHUB-494 audit
       const observationData = await observationService.getSurveyObservationById(surveyId, surveyObservationId);
 
       return res.status(200).json(observationData);
