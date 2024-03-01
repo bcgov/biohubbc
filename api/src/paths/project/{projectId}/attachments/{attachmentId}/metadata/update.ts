@@ -161,7 +161,6 @@ export function updateProjectAttachmentMetadata(): RequestHandler {
         );
 
         // Delete any existing attachment author records
-        // @TODO SIMSBIOHUB-494 audit
         await attachmentService.deleteProjectReportAttachmentAuthors(Number(req.params.attachmentId));
 
         const promises = [];
