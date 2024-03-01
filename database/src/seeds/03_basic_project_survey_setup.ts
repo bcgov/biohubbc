@@ -85,11 +85,14 @@ export async function seed(knex: Knex): Promise<void> {
           ${insertSurveySamplePeriodData()}
           ${insertSurveyObservationData(surveyId)}
         `);
+
+        await knex.raw(`
+          ${insertSurveyObservationMeasurementData(surveyId)}
+        `);
       }
     }
   }
 }
-
 const checkAnyFundingSourceExists = () => `
   SELECT
     funding_source_id
@@ -647,6 +650,22 @@ const insertSurveyObservationData = (surveyId: number) => `
     (SELECT survey_sample_method_id FROM survey_sample_method LIMIT 1),
     (SELECT survey_sample_period_id FROM survey_sample_period LIMIT 1)
   )
+`;
+
+const insertSurveyObservationMeasurementData = (surveyId: number) =>
+  `
+  INSERT INTO survey_observation_measurement
+  (
+    survey_observation_id,
+    cb_measurements_lookup_id,
+    value
+  )
+  VALUES
+  (
+    (SELECT survey_observation_id FROM survey_observation WHERE survey_id = ${surveyId} LIMIT 1),
+    (SELECT cb_measurements_lookup_id FROM cb_measurements_lookup ORDER BY random() LIMIT 1),
+    $$${faker.number.int({ min: 1, max: 200 })}$$
+  );
 `;
 
 /**
