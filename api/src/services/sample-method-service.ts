@@ -28,12 +28,13 @@ export class SampleMethodService extends DBService {
   /**
    * Gets all survey Sample Methods.
    *
+   * @param {number} surveyId
    * @param {number} surveySampleSiteId
    * @return {*}  {Promise<SampleMethodRecord[]>}
    * @memberof SampleMethodService
    */
-  async getSampleMethodsForSurveySampleSiteId(surveySampleSiteId: number): Promise<SampleMethodRecord[]> {
-    return await this.sampleMethodRepository.getSampleMethodsForSurveySampleSiteId(surveySampleSiteId);
+  async getSampleMethodsForSurveySampleSiteId(surveyId: number, surveySampleSiteId: number): Promise<SampleMethodRecord[]> {
+    return await this.sampleMethodRepository.getSampleMethodsForSurveySampleSiteId(surveyId, surveySampleSiteId);
   }
 
   /**
@@ -89,13 +90,14 @@ export class SampleMethodService extends DBService {
    * Fetches and compares any existing sample methods for a given sample site id.
    * Any sample methods not found in the given array will be deleted.
    *
+   * @param {number} surveyId
    * @param {number} surveySampleSiteId
    * @param {UpdateSampleMethodRecord[]} newMethods
    * @memberof SampleMethodService
    */
-  async deleteSampleMethodsNotInArray(surveySampleSiteId: number, newMethods: UpdateSampleMethodRecord[]) {
+  async deleteSampleMethodsNotInArray(surveyId: number, surveySampleSiteId: number, newMethods: UpdateSampleMethodRecord[]) {
     //Get any existing methods for the sample site
-    const existingMethods = await this.getSampleMethodsForSurveySampleSiteId(surveySampleSiteId);
+    const existingMethods = await this.getSampleMethodsForSurveySampleSiteId(surveyId, surveySampleSiteId);
 
     //Compare input and existing for methods to delete
     // Any existing methods that are not found in the new methods being passed in will be collected for deletion

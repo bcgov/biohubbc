@@ -47,15 +47,22 @@ export class SampleMethodRepository extends BaseRepository {
   /**
    * Gets all survey Sample Methods.
    *
+   * @param {number} surveyId
    * @param {number} surveySampleSiteId
    * @return {*}  {Promise<SampleMethodRecord[]>}
    * @memberof SampleMethodRepository
    */
-  async getSampleMethodsForSurveySampleSiteId(surveySampleSiteId: number): Promise<SampleMethodRecord[]> {
+  async getSampleMethodsForSurveySampleSiteId(surveyId: number, surveySampleSiteId: number): Promise<SampleMethodRecord[]> {
     const sql = SQL`
-      SELECT *
-      FROM survey_sample_method
-      WHERE survey_sample_site_id = ${surveySampleSiteId};
+      SELECT
+        *
+      FROM
+        survey_sample_method
+      WHERE
+        survey_sample_site_id = ${surveySampleSiteId}
+      AND
+        survey_id = ${surveyId}
+      ;
     `;
 
     const response = await this.connection.sql(sql, SampleMethodRecord);

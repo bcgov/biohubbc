@@ -122,8 +122,7 @@ export function deleteSurveySampleSiteRecords(): RequestHandler {
       }
 
       for (const surveySampleSiteId of surveySampleSiteIds) {
-        // @TODO SIMSBIOHUB-494 audit
-        await sampleLocationService.deleteSampleSiteRecord(surveySampleSiteId);
+        await sampleLocationService.deleteSampleSiteRecord(surveyId, surveySampleSiteId);
       }
 
       await connection.commit();

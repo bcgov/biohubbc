@@ -65,20 +65,21 @@ export class SampleLocationService extends DBService {
   /**
    * Deletes a survey Sample Location.
    *
+   * @param {number} surveyId
    * @param {number} surveySampleSiteId
    * @return {*}  {Promise<SampleSiteRecord>}
    * @memberof SampleLocationService
    */
-  async deleteSampleSiteRecord(surveySampleSiteId: number): Promise<SampleSiteRecord> {
+  async deleteSampleSiteRecord(surveyId: number, surveySampleSiteId: number): Promise<SampleSiteRecord> {
     const sampleMethodService = new SampleMethodService(this.connection);
 
     // Delete all methods associated with the sample location
-    const existingSampleMethods = await sampleMethodService.getSampleMethodsForSurveySampleSiteId(surveySampleSiteId);
+    const existingSampleMethods = await sampleMethodService.getSampleMethodsForSurveySampleSiteId(surveyId, surveySampleSiteId);
     for (const item of existingSampleMethods) {
       await sampleMethodService.deleteSampleMethodRecord(item.survey_sample_method_id);
     }
 
-    return this.sampleLocationRepository.deleteSampleSiteRecord(surveySampleSiteId);
+    return this.sampleLocationRepository.deleteSampleSiteRecord(surveyId, surveySampleSiteId);
   }
 
   /**
@@ -140,7 +141,7 @@ export class SampleLocationService extends DBService {
     await this.sampleLocationRepository.updateSampleSite(sampleSite);
 
     // Check for methods to delete
-    await methodService.deleteSampleMethodsNotInArray(sampleSite.survey_sample_site_id, sampleSite.methods);
+    await methodService.deleteSampleMethodsNotInArray(sampleSite.survey_id, sampleSite.survey_sample_site_id, sampleSite.methods);
 
     // Loop through all methods
     // For each method, check if it exists

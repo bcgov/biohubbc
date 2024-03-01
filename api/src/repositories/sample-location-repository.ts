@@ -300,16 +300,19 @@ export class SampleLocationRepository extends BaseRepository {
   /**
    * Deletes a survey sample site record.
    *
+   * @param {number} surveyId
    * @param {number} surveySampleSiteId
    * @return {*}  {Promise<SampleSiteRecord>}
    * @memberof SampleLocationRepository
    */
-  async deleteSampleSiteRecord(surveySampleSiteId: number): Promise<SampleSiteRecord> {
+  async deleteSampleSiteRecord(surveyId: number, surveySampleSiteId: number): Promise<SampleSiteRecord> {
     const sqlStatement = SQL`
       DELETE FROM
         survey_sample_site
       WHERE
         survey_sample_site_id = ${surveySampleSiteId}
+      AND
+        survey_id = ${surveyId}
       RETURNING
         *;
     `;
