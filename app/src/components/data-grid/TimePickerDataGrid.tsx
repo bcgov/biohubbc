@@ -1,5 +1,5 @@
 import useEnhancedEffect from '@mui/material/utils/useEnhancedEffect';
-import { GridRenderEditCellParams, GridValidRowModel, useGridApiContext } from '@mui/x-data-grid';
+import { GridRenderEditCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import { LocalizationProvider, TimePicker, TimePickerProps } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { default as dayjs } from 'dayjs';
@@ -14,8 +14,8 @@ const TimePickerDataGrid = <DataGridType extends GridValidRowModel>({
   dateFieldProps,
   dataGridProps
 }: ITimePickerDataGridProps<DataGridType>) => {
-  const apiRef = useGridApiContext();
   const ref = useRef<HTMLInputElement>(null);
+
   useEnhancedEffect(() => {
     if (dataGridProps.hasFocus) {
       ref.current?.focus();
@@ -37,10 +37,10 @@ const TimePickerDataGrid = <DataGridType extends GridValidRowModel>({
         inputRef={ref}
         value={(dataGridProps.value && dayjs(dataGridProps.value, 'HH:mm:ss')) || null}
         onChange={(value) => {
-          apiRef?.current.setEditCellValue({ id: dataGridProps.id, field: dataGridProps.field, value: value });
+          dataGridProps.api.setEditCellValue({ id: dataGridProps.id, field: dataGridProps.field, value: value });
         }}
         onAccept={(value) => {
-          apiRef?.current.setEditCellValue({
+          dataGridProps.api.setEditCellValue({
             id: dataGridProps.id,
             field: dataGridProps.field,
             value: value?.format('HH:mm:ss')

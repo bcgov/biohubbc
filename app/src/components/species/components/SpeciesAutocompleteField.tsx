@@ -2,6 +2,7 @@ import { mdiMagnify } from '@mdi/js';
 import Icon from '@mdi/react';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
+import grey from '@mui/material/colors/grey';
 import TextField from '@mui/material/TextField';
 import SpeciesCard from 'components/species/components/SpeciesCard';
 import { useFormikContext } from 'formik';
@@ -91,11 +92,22 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
       }}
       renderOption={(renderProps, renderOption) => {
         return (
-          <Box component="li" {...renderProps} key={renderOption.tsn}>
-            <SpeciesCard
-              name={renderOption.commonName || renderOption.scientificName}
-              subtext={renderOption.scientificName}
-            />
+          <Box
+            component="li"
+            sx={{
+              '& + li': {
+                borderTop: '1px solid' + grey[300]
+              }
+            }}
+            key={renderOption.tsn}
+            {...renderProps}>
+            <Box py={1} width="100%">
+              <SpeciesCard
+                commonName={renderOption.commonName}
+                scientificName={renderOption.scientificName}
+                tsn={renderOption.tsn}
+              />
+            </Box>
           </Box>
         );
       }}
