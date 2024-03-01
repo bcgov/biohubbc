@@ -167,7 +167,6 @@ export function getProjectReportDetails(): RequestHandler {
         Number(req.params.attachmentId)
       );
 
-      // @TODO SIMSBIOHUB-494 audit
       const projectReportAuthors = await attachmentService.getProjectReportAttachmentAuthors(
         Number(req.params.attachmentId)
       );

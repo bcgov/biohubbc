@@ -255,6 +255,13 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql<IProjectReportAttachment>(sqlStatement);
 
+    if (response.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to get project report attachment by reportAttachmentId', [
+        'AttachmentRepository->getProjectReportAttachmentById',
+        'rowCount was null, undefined or > 1, expected rowCount === 1'
+      ]);
+    }
+
     return response.rows[0];
   }
 
