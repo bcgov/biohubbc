@@ -202,7 +202,7 @@ export class SampleStratumRepository extends BaseRepository {
       WHERE survey_sample_site_id = ${surveySampleSiteId};
     `;
 
-    const response = await this.connection.sql(sql, SampleStratumRecord)
+    const response = await this.connection.sql(sql, SampleStratumRecord);
 
     return response.rows;
   }
