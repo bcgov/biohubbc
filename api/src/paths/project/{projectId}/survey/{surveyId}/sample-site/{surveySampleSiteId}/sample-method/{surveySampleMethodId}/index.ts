@@ -129,9 +129,11 @@ export function updateSurveySampleMethod(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const sampleMethod: UpdateSampleMethodRecord = req.body.sampleMethod;
-      sampleMethod.survey_sample_site_id = Number(req.params.surveySampleSiteId);
-      sampleMethod.survey_sample_method_id = Number(req.params.surveySampleMethodId);
+      const sampleMethod: UpdateSampleMethodRecord = {
+        ...req.body.sampleMethod,
+        survey_sample_site_id: Number(req.params.surveySampleSiteId),
+        survey_sample_method_id: Number(req.params.surveySampleMethodId)
+      };
 
       await connection.open();
 

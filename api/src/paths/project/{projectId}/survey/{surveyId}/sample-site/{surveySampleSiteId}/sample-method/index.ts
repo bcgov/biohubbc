@@ -290,9 +290,10 @@ export function createSurveySampleSiteRecord(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const sampleMethod: InsertSampleMethodRecord = req.body.sampleMethod;
-
-      sampleMethod.survey_sample_site_id = Number(req.params.surveySampleSiteId);
+      const sampleMethod: InsertSampleMethodRecord = {
+        ...req.body.sampleMethod,
+        survey_sample_site_id: Number(req.params.surveySampleSiteId)
+      };
 
       await connection.open();
 

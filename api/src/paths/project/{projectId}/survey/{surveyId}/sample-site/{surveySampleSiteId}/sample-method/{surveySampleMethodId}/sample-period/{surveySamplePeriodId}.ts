@@ -147,9 +147,11 @@ export function updateSurveySamplePeriod(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const samplePeriod: UpdateSamplePeriodRecord = req.body.samplePeriod;
-      samplePeriod.survey_sample_method_id = Number(req.params.surveySampleMethodId);
-      samplePeriod.survey_sample_period_id = Number(req.params.surveySamplePeriodId);
+      const samplePeriod: UpdateSamplePeriodRecord = {
+        ...req.body.samplePeriod,
+        survey_sample_method_id: Number(req.params.surveySampleMethodId),
+        survey_sample_period_id: Number(req.params.surveySamplePeriodId)
+      };
 
       await connection.open();
 
