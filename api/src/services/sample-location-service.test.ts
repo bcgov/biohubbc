@@ -160,18 +160,7 @@ describe('SampleLocationService', () => {
 
       const deleteSampleBlockRecordsStub = sinon
         .stub(SampleBlockService.prototype, 'deleteSampleBlockRecords')
-        .resolves([
-          {
-            survey_sample_block_id: 1,
-            survey_sample_site_id: 1,
-            survey_block_id: 1,
-            create_date: '',
-            create_user: 1,
-            update_date: '',
-            update_user: 1,
-            revision_count: 0
-          }
-        ]);
+        .resolves();
 
       // Stratums
       const getSampleStratumsForSurveySampleSiteIdStub = sinon
@@ -180,18 +169,7 @@ describe('SampleLocationService', () => {
 
       const deleteSampleStratumRecordsStub = sinon
         .stub(SampleStratumService.prototype, 'deleteSampleStratumRecords')
-        .resolves([
-          {
-            survey_sample_stratum_id: 1,
-            survey_sample_site_id: 1,
-            survey_stratum_id: 1,
-            create_date: '',
-            create_user: 1,
-            update_date: '',
-            update_user: 1,
-            revision_count: 0
-          }
-        ]);
+        .resolves();
 
       // Site
       sinon.stub(SampleLocationRepository.prototype, 'deleteSampleSiteRecord').resolves({

@@ -201,7 +201,7 @@ export class SampleLocationService extends DBService {
     await blockService.deleteSampleBlocksNotInArray(sampleSite.survey_sample_site_id, sampleSite.blocks);
 
     // Check for stratums to delete
-    await stratumService.deleteSampleStratumsNotInArray(sampleSite.survey_id, sampleSite.stratums);
+    await stratumService.deleteSampleStratumsNotInArray(sampleSite.survey_sample_site_id, sampleSite.stratums);
 
     // Loop through all blocks
     // For each block, check if it exists
