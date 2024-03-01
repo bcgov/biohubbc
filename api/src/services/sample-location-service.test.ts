@@ -160,7 +160,18 @@ describe('SampleLocationService', () => {
 
       const deleteSampleBlockRecordsStub = sinon
         .stub(SampleBlockService.prototype, 'deleteSampleBlockRecords')
-        .resolves();
+        .resolves([
+          {
+            survey_sample_block_id: 1,
+            survey_sample_site_id: 1,
+            survey_block_id: 1,
+            create_date: '',
+            create_user: 1,
+            update_date: '',
+            update_user: 1,
+            revision_count: 0
+          }
+        ]);
 
       // Stratums
       const getSampleStratumsForSurveyStratumIdStub = sinon
@@ -169,8 +180,20 @@ describe('SampleLocationService', () => {
 
       const deleteSampleStratumRecordsStub = sinon
         .stub(SampleStratumService.prototype, 'deleteSampleStratumRecords')
-        .resolves();
+        .resolves([
+          {
+            survey_sample_stratum_id: 1,
+            survey_sample_site_id: 1,
+            survey_stratum_id: 1,
+            create_date: '',
+            create_user: 1,
+            update_date: '',
+            update_user: 1,
+            revision_count: 0
+          }
+        ]);
 
+      // Site
       sinon.stub(SampleLocationRepository.prototype, 'deleteSampleSiteRecord').resolves({
         survey_sample_site_id: 1,
         survey_id: 1,
@@ -187,15 +210,15 @@ describe('SampleLocationService', () => {
 
       const { survey_sample_site_id } = await service.deleteSampleSiteRecord(1);
 
-      expect(getSampleBlocksForSurveySampleSiteIdStub).to.be.calledOnceWith(1);
-      expect(deleteSampleBlockRecordsStub).to.be.calledOnceWith([1]);
+      expect(getSampleBlocksForSurveySampleSiteIdStub).to.be.calledOnceWith(survey_sample_site_id);
+      expect(deleteSampleBlockRecordsStub).to.be.calledOnceWith([survey_sample_site_id]);
 
-      expect(getSampleStratumsForSurveyStratumIdStub).to.be.calledOnceWith(1);
-      expect(deleteSampleStratumRecordsStub).to.be.calledOnceWith([1]);
+      expect(getSampleStratumsForSurveyStratumIdStub).to.be.calledOnceWith(survey_sample_site_id);
+      expect(deleteSampleStratumRecordsStub).to.be.calledOnceWith([survey_sample_site_id]);
 
-      expect(survey_sample_site_id).to.be.eq(1);
-      expect(getSampleMethodsForSurveySampleSiteIdStub).to.be.calledOnceWith(1);
-      expect(deleteSampleMethodRecordStub).to.be.calledOnceWith(1);
+      expect(survey_sample_site_id).to.be.eq(survey_sample_site_id);
+      expect(getSampleMethodsForSurveySampleSiteIdStub).to.be.calledOnceWith(survey_sample_site_id);
+      expect(deleteSampleMethodRecordStub).to.be.calledOnceWith(survey_sample_site_id);
     });
   });
 
