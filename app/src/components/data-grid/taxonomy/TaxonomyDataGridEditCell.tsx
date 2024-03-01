@@ -1,10 +1,10 @@
 import { GridRenderEditCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import AsyncAutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AsyncAutocompleteDataGridEditCell';
 import { IAutocompleteDataGridOption } from 'components/data-grid/autocomplete/AutocompleteDataGrid.interface';
-import { TaxonomyContext } from 'contexts/taxonomyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useTaxonomyContext } from 'hooks/useContext';
 import debounce from 'lodash-es/debounce';
-import { useContext, useMemo } from 'react';
+import { useMemo } from 'react';
 
 export interface ITaxonomyDataGridCellProps<DataGridType extends GridValidRowModel> {
   dataGridProps: GridRenderEditCellParams<DataGridType>;
@@ -24,7 +24,7 @@ const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel, ValueT
 ) => {
   const { dataGridProps } = props;
 
-  const taxonomyContext = useContext(TaxonomyContext);
+  const taxonomyContext = useTaxonomyContext();
   const biohubApi = useBiohubApi();
 
   const getCurrentOption = async (
