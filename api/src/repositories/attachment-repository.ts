@@ -536,6 +536,13 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql<ISurveyReportAttachment>(sqlStatement);
 
+    if (response.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to get survey report attachment data', [
+        'AttachmentRepository->getSurveyReportAttachmentById',
+        'rowCount was !== 1, expected rowCount === 1'
+      ]);
+    }
+
     return response.rows[0];
   }
 
