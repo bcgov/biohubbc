@@ -61,7 +61,14 @@ export const SurveyAnimalsPage = () => {
 
   const defaultFormValues: IAnimal = useMemo(() => {
     return {
-      general: { wlh_id: '', taxon_id: '', taxon_name: '', animal_id: '', sex: AnimalSex.UNKNOWN, critter_id: '' },
+      general: {
+        wlh_id: '',
+        itis_tsn: '',
+        itis_scientific_name: '',
+        animal_id: '',
+        sex: AnimalSex.UNKNOWN,
+        critter_id: ''
+      },
       captures: [],
       markings: [],
       mortality: [],

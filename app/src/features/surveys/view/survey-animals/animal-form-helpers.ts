@@ -17,10 +17,10 @@ export const transformCritterbaseAPIResponseToForm = (existingCritter: IDetailed
   return {
     general: {
       wlh_id: existingCritter.wlh_id ?? '',
-      taxon_id: existingCritter.taxon_id,
+      itis_tsn: existingCritter.itis_tsn,
       animal_id: existingCritter.animal_id ?? '',
       sex: existingCritter.sex as AnimalSex,
-      taxon_name: existingCritter.taxon,
+      itis_scientific_name: existingCritter.itis_scientific_name,
       critter_id: existingCritter.critter_id
     },
     captures: existingCritter?.capture.map((cap) => ({
@@ -208,7 +208,7 @@ export const createCritterUpdatePayload = (
         familyId = v4();
         createCritter.families.families.push({
           family_id: familyId,
-          family_label: `${currentFormValues.general.animal_id}-${currentFormValues.general.taxon_name}_family`
+          family_label: `${currentFormValues.general.animal_id}-${currentFormValues.general.itis_scientific_name}_family`
         });
       }
       currFam.relationship === 'parent'
