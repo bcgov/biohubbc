@@ -4,7 +4,7 @@ import { CbSelectWrapper } from 'components/fields/CbSelectFieldWrapper';
 import CustomTextField from 'components/fields/CustomTextField';
 import SingleDateField from 'components/fields/SingleDateField';
 import { Field, useFormikContext } from 'formik';
-import { IMeasurementStub } from 'hooks/cb_api/useLookupApi';
+import { IMeasurementStub } from 'hooks/cb_api/useXrefApi';
 import { has, startCase } from 'lodash-es';
 import { useEffect, useState } from 'react';
 import {
@@ -107,7 +107,7 @@ export const MeasurementAnimalFormContent = (props: MeasurementFormContentProps)
             name={optionName}
             id="qualitative_option"
             route="xref/taxon-qualitative-measurement-options"
-            query={`taxon_measurement_id=${taxonMeasurementId}`}
+            query={{ taxon_measurement_id: taxonMeasurementId }}
             controlProps={{
               required: true,
               disabled: !taxonMeasurementId

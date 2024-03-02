@@ -75,9 +75,10 @@ const AnimalList = (props: IAnimalListProps) => {
   const history = useHistory();
 
   const sortedCritterData = useMemo(() => {
-    return [...(critterData ?? [])].sort(
-      (a, b) => new Date(a.create_timestamp).getTime() - new Date(b.create_timestamp).getTime()
-    );
+    return [...(critterData ?? [])]
+      .sort
+      //TODO NICK (a, b) => new Date(a.create_timestamp).getTime() - new Date(b.create_timestamp).getTime()
+      ();
   }, [critterData]);
 
   const handleCritterSelect = (id: string) => {

@@ -178,10 +178,10 @@ export const AnimalMortalitySchema = yup.object({}).shape({
   mortality_comment: yup.string(),
   proximate_cause_of_death_id: yup.string().uuid().required(req),
   proximate_cause_of_death_confidence: yup.string().nullable(),
-  proximate_predated_by_taxon_id: yup.string().uuid(),
+  proximate_predated_by_itis_tsn: yup.string().uuid(),
   ultimate_cause_of_death_id: yup.string().uuid(),
   ultimate_cause_of_death_confidence: yup.string(),
-  ultimate_predated_by_taxon_id: yup.string().uuid(),
+  ultimate_predated_by_itis_tsn: yup.string().uuid(),
   projection_mode: yup.mixed().oneOf(['wgs', 'utm'])
 });
 
@@ -416,12 +416,12 @@ export class Critter {
         mortality_id: cleanedMortality.mortality_id,
         mortality_timestamp: cleanedMortality.mortality_timestamp,
         mortality_comment: cleanedMortality.mortality_comment,
-        proximate_predated_by_taxon_id: cleanedMortality.proximate_predated_by_taxon_id,
+        proximate_predated_by_itis_tsn: cleanedMortality.proximate_predated_by_itis_tsn,
         proximate_cause_of_death_id: cleanedMortality.proximate_cause_of_death_id,
         proximate_cause_of_death_confidence: cleanedMortality.proximate_cause_of_death_confidence,
         ultimate_cause_of_death_id: cleanedMortality.ultimate_cause_of_death_id,
         ultimate_cause_of_death_confidence: cleanedMortality.ultimate_cause_of_death_confidence,
-        ultimate_predated_by_taxon_id: cleanedMortality.ultimate_predated_by_taxon_id,
+        ultimate_predated_by_itis_tsn: cleanedMortality.ultimate_predated_by_itis_tsn,
         location: cleanedMortality.location_id
           ? { ...mortality_location, location_id: cleanedMortality.location_id }
           : undefined

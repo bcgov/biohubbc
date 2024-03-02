@@ -183,10 +183,10 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
       mortality_comment: '',
       proximate_cause_of_death_id: '',
       proximate_cause_of_death_confidence: '',
-      proximate_predated_by_taxon_id: '',
+      proximate_predated_by_itis_tsn: '',
       ultimate_cause_of_death_id: '',
       ultimate_cause_of_death_confidence: '',
-      ultimate_predated_by_taxon_id: '',
+      ultimate_predated_by_itis_tsn: '',
       projection_mode: 'wgs' as ProjectionMode,
       mortality_id: undefined,
       location_id: undefined

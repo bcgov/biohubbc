@@ -42,7 +42,7 @@ const GeneralAnimalForm = () => {
           controlProps={{ required: isRequiredInSchema(AnimalGeneralSchema, 'sex') }}
           label="Sex"
           id={'sex'}
-          route={'lookups/sex'}
+          route={'lookups/enum/sex'}
         />
       </Grid>
       <Grid item xs={12}>

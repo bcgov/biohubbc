@@ -87,10 +87,10 @@ type IMortalityResponse = {
   location: ILocationResponse;
   proximate_cause_of_death_id: string | null;
   proximate_cause_of_death_confidence: string;
-  proximate_predated_by_taxon_id: string | null;
+  proximate_predated_by_itis_tsn: string | null;
   ultimate_cause_of_death_id: string | null;
   ultimate_cause_of_death_confidence: string;
-  ultimate_predated_by_taxon_id: string | null;
+  ultimate_predated_by_itis_tsn: string | null;
   mortality_comment: string | null;
 };
 
@@ -112,14 +112,14 @@ export type ICritterDetailedResponse = {
   animal_id: string | null;
   sex: string;
   responsible_region_nr_id: string;
-  create_user: string; // Deprecated
-  update_user: string; // Deprecated
-  create_timestamp: string; // Deprecated
-  update_timestamp: string; // Deprecated
-  critter_comment: string;
-  taxon: string; // Deprecated
-  responsible_region: string; // Deprecated
-  mortality_timestamp: string | null; // Deprecated
+  //   create_user: string; // Deprecated
+  //   update_user: string; // Deprecated
+  //   create_timestamp: string; // Deprecated
+  //   update_timestamp: string; // Deprecated
+  //   critter_comment: string;
+  //   taxon: string; // Deprecated
+  //   responsible_region: string; // Deprecated
+  //   mortality_timestamp: string | null; // Deprecated
   collection_units: ICollectionUnitResponse[];
   mortality: IMortalityResponse[];
   capture: ICaptureResponse[];
@@ -137,9 +137,9 @@ export interface ICritterSimpleResponse {
   wlh_id: string;
   animal_id: string;
   sex: string;
-  taxon: string; // Deprecated
-  //itis_tsn: number; -> New
-  //itis_scientific_name: string -> New
+  //   taxon: string; // Deprecated
+  itis_tsn: number;
+  itis_scientific_name: string;
   /**
    * These two properties are available in the detailed critter response.
    * Business rules allowed multiple mortality records.

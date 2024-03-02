@@ -73,16 +73,16 @@ export const MortalityAnimalFormContent = ({ index }: MortalityAnimalFormContent
                 required: isRequiredInSchema(AnimalMortalitySchema, 'proximate_cause_of_death_confidence')
               }}
               id={`${index}-pcod-confidence`}
-              route={'lookups/cause-of-death-confidence'}
+              route={'lookups/enum/cod-confidence'}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
             <CbSelectField
-              name={getAnimalFieldName<IAnimalMortality>(name, 'proximate_predated_by_taxon_id', index)}
+              name={getAnimalFieldName<IAnimalMortality>(name, 'proximate_predated_by_itis_tsn', index)}
               label={'Taxon'}
               controlProps={{
                 disabled: pcodTaxonDisabled,
-                required: isRequiredInSchema(AnimalMortalitySchema, 'proximate_predated_by_taxon_id')
+                required: isRequiredInSchema(AnimalMortalitySchema, 'proximate_predated_by_itis_tsn')
               }}
               id={`${index}-pcod-taxon`}
               route={'lookups/taxons'}
@@ -117,16 +117,16 @@ export const MortalityAnimalFormContent = ({ index }: MortalityAnimalFormContent
                 required: isRequiredInSchema(AnimalMortalitySchema, 'ultimate_cause_of_death_confidence')
               }}
               id={`${index}-ucod-confidence`}
-              route={'lookups/cause-of-death-confidence'}
+              route={'lookups/enum/cod-confidence'}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
             <CbSelectField
-              name={getAnimalFieldName<IAnimalMortality>(name, 'ultimate_predated_by_taxon_id', index)}
+              name={getAnimalFieldName<IAnimalMortality>(name, 'ultimate_predated_by_itis_tsn', index)}
               label={'Taxon'}
               controlProps={{
                 disabled: ucodTaxonDisabled,
-                required: isRequiredInSchema(AnimalMortalitySchema, 'ultimate_predated_by_taxon_id')
+                required: isRequiredInSchema(AnimalMortalitySchema, 'ultimate_predated_by_itis_tsn')
               }}
               id={`${index}-ucod-taxon`}
               route={'lookups/taxons'}

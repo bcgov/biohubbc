@@ -12,15 +12,23 @@ const defaultLog = getLogger('middleware/critterbase-proxy');
  * Restrict the proxy to these Critterbase routes.
  */
 const proxyRoutes = [
+  // auth
   '/api/critterbase/signup',
+  // critters
   '/api/critterbase/critters',
+  '/api/critterbase/critters/:critterId',
+  // lookups
+  '/api/critterbase/lookups/taxon-collection-categories',
+  '/api/critterbase/lookups/cods',
+  '/api/critterbase/lookups/cod-confidence',
+  '/api/critterbase/lookups/enum/sex',
+  // family
   '/api/critterbase/family',
   '/api/critterbase/family/:familyId',
-  '/api/critterbase/lookups/:key',
+  // xref
+  '/api/critterbase/xref/collection-units',
   '/api/critterbase/xref/taxon-marking-body-locations',
   '/api/critterbase/xref/taxon-measurements',
-  '/api/critterbase/xref/taxon-quantitative-measurements',
-  '/api/critterbase/xref/taxon-qualitative-measurements',
   '/api/critterbase/xref/taxon-qualitative-measurement-options'
 ];
 

@@ -55,8 +55,8 @@ export const FamilyAnimalFormContent = ({ index, allFamilies }: IFamilyAnimalFor
 
   const classes = useStyles();
   const [showFamilyStructure, setShowFamilyStructure] = useState(false);
-  const critterbase = useCritterbaseApi();
-  const { data: familyHierarchy, load: loadHierarchy } = useDataLoader(critterbase.family.getImmediateFamily);
+  const critterbaseApi = useCritterbaseApi();
+  const { data: familyHierarchy, load: loadHierarchy } = useDataLoader(critterbaseApi.family.getImmediateFamily);
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>

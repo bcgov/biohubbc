@@ -101,7 +101,7 @@ export const MarkingAnimalFormContent = ({ index }: IMarkingAnimalFormContentPro
           name={getAnimalFieldName<IAnimalMarking>(name, 'taxon_marking_body_location_id', index)}
           id="marking_body_location"
           route="xref/taxon-marking-body-locations"
-          query={`itis_tsn=${values.general.itis_tsn}`}
+          query={{ taxon_id: values.general.itis_tsn }}
           controlProps={{
             size: 'medium',
             required: isRequiredInSchema(AnimalMarkingSchema, 'taxon_marking_body_location_id')

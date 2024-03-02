@@ -42,8 +42,8 @@ export const CollectionUnitAnimalFormContent = ({ index }: ICollectionUnitAnimal
           name={getAnimalFieldName<IAnimalCollectionUnit>(name, 'collection_category_id', index)}
           id={'collection_category_id'}
           disabledValues={disabledCategories}
-          query={`itis_tsn=${values.general.itis_tsn}`}
-          route={'lookups/taxon-collection-categories'}
+          query={{ taxon_id: values.general.itis_tsn }}
+          route={'xref/taxon-collection-categories'}
           controlProps={{
             size: 'medium',
             required: isRequiredInSchema(AnimalCollectionUnitSchema, 'collection_category_id')
@@ -55,8 +55,8 @@ export const CollectionUnitAnimalFormContent = ({ index }: ICollectionUnitAnimal
         <CbSelectField
           label="Name"
           id={'collection_unit_id'}
-          route={'lookups/collection-units'}
-          query={`category_id=${values.collectionUnits[index]?.collection_category_id}`}
+          route={'xref/collection-units'}
+          query={{ category_id: values.collectionUnits[index]?.collection_category_id }}
           name={getAnimalFieldName<IAnimalCollectionUnit>(name, 'collection_unit_id', index)}
           controlProps={{
             size: 'medium',

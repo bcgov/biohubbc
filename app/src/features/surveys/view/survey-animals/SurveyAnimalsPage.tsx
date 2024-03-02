@@ -31,7 +31,7 @@ export const SurveyAnimalsPage = () => {
   const { cid: survey_critter_id } = useQuery();
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const bhApi = useBiohubApi();
-  //const cbApi = useCritterbaseApi();
+  //const critterbaseApi = useCritterbaseApi();
   const telemetryApi = useTelemetryApi();
   const dialogContext = useContext(DialogContext);
   const { surveyId, projectId, artifactDataLoader } = useContext(SurveyContext);
@@ -40,7 +40,7 @@ export const SurveyAnimalsPage = () => {
    * On click of the critter inside the AnimalList component.
    * Query the detailed Critter and generate default formik values. (critterAsFormikValues)
    * Pass to AddEditAnimal component.
-   * await cbApi.critters.getDetailedCritter()
+   * await critterbaseApi.critters.getDetailedCritter()
    */
 
   const {

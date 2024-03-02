@@ -64,10 +64,10 @@ export const transformCritterbaseAPIResponseToForm = (existingCritter: IDetailed
       mortality_coordinate_uncertainty: mor.location.coordinate_uncertainty ?? 0,
       proximate_cause_of_death_confidence: mor.proximate_cause_of_death_confidence,
       proximate_cause_of_death_id: mor.proximate_cause_of_death_id ?? '',
-      proximate_predated_by_taxon_id: mor.proximate_predated_by_taxon_id ?? '',
+      proximate_predated_by_itis_tsn: mor.proximate_predated_by_itis_tsn ?? '',
       ultimate_cause_of_death_confidence: mor.ultimate_cause_of_death_confidence ?? '',
       ultimate_cause_of_death_id: mor.ultimate_cause_of_death_id ?? '',
-      ultimate_predated_by_taxon_id: mor.ultimate_predated_by_taxon_id ?? '',
+      ultimate_predated_by_itis_tsn: mor.ultimate_predated_by_itis_tsn ?? '',
       projection_mode: 'wgs',
       location_id: mor.location_id ?? undefined
     })),

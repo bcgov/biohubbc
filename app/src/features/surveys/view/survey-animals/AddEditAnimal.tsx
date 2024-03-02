@@ -54,7 +54,7 @@ export const AddEditAnimal = (props: IAddEditAnimalProps) => {
 
   const theme = useTheme();
   const telemetryApi = useTelemetryApi();
-  const cbApi = useCritterbaseApi();
+  const critterbaseApi = useCritterbaseApi();
   const surveyContext = useContext(SurveyContext);
   const dialogContext = useContext(DialogContext);
   const { cid: survey_critter_id } = useQuery();
@@ -62,9 +62,9 @@ export const AddEditAnimal = (props: IAddEditAnimalProps) => {
   const { submitForm, isValid, resetForm, values, isSubmitting, initialValues, isValidating, status } =
     useFormikContext<IAnimal>();
 
-  const { data: allFamilies, refresh: refreshFamilies } = useDataLoader(cbApi.family.getAllFamilies);
+  const { data: allFamilies, refresh: refreshFamilies } = useDataLoader(critterbaseApi.family.getAllFamilies);
   const { refresh: refreshDeviceDetails } = useDataLoader(telemetryApi.devices.getDeviceDetails);
-  const { data: measurements, refresh: refreshMeasurements } = useDataLoader(cbApi.lookup.getTaxonMeasurements);
+  const { data: measurements, refresh: refreshMeasurements } = useDataLoader(critterbaseApi.xref.getTaxonMeasurements);
 
   const [showDialog, setShowDialog] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);

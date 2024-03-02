@@ -41,10 +41,10 @@ export interface IMortality {
   mortality_timestamp: string;
   proximate_cause_of_death_id: string;
   proximate_cause_of_death_confidence: string;
-  proximate_predated_by_taxon_id: string;
+  proximate_predated_by_itis_tsn: string;
   ultimate_cause_of_death_id: string;
   ultimate_cause_of_death_confidence: string;
-  ultimate_predated_by_taxon_id: string;
+  ultimate_predated_by_itis_tsn: string;
   mortality_comment: string;
 }
 

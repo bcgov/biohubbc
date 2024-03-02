@@ -21,14 +21,14 @@ describe('animal form helpers', () => {
         animal_id: 'def',
         sex: 'Male',
         responsible_region_nr_id: '4a08bf72-86e3-435e-9423-1ade03fa1316',
-        create_user: '4e038522-53ca-43a4-af57-07af0218693c',
-        update_user: '4e038522-53ca-43a4-af57-07af0218693c',
-        create_timestamp: '2022-02-02',
-        update_timestamp: '2022-02-02',
-        critter_comment: '',
+        // create_user: '4e038522-53ca-43a4-af57-07af0218693c',
+        // update_user: '4e038522-53ca-43a4-af57-07af0218693c',
+        // create_timestamp: '2022-02-02',
+        // update_timestamp: '2022-02-02',
+        // critter_comment: '',
         itis_scientific_name: 'Caribou',
-        responsible_region: 'Montana',
-        mortality_timestamp: null,
+        // responsible_region: 'Montana',
+        // mortality_timestamp: null,
         collection_units: [
           {
             critter_collection_unit_id: 'e1300b5e-6ea7-4537-a834-46be1b1fa573',
@@ -45,10 +45,10 @@ describe('animal form helpers', () => {
             mortality_timestamp: '2020-10-10T07:00:00.000Z',
             proximate_cause_of_death_id: '8d530b47-d4d3-4c6d-a87c-b440449d2781',
             proximate_cause_of_death_confidence: '',
-            proximate_predated_by_taxon_id: '',
+            proximate_predated_by_itis_tsn: '',
             ultimate_cause_of_death_id: null,
             ultimate_cause_of_death_confidence: '',
-            ultimate_predated_by_taxon_id: null,
+            ultimate_predated_by_itis_tsn: null,
             mortality_comment: 'Mortality email Nov 11, 2020 & Sept 29th and 30, 2020',
             location: {
               latitude: 52.676422548679,
@@ -244,10 +244,10 @@ describe('animal form helpers', () => {
         mortality_comment: 'tttt',
         proximate_cause_of_death_id: 'eaf6b7a0-c47c-4dba-83b4-88e9331ee097',
         proximate_cause_of_death_confidence: undefined,
-        proximate_predated_by_taxon_id: undefined,
+        proximate_predated_by_itis_tsn: undefined,
         ultimate_cause_of_death_id: undefined,
         ultimate_cause_of_death_confidence: undefined,
-        ultimate_predated_by_taxon_id: undefined,
+        ultimate_predated_by_itis_tsn: undefined,
         projection_mode: 'wgs'
       };
 
