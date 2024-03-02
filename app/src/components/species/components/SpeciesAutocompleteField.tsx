@@ -62,7 +62,8 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
       filterSelectedOptions
       noOptionsText="No matching options"
       options={options}
-      getOptionLabel={(option) => option.commonName || option.scientificName}
+      value={null}
+      getOptionLabel={(option) => option.scientificName}
       isOptionEqualToValue={(option, value) => {
         return option.tsn === value.tsn;
       }}
@@ -72,7 +73,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
           return options;
         }
 
-        const unselectedOptions = options.filter((item) => {
+        const unselectedOptions = options.filter((item, index, array) => {
           return !values.some((existing) => existing.tsn === item.tsn);
         });
         return searchFilter(unselectedOptions, state);
@@ -99,7 +100,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
                 borderTop: '1px solid' + grey[300]
               }
             }}
-            key={renderOption.tsn}
+            key={`${renderOption.tsn}-${renderOption.scientificName}`}
             {...renderProps}>
             <Box py={1} width="100%">
               <SpeciesCard

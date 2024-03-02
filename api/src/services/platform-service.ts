@@ -74,7 +74,7 @@ export class PlatformService extends DBService {
   /**
    * Get taxonomic data from BioHub.
    *
-   * @param {(string | number)[]} ids
+   * @param {(string | number)[]} tsns
    * @return {*}  {Promise<IItisSearchResult[]>}
    * @memberof PlatformService
    */
