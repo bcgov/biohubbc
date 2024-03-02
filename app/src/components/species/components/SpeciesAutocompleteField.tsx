@@ -104,9 +104,10 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
             {...renderProps}>
             <Box py={1} width="100%">
               <SpeciesCard
-                commonName={renderOption.commonName}
+                commonNames={renderOption.commonNames}
                 scientificName={renderOption.scientificName}
                 tsn={renderOption.tsn}
+                rank={renderOption.rank}
               />
             </Box>
           </Box>
