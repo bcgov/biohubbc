@@ -107,22 +107,29 @@ export function deleteDeployment(): RequestHandler {
       keycloak_guid: req['system_user']?.user_guid,
       username: req['system_user']?.user_identifier
     };
+
     const deploymentId = String(req.params.bctwDeploymentId);
     const critterId = Number(req.params.critterId);
+
     const connection = getDBConnection(req['keycloak_token']);
     const surveyCritterService = new SurveyCritterService(connection);
-    const bctw = new BctwService(user);
+    const bctwService = new BctwService(user);
+
     try {
       await connection.open();
+
       // @TODO SIMSBIOHUB-494 audit
       await surveyCritterService.removeDeployment(critterId, deploymentId);
+
       // @TODO SIMSBIOHUB-494 audit
-      await bctw.deleteDeployment(deploymentId);
+      await bctwService.deleteDeployment(deploymentId);
+
       await connection.commit();
       return res.status(200).json({ message: 'Deployment deleted.' });
     } catch (error) {
       defaultLog.error({ label: 'deleteDeployment', message: 'error', error });
       await connection.rollback();
+
       return res.status(500).json((error as AxiosError).response);
     } finally {
       connection.release();
