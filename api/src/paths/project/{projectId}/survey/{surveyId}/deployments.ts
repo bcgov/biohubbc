@@ -84,28 +84,32 @@ GET.apiDoc = {
   }
 };
 
-// @TODO clean up.
 export function getDeploymentsInSurvey(): RequestHandler {
   return async (req, res) => {
     const user: ICritterbaseUser = {
       keycloak_guid: req['system_user']?.user_guid,
       username: req['system_user']?.user_identifier
     };
+
     const surveyId = Number(req.params.surveyId);
     const connection = getDBConnection(req['keycloak_token']);
+
     const surveyCritterService = new SurveyCritterService(connection);
-    const bctw = new BctwService(user);
+    const bctwService = new BctwService(user);
+
     try {
       await connection.open();
+
       const critter_ids = (await surveyCritterService.getCrittersInSurvey(surveyId)).map(
-        (a) => a.critterbase_critter_id
+        (critter) => critter.critterbase_critter_id
       );
-      // @TODO SIMSBIOHUB-494 audit
-      const results = critter_ids.length ? await bctw.getDeploymentsByCritterId(critter_ids) : [];
+
+      const results = critter_ids.length ? await bctwService.getDeploymentsByCritterId(critter_ids) : [];
       return res.status(200).json(results);
     } catch (error) {
       defaultLog.error({ label: 'getDeploymentsInSurvey', message: 'error', error });
       await connection.rollback();
+
       throw error;
     } finally {
       connection.release();

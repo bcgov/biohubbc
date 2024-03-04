@@ -22,7 +22,7 @@ export class SurveyCritterRepository extends BaseRepository {
    * @member SurveyRepository
    */
   async getCrittersInSurvey(surveyId: number): Promise<SurveyCritterRecord[]> {
-    defaultLog.debug({ label: 'getcrittersInSurvey', surveyId });
+    defaultLog.debug({ label: 'getCrittersInSurvey', surveyId });
     const queryBuilder = getKnex().table('critter').select().where('survey_id', surveyId);
     const response = await this.connection.knex(queryBuilder);
     return response.rows;
