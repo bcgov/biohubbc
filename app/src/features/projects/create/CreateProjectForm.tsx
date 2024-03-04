@@ -101,7 +101,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
         <FormikErrorSnackbar />
         <HorizontalSplitFormComponent
           title="General Information"
-          summary="Enter general information, objectives and timelines for the project."
+          summary="Enter a name for your Project and describe your objectives in this workspace."
           component={
             <>
               <ProjectDetailsForm
@@ -151,7 +151,8 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
 
         <HorizontalSplitFormComponent
           title="Team Members"
-          summary="Specify team members and their associated role for this project."
+          summary="Only people invited to your Project can access your Project. 
+          Each collaborator's role determines their permissions in this Project."
           component={<ProjectUserForm users={getProjectParticipants()} roles={codes.project_roles} />}
         />
         <Divider className={classes.sectionDivider} />

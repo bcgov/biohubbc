@@ -1,4 +1,5 @@
 import { LoadingButton } from '@mui/lab';
+import { Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -136,6 +137,11 @@ const CreateProjectPage = () => {
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
       <PageHeader
         title="Create New Project"
+        subTitleJSX={
+          <Typography color="textSecondary">
+            Projects are collaborative workspaces for your team to manage access to shared information.
+          </Typography>
+        }
         buttonJSX={
           <>
             <LoadingButton

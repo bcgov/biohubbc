@@ -32,7 +32,7 @@ export const ProjectUserRoleYupSchema = yup.object().shape({
     )
     .min(1)
     .hasAtLeastOneValue(
-      'A minimum of one team member must be assigned the coordinator role.',
+      'There must be at least one person with the Coordinator role.',
       'project_role_names',
       PROJECT_ROLE.COORDINATOR
     )
@@ -159,7 +159,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
           sx={{
             maxWidth: '72ch'
           }}>
-          A minimum of one team member must be assigned the coordinator role.
+          There must be at least one person with the Coordinator role.
         </Typography>
         {errors?.['participants'] && !selectedUsers.length && (
           <Box mt={3}>
