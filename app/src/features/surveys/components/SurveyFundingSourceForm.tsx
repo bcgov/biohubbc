@@ -77,7 +77,7 @@ const SurveyFundingSourceForm = () => {
       <FieldArray
         name="funding_sources"
         render={(arrayHelpers: FieldArrayRenderProps) => (
-          <>
+          <Stack gap={1}>
             <TransitionGroup
               component={Stack}
               gap={1}
@@ -147,12 +147,11 @@ const SurveyFundingSourceForm = () => {
               startIcon={<Icon path={mdiPlus} size={1} />}
               onClick={() => arrayHelpers.push(SurveyFundingSourceInitialValues)}
               sx={{
-                mt: 1,
                 alignSelf: 'flex-start'
               }}>
               Add Funding Source
             </Button>
-          </>
+          </Stack>
         )}
       />
     </form>

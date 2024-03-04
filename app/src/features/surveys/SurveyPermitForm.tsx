@@ -70,11 +70,7 @@ const SurveyPermitForm: React.FC = () => {
     <FieldArray
       name="permit.permits"
       render={(arrayHelpers: FieldArrayRenderProps) => (
-        <Stack gap={1}
-          sx={{
-            transition: 'all linear ease-out'
-          }}
-        >
+        <>
           <TransitionGroup
             component={Stack}
             role="list"
@@ -173,12 +169,13 @@ const SurveyPermitForm: React.FC = () => {
             startIcon={<Icon path={mdiPlus} size={1} />}
             onClick={() => arrayHelpers.push(SurveyPermitFormArrayItemInitialValues)}
             sx={{
+              mt: 1,
               alignSelf: 'flex-start'
             }}>
             Add New Permit
           </Button>
 
-        </Stack>
+        </>
       )}
     />
   );
