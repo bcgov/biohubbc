@@ -152,13 +152,17 @@ PATCH.apiDoc = {
 export function removeCritterFromSurvey(): RequestHandler {
   return async (req, res) => {
     const critterId = Number(req.params.critterId);
+    const surveyId = Number(req.params.surveyId);
+
     const connection = getDBConnection(req['keycloak_token']);
-    const surveyService = new SurveyCritterService(connection);
+    const surveyCritterService = new SurveyCritterService(connection);
+
     try {
       await connection.open();
-      // @TODO SIMSBIOHUB-494 audit
-      const result = await surveyService.removeCritterFromSurvey(critterId);
+
+      const result = await surveyCritterService.removeCritterFromSurvey(surveyId, critterId);
       await connection.commit();
+
       return res.status(200).json(result);
     } catch (error) {
       defaultLog.error({ label: 'removeCritterFromSurvey', message: 'error', error });
