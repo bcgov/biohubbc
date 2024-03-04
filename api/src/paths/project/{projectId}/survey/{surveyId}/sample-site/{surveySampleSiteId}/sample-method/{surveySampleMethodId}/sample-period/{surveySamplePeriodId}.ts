@@ -272,6 +272,7 @@ DELETE.apiDoc = {
 export function deleteSurveySamplePeriodRecord(): RequestHandler {
   return async (req, res) => {
     const surveySamplePeriodId = Number(req.params.surveySamplePeriodId);
+    const surveyId = Number(req.params.surveyId);
 
     if (!surveySamplePeriodId) {
       throw new HTTP400('Missing required param `surveySamplePeriodId`');
@@ -284,8 +285,7 @@ export function deleteSurveySamplePeriodRecord(): RequestHandler {
 
       const samplePeriodService = new SamplePeriodService(connection);
 
-      // @TODO SIMSBIOHUB-494 audit
-      await samplePeriodService.deleteSamplePeriodRecord(surveySamplePeriodId);
+      await samplePeriodService.deleteSamplePeriodRecord(surveyId, surveySamplePeriodId);
 
       await connection.commit();
 

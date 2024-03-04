@@ -27,23 +27,25 @@ export class SamplePeriodService extends DBService {
   /**
    *  Gets all survey Sample periods.
    *
+   * @param {number} surveyId
    * @param {number} surveySampleMethodId
    * @return {*}  {Promise<SamplePeriodRecord[]>}
    * @memberof SamplePeriodService
    */
-  async getSamplePeriodsForSurveyMethodId(surveySampleMethodId: number): Promise<SamplePeriodRecord[]> {
-    return await this.samplePeriodRepository.getSamplePeriodsForSurveyMethodId(surveySampleMethodId);
+  async getSamplePeriodsForSurveyMethodId(surveyId: number, surveySampleMethodId: number): Promise<SamplePeriodRecord[]> {
+    return await this.samplePeriodRepository.getSamplePeriodsForSurveyMethodId(surveyId, surveySampleMethodId);
   }
 
   /**
    * Deletes a survey Sample Period.
    *
+   * @param {number} surveyId
    * @param {number} surveySamplePeriodId
    * @return {*}  {Promise<SamplePeriodRecord>}
    * @memberof SamplePeriodService
    */
-  async deleteSamplePeriodRecord(surveySamplePeriodId: number): Promise<SamplePeriodRecord> {
-    return this.samplePeriodRepository.deleteSamplePeriodRecord(surveySamplePeriodId);
+  async deleteSamplePeriodRecord(surveyId: number, surveySamplePeriodId: number): Promise<SamplePeriodRecord> {
+    return this.samplePeriodRepository.deleteSamplePeriodRecord(surveyId, surveySamplePeriodId);
   }
 
   /**
@@ -87,9 +89,9 @@ export class SamplePeriodService extends DBService {
    * @param {UpdateSampleMethodRecord[]} newPeriod
    * @memberof SamplePeriodService
    */
-  async deleteSamplePeriodsNotInArray(surveySampleMethodId: number, newPeriod: UpdateSamplePeriodRecord[]) {
+  async deleteSamplePeriodsNotInArray(surveyId: number, surveySampleMethodId: number, newPeriod: UpdateSamplePeriodRecord[]) {
     // Get any existing Period for the given sample method
-    const existingPeriods = await this.getSamplePeriodsForSurveyMethodId(surveySampleMethodId);
+    const existingPeriods = await this.getSamplePeriodsForSurveyMethodId(surveyId, surveySampleMethodId);
 
     // Compare input and existing for Period to delete
     // Any existing periods that are not found in the new Periods being passed in will be collected for deletion

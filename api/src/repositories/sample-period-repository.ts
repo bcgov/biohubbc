@@ -57,30 +57,21 @@ export class SamplePeriodRepository extends BaseRepository {
   async getSamplePeriodsForSurveyMethodId(surveyId: number, surveySampleMethodId: number): Promise<SamplePeriodRecord[]> {
     const sql = SQL`
       SELECT
-        *
+        ssp.*
       FROM
-        survey_sample_period
+        survey_sample_period ssp
+      JOIN
+        survey_sample_method ssm
+      ON
+        ssp.survey_sample_method_id = ssm.survey_sample_method_id
+      JOIN
+        survey_sample_site sss
+      ON
+        ssm.survey_sample_site_id = sss.survey_sample_site_id
       WHERE
-        survey_sample_method_id
-      IN (
-        SELECT
-          survey_sample_method_id
-        FROM
-          survey_sample_method
-        WHERE
-          survey_sample_method_id = ${surveySampleMethodId}
-        AND
-          survey_sample_site_id
-        IN (
-          SELECT
-            survey_sample_site_id
-          FROM
-            survey_sample_siet
-          WHERE
-            survey_id = ${surveyId}
-        )
-      );
-    `;
+        ssm.survey_sample_method_id = ${surveySampleMethodId}
+      AND
+        sss.survey_id = ${surveyId};`
 
     const response = await this.connection.sql(sql, SamplePeriodRecord);
     return response.rows;
@@ -159,18 +150,36 @@ export class SamplePeriodRepository extends BaseRepository {
   /**
    * Deletes a survey Sample Period.
    *
+   * @param {number} surveyId
    * @param {number} surveySamplePeriodId
    * @return {*}  {Promise<SamplePeriodRecord>}
    * @memberof SamplePeriodRepository
    */
-  async deleteSamplePeriodRecord(surveySamplePeriodId: number): Promise<SamplePeriodRecord> {
+  async deleteSamplePeriodRecord(surveyId: number, surveySamplePeriodId: number): Promise<SamplePeriodRecord> {
+    // @TODO 
     const sqlStatement = SQL`
       DELETE FROM
         survey_sample_period
       WHERE
         survey_sample_period_id = ${surveySamplePeriodId}
-      RETURNING
-        *;
+      AND
+        survey_sample_method_id
+      IN (
+        SELECT
+          survey_sample_method_id
+        FROM
+          survey_sample_method
+        WHERE
+          survey_sample_site_id
+        IN (
+          SELECT
+            survey_sample_site_id
+          FROM
+            survey_sample_siet
+          WHERE
+            survey_id = ${surveyId}
+        )
+      );
     `;
 
     const response = await this.connection.sql(sqlStatement, SamplePeriodRecord);
