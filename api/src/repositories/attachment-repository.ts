@@ -1047,7 +1047,7 @@ export class AttachmentRepository extends BaseRepository {
    * @return {*}  {Promise<{ key: string; uuid: string }>}
    * @memberof AttachmentRepository
    */
-  async deleteProjectAttachment(attachmentId: number): Promise<{ key: string; uuid: string }> {
+  async deleteProjectAttachmentRecord(attachmentId: number): Promise<{ key: string; uuid: string }> {
     const sqlStatement = SQL`
       DELETE
         from project_attachment
@@ -1061,7 +1061,7 @@ export class AttachmentRepository extends BaseRepository {
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete Project Attachment by id', [
-        'AttachmentRepository->deleteProjectAttachment',
+        'AttachmentRepository->deleteProjectAttachmentRecord',
         'rows was null or undefined, expected rows != null'
       ]);
     }
@@ -1076,7 +1076,7 @@ export class AttachmentRepository extends BaseRepository {
    * @return {*}  {Promise<{ key: string }>}
    * @memberof AttachmentRepository
    */
-  async deleteProjectReportAttachment(attachmentId: number): Promise<{ key: string; uuid: string }> {
+  async deleteProjectReportAttachmentRecord(attachmentId: number): Promise<{ key: string; uuid: string }> {
     const sqlStatement = SQL`
       DELETE
         from project_report_attachment
@@ -1090,7 +1090,7 @@ export class AttachmentRepository extends BaseRepository {
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete Project Report Attachment by id', [
-        'AttachmentRepository->deleteProjectReportAttachment',
+        'AttachmentRepository->deleteProjectReportAttachmentRecord',
         'rows was null or undefined, expected rows != null'
       ]);
     }
@@ -1285,7 +1285,7 @@ export class AttachmentRepository extends BaseRepository {
    * @return {*}  {Promise<{ key: string; uuid: string }>}
    * @memberof AttachmentRepository
    */
-  async deleteSurveyReportAttachment(attachmentId: number): Promise<{ key: string; uuid: string }> {
+  async deleteSurveyReportAttachmentRecord(attachmentId: number): Promise<{ key: string; uuid: string }> {
     const sqlStatement = SQL`
       DELETE
         from survey_report_attachment
@@ -1299,7 +1299,7 @@ export class AttachmentRepository extends BaseRepository {
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete Survey Report Attachment', [
-        'AttachmentRepository->deleteSurveyReportAttachment',
+        'AttachmentRepository->deleteSurveyReportAttachmentRecord',
         'rows was null or undefined, expected rows != null'
       ]);
     }
@@ -1314,7 +1314,7 @@ export class AttachmentRepository extends BaseRepository {
    * @return {*}  {Promise<{ key: string; uuid: string }>}
    * @memberof AttachmentRepository
    */
-  async deleteSurveyAttachment(attachmentId: number): Promise<{ key: string; uuid: string }> {
+  async deleteSurveyAttachmentRecord(attachmentId: number): Promise<{ key: string; uuid: string }> {
     const sqlStatement = SQL`
       DELETE
         from survey_attachment
@@ -1328,7 +1328,7 @@ export class AttachmentRepository extends BaseRepository {
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete Survey Attachment', [
-        'AttachmentRepository->deleteSurveyAttachment',
+        'AttachmentRepository->deleteSurveyAttachmentRecord',
         'rows was null or undefined, expected rows != null'
       ]);
     }

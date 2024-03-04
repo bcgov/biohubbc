@@ -108,7 +108,7 @@ export function deleteAttachment(): RequestHandler {
 
       const attachmentService = new AttachmentService(connection);
 
-      await attachmentService.handleDeleteSurveyAttachment(
+      await attachmentService.deleteSurveyAttachment(
         Number(req.params.surveyId),
         Number(req.params.attachmentId),
         req.body.attachmentType
