@@ -11,6 +11,7 @@ import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ICreateProjectRequest, IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 import { alphabetizeObjects } from 'utils/Utils';
+import ProjectAgreementsForm from '../components/ProjectAgreementsForm';
 import ProjectDetailsForm, {
   ProjectDetailsFormInitialValues,
   ProjectDetailsFormYupSchema
@@ -101,7 +102,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
         <FormikErrorSnackbar />
         <HorizontalSplitFormComponent
           title="General Information"
-          summary="Enter a name for your Project and describe your objectives in this workspace."
+          summary="Enter a name for your Project and describe your objectives for this workspace."
           component={
             <>
               <ProjectDetailsForm
@@ -146,6 +147,15 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
               </Box> */}
             </>
           }></HorizontalSplitFormComponent>
+
+        <Divider className={classes.sectionDivider} />
+
+        <HorizontalSplitFormComponent
+          title="Data Sharing & Access Agreements"
+          summary="Project leads are encouraged to establish Data Sharing & Access Agreements before collecting data to 
+          prevent information from being used in unintended ways."
+          component={<ProjectAgreementsForm />}
+        />
 
         <Divider className={classes.sectionDivider} />
 
