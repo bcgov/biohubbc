@@ -31,6 +31,7 @@ const AncillarySpeciesComponent = () => {
         label={'Ancillary Species'}
         required={false}
         handleAddSpecies={handleAddSpecies}
+        clearOnSelect={true}
       />
       <SelectedSpecies selectedSpecies={selectedSpecies} handleRemoveSpecies={handleRemoveSpecies} />
       {errors && get(errors, 'species.ancillary_species') && (

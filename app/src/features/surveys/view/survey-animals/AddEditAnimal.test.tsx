@@ -26,8 +26,8 @@ const mockCritterbaseApi = useCritterbaseApi as jest.Mock;
 
 const mockValues: IAnimal = {
   general: {
-    taxon_id: 'taxon',
-    taxon_name: 'taxon_name',
+    itis_tsn: 'itis_tsn',
+    itis_scientific_name: 'itis_scientific_name',
     animal_id: 'alias',
     critter_id: 'critter',
     sex: AnimalSex.UNKNOWN,
