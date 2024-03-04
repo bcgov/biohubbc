@@ -328,22 +328,6 @@ export class ObservationService extends DBService {
   }
 
   /**
-   * Retrieves all observation records for the given survey and sample site id
-   *
-   * @param {number} surveyId
-   * @param {number} sampleSiteId
-   * @return {*}  {Promise<{ observationCount: number }>}
-   * @memberof ObservationService
-   */
-  async getObservationsCountBySampleSiteId(
-    surveyId: number,
-    sampleSiteId: number
-  ): Promise<{ observationCount: number }> {
-    /* @TODO just return number. */
-    return this.observationRepository.getObservationsCountBySampleSiteId(surveyId, sampleSiteId);
-  }
-
-  /**
    * Retrieves observation records count for the given survey and sample site ids
    *
    * @param {number} surveyId
@@ -354,30 +338,30 @@ export class ObservationService extends DBService {
   async getObservationsCountBySampleSiteIds(
     surveyId: number,
     sampleSiteIds: number[]
-  ): Promise<{ observationCount: number }> {
+  ): Promise<number> {
     return this.observationRepository.getObservationsCountBySampleSiteIds(surveyId, sampleSiteIds);
   }
 
   /**
    * Retrieves observation records count for the given survey and sample method ids
    *
-   * @param {number} sampleMethodId
+   * @param {number[]} sampleMethodIds
    * @return {*}  {Promise<{ observationCount: number }>}
    * @memberof ObservationService
    */
-  async getObservationsCountBySampleMethodId(sampleMethodId: number): Promise<{ observationCount: number }> {
-    return this.observationRepository.getObservationsCountBySampleMethodId(sampleMethodId);
+  async getObservationsCountBySampleMethodIds(sampleMethodIds: number[]): Promise<number> {
+    return this.observationRepository.getObservationsCountBySampleMethodIds(sampleMethodIds);
   }
 
   /**
    * Retrieves observation records count for the given survey and sample period ids
    *
-   * @param {number} samplePeriodId
+   * @param {number[]} samplePeriodIds
    * @return {*}  {Promise<{ observationCount: number }>}
    * @memberof ObservationService
    */
-  async getObservationsCountBySamplePeriodId(samplePeriodId: number): Promise<{ observationCount: number }> {
-    return this.observationRepository.getObservationsCountBySamplePeriodId(samplePeriodId);
+  async getObservationsCountBySamplePeriodIds(samplePeriodIds: number[]): Promise<number> {
+    return this.observationRepository.getObservationsCountBySamplePeriodIds(samplePeriodIds);
   }
 
   /**

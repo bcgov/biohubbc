@@ -112,21 +112,16 @@ export class SampleMethodService extends DBService {
 
     // Delete any methods not found in the passed in array
     if (existingMethodsToDelete.length > 0) {
-      const promises: Promise<any>[] = [];
-
       // Check if any observations are associated with the methods to be deleted
-      for (const method of existingMethodsToDelete) {
-        if (
-          (await observationService.getObservationsCountBySampleMethodId(method.survey_sample_method_id))
-            .observationCount > 0
-        ) {
-          throw new HTTP400('Cannot delete a sample method that is associated with an observation');
-        }
-
-        promises.push(this.deleteSampleMethodRecord(surveyId, method.survey_sample_method_id));
+      const existingSampleMethodIds = existingMethodsToDelete.map((method) => method.survey_sample_method_id);
+      const samplingMethodObservationsCount = await observationService.getObservationsCountBySampleMethodIds(existingSampleMethodIds);
+      if (samplingMethodObservationsCount > 0) {
+        throw new HTTP400('Cannot delete a sample method that is associated with an observation');  
       }
 
-      await Promise.all(promises);
+      await Promise.all(
+        existingMethodsToDelete.map((sampleMethod) => this.deleteSampleMethodRecord(surveyId, sampleMethod.survey_sample_method_id))
+      );
     }
   }
 

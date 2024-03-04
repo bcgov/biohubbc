@@ -95,7 +95,7 @@ export class SamplePeriodService extends DBService {
 
     // Compare input and existing for Period to delete
     // Any existing periods that are not found in the new Periods being passed in will be collected for deletion
-    const existingPeriodToDelete = existingPeriods.filter((existingPeriod) => {
+    const existingPeriodsToDelete = existingPeriods.filter((existingPeriod) => {
       return !newPeriod.find(
         (incomingMethod) => incomingMethod.survey_sample_period_id === existingPeriod.survey_sample_period_id
       );
@@ -104,22 +104,16 @@ export class SamplePeriodService extends DBService {
     const observationService = new ObservationService(this.connection);
 
     // Delete any Periods not found in the passed in array
-    if (existingPeriodToDelete.length > 0) {
-      const idsToDelete = [];
+    if (existingPeriodsToDelete.length > 0) {
+      const existingSamplePeriodIds = existingPeriodsToDelete.map((period) => period.survey_sample_period_id);
+      const samplingPeriodObservationsCount = await observationService.getObservationsCountBySamplePeriodIds(existingSamplePeriodIds);
 
-      // Check if any observations are associated with the periods to delete
-      for (const period of existingPeriodToDelete) {
-        if (
-          (await observationService.getObservationsCountBySamplePeriodId(period.survey_sample_period_id))
-            .observationCount > 0
-        ) {
-          throw new HTTP400('Cannot delete a sample period that is associated with an observation');
-        }
-
-        idsToDelete.push(period.survey_sample_period_id);
+      if (samplingPeriodObservationsCount > 0) {
+        
+        throw new HTTP400('Cannot delete a sample period that is associated with an observation');
       }
 
-      await this.deleteSamplePeriodRecords(idsToDelete);
+      await this.deleteSamplePeriodRecords(existingSamplePeriodIds);
     }
   }
 }

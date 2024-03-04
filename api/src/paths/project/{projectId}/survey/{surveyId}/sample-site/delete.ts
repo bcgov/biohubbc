@@ -115,9 +115,9 @@ export function deleteSurveySampleSiteRecords(): RequestHandler {
       const observationService = new ObservationService(connection);
       const sampleLocationService = new SampleLocationService(connection);
 
-      const response = await observationService.getObservationsCountBySampleSiteIds(surveyId, surveySampleSiteIds);
+      const observationCount = await observationService.getObservationsCountBySampleSiteIds(surveyId, surveySampleSiteIds);
 
-      if (response.observationCount > 0) {
+      if (observationCount > 0) {
         throw new HTTP500(`Cannot delete a sampling site that is associated with an observation`);
       }
 

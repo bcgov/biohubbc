@@ -201,7 +201,7 @@ describe('ObservationRepository', () => {
 
       const repo = new ObservationRepository(mockDBConnection);
 
-      const response = await repo.getObservationSubmissionById(5);
+      const response = await repo.getObservationSubmissionById(1, 5);
 
       expect(response).to.eql({ submission_id: 5 });
     });
@@ -216,7 +216,7 @@ describe('ObservationRepository', () => {
       const repo = new ObservationRepository(mockDBConnection);
 
       try {
-        await repo.getObservationSubmissionById(5);
+        await repo.getObservationSubmissionById(1, 5);
         expect.fail();
       } catch (error) {
         expect((error as Error).message).to.equal('Failed to get observation submission');
