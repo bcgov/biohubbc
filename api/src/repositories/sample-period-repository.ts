@@ -80,23 +80,33 @@ export class SamplePeriodRepository extends BaseRepository {
   /**
    * updates a survey Sample Period.
    *
-   * @param {UpdateSamplePeriodRecord} sample
+   * @param {number} surveyId
+   * @param {UpdateSamplePeriodRecord} samplePeriod
    * @return {*}  {Promise<SamplePeriodRecord>}
    * @memberof SamplePeriodRepository
    */
-  async updateSamplePeriod(sample: UpdateSamplePeriodRecord): Promise<SamplePeriodRecord> {
+  async updateSamplePeriod(surveyId: number, samplePeriod: UpdateSamplePeriodRecord): Promise<SamplePeriodRecord> {
     const sql = SQL`
-      UPDATE survey_sample_period
+      UPDATE survey_sample_period ssp
       SET
-        survey_sample_method_id=${sample.survey_sample_method_id},
-        start_date=${sample.start_date},
-        end_date=${sample.end_date},
-        start_time=${sample.start_time || null},
-        end_time=${sample.end_time || null}
-        WHERE
-        survey_sample_period_id = ${sample.survey_sample_period_id}
+        survey_sample_method_id=${samplePeriod.survey_sample_method_id},
+        start_date=${samplePeriod.start_date},
+        end_date=${samplePeriod.end_date},
+        start_time=${samplePeriod.start_time || null},
+        end_time=${samplePeriod.end_time || null}
+      FROM
+          survey_sample_method ssm
+      JOIN
+          survey_sample_site sss ON ssm.survey_sample_site_id = sss.survey_sample_site_id
+      WHERE
+          ssp.survey_sample_method_id = ssm.survey_sample_method_id
+      AND
+          sss.survey_id = surveyId
+      AND
+          ssp.survey_sample_period_id = samplePeriod.survey_sample_period_id
       RETURNING
-        *;`;
+        ssp.*;
+    `;
 
     const response = await this.connection.sql(sql, SamplePeriodRecord);
 
@@ -156,31 +166,24 @@ export class SamplePeriodRepository extends BaseRepository {
    * @memberof SamplePeriodRepository
    */
   async deleteSamplePeriodRecord(surveyId: number, surveySamplePeriodId: number): Promise<SamplePeriodRecord> {
-    // @TODO 
     const sqlStatement = SQL`
-      DELETE FROM
-        survey_sample_period
+      DELETE
+        ssp
+      FROM
+        survey_sample_period AS ssp
+      JOIN
+        survey_sample_method AS ssm
+      ON
+        ssp.survey_sample_method_id = ssm.survey_sample_method_id
+      JOIN
+        survey_sample_site AS sss
+      ON
+        ssm.survey_sample_site_id = sss.survey_sample_site_id
       WHERE
-        survey_sample_period_id = ${surveySamplePeriodId}
+        ssp.survey_sample_period_id = ${surveySamplePeriodId}
       AND
-        survey_sample_method_id
-      IN (
-        SELECT
-          survey_sample_method_id
-        FROM
-          survey_sample_method
-        WHERE
-          survey_sample_site_id
-        IN (
-          SELECT
-            survey_sample_site_id
-          FROM
-            survey_sample_siet
-          WHERE
-            survey_id = ${surveyId}
-        )
-      );
-    `;
+        sss.survey_id = ${surveyId}
+      `;
 
     const response = await this.connection.sql(sqlStatement, SamplePeriodRecord);
 

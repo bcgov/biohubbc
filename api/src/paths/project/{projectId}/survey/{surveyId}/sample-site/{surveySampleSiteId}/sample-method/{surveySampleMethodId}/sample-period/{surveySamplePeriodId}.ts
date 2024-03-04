@@ -144,6 +144,7 @@ export function updateSurveySamplePeriod(): RequestHandler {
       throw new HTTP400('Missing required body param `samplePeriod`');
     }
 
+    const surveyId = Number(req.params.surveyId);
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
@@ -157,8 +158,7 @@ export function updateSurveySamplePeriod(): RequestHandler {
 
       const samplePeriodService = new SamplePeriodService(connection);
 
-      // @TODO SIMSBIOHUB-494 audit
-      await samplePeriodService.updateSamplePeriod(samplePeriod);
+      await samplePeriodService.updateSamplePeriod(surveyId, samplePeriod);
 
       await connection.commit();
 

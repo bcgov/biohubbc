@@ -77,8 +77,8 @@ export class SamplePeriodService extends DBService {
    * @return {*}  {Promise<SamplePeriodRecord>}
    * @memberof SamplePeriodService
    */
-  async updateSamplePeriod(samplePeriod: UpdateSamplePeriodRecord): Promise<SamplePeriodRecord> {
-    return this.samplePeriodRepository.updateSamplePeriod(samplePeriod);
+  async updateSamplePeriod(surveyId: number, samplePeriod: UpdateSamplePeriodRecord): Promise<SamplePeriodRecord> {
+    return this.samplePeriodRepository.updateSamplePeriod(surveyId, samplePeriod);
   }
 
   /**
