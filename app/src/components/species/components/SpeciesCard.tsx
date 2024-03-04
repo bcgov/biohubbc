@@ -8,6 +8,7 @@ interface ISpeciesCard {
   scientificName: string;
   tsn: number;
   rank: string;
+  kingdom: string;
 }
 
 const SpeciesCard = (props: ISpeciesCard) => {
@@ -17,7 +18,7 @@ const SpeciesCard = (props: ISpeciesCard) => {
     { color: colors.green[400], ranks: ['Genus'] },
     { color: colors.blue[400], ranks: ['Family'] },
     { color: colors.red[400], ranks: ['Order'] },
-    { color: colors.orange[400], ranks: ['Class'] },
+    { color: colors.deepOrange[400], ranks: ['Class'] },
     { color: colors.pink[400], ranks: ['Phylum'] },
     { color: colors.grey[400], ranks: ['Kingdom'] }
   ];
@@ -36,26 +37,28 @@ const SpeciesCard = (props: ISpeciesCard) => {
             }
           }}>
           {props.scientificName.split(' ').length > 1 ? <em>{props.scientificName}</em> : <>{props.scientificName}</>}
-          <Chip
-            title="Taxonomic rank"
-            label={props.rank}
-            size="small"
-            sx={{
-              minWidth: '0.4rem',
-              borderRadius: '4px',
-              padding: '1px 1px',
-              margin: '0 10px 3px 10px',
-              opacity: 0.4,
-              backgroundColor: rankColors.find((color) => color.ranks.includes(props.rank))?.color || grey[800],
-              '& .MuiChip-label': {
-                pt: '2px',
-                letterSpacing: '0.03rem',
-                color: '#fff',
-                fontWeight: 100,
-                fontSize: '0.7rem'
-              }
-            }}
-          />
+          {props.rank && (
+            <Chip
+              title="Taxonomic rank"
+              label={props.rank}
+              size="small"
+              sx={{
+                minWidth: '0.4rem',
+                borderRadius: '4px',
+                padding: '1px 1px',
+                margin: '0 10px 3px 10px',
+                opacity: 0.4,
+                backgroundColor: rankColors.find((color) => color.ranks.includes(props.rank))?.color || grey[800],
+                '& .MuiChip-label': {
+                  pt: '2px',
+                  letterSpacing: '0.03rem',
+                  color: '#fff',
+                  fontWeight: 100,
+                  fontSize: '0.7rem'
+                }
+              }}
+            />
+          )}
         </Typography>
         <Box display="flex" alignItems="center">
           {props.commonNames?.length > 0 &&
@@ -75,15 +78,28 @@ const SpeciesCard = (props: ISpeciesCard) => {
         </Box>
       </Typography>
       <Stack spacing={1} direction="row">
+        {props.kingdom && (
+          <Chip
+            title="Taxonomic kingdom"
+            label={props.kingdom}
+            size="small"
+            sx={{
+              // backgroundColor: grey[700],
+              '& .MuiChip-label': {
+                // color: '#fff',
+                letterSpacing: '0.03rem'
+              }
+            }}
+          />
+        )}
         <Chip
           title="Taxonomic serial number (ID)"
           label={'ID: ' + props.tsn}
           size="small"
           sx={{
-            backgroundColor: grey[700],
+            // backgroundColor: grey[700],
             '& .MuiChip-label': {
-              color: '#fff',
-              mt: '1px',
+              // color: '#fff',
               letterSpacing: '0.03rem'
             }
           }}

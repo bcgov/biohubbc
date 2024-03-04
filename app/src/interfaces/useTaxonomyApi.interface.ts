@@ -14,4 +14,5 @@ export interface ITaxonomy {
   commonNames: string[];
   scientificName: string;
   rank: string;
+  kingdom: string;
 }

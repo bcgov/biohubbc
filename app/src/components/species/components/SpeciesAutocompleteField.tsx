@@ -108,6 +108,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
                 scientificName={renderOption.scientificName}
                 tsn={renderOption.tsn}
                 rank={renderOption.rank}
+                kingdom={renderOption.kingdom}
               />
             </Box>
           </Box>
