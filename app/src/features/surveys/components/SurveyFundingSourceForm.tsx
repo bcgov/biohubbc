@@ -82,6 +82,11 @@ const SurveyFundingSourceForm = () => {
               component={Stack}
               gap={1}
               role="list"
+              sx={{
+                '&:not(:has(div[role=listitem]))': {
+                  display: 'none'
+                }
+              }}
             >
               {values.funding_sources.map((surveyFundingSource: ISurveyFundingSource, index: number) => {
                 return (

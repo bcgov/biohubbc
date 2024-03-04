@@ -150,7 +150,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
             />
           }></HorizontalSplitFormComponent>
 
-        <Divider className={classes.sectionDivider} />p
+        <Divider className={classes.sectionDivider} />
 
         <HorizontalSplitFormComponent
           title="Survey Participants"
