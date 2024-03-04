@@ -76,7 +76,7 @@ export class SampleLocationService extends DBService {
     // Delete all methods associated with the sample location
     const existingSampleMethods = await sampleMethodService.getSampleMethodsForSurveySampleSiteId(surveyId, surveySampleSiteId);
     for (const item of existingSampleMethods) {
-      await sampleMethodService.deleteSampleMethodRecord(item.survey_sample_method_id);
+      await sampleMethodService.deleteSampleMethodRecord(surveyId, item.survey_sample_method_id);
     }
 
     return this.sampleLocationRepository.deleteSampleSiteRecord(surveyId, surveySampleSiteId);
@@ -131,10 +131,11 @@ export class SampleLocationService extends DBService {
   /**
    * Updates a survey entire Sample Site Record, with Location and associated methods and periods.
    *
+   * @param {number} surveyId
    * @param {UpdateSampleLocationRecord} sampleSite
    * @memberof SampleLocationService
    */
-  async updateSampleLocationMethodPeriod(sampleSite: UpdateSampleLocationRecord) {
+  async updateSampleLocationMethodPeriod(surveyId: number, sampleSite: UpdateSampleLocationRecord) {
     const methodService = new SampleMethodService(this.connection);
 
     // Update the main sample location
@@ -156,7 +157,7 @@ export class SampleLocationService extends DBService {
           description: item.description,
           periods: item.periods
         };
-        await methodService.updateSampleMethod(sampleMethod);
+        await methodService.updateSampleMethod(surveyId, sampleMethod);
       } else {
         const sampleMethod = {
           survey_sample_site_id: sampleSite.survey_sample_site_id,

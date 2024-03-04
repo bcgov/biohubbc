@@ -40,15 +40,16 @@ export class SampleMethodService extends DBService {
   /**
    * Deletes a survey Sample Method.
    *
+   * @param {number} surveyId
    * @param {number} surveySampleMethodId
    * @return {*}  {Promise<SampleMethodRecord>}
    * @memberof SampleMethodService
    */
-  async deleteSampleMethodRecord(surveySampleMethodId: number): Promise<SampleMethodRecord> {
+  async deleteSampleMethodRecord(surveyId: number, surveySampleMethodId: number): Promise<SampleMethodRecord> {
     const samplePeriodService = new SamplePeriodService(this.connection);
 
     // Collect list of periods to delete
-    const existingSamplePeriods = await samplePeriodService.getSamplePeriodsForSurveyMethodId(surveySampleMethodId);
+    const existingSamplePeriods = await samplePeriodService.getSamplePeriodsForSurveyMethodId(surveyId, surveySampleMethodId);
     const periodsToDelete = existingSamplePeriods.map((item) => item.survey_sample_period_id);
     // Delete all associated sample periods
     await samplePeriodService.deleteSamplePeriodRecords(periodsToDelete);
@@ -122,7 +123,7 @@ export class SampleMethodService extends DBService {
           throw new HTTP400('Cannot delete a sample method that is associated with an observation');
         }
 
-        promises.push(this.deleteSampleMethodRecord(method.survey_sample_method_id));
+        promises.push(this.deleteSampleMethodRecord(surveyId, method.survey_sample_method_id));
       }
 
       await Promise.all(promises);
@@ -132,31 +133,32 @@ export class SampleMethodService extends DBService {
   /**
    * updates a survey Sample method.
    *
+   * @param {number} surveyId
    * @param {InsertSampleMethodRecord} sampleMethod
    * @return {*}  {Promise<SampleMethodRecord>}
    * @memberof SampleMethodService
    */
-  async updateSampleMethod(sampleMethod: UpdateSampleMethodRecord): Promise<SampleMethodRecord> {
+  async updateSampleMethod(surveyId: number, sampleMethod: UpdateSampleMethodRecord): Promise<SampleMethodRecord> {
     const samplePeriodService = new SamplePeriodService(this.connection);
 
     // Check for any sample periods to delete
-    await samplePeriodService.deleteSamplePeriodsNotInArray(sampleMethod.survey_sample_method_id, sampleMethod.periods);
+    await samplePeriodService.deleteSamplePeriodsNotInArray(surveyId, sampleMethod.survey_sample_method_id, sampleMethod.periods);
 
     // Loop through all new sample periods
     // For each sample period, check if it exists in the existing list
     // If it does, update it, otherwise create it
-    for (const item of sampleMethod.periods) {
-      if (item.survey_sample_period_id) {
-        await samplePeriodService.updateSamplePeriod(item);
+    for (const samplePeriod of sampleMethod.periods) {
+      if (samplePeriod.survey_sample_period_id) {
+        await samplePeriodService.updateSamplePeriod(surveyId, samplePeriod);
       } else {
-        const samplePeriod = {
+        const newSamplePeriod = {
           survey_sample_method_id: sampleMethod.survey_sample_method_id,
-          start_date: item.start_date,
-          end_date: item.end_date,
-          start_time: item.start_time,
-          end_time: item.end_time
+          start_date: samplePeriod.start_date,
+          end_date: samplePeriod.end_date,
+          start_time: samplePeriod.start_time,
+          end_time: samplePeriod.end_time
         };
-        await samplePeriodService.insertSamplePeriod(samplePeriod);
+        await samplePeriodService.insertSamplePeriod(newSamplePeriod);
       }
     }
 

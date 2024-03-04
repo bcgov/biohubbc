@@ -126,6 +126,7 @@ export function updateSurveySampleMethod(): RequestHandler {
       throw new HTTP400('Missing required body param `sampleMethod`');
     }
 
+    const surveyId = Number(req.params.surveyId);
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
@@ -139,8 +140,7 @@ export function updateSurveySampleMethod(): RequestHandler {
 
       const sampleMethodService = new SampleMethodService(connection);
 
-      // @TODO SIMSBIOHUB-494 audit
-      await sampleMethodService.updateSampleMethod(sampleMethod);
+      await sampleMethodService.updateSampleMethod(surveyId, sampleMethod);
 
       await connection.commit();
       return res.status(204).send();
@@ -240,6 +240,7 @@ export function deleteSurveySampleMethodRecord(): RequestHandler {
       throw new HTTP400('Missing required param `surveySampleMethodId`');
     }
 
+    const surveyId = Number(req.params.surveyId);
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
@@ -247,8 +248,7 @@ export function deleteSurveySampleMethodRecord(): RequestHandler {
 
       const sampleMethodService = new SampleMethodService(connection);
 
-      // @TODO SIMSBIOHUB-494 audit
-      await sampleMethodService.deleteSampleMethodRecord(surveySampleMethodId);
+      await sampleMethodService.deleteSampleMethodRecord(surveyId, surveySampleMethodId);
 
       await connection.commit();
 

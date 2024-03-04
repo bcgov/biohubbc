@@ -172,6 +172,7 @@ export function updateSurveySampleSite(): RequestHandler {
       throw new HTTP400('Missing required body param `sampleSite`');
     }
 
+    const surveyId = Number(req.params.surveyId);
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
@@ -184,8 +185,8 @@ export function updateSurveySampleSite(): RequestHandler {
       await connection.open();
 
       const sampleLocationService = new SampleLocationService(connection);
-      // @TODO SIMSBIOHUB-494 audit
-      await sampleLocationService.updateSampleLocationMethodPeriod(sampleSite);
+
+      await sampleLocationService.updateSampleLocationMethodPeriod(surveyId, sampleSite);
 
       await connection.commit();
 
