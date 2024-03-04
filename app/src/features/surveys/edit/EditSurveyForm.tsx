@@ -71,8 +71,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
       .isAfterDate(
         projectData.project.start_date,
         DATE_FORMAT.ShortDateFormat,
-        `Survey start date cannot be before project start date ${
-          projectData && getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, projectData.project.start_date)
+        `Survey start date cannot be before project start date ${projectData && getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, projectData.project.start_date)
         }`
       )
       .isAfterDate(
@@ -88,8 +87,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
       .isBeforeDate(
         projectData.project.end_date,
         DATE_FORMAT.ShortDateFormat,
-        `Survey end date cannot be after project end date ${
-          projectData && getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, projectData.project.end_date)
+        `Survey end date cannot be after project end date ${projectData && getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, projectData.project.end_date)
         }`
       )
       .isBeforeDate(
@@ -152,7 +150,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
             />
           }></HorizontalSplitFormComponent>
 
-        <Divider className={classes.sectionDivider} />
+        <Divider className={classes.sectionDivider} />p
 
         <HorizontalSplitFormComponent
           title="Survey Participants"
@@ -169,15 +167,11 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
             <Box>
               <Box component="fieldset">
                 <Typography component="legend">Add Funding Sources</Typography>
-                <Box mt={1}>
-                  <SurveyFundingSourceForm />
-                </Box>
+                <SurveyFundingSourceForm />
               </Box>
               <Box component="fieldset" mt={5}>
                 <Typography component="legend">Additional Partnerships</Typography>
-                <Box mt={1}>
-                  <SurveyPartnershipsForm />
-                </Box>
+                <SurveyPartnershipsForm />
               </Box>
             </Box>
           }
