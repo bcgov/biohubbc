@@ -73,7 +73,7 @@ const useLookupApi = (axios: AxiosInstance) => {
    * @param {string[]} searchTerms
    * @return {*}  {Promise<CBMeasurementType[]>}
    */
-  const getMeasurementTypeDefinitionsBySearachTerms = async (searchTerms: string[]): Promise<CBMeasurementType[]> => {
+  const getMeasurementTypeDefinitionsBySearchTerms = async (searchTerms: string[]): Promise<CBMeasurementType[]> => {
     // TODO: this needs to be updated when itis_tsn is swapped over in critter base
     const { data } = await axios.get(`/api/critterbase/xref/taxon-measurements`);
 
@@ -84,7 +84,7 @@ const useLookupApi = (axios: AxiosInstance) => {
     getSelectOptions,
     getTaxonMeasurements,
     getTaxonMarkingBodyLocations,
-    getMeasurementTypeDefinitionsBySearachTerms
+    getMeasurementTypeDefinitionsBySearchTerms
   };
 };
 

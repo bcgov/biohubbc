@@ -32,7 +32,7 @@ export const MeasurementsSearch = (props: IMeasurementsSearchProps) => {
 
   const critterbaseApi = useCritterbaseApi();
 
-  const measurementsDataLoader = useDataLoader(critterbaseApi.lookup.getMeasurementTypeDefinitionsBySearachTerms);
+  const measurementsDataLoader = useDataLoader(critterbaseApi.lookup.getMeasurementTypeDefinitionsBySearchTerms);
 
   return (
     <Box>
