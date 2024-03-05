@@ -137,7 +137,8 @@ GET.apiDoc = {
                 type: 'integer',
                 minimum: 0
               }
-            }
+            },
+            additionalProperties: false
           }
         }
       }

@@ -5,7 +5,6 @@ import { getDBConnection } from '../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ObservationService } from '../../../../../../services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
-import { surveyObservationsResponseSchema } from './index';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/process');
 
@@ -71,7 +70,79 @@ POST.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            ...surveyObservationsResponseSchema
+            type: 'object',
+            nullable: true,
+            required: ['surveyObservations'],
+            properties: {
+              surveyObservations: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  required: [
+                    'itis_tsn',
+                    'itis_scientific_name',
+                    'survey_sample_site_id',
+                    'survey_sample_method_id',
+                    'survey_sample_period_id',
+                    'count',
+                    'subcount',
+                    'latitude',
+                    'longitude',
+                    'observation_date',
+                    'observation_time'
+                  ],
+                  properties: {
+                    survey_observation_id: {
+                      type: 'number',
+                      nullable: true
+                    },
+                    survey_id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    itis_tsn: {
+                      type: 'integer'
+                    },
+                    itis_scientific_name: {
+                      type: 'string'
+                    },
+                    survey_sample_site_id: {
+                      type: 'number'
+                    },
+                    survey_sample_method_id: {
+                      type: 'number'
+                    },
+                    survey_sample_period_id: {
+                      type: 'number'
+                    },
+                    count: {
+                      type: 'integer'
+                    },
+                    subcount: {
+                      type: 'integer'
+                    },
+                    latitude: {
+                      type: 'number'
+                    },
+                    longitude: {
+                      type: 'number'
+                    },
+                    observation_date: {
+                      type: 'string'
+                    },
+                    observation_time: {
+                      type: 'string'
+                    },
+                    revision_count: {
+                      type: 'integer',
+                      minimum: 0
+                    }
+                  },
+                  additionalProperties: false
+                }
+              }
+            },
+            additionalProperties: false
           }
         }
       }

@@ -11,7 +11,10 @@ export type StyledDataGridProps = DataGridProps & {
   noRowsMessage?: string;
 };
 export const StyledDataGrid = (props: StyledDataGridProps) => {
-  const noRowsOverlay = useCallback(() => <StyledDataGridOverlay message={props.noRowsMessage} />, []);
+  const noRowsOverlay = useCallback(
+    () => <StyledDataGridOverlay message={props.noRowsMessage} />,
+    [props.noRowsMessage]
+  );
   return (
     <DataGrid
       {...props}

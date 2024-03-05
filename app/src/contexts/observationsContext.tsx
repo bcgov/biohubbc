@@ -22,13 +22,7 @@ export type IObservationsContext = {
   >;
 };
 
-export const ObservationsContext = createContext<IObservationsContext>({
-  observationsDataLoader: {} as DataLoader<
-    [pagination?: ApiPaginationRequestOptions],
-    IGetSurveyObservationsResponse,
-    unknown
-  >
-});
+export const ObservationsContext = createContext<IObservationsContext | undefined>(undefined);
 
 export const ObservationsContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
   const { projectId, surveyId } = useContext(SurveyContext);
