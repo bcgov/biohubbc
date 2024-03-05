@@ -1119,7 +1119,7 @@ describe('ProjectParticipationService', () => {
       await service.upsertProjectParticipantData(projectId, participants);
 
       expect(getProjectParticipantsStub).to.have.been.calledOnceWith(projectId);
-      expect(deleteProjectParticipationRecordStub).to.have.been.calledWith(23);
+      expect(deleteProjectParticipationRecordStub).to.have.been.calledWith(1, 23);
       expect(updateProjectParticipationRoleStub).to.have.been.calledOnceWith(12, PROJECT_ROLE.COORDINATOR);
       expect(postProjectParticipantStub).to.have.been.calledOnceWith(projectId, 44, PROJECT_ROLE.OBSERVER);
     });

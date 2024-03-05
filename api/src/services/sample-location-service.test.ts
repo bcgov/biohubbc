@@ -184,7 +184,7 @@ describe('SampleLocationService', () => {
       });
       const insertSampleMethodStub = sinon.stub(SampleMethodService.prototype, 'insertSampleMethod').resolves();
       const updateSampleMethodStub = sinon.stub(SampleMethodService.prototype, 'updateSampleMethod').resolves();
-      const checkSampleMethodsToDeleteStub = sinon
+      const deleteSampleMethodsNotInArrayStub = sinon
         .stub(SampleMethodService.prototype, 'deleteSampleMethodsNotInArray')
         .resolves();
 
@@ -205,14 +205,14 @@ describe('SampleLocationService', () => {
         geojson: { type: 'Feature', geometry: {}, properties: {} },
         methods: methods
       });
-      expect(checkSampleMethodsToDeleteStub).to.be.calledOnceWith(survey_sample_site_id, methods);
+      expect(deleteSampleMethodsNotInArrayStub).to.be.calledOnceWith(mockSurveyId, survey_sample_site_id, methods);
       expect(insertSampleMethodStub).to.be.calledOnceWith({
         survey_sample_site_id: survey_sample_site_id,
         method_lookup_id: 4,
         description: 'Cool method',
         periods: []
       });
-      expect(updateSampleMethodStub).to.be.calledOnceWith({
+      expect(updateSampleMethodStub).to.be.calledOnceWith(mockSurveyId, {
         survey_sample_site_id: survey_sample_site_id,
         survey_sample_method_id: 2,
         method_lookup_id: 3,

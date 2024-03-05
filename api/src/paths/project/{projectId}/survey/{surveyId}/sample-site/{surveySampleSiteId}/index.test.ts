@@ -126,13 +126,13 @@ describe('updateSurveySampleSite', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      surveyId: '1',
+      surveyId: '1001',
       surveySampleSiteId: '2'
     };
 
     const sampleSite = {
-      survey_id: 1,
-      survey_sample_site_id: 1,
+      survey_id: 1001,
+      survey_sample_site_id: 2,
       name: 'name',
       description: 'description',
       geojson: 'geojson',
@@ -157,7 +157,7 @@ describe('updateSurveySampleSite', () => {
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(updateSampleLocationMethodPeriodStub).to.have.been.calledOnceWithExactly(sampleSite);
+    expect(updateSampleLocationMethodPeriodStub).to.have.been.calledOnceWithExactly(1001, sampleSite);
     expect(mockRes.status).to.have.been.calledWith(204);
   });
 });

@@ -226,7 +226,7 @@ describe('ObservationRepository', () => {
 
   describe('getObservationsCountBySampleSiteIds', () => {
     it('gets the observation count by sample site ids', async () => {
-      const mockQueryResponse = ({ rows: [{ rowCount: 1 }], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockQueryResponse = ({ rows: [{ observation_count: 50 }], rowCount: 1 } as unknown) as QueryResult<any>;
 
       const mockDBConnection = getMockDBConnection({
         knex: sinon.stub().resolves(mockQueryResponse)
@@ -236,7 +236,7 @@ describe('ObservationRepository', () => {
 
       const response = await repo.getObservationsCountBySampleSiteIds(1, [1]);
 
-      expect(response).to.eql({ observationCount: 1 });
+      expect(response).to.eql(50);
     });
   });
 });
