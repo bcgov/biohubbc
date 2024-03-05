@@ -41,6 +41,7 @@ export interface ISurveyBlockForm {
     survey_block_id: number | null;
     name: string;
     description: string;
+    sample_block_count: number;
   }[];
 }
 
@@ -114,6 +115,19 @@ export interface IGetSurveyBlock {
   update_date: string | null;
   update_user: number | null;
   revision_count: number;
+  sample_block_count: number;
+}
+
+export interface IGetSurveyStratum {
+  survey_stratum_id: number;
+  name: string;
+  description: string;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
+  sample_stratum_count: number;
 }
 
 export interface SurveyViewObject {
@@ -348,11 +362,13 @@ export type IEditSurveyRequest = IGeneralInformationForm &
   ISurveyLocationForm &
   IProprietaryDataForm &
   IUpdateAgreementsForm & { partnerships: IGetSurveyForViewResponsePartnerships } & ISurveySiteSelectionForm &
-  IParticipantsJobForm;
+  IParticipantsJobForm &
+  ISurveyBlockForm;
 
 export interface IGetSampleSiteResponse {
-  sampleSites: IGetSampleLocationRecord[];
+  sampleSites: IGetSampleLocationDetails[];
 }
+
 export interface IGetSampleLocationRecord {
   survey_sample_site_id: number;
   survey_id: number;
@@ -365,7 +381,49 @@ export interface IGetSampleLocationRecord {
   update_date: string | null;
   update_user: number | null;
   revision_count: number;
+}
+
+export interface IGetSampleLocationDetails {
+  survey_sample_site_id: number;
+  survey_id: number;
+  name: string;
+  description: string;
+  geojson: Feature;
+  geography: string;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
   sample_methods: IGetSampleMethodRecord[] | undefined;
+  sample_blocks: IGetSampleBlockDetails[] | undefined;
+  sample_stratums: IGetSampleStratumDetails[] | undefined;
+}
+
+export interface IGetSampleBlockDetails {
+  survey_sample_block_id: number;
+  survey_sample_site_id: number;
+  survey_block_id: number;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
+  name: string;
+  description: string;
+}
+
+export interface IGetSampleStratumDetails {
+  survey_sample_stratum_id: number;
+  survey_sample_site_id: number;
+  survey_stratum_id: number;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
+  name: string;
+  description: string;
 }
 
 export interface IGetSampleMethodRecord {

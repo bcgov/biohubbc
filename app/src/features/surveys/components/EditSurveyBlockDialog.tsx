@@ -1,10 +1,10 @@
 import EditDialog from 'components/dialog/EditDialog';
 import BlockForm from './BlockForm';
-import { BlockYupSchema, IEditBlock } from './SurveyBlockSection';
+import { BlockYupSchema, ISurveyBlock } from './SurveyBlockForm';
 
 interface IEditBlockProps {
   open: boolean;
-  initialData?: IEditBlock;
+  initialData?: ISurveyBlock;
   onSave: (data: any, index?: number) => void;
   onClose: () => void;
 }
