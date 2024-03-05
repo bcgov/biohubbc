@@ -5,7 +5,7 @@ import {
   InsertObservation,
   ObservationGeometryRecord,
   ObservationRecord,
-  ObservationRecordWithSamplingDataWithEventsWithAttributes,
+  ObservationRecordWithSamplingDataWithAttributes,
   ObservationRepository,
   ObservationSubmissionRecord,
   UpdateObservation
@@ -193,7 +193,7 @@ export class ObservationService extends DBService {
    * @param {number} surveyId
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<{
-   *     surveyObservations: ObservationRecordWithSamplingDataWithEventsWithAttributes[];
+   *     surveyObservations: ObservationRecordWithSamplingDataWithAttributes[];
    *     supplementaryObservationData: ObservationSupplementaryData;
    *   }>}
    * @memberof ObservationService
@@ -202,37 +202,17 @@ export class ObservationService extends DBService {
     surveyId: number,
     pagination?: ApiPaginationOptions
   ): Promise<{
-    surveyObservations: ObservationRecordWithSamplingDataWithEventsWithAttributes[];
+    surveyObservations: ObservationRecordWithSamplingDataWithAttributes[];
     supplementaryObservationData: ObservationSupplementaryData;
   }> {
-    const service = new CritterbaseService({
-      keycloak_guid: this.connection.systemUserGUID(),
-      username: this.connection.systemUserIdentifier()
-    });
-
-    const surveyObservations = await this.observationRepository.getSurveyObservationsWithSamplingData(
+    const surveyObservations = await this.observationRepository.getSurveyObservationsWithSamplingDataWithAttributesData(
       surveyId,
       pagination
     );
 
-    // Get all event ids from all survey observations
-    const eventIds = surveyObservations.flatMap((item) => item.observation_subcount_events).filter(Boolean) as string[];
-
-    // Fetch all measurement values for the given event ids
-    const measurementValues = await service.getMeasurementValuesForEventIds(eventIds);
-
-    // Assign matching measurement records to their respective observation records
-    const surveyObservationsWithAttributes = surveyObservations.map((observation) => {
-      const matchingMeasurementValues = measurementValues.filter((measurement) =>
-        observation.observation_subcount_events?.includes(measurement.event_id)
-      );
-
-      return { ...observation, observation_subcount_attributes: matchingMeasurementValues };
-    });
-
     const supplementaryObservationData = await this.getSurveyObservationsSupplementaryData(surveyId);
 
-    return { surveyObservations: surveyObservationsWithAttributes, supplementaryObservationData };
+    return { surveyObservations: surveyObservations, supplementaryObservationData };
   }
 
   /**

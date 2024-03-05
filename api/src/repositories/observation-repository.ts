@@ -42,19 +42,13 @@ export const ObservationRecordWithSamplingData = ObservationRecord.extend({
 
 export type ObservationRecordWithSamplingData = z.infer<typeof ObservationRecordWithSamplingData>;
 
-export const ObservationRecordWithSamplingDataWithEvents = ObservationRecordWithSamplingData.extend({
+export const ObservationRecordWithSamplingDataWithAttributes = ObservationRecordWithSamplingData.extend({
   subcount: z.number().nullable(),
-  observation_subcount_events: z.array(z.string())
+  observation_subcount_attributes: z.array(CBMeasurementValue)
 });
 
-export type ObservationRecordWithSamplingDataWithEvents = z.infer<typeof ObservationRecordWithSamplingDataWithEvents>;
-
-export const ObservationRecordWithSamplingDataWithEventsWithAttributes = ObservationRecordWithSamplingDataWithEvents.extend(
-  { observation_subcount_attributes: z.array(CBMeasurementValue) }
-);
-
-export type ObservationRecordWithSamplingDataWithEventsWithAttributes = z.infer<
-  typeof ObservationRecordWithSamplingDataWithEventsWithAttributes
+export type ObservationRecordWithSamplingDataWithAttributes = z.infer<
+  typeof ObservationRecordWithSamplingDataWithAttributes
 >;
 
 export const ObservationGeometryRecord = z.object({
@@ -237,14 +231,14 @@ export class ObservationRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {Promise<ObservationRecordWithSamplingDataWithEvents[]>}
+   * @return {*}  {Promise<ObservationRecordWithSamplingDataWithAttributes[]>}
    * @memberof ObservationRepository
    */
-  async getSurveyObservationsWithSamplingData(
+  async getSurveyObservationsWithSamplingDataWithAttributesData(
     surveyId: number,
     pagination?: ApiPaginationOptions
-  ): Promise<ObservationRecordWithSamplingDataWithEvents[]> {
-    defaultLog.debug({ label: 'getSurveyObservationsWithSamplingData', surveyId, pagination });
+  ): Promise<ObservationRecordWithSamplingDataWithAttributes[]> {
+    defaultLog.debug({ label: 'getSurveyObservationsWithSamplingDataWithAttributesData', surveyId, pagination });
 
     const knex = getKnex();
 
@@ -257,16 +251,24 @@ export class ObservationRepository extends BaseRepository {
           .leftJoin({ ml: 'method_lookup' }, 'ml.method_lookup_id', 'ssm.method_lookup_id')
       )
       .with(
-        'observation_subcount_events',
+        'observation_subcount_qualitative_measurements',
+        knex
+          .select('osqm.observation_subcount_id', 'osqm.critterbase_measurement_quantitative_id', 'osqm.value')
+          .from({ osqm: 'observation_subcount_qualitative_measurement' })
+          .leftJoin({ os: 'observation_subcount' }, 'osqm.observation_subcount_id', 'os.observation_subcount_id')
+          .groupBy(['osqm.survey_observation_id', 'osqm.subcount'])
+      )
+      .with(
+        'observation_subcount_quantitative_measurements',
         knex
           .select([
-            'os.survey_observation_id',
-            'os.subcount',
-            knex.raw(`array_remove(array_agg(sa.critterbase_event_id), NULL) as critterbase_event_ids`)
+            'osqm.survey_observation_id',
+            'osqm.subcount',
+            knex.raw(`array_remove(array_agg(os.critterbase_event_id), NULL) as critterbase_event_ids`)
           ])
-          .from({ os: 'observation_subcount' })
-          .leftJoin({ sa: 'subcount_event' }, 'os.observation_subcount_id', 'sa.observation_subcount_id')
-          .groupBy(['os.survey_observation_id', 'os.subcount'])
+          .from({ osqm: 'observation_subcount_quantitative_measurement' })
+          .leftJoin({ os: 'observation_subcount' }, 'osqm.observation_subcount_id', 'os.observation_subcount_id')
+          .groupBy(['osqm.survey_observation_id', 'osqm.subcount'])
       )
       .select([
         // Select all columns from survey_observation
@@ -317,7 +319,9 @@ export class ObservationRepository extends BaseRepository {
       }
     }
 
-    const response = await this.connection.knex(queryBuilder, ObservationRecordWithSamplingDataWithEvents);
+    console.log(queryBuilder.toSQL().toNative());
+
+    const response = await this.connection.knex(queryBuilder, ObservationRecordWithSamplingDataWithAttributes);
 
     return response.rows;
   }

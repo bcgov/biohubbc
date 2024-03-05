@@ -4,7 +4,7 @@ import sinonChai from 'sinon-chai';
 import {
   InsertObservation,
   ObservationRecord,
-  ObservationRecordWithSamplingDataWithEvents,
+  ObservationRecordWithSamplingDataWithAttributes,
   ObservationRepository,
   UpdateObservation
 } from '../repositories/observation-repository';
@@ -118,7 +118,7 @@ describe('ObservationService', () => {
     it('Gets observations by survey id', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      const mockObservations: ObservationRecordWithSamplingDataWithEvents[] = [
+      const mockObservations: ObservationRecordWithSamplingDataWithAttributes[] = [
         {
           survey_observation_id: 11,
           survey_id: 1,
@@ -141,7 +141,7 @@ describe('ObservationService', () => {
           survey_sample_method_id: 1,
           survey_sample_period_id: 1,
           subcount: 5,
-          observation_subcount_events: []
+          observation_subcount_attributes: []
         },
         {
           survey_observation_id: 6,
@@ -165,7 +165,7 @@ describe('ObservationService', () => {
           survey_sample_method_id: 1,
           survey_sample_period_id: 1,
           subcount: 10,
-          observation_subcount_events: []
+          observation_subcount_attributes: []
         }
       ];
 
@@ -175,7 +175,7 @@ describe('ObservationService', () => {
       };
 
       const getSurveyObservationsStub = sinon
-        .stub(ObservationRepository.prototype, 'getSurveyObservationsWithSamplingData')
+        .stub(ObservationRepository.prototype, 'getSurveyObservationsWithSamplingDataWithAttributesData')
         .resolves(mockObservations);
 
       const getMeasurementValuesForEventIdsStub = sinon

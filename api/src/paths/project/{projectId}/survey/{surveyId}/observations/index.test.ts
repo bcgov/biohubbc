@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
-import { ObservationRecordWithSamplingDataWithEventsWithAttributes } from '../../../../../../repositories/observation-repository';
+import { ObservationRecordWithSamplingDataWithAttributes } from '../../../../../../repositories/observation-repository';
 import { ObservationService } from '../../../../../../services/observation-service';
 import { PlatformService } from '../../../../../../services/platform-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
@@ -149,7 +149,7 @@ describe('getSurveyObservations', () => {
         surveyObservations: ([
           { survey_observation_id: 11 },
           { survey_observation_id: 12 }
-        ] as unknown) as ObservationRecordWithSamplingDataWithEventsWithAttributes[],
+        ] as unknown) as ObservationRecordWithSamplingDataWithAttributes[],
         supplementaryObservationData: { observationCount: 59, measurementColumns: [] }
       });
 
@@ -197,7 +197,7 @@ describe('getSurveyObservations', () => {
         surveyObservations: ([
           { survey_observation_id: 16 },
           { survey_observation_id: 17 }
-        ] as unknown) as ObservationRecordWithSamplingDataWithEventsWithAttributes[],
+        ] as unknown) as ObservationRecordWithSamplingDataWithAttributes[],
         supplementaryObservationData: { observationCount: 50, measurementColumns: [] }
       });
 
@@ -243,7 +243,7 @@ describe('getSurveyObservations', () => {
         surveyObservations: ([
           { survey_observation_id: 16 },
           { survey_observation_id: 17 }
-        ] as unknown) as ObservationRecordWithSamplingDataWithEventsWithAttributes[],
+        ] as unknown) as ObservationRecordWithSamplingDataWithAttributes[],
         supplementaryObservationData: { observationCount: 2, measurementColumns: [] }
       });
 

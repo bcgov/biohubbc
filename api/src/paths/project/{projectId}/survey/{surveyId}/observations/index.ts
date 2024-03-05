@@ -116,7 +116,6 @@ GET.apiDoc = {
                     'survey_sample_method_name',
                     'survey_sample_period_start_datetime',
                     'subcount',
-                    'observation_subcount_events',
                     'observation_subcount_attributes',
                     'create_date',
                     'create_user',
@@ -185,12 +184,6 @@ GET.apiDoc = {
                     subcount: {
                       type: 'integer',
                       nullable: true
-                    },
-                    observation_subcount_events: {
-                      type: 'array',
-                      items: {
-                        type: 'string'
-                      }
                     },
                     observation_subcount_attributes: {
                       type: 'array',

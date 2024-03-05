@@ -6,7 +6,7 @@ import {
   SubCountEventRecord,
   SubCountRepository
 } from '../repositories/subcount-repository';
-import { CBMeasurementType, CritterbaseService } from './critterbase-service';
+import { CBMeasurementType } from './critterbase-service';
 import { DBService } from './db-service';
 
 export class SubCountService extends DBService {
@@ -68,15 +68,16 @@ export class SubCountService extends DBService {
    * @memberof SubCountService
    */
   async getMeasurementTypeDefinitionsForSurvey(surveyId: number): Promise<CBMeasurementType[]> {
-    const service = new CritterbaseService({
-      keycloak_guid: this.connection.systemUserGUID(),
-      username: this.connection.systemUserIdentifier()
-    });
+    // const service = new CritterbaseService({
+    //   keycloak_guid: this.connection.systemUserGUID(),
+    //   username: this.connection.systemUserIdentifier()
+    // });
 
-    const subcountEventRecords = await this.subCountRepository.getSubCountEventRecordsBySurveyId(surveyId);
+    // TODO NICK - wire up new function to fetch all measurement ids for a given survey
+    // const subcountEventRecords = await this.subCountRepository.getSubCountEventRecordsBySurveyId(surveyId);
 
-    const eventIds = subcountEventRecords.map((record) => record.critterbase_event_id);
-
-    return service.getMeasurementTypeDefinitionsForEventIds(eventIds);
+    // TODO NICK - wirte up call to critterbase to get all measurement definitions for the given measurement ids
+    // return service.getMeasurementTypeDefinitionsforMeasurementIds(eventIds);
+    return [];
   }
 }

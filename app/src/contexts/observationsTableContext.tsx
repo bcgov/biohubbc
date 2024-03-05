@@ -70,9 +70,8 @@ export type MeasurementColumn = {
   colDef: GridColDef;
 };
 
-export interface IObservationRecordWithSamplingDataWithEventsWithAttributes extends IObservationRecordWithSamplingData {
+export interface IObservationRecordWithSamplingDataWithAttributes extends IObservationRecordWithSamplingData {
   subcount: number;
-  observation_subcount_events: string[];
   observation_subcount_attributes: CBMeasurementValue[];
 }
 
