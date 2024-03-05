@@ -49,9 +49,14 @@ describe('SampleMethodService', () => {
         .stub(SampleMethodRepository.prototype, 'getSampleMethodsForSurveySampleSiteId')
         .resolves(mockSampleMethodRecords);
 
+      const mockSurveyId = 1;
       const surveySampleSiteId = 1;
       const sampleMethodService = new SampleMethodService(mockDBConnection);
-      const response = await sampleMethodService.getSampleMethodsForSurveySampleSiteId(surveySampleSiteId);
+
+      const response = await sampleMethodService.getSampleMethodsForSurveySampleSiteId(
+        mockSurveyId,
+        surveySampleSiteId
+      );
 
       expect(getSampleMethodsForSurveySampleSiteIdStub).to.be.calledOnceWith(surveySampleSiteId);
       expect(response).to.eql(mockSampleMethodRecords);
@@ -66,6 +71,7 @@ describe('SampleMethodService', () => {
     it('Gets permit by admin user id', async () => {
       const mockDBConnection = getMockDBConnection();
 
+      const mockSurveyId = 1;
       const survey_sample_period_id = 1;
 
       const mockSampleMethodRecord: SampleMethodRecord = {
@@ -92,7 +98,7 @@ describe('SampleMethodService', () => {
 
       const surveySampleMethodId = 1;
       const sampleMethodService = new SampleMethodService(mockDBConnection);
-      const response = await sampleMethodService.deleteSampleMethodRecord(surveySampleMethodId);
+      const response = await sampleMethodService.deleteSampleMethodRecord(mockSurveyId, surveySampleMethodId);
 
       expect(deleteSampleMethodRecordStub).to.be.calledOnceWith(surveySampleMethodId);
       expect(deleteSamplePeriodRecordStub).to.be.calledOnceWith([survey_sample_period_id]);
@@ -210,6 +216,7 @@ describe('SampleMethodService', () => {
       sinon.stub(SamplePeriodService.prototype, 'updateSamplePeriod').resolves();
       sinon.stub(SamplePeriodService.prototype, 'insertSamplePeriod').resolves();
 
+      const mockSurveyId = 1;
       const sampleMethod: UpdateSampleMethodRecord = {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
@@ -234,7 +241,7 @@ describe('SampleMethodService', () => {
         ]
       };
       const sampleMethodService = new SampleMethodService(mockDBConnection);
-      const response = await sampleMethodService.updateSampleMethod(sampleMethod);
+      const response = await sampleMethodService.updateSampleMethod(mockSurveyId, sampleMethod);
 
       expect(updateSampleMethodStub).to.be.calledOnceWith(sampleMethod);
       expect(response).to.eql(mockSampleMethodRecord);
@@ -272,14 +279,15 @@ describe('SampleMethodService', () => {
         .resolves();
 
       const getObservationsCountBySampleMethodIdStub = sinon
-        .stub(ObservationService.prototype, 'getObservationsCountBySampleMethodId')
-        .resolves({ observationCount: 0 });
+        .stub(ObservationService.prototype, 'getObservationsCountBySampleMethodIds')
+        .resolves(0);
 
+      const mockSurveyId = 1;
       const surveySampleSiteId = 1;
 
       const sampleMethodService = new SampleMethodService(mockDBConnection);
 
-      await sampleMethodService.deleteSampleMethodsNotInArray(surveySampleSiteId, [
+      await sampleMethodService.deleteSampleMethodsNotInArray(mockSurveyId, surveySampleSiteId, [
         { survey_sample_method_id: 2 } as UpdateSampleMethodRecord
       ]);
 

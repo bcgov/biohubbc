@@ -192,9 +192,15 @@ describe('SurveyParticipationService', () => {
         surveyJobName: 'name'
       };
 
+      const mockSurveyId = 1;
+
       const repoStub = sinon.stub(SurveyParticipationRepository.prototype, 'updateSurveyParticipantJob').resolves();
 
-      const response = await service.updateSurveyParticipantJob(data.surveyParticipationId, data.surveyJobName);
+      const response = await service.updateSurveyParticipantJob(
+        mockSurveyId,
+        data.surveyParticipationId,
+        data.surveyJobName
+      );
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(undefined);
@@ -210,11 +216,13 @@ describe('SurveyParticipationService', () => {
         projectParticipationId: 1
       };
 
+      const mockSurveyId = 1;
+
       const repoStub = sinon
         .stub(SurveyParticipationRepository.prototype, 'deleteSurveyParticipationRecord')
         .resolves();
 
-      const response = await service.deleteSurveyParticipationRecord(data.projectParticipationId);
+      const response = await service.deleteSurveyParticipationRecord(mockSurveyId, data.projectParticipationId);
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(undefined);

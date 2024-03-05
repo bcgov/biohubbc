@@ -148,7 +148,8 @@ describe('SampleLocationService', () => {
         revision_count: 0
       });
 
-      const { survey_sample_site_id } = await service.deleteSampleSiteRecord(1);
+      const mockSurveyId = 1;
+      const { survey_sample_site_id } = await service.deleteSampleSiteRecord(mockSurveyId, 1);
 
       expect(survey_sample_site_id).to.be.eq(1);
       expect(getSampleMethodsForSurveySampleSiteIdStub).to.be.calledOnceWith(1);
@@ -161,6 +162,7 @@ describe('SampleLocationService', () => {
       const mockDBConnection = getMockDBConnection();
       const service = new SampleLocationService(mockDBConnection);
 
+      const mockSurveyId = 1;
       const survey_sample_site_id = 1;
       const methods = [
         { survey_sample_method_id: 2, method_lookup_id: 3, description: 'Cool method', periods: [] } as any,
@@ -186,7 +188,7 @@ describe('SampleLocationService', () => {
         .stub(SampleMethodService.prototype, 'deleteSampleMethodsNotInArray')
         .resolves();
 
-      await service.updateSampleLocationMethodPeriod({
+      await service.updateSampleLocationMethodPeriod(mockSurveyId, {
         survey_sample_site_id: survey_sample_site_id,
         survey_id: 1,
         name: 'Cool new site',

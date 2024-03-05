@@ -127,7 +127,7 @@ describe('SurveyParticipationRepository', () => {
 
         const repository = new SurveyParticipationRepository(dbConnection);
 
-        const response = await repository.updateSurveyParticipantJob(1, 'string');
+        const response = await repository.updateSurveyParticipantJob(1, 1, 'string');
 
         expect(response).to.eql(undefined);
       });
@@ -139,7 +139,7 @@ describe('SurveyParticipationRepository', () => {
         const repository = new SurveyParticipationRepository(dbConnection);
 
         try {
-          await repository.updateSurveyParticipantJob(1, 'string');
+          await repository.updateSurveyParticipantJob(1, 1, 'string');
           expect.fail();
         } catch (error) {
           expect((error as Error).message).to.equal('Failed to update survey participant');
@@ -155,7 +155,7 @@ describe('SurveyParticipationRepository', () => {
 
       const repository = new SurveyParticipationRepository(dbConnection);
 
-      const response = await repository.deleteSurveyParticipationRecord(1);
+      const response = await repository.deleteSurveyParticipationRecord(1, 1);
 
       expect(response).to.eql({ id: 1 });
     });
@@ -167,7 +167,7 @@ describe('SurveyParticipationRepository', () => {
       const repository = new SurveyParticipationRepository(dbConnection);
 
       try {
-        await repository.deleteSurveyParticipationRecord(1);
+        await repository.deleteSurveyParticipationRecord(1, 1);
         expect.fail();
       } catch (error) {
         expect((error as Error).message).to.equal('Failed to delete survey participation record');

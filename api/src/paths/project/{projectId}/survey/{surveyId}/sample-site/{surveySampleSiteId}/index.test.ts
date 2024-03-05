@@ -200,8 +200,8 @@ describe('deleteSurveySampleSiteRecord', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     const getObservationsCountBySampleSiteIdStub = sinon
-      .stub(ObservationService.prototype, 'getObservationsCountBySampleSiteId')
-      .resolves({ observationCount: 0 });
+      .stub(ObservationService.prototype, 'getObservationsCountBySampleSiteIds')
+      .resolves(0);
 
     const deleteSampleLocationRecordStub = sinon
       .stub(SampleLocationService.prototype, 'deleteSampleSiteRecord')

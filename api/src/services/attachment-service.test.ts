@@ -333,7 +333,7 @@ describe('AttachmentService', () => {
 
           const data = { key: 'string', uuid: 'string' };
 
-          const repoStub = sinon.stub(AttachmentRepository.prototype, '_deleteProjectAttachmentRecord').resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'deleteProjectAttachmentRecord').resolves(data);
 
           const response = await service._deleteProjectAttachmentRecord(1);
 
@@ -745,7 +745,7 @@ describe('AttachmentService', () => {
           const data = { key: 'string', uuid: 'string' };
 
           const repoStub = sinon
-            .stub(AttachmentRepository.prototype, '_deleteProjectReportAttachmentRecord')
+            .stub(AttachmentRepository.prototype, 'deleteProjectReportAttachmentRecord')
             .resolves(data);
 
           const response = await service._deleteProjectReportAttachmentRecord(1);
@@ -798,7 +798,7 @@ describe('AttachmentService', () => {
 
           const data = { key: 'string', uuid: 'string' };
 
-          const repoStub = sinon.stub(AttachmentRepository.prototype, '_deleteSurveyAttachmentRecord').resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'deleteSurveyAttachmentRecord').resolves(data);
 
           const response = await service._deleteSurveyAttachmentRecord(1);
 
@@ -1301,7 +1301,7 @@ describe('AttachmentService', () => {
           const data = { key: 'string', uuid: 'string' };
 
           const repoStub = sinon
-            .stub(AttachmentRepository.prototype, '_deleteSurveyReportAttachmentRecord')
+            .stub(AttachmentRepository.prototype, 'deleteSurveyReportAttachmentRecord')
             .resolves(data);
 
           const response = await service._deleteSurveyReportAttachmentRecord(1);

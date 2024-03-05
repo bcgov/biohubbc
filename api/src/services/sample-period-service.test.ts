@@ -49,9 +49,10 @@ describe('SamplePeriodService', () => {
         .stub(SamplePeriodRepository.prototype, 'getSamplePeriodsForSurveyMethodId')
         .resolves(mockSamplePeriodRecords);
 
+      const mockSurveyId = 1;
       const surveySampleMethodId = 1;
       const samplePeriodService = new SamplePeriodService(mockDBConnection);
-      const response = await samplePeriodService.getSamplePeriodsForSurveyMethodId(surveySampleMethodId);
+      const response = await samplePeriodService.getSamplePeriodsForSurveyMethodId(mockSurveyId, surveySampleMethodId);
 
       expect(getSamplePeriodsForSurveyMethodIdStub).to.be.calledOnceWith(surveySampleMethodId);
       expect(response).to.eql(mockSamplePeriodRecords);
@@ -83,9 +84,10 @@ describe('SamplePeriodService', () => {
         .stub(SamplePeriodRepository.prototype, 'deleteSamplePeriodRecord')
         .resolves(mockSamplePeriodRecord);
 
+      const mockSurveyId = 1;
       const surveySamplePeriodId = 1;
       const samplePeriodService = new SamplePeriodService(mockDBConnection);
-      const response = await samplePeriodService.deleteSamplePeriodRecord(surveySamplePeriodId);
+      const response = await samplePeriodService.deleteSamplePeriodRecord(mockSurveyId, surveySamplePeriodId);
 
       expect(deleteSamplePeriodRecordStub).to.be.calledOnceWith(surveySamplePeriodId);
       expect(response).to.eql(mockSamplePeriodRecord);
@@ -165,8 +167,10 @@ describe('SamplePeriodService', () => {
         start_time: '12:00:00',
         end_time: '13:00:00'
       };
+      const mockSurveyId = 1;
+
       const samplePeriodService = new SamplePeriodService(mockDBConnection);
-      const response = await samplePeriodService.updateSamplePeriod(samplePeriod);
+      const response = await samplePeriodService.updateSamplePeriod(mockSurveyId, samplePeriod);
 
       expect(updateSamplePeriodStub).to.be.calledOnceWith(samplePeriod);
       expect(response).to.eql(mockSamplePeriodRecord);
@@ -201,12 +205,13 @@ describe('SamplePeriodService', () => {
         .resolves();
 
       const getObservationsCountBySamplePeriodIdStub = sinon
-        .stub(ObservationService.prototype, 'getObservationsCountBySamplePeriodId')
-        .resolves({ observationCount: 0 });
+        .stub(ObservationService.prototype, 'getObservationsCountBySamplePeriodIds')
+        .resolves(0);
 
+      const mockSurveyId = 1;
       const surveySampleMethodId = 1;
       const samplePeriodService = new SamplePeriodService(mockDBConnection);
-      const response = await samplePeriodService.deleteSamplePeriodsNotInArray(surveySampleMethodId, [
+      const response = await samplePeriodService.deleteSamplePeriodsNotInArray(mockSurveyId, surveySampleMethodId, [
         { survey_sample_period_id: 2 } as SamplePeriodRecord
       ]);
 

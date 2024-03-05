@@ -190,6 +190,7 @@ describe('ProjectParticipationService', () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectParticipationService(dbConnection);
 
+      const mockSurveyId = 1;
       const data = {
         projectParticipationId: 1
       };
@@ -198,7 +199,7 @@ describe('ProjectParticipationService', () => {
         .stub(ProjectParticipationRepository.prototype, 'deleteProjectParticipationRecord')
         .resolves();
 
-      const response = await service.deleteProjectParticipationRecord(data.projectParticipationId);
+      const response = await service.deleteProjectParticipationRecord(mockSurveyId, data.projectParticipationId);
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(undefined);
