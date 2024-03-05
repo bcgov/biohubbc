@@ -60,7 +60,7 @@ export class SampleMethodService extends DBService {
     // Delete all associated sample periods
     await samplePeriodService.deleteSamplePeriodRecords(periodsToDelete);
 
-    return this.sampleMethodRepository.deleteSampleMethodRecord(surveySampleMethodId);
+    return this.sampleMethodRepository.deleteSampleMethodRecord(surveyId, surveySampleMethodId);
   }
 
   /**
