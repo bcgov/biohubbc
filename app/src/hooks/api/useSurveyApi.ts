@@ -496,21 +496,26 @@ const useSurveyApi = (axios: AxiosInstance) => {
 
   // TODO NICK: Question for Mac: Why are we spreading the critter.measurements and critter values into the top level of this payload?
   const critterToPayloadTransform = (critter: Critter, ignoreTopLevel = false) => {
+    const { measurements, mortalities, families, locations, collections, captures, markings, ...critterProps } =
+      critter;
     return {
-      critters: ignoreTopLevel
-        ? []
-        : [
-            {
-              critter_id: critter.critter_id,
-              animal_id: critter.animal_id,
-              sex: critter.sex,
-              itis_tsn: critter.itis_tsn,
-              wlh_id: critter.wlh_id
-            }
-          ],
-      qualitative_measurements: critter.measurements.qualitative,
-      quantitative_measurements: critter.measurements.quantitative,
-      ...critter
+      critters: [
+        {
+          critter_id: critterProps.critter_id,
+          animal_id: critterProps.animal_id,
+          wlh_id: critterProps.wlh_id,
+          sex: critterProps.sex,
+          itis_tsn: critterProps.itis_tsn
+        }
+      ],
+      qualitative_measurements: measurements.qualitative,
+      quantitative_measurements: measurements.quantitative,
+      mortalities,
+      families,
+      locations,
+      collections,
+      markings,
+      captures
     };
   };
 

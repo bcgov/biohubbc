@@ -215,17 +215,19 @@ export function addCritterToSurvey(): RequestHandler {
       username: req['system_user']?.user_identifier
     };
     const surveyId = Number(req.params.surveyId);
+    const critterId = req.body.critters[0].critter_id;
     const connection = getDBConnection(req['keycloak_token']);
     const surveyService = new SurveyCritterService(connection);
     const cb = new CritterbaseService(user);
     try {
       await connection.open();
-      await surveyService.addCritterToSurvey(surveyId, req.body.critter_id);
+      await surveyService.addCritterToSurvey(surveyId, critterId);
       const result = await cb.createCritter(req.body);
+      console.log(result);
       await connection.commit();
       return res.status(201).json(result);
     } catch (error) {
-      defaultLog.error({ label: 'createCritter', message: 'error', error });
+      defaultLog.error({ label: 'addCritterToSurvey', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

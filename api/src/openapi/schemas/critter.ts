@@ -287,73 +287,74 @@ export const critterBulkRequestObject: OpenAPIV3.SchemaObject = {
         ...markingSchema
       }
     },
-    measurements: {
-      title: 'measurements',
-      type: 'object',
-      properties: {
-        qualitative: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              critter_id: {
-                type: 'string'
-              },
-              measurement_qualitative_id: {
-                type: 'string'
-              },
-              measurement_quantitative_id: {
-                type: 'string'
-              },
-              taxon_measurement_id: {
-                type: 'string'
-              },
-              qualitative_option_id: {
-                type: 'string'
-              },
-              measured_timestamp: {
-                type: 'string'
-              },
-              measurement_comment: {
-                type: 'string'
-              }
-            },
-            additionalProperties: false
-          }
-        },
-        quantitative: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              critter_id: {
-                type: 'string'
-              },
-              measurement_qualitative_id: {
-                type: 'string'
-              },
-              measurement_quantitative_id: {
-                type: 'string'
-              },
-              taxon_measurement_id: {
-                type: 'string'
-              },
-              value: {
-                type: 'number'
-              },
-              measured_timestamp: {
-                type: 'string'
-              },
-              measurement_comment: {
-                type: 'string'
-              }
-            },
-            additionalProperties: false
-          }
-        }
-      },
-      additionalProperties: false
-    },
+    //TODO: Is this still needed or remove?
+    // measurements: {
+    //   title: 'measurements',
+    //   type: 'object',
+    //   properties: {
+    //     qualitative: {
+    //       type: 'array',
+    //       items: {
+    //         type: 'object',
+    //         properties: {
+    //           critter_id: {
+    //             type: 'string'
+    //           },
+    //           measurement_qualitative_id: {
+    //             type: 'string'
+    //           },
+    //           measurement_quantitative_id: {
+    //             type: 'string'
+    //           },
+    //           taxon_measurement_id: {
+    //             type: 'string'
+    //           },
+    //           qualitative_option_id: {
+    //             type: 'string'
+    //           },
+    //           measured_timestamp: {
+    //             type: 'string'
+    //           },
+    //           measurement_comment: {
+    //             type: 'string'
+    //           }
+    //         },
+    //         additionalProperties: false
+    //       }
+    //     },
+    //     quantitative: {
+    //       type: 'array',
+    //       items: {
+    //         type: 'object',
+    //         properties: {
+    //           critter_id: {
+    //             type: 'string'
+    //           },
+    //           measurement_qualitative_id: {
+    //             type: 'string'
+    //           },
+    //           measurement_quantitative_id: {
+    //             type: 'string'
+    //           },
+    //           taxon_measurement_id: {
+    //             type: 'string'
+    //           },
+    //           value: {
+    //             type: 'number'
+    //           },
+    //           measured_timestamp: {
+    //             type: 'string'
+    //           },
+    //           measurement_comment: {
+    //             type: 'string'
+    //           }
+    //         },
+    //         additionalProperties: false
+    //       }
+    //     }
+    //   },
+    //   additionalProperties: false
+    // },
     locations: {
       title: 'locations',
       type: 'array',
@@ -519,7 +520,7 @@ const bulkResponseCounts: OpenAPIV3.SchemaObject = {
     captures: { type: 'integer' },
     markings: { type: 'integer' },
     locations: { type: 'integer' },
-    moralities: { type: 'integer' },
+    mortalities: { type: 'integer' },
     collections: { type: 'integer' },
     quantitative_measurements: { type: 'integer' },
     qualitative_measurements: { type: 'integer' },

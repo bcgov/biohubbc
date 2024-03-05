@@ -3,6 +3,7 @@ import { URLSearchParams } from 'url';
 import { v4 } from 'uuid';
 import { z } from 'zod';
 import { ApiError, ApiErrorType } from '../errors/api-error';
+import { getLogger } from '../utils/logger';
 import { KeycloakService } from './keycloak-service';
 
 export interface ICritterbaseUser {
@@ -276,6 +277,8 @@ const BULK_ENDPOINT = '/bulk';
 const SIGNUP_ENDPOINT = '/signup';
 const FAMILY_ENDPOINT = '/family';
 
+const defaultLog = getLogger('CritterbaseServiceLogger');
+
 export class CritterbaseService {
   user: ICritterbaseUser;
   keycloak: KeycloakService;
@@ -296,8 +299,9 @@ export class CritterbaseService {
         return response;
       },
       (error: AxiosError) => {
+        defaultLog.error({ label: 'CritterbaseService', message: error.message, error });
         return Promise.reject(
-          new ApiError(ApiErrorType.UNKNOWN, `API request failed with status code ${error?.response?.status}`)
+          new ApiError(ApiErrorType.GENERAL, `API request failed with status code ${error?.response?.status}`)
         );
       }
     );
