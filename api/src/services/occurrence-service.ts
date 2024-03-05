@@ -73,7 +73,7 @@ export class OccurrenceService extends DBService {
    * @return {*} {Promise<number>}
    */
   async updateDWCSourceForOccurrenceSubmission(submissionId: number, jsonData: string): Promise<number> {
-    return await this.occurrenceRepository.updateDWCSourceForOccurrenceSubmission(submissionId, jsonData);
+    return this.occurrenceRepository.updateDWCSourceForOccurrenceSubmission(submissionId, jsonData);
   }
 
   /**
