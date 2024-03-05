@@ -30,7 +30,7 @@ export async function up(knex: Knex): Promise<void> {
     CREATE TABLE observation_subcount_quantitative_measurement (
       observation_subcount_id                       integer            NOT NULL,
       critterbase_measurement_quantitative_id       UUID               NOT NULL,
-      value                                         number,
+      value                                         numeric,
       create_date                                   timestamptz(6)     DEFAULT now() NOT NULL,
       create_user                                   integer            NOT NULL,
       update_date                                   timestamptz(6),
@@ -48,7 +48,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN observation_subcount_quantitative_measurement.create_user IS 'The id of the user who created the record as identified in the system user table.';
     COMMENT ON COLUMN observation_subcount_quantitative_measurement.update_date IS 'The datetime the record was updated.';
     COMMENT ON COLUMN observation_subcount_quantitative_measurement.update_user IS 'The id of the user who updated the record as identified in the system user table.';
-    COMMENT ON COLUMN observation_subcount_quantitative_measurement.revision_count IS IS 'Revision count used for concurrency control.';
+    COMMENT ON COLUMN observation_subcount_quantitative_measurement.revision_count IS 'Revision count used for concurrency control.';
 
     -- Add foreign key constraint
     ALTER TABLE observation_subcount_quantitative_measurement 
@@ -84,7 +84,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN observation_subcount_qualitative_measurement.create_user IS 'The id of the user who created the record as identified in the system user table.';
     COMMENT ON COLUMN observation_subcount_qualitative_measurement.update_date IS 'The datetime the record was updated.';
     COMMENT ON COLUMN observation_subcount_qualitative_measurement.update_user IS 'The id of the user who updated the record as identified in the system user table.';
-    COMMENT ON COLUMN observation_subcount_qualitative_measurement.revision_count IS IS 'Revision count used for concurrency control.';
+    COMMENT ON COLUMN observation_subcount_qualitative_measurement.revision_count IS 'Revision count used for concurrency control.';
     
     -- Add foreign key constraint
     ALTER TABLE observation_subcount_qualitative_measurement 
