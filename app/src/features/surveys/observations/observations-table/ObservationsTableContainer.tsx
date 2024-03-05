@@ -36,7 +36,7 @@ import { ImportObservationsButton } from 'features/surveys/observations/observat
 import ObservationsTable from 'features/surveys/observations/observations-table/ObservationsTable';
 import { useObservationsTableContext } from 'hooks/useContext';
 import {
-  IGetSampleLocationRecord,
+  IGetSampleLocationDetails,
   IGetSampleMethodRecord,
   IGetSamplePeriodRecord
 } from 'interfaces/useSurveyApi.interface';
@@ -51,7 +51,7 @@ const ObservationComponent = () => {
   const observationsTableContext = useObservationsTableContext();
 
   // Collect sample sites
-  const surveySampleSites: IGetSampleLocationRecord[] = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
+  const surveySampleSites: IGetSampleLocationDetails[] = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
   const sampleSiteOptions: ISampleSiteOption[] =
     surveySampleSites.map((site) => ({
       survey_sample_site_id: site.survey_sample_site_id,
