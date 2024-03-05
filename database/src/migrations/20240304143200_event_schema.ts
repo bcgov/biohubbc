@@ -20,6 +20,7 @@ export async function up(knex: Knex): Promise<void> {
     SET SEARCH_PATH=biohub_dapi_v1;
     DROP VIEW IF EXISTS biohub_dapi_v1.subcount_event;
     
+    -- Dropping this table lieu of tracking measurements per sub count in tables below
     SET SEARCH_PATH=biohub, public;
     DROP TABLE IF EXISTS subcount_event;
 
@@ -29,7 +30,7 @@ export async function up(knex: Knex): Promise<void> {
     CREATE TABLE observation_subcount_quantitative_measurement (
       observation_subcount_id                       integer            NOT NULL,
       critterbase_measurement_quantitative_id       UUID               NOT NULL,
-      value                                         VARCHAR(100),
+      value                                         number,
       create_date                                   timestamptz(6)     DEFAULT now() NOT NULL,
       create_user                                   integer            NOT NULL,
       update_date                                   timestamptz(6),
@@ -39,9 +40,15 @@ export async function up(knex: Knex): Promise<void> {
       CONSTRAINT observation_subcount_quantitative_measurement_pk PRIMARY KEY (observation_subcount_id, critterbase_measurement_quantitative_id)
     );
 
+    COMMENT ON TABLE observation_subcount_quantitative_measurement IS 'This table is intended to track quantitative measurements applied to a particular observation_subcount';
     COMMENT ON COLUMN observation_subcount_quantitative_measurement.observation_subcount_id IS 'Foreign key to the subcount table';
     COMMENT ON COLUMN observation_subcount_quantitative_measurement.critterbase_measurement_quantitative_id IS 'UUID of the measurement associated to a subcount';
-    COMMENT ON COLUMN observation_subcount_quantitative_measurement.value IS 'String representation of the data provided';
+    COMMENT ON COLUMN observation_subcount_quantitative_measurement.value IS 'Quantitative data value';
+    COMMENT ON COLUMN observation_subcount_quantitative_measurement.create_date IS 'The datetime the record was created.';
+    COMMENT ON COLUMN observation_subcount_quantitative_measurement.create_user IS 'The id of the user who created the record as identified in the system user table.';
+    COMMENT ON COLUMN observation_subcount_quantitative_measurement.update_date IS 'The datetime the record was updated.';
+    COMMENT ON COLUMN observation_subcount_quantitative_measurement.update_user IS 'The id of the user who updated the record as identified in the system user table.';
+    COMMENT ON COLUMN observation_subcount_quantitative_measurement.revision_count IS IS 'Revision count used for concurrency control.';
 
     -- Add foreign key constraint
     ALTER TABLE observation_subcount_quantitative_measurement 
@@ -69,9 +76,15 @@ export async function up(knex: Knex): Promise<void> {
       CONSTRAINT observation_subcount_qualitative_measurement_pk PRIMARY KEY (observation_subcount_id, critterbase_measurement_qualitative_id)
     );
 
+    COMMENT ON TABLE observation_subcount_qualitative_measurement IS 'This table is intended to track qualitative measurements applied to a particular observation_subcount';
     COMMENT ON COLUMN observation_subcount_qualitative_measurement.observation_subcount_id IS 'String representation of the data provided';
     COMMENT ON COLUMN observation_subcount_qualitative_measurement.critterbase_measurement_qualitative_id IS 'UUID of the measurement associated to a subcount';
-    COMMENT ON COLUMN observation_subcount_qualitative_measurement.critterbase_measurement_qualitative_option_id IS 'UUID UUID of the option selected for the given measurement';
+    COMMENT ON COLUMN observation_subcount_qualitative_measurement.critterbase_measurement_qualitative_option_id IS 'UUID of the option selected for the given measurement';
+    COMMENT ON COLUMN observation_subcount_qualitative_measurement.create_date IS 'The datetime the record was created.';
+    COMMENT ON COLUMN observation_subcount_qualitative_measurement.create_user IS 'The id of the user who created the record as identified in the system user table.';
+    COMMENT ON COLUMN observation_subcount_qualitative_measurement.update_date IS 'The datetime the record was updated.';
+    COMMENT ON COLUMN observation_subcount_qualitative_measurement.update_user IS 'The id of the user who updated the record as identified in the system user table.';
+    COMMENT ON COLUMN observation_subcount_qualitative_measurement.revision_count IS IS 'Revision count used for concurrency control.';
     
     -- Add foreign key constraint
     ALTER TABLE observation_subcount_qualitative_measurement 
