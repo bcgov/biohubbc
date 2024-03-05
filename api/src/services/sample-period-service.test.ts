@@ -27,7 +27,7 @@ describe('SamplePeriodService', () => {
       sinon.restore();
     });
 
-    it('Gets permit by admin user id', async () => {
+    it('Gets a sample period by survey method ID', async () => {
       const mockDBConnection = getMockDBConnection();
 
       const mockSamplePeriodRecords: SamplePeriodRecord[] = [
@@ -64,7 +64,7 @@ describe('SamplePeriodService', () => {
       sinon.restore();
     });
 
-    it('Gets permit by admin user id', async () => {
+    it('Deletes a sample period record', async () => {
       const mockDBConnection = getMockDBConnection();
 
       const mockSamplePeriodRecord: SamplePeriodRecord = {
@@ -99,7 +99,7 @@ describe('SamplePeriodService', () => {
       sinon.restore();
     });
 
-    it('Gets permit by admin user id', async () => {
+    it('Inserts a sample period successfully', async () => {
       const mockDBConnection = getMockDBConnection();
 
       const mockSamplePeriodRecord: SamplePeriodRecord = {
@@ -139,7 +139,7 @@ describe('SamplePeriodService', () => {
       sinon.restore();
     });
 
-    it('Gets permit by admin user id', async () => {
+    it('Updates a sample period successfully', async () => {
       const mockDBConnection = getMockDBConnection();
 
       const mockSamplePeriodRecord: SamplePeriodRecord = {

@@ -29,7 +29,7 @@ describe('SampleMethodService', () => {
       sinon.restore();
     });
 
-    it('Gets permit by admin user id', async () => {
+    it('Gets a sample method by survey sample site ID', async () => {
       const mockDBConnection = getMockDBConnection();
 
       const mockSampleMethodRecords: SampleMethodRecord[] = [
@@ -68,7 +68,7 @@ describe('SampleMethodService', () => {
       sinon.restore();
     });
 
-    it('Gets permit by admin user id', async () => {
+    it('Deletes a sample method successfully', async () => {
       const mockDBConnection = getMockDBConnection();
 
       const mockSurveyId = 1;
@@ -111,7 +111,7 @@ describe('SampleMethodService', () => {
       sinon.restore();
     });
 
-    it('Gets permit by admin user id', async () => {
+    it('Inserts a sample method successfully', async () => {
       const mockDBConnection = getMockDBConnection();
 
       const mockSampleMethodRecord: SampleMethodRecord = {
@@ -194,7 +194,7 @@ describe('SampleMethodService', () => {
       sinon.restore();
     });
 
-    it('Gets permit by admin user id', async () => {
+    it('Updates a sample method successfully', async () => {
       const mockDBConnection = getMockDBConnection();
 
       const mockSampleMethodRecord: SampleMethodRecord = {
