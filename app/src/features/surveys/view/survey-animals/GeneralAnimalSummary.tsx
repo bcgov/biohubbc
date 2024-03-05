@@ -35,7 +35,7 @@ const GeneralAnimalSummary = (props: GeneralAnimalSummaryProps) => {
 
   const animalGeneralDetails: Array<IGeneralDetail> = [
     { title: 'Alias', value: general.animal_id },
-    { title: 'Taxon', value: general.taxon_name },
+    { title: 'Taxon', value: general.itis_scientific_name },
     { title: 'Sex', value: general.sex },
     { title: 'Wildlife Health ID', value: general.wlh_id },
     {

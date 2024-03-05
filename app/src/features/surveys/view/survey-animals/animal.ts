@@ -69,9 +69,9 @@ const dateSchema = yup
 export type ProjectionMode = 'wgs' | 'utm';
 
 export const AnimalGeneralSchema = yup.object({}).shape({
-  taxon_id: yup.string().required(req),
+  itis_tsn: yup.string().required(req),
   animal_id: yup.string().required(req),
-  taxon_name: yup.string(),
+  itis_scientific_name: yup.string(),
   wlh_id: yup.string(),
   sex: yup.mixed<AnimalSex>().oneOf(Object.values(AnimalSex)),
   critter_id: yup.string()
@@ -314,7 +314,7 @@ type ICritterRelationships = {
 
 export class Critter {
   critter_id: string;
-  taxon_id: string;
+  itis_tsn: string;
   animal_id: string;
   wlh_id?: string;
   sex?: AnimalSex;
@@ -329,10 +329,10 @@ export class Critter {
   locations: ICritterLocation[];
   collections: ICritterCollection[];
 
-  private taxon_name?: string;
+  private itis_scientific_name?: string;
 
   get name(): string {
-    return `${this.animal_id}-${this.taxon_name}`;
+    return `${this.animal_id}-${this.itis_scientific_name}`;
   }
 
   _formatCritterCaptures(animal_captures: IAnimalCapture[]): ICapturesAndLocations {
@@ -525,8 +525,8 @@ export class Critter {
 
   constructor(animal: IAnimal) {
     this.critter_id = animal.general.critter_id ? animal.general.critter_id : v4();
-    this.taxon_id = animal.general.taxon_id;
-    this.taxon_name = animal.general.taxon_name;
+    this.itis_tsn = animal.general.itis_tsn;
+    this.itis_scientific_name = animal.general.itis_scientific_name;
     this.animal_id = animal.general.animal_id;
     this.wlh_id = animal.general.wlh_id;
     this.sex = animal.general.sex;

@@ -81,9 +81,9 @@ export const AddEditAnimal = (props: IAddEditAnimalProps) => {
   }, [critterData]);
 
   useEffect(() => {
-    refreshMeasurements(values.general.taxon_id);
+    refreshMeasurements(values.general.itis_tsn);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [values.general.taxon_id]);
+  }, [values.general.itis_tsn]);
 
   useEffect(() => {
     if (!status?.success && status?.msg) {
