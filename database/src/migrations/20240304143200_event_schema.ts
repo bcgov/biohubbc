@@ -42,7 +42,7 @@ export async function up(knex: Knex): Promise<void> {
 
     COMMENT ON TABLE observation_subcount_quantitative_measurement IS 'This table is intended to track quantitative measurements applied to a particular observation_subcount';
     COMMENT ON COLUMN observation_subcount_quantitative_measurement.observation_subcount_id IS 'Foreign key to the subcount table';
-    COMMENT ON COLUMN observation_subcount_quantitative_measurement.critterbase_measurement_quantitative_id IS 'UUID of the measurement associated to a subcount';
+    COMMENT ON COLUMN observation_subcount_quantitative_measurement.critterbase_measurement_quantitative_id IS 'UUID of an external CritterBase measurement associated to a observation_subcount';
     COMMENT ON COLUMN observation_subcount_quantitative_measurement.value IS 'Quantitative data value';
     COMMENT ON COLUMN observation_subcount_quantitative_measurement.create_date IS 'The datetime the record was created.';
     COMMENT ON COLUMN observation_subcount_quantitative_measurement.create_user IS 'The id of the user who created the record as identified in the system user table.';
@@ -78,8 +78,8 @@ export async function up(knex: Knex): Promise<void> {
 
     COMMENT ON TABLE observation_subcount_qualitative_measurement IS 'This table is intended to track qualitative measurements applied to a particular observation_subcount';
     COMMENT ON COLUMN observation_subcount_qualitative_measurement.observation_subcount_id IS 'String representation of the data provided';
-    COMMENT ON COLUMN observation_subcount_qualitative_measurement.critterbase_measurement_qualitative_id IS 'UUID of the measurement associated to a subcount';
-    COMMENT ON COLUMN observation_subcount_qualitative_measurement.critterbase_measurement_qualitative_option_id IS 'UUID of the option selected for the given measurement';
+    COMMENT ON COLUMN observation_subcount_qualitative_measurement.critterbase_measurement_qualitative_id IS 'UUID of an external CritterBase measurement associated to a observation_subcount';
+    COMMENT ON COLUMN observation_subcount_qualitative_measurement.critterbase_measurement_qualitative_option_id IS 'UUID of an external CritterBase measurement option selected for the given CritterBase measurement';
     COMMENT ON COLUMN observation_subcount_qualitative_measurement.create_date IS 'The datetime the record was created.';
     COMMENT ON COLUMN observation_subcount_qualitative_measurement.create_user IS 'The id of the user who created the record as identified in the system user table.';
     COMMENT ON COLUMN observation_subcount_qualitative_measurement.update_date IS 'The datetime the record was updated.';
