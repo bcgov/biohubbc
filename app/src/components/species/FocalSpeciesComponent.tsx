@@ -1,10 +1,10 @@
+import Stack from '@mui/material/Stack';
 import AlertBar from 'components/alert/AlertBar';
 import { useFormikContext } from 'formik';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import get from 'lodash-es/get';
 import SelectedSpecies from './components/SelectedSpecies';
 import SpeciesAutocompleteField from './components/SpeciesAutocompleteField';
-import Stack from '@mui/material/Stack';
 
 const FocalSpeciesComponent = () => {
   const { values, setFieldValue, errors, submitCount } = useFormikContext<ITaxonomy[]>();

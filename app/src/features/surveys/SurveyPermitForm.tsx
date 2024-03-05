@@ -1,8 +1,10 @@
 import { mdiClose, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Collapse } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
+import grey from '@mui/material/colors/grey';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import IconButton from '@mui/material/IconButton';
@@ -11,13 +13,11 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import grey from '@mui/material/colors/grey';
 import CustomTextField from 'components/fields/CustomTextField';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import React from 'react';
-import yup from 'utils/YupSchema';
 import { TransitionGroup } from 'react-transition-group';
-import { Collapse } from '@mui/material';
+import yup from 'utils/YupSchema';
 
 export interface ISurveyPermitFormArrayItem {
   permit_id: number;
@@ -79,17 +79,13 @@ const SurveyPermitForm: React.FC = () => {
               '&:not(:has(div[role=listitem]))': {
                 display: 'none'
               }
-            }}
-          >
+            }}>
             {values.permit.permits?.map((permit, index) => {
               const permitNumberMeta = getFieldMeta(`permit.permits.[${index}].permit_number`);
               const permitTypeMeta = getFieldMeta(`permit.permits.[${index}].permit_type`);
 
               return (
-                <Collapse
-                  role="listitem"
-                  key={index}
-                >
+                <Collapse role="listitem" key={index}>
                   <Card
                     component={Stack}
                     variant="outlined"
@@ -100,9 +96,7 @@ const SurveyPermitForm: React.FC = () => {
                       width: '100%',
                       p: 2,
                       backgroundColor: grey[100]
-                    }}
-                  >
-
+                    }}>
                     <CustomTextField
                       name={`permit.permits.[${index}].permit_number`}
                       label="Permit Number"
@@ -147,8 +141,7 @@ const SurveyPermitForm: React.FC = () => {
                       onClick={() => arrayHelpers.remove(index)}
                       sx={{
                         mt: 1.125
-                      }}
-                    >
+                      }}>
                       <Icon path={mdiClose} size={1} />
                     </IconButton>
                   </Card>
@@ -173,7 +166,6 @@ const SurveyPermitForm: React.FC = () => {
             }}>
             Add New Permit
           </Button>
-
         </Stack>
       )}
     />

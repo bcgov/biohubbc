@@ -113,7 +113,6 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
             name="survey_details.survey_name"
             label="Survey Name"
             maxLength={200}
-
             other={{
               required: true
             }}

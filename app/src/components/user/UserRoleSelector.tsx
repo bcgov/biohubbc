@@ -49,7 +49,7 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
             <Select
               size="small"
               inputProps={{
-                "aria-label": "Select a role",
+                'aria-label': 'Select a role'
               }}
               data-testid={`select-user-role-button-${index}`}
               sx={{ width: '200px', backgroundColor: '#fff' }}

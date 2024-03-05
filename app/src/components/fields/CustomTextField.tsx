@@ -15,7 +15,7 @@ export interface ICustomTextField {
 
   maxLength?: number;
 
-  endAdornment?: any
+  endAdornment?: any;
 }
 
 const CustomTextField: React.FC<React.PropsWithChildren<ICustomTextField>> = (props) => {

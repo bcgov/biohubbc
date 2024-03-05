@@ -71,7 +71,8 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
       .isAfterDate(
         projectData.project.start_date,
         DATE_FORMAT.ShortDateFormat,
-        `Survey start date cannot be before project start date ${projectData && getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, projectData.project.start_date)
+        `Survey start date cannot be before project start date ${
+          projectData && getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, projectData.project.start_date)
         }`
       )
       .isAfterDate(
@@ -87,7 +88,8 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
       .isBeforeDate(
         projectData.project.end_date,
         DATE_FORMAT.ShortDateFormat,
-        `Survey end date cannot be after project end date ${projectData && getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, projectData.project.end_date)
+        `Survey end date cannot be after project end date ${
+          projectData && getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, projectData.project.end_date)
         }`
       )
       .isBeforeDate(
