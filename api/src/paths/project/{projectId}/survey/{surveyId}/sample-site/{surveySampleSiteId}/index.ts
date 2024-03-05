@@ -128,6 +128,30 @@ PUT.apiDoc = {
                       }
                     }
                   }
+                },
+                blocks: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    required: ['survey_block_id'],
+                    properties: {
+                      survey_block_id: {
+                        type: 'number'
+                      }
+                    }
+                  }
+                },
+                stratums: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    required: ['survey_stratum_id'],
+                    properties: {
+                      survey_stratum_id: {
+                        type: 'number'
+                      }
+                    }
+                  }
                 }
               }
             }

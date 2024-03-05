@@ -3,9 +3,9 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostSurveyBlock, SurveyBlockRepository } from '../repositories/survey-block-repository';
 import { getMockDBConnection } from '../__mocks__/db';
+import { SampleBlockService } from './sample-block-service';
 import { SurveyBlockService } from './survey-block-service';
 
 chai.use(sinonChai);
@@ -28,7 +28,8 @@ describe('SurveyBlockService', () => {
             create_user: 1,
             update_date: '',
             update_user: 1,
-            revision_count: 1
+            revision_count: 1,
+            sample_block_count: 1
           }
         ],
         rowCount: 1
@@ -127,49 +128,37 @@ describe('SurveyBlockService', () => {
     });
   });
 
-  describe('deleteSurveyBlockRecord', () => {
+  describe('deleteSurveyBlock', () => {
     it('should succeed with valid data', async () => {
-      const mockResponse = ({
-        rows: [
-          {
-            survey_block_id: 1,
-            survey_id: 1,
-            name: 'Deleted record',
-            description: '',
-            create_date: '',
-            create_user: 1,
-            update_date: '',
-            update_user: 1,
-            revision_count: 1
-          }
-        ],
-        rowCount: 1
-      } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({
-        sql: () => mockResponse
-      });
+      const mockResponse = {
+        survey_block_id: 1,
+        survey_id: 1,
+        name: 'Deleted record',
+        description: '',
+        create_date: '',
+        create_user: 1,
+        update_date: '',
+        update_user: 1,
+        revision_count: 1
+      };
+
+      const deleteSampleBlockRecordsByBlockIdsStub = sinon
+        .stub(SampleBlockService.prototype, 'deleteSampleBlockRecordsByBlockIds')
+        .resolves(undefined);
+
+      const deleteSurveyBlockRecordStub = sinon
+        .stub(SurveyBlockRepository.prototype, 'deleteSurveyBlockRecord')
+        .resolves(mockResponse);
+
+      const dbConnection = getMockDBConnection();
 
       const service = new SurveyBlockService(dbConnection);
-      const response = await service.deleteSurveyBlock(1);
-      expect(response.survey_block_id).to.be.eql(1);
-    });
+      const surveyBlockId = 1;
+      const response = await service.deleteSurveyBlock(surveyBlockId);
 
-    it('should failed with erroneous data', async () => {
-      const mockResponse = ({
-        rows: [],
-        rowCount: 0
-      } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({
-        sql: () => mockResponse
-      });
-
-      const service = new SurveyBlockService(dbConnection);
-      try {
-        await service.deleteSurveyBlock(1);
-        expect.fail();
-      } catch (error) {
-        expect(((error as any) as ApiExecuteSQLError).message).to.be.eq('Failed to delete survey block record');
-      }
+      expect(response).to.eql(mockResponse);
+      expect(deleteSampleBlockRecordsByBlockIdsStub).to.have.been.calledOnceWith([surveyBlockId]);
+      expect(deleteSurveyBlockRecordStub).to.have.been.calledOnceWith(surveyBlockId);
     });
   });
 });
