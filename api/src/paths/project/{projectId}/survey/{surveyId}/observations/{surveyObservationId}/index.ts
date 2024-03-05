@@ -94,6 +94,21 @@ GET.apiDoc = {
               survey_observation_id: {
                 type: 'integer'
               },
+              survey_id: {
+                type: 'integer'
+              },
+              survey_sample_site_id: {
+                type: 'integer',
+                nullable: true
+              },
+              survey_sample_method_id: {
+                type: 'integer',
+                nullable: true
+              },
+              survey_sample_period_id: {
+                type: 'integer',
+                nullable: true
+              },
               latitude: {
                 type: 'number'
               },
