@@ -24,6 +24,21 @@ export const SurveyBlockRecord = z.object({
 });
 export type SurveyBlockRecord = z.infer<typeof SurveyBlockRecord>;
 
+// This describes the a row in the database for Survey Block
+export const SurveyBlockRecordWithCount = z.object({
+  survey_block_id: z.number(),
+  survey_id: z.number(),
+  name: z.string(),
+  description: z.string(),
+  create_date: z.string(),
+  create_user: z.number(),
+  update_date: z.string().nullable(),
+  update_user: z.number().nullable(),
+  revision_count: z.number(),
+  sample_block_count: z.number()
+});
+export type SurveyBlockRecordWithCount = z.infer<typeof SurveyBlockRecordWithCount>;
+
 /**
  * A repository class for accessing Survey Block data.
  *
@@ -39,14 +54,39 @@ export class SurveyBlockRepository extends BaseRepository {
    * @return {*}  {Promise<SurveyBlockRecord[]>}
    * @memberof SurveyBlockRepository
    */
-  async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockRecord[]> {
+  async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockRecordWithCount[]> {
     const sql = SQL`
-      SELECT * 
-      FROM survey_block
-      WHERE survey_id = ${surveyId};
+    SELECT
+        sb.survey_block_id,
+        sb.survey_id,
+        sb.name,
+        sb.description,
+        sb.create_date,
+        sb.create_user,
+        sb.update_date,
+        sb.update_user,
+        sb.revision_count,
+        COUNT(ssb.survey_block_id)::integer AS sample_block_count
+    FROM
+        survey_block sb
+    LEFT JOIN
+        survey_sample_block ssb ON sb.survey_block_id = ssb.survey_block_id
+    WHERE
+        sb.survey_id = ${surveyId}
+    GROUP BY
+        sb.survey_block_id,
+        sb.survey_id,
+        sb.name,
+        sb.description,
+        sb.create_date,
+        sb.create_user,
+        sb.update_date,
+        sb.update_user,
+        sb.revision_count;
     `;
 
-    const response = await this.connection.sql(sql, SurveyBlockRecord);
+    const response = await this.connection.sql(sql, SurveyBlockRecordWithCount);
+
     return response.rows;
   }
 
