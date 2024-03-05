@@ -14,6 +14,8 @@ export interface ICustomTextField {
   handleBlur?: FormikContextType<any>['handleBlur'];
 
   maxLength?: number;
+
+  endAdornment?: any
 }
 
 const CustomTextField: React.FC<React.PropsWithChildren<ICustomTextField>> = (props) => {
