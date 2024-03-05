@@ -81,7 +81,7 @@ const SurveyGeneralInformation = () => {
                     display: 'none'
                   }
                 }}>
-                {[focalSpecies.commonNames[0], `(${focalSpecies.scientificName})`].filter(Boolean).join(' ')}
+                {[...focalSpecies.commonNames, `(${focalSpecies.scientificName})`].filter(Boolean).join(' ')}
               </Typography>
             );
           })}
@@ -109,7 +109,7 @@ const SurveyGeneralInformation = () => {
                     display: 'none'
                   }
                 }}>
-                {[ancillarySpecies.commonNames[0], `(${ancillarySpecies.scientificName})`].filter(Boolean).join(' ')}
+                {[...ancillarySpecies.commonNames, `(${ancillarySpecies.scientificName})`].filter(Boolean).join(' ')}
               </Typography>
             );
           })}

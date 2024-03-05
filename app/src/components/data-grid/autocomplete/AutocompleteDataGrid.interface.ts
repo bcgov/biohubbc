@@ -14,7 +14,7 @@ export interface IAutocompleteDataGridOption<ValueType extends string | number> 
  * Defines a single option for a data grid taxonomy autocomplete control.
  *
  * @export
- * @interface IAutocompleteDataGridOption
+ * @interface IAutocompleteDataGridTaxonomyOption
  * @template ValueType
  */
 export interface IAutocompleteDataGridTaxonomyOption<ValueType extends string | number> {

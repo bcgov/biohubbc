@@ -73,7 +73,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
           return options;
         }
 
-        const unselectedOptions = options.filter((item, index, array) => {
+        const unselectedOptions = options.filter((item) => {
           return !values.some((existing) => existing.tsn === item.tsn);
         });
         return searchFilter(unselectedOptions, state);
