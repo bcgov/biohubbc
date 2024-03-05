@@ -109,17 +109,18 @@ export class SampleMethodRepository extends BaseRepository {
    */
   async insertSampleMethod(sampleMethod: InsertSampleMethodRecord): Promise<SampleMethodRecord> {
     const sqlStatement = SQL`
-    INSERT INTO survey_sample_method (
-      survey_sample_site_id,
-      method_lookup_id,
-      description
-    ) VALUES (
-      ${sampleMethod.survey_sample_site_id},
-      ${sampleMethod.method_lookup_id},
-      ${sampleMethod.description}
-      )
+      INSERT INTO survey_sample_method (
+        survey_sample_site_id,
+        method_lookup_id,
+        description
+      ) VALUES (
+        ${sampleMethod.survey_sample_site_id},
+        ${sampleMethod.method_lookup_id},
+        ${sampleMethod.description}
+        )
       RETURNING
-        *;`;
+        *;
+    `;
 
     const response = await this.connection.sql(sqlStatement, SampleMethodRecord);
 

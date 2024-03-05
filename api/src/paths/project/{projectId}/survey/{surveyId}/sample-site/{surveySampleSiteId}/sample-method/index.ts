@@ -7,6 +7,7 @@ import { InsertSampleMethodRecord } from '../../../../../../../../repositories/s
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
 import { SampleMethodService } from '../../../../../../../../services/sample-method-service';
 import { getLogger } from '../../../../../../../../utils/logger';
+import { SampleLocationService } from '../../../../../../../../services/sample-location-service';
 
 const defaultLog = getLogger(
   'paths/project/{projectId}/survey/{surveyId}/sample-site/{surveySampleSiteId}/sample-method/'
@@ -287,19 +288,28 @@ export function createSurveySampleSiteRecord(): RequestHandler {
       throw new HTTP400('Missing required body param `sampleMethod`');
     }
 
+    const surveyId = Number(req.params.surveyId);
+    const surveySampleSiteId = Number(req.params.surveySampleSiteId);
+
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
+      const sampleSiteService = new SampleLocationService(connection);
+
+      const sampleSite = sampleSiteService.getSurveySampleSiteById(surveyId, surveySampleSiteId);
+      if (!sampleSite) {
+        throw new HTTP400('The given sample site does not belong to the given survey');
+      }
+
       const sampleMethod: InsertSampleMethodRecord = {
         ...req.body.sampleMethod,
-        survey_sample_site_id: Number(req.params.surveySampleSiteId)
+        survey_sample_site_id: surveySampleSiteId
       };
 
       await connection.open();
 
       const sampleMethodService = new SampleMethodService(connection);
 
-      // @TODO SIMSBIOHUB-494 audit
       await sampleMethodService.insertSampleMethod(sampleMethod);
 
       await connection.commit();

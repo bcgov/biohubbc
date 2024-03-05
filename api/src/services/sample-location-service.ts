@@ -61,6 +61,18 @@ export class SampleLocationService extends DBService {
   async getSampleLocationsCountBySurveyId(surveyId: number): Promise<number> {
     return this.sampleLocationRepository.getSampleLocationsCountBySurveyId(surveyId);
   }
+  
+  /**
+   * Gets a sample site record by sample site ID.
+   *
+   * @param {number} surveyId
+   * @param {number} surveySampleSiteId
+   * @return {*}  {Promise<SampleSiteRecord>}
+   * @memberof SampleLocationService
+   */
+  async getSurveySampleSiteById(surveyId: number, surveySampleSiteId: number): Promise<SampleSiteRecord> {
+    return this.sampleLocationRepository.getSurveySampleSiteById(surveyId, surveySampleSiteId);
+  }
 
   /**
    * Deletes a survey Sample Location.

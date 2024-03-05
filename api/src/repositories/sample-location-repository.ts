@@ -200,6 +200,41 @@ export class SampleLocationRepository extends BaseRepository {
   }
 
   /**
+   * Gets a sample site record by sample site ID.
+   *
+   * @param {number} surveyId
+   * @param {number} surveySampleSiteId
+   * @return {*}  {Promise<SampleSiteRecord>}
+   * @memberof SampleLocationService
+   */
+  async getSurveySampleSiteById(surveyId: number, surveySampleSiteId: number): Promise<SampleSiteRecord> {
+    const sqlStatement = SQL`
+      SELECT
+        sss.*
+      FROM
+        survey_sample_site as sss
+      WHERE
+        sss.survey_id = ${surveyId}
+      AND
+        sss.survey_sample_site_id = ${surveySampleSiteId}
+    `;
+
+    const response = await this.connection.sql(
+      sqlStatement,
+      SampleSiteRecord
+    );
+
+    if (response?.rowCount < 1) {
+      throw new ApiExecuteSQLError('Failed to get sample site by ID', [
+        'SampleLocationRepository->getSurveySampleSiteById',
+        'rowCount was < 1, expected rowCount > 0'
+      ]);
+    }
+
+    return response.rows[0];
+  }
+
+  /**
    * Updates a survey sample site record.
    *
    * @param {UpdateSampleSiteRecord} sample
