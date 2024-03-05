@@ -2,12 +2,11 @@ import { Knex } from 'knex';
 
 /**
  * Create new tables:
- * - observation_subcount
- * - subcount_critter
- * - subcount_event
+ * - observation_subcount_quantitative_measurement
+ * - observation_subcount_qualitative_measurement
  *
- * Create new function/trigger:
- * - tr_observation_subcount_count
+ * Drop old tables:
+ * - subcount_event
  *
  * @export
  * @param {Knex} knex
