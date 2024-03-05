@@ -36,7 +36,7 @@ export class SamplePeriodService extends DBService {
     surveyId: number,
     surveySampleMethodId: number
   ): Promise<SamplePeriodRecord[]> {
-    return await this.samplePeriodRepository.getSamplePeriodsForSurveyMethodId(surveyId, surveySampleMethodId);
+    return this.samplePeriodRepository.getSamplePeriodsForSurveyMethodId(surveyId, surveySampleMethodId);
   }
 
   /**

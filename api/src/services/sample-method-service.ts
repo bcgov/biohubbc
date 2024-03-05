@@ -37,7 +37,7 @@ export class SampleMethodService extends DBService {
     surveyId: number,
     surveySampleSiteId: number
   ): Promise<SampleMethodRecord[]> {
-    return await this.sampleMethodRepository.getSampleMethodsForSurveySampleSiteId(surveyId, surveySampleSiteId);
+    return this.sampleMethodRepository.getSampleMethodsForSurveySampleSiteId(surveyId, surveySampleSiteId);
   }
 
   /**

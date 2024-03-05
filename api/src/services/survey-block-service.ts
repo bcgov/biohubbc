@@ -18,7 +18,7 @@ export class SurveyBlockService extends DBService {
    * @returns
    */
   async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockRecord[]> {
-    return await this.surveyBlockRepository.getSurveyBlocksForSurveyId(surveyId);
+    return this.surveyBlockRepository.getSurveyBlocksForSurveyId(surveyId);
   }
 
   /**
