@@ -45,12 +45,12 @@ describe('useTaxonomyApi', () => {
         searchResponse: [
           {
             tsn: '1',
-            commonNames: 'something',
+            commonNames: ['something'],
             scientificName: 'something'
           },
           {
             tsn: '2',
-            commonNames: 'anything',
+            commonNames: ['anything'],
             scientificName: 'anything'
           }
         ]
@@ -79,12 +79,12 @@ describe('useTaxonomyApi', () => {
         searchResponse: [
           {
             tsn: '3',
-            commonNames: 'something',
+            commonNames: ['something'],
             scientificName: 'something'
           },
           {
             tsn: '4',
-            commonNames: 'anything',
+            commonNames: ['anything'],
             scientificName: 'anything'
           }
         ]

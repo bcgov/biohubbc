@@ -28,8 +28,8 @@ describe('survey/{surveyId}/view', () => {
               revision_count: 1
             },
             species: {
-              focal_species: [{ tsn: 1, commonNames: 'name', scientificName: 'name' }],
-              ancillary_species: [{ tsn: 1, commonNames: 'name', scientificName: 'name' }]
+              focal_species: [{ tsn: 1, commonNames: ['name'], scientificName: 'name' }],
+              ancillary_species: [{ tsn: 1, commonNames: ['name'], scientificName: 'name' }]
             },
             permit: {
               permit_number: '123',
@@ -103,7 +103,7 @@ describe('survey/{surveyId}/view', () => {
               revision_count: 1
             },
             species: {
-              focal_species: [{ tsn: 1, commonNames: 'name', scientificName: 'name' }],
+              focal_species: [{ tsn: 1, commonNames: ['name'], scientificName: 'name' }],
               ancillary_species: null
             },
             permit: {
