@@ -13,7 +13,7 @@ import * as put_survey_sample_site from './index';
 
 chai.use(sinonChai);
 
-describe.only('updateSurveySampleSite', () => {
+describe('updateSurveySampleSite', () => {
   afterEach(() => {
     sinon.restore();
   });

@@ -201,7 +201,7 @@ describe('SampleLocationService', () => {
     });
   });
 
-  describe.only('updateSampleLocationMethodPeriod', () => {
+  describe('updateSampleLocationMethodPeriod', () => {
     it('should successfully update smaple location method and period', async () => {
       const mockDBConnection = getMockDBConnection();
       const service = new SampleLocationService(mockDBConnection);
