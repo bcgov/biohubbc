@@ -278,7 +278,7 @@ begin
       _eml_xml_text := _eml_xml_text||format('
 				<taxonRankName>%1$s</taxonRankName>
 				<taxonRankValue>%2$s</taxonRankValue>
-				<commonName>%3$s</commonName>
+				<commonNames>%3$s</commonNames>
 				<taxonId provider="%4$s">%5$s</taxonId>'
         , api_xml_string_replace(_record.tty_name)
         , api_xml_string_replace(_record.unit_name1||' '||_record.unit_name2)
@@ -294,7 +294,7 @@ begin
         <taxonomicClassification>
 				  <taxonRankName>%1$s</taxonRankName>
 				  <taxonRankValue>%2$s</taxonRankValue>
-				  <commonName>%3$s</commonName>
+				  <commonNames>%3$s</commonNames>
 				  <taxonId provider="%4$s">%5$s</taxonId>
         </taxonomicClassification>'
         , api_xml_string_replace(_record.tty_name)

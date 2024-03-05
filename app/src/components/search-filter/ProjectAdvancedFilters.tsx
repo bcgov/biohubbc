@@ -56,7 +56,7 @@ const ProjectAdvancedFilters = () => {
     value.map((item: any) => {
       return {
         value: parseInt(item.tsn),
-        label: [item.commonName, `(${item.scientificName})`].filter(Boolean).join(' ')
+        label: [item.commonNames, `(${item.scientificName})`].filter(Boolean).join(' ')
       };
     });
 

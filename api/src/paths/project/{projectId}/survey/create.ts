@@ -101,14 +101,16 @@ POST.apiDoc = {
                   type: 'array',
                   items: {
                     type: 'object',
-                    required: ['tsn', 'commonName', 'scientificName'],
+                    required: ['tsn', 'commonNames', 'scientificName'],
                     properties: {
                       tsn: {
                         type: 'integer'
                       },
-                      commonName: {
-                        type: 'string',
-                        nullable: true
+                      commonNames: {
+                        type: 'array',
+                        items: {
+                          type: 'string'
+                        }
                       },
                       scientificName: {
                         type: 'string'
@@ -121,12 +123,12 @@ POST.apiDoc = {
                   type: 'array',
                   items: {
                     type: 'object',
-                    required: ['tsn', 'commonName', 'scientificName'],
+                    required: ['tsn', 'commonNames', 'scientificName'],
                     properties: {
                       tsn: {
                         type: 'integer'
                       },
-                      commonName: {
+                      commonNames: {
                         type: 'string',
                         nullable: true
                       },

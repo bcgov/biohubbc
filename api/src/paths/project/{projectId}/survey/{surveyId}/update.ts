@@ -102,12 +102,12 @@ PUT.apiDoc = {
                   type: 'array',
                   items: {
                     type: 'object',
-                    required: ['tsn', 'commonName', 'scientificName'],
+                    required: ['tsn', 'commonNames', 'scientificName'],
                     properties: {
                       tsn: {
                         type: 'integer'
                       },
-                      commonName: {
+                      commonNames: {
                         type: 'string',
                         nullable: true
                       },
@@ -122,12 +122,12 @@ PUT.apiDoc = {
                   type: 'array',
                   items: {
                     type: 'object',
-                    required: ['tsn', 'commonName', 'scientificName'],
+                    required: ['tsn', 'commonNames', 'scientificName'],
                     properties: {
                       tsn: {
                         type: 'integer'
                       },
-                      commonName: {
+                      commonNames: {
                         type: 'string',
                         nullable: true
                       },

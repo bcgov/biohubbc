@@ -44,13 +44,13 @@ export interface IArtifact {
 
 export interface IItisSearchResult {
   tsn: string;
-  commonName?: string;
+  commonNames?: string;
   scientificName: string;
 }
 
 export interface ITaxonomy {
   tsn: number;
-  commonName?: string;
+  commonNames?: string;
   scientificName: string;
 }
 

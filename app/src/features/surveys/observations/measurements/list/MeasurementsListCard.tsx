@@ -51,9 +51,9 @@ export const MeasurementsListCard = (props: IMeasurementsListCardProps) => {
             <em>{props.measurement.itis_tsn}</em>
           </Typography>
           {/* <Typography variant="body2">
-            {props.measurement.commonName ? (
+            {props.measurement.commonNames ? (
               <>
-                <span>{props.measurement.commonName}</span>&nbsp;
+                <span>{props.measurement.commonNames}</span>&nbsp;
                 <span>
                   (<em>{props.measurement.scientificName}</em>)
                 </span>
