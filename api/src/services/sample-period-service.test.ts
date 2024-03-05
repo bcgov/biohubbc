@@ -167,18 +167,18 @@ describe('SamplePeriodService', () => {
         start_time: '12:00:00',
         end_time: '13:00:00'
       };
-      const mockSurveyId = 1;
+      const mockSurveyId = 1001;
 
       const samplePeriodService = new SamplePeriodService(mockDBConnection);
       const response = await samplePeriodService.updateSamplePeriod(mockSurveyId, samplePeriod);
 
-      expect(updateSamplePeriodStub).to.be.calledOnceWith(samplePeriod);
+      expect(updateSamplePeriodStub).to.be.calledOnceWith(1001, samplePeriod);
       expect(response).to.eql(mockSamplePeriodRecord);
     });
   });
 
   describe('deleteSamplePeriodsNotInArray', () => {
-    it('should run without issue', async () => {
+    it('should delete sample sites not in array successfully', async () => {
       const mockDBConnection = getMockDBConnection();
 
       const mockSamplePeriodRecords: SamplePeriodRecord[] = [
@@ -208,18 +208,18 @@ describe('SamplePeriodService', () => {
         .stub(ObservationService.prototype, 'getObservationsCountBySamplePeriodIds')
         .resolves(0);
 
-      const mockSurveyId = 1;
+      const mockSurveyId = 1001;
       const surveySampleMethodId = 1;
       const samplePeriodService = new SamplePeriodService(mockDBConnection);
       const response = await samplePeriodService.deleteSamplePeriodsNotInArray(mockSurveyId, surveySampleMethodId, [
         { survey_sample_period_id: 2 } as SamplePeriodRecord
       ]);
 
-      expect(getSamplePeriodsForSurveyMethodIdStub).to.be.calledOnceWith(surveySampleMethodId);
+      expect(getSamplePeriodsForSurveyMethodIdStub).to.be.calledOnceWith(1001, surveySampleMethodId);
       expect(deleteSamplePeriodRecordsStub).to.be.calledOnceWith([mockSamplePeriodRecords[0].survey_sample_period_id]);
       expect(response).to.eql(undefined);
       expect(getObservationsCountBySamplePeriodIdStub).to.be.calledOnceWith(
-        mockSamplePeriodRecords[0].survey_sample_period_id
+        [mockSamplePeriodRecords[0].survey_sample_period_id]
       );
     });
   });
