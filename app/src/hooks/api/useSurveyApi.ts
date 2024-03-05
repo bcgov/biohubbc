@@ -494,6 +494,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     };
   };
 
+  // TODO NICK: Question for Mac: Why are we spreading the critter.measurements and critter values into the top level of this payload?
   const critterToPayloadTransform = (critter: Critter, ignoreTopLevel = false) => {
     return {
       critters: ignoreTopLevel

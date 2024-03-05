@@ -5,6 +5,7 @@ import CustomTextField from 'components/fields/CustomTextField';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { useFormikContext } from 'formik';
+import get from 'lodash-es/get';
 import { AnimalGeneralSchema, getAnimalFieldName, IAnimal, IAnimalGeneral, isRequiredInSchema } from '../animal';
 import { ANIMAL_SECTIONS_FORM_MAP } from '../animal-sections';
 
@@ -15,12 +16,9 @@ import { ANIMAL_SECTIONS_FORM_MAP } from '../animal-sections';
  */
 
 const GeneralAnimalForm = () => {
-  const { setFieldValue } = useFormikContext<IAnimal>();
+  const { errors, touched, setFieldValue } = useFormikContext<IAnimal>();
+
   const { animalKeyName } = ANIMAL_SECTIONS_FORM_MAP[SurveyAnimalsI18N.animalGeneralTitle];
-  const handleTaxonName = (tsn: string, scientificName: string) => {
-    setFieldValue(getAnimalFieldName<IAnimalGeneral>(animalKeyName, 'itis_tsn'), tsn);
-    setFieldValue(getAnimalFieldName<IAnimalGeneral>(animalKeyName, 'itis_scientific_name'), scientificName);
-  };
 
   return (
     <Grid container spacing={3}>
@@ -29,9 +27,18 @@ const GeneralAnimalForm = () => {
           <SpeciesAutocompleteField
             formikFieldName={getAnimalFieldName<IAnimalGeneral>(animalKeyName, 'itis_tsn')}
             label="Species"
-            required
-            handleAddSpecies={(species) => {
-              handleTaxonName(String(species.tsn), species.scientificName);
+            required={true}
+            error={
+              get(touched, getAnimalFieldName<IAnimalGeneral>(animalKeyName, 'itis_tsn'))
+                ? get(errors, getAnimalFieldName<IAnimalGeneral>(animalKeyName, 'itis_tsn'))
+                : undefined
+            }
+            handleAddSpecies={(taxon) => {
+              setFieldValue(getAnimalFieldName<IAnimalGeneral>(animalKeyName, 'itis_tsn'), taxon.tsn);
+              setFieldValue(
+                getAnimalFieldName<IAnimalGeneral>(animalKeyName, 'itis_scientific_name'),
+                taxon.scientificName
+              );
             }}
           />
         </HelpButtonTooltip>

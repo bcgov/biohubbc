@@ -14,8 +14,17 @@ import { useEffect, useMemo, useState } from 'react';
 export interface ISpeciesAutocompleteFieldProps {
   formikFieldName: string;
   label: string;
-  required?: boolean;
   handleAddSpecies: (species: ITaxonomy) => void;
+  /**
+   * The error message to display.
+   *
+   * Note: the calling component is responsible for checking `touched`, if needed.
+   *
+   * @type {string}
+   * @memberof ISpeciesAutocompleteFieldProps
+   */
+  error?: string;
+  required?: boolean;
   value?: string;
   /**
    * Clear the input value after a selection is made
@@ -28,7 +37,7 @@ export interface ISpeciesAutocompleteFieldProps {
 }
 
 const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
-  const { formikFieldName, label, required, handleAddSpecies } = props;
+  const { formikFieldName, label, required, error, handleAddSpecies } = props;
   const biohubApi = useBiohubApi();
 
   const [inputValue, setInputValue] = useState('');
@@ -141,6 +150,8 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
               </>
             )
           }}
+          error={Boolean(error)}
+          helperText={error}
         />
       )}
     />
