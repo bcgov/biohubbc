@@ -256,7 +256,7 @@ describe('SampleMethodService', () => {
       const mockDBConnection = getMockDBConnection();
 
       const mockSurveyId = 1001;
-      const mockSampleMethodId = 1
+      const mockSampleMethodId = 1;
       const surveySampleSiteId = 1;
 
       const mockSampleMethodRecord: SampleMethodRecord = {
@@ -292,7 +292,10 @@ describe('SampleMethodService', () => {
 
       expect(getSampleMethodsForSurveySampleSiteIdStub).to.be.calledOnceWith(1001, surveySampleSiteId);
 
-      expect(deleteSampleMethodRecordStub).to.be.calledOnceWith(mockSurveyId, mockSampleMethodRecord.survey_sample_method_id);
+      expect(deleteSampleMethodRecordStub).to.be.calledOnceWith(
+        mockSurveyId,
+        mockSampleMethodRecord.survey_sample_method_id
+      );
       expect(getObservationsCountBySampleMethodIdsStub).to.be.calledOnceWith([mockSampleMethodId]);
     });
   });
