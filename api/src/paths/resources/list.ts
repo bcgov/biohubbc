@@ -78,7 +78,6 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-// @TODO keep/remove this endpoint?
 export function listResources(): RequestHandler {
   return async (_req, res) => {
     defaultLog.debug({ label: 'listResources' });

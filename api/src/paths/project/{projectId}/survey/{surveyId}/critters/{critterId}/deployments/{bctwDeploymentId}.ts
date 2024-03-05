@@ -118,10 +118,8 @@ export function deleteDeployment(): RequestHandler {
     try {
       await connection.open();
 
-      // @TODO SIMSBIOHUB-494 audit
       await surveyCritterService.removeDeployment(critterId, deploymentId);
 
-      // @TODO SIMSBIOHUB-494 audit
       await bctwService.deleteDeployment(deploymentId);
 
       await connection.commit();

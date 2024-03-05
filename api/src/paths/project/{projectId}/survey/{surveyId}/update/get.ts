@@ -392,7 +392,7 @@ GET.apiDoc = {
 };
 
 /**
- * @TODO this endpoint probably isn't needed. Investigate how this endpoint is different from /{surveyId}/view.ts
+ * @TODO remove, per https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-522
  */
 export function getSurveyForUpdate(): RequestHandler {
   return async (req, res) => {

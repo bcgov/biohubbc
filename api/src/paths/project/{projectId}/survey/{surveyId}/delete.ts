@@ -78,7 +78,6 @@ DELETE.apiDoc = {
   }
 };
 
-/* @TODO investigate purpose of return type/order of operations */
 export function deleteSurvey(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
