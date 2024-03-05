@@ -59,7 +59,7 @@ const SpeciesCard = (props: ISpeciesCard) => {
             />
           )}
         </Typography>
-        <Stack direction="row" alignItems='center'>
+        <Stack direction="row" alignItems="center">
           {props.commonNames?.length > 0 &&
             props.commonNames.map((name, index) => (
               <React.Fragment key={`${name}-${index}`}>
