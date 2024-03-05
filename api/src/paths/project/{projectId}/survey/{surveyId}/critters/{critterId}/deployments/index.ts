@@ -244,7 +244,7 @@ export function deployDevice(): RequestHandler {
     const newDeploymentDevice = {
       ...req.body,
       deploymentId: newDeploymentId
-    }
+    };
 
     const connection = getDBConnection(req['keycloak_token']);
     const surveyCritterService = new SurveyCritterService(connection);

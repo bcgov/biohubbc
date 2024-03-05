@@ -273,7 +273,11 @@ export class SurveyParticipationRepository extends BaseRepository {
    * @return {*}  {Promise<void>}
    * @memberof SurveyParticipationRepository
    */
-  async updateSurveyParticipantJob(surveyId: number, surveyParticipationId: number, surveyJobName: string): Promise<void> {
+  async updateSurveyParticipantJob(
+    surveyId: number,
+    surveyParticipationId: number,
+    surveyJobName: string
+  ): Promise<void> {
     const sqlStatement = SQL`
       UPDATE survey_participation
       SET

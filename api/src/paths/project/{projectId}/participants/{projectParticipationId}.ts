@@ -108,16 +108,15 @@ export function putProjectParticipantRole(): RequestHandler {
       const projectParticipationService = new ProjectParticipationService(connection);
 
       // Get project participant state before updates are made
-      let projectParticipants = await projectParticipationService.getProjectParticipants(
-        projectId
-      );
-  
-      let projectHasLead = projectParticipationService.doAllProjectsHaveAProjectLead(
-        projectParticipants
-      );
+      let projectParticipants = await projectParticipationService.getProjectParticipants(projectId);
+
+      let projectHasLead = projectParticipationService.doAllProjectsHaveAProjectLead(projectParticipants);
 
       // Delete the user's old participation record, returning the old record
-      const result = await projectParticipationService.deleteProjectParticipationRecord(projectId, projectParticipationId);
+      const result = await projectParticipationService.deleteProjectParticipationRecord(
+        projectId,
+        projectParticipationId
+      );
 
       if (!result || !result.system_user_id) {
         // The delete result is missing necessary data, fail the request
@@ -134,13 +133,9 @@ export function putProjectParticipantRole(): RequestHandler {
       // after the changes. This situation should ideally never happen.
       if (projectHasLead) {
         // Get project participant state after updates were made
-        projectParticipants = await projectParticipationService.getProjectParticipants(
-          projectId
-        );
+        projectParticipants = await projectParticipationService.getProjectParticipants(projectId);
 
-        projectHasLead = projectParticipationService.doAllProjectsHaveAProjectLead(
-          projectParticipants
-        );
+        projectHasLead = projectParticipationService.doAllProjectsHaveAProjectLead(projectParticipants);
 
         // If any project that the user is on now no longer has a coordinator, then these updates must have been
         // responsible, and so should not be allowed. A project must always have at least 1 coordinator role.
@@ -246,15 +241,14 @@ export function deleteProjectParticipant(): RequestHandler {
       const projectParticipationService = new ProjectParticipationService(connection);
 
       // Check coordinator roles before deleting user
-      let projectParticipants = await projectParticipationService.getProjectParticipants(
-        projectId
-      );
-  
-      let projectHasLead = projectParticipationService.doAllProjectsHaveAProjectLead(
-        projectParticipants
-      );
+      let projectParticipants = await projectParticipationService.getProjectParticipants(projectId);
 
-      const result = await projectParticipationService.deleteProjectParticipationRecord(projectId, projectParticipationId);
+      let projectHasLead = projectParticipationService.doAllProjectsHaveAProjectLead(projectParticipants);
+
+      const result = await projectParticipationService.deleteProjectParticipationRecord(
+        projectId,
+        projectParticipationId
+      );
 
       if (!result || !result.system_user_id) {
         // The delete result is missing necessary data, fail the request
@@ -265,13 +259,9 @@ export function deleteProjectParticipant(): RequestHandler {
       // (Project is already missing coordinator and is in a bad state)
       if (projectHasLead) {
         // Get project participant state after updates were made
-        projectParticipants = await projectParticipationService.getProjectParticipants(
-          projectId
-        );
+        projectParticipants = await projectParticipationService.getProjectParticipants(projectId);
 
-        projectHasLead = projectParticipationService.doAllProjectsHaveAProjectLead(
-          projectParticipants
-        );
+        projectHasLead = projectParticipationService.doAllProjectsHaveAProjectLead(projectParticipants);
 
         if (!projectHasLead) {
           throw new HTTP400(

@@ -32,7 +32,10 @@ export class SamplePeriodService extends DBService {
    * @return {*}  {Promise<SamplePeriodRecord[]>}
    * @memberof SamplePeriodService
    */
-  async getSamplePeriodsForSurveyMethodId(surveyId: number, surveySampleMethodId: number): Promise<SamplePeriodRecord[]> {
+  async getSamplePeriodsForSurveyMethodId(
+    surveyId: number,
+    surveySampleMethodId: number
+  ): Promise<SamplePeriodRecord[]> {
     return await this.samplePeriodRepository.getSamplePeriodsForSurveyMethodId(surveyId, surveySampleMethodId);
   }
 
@@ -89,7 +92,11 @@ export class SamplePeriodService extends DBService {
    * @param {UpdateSampleMethodRecord[]} newPeriod
    * @memberof SamplePeriodService
    */
-  async deleteSamplePeriodsNotInArray(surveyId: number, surveySampleMethodId: number, newPeriod: UpdateSamplePeriodRecord[]) {
+  async deleteSamplePeriodsNotInArray(
+    surveyId: number,
+    surveySampleMethodId: number,
+    newPeriod: UpdateSamplePeriodRecord[]
+  ) {
     // Get any existing Period for the given sample method
     const existingPeriods = await this.getSamplePeriodsForSurveyMethodId(surveyId, surveySampleMethodId);
 
@@ -106,10 +113,11 @@ export class SamplePeriodService extends DBService {
     // Delete any Periods not found in the passed in array
     if (existingPeriodsToDelete.length > 0) {
       const existingSamplePeriodIds = existingPeriodsToDelete.map((period) => period.survey_sample_period_id);
-      const samplingPeriodObservationsCount = await observationService.getObservationsCountBySamplePeriodIds(existingSamplePeriodIds);
+      const samplingPeriodObservationsCount = await observationService.getObservationsCountBySamplePeriodIds(
+        existingSamplePeriodIds
+      );
 
       if (samplingPeriodObservationsCount > 0) {
-        
         throw new HTTP400('Cannot delete a sample period that is associated with an observation');
       }
 

@@ -159,14 +159,13 @@ export function getSurveySamplePeriodRecords(): RequestHandler {
     if (!req.params.surveySampleMethodId) {
       throw new HTTP400('Missing required path param `surveySampleMethodId`');
     }
-    
+
     const surveyId = Number(req.params.surveyId);
     const surveySampleMethodId = Number(req.params.surveySampleMethodId);
 
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-
       await connection.open();
 
       const samplePeriodService = new SamplePeriodService(connection);

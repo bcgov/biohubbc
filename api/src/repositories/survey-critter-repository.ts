@@ -66,7 +66,7 @@ export class SurveyCritterRepository extends BaseRepository {
       .delete()
       .from('critter')
       .where({ critter_id: critterId })
-      .andWhere({ survey_id: surveyId })
+      .andWhere({ survey_id: surveyId });
 
     await this.connection.knex(queryBuilder);
   }

@@ -61,7 +61,7 @@ export class SampleLocationService extends DBService {
   async getSampleLocationsCountBySurveyId(surveyId: number): Promise<number> {
     return this.sampleLocationRepository.getSampleLocationsCountBySurveyId(surveyId);
   }
-  
+
   /**
    * Gets a sample site record by sample site ID.
    *
@@ -86,7 +86,10 @@ export class SampleLocationService extends DBService {
     const sampleMethodService = new SampleMethodService(this.connection);
 
     // Delete all methods associated with the sample location
-    const existingSampleMethods = await sampleMethodService.getSampleMethodsForSurveySampleSiteId(surveyId, surveySampleSiteId);
+    const existingSampleMethods = await sampleMethodService.getSampleMethodsForSurveySampleSiteId(
+      surveyId,
+      surveySampleSiteId
+    );
     for (const item of existingSampleMethods) {
       await sampleMethodService.deleteSampleMethodRecord(surveyId, item.survey_sample_method_id);
     }
@@ -154,7 +157,11 @@ export class SampleLocationService extends DBService {
     await this.sampleLocationRepository.updateSampleSite(sampleSite);
 
     // Check for methods to delete
-    await methodService.deleteSampleMethodsNotInArray(sampleSite.survey_id, sampleSite.survey_sample_site_id, sampleSite.methods);
+    await methodService.deleteSampleMethodsNotInArray(
+      sampleSite.survey_id,
+      sampleSite.survey_sample_site_id,
+      sampleSite.methods
+    );
 
     // Loop through all methods
     // For each method, check if it exists

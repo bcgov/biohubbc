@@ -219,10 +219,7 @@ export class SampleLocationRepository extends BaseRepository {
         sss.survey_sample_site_id = ${surveySampleSiteId}
     `;
 
-    const response = await this.connection.sql(
-      sqlStatement,
-      SampleSiteRecord
-    );
+    const response = await this.connection.sql(sqlStatement, SampleSiteRecord);
 
     if (response?.rowCount < 1) {
       throw new ApiExecuteSQLError('Failed to get sample site by ID', [

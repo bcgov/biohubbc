@@ -52,7 +52,10 @@ export class SampleMethodRepository extends BaseRepository {
    * @return {*}  {Promise<SampleMethodRecord[]>}
    * @memberof SampleMethodRepository
    */
-  async getSampleMethodsForSurveySampleSiteId(surveyId: number, surveySampleSiteId: number): Promise<SampleMethodRecord[]> {
+  async getSampleMethodsForSurveySampleSiteId(
+    surveyId: number,
+    surveySampleSiteId: number
+  ): Promise<SampleMethodRecord[]> {
     const sql = SQL`
       SELECT
         *

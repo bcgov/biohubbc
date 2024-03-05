@@ -276,17 +276,9 @@ export function getCritterTelemetry(): RequestHandler {
       const startDate = new Date(String(req.query.startDate));
       const endDate = new Date(String(req.query.endDate));
 
-      const points = await bctwService.getCritterTelemetryPoints(
-        critter.critterbase_critter_id,
-        startDate,
-        endDate
-      );
+      const points = await bctwService.getCritterTelemetryPoints(critter.critterbase_critter_id, startDate, endDate);
 
-      const tracks = await bctwService.getCritterTelemetryTracks(
-        critter.critterbase_critter_id,
-        startDate,
-        endDate
-      );
+      const tracks = await bctwService.getCritterTelemetryTracks(critter.critterbase_critter_id, startDate, endDate);
 
       await connection.commit();
 

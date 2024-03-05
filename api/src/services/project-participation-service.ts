@@ -97,7 +97,10 @@ export class ProjectParticipationService extends DBService {
    * @return {*}  {Promise<ProjectParticipationRecord>}
    * @memberof ProjectParticipationService
    */
-  async deleteProjectParticipationRecord(projectId: number, projectParticipationId: number): Promise<ProjectParticipationRecord> {
+  async deleteProjectParticipationRecord(
+    projectId: number,
+    projectParticipationId: number
+  ): Promise<ProjectParticipationRecord> {
     return this.projectParticipationRepository.deleteProjectParticipationRecord(projectId, projectParticipationId);
   }
 

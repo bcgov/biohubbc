@@ -358,7 +358,7 @@ export class ObservationRepository extends BaseRepository {
       .select('*')
       .from('survey_observation')
       .where('survey_observation_id', surveyObservationId)
-      .andWhere('survey_id', surveyId)
+      .andWhere('survey_id', surveyId);
 
     const response = await this.connection.knex(query, ObservationRecord);
 
@@ -540,10 +540,7 @@ export class ObservationRepository extends BaseRepository {
    * @return {*}  {Promise<{ observationCount: number }>}
    * @memberof ObservationRepository
    */
-  async getObservationsCountBySampleSiteIds(
-    surveyId: number,
-    sampleSiteIds: number[]
-  ): Promise<number> {
+  async getObservationsCountBySampleSiteIds(surveyId: number, sampleSiteIds: number[]): Promise<number> {
     const knex = getKnex();
     const sqlStatement = knex
       .queryBuilder()
@@ -609,7 +606,7 @@ export class ObservationRepository extends BaseRepository {
       .whereIn('survey_sample_period_id', samplePeriodIds);
 
     const response = await this.connection.knex(sqlStatement);
-    
+
     if (response?.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to get observations count', [
         'ObservationRepository->getObservationsCountBySamplePeriodId',

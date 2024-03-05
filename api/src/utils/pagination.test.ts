@@ -2,7 +2,11 @@ import { expect } from 'chai';
 import { Request } from 'express';
 import { describe } from 'mocha';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
-import { ensureCompletePaginationOptions, makePaginationOptionsFromRequest, makePaginationResponse } from './pagination';
+import {
+  ensureCompletePaginationOptions,
+  makePaginationOptionsFromRequest,
+  makePaginationResponse
+} from './pagination';
 
 describe('pagination', () => {
   describe('makePaginationOptionsFromRequest', () => {

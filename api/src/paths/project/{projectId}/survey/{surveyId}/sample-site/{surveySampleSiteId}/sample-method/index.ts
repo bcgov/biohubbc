@@ -5,9 +5,9 @@ import { getDBConnection } from '../../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../../errors/http-error';
 import { InsertSampleMethodRecord } from '../../../../../../../../repositories/sample-method-repository';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
+import { SampleLocationService } from '../../../../../../../../services/sample-location-service';
 import { SampleMethodService } from '../../../../../../../../services/sample-method-service';
 import { getLogger } from '../../../../../../../../utils/logger';
-import { SampleLocationService } from '../../../../../../../../services/sample-location-service';
 
 const defaultLog = getLogger(
   'paths/project/{projectId}/survey/{surveyId}/sample-site/{surveySampleSiteId}/sample-method/'
@@ -158,7 +158,6 @@ export function getSurveySampleMethodRecords(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-
       await connection.open();
 
       const sampleMethodService = new SampleMethodService(connection);

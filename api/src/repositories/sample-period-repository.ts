@@ -54,7 +54,10 @@ export class SamplePeriodRepository extends BaseRepository {
    * @return {*}  {Promise<SamplePeriodRecord[]>}
    * @memberof SamplePeriodRepository
    */
-  async getSamplePeriodsForSurveyMethodId(surveyId: number, surveySampleMethodId: number): Promise<SamplePeriodRecord[]> {
+  async getSamplePeriodsForSurveyMethodId(
+    surveyId: number,
+    surveySampleMethodId: number
+  ): Promise<SamplePeriodRecord[]> {
     const sql = SQL`
       SELECT
         ssp.*
@@ -71,7 +74,7 @@ export class SamplePeriodRepository extends BaseRepository {
       WHERE
         ssm.survey_sample_method_id = ${surveySampleMethodId}
       AND
-        sss.survey_id = ${surveyId};`
+        sss.survey_id = ${surveyId};`;
 
     const response = await this.connection.sql(sql, SamplePeriodRecord);
     return response.rows;

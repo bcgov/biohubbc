@@ -4,11 +4,11 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/
 import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/http-error';
 import { GeoJSONFeature } from '../../../../../../../openapi/schemas/geoJson';
+import { UpdateSampleLocationRecord } from '../../../../../../../repositories/sample-location-repository';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { ObservationService } from '../../../../../../../services/observation-service';
 import { SampleLocationService } from '../../../../../../../services/sample-location-service';
 import { getLogger } from '../../../../../../../utils/logger';
-import { UpdateSampleLocationRecord } from '../../../../../../../repositories/sample-location-repository';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/sample-site/{surveySampleSiteId}');
 
@@ -294,7 +294,9 @@ export function deleteSurveySampleSiteRecord(): RequestHandler {
       await connection.open();
 
       const observationService = new ObservationService(connection);
-      const samplingSiteObservationsCount = await observationService.getObservationsCountBySampleSiteIds(surveyId, [surveySampleSiteId]);
+      const samplingSiteObservationsCount = await observationService.getObservationsCountBySampleSiteIds(surveyId, [
+        surveySampleSiteId
+      ]);
 
       if (samplingSiteObservationsCount > 0) {
         throw new HTTP400('Cannot delete a sample site that is associated with an observation');
