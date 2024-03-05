@@ -9,7 +9,7 @@ import { ISurveySiteSelectionForm } from 'features/surveys/components/SurveySite
 import { Feature } from 'geojson';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { ApiPaginationResponseParams, StringBoolean } from 'types/misc';
-import { ICritterDetailedResponse } from './useCritterApi.interface';
+import { ICritterDetailedResponse, ICritterSimpleResponse } from './useCritterApi.interface';
 
 /**
  * Create survey post object.
@@ -336,6 +336,10 @@ export interface IUpdateAgreementsForm {
 
 export interface IGetSurveyForUpdateResponse {
   surveyData: SurveyUpdateObject;
+}
+
+export interface ISimpleCritterWithInternalId extends ICritterSimpleResponse {
+  survey_critter_id: number;
 }
 
 export interface IDetailedCritterWithInternalId extends ICritterDetailedResponse {

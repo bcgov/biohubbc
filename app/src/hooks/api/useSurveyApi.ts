@@ -17,11 +17,11 @@ import { IGetSummaryResultsResponse, IUploadSummaryResultsResponse } from 'inter
 import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
-  IDetailedCritterWithInternalId,
   IGetSurveyAttachmentsResponse,
   IGetSurveyForUpdateResponse,
   IGetSurveyForViewResponse,
   IGetSurveyListResponse,
+  ISimpleCritterWithInternalId,
   SurveyUpdateObject
 } from 'interfaces/useSurveyApi.interface';
 import qs from 'qs';
@@ -471,9 +471,9 @@ const useSurveyApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @returns {ICritterDetailedResponse[]}
+   * @returns {ISimpleCritterWithInternalId[]}
    */
-  const getSurveyCritters = async (projectId: number, surveyId: number): Promise<IDetailedCritterWithInternalId[]> => {
+  const getSurveyCritters = async (projectId: number, surveyId: number): Promise<ISimpleCritterWithInternalId[]> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/critters`);
     return data;
   };
@@ -494,8 +494,13 @@ const useSurveyApi = (axios: AxiosInstance) => {
     };
   };
 
-  // TODO NICK: Question for Mac: Why are we spreading the critter.measurements and critter values into the top level of this payload?
-  const critterToPayloadTransform = (critter: Critter, ignoreTopLevel = false) => {
+  /**
+   * Modifies the Critter into bulk payload body for Critterbase.
+   *
+   * @param {Critter} critter - Critter to add to Critterbase.
+   * @returns {[TODO:type]} [TODO:description]
+   */
+  const critterToPayloadTransform = (critter: Critter) => {
     const { measurements, mortalities, families, locations, collections, captures, markings, ...critterProps } =
       critter;
     return {
@@ -556,7 +561,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
   ) => {
     const payload = {
       update: critterToPayloadTransform(updateSection),
-      create: createSection ? critterToPayloadTransform(createSection, true) : undefined
+      create: createSection ? critterToPayloadTransform(createSection) : undefined
     };
     const { data } = await axios.patch(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}`, payload);
     return data;

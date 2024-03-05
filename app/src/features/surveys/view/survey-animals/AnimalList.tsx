@@ -18,16 +18,18 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { useQuery } from 'hooks/useQuery';
-import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
+import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
 
 interface IAnimalListProps {
   isLoading?: boolean;
-  critterData?: IDetailedCritterWithInternalId[];
+  surveyCritters?: ISimpleCritterWithInternalId[];
   selectedSection: IAnimalSections;
   onSelectSection: (section: IAnimalSections) => void;
+  onCritterSelect: (critter: ICritterDetailedResponse) => void;
   onAddButton: () => void;
 }
 
@@ -69,19 +71,20 @@ const ListPlaceholder = (props: { displaySkeleton: boolean }) =>
   );
 
 const AnimalList = (props: IAnimalListProps) => {
-  const { isLoading, selectedSection, onSelectSection, critterData, onAddButton } = props;
+  const { isLoading, selectedSection, onSelectSection, surveyCritters, onAddButton } = props;
   const { cid: survey_critter_id } = useQuery();
 
   const history = useHistory();
 
   const sortedCritterData = useMemo(() => {
-    return [...(critterData ?? [])]
+    return [...(surveyCritters ?? [])]
       .sort
       //TODO NICK (a, b) => new Date(a.create_timestamp).getTime() - new Date(b.create_timestamp).getTime()
       ();
-  }, [critterData]);
+  }, [surveyCritters]);
 
   const handleCritterSelect = (id: string) => {
+    //onCritterSelect();
     if (id === survey_critter_id) {
       history.replace(history.location.pathname);
     } else {

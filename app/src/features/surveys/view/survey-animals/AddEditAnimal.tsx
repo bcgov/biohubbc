@@ -42,7 +42,7 @@ import TelemetryDeviceFormContent from './telemetry-device/TelemetryDeviceFormCo
 
 interface IAddEditAnimalProps {
   section: IAnimalSections;
-  critterData?: IDetailedCritterWithInternalId[];
+  critterData?: IDetailedCritterWithInternalId;
   deploymentData?: IAnimalDeployment[];
   telemetrySaveAction: (data: IAnimalTelemetryDeviceFile[], formMode: ANIMAL_FORM_MODE) => Promise<void>;
   deploymentRemoveAction: (deploymentId: string) => void;
