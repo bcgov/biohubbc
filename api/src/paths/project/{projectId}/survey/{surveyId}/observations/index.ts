@@ -526,35 +526,30 @@ PUT.apiDoc = {
                         subcount: {
                           type: 'number'
                         },
-                        measurements: {
-                          type: 'object',
-                          properties: {
-                            qualitative: {
-                              type: 'array',
-                              items: {
-                                type: 'object',
-                                properties: {
-                                  measurement_id: {
-                                    type: 'string'
-                                  },
-                                  measurement_option_id: {
-                                    type: 'string'
-                                  }
-                                }
+                        qualitative: {
+                          type: 'array',
+                          items: {
+                            type: 'object',
+                            properties: {
+                              measurement_id: {
+                                type: 'string'
+                              },
+                              measurement_option_id: {
+                                type: 'string'
                               }
-                            },
-                            quantitative: {
-                              type: 'array',
-                              items: {
-                                type: 'object',
-                                properties: {
-                                  measurement_id: {
-                                    type: 'string'
-                                  },
-                                  measurement_value: {
-                                    type: 'number'
-                                  }
-                                }
+                            }
+                          }
+                        },
+                        quantitative: {
+                          type: 'array',
+                          items: {
+                            type: 'object',
+                            properties: {
+                              measurement_id: {
+                                type: 'string'
+                              },
+                              measurement_value: {
+                                type: 'number'
                               }
                             }
                           }

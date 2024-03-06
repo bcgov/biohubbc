@@ -20,9 +20,11 @@ import { parseS3File } from '../utils/media/media-utils';
 import {
   constructWorksheets,
   constructXLSXWorkbook,
+  findMeasurementFromTsnMeasurements,
   getCBMeasurementsFromWorksheet,
   getMeasurementColumnNameFromWorksheet,
   getWorksheetRowObjects,
+  isMeasurementCBQualitativeTypeDefinition,
   IXLSXCSVValidator,
   validateCsvFile,
   validateCsvMeasurementColumns,
@@ -48,7 +50,9 @@ const observationCSVColumnValidator: IXLSXCSVValidator = {
   }
 };
 
-export interface InsertMeasurement {
+export interface InsertSubCount {
+  observation_subcount_id: number | null;
+  subcount: number;
   qualitative: {
     measurement_id: string;
     measurement_option_id: string;
@@ -61,11 +65,7 @@ export interface InsertMeasurement {
 
 export type InsertUpdateObservationsWithMeasurements = {
   standardColumns: InsertObservation | UpdateObservation;
-  subcounts: {
-    observation_subcount_id: number | null;
-    subcount: number;
-    measurements: InsertMeasurement;
-  }[];
+  subcounts: InsertSubCount[];
 };
 
 export type ObservationSupplementaryData = {
@@ -164,8 +164,8 @@ export class ObservationService extends DBService {
       if (observation.subcounts.length) {
         for (const subcount of observation.subcounts) {
           // TODO: Update process to fetch and find differences between incoming and existing data to only add, update or delete records as needed
-          if (subcount.measurements.qualitative.length) {
-            const qualitativeData: InsertObservationSubCountQualitativeMeasurementRecord[] = subcount.measurements.qualitative.map(
+          if (subcount.qualitative.length) {
+            const qualitativeData: InsertObservationSubCountQualitativeMeasurementRecord[] = subcount.qualitative.map(
               (item) => ({
                 observation_subcount_id: observationSubCountRecord.observation_subcount_id,
                 critterbase_measurement_qualitative_id: item.measurement_id,
@@ -175,9 +175,9 @@ export class ObservationService extends DBService {
             await measurementService.insertObservationSubCountQualitativeMeasurement(qualitativeData);
           }
 
-          if (subcount.measurements.quantitative.length) {
-            subcount.measurements.quantitative;
-            const quantitativeData: InsertObservationSubCountQuantitativeMeasurementRecord[] = subcount.measurements.quantitative.map(
+          if (subcount.quantitative.length) {
+            subcount.quantitative;
+            const quantitativeData: InsertObservationSubCountQuantitativeMeasurementRecord[] = subcount.quantitative.map(
               (item) => ({
                 observation_subcount_id: observationSubCountRecord.observation_subcount_id,
                 critterbase_measurement_quantitative_id: item.measurement_id,
@@ -445,54 +445,63 @@ export class ObservationService extends DBService {
     }
 
     // Step 6. Merge all the table rows into an array of InsertUpdateObservationsWithMeasurements[]
-    const newRowData = worksheetRowObjects.map((row) => ({
-      standardColumns: {
-        survey_id: surveyId,
-        itis_tsn: row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES'],
-        itis_scientific_name: null,
-        survey_sample_site_id: null,
-        survey_sample_method_id: null,
-        survey_sample_period_id: null,
-        latitude: row['LATITUDE'] ?? row['LAT'],
-        longitude: row['LONGITUDE'] ?? row['LON'] ?? row['LONG'] ?? row['LNG'],
-        count: row['COUNT'],
-        observation_time: row['TIME'],
-        observation_date: row['DATE']
-      },
-      measurementColumns: [],
-      // measurementColumns
-      //   .map((mColumn) => {
-      //     const measurement = findMeasurementFromTsnMeasurements(
-      //       String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']),
-      //       mColumn,
-      //       tsnMeasurements
-      //     );
+    const newRowData: InsertUpdateObservationsWithMeasurements[] = worksheetRowObjects.map((row) => {
+      const newSubcount: InsertSubCount = {
+        observation_subcount_id: null,
+        subcount: row['COUNT'],
+        qualitative: [],
+        quantitative: []
+      };
+      measurementColumns.forEach((mColumn) => {
+        const measurement = findMeasurementFromTsnMeasurements(
+          String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']),
+          mColumn,
+          tsnMeasurements
+        );
 
-      //     let data = row[mColumn];
-      //     // if measurement is qualitative then we need to find the option Id as the value instead of the string/ number representation
-      //     if (measurement) {
-      //       if (isMeasurementCBQualitativeTypeDefinition(measurement)) {
-      //         const foundOption = measurement.options.find((option) => option.option_label === String(data));
+        let rowData = row[mColumn];
 
-      //         if (foundOption) {
-      //           data = foundOption.qualitative_option_id;
-      //         }
-      //       }
-      //     }
-
-      //     if (data) {
-      //       return {
-      //         id: String(measurement?.taxon_measurement_id),
-      //         value: data
-      //       };
-      //     }
-      //   })
-      //   .filter((m): m is InsertMeasurement => Boolean(m)),
-      subcount: row['COUNT']
-    }));
+        if (measurement) {
+          // if measurement is qualitative, find the option uuid
+          if (isMeasurementCBQualitativeTypeDefinition(measurement)) {
+            const foundOption = measurement.options.find(
+              (option) => option.option_label === String(rowData) || option.option_value === Number(rowData)
+            );
+            if (foundOption) {
+              newSubcount.qualitative.push({
+                measurement_id: measurement.taxon_measurement_id,
+                measurement_option_id: foundOption.qualitative_option_id
+              });
+              foundOption.qualitative_option_id;
+            }
+          } else {
+            newSubcount.quantitative.push({
+              measurement_id: measurement.taxon_measurement_id,
+              measurement_value: Number(rowData)
+            });
+          }
+        }
+      });
+      return {
+        standardColumns: {
+          survey_id: surveyId,
+          itis_tsn: row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES'],
+          itis_scientific_name: null,
+          survey_sample_site_id: null,
+          survey_sample_method_id: null,
+          survey_sample_period_id: null,
+          latitude: row['LATITUDE'] ?? row['LAT'],
+          longitude: row['LONGITUDE'] ?? row['LON'] ?? row['LONG'] ?? row['LNG'],
+          count: row['COUNT'],
+          observation_time: row['TIME'],
+          observation_date: row['DATE']
+        },
+        subcounts: [newSubcount]
+      };
+    });
     console.log(newRowData.length);
     // Step 7. Insert new rows and return them
-    // await this.insertUpdateSurveyObservationsWithMeasurements(surveyId, newRowData);
+    await this.insertUpdateSurveyObservationsWithMeasurements(surveyId, newRowData);
     return [];
   }
 
