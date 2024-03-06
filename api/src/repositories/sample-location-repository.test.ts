@@ -152,9 +152,10 @@ describe('SampleLocationRepository', () => {
       const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
+      const mockSurveyId = 1;
       const surveySampleLocationId = 1;
       const repo = new SampleLocationRepository(dbConnectionObj);
-      const response = await repo.deleteSampleSiteRecord(surveySampleLocationId);
+      const response = await repo.deleteSampleSiteRecord(mockSurveyId, surveySampleLocationId);
 
       expect(dbConnectionObj.sql).to.have.been.calledOnce;
       expect(response).to.eql(mockRow);
@@ -164,11 +165,12 @@ describe('SampleLocationRepository', () => {
       const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
+      const mockSurveyId = 1;
       const surveySampleLocationId = 1;
       const repo = new SampleLocationRepository(dbConnectionObj);
 
       try {
-        await repo.deleteSampleSiteRecord(surveySampleLocationId);
+        await repo.deleteSampleSiteRecord(mockSurveyId, surveySampleLocationId);
       } catch (error) {
         expect(dbConnectionObj.sql).to.have.been.calledOnce;
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to delete survey block record');

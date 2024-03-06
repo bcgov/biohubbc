@@ -230,6 +230,7 @@ GET.apiDoc = {
 
 /**
  * Get a project, for update purposes.
+ * @TODO remove, per https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-522
  *
  * @returns {RequestHandler}
  */

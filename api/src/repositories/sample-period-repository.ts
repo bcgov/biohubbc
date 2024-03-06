@@ -49,16 +49,32 @@ export class SamplePeriodRepository extends BaseRepository {
   /**
    * Gets all survey Sample periods.
    *
+   * @param {number} surveyId
    * @param {number} surveySampleMethodId
    * @return {*}  {Promise<SamplePeriodRecord[]>}
    * @memberof SamplePeriodRepository
    */
-  async getSamplePeriodsForSurveyMethodId(surveySampleMethodId: number): Promise<SamplePeriodRecord[]> {
+  async getSamplePeriodsForSurveyMethodId(
+    surveyId: number,
+    surveySampleMethodId: number
+  ): Promise<SamplePeriodRecord[]> {
     const sql = SQL`
-      SELECT *
-      FROM survey_sample_period
-      WHERE survey_sample_method_id = ${surveySampleMethodId};
-    `;
+      SELECT
+        ssp.*
+      FROM
+        survey_sample_period ssp
+      JOIN
+        survey_sample_method ssm
+      ON
+        ssp.survey_sample_method_id = ssm.survey_sample_method_id
+      JOIN
+        survey_sample_site sss
+      ON
+        ssm.survey_sample_site_id = sss.survey_sample_site_id
+      WHERE
+        ssm.survey_sample_method_id = ${surveySampleMethodId}
+      AND
+        sss.survey_id = ${surveyId};`;
 
     const response = await this.connection.sql(sql, SamplePeriodRecord);
     return response.rows;
@@ -67,23 +83,33 @@ export class SamplePeriodRepository extends BaseRepository {
   /**
    * updates a survey Sample Period.
    *
-   * @param {UpdateSamplePeriodRecord} sample
+   * @param {number} surveyId
+   * @param {UpdateSamplePeriodRecord} samplePeriod
    * @return {*}  {Promise<SamplePeriodRecord>}
    * @memberof SamplePeriodRepository
    */
-  async updateSamplePeriod(sample: UpdateSamplePeriodRecord): Promise<SamplePeriodRecord> {
+  async updateSamplePeriod(surveyId: number, samplePeriod: UpdateSamplePeriodRecord): Promise<SamplePeriodRecord> {
     const sql = SQL`
-      UPDATE survey_sample_period
+      UPDATE survey_sample_period ssp
       SET
-        survey_sample_method_id=${sample.survey_sample_method_id},
-        start_date=${sample.start_date},
-        end_date=${sample.end_date},
-        start_time=${sample.start_time || null},
-        end_time=${sample.end_time || null}
-        WHERE
-        survey_sample_period_id = ${sample.survey_sample_period_id}
+        survey_sample_method_id=${samplePeriod.survey_sample_method_id},
+        start_date=${samplePeriod.start_date},
+        end_date=${samplePeriod.end_date},
+        start_time=${samplePeriod.start_time || null},
+        end_time=${samplePeriod.end_time || null}
+      FROM
+          survey_sample_method ssm
+      JOIN
+          survey_sample_site sss ON ssm.survey_sample_site_id = sss.survey_sample_site_id
+      WHERE
+          ssp.survey_sample_method_id = ssm.survey_sample_method_id
+      AND
+          sss.survey_id = surveyId
+      AND
+          ssp.survey_sample_period_id = samplePeriod.survey_sample_period_id
       RETURNING
-        *;`;
+        ssp.*;
+    `;
 
     const response = await this.connection.sql(sql, SamplePeriodRecord);
 
@@ -137,19 +163,30 @@ export class SamplePeriodRepository extends BaseRepository {
   /**
    * Deletes a survey Sample Period.
    *
+   * @param {number} surveyId
    * @param {number} surveySamplePeriodId
    * @return {*}  {Promise<SamplePeriodRecord>}
    * @memberof SamplePeriodRepository
    */
-  async deleteSamplePeriodRecord(surveySamplePeriodId: number): Promise<SamplePeriodRecord> {
+  async deleteSamplePeriodRecord(surveyId: number, surveySamplePeriodId: number): Promise<SamplePeriodRecord> {
     const sqlStatement = SQL`
-      DELETE FROM
-        survey_sample_period
+      DELETE
+        ssp
+      FROM
+        survey_sample_period AS ssp
+      JOIN
+        survey_sample_method AS ssm
+      ON
+        ssp.survey_sample_method_id = ssm.survey_sample_method_id
+      JOIN
+        survey_sample_site AS sss
+      ON
+        ssm.survey_sample_site_id = sss.survey_sample_site_id
       WHERE
-        survey_sample_period_id = ${surveySamplePeriodId}
-      RETURNING
-        *;
-    `;
+        ssp.survey_sample_period_id = ${surveySamplePeriodId}
+      AND
+        sss.survey_id = ${surveyId}
+      `;
 
     const response = await this.connection.sql(sqlStatement, SamplePeriodRecord);
 

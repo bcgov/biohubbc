@@ -264,9 +264,7 @@ describe('ObservationService', () => {
     it('Gets the number of observations by sample site ids', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      const mockObservationCount = {
-        observationCount: 1
-      };
+      const mockObservationCount = 1;
 
       const getObservationsCountBySampleSiteIdsStub = sinon
         .stub(ObservationRepository.prototype, 'getObservationsCountBySampleSiteIds')

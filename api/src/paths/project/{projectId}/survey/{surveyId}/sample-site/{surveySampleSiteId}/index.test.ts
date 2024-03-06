@@ -134,14 +134,14 @@ describe('updateSurveySampleSite', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      surveyId: '1',
+      surveyId: '1001',
       surveySampleSiteId: '2'
     };
 
     mockReq.body = {
       sampleSite: {
-        survey_id: 1,
-        survey_sample_site_id: 1,
+        survey_id: 1001,
+        survey_sample_site_id: 2,
         name: 'name',
         description: 'description',
         geojson: {
@@ -170,7 +170,7 @@ describe('updateSurveySampleSite', () => {
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(updateSampleLocationMethodPeriodStub).to.have.been.calledOnceWithExactly(mockReq.body.sampleSite);
+    expect(updateSampleLocationMethodPeriodStub).to.have.been.calledOnceWithExactly(1001, mockReq.body.sampleSite);
     expect(mockRes.status).to.have.been.calledWith(204);
   });
 });
@@ -209,12 +209,12 @@ describe('deleteSurveySampleSiteRecord', () => {
     }
   });
 
-  it('should work', async () => {
+  it('should successfully delete a survey sample site record', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     const getObservationsCountBySampleSiteIdStub = sinon
-      .stub(ObservationService.prototype, 'getObservationsCountBySampleSiteId')
-      .resolves({ observationCount: 0 });
+      .stub(ObservationService.prototype, 'getObservationsCountBySampleSiteIds')
+      .resolves(0);
 
     const deleteSampleLocationRecordStub = sinon
       .stub(SampleLocationService.prototype, 'deleteSampleSiteRecord')
