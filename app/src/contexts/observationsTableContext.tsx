@@ -29,7 +29,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
 import { SurveyContext } from './surveyContext';
 
-export interface IStandardObservationColumns {
+export type StandardObservationColumns = {
   survey_observation_id: number;
   itis_tsn: number | null;
   itis_scientific_name: string | null;
@@ -42,45 +42,21 @@ export interface IStandardObservationColumns {
   observation_time: string;
   latitude: number | null;
   longitude: number | null;
-}
+};
 
-export interface IObservationRecord extends IStandardObservationColumns {
-  [key: string]: any;
-}
-
-export interface IObservationRecordWithSamplingData {
-  survey_observation_id: number;
-  itis_tsn: number | null;
-  itis_scientific_name: string | null;
-  survey_sample_site_id: number | null;
-  survey_sample_site_name: string | null;
-  survey_sample_method_id: number | null;
-  survey_sample_method_name: string | null;
-  survey_sample_period_id: number | null;
-  survey_sample_period_start_datetime: string | null;
-  count: number | null;
-  observation_date: Date;
-  observation_time: string;
-  latitude: number | null;
-  longitude: number | null;
-}
+export type ObservationRecord = StandardObservationColumns & { [key: string]: any };
 
 export type MeasurementColumn = {
   measurement: CBMeasurementType;
   colDef: GridColDef;
 };
 
-export interface IObservationRecordWithSamplingDataWithAttributes extends IObservationRecordWithSamplingData {
-  subcount: number;
-  observation_subcount_attributes: CBMeasurementValue[];
-}
-
 export interface ISupplementaryObservationData {
   observationCount: number;
   measurementColumns: CBMeasurementType[];
 }
 
-export interface IObservationTableRow extends Partial<IObservationRecord> {
+export interface IObservationTableRow extends Partial<ObservationRecord> {
   id: GridRowId;
 }
 
@@ -818,7 +794,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       return {
         ...row,
         // Spread the measurement column key/values into the row
-        ...row.observation_subcount_attributes.reduce((acc, cur: any) => {
+        ...row.subcounts.reduce((acc, cur: any) => {
           return {
             ...acc,
             // TODO update to be more type safe, etc
@@ -860,7 +836,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     }
 
     const uniqueTaxonomicIds: number[] = Array.from(
-      observationsData.surveyObservations.reduce((acc: Set<number>, record: IObservationRecord) => {
+      observationsData.surveyObservations.reduce((acc: Set<number>, record: ObservationRecord) => {
         if (record.itis_tsn) {
           acc.add(record.itis_tsn);
         }
@@ -924,7 +900,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     // Build the object expected by the SIMS API
     const rowsToSave = rowValues.map((row) => {
-      const standardColumnsToSave: IStandardObservationColumns = row as IStandardObservationColumns;
+      const standardColumnsToSave: StandardObservationColumns = row as StandardObservationColumns;
 
       const measurementColumnsToSave: MeasurementColumnToSave[] = [];
 

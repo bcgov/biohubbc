@@ -1,8 +1,8 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import {
-  IObservationRecord,
-  IStandardObservationColumns,
-  ISupplementaryObservationData
+  ISupplementaryObservationData,
+  ObservationRecord,
+  StandardObservationColumns
 } from 'contexts/observationsTableContext';
 import {
   IGetSurveyObservationsGeometryResponse,
@@ -17,7 +17,7 @@ export interface MeasurementColumnToSave {
 }
 
 export interface IObservationTableRowToSave {
-  standardColumns: IStandardObservationColumns;
+  standardColumns: StandardObservationColumns;
   measurementColumns: MeasurementColumnToSave[];
 }
 
@@ -48,7 +48,7 @@ const useObservationApi = (axios: AxiosInstance) => {
       return item;
     });
 
-    // TODO `IObservationRecord[]` might not be the actual return value once measurements are being returned
+    // TODO `ObservationRecord[]` might not be the actual return value once measurements are being returned
     await axios.put<IGetSurveyObservationsResponse>(`/api/project/${projectId}/survey/${surveyId}/observations`, {
       surveyObservations: dataToSave
     });
@@ -107,8 +107,8 @@ const useObservationApi = (axios: AxiosInstance) => {
     projectId: number,
     surveyId: number,
     surveyObservationId: number
-  ): Promise<IObservationRecord> => {
-    const { data } = await axios.get<IObservationRecord>(
+  ): Promise<ObservationRecord> => {
+    const { data } = await axios.get<ObservationRecord>(
       `/api/project/${projectId}/survey/${surveyId}/observations/${surveyObservationId}`
     );
 
