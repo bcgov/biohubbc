@@ -73,7 +73,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
         }}>
         <Typography
           data-testid="map-control-title"
-          component="h4"
+          component="div"
           fontWeight="700"
           sx={{
             flex: '1 1 auto'
