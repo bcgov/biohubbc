@@ -151,7 +151,7 @@ export class ObservationService extends DBService {
 
       const surveyObservationId = upsertedObservationRecord[0].survey_observation_id;
 
-      // Delete old observation subcount records (subcounts, events, and critters)
+      // Delete old observation subcount records (subcounts and critters)
       await subCountService.deleteObservationSubCountRecords(surveyId, [surveyObservationId]);
 
       // Insert observation subcount record (event)
@@ -160,8 +160,8 @@ export class ObservationService extends DBService {
         subcount: observation.standardColumns.count
       });
 
-      // TODO:
-      // There should always be at least 1 sub count per observation
+      // TODO: Update process to fetch and find differences between incoming and existing data to only add, update or delete records as needed
+      // Process currently treats all incoming data as source of truth, deletes all
       if (observation.subcounts.length) {
         for (const subcount of observation.subcounts) {
           // delete all the old measurements
