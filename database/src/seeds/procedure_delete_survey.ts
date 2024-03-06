@@ -11,11 +11,6 @@ export async function up(knex: Knex): Promise<void> {
     
       declare
 
-      begin
-
-      DECLARE
-        p_survey_id INTEGER := 1;
-
       BEGIN
 
         WITH
@@ -215,7 +210,7 @@ export async function up(knex: Knex): Promise<void> {
         exception
           when others THEN
             raise;
-        end;
+      END;
     $procedure$;
   `);
 }
