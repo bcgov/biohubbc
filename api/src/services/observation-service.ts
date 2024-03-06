@@ -61,7 +61,6 @@ export interface InsertMeasurement {
 
 export type InsertUpdateObservationsWithMeasurements = {
   standardColumns: InsertObservation | UpdateObservation;
-  measurementColumns: InsertMeasurement;
   subcounts: {
     observation_subcount_id: number | null;
     subcount: number;
@@ -151,7 +150,8 @@ export class ObservationService extends DBService {
 
       const surveyObservationId = upsertedObservationRecord[0].survey_observation_id;
 
-      // Delete old observation subcount records (subcounts and critters)
+      // TODO: Update process to fetch and find differences between incoming and existing data to only add, update or delete records as needed
+      // Delete old observation subcount records (critters, measurements and subcounts)
       await subCountService.deleteObservationSubCountRecords(surveyId, [surveyObservationId]);
 
       // Insert observation subcount record (event)
@@ -160,11 +160,10 @@ export class ObservationService extends DBService {
         subcount: observation.standardColumns.count
       });
 
-      // TODO: Update process to fetch and find differences between incoming and existing data to only add, update or delete records as needed
       // Process currently treats all incoming data as source of truth, deletes all
       if (observation.subcounts.length) {
         for (const subcount of observation.subcounts) {
-          // delete all the old measurements
+          // TODO: Update process to fetch and find differences between incoming and existing data to only add, update or delete records as needed
           if (subcount.measurements.qualitative.length) {
             const qualitativeData: InsertObservationSubCountQualitativeMeasurementRecord[] = subcount.measurements.qualitative.map(
               (item) => ({

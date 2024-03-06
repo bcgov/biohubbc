@@ -1,4 +1,3 @@
-import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { BaseRepository } from './base-repository';
@@ -69,15 +68,15 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
     surveyObservationId: number[],
     surveyId: number
   ): Promise<number> {
-    const sql = SQL`
-      DELETE from observation_subcount_qualitative_measurement osqm
-      USING observation_subcount os, survey_observation so
-      WHERE osqm.observation_subcount_id = os.observation_subcount_id 
-      AND os.survey_observation_id = so.survey_observation_id 
-      AND so.survey_id = ${surveyId}
-      AND so.survey_observation_id = ${surveyObservationId};
-    `;
-    const response = await this.connection.sql(sql);
+    const qb = getKnex()
+      .delete()
+      .from('observation_subcount_qualitative_measurement as osqm')
+      .using(['observation_subcount as os', 'survey_observation as so'])
+      .where('os.survey_observation_id = so.survey_observation_id')
+      .andWhere(`AND so.survey_id = ${surveyId}`)
+      .whereIn('so.survey_observation_id', surveyObservationId);
+
+    const response = await this.connection.knex(qb);
     return response.rowCount;
   }
 
@@ -85,15 +84,16 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
     surveyObservationId: number[],
     surveyId: number
   ) {
-    const sql = SQL`
-      DELETE from observation_subcount_quantitative_measurement osqm
-      USING observation_subcount os, survey_observation so
-      WHERE osqm.observation_subcount_id = os.observation_subcount_id 
-      AND os.survey_observation_id = so.survey_observation_id 
-      AND so.survey_id = ${surveyId}
-      AND so.survey_observation_id IN (${surveyObservationId.join(', ')});
-    `;
-    const response = await this.connection.sql(sql);
+    const qb = getKnex()
+      .delete()
+      .from('observation_subcount_quantitative_measurement as osqm')
+      .using(['observation_subcount as os', 'survey_observation as so'])
+      .where('os.survey_observation_id = so.survey_observation_id')
+      .andWhere(`AND so.survey_id = ${surveyId}`)
+      .whereIn('so.survey_observation_id', surveyObservationId);
+
+    const response = await this.connection.knex(qb);
+
     return response.rowCount;
   }
 }

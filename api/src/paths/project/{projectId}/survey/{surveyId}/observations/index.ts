@@ -466,7 +466,7 @@ PUT.apiDoc = {
               items: {
                 description: 'A single survey observation record.',
                 type: 'object',
-                required: ['standardColumns', 'measurementColumns'],
+                required: ['standardColumns', 'measurementColumns', 'subcounts'],
                 properties: {
                   standardColumns: {
                     description: 'Standard column data for an observation record.',
@@ -533,26 +533,53 @@ PUT.apiDoc = {
                     },
                     additionalProperties: true
                   },
-                  measurementColumns: {
-                    description:
-                      'Non-standard user-added measurement column data for creating and tracking event data in Critter Base',
+                  subcounts: {
+                    description: 'An array of observation subcount and measurement data',
                     type: 'array',
                     items: {
                       type: 'object',
-                      required: ['id', 'field', 'value'],
                       properties: {
-                        id: {
-                          type: 'string'
-                        },
-                        field: {
-                          type: 'string'
-                        },
-                        value: {
-                          oneOf: [{ type: 'number' }, { type: 'string' }],
+                        observation_subcount_id: {
+                          type: 'number',
                           nullable: true
+                        },
+                        subcount: {
+                          type: 'number'
+                        },
+                        measurements: {
+                          type: 'object',
+                          properties: {
+                            qualitative: {
+                              type: 'array',
+                              items: {
+                                type: 'object',
+                                properties: {
+                                  measurement_id: {
+                                    type: 'string'
+                                  },
+                                  measurement_option_id: {
+                                    type: 'string'
+                                  }
+                                }
+                              }
+                            },
+                            quantitative: {
+                              type: 'array',
+                              items: {
+                                type: 'object',
+                                properties: {
+                                  measurement_id: {
+                                    type: 'string'
+                                  },
+                                  measurement_value: {
+                                    type: 'number'
+                                  }
+                                }
+                              }
+                            }
+                          }
                         }
-                      },
-                      additionalProperties: false
+                      }
                     }
                   }
                 },
