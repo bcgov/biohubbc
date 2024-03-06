@@ -1,6 +1,6 @@
 import { Knex } from 'knex';
 
-export async function up(knex: Knex): Promise<void> {
+export async function seed(knex: Knex): Promise<void> {
   await knex.raw(`--sql
     SET search_path = 'biohub';
 

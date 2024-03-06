@@ -18,7 +18,10 @@ export default {
       directory: './migrations'
     },
     seeds: {
-      directory: './seeds'
+      directory: [
+        './seeds',
+        './procedures'
+      ]
     }
   },
   production: {
