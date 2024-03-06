@@ -9,6 +9,7 @@ import { ProjectContext } from 'contexts/projectContext';
 import { useContext } from 'react';
 import ProjectObjectives from './components/ProjectObjectives';
 import TeamMembers from './components/TeamMember';
+import GeneralInformation from './components/GeneralInformation';
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectMetadata: {
@@ -73,13 +74,13 @@ const ProjectDetails = () => {
           <ProjectObjectives />
         </Box>
 
-        {/* <Box component="section">
+        <Box component="section">
           <Typography component="h4" className={classes.projectMetaSectionHeader}>
             General Information
           </Typography>
           <Divider></Divider>
           <GeneralInformation />
-        </Box> */}
+        </Box>
 
         <Box component="section">
           <Typography component="h4" className={classes.projectMetaSectionHeader}>

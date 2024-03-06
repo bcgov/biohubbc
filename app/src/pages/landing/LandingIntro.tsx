@@ -1,4 +1,4 @@
-import { Box, Divider, Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { QuestionAnswer } from './components/QuestionAnswer';
 
 export const LandingIntro = () => {
@@ -29,9 +29,9 @@ export const LandingIntro = () => {
             title="What's the benefit?"
             subtext={
               <>
-                Simple screens let teams organize and collaboratively manage ecological survey information in an
-                intuitive way. Keep track of where, when, and how you surveyed, along with your findings, in a shared
-                workspace that is private to your team.
+                Simple screens let teams organize and manage ecological survey information in an intuitive way. Keep
+                track of where, when, and how you surveyed, along with your findings, in a shared workspace that is
+                private to your team.
               </>
             }
           />
@@ -49,12 +49,11 @@ export const LandingIntro = () => {
           />
         </Grid>
 
-        {/* <Grid item xs={12} mt={5}>
+        <Grid item xs={12} mt={5}>
           <Box maxWidth="100%" component="img" src="/assets/manage-observations.jpg" />
-        </Grid> */}
+        </Grid>
       </Grid>
 
-      <Divider sx={{ my: 5 }} />
       <Box mt={4} display="flex" justifyContent="center">
         <QuestionAnswer
           title="Looking for more information?"
