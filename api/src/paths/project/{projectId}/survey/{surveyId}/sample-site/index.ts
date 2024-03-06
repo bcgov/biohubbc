@@ -173,6 +173,42 @@ GET.apiDoc = {
                         },
                         additionalProperties: false
                       }
+                    },
+                    sample_blocks: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        required: ['survey_sample_block_id', 'survey_sample_site_id', 'survey_block_id'],
+                        properties: {
+                          survey_sample_block_id: {
+                            type: 'number'
+                          },
+                          survey_sample_site_id: {
+                            type: 'number'
+                          },
+                          survey_block_id: {
+                            type: 'number'
+                          }
+                        }
+                      }
+                    },
+                    sample_stratums: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        required: ['survey_sample_stratum_id', 'survey_sample_site_id', 'survey_stratum_id'],
+                        properties: {
+                          survey_sample_stratum_id: {
+                            type: 'number'
+                          },
+                          survey_sample_site_id: {
+                            type: 'number'
+                          },
+                          survey_stratum_id: {
+                            type: 'number'
+                          }
+                        }
+                      }
                     }
                   },
                   additionalProperties: false
