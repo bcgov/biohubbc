@@ -8,8 +8,8 @@ import { SurveyService } from '../../../../services/survey-service';
 import { getLogger } from '../../../../utils/logger';
 import {
   ensureCompletePaginationOptions,
-  getPaginationOptionsFromRequest,
-  getPaginationResponse
+  makePaginationOptionsFromRequest,
+  makePaginationResponse
 } from '../../../../utils/pagination';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/index');
@@ -137,7 +137,7 @@ export function getSurveys(): RequestHandler {
       await connection.open();
 
       const projectId = Number(req.params.projectId);
-      const paginationOptions = getPaginationOptionsFromRequest(req);
+      const paginationOptions = makePaginationOptionsFromRequest(req);
 
       const surveyService = new SurveyService(connection);
       const surveys = await surveyService.getSurveysBasicFieldsByProjectId(
@@ -148,7 +148,7 @@ export function getSurveys(): RequestHandler {
 
       const response = {
         surveys,
-        pagination: getPaginationResponse(surveysTotalCount, paginationOptions)
+        pagination: makePaginationResponse(surveysTotalCount, paginationOptions)
       };
 
       await connection.commit();

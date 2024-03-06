@@ -115,13 +115,16 @@ describe('updateSurveySampleMethod', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      surveySampleMethodId: '1',
-      surveySampleSiteId: '2'
+      surveyId: '1001',
+      surveySampleMethodId: '6',
+      surveySampleSiteId: '9'
     };
 
     const sampleMethod = {
       method_lookup_id: 1,
-      description: 'description'
+      description: 'description',
+      survey_sample_method_id: 6,
+      survey_sample_site_id: 9
     };
 
     mockReq.body = {
@@ -134,7 +137,7 @@ describe('updateSurveySampleMethod', () => {
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(updateSampleMethodStub).to.have.been.calledOnceWithExactly(sampleMethod);
+    expect(updateSampleMethodStub).to.have.been.calledOnceWithExactly(1001, sampleMethod);
     expect(mockRes.status).to.have.been.calledWith(204);
   });
 });

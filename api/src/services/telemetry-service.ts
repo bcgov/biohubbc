@@ -141,7 +141,7 @@ export class TelemetryService extends DBService {
     // step 9 create telemetries
     if (itemsToAdd.length > 0) {
       try {
-        return await bctwService.createManualTelemetry(itemsToAdd);
+        return bctwService.createManualTelemetry(itemsToAdd);
       } catch (error) {
         throw new ApiGeneralError('Error adding Manual Telemetry');
       }

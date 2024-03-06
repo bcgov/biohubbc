@@ -94,6 +94,21 @@ GET.apiDoc = {
               survey_observation_id: {
                 type: 'integer'
               },
+              survey_id: {
+                type: 'integer'
+              },
+              survey_sample_site_id: {
+                type: 'integer',
+                nullable: true
+              },
+              survey_sample_method_id: {
+                type: 'integer',
+                nullable: true
+              },
+              survey_sample_period_id: {
+                type: 'integer',
+                nullable: true
+              },
               latitude: {
                 type: 'number'
               },
@@ -169,6 +184,7 @@ GET.apiDoc = {
  */
 export function getSurveyObservation(): RequestHandler {
   return async (req, res) => {
+    const surveyId = Number(req.params.surveyId);
     const surveyObservationId = Number(req.params.surveyObservationId);
 
     defaultLog.debug({ label: 'getSurveyObservation', surveyObservationId });
@@ -180,7 +196,7 @@ export function getSurveyObservation(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      const observationData = await observationService.getSurveyObservationById(surveyObservationId);
+      const observationData = await observationService.getSurveyObservationById(surveyId, surveyObservationId);
 
       return res.status(200).json(observationData);
     } catch (error) {

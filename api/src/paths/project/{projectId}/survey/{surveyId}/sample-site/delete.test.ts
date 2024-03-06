@@ -51,7 +51,7 @@ describe('deleteSurveySampleSiteRecords', () => {
 
     const getObservationsCountBySampleSiteIdStub = sinon
       .stub(ObservationService.prototype, 'getObservationsCountBySampleSiteIds')
-      .resolves({ observationCount: 0 });
+      .resolves(0);
 
     const deleteSampleLocationRecordStub = sinon
       .stub(SampleLocationService.prototype, 'deleteSampleSiteRecord')

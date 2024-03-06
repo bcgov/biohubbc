@@ -905,7 +905,7 @@ export class SurveyService extends DBService {
 
       existingParticipantsToDelete.forEach((participant: any) => {
         promises.push(
-          this.surveyParticipationService.deleteSurveyParticipationRecord(participant.survey_participation_id)
+          this.surveyParticipationService.deleteSurveyParticipationRecord(surveyId, participant.survey_participation_id)
         );
       });
 
@@ -920,7 +920,8 @@ export class SurveyService extends DBService {
       if (participant.survey_participation_id) {
         // Update participant
         promises.push(
-          this.surveyParticipationService.updateSurveyParticipant(
+          this.surveyParticipationService.updateSurveyParticipantJob(
+            surveyId,
             participant.survey_participation_id,
             participant.survey_job_name
           )

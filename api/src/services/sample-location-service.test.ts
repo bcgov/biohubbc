@@ -186,7 +186,8 @@ describe('SampleLocationService', () => {
         revision_count: 0
       });
 
-      const { survey_sample_site_id } = await service.deleteSampleSiteRecord(1);
+      const mockSurveyId = 1;
+      const { survey_sample_site_id } = await service.deleteSampleSiteRecord(mockSurveyId, 1);
 
       expect(getSampleBlocksForSurveySampleSiteIdStub).to.be.calledOnceWith(survey_sample_site_id);
       expect(deleteSampleBlockRecordsStub).to.be.calledOnceWith([survey_sample_site_id]);
@@ -201,10 +202,11 @@ describe('SampleLocationService', () => {
   });
 
   describe('updateSampleLocationMethodPeriod', () => {
-    it('should run without issue', async () => {
+    it('should successfully update smaple location method and period', async () => {
       const mockDBConnection = getMockDBConnection();
       const service = new SampleLocationService(mockDBConnection);
 
+      const mockSurveyId = 1;
       const survey_sample_site_id = 1;
 
       const methods = [
@@ -261,19 +263,17 @@ describe('SampleLocationService', () => {
       const insertSampleBlockStub = sinon.stub(SampleBlockService.prototype, 'insertSampleBlock').resolves();
       const insertSampleStratumStub = sinon.stub(SampleStratumService.prototype, 'insertSampleStratum').resolves();
       const updateSampleMethodStub = sinon.stub(SampleMethodService.prototype, 'updateSampleMethod').resolves();
-
-      const checkSampleMethodsToDeleteStub = sinon
+      const deleteSampleMethodsNotInArrayStub = sinon
         .stub(SampleMethodService.prototype, 'deleteSampleMethodsNotInArray')
         .resolves();
-      const checkSampleBlocksToDeleteStub = sinon
+      const deleteSampleBlocksNotInArrayStub = sinon
         .stub(SampleBlockService.prototype, 'deleteSampleBlocksNotInArray')
         .resolves();
-      const checkSampleStratumsToDeleteStub = sinon
+      const deleteSampleStratumsNotInArrayStub = sinon
         .stub(SampleStratumService.prototype, 'deleteSampleStratumsNotInArray')
         .resolves();
 
-      // returns nothing
-      await service.updateSampleLocationMethodPeriod({
+      await service.updateSampleLocationMethodPeriod(mockSurveyId, {
         survey_sample_site_id: survey_sample_site_id,
         survey_id: 1,
         name: 'Cool new site',
@@ -295,9 +295,9 @@ describe('SampleLocationService', () => {
         stratums: stratums
       });
 
-      expect(checkSampleMethodsToDeleteStub).to.be.calledOnceWith(survey_sample_site_id, methods);
-      expect(checkSampleBlocksToDeleteStub).to.be.calledOnceWith(survey_sample_site_id, blocks);
-      expect(checkSampleStratumsToDeleteStub).to.be.calledOnceWith(survey_sample_site_id, stratums);
+      expect(deleteSampleMethodsNotInArrayStub).to.be.calledOnceWith(1, survey_sample_site_id, methods);
+      expect(deleteSampleBlocksNotInArrayStub).to.be.calledOnceWith(survey_sample_site_id, blocks);
+      expect(deleteSampleStratumsNotInArrayStub).to.be.calledOnceWith(survey_sample_site_id, stratums);
 
       expect(insertSampleBlockStub).to.be.calledOnceWith({
         survey_block_id: 4,
@@ -313,8 +313,7 @@ describe('SampleLocationService', () => {
         description: 'Cool method',
         periods: []
       });
-
-      expect(updateSampleMethodStub).to.be.calledOnceWith({
+      expect(updateSampleMethodStub).to.be.calledOnceWith(mockSurveyId, {
         survey_sample_site_id: survey_sample_site_id,
         survey_sample_method_id: 2,
         method_lookup_id: 3,
