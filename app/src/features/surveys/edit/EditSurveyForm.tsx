@@ -169,15 +169,11 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
             <Box>
               <Box component="fieldset">
                 <Typography component="legend">Add Funding Sources</Typography>
-                <Box mt={1}>
-                  <SurveyFundingSourceForm />
-                </Box>
+                <SurveyFundingSourceForm />
               </Box>
               <Box component="fieldset" mt={5}>
                 <Typography component="legend">Additional Partnerships</Typography>
-                <Box mt={1}>
-                  <SurveyPartnershipsForm />
-                </Box>
+                <SurveyPartnershipsForm />
               </Box>
             </Box>
           }
