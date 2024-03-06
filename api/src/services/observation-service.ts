@@ -10,17 +10,19 @@ import {
   ObservationSubmissionRecord,
   UpdateObservation
 } from '../repositories/observation-repository';
+import {
+  InsertObservationSubCountQualitativeMeasurementRecord,
+  InsertObservationSubCountQuantitativeMeasurementRecord
+} from '../repositories/observation-subcount-measurement-repository';
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { parseS3File } from '../utils/media/media-utils';
 import {
   constructWorksheets,
   constructXLSXWorkbook,
-  findMeasurementFromTsnMeasurements,
   getCBMeasurementsFromWorksheet,
   getMeasurementColumnNameFromWorksheet,
   getWorksheetRowObjects,
-  isMeasurementCBQualitativeTypeDefinition,
   IXLSXCSVValidator,
   validateCsvFile,
   validateCsvMeasurementColumns,
@@ -30,6 +32,7 @@ import {
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { CBMeasurementType, CritterbaseService } from './critterbase-service';
 import { DBService } from './db-service';
+import { ObservationSubCountMeasurementService } from './observation-subcount-measurement-service';
 import { PlatformService } from './platform-service';
 import { SubCountService } from './subcount-service';
 
@@ -46,13 +49,24 @@ const observationCSVColumnValidator: IXLSXCSVValidator = {
 };
 
 export interface InsertMeasurement {
-  id: string;
-  value: string | number;
+  qualitative: {
+    measurement_id: string;
+    measurement_option_id: string;
+  }[];
+  quantitative: {
+    measurement_id: string;
+    measurement_value: number;
+  }[];
 }
 
 export type InsertUpdateObservationsWithMeasurements = {
   standardColumns: InsertObservation | UpdateObservation;
-  measurementColumns: InsertMeasurement[];
+  measurementColumns: InsertMeasurement;
+  subcounts: {
+    observation_subcount_id: number | null;
+    subcount: number;
+    measurements: InsertMeasurement;
+  }[];
 };
 
 export type ObservationSupplementaryData = {
@@ -127,6 +141,7 @@ export class ObservationService extends DBService {
     observations: InsertUpdateObservationsWithMeasurements[]
   ): Promise<void> {
     const subCountService = new SubCountService(this.connection);
+    const measurementService = new ObservationSubCountMeasurementService(this.connection);
     for (const observation of observations) {
       // Upsert observation standard columns
       const upsertedObservationRecord = await this.observationRepository.insertUpdateSurveyObservations(
@@ -145,22 +160,34 @@ export class ObservationService extends DBService {
         subcount: observation.standardColumns.count
       });
 
-      // Persist measurement records to Critterbase
-      if (observation.measurementColumns.length) {
-        const critterBaseService = new CritterbaseService({
-          keycloak_guid: this.connection.systemUserGUID(),
-          username: this.connection.systemUserIdentifier()
-        });
+      // TODO:
+      // There should always be at least 1 sub count per observation
+      if (observation.subcounts.length) {
+        for (const subcount of observation.subcounts) {
+          // delete all the old measurements
+          if (subcount.measurements.qualitative.length) {
+            const qualitativeData: InsertObservationSubCountQualitativeMeasurementRecord[] = subcount.measurements.qualitative.map(
+              (item) => ({
+                observation_subcount_id: observationSubCountRecord.observation_subcount_id,
+                critterbase_measurement_qualitative_id: item.measurement_id,
+                critterbase_measurement_qualitative_option_id: item.measurement_option_id
+              })
+            );
+            await measurementService.insertObservationSubCountQualitativeMeasurement(qualitativeData);
+          }
 
-        const insertMeasurementResponse = await critterBaseService.insertMeasurementRecords(
-          observation.measurementColumns
-        );
-
-        // Insert observation subcount_event record to track the measurements persisted by Critterbase
-        await subCountService.insertSubCountEvent({
-          observation_subcount_id: observationSubCountRecord.observation_subcount_id,
-          critterbase_event_id: insertMeasurementResponse.eventId
-        });
+          if (subcount.measurements.quantitative.length) {
+            subcount.measurements.quantitative;
+            const quantitativeData: InsertObservationSubCountQuantitativeMeasurementRecord[] = subcount.measurements.quantitative.map(
+              (item) => ({
+                observation_subcount_id: observationSubCountRecord.observation_subcount_id,
+                critterbase_measurement_quantitative_id: item.measurement_id,
+                value: item.measurement_value
+              })
+            );
+            await measurementService.insertObservationSubCountQuantitativeMeasurement(quantitativeData);
+          }
+        }
       }
     }
   }
@@ -433,34 +460,35 @@ export class ObservationService extends DBService {
         observation_time: row['TIME'],
         observation_date: row['DATE']
       },
-      measurementColumns: measurementColumns
-        .map((mColumn) => {
-          const measurement = findMeasurementFromTsnMeasurements(
-            String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']),
-            mColumn,
-            tsnMeasurements
-          );
+      measurementColumns: [],
+      // measurementColumns
+      //   .map((mColumn) => {
+      //     const measurement = findMeasurementFromTsnMeasurements(
+      //       String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']),
+      //       mColumn,
+      //       tsnMeasurements
+      //     );
 
-          let data = row[mColumn];
-          // if measurement is qualitative then we need to find the option Id as the value instead of the string/ number representation
-          if (measurement) {
-            if (isMeasurementCBQualitativeTypeDefinition(measurement)) {
-              const foundOption = measurement.options.find((option) => option.option_label === String(data));
+      //     let data = row[mColumn];
+      //     // if measurement is qualitative then we need to find the option Id as the value instead of the string/ number representation
+      //     if (measurement) {
+      //       if (isMeasurementCBQualitativeTypeDefinition(measurement)) {
+      //         const foundOption = measurement.options.find((option) => option.option_label === String(data));
 
-              if (foundOption) {
-                data = foundOption.qualitative_option_id;
-              }
-            }
-          }
+      //         if (foundOption) {
+      //           data = foundOption.qualitative_option_id;
+      //         }
+      //       }
+      //     }
 
-          if (data) {
-            return {
-              id: String(measurement?.taxon_measurement_id),
-              value: data
-            };
-          }
-        })
-        .filter((m): m is InsertMeasurement => Boolean(m)),
+      //     if (data) {
+      //       return {
+      //         id: String(measurement?.taxon_measurement_id),
+      //         value: data
+      //       };
+      //     }
+      //   })
+      //   .filter((m): m is InsertMeasurement => Boolean(m)),
       subcount: row['COUNT']
     }));
     console.log(newRowData.length);

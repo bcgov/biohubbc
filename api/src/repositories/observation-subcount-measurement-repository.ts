@@ -31,12 +31,12 @@ export type ObservationSubCountQuantitativeMeasurementRecord = z.infer<
 >;
 
 export interface InsertObservationSubCountQualitativeMeasurementRecord {
-  observation_subcount_id: string;
+  observation_subcount_id: number;
   critterbase_measurement_qualitative_id: string;
   critterbase_measurement_qualitative_option_id: string;
 }
 export interface InsertObservationSubCountQuantitativeMeasurementRecord {
-  observation_subcount_id: string;
+  observation_subcount_id: number;
   critterbase_measurement_quantitative_id: string;
   value: number;
 }
@@ -58,4 +58,6 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
 
     return response.rows;
   }
+  async deleteObservationQualitativeMeasurementRecords() {}
+  async deleteObservationQuantitativeMeasurementRecords() {}
 }

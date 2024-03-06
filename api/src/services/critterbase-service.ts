@@ -607,18 +607,4 @@ export class CritterbaseService {
       }
     ];
   }
-
-  /**
-   * Insert measurement records.
-   *
-   * TODO: Implement this function fully when Critterbase changes are complete.
-   *
-   * @param {any[]} measurements
-   * @return {*}  {Promise<{ eventId: string }>}
-   * @memberof CritterbaseService
-   */
-  async insertMeasurementRecords(measurements: any[]): Promise<{ eventId: string }> {
-    // const response = await this.axiosInstance.post('', ids);
-    return { eventId: v4().toString() };
-  }
 }
