@@ -69,7 +69,7 @@ const dateSchema = yup
 export type ProjectionMode = 'wgs' | 'utm';
 
 export const AnimalGeneralSchema = yup.object({}).shape({
-  itis_tsn: yup.string().required(req),
+  itis_tsn: yup.number().required(req),
   animal_id: yup.string().required(req),
   itis_scientific_name: yup.string(),
   wlh_id: yup.string(),
@@ -314,7 +314,7 @@ type ICritterRelationships = {
 
 export class Critter {
   critter_id: string;
-  itis_tsn: string;
+  itis_tsn: number;
   animal_id: string;
   wlh_id?: string;
   sex?: AnimalSex;

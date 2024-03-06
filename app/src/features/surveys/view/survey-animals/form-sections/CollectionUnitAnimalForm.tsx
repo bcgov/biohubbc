@@ -42,7 +42,7 @@ export const CollectionUnitAnimalFormContent = ({ index }: ICollectionUnitAnimal
           name={getAnimalFieldName<IAnimalCollectionUnit>(name, 'collection_category_id', index)}
           id={'collection_category_id'}
           disabledValues={disabledCategories}
-          query={{ taxon_id: values.general.itis_tsn }}
+          query={{ tsn: values.general.itis_tsn }}
           route={'xref/taxon-collection-categories'}
           controlProps={{
             size: 'medium',

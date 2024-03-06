@@ -17,9 +17,9 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { SurveyAnimalsI18N } from 'constants/i18n';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { useQuery } from 'hooks/useQuery';
-import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
-import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { IDetailedCritterWithInternalId, ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
@@ -29,7 +29,7 @@ interface IAnimalListProps {
   surveyCritters?: ISimpleCritterWithInternalId[];
   selectedSection: IAnimalSections;
   onSelectSection: (section: IAnimalSections) => void;
-  onCritterSelect: (critter: ICritterDetailedResponse) => void;
+  onSelectCritter: (critter: IDetailedCritterWithInternalId) => void;
   onAddButton: () => void;
 }
 
@@ -71,7 +71,8 @@ const ListPlaceholder = (props: { displaySkeleton: boolean }) =>
   );
 
 const AnimalList = (props: IAnimalListProps) => {
-  const { isLoading, selectedSection, onSelectSection, surveyCritters, onAddButton } = props;
+  const { isLoading, selectedSection, onSelectSection, onSelectCritter, surveyCritters, onAddButton } = props;
+  const cbApi = useCritterbaseApi();
   const { cid: survey_critter_id } = useQuery();
 
   const history = useHistory();
@@ -83,13 +84,14 @@ const AnimalList = (props: IAnimalListProps) => {
       ();
   }, [surveyCritters]);
 
-  const handleCritterSelect = (id: string) => {
-    //onCritterSelect();
-    if (id === survey_critter_id) {
+  const handleCritterSelect = async (critter: ISimpleCritterWithInternalId) => {
+    if (critter.survey_critter_id === survey_critter_id) {
       history.replace(history.location.pathname);
     } else {
-      history.push(`?cid=${id}`);
+      history.push(`?cid=${critter.survey_critter_id}`);
     }
+    const detailedCritter = await cbApi.critters.getDetailedCritter(critter.critter_id);
+    onSelectCritter(detailedCritter);
     onSelectSection(SurveyAnimalsI18N.animalGeneralTitle);
   };
 
@@ -146,7 +148,7 @@ const AnimalList = (props: IAnimalListProps) => {
                 <Box display="flex" overflow="hidden" alignItems="center" className="sampleSiteHeader">
                   <AccordionSummary
                     expandIcon={<Icon path={mdiChevronDown} size={1} />}
-                    onClick={() => handleCritterSelect(critter.survey_critter_id.toString())}
+                    onClick={() => handleCritterSelect(critter)}
                     aria-controls="panel1bh-content"
                     sx={{
                       flex: '1 1 auto',

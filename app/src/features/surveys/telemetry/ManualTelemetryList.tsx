@@ -24,7 +24,7 @@ import { default as dayjs } from 'dayjs';
 import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
-import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual as _deepEquals } from 'lodash';
 import { get } from 'lodash-es';
 import { useContext, useEffect, useMemo, useState } from 'react';
@@ -50,7 +50,7 @@ export const AnimalDeploymentSchema = AnimalTelemetryDeviceSchema.shape({
 export type AnimalDeployment = InferType<typeof AnimalDeploymentSchema>;
 
 export interface ICritterDeployment {
-  critter: IDetailedCritterWithInternalId;
+  critter: ISimpleCritterWithInternalId;
   deployment: IAnimalDeployment;
 }
 

@@ -500,7 +500,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {Critter} critter - Critter to add to Critterbase.
    * @returns {[TODO:type]} [TODO:description]
    */
-  const critterToPayloadTransform = (critter: Critter) => {
+  const critterToBulkPayloadTransform = (critter: Critter) => {
     const { measurements, mortalities, families, locations, collections, captures, markings, ...critterProps } =
       critter;
     return {
@@ -537,7 +537,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     surveyId: number,
     critter: Critter
   ): Promise<CritterBulkCreationResponse> => {
-    const payload = critterToPayloadTransform(critter);
+    const payload = critterToBulkPayloadTransform(critter);
     const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters`, payload);
     return data;
   };
@@ -560,8 +560,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
     createSection: Critter | undefined
   ) => {
     const payload = {
-      update: critterToPayloadTransform(updateSection),
-      create: createSection ? critterToPayloadTransform(createSection) : undefined
+      update: critterToBulkPayloadTransform(updateSection),
+      create: createSection ? critterToBulkPayloadTransform(createSection) : undefined
     };
     const { data } = await axios.patch(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}`, payload);
     return data;

@@ -106,7 +106,7 @@ type IFamilyChildResponse = {
 
 export type ICritterDetailedResponse = {
   critter_id: string;
-  itis_tsn: string;
+  itis_tsn: number;
   itis_scientific_name: string;
   wlh_id: string | null;
   animal_id: string | null;
@@ -122,9 +122,9 @@ export type ICritterDetailedResponse = {
   //   mortality_timestamp: string | null; // Deprecated
   collection_units: ICollectionUnitResponse[];
   mortality: IMortalityResponse[];
-  capture: ICaptureResponse[];
-  marking: IMarkingResponse[];
-  measurement: {
+  captures: ICaptureResponse[];
+  markings: IMarkingResponse[];
+  measurements: {
     qualitative: IQualitativeMeasurementResponse[];
     quantitative: IQuantitativeMeasurementResponse[];
   };

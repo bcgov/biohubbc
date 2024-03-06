@@ -10,11 +10,11 @@ export interface IMeasurementStub {
 }
 
 export const useXrefApi = (axios: AxiosInstance) => {
-  const getTaxonMeasurements = async (taxon_id?: string): Promise<Array<IMeasurementStub> | undefined> => {
-    if (!taxon_id) {
+  const getTaxonMeasurements = async (tsn?: number): Promise<Array<IMeasurementStub> | undefined> => {
+    if (!tsn) {
       return;
     }
-    const { data } = await axios.get(`/api/critterbase/xref/taxon-measurements?taxon_id=${taxon_id}`);
+    const { data } = await axios.get(`/api/critterbase/xref/taxon-measurements?tsn=${tsn}`);
     return data;
   };
 

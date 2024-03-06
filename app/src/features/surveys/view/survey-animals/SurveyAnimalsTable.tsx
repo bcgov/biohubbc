@@ -3,7 +3,7 @@ import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { default as dayjs } from 'dayjs';
-import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import SurveyAnimalsTableActions from './SurveyAnimalsTableActions';
 import { IAnimalDeployment } from './telemetry-device/device';
 
@@ -16,7 +16,7 @@ interface ISurveyAnimalsTableEntry {
 }
 
 interface ISurveyAnimalsTableProps {
-  animalData: IDetailedCritterWithInternalId[];
+  animalData: ISimpleCritterWithInternalId[];
   deviceData?: IAnimalDeployment[];
   onMenuOpen: (critter_id: number) => void;
   onRemoveCritter: (critter_id: number) => void;

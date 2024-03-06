@@ -9,7 +9,6 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useQuery } from 'hooks/useQuery';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
-import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual as _deepEquals, omitBy } from 'lodash';
 import { useContext, useMemo, useState } from 'react';
@@ -38,13 +37,6 @@ export const SurveyAnimalsPage = () => {
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [detailedCritter, setDetailedCritter] = useState<IDetailedCritterWithInternalId | undefined>();
 
-  /**
-   * On click of the critter inside the AnimalList component.
-   * Query the detailed Critter and generate default formik values. (critterAsFormikValues)
-   * Pass to AddEditAnimal component.
-   * await critterbaseApi.critters.getDetailedCritter()
-   */
-
   const {
     data: surveyCritters,
     load: loadCritters,
@@ -65,7 +57,7 @@ export const SurveyAnimalsPage = () => {
     return {
       general: {
         wlh_id: '',
-        itis_tsn: '',
+        itis_tsn: '' as unknown as number,
         itis_scientific_name: '',
         animal_id: '',
         sex: AnimalSex.UNKNOWN,
@@ -83,13 +75,7 @@ export const SurveyAnimalsPage = () => {
   }, []);
 
   const critterAsFormikValues = useMemo(() => {
-    // const existingCritter = surveyCritters?.find(
-    //   (critter: ISimpleCritterWithInternalId) => Number(survey_critter_id) === Number(critter.survey_critter_id)
-    // );
-
-    // if (!existingCritter) {
-    //   return defaultFormValues;
-    // }
+    console.log('called formik critter memo');
     if (!detailedCritter) {
       return defaultFormValues;
     }
@@ -123,10 +109,6 @@ export const SurveyAnimalsPage = () => {
     animal.device = deployments;
     return animal;
   }, [deploymentData, defaultFormValues, detailedCritter]);
-
-  const handleSetDetailedCritter = (critter: ICritterDetailedResponse) => {
-    setDetailedCritter({ ...critter, survey_critter_id });
-  };
 
   const handleRemoveDeployment = async (deployment_id: string) => {
     try {
@@ -305,7 +287,7 @@ export const SurveyAnimalsPage = () => {
           sideBarComponent={
             <AnimalList
               onAddButton={() => setOpenAddDialog(true)}
-              onCritterSelect={handleSetDetailedCritter}
+              onSelectCritter={setDetailedCritter}
               surveyCritters={surveyCritters}
               isLoading={crittersLoading}
               selectedSection={selectedSection}

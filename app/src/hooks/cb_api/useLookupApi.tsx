@@ -48,7 +48,7 @@ export const useLookupApi = (axios: AxiosInstance) => {
    * Queries the Critterbase API with `format=asSelect` and returns the results.
    *
    * @param {SelectOptionsProps} options
-   * @return {*}  {(Promise<Array<ICbSelectRows | string>>)}
+   * @return {Promise<Array<ICbSelectRows | string>>}
    */
   const getSelectOptions = async (options: SelectOptionsProps): Promise<Array<ICbSelectRows | string>> => {
     const { data } = await axios.get<Array<ICbSelectRows | string>>(`/api/critterbase/${options.route}`, {

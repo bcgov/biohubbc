@@ -16,7 +16,7 @@ describe('animal form helpers', () => {
       const detailedResponse: IDetailedCritterWithInternalId = {
         survey_critter_id: 1,
         critter_id: 'c8601a4a-3946-4d1a-8c3f-a07088112284',
-        itis_tsn: '93ced109-d806-4851-90d7-064951cfc4f5',
+        itis_tsn: 1,
         wlh_id: 'abc',
         animal_id: 'def',
         sex: 'Male',
@@ -65,7 +65,7 @@ describe('animal form helpers', () => {
             }
           }
         ],
-        capture: [
+        captures: [
           {
             capture_id: 'd9ae9a17-4889-4628-bf32-3eb126bfb924',
             capture_location_id: '7f46207c-98db-43ab-9705-31fdd8fd9692',
@@ -102,7 +102,7 @@ describe('animal form helpers', () => {
             }
           }
         ],
-        marking: [
+        markings: [
           {
             marking_id: '0e3afd57-a0bb-4704-a417-f4005f26e86b',
             capture_id: 'd9ae9a17-4889-4628-bf32-3eb126bfb924',
@@ -127,7 +127,7 @@ describe('animal form helpers', () => {
             text_colour: null
           }
         ],
-        measurement: {
+        measurements: {
           qualitative: [
             {
               measurement_qualitative_id: 'd1ad55b2-c060-4ca0-863a-cd33e1da53c2',
@@ -267,7 +267,7 @@ describe('animal form helpers', () => {
       const initialFormValues: IAnimal = {
         general: {
           wlh_id: 'wlh-a',
-          itis_tsn: '',
+          itis_tsn: 1,
           animal_id: '',
           itis_scientific_name: undefined,
           sex: undefined,
@@ -288,7 +288,7 @@ describe('animal form helpers', () => {
 
       const currentFormValues: IAnimal = {
         general: {
-          itis_tsn: '',
+          itis_tsn: 1,
           animal_id: '',
           itis_scientific_name: undefined,
           wlh_id: 'wlh-b',

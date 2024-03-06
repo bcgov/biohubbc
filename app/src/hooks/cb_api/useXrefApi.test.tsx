@@ -31,7 +31,7 @@ describe('useXrefApi', () => {
     it('should retrieve all possible measurements for a specific taxon', async () => {
       const taxon_id = v4();
       mock.onGet('/api/critterbase/xref/taxon-measurements?taxon_id=' + taxon_id).reply(200, mockMeasurement);
-      const result = await useXrefApi(axios).getTaxonMeasurements(taxon_id);
+      const result = await useXrefApi(axios).getTaxonMeasurements(1);
       expect(Array.isArray(result)).toBe(true);
       expect(typeof result?.[0].taxon_measurement_id).toBe('string');
       expect(typeof result?.[0].measurement_name).toBe('string');

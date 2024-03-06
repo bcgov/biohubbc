@@ -22,10 +22,9 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { useQuery } from 'hooks/useQuery';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { setMessageSnackbar } from 'utils/Utils';
 import { ANIMAL_FORM_MODE, IAnimal } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
@@ -50,14 +49,14 @@ interface IAddEditAnimalProps {
 }
 
 export const AddEditAnimal = (props: IAddEditAnimalProps) => {
-  const { section, critterData, telemetrySaveAction, deploymentRemoveAction, formikArrayHelpers } = props;
+  const { section, critterData, telemetrySaveAction, formikArrayHelpers } = props;
 
   const theme = useTheme();
   const telemetryApi = useTelemetryApi();
   const critterbaseApi = useCritterbaseApi();
   const surveyContext = useContext(SurveyContext);
   const dialogContext = useContext(DialogContext);
-  const { cid: survey_critter_id } = useQuery();
+  //const { cid: survey_critter_id } = useQuery();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const { submitForm, isValid, resetForm, values, isSubmitting, initialValues, isValidating, status } =
     useFormikContext<IAnimal>();
@@ -92,7 +91,7 @@ export const AddEditAnimal = (props: IAddEditAnimalProps) => {
     }
   }, [initialValues, resetForm, status]);
 
-  const renderSingleForm = useMemo(() => {
+  const renderSingleForm = (section: IAnimalSections) => {
     const sectionMap: Partial<Record<IAnimalSections, JSX.Element>> = {
       [SurveyAnimalsI18N.animalGeneralTitle]: <GeneralAnimalForm />,
       [SurveyAnimalsI18N.animalMarkingTitle]: <MarkingAnimalFormContent index={selectedIndex} />,
@@ -108,20 +107,7 @@ export const AddEditAnimal = (props: IAddEditAnimalProps) => {
       Telemetry: <TelemetryDeviceFormContent index={selectedIndex} mode={formMode} />
     };
     return sectionMap[section];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    allFamilies,
-    deploymentRemoveAction,
-    measurements,
-    props.deploymentData,
-    formMode,
-    section,
-    selectedIndex,
-    survey_critter_id,
-    values.captures,
-    values.device,
-    values.mortality
-  ]);
+  };
 
   if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -189,7 +175,7 @@ export const AddEditAnimal = (props: IAddEditAnimalProps) => {
                   setFormMode(ANIMAL_FORM_MODE.EDIT);
                 }}>
                 <DialogTitle>{dialogTitle}</DialogTitle>
-                <DialogContent>{renderSingleForm}</DialogContent>
+                <DialogContent>{renderSingleForm(section)}</DialogContent>
                 <DialogActions>
                   <LoadingButton
                     color="primary"
