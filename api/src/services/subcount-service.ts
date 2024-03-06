@@ -1,4 +1,5 @@
 import { IDBConnection } from '../database/db';
+import { ObservationSubCountMeasurementRepository } from '../repositories/observation-subcount-measurement-repository';
 import {
   InsertObservationSubCount,
   InsertSubCountEvent,
@@ -53,8 +54,9 @@ export class SubCountService extends DBService {
     // Delete child subcount_critter records, if any
     await this.subCountRepository.deleteSubCountCritterRecordsForObservationId(surveyId, surveyObservationIds);
 
-    // Delete child subcount_event records, if any
-    await this.subCountRepository.deleteSubCountEventRecordsForObservationId(surveyId, surveyObservationIds);
+    // Delete child observation measurements, if any
+    const repo = new ObservationSubCountMeasurementRepository(this.connection);
+    await repo.deleteObservationMeasurements(surveyObservationIds, surveyId);
 
     // Delete observation_subcount records, if any
     return this.subCountRepository.deleteObservationSubCountRecords(surveyId, surveyObservationIds);
