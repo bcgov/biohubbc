@@ -5,7 +5,7 @@ import {
   InsertObservation,
   ObservationGeometryRecord,
   ObservationRecord,
-  ObservationRecordWithSamplingDataWithAttributes,
+  ObservationRecordWithSamplingDataWithSubcount,
   ObservationRepository,
   ObservationSubmissionRecord,
   UpdateObservation
@@ -193,7 +193,7 @@ export class ObservationService extends DBService {
    * @param {number} surveyId
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<{
-   *     surveyObservations: ObservationRecordWithSamplingDataWithAttributes[];
+   *     surveyObservations: ObservationRecordWithSamplingDataWithSubcount[];
    *     supplementaryObservationData: ObservationSupplementaryData;
    *   }>}
    * @memberof ObservationService
@@ -202,7 +202,7 @@ export class ObservationService extends DBService {
     surveyId: number,
     pagination?: ApiPaginationOptions
   ): Promise<{
-    surveyObservations: ObservationRecordWithSamplingDataWithAttributes[];
+    surveyObservations: ObservationRecordWithSamplingDataWithSubcount[];
     supplementaryObservationData: ObservationSupplementaryData;
   }> {
     const surveyObservations = await this.observationRepository.getSurveyObservationsWithSamplingDataWithAttributesData(

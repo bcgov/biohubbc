@@ -4,7 +4,7 @@ import sinonChai from 'sinon-chai';
 import {
   InsertObservation,
   ObservationRecord,
-  ObservationRecordWithSamplingDataWithAttributes,
+  ObservationRecordWithSamplingDataWithSubcount,
   ObservationRepository,
   UpdateObservation
 } from '../repositories/observation-repository';
@@ -118,7 +118,7 @@ describe('ObservationService', () => {
     it('Gets observations by survey id', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      const mockObservations: ObservationRecordWithSamplingDataWithAttributes[] = [
+      const mockObservations: ObservationRecordWithSamplingDataWithSubcount[] = [
         {
           survey_observation_id: 11,
           survey_id: 1,
