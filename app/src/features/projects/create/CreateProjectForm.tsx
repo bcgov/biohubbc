@@ -11,6 +11,7 @@ import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ICreateProjectRequest, IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 import { alphabetizeObjects } from 'utils/Utils';
+import ProjectAgreementsForm from '../components/ProjectAgreementsForm';
 import ProjectDetailsForm, {
   ProjectDetailsFormInitialValues,
   ProjectDetailsFormYupSchema
@@ -101,7 +102,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
         <FormikErrorSnackbar />
         <HorizontalSplitFormComponent
           title="General Information"
-          summary="Enter general information, objectives and timelines for the project."
+          summary="Enter a name for your Project and describe your objectives for this workspace."
           component={
             <>
               <ProjectDetailsForm
@@ -150,8 +151,18 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
         <Divider className={classes.sectionDivider} />
 
         <HorizontalSplitFormComponent
+          title="Data Sharing & Access Agreements"
+          summary="Project leads are encouraged to establish Data Sharing & Access Agreements before collecting data to 
+          prevent information from being used in unintended ways."
+          component={<ProjectAgreementsForm />}
+        />
+
+        <Divider className={classes.sectionDivider} />
+
+        <HorizontalSplitFormComponent
           title="Team Members"
-          summary="Specify team members and their associated role for this project."
+          summary="Only people invited to your Project can access your Project. 
+          Each collaborator's role determines their permissions in this Project."
           component={<ProjectUserForm users={getProjectParticipants()} roles={codes.project_roles} />}
         />
         <Divider className={classes.sectionDivider} />
