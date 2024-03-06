@@ -106,7 +106,7 @@ export const surveyObservationsSupplementaryData: SchemaObject = {
                 nullable: true
               },
               options: {
-                description: 'Valid otions for the measurement.',
+                description: 'Valid options for the measurement.',
                 type: 'array',
                 items: {
                   type: 'object',
@@ -267,7 +267,7 @@ GET.apiDoc = {
                               nullable: true
                             },
                             options: {
-                              description: 'Valid otions for the measurement.',
+                              description: 'Valid options for the measurement.',
                               type: 'array',
                               items: {
                                 type: 'object',

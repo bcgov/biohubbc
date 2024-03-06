@@ -162,7 +162,7 @@ POST.apiDoc = {
                               nullable: true
                             },
                             options: {
-                              description: 'Valid otions for the measurement.',
+                              description: 'Valid options for the measurement.',
                               type: 'array',
                               items: {
                                 type: 'object',

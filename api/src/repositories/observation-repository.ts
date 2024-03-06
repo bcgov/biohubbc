@@ -2,10 +2,14 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { CBMeasurementValue } from '../services/critterbase-service';
 import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
+import {
+  ObservationSubCountQualitativeMeasurementRecord,
+  ObservationSubCountQuantitativeMeasurementRecord
+} from './observation-subcount-measurement-repository';
+import { ObservationSubCountRecord } from './subcount-repository';
 
 const defaultLog = getLogger('repositories/observation-repository');
 
@@ -34,37 +38,45 @@ export const ObservationRecord = z.object({
 
 export type ObservationRecord = z.infer<typeof ObservationRecord>;
 
-const ObservationSamplingData = ObservationRecord.extend({
+const ObservationSamplingData = z.object({
   survey_sample_site_name: z.string().nullable(),
   survey_sample_method_name: z.string().nullable(),
   survey_sample_period_start_datetime: z.string().nullable()
 });
 
-// type ObservationSamplingData = z.infer<typeof ObservationSamplingData>;
+const ObservationSubcountQualitativeMeasurementObject = ObservationSubCountQualitativeMeasurementRecord.pick({
+  critterbase_measurement_qualitative_id: true,
+  critterbase_measurement_qualitative_option_id: true
+});
 
-export const ObservationRecordWithSamplingDataWithSubcount = ObservationRecord.extend(
+const ObservationSubcountQuantitativeMeasurementObject = ObservationSubCountQuantitativeMeasurementRecord.pick({
+  critterbase_measurement_quantitative_id: true,
+  value: true
+});
+
+const ObservationSubcountObject = z.object({
+  observation_subcount_id: ObservationSubCountRecord.shape.observation_subcount_id,
+  subcount: ObservationSubCountRecord.shape.subcount,
+  qualitative_measurements: z.array(ObservationSubcountQualitativeMeasurementObject),
+  quantitative_measurements: z.array(ObservationSubcountQuantitativeMeasurementObject)
+});
+
+const ObservationSubcountsObject = z.object({
+  subcounts: z.array(ObservationSubcountObject)
+});
+
+/**
+ * An extended observation record.
+ * Includes:
+ * - all fields from the observation record
+ * - additional fields about the survey_sample_* data for the observation record
+ * - additional fields about the subcount records for the observation record
+ */
+export const ObservationRecordWithSamplingAndSubcountData = ObservationRecord.extend(
   ObservationSamplingData.shape
-).extend({
-  subcount: z.number().nullable(),
-  observation_subcount_attributes: z.array(CBMeasurementValue)
-});
+).extend(ObservationSubcountsObject.shape);
 
-export type ObservationRecordWithSamplingDataWithSubcount = z.infer<
-  typeof ObservationRecordWithSamplingDataWithSubcount
->;
-
-export const ObservationSubcountRecord = z.object({
-  observation_subcount_id: z.number(),
-  survey_observation_id: z.number(),
-  subcount: z.number(),
-  create_date: z.string(),
-  create_user: z.number(),
-  update_date: z.string().nullable(),
-  update_user: z.number().nullable(),
-  revision_count: z.number()
-});
-
-export type ObservationSubcountRecord = z.infer<typeof ObservationSubcountRecord>;
+export type ObservationRecordWithSamplingAndSubcountData = z.infer<typeof ObservationRecordWithSamplingAndSubcountData>;
 
 export const ObservationGeometryRecord = z.object({
   survey_observation_id: z.number(),
@@ -246,18 +258,63 @@ export class ObservationRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {Promise<ObservationRecordWithSamplingDataWithSubcount[]>}
+   * @return {*}  {Promise<ObservationRecordWithSamplingAndSubcountData[]>}
    * @memberof ObservationRepository
    */
   async getSurveyObservationsWithSamplingDataWithAttributesData(
     surveyId: number,
     pagination?: ApiPaginationOptions
-  ): Promise<ObservationRecordWithSamplingDataWithSubcount[]> {
+  ): Promise<ObservationRecordWithSamplingAndSubcountData[]> {
     defaultLog.debug({ label: 'getSurveyObservationsWithSamplingDataWithAttributesData', surveyId, pagination });
 
     const knex = getKnex();
 
     const queryBuilder = knex
+      // Get all sample sites for the survey
+      .with(
+        'w_survey_sample_site',
+        knex
+          .select('survey_sample_site_id', 'name as survey_sample_site_name')
+          .from('survey_sample_site')
+          .where('survey_id', surveyId)
+      )
+      // Get all sample methods for the sample sites, and additionally fetch the method name
+      .with(
+        'w_survey_sample_method',
+        knex
+          .select(
+            'survey_sample_method.survey_sample_site_id',
+            'survey_sample_method.survey_sample_method_id',
+            'method_lookup.name as survey_sample_method_name'
+          )
+          .from('survey_sample_method')
+          .innerJoin('method_lookup', 'survey_sample_method.method_lookup_id', 'method_lookup.method_lookup_id')
+          .innerJoin(
+            'w_survey_sample_site',
+            'survey_sample_method.survey_sample_site_id',
+            'w_survey_sample_site.survey_sample_site_id'
+          )
+      )
+      // Get all sample periods for the sample methods, and additionally create a datetime field from the start date and time
+      .with(
+        'w_survey_sample_period',
+        knex
+          .select(
+            'w_survey_sample_method.survey_sample_site_id',
+            'survey_sample_period.survey_sample_method_id',
+            'survey_sample_period.survey_sample_period_id',
+            knex.raw(
+              `(survey_sample_period.start_date::date + COALESCE(survey_sample_period.start_time, '00:00:00')::time)::timestamp as survey_sample_period_start_datetime`
+            )
+          )
+          .from('survey_sample_period')
+          .innerJoin(
+            'w_survey_sample_method',
+            'survey_sample_period.survey_sample_method_id',
+            'w_survey_sample_method.survey_sample_method_id'
+          )
+      )
+      // Get all qualitative measurements for all subcounts associated to all observations for the survey
       .with(
         'w_qualitative_measurements',
         knex
@@ -281,6 +338,7 @@ export class ObservationRepository extends BaseRepository {
           })
           .groupBy('observation_subcount_id')
       )
+      // Get all quantitative measurements for all subcounts associated to all observations for the survey
       .with(
         'w_quantitative_measurements',
         knex
@@ -304,6 +362,7 @@ export class ObservationRepository extends BaseRepository {
           })
           .groupBy('observation_subcount_id')
       )
+      // Rollup the subcount records into an array of objects for each observation
       .with(
         'w_subcounts',
         knex
@@ -335,8 +394,31 @@ export class ObservationRepository extends BaseRepository {
           )
           .groupBy('survey_observation_id')
       )
-      .select('survey_observation.*', knex.raw(`COALESCE(w_subcounts.subcounts, '[]'::json) as subcounts`))
+      // Return all observations for the surveys, including the additional sampling data, and rolled up subcount data
+      .select(
+        'survey_observation.*',
+        'w_survey_sample_site.survey_sample_site_name',
+        'w_survey_sample_method.survey_sample_method_name',
+        'w_survey_sample_period.survey_sample_period_start_datetime',
+        knex.raw(`COALESCE(w_subcounts.subcounts, '[]'::json) as subcounts`)
+      )
       .from('survey_observation')
+      .leftJoin(
+        'w_survey_sample_site',
+        'survey_observation.survey_sample_site_id',
+        'w_survey_sample_site.survey_sample_site_id'
+      )
+      .leftJoin(
+        'w_survey_sample_method',
+        'survey_observation.survey_sample_method_id',
+        'w_survey_sample_method.survey_sample_method_id'
+      )
+      .leftJoin(
+        'w_survey_sample_period',
+        'survey_observation.survey_sample_period_id',
+        'w_survey_sample_period.survey_sample_period_id'
+      )
+      // Note: inner join requires every observation record to have at least one subcount record, otherwise use left join
       .innerJoin('w_subcounts', 'w_subcounts.survey_observation_id', 'survey_observation.survey_observation_id')
       .where('survey_observation.survey_id', surveyId);
 
@@ -348,7 +430,7 @@ export class ObservationRepository extends BaseRepository {
       }
     }
 
-    const response = await this.connection.knex(queryBuilder, ObservationRecordWithSamplingDataWithSubcount);
+    const response = await this.connection.knex(queryBuilder, ObservationRecordWithSamplingAndSubcountData);
 
     return response.rows;
   }
