@@ -4,7 +4,8 @@ export async function seed(knex: Knex): Promise<void> {
   await knex.raw(`--sql
     SET search_path = 'biohub';
 
-    CREATE OR REPLACE PROCEDURE api_delete_survey(p_survey_id integer)
+    CREATE OR REPLACE PROCEDURE
+      api_delete_survey(p_survey_id integer)
     LANGUAGE plpgsql
     SECURITY DEFINER
     AS $procedure$
