@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import Stack from '@mui/material/Stack';
 import AlertBar from 'components/alert/AlertBar';
 import { useFormikContext } from 'formik';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
@@ -25,7 +25,15 @@ const FocalSpeciesComponent = () => {
   };
 
   return (
-    <>
+    <Stack>
+      {submitCount > 0 && errors && get(errors, 'species.focal_species') && (
+        <AlertBar
+          severity="error"
+          variant="outlined"
+          title="Focal Species missing"
+          text={get(errors, 'species.focal_species') || 'Select a species'}
+        />
+      )}
       <SpeciesAutocompleteField
         formikFieldName={'species.focal_species'}
         label={'Focal Species'}
@@ -34,17 +42,7 @@ const FocalSpeciesComponent = () => {
         clearOnSelect={true}
       />
       <SelectedSpecies selectedSpecies={selectedSpecies} handleRemoveSpecies={handleRemoveSpecies} />
-      {submitCount > 0 && errors && get(errors, 'species.focal_species') && (
-        <Box mt={3}>
-          <AlertBar
-            severity="error"
-            variant="standard"
-            title="Missing Species"
-            text={get(errors, 'species.focal_species') || 'Select a species'}
-          />
-        </Box>
-      )}
-    </>
+    </Stack>
   );
 };
 
