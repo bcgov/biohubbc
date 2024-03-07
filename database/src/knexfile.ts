@@ -43,7 +43,10 @@ export default {
       directory: './migrations'
     },
     seeds: {
-      directory: './seeds'
+      // In production, only scripts in the `procedures` directory should run.
+      directory: [
+        './procedures'
+      ]
     }
   }
 };
