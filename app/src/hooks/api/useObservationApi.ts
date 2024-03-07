@@ -10,12 +10,6 @@ import {
 } from 'interfaces/useObservationApi.interface';
 import { ApiPaginationRequestOptions } from 'types/misc';
 
-export interface MeasurementColumnToSave {
-  id: string;
-  field: string;
-  value: string | number | null;
-}
-
 export interface SubcountToSave {
   observation_subcount_id: number | null;
   subcount: number;
@@ -62,7 +56,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     });
 
     // TODO `ObservationRecord[]` might not be the actual return value once measurements are being returned
-    await axios.put<IGetSurveyObservationsResponse>(`/api/project/${projectId}/survey/${surveyId}/observations`, {
+    await axios.put(`/api/project/${projectId}/survey/${surveyId}/observations`, {
       surveyObservations: dataToSave
     });
   };
@@ -99,12 +93,6 @@ const useObservationApi = (axios: AxiosInstance) => {
       `/api/project/${projectId}/survey/${surveyId}/observations${urlParamsString}`
     );
 
-    // TODO: Using sub count value here as observation count may be depreciated
-    // TODO: Business requirement to use sub counts as the primary count value
-    data.surveyObservations = data.surveyObservations.map((item: any) => {
-      item.count = item.subcount;
-      return item;
-    });
     return data;
   };
 

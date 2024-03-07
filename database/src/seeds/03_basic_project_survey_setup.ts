@@ -90,9 +90,13 @@ export async function seed(knex: Knex): Promise<void> {
 
         for (let k = 0; k < NUM_SEED_OBSERVATIONS_PER_SURVEY; k++) {
           const createObservationResponse = await knex.raw(
-            // set the number of observations to 20 times the number of subcounts (which are set to a number between 1
-            // and 20) to ensure the sum of all subcounts is <= the observation count (to avoid constraint violations)
-            insertSurveyObservationData(surveyId, NUM_SEED_SUBCOUNTS_PER_OBSERVATION * 20)
+            // set the number of observations to minimum 20 times the number of subcounts (which are set to a number
+            // between 1 and 20) to ensure the sum of all subcounts is at least <= the observation count (to avoid
+            // constraint violations)
+            insertSurveyObservationData(
+              surveyId,
+              NUM_SEED_SUBCOUNTS_PER_OBSERVATION * 20 + faker.number.int({ min: 1, max: 20 })
+            )
           );
           for (let l = 0; l < NUM_SEED_SUBCOUNTS_PER_OBSERVATION; l++) {
             await knex.raw(insertObservationSubCount(createObservationResponse.rows[0].survey_observation_id));
