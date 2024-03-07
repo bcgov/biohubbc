@@ -88,13 +88,13 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
       FROM
         observation_subcount_qualitative_measurement
       WHERE
-        obsevation_subcount_id (
-          SELECT
-            obsevation_subcount_id
+        observation_subcount_id in (
+          select
+            observation_subcount_id
           FROM
             observation_subcount
           WHERE
-            survey_observation_id (
+            survey_observation_id in (
               SELECT
                 survey_observation_id
               FROM
@@ -114,7 +114,7 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
    * Get all distinct taxon_measurment_ids for all quantitative measurements for a given survey.
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<string[]>}F
+   * @return {*}  {Promise<string[]>}
    * @memberof ObservationSubCountMeasurementRepository
    */
   async getObservationSubCountQuantitativeTaxonMeasurementIds(surveyId: number): Promise<string[]> {
@@ -124,13 +124,13 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
       FROM
         observation_subcount_quantitative_measurement
       WHERE
-        obsevation_subcount_id (
-          SELECT
-            obsevation_subcount_id
+        observation_subcount_id in (
+          select
+            observation_subcount_id
           FROM
             observation_subcount
           WHERE
-            survey_observation_id (
+            survey_observation_id in (
               SELECT
                 survey_observation_id
               FROM

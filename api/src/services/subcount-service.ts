@@ -67,7 +67,8 @@ export class SubCountService extends DBService {
   }
 
   /**
-   * Returns all measurement event ids for all observations in a given survey.
+   * Returns a unique set of all measurement type definitions for all measurements of all observations in the given
+   * survey.
    *
    * @param {number} surveyId
    * @return {*}  {Promise<{
@@ -84,6 +85,7 @@ export class SubCountService extends DBService {
   }> {
     const observationSubCountMeasurementService = new ObservationSubCountMeasurementRepository(this.connection);
 
+    // Fetch all unique taxon_measurement_ids for qualitative and quantitative measurements
     const [qualitativeTaxonMeasurementIds, quantitativeTaxonMeasurementIds] = await Promise.all([
       observationSubCountMeasurementService.getObservationSubCountQualitativeTaxonMeasurementIds(surveyId),
       observationSubCountMeasurementService.getObservationSubCountQuantitativeTaxonMeasurementIds(surveyId)
@@ -94,6 +96,7 @@ export class SubCountService extends DBService {
       username: this.connection.systemUserIdentifier()
     });
 
+    // Fetch all measurement type definitions from Critterbase for the unique taxon_measurement_ids
     const response = await Promise.all([
       critterbaseService.getQualitativeMeasurementTypeDefinition(qualitativeTaxonMeasurementIds),
       critterbaseService.getQuantitativeMeasurementTypeDefinition(quantitativeTaxonMeasurementIds)

@@ -21,7 +21,12 @@ import { APIError } from 'hooks/api/useAxios';
 import { IObservationTableRowToSave, SubcountToSave } from 'hooks/api/useObservationApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useObservationsContext, useTaxonomyContext } from 'hooks/useContext';
-import { CBMeasurementType, CBMeasurementValue } from 'interfaces/useCritterApi.interface';
+import {
+  CBMeasurementType,
+  CBMeasurementValue,
+  CBQualitativeMeasurementTypeDefinition,
+  CBQuantitativeMeasurementTypeDefinition
+} from 'interfaces/useCritterApi.interface';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { firstOrNull } from 'utils/Utils';
@@ -53,7 +58,8 @@ export type MeasurementColumn = {
 
 export interface ISupplementaryObservationData {
   observationCount: number;
-  measurementColumns: CBMeasurementType[];
+  qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
+  quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
 }
 
 export interface IObservationTableRow extends Partial<ObservationRecord> {
