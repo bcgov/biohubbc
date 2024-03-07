@@ -459,7 +459,7 @@ export class ObservationService extends DBService {
           tsnMeasurements
         );
 
-        let rowData = row[mColumn];
+        const rowData = row[mColumn];
 
         if (measurement) {
           // if measurement is qualitative, find the option uuid

@@ -20,7 +20,8 @@ const proxyRoutes = [
   '/api/critterbase/xref/taxon-measurements',
   '/api/critterbase/xref/taxon-quantitative-measurements',
   '/api/critterbase/xref/taxon-qualitative-measurements',
-  '/api/critterbase/xref/taxon-qualitative-measurement-options'
+  '/api/critterbase/xref/taxon-qualitative-measurement-options',
+  '/api/critterbase/xref/measurements/search'
 ];
 
 /**
