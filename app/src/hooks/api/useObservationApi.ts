@@ -16,9 +16,22 @@ export interface MeasurementColumnToSave {
   value: string | number | null;
 }
 
+export interface SubcountToSave {
+  observation_subcount_id: number | null;
+  subcount: number;
+  qualitative: {
+    measurement_id: string;
+    measurement_option_id: string;
+  }[];
+  quantitative: {
+    measurement_id: string;
+    measurement_value: number;
+  }[];
+}
+
 export interface IObservationTableRowToSave {
   standardColumns: StandardObservationColumns;
-  measurementColumns: MeasurementColumnToSave[];
+  subcounts: SubcountToSave[];
 }
 
 /**

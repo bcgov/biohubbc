@@ -446,7 +446,7 @@ PUT.apiDoc = {
               items: {
                 description: 'A single survey observation record.',
                 type: 'object',
-                required: ['standardColumns', 'measurementColumns', 'subcounts'],
+                required: ['standardColumns', 'subcounts'],
                 properties: {
                   standardColumns: {
                     description: 'Standard column data for an observation record.',

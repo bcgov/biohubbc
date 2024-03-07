@@ -18,7 +18,7 @@ import { DialogContext } from 'contexts/dialogContext';
 import { default as dayjs } from 'dayjs';
 import { getMeasurementColumns } from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitionsUtils';
 import { APIError } from 'hooks/api/useAxios';
-import { IObservationTableRowToSave, MeasurementColumnToSave } from 'hooks/api/useObservationApi';
+import { IObservationTableRowToSave, SubcountToSave } from 'hooks/api/useObservationApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useObservationsContext, useTaxonomyContext } from 'hooks/useContext';
 import { CBMeasurementType, CBMeasurementValue } from 'interfaces/useCritterApi.interface';
@@ -897,29 +897,42 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     const rowValues = Array.from(rowModels, ([_, value]) => value);
 
     const measurements = measurementColumns.map((item) => item.measurement);
-
+    console.log(measurements);
     // Build the object expected by the SIMS API
     const rowsToSave = rowValues.map((row) => {
       const standardColumnsToSave: StandardObservationColumns = row as StandardObservationColumns;
 
-      const measurementColumnsToSave: MeasurementColumnToSave[] = [];
-
       const rowEntries = Object.entries(row);
+      console.log(rowEntries);
+      // TODO MAKE A PROPER DEFINITION FOR THIS
+      const subCountToSave: SubcountToSave = {
+        observation_subcount_id: null,
+        subcount: 1,
+        qualitative: [],
+        quantitative: []
+      };
       rowEntries.forEach(([key, value]) => {
         const matchingMeasurement = measurements.find((item) => item.taxon_measurement_id === key);
 
         if (matchingMeasurement) {
-          measurementColumnsToSave.push({
-            id: matchingMeasurement.taxon_measurement_id,
-            field: matchingMeasurement.measurement_name,
-            value: (value as any) || null
+          // TODO: check if the measurement is qualitative
+          subCountToSave.quantitative.push({
+            measurement_id: matchingMeasurement.taxon_measurement_id,
+            measurement_value: Number(value)
           });
+          // if (true) {
+          // } else {
+          //   console.log('THIS IS A QUALITATIVE MEASUREMENT');
+          //   subCountToSave.qualitative.push({
+          //     measurement_id: '', //matchingMeasurement.taxon_measurement_id,
+          //     measurement_option_id: String(value)
+          //   });
+          // }
         }
       });
-
       return {
         standardColumns: standardColumnsToSave,
-        measurementColumns: measurementColumnsToSave
+        subcounts: [subCountToSave]
       };
     });
 
