@@ -464,147 +464,38 @@ export class CritterbaseService {
   }
 
   /**
-   * Get measurement values for a given set of event ids.
+   * Get qualitative measurement type definitions by ids.
    *
-   * @param {string[]} eventIds
-   * @return {*}  {Promise<CBMeasurementValue[]>}
+   * TODO Update after mac adds endpoints to critterbase
+   *
+   * @param {string[]} taxon_measurement_id
+   * @return {*}  {CBQualitativeMeasurementTypeDefinition[]}
    * @memberof CritterbaseService
    */
-  async getMeasurementValuesForEventIds(eventIds: string[]): Promise<CBMeasurementValue[]> {
-    // TODO: wire up to critter base api when available
-    // const response = await this.axiosInstance.post('', ids);F
-    const mockMeasurements = (eventId: string) => [
-      {
-        event_id: eventId,
-        measurement_quantitative_id: 'b73097cd-06bc-4fb3-9f69-ed471abc6a94',
-        taxon_measurement_id: 'c38c3d61-833f-47d4-a173-6a01a19a7a13',
-        value: 5,
-        measurement_comment: 'This is a comment about the measurement.',
-        measured_timestamp: ''
-      },
-      {
-        event_id: eventId,
-        measurement_qualitative_id: 'd78991d8-806f-4b4c-802c-aaadbf21c381',
-        taxon_measurement_id: 'd47568e6-e7ef-49fd-bbac-7e4ad47418be',
-        qualitative_option_id: '2272abee-8161-4887-a5e4-b842524e48c8',
-        measurement_comment: 'This is a comment about the measurement.',
-        measured_timestamp: ''
-      }
-    ];
+  async getQualitativeMeasurementTypeDefinition(
+    taxon_measurement_id: string[]
+  ): Promise<CBQualitativeMeasurementTypeDefinition[]> {
+    // const { data } = await this.axiosInstance.get(`/api/xref/measurements/qualitative/${taxon_measurement_id}`);
 
-    return eventIds.flatMap((eventId) => mockMeasurements(eventId));
+    // return data;
+    return [];
   }
 
   /**
-   * Get measurement type definitions for a given set of event ids.
+   * Get qualitative measurement type definitions by ids.
    *
-   * @param {string[]} eventIds
-   * @return {*}  {Promise<CBMeasurementType[]>}
+   * TODO Update after mac adds endpoints to critterbase
+   *
+   * @param {string[]} taxon_measurement_id
+   * @return {*}  {CBQuantitativeMeasurementTypeDefinition[]}
    * @memberof CritterbaseService
    */
-  async getMeasurementTypeDefinitionsForEventIds(eventIds: string[]): Promise<CBMeasurementType[]> {
-    // TODO: wire up to critter base api when available
-    // const response = await this.axiosInstance.post('', ids);
-    return [
-      {
-        itis_tsn: 123,
-        taxon_measurement_id: 'c38c3d61-833f-47d4-a173-6a01a19a7a13',
-        measurement_name: 'Estimated age',
-        measurement_desc: 'Estimated age of the animal in years',
-        max_value: 100,
-        min_value: 0,
-        unit: null
-      },
-      {
-        itis_tsn: 456,
-        taxon_measurement_id: 'd47568e6-e7ef-49fd-bbac-7e4ad47418be',
-        measurement_name: 'Juvenile at heel indicator',
-        measurement_desc: 'Indicator of juvenile at heel',
-        options: [
-          {
-            qualitative_option_id: '824900f6-f2bd-4a24-b844-3bf54d82a667',
-            taxon_measurement_id: 'd47568e6-e7ef-49fd-bbac-7e4ad47418be',
-            option_label: 'False',
-            option_value: 0,
-            option_desc: null
-          },
-          {
-            qualitative_option_id: '2272abee-8161-4887-a5e4-b842524e48c8',
-            taxon_measurement_id: 'd47568e6-e7ef-49fd-bbac-7e4ad47418be',
-            option_label: 'True',
-            option_value: 1,
-            option_desc: null
-          }
-        ]
-      }
-    ];
-  }
+  async getQuantitativeMeasurementTypeDefinition(
+    taxon_measurement_id: string[]
+  ): Promise<CBQuantitativeMeasurementTypeDefinition[]> {
+    // const { data } = await this.axiosInstance.get(`/api/xref/measurements/quantitative/${taxon_measurement_id}`);
 
-  /**
-   * Search for measurement type definitions by keywords.
-   *
-   * @param {string[]} searchTerms
-   * @return {*}  {Promise<CBMeasurementType[]>}
-   * @memberof CritterbaseService
-   */
-  async searchForMeasurementTypeDefinitions(searchTerms: string[]): Promise<CBMeasurementType[]> {
-    // TODO: wire up to critter base api when available
-    // const response = await this.axiosInstance.post('', ids);
-    return [
-      {
-        itis_tsn: 123,
-        taxon_measurement_id: 'c38c3d61-833f-47d4-a173-6a01a19a7a13',
-        measurement_name: 'Estimated age',
-        measurement_desc: 'Estimated age of the animal in years',
-        max_value: null,
-        min_value: 0,
-        unit: null
-      },
-      {
-        itis_tsn: 123,
-        taxon_measurement_id: '9b58e2bd-a5b1-4217-b41e-16112003e7e6',
-        measurement_name: 'Juvenile count',
-        measurement_desc: 'Number of juveniles',
-        max_value: null,
-        min_value: 0,
-        unit: null
-      },
-      {
-        itis_tsn: 123,
-        taxon_measurement_id: 'b0712ca0-74b3-42df-9c42-7066e6713518',
-        measurement_name: 'Life Stage',
-        measurement_desc: 'Life stage of the animal',
-        options: []
-      },
-      {
-        itis_tsn: 456,
-        taxon_measurement_id: '1e1fccd9-9d35-41f8-abd0-408d41e9ba33',
-        measurement_name: 'Life Stage',
-        measurement_desc: 'Life stage of the animal',
-        options: []
-      },
-      {
-        itis_tsn: 456,
-        taxon_measurement_id: 'd47568e6-e7ef-49fd-bbac-7e4ad47418be',
-        measurement_name: 'Juvenile at heel indicator',
-        measurement_desc: 'Indicator of juvenile at heel',
-        options: [
-          {
-            qualitative_option_id: '824900f6-f2bd-4a24-b844-3bf54d82a667',
-            taxon_measurement_id: 'd47568e6-e7ef-49fd-bbac-7e4ad47418be',
-            option_label: 'False',
-            option_value: 0,
-            option_desc: null
-          },
-          {
-            qualitative_option_id: '2272abee-8161-4887-a5e4-b842524e48c8',
-            taxon_measurement_id: 'd47568e6-e7ef-49fd-bbac-7e4ad47418be',
-            option_label: 'True',
-            option_value: 1,
-            option_desc: null
-          }
-        ]
-      }
-    ];
+    // return data;
+    return [];
   }
 }

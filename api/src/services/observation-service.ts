@@ -32,7 +32,11 @@ import {
   validateWorksheetHeaders
 } from '../utils/xlsx-utils/worksheet-utils';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
-import { CBMeasurementType, CritterbaseService } from './critterbase-service';
+import {
+  CBQualitativeMeasurementTypeDefinition,
+  CBQuantitativeMeasurementTypeDefinition,
+  CritterbaseService
+} from './critterbase-service';
 import { DBService } from './db-service';
 import { ObservationSubCountMeasurementService } from './observation-subcount-measurement-service';
 import { PlatformService } from './platform-service';
@@ -70,7 +74,8 @@ export type InsertUpdateObservationsWithMeasurements = {
 
 export type ObservationSupplementaryData = {
   observationCount: number;
-  measurementColumns: CBMeasurementType[];
+  qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
+  quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
 };
 
 export class ObservationService extends DBService {
@@ -278,7 +283,11 @@ export class ObservationService extends DBService {
 
     const measurementTypeDefinitions = await service.getMeasurementTypeDefinitionsForSurvey(surveyId);
 
-    return { observationCount, measurementColumns: measurementTypeDefinitions };
+    return {
+      observationCount,
+      qualitative_measurements: measurementTypeDefinitions.qualitative_measurements,
+      quantitative_measurements: measurementTypeDefinitions.quantitative_measurements
+    };
   }
 
   /**
