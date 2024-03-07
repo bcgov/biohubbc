@@ -28,7 +28,7 @@ export async function up(knex: Knex): Promise<void> {
     -- Create measurement tables
     ----------------------------------------------------------------------------------------
     CREATE TABLE observation_subcount_quantitative_measurement (
-      observation_subcount_quantitative_measurement_id  integer            NOT NULL,
+      observation_subcount_quantitative_measurement_id  integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       observation_subcount_id                           integer            NOT NULL,
       critterbase_measurement_quantitative_id           UUID               NOT NULL,
       value                                             numeric,
@@ -66,7 +66,7 @@ export async function up(knex: Knex): Promise<void> {
 
 
     CREATE TABLE observation_subcount_qualitative_measurement (
-      observation_subcount_qualitative_measurement_id     integer         NOT NULL,
+      observation_subcount_qualitative_measurement_id     integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       observation_subcount_id                             integer         NOT NULL,
       critterbase_measurement_qualitative_id              UUID            NOT NULL,
       critterbase_measurement_qualitative_option_id       UUID            NOT NULL,

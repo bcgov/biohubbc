@@ -44,7 +44,11 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
   async insertObservationQualitativeMeasurementRecords(
     record: InsertObservationSubCountQualitativeMeasurementRecord[]
   ): Promise<ObservationSubCountQualitativeMeasurementRecord[]> {
-    const qb = getKnex().insert(record).into('observation_subcount_qualitative_measurement').returning('*');
+    const qb = getKnex()
+      .queryBuilder()
+      .insert(record)
+      .into('observation_subcount_qualitative_measurement')
+      .returning('*');
     const response = await this.connection.knex(qb, ObservationSubCountQualitativeMeasurementRecord);
 
     return response.rows;
@@ -53,7 +57,12 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
   async insertObservationQuantitativeMeasurementRecords(
     record: InsertObservationSubCountQuantitativeMeasurementRecord[]
   ): Promise<ObservationSubCountQuantitativeMeasurementRecord[]> {
-    const qb = getKnex().insert(record).into('observation_subcount_quantitative_measurement').returning('*');
+    console.log(record);
+    const qb = getKnex()
+      .queryBuilder()
+      .insert(record)
+      .into('observation_subcount_quantitative_measurement')
+      .returning('*');
     const response = await this.connection.knex(qb, ObservationSubCountQuantitativeMeasurementRecord);
 
     return response.rows;
@@ -69,14 +78,18 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
     surveyId: number
   ): Promise<number> {
     const qb = getKnex()
+      .queryBuilder()
       .delete()
-      .from('observation_subcount_qualitative_measurement as osqm')
-      .using(['observation_subcount as os', 'survey_observation as so'])
-      .where('os.survey_observation_id = so.survey_observation_id')
-      .andWhere(`AND so.survey_id = ${surveyId}`)
-      .whereIn('so.survey_observation_id', surveyObservationId);
-
+      .from('observation_subcount_qualitative_measurement')
+      .using(['observation_subcount', 'survey_observation'])
+      .whereRaw(
+        'observation_subcount_qualitative_measurement.observation_subcount_id = observation_subcount.observation_subcount_id'
+      )
+      .whereRaw('observation_subcount.survey_observation_id = survey_observation.survey_observation_id')
+      .andWhere(`survey_observation.survey_id`, surveyId)
+      .whereIn('survey_observation.survey_observation_id', surveyObservationId);
     const response = await this.connection.knex(qb);
+
     return response.rowCount;
   }
 
@@ -85,12 +98,16 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
     surveyId: number
   ) {
     const qb = getKnex()
+      .queryBuilder()
       .delete()
-      .from('observation_subcount_quantitative_measurement as osqm')
-      .using(['observation_subcount as os', 'survey_observation as so'])
-      .where('os.survey_observation_id = so.survey_observation_id')
-      .andWhere(`AND so.survey_id = ${surveyId}`)
-      .whereIn('so.survey_observation_id', surveyObservationId);
+      .from('observation_subcount_quantitative_measurement')
+      .using(['observation_subcount', 'survey_observation'])
+      .whereRaw(
+        'observation_subcount_quantitative_measurement.observation_subcount_id = observation_subcount.observation_subcount_id'
+      )
+      .whereRaw('observation_subcount.survey_observation_id = survey_observation.survey_observation_id')
+      .andWhere(`survey_observation.survey_id`, surveyId)
+      .whereIn('survey_observation.survey_observation_id', surveyObservationId);
 
     const response = await this.connection.knex(qb);
 
