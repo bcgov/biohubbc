@@ -49,8 +49,8 @@ export const ConfigContext = React.createContext<IConfig | undefined>({
  *
  * This is used when running the app locally in docker.
  *
- * Note: All changes env vars here must also be reflected in the `app/server/index.js` file, so that the app has access
- * to the same env vars when running in both local development (via docker-compose) and in OpenShift.
+ * Note: All changes to env vars here must also be reflected in the `app/server/index.js` file, so that the app has
+ * access to the same env vars when running in both local development (via docker-compose) and in OpenShift.
  *
  * @return {*}  {IConfig}
  */

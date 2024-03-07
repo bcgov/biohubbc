@@ -25,13 +25,13 @@ const request = require('request');
 /**
  * An immediately invoked function that runs a simple express server to serve the app static build files.
  *
- * Includes a health check endpoint that OpenShift uses to determine if the app is healthy.
+ * This includes a health check endpoint that OpenShift uses to determine if the app is healthy.
  *
- * This is only used when serving the app in OpenShift. When running the app locally, the app is served by
- * docker-compose, and doesn't use this file at all.
+ * This file is only used when serving the app in OpenShift.
+ * When running the app locally, the app is served by docker-compose, and doesn't use this file at all.
  *
  * Note: All changes to env vars here must also be reflected in the `app/src/contexts/configContext.tsx` file, so that
- * the app has access to the same env vars in both OpenShift and local development.
+ * the app has access to the same env vars when running in both OpenShift and local development.
  */
 (() => {
   process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;

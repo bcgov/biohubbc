@@ -294,6 +294,22 @@ If you already had PSQL installed, it is likely that the default port `5432` is 
 - Or alter the `DB_PORT` environment variable in `.env` to something not in use (ex: `5433`).
   - You will likely need to run `make clean` and `make web` to ensure the containers are re-built with the new variables.
 
+## The App Works Locally But Not In OpenShift
+
+Ensure that any new environment variables have been included in all of the necessary files.
+
+Local Development
+
+- `env.docker`
+- `docker-compose.yml`
+- `app/src/contexts/configContext.tsx`
+
+Deployed to OpenShift
+
+- `../.pipeline/**`
+- `server/index.js`
+- `app/src/contexts/configContext.tsx`
+
 # Helpful Tools
 
 ## DBeaver
