@@ -306,9 +306,10 @@ Local Development
 
 Deployed to OpenShift
 
-- `../.pipeline/**`
+- `[api/app/database]/.pipeline/**`
 - `server/index.js`
 - `app/src/contexts/configContext.tsx`
+- OpenShift Secrets [dev,test,prod]
 
 # Helpful Tools
 
