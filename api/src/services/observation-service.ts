@@ -173,7 +173,7 @@ export class ObservationService extends DBService {
             const qualitativeData: InsertObservationSubCountQualitativeMeasurementRecord[] = subcount.qualitative.map(
               (item) => ({
                 observation_subcount_id: observationSubCountRecord.observation_subcount_id,
-                critterbase_measurement_qualitative_id: item.measurement_id,
+                critterbase_taxon_measurement_id: item.measurement_id,
                 critterbase_measurement_qualitative_option_id: item.measurement_option_id
               })
             );
@@ -185,7 +185,7 @@ export class ObservationService extends DBService {
             const quantitativeData: InsertObservationSubCountQuantitativeMeasurementRecord[] = subcount.quantitative.map(
               (item) => ({
                 observation_subcount_id: observationSubCountRecord.observation_subcount_id,
-                critterbase_measurement_quantitative_id: item.measurement_id,
+                critterbase_taxon_measurement_id: item.measurement_id,
                 value: item.measurement_value
               })
             );

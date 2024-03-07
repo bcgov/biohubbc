@@ -223,11 +223,11 @@ GET.apiDoc = {
                             items: {
                               type: 'object',
                               required: [
-                                'critterbase_measurement_qualitative_id',
+                                'critterbase_taxon_measurement_id',
                                 'critterbase_measurement_qualitative_option_id'
                               ],
                               properties: {
-                                critterbase_measurement_qualitative_id: {
+                                critterbase_taxon_measurement_id: {
                                   type: 'string',
                                   format: 'uuid'
                                 },
@@ -243,9 +243,9 @@ GET.apiDoc = {
                             type: 'array',
                             items: {
                               type: 'object',
-                              required: ['critterbase_measurement_quantitative_id', 'value'],
+                              required: ['critterbase_taxon_measurement_id', 'value'],
                               properties: {
-                                critterbase_measurement_quantitative_id: {
+                                critterbase_taxon_measurement_id: {
                                   type: 'string',
                                   format: 'uuid'
                                 },

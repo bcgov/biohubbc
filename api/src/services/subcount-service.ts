@@ -82,16 +82,21 @@ export class SubCountService extends DBService {
     qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
     quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
   }> {
+    const observationSubCountMeasurementService = new ObservationSubCountMeasurementRepository(this.connection);
+
+    const [qualitativeTaxonMeasurementIds, quantitativeTaxonMeasurementIds] = await Promise.all([
+      observationSubCountMeasurementService.getObservationSubCountQualitativeTaxonMeasurementIds(surveyId),
+      observationSubCountMeasurementService.getObservationSubCountQuantitativeTaxonMeasurementIds(surveyId)
+    ]);
+
     const critterbaseService = new CritterbaseService({
       keycloak_guid: this.connection.systemUserGUID(),
       username: this.connection.systemUserIdentifier()
     });
 
-    // TODO fetch measurement ids by survey id
-
     const response = await Promise.all([
-      critterbaseService.getQualitativeMeasurementTypeDefinition([]),
-      critterbaseService.getQuantitativeMeasurementTypeDefinition([])
+      critterbaseService.getQualitativeMeasurementTypeDefinition(qualitativeTaxonMeasurementIds),
+      critterbaseService.getQuantitativeMeasurementTypeDefinition(quantitativeTaxonMeasurementIds)
     ]);
 
     return { qualitative_measurements: response[0], quantitative_measurements: response[1] };

@@ -45,12 +45,12 @@ const ObservationSamplingData = z.object({
 });
 
 const ObservationSubcountQualitativeMeasurementObject = ObservationSubCountQualitativeMeasurementRecord.pick({
-  critterbase_measurement_qualitative_id: true,
+  critterbase_taxon_measurement_id: true,
   critterbase_measurement_qualitative_option_id: true
 });
 
 const ObservationSubcountQuantitativeMeasurementObject = ObservationSubCountQuantitativeMeasurementRecord.pick({
-  critterbase_measurement_quantitative_id: true,
+  critterbase_taxon_measurement_id: true,
   value: true
 });
 
@@ -322,7 +322,7 @@ export class ObservationRepository extends BaseRepository {
             'observation_subcount_id',
             knex.raw(`
               json_agg(json_build_object(
-                'critterbase_measurement_qualitative_id', critterbase_measurement_qualitative_id,
+                'critterbase_taxon_measurement_id', critterbase_taxon_measurement_id,
                 'critterbase_measurement_qualitative_option_id', critterbase_measurement_qualitative_option_id
               )) as qualitative_measurements
             `)
@@ -346,7 +346,7 @@ export class ObservationRepository extends BaseRepository {
             'observation_subcount_id',
             knex.raw(`
               json_agg(json_build_object(
-                'critterbase_measurement_quantitative_id', critterbase_measurement_quantitative_id,
+                'critterbase_taxon_measurement_id', critterbase_taxon_measurement_id,
                 'value', value
               )) as quantitative_measurements
             `)

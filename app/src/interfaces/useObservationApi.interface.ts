@@ -22,7 +22,7 @@ type ObservationSamplingData = {
 
 type ObservationSubCountQualitativeMeasurementRecord = {
   observation_subcount_id: number;
-  critterbase_measurement_qualitative_id: string;
+  critterbase_taxon_measurement_id: string;
   critterbase_measurement_qualitative_option_id: string;
   create_date: string;
   create_user: number;
@@ -33,7 +33,7 @@ type ObservationSubCountQualitativeMeasurementRecord = {
 
 type ObservationSubCountQuantitativeMeasurementRecord = {
   observation_subcount_id: number;
-  critterbase_measurement_quantitative_id: string;
+  critterbase_taxon_measurement_id: string;
   value: number;
   create_date: string;
   create_user: number;
@@ -44,12 +44,12 @@ type ObservationSubCountQuantitativeMeasurementRecord = {
 
 type ObservationSubcountQualitativeMeasurementObject = Pick<
   ObservationSubCountQualitativeMeasurementRecord,
-  'critterbase_measurement_qualitative_id' | 'critterbase_measurement_qualitative_option_id'
+  'critterbase_taxon_measurement_id' | 'critterbase_measurement_qualitative_option_id'
 >;
 
 type ObservationSubcountQuantitativeMeasurementObject = Pick<
   ObservationSubCountQuantitativeMeasurementRecord,
-  'critterbase_measurement_quantitative_id' | 'value'
+  'critterbase_taxon_measurement_id' | 'value'
 >;
 
 type ObservationSubcountRecord = {

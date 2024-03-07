@@ -1,10 +1,11 @@
+import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { BaseRepository } from './base-repository';
 
 export const ObservationSubCountQualitativeMeasurementRecord = z.object({
   observation_subcount_id: z.number(),
-  critterbase_measurement_qualitative_id: z.string().uuid(),
+  critterbase_taxon_measurement_id: z.string().uuid(),
   critterbase_measurement_qualitative_option_id: z.string().uuid(),
   create_date: z.string(),
   create_user: z.number(),
@@ -18,7 +19,7 @@ export type ObservationSubCountQualitativeMeasurementRecord = z.infer<
 
 export const ObservationSubCountQuantitativeMeasurementRecord = z.object({
   observation_subcount_id: z.number(),
-  critterbase_measurement_quantitative_id: z.string().uuid(),
+  critterbase_taxon_measurement_id: z.string().uuid(),
   value: z.number(),
   create_date: z.string(),
   create_user: z.number(),
@@ -32,12 +33,12 @@ export type ObservationSubCountQuantitativeMeasurementRecord = z.infer<
 
 export interface InsertObservationSubCountQualitativeMeasurementRecord {
   observation_subcount_id: number;
-  critterbase_measurement_qualitative_id: string;
+  critterbase_taxon_measurement_id: string;
   critterbase_measurement_qualitative_option_id: string;
 }
 export interface InsertObservationSubCountQuantitativeMeasurementRecord {
   observation_subcount_id: number;
-  critterbase_measurement_quantitative_id: string;
+  critterbase_taxon_measurement_id: string;
   value: number;
 }
 export class ObservationSubCountMeasurementRepository extends BaseRepository {
@@ -71,6 +72,78 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
   async deleteObservationMeasurements(surveyObservationId: number[], surveyId: number) {
     await this.deleteObservationQualitativeMeasurementRecordsForSurveyObservationIds(surveyObservationId, surveyId);
     await this.deleteObservationQuantitativeMeasurementRecordsForSurveyObservationIds(surveyObservationId, surveyId);
+  }
+
+  /**
+   * Get all distinct taxon_measurment_ids for all qualitative measurements for a given survey.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<string[]>}
+   * @memberof ObservationSubCountMeasurementRepository
+   */
+  async getObservationSubCountQualitativeTaxonMeasurementIds(surveyId: number): Promise<string[]> {
+    const sqlStatement = SQL`
+      SELECT
+        DISTINCT critterbase_taxon_measurement_id
+      FROM
+        observation_subcount_qualitative_measurement
+      WHERE
+        obsevation_subcount_id (
+          SELECT
+            obsevation_subcount_id
+          FROM
+            observation_subcount
+          WHERE
+            survey_observation_id (
+              SELECT
+                survey_observation_id
+              FROM
+                survey_observation
+              WHERE
+                survey_id = ${surveyId}
+            )
+        )
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    return response.rows.map((item) => item.critterbase_taxon_measurement_id);
+  }
+
+  /**
+   * Get all distinct taxon_measurment_ids for all quantitative measurements for a given survey.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<string[]>}F
+   * @memberof ObservationSubCountMeasurementRepository
+   */
+  async getObservationSubCountQuantitativeTaxonMeasurementIds(surveyId: number): Promise<string[]> {
+    const sqlStatement = SQL`
+      SELECT
+        DISTINCT critterbase_taxon_measurement_id
+      FROM
+        observation_subcount_quantitative_measurement
+      WHERE
+        obsevation_subcount_id (
+          SELECT
+            obsevation_subcount_id
+          FROM
+            observation_subcount
+          WHERE
+            survey_observation_id (
+              SELECT
+                survey_observation_id
+              FROM
+                survey_observation
+              WHERE
+                survey_id = ${surveyId}
+            )
+        )
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    return response.rows.map((item) => item.critterbase_taxon_measurement_id);
   }
 
   async deleteObservationQualitativeMeasurementRecordsForSurveyObservationIds(

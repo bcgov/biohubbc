@@ -30,7 +30,7 @@ export async function up(knex: Knex): Promise<void> {
     CREATE TABLE observation_subcount_quantitative_measurement (
       observation_subcount_quantitative_measurement_id  integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       observation_subcount_id                           integer            NOT NULL,
-      critterbase_measurement_quantitative_id           UUID               NOT NULL,
+      critterbase_taxon_measurement_id                  UUID               NOT NULL,
       value                                             numeric,
       create_date                                       timestamptz(6)     DEFAULT now() NOT NULL,
       create_user                                       integer            NOT NULL,
@@ -41,11 +41,11 @@ export async function up(knex: Knex): Promise<void> {
       CONSTRAINT observation_subcount_quantitative_measurement_pk PRIMARY KEY (observation_subcount_quantitative_measurement_id)
     );
 
-    COMMENT ON TABLE observation_subcount_quantitative_measurement IS 'This table is intended to track quantitative measurements applied to a particular observation_subcount';
-    COMMENT ON COLUMN observation_subcount_quantitative_measurement.observation_subcount_quantitative_measurement_id IS 'Primary key to the table';
-    COMMENT ON COLUMN observation_subcount_quantitative_measurement.observation_subcount_id IS 'Foreign key to the subcount table';
-    COMMENT ON COLUMN observation_subcount_quantitative_measurement.critterbase_measurement_quantitative_id IS 'UUID of an external CritterBase measurement associated to a observation_subcount';
-    COMMENT ON COLUMN observation_subcount_quantitative_measurement.value IS 'Quantitative data value';
+    COMMENT ON TABLE observation_subcount_quantitative_measurement IS 'This table is intended to track quantitative measurements applied to a particular observation_subcount.';
+    COMMENT ON COLUMN observation_subcount_quantitative_measurement.observation_subcount_quantitative_measurement_id IS 'Primary key to the table.';
+    COMMENT ON COLUMN observation_subcount_quantitative_measurement.observation_subcount_id IS 'Foreign key to the subcount table.';
+    COMMENT ON COLUMN observation_subcount_quantitative_measurement.critterbase_taxon_measurement_id IS 'UUID of an external CritterBase quantitative measurement definition, that describes the value provided in the value column.';
+    COMMENT ON COLUMN observation_subcount_quantitative_measurement.value IS 'Quantitative data value.';
     COMMENT ON COLUMN observation_subcount_quantitative_measurement.create_date IS 'The datetime the record was created.';
     COMMENT ON COLUMN observation_subcount_quantitative_measurement.create_user IS 'The id of the user who created the record as identified in the system user table.';
     COMMENT ON COLUMN observation_subcount_quantitative_measurement.update_date IS 'The datetime the record was updated.';
@@ -64,11 +64,10 @@ export async function up(knex: Knex): Promise<void> {
     CREATE TRIGGER audit_observation_subcount_quantitative_measurement BEFORE INSERT OR UPDATE OR DELETE ON biohub.observation_subcount_quantitative_measurement FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
     CREATE TRIGGER journal_observation_subcount_quantitative_measurement AFTER INSERT OR UPDATE OR DELETE ON biohub.observation_subcount_quantitative_measurement FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
 
-
     CREATE TABLE observation_subcount_qualitative_measurement (
       observation_subcount_qualitative_measurement_id     integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       observation_subcount_id                             integer         NOT NULL,
-      critterbase_measurement_qualitative_id              UUID            NOT NULL,
+      critterbase_taxon_measurement_id                    UUID            NOT NULL,
       critterbase_measurement_qualitative_option_id       UUID            NOT NULL,
       create_date                                         timestamptz(6)  DEFAULT now() NOT NULL,
       create_user                                         integer         NOT NULL,
@@ -79,11 +78,11 @@ export async function up(knex: Knex): Promise<void> {
       CONSTRAINT observation_subcount_qualitative_measurement_pk PRIMARY KEY (observation_subcount_qualitative_measurement_id)
     );
 
-    COMMENT ON TABLE observation_subcount_qualitative_measurement IS 'This table is intended to track qualitative measurements applied to a particular observation_subcount';
-    COMMENT ON COLUMN observation_subcount_qualitative_measurement.observation_subcount_qualitative_measurement_id IS 'Primary key for teh table';
-    COMMENT ON COLUMN observation_subcount_qualitative_measurement.observation_subcount_id IS 'String representation of the data provided';
-    COMMENT ON COLUMN observation_subcount_qualitative_measurement.critterbase_measurement_qualitative_id IS 'UUID of an external CritterBase measurement associated to a observation_subcount';
-    COMMENT ON COLUMN observation_subcount_qualitative_measurement.critterbase_measurement_qualitative_option_id IS 'UUID of an external CritterBase measurement option selected for the given CritterBase measurement';
+    COMMENT ON TABLE observation_subcount_qualitative_measurement IS 'This table is intended to track qualitative measurements applied to a particular observation_subcount.';
+    COMMENT ON COLUMN observation_subcount_qualitative_measurement.observation_subcount_qualitative_measurement_id IS 'Primary key for the table.';
+    COMMENT ON COLUMN observation_subcount_qualitative_measurement.observation_subcount_id IS 'String representation of the data provided.';
+    COMMENT ON COLUMN observation_subcount_qualitative_measurement.critterbase_taxon_measurement_id IS 'UUID of an external CritterBase qualitative measurement definition.';
+    COMMENT ON COLUMN observation_subcount_qualitative_measurement.critterbase_measurement_qualitative_option_id IS 'UUID of an external CritterBase qualitative measurement option.';
     COMMENT ON COLUMN observation_subcount_qualitative_measurement.create_date IS 'The datetime the record was created.';
     COMMENT ON COLUMN observation_subcount_qualitative_measurement.create_user IS 'The id of the user who created the record as identified in the system user table.';
     COMMENT ON COLUMN observation_subcount_qualitative_measurement.update_date IS 'The datetime the record was updated.';

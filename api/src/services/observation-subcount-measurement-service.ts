@@ -27,4 +27,28 @@ export class ObservationSubCountMeasurementService extends DBService {
   ): Promise<ObservationSubCountQuantitativeMeasurementRecord[]> {
     return this.observationSubCountMeasurementRepository.insertObservationQuantitativeMeasurementRecords(data);
   }
+
+  /**
+   * Get all distinct taxon_measurment_ids for all qualitative measurements for a given survey.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<string[]>}
+   * @memberof ObservationSubCountMeasurementService
+   */
+  async getObservationSubCountQualitativeTaxonMeasurements(surveyId: number): Promise<string[]> {
+    return this.observationSubCountMeasurementRepository.getObservationSubCountQualitativeTaxonMeasurementIds(surveyId);
+  }
+
+  /**
+   * Get all distinct taxon_measurment_ids for all quantitative measurements for a given survey.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<string[]>}
+   * @memberof ObservationSubCountMeasurementService
+   */
+  async getObservationSubCountQuantitativeTaxonMeasurements(surveyId: number): Promise<string[]> {
+    return this.observationSubCountMeasurementRepository.getObservationSubCountQuantitativeTaxonMeasurementIds(
+      surveyId
+    );
+  }
 }
