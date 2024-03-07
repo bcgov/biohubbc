@@ -750,8 +750,12 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     }
 
     setMeasurementColumns(() => {
-      if (!observationsData.supplementaryObservationData.measurementColumns.length) {
-        // Get measurement columns from local storage
+      const hasExistingMeasurementColumns =
+        observationsData.supplementaryObservationData.qualitative_measurements.length > 0 ||
+        observationsData.supplementaryObservationData.quantitative_measurements.length > 0;
+
+      if (!hasExistingMeasurementColumns) {
+        // Get measurement columns from local storage, if any
         const measurementColumnStringified = sessionStorage.getItem(
           getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS)
         );
@@ -767,7 +771,15 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       sessionStorage.removeItem(getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS));
 
       // Get measurement columns from existing observations data
-      return [...getMeasurementColumns(observationsData.supplementaryObservationData.measurementColumns, hasError)];
+      return [
+        ...getMeasurementColumns(
+          [
+            ...observationsData.supplementaryObservationData.qualitative_measurements,
+            ...observationsData.supplementaryObservationData.quantitative_measurements
+          ],
+          hasError
+        )
+      ];
     });
   }, [isLoadingObservationsData, observationsData, hasError, surveyId, measurementColumns.length]);
 

@@ -55,7 +55,6 @@ const useObservationApi = (axios: AxiosInstance) => {
       return item;
     });
 
-    // TODO `ObservationRecord[]` might not be the actual return value once measurements are being returned
     await axios.put(`/api/project/${projectId}/survey/${surveyId}/observations`, {
       surveyObservations: dataToSave
     });

@@ -25,7 +25,7 @@ export const useXrefApi = (axios: AxiosInstance) => {
   const getMeasurementTypeDefinitionsBySearchTerm = async (
     searchTerm: string
   ): Promise<CBMeasurementSearchByTermResponse> => {
-    const { data } = await axios.get(`/api/critterbase/xref/measurements/search?name=${searchTerm}`);
+    const { data } = await axios.get(`/api/critterbase/xref/taxon-measurements/search?name=${searchTerm}`);
 
     return data;
   };
