@@ -42,11 +42,14 @@ GET.apiDoc = {
               'system_user_id',
               'user_identifier',
               'user_guid',
+              'identity_source',
               'record_end_date',
               'role_ids',
               'role_names',
               'email',
               'display_name',
+              'given_name',
+              'family_name',
               'agency'
             ],
             properties: {
@@ -63,6 +66,10 @@ GET.apiDoc = {
                 type: 'string',
                 description: 'The GUID for the user.',
                 nullable: true
+              },
+              identity_source: {
+                description: 'The source of the user identity',
+                type: 'string'
               },
               record_end_date: {
                 oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
@@ -89,6 +96,14 @@ GET.apiDoc = {
               },
               display_name: {
                 type: 'string'
+              },
+              given_name: {
+                type: 'string',
+                nullable: true
+              },
+              family_name: {
+                type: 'string',
+                nullable: true
               },
               agency: {
                 type: 'string',

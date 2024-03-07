@@ -42,7 +42,6 @@ describe.skip('SurveyStudyArea', () => {
   it('renders correctly with no data', async () => {
     const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
-    const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
     const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
@@ -54,7 +53,6 @@ describe.skip('SurveyStudyArea', () => {
           surveyId: 1,
           surveyDataLoader: mockSurveyDataLoader,
           artifactDataLoader: mockArtifactDataLoader,
-          summaryDataLoader: mockSummaryDataLoader,
           sampleSiteDataLoader: mockSampleSiteDataLoader,
           critterDataLoader: mockCritterDataLoader,
           deploymentDataLoader: mockDeploymentDataLoader
@@ -80,7 +78,6 @@ describe.skip('SurveyStudyArea', () => {
         }
       } as DataLoader<any, any, any>;
       const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
-      const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
       const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
       const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
       const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
@@ -92,7 +89,6 @@ describe.skip('SurveyStudyArea', () => {
             surveyId: 1,
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
-            summaryDataLoader: mockSummaryDataLoader,
             sampleSiteDataLoader: mockSampleSiteDataLoader,
             critterDataLoader: mockCritterDataLoader,
             deploymentDataLoader: mockDeploymentDataLoader
@@ -110,7 +106,6 @@ describe.skip('SurveyStudyArea', () => {
     it('is rendered if there are geometries on the map', async () => {
       const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, any, any>;
       const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
-      const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
       const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
       const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
       const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
@@ -122,7 +117,6 @@ describe.skip('SurveyStudyArea', () => {
             surveyId: 1,
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
-            summaryDataLoader: mockSummaryDataLoader,
             sampleSiteDataLoader: mockSampleSiteDataLoader,
             critterDataLoader: mockCritterDataLoader,
             deploymentDataLoader: mockDeploymentDataLoader
@@ -144,7 +138,6 @@ describe.skip('SurveyStudyArea', () => {
       refresh: jest.fn() as unknown as any
     } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
-    const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
     const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
@@ -166,7 +159,6 @@ describe.skip('SurveyStudyArea', () => {
             surveyId: 1,
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
-            summaryDataLoader: mockSummaryDataLoader,
             sampleSiteDataLoader: mockSampleSiteDataLoader,
             critterDataLoader: mockCritterDataLoader,
             deploymentDataLoader: mockDeploymentDataLoader
@@ -238,7 +230,6 @@ describe.skip('SurveyStudyArea', () => {
   it('shows error dialog with API error message when updating survey data fails', async () => {
     const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
-    const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
     const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
@@ -277,7 +268,6 @@ describe.skip('SurveyStudyArea', () => {
             surveyId: 1,
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
-            summaryDataLoader: mockSummaryDataLoader,
             sampleSiteDataLoader: mockSampleSiteDataLoader,
             critterDataLoader: mockCritterDataLoader,
             deploymentDataLoader: mockDeploymentDataLoader

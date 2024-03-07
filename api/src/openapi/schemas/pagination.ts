@@ -83,6 +83,5 @@ export const paginationResponseSchema: OpenAPIV3.SchemaObject = {
       enum: ['asc', 'desc'],
       description: 'The sort order of the response'
     }
-  },
-  additionalProperties: false
+  }
 };

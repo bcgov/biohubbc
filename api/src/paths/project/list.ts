@@ -129,6 +129,10 @@ GET.apiDoc = {
                       items: {
                         type: 'string'
                       }
+                    },
+                    completion_status: {
+                      type: 'string',
+                      enum: ['Completed', 'Active']
                     }
                   }
                 }
