@@ -32,7 +32,7 @@ export const MeasurementsSearch = (props: IMeasurementsSearchProps) => {
 
   const critterbaseApi = useCritterbaseApi();
 
-  const measurementsDataLoader = useDataLoader(critterbaseApi.lookup.getMeasurementTypeDefinitionsBySearchTerms);
+  const measurementsDataLoader = useDataLoader(critterbaseApi.xref.getMeasurementTypeDefinitionsBySearchTerm);
 
   return (
     <Box>
@@ -42,12 +42,8 @@ export const MeasurementsSearch = (props: IMeasurementsSearchProps) => {
       <MeasurementsSearchAutocomplete
         selectedOptions={selectedMeasurements}
         getOptions={async (inputValue: string) => {
-          const searchTerms = inputValue
-            .split(' ')
-            .map((item) => item.trim())
-            .filter(Boolean);
-          const response = await measurementsDataLoader.refresh(searchTerms);
-          return response || [];
+          const response = await measurementsDataLoader.refresh(inputValue);
+          return (response && [...response.qualitative, ...response.quantitative]) || [];
         }}
         onSelectOptions={onSelectOptions}
       />
