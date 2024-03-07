@@ -48,10 +48,12 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: ['funding_source', 'funding_source_survey_references'],
             properties: {
               funding_source: {
                 type: 'object',
+                additionalProperties: false,
                 required: [
                   'funding_source_id',
                   'name',
@@ -91,6 +93,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   required: [
                     'survey_funding_source_id',
                     'survey_id',
@@ -223,6 +226,7 @@ PUT.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['name', 'description', 'revision_count'],
           properties: {
             funding_source_id: {
@@ -251,6 +255,7 @@ PUT.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: ['funding_source_id'],
             properties: {
               funding_source_id: {
@@ -349,6 +354,7 @@ DELETE.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: ['funding_source_id'],
             properties: {
               funding_source_id: {

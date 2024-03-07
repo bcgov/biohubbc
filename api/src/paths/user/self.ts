@@ -37,6 +37,7 @@ GET.apiDoc = {
           schema: {
             title: 'User Response Object',
             type: 'object',
+            additionalProperties: false,
             required: [
               'system_user_id',
               'user_identifier',

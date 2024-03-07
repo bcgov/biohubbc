@@ -46,6 +46,7 @@ GET.apiDoc = {
             type: 'array',
             items: {
               type: 'object',
+              additionalProperties: false,
               required: ['system_user_id'],
               properties: {
                 system_user_id: {

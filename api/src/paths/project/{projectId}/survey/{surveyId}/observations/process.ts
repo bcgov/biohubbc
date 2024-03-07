@@ -53,6 +53,7 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['observation_submission_id'],
           properties: {
             observation_submission_id: {
@@ -71,6 +72,7 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             nullable: true,
             required: ['surveyObservations'],
             properties: {
@@ -78,6 +80,7 @@ POST.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   required: [
                     'itis_tsn',
                     'itis_scientific_name',
@@ -137,12 +140,10 @@ POST.apiDoc = {
                       type: 'integer',
                       minimum: 0
                     }
-                  },
-                  additionalProperties: false
+                  }
                 }
               }
-            },
-            additionalProperties: false
+            }
           }
         }
       }

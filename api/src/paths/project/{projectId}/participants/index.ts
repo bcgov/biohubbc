@@ -58,6 +58,7 @@ GET.apiDoc = {
             type: 'array',
             items: {
               type: 'object',
+              additionalProperties: false,
               properties: {
                 project_participation_id: {
                   type: 'number'
@@ -192,12 +193,14 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['participants'],
           properties: {
             participants: {
               type: 'array',
               items: {
                 type: 'object',
+                additionalProperties: false,
                 required: ['userIdentifier', 'identitySource', 'displayName', 'email', 'roleId'],
                 properties: {
                   userIdentifier: {

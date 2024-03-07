@@ -45,6 +45,7 @@ GET.apiDoc = {
             type: 'array',
             items: {
               type: 'object',
+              additionalProperties: false,
               required: ['funding_source_id', 'name', 'description', 'revision_count'],
               properties: {
                 funding_source_id: {
@@ -183,6 +184,7 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['name', 'description'],
           properties: {
             name: {
@@ -211,6 +213,7 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: ['funding_source_id'],
             properties: {
               funding_source_id: {

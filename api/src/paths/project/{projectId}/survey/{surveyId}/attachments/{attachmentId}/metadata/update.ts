@@ -71,6 +71,7 @@ PUT.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           description: 'Attachment metadata for attachments of type: Report.',
           required: ['attachment_type', 'attachment_meta', 'revision_count'],
           properties: {
@@ -80,6 +81,7 @@ PUT.apiDoc = {
             },
             attachment_meta: {
               type: 'object',
+              additionalProperties: false,
               required: ['title', 'year_published', 'authors', 'description'],
               properties: {
                 title: {
@@ -92,6 +94,7 @@ PUT.apiDoc = {
                   type: 'array',
                   items: {
                     type: 'object',
+                    additionalProperties: false,
                     properties: {
                       first_name: {
                         type: 'string'

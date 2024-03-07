@@ -172,7 +172,6 @@ describe('xlsx/process', () => {
         .stub(ValidationService.prototype, 'processXLSXFile')
         .throws(new Error('test processXLSXFile error'));
       const errorServiceStub = sinon.stub(ErrorService.prototype, 'insertSubmissionStatus').resolves();
-      const processDWCFileStub = sinon.stub(ValidationService.prototype, 'processDWCFile').resolves();
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
       mockReq['keycloak_token'] = 'token';
@@ -188,7 +187,6 @@ describe('xlsx/process', () => {
         expect.fail();
       } catch (actualError) {
         expect(processXLSXFileStub).to.have.been.calledOnceWith(mockReq.body.occurrence_submission_id);
-        expect(processDWCFileStub).not.to.have.been.calledOnce;
         expect(errorServiceStub).to.have.been.calledOnce;
         expect(dbConnectionObj.rollback).to.have.been.calledOnce;
         expect(dbConnectionObj.release).to.have.been.calledOnce;
@@ -203,7 +201,6 @@ describe('xlsx/process', () => {
       const processXLSXFileStub = sinon
         .stub(ValidationService.prototype, 'processXLSXFile')
         .throws(new Error('test processDWCFile error'));
-      const processDWCFileStub = sinon.stub(ValidationService.prototype, 'processDWCFile').resolves();
 
       const errorServiceStub = sinon
         .stub(ErrorService.prototype, 'insertSubmissionStatus')
@@ -223,7 +220,6 @@ describe('xlsx/process', () => {
         expect.fail();
       } catch (actualError) {
         expect(processXLSXFileStub).to.have.been.calledOnceWith(mockReq.body.occurrence_submission_id);
-        expect(processDWCFileStub).not.to.have.been.calledOnce;
         expect(errorServiceStub).to.have.been.calledOnce;
         expect(dbConnectionObj.rollback).to.have.been.calledOnce;
         expect(dbConnectionObj.release).to.have.been.calledOnce;

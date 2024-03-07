@@ -78,12 +78,14 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             properties: {
               data: {
                 type: 'array',
                 items: {
                   title: 'Summary submission CSV data',
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     name: {
                       type: 'string'

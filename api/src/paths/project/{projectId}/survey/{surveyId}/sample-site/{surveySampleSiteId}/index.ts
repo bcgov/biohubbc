@@ -73,10 +73,12 @@ PUT.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['sampleSite'],
           properties: {
             sampleSite: {
               type: 'object',
+              additionalProperties: false,
               required: ['name', 'description', 'methods', 'survey_sample_sites'],
               properties: {
                 name: {
@@ -93,6 +95,7 @@ PUT.apiDoc = {
                   minItems: 1,
                   items: {
                     type: 'object',
+                    additionalProperties: false,
                     required: ['method_lookup_id', 'description', 'periods'],
                     properties: {
                       method_lookup_id: {
@@ -107,6 +110,7 @@ PUT.apiDoc = {
                         minItems: 1,
                         items: {
                           type: 'object',
+                          additionalProperties: false,
                           required: ['start_date', 'end_date'],
                           properties: {
                             start_date: {
@@ -133,6 +137,7 @@ PUT.apiDoc = {
                   type: 'array',
                   items: {
                     type: 'object',
+                    additionalProperties: false,
                     required: ['survey_block_id'],
                     properties: {
                       survey_block_id: {
@@ -145,6 +150,7 @@ PUT.apiDoc = {
                   type: 'array',
                   items: {
                     type: 'object',
+                    additionalProperties: false,
                     required: ['survey_stratum_id'],
                     properties: {
                       survey_stratum_id: {

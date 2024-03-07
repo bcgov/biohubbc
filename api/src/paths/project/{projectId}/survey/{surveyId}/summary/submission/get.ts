@@ -68,11 +68,13 @@ GET.apiDoc = {
           schema: {
             title: 'Survey get response object, for view purposes',
             type: 'object',
+            additionalProperties: false,
             nullable: true,
             required: ['surveySummaryData', 'surveySummarySupplementaryData'],
             properties: {
               surveySummaryData: {
                 type: 'object',
+                additionalProperties: false,
                 nullable: true,
                 properties: {
                   survey_summary_submission_id: {
@@ -87,6 +89,7 @@ GET.apiDoc = {
                     type: 'array',
                     items: {
                       type: 'object',
+                      additionalProperties: false,
                       description: 'A validation status message of the summary submission'
                     }
                   }
@@ -95,6 +98,7 @@ GET.apiDoc = {
               surveySummarySupplementaryData: {
                 description: 'Survey summary submission publish record',
                 type: 'object',
+                additionalProperties: false,
                 nullable: true,
                 required: [
                   'survey_summary_submission_publish_id',

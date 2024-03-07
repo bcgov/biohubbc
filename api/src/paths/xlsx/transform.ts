@@ -44,6 +44,7 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['project_id', 'occurrence_submission_id'],
           properties: {
             project_id: {
@@ -69,6 +70,7 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             properties: {
               status: {
                 type: 'string'

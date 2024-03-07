@@ -27,6 +27,7 @@ const GeoJSONTelemetryPointsAPISchema: OpenAPIV3.SchemaObject = {
           ...GeoJSONFeatureCollectionFeaturesItems?.properties,
           properties: {
             type: 'object',
+            additionalProperties: false,
             required: ['collar_id', 'device_id', 'date_recorded', 'deployment_id', 'critter_id'],
             properties: {
               collar_id: {
@@ -85,6 +86,7 @@ const GeoJSONTelemetryPointsAPISchema: OpenAPIV3.SchemaObject = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     collection_unit_id: {
                       type: 'string',
@@ -133,6 +135,7 @@ const GeoJSONTelemetryTracksAPISchema: OpenAPIV3.SchemaObject = {
           ...GeoJSONFeatureCollectionFeaturesItems?.properties,
           properties: {
             type: 'object',
+            additionalProperties: false,
             required: ['critter_id', 'deployment_id'],
             properties: {
               critter_id: {
@@ -223,6 +226,7 @@ GET.apiDoc = {
           schema: {
             title: 'Telemetry response',
             type: 'object',
+            additionalProperties: false,
             required: ['tracks', 'points'],
             properties: {
               points: GeoJSONTelemetryPointsAPISchema,

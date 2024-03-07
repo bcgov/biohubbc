@@ -93,12 +93,14 @@ GET.apiDoc = {
           schema: {
             description: 'Survey get response object, for view purposes',
             type: 'object',
+            additionalProperties: false,
             required: ['surveyObservations', 'supplementaryObservationData', 'pagination'],
             properties: {
               surveyObservations: {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   required: [
                     'survey_observation_id',
                     'survey_id',
@@ -199,6 +201,7 @@ GET.apiDoc = {
                           {
                             description: 'A quantitative (number) measurement.',
                             type: 'object',
+                            additionalProperties: false,
                             required: [
                               'event_id',
                               'measurement_quantitative_id',
@@ -226,12 +229,12 @@ GET.apiDoc = {
                               measured_timestamp: {
                                 type: 'string'
                               }
-                            },
-                            additionalProperties: false
+                            }
                           },
                           {
                             description: 'A qualitative (string) measurement.',
                             type: 'object',
+                            additionalProperties: false,
                             required: [
                               'event_id',
                               'measurement_qualitative_id',
@@ -259,8 +262,7 @@ GET.apiDoc = {
                               measured_timestamp: {
                                 type: 'string'
                               }
-                            },
-                            additionalProperties: false
+                            }
                           }
                         ]
                       }
@@ -287,12 +289,12 @@ GET.apiDoc = {
                       type: 'integer',
                       minimum: 0
                     }
-                  },
-                  additionalProperties: false
+                  }
                 }
               },
               supplementaryObservationData: {
                 type: 'object',
+                additionalProperties: false,
                 required: ['observationCount', 'measurementColumns'],
                 properties: {
                   observationCount: {
@@ -307,6 +309,7 @@ GET.apiDoc = {
                           description:
                             'A quantitative (number) measurement type definition, with possible min/max constraint.',
                           type: 'object',
+                          additionalProperties: false,
                           required: [
                             'itis_tsn',
                             'taxon_measurement_id',
@@ -343,13 +346,13 @@ GET.apiDoc = {
                               type: 'string',
                               nullable: true
                             }
-                          },
-                          additionalProperties: false
+                          }
                         },
                         {
                           description:
                             'A qualitative (string) measurement type definition, with array of valid/accepted options',
                           type: 'object',
+                          additionalProperties: false,
                           required: [
                             'itis_tsn',
                             'taxon_measurement_id',
@@ -377,6 +380,7 @@ GET.apiDoc = {
                               type: 'array',
                               items: {
                                 type: 'object',
+                                additionalProperties: false,
                                 required: [
                                   'taxon_measurement_id',
                                   'qualitative_option_id',
@@ -402,22 +406,18 @@ GET.apiDoc = {
                                     type: 'string',
                                     nullable: true
                                   }
-                                },
-                                additionalProperties: false
+                                }
                               }
                             }
-                          },
-                          additionalProperties: false
+                          }
                         }
                       ]
                     }
                   }
-                },
-                additionalProperties: false
+                }
               },
               pagination: { ...paginationResponseSchema }
-            },
-            additionalProperties: false
+            }
           }
         }
       }
@@ -466,6 +466,7 @@ PUT.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           properties: {
             surveyObservations: {
               description: 'Survey observation records.',
@@ -473,11 +474,13 @@ PUT.apiDoc = {
               items: {
                 description: 'A single survey observation record.',
                 type: 'object',
+                additionalProperties: false,
                 required: ['standardColumns', 'measurementColumns'],
                 properties: {
                   standardColumns: {
                     description: 'Standard column data for an observation record.',
                     type: 'object',
+                    additionalProperties: false,
                     required: [
                       'itis_tsn',
                       'survey_sample_site_id',
@@ -537,8 +540,7 @@ PUT.apiDoc = {
                         type: 'integer',
                         minimum: 0
                       }
-                    },
-                    additionalProperties: true
+                    }
                   },
                   measurementColumns: {
                     description:
@@ -546,6 +548,7 @@ PUT.apiDoc = {
                     type: 'array',
                     items: {
                       type: 'object',
+                      additionalProperties: false,
                       required: ['id', 'field', 'value'],
                       properties: {
                         id: {
@@ -558,16 +561,13 @@ PUT.apiDoc = {
                           oneOf: [{ type: 'number' }, { type: 'string' }],
                           nullable: true
                         }
-                      },
-                      additionalProperties: false
+                      }
                     }
                   }
-                },
-                additionalProperties: false
+                }
               }
             }
-          },
-          additionalProperties: false
+          }
         }
       }
     }

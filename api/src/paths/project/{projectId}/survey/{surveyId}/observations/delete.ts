@@ -53,6 +53,7 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           properties: {
             surveyObservationIds: {
               type: 'array',
@@ -80,10 +81,12 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: ['supplementaryObservationData'],
             properties: {
               supplementaryObservationData: {
                 type: 'object',
+                additionalProperties: false,
                 required: ['observationCount'],
                 properties: {
                   observationCount: {
@@ -97,6 +100,7 @@ POST.apiDoc = {
                         {
                           description: 'A quantitative (number) measurement, with possible min/max constraint.',
                           type: 'object',
+                          additionalProperties: false,
                           required: [
                             'itis_tsn',
                             'taxon_measurement_id',
@@ -133,12 +137,12 @@ POST.apiDoc = {
                               type: 'string',
                               nullable: true
                             }
-                          },
-                          additionalProperties: false
+                          }
                         },
                         {
                           description: 'A qualitative (string) measurement, with array of valid/accepted options',
                           type: 'object',
+                          additionalProperties: false,
                           required: [
                             'itis_tsn',
                             'taxon_measurement_id',
@@ -166,6 +170,7 @@ POST.apiDoc = {
                               type: 'array',
                               items: {
                                 type: 'object',
+                                additionalProperties: false,
                                 required: [
                                   'taxon_measurement_id',
                                   'qualitative_option_id',
@@ -191,21 +196,17 @@ POST.apiDoc = {
                                     type: 'string',
                                     nullable: true
                                   }
-                                },
-                                additionalProperties: false
+                                }
                               }
                             }
-                          },
-                          additionalProperties: false
+                          }
                         }
                       ]
                     }
                   }
-                },
-                additionalProperties: false
+                }
               }
-            },
-            additionalProperties: false
+            }
           }
         }
       }

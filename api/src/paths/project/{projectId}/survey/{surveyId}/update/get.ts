@@ -68,10 +68,12 @@ GET.apiDoc = {
           schema: {
             title: 'Survey get response object, for view purposes',
             type: 'object',
+            additionalProperties: false,
             required: ['surveyData'],
             properties: {
               surveyData: {
                 type: 'object',
+                additionalProperties: false,
                 required: [
                   'survey_details',
                   'species',
@@ -86,6 +88,7 @@ GET.apiDoc = {
                   survey_details: {
                     description: 'Survey Details',
                     type: 'object',
+                    additionalProperties: false,
                     required: ['survey_name', 'start_date', 'survey_types', 'revision_count'],
                     properties: {
                       survey_name: {
@@ -115,6 +118,7 @@ GET.apiDoc = {
                   species: {
                     description: 'Survey Species',
                     type: 'object',
+                    additionalProperties: false,
                     required: ['focal_species', 'ancillary_species'],
                     properties: {
                       ancillary_species: {
@@ -122,6 +126,7 @@ GET.apiDoc = {
                         type: 'array',
                         items: {
                           type: 'object',
+                          additionalProperties: false,
                           required: ['tsn', 'commonName', 'scientificName'],
                           properties: {
                             tsn: {
@@ -142,6 +147,7 @@ GET.apiDoc = {
                         type: 'array',
                         items: {
                           type: 'object',
+                          additionalProperties: false,
                           required: ['tsn', 'commonName', 'scientificName'],
                           properties: {
                             tsn: {
@@ -162,11 +168,13 @@ GET.apiDoc = {
                   permit: {
                     description: 'Survey Permit',
                     type: 'object',
+                    additionalProperties: false,
                     properties: {
                       permits: {
                         type: 'array',
                         items: {
                           type: 'object',
+                          additionalProperties: false,
                           required: ['permit_id', 'permit_number', 'permit_type'],
                           properties: {
                             permit_id: {
@@ -188,6 +196,7 @@ GET.apiDoc = {
                     type: 'array',
                     items: {
                       type: 'object',
+                      additionalProperties: false,
                       required: [
                         'survey_funding_source_id',
                         'survey_id',
@@ -223,6 +232,7 @@ GET.apiDoc = {
                   purpose_and_methodology: {
                     description: 'Survey Details',
                     type: 'object',
+                    additionalProperties: false,
                     required: ['additional_details', 'intended_outcome_ids', 'vantage_code_ids', 'revision_count'],
                     properties: {
                       additional_details: {
@@ -247,6 +257,7 @@ GET.apiDoc = {
                   proprietor: {
                     description: 'Survey Proprietor Details',
                     type: 'object',
+                    additionalProperties: false,
                     nullable: true,
                     required: [
                       'survey_data_proprietary',
@@ -296,6 +307,7 @@ GET.apiDoc = {
                     type: 'array',
                     items: {
                       type: 'object',
+                      additionalProperties: false,
                       required: [
                         'survey_location_id',
                         'name',
@@ -343,6 +355,7 @@ GET.apiDoc = {
                     type: 'array',
                     items: {
                       type: 'object',
+                      additionalProperties: false,
                       required: ['survey_participation_id', 'system_user_id', 'survey_job_id', 'survey_job_name'],
                       properties: {
                         survey_participation_id: {
@@ -367,6 +380,7 @@ GET.apiDoc = {
                     type: 'array',
                     items: {
                       type: 'object',
+                      additionalProperties: false,
                       required: ['survey_block_id', 'name', 'description'],
                       properties: {
                         survey_block_id: {

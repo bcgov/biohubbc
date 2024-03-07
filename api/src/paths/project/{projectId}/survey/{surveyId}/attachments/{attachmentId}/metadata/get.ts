@@ -76,11 +76,13 @@ GET.apiDoc = {
           schema: {
             title: 'metadata get response object',
             type: 'object',
+            additionalProperties: false,
             required: ['metadata', 'authors'],
             properties: {
               metadata: {
                 description: 'Report metadata general information object',
                 type: 'object',
+                additionalProperties: false,
                 required: [
                   'survey_report_attachment_id',
                   'title',
@@ -121,6 +123,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   required: ['first_name', 'last_name'],
                   properties: {
                     first_name: {

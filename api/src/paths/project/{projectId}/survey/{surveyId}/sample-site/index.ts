@@ -78,11 +78,13 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             properties: {
               sampleSites: {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   required: ['survey_sample_site_id', 'survey_id', 'name', 'description', 'geojson'],
                   properties: {
                     survey_sample_site_id: {
@@ -114,6 +116,7 @@ GET.apiDoc = {
                       ],
                       items: {
                         type: 'object',
+                        additionalProperties: false,
                         properties: {
                           survey_sample_method_id: {
                             type: 'integer',
@@ -143,6 +146,7 @@ GET.apiDoc = {
                             ],
                             items: {
                               type: 'object',
+                              additionalProperties: false,
                               properties: {
                                 survey_sample_period_id: {
                                   type: 'integer',
@@ -166,18 +170,17 @@ GET.apiDoc = {
                                   type: 'string',
                                   nullable: true
                                 }
-                              },
-                              additionalProperties: false
+                              }
                             }
                           }
-                        },
-                        additionalProperties: false
+                        }
                       }
                     },
                     sample_blocks: {
                       type: 'array',
                       items: {
                         type: 'object',
+                        additionalProperties: false,
                         required: ['survey_sample_block_id', 'survey_sample_site_id', 'survey_block_id'],
                         properties: {
                           survey_sample_block_id: {
@@ -196,6 +199,7 @@ GET.apiDoc = {
                       type: 'array',
                       items: {
                         type: 'object',
+                        additionalProperties: false,
                         required: ['survey_sample_stratum_id', 'survey_sample_site_id', 'survey_stratum_id'],
                         properties: {
                           survey_sample_stratum_id: {
@@ -210,13 +214,11 @@ GET.apiDoc = {
                         }
                       }
                     }
-                  },
-                  additionalProperties: false
+                  }
                 }
               },
               pagination: { ...paginationResponseSchema }
-            },
-            additionalProperties: false
+            }
           }
         }
       }
@@ -333,6 +335,7 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['methods', 'survey_sample_sites'],
           properties: {
             methods: {
@@ -340,6 +343,7 @@ POST.apiDoc = {
               minItems: 1,
               items: {
                 type: 'object',
+                additionalProperties: false,
                 required: ['method_lookup_id', 'description', 'periods'],
                 properties: {
                   method_lookup_id: {
@@ -353,6 +357,7 @@ POST.apiDoc = {
                     minItems: 1,
                     items: {
                       type: 'object',
+                      additionalProperties: false,
                       required: ['start_date', 'end_date'],
                       properties: {
                         start_date: {
@@ -380,6 +385,7 @@ POST.apiDoc = {
               minItems: 1,
               items: {
                 type: 'object',
+                additionalProperties: false,
                 properties: {
                   name: {
                     type: 'string'

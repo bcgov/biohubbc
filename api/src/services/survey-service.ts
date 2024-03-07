@@ -314,17 +314,6 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Get a survey summary submission record for a given survey id.
-   *
-   * @param {number} surveyId
-   * @return {*}  {(Promise<{ survey_summary_submission_id: number | null }>)}
-   * @memberof SurveyService
-   */
-  async getSurveySummarySubmission(surveyId: number): Promise<{ survey_summary_submission_id: number | null }> {
-    return this.surveyRepository.getSurveySummarySubmission(surveyId);
-  }
-
-  /**
    * Get surveys by their ids.
    *
    * @param {number[]} surveyIds

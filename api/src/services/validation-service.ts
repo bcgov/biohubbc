@@ -88,63 +88,6 @@ export class ValidationService extends DBService {
   }
 
   /**
-   * Process a DwCA file.
-   *
-   * @param {number} submissionId
-   * @memberof ValidationService
-   */
-  async processDWCFile(submissionId: number) {
-    defaultLog.debug({ label: 'processDWCFile', submissionId });
-    try {
-      // Prepare DwC
-      const dwcPrep = await this.dwcPreparation(submissionId);
-
-      // Run DwC validations
-      const csvState = this.validateDWC(dwcPrep.archive);
-
-      // Insert results of validation
-      await this.persistValidationResults(csvState.csv_state, csvState.media_state);
-
-      // Insert validation complete status
-      await this.submissionRepository.insertSubmissionStatus(submissionId, SUBMISSION_STATUS_TYPE.TEMPLATE_VALIDATED);
-
-      // Normalize DwC source
-      // const normalizedDWC = this.normalizeDWCArchive(dwcPrep.archive);
-
-      // Apply decorations to DwC
-      const decoratedDWC = {}; // await this.dwCService.decorateDwCJSON(normalizedDWC);
-
-      await this.occurrenceService.updateDWCSourceForOccurrenceSubmission(submissionId, JSON.stringify(decoratedDWC));
-
-      // Run transforms to create and insert spatial components
-      await this.scrapeDwCAndUploadOccurrences(submissionId);
-
-      const workbookBuffer = this.createWorkbookFromJSON(decoratedDWC);
-
-      const { outputFileName, s3OutputKey } = await this.uploadDwCWorkbookToS3(
-        submissionId,
-        workbookBuffer,
-        dwcPrep.s3InputKey,
-        dwcPrep.archive
-      );
-
-      // Update occurrence submission with output filename and key
-      await this.occurrenceService.updateSurveyOccurrenceSubmissionWithOutputKey(
-        submissionId,
-        outputFileName,
-        s3OutputKey
-      );
-    } catch (error) {
-      defaultLog.debug({ label: 'processDWCFile', message: 'error', error });
-      if (error instanceof SubmissionError) {
-        await this.errorService.insertSubmissionError(submissionId, error);
-      } else {
-        throw error;
-      }
-    }
-  }
-
-  /**
    * Process an XLSX file.
    *
    * @param {number} submissionId

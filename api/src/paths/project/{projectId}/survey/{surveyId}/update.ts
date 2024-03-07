@@ -64,9 +64,11 @@ PUT.apiDoc = {
         schema: {
           title: 'SurveyProject put request object',
           type: 'object',
+          additionalProperties: false,
           properties: {
             survey_details: {
               type: 'object',
+              additionalProperties: false,
               required: ['survey_name', 'start_date', 'end_date', 'survey_types', 'revision_count'],
               properties: {
                 survey_name: {
@@ -95,6 +97,7 @@ PUT.apiDoc = {
             },
             species: {
               type: 'object',
+              additionalProperties: false,
               required: ['focal_species', 'ancillary_species'],
               properties: {
                 focal_species: {
@@ -102,6 +105,7 @@ PUT.apiDoc = {
                   type: 'array',
                   items: {
                     type: 'object',
+                    additionalProperties: false,
                     required: ['tsn', 'commonName', 'scientificName'],
                     properties: {
                       tsn: {
@@ -122,6 +126,7 @@ PUT.apiDoc = {
                   type: 'array',
                   items: {
                     type: 'object',
+                    additionalProperties: false,
                     required: ['tsn', 'commonName', 'scientificName'],
                     properties: {
                       tsn: {
@@ -141,11 +146,13 @@ PUT.apiDoc = {
             },
             permit: {
               type: 'object',
+              additionalProperties: false,
               properties: {
                 permits: {
                   type: 'array',
                   items: {
                     type: 'object',
+                    additionalProperties: false,
                     required: ['permit_number', 'permit_type'],
                     properties: {
                       permit_id: {
@@ -167,6 +174,7 @@ PUT.apiDoc = {
               type: 'array',
               items: {
                 type: 'object',
+                additionalProperties: false,
                 required: ['funding_source_id', 'amount'],
                 properties: {
                   survey_funding_source_id: {
@@ -190,6 +198,7 @@ PUT.apiDoc = {
             partnerships: {
               title: 'Survey partnerships',
               type: 'object',
+              additionalProperties: false,
               required: [],
               properties: {
                 indigenous_partnerships: {
@@ -209,6 +218,7 @@ PUT.apiDoc = {
             },
             proprietor: {
               type: 'object',
+              additionalProperties: false,
               required: [
                 'survey_data_proprietary',
                 'proprietary_data_category',
@@ -236,6 +246,7 @@ PUT.apiDoc = {
             },
             purpose_and_methodology: {
               type: 'object',
+              additionalProperties: false,
               required: ['intended_outcome_ids', 'additional_details', 'vantage_code_ids', 'revision_count'],
               properties: {
                 intended_outcome_ids: {
@@ -265,6 +276,7 @@ PUT.apiDoc = {
               minItems: 1,
               items: {
                 type: 'object',
+                additionalProperties: false,
                 required: ['name', 'description', 'geojson'],
                 properties: {
                   survey_location_id: {
@@ -294,6 +306,7 @@ PUT.apiDoc = {
             },
             site_selection: {
               type: 'object',
+              additionalProperties: false,
               required: ['strategies', 'stratums'],
               properties: {
                 strategies: {
@@ -307,6 +320,7 @@ PUT.apiDoc = {
                   type: 'array',
                   items: {
                     type: 'object',
+                    additionalProperties: false,
                     required: ['name', 'description'],
                     properties: {
                       name: {
@@ -324,6 +338,7 @@ PUT.apiDoc = {
               type: 'array',
               items: {
                 type: 'object',
+                additionalProperties: false,
                 nullable: true,
                 required: ['system_user_id', 'survey_job_name'],
                 properties: {
@@ -346,6 +361,7 @@ PUT.apiDoc = {
               type: 'array',
               items: {
                 type: 'object',
+                additionalProperties: false,
                 required: ['name', 'description'],
                 properties: {
                   survey_block_id: {
@@ -374,6 +390,7 @@ PUT.apiDoc = {
           schema: {
             title: 'Survey Response Object',
             type: 'object',
+            additionalProperties: false,
             required: ['id'],
             properties: {
               id: {

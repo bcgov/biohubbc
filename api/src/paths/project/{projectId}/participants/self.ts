@@ -35,6 +35,7 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             nullable: true,
             required: [
               'project_participation_id',

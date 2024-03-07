@@ -518,22 +518,6 @@ describe('SurveyService', () => {
     });
   });
 
-  describe('getSurveySummarySubmission', () => {
-    it('returns the first row on success', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new SurveyService(dbConnection);
-
-      const data = { survey_summary_submission_id: 1 };
-
-      const repoStub = sinon.stub(SurveyRepository.prototype, 'getSurveySummarySubmission').resolves(data);
-
-      const response = await service.getSurveySummarySubmission(1);
-
-      expect(repoStub).to.be.calledOnce;
-      expect(response).to.eql(data);
-    });
-  });
-
   describe('getSurveysByIds', () => {
     it('returns the first row on success', async () => {
       const dbConnection = getMockDBConnection();

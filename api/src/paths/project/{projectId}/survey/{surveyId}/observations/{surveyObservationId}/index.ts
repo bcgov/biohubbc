@@ -75,6 +75,7 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: [
               'survey_observation_id',
               'latitude',
@@ -152,8 +153,7 @@ GET.apiDoc = {
                 type: 'integer',
                 minimum: 0
               }
-            },
-            additionalProperties: false
+            }
           }
         }
       }

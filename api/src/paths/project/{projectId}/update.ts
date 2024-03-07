@@ -76,10 +76,12 @@ GET.apiDoc = {
           schema: {
             title: 'Project get response object, for update purposes',
             type: 'object',
+            additionalProperties: false,
             properties: {
               project: {
                 description: 'Basic project metadata',
                 type: 'object',
+                additionalProperties: false,
                 required: ['project_name', 'project_programs', 'start_date', 'end_date', 'revision_count'],
                 nullable: true,
                 properties: {
@@ -111,6 +113,7 @@ GET.apiDoc = {
               objectives: {
                 description: 'The project objectives',
                 type: 'object',
+                additionalProperties: false,
                 required: ['objectives'],
                 nullable: true,
                 properties: {
@@ -122,6 +125,7 @@ GET.apiDoc = {
               iucn: {
                 description: 'The International Union for Conservation of Nature number',
                 type: 'object',
+                additionalProperties: false,
                 required: ['classificationDetails'],
                 nullable: true,
                 properties: {
@@ -129,6 +133,7 @@ GET.apiDoc = {
                     type: 'array',
                     items: {
                       type: 'object',
+                      additionalProperties: false,
                       properties: {
                         classification: {
                           type: 'number'
@@ -149,6 +154,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   required: [
                     'project_participation_id',
                     'project_id',
@@ -309,6 +315,7 @@ PUT.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: ['id'],
             properties: {
               id: {

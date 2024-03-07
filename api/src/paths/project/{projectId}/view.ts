@@ -58,15 +58,18 @@ GET.apiDoc = {
           schema: {
             title: 'Project get response object, for view purposes',
             type: 'object',
+            additionalProperties: false,
             required: ['projectData', 'projectSupplementaryData'],
             properties: {
               projectData: {
                 type: 'object',
+                additionalProperties: false,
                 required: ['project', 'participants', 'objectives', 'iucn'],
                 properties: {
                   project: {
                     description: 'Basic project metadata',
                     type: 'object',
+                    additionalProperties: false,
                     required: ['project_id', 'project_name', 'project_programs', 'start_date', 'comments'],
                     properties: {
                       project_id: {
@@ -105,6 +108,7 @@ GET.apiDoc = {
                     type: 'array',
                     items: {
                       type: 'object',
+                      additionalProperties: false,
                       required: [
                         'project_participation_id',
                         'project_id',
@@ -147,6 +151,7 @@ GET.apiDoc = {
                   objectives: {
                     description: 'The project objectives',
                     type: 'object',
+                    additionalProperties: false,
                     required: ['objectives'],
                     properties: {
                       objectives: {
@@ -157,12 +162,14 @@ GET.apiDoc = {
                   iucn: {
                     description: 'The International Union for Conservation of Nature number',
                     type: 'object',
+                    additionalProperties: false,
                     required: ['classificationDetails'],
                     properties: {
                       classificationDetails: {
                         type: 'array',
                         items: {
                           type: 'object',
+                          additionalProperties: false,
                           properties: {
                             classification: {
                               type: 'number'
@@ -183,11 +190,13 @@ GET.apiDoc = {
               projectSupplementaryData: {
                 description: 'Project supplementary data',
                 type: 'object',
+                additionalProperties: false,
                 required: ['project_metadata_publish'],
                 properties: {
                   project_metadata_publish: {
                     description: 'Project metadata publish record',
                     type: 'object',
+                    additionalProperties: false,
                     nullable: true,
                     required: [
                       'project_metadata_publish_id',

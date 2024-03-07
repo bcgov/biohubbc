@@ -19,6 +19,7 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: [
               'management_action_type',
               'first_nations',
@@ -42,6 +43,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -56,6 +58,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -70,6 +73,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -84,6 +88,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -102,6 +107,7 @@ GET.apiDoc = {
                 description: 'Types of surveys',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -116,6 +122,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -130,6 +137,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -144,6 +152,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -161,6 +170,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -175,6 +185,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -192,6 +203,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -209,6 +221,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -223,6 +236,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -237,6 +251,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -251,6 +266,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -265,6 +281,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -279,6 +296,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -293,6 +311,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -307,6 +326,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'

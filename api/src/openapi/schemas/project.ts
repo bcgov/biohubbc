@@ -6,11 +6,13 @@ import { PROJECT_ROLE } from '../../constants/roles';
 export const projectCreatePostRequestObject = {
   title: 'Project post request object',
   type: 'object',
+  additionalProperties: false,
   required: ['project', 'iucn', 'participants'],
   properties: {
     project: {
       title: 'Project details',
       type: 'object',
+      additionalProperties: false,
       properties: {
         project_name: {
           type: 'string'
@@ -36,12 +38,14 @@ export const projectCreatePostRequestObject = {
     iucn: {
       title: 'Project IUCN classifications',
       type: 'object',
+      additionalProperties: false,
       properties: {
         classificationDetails: {
           type: 'array',
           items: {
             title: 'IUCN classification',
             type: 'object',
+            additionalProperties: false,
             properties: {
               classification: {
                 type: 'number'
@@ -62,6 +66,7 @@ export const projectCreatePostRequestObject = {
       type: 'array',
       items: {
         type: 'object',
+        additionalProperties: false,
         required: ['system_user_id', 'project_role_names'],
         properties: {
           system_user_id: {
@@ -81,16 +86,18 @@ export const projectCreatePostRequestObject = {
 };
 
 const projectUpdateProperties = {
-  project: { type: 'object', properties: {} },
-  objectives: { type: 'object', properties: {} },
+  project: { type: 'object', additionalProperties: false, properties: {} },
+  objectives: { type: 'object', additionalProperties: false, properties: {} },
   iucn: {
     type: 'object',
+    additionalProperties: false,
     properties: {
       classificationDetails: {
         type: 'array',
         items: {
           title: 'IUCN classification',
           type: 'object',
+          additionalProperties: false,
           properties: {
             classification: {
               type: 'number'
@@ -106,7 +113,7 @@ const projectUpdateProperties = {
       }
     }
   },
-  participants: { type: 'array', items: { type: 'object', properties: {} } }
+  participants: { type: 'array', items: { type: 'object', additionalProperties: false, properties: {} } }
 };
 
 /**
@@ -115,6 +122,7 @@ const projectUpdateProperties = {
 export const projectUpdateGetResponseObject = {
   title: 'Project get response object, for update purposes',
   type: 'object',
+  additionalProperties: false,
   properties: {
     ...projectUpdateProperties
   }
@@ -126,6 +134,7 @@ export const projectUpdateGetResponseObject = {
 export const projectUpdatePutRequestObject = {
   title: 'Project Put Object',
   type: 'object',
+  additionalProperties: false,
   properties: {
     ...projectUpdateProperties
   }

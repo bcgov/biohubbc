@@ -53,6 +53,7 @@ export const paginationRequestQueryParamSchema: OpenAPIV3.ParameterObject[] = [
  */
 export const paginationResponseSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
+  additionalProperties: false,
   required: ['total', 'current_page', 'last_page'],
   properties: {
     total: {

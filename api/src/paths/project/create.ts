@@ -50,6 +50,7 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: ['id'],
             properties: {
               id: {

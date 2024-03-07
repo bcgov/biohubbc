@@ -57,11 +57,13 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             properties: {
               attachmentsList: {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   required: ['id', 'fileName', 'fileType', 'lastModified', 'size'],
                   properties: {
                     id: {

@@ -55,6 +55,7 @@ POST.apiDoc = {
         schema: {
           title: 'SurveyProject post request object',
           type: 'object',
+          additionalProperties: false,
           required: [
             'survey_details',
             'species',
@@ -71,6 +72,7 @@ POST.apiDoc = {
           properties: {
             survey_details: {
               type: 'object',
+              additionalProperties: false,
               required: ['survey_name', 'start_date'],
               properties: {
                 survey_name: {
@@ -96,11 +98,13 @@ POST.apiDoc = {
             },
             species: {
               type: 'object',
+              additionalProperties: false,
               properties: {
                 focal_species: {
                   type: 'array',
                   items: {
                     type: 'object',
+                    additionalProperties: false,
                     required: ['tsn', 'commonName', 'scientificName'],
                     properties: {
                       tsn: {
@@ -121,6 +125,7 @@ POST.apiDoc = {
                   type: 'array',
                   items: {
                     type: 'object',
+                    additionalProperties: false,
                     required: ['tsn', 'commonName', 'scientificName'],
                     properties: {
                       tsn: {
@@ -140,11 +145,13 @@ POST.apiDoc = {
             },
             permit: {
               type: 'object',
+              additionalProperties: false,
               properties: {
                 permits: {
                   type: 'array',
                   items: {
                     type: 'object',
+                    additionalProperties: false,
                     required: ['permit_number', 'permit_type'],
                     properties: {
                       permit_number: {
@@ -162,6 +169,7 @@ POST.apiDoc = {
               type: 'array',
               items: {
                 type: 'object',
+                additionalProperties: false,
                 required: ['funding_source_id', 'amount'],
                 properties: {
                   funding_source_id: {
@@ -177,6 +185,7 @@ POST.apiDoc = {
             partnerships: {
               title: 'Survey partnerships',
               type: 'object',
+              additionalProperties: false,
               required: [],
               properties: {
                 indigenous_partnerships: {
@@ -196,6 +205,7 @@ POST.apiDoc = {
             },
             proprietor: {
               type: 'object',
+              additionalProperties: false,
               properties: {
                 survey_data_proprietary: {
                   type: 'string'
@@ -219,6 +229,7 @@ POST.apiDoc = {
             },
             purpose_and_methodology: {
               type: 'object',
+              additionalProperties: false,
               properties: {
                 intended_outcome_ids: {
                   type: 'array',
@@ -244,6 +255,7 @@ POST.apiDoc = {
               minItems: 1,
               items: {
                 type: 'object',
+                additionalProperties: false,
                 required: ['name', 'description', 'geojson'],
                 properties: {
                   name: {
@@ -265,6 +277,7 @@ POST.apiDoc = {
             },
             site_selection: {
               type: 'object',
+              additionalProperties: false,
               required: ['strategies', 'stratums'],
               properties: {
                 strategies: {
@@ -278,6 +291,7 @@ POST.apiDoc = {
                   type: 'array',
                   items: {
                     type: 'object',
+                    additionalProperties: false,
                     required: ['name', 'description'],
                     properties: {
                       name: {
@@ -295,6 +309,7 @@ POST.apiDoc = {
               type: 'array',
               items: {
                 type: 'object',
+                additionalProperties: false,
                 required: ['system_user_id', 'survey_job_name'],
                 properties: {
                   system_user_id: {
@@ -311,6 +326,7 @@ POST.apiDoc = {
               type: 'array',
               items: {
                 type: 'object',
+                additionalProperties: false,
                 required: ['name', 'description'],
                 properties: {
                   name: {
@@ -334,6 +350,7 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: ['id'],
             properties: {
               id: {
