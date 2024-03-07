@@ -10,7 +10,6 @@ import {
 } from '../repositories/observation-repository';
 import * as file_utils from '../utils/file-utils';
 import { getMockDBConnection } from '../__mocks__/db';
-import { CritterbaseService } from './critterbase-service';
 import { ObservationService } from './observation-service';
 
 chai.use(sinonChai);
@@ -177,10 +176,6 @@ describe('ObservationService', () => {
       const getSurveyObservationsStub = sinon
         .stub(ObservationRepository.prototype, 'getSurveyObservationsWithSamplingDataWithAttributesData')
         .resolves(mockObservations);
-
-      const getMeasurementValuesForEventIdsStub = sinon
-        .stub(CritterbaseService.prototype, 'getMeasurementValuesForEventIds')
-        .resolves([]);
 
       const getSurveyObservationSupplementaryDataStub = sinon
         .stub(ObservationService.prototype, 'getSurveyObservationsSupplementaryData')

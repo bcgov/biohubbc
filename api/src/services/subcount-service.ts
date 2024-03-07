@@ -7,7 +7,11 @@ import {
   SubCountEventRecord,
   SubCountRepository
 } from '../repositories/subcount-repository';
-import { CBMeasurementType } from './critterbase-service';
+import {
+  CBQualitativeMeasurementTypeDefinition,
+  CBQuantitativeMeasurementTypeDefinition,
+  CritterbaseService
+} from './critterbase-service';
 import { DBService } from './db-service';
 
 export class SubCountService extends DBService {
@@ -66,20 +70,30 @@ export class SubCountService extends DBService {
    * Returns all measurement event ids for all observations in a given survey.
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<CBMeasurementType[]>}
+   * @return {*}  {Promise<{
+   *     qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
+   *     quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
+   *   }>}
    * @memberof SubCountService
    */
-  async getMeasurementTypeDefinitionsForSurvey(surveyId: number): Promise<CBMeasurementType[]> {
-    // const service = new CritterbaseService({
-    //   keycloak_guid: this.connection.systemUserGUID(),
-    //   username: this.connection.systemUserIdentifier()
-    // });
+  async getMeasurementTypeDefinitionsForSurvey(
+    surveyId: number
+  ): Promise<{
+    qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
+    quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
+  }> {
+    const critterbaseService = new CritterbaseService({
+      keycloak_guid: this.connection.systemUserGUID(),
+      username: this.connection.systemUserIdentifier()
+    });
 
-    // TODO NICK - wire up new function to fetch all measurement ids for a given survey
-    // const subcountEventRecords = await this.subCountRepository.getSubCountEventRecordsBySurveyId(surveyId);
+    // TODO fetch measurement ids by survey id
 
-    // TODO NICK - wirte up call to critterbase to get all measurement definitions for the given measurement ids
-    // return service.getMeasurementTypeDefinitionsforMeasurementIds(eventIds);
-    return [];
+    const response = await Promise.all([
+      critterbaseService.getQualitativeMeasurementTypeDefinition([]),
+      critterbaseService.getQuantitativeMeasurementTypeDefinition([])
+    ]);
+
+    return { qualitative_measurements: response[0], quantitative_measurements: response[1] };
   }
 }
