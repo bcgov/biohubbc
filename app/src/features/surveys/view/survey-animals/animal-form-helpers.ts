@@ -14,7 +14,6 @@ export const transformCritterbaseAPIResponseToForm = (existingCritter: IDetailed
   //This is a pretty long albeit straightforward function, which is why it's been lifted out of the main TSX file.
   //Perhaps some of this could be automated by iterating through each object entries, but I don't think
   //it's necessarily a bad thing to have it this explicit when so many parts need to be handled in particular ways.
-  console.log('called transform critterbase');
   return {
     general: {
       wlh_id: existingCritter.wlh_id ?? '',

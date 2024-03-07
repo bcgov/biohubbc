@@ -20,7 +20,6 @@ import { SurveyAnimalsI18N } from 'constants/i18n';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { useQuery } from 'hooks/useQuery';
 import { IDetailedCritterWithInternalId, ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
-import { useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
 
@@ -29,7 +28,7 @@ interface IAnimalListProps {
   surveyCritters?: ISimpleCritterWithInternalId[];
   selectedSection: IAnimalSections;
   onSelectSection: (section: IAnimalSections) => void;
-  onSelectCritter: (critter: IDetailedCritterWithInternalId) => void;
+  onSelectCritter: (critter?: IDetailedCritterWithInternalId) => void;
   onAddButton: () => void;
 }
 
@@ -72,26 +71,20 @@ const ListPlaceholder = (props: { displaySkeleton: boolean }) =>
 
 const AnimalList = (props: IAnimalListProps) => {
   const { isLoading, selectedSection, onSelectSection, onSelectCritter, surveyCritters, onAddButton } = props;
+
+  const history = useHistory();
   const cbApi = useCritterbaseApi();
   const { cid: survey_critter_id } = useQuery();
 
-  const history = useHistory();
-
-  const sortedCritterData = useMemo(() => {
-    return [...(surveyCritters ?? [])]
-      .sort
-      //TODO NICK (a, b) => new Date(a.create_timestamp).getTime() - new Date(b.create_timestamp).getTime()
-      ();
-  }, [surveyCritters]);
-
   const handleCritterSelect = async (critter: ISimpleCritterWithInternalId) => {
-    if (critter.survey_critter_id === survey_critter_id) {
+    if (critter.survey_critter_id === Number(survey_critter_id)) {
       history.replace(history.location.pathname);
+      onSelectCritter();
     } else {
       history.push(`?cid=${critter.survey_critter_id}`);
+      const detailedCritter = await cbApi.critters.getDetailedCritter(critter.critter_id);
+      onSelectCritter(detailedCritter);
     }
-    const detailedCritter = await cbApi.critters.getDetailedCritter(critter.critter_id);
-    onSelectCritter(detailedCritter);
     onSelectSection(SurveyAnimalsI18N.animalGeneralTitle);
   };
 
@@ -129,10 +122,10 @@ const AnimalList = (props: IAnimalListProps) => {
           sx={{
             background: grey[100]
           }}>
-          {!sortedCritterData.length ? (
-            <ListPlaceholder displaySkeleton={!!isLoading && !sortedCritterData?.length} />
+          {!surveyCritters?.length ? (
+            <ListPlaceholder displaySkeleton={!!isLoading && !surveyCritters?.length} />
           ) : (
-            sortedCritterData.map((critter) => (
+            surveyCritters.map((critter) => (
               <Accordion
                 disableGutters
                 square
@@ -144,7 +137,7 @@ const AnimalList = (props: IAnimalListProps) => {
                   }
                 }}
                 key={critter.critter_id}
-                expanded={critter.survey_critter_id.toString() === survey_critter_id}>
+                expanded={critter.survey_critter_id === Number(survey_critter_id)}>
                 <Box display="flex" overflow="hidden" alignItems="center" className="sampleSiteHeader">
                   <AccordionSummary
                     expandIcon={<Icon path={mdiChevronDown} size={1} />}

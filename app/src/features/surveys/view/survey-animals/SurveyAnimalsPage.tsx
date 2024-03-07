@@ -28,6 +28,7 @@ import {
 
 export const SurveyAnimalsPage = () => {
   const bhApi = useBiohubApi();
+  //const cbApi = useCritterbaseApi();
   const { cid: survey_critter_id } = useQuery();
   const telemetryApi = useTelemetryApi();
   const dialogContext = useContext(DialogContext);
@@ -75,7 +76,6 @@ export const SurveyAnimalsPage = () => {
   }, []);
 
   const critterAsFormikValues = useMemo(() => {
-    console.log('called formik critter memo');
     if (!detailedCritter) {
       return defaultFormValues;
     }
