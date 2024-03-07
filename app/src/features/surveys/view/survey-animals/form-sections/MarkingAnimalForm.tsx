@@ -5,7 +5,8 @@ import CustomTextField from 'components/fields/CustomTextField';
 import FormikDevDebugger from 'components/formik/FormikDevDebugger';
 import { EditDeleteStubCard } from 'features/surveys/components/EditDeleteStubCard';
 import { useFormikContext } from 'formik';
-import { useState } from 'react';
+import useIsMounted from 'hooks/useIsMounted';
+import { useEffect, useState } from 'react';
 import {
   AnimalMarkingSchema,
   ANIMAL_FORM_MODE,
@@ -65,6 +66,13 @@ interface IMarkingAnimalFormContentProps {
 
 export const MarkingAnimalFormContent = ({ index }: IMarkingAnimalFormContentProps) => {
   const name: keyof IAnimal = 'markings';
+
+  const isMounted = useIsMounted();
+  const componentMounted = isMounted();
+
+  useEffect(() => {
+    console.log(`Marking animal form mounted: ${componentMounted}`);
+  }, [componentMounted]);
 
   const { values, setFieldValue } = useFormikContext<IAnimal>();
 

@@ -1,4 +1,4 @@
-import { RequestHandler } from 'express';
+import { Request, RequestHandler } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { KeycloakService } from '../services/keycloak-service';
 import { HTTP403 } from './../errors/http-error';
@@ -10,27 +10,37 @@ const defaultLog = getLogger('middleware/critterbase-proxy');
 
 /**
  * Restrict the proxy to these Critterbase routes.
+ * TODO: remove this if not needed anymore.
  */
-const proxyRoutes = [
-  // auth
-  '/api/critterbase/signup',
-  // critters
-  '/api/critterbase/critters',
-  '/api/critterbase/critters/:critterId',
-  // lookups
-  '/api/critterbase/lookups/taxon-collection-categories',
-  '/api/critterbase/lookups/cods',
-  '/api/critterbase/lookups/cod-confidence',
-  '/api/critterbase/lookups/enum/sex',
-  // family
-  '/api/critterbase/family',
-  '/api/critterbase/family/:familyId',
-  // xref
-  '/api/critterbase/xref/collection-units',
-  '/api/critterbase/xref/taxon-marking-body-locations',
-  '/api/critterbase/xref/taxon-measurements',
-  '/api/critterbase/xref/taxon-qualitative-measurement-options'
-];
+// const proxyRoutes = [
+//   // auth
+//   '/api/critterbase/signup',
+//   // critters
+//   '/api/critterbase/critters',
+//   '/api/critterbase/critters/:critterId',
+//   // lookups
+//   '/api/critterbase/lookups/**',
+//   // family
+//   '/api/critterbase/family',
+//   '/api/critterbase/family/:familyId',
+//   // xref
+//   '/api/critterbase/xref/collection-units',
+//   '/api/critterbase/xref/taxon-marking-body-locations',
+//   '/api/critterbase/xref/taxon-measurements'
+// ];
+
+const proxyFilter = (pathname: string, req: Request) => {
+  // Currently supported Critterbase POST requests. Add more when needed.
+  if (req.method === 'POST') {
+    return Boolean(pathname.match('/api/critterbase/signup'));
+  }
+  // Currently support all Critterbase GET requests.
+  if (req.method === 'GET') {
+    return Boolean(pathname.match(/^\/api\/critterbase(\/|$)/));
+  }
+  // Block all other requests.
+  return false;
+};
 
 /**
  * Get the Critterbase API host URL.
@@ -94,10 +104,12 @@ export const replaceAuthorizationHeaderMiddleware: RequestHandler = async (req, 
  * needing to re-define every Critterbase endpoint.
  */
 export const getCritterbaseProxyMiddleware = () =>
-  createProxyMiddleware(proxyRoutes, {
+  createProxyMiddleware(proxyFilter, {
     target: getCritterbaseApiHostUrl(),
+    logLevel: 'warn',
     changeOrigin: true,
     pathRewrite: async (path) => {
+      console.log(path);
       defaultLog.debug({ label: 'pathRewrite', message: 'path', req: path });
 
       const matchRoutePrefix = /\/api\/critterbase(\/?)(.*)/;

@@ -42,11 +42,12 @@ const CbSelectField = (props: ICbSelectField) => {
 
   const val = get(values, name) ?? '';
 
+  const selectParams = { route, query, orderBy };
+
   useEffect(() => {
-    // Only refresh when the query changes
-    refresh({ route, query, orderBy });
+    refresh(selectParams);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query]);
+  }, [JSON.stringify(selectParams)]);
 
   const isValueInRange = useMemo(() => {
     if (val === '') {
