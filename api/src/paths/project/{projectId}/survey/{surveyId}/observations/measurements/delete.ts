@@ -3,6 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
+import { ObservationSubCountMeasurementService } from '../../../../../../../services/observation-subcount-measurement-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/measurements');
@@ -112,20 +113,13 @@ export function deleteObservationMeasurements(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      //   await connection.open();
+      await connection.open();
+      const service = new ObservationSubCountMeasurementService(connection);
 
-      // const observationService = new ObservationService(connection);
+      await service.deleteMeasurementsForTaxonMeasurementIds(surveyId, req.body.measurement_ids);
 
-      // const deleteObservationIds =
-      //   req.body?.surveyObservationIds?.map((observationId: string | number) => Number(observationId)) ?? [];
+      await connection.commit();
 
-      // await observationService.deleteObservationsByIds(surveyId, deleteObservationIds);
-
-      // const observationCount = await observationService.getSurveyObservationCount(surveyId);
-
-      // await connection.commit();
-
-      // return res.status(200).json({ supplementaryObservationData: { observationCount } });
       return res.status(204);
     } catch (error) {
       defaultLog.error({ label: 'deleteSurveyObservations', message: 'error', error });

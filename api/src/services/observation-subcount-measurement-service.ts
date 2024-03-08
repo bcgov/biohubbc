@@ -51,4 +51,8 @@ export class ObservationSubCountMeasurementService extends DBService {
       surveyId
     );
   }
+
+  async deleteMeasurementsForTaxonMeasurementIds(surveyId: number, ids: string[]): Promise<void> {
+    return this.observationSubCountMeasurementRepository.deleteMeasurementsForTaxonMeasurementIds(surveyId, ids);
+  }
 }

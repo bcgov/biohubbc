@@ -169,7 +169,7 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
   async deleteObservationQuantitativeMeasurementRecordsForSurveyObservationIds(
     surveyObservationId: number[],
     surveyId: number
-  ) {
+  ): Promise<number> {
     const qb = getKnex()
       .queryBuilder()
       .delete()
@@ -181,6 +181,47 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
       .whereRaw('observation_subcount.survey_observation_id = survey_observation.survey_observation_id')
       .andWhere(`survey_observation.survey_id`, surveyId)
       .whereIn('survey_observation.survey_observation_id', surveyObservationId);
+
+    const response = await this.connection.knex(qb);
+
+    return response.rowCount;
+  }
+
+  async deleteMeasurementsForTaxonMeasurementIds(surveyId: number, ids: string[]): Promise<void> {
+    await this.deleteQualitativeMeasurementForTaxonMeasurementIds(surveyId, ids);
+    await this.deleteQuantitativeMeasurementForTaxonMeasurementIds(surveyId, ids);
+  }
+
+  async deleteQualitativeMeasurementForTaxonMeasurementIds(surveyId: number, ids: string[]): Promise<number> {
+    const qb = getKnex()
+      .queryBuilder()
+      .delete()
+      .from('observation_subcount_qualitative_measurement')
+      .using(['observation_subcount', 'survey_observation'])
+      .whereRaw(
+        'observation_subcount_qualitative_measurement.observation_subcount_id = observation_subcount.observation_subcount_id'
+      )
+      .whereRaw('observation_subcount.survey_observation_id = survey_observation.survey_observation_id')
+      .andWhere(`survey_observation.survey_id`, surveyId)
+      .whereIn('observation_subcount_qualitative_measurement.critterbase_taxon_measurement_id', ids);
+
+    const response = await this.connection.knex(qb);
+
+    return response.rowCount;
+  }
+
+  async deleteQuantitativeMeasurementForTaxonMeasurementIds(surveyId: number, ids: string[]): Promise<number> {
+    const qb = getKnex()
+      .queryBuilder()
+      .delete()
+      .from('observation_subcount_quantitative_measurement')
+      .using(['observation_subcount', 'survey_observation'])
+      .whereRaw(
+        'observation_subcount_quantitative_measurement.observation_subcount_id = observation_subcount.observation_subcount_id'
+      )
+      .whereRaw('observation_subcount.survey_observation_id = survey_observation.survey_observation_id')
+      .andWhere(`survey_observation.survey_id`, surveyId)
+      .whereIn('observation_subcount_quantitative_measurement.critterbase_taxon_measurement_id', ids);
 
     const response = await this.connection.knex(qb);
 
