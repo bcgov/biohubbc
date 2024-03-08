@@ -407,7 +407,7 @@ export class ObservationService extends DBService {
    * @return {*}  {Promise<ObservationRecord[]>}
    * @memberof ObservationService
    */
-  async processObservationCsvSubmission(submissionId: number): Promise<ObservationRecord[]> {
+  async processObservationCsvSubmission(submissionId: number): Promise<void> {
     defaultLog.debug({ label: 'processObservationCsvSubmission', submissionId });
 
     // Step 1. Retrieve the observation submission record
@@ -440,14 +440,15 @@ export class ObservationService extends DBService {
       keycloak_guid: this.connection.systemUserGUID(),
       username: this.connection.systemUserIdentifier()
     });
+
     // reach out to critterbase for TSN Measurement data
     const tsnMeasurements = await getCBMeasurementsFromWorksheet(xlsxWorksheets, service);
 
     // collection additional measurement columns
     const measurementColumns = getMeasurementColumnNameFromWorksheet(xlsxWorksheets, observationCSVColumnValidator);
+
     // Get the worksheet row objects
     const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheets['Sheet1']);
-
     // Validate measurement data against
     if (!validateCsvMeasurementColumns(worksheetRowObjects, measurementColumns, tsnMeasurements)) {
       throw new Error('Failed to process file for importing observations. Measurement column validator failed.');
@@ -508,10 +509,9 @@ export class ObservationService extends DBService {
         subcounts: [newSubcount]
       };
     });
-    console.log(newRowData.length);
+
     // Step 7. Insert new rows and return them
     await this.insertUpdateSurveyObservationsWithMeasurements(surveyId, newRowData);
-    return [];
   }
 
   /**

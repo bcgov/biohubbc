@@ -324,10 +324,11 @@ export function validateMeasurements(
   tsnMeasurementMap: TsnMeasurementMap
 ): boolean {
   return data.every((item) => {
+    console.log(`TSN: ${item.tsn} Column: '${item.measurement_name}' Data: ${item.measurement_value}`);
     const measurements = tsnMeasurementMap[item.tsn];
     if (measurements) {
       // only validate if the column has data
-      if (data) {
+      if (item.measurement_value) {
         // find the correct measurement
         if (measurements.qualitative.length > 0) {
           const measurement = measurements.qualitative.find(
@@ -382,11 +383,11 @@ export function isQuantitativeValueValid(value: number, measurement: CBQuantitat
       isValid = true;
     }
   } else {
-    if (min_value && min_value <= value) {
+    if (min_value !== null && min_value <= value) {
       isValid = true;
     }
 
-    if (max_value && value <= max_value) {
+    if (max_value !== null && value <= max_value) {
       isValid = true;
     }
 
@@ -402,11 +403,9 @@ export function isQualitativeValueValid(
   value: string | number,
   measurement: CBQualitativeMeasurementTypeDefinition
 ): boolean {
-  console.log(measurement.options);
-  console.log(`Check options: ${value}`);
   // check if data is in the options for the
   const foundOption = measurement.options.find(
-    (option) => option.option_value === value || option.option_label === value
+    (option) => option.option_value === value || option.option_label.toLowerCase() === String(value).toLowerCase()
   );
 
   return Boolean(foundOption);
@@ -449,6 +448,7 @@ export async function getCBMeasurementsFromWorksheet(
 ): Promise<TsnMeasurementMap> {
   const tsnMeasurements: TsnMeasurementMap = {};
   const rows = getWorksheetRowObjects(xlsxWorksheets[sheet]);
+
   try {
     for (const row of rows) {
       const tsn = String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']);
@@ -464,6 +464,7 @@ export async function getCBMeasurementsFromWorksheet(
       }
     }
   } catch (error) {
+    console.log(error);
     // TODO: should this throw an error?
     // throw new ApiGeneralError('Error connecting to the Critterbase API');
   }

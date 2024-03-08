@@ -1,6 +1,5 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { URLSearchParams } from 'url';
-import { v4 } from 'uuid';
 import { z } from 'zod';
 import { ApiError, ApiErrorType } from '../errors/api-error';
 import { KeycloakService } from './keycloak-service';
@@ -285,6 +284,7 @@ export class CritterbaseService {
   constructor(user: ICritterbaseUser) {
     this.user = user;
     this.keycloak = new KeycloakService();
+    console.log(`Base URL: ${CRITTERBASE_API_HOST}`);
     this.axiosInstance = axios.create({
       headers: {
         user: this.getUserHeader()
@@ -338,6 +338,7 @@ export class CritterbaseService {
       appendParams.append(p.key, p.value);
     }
     const url = `${endpoint}?${appendParams.toString()}`;
+    console.log(`Full URL: ${url}`);
     const response = await this.axiosInstance.get(url);
     return response.data;
   }
@@ -347,74 +348,13 @@ export class CritterbaseService {
   }
 
   async getTaxonMeasurements(
-    taxon_id: string
+    tsn: string
   ): Promise<{
     qualitative: CBQualitativeMeasurementTypeDefinition[];
     quantitative: CBQuantitativeMeasurementTypeDefinition[];
   }> {
-    // return this._makeGetRequest(CbRoutes['taxon-measurements'], [{ key: 'taxon_id', value: taxon_id }]);
-    return Promise.resolve({
-      qualitative: [
-        {
-          itis_tsn: 1,
-          taxon_measurement_id: taxon_id,
-          measurement_name: 'Color',
-          measurement_desc: '',
-          options: [
-            {
-              taxon_measurement_id: '',
-              qualitative_option_id: v4(),
-              option_label: 'Brown',
-              option_value: 1,
-              option_desc: ''
-            },
-            {
-              taxon_measurement_id: '',
-              qualitative_option_id: v4(),
-              option_label: 'Black',
-              option_value: 2,
-              option_desc: ''
-            },
-            {
-              taxon_measurement_id: '',
-              qualitative_option_id: v4(),
-              option_label: 'Red',
-              option_value: 3,
-              option_desc: ''
-            }
-          ]
-        }
-      ],
-      quantitative: [
-        {
-          itis_tsn: 1,
-          taxon_measurement_id: taxon_id,
-          measurement_name: 'Lifespan',
-          measurement_desc: '',
-          min_value: 1,
-          max_value: null,
-          unit: null
-        },
-        {
-          itis_tsn: 2,
-          taxon_measurement_id: taxon_id,
-          measurement_name: 'Wingspan',
-          measurement_desc: '',
-          min_value: 1,
-          max_value: 15,
-          unit: null
-        },
-        {
-          itis_tsn: 2,
-          taxon_measurement_id: taxon_id,
-          measurement_name: 'Hooves',
-          measurement_desc: '',
-          min_value: null,
-          max_value: 4,
-          unit: null
-        }
-      ]
-    });
+    const response = await this._makeGetRequest(CbRoutes['taxon-measurements'], [{ key: 'tsn', value: tsn }]);
+    return response;
   }
 
   async getTaxonBodyLocations(taxon_id: string) {
