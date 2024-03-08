@@ -126,9 +126,6 @@ export async function seed(knex: Knex): Promise<void> {
         DELETE FROM survey_first_nation_partnership
         WHERE survey_id = p_survey_id;
         
-        DELETE FROM survey_block
-        WHERE survey_id = p_survey_id;
-        
         DELETE FROM permit
         WHERE survey_id = p_survey_id;
         
@@ -142,12 +139,6 @@ export async function seed(knex: Knex): Promise<void> {
         WHERE survey_id = p_survey_id;
         
         DELETE FROM survey_participation
-        WHERE survey_id = p_survey_id;
-        
-        DELETE FROM survey_stratum
-        WHERE survey_id = p_survey_id;
-        
-        DELETE FROM survey_block
         WHERE survey_id = p_survey_id;
         
         DELETE FROM survey_site_strategy
@@ -176,6 +167,27 @@ export async function seed(knex: Knex): Promise<void> {
         DELETE FROM survey_observation
         WHERE survey_id = p_survey_id;
 
+        -------- delete sample blocks and stratums --------
+
+        DELETE FROM survey_sample_block
+        WHERE survey_sample_site_id IN (
+          SELECT survey_sample_site_id
+          FROM survey_sample_site
+          WHERE survey_id = p_survey_id
+        );
+
+        DELETE FROM survey_sample_stratum
+        WHERE survey_sample_site_id IN (
+          SELECT survey_sample_site_id
+          FROM survey_sample_site
+          WHERE survey_id = p_survey_id
+        );
+
+        DELETE FROM survey_block
+        WHERE survey_id = p_survey_id;
+
+        DELETE FROM survey_stratum
+        WHERE survey_id = p_survey_id;        
 
         -------- delete sampling data --------
         DELETE FROM survey_sample_period
