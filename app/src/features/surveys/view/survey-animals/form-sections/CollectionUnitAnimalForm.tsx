@@ -34,6 +34,8 @@ export const CollectionUnitAnimalFormContent = ({ index }: ICollectionUnitAnimal
     setFieldValue(getAnimalFieldName<IAnimalCollectionUnit>(name, 'unit_name', index), label);
   };
 
+  console.log(values.collectionUnits[index]);
+
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
@@ -55,8 +57,7 @@ export const CollectionUnitAnimalFormContent = ({ index }: ICollectionUnitAnimal
         <CbSelectField
           label="Name"
           id={'collection_unit_id'}
-          route={'xref/collection-units'}
-          query={{ category_id: values.collectionUnits[index]?.collection_category_id }}
+          route={`xref/collection-units/${values.collectionUnits[index].collection_category_id}`}
           name={getAnimalFieldName<IAnimalCollectionUnit>(name, 'collection_unit_id', index)}
           controlProps={{
             size: 'medium',

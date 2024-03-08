@@ -44,21 +44,16 @@ export const transformCritterbaseAPIResponseToForm = (existingCritter: IDetailed
       capture_location_id: cap.capture_location_id ?? undefined,
       release_location_id: cap.release_location_id ?? undefined
     })),
-    collectionUnits: [],
-    markings: [],
     mortality: [],
-    measurements: [],
-    family: [],
-
-    // markings: existingCritter?.marking.map((mark) => ({
-    //   ...mark,
-    //   primary_colour_id: mark.primary_colour_id ?? '',
-    //   secondary_colour_id: mark.secondary_colour_id ?? '',
-    //   marking_comment: mark.comment ?? '',
-    //   primary_colour: mark.primary_colour ?? undefined,
-    //   marking_type: mark.marking_type ?? undefined,
-    //   body_location: mark.body_location ?? undefined
-    // })),
+    markings: existingCritter?.markings.map((mark) => ({
+      ...mark,
+      primary_colour_id: mark.primary_colour_id ?? '',
+      secondary_colour_id: mark.secondary_colour_id ?? '',
+      marking_comment: mark.comment ?? '',
+      primary_colour: mark.primary_colour ?? undefined,
+      marking_type: mark.marking_type ?? undefined,
+      body_location: mark.body_location ?? undefined
+    })),
     // mortality: existingCritter?.mortality.map((mor) => ({
     //   ...mor,
     //   mortality_comment: mor.mortality_comment ?? '',
@@ -77,39 +72,37 @@ export const transformCritterbaseAPIResponseToForm = (existingCritter: IDetailed
     //   projection_mode: 'wgs',
     //   location_id: mor.location_id ?? undefined
     // })),
-    // collectionUnits: existingCritter.collection_units.map((a) => ({
-    //   ...a
-    // })),
-    // measurements: [
-    //   ...existingCritter.measurement.qualitative.map((meas) => ({
-    //     ...meas,
-    //     measurement_quantitative_id: undefined,
-    //     value: undefined,
-    //     measured_timestamp: meas.measured_timestamp ? new Date(meas.measured_timestamp) : ('' as unknown as Date),
-    //     measurement_comment: meas.measurement_comment ?? '',
-    //     measurement_name: meas.measurement_name ?? undefined,
-    //     option_label: meas.option_label
-    //   })),
-    //   ...existingCritter.measurement.quantitative.map((meas) => ({
-    //     ...meas,
-    //     measurement_qualitative_id: undefined,
-    //     qualitative_option_id: undefined,
-    //     measured_timestamp: meas.measured_timestamp ? new Date(meas.measured_timestamp) : ('' as unknown as Date),
-    //     measurement_comment: meas.measurement_comment ?? '',
-    //     measurement_name: meas.measurement_name ?? undefined,
-    //     option_label: undefined
-    //   }))
-    // ],
-    // family: [
-    //   ...existingCritter.family_child.map((ch) => ({
-    //     family_id: ch.family_id,
-    //     relationship: 'child'
-    //   })),
-    //   ...existingCritter.family_parent.map((par) => ({
-    //     family_id: par.family_id,
-    //     relationship: 'parent'
-    //   }))
-    // ],
+    collectionUnits: existingCritter.collection_units,
+    measurements: [
+      ...existingCritter.measurements.qualitative.map((meas) => ({
+        ...meas,
+        measurement_quantitative_id: undefined,
+        value: undefined,
+        measured_timestamp: meas.measured_timestamp ? new Date(meas.measured_timestamp) : ('' as unknown as Date),
+        measurement_comment: meas.measurement_comment ?? '',
+        measurement_name: meas.measurement_name ?? undefined,
+        option_label: meas.option_label
+      })),
+      ...existingCritter.measurements.quantitative.map((meas) => ({
+        ...meas,
+        measurement_qualitative_id: undefined,
+        qualitative_option_id: undefined,
+        measured_timestamp: meas.measured_timestamp ? new Date(meas.measured_timestamp) : ('' as unknown as Date),
+        measurement_comment: meas.measurement_comment ?? '',
+        measurement_name: meas.measurement_name ?? undefined,
+        option_label: undefined
+      }))
+    ],
+    family: [
+      ...existingCritter.family_child.map((ch) => ({
+        family_id: ch.family_id,
+        relationship: 'child'
+      })),
+      ...existingCritter.family_parent.map((par) => ({
+        family_id: par.family_id,
+        relationship: 'parent'
+      }))
+    ],
     images: [],
     device: []
   };

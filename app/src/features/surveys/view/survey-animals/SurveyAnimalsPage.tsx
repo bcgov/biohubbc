@@ -6,12 +6,13 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { SurveySectionFullPageLayout } from 'features/surveys/components/SurveySectionFullPageLayout';
 import { FieldArray, FieldArrayRenderProps, Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useQuery } from 'hooks/useQuery';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual as _deepEquals, omitBy } from 'lodash';
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { datesSameNullable, setMessageSnackbar } from 'utils/Utils';
 import { AddEditAnimal } from './AddEditAnimal';
 import { AnimalSchema, AnimalSex, ANIMAL_FORM_MODE, Critter, IAnimal } from './animal';
@@ -28,7 +29,7 @@ import {
 
 export const SurveyAnimalsPage = () => {
   const bhApi = useBiohubApi();
-  //const cbApi = useCritterbaseApi();
+  const cbApi = useCritterbaseApi();
   const { cid: survey_critter_id } = useQuery();
   const telemetryApi = useTelemetryApi();
   const dialogContext = useContext(DialogContext);
@@ -53,6 +54,21 @@ export const SurveyAnimalsPage = () => {
 
   loadCritters();
   loadDeployments();
+
+  useEffect(() => {
+    const getDetailedCritterOnMount = async () => {
+      if (detailedCritter) {
+        return;
+      }
+      const focusCritter = surveyCritters?.find((critter) => critter.survey_critter_id === Number(survey_critter_id));
+      if (!focusCritter) {
+        return;
+      }
+      const critter = await cbApi.critters.getDetailedCritter(focusCritter.critter_id);
+      setDetailedCritter(critter);
+    };
+    getDetailedCritterOnMount();
+  }, [surveyCritters, survey_critter_id, detailedCritter, cbApi.critters]);
 
   const defaultFormValues: IAnimal = useMemo(() => {
     return {
