@@ -81,6 +81,7 @@ const SurveyRecord = z.object({
   start_date: z.string(),
   end_date: z.string().nullable(),
   additional_details: z.string().nullable(),
+  status: z.number(),
   comments: z.string().nullable(),
   create_date: z.string(),
   create_user: z.number(),
@@ -120,11 +121,20 @@ export type StakeholderPartnershipRecord = z.infer<typeof StakeholderPartnership
 
 export type IndigenousPartnershipRecord = z.infer<typeof IndigenousPartnershipRecord>;
 
+export const SurveyStatusRecord = z.object({
+  survey_status_id: z.number(),
+  name: z.string(),
+  description: z.string()
+});
+
+export type SurveyStatusRecord = z.infer<typeof SurveyStatusRecord>;
+
 export const SurveyBasicFields = z.object({
   survey_id: z.number(),
   name: z.string(),
   start_date: z.string(),
   end_date: z.string().nullable(),
+  status: z.number(),
   focal_species: z.array(z.number()),
   focal_species_names: z.array(z.string())
 });
@@ -215,6 +225,28 @@ export class SurveyRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement, SurveyTypeRecord);
+
+    return response.rows;
+  }
+
+  /**
+   * Gets survey status records for a given survey ID
+   *
+   * @param {number} surveyId
+   * @returns {*}  {Promise<SurveyTypeRecord[]>}
+   * @memberof SurveyRepository
+   */
+  async getSurveyStatusData(surveyId: number): Promise<SurveyStatusRecord[]> {
+    const sqlStatement = SQL`
+      SELECT
+        *
+      FROM
+        survey_status
+      WHERE
+        survey_id = ${surveyId};
+    `;
+
+    const response = await this.connection.sql(sqlStatement, SurveyStatusRecord);
 
     return response.rows;
   }
@@ -666,12 +698,14 @@ export class SurveyRepository extends BaseRepository {
         name,
         start_date,
         end_date,
+        status,
         additional_details
       ) VALUES (
         ${projectId},
         ${surveyData.survey_details.survey_name},
         ${surveyData.survey_details.start_date},
         ${surveyData.survey_details.end_date},
+        ${surveyData.survey_details.status},
         ${surveyData.purpose_and_methodology.additional_details}
       )
       RETURNING
@@ -998,7 +1032,8 @@ export class SurveyRepository extends BaseRepository {
         ...fieldsToUpdate,
         name: surveyData.survey_details.name,
         start_date: surveyData.survey_details.start_date,
-        end_date: surveyData.survey_details.end_date
+        end_date: surveyData.survey_details.end_date,
+        status: surveyData.survey_details.status
       };
     }
 

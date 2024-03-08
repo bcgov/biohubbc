@@ -149,6 +149,22 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
 
       <Box component="fieldset" mt={5}>
         <Typography component="legend" variant="h5">
+          Status
+        </Typography>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <MultiAutocompleteFieldVariableSize
+              id={'survey_details.survey_status'}
+              label={'Status'}
+              options={props.type}
+              required={true}
+            />
+          </Grid>
+        </Grid>
+      </Box>
+
+      <Box component="fieldset" mt={5}>
+        <Typography component="legend" variant="h5">
           Species
         </Typography>
         <Grid container spacing={3}>
