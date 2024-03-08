@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Stack from '@mui/material/Stack';
+import { DialogContextProvider } from 'contexts/dialogContext';
 import { ObservationsTableContext, ObservationsTableContextProvider } from 'contexts/observationsTableContext';
 import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -44,24 +45,28 @@ export const SurveyObservationPage = () => {
         }}>
         {/* Sampling Site List */}
         <Box flex="0 0 auto" width="400px">
-          <SamplingSiteList />
+          <DialogContextProvider>
+            <SamplingSiteList />
+          </DialogContextProvider>
         </Box>
 
         {/* Observations Component */}
         <Box flex="1 1 auto">
-          <TaxonomyContextProvider>
-            <ObservationsTableContextProvider>
-              <ObservationsTableContext.Consumer>
-                {(context) => {
-                  if (!context?._muiDataGridApiRef.current) {
-                    return <CircularProgress className="pageProgress" size={40} />;
-                  }
+          <DialogContextProvider>
+            <TaxonomyContextProvider>
+              <ObservationsTableContextProvider>
+                <ObservationsTableContext.Consumer>
+                  {(context) => {
+                    if (!context?._muiDataGridApiRef.current) {
+                      return <CircularProgress className="pageProgress" size={40} />;
+                    }
 
-                  return <ObservationsTableContainer />;
-                }}
-              </ObservationsTableContext.Consumer>
-            </ObservationsTableContextProvider>
-          </TaxonomyContextProvider>
+                    return <ObservationsTableContainer />;
+                  }}
+                </ObservationsTableContext.Consumer>
+              </ObservationsTableContextProvider>
+            </TaxonomyContextProvider>
+          </DialogContextProvider>
         </Box>
       </Stack>
     </Stack>
