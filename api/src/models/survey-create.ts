@@ -76,14 +76,14 @@ export class PostSurveyDetailsData {
   survey_name: string;
   start_date: string;
   end_date: string;
-  status: number;
+  progress: number;
   survey_types: number[];
 
   constructor(obj?: any) {
     this.survey_name = obj?.survey_name || null;
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
-    this.status = obj?.status || null;
+    this.progress = obj?.progress || null;
     this.survey_types = (obj?.survey_types?.length && obj.survey_types) || [];
   }
 }

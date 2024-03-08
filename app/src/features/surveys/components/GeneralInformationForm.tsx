@@ -38,6 +38,7 @@ export interface IGeneralInformationForm {
     survey_name: string;
     start_date: string;
     end_date: string;
+    progress: number;
     survey_types: number[];
   };
   species: {
@@ -58,6 +59,7 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
     survey_name: '',
     start_date: '',
     end_date: '',
+    progress: 1,
     survey_types: []
   },
   species: {
@@ -154,7 +156,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <MultiAutocompleteFieldVariableSize
-              id={'survey_details.survey_status'}
+              id={'survey_details.survey_progress'}
               label={'Status'}
               options={props.type}
               required={true}

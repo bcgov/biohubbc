@@ -87,7 +87,7 @@ GET.apiDoc = {
                   survey_details: {
                     description: 'Survey Details',
                     type: 'object',
-                    required: ['survey_name', 'start_date', 'survey_types', 'status', 'revision_count'],
+                    required: ['survey_name', 'start_date', 'survey_types', 'progress', 'revision_count'],
                     properties: {
                       survey_name: {
                         type: 'string'
@@ -101,7 +101,7 @@ GET.apiDoc = {
                         nullable: true,
                         description: 'ISO 8601 date string for the funding end_date'
                       },
-                      status: {
+                      progress: {
                         type: 'number'
                       },
                       survey_types: {

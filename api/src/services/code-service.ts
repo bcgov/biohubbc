@@ -40,7 +40,8 @@ export class CodeService extends DBService {
       vantage_codes,
       survey_jobs,
       site_selection_strategies,
-      sample_methods
+      sample_methods,
+      survey_progress
     ] = await Promise.all([
       await this.codeRepository.getManagementActionType(),
       await this.codeRepository.getFirstNations(),
@@ -59,7 +60,8 @@ export class CodeService extends DBService {
       await this.codeRepository.getVantageCodes(),
       await this.codeRepository.getSurveyJobs(),
       await this.codeRepository.getSiteSelectionStrategies(),
-      await this.codeRepository.getSampleMethods()
+      await this.codeRepository.getSampleMethods(),
+      await this.codeRepository.getSurveyProgress()
     ]);
 
     return {
@@ -80,7 +82,8 @@ export class CodeService extends DBService {
       vantage_codes,
       survey_jobs,
       site_selection_strategies,
-      sample_methods
+      sample_methods,
+      survey_progress
     };
   }
 }

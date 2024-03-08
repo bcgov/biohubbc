@@ -81,7 +81,7 @@ const SurveyRecord = z.object({
   start_date: z.string(),
   end_date: z.string().nullable(),
   additional_details: z.string().nullable(),
-  status: z.number(),
+  progress_id: z.number().nullable(),
   comments: z.string().nullable(),
   create_date: z.string(),
   create_user: z.number(),
@@ -121,20 +121,20 @@ export type StakeholderPartnershipRecord = z.infer<typeof StakeholderPartnership
 
 export type IndigenousPartnershipRecord = z.infer<typeof IndigenousPartnershipRecord>;
 
-export const SurveyStatusRecord = z.object({
-  survey_status_id: z.number(),
+export const SurveyProgressRecord = z.object({
+  survey_progress_id: z.number(),
   name: z.string(),
   description: z.string()
 });
 
-export type SurveyStatusRecord = z.infer<typeof SurveyStatusRecord>;
+export type SurveyProgressRecord = z.infer<typeof SurveyProgressRecord>;
 
 export const SurveyBasicFields = z.object({
   survey_id: z.number(),
   name: z.string(),
   start_date: z.string(),
   end_date: z.string().nullable(),
-  status: z.number(),
+  progress_id: z.number(),
   focal_species: z.array(z.number()),
   focal_species_names: z.array(z.string())
 });
@@ -236,17 +236,17 @@ export class SurveyRepository extends BaseRepository {
    * @returns {*}  {Promise<SurveyTypeRecord[]>}
    * @memberof SurveyRepository
    */
-  async getSurveyStatusData(surveyId: number): Promise<SurveyStatusRecord[]> {
+  async getSurveyStatusData(surveyId: number): Promise<SurveyProgressRecord[]> {
     const sqlStatement = SQL`
       SELECT
         *
       FROM
-        survey_status
+        survey_progress
       WHERE
         survey_id = ${surveyId};
     `;
 
-    const response = await this.connection.sql(sqlStatement, SurveyStatusRecord);
+    const response = await this.connection.sql(sqlStatement, SurveyProgressRecord);
 
     return response.rows;
   }
@@ -628,6 +628,7 @@ export class SurveyRepository extends BaseRepository {
         'survey.name',
         'survey.start_date',
         'survey.end_date',
+        'survey.progress_id',
         knex.raw('array_remove(array_agg(study_species.itis_tsn), NULL) AS focal_species')
       )
       .from('project')
@@ -638,7 +639,8 @@ export class SurveyRepository extends BaseRepository {
       .groupBy('survey.survey_id')
       .groupBy('survey.name')
       .groupBy('survey.start_date')
-      .groupBy('survey.end_date');
+      .groupBy('survey.end_date')
+      .groupBy('survey.progress_id');
 
     if (pagination) {
       queryBuilder.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
@@ -698,14 +700,12 @@ export class SurveyRepository extends BaseRepository {
         name,
         start_date,
         end_date,
-        status,
         additional_details
       ) VALUES (
         ${projectId},
         ${surveyData.survey_details.survey_name},
         ${surveyData.survey_details.start_date},
         ${surveyData.survey_details.end_date},
-        ${surveyData.survey_details.status},
         ${surveyData.purpose_and_methodology.additional_details}
       )
       RETURNING
@@ -1033,7 +1033,7 @@ export class SurveyRepository extends BaseRepository {
         name: surveyData.survey_details.name,
         start_date: surveyData.survey_details.start_date,
         end_date: surveyData.survey_details.end_date,
-        status: surveyData.survey_details.status
+        status: surveyData.survey_details.progress
       };
     }
 

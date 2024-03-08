@@ -67,7 +67,7 @@ PUT.apiDoc = {
           properties: {
             survey_details: {
               type: 'object',
-              required: ['survey_name', 'start_date', 'end_date', 'survey_types', 'status', 'revision_count'],
+              required: ['survey_name', 'start_date', 'end_date', 'survey_types', 'progress', 'revision_count'],
               properties: {
                 survey_name: {
                   type: 'string'
@@ -88,7 +88,7 @@ PUT.apiDoc = {
                     minimum: 1
                   }
                 },
-                status: {
+                progress: {
                   type: 'number'
                 },
                 revision_count: {

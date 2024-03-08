@@ -35,7 +35,8 @@ export const IAllCodeSets = z.object({
   vantage_codes: CodeSet(),
   survey_jobs: CodeSet(),
   site_selection_strategies: CodeSet(),
-  sample_methods: CodeSet()
+  sample_methods: CodeSet(),
+  survey_progress: CodeSet()
 });
 
 export type IAllCodeSets = z.infer<typeof IAllCodeSets>;
@@ -406,6 +407,28 @@ export class CodeRepository extends BaseRepository {
         name
       FROM
         administrative_activity_status_type
+      WHERE
+        record_end_date is null;
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    return response.rows;
+  }
+
+  /**
+   * Fetch survey progress codes.
+   *
+   * @return {*}
+   * @memberof CodeRepository
+   */
+  async getSurveyProgress() {
+    const sqlStatement = SQL`
+      SELECT
+        survey_progress_id as id,
+        name
+      FROM
+        survey_progress
       WHERE
         record_end_date is null;
     `;
