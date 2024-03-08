@@ -94,7 +94,7 @@ export const AddEditAnimal = (props: IAddEditAnimalProps) => {
   const renderSingleForm = (section: IAnimalSections) => {
     const sectionMap: Partial<Record<IAnimalSections, JSX.Element>> = {
       [SurveyAnimalsI18N.animalGeneralTitle]: <GeneralAnimalForm />,
-      [SurveyAnimalsI18N.animalMarkingTitle]: <MarkingAnimalFormContent index={selectedIndex} />,
+      [SurveyAnimalsI18N.animalMarkingTitle]: <MarkingAnimalFormContent index={selectedIndex} tsn={1} />,
       [SurveyAnimalsI18N.animalMeasurementTitle]: (
         <MeasurementAnimalFormContent index={selectedIndex} measurements={measurements} mode={formMode} />
       ),

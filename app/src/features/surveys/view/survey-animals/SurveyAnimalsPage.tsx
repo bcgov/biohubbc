@@ -1,39 +1,30 @@
 import EditDialog from 'components/dialog/EditDialog';
-import { AttachmentType } from 'constants/attachments';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { SurveySectionFullPageLayout } from 'features/surveys/components/SurveySectionFullPageLayout';
-import { FieldArray, FieldArrayRenderProps, Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useQuery } from 'hooks/useQuery';
-import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
-import { isEqual as _deepEquals, omitBy } from 'lodash';
-import { useContext, useEffect, useMemo, useState } from 'react';
-import { datesSameNullable, setMessageSnackbar } from 'utils/Utils';
-import { AddEditAnimal } from './AddEditAnimal';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { setMessageSnackbar } from 'utils/Utils';
 import { AnimalSchema, AnimalSex, ANIMAL_FORM_MODE, Critter, IAnimal } from './animal';
 import { createCritterUpdatePayload, transformCritterbaseAPIResponseToForm } from './animal-form-helpers';
-import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
+import { IAnimalSections } from './animal-sections';
 import AnimalList from './AnimalList';
+import { AnimalSection } from './AnimalSection';
 import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
-import {
-  Device,
-  IAnimalTelemetryDevice,
-  IAnimalTelemetryDeviceFile,
-  IDeploymentTimespan
-} from './telemetry-device/device';
+import { IAnimalTelemetryDevice } from './telemetry-device/device';
 
 export const SurveyAnimalsPage = () => {
   const bhApi = useBiohubApi();
   const cbApi = useCritterbaseApi();
   const { cid: survey_critter_id } = useQuery();
-  const telemetryApi = useTelemetryApi();
+  //const telemetryApi = useTelemetryApi();
   const dialogContext = useContext(DialogContext);
-  const { surveyId, projectId, artifactDataLoader } = useContext(SurveyContext);
+  const { surveyId, projectId } = useContext(SurveyContext);
 
   const [selectedSection, setSelectedSection] = useState<IAnimalSections>(SurveyAnimalsI18N.animalGeneralTitle);
   const [openAddDialog, setOpenAddDialog] = useState(false);
@@ -126,19 +117,19 @@ export const SurveyAnimalsPage = () => {
     return animal;
   }, [deploymentData, defaultFormValues, detailedCritter]);
 
-  const handleRemoveDeployment = async (deployment_id: string) => {
-    try {
-      if (survey_critter_id === undefined) {
-        setMessageSnackbar('No critter set!', dialogContext);
-      }
-      await bhApi.survey.removeDeployment(projectId, surveyId, Number(survey_critter_id), deployment_id);
-    } catch (e) {
-      setMessageSnackbar('Failed to delete deployment.', dialogContext);
-      return;
-    }
-
-    refreshDeployments();
-  };
+  // const handleRemoveDeployment = async (deployment_id: string) => {
+  //   try {
+  //     if (survey_critter_id === undefined) {
+  //       setMessageSnackbar('No critter set!', dialogContext);
+  //     }
+  //     await bhApi.survey.removeDeployment(projectId, surveyId, Number(survey_critter_id), deployment_id);
+  //   } catch (e) {
+  //     setMessageSnackbar('Failed to delete deployment.', dialogContext);
+  //     return;
+  //   }
+  //
+  //   refreshDeployments();
+  // };
 
   const handleCritterSave = async (currentFormValues: IAnimal, formMode: ANIMAL_FORM_MODE) => {
     const postCritterPayload = async () => {
@@ -186,146 +177,122 @@ export const SurveyAnimalsPage = () => {
     }
   };
 
-  const uploadAttachment = async (file?: File, attachmentType?: AttachmentType) => {
-    try {
-      if (file && attachmentType === AttachmentType.KEYX) {
-        await bhApi.survey.uploadSurveyKeyx(projectId, surveyId, file);
-      } else if (file && attachmentType === AttachmentType.OTHER) {
-        await bhApi.survey.uploadSurveyAttachments(projectId, surveyId, file);
-      }
-    } catch (error) {
-      throw new Error(`Failed to upload attachment ${file?.name}`);
-    }
-  };
+  // const uploadAttachment = async (file?: File, attachmentType?: AttachmentType) => {
+  //   try {
+  //     if (file && attachmentType === AttachmentType.KEYX) {
+  //       await bhApi.survey.uploadSurveyKeyx(projectId, surveyId, file);
+  //     } else if (file && attachmentType === AttachmentType.OTHER) {
+  //       await bhApi.survey.uploadSurveyAttachments(projectId, surveyId, file);
+  //     }
+  //   } catch (error) {
+  //     throw new Error(`Failed to upload attachment ${file?.name}`);
+  //   }
+  // };
 
-  const handleAddTelemetry = async (survey_critter_id: number, data: IAnimalTelemetryDeviceFile[]) => {
-    const critter = surveyCritters?.find((a) => a.survey_critter_id === survey_critter_id);
-    if (!critter) console.log('Did not find critter in addTelemetry!');
-    const { attachmentFile, attachmentType, ...critterTelemetryDevice } = {
-      ...data[0],
-      critter_id: critter?.critter_id ?? ''
-    };
-    try {
-      // Upload attachment if there is one
-      await uploadAttachment(attachmentFile, attachmentType);
-      // create new deployment record
-      const critterTelemNoBlanks = omitBy(
-        critterTelemetryDevice,
-        (value) => value === '' || value === null
-      ) as IAnimalTelemetryDevice & { critter_id: string };
-      await bhApi.survey.addDeployment(projectId, surveyId, survey_critter_id, critterTelemNoBlanks);
-      setMessageSnackbar('Successfully added deployment.', dialogContext);
-      artifactDataLoader.refresh(projectId, surveyId);
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        setMessageSnackbar('Failed to add deployment' + (error?.message ? `: ${error.message}` : '.'), dialogContext);
-      } else {
-        setMessageSnackbar('Failed to add deployment.', dialogContext);
-      }
-    }
-  };
+  // const handleAddTelemetry = async (survey_critter_id: number, data: IAnimalTelemetryDeviceFile[]) => {
+  //   const critter = surveyCritters?.find((a) => a.survey_critter_id === survey_critter_id);
+  //   if (!critter) console.log('Did not find critter in addTelemetry!');
+  //   const { attachmentFile, attachmentType, ...critterTelemetryDevice } = {
+  //     ...data[0],
+  //     critter_id: critter?.critter_id ?? ''
+  //   };
+  //   try {
+  //     // Upload attachment if there is one
+  //     await uploadAttachment(attachmentFile, attachmentType);
+  //     // create new deployment record
+  //     const critterTelemNoBlanks = omitBy(
+  //       critterTelemetryDevice,
+  //       (value) => value === '' || value === null
+  //     ) as IAnimalTelemetryDevice & { critter_id: string };
+  //     await bhApi.survey.addDeployment(projectId, surveyId, survey_critter_id, critterTelemNoBlanks);
+  //     setMessageSnackbar('Successfully added deployment.', dialogContext);
+  //     artifactDataLoader.refresh(projectId, surveyId);
+  //   } catch (error: unknown) {
+  //     if (error instanceof Error) {
+  //       setMessageSnackbar('Failed to add deployment' + (error?.message ? `: ${error.message}` : '.'), dialogContext);
+  //     } else {
+  //       setMessageSnackbar('Failed to add deployment.', dialogContext);
+  //     }
+  //   }
+  // };
 
-  const updateDevice = async (formValues: IAnimalTelemetryDevice) => {
-    const existingDevice = deploymentData?.find((deployment) => deployment.device_id === formValues.device_id);
-    const formDevice = new Device({ collar_id: existingDevice?.collar_id, ...formValues });
-    if (existingDevice && !_deepEquals(new Device(existingDevice), formDevice)) {
-      try {
-        await telemetryApi.devices.upsertCollar(formDevice);
-      } catch (error) {
-        throw new Error(`Failed to update collar ${formDevice.collar_id}`);
-      }
-    }
-  };
+  // const updateDevice = async (formValues: IAnimalTelemetryDevice) => {
+  //   const existingDevice = deploymentData?.find((deployment) => deployment.device_id === formValues.device_id);
+  //   const formDevice = new Device({ collar_id: existingDevice?.collar_id, ...formValues });
+  //   if (existingDevice && !_deepEquals(new Device(existingDevice), formDevice)) {
+  //     try {
+  //       await telemetryApi.devices.upsertCollar(formDevice);
+  //     } catch (error) {
+  //       throw new Error(`Failed to update collar ${formDevice.collar_id}`);
+  //     }
+  //   }
+  // };
 
-  const updateDeployments = async (formDeployments: IDeploymentTimespan[], survey_critter_id: number) => {
-    for (const formDeployment of formDeployments ?? []) {
-      const existingDeployment = deploymentData?.find(
-        (animalDeployment) => animalDeployment.deployment_id === formDeployment.deployment_id
-      );
-      if (
-        !datesSameNullable(formDeployment?.attachment_start, existingDeployment?.attachment_start) ||
-        !datesSameNullable(formDeployment?.attachment_end, existingDeployment?.attachment_end)
-      ) {
-        try {
-          await bhApi.survey.updateDeployment(projectId, surveyId, survey_critter_id, formDeployment);
-        } catch (error) {
-          throw new Error(`Failed to update deployment ${formDeployment.deployment_id}`);
-        }
-      }
-    }
-  };
+  // const updateDeployments = async (formDeployments: IDeploymentTimespan[], survey_critter_id: number) => {
+  //   for (const formDeployment of formDeployments ?? []) {
+  //     const existingDeployment = deploymentData?.find(
+  //       (animalDeployment) => animalDeployment.deployment_id === formDeployment.deployment_id
+  //     );
+  //     if (
+  //       !datesSameNullable(formDeployment?.attachment_start, existingDeployment?.attachment_start) ||
+  //       !datesSameNullable(formDeployment?.attachment_end, existingDeployment?.attachment_end)
+  //     ) {
+  //       try {
+  //         await bhApi.survey.updateDeployment(projectId, surveyId, survey_critter_id, formDeployment);
+  //       } catch (error) {
+  //         throw new Error(`Failed to update deployment ${formDeployment.deployment_id}`);
+  //       }
+  //     }
+  //   }
+  // };
 
-  const handleEditTelemetry = async (survey_critter_id: number, data: IAnimalTelemetryDeviceFile[]) => {
-    const errors: string[] = [];
-    for (const { attachmentFile, attachmentType, ...formValues } of data) {
-      try {
-        await uploadAttachment(attachmentFile, attachmentType);
-        await updateDevice(formValues);
-        await updateDeployments(formValues.deployments ?? [], survey_critter_id);
-      } catch (error) {
-        const deviceErr = `Device ${formValues.device_id}`;
-        const err = error instanceof Error ? `${deviceErr} ${error.message}` : `${deviceErr} unknown error`;
-        errors.push(err);
-      }
-    }
-    errors.length
-      ? setMessageSnackbar('Failed to save some data: ' + errors.join(', '), dialogContext)
-      : setMessageSnackbar('Updated deployment and device data successfully.', dialogContext);
-  };
+  // const handleEditTelemetry = async (survey_critter_id: number, data: IAnimalTelemetryDeviceFile[]) => {
+  //   const errors: string[] = [];
+  //   for (const { attachmentFile, attachmentType, ...formValues } of data) {
+  //     try {
+  //       await uploadAttachment(attachmentFile, attachmentType);
+  //       await updateDevice(formValues);
+  //       await updateDeployments(formValues.deployments ?? [], survey_critter_id);
+  //     } catch (error) {
+  //       const deviceErr = `Device ${formValues.device_id}`;
+  //       const err = error instanceof Error ? `${deviceErr} ${error.message}` : `${deviceErr} unknown error`;
+  //       errors.push(err);
+  //     }
+  //   }
+  //   errors.length
+  //     ? setMessageSnackbar('Failed to save some data: ' + errors.join(', '), dialogContext)
+  //     : setMessageSnackbar('Updated deployment and device data successfully.', dialogContext);
+  // };
 
-  const handleTelemetrySave = async (
-    survey_critter_id: number,
-    data: IAnimalTelemetryDeviceFile[],
-    telemetryFormMode: ANIMAL_FORM_MODE
-  ) => {
-    if (telemetryFormMode === ANIMAL_FORM_MODE.ADD) {
-      await handleAddTelemetry(survey_critter_id, data);
-    } else if (telemetryFormMode === ANIMAL_FORM_MODE.EDIT) {
-      await handleEditTelemetry(survey_critter_id, data);
-    }
-    refreshDeployments();
-  };
+  // const handleTelemetrySave = async (
+  //   survey_critter_id: number,
+  //   data: IAnimalTelemetryDeviceFile[],
+  //   telemetryFormMode: ANIMAL_FORM_MODE
+  // ) => {
+  //   if (telemetryFormMode === ANIMAL_FORM_MODE.ADD) {
+  //     await handleAddTelemetry(survey_critter_id, data);
+  //   } else if (telemetryFormMode === ANIMAL_FORM_MODE.EDIT) {
+  //     await handleEditTelemetry(survey_critter_id, data);
+  //   }
+  //   refreshDeployments();
+  // };
 
   return (
     <>
-      <Formik
-        initialValues={critterAsFormikValues}
-        enableReinitialize
-        validationSchema={AnimalSchema}
-        validateOnBlur={false}
-        validateOnChange={true}
-        onSubmit={async (values, actions) => {
-          const status = await handleCritterSave(values, ANIMAL_FORM_MODE.EDIT);
-          actions.setStatus(status);
-        }}>
-        <SurveySectionFullPageLayout
-          pageTitle="Manage Animals"
-          sideBarComponent={
-            <AnimalList
-              onAddButton={() => setOpenAddDialog(true)}
-              onSelectCritter={setDetailedCritter}
-              surveyCritters={surveyCritters}
-              isLoading={crittersLoading}
-              selectedSection={selectedSection}
-              onSelectSection={(section) => setSelectedSection(section)}
-            />
-          }
-          mainComponent={
-            <FieldArray name={ANIMAL_SECTIONS_FORM_MAP[selectedSection].animalKeyName}>
-              {(formikArrayHelpers: FieldArrayRenderProps) => (
-                <AddEditAnimal
-                  critterData={detailedCritter}
-                  deploymentData={deploymentData}
-                  section={selectedSection}
-                  telemetrySaveAction={(data, mode) => handleTelemetrySave(Number(survey_critter_id), data, mode)}
-                  deploymentRemoveAction={handleRemoveDeployment}
-                  formikArrayHelpers={formikArrayHelpers}
-                />
-              )}
-            </FieldArray>
-          }
-        />
-      </Formik>
+      <SurveySectionFullPageLayout
+        pageTitle="Manage Animals"
+        sideBarComponent={
+          <AnimalList
+            onAddButton={() => setOpenAddDialog(true)}
+            onSelectCritter={setDetailedCritter}
+            surveyCritters={surveyCritters}
+            isLoading={crittersLoading}
+            selectedSection={selectedSection}
+            onSelectSection={(section) => setSelectedSection(section)}
+          />
+        }
+        mainComponent={<AnimalSection critter={detailedCritter} section={selectedSection} />}
+      />
       <EditDialog
         dialogTitle={'Add New Animal'}
         open={openAddDialog}

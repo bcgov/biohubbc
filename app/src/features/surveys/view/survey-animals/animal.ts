@@ -123,6 +123,15 @@ export const AnimalMarkingSchema = yup.object({
   body_location: yup.string().optional()
 });
 
+export const CreateCritterMarkingSchema = yup.object({
+  critter_id: yup.string(),
+  marking_type_id: yup.string().required('Type is required'),
+  taxon_marking_body_location_id: yup.string().required('Body location required'),
+  primary_colour_id: yup.string(),
+  secondary_colour_id: yup.string(),
+  marking_comment: yup.string()
+});
+
 export const AnimalCollectionUnitSchema = yup.object({}).shape({
   collection_unit_id: yup.string().required('Name is required'),
   collection_category_id: yup.string().required('Category is required'),
@@ -268,7 +277,9 @@ type ICritterCapture = Omit<
   '_id'
 >;
 
-export type ICritterMarking = Omit<ICritterID & IAnimalMarking, '_id'>;
+export type ICritterMarking = ICritterID & IAnimalMarking;
+
+export type ICreateMarking = InferType<typeof CreateCritterMarkingSchema>;
 
 export type ICritterCollection = Omit<ICritterID & IAnimalCollectionUnit, 'collection_category_id'>;
 

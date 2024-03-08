@@ -6,6 +6,7 @@ import { useAuthentication } from './cb_api/useAuthenticationApi';
 import { useCritterApi } from './cb_api/useCritterApi';
 import { useFamilyApi } from './cb_api/useFamilyApi';
 import { useLookupApi } from './cb_api/useLookupApi';
+import { useMarkingApi } from './cb_api/useMarkingApi';
 // import { useMarkings } from './cb_api/useMarkings';
 
 /**
@@ -27,13 +28,16 @@ export const useCritterbaseApi = () => {
 
   const xref = useXrefApi(apiAxios);
 
+  const marking = useMarkingApi(apiAxios);
+
   return useMemo(
     () => ({
       critters,
       authentication,
       lookup,
       family,
-      xref
+      xref,
+      marking
     }),
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
