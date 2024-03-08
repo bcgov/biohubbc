@@ -24,6 +24,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull, getFormattedDate } from 'utils/Utils';
 import ProjectsListFilterForm from './ProjectsListFilterForm';
+import { Collapse } from '@mui/material';
 
 interface IProjectsListTableRow extends Omit<IProjectsListItemData, 'project_programs'> {
   project_programs: string;
@@ -47,6 +48,8 @@ const ProjectsListPage = () => {
   const biohubApi = useBiohubApi();
 
   const codesContext = useContext(CodesContext);
+  codesContext.codesDataLoader.load();
+
   const projectsDataLoader = useDataLoader(
     (pagination: ApiPaginationRequestOptions, filter?: IProjectAdvancedFilters) => {
       return biohubApi.project.getProjectsList(pagination, filter);
@@ -179,12 +182,12 @@ const ProjectsListPage = () => {
               </Button>
             </Toolbar>
             <Divider></Divider>
-            {isFiltersOpen && (
+            <Collapse in={isFiltersOpen}>
               <ProjectsListFilterForm
                 handleSubmit={(filterValues) => refreshProjectsList(filterValues)}
                 handleReset={() => refreshProjectsList()}
               />
-            )}
+            </Collapse>
             <Box p={2}>
               <StyledDataGrid
                 noRowsMessage="No projects found"

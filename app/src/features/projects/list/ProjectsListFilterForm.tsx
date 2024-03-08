@@ -3,14 +3,12 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import { makeStyles } from '@mui/styles';
-import assert from 'assert';
 import ProjectAdvancedFilters, {
   IProjectAdvancedFilters,
   ProjectAdvancedFiltersInitialValues
 } from 'components/search-filter/ProjectAdvancedFilters';
-import { CodesContext } from 'contexts/codesContext';
 import { Formik, FormikProps } from 'formik';
-import React, { useContext, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -27,10 +25,6 @@ export interface IProjectsListFilterFormProps {
 const ProjectsListFilterForm: React.FC<IProjectsListFilterFormProps> = (props) => {
   const { handleSubmit, handleReset } = props;
   const classes = useStyles();
-
-  const codesContext = useContext(CodesContext);
-  // Codes data must be loaded by a parent before this component is rendered
-  assert(codesContext.codesDataLoader.data);
 
   const [formikRef] = useState(useRef<FormikProps<IProjectAdvancedFilters>>(null));
 
