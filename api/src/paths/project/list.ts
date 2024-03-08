@@ -9,8 +9,8 @@ import { ProjectService } from '../../services/project-service';
 import { getLogger } from '../../utils/logger';
 import {
   ensureCompletePaginationOptions,
-  getPaginationOptionsFromRequest,
-  getPaginationResponse
+  makePaginationOptionsFromRequest,
+  makePaginationResponse
 } from '../../utils/pagination';
 
 const defaultLog = getLogger('paths/projects');
@@ -175,7 +175,7 @@ export function getProjectList(): RequestHandler {
       );
       const systemUserId = connection.systemUserId();
       const filterFields: IProjectAdvancedFilters = req.query || {};
-      const paginationOptions = getPaginationOptionsFromRequest(req);
+      const paginationOptions = makePaginationOptionsFromRequest(req);
 
       const projectService = new ProjectService(connection);
       const projects = await projectService.getProjectList(
@@ -188,7 +188,7 @@ export function getProjectList(): RequestHandler {
 
       const response = {
         projects,
-        pagination: getPaginationResponse(projectsTotalCount, paginationOptions)
+        pagination: makePaginationResponse(projectsTotalCount, paginationOptions)
       };
 
       await connection.commit();

@@ -2,16 +2,20 @@ import { expect } from 'chai';
 import { Request } from 'express';
 import { describe } from 'mocha';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
-import { ensureCompletePaginationOptions, getPaginationOptionsFromRequest, getPaginationResponse } from './pagination';
+import {
+  ensureCompletePaginationOptions,
+  makePaginationOptionsFromRequest,
+  makePaginationResponse
+} from './pagination';
 
 describe('pagination', () => {
-  describe('getPaginationOptionsFromRequest', () => {
+  describe('makePaginationOptionsFromRequest', () => {
     it('should return undefined options if the corresponding request params are undefined', () => {
       const mockRequst = {
         query: {}
       } as Request;
 
-      const result = getPaginationOptionsFromRequest(mockRequst);
+      const result = makePaginationOptionsFromRequest(mockRequst);
       expect(result).to.eql({
         limit: undefined,
         page: undefined,
@@ -30,7 +34,7 @@ describe('pagination', () => {
         }
       } as unknown) as Request;
 
-      const result = getPaginationOptionsFromRequest(mockRequst);
+      const result = makePaginationOptionsFromRequest(mockRequst);
       expect(result).to.eql({
         limit: 100,
         page: 2,
@@ -40,7 +44,7 @@ describe('pagination', () => {
     });
   });
 
-  describe('getPaginationResponse', () => {
+  describe('makePaginationResponse', () => {
     it('should successfully coerce undefined params', () => {
       const mockPagination: Partial<ApiPaginationOptions> = {
         limit: undefined,
@@ -49,7 +53,7 @@ describe('pagination', () => {
         order: undefined
       };
 
-      const result = getPaginationResponse(101, mockPagination);
+      const result = makePaginationResponse(101, mockPagination);
       expect(result).to.eql({
         total: 101,
         per_page: 101,
@@ -68,7 +72,7 @@ describe('pagination', () => {
         order: 'asc'
       };
 
-      const result = getPaginationResponse(99, mockPagination);
+      const result = makePaginationResponse(99, mockPagination);
       expect(result).to.eql({
         total: 99,
         per_page: 15,
@@ -87,7 +91,7 @@ describe('pagination', () => {
         order: 'desc'
       };
 
-      const result = getPaginationResponse(0, mockPagination);
+      const result = makePaginationResponse(0, mockPagination);
       expect(result).to.eql({
         total: 0,
         per_page: 20,

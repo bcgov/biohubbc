@@ -7,7 +7,7 @@ import { ApiPaginationOptions, ApiPaginationResults } from '../zod-schema/pagina
  * @param {Request} request
  * @returns {ApiPaginationOptions | undefined}
  */
-export const getPaginationOptionsFromRequest = (request: Request): Partial<ApiPaginationOptions> => {
+export const makePaginationOptionsFromRequest = (request: Request): Partial<ApiPaginationOptions> => {
   const page: number | undefined = request.query.page ? Number(request.query.page) : undefined;
   const limit: number | undefined = request.query.limit ? Number(request.query.limit) : undefined;
   const order: 'asc' | 'desc' | undefined = request.query.order
@@ -30,7 +30,7 @@ export const getPaginationOptionsFromRequest = (request: Request): Partial<ApiPa
  * @param {Partial<ApiPaginationOptions>} [pagination]
  * @returns
  */
-export const getPaginationResponse = (
+export const makePaginationResponse = (
   total: number,
   pagination?: Partial<ApiPaginationOptions>
 ): ApiPaginationResults => {

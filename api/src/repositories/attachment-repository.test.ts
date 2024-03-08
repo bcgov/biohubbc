@@ -192,14 +192,14 @@ describe('AttachmentRepository', () => {
         });
       });
 
-      describe('deleteProjectAttachment', () => {
+      describe('deleteProjectAttachmentRecord', () => {
         it('should return result', async () => {
           const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
 
-          const response = await repository.deleteProjectAttachment(1);
+          const response = await repository.deleteProjectAttachmentRecord(1);
 
           expect(response).to.eql({ id: 1 });
         });
@@ -211,7 +211,7 @@ describe('AttachmentRepository', () => {
           const repository = new AttachmentRepository(dbConnection);
 
           try {
-            await repository.deleteProjectAttachment(1);
+            await repository.deleteProjectAttachmentRecord(1);
             expect.fail();
           } catch (error) {
             expect((error as Error).message).to.equal('Failed to delete Project Attachment by id');
@@ -482,14 +482,14 @@ describe('AttachmentRepository', () => {
         });
       });
 
-      describe('deleteProjectReportAttachment', () => {
+      describe('deleteProjectReportAttachmentRecord', () => {
         it('should return result', async () => {
           const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
 
-          const response = await repository.deleteProjectReportAttachment(1);
+          const response = await repository.deleteProjectReportAttachmentRecord(1);
 
           expect(response).to.eql({ id: 1 });
         });
@@ -501,7 +501,7 @@ describe('AttachmentRepository', () => {
           const repository = new AttachmentRepository(dbConnection);
 
           try {
-            await repository.deleteProjectReportAttachment(1);
+            await repository.deleteProjectReportAttachmentRecord(1);
             expect.fail();
           } catch (error) {
             expect((error as Error).message).to.equal('Failed to delete Project Report Attachment by id');
@@ -550,14 +550,14 @@ describe('AttachmentRepository', () => {
         });
       });
 
-      describe('deleteSurveyAttachment', () => {
+      describe('deleteSurveyAttachmentRecord', () => {
         it('should return result', async () => {
           const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
 
-          const response = await repository.deleteSurveyAttachment(1);
+          const response = await repository.deleteSurveyAttachmentRecord(1);
 
           expect(response).to.eql({ id: 1 });
         });
@@ -569,7 +569,7 @@ describe('AttachmentRepository', () => {
           const repository = new AttachmentRepository(dbConnection);
 
           try {
-            await repository.deleteSurveyAttachment(1);
+            await repository.deleteSurveyAttachmentRecord(1);
             expect.fail();
           } catch (error) {
             expect((error as Error).message).to.equal('Failed to delete Survey Attachment');
@@ -865,14 +865,14 @@ describe('AttachmentRepository', () => {
         });
       });
 
-      describe('deleteSurveyReportAttachment', () => {
+      describe('deleteSurveyReportAttachmentRecord', () => {
         it('should return result', async () => {
           const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
 
-          const response = await repository.deleteSurveyReportAttachment(1);
+          const response = await repository.deleteSurveyReportAttachmentRecord(1);
 
           expect(response).to.eql({ id: 1 });
         });
@@ -884,7 +884,7 @@ describe('AttachmentRepository', () => {
           const repository = new AttachmentRepository(dbConnection);
 
           try {
-            await repository.deleteSurveyReportAttachment(1);
+            await repository.deleteSurveyReportAttachmentRecord(1);
             expect.fail();
           } catch (error) {
             expect((error as Error).message).to.equal('Failed to delete Survey Report Attachment');

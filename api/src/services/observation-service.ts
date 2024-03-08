@@ -217,11 +217,12 @@ export class ObservationService extends DBService {
    * Retrieves a single observation records by ID
    *
    * @param {number} surveyId
+   * @param {number} surveyObservationId
    * @return {*}  {Promise<ObservationRecord[]>}
    * @memberof ObservationRepository
    */
-  async getSurveyObservationById(surveyObservationId: number): Promise<ObservationRecord> {
-    return this.observationRepository.getSurveyObservationById(surveyObservationId);
+  async getSurveyObservationById(surveyId: number, surveyObservationId: number): Promise<ObservationRecord> {
+    return this.observationRepository.getSurveyObservationById(surveyId, surveyObservationId);
   }
 
   /**
@@ -334,27 +335,13 @@ export class ObservationService extends DBService {
   /**
    * Retrieves the observation submission record by the given submission ID.
    *
+   * @param {number} surveyId
    * @param {number} submissionId
    * @return {*}  {Promise<ObservationSubmissionRecord>}
    * @memberof ObservationService
    */
-  async getObservationSubmissionById(submissionId: number): Promise<ObservationSubmissionRecord> {
-    return this.observationRepository.getObservationSubmissionById(submissionId);
-  }
-
-  /**
-   * Retrieves all observation records for the given survey and sample site id
-   *
-   * @param {number} surveyId
-   * @param {number} sampleSiteId
-   * @return {*}  {Promise<{ observationCount: number }>}
-   * @memberof ObservationService
-   */
-  async getObservationsCountBySampleSiteId(
-    surveyId: number,
-    sampleSiteId: number
-  ): Promise<{ observationCount: number }> {
-    return this.observationRepository.getObservationsCountBySampleSiteId(surveyId, sampleSiteId);
+  async getObservationSubmissionById(surveyId: number, submissionId: number): Promise<ObservationSubmissionRecord> {
+    return this.observationRepository.getObservationSubmissionById(surveyId, submissionId);
   }
 
   /**
@@ -365,33 +352,30 @@ export class ObservationService extends DBService {
    * @return {*}  {Promise<{ observationCount: number }>}
    * @memberof ObservationService
    */
-  async getObservationsCountBySampleSiteIds(
-    surveyId: number,
-    sampleSiteIds: number[]
-  ): Promise<{ observationCount: number }> {
+  async getObservationsCountBySampleSiteIds(surveyId: number, sampleSiteIds: number[]): Promise<number> {
     return this.observationRepository.getObservationsCountBySampleSiteIds(surveyId, sampleSiteIds);
   }
 
   /**
    * Retrieves observation records count for the given survey and sample method ids
    *
-   * @param {number} sampleMethodId
+   * @param {number[]} sampleMethodIds
    * @return {*}  {Promise<{ observationCount: number }>}
    * @memberof ObservationService
    */
-  async getObservationsCountBySampleMethodId(sampleMethodId: number): Promise<{ observationCount: number }> {
-    return this.observationRepository.getObservationsCountBySampleMethodId(sampleMethodId);
+  async getObservationsCountBySampleMethodIds(sampleMethodIds: number[]): Promise<number> {
+    return this.observationRepository.getObservationsCountBySampleMethodIds(sampleMethodIds);
   }
 
   /**
    * Retrieves observation records count for the given survey and sample period ids
    *
-   * @param {number} samplePeriodId
+   * @param {number[]} samplePeriodIds
    * @return {*}  {Promise<{ observationCount: number }>}
    * @memberof ObservationService
    */
-  async getObservationsCountBySamplePeriodId(samplePeriodId: number): Promise<{ observationCount: number }> {
-    return this.observationRepository.getObservationsCountBySamplePeriodId(samplePeriodId);
+  async getObservationsCountBySamplePeriodIds(samplePeriodIds: number[]): Promise<number> {
+    return this.observationRepository.getObservationsCountBySamplePeriodIds(samplePeriodIds);
   }
 
   /**
@@ -400,6 +384,7 @@ export class ObservationService extends DBService {
    * all of the records in the CSV file to the observations for the survey. If the CSV
    * file fails validation, this method fails.
    *
+   * @param {number} surveyId
    * @param {number} submissionId
    * @return {*}  {Promise<ObservationRecord[]>}
    * @memberof ObservationService
@@ -408,8 +393,7 @@ export class ObservationService extends DBService {
     defaultLog.debug({ label: 'processObservationCsvSubmission', submissionId });
 
     // Step 1. Retrieve the observation submission record
-    const submission = await this.getObservationSubmissionById(submissionId);
-    const surveyId = submission.survey_id;
+    const submission = await this.getObservationSubmissionById(surveyId, submissionId);
 
     // Step 2. Retrieve the S3 object containing the uploaded CSV file
     const s3Object = await getFileFromS3(submission.key);

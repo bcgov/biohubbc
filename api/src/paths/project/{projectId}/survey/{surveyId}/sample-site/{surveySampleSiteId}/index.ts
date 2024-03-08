@@ -4,6 +4,7 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/
 import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/http-error';
 import { GeoJSONFeature } from '../../../../../../../openapi/schemas/geoJson';
+import { UpdateSampleLocationRecord } from '../../../../../../../repositories/sample-location-repository';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { ObservationService } from '../../../../../../../services/observation-service';
 import { SampleLocationService } from '../../../../../../../services/sample-location-service';
@@ -195,18 +196,21 @@ export function updateSurveySampleSite(): RequestHandler {
       throw new HTTP400('Missing required body param `sampleSite`');
     }
 
+    const surveyId = Number(req.params.surveyId);
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const sampleSite: any = req.body.sampleSite;
-
-      sampleSite.survey_id = Number(req.params.surveyId);
-      sampleSite.survey_sample_site_id = Number(req.params.surveySampleSiteId);
+      const sampleSite: UpdateSampleLocationRecord = {
+        ...req.body.sampleSite,
+        survey_id: Number(req.params.surveyId),
+        survey_sample_site_id: Number(req.params.surveySampleSiteId)
+      };
 
       await connection.open();
 
       const sampleLocationService = new SampleLocationService(connection);
-      await sampleLocationService.updateSampleLocationMethodPeriod(sampleSite);
+
+      await sampleLocationService.updateSampleLocationMethodPeriod(surveyId, sampleSite);
 
       await connection.commit();
 
@@ -314,16 +318,17 @@ export function deleteSurveySampleSiteRecord(): RequestHandler {
       await connection.open();
 
       const observationService = new ObservationService(connection);
+      const samplingSiteObservationsCount = await observationService.getObservationsCountBySampleSiteIds(surveyId, [
+        surveySampleSiteId
+      ]);
 
-      if (
-        (await observationService.getObservationsCountBySampleSiteId(surveyId, surveySampleSiteId)).observationCount > 0
-      ) {
+      if (samplingSiteObservationsCount > 0) {
         throw new HTTP400('Cannot delete a sample site that is associated with an observation');
       }
 
       const sampleLocationService = new SampleLocationService(connection);
 
-      await sampleLocationService.deleteSampleSiteRecord(surveySampleSiteId);
+      await sampleLocationService.deleteSampleSiteRecord(surveyId, surveySampleSiteId);
 
       await connection.commit();
 

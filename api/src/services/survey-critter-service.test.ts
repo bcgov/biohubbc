@@ -55,7 +55,7 @@ describe('SurveyService', () => {
 
       const repoStub = sinon.stub(SurveyCritterRepository.prototype, 'removeCritterFromSurvey').resolves();
 
-      const response = await service.removeCritterFromSurvey(1);
+      const response = await service.removeCritterFromSurvey(1, 1);
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.be.undefined;

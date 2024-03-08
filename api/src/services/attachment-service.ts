@@ -554,8 +554,8 @@ export class AttachmentService extends DBService {
    * @return {*}  {Promise<{ key: string }>}
    * @memberof AttachmentService
    */
-  async deleteProjectAttachment(attachmentId: number): Promise<{ key: string; uuid: string }> {
-    return this.attachmentRepository.deleteProjectAttachment(attachmentId);
+  async _deleteProjectAttachmentRecord(attachmentId: number): Promise<{ key: string; uuid: string }> {
+    return this.attachmentRepository.deleteProjectAttachmentRecord(attachmentId);
   }
 
   /**
@@ -565,8 +565,8 @@ export class AttachmentService extends DBService {
    * @return {*}  {Promise<{ key: string; uuid: string }>}
    * @memberof AttachmentService
    */
-  async deleteProjectReportAttachment(attachmentId: number): Promise<{ key: string; uuid: string }> {
-    return this.attachmentRepository.deleteProjectReportAttachment(attachmentId);
+  async _deleteProjectReportAttachmentRecord(attachmentId: number): Promise<{ key: string; uuid: string }> {
+    return this.attachmentRepository.deleteProjectReportAttachmentRecord(attachmentId);
   }
 
   /**
@@ -713,8 +713,8 @@ export class AttachmentService extends DBService {
    * @return {*}  {Promise<{ key: string; uuid: string }>}
    * @memberof AttachmentService
    */
-  async deleteSurveyReportAttachment(attachmentId: number): Promise<{ key: string; uuid: string }> {
-    return this.attachmentRepository.deleteSurveyReportAttachment(attachmentId);
+  async _deleteSurveyReportAttachmentRecord(attachmentId: number): Promise<{ key: string; uuid: string }> {
+    return this.attachmentRepository.deleteSurveyReportAttachmentRecord(attachmentId);
   }
 
   /**
@@ -724,8 +724,8 @@ export class AttachmentService extends DBService {
    * @return {*}  {Promise<{ key: string; uuid: string }>}
    * @memberof AttachmentService
    */
-  async deleteSurveyAttachment(attachmentId: number): Promise<{ key: string; uuid: string }> {
-    return this.attachmentRepository.deleteSurveyAttachment(attachmentId);
+  async _deleteSurveyAttachmentRecord(attachmentId: number): Promise<{ key: string; uuid: string }> {
+    return this.attachmentRepository.deleteSurveyAttachmentRecord(attachmentId);
   }
 
   /**
@@ -876,7 +876,7 @@ export class AttachmentService extends DBService {
    * @return {*}  {Promise<void>}
    * @memberof AttachmentService
    */
-  async handleDeleteProjectAttachment(projectId: number, attachmentId: number, attachmentType: string): Promise<void> {
+  async deleteProjectAttachment(projectId: number, attachmentId: number, attachmentType: string): Promise<void> {
     const historyPublishService = new HistoryPublishService(this.connection);
 
     let attachment: IProjectAttachment | IProjectReportAttachment | null;
@@ -888,14 +888,14 @@ export class AttachmentService extends DBService {
       // Delete the publish record, authors, and attachment
       await historyPublishService.deleteProjectReportAttachmentPublishRecord(attachmentId);
       await this.deleteProjectReportAttachmentAuthors(attachmentId);
-      await this.deleteProjectReportAttachment(attachmentId);
+      await this._deleteProjectReportAttachmentRecord(attachmentId);
     } else {
       // Get the attachment
       attachment = await this.getProjectAttachmentById(projectId, attachmentId);
 
       // Delete the publish record and attachment
       await historyPublishService.deleteProjectAttachmentPublishRecord(attachmentId);
-      await this.deleteProjectAttachment(attachmentId);
+      await this._deleteProjectAttachmentRecord(attachmentId);
     }
 
     // Delete the attachment from S3
@@ -919,7 +919,7 @@ export class AttachmentService extends DBService {
    * @return {*}  {Promise<void>}
    * @memberof AttachmentService
    */
-  async handleDeleteSurveyAttachment(surveyId: number, attachmentId: number, attachmentType: string): Promise<void> {
+  async deleteSurveyAttachment(surveyId: number, attachmentId: number, attachmentType: string): Promise<void> {
     const historyPublishService = new HistoryPublishService(this.connection);
 
     let attachment: ISurveyAttachment | ISurveyReportAttachment | null;
@@ -931,14 +931,14 @@ export class AttachmentService extends DBService {
       // Delete the publish record, authors, and attachment
       await historyPublishService.deleteSurveyReportAttachmentPublishRecord(attachmentId);
       await this.deleteSurveyReportAttachmentAuthors(attachmentId);
-      await this.deleteSurveyReportAttachment(attachmentId);
+      await this._deleteSurveyReportAttachmentRecord(attachmentId);
     } else {
       // Get the attachment
       attachment = await this.getSurveyAttachmentById(surveyId, attachmentId);
 
       // Delete the publish record and attachment
       await historyPublishService.deleteSurveyAttachmentPublishRecord(attachmentId);
-      await this.deleteSurveyAttachment(attachmentId);
+      await this._deleteSurveyAttachmentRecord(attachmentId);
     }
 
     // Delete the attachment from S3

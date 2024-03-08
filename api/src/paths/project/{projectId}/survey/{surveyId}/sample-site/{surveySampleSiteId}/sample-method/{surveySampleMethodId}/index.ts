@@ -126,18 +126,21 @@ export function updateSurveySampleMethod(): RequestHandler {
       throw new HTTP400('Missing required body param `sampleMethod`');
     }
 
+    const surveyId = Number(req.params.surveyId);
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const sampleMethod: UpdateSampleMethodRecord = req.body.sampleMethod;
-      sampleMethod.survey_sample_site_id = Number(req.params.surveySampleSiteId);
-      sampleMethod.survey_sample_method_id = Number(req.params.surveySampleMethodId);
+      const sampleMethod: UpdateSampleMethodRecord = {
+        ...req.body.sampleMethod,
+        survey_sample_site_id: Number(req.params.surveySampleSiteId),
+        survey_sample_method_id: Number(req.params.surveySampleMethodId)
+      };
 
       await connection.open();
 
       const sampleMethodService = new SampleMethodService(connection);
 
-      await sampleMethodService.updateSampleMethod(sampleMethod);
+      await sampleMethodService.updateSampleMethod(surveyId, sampleMethod);
 
       await connection.commit();
       return res.status(204).send();
@@ -237,6 +240,7 @@ export function deleteSurveySampleMethodRecord(): RequestHandler {
       throw new HTTP400('Missing required param `surveySampleMethodId`');
     }
 
+    const surveyId = Number(req.params.surveyId);
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
@@ -244,7 +248,7 @@ export function deleteSurveySampleMethodRecord(): RequestHandler {
 
       const sampleMethodService = new SampleMethodService(connection);
 
-      await sampleMethodService.deleteSampleMethodRecord(surveySampleMethodId);
+      await sampleMethodService.deleteSampleMethodRecord(surveyId, surveySampleMethodId);
 
       await connection.commit();
 
