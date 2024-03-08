@@ -14,7 +14,6 @@ import { debounce } from 'lodash-es';
 import { useContext, useMemo } from 'react';
 
 export interface IProjectAdvancedFilters {
-  permit_number: string;
   project_programs: number[];
   start_date: string;
   end_date: string;
@@ -26,7 +25,6 @@ export interface IProjectAdvancedFilters {
 }
 
 export const ProjectAdvancedFiltersInitialValues: IProjectAdvancedFilters = {
-  permit_number: '',
   project_programs: [],
   start_date: '',
   end_date: '',
@@ -117,9 +115,6 @@ const ProjectAdvancedFilters = () => {
             startRequired={false}
             endRequired={false}
           />
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <CustomTextField name="permit_number" label="Permit Number" />
         </Grid>
         <Grid item xs={12} md={6}>
           <MultiAutocompleteFieldVariableSize
