@@ -109,7 +109,6 @@ export class ProjectRepository extends BaseRepository {
       if (filterFields.keyword) {
         const keyword_string = '%'.concat(filterFields.keyword).concat('%');
         sqlStatement.append(SQL` AND p.name ilike ${keyword_string}`);
-        sqlStatement.append(SQL` AND fs.name ilike ${keyword_string}`);
         sqlStatement.append(SQL` OR s.name ilike ${keyword_string}`);
       }
     }
