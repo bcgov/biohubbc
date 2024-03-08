@@ -98,6 +98,7 @@ GET.apiDoc = {
                     'completion_status',
                     'start_date',
                     'end_date',
+                    'status',
                     'regions'
                   ],
                   properties: {
@@ -121,6 +122,9 @@ GET.apiDoc = {
                       oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
                       nullable: true,
                       description: 'ISO 8601 date string for the funding end_date'
+                    },
+                    status: {
+                      type: 'number'
                     },
                     regions: {
                       type: 'array',
