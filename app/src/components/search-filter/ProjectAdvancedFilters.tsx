@@ -20,7 +20,7 @@ export interface IProjectAdvancedFilters {
   project_name: string;
   agency_id: number;
   agency_project_id: string;
-  species: number[];
+  species_tsns: number[];
 }
 
 export const ProjectAdvancedFiltersInitialValues: IProjectAdvancedFilters = {
@@ -31,7 +31,7 @@ export const ProjectAdvancedFiltersInitialValues: IProjectAdvancedFilters = {
   project_name: '',
   agency_id: '' as unknown as number,
   agency_project_id: '',
-  species: []
+  species_tsns: []
 };
 
 /**
@@ -98,7 +98,7 @@ const ProjectAdvancedFilters = () => {
         </Grid>
         <Grid item xs={12} md={6}>
           <MultiAutocompleteFieldVariableSize
-            id="species"
+            id="species_tsns"
             label="Species"
             required={false}
             type="api-search"

@@ -49,6 +49,7 @@ export class ProjectRepository extends BaseRepository {
       SELECT
         p.project_id,
         p.name,
+        p.objectives,
         p.start_date,
         p.end_date,
         COALESCE(array_remove(array_agg(DISTINCT rl.region_name), null), '{}') as regions,
@@ -57,12 +58,12 @@ export class ProjectRepository extends BaseRepository {
         project as p
       LEFT JOIN project_program pp
         ON p.project_id = pp.project_id
-      LEFT JOIN program p2
-        ON p2.program_id = pp.program_id
       LEFT OUTER JOIN survey as s
         ON s.project_id = p.project_id
-
-        
+      LEFT OUTER JOIN study_species as sp
+        ON sp.survey_id = s.survey_id
+      LEFT JOIN program p2
+        ON p2.program_id = pp.program_id        
       LEFT JOIN project_region pr
         ON p.project_id = pr.project_id
       LEFT JOIN region_lookup rl
@@ -102,13 +103,15 @@ export class ProjectRepository extends BaseRepository {
         sqlStatement.append(SQL` AND p.name = ${filterFields.project_name}`);
       }
 
-      if (filterFields?.species && filterFields?.species?.length > 0) {
-        sqlStatement.append(SQL` AND sp.wldtaxonomic_units_id =${filterFields.species[0]}`);
+      if (filterFields?.species_tsns && filterFields?.species_tsns?.length > 0) {
+        sqlStatement.append(SQL` AND sp.itis_tsn = ${filterFields.species_tsns[0]}`);
+        // sqlStatement.append(SQL` AND sp.itis_tsn = 180703`);
       }
 
       if (filterFields.keyword) {
         const keyword_string = '%'.concat(filterFields.keyword).concat('%');
         sqlStatement.append(SQL` AND p.name ilike ${keyword_string}`);
+        sqlStatement.append(SQL` OR p.objectives ilike ${keyword_string}`);
         sqlStatement.append(SQL` OR s.name ilike ${keyword_string}`);
       }
     }
@@ -117,6 +120,7 @@ export class ProjectRepository extends BaseRepository {
       group by
         p.project_id,
         p.name,
+        p.objectives,
         p.start_date,
         p.end_date
     `);
@@ -167,6 +171,10 @@ export class ProjectRepository extends BaseRepository {
     }
 
     sqlStatement.append(';');
+
+    console.log('filterFields:', filterFields)
+    console.log(sqlStatement.text)
+    console.log(sqlStatement.values)
 
     const response = await this.connection.sql(sqlStatement, ProjectListData);
 

@@ -52,6 +52,7 @@ const ProjectsListPage = () => {
 
   const projectsDataLoader = useDataLoader(
     (pagination: ApiPaginationRequestOptions, filter?: IProjectAdvancedFilters) => {
+      console.log('filter:', filter)
       return biohubApi.project.getProjectsList(pagination, filter);
     }
   );

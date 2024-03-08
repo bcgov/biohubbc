@@ -66,8 +66,7 @@ GET.apiDoc = {
               type: 'string',
               nullable: true
             },
-            // TODO rename this to imply ITIS TSN filtering
-            species: {
+            species_tsns: {
               type: 'array',
               items: {
                 type: 'integer'
