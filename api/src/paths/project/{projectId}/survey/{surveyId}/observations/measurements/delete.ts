@@ -112,7 +112,7 @@ export function deleteObservationMeasurements(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      await connection.open();
+      //   await connection.open();
 
       // const observationService = new ObservationService(connection);
 
