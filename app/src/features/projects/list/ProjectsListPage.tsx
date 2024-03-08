@@ -15,11 +15,11 @@ import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvance
 import { SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SYSTEM_ROLE } from 'constants/roles';
-import { CodesContext } from 'contexts/codesContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useCodesContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { IProjectsListItemData } from 'interfaces/useProjectApi.interface';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull, getFormattedDate } from 'utils/Utils';
@@ -46,7 +46,12 @@ const ProjectsListPage = () => {
 
   const biohubApi = useBiohubApi();
 
-  const codesContext = useContext(CodesContext);
+  const codesContext = useCodesContext();
+
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
+
   const projectsDataLoader = useDataLoader(
     (pagination: ApiPaginationRequestOptions, filter?: IProjectAdvancedFilters) => {
       return biohubApi.project.getProjectsList(pagination, filter);

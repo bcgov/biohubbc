@@ -3,6 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { GeoJSONFeature } from '../../../../../openapi/schemas/geoJson';
+import { surveyParticipationAndSystemUserSchema } from '../../../../../openapi/schemas/user';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { SurveyService } from '../../../../../services/survey-service';
 import { getLogger } from '../../../../../utils/logger';
@@ -92,6 +93,18 @@ GET.apiDoc = {
                     additionalProperties: false,
                     required: ['survey_name', 'start_date', 'survey_types', 'revision_count'],
                     properties: {
+                      id: {
+                        type: 'integer',
+                        minimum: 1
+                      },
+                      project_id: {
+                        type: 'integer',
+                        minimum: 1
+                      },
+                      uuid: {
+                        type: 'string',
+                        format: 'uuid'
+                      },
                       survey_name: {
                         type: 'string'
                       },
@@ -223,6 +236,20 @@ GET.apiDoc = {
                         amount: {
                           type: 'number'
                         },
+                        start_date: {
+                          type: 'string',
+                          format: 'date',
+                          nullable: true
+                        },
+                        end_date: {
+                          type: 'string',
+                          format: 'date',
+                          nullable: true
+                        },
+                        description: {
+                          type: 'string',
+                          nullable: true
+                        },
                         revision_count: {
                           type: 'number'
                         }
@@ -271,6 +298,9 @@ GET.apiDoc = {
                         items: {
                           type: 'number'
                         }
+                      },
+                      revision_count: {
+                        type: 'number'
                       }
                     }
                   },
@@ -360,6 +390,12 @@ GET.apiDoc = {
                           minimum: 0
                         }
                       }
+                    }
+                  },
+                  participants: {
+                    type: 'array',
+                    items: {
+                      ...surveyParticipationAndSystemUserSchema
                     }
                   },
                   site_selection: {

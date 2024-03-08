@@ -86,6 +86,16 @@ GET.apiDoc = {
                     type: 'number',
                     minimum: 0,
                     description: 'The total amount from all references to this funding source by all surveys.'
+                  },
+                  start_date: {
+                    type: 'string',
+                    format: 'date',
+                    nullable: true
+                  },
+                  end_date: {
+                    type: 'string',
+                    format: 'date',
+                    nullable: true
                   }
                 }
               },
@@ -117,7 +127,8 @@ GET.apiDoc = {
                       minimum: 1
                     },
                     amount: {
-                      type: 'number'
+                      type: 'number',
+                      minimum: 0
                     },
                     revision_count: {
                       type: 'integer',
@@ -238,6 +249,16 @@ PUT.apiDoc = {
             },
             description: {
               type: 'string'
+            },
+            start_date: {
+              type: 'string',
+              format: 'date',
+              nullable: true
+            },
+            end_date: {
+              type: 'string',
+              format: 'date',
+              nullable: true
             },
             revision_count: {
               type: 'integer',

@@ -1,3 +1,4 @@
+import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { ConfigContext, IConfig } from 'contexts/configContext';
 import { DialogContext, IDialogContext } from 'contexts/dialogContext';
 import { IObservationsContext, ObservationsContext } from 'contexts/observationsContext';
@@ -6,6 +7,23 @@ import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import { ITaxonomyContext, TaxonomyContext } from 'contexts/taxonomyContext';
 import { useContext } from 'react';
+
+/**
+ * Returns an instance of `ICodesContext` from `CodesContext`.
+ *
+ * @return {*}  {ICodesContext}
+ */
+export const useCodesContext = (): ICodesContext => {
+  const context = useContext(CodesContext);
+
+  if (!context) {
+    throw Error(
+      'CodeContext is undefined, please verify you are calling useCodeContext() as child of an <CodeContextProvider> component.'
+    );
+  }
+
+  return context;
+};
 
 /**
  * Returns an instance of `IConfig` from `ConfigContext`.

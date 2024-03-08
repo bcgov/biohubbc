@@ -221,7 +221,8 @@ GET.apiDoc = {
                           type: 'string'
                         },
                         amount: {
-                          type: 'number'
+                          type: 'number',
+                          minimum: 0
                         },
                         revision_count: {
                           type: 'number'

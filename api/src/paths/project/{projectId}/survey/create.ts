@@ -177,7 +177,8 @@ POST.apiDoc = {
                     minimum: 1
                   },
                   amount: {
-                    type: 'number'
+                    type: 'number',
+                    minimum: 0
                   }
                 }
               }

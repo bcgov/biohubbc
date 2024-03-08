@@ -4,6 +4,7 @@ import { SYSTEM_IDENTITY_SOURCE } from '../../../../constants/database';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/http-error';
+import { projectAndSystemUserSchema } from '../../../../openapi/schemas/user';
 import { IParticipant } from '../../../../repositories/project-participation-repository';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { ProjectParticipationService } from '../../../../services/project-participation-service';
@@ -57,42 +58,7 @@ GET.apiDoc = {
           schema: {
             type: 'array',
             items: {
-              type: 'object',
-              additionalProperties: false,
-              properties: {
-                project_participation_id: {
-                  type: 'number'
-                },
-                project_id: {
-                  type: 'number'
-                },
-                system_user_id: {
-                  type: 'number'
-                },
-                project_role_ids: {
-                  type: 'array',
-                  items: {
-                    type: 'number'
-                  }
-                },
-                project_role_names: {
-                  type: 'array',
-                  items: {
-                    type: 'string'
-                  }
-                },
-                user_guid: {
-                  type: 'string',
-                  description: 'The GUID for the user.',
-                  nullable: true
-                },
-                user_identifier: {
-                  type: 'string'
-                },
-                identity_source: {
-                  type: 'string'
-                }
-              }
+              ...projectAndSystemUserSchema
             }
           }
         }

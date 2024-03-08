@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
+import { systemUserSchema } from '../../openapi/schemas/user';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { UserService } from '../../services/user-service';
 import { getLogger } from '../../utils/logger';
@@ -38,58 +39,7 @@ GET.apiDoc = {
           schema: {
             type: 'array',
             items: {
-              title: 'User Response Object',
-              type: 'object',
-              additionalProperties: false,
-              required: [
-                'system_user_id',
-                'user_identifier',
-                'identity_source',
-                'role_ids',
-                'role_names',
-                'email',
-                'display_name',
-                'agency'
-              ],
-              properties: {
-                system_user_id: {
-                  type: 'number'
-                },
-                user_guid: {
-                  type: 'string',
-                  description: 'The GUID for the user.',
-                  nullable: true
-                },
-                user_identifier: {
-                  type: 'string'
-                },
-                identity_source: {
-                  type: 'string',
-                  description: 'The identity source of the user'
-                },
-                role_ids: {
-                  type: 'array',
-                  items: {
-                    type: 'number'
-                  }
-                },
-                role_names: {
-                  type: 'array',
-                  items: {
-                    type: 'string'
-                  }
-                },
-                email: {
-                  type: 'string'
-                },
-                display_name: {
-                  type: 'string'
-                },
-                agency: {
-                  type: 'string',
-                  nullable: true
-                }
-              }
+              ...systemUserSchema
             }
           }
         }
