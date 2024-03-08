@@ -97,7 +97,7 @@ export function processFile(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      const response = await observationService.processObservationCsvSubmission(surveyId, submissionId);
+      await observationService.processObservationCsvSubmission(surveyId, submissionId);
 
       await connection.commit();
 

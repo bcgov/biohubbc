@@ -567,9 +567,10 @@ export class ObservationRepository extends BaseRepository {
   /**
    * Retrieves the observation submission record by the given submission ID.
    *
+   * @param {number} surveyId
    * @param {number} submissionId
    * @return {*}  {Promise<ObservationSubmissionRecord>}
-   * @memberof ObservationService
+   * @memberof ObservationRepository
    */
   async getObservationSubmissionById(surveyId: number, submissionId: number): Promise<ObservationSubmissionRecord> {
     const queryBuilder = getKnex()
@@ -625,7 +626,7 @@ export class ObservationRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number[]} sampleSiteIds
-   * @return {*}  {Promise<{ observationCount: number }>}
+   * @return {*}  {Promise<number>}
    * @memberof ObservationRepository
    */
   async getObservationsCountBySampleSiteIds(surveyId: number, sampleSiteIds: number[]): Promise<number> {
@@ -654,7 +655,7 @@ export class ObservationRepository extends BaseRepository {
    * Retrieves observation records count for the given survey and sample method ids
    *
    * @param {number[]} sampleMethodIds
-   * @return {*}  {Promise<{ observationCount: number }>}
+   * @return {*}  {Promise<number>}
    * @memberof ObservationRepository
    */
   async getObservationsCountBySampleMethodIds(sampleMethodIds: number[]): Promise<number> {
@@ -682,7 +683,7 @@ export class ObservationRepository extends BaseRepository {
    * Retrieves observation records count for the given survey and sample period ids
    *
    * @param {number[]} samplePeriodIds
-   * @return {*}  {Promise<{ observationCount: number }>}
+   * @return {*}  {Promise<number>}
    * @memberof ObservationRepository
    */
   async getObservationsCountBySamplePeriodIds(samplePeriodIds: number[]): Promise<number> {

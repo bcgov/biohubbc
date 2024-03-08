@@ -95,7 +95,8 @@ export class ObservationService extends DBService {
   /**
    * Validates the given CSV file against the given column validator
    *
-   * @param {MediaFile} file
+   * @param {xlsx.WorkSheet} xlsxWorksheets
+   * @param {IXLSXCSVValidator} columnValidator
    * @return {*}  {boolean}
    * @memberof ObservationService
    */
@@ -142,7 +143,7 @@ export class ObservationService extends DBService {
    * Upserts the given observation records and their associated measurements.
    *
    * @param {number} surveyId
-   * @param {((Observation | ObservationRecord)[])} observations
+   * @param {InsertUpdateObservationsWithMeasurements[]} observations
    * @return {*}  {Promise<void>}
    * @memberof ObservationService
    */
@@ -349,7 +350,7 @@ export class ObservationService extends DBService {
    *
    * @param {number} surveyId
    * @param {number[]} sampleSiteIds
-   * @return {*}  {Promise<{ observationCount: number }>}
+   * @return {*}  {Promise<number>}
    * @memberof ObservationService
    */
   async getObservationsCountBySampleSiteIds(surveyId: number, sampleSiteIds: number[]): Promise<number> {
@@ -360,7 +361,7 @@ export class ObservationService extends DBService {
    * Retrieves observation records count for the given survey and sample method ids
    *
    * @param {number[]} sampleMethodIds
-   * @return {*}  {Promise<{ observationCount: number }>}
+   * @return {*}  {Promise<number>}
    * @memberof ObservationService
    */
   async getObservationsCountBySampleMethodIds(sampleMethodIds: number[]): Promise<number> {
@@ -371,7 +372,7 @@ export class ObservationService extends DBService {
    * Retrieves observation records count for the given survey and sample period ids
    *
    * @param {number[]} samplePeriodIds
-   * @return {*}  {Promise<{ observationCount: number }>}
+   * @return {*}  {Promise<number>}
    * @memberof ObservationService
    */
   async getObservationsCountBySamplePeriodIds(samplePeriodIds: number[]): Promise<number> {
@@ -386,10 +387,10 @@ export class ObservationService extends DBService {
    *
    * @param {number} surveyId
    * @param {number} submissionId
-   * @return {*}  {Promise<ObservationRecord[]>}
+   * @return {*}  {Promise<void>}
    * @memberof ObservationService
    */
-  async processObservationCsvSubmission(submissionId: number): Promise<void> {
+  async processObservationCsvSubmission(surveyId: number, submissionId: number): Promise<void> {
     defaultLog.debug({ label: 'processObservationCsvSubmission', submissionId });
 
     // Step 1. Retrieve the observation submission record
