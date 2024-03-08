@@ -72,11 +72,17 @@ export type InsertUpdateObservationsWithMeasurements = {
   subcounts: InsertSubCount[];
 };
 
-export type ObservationSupplementaryData = {
+export type ObservationCountSupplementaryData = {
   observationCount: number;
+};
+
+export type ObservationMeasurementSupplementaryData = {
   qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
   quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
 };
+
+export type AllObservationSupplementaryData = ObservationCountSupplementaryData &
+  ObservationMeasurementSupplementaryData;
 
 export class ObservationService extends DBService {
   observationRepository: ObservationRepository;
@@ -225,7 +231,7 @@ export class ObservationService extends DBService {
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<{
    *     surveyObservations: ObservationRecordWithSamplingAndSubcountData[];
-   *     supplementaryObservationData: ObservationSupplementaryData;
+   *     supplementaryObservationData: AllObservationSupplementaryData;
    *   }>}
    * @memberof ObservationService
    */
@@ -234,16 +240,26 @@ export class ObservationService extends DBService {
     pagination?: ApiPaginationOptions
   ): Promise<{
     surveyObservations: ObservationRecordWithSamplingAndSubcountData[];
-    supplementaryObservationData: ObservationSupplementaryData;
+    supplementaryObservationData: AllObservationSupplementaryData;
   }> {
     const surveyObservations = await this.observationRepository.getSurveyObservationsWithSamplingDataWithAttributesData(
       surveyId,
       pagination
     );
 
-    const supplementaryObservationData = await this.getSurveyObservationsSupplementaryData(surveyId);
+    // Get supplementary observation data
+    const observationCount = await this.observationRepository.getSurveyObservationCount(surveyId);
+    const subCountService = new SubCountService(this.connection);
+    const measurementTypeDefinitions = await subCountService.getMeasurementTypeDefinitionsForSurvey(surveyId);
 
-    return { surveyObservations: surveyObservations, supplementaryObservationData };
+    return {
+      surveyObservations: surveyObservations,
+      supplementaryObservationData: {
+        observationCount,
+        qualitative_measurements: measurementTypeDefinitions.qualitative_measurements,
+        quantitative_measurements: measurementTypeDefinitions.quantitative_measurements
+      }
+    };
   }
 
   /**
@@ -253,7 +269,7 @@ export class ObservationService extends DBService {
    * @param {number} surveyId
    * @return {*}  {Promise<{
    *     surveyObservationsGeometry: ObservationGeometryRecord[];
-   *     supplementaryObservationData: ObservationSupplementaryData;
+   *     supplementaryObservationData: ObservationCountSupplementaryData;
    *   }>}
    * @memberof ObservationService
    */
@@ -261,33 +277,14 @@ export class ObservationService extends DBService {
     surveyId: number
   ): Promise<{
     surveyObservationsGeometry: ObservationGeometryRecord[];
-    supplementaryObservationData: ObservationSupplementaryData;
+    supplementaryObservationData: ObservationCountSupplementaryData;
   }> {
     const surveyObservationsGeometry = await this.observationRepository.getSurveyObservationsGeometry(surveyId);
-    const supplementaryObservationData = await this.getSurveyObservationsSupplementaryData(surveyId);
 
-    return { surveyObservationsGeometry, supplementaryObservationData };
-  }
-
-  /**
-   * Retrieves all supplementary data for the given survey's observations
-   *
-   * @param {number} surveyId
-   * @return {*}  {Promise<ObservationSupplementaryData>}
-   * @memberof ObservationService
-   */
-  async getSurveyObservationsSupplementaryData(surveyId: number): Promise<ObservationSupplementaryData> {
-    const service = new SubCountService(this.connection);
-
+    // Get supplementary observation data
     const observationCount = await this.observationRepository.getSurveyObservationCount(surveyId);
 
-    const measurementTypeDefinitions = await service.getMeasurementTypeDefinitionsForSurvey(surveyId);
-
-    return {
-      observationCount,
-      qualitative_measurements: measurementTypeDefinitions.qualitative_measurements,
-      quantitative_measurements: measurementTypeDefinitions.quantitative_measurements
-    };
+    return { surveyObservationsGeometry, supplementaryObservationData: { observationCount } };
   }
 
   /**
