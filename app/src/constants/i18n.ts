@@ -204,7 +204,7 @@ export const DeleteProjectI18N = {
 export const DeleteSurveyI18N = {
   deleteTitle: 'Delete Survey?',
   deleteText: 'Deleting this survey will remove all attachments and related data. This action cannot be undone.',
-  deleteErrorTitle: 'Error Deleting Project',
+  deleteErrorTitle: 'Error Deleting Survey',
   deleteErrorText:
     'An error has occurred while attempting to delete this survey. If the error persists, please contact your system administrator.'
 };
