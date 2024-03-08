@@ -78,17 +78,7 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Delete OK',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            required: [],
-            properties: {},
-            additionalProperties: false
-          }
-        }
-      }
+      description: 'Delete OK'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -109,7 +99,8 @@ POST.apiDoc = {
 };
 
 /**
- * Deletes survey observation measurements.
+ * Deletes survey observation measurement records, for all observation records, for the given survey and set of
+ * measurement ids.
  *
  * @export
  * @return {*}  {RequestHandler}
@@ -130,7 +121,7 @@ export function deleteObservationMeasurements(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(204);
+      return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'deleteObservationMeasurements', message: 'error', error });
       await connection.rollback();

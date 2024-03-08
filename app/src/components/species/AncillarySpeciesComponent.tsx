@@ -7,13 +7,13 @@ import SelectedSpecies from './components/SelectedSpecies';
 import SpeciesAutocompleteField from './components/SpeciesAutocompleteField';
 
 const AncillarySpeciesComponent = () => {
-  const { values, setFieldValue, setErrors, errors } = useFormikContext<ITaxonomy[]>();
+  const { values, setFieldValue, setFieldError, errors } = useFormikContext<ITaxonomy[]>();
 
   const selectedSpecies: ITaxonomy[] = get(values, 'species.ancillary_species') || [];
 
   const handleAddSpecies = (species: ITaxonomy) => {
     setFieldValue(`species.ancillary_species[${selectedSpecies.length}]`, species);
-    setErrors([]);
+    setFieldError(`species.ancillary_species`, undefined);
   };
 
   const handleRemoveSpecies = (species_id: number) => {

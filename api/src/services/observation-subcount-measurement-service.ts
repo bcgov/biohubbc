@@ -52,7 +52,18 @@ export class ObservationSubCountMeasurementService extends DBService {
     );
   }
 
-  async deleteMeasurementsForTaxonMeasurementIds(surveyId: number, ids: string[]): Promise<void> {
-    return this.observationSubCountMeasurementRepository.deleteMeasurementsForTaxonMeasurementIds(surveyId, ids);
+  /**
+   * Delete all measurement records, for all observation records, for a given survey and set of measurement ids.
+   *
+   * @param {number} surveyId
+   * @param {string[]} measurementIds Critterbase taxon measurement ids to delete
+   * @return {*}  {Promise<void>}
+   * @memberof ObservationSubCountMeasurementService
+   */
+  async deleteMeasurementsForTaxonMeasurementIds(surveyId: number, measurementIds: string[]): Promise<void> {
+    return this.observationSubCountMeasurementRepository.deleteMeasurementsForTaxonMeasurementIds(
+      surveyId,
+      measurementIds
+    );
   }
 }

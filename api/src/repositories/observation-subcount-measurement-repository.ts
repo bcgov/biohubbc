@@ -58,7 +58,6 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
   async insertObservationQuantitativeMeasurementRecords(
     record: InsertObservationSubCountQuantitativeMeasurementRecord[]
   ): Promise<ObservationSubCountQuantitativeMeasurementRecord[]> {
-    console.log(record);
     const qb = getKnex()
       .queryBuilder()
       .insert(record)
@@ -187,12 +186,32 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
     return response.rowCount;
   }
 
-  async deleteMeasurementsForTaxonMeasurementIds(surveyId: number, ids: string[]): Promise<void> {
-    await this.deleteQualitativeMeasurementForTaxonMeasurementIds(surveyId, ids);
-    await this.deleteQuantitativeMeasurementForTaxonMeasurementIds(surveyId, ids);
+  /**
+   * Delete all measurement records, for all observation records, for a given survey and set of measurement ids.
+   *
+   * @param {number} surveyId
+   * @param {string[]} measurementIds Critterbase taxon measurement ids to delete
+   * @return {*}  {Promise<void>}
+   * @memberof ObservationSubCountMeasurementRepository
+   */
+  async deleteMeasurementsForTaxonMeasurementIds(surveyId: number, measurementIds: string[]): Promise<void> {
+    await this.deleteQualitativeMeasurementForTaxonMeasurementIds(surveyId, measurementIds);
+    await this.deleteQuantitativeMeasurementForTaxonMeasurementIds(surveyId, measurementIds);
   }
 
-  async deleteQualitativeMeasurementForTaxonMeasurementIds(surveyId: number, ids: string[]): Promise<number> {
+  /**
+   * Delete all qualitative measurement records, for all observation records, for a given survey and set of measurement
+   * ids.
+   *
+   * @param {number} surveyId
+   * @param {string[]} measurementIds Critterbase taxon measurement ids to delete.
+   * @return {*}  {Promise<number>}
+   * @memberof ObservationSubCountMeasurementRepository
+   */
+  async deleteQualitativeMeasurementForTaxonMeasurementIds(
+    surveyId: number,
+    measurementIds: string[]
+  ): Promise<number> {
     const qb = getKnex()
       .queryBuilder()
       .delete()
@@ -203,14 +222,26 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
       )
       .whereRaw('observation_subcount.survey_observation_id = survey_observation.survey_observation_id')
       .andWhere(`survey_observation.survey_id`, surveyId)
-      .whereIn('observation_subcount_qualitative_measurement.critterbase_taxon_measurement_id', ids);
+      .whereIn('observation_subcount_qualitative_measurement.critterbase_taxon_measurement_id', measurementIds);
 
     const response = await this.connection.knex(qb);
 
     return response.rowCount;
   }
 
-  async deleteQuantitativeMeasurementForTaxonMeasurementIds(surveyId: number, ids: string[]): Promise<number> {
+  /**
+   * Delete all quantitative measurement records, for all observation records, for a given survey and set of measurement
+   * ids.
+   *
+   * @param {number} surveyId
+   * @param {string[]} measurementIds Critterbase taxon measurement ids to delete.
+   * @return {*}  {Promise<number>}
+   * @memberof ObservationSubCountMeasurementRepository
+   */
+  async deleteQuantitativeMeasurementForTaxonMeasurementIds(
+    surveyId: number,
+    measurementIds: string[]
+  ): Promise<number> {
     const qb = getKnex()
       .queryBuilder()
       .delete()
@@ -221,7 +252,7 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
       )
       .whereRaw('observation_subcount.survey_observation_id = survey_observation.survey_observation_id')
       .andWhere(`survey_observation.survey_id`, surveyId)
-      .whereIn('observation_subcount_quantitative_measurement.critterbase_taxon_measurement_id', ids);
+      .whereIn('observation_subcount_quantitative_measurement.critterbase_taxon_measurement_id', measurementIds);
 
     const response = await this.connection.knex(qb);
 

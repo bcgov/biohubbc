@@ -318,7 +318,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   });
 
   // Sort model
-  const [sortModel, setSortModel] = useState<GridSortModel>([]);
+  const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'observation_date', sort: 'desc' }]);
 
   /**
    * Refreshes the observations table with the latest records from the server.
@@ -546,31 +546,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       }
 
       try {
-        const response = await biohubApi.observation.deleteObservationMeasurements(projectId, surveyId, measurementIds);
-        console.log('response', response);
-
-        console.log('validationModel', validationModel);
-
-        // Remove deleted row IDs from the validation model
-        // setValidationModel((prevValidationModel) => {
-        //   Object.keys(prevValidationModel).forEach((rowId) => {
-        //     const observationTableRow = prevValidationModel[rowId];
-
-        //     // Check if the object B exists
-        //     if (!observationTableRow) {
-        //       return;
-        //     }
-
-        //     // Remove each specified key from the object B
-        //     measurementIds.forEach((measurementId) => {
-        //       if (measurementId in observationTableRow) {
-        //         delete observationTableRow[measurementId];
-        //       }
-        //     });
-        //   });
-
-        //   return prevValidationModel;
-        // });
+        // Delete measurement columns from the database
+        await biohubApi.observation.deleteObservationMeasurements(projectId, surveyId, measurementIds);
 
         // Close yes-no dialog
         setYesNoDialog({ open: false });

@@ -33,6 +33,7 @@ export const asyncErrorWrapper = <WrapperArgs extends any[], WrapperReturn>(
   fn: (...args: WrapperArgs) => Promise<WrapperReturn>
 ) => async (...args: WrapperArgs): Promise<WrapperReturn> => {
   try {
+    // asyncErrorWrapper must return the awaited promise, and cannot simply `return fn(...args)`.
     return await fn(...args);
   } catch (err) {
     throw parseError(err);

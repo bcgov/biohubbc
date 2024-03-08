@@ -190,6 +190,7 @@ describe('ProjectParticipationService', () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectParticipationService(dbConnection);
 
+      const mockSurveyId = 1;
       const data = {
         projectParticipationId: 1
       };
@@ -198,7 +199,7 @@ describe('ProjectParticipationService', () => {
         .stub(ProjectParticipationRepository.prototype, 'deleteProjectParticipationRecord')
         .resolves();
 
-      const response = await service.deleteProjectParticipationRecord(data.projectParticipationId);
+      const response = await service.deleteProjectParticipationRecord(mockSurveyId, data.projectParticipationId);
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(undefined);
@@ -1118,7 +1119,7 @@ describe('ProjectParticipationService', () => {
       await service.upsertProjectParticipantData(projectId, participants);
 
       expect(getProjectParticipantsStub).to.have.been.calledOnceWith(projectId);
-      expect(deleteProjectParticipationRecordStub).to.have.been.calledWith(23);
+      expect(deleteProjectParticipationRecordStub).to.have.been.calledWith(1, 23);
       expect(updateProjectParticipationRoleStub).to.have.been.calledOnceWith(12, PROJECT_ROLE.COORDINATOR);
       expect(postProjectParticipantStub).to.have.been.calledOnceWith(projectId, 44, PROJECT_ROLE.OBSERVER);
     });

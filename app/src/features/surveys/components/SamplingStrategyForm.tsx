@@ -13,9 +13,7 @@ const SamplingStrategyForm = () => {
     <>
       <Box component="fieldset">
         <Typography component="legend">Site Selection Strategies</Typography>
-        <Box mt={1}>
-          <SurveySiteSelectionForm onChangeStratumEntryVisibility={setShowStratumForm} />
-        </Box>
+        <SurveySiteSelectionForm onChangeStratumEntryVisibility={setShowStratumForm} />
       </Box>
       <Collapse in={showStratumForm}>
         <Box component="fieldset" mt={5}>

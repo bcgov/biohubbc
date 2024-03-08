@@ -9,7 +9,7 @@ import {
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ObservationService } from '../../../../../../services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
-import { ensureCompletePaginationOptions, getPaginationResponse } from '../../../../../../utils/pagination';
+import { ensureCompletePaginationOptions, makePaginationResponse } from '../../../../../../utils/pagination';
 import { ApiPaginationOptions } from '../../../../../../zod-schema/pagination';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation');
@@ -635,7 +635,7 @@ export function getSurveyObservations(): RequestHandler {
       return res.status(200).json({
         surveyObservations: observationData.surveyObservations,
         supplementaryObservationData: observationData.supplementaryObservationData,
-        pagination: getPaginationResponse(observationCount, paginationOptions)
+        pagination: makePaginationResponse(observationCount, paginationOptions)
       });
     } catch (error) {
       defaultLog.error({ label: 'getSurveyObservations', message: 'error', error });
