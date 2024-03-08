@@ -65,11 +65,16 @@ export type MeasurementColumn = {
   colDef: GridColDef;
 };
 
-export interface ISupplementaryObservationData {
+export type SupplementaryObservationCountData = {
   observationCount: number;
+};
+
+export type SupplementaryObservationMeasurementData = {
   qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
   quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
-}
+};
+
+export type SupplementaryObservationData = SupplementaryObservationCountData & SupplementaryObservationMeasurementData;
 
 export interface IObservationTableRow extends Partial<ObservationRecord> {
   id: GridRowId;
@@ -135,6 +140,15 @@ export type IObservationsTableContext = {
    * Deletes all of the given records and removes them from the Observation table.
    */
   deleteObservationRecords: (observationRecords: IObservationTableRow[]) => void;
+  /**
+   * Deletes all of the given measurement columns, for all observation records, and removes them from the Observation
+   * table.
+   *
+   * @param {string[]} measurementIds The critterbase taxon measurement ids to delete.
+   * @param {() => void} [onSuccess] Optional callback that fires after the user confirms the deletion, and the deletion
+   * is successful.
+   */
+  deleteObservationMeasurementColumns: (measurementIds: string[], onSuccess?: () => void) => void;
   /**
    * discards all changes made to observation records within the Observation Table. Abandons all newly added rows that
    * have not yet been saved, and reverts all edits to existing rows.
@@ -520,6 +534,76 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   );
 
   /**
+   * Deletes the given records from the server and removes them from the table.
+   *
+   * @param {string[]} measurementIds The critterbase taxon measurement ids to delete.
+   * @return {*}  {Promise<void>}
+   */
+  const _deleteMeasurementColumns = useCallback(
+    async (measurementIds: string[]): Promise<void> => {
+      if (!measurementIds.length) {
+        return;
+      }
+
+      try {
+        const response = await biohubApi.observation.deleteObservationMeasurements(projectId, surveyId, measurementIds);
+        console.log('response', response);
+
+        console.log('validationModel', validationModel);
+
+        // Remove deleted row IDs from the validation model
+        // setValidationModel((prevValidationModel) => {
+        //   Object.keys(prevValidationModel).forEach((rowId) => {
+        //     const observationTableRow = prevValidationModel[rowId];
+
+        //     // Check if the object B exists
+        //     if (!observationTableRow) {
+        //       return;
+        //     }
+
+        //     // Remove each specified key from the object B
+        //     measurementIds.forEach((measurementId) => {
+        //       if (measurementId in observationTableRow) {
+        //         delete observationTableRow[measurementId];
+        //       }
+        //     });
+        //   });
+
+        //   return prevValidationModel;
+        // });
+
+        // Close yes-no dialog
+        setYesNoDialog({ open: false });
+
+        // Show snackbar for successful deletion
+        setSnackbar({
+          snackbarMessage: (
+            <Typography variant="body2" component="div">
+              {measurementIds.length === 1
+                ? ObservationsTableI18N.deleteSingleMeasurementColumnSuccessSnackbarMessage
+                : ObservationsTableI18N.deleteMultipleMeasurementColumnSuccessSnackbarMessage(measurementIds.length)}
+            </Typography>
+          ),
+          open: true
+        });
+      } catch {
+        // Close yes-no dialog
+        setYesNoDialog({ open: false });
+
+        // Show error dialog
+        setErrorDialog({
+          onOk: () => setErrorDialog({ open: false }),
+          onClose: () => setErrorDialog({ open: false }),
+          dialogTitle: ObservationsTableI18N.removeMeasurementColumnsErrorDialogTitle,
+          dialogText: ObservationsTableI18N.removeMeasurementColumnsErrorDialogText,
+          open: true
+        });
+      }
+    },
+    [setYesNoDialog, setSnackbar, biohubApi.observation, projectId, surveyId, setErrorDialog]
+  );
+
+  /**
    * Returns all of the rows that have been selected.
    *
    * @return {*}
@@ -575,6 +659,51 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       });
     },
     [_deleteRecords, setYesNoDialog]
+  );
+
+  /**
+   * Renders a dialog that prompts the user to delete the given measurement columns (from all observation records).
+   *
+   * @param {string[]} measurementIds The critterbase taxon measurement ids to delete.
+   * @param {() => void} [onSuccess] Optional callback that fires after the user confirms the deletion, and the deletion
+   * is successful.
+   * @return {*}
+   */
+  const deleteObservationMeasurementColumns = useCallback(
+    (measurementIds: string[], onSuccess?: () => void) => {
+      if (!measurementIds.length) {
+        return;
+      }
+
+      setYesNoDialog({
+        dialogTitle:
+          measurementIds.length === 1
+            ? ObservationsTableI18N.removeSingleMeasurementColumnDialogTitle
+            : ObservationsTableI18N.removeMultipleMeasurementColumnsDialogTitle(measurementIds.length),
+        dialogText:
+          measurementIds.length === 1
+            ? ObservationsTableI18N.removeSingleMeasurementColumnDialogText
+            : ObservationsTableI18N.removeMultipleMeasurementColumnsDialogText,
+        yesButtonProps: {
+          color: 'error',
+          loading: false
+        },
+        yesButtonLabel:
+          measurementIds.length === 1
+            ? ObservationsTableI18N.removeSingleMeasurementColumnButtonText
+            : ObservationsTableI18N.removeMultipleMeasurementColumnsButtonText,
+        noButtonProps: { color: 'primary', variant: 'outlined', disabled: false },
+        noButtonLabel: 'Cancel',
+        open: true,
+        onYes: async () => {
+          await _deleteMeasurementColumns(measurementIds);
+          onSuccess?.();
+        },
+        onClose: () => setYesNoDialog({ open: false }),
+        onNo: () => setYesNoDialog({ open: false })
+      });
+    },
+    [_deleteMeasurementColumns, setYesNoDialog]
   );
 
   /**
@@ -1082,6 +1211,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       addObservationRecord,
       saveObservationRecords,
       deleteObservationRecords,
+      deleteObservationMeasurementColumns,
       discardChanges,
       refreshObservationRecords,
       getSelectedObservationRecords,
@@ -1115,6 +1245,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       addObservationRecord,
       saveObservationRecords,
       deleteObservationRecords,
+      deleteObservationMeasurementColumns,
       discardChanges,
       refreshObservationRecords,
       getSelectedObservationRecords,

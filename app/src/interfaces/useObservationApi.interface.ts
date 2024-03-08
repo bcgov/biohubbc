@@ -1,8 +1,8 @@
-import { ISupplementaryObservationData, StandardObservationColumns } from 'contexts/observationsTableContext';
+import { StandardObservationColumns, SupplementaryObservationData } from 'contexts/observationsTableContext';
 import { ApiPaginationResponseParams } from 'types/misc';
 export interface IGetSurveyObservationsResponse {
   surveyObservations: ObservationRecordWithSamplingAndSubcountData[];
-  supplementaryObservationData: ISupplementaryObservationData;
+  supplementaryObservationData: SupplementaryObservationData;
   pagination: ApiPaginationResponseParams;
 }
 
@@ -11,7 +11,7 @@ export interface IGetSurveyObservationsGeometryResponse {
     survey_observation_id: number;
     geometry: GeoJSON.Point;
   }[];
-  supplementaryObservationData: ISupplementaryObservationData;
+  supplementaryObservationData: SupplementaryObservationData;
 }
 
 type ObservationSamplingData = {

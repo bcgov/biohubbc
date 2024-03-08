@@ -96,19 +96,21 @@ export const ConfigureColumnsContainer = (props: IConfigureColumnsContainerProps
    * @param {string[]} measurementColumnsToRemove The `field` names of the columns to remove
    */
   const onRemoveMeasurements = useCallback(
-    (measurementColumnsToRemove: string[]) => {
-      observationsTableContext.setMeasurementColumns((currentColumns) => {
-        const remainingColumns = currentColumns.filter(
-          (currentColumn) => !measurementColumnsToRemove.includes(currentColumn.colDef.field)
-        );
+    async (measurementColumnsToRemove: string[]) => {
+      await observationsTableContext.deleteObservationMeasurementColumns(measurementColumnsToRemove, () => {
+        observationsTableContext.setMeasurementColumns((currentColumns) => {
+          const remainingColumns = currentColumns.filter(
+            (currentColumn) => !measurementColumnsToRemove.includes(currentColumn.colDef.field)
+          );
 
-        // Store user-added mesurement columns in local storage
-        sessionStorage.setItem(
-          getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS),
-          JSON.stringify(remainingColumns)
-        );
+          // Store user-added mesurement columns in local storage
+          sessionStorage.setItem(
+            getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS),
+            JSON.stringify(remainingColumns)
+          );
 
-        return remainingColumns;
+          return remainingColumns;
+        });
       });
     },
     [observationsTableContext, surveyId]

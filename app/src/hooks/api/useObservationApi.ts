@@ -1,8 +1,8 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import {
-  ISupplementaryObservationData,
   ObservationRecord,
-  StandardObservationColumns
+  StandardObservationColumns,
+  SupplementaryObservationCountData
 } from 'contexts/observationsTableContext';
 import {
   IGetSurveyObservationsGeometryResponse,
@@ -178,21 +178,42 @@ const useObservationApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Deletes all of the observations having the given ID.
+   * Deletes all of the observation records having the given observation id.
    *
    * @param {number} projectId
    * @param {number} surveyId
    * @param {((string | number)[])} surveyObservationIds
-   * @return {*}  {Promise<number>}
+   * @return {*}  {Promise<{ supplementaryObservationData: SupplementaryObservationCountData }>}
    */
   const deleteObservationRecords = async (
     projectId: number,
     surveyId: number,
     surveyObservationIds: (string | number)[]
-  ): Promise<{ supplementaryObservationData: ISupplementaryObservationData }> => {
-    const { data } = await axios.post<{ supplementaryObservationData: ISupplementaryObservationData }>(
+  ): Promise<{ supplementaryObservationData: SupplementaryObservationCountData }> => {
+    const { data } = await axios.post<{ supplementaryObservationData: SupplementaryObservationCountData }>(
       `/api/project/${projectId}/survey/${surveyId}/observations/delete`,
       { surveyObservationIds }
+    );
+
+    return data;
+  };
+
+  /**
+   * Deletes all of the observation measurements, from all observation records, having the given taxon measurement id.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {string[]} measurementIds The critterbase taxon measurement ids to delete.
+   * @return {*}  {Promise<{ supplementaryObservationData: SupplementaryObservationCountData }>}
+   */
+  const deleteObservationMeasurements = async (
+    projectId: number,
+    surveyId: number,
+    measurementIds: string[]
+  ): Promise<{ supplementaryObservationData: SupplementaryObservationCountData }> => {
+    const { data } = await axios.post<{ supplementaryObservationData: SupplementaryObservationCountData }>(
+      `/api/project/${projectId}/survey/${surveyId}/observations/measurements/delete`,
+      { measurement_ids: measurementIds }
     );
 
     return data;
@@ -204,6 +225,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     getObservationRecord,
     getObservationsGeometry,
     deleteObservationRecords,
+    deleteObservationMeasurements,
     uploadCsvForImport,
     processCsvSubmission
   };
