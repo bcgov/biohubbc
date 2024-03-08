@@ -8,9 +8,13 @@ export const LandingIntro = () => {
         <Grid item xs={10} md={6}>
           <QuestionAnswer
             title="What is the Species Inventory Management System?"
-            subtext="A space to manage fish and wildlife data with collaborators from multiple organizations.
-            Upload species observations, animal telemetry, and animal captures, among other information, 
-            and invite collaborators to do the same in a shared workspace."
+            subtext={
+              <>
+                A space to manage fish and wildlife data with collaborators from multiple organizations. Upload species
+                observations, animal telemetry, and animal captures, among other information, and invite collaborators
+                to do the same in a shared workspace.
+              </>
+            }
           />
         </Grid>
         <Grid item xs={10} md={6}>
@@ -49,9 +53,9 @@ export const LandingIntro = () => {
           />
         </Grid>
 
-        {/* <Grid item xs={12} mt={5}>
+        <Grid item xs={12} mt={5}>
           <Box maxWidth="100%" component="img" src="/assets/manage-observations.jpg" />
-        </Grid> */}
+        </Grid>
       </Grid>
 
       <Divider sx={{ my: 5 }} />
