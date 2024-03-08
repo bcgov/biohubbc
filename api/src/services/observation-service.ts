@@ -459,6 +459,7 @@ export class ObservationService extends DBService {
         qualitative: [],
         quantitative: []
       };
+
       measurementColumns.forEach((mColumn) => {
         // Ignore blank columns
         if (Boolean(mColumn)) {
@@ -470,27 +471,23 @@ export class ObservationService extends DBService {
 
           const rowData = row[mColumn];
 
-          console.log(`Column: ${measurement?.measurement_name} Value: ${rowData}`);
           // Ignore empty rows
-          if (Boolean(rowData)) {
+          if (rowData !== undefined) {
             if (measurement) {
               // if measurement is qualitative, find the option uuid
               if (isMeasurementCBQualitativeTypeDefinition(measurement)) {
-                console.log(`Qualitative Measurement!`);
                 const foundOption = measurement.options.find(
                   (option) =>
                     option.option_label.toLowerCase() === String(rowData).toLowerCase() ||
                     option.option_value === Number(rowData)
                 );
                 if (foundOption) {
-                  console.log(`Found the option`);
                   newSubcount.qualitative.push({
                     measurement_id: measurement.taxon_measurement_id,
                     measurement_option_id: foundOption.qualitative_option_id
                   });
                 }
               } else {
-                console.log(`Quantitative Measurement!`);
                 newSubcount.quantitative.push({
                   measurement_id: measurement.taxon_measurement_id,
                   measurement_value: Number(rowData)
@@ -520,7 +517,6 @@ export class ObservationService extends DBService {
     });
 
     // Step 7. Insert new rows and return them
-    console.log(newRowData);
     await this.insertUpdateSurveyObservationsWithMeasurements(surveyId, newRowData);
   }
 

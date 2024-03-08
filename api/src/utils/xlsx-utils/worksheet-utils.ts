@@ -324,7 +324,6 @@ export function validateMeasurements(
   tsnMeasurementMap: TsnMeasurementMap
 ): boolean {
   return data.every((item) => {
-    console.log(`TSN: ${item.tsn} Column: '${item.measurement_name}' Data: ${item.measurement_value}`);
     const measurements = tsnMeasurementMap[item.tsn];
     if (measurements) {
       // only validate if the column has data
@@ -348,7 +347,7 @@ export function validateMeasurements(
           }
         }
         // Has measurements for tsn
-        // Has data but no matches found, return false
+        // Has data but no matches found, entry is invalid
         return false;
       } else {
         return true;
@@ -455,7 +454,6 @@ export async function getCBMeasurementsFromWorksheet(
       if (!tsnMeasurements[tsn]) {
         // TODO: modify Critter Base to accept multiple TSN at once
         const measurements = await critterBaseService.getTaxonMeasurements(tsn);
-        console.log(measurements);
         if (!measurements) {
           // TODO: do we care if there are no measurements for a taxon?
         }
@@ -499,7 +497,8 @@ export function findMeasurementFromTsnMeasurements(
       );
     }
 
-    if (measurements.quantitative.length > 0) {
+    // don't bother searching if we already found a measurement
+    if (measurements.quantitative.length > 0 && !foundMeasurement) {
       foundMeasurement = measurements.quantitative.find(
         (measurement) => measurement.measurement_name.toLowerCase() === measurementColumnName.toLowerCase()
       );
