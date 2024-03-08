@@ -82,7 +82,10 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
   };
 
   const clearErrors = () => {
-    setErrors({ ...errors, participants: undefined });
+    const newErrors = { ...errors };
+    delete errors.participants;
+
+    setErrors(newErrors);
   };
 
   const alertBarText = (): { title: string; text: string } => {
