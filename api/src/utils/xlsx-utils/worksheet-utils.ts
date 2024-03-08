@@ -491,21 +491,21 @@ export function findMeasurementFromTsnMeasurements(
     | null
     | undefined = null;
   const measurements = tsnMeasurements[tsn];
-
   if (measurements) {
     // find the correct measurement
     if (measurements.qualitative.length > 0) {
       foundMeasurement = measurements.qualitative.find(
-        (measurement) => measurement.measurement_name === measurementColumnName
+        (measurement) => measurement.measurement_name.toLowerCase() === measurementColumnName.toLowerCase()
       );
     }
 
     if (measurements.quantitative.length > 0) {
       foundMeasurement = measurements.quantitative.find(
-        (measurement) => measurement.measurement_name === measurementColumnName
+        (measurement) => measurement.measurement_name.toLowerCase() === measurementColumnName.toLowerCase()
       );
     }
   }
+
   return foundMeasurement;
 }
 
