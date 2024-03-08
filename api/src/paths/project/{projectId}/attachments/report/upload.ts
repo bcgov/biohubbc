@@ -8,7 +8,7 @@ import { AttachmentService } from '../../../../../services/attachment-service';
 import { scanFileForVirus, uploadFileToS3 } from '../../../../../utils/file-utils';
 import { getLogger } from '../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/attachments/upload');
+const defaultLog = getLogger('/api/project/{projectId}/attachments/report/upload');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {

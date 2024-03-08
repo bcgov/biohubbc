@@ -13,8 +13,7 @@ import {
   IGetProject,
   IProjectAdvancedFilters,
   ProjectData,
-  ProjectListData,
-  ProjectSupplementaryData
+  ProjectListData
 } from '../models/project-view';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { ProjectUser } from '../repositories/project-participation-repository';
@@ -107,19 +106,6 @@ export class ProjectService extends DBService {
       participants: projectParticipantsData,
       iucn: iucnData
     };
-  }
-
-  /**
-   * Get Project supplementary data for a given project ID
-   *
-   * @param {number} projectId
-   * @returns {*} {Promise<ProjectSupplementaryData>}
-   * @memberof ProjectService
-   */
-  async getProjectSupplementaryDataById(projectId: number): Promise<ProjectSupplementaryData> {
-    const projectMetadataPublish = await this.historyPublishService.getProjectMetadataPublishRecord(projectId);
-
-    return { project_metadata_publish: projectMetadataPublish };
   }
 
   async getProjectEntitiesById(projectId: number, entities: string[]): Promise<Partial<IGetProject>> {

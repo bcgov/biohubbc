@@ -14,12 +14,7 @@ import {
   ISurveyAttachment,
   ISurveyReportAttachment
 } from '../repositories/attachment-repository';
-import {
-  ProjectAttachmentPublish,
-  ProjectReportPublish,
-  SurveyAttachmentPublish,
-  SurveyReportPublish
-} from '../repositories/history-publish-repository';
+import { SurveyAttachmentPublish, SurveyReportPublish } from '../repositories/history-publish-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { AttachmentService } from './attachment-service';
 import { HistoryPublishService } from './history-publish-service';
@@ -54,62 +49,6 @@ describe('AttachmentService', () => {
 
           expect(repoStub).to.be.calledOnce;
           expect(response).to.eql(data);
-        });
-      });
-
-      describe('getProjectAttachmentsWithSupplementaryData', async () => {
-        it('should return a project attachment with supplementary data', async () => {
-          const dbConnection = getMockDBConnection();
-
-          const attachmentService = new AttachmentService(dbConnection);
-
-          const attachmentData = [
-            ({ project_attachment_id: 1, file_type: 'Attachment' } as unknown) as IProjectAttachment
-          ];
-
-          const supplementaryData = ({ project_attachment_publish_id: 1 } as unknown) as ProjectAttachmentPublish;
-
-          const attachmentRepoStub = sinon
-            .stub(AttachmentRepository.prototype, 'getProjectAttachments')
-            .resolves(attachmentData);
-
-          const supplementaryDataStub = sinon
-            .stub(HistoryPublishService.prototype, 'getProjectAttachmentPublishRecord')
-            .resolves(supplementaryData);
-
-          const response = await attachmentService.getProjectAttachmentsWithSupplementaryData(1);
-
-          expect(attachmentRepoStub).to.be.calledOnce;
-          expect(supplementaryDataStub).to.be.calledOnce;
-          expect(response[0].id).to.eql(attachmentData[0].project_attachment_id);
-          expect(response[0].supplementaryAttachmentData).to.eql(supplementaryData);
-        });
-      });
-
-      describe('getProjectReportAttachmentsWithSupplementaryData', async () => {
-        it('should return a project attachment with supplementary data', async () => {
-          const dbConnection = getMockDBConnection();
-
-          const attachmentService = new AttachmentService(dbConnection);
-
-          const attachmentData = [({ project_report_attachment_id: 1 } as unknown) as IProjectReportAttachment];
-
-          const supplementaryData = ({ project_report_publish_id: 1 } as unknown) as ProjectReportPublish;
-
-          const attachmentRepoStub = sinon
-            .stub(AttachmentRepository.prototype, 'getProjectReportAttachments')
-            .resolves(attachmentData);
-
-          const supplementaryDataStub = sinon
-            .stub(HistoryPublishService.prototype, 'getProjectReportPublishRecord')
-            .resolves(supplementaryData);
-
-          const response = await attachmentService.getProjectReportAttachmentsWithSupplementaryData(1);
-
-          expect(attachmentRepoStub).to.be.calledOnce;
-          expect(supplementaryDataStub).to.be.calledOnce;
-          expect(response[0].id).to.eql(attachmentData[0].project_report_attachment_id);
-          expect(response[0].supplementaryAttachmentData).to.eql(supplementaryData);
         });
       });
 

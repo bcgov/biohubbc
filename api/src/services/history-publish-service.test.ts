@@ -19,10 +19,8 @@ import {
   SurveyReportWithPublishData,
   SurveySummarySubmissionPublish
 } from '../repositories/history-publish-repository';
-import { ISurveySummaryDetails } from '../repositories/summary-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { HistoryPublishService } from './history-publish-service';
-import { SummaryService } from './summary-service';
 
 chai.use(sinonChai);
 
@@ -486,65 +484,6 @@ describe('HistoryPublishService', () => {
 
       expect(repositoryStub).to.be.calledOnce;
       expect(repositoryStub).to.be.calledWith(20);
-      expect(publishRecordStub).to.be.calledOnce;
-      expect(publishRecordStub).to.be.calledWith(1);
-      expect(response).to.eql(PublishStatus.UNSUBMITTED);
-    });
-  });
-
-  describe('summaryPublishStatus', () => {
-    it('returns NO_DATA when no summary are found', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new HistoryPublishService(dbConnection);
-
-      const summaryServiceStub = sinon
-        .stub(SummaryService.prototype, 'getLatestSurveySummarySubmission')
-        .resolves(undefined);
-
-      const response = await service.summaryPublishStatus(20);
-
-      expect(summaryServiceStub).to.be.calledOnce;
-      expect(summaryServiceStub).to.be.calledWith(20);
-      expect(response).to.eql(PublishStatus.NO_DATA);
-    });
-
-    it('returns SUBMITTED when all summary are submitted', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new HistoryPublishService(dbConnection);
-
-      const summaryServiceStub = sinon
-        .stub(SummaryService.prototype, 'getLatestSurveySummarySubmission')
-        .resolves(({ survey_summary_submission_id: 1 } as unknown) as ISurveySummaryDetails);
-
-      const publishRecordStub = sinon
-        .stub(HistoryPublishRepository.prototype, 'getSurveySummarySubmissionPublishRecord')
-        .resolves(({ survey_summary_submission_publish_id: 1 } as unknown) as SurveySummarySubmissionPublish);
-
-      const response = await service.summaryPublishStatus(20);
-
-      expect(summaryServiceStub).to.be.calledOnce;
-      expect(summaryServiceStub).to.be.calledWith(20);
-      expect(publishRecordStub).to.be.calledOnce;
-      expect(publishRecordStub).to.be.calledWith(1);
-      expect(response).to.eql(PublishStatus.SUBMITTED);
-    });
-
-    it('returns UNSUBMITTED when some summary are unsubmitted', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new HistoryPublishService(dbConnection);
-
-      const summaryServiceStub = sinon
-        .stub(SummaryService.prototype, 'getLatestSurveySummarySubmission')
-        .resolves(({ survey_summary_submission_id: 1 } as unknown) as ISurveySummaryDetails);
-
-      const publishRecordStub = sinon
-        .stub(HistoryPublishRepository.prototype, 'getSurveySummarySubmissionPublishRecord')
-        .resolves(({} as unknown) as SurveySummarySubmissionPublish);
-
-      const response = await service.summaryPublishStatus(20);
-
-      expect(summaryServiceStub).to.be.calledOnce;
-      expect(summaryServiceStub).to.be.calledWith(20);
       expect(publishRecordStub).to.be.calledOnce;
       expect(publishRecordStub).to.be.calledWith(1);
       expect(response).to.eql(PublishStatus.UNSUBMITTED);

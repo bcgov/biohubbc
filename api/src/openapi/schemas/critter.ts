@@ -2,6 +2,7 @@ import { OpenAPIV3 } from 'openapi-types';
 
 const critterSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     critter_id: {
       type: 'string',
@@ -24,6 +25,7 @@ const critterSchema: OpenAPIV3.SchemaObject = {
 
 const locationSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     location_id: {
       type: 'string',
@@ -46,6 +48,7 @@ const locationSchema: OpenAPIV3.SchemaObject = {
 
 const captureSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     critter_id: {
       type: 'string',
@@ -85,6 +88,7 @@ const captureSchema: OpenAPIV3.SchemaObject = {
 
 const collectionUnits: OpenAPIV3.SchemaObject = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     critter_id: {
       type: 'string',
@@ -103,6 +107,7 @@ const collectionUnits: OpenAPIV3.SchemaObject = {
 
 const markingSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     critter_id: {
       type: 'string',
@@ -136,6 +141,7 @@ const markingSchema: OpenAPIV3.SchemaObject = {
 
 const mortalitySchema: OpenAPIV3.SchemaObject = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     mortality_id: { type: 'string', format: 'uuid' },
     critter_id: { type: 'string', format: 'uuid' },
@@ -154,6 +160,7 @@ const mortalitySchema: OpenAPIV3.SchemaObject = {
 
 const qualitativeMeasurementSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     measurement_qualitative_id: { type: 'string', format: 'uuid' },
     taxon_measurement_id: { type: 'string' },
@@ -167,6 +174,7 @@ const qualitativeMeasurementSchema: OpenAPIV3.SchemaObject = {
 
 const quantitativeMeasurmentSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     measurement_qualitative_id: { type: 'string', format: 'uuid' },
     taxon_measurement_id: { type: 'string' },
@@ -185,6 +193,7 @@ const quantitativeMeasurmentSchema: OpenAPIV3.SchemaObject = {
 export const critterBulkRequestObject: OpenAPIV3.SchemaObject = {
   title: 'Bulk post request object',
   type: 'object',
+  additionalProperties: false,
   properties: {
     critters: {
       title: 'critters',
@@ -253,122 +262,11 @@ export const critterBulkRequestObject: OpenAPIV3.SchemaObject = {
   }
 };
 
-export const critterBulkRequestPatchObject: OpenAPIV3.SchemaObject = {
-  title: 'Bulk post request object',
-  type: 'object',
-  properties: {
-    critters: {
-      title: 'critters',
-      type: 'array',
-      items: {
-        title: 'critter',
-        ...critterSchema
-      }
-    },
-    captures: {
-      title: 'captures',
-      type: 'array',
-      items: {
-        title: 'capture',
-        type: 'object',
-        properties: {
-          ...captureSchema.properties,
-          _delete: {
-            type: 'boolean'
-          }
-        }
-      }
-    },
-    collections: {
-      title: 'collection units',
-      type: 'array',
-      items: {
-        title: 'collection unit',
-        type: 'object',
-        properties: {
-          ...collectionUnits.properties,
-          _delete: {
-            type: 'boolean'
-          }
-        }
-      }
-    },
-    markings: {
-      title: 'markings',
-      type: 'array',
-      items: {
-        title: 'marking',
-        type: 'object',
-        properties: {
-          ...markingSchema.properties,
-          _delete: {
-            type: 'boolean'
-          }
-        }
-      }
-    },
-    locations: {
-      title: 'locations',
-      type: 'array',
-      items: {
-        title: 'location',
-        type: 'object',
-        properties: {
-          ...locationSchema.properties,
-          _delete: {
-            type: 'boolean'
-          }
-        }
-      }
-    },
-    mortalities: {
-      title: 'locations',
-      type: 'array',
-      items: {
-        title: 'location',
-        type: 'object',
-        properties: {
-          ...mortalitySchema.properties,
-          _delete: {
-            type: 'boolean'
-          }
-        }
-      }
-    },
-    qualitative_measurements: {
-      title: 'qualitative measurements',
-      type: 'array',
-      items: {
-        title: 'qualitative measurement',
-        type: 'object',
-        properties: {
-          ...qualitativeMeasurementSchema.properties,
-          _delete: {
-            type: 'boolean'
-          }
-        }
-      }
-    },
-    quantitative_measurements: {
-      title: 'quantitative measurements',
-      type: 'array',
-      items: {
-        title: 'quantitative measurement',
-        type: 'object',
-        properties: {
-          ...quantitativeMeasurmentSchema.properties,
-          _delete: {
-            type: 'boolean'
-          }
-        }
-      }
-    }
-  }
-};
 
 const bulkResponseCounts: OpenAPIV3.SchemaObject = {
   title: 'Bulk operation counts',
   type: 'object',
+  additionalProperties: false,
   properties: {
     critters: { type: 'integer' },
     captures: { type: 'integer' },
@@ -387,6 +285,7 @@ const bulkResponseCounts: OpenAPIV3.SchemaObject = {
 export const bulkCreateResponse: OpenAPIV3.SchemaObject = {
   title: 'Critterbase bulk creation response object',
   type: 'object',
+  additionalProperties: false,
   properties: {
     created: bulkResponseCounts
   }
@@ -395,6 +294,7 @@ export const bulkCreateResponse: OpenAPIV3.SchemaObject = {
 export const bulkUpdateResponse: OpenAPIV3.SchemaObject = {
   title: 'Critterbase bulk update response object',
   type: 'object',
+  additionalProperties: false,
   properties: {
     created: bulkCreateResponse,
     updated: bulkResponseCounts,

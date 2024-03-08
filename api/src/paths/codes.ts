@@ -29,8 +29,8 @@ GET.apiDoc = {
               'iucn_conservation_action_level_1_classification',
               'iucn_conservation_action_level_2_subclassification',
               'iucn_conservation_action_level_3_subclassification',
-              'program',
               'proprietor_type',
+              'program',
               'system_roles',
               'project_roles',
               'administrative_activity_status_type',
@@ -118,54 +118,6 @@ GET.apiDoc = {
                   }
                 }
               },
-              project_program: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  additionalProperties: false,
-                  properties: {
-                    id: {
-                      type: 'number'
-                    },
-                    name: {
-                      type: 'string'
-                    }
-                  }
-                }
-              },
-              species: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  additionalProperties: false,
-                  properties: {
-                    id: {
-                      type: 'number'
-                    },
-                    name: {
-                      type: 'string'
-                    }
-                  }
-                }
-              },
-              proprietor_type: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  additionalProperties: false,
-                  properties: {
-                    id: {
-                      type: 'number'
-                    },
-                    name: {
-                      type: 'string'
-                    },
-                    is_first_nation: {
-                      type: 'boolean'
-                    }
-                  }
-                }
-              },
               iucn_conservation_action_level_1_classification: {
                 type: 'array',
                 items: {
@@ -217,7 +169,25 @@ GET.apiDoc = {
                   }
                 }
               },
-              system_role: {
+              proprietor_type: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    },
+                    is_first_nation: {
+                      type: 'boolean'
+                    }
+                  }
+                }
+              },
+              program: {
                 type: 'array',
                 items: {
                   type: 'object',
@@ -232,7 +202,7 @@ GET.apiDoc = {
                   }
                 }
               },
-              project_role: {
+              system_roles: {
                 type: 'array',
                 items: {
                   type: 'object',
@@ -247,7 +217,7 @@ GET.apiDoc = {
                   }
                 }
               },
-              survey_jobs: {
+              project_roles: {
                 type: 'array',
                 items: {
                   type: 'object',
@@ -288,11 +258,29 @@ GET.apiDoc = {
                     },
                     name: {
                       type: 'string'
+                    },
+                    description: {
+                      type: 'string'
                     }
                   }
                 }
               },
               vantage_codes: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              survey_jobs: {
                 type: 'array',
                 items: {
                   type: 'object',

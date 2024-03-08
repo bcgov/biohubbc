@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { ProjectMetadataPublish } from '../repositories/history-publish-repository';
 import { ProjectUser } from '../repositories/project-participation-repository';
 import { SystemUser } from '../repositories/user-repository';
 
@@ -86,10 +85,6 @@ export class GetIUCNClassificationData {
       }) ?? [];
   }
 }
-
-export type ProjectSupplementaryData = {
-  project_metadata_publish: ProjectMetadataPublish | null;
-};
 
 interface IGetAttachmentsSource {
   file_name: string;

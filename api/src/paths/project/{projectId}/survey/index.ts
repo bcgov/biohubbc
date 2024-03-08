@@ -99,6 +99,12 @@ GET.apiDoc = {
                       items: {
                         type: 'integer'
                       }
+                    },
+                    focal_species_names: {
+                      type: 'array',
+                      items: {
+                        type: 'string'
+                      }
                     }
                   }
                 }
