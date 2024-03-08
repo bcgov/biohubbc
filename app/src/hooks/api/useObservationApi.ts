@@ -12,7 +12,7 @@ import { ApiPaginationRequestOptions } from 'types/misc';
 
 export interface SubcountToSave {
   observation_subcount_id: number | null;
-  subcount: number;
+  subcount: number | null;
   qualitative: {
     measurement_id: string;
     measurement_option_id: string;
@@ -48,15 +48,8 @@ const useObservationApi = (axios: AxiosInstance) => {
     surveyId: number,
     surveyObservations: IObservationTableRowToSave[]
   ): Promise<void> => {
-    // TODO: There is currently no way in the UI to add a sub count value
-    // TODO: Business requirement to use sub counts as the primary count value
-    const dataToSave = surveyObservations.map((item: IObservationTableRowToSave) => {
-      item.standardColumns.subcount = item.standardColumns.count;
-      return item;
-    });
-
     await axios.put(`/api/project/${projectId}/survey/${surveyId}/observations`, {
-      surveyObservations: dataToSave
+      surveyObservations
     });
   };
 

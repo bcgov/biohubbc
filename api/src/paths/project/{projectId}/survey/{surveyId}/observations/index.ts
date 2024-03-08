@@ -450,7 +450,6 @@ PUT.apiDoc = {
                       'survey_sample_method_id',
                       'survey_sample_period_id',
                       'count',
-                      'subcount',
                       'latitude',
                       'longitude',
                       'observation_date',

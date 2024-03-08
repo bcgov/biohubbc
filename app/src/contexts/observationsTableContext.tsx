@@ -16,7 +16,11 @@ import { ObservationsTableI18N } from 'constants/i18n';
 import { getSurveySessionStorageKey, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS } from 'constants/session-storage';
 import { DialogContext } from 'contexts/dialogContext';
 import { default as dayjs } from 'dayjs';
-import { getMeasurementColumns } from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitionsUtils';
+import {
+  getMeasurementColumns,
+  isQualitativeMeasurementTypeDefinition,
+  isQuantitativeMeasurementTypeDefinition
+} from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitionsUtils';
 import { APIError } from 'hooks/api/useAxios';
 import { IObservationTableRowToSave, SubcountToSave } from 'hooks/api/useObservationApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -42,14 +46,19 @@ export type StandardObservationColumns = {
   survey_sample_method_id: number | null;
   survey_sample_period_id: number | null;
   count: number | null;
-  subcount: number | null;
   observation_date: Date;
   observation_time: string;
   latitude: number | null;
   longitude: number | null;
 };
 
-export type ObservationRecord = StandardObservationColumns & { [key: string]: any };
+export type SubcountObservationColumns = {
+  observation_subcount_id: number | null;
+  subcount: number | null;
+  [key: string]: any;
+};
+
+export type ObservationRecord = StandardObservationColumns & SubcountObservationColumns;
 
 export type MeasurementColumn = {
   measurement: CBMeasurementType;
@@ -684,6 +693,14 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   // True if the data grid contains at least 1 unsaved record
   const hasUnsavedChanges = modifiedRowIds.length > 0 || stagedRows.length > 0;
 
+  // True if the taxonomy cache is still initializing or the observations data is still loading
+  const isLoading: boolean = useMemo(() => {
+    return !taxonomyCacheStatus.isInitialized || isLoadingObservationsData;
+  }, [isLoadingObservationsData, taxonomyCacheStatus.isInitialized]);
+
+  // True if the save process has started
+  const isSaving: boolean = _isSavingData.current || _isStoppingEdit.current;
+
   /**
    * Send all observation rows to the backend.
    */
@@ -732,11 +749,160 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     ]
   );
 
-  const isLoading: boolean = useMemo(() => {
-    return !taxonomyCacheStatus.isInitialized || isLoadingObservationsData;
-  }, [isLoadingObservationsData, taxonomyCacheStatus.isInitialized]);
+  /**
+   * Compiles all measurement columns and their values for the given row.
+   *
+   * @param {ObservationRecord} row
+   * @return {*}
+   */
+  const _getMeasurementsToSave = useCallback(
+    (row: ObservationRecord) => {
+      const measurementDefinitions = measurementColumns.map((item) => item.measurement);
 
-  const isSaving: boolean = _isSavingData.current || _isStoppingEdit.current;
+      const qualitative: SubcountToSave['qualitative'] = [];
+      const quantitative: SubcountToSave['quantitative'] = [];
+
+      // For each measurement column in the data grid
+      for (const measurementDefinition of measurementDefinitions) {
+        // If the row has a non-null/non-undefined value for the measurement column
+        if (row[measurementDefinition.taxon_measurement_id]) {
+          // If the measurement column is a qualitative measurement, add it to the qualitative array
+          if (isQualitativeMeasurementTypeDefinition(measurementDefinition)) {
+            qualitative.push({
+              measurement_id: measurementDefinition.taxon_measurement_id,
+              measurement_option_id: row[measurementDefinition.taxon_measurement_id]
+            });
+          }
+
+          // If the measurement column is a quantitative measurement, add it to the quantitative array
+          if (isQuantitativeMeasurementTypeDefinition(measurementDefinition)) {
+            quantitative.push({
+              measurement_id: measurementDefinition.taxon_measurement_id,
+              measurement_value: row[measurementDefinition.taxon_measurement_id]
+            });
+          }
+        }
+      }
+
+      // Return the qualitative and quantitative arrays
+      return { qualitative, quantitative };
+    },
+    [measurementColumns]
+  );
+
+  /**
+   * Compiles all subcount columns and their values for the given row.
+   *
+   * @param {ObservationRecord} row
+   * @return {*}
+   */
+  const _getSubcountsToSave = useCallback(
+    (row: ObservationRecord) => {
+      // Get all populated measurement column values for the row
+      const measurementsToSave = _getMeasurementsToSave(row);
+
+      // Return the subcount row to save
+      return {
+        observation_subcount_id: row.observation_subcount_id,
+        // TODO - 1 subcount per observation: Currently the observations datagrid has no subcount column, use the count
+        // column for now
+        subcount: row.count,
+        qualitative: measurementsToSave.qualitative,
+        quantitative: measurementsToSave.quantitative
+      };
+    },
+    [_getMeasurementsToSave]
+  );
+
+  /**
+   * Compiles the given row into the format expected by the SIMS API.
+   *
+   * @param {ObservationRecord} row
+   * @return {*}  {IObservationTableRowToSave}
+   */
+  const _getRowToSave = useCallback(
+    (row: ObservationRecord): IObservationTableRowToSave => {
+      // Get all subcount row data for the observation row
+      const subcountsToSave = _getSubcountsToSave(row);
+
+      // Return the observation row to save
+      return {
+        standardColumns: {
+          survey_observation_id: row.survey_observation_id,
+          itis_tsn: row.itis_tsn,
+          itis_scientific_name: row.itis_scientific_name,
+          survey_sample_site_id: row.survey_sample_site_id,
+          survey_sample_method_id: row.survey_sample_method_id,
+          survey_sample_period_id: row.survey_sample_period_id,
+          count: row.count,
+          observation_date: row.observation_date,
+          observation_time: row.observation_time,
+          latitude: row.latitude,
+          longitude: row.longitude
+        },
+        // TODO - 1 subcount per observation: Currently the observations datagrid only supports 1 subcount per
+        // oberservation
+        subcounts: [subcountsToSave]
+      };
+    },
+    [_getSubcountsToSave]
+  );
+
+  /**
+   * Transforms the raw data grid rows into the format expected by the SIMS API.
+   *
+   * @return {*}  {IObservationTableRowToSave[]}
+   */
+  const _getRowsToSave = useCallback((): IObservationTableRowToSave[] => {
+    // Get all rows that have been modified
+    const modifiedRows: ObservationRecord[] = modifiedRowIds
+      .map((rowId) => _muiDataGridApiRef.current.getRow(rowId))
+      .filter(Boolean);
+
+    //stagedRows
+
+    // Transform the modified rows into the format expected by the SIMS API
+    const rowsToSave: IObservationTableRowToSave[] = modifiedRows.map((modifiedRow) => _getRowToSave(modifiedRow));
+
+    return rowsToSave;
+  }, [_getRowToSave, _muiDataGridApiRef, modifiedRowIds]);
+
+  /**
+   * Transforms the raw observation data into the format expected by the observations data grid table.
+   *
+   * @param {IGetSurveyObservationsResponse} observationsData
+   * @return {*}  {IObservationTableRow[]}
+   */
+  const _getRowsToDisplay = useCallback((observationsData: IGetSurveyObservationsResponse): IObservationTableRow[] => {
+    // Spread all subcount rows into separate observation table rows, duplicating the parent observation standard row data
+    const rowsToDisplay: IObservationTableRow[] = observationsData.surveyObservations.flatMap((observationRow) => {
+      // Return a new row for each subcount, which contains the parent observation standard row data
+      return observationRow.subcounts.map((subcountRow) => {
+        return {
+          // TODO - 1 subcount per observation: the id field will need to be set to observation_subcount_id
+          id: String(observationRow.survey_observation_id),
+          ...observationRow,
+          observation_subcount_id: subcountRow.observation_subcount_id,
+          // Reduce all qualitative measurements into an object and spread into the row
+          ...subcountRow.qualitative_measurements.reduce((acc, cur) => {
+            return {
+              ...acc,
+              [cur.critterbase_taxon_measurement_id]: cur.critterbase_measurement_qualitative_option_id
+            };
+          }, {} as CBMeasurementValue),
+          // Reduce all quantitative measurements into an object and spread into the row
+          ...subcountRow.quantitative_measurements.reduce((acc, cur) => {
+            return {
+              ...acc,
+              [cur.critterbase_taxon_measurement_id]: cur.value
+            };
+          }, {} as CBMeasurementValue)
+        };
+      });
+    });
+
+    return rowsToDisplay;
+  }, []);
 
   useEffect(() => {
     if (isLoadingObservationsData || !observationsData) {
@@ -807,28 +973,15 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       return;
     }
 
-    // Collect rows from the observations data loader
-    const existingRows = observationsData.surveyObservations.map((row) => {
-      return {
-        ...row,
-        // Spread the measurement column key/values into the row
-        ...row.subcounts.reduce((acc, cur: any) => {
-          return {
-            ...acc,
-            // TODO update to be more type safe, etc
-            [cur.taxon_measurement_id]: cur.value || cur.qualitative_option_id
-          };
-        }, {} as CBMeasurementValue),
-        id: String(row.survey_observation_id)
-      };
-    });
+    // Transform the raw observation data into the format expected by the observations data grid table
+    const rowsToDisplay = _getRowsToDisplay(observationsData);
 
     // Set initial rows for the table context
-    setSavedRows(existingRows);
+    setSavedRows(rowsToDisplay);
 
     // Set initial observations count
     setObservationCount(observationsData.supplementaryObservationData.observationCount);
-  }, [observationsData, hasLoadedObservationsData]);
+  }, [observationsData, hasLoadedObservationsData, _getRowsToDisplay]);
 
   /**
    * Runs onces on initial page load.
@@ -854,7 +1007,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     }
 
     const uniqueTaxonomicIds: number[] = Array.from(
-      observationsData.surveyObservations.reduce((acc: Set<number>, record: ObservationRecord) => {
+      observationsData.surveyObservations.reduce((acc: Set<number>, record) => {
         if (record.itis_tsn) {
           acc.add(record.itis_tsn);
         }
@@ -910,52 +1063,10 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     // All rows have transitioned to view mode
     _isStoppingEdit.current = false;
 
-    const rowModels = _muiDataGridApiRef.current.getRowModels();
-
-    const rowValues = Array.from(rowModels, ([_, value]) => value);
-
-    const measurements = measurementColumns.map((item) => item.measurement);
-    console.log(measurements);
-    // Build the object expected by the SIMS API
-    const rowsToSave = rowValues.map((row) => {
-      const standardColumnsToSave: StandardObservationColumns = row as StandardObservationColumns;
-
-      const rowEntries = Object.entries(row);
-      console.log(rowEntries);
-      // TODO MAKE A PROPER DEFINITION FOR THIS
-      const subCountToSave: SubcountToSave = {
-        observation_subcount_id: null,
-        subcount: 1,
-        qualitative: [],
-        quantitative: []
-      };
-      rowEntries.forEach(([key, value]) => {
-        const matchingMeasurement = measurements.find((item) => item.taxon_measurement_id === key);
-
-        if (matchingMeasurement) {
-          // TODO: check if the measurement is qualitative
-          subCountToSave.quantitative.push({
-            measurement_id: matchingMeasurement.taxon_measurement_id,
-            measurement_value: Number(value)
-          });
-          // if (true) {
-          // } else {
-          //   console.log('THIS IS A QUALITATIVE MEASUREMENT');
-          //   subCountToSave.qualitative.push({
-          //     measurement_id: '', //matchingMeasurement.taxon_measurement_id,
-          //     measurement_option_id: String(value)
-          //   });
-          // }
-        }
-      });
-      return {
-        standardColumns: standardColumnsToSave,
-        subcounts: [subCountToSave]
-      };
-    });
+    const rowsToSave = _getRowsToSave();
 
     _saveRecords(rowsToSave);
-  }, [_muiDataGridApiRef, _saveRecords, measurementColumns, modifiedRowIds, rowModesModel]);
+  }, [_getRowsToSave, _muiDataGridApiRef, _saveRecords, measurementColumns, modifiedRowIds, rowModesModel]);
 
   const observationsTableContext: IObservationsTableContext = useMemo(
     () => ({
