@@ -4,60 +4,47 @@ import CbSelectField from 'components/fields/CbSelectField';
 import CustomTextField from 'components/fields/CustomTextField';
 import FormikDevDebugger from 'components/formik/FormikDevDebugger';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { ANIMAL_FORM_MODE, CreateCritterMarkingSchema, ICritterMarking, isRequiredInSchema } from '../animal';
+import { AnimalFormProps } from './animalForm';
 
-type MarkingAnimalFormProps =
-  | {
-      marking?: never;
-      formMode: ANIMAL_FORM_MODE.ADD;
-      open: boolean;
-      handleClose: () => void;
-      critter: IDetailedCritterWithInternalId;
-    }
-  | {
-      marking: ICritterMarking;
-      formMode: ANIMAL_FORM_MODE.EDIT;
-      open: boolean;
-      handleClose: () => void;
-      critter: IDetailedCritterWithInternalId;
-    };
 /*
  * Note: This is a placeholder component for how to handle the form sections individually
  * allows easier management of the individual form sections with push / patch per form
  * vs how it's currently implemented with one large payload that updates/removes/creates critter meta
  */
-export const MarkingAnimalForm = (props: MarkingAnimalFormProps) => {
+export const MarkingAnimalForm = (props: AnimalFormProps<ICritterMarking>) => {
   const cbApi = useCritterbaseApi();
 
   return (
-    <EditDialog
-      dialogTitle={props.formMode === ANIMAL_FORM_MODE.ADD ? 'Add Marking' : 'Edit Marking'}
-      open={props.open}
-      component={{
-        element: <MarkingAnimalFormContent tsn={props.critter.itis_tsn} />,
-        initialValues: {
-          marking_id: props?.marking?.marking_id, // undefined on ADD
-          critter_id: props.critter.critter_id,
-          marking_type_id: props?.marking?.marking_type_id ?? '',
-          taxon_marking_body_location_id: props?.marking?.taxon_marking_body_location_id ?? '',
-          primary_colour_id: props?.marking?.primary_colour_id ?? '',
-          secondary_colour_id: props?.marking?.secondary_colour_id ?? '',
-          marking_comment: props?.marking?.marking_comment ?? ''
-        },
-        validationSchema: CreateCritterMarkingSchema
-      }}
-      onCancel={props.handleClose}
-      onSave={async (values) => {
-        if (props.formMode === ANIMAL_FORM_MODE.ADD) {
-          await cbApi.marking.createMarking(values);
-        }
-        if (props.formMode === ANIMAL_FORM_MODE.EDIT) {
-          await cbApi.marking.updateMarking(values);
-        }
-        props.handleClose();
-      }}
-    />
+    <>
+      <EditDialog
+        dialogTitle={props.formMode === ANIMAL_FORM_MODE.ADD ? 'Add Marking' : 'Edit Marking'}
+        open={props.open}
+        component={{
+          element: <MarkingAnimalFormContent tsn={props.critter.itis_tsn} />,
+          initialValues: {
+            marking_id: props?.formObject?.marking_id, // undefined on ADD
+            critter_id: props.critter.critter_id,
+            marking_type_id: props?.formObject?.marking_type_id ?? '',
+            taxon_marking_body_location_id: props?.formObject?.taxon_marking_body_location_id ?? '',
+            primary_colour_id: props?.formObject?.primary_colour_id ?? '',
+            secondary_colour_id: props?.formObject?.secondary_colour_id ?? '',
+            marking_comment: props?.formObject?.marking_comment ?? ''
+          },
+          validationSchema: CreateCritterMarkingSchema
+        }}
+        onCancel={props.handleClose}
+        onSave={async (values) => {
+          if (props.formMode === ANIMAL_FORM_MODE.ADD) {
+            await cbApi.marking.createMarking(values);
+          }
+          if (props.formMode === ANIMAL_FORM_MODE.EDIT) {
+            await cbApi.marking.updateMarking(values);
+          }
+          props.handleClose();
+        }}
+      />
+    </>
   );
 };
 
