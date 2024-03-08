@@ -318,7 +318,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   });
 
   // Sort model
-  const [sortModel, setSortModel] = useState<GridSortModel>([]);
+  const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'observation_date', sort: 'desc' }]);
 
   /**
    * Refreshes the observations table with the latest records from the server.

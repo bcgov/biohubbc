@@ -204,16 +204,18 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {string[]} measurementIds The critterbase taxon measurement ids to delete.
-   * @return {*}  {Promise<{ supplementaryObservationData: SupplementaryObservationCountData }>}
+   * @return {*}  {Promise<void>}
    */
   const deleteObservationMeasurements = async (
     projectId: number,
     surveyId: number,
     measurementIds: string[]
-  ): Promise<{ supplementaryObservationData: SupplementaryObservationCountData }> => {
-    const { data } = await axios.post<{ supplementaryObservationData: SupplementaryObservationCountData }>(
+  ): Promise<void> => {
+    const { data } = await axios.post<void>(
       `/api/project/${projectId}/survey/${surveyId}/observations/measurements/delete`,
-      { measurement_ids: measurementIds }
+      {
+        measurement_ids: measurementIds
+      }
     );
 
     return data;
