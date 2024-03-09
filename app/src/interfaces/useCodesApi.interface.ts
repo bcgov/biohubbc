@@ -39,5 +39,5 @@ export interface IGetAllCodeSetsResponse {
   survey_jobs: CodeSet;
   site_selection_strategies: CodeSet;
   sample_methods: CodeSet;
-  survey_progress: CodeSet;
+  survey_progress: CodeSet<{ id: number; name: string; description: string }>;
 }

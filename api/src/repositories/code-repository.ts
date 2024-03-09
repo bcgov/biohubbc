@@ -36,7 +36,7 @@ export const IAllCodeSets = z.object({
   survey_jobs: CodeSet(),
   site_selection_strategies: CodeSet(),
   sample_methods: CodeSet(),
-  survey_progress: CodeSet()
+  survey_progress: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape)
 });
 
 export type IAllCodeSets = z.infer<typeof IAllCodeSets>;
@@ -426,7 +426,8 @@ export class CodeRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         survey_progress_id as id,
-        name
+        name,
+        description
       FROM
         survey_progress
       WHERE

@@ -56,5 +56,5 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 1, name: 'Camera Trap' },
     { id: 2, name: 'Dip Net' }
   ],
-  survey_progress: [{ id: 1, name: 'Planning' }]
+  survey_progress: [{ id: 1, name: 'Planning', description: 'Description 1' }]
 };
