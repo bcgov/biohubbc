@@ -11,6 +11,7 @@ import {
 import * as file_utils from '../utils/file-utils';
 import { getMockDBConnection } from '../__mocks__/db';
 import { ObservationService } from './observation-service';
+import { SubCountService } from './subcount-service';
 
 chai.use(sinonChai);
 
@@ -113,7 +114,7 @@ describe('ObservationService', () => {
     });
   });
 
-  describe('getSurveyObservationsWithSupplementaryAndSamplingData', () => {
+  describe('getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData', () => {
     it('Gets observations by survey id', async () => {
       const mockDBConnection = getMockDBConnection();
 
@@ -139,8 +140,7 @@ describe('ObservationService', () => {
           survey_sample_site_id: 1,
           survey_sample_method_id: 1,
           survey_sample_period_id: 1,
-          subcount: 5,
-          observation_subcount_attributes: []
+          subcounts: []
         },
         {
           survey_observation_id: 6,
@@ -163,8 +163,7 @@ describe('ObservationService', () => {
           survey_sample_site_id: 1,
           survey_sample_method_id: 1,
           survey_sample_period_id: 1,
-          subcount: 10,
-          observation_subcount_attributes: []
+          subcounts: []
         }
       ];
 
@@ -177,9 +176,13 @@ describe('ObservationService', () => {
         .stub(ObservationRepository.prototype, 'getSurveyObservationsWithSamplingDataWithAttributesData')
         .resolves(mockObservations);
 
-      const getSurveyObservationSupplementaryDataStub = sinon
-        .stub(ObservationService.prototype, 'getSurveyObservationsSupplementaryData')
-        .resolves(mockSupplementaryData);
+      const getSurveyObservationCountStub = sinon
+        .stub(ObservationRepository.prototype, 'getSurveyObservationCount')
+        .resolves(2);
+
+      const getMeasurementTypeDefinitionsForSurveyStub = sinon
+        .stub(SubCountService.prototype, 'getMeasurementTypeDefinitionsForSurvey')
+        .resolves({ qualitative_measurements: [], quantitative_measurements: [] });
 
       const surveyId = 1;
 
@@ -190,8 +193,8 @@ describe('ObservationService', () => {
       );
 
       expect(getSurveyObservationsStub).to.be.calledOnceWith(surveyId);
-      expect(getMeasurementValuesForEventIdsStub).to.be.calledOnceWith([]);
-      expect(getSurveyObservationSupplementaryDataStub).to.be.calledOnceWith(surveyId);
+      expect(getSurveyObservationCountStub).to.be.calledOnceWith(surveyId);
+      expect(getMeasurementTypeDefinitionsForSurveyStub).to.be.calledOnceWith(surveyId);
       expect(response).to.eql({
         surveyObservations: [
           {
