@@ -634,6 +634,7 @@ export class SurveyRepository extends BaseRepository {
       .from('project')
       .leftJoin('survey', 'survey.project_id', 'project.project_id')
       .leftJoin('study_species', 'study_species.survey_id', 'survey.survey_id')
+      .leftJoin('survey_progress', 'survey_progress.survey_progress_id', 'survey.progress_id')
       .where('project.project_id', projectId)
       .where('study_species.is_focal', true)
       .groupBy('survey.survey_id')
@@ -700,12 +701,14 @@ export class SurveyRepository extends BaseRepository {
         name,
         start_date,
         end_date,
+        progress_id,
         additional_details
       ) VALUES (
         ${projectId},
         ${surveyData.survey_details.survey_name},
         ${surveyData.survey_details.start_date},
         ${surveyData.survey_details.end_date},
+        ${surveyData.survey_details.progress},
         ${surveyData.purpose_and_methodology.additional_details}
       )
       RETURNING

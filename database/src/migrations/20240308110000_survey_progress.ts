@@ -28,7 +28,6 @@ export async function up(knex: Knex): Promise<void> {
       update_date                                   timestamptz(6),
       update_user                                   integer,
       revision_count                                integer            DEFAULT 0 NOT NULL,
-      
       CONSTRAINT survey_progress_id_pk PRIMARY KEY (survey_progress_id)
     );
 
@@ -44,15 +43,15 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN survey_progress.revision_count IS 'Revision count used for concurrency control.';
 
     ----------------------------------------------------------------------------------------
-    -- add triggers for user data
+    -- Add triggers for user data
     ----------------------------------------------------------------------------------------
     CREATE TRIGGER audit_survey_progress BEFORE INSERT OR UPDATE OR DELETE ON biohub.survey_progress FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
     CREATE TRIGGER journal_survey_progress AFTER INSERT OR UPDATE OR DELETE ON biohub.survey_progress FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
-  
+
     ----------------------------------------------------------------------------------------
     -- Modify survey table to include survey_progress
     ----------------------------------------------------------------------------------------
-    ALTER TABLE survey ADD COLUMN progress_id INT;
+    ALTER TABLE survey ADD COLUMN progress_id INTEGER NOT NULL;
     COMMENT ON COLUMN survey.progress_id IS 'Foreign key referencing the progress value.';
     ALTER TABLE survey ADD CONSTRAINT survey_progress_fk FOREIGN KEY (progress_id) REFERENCES survey_progress(survey_progress_id);
     
@@ -64,15 +63,15 @@ export async function up(knex: Knex): Promise<void> {
     (
       'Planning',
       'The Survey is being planned and may change.'
-    ),
-    (
-      'Ongoing',
-      'The Survey has started but not all information has been collected or uploaded.'
-    ),
-    (
-      'Completed',
-      'The Survey is complete and all information has been uploaded.'
     );
+
+    ----------------------------------------------------------------------------------------
+    -- Add view for survey_progress table
+    ----------------------------------------------------------------------------------------
+    SET SEARCH_PATH=biohub_dapi_v1;
+
+    CREATE VIEW survey_progress AS (SELECT * FROM biohub.survey_progress);
+
     `);
 }
 
