@@ -197,6 +197,8 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement, SurveyRecord);
 
+    console.log(response.rows)
+
     if (!response.rows[0]) {
       throw new ApiExecuteSQLError('Failed to get project survey details data', [
         'SurveyRepository->getSurveyData',
@@ -708,7 +710,7 @@ export class SurveyRepository extends BaseRepository {
         ${surveyData.survey_details.survey_name},
         ${surveyData.survey_details.start_date},
         ${surveyData.survey_details.end_date},
-        ${surveyData.survey_details.progress},
+        ${surveyData.survey_details.progress_id},
         ${surveyData.purpose_and_methodology.additional_details}
       )
       RETURNING
@@ -1030,13 +1032,15 @@ export class SurveyRepository extends BaseRepository {
 
     let fieldsToUpdate = {};
 
+    console.log(surveyData)
+
     if (surveyData.survey_details) {
       fieldsToUpdate = {
         ...fieldsToUpdate,
         name: surveyData.survey_details.name,
         start_date: surveyData.survey_details.start_date,
         end_date: surveyData.survey_details.end_date,
-        status: surveyData.survey_details.progress
+        progress_id: surveyData.survey_details.progress_id
       };
     }
 

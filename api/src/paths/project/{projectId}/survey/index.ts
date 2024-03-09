@@ -71,7 +71,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
-                  required: ['survey_id', 'name', 'start_date', 'end_date', 'progress', 'focal_species'],
+                  required: ['survey_id', 'name', 'start_date', 'end_date', 'progress_id', 'focal_species'],
                   properties: {
                     survey_id: {
                       type: 'integer',
@@ -92,7 +92,7 @@ GET.apiDoc = {
                       description: 'ISO 8601 date string',
                       nullable: true
                     },
-                    progress: {
+                    progress_id: {
                       type: 'number'
                     },
                     focal_species: {

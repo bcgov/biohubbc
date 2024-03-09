@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteField';
 import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
+import SelectWithSubtextField, { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
 import AncillarySpeciesComponent from 'components/species/AncillarySpeciesComponent';
 import FocalSpeciesComponent from 'components/species/FocalSpeciesComponent';
@@ -59,7 +60,7 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
     survey_name: '',
     start_date: '',
     end_date: '',
-    progress: 1,
+    progress: 0,
     survey_types: []
   },
   species: {
@@ -97,6 +98,7 @@ export interface IGeneralInformationFormProps {
   type: IMultiAutocompleteFieldOption[];
   projectStartDate: string;
   projectEndDate: string;
+  progress: ISelectWithSubtextFieldOption[];
 }
 
 /**
@@ -155,11 +157,11 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         </Typography>
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            <MultiAutocompleteFieldVariableSize
-              id={'survey_details.survey_progress'}
-              label={'Status'}
-              options={props.type}
-              required={true}
+            <SelectWithSubtextField
+              id={'survey_details.progress_id'}
+              name={'survey_details.progress_id'}
+              label={'Progress'}
+              options={props.progress}
             />
           </Grid>
         </Grid>

@@ -67,7 +67,7 @@ PUT.apiDoc = {
           properties: {
             survey_details: {
               type: 'object',
-              required: ['survey_name', 'start_date', 'end_date', 'survey_types', 'progress', 'revision_count'],
+              required: ['survey_name', 'start_date', 'end_date', 'survey_types', 'progress_id', 'revision_count'],
               properties: {
                 survey_name: {
                   type: 'string'
@@ -88,7 +88,7 @@ PUT.apiDoc = {
                     minimum: 1
                   }
                 },
-                progress: {
+                progress_id: {
                   type: 'number'
                 },
                 revision_count: {
@@ -412,6 +412,8 @@ export function updateSurvey(): RequestHandler {
     const sanitizedPutSurveyData = new PutSurveyObject(req.body);
 
     const connection = getDBConnection(req['keycloak_token']);
+
+    console.log(sanitizedPutSurveyData)
 
     try {
       await connection.open();

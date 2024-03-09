@@ -72,6 +72,11 @@ export async function up(knex: Knex): Promise<void> {
 
     CREATE VIEW survey_progress AS (SELECT * FROM biohub.survey_progress);
 
+    ----------------------------------------------------------------------------------------
+    -- Replace survey view to include progress_id
+    ----------------------------------------------------------------------------------------
+    CREATE OR REPLACE VIEW survey AS SELECT * FROM biohub.survey;
+
     `);
 }
 
