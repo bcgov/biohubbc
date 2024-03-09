@@ -1,8 +1,11 @@
 import Box from '@mui/material/Box';
+import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
 import Typography from '@mui/material/Typography';
+import { EditDeleteStubCard } from 'features/surveys/components/EditDeleteStubCard';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
+import { TransitionGroup } from 'react-transition-group';
 import { ANIMAL_FORM_MODE } from './animal';
 import { IAnimalSections } from './animal-sections';
 import { AnimalSectionWrapper } from './AnimalSectionWrapper';
@@ -15,7 +18,23 @@ interface IAnimalSectionProps {
 export const AnimalSection = (props: IAnimalSectionProps) => {
   const { section, critter } = props;
 
-  const [openForm, setOpenForm] = useState(false);
+  const [formMode, setFormMode] = useState<ANIMAL_FORM_MODE | undefined>(undefined);
+  const [formObject, setFormObject] = useState<any | undefined>(undefined);
+
+  const handleOpenAddForm = () => {
+    setFormMode(ANIMAL_FORM_MODE.ADD);
+  };
+
+  const handleOpenEditForm = (editObject: any) => {
+    setFormObject(editObject);
+    setFormMode(ANIMAL_FORM_MODE.EDIT);
+  };
+
+  const handleCloseForm = () => {
+    setFormObject(undefined);
+    setFormMode(undefined);
+    // reset critter here
+  };
 
   if (!critter) {
     return (
@@ -37,11 +56,12 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
   }
 
   const formProps = {
-    formMode: ANIMAL_FORM_MODE.ADD,
+    formMode: formMode ? formMode : ANIMAL_FORM_MODE.ADD,
+    formObject: formObject ? formObject : undefined,
     critter: critter,
-    open: openForm,
+    open: !!formMode,
     handleClose: () => {
-      setOpenForm(false);
+      handleCloseForm();
       console.log('Reset form here / get detailed critter.');
     }
   } as const;
@@ -50,7 +70,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     return (
       <AnimalSectionWrapper
         form={<div>placeholder</div>}
-        content={<div>test</div>}
+        //content={<GeneralAnimalSummary handleEdit={() => console.log('edit animal placeholder')} />}
         section={section}
         critter={critter}
       />
@@ -61,9 +81,8 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     return (
       <AnimalSectionWrapper
         form={<div>placeholder</div>}
-        content={<div>test</div>}
         section={section}
-        openAddForm={() => setOpenForm(true)}
+        openAddForm={handleOpenAddForm}
         critter={critter}
       />
     );
@@ -73,11 +92,21 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     return (
       <AnimalSectionWrapper
         form={<MarkingAnimalForm {...formProps} />}
-        content={<div>test</div>}
         section={section}
-        openAddForm={() => setOpenForm(true)}
-        critter={critter}
-      />
+        openAddForm={handleOpenAddForm}
+        critter={critter}>
+        <TransitionGroup>
+          {critter.markings.map((marking) => (
+            <Collapse>
+              <EditDeleteStubCard
+                header={'Marking'}
+                subHeader={'marking'}
+                onClickEdit={() => handleOpenEditForm(marking)}
+              />
+            </Collapse>
+          ))}
+        </TransitionGroup>
+      </AnimalSectionWrapper>
     );
   }
 
@@ -85,9 +114,8 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     return (
       <AnimalSectionWrapper
         form={<div>placeholder</div>}
-        content={<div>test</div>}
         section={section}
-        openAddForm={() => setOpenForm(true)}
+        openAddForm={handleOpenAddForm}
         critter={critter}
       />
     );
@@ -97,9 +125,8 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     return (
       <AnimalSectionWrapper
         form={<div>placeholder</div>}
-        content={<div>test</div>}
         section={section}
-        openAddForm={() => setOpenForm(true)}
+        openAddForm={handleOpenAddForm}
         critter={critter}
       />
     );
@@ -109,9 +136,8 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     return (
       <AnimalSectionWrapper
         form={<div>placeholder</div>}
-        content={<div>test</div>}
         section={section}
-        openAddForm={() => setOpenForm(true)}
+        openAddForm={handleOpenAddForm}
         critter={critter}
       />
     );
@@ -121,9 +147,8 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     return (
       <AnimalSectionWrapper
         form={<div>placeholder</div>}
-        content={<div>test</div>}
         section={section}
-        openAddForm={() => setOpenForm(true)}
+        openAddForm={handleOpenAddForm}
         critter={critter}
       />
     );
@@ -133,9 +158,8 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     return (
       <AnimalSectionWrapper
         form={<div>placeholder</div>}
-        content={<div>test</div>}
         section={section}
-        openAddForm={() => setOpenForm(true)}
+        openAddForm={handleOpenAddForm}
         critter={critter}
       />
     );

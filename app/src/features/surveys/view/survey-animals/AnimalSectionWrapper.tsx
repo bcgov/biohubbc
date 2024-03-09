@@ -9,12 +9,11 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
 
-interface IAnimalSectionWrapperProps {
+interface IAnimalSectionWrapperProps extends PropsWithChildren {
   form: JSX.Element;
-  content: JSX.Element;
   section: IAnimalSections;
   openAddForm?: () => void;
   critter?: IDetailedCritterWithInternalId;
@@ -80,7 +79,7 @@ export const AnimalSectionWrapper = (props: IAnimalSectionWrapperProps) => {
               }}>
               {sectionData.infoText}
             </Typography>
-            {props.content}
+            {props.children}
           </Box>
         </Box>
       </Paper>
