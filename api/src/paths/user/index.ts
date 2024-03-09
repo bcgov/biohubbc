@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getDBConnection } from '../../database/db';
+import { systemUserSchema } from '../../openapi/schemas/user';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { UserService } from '../../services/user-service';
 import { getLogger } from '../../utils/logger';
@@ -45,15 +46,7 @@ GET.apiDoc = {
           schema: {
             type: 'array',
             items: {
-              type: 'object',
-              additionalProperties: false,
-              required: ['system_user_id'],
-              properties: {
-                system_user_id: {
-                  type: 'integer',
-                  minimum: 1
-                }
-              }
+              ...systemUserSchema
             }
           }
         }

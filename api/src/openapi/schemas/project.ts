@@ -86,16 +86,74 @@ export const projectCreatePostRequestObject = {
 };
 
 const projectUpdateProperties = {
-  project: { type: 'object', additionalProperties: false, properties: {} },
-  objectives: { type: 'object', additionalProperties: false, properties: {} },
-  iucn: {
+  project: {
+    description: 'Basic project metadata',
     type: 'object',
     additionalProperties: false,
+    required: ['project_name', 'project_programs', 'start_date', 'end_date', 'revision_count'],
+    nullable: true,
+    properties: {
+      project_id: {
+        type: 'integer',
+        minimum: 1
+      },
+      uuid: {
+        type: 'string'
+      },
+      comments: {
+        type: 'string',
+        nullable: true
+      },
+      project_name: {
+        type: 'string'
+      },
+      project_programs: {
+        type: 'array',
+        items: {
+          type: 'number'
+        }
+      },
+      start_date: {
+        type: 'string',
+        format: 'date',
+        description: 'ISO 8601 date string for the project start date'
+      },
+      end_date: {
+        type: 'string',
+        format: 'date',
+        description: 'ISO 8601 date string for the project end date',
+        nullable: true
+      },
+      revision_count: {
+        type: 'number'
+      }
+    }
+  },
+  objectives: {
+    description: 'The project objectives',
+    type: 'object',
+    additionalProperties: false,
+    required: ['objectives'],
+    nullable: true,
+    properties: {
+      objectives: {
+        type: 'string'
+      },
+      revision_count: {
+        type: 'number'
+      }
+    }
+  },
+  iucn: {
+    description: 'The International Union for Conservation of Nature number',
+    type: 'object',
+    additionalProperties: false,
+    required: ['classificationDetails'],
+    nullable: true,
     properties: {
       classificationDetails: {
         type: 'array',
         items: {
-          title: 'IUCN classification',
           type: 'object',
           additionalProperties: false,
           properties: {
@@ -113,7 +171,95 @@ const projectUpdateProperties = {
       }
     }
   },
-  participants: { type: 'array', items: { type: 'object', additionalProperties: false, properties: {} } }
+  participants: {
+    title: 'Project participants',
+    type: 'array',
+    items: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['system_user_id', 'display_name', 'email', 'agency', 'identity_source', 'project_role_names'],
+      properties: {
+        project_participation_id: {
+          type: 'number'
+        },
+        project_id: {
+          type: 'number'
+        },
+        system_user_id: {
+          type: 'number'
+        },
+        project_role_ids: {
+          type: 'array',
+          items: {
+            type: 'number'
+          }
+        },
+        project_role_names: {
+          type: 'array',
+          items: {
+            type: 'string'
+          }
+        },
+        project_role_permissions: {
+          type: 'array',
+          items: {
+            type: 'string'
+          }
+        },
+        user_identifier: {
+          description: 'The unique user identifier',
+          type: 'string'
+        },
+        user_guid: {
+          type: 'string',
+          description: 'The GUID for the user.',
+          nullable: true
+        },
+        identity_source: {
+          description: 'The source of the user identity',
+          type: 'string'
+        },
+        record_end_date: {
+          oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+          description: 'Determines if the user record has expired',
+          nullable: true
+        },
+        role_ids: {
+          description: 'list of role ids for the user',
+          type: 'array',
+          items: {
+            type: 'integer',
+            minimum: 1
+          }
+        },
+        role_names: {
+          description: 'list of role names for the user',
+          type: 'array',
+          items: {
+            type: 'string'
+          }
+        },
+        email: {
+          type: 'string'
+        },
+        display_name: {
+          type: 'string'
+        },
+        given_name: {
+          type: 'string',
+          nullable: true
+        },
+        family_name: {
+          type: 'string',
+          nullable: true
+        },
+        agency: {
+          type: 'string',
+          nullable: true
+        }
+      }
+    }
+  }
 };
 
 /**

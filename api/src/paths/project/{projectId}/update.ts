@@ -5,6 +5,7 @@ import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/http-error';
 import { PostParticipantData } from '../../../models/project-create';
 import { projectUpdatePutRequestObject } from '../../../openapi/schemas/project';
+import { projectAndSystemUserSchema } from '../../../openapi/schemas/user';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { ProjectService } from '../../../services/project-service';
 import { getLogger } from '../../../utils/logger';
@@ -85,6 +86,17 @@ GET.apiDoc = {
                 required: ['project_name', 'project_programs', 'start_date', 'end_date', 'revision_count'],
                 nullable: true,
                 properties: {
+                  project_id: {
+                    type: 'integer',
+                    minimum: 1
+                  },
+                  uuid: {
+                    type: 'string'
+                  },
+                  comments: {
+                    type: 'string',
+                    nullable: true
+                  },
                   project_name: {
                     type: 'string'
                   },
@@ -119,6 +131,9 @@ GET.apiDoc = {
                 properties: {
                   objectives: {
                     type: 'string'
+                  },
+                  revision_count: {
+                    type: 'number'
                   }
                 }
               },
@@ -153,62 +168,7 @@ GET.apiDoc = {
                 title: 'Project participants',
                 type: 'array',
                 items: {
-                  type: 'object',
-                  additionalProperties: false,
-                  required: [
-                    'project_participation_id',
-                    'project_id',
-                    'system_user_id',
-                    'project_role_ids',
-                    'project_role_names',
-                    'project_role_permissions',
-                    'display_name',
-                    'email',
-                    'agency',
-                    'identity_source'
-                  ],
-                  properties: {
-                    project_participation_id: {
-                      type: 'number'
-                    },
-                    project_id: {
-                      type: 'number'
-                    },
-                    system_user_id: {
-                      type: 'number'
-                    },
-                    project_role_ids: {
-                      type: 'array',
-                      items: {
-                        type: 'number'
-                      }
-                    },
-                    project_role_names: {
-                      type: 'array',
-                      items: {
-                        type: 'string'
-                      }
-                    },
-                    project_role_permissions: {
-                      type: 'array',
-                      items: {
-                        type: 'string'
-                      }
-                    },
-                    display_name: {
-                      type: 'string'
-                    },
-                    email: {
-                      type: 'string'
-                    },
-                    agency: {
-                      type: 'string',
-                      nullable: true
-                    },
-                    identity_source: {
-                      type: 'string'
-                    }
-                  }
+                  ...projectAndSystemUserSchema
                 }
               }
             }
@@ -302,7 +262,6 @@ PUT.apiDoc = {
     content: {
       'application/json': {
         schema: {
-          // TODO this is currently empty, and needs updating
           ...(projectUpdatePutRequestObject as object)
         }
       }
