@@ -14,9 +14,9 @@ const SurveyProgressChip = (props: ISurveyProgressChipProps) => {
   const codeName = codes?.survey_progress.find((code) => code.id === props.progress_id)?.name;
 
   const colorLookup: Record<string, string> = {
-    Planning: '#4d96a3',
-    'In progress': '#e35f30',
-    Completed: '#099c30'
+    Planning: '#84aac4',
+    'In progress': '#dbaa81',
+    Completed: '#91bf9b'
   };
 
   // Providing a default color in case codeName is undefined
@@ -32,7 +32,7 @@ const SurveyProgressChip = (props: ISurveyProgressChipProps) => {
         '& .MuiChip-label': {
           mt: '1px',
           letterSpacing: '0.03rem',
-          color: '#fff',
+          color: '#fff'
         }
       }}
       {...props}

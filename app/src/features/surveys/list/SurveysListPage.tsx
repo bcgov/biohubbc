@@ -69,26 +69,6 @@ const SurveysListPage = () => {
       )
     },
     {
-      field: 'focal_species_names',
-      headerName: 'Focal Species',
-      flex: 1,
-      disableColumnMenu: true,
-      sortable: false,
-      renderCell: (params) => (
-        <Typography
-          component="span"
-          variant="body2"
-          sx={{
-            display: 'inline-block',
-            '&::first-letter': {
-              textTransform: 'capitalize'
-            }
-          }}>
-          {params.value.join(', ')}
-        </Typography>
-      )
-    },
-    {
       field: 'status',
       headerName: 'Status',
       flex: 0.5,

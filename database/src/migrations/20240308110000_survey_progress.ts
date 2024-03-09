@@ -62,11 +62,15 @@ export async function up(knex: Knex): Promise<void> {
     VALUES
     (
       'Planning',
-      'The Survey is being planned and may change.'
+      'The Survey is being planned and details may change.'
     ),
     (
       'In progress',
       'The Survey is underway and not all data has been collected or uploaded.'
+    ),
+    (
+      'Completed',
+      'The Survey is complete and all data and information has been uploaded.'
     );
 
     ----------------------------------------------------------------------------------------
