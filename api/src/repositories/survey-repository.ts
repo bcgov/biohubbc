@@ -197,8 +197,6 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement, SurveyRecord);
 
-    console.log(response.rows)
-
     if (!response.rows[0]) {
       throw new ApiExecuteSQLError('Failed to get project survey details data', [
         'SurveyRepository->getSurveyData',
@@ -1031,8 +1029,6 @@ export class SurveyRepository extends BaseRepository {
     const knex = getKnex();
 
     let fieldsToUpdate = {};
-
-    console.log(surveyData)
 
     if (surveyData.survey_details) {
       fieldsToUpdate = {

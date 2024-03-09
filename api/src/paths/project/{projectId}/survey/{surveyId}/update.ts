@@ -413,8 +413,6 @@ export function updateSurvey(): RequestHandler {
 
     const connection = getDBConnection(req['keycloak_token']);
 
-    console.log(sanitizedPutSurveyData)
-
     try {
       await connection.open();
 
