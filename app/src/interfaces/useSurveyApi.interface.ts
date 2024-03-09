@@ -150,6 +150,7 @@ export interface SurveyBasicFieldsObject {
   name: string;
   start_date: string;
   end_date: string | null;
+  progress_id: number;
   focal_species: number[];
   focal_species_names: string[];
 }

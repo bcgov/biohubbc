@@ -152,7 +152,7 @@ const SurveyHeader = () => {
               )}
             </Typography>
 
-            <SurveyProgressChip surveyWithDetails={surveyWithDetails} />
+            <SurveyProgressChip progress_id={surveyWithDetails.surveyData.survey_details.progress_id} />
           </Stack>
         }
         buttonJSX={

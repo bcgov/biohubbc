@@ -130,7 +130,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
               }
               progress={
                 codes?.survey_progress?.map((item) => {
-                  return { value: item.id, label: item.name, subText: item.description};
+                  return { value: item.id, label: item.name, subText: item.description };
                 }) || []
               }
               projectStartDate={projectData.project.start_date}

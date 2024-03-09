@@ -1,24 +1,21 @@
-import { Chip } from '@mui/material';
+import { Chip, ChipProps } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { CodesContext } from 'contexts/codesContext';
-import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import { useContext } from 'react';
 
-interface ISurveyProgressChipProps {
-  surveyWithDetails: IGetSurveyForViewResponse;
+interface ISurveyProgressChipProps extends ChipProps {
+  progress_id: number;
 }
 
 const SurveyProgressChip = (props: ISurveyProgressChipProps) => {
   const codesContext = useContext(CodesContext);
   const codes = codesContext.codesDataLoader.data;
 
-  const codeName = codes?.survey_progress.find(
-    (code) => code.id === props.surveyWithDetails.surveyData.survey_details.progress_id
-  )?.name;
+  const codeName = codes?.survey_progress.find((code) => code.id === props.progress_id)?.name;
 
   const colorLookup: Record<string, string> = {
-    Planning: '#109ec2',
-    'In progress': '#db5b00',
+    Planning: '#4d96a3',
+    'In progress': '#e35f30',
     Completed: '#099c30'
   };
 
@@ -33,12 +30,12 @@ const SurveyProgressChip = (props: ISurveyProgressChipProps) => {
         backgroundColor: color,
         ml: '5px',
         '& .MuiChip-label': {
-          fontWeight: 600,
           mt: '1px',
           letterSpacing: '0.03rem',
-          color: '#fff'
+          color: '#fff',
         }
       }}
+      {...props}
     />
   );
 };

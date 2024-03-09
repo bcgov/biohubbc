@@ -14,6 +14,7 @@ import { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
+import SurveyProgressChip from '../view/components/SurveyProgressChip';
 
 const pageSizeOptions = [10, 25, 50];
 
@@ -86,6 +87,14 @@ const SurveysListPage = () => {
           {params.value.join(', ')}
         </Typography>
       )
+    },
+    {
+      field: 'status',
+      headerName: 'Status',
+      flex: 0.5,
+      disableColumnMenu: true,
+      sortable: false,
+      renderCell: (params) => <SurveyProgressChip progress_id={params.row.progress_id} />
     }
   ];
 
