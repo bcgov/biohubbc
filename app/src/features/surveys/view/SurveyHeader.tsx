@@ -26,6 +26,7 @@ import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
+import SurveyProgressChip from './components/SurveyProgressChip';
 
 /**
  * Survey header for a single-survey view.
@@ -150,6 +151,8 @@ const SurveyHeader = () => {
                 surveyWithDetails.surveyData.survey_details.end_date
               )}
             </Typography>
+
+            <SurveyProgressChip surveyWithDetails={surveyWithDetails} />
           </Stack>
         }
         buttonJSX={

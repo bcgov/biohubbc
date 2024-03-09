@@ -130,6 +130,14 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
           />
         </Grid>
         <Grid item xs={12}>
+          <SelectWithSubtextField
+            id={'survey_details.progress_id'}
+            name={'survey_details.progress_id'}
+            label={'Status'}
+            options={props.progress}
+          />
+        </Grid>
+        <Grid item xs={12}>
           <StartEndDateFields
             formikProps={formikProps}
             startName="survey_details.start_date"
@@ -150,22 +158,6 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
           />
         </Grid>
       </Grid>
-
-      <Box component="fieldset" mt={5}>
-        <Typography component="legend" variant="h5">
-          Status
-        </Typography>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <SelectWithSubtextField
-              id={'survey_details.progress_id'}
-              name={'survey_details.progress_id'}
-              label={'Progress'}
-              options={props.progress}
-            />
-          </Grid>
-        </Grid>
-      </Box>
 
       <Box component="fieldset" mt={5}>
         <Typography component="legend" variant="h5">
