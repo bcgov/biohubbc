@@ -66,7 +66,9 @@ const ObservationComponent = () => {
   const sampleMethodOptions: ISampleMethodOption[] = surveySampleMethods.map((method) => ({
     survey_sample_method_id: method.survey_sample_method_id,
     survey_sample_site_id: method.survey_sample_site_id,
-    sample_method_name: getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_lookup_id) ?? ''
+    sample_method_name:
+      getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_lookup_id) ?? '',
+    response_metric: getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.response_metric_lookup_id) ?? ''
   }));
 
   // Collect sample periods
@@ -88,7 +90,7 @@ const ObservationComponent = () => {
     SampleSiteColDef({ sampleSiteOptions, hasError: observationsTableContext.hasError }),
     SampleMethodColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
     SamplePeriodColDef({ samplePeriodOptions, hasError: observationsTableContext.hasError }),
-    ObservationCountColDef({ hasError: observationsTableContext.hasError }),
+    ObservationCountColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
     ObservationDateColDef({ hasError: observationsTableContext.hasError }),
     ObservationTimeColDef({ hasError: observationsTableContext.hasError }),
     ObservationLatitudeColDef({ hasError: observationsTableContext.hasError }),

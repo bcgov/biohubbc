@@ -26,6 +26,7 @@ export type ISampleMethodOption = {
   survey_sample_method_id: number;
   survey_sample_site_id: number;
   sample_method_name: string;
+  response_metric: string;
 };
 
 export type ISamplePeriodOption = {
@@ -205,6 +206,7 @@ export const SamplePeriodColDef = (props: {
 };
 
 export const ObservationCountColDef = (props: {
+  sampleMethodOptions: ISampleMethodOption[];
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
   const { hasError } = props;
@@ -231,6 +233,13 @@ export const ObservationCountColDef = (props: {
         <TextFieldDataGrid
           dataGridProps={params}
           textFieldProps={{
+            inputProps: {
+              max:
+                props.sampleMethodOptions.find(
+                  (option) => option.survey_sample_method_id === params.row.survey_sample_method_id
+                )?.response_metric === 'presence-absence' && 1,
+              inputMode: 'numeric'
+            },
             name: params.field,
             onChange: (event) => {
               if (!/^\d{0,7}$/.test(event.target.value)) {
