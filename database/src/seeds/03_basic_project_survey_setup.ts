@@ -81,7 +81,7 @@ export async function seed(knex: Knex): Promise<void> {
           ${insertSurveySiteStrategy(surveyId)}
           ${insertSurveyIntendedOutcome(surveyId)}
           ${insertSurveySamplingSiteData(surveyId)}
-          ${insertSurveySamplingMethodData(surveyId)}
+          ${insertSurveySamplingMethodData(surveyId, 1)}
           ${insertSurveySamplePeriodData(surveyId)}
         `);
 
@@ -544,19 +544,21 @@ const insertSurveySamplingSiteData = (surveyId: number) =>
  * SQL to insert survey sampling method data. Requires sampling site.
  *
  */
-const insertSurveySamplingMethodData = (surveyId: number) =>
+const insertSurveySamplingMethodData = (surveyId: number, responseMetricLookupId: number) =>
   `
  INSERT INTO survey_sample_method
  (
   survey_sample_site_id,
   method_lookup_id,
-  description
+  description,
+  response_metric_lookup_id
  )
  VALUES
  (
     (SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1),
     (SELECT method_lookup_id FROM method_lookup ORDER BY random() LIMIT 1),
-    $$${faker.lorem.sentences(2)}$$
+    $$${faker.lorem.sentences(2)}$$,
+    ${responseMetricLookupId}
  );
 `;
 

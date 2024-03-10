@@ -38,5 +38,6 @@ export interface IGetAllCodeSetsResponse {
   vantage_codes: CodeSet;
   survey_jobs: CodeSet;
   site_selection_strategies: CodeSet;
-  sample_methods: CodeSet;
+  sample_methods: CodeSet<{id: number; name: string; description: string}>;
+  method_response_metrics: CodeSet<{id: number; name: string; description: string}>;
 }

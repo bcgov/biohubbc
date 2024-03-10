@@ -4,22 +4,17 @@ import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import FormControl from '@mui/material/FormControl';
-import FormHelperText from '@mui/material/FormHelperText';
 import IconButton from '@mui/material/IconButton';
-import InputLabel from '@mui/material/InputLabel';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import { DateTimeFields } from 'components/fields/DateTimeFields';
+import SelectWithSubtextField, { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
 import { CodesContext } from 'contexts/codesContext';
 import { default as dayjs } from 'dayjs';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
-import get from 'lodash-es/get';
 import { useContext, useEffect } from 'react';
 import yup from 'utils/YupSchema';
 
@@ -38,6 +33,7 @@ export interface ISurveySampleMethodData {
   method_lookup_id: number | null;
   description: string;
   periods: ISurveySampleMethodPeriodData[];
+  response_metric_lookup_id: number | null;
 }
 
 export interface IEditSurveySampleMethodData extends ISurveySampleMethodData {
@@ -59,7 +55,8 @@ export const SurveySampleMethodDataInitialValues = {
   survey_sample_site_id: '' as unknown as null,
   method_lookup_id: '' as unknown as null,
   description: '',
-  periods: [SurveySampleMethodPeriodArrayItemInitialValues]
+  periods: [SurveySampleMethodPeriodArrayItemInitialValues],
+  response_metric_lookup_id: '' as unknown as null
 };
 
 export const SamplingSiteMethodYupSchema = yup.object({
@@ -104,9 +101,24 @@ export const SamplingSiteMethodYupSchema = yup.object({
 
 const MethodForm = () => {
   const formikProps = useFormikContext<ISurveySampleMethodData>();
-  const { values, errors, touched, handleChange } = formikProps;
+  const { values, errors } = formikProps;
 
   const codesContext = useContext(CodesContext);
+
+  const methodResponseMetricOptions: ISelectWithSubtextFieldOption[] =
+    codesContext.codesDataLoader.data?.method_response_metrics.map((option) => ({
+      value: option.id,
+      label: option.name,
+      subText: ''
+    })) ?? [];
+
+    const methodOptions: ISelectWithSubtextFieldOption[] =
+    codesContext.codesDataLoader.data?.sample_methods.map((option) => ({
+      value: option.id,
+      label: option.name,
+      subText: ''
+    })) ?? [];
+
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
@@ -120,30 +132,20 @@ const MethodForm = () => {
       <Stack gap={3} width={900}>
         <Stack component="fieldset" gap={3}>
           <Typography component="legend">Details</Typography>
-          <FormControl
-            fullWidth
-            variant="outlined"
-            required={true}
-            error={get(touched, 'method_lookup_id') && Boolean(get(errors, 'method_lookup_id'))}
-            style={{ width: '100%' }}>
-            <InputLabel id={'method_lookup_id-label'}>Method Type</InputLabel>
-            <Select
-              name={'method_lookup_id'}
-              labelId={'method_lookup_id-label'}
-              label={'Method Type'}
-              value={values.method_lookup_id}
-              displayEmpty
-              inputProps={{ id: 'method_lookup_id', 'aria-label': 'Method Type' }}
-              onChange={handleChange}
-              sx={{ width: '100%', backgroundColor: '#fff' }}>
-              {codesContext.codesDataLoader.data.sample_methods.map((item) => (
-                <MenuItem key={item.id} value={item.id}>
-                  {item.name}
-                </MenuItem>
-              ))}
-            </Select>
-            <FormHelperText>{get(touched, 'method_lookup_id') && get(errors, 'method_lookup_id')}</FormHelperText>
-          </FormControl>
+          <SelectWithSubtextField
+            id="method_lookup_id"
+            label="Sampling Method"
+            name="method_lookup_id"
+            options={methodOptions}
+            required
+          />
+          <SelectWithSubtextField
+            id="response-metric"
+            label="Response metric"
+            name="response-metric"
+            options={methodResponseMetricOptions}
+            required
+          />
           <CustomTextField
             name="description"
             label="Description"
