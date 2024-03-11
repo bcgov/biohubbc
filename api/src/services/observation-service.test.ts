@@ -168,8 +168,9 @@ describe('ObservationService', () => {
       ];
 
       const mockSupplementaryData = {
-        observationCount: 1,
-        measurementColumns: []
+        observationCount: 2,
+        qualitative_measurements: [],
+        quantitative_measurements: []
       };
 
       const getSurveyObservationsStub = sinon
@@ -198,12 +199,10 @@ describe('ObservationService', () => {
       expect(response).to.eql({
         surveyObservations: [
           {
-            ...mockObservations[0],
-            observation_subcount_attributes: []
+            ...mockObservations[0]
           },
           {
-            ...mockObservations[1],
-            observation_subcount_attributes: []
+            ...mockObservations[1]
           }
         ],
         supplementaryObservationData: mockSupplementaryData
