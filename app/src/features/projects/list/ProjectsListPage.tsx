@@ -50,7 +50,10 @@ const ProjectsListPage = () => {
   const biohubApi = useBiohubApi();
 
   const codesContext = useContext(CodesContext);
-  codesContext.codesDataLoader.load();
+
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
 
   const projectsDataLoader = useDataLoader(
     (pagination: ApiPaginationRequestOptions, filter?: IProjectAdvancedFilters) => {
