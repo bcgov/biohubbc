@@ -133,7 +133,9 @@ describe('SurveyHeader', () => {
 
     await waitFor(() => {
       expect(
-        getByText('Are you sure you want to delete this survey? This action cannot be undone.')
+        getByText(
+          'Are you sure you want to delete this survey? This will remove all attachments, observations, and other related data. This action cannot be undone.'
+        )
       ).toBeInTheDocument();
     });
 
