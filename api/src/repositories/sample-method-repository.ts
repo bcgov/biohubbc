@@ -9,7 +9,7 @@ import { InsertSamplePeriodRecord, UpdateSamplePeriodRecord } from './sample-per
  */
 export type InsertSampleMethodRecord = Pick<
   SampleMethodRecord,
-  'survey_sample_site_id' | 'method_lookup_id' | 'description'
+  'survey_sample_site_id' | 'method_lookup_id' | 'description' | 'method_response_metric_id'
 > & { periods: InsertSamplePeriodRecord[] };
 
 /**
@@ -17,7 +17,7 @@ export type InsertSampleMethodRecord = Pick<
  */
 export type UpdateSampleMethodRecord = Pick<
   SampleMethodRecord,
-  'survey_sample_method_id' | 'survey_sample_site_id' | 'method_lookup_id' | 'description'
+  'survey_sample_method_id' | 'survey_sample_site_id' | 'method_lookup_id' | 'description' | 'method_response_metric_id'
 > & { periods: UpdateSamplePeriodRecord[] };
 
 /**
@@ -27,6 +27,7 @@ export const SampleMethodRecord = z.object({
   survey_sample_method_id: z.number(),
   survey_sample_site_id: z.number(),
   method_lookup_id: z.number(),
+  method_response_metric_id: z.number(),
   description: z.string(),
   create_date: z.string(),
   create_user: z.number(),
@@ -63,8 +64,6 @@ export class SampleMethodRepository extends BaseRepository {
         survey_sample_method
       WHERE
         survey_sample_site_id = ${surveySampleSiteId}
-      AND
-        survey_id = ${surveyId}
       ;
     `;
 
@@ -85,7 +84,8 @@ export class SampleMethodRepository extends BaseRepository {
       SET
         survey_sample_site_id=${sampleMethod.survey_sample_site_id},
         method_lookup_id = ${sampleMethod.method_lookup_id},
-        description=${sampleMethod.description}
+        description=${sampleMethod.description},
+        method_response_metric_id=${sampleMethod.method_response_metric_id}
       WHERE
         survey_sample_method_id = ${sampleMethod.survey_sample_method_id}
       RETURNING
@@ -115,11 +115,13 @@ export class SampleMethodRepository extends BaseRepository {
       INSERT INTO survey_sample_method (
         survey_sample_site_id,
         method_lookup_id,
-        description
+        description,
+        method_response_metric_id
       ) VALUES (
         ${sampleMethod.survey_sample_site_id},
         ${sampleMethod.method_lookup_id},
-        ${sampleMethod.description}
+        ${sampleMethod.description},
+        ${sampleMethod.method_response_metric_id}
         )
       RETURNING
         *;

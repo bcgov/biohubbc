@@ -89,8 +89,6 @@ const SurveysListPage = () => {
     }
   ];
 
-  console.log(projectContext.surveysListDataLoader.data?.surveys)
-
   return (
     <>
       <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>

@@ -17,7 +17,7 @@ export async function up(knex: Knex): Promise<void> {
     -- Update existing method_lookup values
     ----------------------------------------------------------------------------------------
     SET search_path = biohub;
-    
+
     -- Update 'Electrofishing'
     UPDATE method_lookup
     SET name = 'Electrofishing',
@@ -26,7 +26,7 @@ export async function up(knex: Knex): Promise<void> {
 
     -- Update 'Camera Trap'
     UPDATE method_lookup
-    SET description = 'Recording observations of species using a motion-activated camera attached to a fixed object like a tree.'
+    SET name = 'Camera trap', description = 'Recording observations of species using a motion-activated camera attached to a fixed object like a tree.'
     WHERE name = 'Camera Trap';
 
     -- Update 'Box Trap' and its description

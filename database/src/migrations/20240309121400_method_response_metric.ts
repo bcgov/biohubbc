@@ -62,7 +62,7 @@ export async function up(knex: Knex): Promise<void> {
     VALUES
     (
       'Count',
-      'Counting the number of individuals at a sampling site.'
+      'Counting the number of individuals of a species at a sampling site.'
     ),
     (
       'Presence-absence',
