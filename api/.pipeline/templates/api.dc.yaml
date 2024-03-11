@@ -27,6 +27,8 @@ parameters:
     required: true
     value: 'development'
   - name: NODE_OPTIONS
+    description: Optional node options. See https://nodejs.org/api/cli.html#node_optionsoptions
+    value: ''
   - name: API_PORT_DEFAULT
     value: '6100'
   - name: API_PORT_DEFAULT_NAME
