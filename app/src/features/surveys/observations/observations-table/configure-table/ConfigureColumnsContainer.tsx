@@ -96,9 +96,9 @@ export const ConfigureColumnsContainer = (props: IConfigureColumnsContainerProps
    * @param {string[]} measurementColumnsToRemove The `field` names of the columns to remove
    */
   const onRemoveMeasurements = useCallback(
-    async (measurementColumnsToRemove: string[]) => {
+    (measurementColumnsToRemove: string[]) => {
       // Delete the measurement columns from the database
-      await observationsTableContext.deleteObservationMeasurementColumns(measurementColumnsToRemove, () => {
+      observationsTableContext.deleteObservationMeasurementColumns(measurementColumnsToRemove, () => {
         // Remove the measurement columns from the table context
         observationsTableContext.setMeasurementColumns((currentColumns) => {
           const remainingColumns = currentColumns.filter(

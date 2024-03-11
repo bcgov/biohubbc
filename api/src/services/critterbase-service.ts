@@ -284,7 +284,7 @@ export class CritterbaseService {
   constructor(user: ICritterbaseUser) {
     this.user = user;
     this.keycloak = new KeycloakService();
-    console.log(`Base URL: ${CRITTERBASE_API_HOST}`);
+
     this.axiosInstance = axios.create({
       headers: {
         user: this.getUserHeader()
@@ -338,7 +338,7 @@ export class CritterbaseService {
       appendParams.append(p.key, p.value);
     }
     const url = `${endpoint}?${appendParams.toString()}`;
-    console.log(`Full URL: ${url}`);
+
     const response = await this.axiosInstance.get(url);
     return response.data;
   }

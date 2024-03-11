@@ -188,7 +188,6 @@ export class ObservationService extends DBService {
           }
 
           if (subcount.quantitative.length) {
-            subcount.quantitative;
             const quantitativeData: InsertObservationSubCountQuantitativeMeasurementRecord[] = subcount.quantitative.map(
               (item) => ({
                 observation_subcount_id: observationSubCountRecord.observation_subcount_id,

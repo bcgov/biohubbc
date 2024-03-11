@@ -472,7 +472,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         if (savedRowIdsToDelete.length) {
           // Delete previously saved records from the server, if any
           await biohubApi.observation.deleteObservationRecords(projectId, surveyId, savedRowIdsToDelete);
-          //   setObservationCount(response.supplementaryObservationData.observationCount);
+          // Refresh the table after deleting one or more records
           refreshObservationRecords();
         }
 
@@ -527,7 +527,17 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         });
       }
     },
-    [savedRows, stagedRows, setYesNoDialog, setSnackbar, biohubApi.observation, projectId, surveyId, setErrorDialog]
+    [
+      savedRows,
+      stagedRows,
+      setYesNoDialog,
+      setSnackbar,
+      biohubApi.observation,
+      projectId,
+      surveyId,
+      refreshObservationRecords,
+      setErrorDialog
+    ]
   );
 
   /**
