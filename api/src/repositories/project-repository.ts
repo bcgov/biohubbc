@@ -46,17 +46,83 @@ export class ProjectRepository extends BaseRepository {
   ): Promise<ProjectListData[]> {
     defaultLog.debug({ label: 'getProjectList', pagination });
 
-    const newQuery = getKnex()
+    const knex = getKnex();
+
+    const newQuery = knex
       .select([
         'p.project_id',
         'p.name',
         'p.objectives',
         'p.start_date',
         'p.end_date',
-        `COALESCE(array_remove(array_agg(DISTINCT rl.region_name), null), '{}') as regions`,
-        'array_agg(distinct p2.program_id) as project_programs'
+        knex.raw(`COALESCE(array_remove(array_agg(DISTINCT rl.region_name), null), '{}') as regions`),
+        knex.raw('array_agg(distinct p2.program_id) as project_programs'),
       ])
       .from('project as p')
+
+      .leftJoin('project_program as pp', 'p.project_id', 'pp.project_id')
+      .leftJoin('survey as s', 's.project_id', 'p.project_id')
+      .leftJoin('study_species as sp', 'sp.survey_id', 's.survey_id')
+      .leftJoin('program as p2', 'p2.program_id', 'pp.program_id')
+      .leftJoin('project_region as pr', 'p.project_id', 'pr.project_id')
+      .leftJoin('region_lookup as rl', 'pr.region_id', 'rl.region_id')
+      
+      .groupBy([
+        'p.project_id',
+        'p.name',
+        'p.objectives',
+        'p.start_date',
+        'p.end_date',
+      ])
+
+    /*
+     * Ensure that users can only see project that they are participating in, unless
+     * they are an administrator.
+     */
+    if (!isUserAdmin) {
+      newQuery.whereIn('p.project_id', (subQueryBuilder) => {
+        subQueryBuilder
+          .select('project_id')
+          .from('project_participation')
+          .where('system_user_id', systemUserId);
+      });
+    }
+
+    // Start Date filter
+    if (filterFields.start_date) {
+      newQuery.andWhere('p.start_date', '>=', filterFields.start_date);
+    }
+
+    // End Date filter
+    if (filterFields.end_date) {
+      newQuery.andWhere('p.end_date', '<=', filterFields.end_date)
+    }
+
+    // Project Name filter (exact match)
+    if (filterFields.project_name) {
+      newQuery.andWhere('p.name', filterFields.project_name);
+    }
+
+    // Focal Species filter
+    if (filterFields.species_tsns?.length) {
+      newQuery.whereIn('sp.itis_tsn', filterFields.species_tsns);
+    }
+
+    // Keyword Search filter
+    // TODO
+    // if (filterFields.keyword) {
+    //   const keyword_string = '%'.concat(filterFields.keyword).concat('%');
+    //   sqlStatement.append(SQL` AND p.name ilike ${keyword_string}`);
+    //   sqlStatement.append(SQL` OR p.objectives ilike ${keyword_string}`);
+    //   sqlStatement.append(SQL` OR s.name ilike ${keyword_string}`);
+    // }
+
+    // Programs filter
+    // TODO
+
+    // Pagination
+    // TODO
+    
 
     const sqlStatement = SQL`
       SELECT
