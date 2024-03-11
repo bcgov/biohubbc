@@ -7,6 +7,7 @@ import { makeStyles } from '@mui/styles';
 import assert from 'assert';
 import { ProjectContext } from 'contexts/projectContext';
 import { useContext } from 'react';
+import GeneralInformation from './components/GeneralInformation';
 import ProjectObjectives from './components/ProjectObjectives';
 import TeamMembers from './components/TeamMember';
 import GeneralInformation from './components/GeneralInformation';
@@ -87,15 +88,7 @@ const ProjectDetails = () => {
             Team Members
           </Typography>
           <Divider></Divider>
-          <TeamMembers/>
-        </Box>
-
-        <Box component="section">
-          <Typography component="h4" className={classes.projectMetaSectionHeader}>
-            Agreements
-          </Typography>
-          <Divider></Divider>
-          Agreement placeholder
+          <TeamMembers />
         </Box>
 
         {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-162) Commenting out IUCN form (view) temporarily, while its decided if IUCN information is desired */}

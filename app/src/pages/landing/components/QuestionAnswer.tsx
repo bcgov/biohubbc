@@ -8,7 +8,7 @@ interface IQuestionAnswerProps {
 
 export const QuestionAnswer = (props: IQuestionAnswerProps) => {
   return (
-    <Box textAlign='center'>
+    <Box textAlign="center">
       <Typography variant="h2" mb={2} color="primary" textAlign={props.textAlign ?? 'start'}>
         {props.title}
       </Typography>
