@@ -237,7 +237,7 @@ export const ObservationCountColDef = (props: {
               max:
                 props.sampleMethodOptions.find(
                   (option) => option.survey_sample_method_id === params.row.survey_sample_method_id
-                )?.response_metric === 'presence-absence' && 1,
+                )?.response_metric === 'Presence-absence' && 1,
               inputMode: 'numeric'
             },
             name: params.field,

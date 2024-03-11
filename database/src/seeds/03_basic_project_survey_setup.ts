@@ -99,7 +99,7 @@ export async function seed(knex: Knex): Promise<void> {
             )
           );
           for (let l = 0; l < NUM_SEED_SUBCOUNTS_PER_OBSERVATION; l++) {
-            await knex.raw(insertObservationSubCount(createObservationResponse.rows[0].survey_observation_id));
+            await knex.raw(insertObservationSubCount(createObservationResponse.rows[0].survey_observation_id, 1));
           }
         }
       }
@@ -562,7 +562,7 @@ const insertSurveySamplingMethodData = (surveyId: number, responseMetricLookupId
   survey_sample_site_id,
   method_lookup_id,
   description,
-  response_metric_lookup_id
+  method_response_metric_id
  )
  VALUES
  (
@@ -599,16 +599,18 @@ const insertSurveySamplePeriodData = (surveyId: number) =>
   );
 `;
 
-const insertObservationSubCount = (surveyObservationId: number) => `
+const insertObservationSubCount = (surveyObservationId: number, signId: number) => `
   INSERT INTO observation_subcount 
   (
     survey_observation_id,
-    subcount
+    subcount,
+    sign_id
   )
   VALUES
   (
     ${surveyObservationId},
-    $$${faker.number.int({ min: 1, max: 20 })}$$
+    $$${faker.number.int({ min: 1, max: 20 })}$$,
+    ${signId}
   );
 `;
 
