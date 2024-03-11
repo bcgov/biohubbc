@@ -157,7 +157,7 @@ export class SurveyService extends DBService {
   async getSurveyData(surveyId: number): Promise<GetSurveyData> {
     const [surveyData, surveyTypesData] = await Promise.all([
       this.surveyRepository.getSurveyData(surveyId),
-      this.surveyRepository.getSurveyTypesData(surveyId),
+      this.surveyRepository.getSurveyTypesData(surveyId)
     ]);
 
     const surveyTypeIds = surveyTypesData.map((item) => item.type_id);

@@ -517,7 +517,7 @@ describe('SurveyRepository', () => {
           survey_name: 'name',
           start_date: 'start',
           end_date: 'end',
-           progress_id: 1,
+          progress_id: 1,
           survey_types: [1, 2]
         },
         purpose_and_methodology: {
