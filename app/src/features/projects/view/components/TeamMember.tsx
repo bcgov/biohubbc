@@ -58,40 +58,40 @@ const TeamMembers = () => {
   return (
     <Stack spacing={1}>
       {projectTeamMembers.map((member, index) => (
-          <Box display="flex" alignItems="center" key={member.display_name}>
-            <Box
-              sx={{ height: '35px', width: '35px', minWidth: '30px', borderRadius: '50%' }}
-              bgcolor={getRandomHexColor(index)}
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              mr={1}>
-              <Typography sx={{ fontSize: '0.9rem', color: '#fff' }} variant="body2">
-                {member.initials}
-              </Typography>
-            </Box>
-            <Typography variant="body2" color="textSecondary" alignItems="center" display="flex">
-              {member.display_name}
-              {member.roles.includes('Coordinator') && (
-                <Icon
-                  title={member.roles.join(', ')}
-                  color="gray"
-                  path={mdiCrown}
-                  size={0.75}
-                  style={{ marginLeft: '8px' }}
-                />
-              )}
-              {member.roles.includes('Collaborator') && (
-                <Icon
-                  title={member.roles.join(', ')}
-                  color="gray"
-                  path={mdiPencilOutline}
-                  size={0.75}
-                  style={{ marginLeft: '8px' }}
-                />
-              )}
+        <Box display="flex" alignItems="center" key={member.display_name}>
+          <Box
+            sx={{ height: '35px', width: '35px', minWidth: '30px', borderRadius: '50%' }}
+            bgcolor={getRandomHexColor(index)}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            mr={1}>
+            <Typography sx={{ fontSize: '0.9rem', color: '#fff' }} variant="body2">
+              {member.initials}
             </Typography>
           </Box>
+          <Typography variant="body2" color="textSecondary" alignItems="center" display="flex">
+            {member.display_name}
+            {member.roles.includes('Coordinator') && (
+              <Icon
+                title={member.roles.join(', ')}
+                color="gray"
+                path={mdiCrown}
+                size={0.75}
+                style={{ marginLeft: '8px' }}
+              />
+            )}
+            {member.roles.includes('Collaborator') && (
+              <Icon
+                title={member.roles.join(', ')}
+                color="gray"
+                path={mdiPencilOutline}
+                size={0.75}
+                style={{ marginLeft: '8px' }}
+              />
+            )}
+          </Typography>
+        </Box>
       ))}
     </Stack>
   );

@@ -58,18 +58,6 @@ export const LandingIntro = () => {
         </Grid>
       </Grid>
 
-      <Box mt={4} display="flex" justifyContent="center">
-        <QuestionAnswer
-          title="Looking for more information?"
-          subtext={
-            <>
-              Contact <a href="mailto:biohub@gov.bc.ca">biohub@gov.bc.ca</a> to request a demo, ask questions, and learn
-              more.
-            </>
-          }
-          textAlign="center"
-        />
-      </Box>
     </>
   );
 };
