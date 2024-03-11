@@ -54,7 +54,7 @@ const TeamMembers = () => {
                 bgcolor={grey[200]}
                 mr={1}
               />
-              <Typography component="dd" variant="body2" color='textSecondary'>
+              <Typography component="dd" variant="body2" color="textSecondary">
                 {member.display_name}
               </Typography>
             </Box>
