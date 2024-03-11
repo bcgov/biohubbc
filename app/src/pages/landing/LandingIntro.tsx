@@ -57,7 +57,6 @@ export const LandingIntro = () => {
           <Box maxWidth="100%" component="img" src="/assets/manage-observations.jpg" />
         </Grid>
       </Grid>
-
     </>
   );
 };
