@@ -116,6 +116,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
           <CustomTextField
             name="survey_details.survey_name"
             label="Survey Name"
+            maxLength={200}
             other={{
               required: true
             }}

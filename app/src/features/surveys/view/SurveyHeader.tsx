@@ -48,8 +48,8 @@ const SurveyHeader = () => {
   const dialogContext = useContext(DialogContext);
 
   const defaultYesNoDialogProps = {
-    dialogTitle: 'Delete Survey?',
-    dialogText: 'Are you sure you want to delete this survey? This action cannot be undone.',
+    dialogTitle: DeleteSurveyI18N.deleteTitle,
+    dialogText: DeleteSurveyI18N.deleteText,
     open: false,
     onClose: () => dialogContext.setYesNoDialog({ open: false }),
     onNo: () => dialogContext.setYesNoDialog({ open: false }),
@@ -103,7 +103,7 @@ const SurveyHeader = () => {
       history.push(`/admin/projects/${surveyContext.projectId}`);
     } catch (error) {
       const apiError = error as APIError;
-      showDeleteErrorDialog({ dialogText: apiError.message, open: true });
+      showDeleteErrorDialog({ dialogErrorDetails: [apiError.message], open: true });
       return error;
     }
   };

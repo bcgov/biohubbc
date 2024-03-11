@@ -23,7 +23,15 @@ const path = require('path');
 const request = require('request');
 
 /**
- * @description Bootstrap script to start app web server
+ * An immediately invoked function that runs a simple express server to serve the app static build files.
+ *
+ * This includes a health check endpoint that OpenShift uses to determine if the app is healthy.
+ *
+ * This file is only used when serving the app in OpenShift.
+ * When running the app locally, the app is served by docker-compose, and doesn't use this file at all.
+ *
+ * Note: All changes to env vars here must also be reflected in the `app/src/contexts/configContext.tsx` file, so that
+ * the app has access to the same env vars when running in both OpenShift and local development.
  */
 (() => {
   process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
@@ -56,7 +64,10 @@ const request = require('request');
       MAX_UPLOAD_NUM_FILES: Number(process.env.REACT_APP_MAX_UPLOAD_NUM_FILES) || 10,
       MAX_UPLOAD_FILE_SIZE: Number(process.env.REACT_APP_MAX_UPLOAD_FILE_SIZE) || 52428800,
       S3_PUBLIC_HOST_URL: `https://${OBJECT_STORE_URL}/${OBJECT_STORE_BUCKET_NAME}`,
-      BIOHUB_FEATURE_FLAG: process.env.REACT_APP_BIOHUB_FEATURE_FLAG === 'true'
+      BIOHUB_FEATURE_FLAG: process.env.REACT_APP_BIOHUB_FEATURE_FLAG === 'true',
+      BACKBONE_PUBLIC_API_HOST: process.env.REACT_APP_BACKBONE_PUBLIC_API_HOST || '',
+      BIOHUB_TAXON_PATH: process.env.REACT_APP_BIOHUB_TAXON_PATH || '',
+      BIOHUB_TAXON_TSN_PATH: process.env.REACT_APP_BIOHUB_TAXON_TSN_PATH || ''
     };
     resp.status(200).json(config);
   });
