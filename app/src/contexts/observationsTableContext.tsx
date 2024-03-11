@@ -327,15 +327,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    * @return {*}
    */
   const refreshObservationRecords = useCallback(async () => {
-    const sort = firstOrNull(sortModel);
-    return refreshObservationsData({
-      limit: paginationModel.pageSize,
-      sort: sort?.field || undefined,
-      order: sort?.sort || undefined,
-
-      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
-      page: paginationModel.page + 1
-    });
+    return refreshAndSetMeasurementColumns();
   }, [paginationModel.page, paginationModel.pageSize, refreshObservationsData, sortModel]);
 
   /**
@@ -1034,37 +1026,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     }
 
     _hasLoadedMeasurementColumns.current = true;
-
-    setMeasurementColumns(() => {
-      // Existing measurement definitions from the observations data
-      const existingMeasurementDefinitions = [
-        ...observationsData.supplementaryObservationData.qualitative_measurements,
-        ...observationsData.supplementaryObservationData.quantitative_measurements
-      ];
-
-      // Get all measurement definitions from local storage, if any
-      const measurementDefinitionsStringified = sessionStorage.getItem(
-        getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS)
-      );
-
-      let localStoragemeasurementDefinitions: CBMeasurementType[] = [];
-      if (measurementDefinitionsStringified) {
-        localStoragemeasurementDefinitions = JSON.parse(measurementDefinitionsStringified) as CBMeasurementType[];
-      }
-
-      // Remove any duplicate measurement definitions that already exist in the observations data
-      localStoragemeasurementDefinitions = localStoragemeasurementDefinitions.filter((item1) => {
-        return !existingMeasurementDefinitions.some(
-          (item2) => item2.taxon_measurement_id === item1.taxon_measurement_id
-        );
-      });
-
-      // Set measurement columns, including both existing and local storage measurement definitions
-      return getMeasurementColumns(
-        [...existingMeasurementDefinitions, ...localStoragemeasurementDefinitions],
-        hasError
-      );
-    });
   }, [isLoadingObservationsData, observationsData, hasError, surveyId, measurementColumns.length]);
 
   /**
@@ -1251,6 +1212,54 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       disabled
     ]
   );
+
+  const refreshAndSetMeasurementColumns = async () => {
+    const sort = firstOrNull(sortModel);
+
+    const response = await refreshObservationsData({
+      limit: paginationModel.pageSize,
+      sort: sort?.field || undefined,
+      order: sort?.sort || undefined,
+
+      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+      page: paginationModel.page + 1
+    });
+
+    if (response) {
+      setMeasurementColumns(() => {
+        // Existing measurement definitions from the observations data
+        const existingMeasurementDefinitions = [
+          ...response.supplementaryObservationData.qualitative_measurements,
+          ...response.supplementaryObservationData.quantitative_measurements
+        ];
+
+        // Get all measurement definitions from local storage, if any
+        const measurementDefinitionsStringified = sessionStorage.getItem(
+          getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS)
+        );
+
+        let localStoragemeasurementDefinitions: CBMeasurementType[] = [];
+        if (measurementDefinitionsStringified) {
+          localStoragemeasurementDefinitions = JSON.parse(measurementDefinitionsStringified) as CBMeasurementType[];
+        }
+
+        // Remove any duplicate measurement definitions that already exist in the observations data
+        localStoragemeasurementDefinitions = localStoragemeasurementDefinitions.filter((item1) => {
+          return !existingMeasurementDefinitions.some(
+            (item2) => item2.taxon_measurement_id === item1.taxon_measurement_id
+          );
+        });
+
+        // Set measurement columns, including both existing and local storage measurement definitions
+        return getMeasurementColumns(
+          [...existingMeasurementDefinitions, ...localStoragemeasurementDefinitions],
+          hasError
+        );
+      });
+    }
+
+    return response;
+  };
 
   return (
     <ObservationsTableContext.Provider value={observationsTableContext}>
