@@ -4,11 +4,9 @@ import Divider from '@mui/material/Divider';
 import { makeStyles } from '@mui/styles';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
-import { PROJECT_ROLE } from 'constants/roles';
 import { Formik, FormikProps } from 'formik';
-import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { ICreateProjectRequest, IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
+import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 import { alphabetizeObjects } from 'utils/Utils';
 import ProjectDetailsForm, {
@@ -69,23 +67,6 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
 
   const handleSubmit = async (formikData: ICreateProjectRequest) => {
     props.handleSubmit(formikData);
-  };
-
-  const authStateContext = useAuthStateContext();
-
-  const getProjectParticipants = (): IGetProjectParticipant[] => {
-    const participants: IGetProjectParticipant[] = [
-      {
-        system_user_id: authStateContext.simsUserWrapper?.systemUserId,
-        display_name: authStateContext.simsUserWrapper?.displayName,
-        email: authStateContext.simsUserWrapper?.email,
-        agency: authStateContext.simsUserWrapper?.agency,
-        identity_source: authStateContext.simsUserWrapper?.identitySource,
-        project_role_names: [PROJECT_ROLE.COORDINATOR]
-      } as IGetProjectParticipant
-    ];
-
-    return participants;
   };
 
   return (
@@ -153,7 +134,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
           title="Team Members"
           summary="Only people invited to your Project can access your Project. 
           Each collaborator's role determines their permissions in this Project."
-          component={<ProjectUserForm users={getProjectParticipants()} roles={codes.project_roles} />}
+          component={<ProjectUserForm roles={codes.project_roles} />}
         />
         <Divider className={classes.sectionDivider} />
       </>
