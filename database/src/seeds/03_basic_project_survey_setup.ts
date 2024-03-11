@@ -86,13 +86,13 @@ export async function seed(knex: Knex): Promise<void> {
         `);
 
         const response1 = await knex.raw(insertSurveyObservationData(surveyId));
-        await knex.raw(insertObservationSubCount(response1.rows[0].survey_observation_id));
+        await knex.raw(insertObservationSubCount(response1.rows[0].survey_observation_id, 1));
 
         const response2 = await knex.raw(insertSurveyObservationData(surveyId));
-        await knex.raw(insertObservationSubCount(response2.rows[0].survey_observation_id));
+        await knex.raw(insertObservationSubCount(response2.rows[0].survey_observation_id, 2));
 
         const response3 = await knex.raw(insertSurveyObservationData(surveyId));
-        await knex.raw(insertObservationSubCount(response3.rows[0].survey_observation_id));
+        await knex.raw(insertObservationSubCount(response3.rows[0].survey_observation_id, 3));
       }
     }
   }
@@ -551,7 +551,7 @@ const insertSurveySamplingMethodData = (surveyId: number, responseMetricLookupId
   survey_sample_site_id,
   method_lookup_id,
   description,
-  response_metric_lookup_id
+  method_response_metric_id
  )
  VALUES
  (
@@ -588,16 +588,18 @@ const insertSurveySamplePeriodData = (surveyId: number) =>
   );
 `;
 
-const insertObservationSubCount = (surveyObservationId: number) => `
+const insertObservationSubCount = (surveyObservationId: number, signId: number) => `
   INSERT INTO observation_subcount 
   (
     survey_observation_id,
-    subcount
+    subcount,
+    sign_id
   )
   VALUES
   (
     ${surveyObservationId},
-    $$${faker.number.int({ min: 1, max: 20 })}$$
+    $$${faker.number.int({ min: 1, max: 20 })}$$,
+    ${signId}
   );
 `;
 

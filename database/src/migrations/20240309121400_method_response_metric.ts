@@ -19,9 +19,9 @@ export async function up(knex: Knex): Promise<void> {
     SET search_path = biohub;
 
     CREATE TABLE method_response_metric (
-      method_response_metric_id                          integer          GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+      method_response_metric_id                     integer          GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       name                                          varchar(32)        NOT NULL,
-      description                                   varchar(128),
+      description                                   varchar(256),
       record_end_date                               timestamptz(6),
       create_date                                   timestamptz(6)     DEFAULT now() NOT NULL,
       create_user                                   integer            NOT NULL,
@@ -62,15 +62,15 @@ export async function up(knex: Knex): Promise<void> {
     VALUES
     (
       'Abundance',
-      'A count of individuals at a sampling site.'
+      'A count of individuals at a sampling site. Observation count values must be whole numbers.'
     ),
     (
       'Presence-absence',
-      'A record of whether a species is present or not detected at a sampling site, irrespective of abundance.'
+      'A record of whether a species is present or not detected at a sampling site, irrespective of abundance. Observation count values must be 0 or 1.'
     ),
     (
       'Percent cover',
-      'The percentage of a sampling site\'s area covered by a species.'
+      'The percentage of area at a sampling site covered by a species.'
     ),
     (
       'Mass',
@@ -82,7 +82,7 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
     SET SEARCH_PATH=biohub_dapi_v1;
 
-    CREATE VIEW method_response_metric AS (SELECT * FROM biohub.method_response_metric);
+    CREATE VIEW method_response_metric AS SELECT * FROM biohub.method_response_metric;
 
     ----------------------------------------------------------------------------------------
     -- Replace survey_sample_method view to include method_response_metric_id
