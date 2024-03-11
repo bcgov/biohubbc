@@ -118,9 +118,13 @@ parameters:
     description: S3 key optional prefix
     required: false
     value: 'sims'
-  # Log level
+  # Logging and Validation
   - name: LOG_LEVEL
-    value: 'info'
+    value: 'warn'
+  - name: API_RESPONSE_VALIDATION_ENABLED
+    value: 'false'
+  - name: DATABASE_RESPONSE_VALIDATION_ENABLED
+    value: 'false'
   # GCNotify
   - name: GCNOTIFY_API_SECRET
     description: Secret for gcnotify api key
@@ -317,9 +321,13 @@ objects:
                     secretKeyRef:
                       key: object_store_bucket_name
                       name: ${OBJECT_STORE_SECRETS}
-                # Log level
+                # Logging and Validation
                 - name: LOG_LEVEL
                   value: ${LOG_LEVEL}
+                - name: API_RESPONSE_VALIDATION_ENABLED
+                  value: ${API_RESPONSE_VALIDATION_ENABLED}
+                - name: DATABASE_RESPONSE_VALIDATION_ENABLED
+                  value: ${DATABASE_RESPONSE_VALIDATION_ENABLED}
                 # GCNotify
                 - name: GCNOTIFY_SECRET_API_KEY
                   valueFrom:
