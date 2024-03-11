@@ -1,6 +1,6 @@
-import { mdiCrown } from '@mdi/js';
+import { mdiCrown, mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, Grid, Stack, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import assert from 'assert';
 import { ProjectContext } from 'contexts/projectContext';
 import { useContext } from 'react';
@@ -55,44 +55,43 @@ const TeamMembers = () => {
     return randomColor;
   }
 
-  // Example usage with seed value 42
-  console.log(getRandomHexColor(42));
-
   return (
     <Stack spacing={1}>
       {projectTeamMembers.map((member, index) => (
-        <Grid container spacing={0} key={member.display_name} sx={{ justifyContent: 'space-between', display: 'flex' }}>
-          <Grid item sm={8}>
-            <Box display="flex" alignItems="center">
-              <Box
-                sx={{ height: '35px', width: '35px', minWidth: '30px', borderRadius: '50%' }}
-                bgcolor={getRandomHexColor(index)}
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                mr={1}>
-                <Typography sx={{ fontSize: '0.9rem', color: '#fff' }} variant="body2">
-                  {member.initials}
-                </Typography>
-              </Box>
-              <Typography variant="body1" color="textSecondary">
-                {member.display_name}
+          <Box display="flex" alignItems="center" key={member.display_name}>
+            <Box
+              sx={{ height: '35px', width: '35px', minWidth: '30px', borderRadius: '50%' }}
+              bgcolor={getRandomHexColor(index)}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              mr={1}>
+              <Typography sx={{ fontSize: '0.9rem', color: '#fff' }} variant="body2">
+                {member.initials}
               </Typography>
             </Box>
-          </Grid>
-          <Grid item sm={4} alignItems="center" display="flex" justifyContent='end'>
-            <Typography
-            textAlign='end'
-              color="textSecondary"
-              variant="subtitle2"
-              sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+            <Typography variant="body2" color="textSecondary" alignItems="center" display="flex">
+              {member.display_name}
               {member.roles.includes('Coordinator') && (
-                <Icon color="gray" path={mdiCrown} style={{ marginRight: '5px', width: '15px', height: '15px' }} />
+                <Icon
+                  title={member.roles.join(', ')}
+                  color="gray"
+                  path={mdiCrown}
+                  size={0.75}
+                  style={{ marginLeft: '8px' }}
+                />
               )}
-              {member.roles.join(', ')}
+              {member.roles.includes('Collaborator') && (
+                <Icon
+                  title={member.roles.join(', ')}
+                  color="gray"
+                  path={mdiPencilOutline}
+                  size={0.75}
+                  style={{ marginLeft: '8px' }}
+                />
+              )}
             </Typography>
-          </Grid>
-        </Grid>
+          </Box>
       ))}
     </Stack>
   );
