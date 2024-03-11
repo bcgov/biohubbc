@@ -51,7 +51,7 @@ export class ProjectRepository extends BaseRepository {
         p.name,
         p.start_date,
         p.end_date,
-        array_remove(array_agg(DISTINCT rl.region_name), null) as regions,
+        COALESCE(array_remove(array_agg(DISTINCT rl.region_name), null), '{}') as regions,
         array_agg(distinct p2.program_id) as project_programs
       FROM
         project as p

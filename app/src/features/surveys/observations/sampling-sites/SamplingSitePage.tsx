@@ -1,4 +1,5 @@
 import { LoadingButton } from '@mui/lab';
+import { Container } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -6,7 +7,6 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import { Theme } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
-import { Container } from '@mui/system';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { CreateSamplingSiteI18N } from 'constants/i18n';
@@ -20,9 +20,11 @@ import { Feature } from 'geojson';
 import History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetSurveyBlock, IGetSurveyStratum } from 'interfaces/useSurveyApi.interface';
 import { useContext, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
+import SamplingSiteGroupingsForm from './components/SamplingSiteGroupingsForm';
 import SamplingSiteHeader from './SamplingSiteHeader';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -49,6 +51,8 @@ export interface ICreateSamplingSiteRequest {
   survey_id: number;
   survey_sample_sites: ISurveySampleSite[]; // extracted list from shape files
   methods: ISurveySampleMethodData[];
+  blocks: IGetSurveyBlock[];
+  stratums: IGetSurveyStratum[];
 }
 
 const SamplingSitePage = () => {
@@ -163,7 +167,9 @@ const SamplingSitePage = () => {
           name: '',
           description: '',
           survey_sample_sites: [],
-          methods: []
+          methods: [],
+          blocks: [],
+          stratums: []
         }}
         validationSchema={samplingSiteYupSchema}
         validateOnBlur={true}
@@ -197,6 +203,14 @@ const SamplingSitePage = () => {
                     title="Sampling Methods"
                     summary="Specify sampling methods that were used to collect data."
                     component={<SamplingMethodForm />}></HorizontalSplitFormComponent>
+
+                  <Divider className={classes.sectionDivider} />
+
+                  <HorizontalSplitFormComponent
+                    title="Sampling Site Groupings"
+                    summary="Group similar sites by assigning them to groups or strata, 
+                    which you can add when creating or editing your Survey."
+                    component={<SamplingSiteGroupingsForm />}></HorizontalSplitFormComponent>
 
                   <Divider className={classes.sectionDivider} />
 

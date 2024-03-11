@@ -452,7 +452,7 @@ const ManualTelemetryList = () => {
                                   {item.animal_id}
                                 </Typography>
                                 <Typography variant="subtitle2" color="textSecondary">
-                                  {item.taxon} - {item.sex}
+                                  {item.itis_scientific_name} - {item.sex}
                                 </Typography>
                               </Box>
                             </MenuItem>
@@ -565,7 +565,7 @@ const ManualTelemetryList = () => {
                             key={`${item.deployment.device_id}:${item.deployment.device_make}:${item.deployment.attachment_start}`}
                             device_id={item.deployment.device_id}
                             device_make={item.deployment.device_make}
-                            name={String(item.critter.animal_id ?? item.critter.taxon)}
+                            name={String(item.critter.animal_id ?? item.critter.itis_scientific_name)}
                             start_date={item.deployment.attachment_start}
                             end_date={item.deployment.attachment_end}
                             onMenu={(event, id) => {

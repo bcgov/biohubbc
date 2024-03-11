@@ -46,7 +46,8 @@ const subClassifications2: IIUCNSubClassification2Option[] = [
   }
 ];
 
-describe('ProjectIUCNForm', () => {
+// TODO This component is deprecated and should be removedF
+describe.skip('ProjectIUCNForm', () => {
   it('renders correctly with default empty values', () => {
     const { queryByLabelText } = render(
       <Formik

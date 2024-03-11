@@ -1,7 +1,7 @@
-import { AxiosInstance, CancelTokenSource } from 'axios';
+import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import {
   IObservationRecord,
-  IObservationTableRow,
+  IStandardObservationColumns,
   ISupplementaryObservationData
 } from 'contexts/observationsTableContext';
 import {
@@ -9,6 +9,17 @@ import {
   IGetSurveyObservationsResponse
 } from 'interfaces/useObservationApi.interface';
 import { ApiPaginationRequestOptions } from 'types/misc';
+
+export interface MeasurementColumnToSave {
+  id: string;
+  field: string;
+  value: string | number | null;
+}
+
+export interface IObservationTableRowToSave {
+  standardColumns: IStandardObservationColumns;
+  measurementColumns: MeasurementColumnToSave[];
+}
 
 /**
  * Returns a set of supported api methods for working with observations.
@@ -22,20 +33,25 @@ const useObservationApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {IObservationTableRow[]} surveyObservations
-   * @return {*}
+   * @param {IObservationTableRowToSave[]} surveyObservations
+   * @return {*}  {Promise<void>}
    */
   const insertUpdateObservationRecords = async (
     projectId: number,
     surveyId: number,
-    surveyObservations: IObservationTableRow[]
-  ): Promise<IObservationRecord[]> => {
-    const { data } = await axios.put<IGetSurveyObservationsResponse>(
-      `/api/project/${projectId}/survey/${surveyId}/observations`,
-      { surveyObservations }
-    );
+    surveyObservations: IObservationTableRowToSave[]
+  ): Promise<void> => {
+    // TODO: There is currently no way in the UI to add a sub count value
+    // TODO: Business requirement to use sub counts as the primary count value
+    const dataToSave = surveyObservations.map((item: IObservationTableRowToSave) => {
+      item.standardColumns.subcount = item.standardColumns.count;
+      return item;
+    });
 
-    return data.surveyObservations;
+    // TODO `IObservationRecord[]` might not be the actual return value once measurements are being returned
+    await axios.put<IGetSurveyObservationsResponse>(`/api/project/${projectId}/survey/${surveyId}/observations`, {
+      surveyObservations: dataToSave
+    });
   };
 
   /**
@@ -70,6 +86,12 @@ const useObservationApi = (axios: AxiosInstance) => {
       `/api/project/${projectId}/survey/${surveyId}/observations${urlParamsString}`
     );
 
+    // TODO: Using sub count value here as observation count may be depreciated
+    // TODO: Business requirement to use sub counts as the primary count value
+    data.surveyObservations = data.surveyObservations.map((item: any) => {
+      item.count = item.subcount;
+      return item;
+    });
     return data;
   };
 
@@ -119,7 +141,7 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} surveyId
    * @param {File} file
    * @param {CancelTokenSource} [cancelTokenSource]
-   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<{ submissionId: number }>}
    */
   const uploadCsvForImport = async (
@@ -127,7 +149,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     surveyId: number,
     file: File,
     cancelTokenSource?: CancelTokenSource,
-    onProgress?: (progressEvent: ProgressEvent) => void
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
   ): Promise<{ submissionId: number }> => {
     const formData = new FormData();
 
@@ -138,6 +160,7 @@ const useObservationApi = (axios: AxiosInstance) => {
       formData,
       {
         cancelToken: cancelTokenSource?.token,
+
         onUploadProgress: onProgress
       }
     );

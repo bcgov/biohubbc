@@ -15,7 +15,7 @@ describe('ProjectParticipationRepository', () => {
 
       const repository = new ProjectParticipationRepository(dbConnection);
 
-      const response = await repository.deleteProjectParticipationRecord(1);
+      const response = await repository.deleteProjectParticipationRecord(1, 1);
 
       expect(response).to.eql({ id: 1 });
     });
@@ -27,7 +27,7 @@ describe('ProjectParticipationRepository', () => {
       const repository = new ProjectParticipationRepository(dbConnection);
 
       try {
-        await repository.deleteProjectParticipationRecord(1);
+        await repository.deleteProjectParticipationRecord(1, 1);
         expect.fail();
       } catch (error) {
         expect((error as Error).message).to.equal('Failed to delete project participation record');

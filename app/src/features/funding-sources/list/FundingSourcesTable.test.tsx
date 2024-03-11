@@ -18,7 +18,7 @@ describe('FundingSourcesTable', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('No Funding Sources available')).toBeVisible();
+      expect(getByText('No funding sources found')).toBeVisible();
     });
   });
 

@@ -376,6 +376,25 @@ GET.apiDoc = {
                         }
                       }
                     }
+                  },
+                  blocks: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      required: ['name', 'description', 'sample_block_count'],
+                      properties: {
+                        name: {
+                          type: 'string'
+                        },
+                        description: {
+                          type: 'string',
+                          nullable: true
+                        },
+                        sample_block_count: {
+                          type: 'number'
+                        }
+                      }
+                    }
                   }
                 }
               },
@@ -478,6 +497,7 @@ export function getSurvey(): RequestHandler {
 
       const surveyData = await surveyService.getSurveyById(surveyId);
 
+      // @TODO safe to delete survey supplementary data code?
       const surveySupplementaryData = await surveyService.getSurveySupplementaryDataById(Number(req.params.surveyId));
 
       await connection.commit();

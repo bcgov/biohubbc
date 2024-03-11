@@ -1,13 +1,12 @@
 import { mdiBroadcast, mdiEye } from '@mdi/js';
 import { Box, Paper } from '@mui/material';
 import { CodesContext } from 'contexts/codesContext';
-import { ObservationsContext } from 'contexts/observationsContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import { TaxonomyContext } from 'contexts/taxonomyContext';
 import { TelemetryDataContext } from 'contexts/telemetryDataContext';
 import dayjs from 'dayjs';
 import { Position } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useObservationsContext, useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { ITelemetry } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
@@ -21,9 +20,9 @@ import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './SurveySpat
 const SurveySpatialData = () => {
   const [activeView, setActiveView] = useState<SurveySpatialDatasetViewEnum>(SurveySpatialDatasetViewEnum.OBSERVATIONS);
 
-  const observationsContext = useContext(ObservationsContext);
+  const observationsContext = useObservationsContext();
   const telemetryContext = useContext(TelemetryDataContext);
-  const taxonomyContext = useContext(TaxonomyContext);
+  const taxonomyContext = useTaxonomyContext();
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
   const { projectId, surveyId } = useContext(SurveyContext);
@@ -41,13 +40,15 @@ const SurveySpatialData = () => {
       const deploymentIds = surveyContext.deploymentDataLoader.data.map((item) => item.deployment_id);
       telemetryContext.telemetryDataLoader.refresh(deploymentIds);
     }
+    // Should not re-run this effect on `telemetryContext.telemetryDataLoader.refresh` changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [surveyContext.deploymentDataLoader.data]);
 
   // Fetch/cache all taxonomic data for the observations
   useEffect(() => {
     const cacheTaxonomicData = async () => {
       if (observationsContext.observationsDataLoader.data) {
-        // fetch all unique wldtaxonomic_units_id's from observations to find taxonomic names
+        // fetch all unique itis_tsn's from observations to find taxonomic names
         const taxonomicIds = [
           ...new Set(observationsContext.observationsDataLoader.data.surveyObservations.map((item) => item.itis_tsn))
         ].filter((tsn): tsn is number => tsn !== null);
@@ -56,6 +57,8 @@ const SurveySpatialData = () => {
     };
 
     cacheTaxonomicData();
+    // Should not re-run this effect on `taxonomyContext` changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [observationsContext.observationsDataLoader.data]);
 
   /**
@@ -117,7 +120,11 @@ const SurveySpatialData = () => {
           };
         })
     );
-  }, [surveyContext.critterDataLoader.data, surveyContext.deploymentDataLoader.data]);
+  }, [
+    surveyContext.critterDataLoader.data,
+    surveyContext.deploymentDataLoader.data,
+    telemetryContext.telemetryDataLoader.data
+  ]);
 
   /**
    * Because Observations data is server-side paginated, we must collect all spatial points from
@@ -156,7 +163,7 @@ const SurveySpatialData = () => {
 
       return point;
     });
-  }, [observationsGeometryDataLoader.data]);
+  }, [biohubApi.observation, observationsGeometryDataLoader.data?.surveyObservationsGeometry, projectId, surveyId]);
 
   let isLoading = false;
   if (activeView === SurveySpatialDatasetViewEnum.OBSERVATIONS) {
@@ -223,7 +230,7 @@ const SurveySpatialData = () => {
       <Box height={{ sm: 300, md: 500 }} position="relative">
         <SurveyMap supplementaryLayers={supplementaryLayers} isLoading={isLoading} />
       </Box>
-      <Box py={1} px={2} position="relative">
+      <Box p={2} position="relative">
         {activeView === SurveySpatialDatasetViewEnum.OBSERVATIONS && (
           <SurveySpatialObservationDataTable isLoading={isLoading} />
         )}

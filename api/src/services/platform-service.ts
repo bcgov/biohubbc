@@ -85,25 +85,29 @@ export class PlatformService extends DBService {
       return [];
     }
 
-    const keycloakService = new KeycloakService();
+    try {
+      const keycloakService = new KeycloakService();
 
-    const token = await keycloakService.getKeycloakServiceToken();
+      const token = await keycloakService.getKeycloakServiceToken();
 
-    const backboneTaxonTsnUrl = new URL(getBackboneTaxonTsnPath(), getBackboneInternalApiHost()).href;
+      const backboneTaxonTsnUrl = new URL(getBackboneTaxonTsnPath(), getBackboneInternalApiHost()).href;
 
-    const { data } = await axios.get<{ searchResponse: IItisSearchResult[] }>(backboneTaxonTsnUrl, {
-      headers: {
-        authorization: `Bearer ${token}`
-      },
-      params: {
-        tsn: [...new Set(tsns)]
-      },
-      paramsSerializer: (params) => {
-        return qs.stringify(params);
-      }
-    });
+      const { data } = await axios.get<{ searchResponse: IItisSearchResult[] }>(backboneTaxonTsnUrl, {
+        headers: {
+          authorization: `Bearer ${token}`
+        },
+        params: {
+          tsn: [...new Set(tsns)]
+        },
+        paramsSerializer: (params) => {
+          return qs.stringify(params);
+        }
+      });
 
-    return data.searchResponse;
+      return data.searchResponse;
+    } catch (error) {
+      return [];
+    }
   }
 
   /**
