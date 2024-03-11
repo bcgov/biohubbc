@@ -50,9 +50,7 @@ const TeamMembers = () => {
     const randomComponent = () => seededRandom(70, 150).toString(16).padStart(2, '0');
 
     // Concatenate three random color components to form a hex color
-    const randomColor = `#${randomComponent()}${randomComponent()}${randomComponent()}`;
-
-    return randomColor;
+    return `#${randomComponent()}${randomComponent()}${randomComponent()}`;
   }
 
   return (
