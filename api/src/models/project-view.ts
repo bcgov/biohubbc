@@ -4,7 +4,6 @@ import { ProjectUser } from '../repositories/project-participation-repository';
 import { SystemUser } from '../repositories/user-repository';
 
 export interface IProjectAdvancedFilters {
-  permit_number?: string;
   project_programs?: number[];
   start_date?: string;
   end_date?: string;

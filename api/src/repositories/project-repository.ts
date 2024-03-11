@@ -16,6 +16,7 @@ import {
 import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
+import { getKnex } from '../database/db';
 
 const defaultLog = getLogger('repositories/project-repository');
 
@@ -44,6 +45,18 @@ export class ProjectRepository extends BaseRepository {
     pagination?: ApiPaginationOptions
   ): Promise<ProjectListData[]> {
     defaultLog.debug({ label: 'getProjectList', pagination });
+
+    const newQuery = getKnex()
+      .select([
+        'p.project_id',
+        'p.name',
+        'p.objectives',
+        'p.start_date',
+        'p.end_date',
+        `COALESCE(array_remove(array_agg(DISTINCT rl.region_name), null), '{}') as regions`,
+        'array_agg(distinct p2.program_id) as project_programs'
+      ])
+      .from('project as p')
 
     const sqlStatement = SQL`
       SELECT
@@ -172,11 +185,12 @@ export class ProjectRepository extends BaseRepository {
 
     sqlStatement.append(';');
 
-    console.log('filterFields:', filterFields)
-    console.log(sqlStatement.text)
-    console.log(sqlStatement.values)
+    // console.log('filterFields:', filterFields)
+    // console.log(sqlStatement.text)
+    // console.log(sqlStatement.values)
 
-    const response = await this.connection.sql(sqlStatement, ProjectListData);
+    // const response = await this.connection.sql(sqlStatement, ProjectListData);
+    const response = await this.connection.knex(newQuery, ProjectListData);
 
     return response.rows;
   }
