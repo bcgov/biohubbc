@@ -22,22 +22,6 @@ const dbSetupBuild = (settings) => {
 
   const objects = [];
 
-  console.log('4==========================================');
-  console.log({
-    NAME: name,
-    SUFFIX: phases[env][phase].suffix,
-    VERSION: phases[env][phase].tag,
-    SOURCE_CONTEXT_DIR: phases[env][phase].sourceContextDir,
-    DB_SETUP_DOCKERFILE_PATH: phases[env][phase].dbSetupDockerfilePath,
-    SOURCE_REPOSITORY_URL: oc.git.http_url,
-    SOURCE_REPOSITORY_REF: phases[env][phase].branch,
-    CPU_REQUEST: phases[env][phase].cpuRequest,
-    CPU_LIMIT: phases[env][phase].cpuLimit,
-    MEMORY_REQUEST: phases[env][phase].memoryRequest,
-    MEMORY_LIMIT: phases[env][phase].memoryLimit
-  });
-  console.log('5==========================================');
-
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.setup.bc.yaml`, {
       param: {

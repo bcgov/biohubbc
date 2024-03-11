@@ -163,10 +163,4 @@ const phases = {
   }
 };
 
-console.log('1==============================================');
-console.log('phases', phases);
-console.log('2==============================================');
-console.log('options', options);
-console.log('3==============================================');
-
 module.exports = exports = { phases, options };
