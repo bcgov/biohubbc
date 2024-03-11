@@ -77,13 +77,14 @@ export class ProjectService extends DBService {
   /**
    * Returns the total count of projects that are visible to the given user.
    *
+   * @param {IProjectAdvancedFilters} filterFields
    * @param {boolean} isUserAdmin
    * @param {(number | null)} systemUserId
    * @return {*}  {Promise<number>}
    * @memberof ProjectService
    */
-  async getProjectCount(isUserAdmin: boolean, systemUserId: number | null): Promise<number> {
-    return this.projectRepository.getProjectCount(isUserAdmin, systemUserId);
+  async getProjectCount(filterFields: IProjectAdvancedFilters, isUserAdmin: boolean, systemUserId: number | null): Promise<number> {
+    return this.projectRepository.getProjectCount(filterFields, isUserAdmin, systemUserId);
   }
 
   /**

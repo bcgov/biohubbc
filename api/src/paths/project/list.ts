@@ -176,7 +176,7 @@ export function getProjectList(): RequestHandler {
       const filterFields: IProjectAdvancedFilters = {
         keyword: req.query.keyword && String(req.query.keyword),
         project_name: req.query.project_name && String(req.query.project_name),
-        project_programs: req.query.project_programs ? String(req.query.project_program).split(',').map(Number) : undefined,
+        project_programs: req.query.project_programs ? String(req.query.project_programs).split(',').map(Number) : undefined,
         species_tsns: req.query.species_tsns ? String(req.query.species_tsns).split(',').map(Number) : undefined,
         start_date: req.query.start_date && String(req.query.start_date),
         end_date: req.query.end_date && String(req.query.end_date),
@@ -191,7 +191,8 @@ export function getProjectList(): RequestHandler {
         filterFields,
         ensureCompletePaginationOptions(paginationOptions)
       );
-      const projectsTotalCount = await projectService.getProjectCount(isUserAdmin, systemUserId);
+
+      const projectsTotalCount = await projectService.getProjectCount(filterFields, isUserAdmin, systemUserId);
 
       const response = {
         projects,
