@@ -447,7 +447,7 @@ export class ObservationService extends DBService {
 
       measurementColumns.forEach((mColumn) => {
         // Ignore blank columns
-        if (Boolean(mColumn)) {
+        if (mColumn) {
           const measurement = findMeasurementFromTsnMeasurements(
             String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']),
             mColumn,
