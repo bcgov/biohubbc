@@ -16,6 +16,7 @@ import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
 import { getKnex } from '../database/db';
+import { Knex } from 'knex';
 
 const defaultLog = getLogger('repositories/project-repository');
 
@@ -27,24 +28,21 @@ const defaultLog = getLogger('repositories/project-repository');
  * @extends {BaseRepository}
  */
 export class ProjectRepository extends BaseRepository {
+
   /**
-   * Retrieves the paginated list of all projects that are available to the user.
+   * Constructs a non-paginated query used to get a project list for users.
    *
    * @param {boolean} isUserAdmin
    * @param {(number | null)} systemUserId
    * @param {IProjectAdvancedFilters} filterFields
-   * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {Promise<ProjectListData[]>}
+   * @return {*}  Promise<Knex.QueryBuilder>
    * @memberof ProjectRepository
    */
-  async getProjectList(
+  _makeProjectListQuery(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: IProjectAdvancedFilters,
-    pagination?: ApiPaginationOptions
-  ): Promise<ProjectListData[]> {
-    defaultLog.debug({ label: 'getProjectList', pagination });
-
+  ): Knex.QueryBuilder {
     const knex = getKnex();
 
     const query = knex
@@ -123,6 +121,33 @@ export class ProjectRepository extends BaseRepository {
       query.havingRaw(`array_agg(DISTINCT prog.program_id) && ARRAY[${filterFields.project_programs.join(",")}]::integer[]`);
     }
 
+    return query;
+  }
+
+  /**
+   * Retrieves the paginated list of all projects that are available to the user.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IProjectAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {Promise<ProjectListData[]>}
+   * @memberof ProjectRepository
+   */
+  async getProjectList(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IProjectAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<ProjectListData[]> {
+    defaultLog.debug({ label: 'getProjectList', pagination });
+
+    const query = this._makeProjectListQuery(
+      isUserAdmin,
+      systemUserId,
+      filterFields
+    );
+    
     // Pagination
     if (pagination) {
       query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
@@ -147,31 +172,13 @@ export class ProjectRepository extends BaseRepository {
    * @memberof ProjectRepository
    */
   async getProjectCount(filterFields: IProjectAdvancedFilters, isUserAdmin: boolean, systemUserId: number | null): Promise<number> {
-    // TODO use filterFields
-    const sqlStatement = SQL`
-      SELECT
-        COUNT(*) as project_count
-      FROM
-        project as p
-      WHERE 1 = 1
-    `;
+    const projectsListQuery = this._makeProjectListQuery(isUserAdmin, systemUserId, filterFields)
 
-    if (!isUserAdmin) {
-      sqlStatement.append(SQL`
-        AND p.project_id IN (
-          SELECT
-            project_id
-          FROM
-            project_participation
-          where
-            system_user_id = ${systemUserId}
-        )
-      `);
-    }
+    const query = getKnex()
+      .from(projectsListQuery.as('temp'))
+      .count('* as project_count');
 
-    sqlStatement.append(';');
-
-    const response = await this.connection.sql(sqlStatement, z.object({ project_count: z.string().transform(Number) }));
+    const response = await this.connection.knex(query, z.object({ project_count: z.string().transform(Number) }));
 
     if (response?.rowCount < 1) {
       throw new ApiExecuteSQLError('Failed to get project count', [
