@@ -7,7 +7,6 @@ import { makeStyles } from '@mui/styles';
 import assert from 'assert';
 import { ProjectContext } from 'contexts/projectContext';
 import { useContext } from 'react';
-import GeneralInformation from './components/GeneralInformation';
 import ProjectObjectives from './components/ProjectObjectives';
 import TeamMembers from './components/TeamMember';
 import GeneralInformation from './components/GeneralInformation';

@@ -60,15 +60,6 @@ const TeamMembers = () => {
 
   return (
     <Stack spacing={1}>
-      {/* {projectContext.projectDataLoader.data.projectData.participants.map((member) => (
-        <Box display="flex" alignItems="center">
-          <Box sx={{ height: '30px', width: '30px', borderRadius: '50%' }} bgcolor={grey[200]} mr={1}></Box>
-          <Typography variant="body1" color="textSecondary">
-            {member.display_name}
-          </Typography>
-        </Box>
-      ))}
-       */}
       {projectTeamMembers.map((member, index) => (
         <Grid container spacing={0} key={member.display_name} sx={{ justifyContent: 'space-between', display: 'flex' }}>
           <Grid item sm={8}>
@@ -89,7 +80,7 @@ const TeamMembers = () => {
               </Typography>
             </Box>
           </Grid>
-          <Grid item sm={4} alignItems="center" display="flex">
+          <Grid item sm={4} alignItems="center" display="flex" justifyContent='end'>
             <Typography
             textAlign='end'
               color="textSecondary"
