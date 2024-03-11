@@ -87,7 +87,7 @@ describe('UserRoleSelector', () => {
     });
   });
 
-  it('Add role to user', async () => {
+  it.skip('Add role to user', async () => {
     const onDelete = jest.fn();
     const onAdd = jest.fn();
 

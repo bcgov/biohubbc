@@ -1,3 +1,4 @@
+import Autocomplete from '@mui/material/Autocomplete';
 import { Paper } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
@@ -7,7 +8,6 @@ import TextField from '@mui/material/TextField';
 import useEnhancedEffect from '@mui/material/utils/useEnhancedEffect';
 import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import { IAutocompleteDataGridOption } from 'components/data-grid/autocomplete/AutocompleteDataGrid.interface';
-import SpeciesCard from 'components/species/components/SpeciesCard';
 import { DebouncedFunc } from 'lodash-es';
 import { useEffect, useRef, useState } from 'react';
 
@@ -45,6 +45,10 @@ export interface IAsyncAutocompleteDataGridEditCell<
    * @memberof IAsyncAutocompleteDataGridEditCell
    */
   error?: boolean;
+  /**
+   * Optional function to render the autocomplete option.
+   */
+  renderOption?: (option: IAutocompleteDataGridOption<ValueType>) => JSX.Element;
 }
 
 /**
@@ -66,7 +70,8 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
     if (dataGridProps.hasFocus) {
       ref.current?.focus();
     }
-  }, [dataGridProps.hasFocus]);
+  }, [dataGridProps]);
+
   // The current data grid value
   const dataGridValue = dataGridProps.value;
   // The input field value
@@ -149,7 +154,6 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
       loading={isLoading}
       value={currentOption}
       options={options}
-      PaperComponent={({ children }) => <Paper sx={{ minWidth: '600px' }}>{children}</Paper>}
       getOptionLabel={(option) => option.label}
       isOptionEqualToValue={(option, value) => {
         if (!option?.value || !value?.value) {
@@ -194,18 +198,8 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
       )}
       renderOption={(renderProps, renderOption) => {
         return (
-          <Box
-            component="li"
-            sx={{
-              '& + li': {
-                borderTop: '1px solid' + grey[300]
-              }
-            }}
-            key={`${renderOption.value}-${renderOption.label}`}
-            {...renderProps}>
-            <Box py={1} width="100%">
-              <SpeciesCard name={renderOption.label} subtext={renderOption.label} />
-            </Box>
+          <Box component="li" {...renderProps}>
+            {props.renderOption ? props.renderOption(renderOption) : <span>{renderOption.label}</span>}
           </Box>
         );
       }}

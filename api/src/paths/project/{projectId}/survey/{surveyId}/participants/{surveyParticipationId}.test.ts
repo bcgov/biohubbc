@@ -23,7 +23,7 @@ describe('updateSurveyParticipantRole', () => {
 
     const expectedError = new Error('cannot process request');
     const updateSurveyParticipantStub = sinon
-      .stub(SurveyParticipationService.prototype, 'updateSurveyParticipant')
+      .stub(SurveyParticipationService.prototype, 'updateSurveyParticipantJob')
       .rejects(expectedError);
 
     const sampleReq = {
@@ -53,7 +53,7 @@ describe('updateSurveyParticipantRole', () => {
     sinon.stub(db, 'getDBConnection').returns(fakeDB);
 
     const updateSurveyParticipantStub = sinon
-      .stub(SurveyParticipationService.prototype, 'updateSurveyParticipant')
+      .stub(SurveyParticipationService.prototype, 'updateSurveyParticipantJob')
       .resolves();
 
     const sampleReq = {

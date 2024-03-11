@@ -4,6 +4,7 @@ import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Collapse from '@mui/material/Collapse';
+import grey from '@mui/material/colors/grey';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import AlertBar from 'components/alert/AlertBar';
@@ -15,7 +16,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { ICode } from 'interfaces/useCodesApi.interface';
 import { ICreateSurveyRequest, IGetSurveyParticipant } from 'interfaces/useSurveyApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { alphabetizeObjects } from 'utils/Utils';
 import yup from 'utils/YupSchema';
@@ -29,8 +30,7 @@ export const SurveyUserJobYupSchema = yup.object().shape({
   )
 });
 
-interface ISurveyUser {
-  users: (ISystemUser | IGetSurveyParticipant)[];
+interface ISurveyUserFormProps {
   jobs: ICode[];
 }
 
@@ -38,7 +38,7 @@ export const SurveyUserJobFormInitialValues = {
   participants: []
 };
 
-const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
+const SurveyUserForm = (props: ISurveyUserFormProps) => {
   const { handleSubmit, values, setFieldValue, errors, setErrors } = useFormikContext<ICreateSurveyRequest>();
   const biohubApi = useBiohubApi();
 
@@ -46,24 +46,9 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
   searchUserDataLoader.load();
 
   const [searchText, setSearchText] = useState('');
-  const [selectedUsers, setSelectedUsers] = useState<(ISystemUser | IGetSurveyParticipant)[]>(props.users);
-
-  useEffect(() => {
-    props.users.forEach((user, index) => {
-      setFieldValue(`participants[${index}].system_user_id`, user.system_user_id);
-      setFieldValue(`participants[${index}].display_name`, user.display_name);
-      setFieldValue(`participants[${index}].email`, user.email);
-      setFieldValue(`participants[${index}].agency`, user.agency);
-      setFieldValue(`participants[${index}].identity_source`, user.identity_source);
-      setFieldValue(`participants[${index}].system_user_id`, user.system_user_id);
-      setFieldValue(`participants[${index}].survey_job_name`, (user as IGetSurveyParticipant).survey_job_name);
-    });
-  }, [props.users, setFieldValue]);
 
   const handleAddUser = (user: ISystemUser | IGetSurveyParticipant) => {
-    selectedUsers.push(user);
-
-    setFieldValue(`participants[${selectedUsers.length - 1}]`, {
+    setFieldValue(`participants[${values.participants.length}]`, {
       system_user_id: user.system_user_id,
       display_name: user.display_name,
       email: user.email,
@@ -80,22 +65,16 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
   };
 
   const handleRemoveUser = (systemUserId: number) => {
-    const filteredUsers = selectedUsers.filter(
+    const filteredUsers = values.participants.filter(
       (item: ISystemUser | IGetSurveyParticipant) => item.system_user_id !== systemUserId
     );
-    const filteredValues = values.participants.filter((item) => item.system_user_id !== systemUserId);
 
-    setSelectedUsers(filteredUsers);
-    setFieldValue(`participants`, filteredValues);
+    setFieldValue(`participants`, filteredUsers);
     clearErrors();
   };
 
-  // Clear all errors for any modify action
-  // setting to undefined keeps the formik form from submitting
   const clearErrors = () => {
-    const tempErrors = errors;
-    delete tempErrors.participants;
-    setErrors(tempErrors);
+    setErrors({ ...errors, participants: undefined });
   };
 
   const alertBarText = (): { title: string; text: string } => {
@@ -145,9 +124,9 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
           Add particpants to this survey and assign each a role.
         </Typography>
       </Box>
-      {errors?.['participants'] && selectedUsers.length > 0 && (
+      {errors?.['participants'] && values.participants.length > 0 && (
         <Box mt={3}>
-          <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
+          <AlertBar severity="error" variant="outlined" title={alertBarText().title} text={alertBarText().text} />
         </Box>
       )}
       <Box mt={3}>
@@ -160,7 +139,7 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
           filterOptions={(options, state) => {
             const searchFilter = createFilterOptions<ISystemUser>({ ignoreCase: true });
             const unselectedOptions = options.filter(
-              (item) => !selectedUsers.some((existing) => existing.system_user_id === item.system_user_id)
+              (item) => !values.participants.some((existing) => existing.system_user_id === item.system_user_id)
             );
             return searchFilter(unselectedOptions, state);
           }}
@@ -196,13 +175,23 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
           )}
           renderOption={(renderProps, renderOption) => {
             return (
-              <Box component="li" {...renderProps} key={renderOption.system_user_id}>
-                <UserCard
-                  name={renderOption.display_name}
-                  email={renderOption.email}
-                  agency={renderOption.agency}
-                  type={renderOption.identity_source}
-                />
+              <Box
+                component="li"
+                sx={{
+                  '& + li': {
+                    borderTop: '1px solid' + grey[300]
+                  }
+                }}
+                key={renderOption.system_user_id}
+                {...renderProps}>
+                <Box py={0.5} width="100%">
+                  <UserCard
+                    name={renderOption.display_name}
+                    email={renderOption.email}
+                    agency={renderOption.agency}
+                    type={renderOption.identity_source}
+                  />
+                </Box>
               </Box>
             );
           }}
@@ -216,7 +205,7 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
             }
           }}>
           <TransitionGroup>
-            {selectedUsers.map((user: ISystemUser | IGetSurveyParticipant, index: number) => {
+            {values.participants.map((user: ISystemUser | IGetSurveyParticipant, index: number) => {
               const error = rowItemError(index);
               return (
                 <Collapse key={user.system_user_id}>

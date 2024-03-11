@@ -26,7 +26,7 @@ describe('deleteAttachment', () => {
 
     const expectedError = new Error('cannot process request');
     const handleDeleteSurveyAttachmentStub = sinon
-      .stub(AttachmentService.prototype, 'handleDeleteSurveyAttachment')
+      .stub(AttachmentService.prototype, 'deleteSurveyAttachment')
       .rejects(expectedError);
 
     const sampleReq = {
@@ -62,7 +62,7 @@ describe('deleteAttachment', () => {
     });
 
     const handleDeleteSurveyAttachmentStub = sinon
-      .stub(AttachmentService.prototype, 'handleDeleteSurveyAttachment')
+      .stub(AttachmentService.prototype, 'deleteSurveyAttachment')
       .resolves();
 
     const sampleReq = {

@@ -2,6 +2,7 @@ import Grid from '@mui/material/Grid';
 import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import CbSelectField from 'components/fields/CbSelectField';
 import CustomTextField from 'components/fields/CustomTextField';
+import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { useFormikContext } from 'formik';
 import { AnimalGeneralSchema, getAnimalFieldName, IAnimal, IAnimalGeneral, isRequiredInSchema } from '../animal';
@@ -14,26 +15,24 @@ import { ANIMAL_SECTIONS_FORM_MAP } from '../animal-sections';
  */
 
 const GeneralAnimalForm = () => {
-  const { setFieldValue, values } = useFormikContext<IAnimal>();
+  const { setFieldValue } = useFormikContext<IAnimal>();
   const { animalKeyName } = ANIMAL_SECTIONS_FORM_MAP[SurveyAnimalsI18N.animalGeneralTitle];
-  const handleTaxonName = (_value: string, label: string) => {
-    setFieldValue(getAnimalFieldName<IAnimalGeneral>(animalKeyName, 'taxon_name'), label);
+  const handleTaxonName = (tsn: string, scientificName: string) => {
+    setFieldValue(getAnimalFieldName<IAnimalGeneral>(animalKeyName, 'itis_tsn'), tsn);
+    setFieldValue(getAnimalFieldName<IAnimalGeneral>(animalKeyName, 'itis_scientific_name'), scientificName);
   };
 
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
         <HelpButtonTooltip content={SurveyAnimalsI18N.taxonHelp}>
-          <CbSelectField
-            name={getAnimalFieldName<IAnimalGeneral>(animalKeyName, 'taxon_id')}
-            controlProps={{
-              required: isRequiredInSchema(AnimalGeneralSchema, 'taxon_id'),
-              disabled: !!values.collectionUnits.length
+          <SpeciesAutocompleteField
+            formikFieldName={getAnimalFieldName<IAnimalGeneral>(animalKeyName, 'itis_tsn')}
+            label="Species"
+            required
+            handleAddSpecies={(species) => {
+              handleTaxonName(String(species.tsn), species.scientificName);
             }}
-            label={'Species'}
-            id={'taxon'}
-            route={'lookups/taxons'}
-            handleChangeSideEffect={handleTaxonName}
           />
         </HelpButtonTooltip>
       </Grid>

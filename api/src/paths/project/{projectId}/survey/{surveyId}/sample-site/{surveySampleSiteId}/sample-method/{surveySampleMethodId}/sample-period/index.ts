@@ -160,16 +160,17 @@ export function getSurveySamplePeriodRecords(): RequestHandler {
       throw new HTTP400('Missing required path param `surveySampleMethodId`');
     }
 
+    const surveyId = Number(req.params.surveyId);
+    const surveySampleMethodId = Number(req.params.surveySampleMethodId);
+
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const surveySampleMethodId = Number(req.params.surveySampleMethodId);
-
       await connection.open();
 
       const samplePeriodService = new SamplePeriodService(connection);
 
-      const result = await samplePeriodService.getSamplePeriodsForSurveyMethodId(surveySampleMethodId);
+      const result = await samplePeriodService.getSamplePeriodsForSurveyMethodId(surveyId, surveySampleMethodId);
 
       await connection.commit();
 
@@ -302,8 +303,10 @@ export function createSurveySamplePeriodRecord(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const samplePeriod: InsertSamplePeriodRecord = req.body.samplePeriod;
-      samplePeriod.survey_sample_method_id = Number(req.params.surveySampleMethodId);
+      const samplePeriod: InsertSamplePeriodRecord = {
+        ...req.body.samplePeriod,
+        survey_sample_method_id: Number(req.params.surveySampleMethodId)
+      };
 
       await connection.open();
 

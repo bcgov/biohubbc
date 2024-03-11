@@ -27,10 +27,7 @@ const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataG
   const [hideAlert, setHideAlert] = useState<boolean>(false);
   const [index, setIndex] = useState<number>(0);
 
-  const sortedRowIds = useMemo(
-    () => props.muiDataGridApiRef?.getSortedRowIds?.() ?? [],
-    [props.muiDataGridApiRef.getSortedRowIds]
-  );
+  const sortedRowIds = useMemo(() => props.muiDataGridApiRef?.getSortedRowIds?.() ?? [], [props.muiDataGridApiRef]);
 
   const sortedErrors: ITableValidationError<RowType>[] = useMemo(() => {
     const sortedEditableColumnNames = (props.muiDataGridApiRef?.getAllColumns?.() ?? [])
@@ -62,33 +59,7 @@ const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataG
       }, []);
 
     return newSortedErrors;
-  }, [JSON.stringify(props.validationModel)]);
-
-  const numErrors = sortedErrors.length;
-
-  const handlePrev = useCallback(() => {
-    setIndex((prev) => {
-      const next = prev === 0 ? numErrors - 1 : prev - 1;
-      focusErrorAtIndex(next);
-      return next;
-    });
-  }, [numErrors]);
-
-  const handleNext = useCallback(() => {
-    setIndex((prev) => {
-      const next = prev === numErrors - 1 ? 0 : prev + 1;
-      focusErrorAtIndex(next);
-      return next;
-    });
-  }, [numErrors]);
-
-  const indexIndicator = useMemo(() => {
-    return numErrors > 0 ? `${index + 1}/${numErrors}` : '0/0';
-  }, [numErrors, index]);
-
-  const currentError = useMemo(() => {
-    return sortedErrors[index];
-  }, [sortedErrors, index]);
+  }, [props.muiDataGridApiRef, props.validationModel, sortedRowIds]);
 
   const focusErrorAtIndex = useCallback(
     (errorIndex: number) => {
@@ -114,8 +85,34 @@ const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataG
       props.muiDataGridApiRef.setCellFocus(focusedError.rowId, field);
       props.muiDataGridApiRef.scrollToIndexes({ rowIndex, colIndex });
     },
-    [sortedErrors]
+    [props.muiDataGridApiRef, sortedErrors]
   );
+
+  const numErrors = sortedErrors.length;
+
+  const handlePrev = useCallback(() => {
+    setIndex((prev) => {
+      const next = prev === 0 ? numErrors - 1 : prev - 1;
+      focusErrorAtIndex(next);
+      return next;
+    });
+  }, [focusErrorAtIndex, numErrors]);
+
+  const handleNext = useCallback(() => {
+    setIndex((prev) => {
+      const next = prev === numErrors - 1 ? 0 : prev + 1;
+      focusErrorAtIndex(next);
+      return next;
+    });
+  }, [focusErrorAtIndex, numErrors]);
+
+  const indexIndicator = useMemo(() => {
+    return numErrors > 0 ? `${index + 1}/${numErrors}` : '0/0';
+  }, [numErrors, index]);
+
+  const currentError = useMemo(() => {
+    return sortedErrors[index];
+  }, [sortedErrors, index]);
 
   useEffect(() => {
     if (Object.keys(props.validationModel).length > 0) {
@@ -125,7 +122,7 @@ const DataGridValidationAlert = <RowType extends Record<any, any>>(props: IDataG
     if (index >= numErrors) {
       setIndex(numErrors > 0 ? numErrors - 1 : 0);
     }
-  }, [props.validationModel]);
+  }, [index, numErrors, props.validationModel]);
 
   return (
     <Collapse in={numErrors > 0 && !hideAlert}>

@@ -1,11 +1,11 @@
 import xlsx from 'xlsx';
-import { z } from 'zod';
 import { IDBConnection } from '../database/db';
 import { ApiGeneralError } from '../errors/api-error';
 import {
   InsertObservation,
   ObservationGeometryRecord,
   ObservationRecord,
+  ObservationRecordWithSamplingDataWithEventsWithAttributes,
   ObservationRepository,
   ObservationSubmissionRecord,
   UpdateObservation
@@ -23,8 +23,10 @@ import {
   validateWorksheetHeaders
 } from '../utils/xlsx-utils/worksheet-utils';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
+import { CBMeasurementType, CritterbaseService } from './critterbase-service';
 import { DBService } from './db-service';
 import { PlatformService } from './platform-service';
+import { SubCountService } from './subcount-service';
 
 const defaultLog = getLogger('services/observation-service');
 
@@ -38,11 +40,19 @@ const observationCSVColumnValidator: IXLSXCSVValidator = {
   }
 };
 
-export const ObservationSupplementaryData = z.object({
-  observationCount: z.number()
-});
+export type InsertUpdateObservationsWithMeasurements = {
+  standardColumns: InsertObservation | UpdateObservation;
+  measurementColumns: {
+    id: string;
+    measurement_id: number;
+    value: string | number;
+  }[];
+};
 
-export type ObservationSupplementaryData = z.infer<typeof ObservationSupplementaryData>;
+export type ObservationSupplementaryData = {
+  observationCount: number;
+  measurementColumns: CBMeasurementType[];
+};
 
 export class ObservationService extends DBService {
   observationRepository: ObservationRepository;
@@ -99,22 +109,55 @@ export class ObservationService extends DBService {
   }
 
   /**
-   * Performs an upsert for all observation records belonging to the given survey, then
-   * returns the updated rows.
+   * Upserts the given observation records and their associated measurements.
    *
    * @param {number} surveyId
    * @param {((Observation | ObservationRecord)[])} observations
-   * @return {*}  {Promise<ObservationRecord[]>}
+   * @return {*}  {Promise<void>}
    * @memberof ObservationService
    */
-  async insertUpdateSurveyObservations(
+  async insertUpdateSurveyObservationsWithMeasurements(
     surveyId: number,
-    observations: (InsertObservation | UpdateObservation)[]
-  ): Promise<ObservationRecord[]> {
-    return this.observationRepository.insertUpdateSurveyObservations(
-      surveyId,
-      await this._attachItisScientificName(observations)
-    );
+    observations: InsertUpdateObservationsWithMeasurements[]
+  ): Promise<void> {
+    const subCountService = new SubCountService(this.connection);
+
+    for (const observation of observations) {
+      // Upsert observation standard columns
+      const upsertedObservationRecord = await this.observationRepository.insertUpdateSurveyObservations(
+        surveyId,
+        await this._attachItisScientificName([observation.standardColumns])
+      );
+
+      const surveyObservationId = upsertedObservationRecord[0].survey_observation_id;
+
+      // Delete old observation subcount records (subcounts, events, and critters)
+      await subCountService.deleteObservationSubCountRecords(surveyId, [surveyObservationId]);
+
+      // Insert observation subcount record (event)
+      const observationSubCountRecord = await subCountService.insertObservationSubCount({
+        survey_observation_id: surveyObservationId,
+        subcount: observation.standardColumns.count
+      });
+
+      // Persist measurement records to Critterbase
+      if (observation.measurementColumns.length) {
+        const critterBaseService = new CritterbaseService({
+          keycloak_guid: this.connection.systemUserGUID(),
+          username: this.connection.systemUserIdentifier()
+        });
+
+        const insertMeasurementResponse = await critterBaseService.insertMeasurementRecords(
+          observation.measurementColumns
+        );
+
+        // Insert observation subcount_event record to track the measurements persisted by Critterbase
+        await subCountService.insertSubCountEvent({
+          observation_subcount_id: observationSubCountRecord.observation_subcount_id,
+          critterbase_event_id: insertMeasurementResponse.eventId
+        });
+      }
+    }
   }
 
   /**
@@ -132,11 +175,12 @@ export class ObservationService extends DBService {
    * Retrieves a single observation records by ID
    *
    * @param {number} surveyId
+   * @param {number} surveyObservationId
    * @return {*}  {Promise<ObservationRecord[]>}
    * @memberof ObservationRepository
    */
-  async getSurveyObservationById(surveyObservationId: number): Promise<ObservationRecord> {
-    return this.observationRepository.getSurveyObservationById(surveyObservationId);
+  async getSurveyObservationById(surveyId: number, surveyObservationId: number): Promise<ObservationRecord> {
+    return this.observationRepository.getSurveyObservationById(surveyId, surveyObservationId);
   }
 
   /**
@@ -144,20 +188,47 @@ export class ObservationService extends DBService {
    *
    * @param {number} surveyId
    * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {Promise<{ surveyObservations: ObservationRecord[]; supplementaryObservationData: ObservationSupplementaryData }>}
+   * @return {*}  {Promise<{
+   *     surveyObservations: ObservationRecordWithSamplingDataWithEventsWithAttributes[];
+   *     supplementaryObservationData: ObservationSupplementaryData;
+   *   }>}
    * @memberof ObservationService
    */
-  async getSurveyObservationsWithSupplementaryAndSamplingData(
+  async getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData(
     surveyId: number,
     pagination?: ApiPaginationOptions
-  ): Promise<{ surveyObservations: ObservationRecord[]; supplementaryObservationData: ObservationSupplementaryData }> {
+  ): Promise<{
+    surveyObservations: ObservationRecordWithSamplingDataWithEventsWithAttributes[];
+    supplementaryObservationData: ObservationSupplementaryData;
+  }> {
+    const service = new CritterbaseService({
+      keycloak_guid: this.connection.systemUserGUID(),
+      username: this.connection.systemUserIdentifier()
+    });
+
     const surveyObservations = await this.observationRepository.getSurveyObservationsWithSamplingData(
       surveyId,
       pagination
     );
+
+    // Get all event ids from all survey observations
+    const eventIds = surveyObservations.flatMap((item) => item.observation_subcount_events).filter(Boolean) as string[];
+
+    // Fetch all measurement values for the given event ids
+    const measurementValues = await service.getMeasurementValuesForEventIds(eventIds);
+
+    // Assign matching measurement records to their respective observation records
+    const surveyObservationsWithAttributes = surveyObservations.map((observation) => {
+      const matchingMeasurementValues = measurementValues.filter((measurement) =>
+        observation.observation_subcount_events?.includes(measurement.event_id)
+      );
+
+      return { ...observation, observation_subcount_attributes: matchingMeasurementValues };
+    });
+
     const supplementaryObservationData = await this.getSurveyObservationsSupplementaryData(surveyId);
 
-    return { surveyObservations, supplementaryObservationData };
+    return { surveyObservations: surveyObservationsWithAttributes, supplementaryObservationData };
   }
 
   /**
@@ -191,9 +262,13 @@ export class ObservationService extends DBService {
    * @memberof ObservationService
    */
   async getSurveyObservationsSupplementaryData(surveyId: number): Promise<ObservationSupplementaryData> {
+    const service = new SubCountService(this.connection);
+
     const observationCount = await this.observationRepository.getSurveyObservationCount(surveyId);
 
-    return { observationCount };
+    const measurementTypeDefinitions = await service.getMeasurementTypeDefinitionsForSurvey(surveyId);
+
+    return { observationCount, measurementColumns: measurementTypeDefinitions };
   }
 
   /**
@@ -243,27 +318,13 @@ export class ObservationService extends DBService {
   /**
    * Retrieves the observation submission record by the given submission ID.
    *
+   * @param {number} surveyId
    * @param {number} submissionId
    * @return {*}  {Promise<ObservationSubmissionRecord>}
    * @memberof ObservationService
    */
-  async getObservationSubmissionById(submissionId: number): Promise<ObservationSubmissionRecord> {
-    return this.observationRepository.getObservationSubmissionById(submissionId);
-  }
-
-  /**
-   * Retrieves all observation records for the given survey and sample site id
-   *
-   * @param {number} surveyId
-   * @param {number} sampleSiteId
-   * @return {*}  {Promise<{ observationCount: number }>}
-   * @memberof ObservationService
-   */
-  async getObservationsCountBySampleSiteId(
-    surveyId: number,
-    sampleSiteId: number
-  ): Promise<{ observationCount: number }> {
-    return this.observationRepository.getObservationsCountBySampleSiteId(surveyId, sampleSiteId);
+  async getObservationSubmissionById(surveyId: number, submissionId: number): Promise<ObservationSubmissionRecord> {
+    return this.observationRepository.getObservationSubmissionById(surveyId, submissionId);
   }
 
   /**
@@ -274,33 +335,30 @@ export class ObservationService extends DBService {
    * @return {*}  {Promise<{ observationCount: number }>}
    * @memberof ObservationService
    */
-  async getObservationsCountBySampleSiteIds(
-    surveyId: number,
-    sampleSiteIds: number[]
-  ): Promise<{ observationCount: number }> {
+  async getObservationsCountBySampleSiteIds(surveyId: number, sampleSiteIds: number[]): Promise<number> {
     return this.observationRepository.getObservationsCountBySampleSiteIds(surveyId, sampleSiteIds);
   }
 
   /**
    * Retrieves observation records count for the given survey and sample method ids
    *
-   * @param {number} sampleMethodId
+   * @param {number[]} sampleMethodIds
    * @return {*}  {Promise<{ observationCount: number }>}
    * @memberof ObservationService
    */
-  async getObservationsCountBySampleMethodId(sampleMethodId: number): Promise<{ observationCount: number }> {
-    return this.observationRepository.getObservationsCountBySampleMethodId(sampleMethodId);
+  async getObservationsCountBySampleMethodIds(sampleMethodIds: number[]): Promise<number> {
+    return this.observationRepository.getObservationsCountBySampleMethodIds(sampleMethodIds);
   }
 
   /**
    * Retrieves observation records count for the given survey and sample period ids
    *
-   * @param {number} samplePeriodId
+   * @param {number[]} samplePeriodIds
    * @return {*}  {Promise<{ observationCount: number }>}
    * @memberof ObservationService
    */
-  async getObservationsCountBySamplePeriodId(samplePeriodId: number): Promise<{ observationCount: number }> {
-    return this.observationRepository.getObservationsCountBySamplePeriodId(samplePeriodId);
+  async getObservationsCountBySamplePeriodIds(samplePeriodIds: number[]): Promise<number> {
+    return this.observationRepository.getObservationsCountBySamplePeriodIds(samplePeriodIds);
   }
 
   /**
@@ -309,16 +367,16 @@ export class ObservationService extends DBService {
    * all of the records in the CSV file to the observations for the survey. If the CSV
    * file fails validation, this method fails.
    *
+   * @param {number} surveyId
    * @param {number} submissionId
    * @return {*}  {Promise<ObservationRecord[]>}
    * @memberof ObservationService
    */
-  async processObservationCsvSubmission(submissionId: number): Promise<ObservationRecord[]> {
+  async processObservationCsvSubmission(surveyId: number, submissionId: number): Promise<ObservationRecord[]> {
     defaultLog.debug({ label: 'processObservationCsvSubmission', submissionId });
 
     // Step 1. Retrieve the observation submission record
-    const submission = await this.getObservationSubmissionById(submissionId);
-    const surveyId = submission.survey_id;
+    const submission = await this.getObservationSubmissionById(surveyId, submissionId);
 
     // Step 2. Retrieve the S3 object containing the uploaded CSV file
     const s3Object = await getFileFromS3(submission.key);
@@ -347,6 +405,8 @@ export class ObservationService extends DBService {
     // Step 5. Merge all the table rows into an array of ObservationInsert[]
     const insertRows: InsertObservation[] = worksheetRowObjects.map((row) => ({
       survey_id: surveyId,
+      itis_tsn: row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES'],
+      itis_scientific_name: null,
       survey_sample_site_id: null,
       survey_sample_method_id: null,
       survey_sample_period_id: null,
@@ -354,9 +414,7 @@ export class ObservationService extends DBService {
       longitude: row['LONGITUDE'] ?? row['LON'] ?? row['LONG'] ?? row['LNG'],
       count: row['COUNT'],
       observation_time: row['TIME'],
-      observation_date: row['DATE'],
-      itis_tsn: row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES'],
-      itis_scientific_name: null
+      observation_date: row['DATE']
     }));
 
     // Step 7. Insert new rows and return them
@@ -370,55 +428,54 @@ export class ObservationService extends DBService {
    * Maps over an array of inserted/updated observation records in order to update its scientific
    * name to match its ITIS TSN.
    *
-   * @param {InsertObservation[]} records
-   * @return {*}  {Promise<InsertObservation[]>}
-   * @memberof ObservationService
+   * @template RecordWithTaxonFields
+   * @param {RecordWithTaxonFields[]} records
+   * @return {*}  {Promise<RecordWithTaxonFields[]>}
+   * @memberof ObservationServiceF
    */
-  async _attachItisScientificName(
-    records: (InsertObservation | UpdateObservation)[]
-  ): Promise<(InsertObservation | UpdateObservation)[]> {
+  async _attachItisScientificName<
+    RecordWithTaxonFields extends Pick<ObservationRecord, 'itis_tsn' | 'itis_scientific_name'>
+  >(recordsToPatch: RecordWithTaxonFields[]): Promise<RecordWithTaxonFields[]> {
     defaultLog.debug({ label: '_attachItisScientificName' });
 
     const platformService = new PlatformService(this.connection);
 
-    const uniqueTsnSet: Set<number> = records.reduce(
-      (acc: Set<number>, record: InsertObservation | UpdateObservation) => {
-        if (record.itis_tsn) {
-          acc.add(record.itis_tsn as number);
-        }
-        return acc;
-      },
-      new Set<number>([])
-    );
+    const uniqueTsnSet: Set<number> = recordsToPatch.reduce((acc: Set<number>, record: RecordWithTaxonFields) => {
+      if (record.itis_tsn) {
+        acc.add(record.itis_tsn);
+      }
+      return acc;
+    }, new Set<number>([]));
 
     const taxonomyResponse = await platformService.getTaxonomyByTsns(Array.from(uniqueTsnSet)).catch((error) => {
       throw new ApiGeneralError(
-        `Failed to fetch scientific names for observation records. The request to ITIS failed: ${error}`
+        `Failed to fetch scientific names for observation records. The request to BioHub failed: ${error}`
       );
     });
 
-    return records.map((record: InsertObservation | UpdateObservation) => {
-      record.itis_scientific_name =
-        taxonomyResponse.find((taxonomy) => Number(taxonomy.tsn) === record.itis_tsn)?.scientificName ?? null;
+    return recordsToPatch.map((recordToPatch: RecordWithTaxonFields) => {
+      recordToPatch.itis_scientific_name =
+        taxonomyResponse.find((taxonItem) => Number(taxonItem.tsn) === recordToPatch.itis_tsn)?.scientificName ?? null;
 
-      if (!record.itis_scientific_name) {
-        throw new ApiGeneralError(
-          `Failed to fetch scientific names for observation records. A scientific name could not be found for the given ITIS TSN: ${record.itis_tsn}`
-        );
-      }
-
-      return record;
+      return recordToPatch;
     });
   }
 
   /**
-   * Deletes all of the given survey observations by ID.
+   * Deletes all survey_observation records for the given survey observation ids.
    *
+   * @param {number} surveyId
    * @param {number[]} observationIds
    * @return {*}  {Promise<number>}
    * @memberof ObservationRepository
    */
-  async deleteObservationsByIds(observationIds: number[]): Promise<number> {
-    return this.observationRepository.deleteObservationsByIds(observationIds);
+  async deleteObservationsByIds(surveyId: number, observationIds: number[]): Promise<number> {
+    // Remove any existing child subcount records (observation_subcount, subcount_event, subcount_critter) before
+    // deleteing survey_observation records
+    const service = new SubCountService(this.connection);
+    await service.deleteObservationSubCountRecords(surveyId, observationIds);
+
+    // Delete survey_observation records
+    return this.observationRepository.deleteObservationsByIds(surveyId, observationIds);
   }
 }

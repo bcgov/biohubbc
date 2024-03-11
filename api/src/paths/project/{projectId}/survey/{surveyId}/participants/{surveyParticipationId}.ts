@@ -102,6 +102,7 @@ PUT.apiDoc = {
 
 export function updateSurveyParticipantRole(): RequestHandler {
   return async (req, res) => {
+    const surveyId = Number(req.params.surveyId);
     const surveyParticipationId = Number(req.params.surveyParticipationId);
     const { surveyJobName } = req.body;
 
@@ -112,7 +113,7 @@ export function updateSurveyParticipantRole(): RequestHandler {
 
       const surveyParticipationService = new SurveyParticipationService(connection);
 
-      await surveyParticipationService.updateSurveyParticipant(surveyParticipationId, surveyJobName);
+      await surveyParticipationService.updateSurveyParticipantJob(surveyId, surveyParticipationId, surveyJobName);
 
       await connection.commit();
 
@@ -207,6 +208,7 @@ DELETE.apiDoc = {
 
 export function deleteSurveyParticipant(): RequestHandler {
   return async (req, res) => {
+    const surveyId = Number(req.params.surveyId);
     const surveyParticipationId = Number(req.params.surveyParticipationId);
 
     const connection = getDBConnection(req['keycloak_token']);
@@ -216,7 +218,7 @@ export function deleteSurveyParticipant(): RequestHandler {
 
       const surveyParticipationService = new SurveyParticipationService(connection);
 
-      await surveyParticipationService.deleteSurveyParticipationRecord(surveyParticipationId);
+      await surveyParticipationService.deleteSurveyParticipationRecord(surveyId, surveyParticipationId);
 
       await connection.commit();
 
