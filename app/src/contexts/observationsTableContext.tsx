@@ -304,6 +304,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
   // Stores any measurement columns that are not part of the default observation table columns
   const [measurementColumns, setMeasurementColumns] = useState<MeasurementColumn[]>([]);
+  const _hasLoadedMeasurementColumns = useRef<boolean>(false);
 
   // Global disabled state for the observations table
   const [disabled, setDisabled] = useState(false);
@@ -1017,48 +1018,52 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     return rowsToDisplay;
   }, []);
 
+  /**
+   * Load and set the initial measurement columns, if any.
+   * Should only run once on initial page load.
+   */
   useEffect(() => {
     if (isLoadingObservationsData || !observationsData) {
       // Observations data is still loading
       return;
     }
 
-    if (measurementColumns.length) {
-      // Already loaded measurement columns from local storage or existing observations data
+    if (_hasLoadedMeasurementColumns.current) {
+      // Already loaded measurement definitions
       return;
     }
 
+    _hasLoadedMeasurementColumns.current = true;
+
     setMeasurementColumns(() => {
-      const hasExistingMeasurementColumns =
-        observationsData.supplementaryObservationData.qualitative_measurements.length > 0 ||
-        observationsData.supplementaryObservationData.quantitative_measurements.length > 0;
+      // Existing measurement definitions from the observations data
+      const existingMeasurementDefinitions = [
+        ...observationsData.supplementaryObservationData.qualitative_measurements,
+        ...observationsData.supplementaryObservationData.quantitative_measurements
+      ];
 
-      if (!hasExistingMeasurementColumns) {
-        // Get measurement columns from local storage, if any
-        const measurementColumnStringified = sessionStorage.getItem(
-          getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS)
-        );
+      // Get all measurement definitions from local storage, if any
+      const measurementDefinitionsStringified = sessionStorage.getItem(
+        getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS)
+      );
 
-        if (!measurementColumnStringified) {
-          return [];
-        }
-
-        return JSON.parse(measurementColumnStringified);
+      let localStoragemeasurementDefinitions: CBMeasurementType[] = [];
+      if (measurementDefinitionsStringified) {
+        localStoragemeasurementDefinitions = JSON.parse(measurementDefinitionsStringified) as CBMeasurementType[];
       }
 
-      // Measurement columns are available in the observations data, remove measurement columns from local storage
-      sessionStorage.removeItem(getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS));
+      // Remove any duplicate measurement definitions that already exist in the observations data
+      localStoragemeasurementDefinitions = localStoragemeasurementDefinitions.filter((item1) => {
+        return !existingMeasurementDefinitions.some(
+          (item2) => item2.taxon_measurement_id === item1.taxon_measurement_id
+        );
+      });
 
-      // Get measurement columns from existing observations data
-      return [
-        ...getMeasurementColumns(
-          [
-            ...observationsData.supplementaryObservationData.qualitative_measurements,
-            ...observationsData.supplementaryObservationData.quantitative_measurements
-          ],
-          hasError
-        )
-      ];
+      // Set measurement columns, including both existing and local storage measurement definitions
+      return getMeasurementColumns(
+        [...existingMeasurementDefinitions, ...localStoragemeasurementDefinitions],
+        hasError
+      );
     });
   }, [isLoadingObservationsData, observationsData, hasError, surveyId, measurementColumns.length]);
 

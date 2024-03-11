@@ -105,10 +105,10 @@ export const ConfigureColumnsContainer = (props: IConfigureColumnsContainerProps
             (currentColumn) => !measurementColumnsToRemove.includes(currentColumn.colDef.field)
           );
 
-          // Store the remaining user-added measurement columns in local storage
+          // Store all remaining measurement definitions in local storage
           sessionStorage.setItem(
             getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS),
-            JSON.stringify(remainingColumns)
+            JSON.stringify(remainingColumns.map((column) => column.measurement))
           );
 
           return remainingColumns;
@@ -142,10 +142,13 @@ export const ConfigureColumnsContainer = (props: IConfigureColumnsContainerProps
           !currentColumns.find((currentColumn) => currentColumn.colDef.field === columnToAdd.colDef.field)
       );
 
-      // Store user-added measurement columns in local storage
+      // Store all measurement definitions in local storage
       sessionStorage.setItem(
         getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS),
-        JSON.stringify([...currentColumns, ...newColumns])
+        JSON.stringify([
+          ...currentColumns.map((column) => column.measurement),
+          ...newColumns.map((column) => column.measurement)
+        ])
       );
 
       return [...currentColumns, ...newColumns];
