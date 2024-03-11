@@ -58,7 +58,7 @@ const TeamMembers = () => {
       {projectTeamMembers.map((member, index) => (
         <Box display="flex" alignItems="center" key={member.display_name}>
           <Box
-            sx={{ height: '35px', width: '35px', minWidth: '30px', borderRadius: '50%' }}
+            sx={{ height: '35px', width: '35px', minWidth: '35px', borderRadius: '50%' }}
             bgcolor={getRandomHexColor(index)}
             display="flex"
             alignItems="center"
