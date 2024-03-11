@@ -61,7 +61,7 @@ export async function up(knex: Knex): Promise<void> {
     INSERT INTO method_response_metric (name, description)
     VALUES
     (
-      'Abundance',
+      'Count',
       'Counting the number of individuals at a sampling site.'
     ),
     (
@@ -70,7 +70,7 @@ export async function up(knex: Knex): Promise<void> {
     ),
     (
       'Percent cover',
-      'Measuring the coverage of species within a sampling area.'
+      'Measuring the spatial coverage of species at a sampling site.'
     ),
     (
       'Biomass',
