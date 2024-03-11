@@ -8,7 +8,7 @@ const useMarkingApi = (axios: AxiosInstance) => {
   };
 
   const updateMarking = async (payload: ICreateMarking) => {
-    const { data } = await axios.patch(`/api/critterbase/markings/`, payload);
+    const { data } = await axios.patch(`/api/critterbase/markings/${payload.marking_id}`, payload);
     return data;
   };
 

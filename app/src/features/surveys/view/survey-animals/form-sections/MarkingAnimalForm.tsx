@@ -3,17 +3,36 @@ import EditDialog from 'components/dialog/EditDialog';
 import CbSelectField from 'components/fields/CbSelectField';
 import CustomTextField from 'components/fields/CustomTextField';
 import FormikDevDebugger from 'components/formik/FormikDevDebugger';
+import { useDialogContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-import { ANIMAL_FORM_MODE, CreateCritterMarkingSchema, ICritterMarking, isRequiredInSchema } from '../animal';
+import {
+  ANIMAL_FORM_MODE,
+  CreateCritterMarkingSchema,
+  ICreateMarking,
+  ICritterMarking,
+  isRequiredInSchema
+} from '../animal';
 import { AnimalFormProps } from './animalForm';
 
-/*
- * Note: This is a placeholder component for how to handle the form sections individually
- * allows easier management of the individual form sections with push / patch per form
- * vs how it's currently implemented with one large payload that updates/removes/creates critter meta
- */
 export const MarkingAnimalForm = (props: AnimalFormProps<ICritterMarking>) => {
   const cbApi = useCritterbaseApi();
+  const dialog = useDialogContext();
+
+  const handleSave = async (values: ICreateMarking) => {
+    try {
+      if (props.formMode === ANIMAL_FORM_MODE.ADD) {
+        await cbApi.marking.createMarking(values);
+        dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created marking.` });
+      }
+      if (props.formMode === ANIMAL_FORM_MODE.EDIT) {
+        await cbApi.marking.updateMarking(values);
+        dialog.setSnackbar({ open: true, snackbarMessage: `Successfully edited marking.` });
+      }
+    } catch (err) {
+      dialog.setSnackbar({ open: true, snackbarMessage: `Critter marking request failed.` });
+    }
+    props.handleClose();
+  };
 
   return (
     <>
@@ -23,26 +42,18 @@ export const MarkingAnimalForm = (props: AnimalFormProps<ICritterMarking>) => {
         component={{
           element: <MarkingAnimalFormContent tsn={props.critter.itis_tsn} />,
           initialValues: {
-            marking_id: props?.formObject?.marking_id, // undefined on ADD
+            marking_id: props?.formObject?.marking_id,
             critter_id: props.critter.critter_id,
             marking_type_id: props?.formObject?.marking_type_id ?? '',
             taxon_marking_body_location_id: props?.formObject?.taxon_marking_body_location_id ?? '',
-            primary_colour_id: props?.formObject?.primary_colour_id ?? '',
-            secondary_colour_id: props?.formObject?.secondary_colour_id ?? '',
-            marking_comment: props?.formObject?.marking_comment ?? ''
+            primary_colour_id: props?.formObject?.primary_colour_id,
+            secondary_colour_id: props?.formObject?.secondary_colour_id,
+            marking_comment: props?.formObject?.marking_comment
           },
           validationSchema: CreateCritterMarkingSchema
         }}
         onCancel={props.handleClose}
-        onSave={async (values) => {
-          if (props.formMode === ANIMAL_FORM_MODE.ADD) {
-            await cbApi.marking.createMarking(values);
-          }
-          if (props.formMode === ANIMAL_FORM_MODE.EDIT) {
-            await cbApi.marking.updateMarking(values);
-          }
-          props.handleClose();
-        }}
+        onSave={handleSave}
       />
     </>
   );

@@ -124,12 +124,13 @@ export const AnimalMarkingSchema = yup.object({
 });
 
 export const CreateCritterMarkingSchema = yup.object({
+  marking_id: yup.string().optional(),
   critter_id: yup.string(),
   marking_type_id: yup.string().required('Type is required'),
   taxon_marking_body_location_id: yup.string().required('Body location required'),
-  primary_colour_id: yup.string(),
-  secondary_colour_id: yup.string(),
-  marking_comment: yup.string()
+  primary_colour_id: yup.string().optional(),
+  secondary_colour_id: yup.string().optional(),
+  marking_comment: yup.string().optional()
 });
 
 export const AnimalCollectionUnitSchema = yup.object({}).shape({

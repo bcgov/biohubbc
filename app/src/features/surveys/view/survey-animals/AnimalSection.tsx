@@ -1,15 +1,21 @@
+import { mdiPlus } from '@mdi/js';
+import Icon from '@mdi/react';
+import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
 import Typography from '@mui/material/Typography';
+import { SurveyAnimalsI18N } from 'constants/i18n';
 import { EditDeleteStubCard } from 'features/surveys/components/EditDeleteStubCard';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
-import React, { useState } from 'react';
+import { default as React, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { ANIMAL_FORM_MODE } from './animal';
 import { IAnimalSections } from './animal-sections';
 import { AnimalSectionWrapper } from './AnimalSectionWrapper';
 import { MarkingAnimalForm } from './form-sections/MarkingAnimalForm';
+
+type SubHeaderData = Record<string, string | number | null | undefined>;
 
 interface IAnimalSectionProps {
   critter?: IDetailedCritterWithInternalId;
@@ -33,8 +39,30 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
   const handleCloseForm = () => {
     setFormObject(undefined);
     setFormMode(undefined);
-    // reset critter here
+    // refetch the critter here
   };
+
+  const formatSubHeader = (subHeaderData: SubHeaderData) => {
+    const formatArr: string[] = [];
+    const entries = Object.entries(subHeaderData);
+    entries.forEach(([key, value]) => {
+      if (value == null || value === '') {
+        return;
+      }
+      formatArr.push(`${key}: ${value}`);
+    });
+    return formatArr.join(' | ');
+  };
+
+  const AddButton = ({ label }: { label: string }) => (
+    <Button
+      startIcon={<Icon path={mdiPlus} size={1} />}
+      variant="contained"
+      color="primary"
+      onClick={handleOpenAddForm}>
+      {label}
+    </Button>
+  );
 
   if (!critter) {
     return (
@@ -55,7 +83,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     );
   }
 
-  const formProps = {
+  const FORM_PROPS = {
     formMode: formMode ? formMode : ANIMAL_FORM_MODE.ADD,
     formObject: formObject ? formObject : undefined,
     critter: critter,
@@ -70,6 +98,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     return (
       <AnimalSectionWrapper
         form={<div>placeholder</div>}
+        infoText={SurveyAnimalsI18N.animalGeneralHelp}
         //content={<GeneralAnimalSummary handleEdit={() => console.log('edit animal placeholder')} />}
         section={section}
         critter={critter}
@@ -81,8 +110,8 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     return (
       <AnimalSectionWrapper
         form={<div>placeholder</div>}
+        infoText={SurveyAnimalsI18N.animalCollectionUnitHelp}
         section={section}
-        openAddForm={handleOpenAddForm}
         critter={critter}
       />
     );
@@ -91,16 +120,17 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
   if (section === 'Markings') {
     return (
       <AnimalSectionWrapper
-        form={<MarkingAnimalForm {...formProps} />}
+        form={<MarkingAnimalForm {...FORM_PROPS} />}
+        addBtn={<AddButton label={'Add Marking'} />}
+        infoText={SurveyAnimalsI18N.animalMarkingHelp}
         section={section}
-        openAddForm={handleOpenAddForm}
         critter={critter}>
         <TransitionGroup>
           {critter.markings.map((marking) => (
             <Collapse>
               <EditDeleteStubCard
                 header={'Marking'}
-                subHeader={'marking'}
+                subHeader={formatSubHeader({ Location: marking.body_location, Colour: marking.primary_colour })}
                 onClickEdit={() => handleOpenEditForm(marking)}
               />
             </Collapse>
@@ -114,8 +144,8 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     return (
       <AnimalSectionWrapper
         form={<div>placeholder</div>}
+        infoText={SurveyAnimalsI18N.animalMeasurementHelp}
         section={section}
-        openAddForm={handleOpenAddForm}
         critter={critter}
       />
     );
@@ -125,8 +155,8 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     return (
       <AnimalSectionWrapper
         form={<div>placeholder</div>}
+        infoText={SurveyAnimalsI18N.animalMortalityHelp}
         section={section}
-        openAddForm={handleOpenAddForm}
         critter={critter}
       />
     );
@@ -136,8 +166,8 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     return (
       <AnimalSectionWrapper
         form={<div>placeholder</div>}
+        infoText={SurveyAnimalsI18N.animalFamilyHelp}
         section={section}
-        openAddForm={handleOpenAddForm}
         critter={critter}
       />
     );
@@ -147,8 +177,8 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     return (
       <AnimalSectionWrapper
         form={<div>placeholder</div>}
+        infoText={SurveyAnimalsI18N.animalCaptureHelp}
         section={section}
-        openAddForm={handleOpenAddForm}
         critter={critter}
       />
     );
@@ -158,8 +188,8 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     return (
       <AnimalSectionWrapper
         form={<div>placeholder</div>}
+        infoText={SurveyAnimalsI18N.telemetryDeviceHelp}
         section={section}
-        openAddForm={handleOpenAddForm}
         critter={critter}
       />
     );

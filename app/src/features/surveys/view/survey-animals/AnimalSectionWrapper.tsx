@@ -1,6 +1,3 @@
-import { mdiPlus } from '@mdi/js';
-import Icon from '@mdi/react';
-import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
@@ -10,17 +7,16 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import React, { PropsWithChildren } from 'react';
-import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
+import { IAnimalSections } from './animal-sections';
 
 interface IAnimalSectionWrapperProps extends PropsWithChildren {
   form: JSX.Element;
   section: IAnimalSections;
-  openAddForm?: () => void;
   critter?: IDetailedCritterWithInternalId;
+  infoText: string;
+  addBtn?: JSX.Element;
 }
 export const AnimalSectionWrapper = (props: IAnimalSectionWrapperProps) => {
-  const sectionData = ANIMAL_SECTIONS_FORM_MAP[props.section];
-
   return (
     <>
       {props.form}
@@ -58,16 +54,7 @@ export const AnimalSectionWrapper = (props: IAnimalSectionWrapperProps) => {
                 }}>
                 {props.section}
               </Typography>
-
-              {props.openAddForm ? (
-                <Button
-                  startIcon={<Icon path={mdiPlus} size={1} />}
-                  variant="contained"
-                  color="primary"
-                  onClick={props.openAddForm}>
-                  {sectionData.addBtnText}
-                </Button>
-              ) : null}
+              {props.addBtn ? props.addBtn : null}
             </Box>
 
             <Typography
@@ -77,7 +64,7 @@ export const AnimalSectionWrapper = (props: IAnimalSectionWrapperProps) => {
               sx={{
                 mb: 5
               }}>
-              {sectionData.infoText}
+              {props.infoText}
             </Typography>
             {props.children}
           </Box>
