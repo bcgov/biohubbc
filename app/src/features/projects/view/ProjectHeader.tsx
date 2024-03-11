@@ -79,7 +79,7 @@ const ProjectHeader = () => {
       history.push(`/admin/projects`);
     } catch (error) {
       const apiError = error as APIError;
-      showDeleteErrorDialog({ dialogText: apiError.message, open: true });
+      showDeleteErrorDialog({ dialogErrorDetails: [apiError.message], open: true });
       return error;
     }
   };
