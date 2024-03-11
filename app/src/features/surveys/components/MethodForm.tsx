@@ -109,14 +109,14 @@ const MethodForm = () => {
     codesContext.codesDataLoader.data?.method_response_metrics.map((option) => ({
       value: option.id,
       label: option.name,
-      subText: ''
+      subText: option.description
     })) ?? [];
 
-    const methodOptions: ISelectWithSubtextFieldOption[] =
+  const methodOptions: ISelectWithSubtextFieldOption[] =
     codesContext.codesDataLoader.data?.sample_methods.map((option) => ({
       value: option.id,
       label: option.name,
-      subText: ''
+      subText: option.description
     })) ?? [];
 
   useEffect(() => {
@@ -141,14 +141,14 @@ const MethodForm = () => {
           />
           <SelectWithSubtextField
             id="response-metric"
-            label="Response metric"
+            label="Response Metric"
             name="response-metric"
             options={methodResponseMetricOptions}
             required
           />
           <CustomTextField
             name="description"
-            label="Description"
+            label="Description of method"
             maxLength={250}
             other={{ multiline: true, placeholder: 'Maximum 250 characters', rows: 3 }}
           />

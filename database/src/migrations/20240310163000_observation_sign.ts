@@ -56,13 +56,19 @@ export async function up(knex: Knex): Promise<void> {
     ALTER TABLE observation_subcount ADD CONSTRAINT sign_fk FOREIGN KEY (sign_id) REFERENCES observation_subcount_sign(observation_subcount_sign_id);
     
     ----------------------------------------------------------------------------------------
+    -- Alter table method_lookup to include a description of the method
+    ----------------------------------------------------------------------------------------
+    ALTER TABLE method_lookup ADD COLUMN description VARCHAR(1500);
+    COMMENT ON COLUMN method_lookup.description IS 'Description of the sampling method.';
+
+    ----------------------------------------------------------------------------------------
     -- Add initial values
     ----------------------------------------------------------------------------------------
     INSERT INTO observation_subcount_sign (name, description)
     VALUES
     (
       'Direct sighting',
-      'Observing the species visually, in-person or in an image.'
+      'Observing the species visually, whether in person or an image.'
     ),
     (
       'Sound',
@@ -78,11 +84,11 @@ export async function up(knex: Knex): Promise<void> {
     ),
     (
       'Hair',
-      'Detecting the species by finding strands of hair or fur.'
+      'Detecting the species by finding and visually analyzing hair or fur.'
     ),
     (
       'DNA',
-      'Detecting the species by analyzing genetic material.'
+      'Detecting the species by analyzing genetic material, such as hair or feces.'
     );
 
     ----------------------------------------------------------------------------------------
@@ -96,6 +102,7 @@ export async function up(knex: Knex): Promise<void> {
     -- Replace observation_subcount view to include sign_id
     ----------------------------------------------------------------------------------------
     CREATE OR REPLACE VIEW observation_subcount AS SELECT * FROM biohub.observation_subcount;
+    CREATE OR REPLACE VIEW method_lookup AS SELECT * FROM biohub.method_lookup;
     `);
 }
 

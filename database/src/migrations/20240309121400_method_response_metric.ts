@@ -62,19 +62,19 @@ export async function up(knex: Knex): Promise<void> {
     VALUES
     (
       'Abundance',
-      'A count of individuals at a sampling site. Observation count values must be whole numbers.'
+      'Counting the number of individuals at a sampling site.'
     ),
     (
       'Presence-absence',
-      'A record of whether a species is present or not detected at a sampling site, irrespective of abundance. Observation count values must be 0 or 1.'
+      'Recording the presence or absence of species at a sampling site, irrespective of abundance.'
     ),
     (
       'Percent cover',
-      'The percentage of area at a sampling site covered by a species.'
+      'Measuring the coverage of species within a sampling area.'
     ),
     (
-      'Mass',
-      'The weight or biomass of a species at a sampling site. This metric is commonly used when individuals cannot be distinguished.'
+      'Biomass',
+      'Measuring the weight or mass of species at a sampling site.'
     );
 
     ----------------------------------------------------------------------------------------
