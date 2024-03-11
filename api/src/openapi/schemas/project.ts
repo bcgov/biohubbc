@@ -78,7 +78,29 @@ export const projectCreatePostRequestObject = {
               type: 'string',
               enum: [PROJECT_ROLE.COORDINATOR, PROJECT_ROLE.COLLABORATOR, PROJECT_ROLE.OBSERVER]
             }
+          },
+          email: {
+            type: 'string'
+          },
+          display_name: {
+            type: 'string'
+          },
+          agency: {
+            type: 'string',
+            nullable: true
+          },
+          identity_source: {
+            type: 'string'
           }
+        }
+      }
+    },
+    objectives: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        objectives: {
+          type: 'string'
         }
       }
     }

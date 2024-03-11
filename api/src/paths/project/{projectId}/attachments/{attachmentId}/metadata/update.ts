@@ -7,6 +7,7 @@ import {
   IReportAttachmentAuthor,
   PutReportAttachmentMetadata
 } from '../../../../../../models/project-survey-attachments';
+import { projectReportAttachmentAuthorSchema } from '../../../../../../openapi/schemas/attachment';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../../services/attachment-service';
 import { getLogger } from '../../../../../../utils/logger';
@@ -86,18 +87,7 @@ PUT.apiDoc = {
                 },
                 authors: {
                   type: 'array',
-                  items: {
-                    type: 'object',
-                    additionalProperties: false,
-                    properties: {
-                      first_name: {
-                        type: 'string'
-                      },
-                      last_name: {
-                        type: 'string'
-                      }
-                    }
-                  }
+                  items: projectReportAttachmentAuthorSchema
                 },
                 description: {
                   type: 'string'

@@ -1,5 +1,33 @@
 import { OpenAPIV3 } from 'openapi-types';
 
+export const updateCreatePropertiesSchema = {
+  create_user: {
+    description: 'The user who created the record.',
+    type: 'integer',
+    minimum: 1
+  },
+  create_date: {
+    description: 'The date the record was created.',
+    type: 'string'
+  },
+  update_user: {
+    description: 'The user who last updated the record.',
+    type: 'integer',
+    minimum: 1,
+    nullable: true
+  },
+  update_date: {
+    description: 'The date the record was last updated.',
+    type: 'string',
+    nullable: true
+  },
+  revision_count: {
+    description: 'The integer of times the record has been revised.',
+    type: 'integer',
+    minimum: 0
+  }
+};
+
 export const systemUserSchema: OpenAPIV3.SchemaObject = {
   title: 'User Response Object',
   type: 'object',

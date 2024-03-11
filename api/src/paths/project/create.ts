@@ -8,7 +8,7 @@ import { authorizeRequestHandler } from '../../request-handlers/security/authori
 import { ProjectService } from '../../services/project-service';
 import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('paths/project');
+const defaultLog = getLogger('paths/project/create');
 
 export const POST: Operation = [
   authorizeRequestHandler(() => {
