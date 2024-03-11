@@ -42,8 +42,10 @@ const ProjectsListPage = () => {
     page: 0,
     pageSize: pageSizeOptions[0]
   });
+
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
-  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IProjectAdvancedFilters | undefined>(undefined);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
   const biohubApi = useBiohubApi();
 
@@ -66,7 +68,7 @@ const ProjectsListPage = () => {
     );
   };
 
-  const refreshProjectsList = (filterValues?: IProjectAdvancedFilters) => {
+  const refreshProjectsList = () => {
     const sort = firstOrNull(sortModel);
     const pagination = {
       limit: paginationModel.pageSize,
@@ -77,7 +79,7 @@ const ProjectsListPage = () => {
       page: paginationModel.page + 1
     };
 
-    return projectsDataLoader.refresh(pagination, filterValues);
+    return projectsDataLoader.refresh(pagination, advancedFiltersModel);
   };
 
   const projectRows =
@@ -135,7 +137,7 @@ const ProjectsListPage = () => {
   // Refresh projects when pagination or sort changes
   useEffect(() => {
     refreshProjectsList();
-  }, [sortModel, paginationModel]);
+  }, [sortModel, paginationModel, advancedFiltersModel]);
 
   /**
    * Displays project list.
@@ -178,15 +180,15 @@ const ProjectsListPage = () => {
                 variant="text"
                 color="primary"
                 startIcon={<Icon path={mdiFilterOutline} size={0.8} />}
-                onClick={() => setIsFiltersOpen(!isFiltersOpen)}>
-                {!isFiltersOpen ? `Show Filters` : `Hide Filters`}
+                onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}>
+                {!showAdvancedFilters ? `Show Filters` : `Hide Filters`}
               </Button>
             </Toolbar>
             <Divider></Divider>
-            <Collapse in={isFiltersOpen}>
+            <Collapse in={showAdvancedFilters}>
               <ProjectsListFilterForm
-                handleSubmit={(filterValues) => refreshProjectsList(filterValues)}
-                handleReset={() => refreshProjectsList()}
+                handleSubmit={setAdvancedFiltersModel}
+                handleReset={() => setAdvancedFiltersModel(undefined)}
               />
             </Collapse>
             <Box p={2}>

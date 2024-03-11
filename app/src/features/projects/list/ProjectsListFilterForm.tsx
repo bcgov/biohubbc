@@ -23,7 +23,6 @@ export interface IProjectsListFilterFormProps {
 }
 
 const ProjectsListFilterForm: React.FC<IProjectsListFilterFormProps> = (props) => {
-  const { handleSubmit, handleReset } = props;
   const classes = useStyles();
 
   const [formikRef] = useState(useRef<FormikProps<IProjectAdvancedFilters>>(null));
@@ -31,7 +30,7 @@ const ProjectsListFilterForm: React.FC<IProjectsListFilterFormProps> = (props) =
   return (
     <Box>
       <Box p={3}>
-        <Formik innerRef={formikRef} initialValues={ProjectAdvancedFiltersInitialValues} onSubmit={handleSubmit}>
+        <Formik innerRef={formikRef} initialValues={ProjectAdvancedFiltersInitialValues} onSubmit={props.handleSubmit}>
           <>
             <ProjectAdvancedFilters />
             <Box mt={3} display="flex" alignItems="center" justifyContent="flex-end">
@@ -48,7 +47,7 @@ const ProjectsListFilterForm: React.FC<IProjectsListFilterFormProps> = (props) =
                 variant="outlined"
                 color="primary"
                 onClick={() => {
-                  handleReset();
+                  props.handleReset();
                   formikRef.current?.resetForm();
                 }}>
                 Clear
