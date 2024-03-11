@@ -164,7 +164,7 @@ const AnimalList = (props: IAnimalListProps) => {
                         {critter.animal_id}
                       </Typography>
                       <Typography variant="body2" color="textSecondary">
-                        {critter.taxon} | {critter.sex}
+                        {critter.itis_scientific_name} | {critter.sex}
                       </Typography>
                     </Box>
                   </AccordionSummary>

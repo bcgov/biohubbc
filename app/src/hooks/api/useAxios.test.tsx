@@ -87,31 +87,6 @@ describe('useAxios', () => {
     });
   });
 
-  it('should retry once if the call fails with a 403', async () => {
-    // Simulate `signinSilent` call success
-    mockSigninSilent.mockResolvedValue({} as unknown as User);
-
-    axiosMock.onAny().replyOnce(403).onAny().replyOnce(200, { value: 'test value' });
-
-    const baseUrl = 'http://baseurl.com';
-
-    // Render the `useAxios` hook with necessary keycloak parent components
-    const { result } = renderHook(() => useAxios(baseUrl), {
-      wrapper: ({ children }: PropsWithChildren) => <AuthProvider {...authConfig}>{children}</AuthProvider>
-    });
-
-    await act(async () => {
-      const response = await result.current.get('/some/url');
-
-      expect(mockSigninSilent).toHaveBeenCalledTimes(1);
-
-      expect(axiosMock.history['get'].length).toEqual(2);
-
-      expect(response.status).toEqual(200);
-      expect(response.data).toEqual({ value: 'test value' });
-    });
-  });
-
   it('should retry once if the call fails with a 401', async () => {
     // Simulate `signinSilent` call success
     mockSigninSilent.mockResolvedValue({} as unknown as User);
@@ -135,33 +110,6 @@ describe('useAxios', () => {
 
       expect(response.status).toEqual(200);
       expect(response.data).toEqual({ value: 'test value' });
-    });
-  });
-
-  it('should retry once and fail if the call continues to return 403', async () => {
-    // Simulate `signinSilent` call success
-    mockSigninSilent.mockResolvedValue({} as unknown as User);
-
-    // Return 401 always
-    axiosMock.onAny().reply(403);
-
-    const baseUrl = 'http://baseurl.com';
-
-    // Render the `useAxios` hook with necessary keycloak parent components
-    const { result } = renderHook(() => useAxios(baseUrl), {
-      wrapper: ({ children }: PropsWithChildren) => <AuthProvider {...authConfig}>{children}</AuthProvider>
-    });
-
-    await act(async () => {
-      try {
-        await result.current.get('/some/url');
-      } catch (actualError) {
-        expect((actualError as APIError).status).toEqual(403);
-
-        expect(axiosMock.history['get'].length).toEqual(2);
-
-        expect(mockSigninSilent).toHaveBeenCalledTimes(1);
-      }
     });
   });
 
@@ -197,7 +145,7 @@ describe('useAxios', () => {
     mockSigninSilent.mockResolvedValue(null);
 
     // Return 403 once
-    axiosMock.onAny().replyOnce(403).onAny().replyOnce(200, { value: 'test value' });
+    axiosMock.onAny().replyOnce(401).onAny().replyOnce(200, { value: 'test value' });
 
     const baseUrl = 'http://baseurl.com';
 
@@ -210,7 +158,7 @@ describe('useAxios', () => {
       try {
         await result.current.get('/some/url');
       } catch (actualError) {
-        expect((actualError as APIError).status).toEqual(403);
+        expect((actualError as APIError).status).toEqual(401);
 
         expect(axiosMock.history['get'].length).toEqual(1);
 

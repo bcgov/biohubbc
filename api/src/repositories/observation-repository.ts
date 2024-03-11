@@ -2,9 +2,12 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
+import { CBMeasurementValue } from '../services/critterbase-service';
 import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
+
+const defaultLog = getLogger('repositories/observation-repository');
 
 /**
  * Interface reflecting survey observations retrieved from the database
@@ -12,14 +15,14 @@ import { BaseRepository } from './base-repository';
 export const ObservationRecord = z.object({
   survey_observation_id: z.number(),
   survey_id: z.number(),
+  itis_tsn: z.number(),
+  itis_scientific_name: z.string().nullable(),
   survey_sample_site_id: z.number().nullable(),
   survey_sample_method_id: z.number().nullable(),
   survey_sample_period_id: z.number().nullable(),
   latitude: z.number(),
   longitude: z.number(),
   count: z.number(),
-  itis_tsn: z.number().nullable(),
-  itis_scientific_name: z.string().nullable(),
   observation_time: z.string(),
   observation_date: z.string(),
   create_date: z.string(),
@@ -38,6 +41,21 @@ export const ObservationRecordWithSamplingData = ObservationRecord.extend({
 });
 
 export type ObservationRecordWithSamplingData = z.infer<typeof ObservationRecordWithSamplingData>;
+
+export const ObservationRecordWithSamplingDataWithEvents = ObservationRecordWithSamplingData.extend({
+  subcount: z.number().nullable(),
+  observation_subcount_events: z.array(z.string())
+});
+
+export type ObservationRecordWithSamplingDataWithEvents = z.infer<typeof ObservationRecordWithSamplingDataWithEvents>;
+
+export const ObservationRecordWithSamplingDataWithEventsWithAttributes = ObservationRecordWithSamplingDataWithEvents.extend(
+  { observation_subcount_attributes: z.array(CBMeasurementValue) }
+);
+
+export type ObservationRecordWithSamplingDataWithEventsWithAttributes = z.infer<
+  typeof ObservationRecordWithSamplingDataWithEventsWithAttributes
+>;
 
 export const ObservationGeometryRecord = z.object({
   survey_observation_id: z.number(),
@@ -97,8 +115,6 @@ export const ObservationSubmissionRecord = z.object({
 });
 
 export type ObservationSubmissionRecord = z.infer<typeof ObservationSubmissionRecord>;
-
-const defaultLog = getLogger('repositories/observation-repository');
 
 export class ObservationRepository extends BaseRepository {
   /**
@@ -221,13 +237,13 @@ export class ObservationRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {Promise<ObservationRecord[]>}
+   * @return {*}  {Promise<ObservationRecordWithSamplingDataWithEvents[]>}
    * @memberof ObservationRepository
    */
   async getSurveyObservationsWithSamplingData(
     surveyId: number,
     pagination?: ApiPaginationOptions
-  ): Promise<ObservationRecordWithSamplingData[]> {
+  ): Promise<ObservationRecordWithSamplingDataWithEvents[]> {
     defaultLog.debug({ label: 'getSurveyObservationsWithSamplingData', surveyId, pagination });
 
     const knex = getKnex();
@@ -239,6 +255,18 @@ export class ObservationRepository extends BaseRepository {
           .select(['ml.name as survey_sample_method_name', 'ssm.survey_sample_method_id'])
           .from({ ssm: 'survey_sample_method ' })
           .leftJoin({ ml: 'method_lookup' }, 'ml.method_lookup_id', 'ssm.method_lookup_id')
+      )
+      .with(
+        'observation_subcount_events',
+        knex
+          .select([
+            'os.survey_observation_id',
+            'os.subcount',
+            knex.raw(`array_remove(array_agg(sa.critterbase_event_id), NULL) as critterbase_event_ids`)
+          ])
+          .from({ os: 'observation_subcount' })
+          .leftJoin({ sa: 'subcount_event' }, 'os.observation_subcount_id', 'sa.observation_subcount_id')
+          .groupBy(['os.survey_observation_id', 'os.subcount'])
       )
       .select([
         // Select all columns from survey_observation
@@ -257,7 +285,9 @@ export class ObservationRepository extends BaseRepository {
         knex.raw(`(??::date + COALESCE(??, '00:00:00')::time)::timestamp as survey_sample_period_start_datetime`, [
           'ssp.start_date',
           'ssp.start_time'
-        ])
+        ]),
+        'osa.subcount',
+        'osa.critterbase_event_ids as observation_subcount_events'
       ])
       // Alias survey_observation as so
       .from({ so: 'survey_observation' })
@@ -274,6 +304,9 @@ export class ObservationRepository extends BaseRepository {
 
       // Join sample period onto observation
       .leftJoin({ ssp: 'survey_sample_period' }, 'so.survey_sample_period_id', 'ssp.survey_sample_period_id') // Join survey_sample_period
+
+      // Join aggregated observation attributes
+      .leftJoin({ osa: 'observation_subcount_events' }, 'so.survey_observation_id', 'osa.survey_observation_id')
       .where('so.survey_id', surveyId);
 
     if (pagination) {
@@ -284,7 +317,7 @@ export class ObservationRepository extends BaseRepository {
       }
     }
 
-    const response = await this.connection.knex(queryBuilder, ObservationRecordWithSamplingData);
+    const response = await this.connection.knex(queryBuilder, ObservationRecordWithSamplingDataWithEvents);
 
     return response.rows;
   }
@@ -314,16 +347,18 @@ export class ObservationRepository extends BaseRepository {
    * Retrieves a single observation record
    *
    * @param {number} surveyId
+   * @param {number} surveyObservationId
    * @return {*}  {Promise<ObservationRecord[]>}
    * @memberof ObservationRepository
    */
-  async getSurveyObservationById(surveyObservationId: number): Promise<ObservationRecord> {
+  async getSurveyObservationById(surveyId: number, surveyObservationId: number): Promise<ObservationRecord> {
     const knex = getKnex();
     const query = knex
       .queryBuilder()
       .select('*')
       .from('survey_observation')
-      .where('survey_observation_id', surveyObservationId);
+      .where('survey_observation_id', surveyObservationId)
+      .andWhere('survey_id', surveyId);
 
     const response = await this.connection.knex(query, ObservationRecord);
 
@@ -423,12 +458,13 @@ export class ObservationRepository extends BaseRepository {
    * @return {*}  {Promise<ObservationSubmissionRecord>}
    * @memberof ObservationService
    */
-  async getObservationSubmissionById(submissionId: number): Promise<ObservationSubmissionRecord> {
+  async getObservationSubmissionById(surveyId: number, submissionId: number): Promise<ObservationSubmissionRecord> {
     const queryBuilder = getKnex()
       .queryBuilder()
       .select('*')
       .from('survey_observation_submission')
-      .where('submission_id', submissionId);
+      .where('submission_id', submissionId)
+      .andWhere('survey_id', surveyId);
 
     const response = await this.connection.knex(queryBuilder, ObservationSubmissionRecord);
 
@@ -443,18 +479,20 @@ export class ObservationRepository extends BaseRepository {
   }
 
   /**
-   * Deletes all of the given survey observations by ID.
+   * Deletes all survey observation records for the given observation ids.
    *
+   * @param {number} surveyId
    * @param {number[]} observationIds
    * @return {*}  {Promise<number>}
    * @memberof ObservationRepository
    */
-  async deleteObservationsByIds(observationIds: number[]): Promise<number> {
+  async deleteObservationsByIds(surveyId: number, observationIds: number[]): Promise<number> {
     const queryBuilder = getKnex()
       .queryBuilder()
       .delete()
       .from('survey_observation')
       .whereIn('survey_observation_id', observationIds)
+      .andWhere('survey_id', surveyId)
       .returning('*');
 
     const response = await this.connection.knex(queryBuilder, ObservationRecord);
@@ -470,31 +508,6 @@ export class ObservationRepository extends BaseRepository {
   }
 
   /**
-   * Retrieves observation records count for the given survey and sample site id
-   *
-   * @param {number} surveyId
-   * @param {number} sampleSiteId
-   * @return {*}  {Promise<{ observationCount: number }>}
-   * @memberof ObservationRepository
-   */
-  async getObservationsCountBySampleSiteId(
-    surveyId: number,
-    sampleSiteId: number
-  ): Promise<{ observationCount: number }> {
-    const knex = getKnex();
-    const sqlStatement = knex
-      .queryBuilder()
-      .count('survey_observation_id as rowCount')
-      .from('survey_observation')
-      .where('survey_id', surveyId)
-      .where('survey_sample_site_id', sampleSiteId);
-
-    const response = await this.connection.knex(sqlStatement);
-    const observationCount = Number(response.rows[0].rowCount);
-    return { observationCount };
-  }
-
-  /**
    * Retrieves observation records count for the given survey and sample site ids
    *
    * @param {number} surveyId
@@ -502,60 +515,81 @@ export class ObservationRepository extends BaseRepository {
    * @return {*}  {Promise<{ observationCount: number }>}
    * @memberof ObservationRepository
    */
-  async getObservationsCountBySampleSiteIds(
-    surveyId: number,
-    sampleSiteIds: number[]
-  ): Promise<{ observationCount: number }> {
+  async getObservationsCountBySampleSiteIds(surveyId: number, sampleSiteIds: number[]): Promise<number> {
     const knex = getKnex();
     const sqlStatement = knex
       .queryBuilder()
-      .count('survey_observation_id as rowCount')
+      .count('survey_observation_id as observation_count')
       .from('survey_observation')
       .where('survey_id', surveyId)
       .whereIn('survey_sample_site_id', sampleSiteIds);
 
     const response = await this.connection.knex(sqlStatement);
-    const observationCount = Number(response.rows[0].rowCount);
-    return { observationCount };
+
+    if (response?.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to get observations count', [
+        'ObservationRepository->getObservationsCountBySampleSiteIds',
+        'response.rowCount was !== 1, expected rowCount === 1'
+      ]);
+    }
+
+    const observation_count = Number(response.rows[0].observation_count);
+    return observation_count;
   }
 
   /**
    * Retrieves observation records count for the given survey and sample method ids
    *
-   * @param {number} sampleMethodId
+   * @param {number[]} sampleMethodIds
    * @return {*}  {Promise<{ observationCount: number }>}
    * @memberof ObservationRepository
    */
-  async getObservationsCountBySampleMethodId(sampleMethodId: number): Promise<{ observationCount: number }> {
+  async getObservationsCountBySampleMethodIds(sampleMethodIds: number[]): Promise<number> {
     const knex = getKnex();
     const sqlStatement = knex
       .queryBuilder()
-      .count('survey_observation_id as rowCount')
+      .count('survey_observation_id as observation_count')
       .from('survey_observation')
-      .where('survey_sample_method_id', sampleMethodId);
+      .whereIn('survey_sample_method_id', sampleMethodIds);
 
     const response = await this.connection.knex(sqlStatement);
-    const observationCount = Number(response.rows[0].rowCount);
-    return { observationCount };
+
+    if (response?.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to get observations count', [
+        'ObservationRepository->getObservationsCountBySampleMethodId',
+        'response.rowCount was !== 1, expected rowCount === 1'
+      ]);
+    }
+
+    const observation_count = Number(response.rows[0].observation_count);
+    return observation_count;
   }
 
   /**
    * Retrieves observation records count for the given survey and sample period ids
    *
-   * @param {number} samplePeriodId
+   * @param {number[]} samplePeriodIds
    * @return {*}  {Promise<{ observationCount: number }>}
    * @memberof ObservationRepository
    */
-  async getObservationsCountBySamplePeriodId(samplePeriodId: number): Promise<{ observationCount: number }> {
+  async getObservationsCountBySamplePeriodIds(samplePeriodIds: number[]): Promise<number> {
     const knex = getKnex();
     const sqlStatement = knex
       .queryBuilder()
       .count('survey_observation_id as rowCount')
       .from('survey_observation')
-      .where('survey_sample_period_id', samplePeriodId);
+      .whereIn('survey_sample_period_id', samplePeriodIds);
 
     const response = await this.connection.knex(sqlStatement);
-    const observationCount = Number(response.rows[0].rowCount);
-    return { observationCount };
+
+    if (response?.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to get observations count', [
+        'ObservationRepository->getObservationsCountBySamplePeriodId',
+        'response.rowCount was !== 1, expected rowCount === 1'
+      ]);
+    }
+
+    const observation_count = Number(response.rows[0].observation_count);
+    return observation_count;
   }
 }

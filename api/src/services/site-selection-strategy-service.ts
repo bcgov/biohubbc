@@ -7,6 +7,7 @@ import {
 } from '../repositories/site-selection-strategy-repository';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
+import { SampleStratumService } from './sample-stratum-service';
 
 const defaultLog = getLogger('repositories/site-selection-strategy-repository');
 
@@ -83,6 +84,7 @@ export class SiteSelectionStrategyService extends DBService {
 
     const insertStratums: SurveyStratum[] = [];
     const updateStratums: SurveyStratumRecord[] = [];
+
     const existingSiteSelectionStrategies = await this.siteSelectionStrategyRepository.getSiteSelectionDataBySurveyId(
       surveyId
     );
@@ -95,12 +97,15 @@ export class SiteSelectionStrategyService extends DBService {
       }
     });
 
-    const removeStratums = existingSiteSelectionStrategies.stratums.filter((stratum) => {
-      return !updateStratums.some((updateStratum) => updateStratum.survey_stratum_id === stratum.survey_stratum_id);
-    });
+    const removeStratums = existingSiteSelectionStrategies.stratums
+      .filter(
+        (stratum) =>
+          !updateStratums.some((updateStratum) => updateStratum.survey_stratum_id === stratum.survey_stratum_id)
+      )
+      .map((stratum) => stratum.survey_stratum_id);
 
     if (removeStratums.length) {
-      await this.deleteSurveyStratums(removeStratums.map((stratum) => stratum.survey_stratum_id));
+      await this.deleteSurveyStratums(removeStratums);
     }
 
     if (updateStratums.length) {
@@ -143,7 +148,13 @@ export class SiteSelectionStrategyService extends DBService {
    * @return {*}  {Promise<any>}
    * @memberof SiteSelectionStrategyService
    */
-  async deleteSurveyStratums(stratumIds: number[]): Promise<any> {
+  async deleteSurveyStratums(stratumIds: number[]): Promise<number> {
+    const sampleStratumService = new SampleStratumService(this.connection);
+
+    // Deletes the joins between survey_stratum and survey_sample_stratum
+    await sampleStratumService.deleteSampleStratumRecordsByStratumIds(stratumIds); // PROBLEM HERE
+
+    // Deletes the Survey Stratum
     return this.siteSelectionStrategyRepository.deleteSurveyStratums(stratumIds);
   }
 }

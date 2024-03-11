@@ -13,8 +13,8 @@ import { PostSampleLocations, SampleLocationService } from '../../../../../../se
 import { getLogger } from '../../../../../../utils/logger';
 import {
   ensureCompletePaginationOptions,
-  getPaginationOptionsFromRequest,
-  getPaginationResponse
+  makePaginationOptionsFromRequest,
+  makePaginationResponse
 } from '../../../../../../utils/pagination';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/sample-site/');
@@ -173,6 +173,42 @@ GET.apiDoc = {
                         },
                         additionalProperties: false
                       }
+                    },
+                    sample_blocks: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        required: ['survey_sample_block_id', 'survey_sample_site_id', 'survey_block_id'],
+                        properties: {
+                          survey_sample_block_id: {
+                            type: 'number'
+                          },
+                          survey_sample_site_id: {
+                            type: 'number'
+                          },
+                          survey_block_id: {
+                            type: 'number'
+                          }
+                        }
+                      }
+                    },
+                    sample_stratums: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        required: ['survey_sample_stratum_id', 'survey_sample_site_id', 'survey_stratum_id'],
+                        properties: {
+                          survey_sample_stratum_id: {
+                            type: 'number'
+                          },
+                          survey_sample_site_id: {
+                            type: 'number'
+                          },
+                          survey_stratum_id: {
+                            type: 'number'
+                          }
+                        }
+                      }
                     }
                   },
                   additionalProperties: false
@@ -220,7 +256,7 @@ export function getSurveySampleLocationRecords(): RequestHandler {
       await connection.open();
 
       const surveyId = Number(req.params.surveyId);
-      const paginationOptions = getPaginationOptionsFromRequest(req);
+      const paginationOptions = makePaginationOptionsFromRequest(req);
 
       const sampleLocationService = new SampleLocationService(connection);
       const sampleSites = await sampleLocationService.getSampleLocationsForSurveyId(
@@ -233,7 +269,7 @@ export function getSurveySampleLocationRecords(): RequestHandler {
 
       return res.status(200).json({
         sampleSites,
-        pagination: getPaginationResponse(sampleSitesTotalCount, paginationOptions)
+        pagination: makePaginationResponse(sampleSitesTotalCount, paginationOptions)
       });
     } catch (error) {
       defaultLog.error({ label: 'getSurveySampleLocationRecords', message: 'error', error });
@@ -391,9 +427,10 @@ export function createSurveySampleSiteRecord(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const sampleSite: PostSampleLocations = req.body;
-
-      sampleSite.survey_id = Number(req.params.surveyId);
+      const sampleSite: PostSampleLocations = {
+        ...req.body,
+        survey_id: Number(req.params.surveyId)
+      };
 
       await connection.open();
 

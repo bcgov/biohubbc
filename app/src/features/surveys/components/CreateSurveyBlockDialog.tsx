@@ -1,6 +1,6 @@
 import EditDialog from 'components/dialog/EditDialog';
 import BlockForm from './BlockForm';
-import { BlockYupSchema } from './SurveyBlockSection';
+import { BlockYupSchema } from './SurveyBlockForm';
 interface ICreateBlockProps {
   open: boolean;
   onSave: (data: any) => void;
@@ -20,7 +20,8 @@ const CreateSurveyBlockDialog: React.FC<ICreateBlockProps> = (props) => {
           initialValues: {
             survey_block_id: null,
             name: '',
-            description: ''
+            description: '',
+            sample_block_count: 0
           },
           validationSchema: BlockYupSchema
         }}

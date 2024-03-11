@@ -48,8 +48,10 @@ const parseFeatureFlagsString = (featureFlagsString: string): string[] => {
 /**
  * Return the app config based on locally set environment variables.
  *
- * IMPORTANT: Any changes made to this file must also be made in `app/server/index.js` to ensure the same config is
- * provided to the client when running locally and in OpenShift.
+ * This is used when running the app locally in docker.
+ *
+ * Note: All changes to env vars here must also be reflected in the `app/server/index.js` file, so that the app has
+ * access to the same env vars when running in both local development (via docker-compose) and in OpenShift.
  *
  * @return {*}  {IConfig}
  */

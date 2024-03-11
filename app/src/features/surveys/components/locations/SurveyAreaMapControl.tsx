@@ -73,7 +73,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
         }}>
         <Typography
           data-testid="map-control-title"
-          component="h4"
+          component="div"
           fontWeight="700"
           sx={{
             flex: '1 1 auto'
@@ -208,7 +208,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
                 // Map geojson features into layer objects for leaflet
                 return {
                   layerName: location.name,
-                  features: location.geojson.map((geo) => ({ geoJSON: geo, key: location.uuid }))
+                  features: location.geojson.map((geo) => ({ geoJSON: geo, key: location.uuid ?? v4() }))
                 };
               })}
           />

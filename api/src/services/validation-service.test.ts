@@ -262,13 +262,11 @@ describe('ValidationService', () => {
     it('should return valid XLSXCSV', () => {
       const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
       const parse = sinon.stub(MediaUtils, 'parseUnknownMedia').returns(file);
-      sinon.stub(XLSXCSV, 'prototype').returns({
-        workbook: {
-          rawWorkbook: {
-            Custprops: {
-              sims_template_id: 1,
-              sims_csm_id: 1
-            }
+      sinon.stub(XLSXCSV.prototype, 'workbook').returns({
+        rawWorkbook: {
+          Custprops: {
+            sims_template_id: 1,
+            sims_csm_id: 1
           }
         }
       });

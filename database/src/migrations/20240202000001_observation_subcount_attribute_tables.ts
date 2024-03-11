@@ -4,7 +4,7 @@ import { Knex } from 'knex';
  * Create new tables:
  * - observation_subcount
  * - subcount_critter
- * - subcount_attribute
+ * - subcount_event
  *
  * Create new function/trigger:
  * - tr_observation_subcount_count
@@ -68,8 +68,8 @@ export async function up(knex: Knex): Promise<void> {
 
     ----------------------------------------------------------------------------------------
 
-    CREATE TABLE subcount_attribute(
-      subcount_attribute_id      integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    CREATE TABLE subcount_event(
+      subcount_event_id          integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       observation_subcount_id    integer            NOT NULL,
       critterbase_event_id       uuid               NOT NULL,
       create_date                timestamptz(6)     DEFAULT now() NOT NULL,
@@ -77,18 +77,18 @@ export async function up(knex: Knex): Promise<void> {
       update_date                timestamptz(6),
       update_user                integer,
       revision_count             integer            DEFAULT 0 NOT NULL,
-      CONSTRAINT subcount_attribute_pk PRIMARY KEY (subcount_attribute_id)
+      CONSTRAINT subcount_event_pk PRIMARY KEY (subcount_event_id)
     );
 
-    COMMENT ON COLUMN subcount_attribute.subcount_attribute_id      IS 'System generated surrogate primary key identifier.';
-    COMMENT ON COLUMN subcount_attribute.observation_subcount_id    IS 'A foreign key pointing to the observation_subcount table.';
-    COMMENT ON COLUMN subcount_attribute.critterbase_event_id       IS 'The external system id of a Critterbase event, to which Critterbase attribute records are associated.';
-    COMMENT ON COLUMN subcount_attribute.create_date                IS 'The datetime the record was created.';
-    COMMENT ON COLUMN subcount_attribute.create_user                IS 'The id of the user who created the record as identified in the system user table.';
-    COMMENT ON COLUMN subcount_attribute.update_date                IS 'The datetime the record was updated.';
-    COMMENT ON COLUMN subcount_attribute.update_user                IS 'The id of the user who updated the record as identified in the system user table.';
-    COMMENT ON COLUMN subcount_attribute.revision_count             IS 'Revision count used for concurrency control.';
-    COMMENT ON TABLE  subcount_attribute                            IS 'Tracks an external system id to Critterbase, which tracks the attributes (measurements, etc) associated to the subcount record.';
+    COMMENT ON COLUMN subcount_event.subcount_event_id          IS 'System generated surrogate primary key identifier.';
+    COMMENT ON COLUMN subcount_event.observation_subcount_id    IS 'A foreign key pointing to the observation_subcount table.';
+    COMMENT ON COLUMN subcount_event.critterbase_event_id       IS 'The external system id of a Critterbase event, to which Critterbase attribute records are associated.';
+    COMMENT ON COLUMN subcount_event.create_date                IS 'The datetime the record was created.';
+    COMMENT ON COLUMN subcount_event.create_user                IS 'The id of the user who created the record as identified in the system user table.';
+    COMMENT ON COLUMN subcount_event.update_date                IS 'The datetime the record was updated.';
+    COMMENT ON COLUMN subcount_event.update_user                IS 'The id of the user who updated the record as identified in the system user table.';
+    COMMENT ON COLUMN subcount_event.revision_count             IS 'Revision count used for concurrency control.';
+    COMMENT ON TABLE  subcount_event                            IS 'Tracks an external system id to Critterbase, which tracks the attributes (measurements, etc) associated to the subcount record.';
 
     ----------------------------------------------------------------------------------------
     -- Create Indexes and Constraints for table: observation_subcount
@@ -124,19 +124,19 @@ export async function up(knex: Knex): Promise<void> {
     CREATE UNIQUE INDEX subcount_critter_uk1 ON subcount_critter(observation_subcount_id, critter_id);
 
     ----------------------------------------------------------------------------------------
-    -- Create Indexes and Constraints for table: subcount_attribute
+    -- Create Indexes and Constraints for table: subcount_event
     ----------------------------------------------------------------------------------------
 
     -- Add foreign key constraint
-    ALTER TABLE subcount_attribute ADD CONSTRAINT subcount_attribute_fk1
+    ALTER TABLE subcount_event ADD CONSTRAINT subcount_event_fk1
       FOREIGN KEY (observation_subcount_id)
       REFERENCES observation_subcount(observation_subcount_id);
 
     -- add indexes for foreign keys
-    CREATE INDEX subcount_attribute_idx1 ON subcount_attribute(observation_subcount_id);
+    CREATE INDEX subcount_event_idx1 ON subcount_event(observation_subcount_id);
 
     -- Add unique key constraint (don't allow 2 entities with the same observation_subcount_id and critterbase_event_id)
-    CREATE UNIQUE INDEX subcount_attribute_uk1 ON subcount_attribute(observation_subcount_id, critterbase_event_id);
+    CREATE UNIQUE INDEX subcount_event_uk1 ON subcount_event(observation_subcount_id, critterbase_event_id);
   
     ----------------------------------------------------------------------------------------
     -- Create audit and journal triggers
@@ -148,8 +148,8 @@ export async function up(knex: Knex): Promise<void> {
     CREATE TRIGGER audit_subcount_critter BEFORE INSERT OR UPDATE OR DELETE ON biohub.subcount_critter FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
     CREATE TRIGGER journal_subcount_critter AFTER INSERT OR UPDATE OR DELETE ON biohub.subcount_critter FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
 
-    CREATE TRIGGER audit_subcount_attribute BEFORE INSERT OR UPDATE OR DELETE ON biohub.subcount_attribute FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
-    CREATE TRIGGER journal_subcount_attribute AFTER INSERT OR UPDATE OR DELETE ON biohub.subcount_attribute FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+    CREATE TRIGGER audit_subcount_event BEFORE INSERT OR UPDATE OR DELETE ON biohub.subcount_event FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_subcount_event AFTER INSERT OR UPDATE OR DELETE ON biohub.subcount_event FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
   
     ----------------------------------------------------------------------------------------
     -- Create constraint triggers
@@ -183,7 +183,7 @@ export async function up(knex: Knex): Promise<void> {
 
     CREATE OR REPLACE VIEW observation_subcount AS SELECT * FROM biohub.observation_subcount;
     CREATE OR REPLACE VIEW subcount_critter AS SELECT * FROM biohub.subcount_critter;
-    CREATE OR REPLACE VIEW subcount_attribute AS SELECT * FROM biohub.subcount_attribute;
+    CREATE OR REPLACE VIEW subcount_event AS SELECT * FROM biohub.subcount_event;
 
   `);
 }

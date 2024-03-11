@@ -99,6 +99,7 @@ POST.apiDoc = {
   }
 };
 
+// @TODO safe to delete this endpoint?
 export function processFile(): RequestHandler {
   return async (req, res) => {
     const submissionId = req.body.occurrence_submission_id;

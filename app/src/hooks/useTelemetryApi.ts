@@ -1,4 +1,4 @@
-import { CancelTokenSource } from 'axios';
+import { AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { useConfigContext } from 'hooks/useContext';
 import useAxios from './api/useAxios';
 import { useDeviceApi } from './telemetry/useDeviceApi';
@@ -126,7 +126,7 @@ export const useTelemetryApi = () => {
    * @param {number} surveyId
    * @param {File} file
    * @param {CancelTokenSource} [cancelTokenSource]
-   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<{ submission_id: number }>}
    */
   const uploadCsvForImport = async (
@@ -134,7 +134,7 @@ export const useTelemetryApi = () => {
     surveyId: number,
     file: File,
     cancelTokenSource?: CancelTokenSource,
-    onProgress?: (progressEvent: ProgressEvent) => void
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
   ): Promise<{ submission_id: number }> => {
     const formData = new FormData();
 
