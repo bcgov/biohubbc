@@ -62,9 +62,17 @@ export class SampleMethodRepository extends BaseRepository {
       FROM
         survey_sample_method
       WHERE
-        survey_sample_site_id = ${surveySampleSiteId}
-      AND
-        survey_id = ${surveyId}
+        survey_sample_site_id = (
+          SELECT
+            survey_sample_site_id
+          FROM
+            survey_sample_site
+          WHERE
+            survey_sample_site_id = ${surveySampleSiteId}
+          AND
+            survey_id = ${surveyId}
+          LIMIT 1
+        )
       ;
     `;
 
