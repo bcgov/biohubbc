@@ -31,6 +31,7 @@ export interface IAttachmentsListProps<T extends IGetProjectAttachment | IGetSur
 const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>(props: IAttachmentsListProps<T>) => {
   const { attachments, handleDownload, handleDelete, handleViewDetails, handleRemoveOrResubmit } = props;
 
+  // @TODO https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-533
   const [rowsPerPage] = useState(10);
   const [page] = useState(0);
 

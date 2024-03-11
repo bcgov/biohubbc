@@ -8,7 +8,7 @@ import ProjectAdvancedFilters, {
   ProjectAdvancedFiltersInitialValues
 } from 'components/search-filter/ProjectAdvancedFilters';
 import { Formik, FormikProps } from 'formik';
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -25,7 +25,7 @@ export interface IProjectsListFilterFormProps {
 const ProjectsListFilterForm: React.FC<IProjectsListFilterFormProps> = (props) => {
   const classes = useStyles();
 
-  const [formikRef] = useState(useRef<FormikProps<IProjectAdvancedFilters>>(null));
+  const formikRef = useRef<FormikProps<IProjectAdvancedFilters>>(null);
 
   return (
     <Box>
