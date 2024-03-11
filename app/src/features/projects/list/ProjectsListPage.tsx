@@ -54,7 +54,6 @@ const ProjectsListPage = () => {
 
   const projectsDataLoader = useDataLoader(
     (pagination: ApiPaginationRequestOptions, filter?: IProjectAdvancedFilters) => {
-      console.log('filter:', filter)
       return biohubApi.project.getProjectsList(pagination, filter);
     }
   );
@@ -181,7 +180,7 @@ const ProjectsListPage = () => {
                 color="primary"
                 startIcon={<Icon path={mdiFilterOutline} size={0.8} />}
                 onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}>
-                {!showAdvancedFilters ? `Show Filters` : `Hide Filters`}
+                {!showAdvancedFilters ? 'Show Filters' : 'Hide Filters'}
               </Button>
             </Toolbar>
             <Divider></Divider>

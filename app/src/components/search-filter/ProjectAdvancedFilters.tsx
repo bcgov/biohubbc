@@ -112,9 +112,9 @@ const ProjectAdvancedFilters = () => {
               id={'project_programs'}
               label={'Project Programs'}
               options={
-                codesContext.codesDataLoader.data.program.map((item) => {
+                codesContext.codesDataLoader.data?.program?.map((item) => {
                   return { value: item.id, label: item.name };
-                }) || []
+                }) ?? []
               }
             />
           </FormControl>
