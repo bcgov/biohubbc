@@ -29,6 +29,10 @@ Seeds will run in alphanumeric order, so if the order of seeds is important, con
 
 Note: Seed files run every time regardless of past successful runs. As a result, seed files need to account for the fact that they may run repeatedly (ex: check if a record exists before adding it, in case this is not the first time this seed has run and inserting the same record again would cause an error).
 
+### Procedures
+
+The `procedures` directory contains a collection of scripts that, when run, create PostgreSQL stored procedures. These procedures are invoked by the application and are designed to perform specific tasks that usually envolve complex queries with several commands (for example, cascading deletes that involve multiple `DELETE` commands). Files in this directory are functionally almost identical to seeds, with the exception that they are expected to run in all environments, including production. To that end, running any one of the scripts from the `procedures` directory more than once should have no effect.
+
 # Port forward to remote database
 
 1. Open a terminal
