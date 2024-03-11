@@ -33,7 +33,7 @@ export interface ISurveySampleMethodData {
   method_lookup_id: number | null;
   description: string;
   periods: ISurveySampleMethodPeriodData[];
-  response_metric_lookup_id: number | null;
+  method_response_metric_id: number | null;
 }
 
 export interface IEditSurveySampleMethodData extends ISurveySampleMethodData {
@@ -56,7 +56,7 @@ export const SurveySampleMethodDataInitialValues = {
   method_lookup_id: null,
   description: '',
   periods: [SurveySampleMethodPeriodArrayItemInitialValues],
-  response_metric_lookup_id: '' as unknown as null
+  method_response_metric_id: '' as unknown as null
 };
 
 export const SamplingSiteMethodYupSchema = yup.object({
@@ -127,6 +127,8 @@ const MethodForm = () => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
+  console.log(values);
+
   return (
     <form>
       <Stack gap={3} width={900}>
@@ -140,9 +142,9 @@ const MethodForm = () => {
             required
           />
           <SelectWithSubtextField
-            id="response-metric"
+            id="method_response_metric_id"
             label="Response Metric"
-            name="response-metric"
+            name="method_response_metric_id"
             options={methodResponseMetricOptions}
             required
           />

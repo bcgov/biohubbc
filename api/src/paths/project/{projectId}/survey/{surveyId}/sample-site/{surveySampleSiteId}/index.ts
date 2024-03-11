@@ -99,7 +99,7 @@ PUT.apiDoc = {
                   items: {
                     type: 'object',
                     additionalProperties: false,
-                    required: ['description', 'periods'],
+                    required: ['method_lookup_id', 'description', 'periods', 'method_response_metric_id'],
                     properties: {
                       survey_sample_site_id: {
                         type: 'integer',
@@ -153,6 +153,10 @@ PUT.apiDoc = {
                             }
                           }
                         }
+                      },
+                      method_response_metric_id: {
+                        type: 'number',
+                        minimum: 1
                       }
                     }
                   }

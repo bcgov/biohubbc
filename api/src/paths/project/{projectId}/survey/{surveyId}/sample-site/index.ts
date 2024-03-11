@@ -112,6 +112,7 @@ GET.apiDoc = {
                         'survey_sample_method_id',
                         'survey_sample_site_id',
                         'method_lookup_id',
+                        'method_response_metric_id',
                         'sample_periods'
                       ],
                       items: {
@@ -172,8 +173,9 @@ GET.apiDoc = {
                                 }
                               }
                             }
-                          }
-                        }
+                          },
+                        method_response_metric_id: { type: 'number', minimum: 1 }
+                        },
                       }
                     },
                     sample_blocks: {
@@ -277,6 +279,7 @@ export function getSurveySampleLocationRecords(): RequestHandler {
         surveyId,
         ensureCompletePaginationOptions(paginationOptions)
       );
+
       const sampleSitesTotalCount = await sampleLocationService.getSampleLocationsCountBySurveyId(surveyId);
 
       await connection.commit();
@@ -365,7 +368,7 @@ POST.apiDoc = {
               items: {
                 type: 'object',
                 additionalProperties: false,
-                required: ['method_lookup_id', 'description', 'periods'],
+                required: ['method_lookup_id', 'description', 'periods', 'method_response_metric_id'],
                 properties: {
                   survey_sample_site_id: {
                     type: 'integer',
@@ -418,6 +421,10 @@ POST.apiDoc = {
                         }
                       }
                     }
+                  },
+                  method_response_metric_id: {
+                    type: 'number',
+                    minimum: 1
                   }
                 }
               }

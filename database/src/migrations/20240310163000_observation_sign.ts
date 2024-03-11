@@ -53,7 +53,7 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
     ALTER TABLE observation_subcount ADD COLUMN sign_id INTEGER NOT NULL;
     COMMENT ON COLUMN observation_subcount.sign_id IS 'Foreign key referencing the response metric id.';
-    ALTER TABLE observation_subcount ADD CONSTRAINT sign_fk FOREIGN KEY (sign_id) REFERENCES observation_subcount_sign(observation_subcount_sign_id);
+    ALTER TABLE observation_subcount ADD CONSTRAINT observation_subcount_sign_fk FOREIGN KEY (sign_id) REFERENCES observation_subcount_sign(observation_subcount_sign_id);
     
     ----------------------------------------------------------------------------------------
     -- Alter table method_lookup to include a description of the method
