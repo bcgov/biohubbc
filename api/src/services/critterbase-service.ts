@@ -404,38 +404,36 @@ export class CritterbaseService {
   }
 
   /**
-   * Get qualitative measurement type definitions by ids.
+   * Get qualitative measurement type definitions by Critterbase taxon measurement ids.
    *
-   * TODO Update after mac adds endpoints to critterbase
-   *
-   * @param {string[]} taxon_measurement_id
+   * @param {string[]} taxon_measurement_ids
    * @return {*}  {CBQualitativeMeasurementTypeDefinition[]}
    * @memberof CritterbaseService
    */
   async getQualitativeMeasurementTypeDefinition(
-    taxon_measurement_id: string[]
+    taxon_measurement_ids: string[]
   ): Promise<CBQualitativeMeasurementTypeDefinition[]> {
-    // const { data } = await this.axiosInstance.get(`/api/xref/measurements/qualitative/${taxon_measurement_id}`);
+    const { data } = await this.axiosInstance.post(`/xref/taxon-qualitative-measurements`, {
+      taxon_measurement_ids: taxon_measurement_ids
+    });
 
-    // return data;
-    return [];
+    return data;
   }
 
   /**
-   * Get qualitative measurement type definitions by ids.
+   * Get qualitative measurement type definitions by Critterbase taxon measurement ids.
    *
-   * TODO Update after mac adds endpoints to critterbase
-   *
-   * @param {string[]} taxon_measurement_id
+   * @param {string[]} taxon_measurement_ids
    * @return {*}  {CBQuantitativeMeasurementTypeDefinition[]}
    * @memberof CritterbaseService
    */
   async getQuantitativeMeasurementTypeDefinition(
-    taxon_measurement_id: string[]
+    taxon_measurement_ids: string[]
   ): Promise<CBQuantitativeMeasurementTypeDefinition[]> {
-    // const { data } = await this.axiosInstance.get(`/api/xref/measurements/quantitative/${taxon_measurement_id}`);
+    const { data } = await this.axiosInstance.post(`/xref/taxon-quantitative-measurements`, {
+      taxon_measurement_ids: taxon_measurement_ids
+    });
 
-    // return data;
-    return [];
+    return data;
   }
 }

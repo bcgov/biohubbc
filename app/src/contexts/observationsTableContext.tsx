@@ -471,12 +471,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       try {
         if (savedRowIdsToDelete.length) {
           // Delete previously saved records from the server, if any
-          const response = await biohubApi.observation.deleteObservationRecords(
-            projectId,
-            surveyId,
-            savedRowIdsToDelete
-          );
-          setObservationCount(response.supplementaryObservationData.observationCount);
+          await biohubApi.observation.deleteObservationRecords(projectId, surveyId, savedRowIdsToDelete);
+          //   setObservationCount(response.supplementaryObservationData.observationCount);
+          refreshObservationRecords();
         }
 
         // Remove deleted row IDs from the validation model

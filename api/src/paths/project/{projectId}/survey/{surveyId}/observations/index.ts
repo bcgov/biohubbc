@@ -299,17 +299,8 @@ GET.apiDoc = {
                           type: 'array',
                           items: {
                             type: 'object',
-                            required: [
-                              'taxon_measurement_id',
-                              'qualitative_option_id',
-                              'option_label',
-                              'option_value',
-                              'option_desc'
-                            ],
+                            required: ['qualitative_option_id', 'option_label', 'option_value', 'option_desc'],
                             properties: {
-                              taxon_measurement_id: {
-                                type: 'string'
-                              },
                               qualitative_option_id: {
                                 type: 'string'
                               },
