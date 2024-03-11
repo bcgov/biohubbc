@@ -632,9 +632,18 @@ const insertSurveyObservationData = (surveyId: number) => `
     timestamp $$${faker.date
       .between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
       .toISOString()}$$::time,
-    (SELECT survey_sample_site_id FROM survey_sample_site LIMIT 1),
-    (SELECT survey_sample_method_id FROM survey_sample_method LIMIT 1),
-    (SELECT survey_sample_period_id FROM survey_sample_period LIMIT 1)
+
+    (SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1),
+    
+    (SELECT survey_sample_method_id FROM survey_sample_method WHERE survey_sample_site_id = (
+      SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1
+    ) LIMIT 1),
+
+    (SELECT survey_sample_period_id FROM survey_sample_period WHERE survey_sample_method_id = (
+      SELECT survey_sample_method_id FROM survey_sample_method WHERE survey_sample_site_id = (
+        SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1
+      ) LIMIT 1
+    ) LIMIT 1)
   )
   RETURNING survey_observation_id;
 `;
