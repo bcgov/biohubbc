@@ -1,5 +1,6 @@
 import { mdiFilterOutline, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Collapse } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -24,7 +25,6 @@ import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull, getFormattedDate } from 'utils/Utils';
 import ProjectsListFilterForm from './ProjectsListFilterForm';
-import { Collapse } from '@mui/material';
 
 interface IProjectsListTableRow extends Omit<IProjectsListItemData, 'project_programs'> {
   project_programs: string;

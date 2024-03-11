@@ -42,7 +42,6 @@ export const useCodesContext = (): ICodesContext => {
   return context;
 };
 
-
 /**
  * Returns an instance of `IDialogContext` from `DialogContext`.
  *

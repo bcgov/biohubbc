@@ -1,5 +1,7 @@
+import { Knex } from 'knex';
 import SQL, { SQLStatement } from 'sql-template-strings';
 import { z } from 'zod';
+import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostProjectObject } from '../models/project-create';
 import { PutObjectivesData, PutProjectData } from '../models/project-update';
@@ -15,8 +17,6 @@ import {
 import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
-import { getKnex } from '../database/db';
-import { Knex } from 'knex';
 
 const defaultLog = getLogger('repositories/project-repository');
 
@@ -28,7 +28,6 @@ const defaultLog = getLogger('repositories/project-repository');
  * @extends {BaseRepository}
  */
 export class ProjectRepository extends BaseRepository {
-
   /**
    * Constructs a non-paginated query used to get a project list for users.
    *
@@ -41,7 +40,7 @@ export class ProjectRepository extends BaseRepository {
   _makeProjectListQuery(
     isUserAdmin: boolean,
     systemUserId: number | null,
-    filterFields: IProjectAdvancedFilters,
+    filterFields: IProjectAdvancedFilters
   ): Knex.QueryBuilder {
     const knex = getKnex();
 
@@ -53,7 +52,7 @@ export class ProjectRepository extends BaseRepository {
         'p.start_date',
         'p.end_date',
         knex.raw(`COALESCE(array_remove(array_agg(DISTINCT rl.region_name), null), '{}') as regions`),
-        knex.raw('array_agg(distinct prog.program_id) as project_programs'),
+        knex.raw('array_agg(distinct prog.program_id) as project_programs')
       ])
       .from('project as p')
 
@@ -63,14 +62,8 @@ export class ProjectRepository extends BaseRepository {
       .leftJoin('program as prog', 'prog.program_id', 'pp.program_id')
       .leftJoin('project_region as pr', 'p.project_id', 'pr.project_id')
       .leftJoin('region_lookup as rl', 'pr.region_id', 'rl.region_id')
-      
-      .groupBy([
-        'p.project_id',
-        'p.name',
-        'p.objectives',
-        'p.start_date',
-        'p.end_date',
-      ])
+
+      .groupBy(['p.project_id', 'p.name', 'p.objectives', 'p.start_date', 'p.end_date']);
 
     /*
      * Ensure that users can only see project that they are participating in, unless
@@ -78,10 +71,7 @@ export class ProjectRepository extends BaseRepository {
      */
     if (!isUserAdmin) {
       query.whereIn('p.project_id', (subQueryBuilder) => {
-        subQueryBuilder
-          .select('project_id')
-          .from('project_participation')
-          .where('system_user_id', systemUserId);
+        subQueryBuilder.select('project_id').from('project_participation').where('system_user_id', systemUserId);
       });
     }
 
@@ -92,7 +82,7 @@ export class ProjectRepository extends BaseRepository {
 
     // End Date filter
     if (filterFields.end_date) {
-      query.andWhere('p.end_date', '<=', filterFields.end_date)
+      query.andWhere('p.end_date', '<=', filterFields.end_date);
     }
 
     // Project Name filter (exact match)
@@ -118,7 +108,9 @@ export class ProjectRepository extends BaseRepository {
 
     // Programs filter
     if (filterFields.project_programs?.length) {
-      query.havingRaw(`array_agg(DISTINCT prog.program_id) && ARRAY[${filterFields.project_programs.join(",")}]::integer[]`);
+      query.havingRaw(
+        `array_agg(DISTINCT prog.program_id) && ARRAY[${filterFields.project_programs.join(',')}]::integer[]`
+      );
     }
 
     return query;
@@ -142,12 +134,8 @@ export class ProjectRepository extends BaseRepository {
   ): Promise<ProjectListData[]> {
     defaultLog.debug({ label: 'getProjectList', pagination });
 
-    const query = this._makeProjectListQuery(
-      isUserAdmin,
-      systemUserId,
-      filterFields
-    );
-    
+    const query = this._makeProjectListQuery(isUserAdmin, systemUserId, filterFields);
+
     // Pagination
     if (pagination) {
       query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
@@ -171,12 +159,14 @@ export class ProjectRepository extends BaseRepository {
    * @return {*}  {Promise<number>}
    * @memberof ProjectRepository
    */
-  async getProjectCount(filterFields: IProjectAdvancedFilters, isUserAdmin: boolean, systemUserId: number | null): Promise<number> {
-    const projectsListQuery = this._makeProjectListQuery(isUserAdmin, systemUserId, filterFields)
+  async getProjectCount(
+    filterFields: IProjectAdvancedFilters,
+    isUserAdmin: boolean,
+    systemUserId: number | null
+  ): Promise<number> {
+    const projectsListQuery = this._makeProjectListQuery(isUserAdmin, systemUserId, filterFields);
 
-    const query = getKnex()
-      .from(projectsListQuery.as('temp'))
-      .count('* as project_count');
+    const query = getKnex().from(projectsListQuery.as('temp')).count('* as project_count');
 
     const response = await this.connection.knex(query, z.object({ project_count: z.string().transform(Number) }));
 
