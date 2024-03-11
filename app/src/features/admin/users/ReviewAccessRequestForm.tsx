@@ -93,7 +93,7 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
 
             <Grid item xs={12}>
               <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Reason for request
+                Reason for Request
               </Typography>
               <Typography component="dd" variant="body1">
                 {props.request.data.reason}
