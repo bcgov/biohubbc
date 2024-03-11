@@ -449,6 +449,7 @@ PUT.apiDoc = {
                     properties: {
                       survey_observation_id: {
                         type: 'integer',
+                        minimum: 1,
                         nullable: true
                       },
                       survey_id: {
@@ -463,13 +464,19 @@ PUT.apiDoc = {
                         nullable: true
                       },
                       survey_sample_site_id: {
-                        type: 'integer'
+                        type: 'integer',
+                        minimum: 1,
+                        nullable: true
                       },
                       survey_sample_method_id: {
-                        type: 'integer'
+                        type: 'integer',
+                        minimum: 1,
+                        nullable: true
                       },
                       survey_sample_period_id: {
-                        type: 'integer'
+                        type: 'integer',
+                        minimum: 1,
+                        nullable: true
                       },
                       count: {
                         type: 'integer'
