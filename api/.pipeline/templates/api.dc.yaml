@@ -118,9 +118,13 @@ parameters:
     description: S3 key optional prefix
     required: false
     value: 'sims'
-  # Log level
+  # Logging and Validation
   - name: LOG_LEVEL
-    value: 'info'
+    value: 'warn'
+  - name: API_RESPONSE_VALIDATION_ENABLED
+    value: 'false'
+  - name: DATABASE_RESPONSE_VALIDATION_ENABLED
+    value: 'false'
   # GCNotify
   - name: GCNOTIFY_API_SECRET
     description: Secret for gcnotify api key
@@ -267,12 +271,6 @@ objects:
                       name: ${DB_SERVICE_NAME}
                 - name: DB_PORT
                   value: '5432'
-                - name: PROJECT_SEEDER_USER_IDENTIFIER
-                  value: ${PROJECT_SEEDER_USER_IDENTIFIER}
-                - name: NUM_SEED_PROJECTS
-                  value: ${NUM_SEED_PROJECTS}
-                - name: NUM_SEED_SURVEYS_PER_PROJECT
-                  value: ${NUM_SEED_SURVEYS_PER_PROJECT}
                 # Keycloak
                 - name: KEYCLOAK_HOST
                   value: ${KEYCLOAK_HOST}
@@ -323,9 +321,13 @@ objects:
                     secretKeyRef:
                       key: object_store_bucket_name
                       name: ${OBJECT_STORE_SECRETS}
-                # Log level
+                # Logging and Validation
                 - name: LOG_LEVEL
                   value: ${LOG_LEVEL}
+                - name: API_RESPONSE_VALIDATION_ENABLED
+                  value: ${API_RESPONSE_VALIDATION_ENABLED}
+                - name: DATABASE_RESPONSE_VALIDATION_ENABLED
+                  value: ${DATABASE_RESPONSE_VALIDATION_ENABLED}
                 # GCNotify
                 - name: GCNOTIFY_SECRET_API_KEY
                   valueFrom:

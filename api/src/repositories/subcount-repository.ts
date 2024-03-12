@@ -1,4 +1,3 @@
-import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
@@ -177,33 +176,5 @@ export class SubCountRepository extends BaseRepository {
       .andWhere('survey_observation.survey_id', surveyId);
 
     return this.connection.knex(queryBuilder);
-  }
-
-  /**
-   * Returns all subcount event records for all observations in a given survey.
-   *
-   * @param {number} surveyId
-   * @return {*}  {Promise<SubCountEventRecord[]>}
-   * @memberof SubCountRepository
-   */
-  async getSubCountEventRecordsBySurveyId(surveyId: number): Promise<SubCountEventRecord[]> {
-    const sql = SQL`
-      SELECT 
-        subcount_event.*
-      FROM 
-        survey_observation, 
-        observation_subcount, 
-        subcount_event
-      WHERE 
-        survey_observation.survey_observation_id = observation_subcount.survey_observation_id 
-      AND 
-        observation_subcount.observation_subcount_id = subcount_event.observation_subcount_id
-      AND 
-        survey_observation.survey_id = ${surveyId};
-    `;
-
-    const response = await this.connection.sql(sql, SubCountEventRecord);
-
-    return response.rows;
   }
 }

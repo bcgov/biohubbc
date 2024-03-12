@@ -47,6 +47,8 @@ app.use(function (req: Request, res: Response, next: NextFunction) {
 });
 
 // Enable Critterbase API proxy
+// Note: This must be added to express directly as it is not part of the openapi spec, and therefore can't be handled
+// by the express-openapi framework.
 app.use(
   '/api/critterbase',
   authorizeAndAuthenticateMiddleware,
@@ -58,7 +60,7 @@ app.use(
 const openAPIFramework = initialize({
   apiDoc: {
     ...(rootAPIDoc as OpenAPIV3.Document), // base open api spec
-    'x-express-openapi-additional-middleware': [validateAllResponses],
+    'x-express-openapi-additional-middleware': getAdditionalMiddleware(),
     'x-express-openapi-validation-strict': true
   },
   app: app, // express app to initialize
@@ -137,6 +139,22 @@ try {
 } catch (error) {
   defaultLog.error({ label: 'start api', message: 'error', error });
   process.exit(1);
+}
+
+/**
+ * Get additional middleware to apply to all routes.
+ *
+ * @return {*}  {express.RequestHandler[]}
+ */
+function getAdditionalMiddleware(): express.RequestHandler[] {
+  const additionalMiddleware = [];
+
+  if (process.env.API_RESPONSE_VALIDATION_ENABLED === 'true') {
+    // Validate endpoint responses against openapi spec
+    additionalMiddleware.push(validateAllResponses);
+  }
+
+  return additionalMiddleware;
 }
 
 /**

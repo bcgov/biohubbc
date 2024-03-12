@@ -1,5 +1,6 @@
 import { ProjectRoleRouteGuard, SystemRoleRouteGuard } from 'components/security/RouteGuards';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { DialogContextProvider } from 'contexts/dialogContext';
 import { ObservationsContextProvider } from 'contexts/observationsContext';
 import { ProjectAuthStateContextProvider } from 'contexts/projectAuthStateContext';
 import { ProjectContextProvider } from 'contexts/projectContext';
@@ -27,14 +28,18 @@ const ProjectsRouter: React.FC = () => {
     <Switch>
       {/* Project List Routes */}
       <RouteWithTitle exact path="/admin/projects" title={getTitle('Projects')}>
-        <ProjectsListPage />
+        <DialogContextProvider>
+          <ProjectsListPage />
+        </DialogContextProvider>
       </RouteWithTitle>
 
       {/* Create Project Route */}
       <RouteWithTitle exact path="/admin/projects/create" title={getTitle('Create Project')}>
         <SystemRoleRouteGuard
           validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.PROJECT_CREATOR]}>
-          <CreateProjectPage />
+          <DialogContextProvider>
+            <CreateProjectPage />
+          </DialogContextProvider>
         </SystemRoleRouteGuard>
       </RouteWithTitle>
 
@@ -53,7 +58,9 @@ const ProjectsRouter: React.FC = () => {
                   PROJECT_PERMISSION.OBSERVER
                 ]}
                 validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                <ProjectPage />
+                <DialogContextProvider>
+                  <ProjectPage />
+                </DialogContextProvider>
               </ProjectRoleRouteGuard>
             </RouteWithTitle>
 
@@ -62,7 +69,9 @@ const ProjectsRouter: React.FC = () => {
               <ProjectRoleRouteGuard
                 validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
                 validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                <EditProjectPage />
+                <DialogContextProvider>
+                  <EditProjectPage />
+                </DialogContextProvider>
               </ProjectRoleRouteGuard>
             </RouteWithTitle>
 
@@ -71,7 +80,9 @@ const ProjectsRouter: React.FC = () => {
               <ProjectRoleRouteGuard
                 validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}
                 validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                <ProjectParticipantsPage />
+                <DialogContextProvider>
+                  <ProjectParticipantsPage />
+                </DialogContextProvider>
               </ProjectRoleRouteGuard>
             </RouteWithTitle>
 
@@ -99,7 +110,9 @@ const ProjectsRouter: React.FC = () => {
               <ProjectRoleRouteGuard
                 validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
                 validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                <CreateSurveyPage />
+                <DialogContextProvider>
+                  <CreateSurveyPage />
+                </DialogContextProvider>
               </ProjectRoleRouteGuard>
             </RouteWithTitle>
           </ProjectContextProvider>
