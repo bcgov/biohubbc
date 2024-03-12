@@ -368,13 +368,13 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
           getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS)
         );
 
-        let localStoragemeasurementDefinitions: CBMeasurementType[] = [];
+        let localStorageMeasurementDefinitions: CBMeasurementType[] = [];
         if (measurementDefinitionsStringified) {
-          localStoragemeasurementDefinitions = JSON.parse(measurementDefinitionsStringified) as CBMeasurementType[];
+          localStorageMeasurementDefinitions = JSON.parse(measurementDefinitionsStringified) as CBMeasurementType[];
         }
 
         // Remove any duplicate measurement definitions that already exist in the observations data
-        localStoragemeasurementDefinitions = localStoragemeasurementDefinitions.filter((item1) => {
+        localStorageMeasurementDefinitions = localStorageMeasurementDefinitions.filter((item1) => {
           return !existingMeasurementDefinitions.some(
             (item2) => item2.taxon_measurement_id === item1.taxon_measurement_id
           );
@@ -382,7 +382,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
         // Set measurement columns, including both existing and local storage measurement definitions
         return getMeasurementColumns(
-          [...existingMeasurementDefinitions, ...localStoragemeasurementDefinitions],
+          [...existingMeasurementDefinitions, ...localStorageMeasurementDefinitions],
           hasError
         );
       });
@@ -954,8 +954,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       // Return the subcount row to save
       return {
         observation_subcount_id: row.observation_subcount_id,
-        // TODO - 1 subcount per observation: Currently the observations datagrid has no subcount column, use the count
-        // column for now
+        // Map the observation `count` value to the `subcount` value, for now.
+        // Why?: Currently there is no UI support for setting a subcount value.
+        // See https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-534
         subcount: row.count,
         qualitative: measurementsToSave.qualitative,
         quantitative: measurementsToSave.quantitative
@@ -990,8 +991,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
           latitude: row.latitude,
           longitude: row.longitude
         },
-        // TODO - 1 subcount per observation: Currently the observations datagrid only supports 1 subcount per
-        // oberservation
+        // Set the subcount data for the observation row.
+        // Why? Currently the UI only supports 1 subcount record per observation record.
+        // See https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-534
         subcounts: [subcountsToSave]
       };
     },
@@ -1008,8 +1010,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     const modifiedRows: ObservationRecord[] = modifiedRowIds
       .map((rowId) => _muiDataGridApiRef.current.getRow(rowId))
       .filter(Boolean);
-
-    //stagedRows
 
     // Transform the modified rows into the format expected by the SIMS API
     const rowsToSave: IObservationTableRowToSave[] = modifiedRows.map((modifiedRow) => _getRowToSave(modifiedRow));
@@ -1029,18 +1029,22 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       // Return a new row for each subcount, which contains the parent observation standard row data
       return observationRow.subcounts.map((subcountRow) => {
         return {
-          // TODO - 1 subcount per observation: the id field will need to be set to observation_subcount_id
+          // Spread the standard observation row data into the row
           id: String(observationRow.survey_observation_id),
           ...observationRow,
+
+          // Spread the subcount row data into the row
+          // Why? Currently there is no UI support for a dedicated subcount row.
+          // See https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-534
           observation_subcount_id: subcountRow.observation_subcount_id,
-          // Reduce all qualitative measurements into an object and spread into the row
+          // Reduce the array of qualitative measurements into an object and spread into the row
           ...subcountRow.qualitative_measurements.reduce((acc, cur) => {
             return {
               ...acc,
               [cur.critterbase_taxon_measurement_id]: cur.critterbase_measurement_qualitative_option_id
             };
           }, {} as CBMeasurementValue),
-          // Reduce all quantitative measurements into an object and spread into the row
+          // Reduce the array of quantitative measurements into an object and spread into the row
           ...subcountRow.quantitative_measurements.reduce((acc, cur) => {
             return {
               ...acc,

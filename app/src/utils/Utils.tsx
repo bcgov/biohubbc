@@ -510,7 +510,3 @@ export const setMessageSnackbar = (message: string, context: IDialogContext) => 
  * @returns T
  */
 export const firstOrNull = <T,>(arr: T[]): T | null => (arr.length > 0 ? arr[0] : null);
-
-export const isMeasurementQualitative = (): boolean => {
-  return false;
-};
