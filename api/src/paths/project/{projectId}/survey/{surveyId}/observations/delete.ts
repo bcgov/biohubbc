@@ -89,117 +89,6 @@ POST.apiDoc = {
                   observationCount: {
                     type: 'integer',
                     minimum: 0
-                  },
-                  measurementColumns: {
-                    type: 'array',
-                    items: {
-                      anyOf: [
-                        {
-                          description: 'A quantitative (number) measurement, with possible min/max constraint.',
-                          type: 'object',
-                          required: [
-                            'itis_tsn',
-                            'taxon_measurement_id',
-                            'measurement_name',
-                            'measurement_desc',
-                            'min_value',
-                            'max_value',
-                            'unit'
-                          ],
-                          properties: {
-                            itis_tsn: {
-                              type: 'number',
-                              nullable: true
-                            },
-                            taxon_measurement_id: {
-                              type: 'string'
-                            },
-                            measurement_name: {
-                              type: 'string'
-                            },
-                            measurement_desc: {
-                              type: 'string',
-                              nullable: true
-                            },
-                            min_value: {
-                              type: 'number',
-                              nullable: true
-                            },
-                            max_value: {
-                              type: 'number',
-                              nullable: true
-                            },
-                            unit: {
-                              type: 'string',
-                              nullable: true
-                            }
-                          },
-                          additionalProperties: false
-                        },
-                        {
-                          description: 'A qualitative (string) measurement, with array of valid/accepted options',
-                          type: 'object',
-                          required: [
-                            'itis_tsn',
-                            'taxon_measurement_id',
-                            'measurement_name',
-                            'measurement_desc',
-                            'options'
-                          ],
-                          properties: {
-                            itis_tsn: {
-                              type: 'number',
-                              nullable: true
-                            },
-                            taxon_measurement_id: {
-                              type: 'string'
-                            },
-                            measurement_name: {
-                              type: 'string'
-                            },
-                            measurement_desc: {
-                              type: 'string',
-                              nullable: true
-                            },
-                            options: {
-                              description: 'Valid otions for the measurement.',
-                              type: 'array',
-                              items: {
-                                type: 'object',
-                                required: [
-                                  'taxon_measurement_id',
-                                  'qualitative_option_id',
-                                  'option_label',
-                                  'option_value',
-                                  'option_desc'
-                                ],
-                                properties: {
-                                  taxon_measurement_id: {
-                                    type: 'string'
-                                  },
-                                  qualitative_option_id: {
-                                    type: 'string'
-                                  },
-                                  option_label: {
-                                    type: 'string',
-                                    nullable: true
-                                  },
-                                  option_value: {
-                                    type: 'number'
-                                  },
-                                  option_desc: {
-                                    type: 'string',
-                                    nullable: true
-                                  }
-                                },
-                                additionalProperties: false
-                              }
-                            }
-                          },
-                          additionalProperties: false
-                        }
-                      ]
-                    }
                   }
                 },
                 additionalProperties: false
@@ -252,11 +141,11 @@ export function deleteSurveyObservations(): RequestHandler {
 
       await observationService.deleteObservationsByIds(surveyId, deleteObservationIds);
 
-      const supplementaryObservationData = await observationService.getSurveyObservationsSupplementaryData(surveyId);
+      const observationCount = await observationService.getSurveyObservationCount(surveyId);
 
       await connection.commit();
 
-      return res.status(200).json({ supplementaryObservationData });
+      return res.status(200).json({ supplementaryObservationData: { observationCount } });
     } catch (error) {
       defaultLog.error({ label: 'deleteSurveyObservations', message: 'error', error });
       await connection.rollback();

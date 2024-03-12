@@ -385,22 +385,51 @@ export const CreateSamplingSiteI18N = {
 export const ObservationsTableI18N = {
   removeAllDialogTitle: 'Discard changes?',
   removeAllDialogText: 'Are you sure you want to discard all your changes? This action cannot be undone.',
+
+  // Delete observation records (rows)
   removeSingleRecordDialogTitle: 'Delete record?',
   removeSingleRecordDialogText: 'Are you sure you want to delete this record? This action cannot be undone.',
   removeSingleRecordButtonText: 'Delete Record',
   removeMultipleRecordsDialogTitle: (count: number) => `Delete ${count} ${p(count, 'record')}?`,
   removeMultipleRecordsDialogText: 'Are you sure you want to delete these records? This action cannot be undone.',
   removeMultipleRecordsButtonText: 'Delete Records',
+
+  // Delete measurement columns
+  removeSingleMeasurementColumnDialogTitle: 'Delete measurement column?',
+  removeSingleMeasurementColumnDialogText:
+    'Are you sure you want to delete this measurement column? This action cannot be undone.',
+  removeSingleMeasurementColumnButtonText: 'Delete Columns',
+  removeMultipleMeasurementColumnsDialogTitle: (count: number) => `Delete ${count} ${p(count, 'column')}?`,
+  removeMultipleMeasurementColumnsDialogText:
+    'Are you sure you want to delete these columns? This action cannot be undone.',
+  removeMultipleMeasurementColumnsButtonText: 'Delete Columns',
+
+  // Save observation records success
+  saveRecordsSuccessSnackbarMessage: 'Observations updated successfully.',
+  // Save observation records error
   submitRecordsErrorDialogTitle: 'Error Updating Observation Records',
   submitRecordsErrorDialogText:
     'An error has occurred while attempting to update the observation records for this survey. Please try again. If the error persists, please contact your system administrator.',
+
+  // Delete observation records success
+  deleteSingleRecordSuccessSnackbarMessage: 'Deleted observation record successfully.',
+  // Delete observation records error
   removeRecordsErrorDialogTitle: 'Error Deleting Observation Records',
   removeRecordsErrorDialogText:
     'An error has occurred while attempting to delete observation records for this survey. Please try again. If the error persists, please contact your system administrator.',
-  saveRecordsSuccessSnackbarMessage: 'Observations updated successfully.',
-  deleteSingleRecordSuccessSnackbarMessage: 'Deleted observation record successfully.',
   deleteMultipleRecordSuccessSnackbarMessage: (count: number) =>
     `Deleted ${count} observation ${p(count, 'record')} successfully.`,
+
+  // Delete measurement columns success
+  deleteSingleMeasurementColumnSuccessSnackbarMessage: 'Deleted measurement column successfully.',
+  // Delete measurement columns error
+  removeMeasurementColumnsErrorDialogTitle: 'Error Deleting Measurement Columns',
+  removeMeasurementColumnsErrorDialogText:
+    'An error has occurred while attempting to delete measurement columns for this survey. Please try again. If the error persists, please contact your system administrator.',
+  deleteMultipleMeasurementColumnSuccessSnackbarMessage: (count: number) =>
+    `Deleted ${count} measurement ${p(count, 'column')} successfully.`,
+
+  // Import observation records
   importRecordsSuccessSnackbarMessage: 'Observations imported successfully.',
   importRecordsErrorDialogTitle: 'Error Importing Observation Records',
   importRecordsErrorDialogText: 'An error occurred while importing observation records.'

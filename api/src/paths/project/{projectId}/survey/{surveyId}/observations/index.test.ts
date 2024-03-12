@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
-import { ObservationRecordWithSamplingDataWithEventsWithAttributes } from '../../../../../../repositories/observation-repository';
+import { ObservationRecordWithSamplingAndSubcountData } from '../../../../../../repositories/observation-repository';
 import { ObservationService } from '../../../../../../services/observation-service';
 import { PlatformService } from '../../../../../../services/platform-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
@@ -48,7 +48,8 @@ describe('insertUpdateSurveyObservationsWithMeasurements', () => {
           survey_sample_method_id: 1,
           survey_sample_period_id: 1
         },
-        measurementColumns: []
+        qualitative_measurements: [],
+        quantitative_measurements: []
       },
       {
         standardColumns: {
@@ -63,7 +64,8 @@ describe('insertUpdateSurveyObservationsWithMeasurements', () => {
           survey_sample_method_id: 1,
           survey_sample_period_id: 1
         },
-        measurementColumns: []
+        qualitative_measurements: [],
+        quantitative_measurements: []
       }
     ];
 
@@ -115,7 +117,8 @@ describe('insertUpdateSurveyObservationsWithMeasurements', () => {
             survey_sample_method_id: 1,
             survey_sample_site_id: 1
           },
-          measurementColumns: []
+          qualitative_measurements: [],
+          quantitative_measurements: []
         }
       ]
     };
@@ -149,8 +152,12 @@ describe('getSurveyObservations', () => {
         surveyObservations: ([
           { survey_observation_id: 11 },
           { survey_observation_id: 12 }
-        ] as unknown) as ObservationRecordWithSamplingDataWithEventsWithAttributes[],
-        supplementaryObservationData: { observationCount: 59, measurementColumns: [] }
+        ] as unknown) as ObservationRecordWithSamplingAndSubcountData[],
+        supplementaryObservationData: {
+          observationCount: 59,
+          qualitative_measurements: [],
+          quantitative_measurements: []
+        }
       });
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -174,7 +181,11 @@ describe('getSurveyObservations', () => {
     expect(mockRes.statusValue).to.equal(200);
     expect(mockRes.jsonValue).to.eql({
       surveyObservations: [{ survey_observation_id: 11 }, { survey_observation_id: 12 }],
-      supplementaryObservationData: { observationCount: 59, measurementColumns: [] },
+      supplementaryObservationData: {
+        observationCount: 59,
+        qualitative_measurements: [],
+        quantitative_measurements: []
+      },
       pagination: {
         total: 59,
         current_page: 4,
@@ -197,8 +208,12 @@ describe('getSurveyObservations', () => {
         surveyObservations: ([
           { survey_observation_id: 16 },
           { survey_observation_id: 17 }
-        ] as unknown) as ObservationRecordWithSamplingDataWithEventsWithAttributes[],
-        supplementaryObservationData: { observationCount: 50, measurementColumns: [] }
+        ] as unknown) as ObservationRecordWithSamplingAndSubcountData[],
+        supplementaryObservationData: {
+          observationCount: 50,
+          qualitative_measurements: [],
+          quantitative_measurements: []
+        }
       });
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -220,7 +235,11 @@ describe('getSurveyObservations', () => {
     expect(mockRes.statusValue).to.equal(200);
     expect(mockRes.jsonValue).to.eql({
       surveyObservations: [{ survey_observation_id: 16 }, { survey_observation_id: 17 }],
-      supplementaryObservationData: { observationCount: 50, measurementColumns: [] },
+      supplementaryObservationData: {
+        observationCount: 50,
+        qualitative_measurements: [],
+        quantitative_measurements: []
+      },
       pagination: {
         total: 50,
         current_page: 2,
@@ -243,8 +262,12 @@ describe('getSurveyObservations', () => {
         surveyObservations: ([
           { survey_observation_id: 16 },
           { survey_observation_id: 17 }
-        ] as unknown) as ObservationRecordWithSamplingDataWithEventsWithAttributes[],
-        supplementaryObservationData: { observationCount: 2, measurementColumns: [] }
+        ] as unknown) as ObservationRecordWithSamplingAndSubcountData[],
+        supplementaryObservationData: {
+          observationCount: 2,
+          qualitative_measurements: [],
+          quantitative_measurements: []
+        }
       });
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -261,7 +284,11 @@ describe('getSurveyObservations', () => {
     expect(mockRes.statusValue).to.equal(200);
     expect(mockRes.jsonValue).to.eql({
       surveyObservations: [{ survey_observation_id: 16 }, { survey_observation_id: 17 }],
-      supplementaryObservationData: { observationCount: 2, measurementColumns: [] },
+      supplementaryObservationData: {
+        observationCount: 2,
+        qualitative_measurements: [],
+        quantitative_measurements: []
+      },
       pagination: {
         total: 2,
         current_page: 1,
