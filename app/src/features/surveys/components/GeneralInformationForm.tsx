@@ -136,6 +136,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
             name={'survey_details.progress_id'}
             label={'Progress'}
             options={props.progress}
+            required={true}
           />
         </Grid>
         <Grid item xs={12}>
