@@ -1,5 +1,5 @@
 import { Chip } from '@mui/material';
-import { blue, orange, purple, teal } from '@mui/material/colors';
+import { blue, deepOrange, purple, teal } from '@mui/material/colors';
 import { CodesContext } from 'contexts/codesContext';
 import { useContext, useEffect } from 'react';
 import { getCodesName } from 'utils/Utils';
@@ -15,7 +15,7 @@ const SamplingSiteMethodResponseMetricChip = (props: ISamplingSiteMethodResponse
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
-  const chipColours = [purple[400], orange[600], blue[600], teal[400]];
+  const chipColours = [purple[400], deepOrange[600], blue[600], teal[400]];
 
   console.log(props.method_response_metric_id);
 

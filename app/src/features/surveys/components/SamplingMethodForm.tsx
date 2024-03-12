@@ -149,7 +149,6 @@ const SamplingMethodForm = () => {
                     title={
                       <>
                         {getCodesName(codesContext.codesDataLoader.data, 'sample_methods', item.method_lookup_id || 0)}
-
                         {item.method_response_metric_id && (
                           <SamplingSiteMethodResponseMetricChip
                             method_response_metric_id={item.method_response_metric_id}
@@ -189,7 +188,7 @@ const SamplingMethodForm = () => {
                         </Typography>
                       )}
                       <Box>
-                        <Typography variant="body1" fontWeight={700}>
+                        <Typography variant="body2" fontWeight={700}>
                           Time Periods
                         </Typography>
                         <Divider component="div" sx={{ mt: 1 }}></Divider>
