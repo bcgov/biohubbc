@@ -1028,14 +1028,17 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     const rowsToDisplay: IObservationTableRow[] = observationsData.surveyObservations.flatMap((observationRow) => {
       // Return a new row for each subcount, which contains the parent observation standard row data
       return observationRow.subcounts.map((subcountRow) => {
+        // This code flattens out the array of subcount rows into a single array of observation rows, where each row
+        // contains a copy of the parent observation standard row data, and the unique subcount row data.
+        // Note: This code currently assumes that each observation record has exactly 1 subcount record.
+        // Why? Currently there is no UI support for handling multiple subcount records per observation record.
+        // See https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-534
         return {
           // Spread the standard observation row data into the row
           id: String(observationRow.survey_observation_id),
           ...observationRow,
 
           // Spread the subcount row data into the row
-          // Why? Currently there is no UI support for a dedicated subcount row.
-          // See https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-534
           observation_subcount_id: subcountRow.observation_subcount_id,
           // Reduce the array of qualitative measurements into an object and spread into the row
           ...subcountRow.qualitative_measurements.reduce((acc, cur) => {
