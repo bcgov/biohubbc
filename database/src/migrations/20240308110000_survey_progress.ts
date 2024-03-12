@@ -63,19 +63,22 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
     -- Add initial values to survey progress table
     ----------------------------------------------------------------------------------------
-    INSERT INTO survey_progress (name, description)
+    INSERT INTO survey_progress (name, description, record_effective_date)
     VALUES
     (
       'Planning',
-      'The Survey is being planned and details may change.'
+      'The Survey is being planned and details may change.',
+      'NOW()'
     ),
     (
       'In progress',
-      'The Survey is underway and some data has not yet been collected or uploaded.'
+      'The Survey is underway and some data has not yet been collected or uploaded.',
+      'NOW()'
     ),
     (
       'Completed',
-      'The Survey is complete and all data and information has been uploaded.'
+      'The Survey is complete and all data and information has been uploaded.',
+      'NOW()'
     );
 
     ----------------------------------------------------------------------------------------
