@@ -104,9 +104,8 @@ const LandingActions = () => {
               Log In
             </Button>
           </Box>
+          <Typography>You need a valid government-issued IDIR or BCeID account to log in.</Typography>
           <Typography>
-            You need a valid government-issued IDIR or BCeID account to log in.
-            <br />
             Don't have an account? &zwnj;
             <a
               className={classes.heroLink}
