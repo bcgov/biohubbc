@@ -267,7 +267,6 @@ GET.apiDoc = {
               },
               supplementaryObservationData: {
                 type: 'object',
-                additionalProperties: false,
                 required: ['observationCount', 'qualitative_measurements', 'quantitative_measurements'],
                 properties: {
                   observationCount: {
@@ -431,7 +430,6 @@ PUT.apiDoc = {
               items: {
                 description: 'A single survey observation record.',
                 type: 'object',
-                additionalProperties: false,
                 required: ['standardColumns', 'subcounts'],
                 properties: {
                   standardColumns: {
@@ -510,7 +508,6 @@ PUT.apiDoc = {
                     type: 'array',
                     items: {
                       type: 'object',
-                      additionalProperties: false,
                       properties: {
                         observation_subcount_id: {
                           type: 'number',
