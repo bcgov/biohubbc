@@ -1,9 +1,10 @@
 import { mdiCalendarRange } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Chip, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
-import { grey } from '@mui/material/colors';
+import { blue, blueGrey, grey, purple, teal } from '@mui/material/colors';
 import { Box } from '@mui/system';
 import { CodesContext } from 'contexts/codesContext';
+import dayjs from 'dayjs';
 import { IGetSampleLocationDetails } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect } from 'react';
 import { getCodesName } from 'utils/Utils';
@@ -19,12 +20,17 @@ const SamplingSiteMethodsPeriodsList = (props: ISamplingSiteMethodsPeriodsListPr
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
+  const chipColours = [purple[300], blueGrey[300], blue[300], teal[300]];
+
+  const formatDate = (dt: Date, time: boolean) => dayjs(dt).format(time ? 'MMM D, YYYY h:mm A' : 'MMM D, YYYY');
+
   return (
     <List
       disablePadding
       sx={{
         '& .MuiListItemText-primary': {
-          typography: 'body2'
+          typography: 'body2',
+          fontWeight: 700
         }
       }}>
       {props.sampleSite.sample_methods?.map((sampleMethod) => {
@@ -37,7 +43,8 @@ const SamplingSiteMethodsPeriodsList = (props: ISamplingSiteMethodsPeriodsListPr
               p: 0,
               '& + li': {
                 mt: 1.5
-              }
+              },
+              justifyContent: 'flex-start'
             }}>
             <Box
               style={{
@@ -67,12 +74,13 @@ const SamplingSiteMethodsPeriodsList = (props: ISamplingSiteMethodsPeriodsListPr
                   sampleMethod.method_response_metric_id
                 )}
                 sx={{
+                  opacity: 0.75,
                   fontSize: '0.75rem',
                   mx: 2,
                   minWidth: 0,
                   borderRadius: '5px',
                   color: '#fff',
-                  backgroundColor: '#97a7db',
+                  backgroundColor: chipColours[sampleMethod.method_response_metric_id - 1],
                   fontWeight: 700
                 }}
               />
@@ -90,14 +98,18 @@ const SamplingSiteMethodsPeriodsList = (props: ISamplingSiteMethodsPeriodsListPr
                     }}
                     title="Sampling Period"
                     key={`${samplePeriod.survey_sample_method_id}-${samplePeriod.survey_sample_period_id}`}>
-                    <ListItemIcon sx={{ minWidth: '32px' }} color="inherit">
-                      <Icon path={mdiCalendarRange} size={0.75}></Icon>
+                    <ListItemIcon sx={{ minWidth: '25px' }} color="inherit">
+                      <Icon path={mdiCalendarRange} size={0.7}></Icon>
                     </ListItemIcon>
                     <ListItemText>
                       <Typography variant="body2" component="div" color="inherit">
-                        {`${samplePeriod.start_date} ${samplePeriod.start_time ?? ''} - ${samplePeriod.end_date} ${
-                          samplePeriod.end_time ?? ''
-                        }`}
+                        {`${formatDate(
+                          [samplePeriod.start_date, samplePeriod.start_time].join('T') as unknown as Date,
+                          samplePeriod.start_time != null
+                        )} - ${formatDate(
+                          [samplePeriod.end_date, samplePeriod.end_time].join('T') as unknown as Date,
+                          samplePeriod.start_time != null
+                        )}`}
                       </Typography>
                     </ListItemText>
                   </ListItem>

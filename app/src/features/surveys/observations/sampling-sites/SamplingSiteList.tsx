@@ -373,7 +373,6 @@ const SamplingSiteList = () => {
                             display: 'none'
                           }
                         }}>
-                        <SamplingSiteMethodsPeriodsList sampleSite={sampleSite} />
                         <Box display="flex" alignItems="center" overflow="hidden">
                           <AccordionSummary
                             expandIcon={<Icon path={mdiChevronDown} size={1} />}
@@ -439,7 +438,9 @@ const SamplingSiteList = () => {
                           sx={{
                             pt: 0,
                             px: 2
-                          }}></AccordionDetails>
+                          }}>
+                          <SamplingSiteMethodsPeriodsList sampleSite={sampleSite} />
+                        </AccordionDetails>
                       </Accordion>
                     );
                   })}
