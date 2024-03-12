@@ -6,9 +6,11 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useQuery } from 'hooks/useQuery';
 import React, { useContext, useEffect, useState } from 'react';
+import { ANIMAL_FORM_MODE } from './animal';
 import { IAnimalSections } from './animal-sections';
 import AnimalList from './AnimalList';
 import { AnimalSection } from './AnimalSection';
+import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 
 export const SurveyAnimalsPage = () => {
   const bhApi = useBiohubApi();
@@ -19,13 +21,13 @@ export const SurveyAnimalsPage = () => {
   const { surveyId, projectId } = useContext(SurveyContext);
 
   const [selectedSection, setSelectedSection] = useState<IAnimalSections>(SurveyAnimalsI18N.animalGeneralTitle);
-  //const [openAddDialog, setOpenAddDialog] = useState(false);
+  const [openAddCritter, setOpenAddCritter] = useState(false);
   //const [detailedCritter, setDetailedCritter] = useState<IDetailedCritterWithInternalId | undefined>();
 
   const {
     data: surveyCritters,
     load: loadCritters,
-    //refresh: refreshSurveyCritters,
+    refresh: refreshSurveyCritters,
     isLoading: crittersLoading
   } = useDataLoader(() => bhApi.survey.getSurveyCritters(projectId, surveyId));
 
@@ -127,6 +129,7 @@ export const SurveyAnimalsPage = () => {
   //
   //   refreshDeployments();
   // };
+  //
 
   // const handleCritterSave = async (currentFormValues: IAnimal, formMode: ANIMAL_FORM_MODE) => {
   //   const postCritterPayload = async () => {
@@ -276,11 +279,21 @@ export const SurveyAnimalsPage = () => {
 
   return (
     <>
+      <GeneralAnimalForm
+        formMode={ANIMAL_FORM_MODE.ADD}
+        open={openAddCritter}
+        surveyId={surveyId}
+        projectId={projectId}
+        handleClose={() => {
+          setOpenAddCritter(false);
+          refreshSurveyCritters();
+        }}
+      />
       <SurveySectionFullPageLayout
         pageTitle="Manage Animals"
         sideBarComponent={
           <AnimalList
-            onAddButton={() => console.log('open dialog here')}
+            onAddButton={() => setOpenAddCritter(true)}
             refreshCritter={refreshCritter}
             //onSelectCritter={setDetailedCritter}
             surveyCritters={surveyCritters}

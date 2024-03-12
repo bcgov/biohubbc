@@ -5,6 +5,7 @@ import CustomTextField from 'components/fields/CustomTextField';
 import FormikDevDebugger from 'components/formik/FormikDevDebugger';
 import { useDialogContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import { useState } from 'react';
 import {
   AnimalFormProps,
   ANIMAL_FORM_MODE,
@@ -18,7 +19,10 @@ export const MarkingAnimalForm = (props: AnimalFormProps<ICritterMarking>) => {
   const cbApi = useCritterbaseApi();
   const dialog = useDialogContext();
 
+  const [loading, setLoading] = useState(false);
+
   const handleSave = async (values: ICreateMarking) => {
+    setLoading(true);
     try {
       if (props.formMode === ANIMAL_FORM_MODE.ADD) {
         await cbApi.marking.createMarking(values);
@@ -32,6 +36,7 @@ export const MarkingAnimalForm = (props: AnimalFormProps<ICritterMarking>) => {
       dialog.setSnackbar({ open: true, snackbarMessage: `Critter marking request failed.` });
     } finally {
       props.handleClose();
+      setLoading(false);
     }
   };
 
@@ -41,6 +46,7 @@ export const MarkingAnimalForm = (props: AnimalFormProps<ICritterMarking>) => {
       open={props.open}
       onCancel={props.handleClose}
       onSave={handleSave}
+      dialogLoading={loading}
       component={{
         initialValues: {
           marking_id: props?.formObject?.marking_id,

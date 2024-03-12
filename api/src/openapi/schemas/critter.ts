@@ -1,6 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-const critterSchema: OpenAPIV3.SchemaObject = {
+export const critterSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   properties: {
     critter_id: {
@@ -8,10 +8,12 @@ const critterSchema: OpenAPIV3.SchemaObject = {
       format: 'uuid'
     },
     animal_id: {
-      type: 'string'
+      type: 'string',
+      nullable: true
     },
     wlh_id: {
-      type: 'string'
+      type: 'string',
+      nullable: true
     },
     itis_tsn: {
       type: 'number'
@@ -21,6 +23,15 @@ const critterSchema: OpenAPIV3.SchemaObject = {
     },
     sex: {
       type: 'string'
+    },
+    responsible_region_nr_id: {
+      type: 'string',
+      format: 'uuid',
+      nullable: true
+    },
+    critter_comment: {
+      type: 'string',
+      nullable: true
     }
   },
   additionalProperties: false
@@ -189,6 +200,30 @@ const quantitativeMeasurmentSchema: OpenAPIV3.SchemaObject = {
     },
     measured_timestamp: { type: 'string' },
     measurement_comment: { type: 'string' }
+  },
+  additionalProperties: false
+};
+
+export const critterCreateRequestObject: OpenAPIV3.SchemaObject = {
+  title: 'Create critter request object',
+  type: 'object',
+  properties: {
+    critter_id: {
+      type: 'string',
+      format: 'uuid'
+    },
+    animal_id: {
+      type: 'string'
+    },
+    wlh_id: {
+      type: 'string'
+    },
+    itis_tsn: {
+      type: 'number'
+    },
+    sex: {
+      type: 'string'
+    }
   },
   additionalProperties: false
 };

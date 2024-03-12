@@ -80,7 +80,6 @@ const AnimalList = (props: IAnimalListProps) => {
   const handleCritterSelect = async (critter: ISimpleCritterWithInternalId) => {
     if (critter.survey_critter_id === Number(survey_critter_id)) {
       history.replace(history.location.pathname);
-      //TODO: handle reset state
       //onSelectCritter();
     } else {
       refreshCritter(critter.critter_id);

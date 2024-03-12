@@ -6,10 +6,33 @@ import CustomTextField from 'components/fields/CustomTextField';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { Field, FieldProps } from 'formik';
-import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
-import React from 'react';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useDialogContext } from 'hooks/useContext';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import { ICritterDetailedResponse, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
+import React, { useState } from 'react';
 import { v4 } from 'uuid';
-import { AnimalFormProps, AnimalGeneralSchema, ANIMAL_FORM_MODE, isRequiredInSchema } from '../animal';
+import { AnimalSex, ANIMAL_FORM_MODE, CreateCritterSchema, ICreateCritter, isRequiredInSchema } from '../animal';
+
+export type GeneralAnimalFormProps<T> =
+  | {
+      formObject?: never;
+      formMode: ANIMAL_FORM_MODE.ADD;
+      open: boolean;
+      handleClose: () => void;
+      critter?: never;
+      projectId: number;
+      surveyId: number;
+    }
+  | {
+      formObject: T;
+      formMode: ANIMAL_FORM_MODE.EDIT;
+      open: boolean;
+      handleClose: () => void;
+      critter: ICritterDetailedResponse | ICritterSimpleResponse;
+      projectId?: never;
+      surveyId?: never;
+    };
 
 /**
  * Renders the General section for the Individual Animal form
@@ -17,19 +40,31 @@ import { AnimalFormProps, AnimalGeneralSchema, ANIMAL_FORM_MODE, isRequiredInSch
  * @return {*}
  */
 
-const GeneralAnimalForm = (props: AnimalFormProps<ICritterSimpleResponse>) => {
-  // const cbApi = useCritterbaseApi();
-  // const dialog = useDialogContext();
+const GeneralAnimalForm = (props: GeneralAnimalFormProps<ICreateCritter>) => {
+  const cbApi = useCritterbaseApi();
+  const bhApi = useBiohubApi();
+  const dialog = useDialogContext();
 
-  //const { setFieldValue } = useFormikContext();
+  const [loading, setLoading] = useState(false);
 
-  //const { errors, touched, setFieldValue } = useFormikContext();
-
-  //const { animalKeyName } = ANIMAL_SECTIONS_FORM_MAP[SurveyAnimalsI18N.animalGeneralTitle];
-  //
-
-  const handleSave = () => {
-    console.log('saving');
+  const handleSave = async (values: ICreateCritter) => {
+    setLoading(true);
+    try {
+      if (props.formMode === ANIMAL_FORM_MODE.ADD) {
+        await bhApi.survey.createCritterAndAddToSurvey(props.projectId, props.surveyId, values);
+        //await cbApi.critters.createCritter(values);
+        dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created critter.` });
+      }
+      if (props.formMode === ANIMAL_FORM_MODE.EDIT) {
+        await cbApi.critters.updateCritter(values);
+        dialog.setSnackbar({ open: true, snackbarMessage: `Successfully edited critter.` });
+      }
+    } catch (err) {
+      dialog.setSnackbar({ open: true, snackbarMessage: `Critter request failed.` });
+    } finally {
+      props.handleClose();
+      setLoading(false);
+    }
   };
 
   return (
@@ -38,6 +73,7 @@ const GeneralAnimalForm = (props: AnimalFormProps<ICritterSimpleResponse>) => {
       open={props.open}
       onCancel={props.handleClose}
       onSave={handleSave}
+      dialogLoading={loading}
       debug
       component={{
         initialValues: {
@@ -45,13 +81,13 @@ const GeneralAnimalForm = (props: AnimalFormProps<ICritterSimpleResponse>) => {
            * Omitting itis_scientific_name.
            * Critterbase has to query for scientific name regardless if included.
            */
-          critter_id: props.critter.critter_id ?? v4(),
-          sex: props.critter.animal_id ?? '',
-          itis_tsn: props.critter.itis_tsn,
-          animal_id: props.critter.animal_id,
-          wlh_id: props.critter.wlh_id
+          critter_id: props.critter?.critter_id ?? v4(),
+          sex: props.critter?.sex as AnimalSex,
+          itis_tsn: (props.critter?.itis_tsn ?? '') as unknown as number,
+          animal_id: props.critter?.animal_id ?? '',
+          wlh_id: props.critter?.wlh_id ? props.critter.wlh_id : undefined
         },
-        validationSchema: AnimalGeneralSchema,
+        validationSchema: CreateCritterSchema,
         element: (
           <Grid container spacing={3}>
             <Grid item xs={12}>
@@ -61,13 +97,17 @@ const GeneralAnimalForm = (props: AnimalFormProps<ICritterSimpleResponse>) => {
                     <SpeciesAutocompleteField
                       formikFieldName={'itis_tsn'}
                       label="Taxon"
-                      required={isRequiredInSchema(AnimalGeneralSchema, 'itis_tsn')}
+                      required={isRequiredInSchema(CreateCritterSchema, 'itis_tsn')}
                       error={meta.touched && meta.error ? meta.error : undefined}
-                      defaultSpecies={{
-                        tsn: props.critter.itis_tsn,
-                        scientificName: props.critter.itis_scientific_name,
-                        commonName: null
-                      }}
+                      defaultSpecies={
+                        props.critter
+                          ? {
+                              tsn: props.critter.itis_tsn,
+                              scientificName: props.critter.itis_scientific_name,
+                              commonName: null
+                            }
+                          : undefined
+                      }
                       handleSpecies={(taxon) => {
                         form.setFieldValue('itis_tsn', taxon?.tsn ?? '');
                       }}
@@ -79,7 +119,7 @@ const GeneralAnimalForm = (props: AnimalFormProps<ICritterSimpleResponse>) => {
             <Grid item xs={12}>
               <CbSelectField
                 name={'sex'}
-                controlProps={{ required: isRequiredInSchema(AnimalGeneralSchema, 'sex') }}
+                controlProps={{ required: isRequiredInSchema(CreateCritterSchema, 'sex') }}
                 label="Sex"
                 id={'sex'}
                 route={'lookups/enum/sex'}
@@ -88,7 +128,7 @@ const GeneralAnimalForm = (props: AnimalFormProps<ICritterSimpleResponse>) => {
             <Grid item xs={12}>
               <HelpButtonTooltip content={SurveyAnimalsI18N.taxonLabelHelp}>
                 <CustomTextField
-                  other={{ required: isRequiredInSchema(AnimalGeneralSchema, 'animal_id') }}
+                  other={{ required: isRequiredInSchema(CreateCritterSchema, 'animal_id') }}
                   label="Alias"
                   name={'animal_id'}
                 />
@@ -97,7 +137,7 @@ const GeneralAnimalForm = (props: AnimalFormProps<ICritterSimpleResponse>) => {
             <Grid item xs={12}>
               <HelpButtonTooltip content={SurveyAnimalsI18N.wlhIdHelp}>
                 <CustomTextField
-                  other={{ required: isRequiredInSchema(AnimalGeneralSchema, 'wlh_id') }}
+                  other={{ required: isRequiredInSchema(CreateCritterSchema, 'wlh_id') }}
                   label="Wildlife Health ID (Optional)"
                   name={'wlh_id'}
                 />

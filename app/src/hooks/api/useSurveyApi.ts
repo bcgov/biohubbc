@@ -1,13 +1,14 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
-import { Critter } from 'features/surveys/view/survey-animals/animal';
+import { Critter, ICreateCritter } from 'features/surveys/view/survey-animals/animal';
 import {
   IAnimalDeployment,
   IAnimalTelemetryDevice,
   IDeploymentTimespan,
   ITelemetryPointCollection
 } from 'features/surveys/view/survey-animals/telemetry-device/device';
+import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import {
   IGetAttachmentDetails,
   IGetReportDetails,
@@ -478,22 +479,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  type CritterBulkCreationResponse = {
-    create: {
-      critters: number;
-      collections: number;
-      markings: number;
-      locations: number;
-      captures: number;
-      mortalities: number;
-      qualitative_measurements: number;
-      quantitative_measurements: number;
-      families: number;
-      family_children: number;
-      family_parents: number;
-    };
-  };
-
   /**
    * Modifies the Critter into bulk payload body for Critterbase.
    *
@@ -535,10 +520,9 @@ const useSurveyApi = (axios: AxiosInstance) => {
   const createCritterAndAddToSurvey = async (
     projectId: number,
     surveyId: number,
-    critter: Critter
-  ): Promise<CritterBulkCreationResponse> => {
-    const payload = critterToBulkPayloadTransform(critter);
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters`, payload);
+    critter: ICreateCritter
+  ): Promise<ICritterSimpleResponse> => {
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters`, critter);
     return data;
   };
 

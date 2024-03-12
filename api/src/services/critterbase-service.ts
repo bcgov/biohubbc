@@ -21,6 +21,8 @@ export interface ICritter {
   wlh_id: string;
   animal_id: string;
   sex: string;
+  itis_tsn: number;
+  itis_scientific_name: number;
   critter_comment: string;
 }
 
@@ -379,8 +381,8 @@ export class CritterbaseService {
     return this._makeGetRequest(`${CRITTER_ENDPOINT}/${critter_id}`, [{ key: 'format', value: 'detail' }]);
   }
 
-  async createCritter(data: IBulkCreate) {
-    const response = await this.axiosInstance.post(BULK_ENDPOINT, data);
+  async createCritter(data: ICritter) {
+    const response = await this.axiosInstance.post(`${CRITTER_ENDPOINT}/create`, data);
     return response.data;
   }
 

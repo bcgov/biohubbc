@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { bulkCreateResponse, critterBulkRequestObject } from '../../../../../../openapi/schemas/critter';
+import { critterCreateRequestObject, critterSchema } from '../../../../../../openapi/schemas/critter';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { CritterbaseService, ICritterbaseUser } from '../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
@@ -130,19 +130,19 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Critterbase bulk creation request object',
+    description: 'Critterbase create critter request object',
     content: {
       'application/json': {
-        schema: critterBulkRequestObject
+        schema: critterCreateRequestObject
       }
     }
   },
   responses: {
     201: {
-      description: 'Responds with counts of objects created in critterbase.',
+      description: 'Responds with created critter.',
       content: {
         'application/json': {
-          schema: bulkCreateResponse
+          schema: critterSchema
         }
       }
     },
@@ -215,7 +215,7 @@ export function addCritterToSurvey(): RequestHandler {
       username: req['system_user']?.user_identifier
     };
     const surveyId = Number(req.params.surveyId);
-    const critterId = req.body.critters[0].critter_id;
+    const critterId = req.body.critter_id;
     const connection = getDBConnection(req['keycloak_token']);
     const surveyService = new SurveyCritterService(connection);
     const cb = new CritterbaseService(user);
@@ -223,7 +223,6 @@ export function addCritterToSurvey(): RequestHandler {
       await connection.open();
       await surveyService.addCritterToSurvey(surveyId, critterId);
       const result = await cb.createCritter(req.body);
-      console.log(result);
       await connection.commit();
       return res.status(201).json(result);
     } catch (error) {

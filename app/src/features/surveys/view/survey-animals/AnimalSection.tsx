@@ -134,7 +134,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
   if (props.section === 'General') {
     return (
       <AnimalSectionWrapper
-        form={<GeneralAnimalForm {...SECTION_FORM_PROPS} />}
+        form={<GeneralAnimalForm {...SECTION_FORM_PROPS} formMode={ANIMAL_FORM_MODE.EDIT} />}
         infoText={SurveyAnimalsI18N.animalGeneralHelp}
         section={props.section}
         critter={props.critter}>

@@ -140,6 +140,17 @@ export const AnimalMarkingSchema = yup.object({
   body_location: yup.string().optional()
 });
 
+//TODO: new schemas
+
+export const CreateCritterSchema = yup.object({
+  critter_id: yup.string().optional(),
+  itis_tsn: yup.number().required(req),
+  animal_id: yup.string().required(req),
+  wlh_id: yup.string().optional(),
+  sex: yup.mixed<AnimalSex>().oneOf(Object.values(AnimalSex)).required(req)
+});
+export type ICreateCritter = InferType<typeof CreateCritterSchema>;
+
 export const CreateCritterMarkingSchema = yup.object({
   marking_id: yup.string().optional(),
   critter_id: yup.string(),
@@ -149,6 +160,7 @@ export const CreateCritterMarkingSchema = yup.object({
   secondary_colour_id: yup.string().optional().nullable(),
   marking_comment: yup.string().optional().nullable()
 });
+export type ICreateCritterMarking = InferType<typeof CreateCritterMarkingSchema>;
 
 export const AnimalCollectionUnitSchema = yup.object({}).shape({
   collection_unit_id: yup.string().required('Name is required'),

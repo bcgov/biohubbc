@@ -30,9 +30,20 @@ const defaultLog = getLogger('middleware/critterbase-proxy');
 // ];
 
 const proxyFilter = (pathname: string, req: Request) => {
-  // Currently supported Critterbase POST requests. Add more when needed.
+  // Reject requests not coming from the SIMS APP.
+  if (req.headers.origin !== process.env.APP_HOST) {
+    return false;
+  }
+  //TODO: update this to be explicit endpoints.
+  if (req.method === 'DELETE') {
+    return true;
+  }
+  // Currently support all POST requests.
   if (req.method === 'POST') {
-    return Boolean(pathname.match('/api/critterbase/signup'));
+    return true;
+  }
+  if (req.method === 'PATCH') {
+    return true;
   }
   // Currently support all Critterbase GET requests.
   if (req.method === 'GET') {
@@ -109,14 +120,13 @@ export const getCritterbaseProxyMiddleware = () =>
     logLevel: 'warn',
     changeOrigin: true,
     pathRewrite: async (path) => {
-      console.log(path);
-      defaultLog.debug({ label: 'pathRewrite', message: 'path', req: path });
+      defaultLog.debug({ label: 'onCritterbaseProxyPathRewrite', message: 'path', req: path });
 
       const matchRoutePrefix = /\/api\/critterbase(\/?)(.*)/;
       return path.replace(matchRoutePrefix, '/$2');
     },
     onProxyReq: (client, req) => {
-      defaultLog.debug({ label: 'onProxyReq', message: 'path', req: req.path });
+      defaultLog.debug({ label: 'onCritterbaseProxyRequest', message: 'path', req: req.path });
 
       // Set user header as required by Critterbase
       client.setHeader(
