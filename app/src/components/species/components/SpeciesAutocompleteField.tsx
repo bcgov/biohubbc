@@ -7,14 +7,40 @@ import grey from '@mui/material/colors/grey';
 import TextField from '@mui/material/TextField';
 import SpeciesCard from 'components/species/components/SpeciesCard';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import useIsMounted from 'hooks/useIsMounted';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { debounce } from 'lodash-es';
-import { useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, useMemo, useState } from 'react';
 
 export interface ISpeciesAutocompleteFieldProps {
+  /**
+   * Formik field name.
+   *
+   * @type {string}
+   * @memberof ISpeciesAutocompleteFieldProps
+   */
   formikFieldName: string;
+  /**
+   * The field label.
+   *
+   * @type {string}
+   * @memberof ISpeciesAutocompleteFieldProps
+   */
   label: string;
+  /**
+   * Callback to fire on species option selection.
+   *
+   * @type {(species: ITaxonomy) => void}
+   * @memberof ISpeciesAutocompleteFieldProps
+   */
   handleAddSpecies: (species: ITaxonomy) => void;
+  /**
+   * Default species to render for input and options.
+   *
+   * @type {ITaxonomy}
+   * @memberof ISpeciesAutocompleteFieldProps
+   */
+  defaultSpecies?: ITaxonomy;
   /**
    * The error message to display.
    *
@@ -24,8 +50,13 @@ export interface ISpeciesAutocompleteFieldProps {
    * @memberof ISpeciesAutocompleteFieldProps
    */
   error?: string;
+  /**
+   * If field is required.
+   *
+   * @type {boolean}
+   * @memberof ISpeciesAutocompleteFieldProps
+   */
   required?: boolean;
-  value?: string;
   /**
    * Clear the input value after a selection is made
    * Defaults to false
@@ -37,15 +68,17 @@ export interface ISpeciesAutocompleteFieldProps {
 }
 
 const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
-  const { formikFieldName, label, required, error, handleAddSpecies } = props;
-  const biohubApi = useBiohubApi();
+  const { formikFieldName, label, required, error, handleAddSpecies, defaultSpecies } = props;
 
-  const [inputValue, setInputValue] = useState('');
-  const [options, setOptions] = useState<ITaxonomy[]>([]);
+  const biohubApi = useBiohubApi();
+  const isMounted = useIsMounted();
+
+  const [inputValue, setInputValue] = useState(defaultSpecies?.scientificName ?? '');
+  const [options, setOptions] = useState<ITaxonomy[]>(defaultSpecies ? [defaultSpecies] : []);
   // Is control loading (search in progress)
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSearch = useMemo(
+  const search = useMemo(
     () =>
       debounce(async (inputValue: string, callback: (searchedValues: ITaxonomy[]) => void) => {
         const searchTerms = inputValue.split(' ').filter(Boolean);
@@ -57,28 +90,24 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
     [biohubApi.taxonomy]
   );
 
-  useEffect(() => {
-    let mounted = true;
+  const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const input = event.target.value;
+    setInputValue(input);
 
-    if (!inputValue) {
+    if (!input) {
       setOptions([]);
-      handleSearch.cancel();
-    } else {
-      setIsLoading(true);
-      handleSearch(inputValue, (newOptions) => {
-        if (!mounted) {
-          return;
-        }
-
-        setOptions(newOptions);
-        setIsLoading(false);
-      });
+      search.cancel();
+      return;
     }
-
-    return () => {
-      mounted = false;
-    };
-  }, [handleSearch, inputValue]);
+    setIsLoading(true);
+    search(input, (speciesOptions) => {
+      if (!isMounted()) {
+        return;
+      }
+      setOptions(speciesOptions);
+      setIsLoading(false);
+    });
+  };
 
   return (
     <Autocomplete
@@ -96,10 +125,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
       onInputChange={(_, value, reason) => {
         if (props.clearOnSelect && reason === 'reset') {
           setInputValue('');
-          return;
         }
-
-        setInputValue(value);
       }}
       onChange={(_, option) => {
         if (option) {
@@ -131,6 +157,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
         <TextField
           {...params}
           name={formikFieldName}
+          onChange={handleOnChange}
           required={required}
           label={label}
           variant="outlined"

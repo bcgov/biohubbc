@@ -1,45 +1,38 @@
-import EditDialog from 'components/dialog/EditDialog';
 import { SurveyAnimalsI18N } from 'constants/i18n';
-import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { SurveySectionFullPageLayout } from 'features/surveys/components/SurveySectionFullPageLayout';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useQuery } from 'hooks/useQuery';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { setMessageSnackbar } from 'utils/Utils';
-import { AnimalSchema, AnimalSex, ANIMAL_FORM_MODE, Critter, IAnimal } from './animal';
-import { createCritterUpdatePayload, transformCritterbaseAPIResponseToForm } from './animal-form-helpers';
+import React, { useContext, useEffect, useState } from 'react';
 import { IAnimalSections } from './animal-sections';
 import AnimalList from './AnimalList';
 import { AnimalSection } from './AnimalSection';
-import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
-import { IAnimalTelemetryDevice } from './telemetry-device/device';
 
 export const SurveyAnimalsPage = () => {
   const bhApi = useBiohubApi();
   const cbApi = useCritterbaseApi();
   const { cid: survey_critter_id } = useQuery();
   //const telemetryApi = useTelemetryApi();
-  const dialogContext = useContext(DialogContext);
+  //const dialogContext = useContext(DialogContext);
   const { surveyId, projectId } = useContext(SurveyContext);
 
   const [selectedSection, setSelectedSection] = useState<IAnimalSections>(SurveyAnimalsI18N.animalGeneralTitle);
-  const [openAddDialog, setOpenAddDialog] = useState(false);
+  //const [openAddDialog, setOpenAddDialog] = useState(false);
   //const [detailedCritter, setDetailedCritter] = useState<IDetailedCritterWithInternalId | undefined>();
 
   const {
     data: surveyCritters,
     load: loadCritters,
-    refresh: refreshSurveyCritters,
+    //refresh: refreshSurveyCritters,
     isLoading: crittersLoading
   } = useDataLoader(() => bhApi.survey.getSurveyCritters(projectId, surveyId));
 
   const {
-    data: deploymentData,
-    load: loadDeployments,
-    refresh: refreshDeployments
+    //data: deploymentData,
+    load: loadDeployments
+    //refresh: refreshDeployments
   } = useDataLoader(() => bhApi.survey.getDeploymentsInSurvey(projectId, surveyId));
 
   const {
@@ -65,61 +58,61 @@ export const SurveyAnimalsPage = () => {
     getDetailedCritterOnMount();
   }, [surveyCritters, survey_critter_id, cbApi.critters, detailedCritter, refreshCritter]);
 
-  const defaultFormValues: IAnimal = useMemo(() => {
-    return {
-      general: {
-        wlh_id: '',
-        itis_tsn: '' as unknown as number,
-        itis_scientific_name: '',
-        animal_id: '',
-        sex: AnimalSex.UNKNOWN,
-        critter_id: ''
-      },
-      captures: [],
-      markings: [],
-      mortality: [],
-      collectionUnits: [],
-      measurements: [],
-      family: [],
-      images: [],
-      device: []
-    };
-  }, []);
-
-  const critterAsFormikValues = useMemo(() => {
-    if (!detailedCritter) {
-      return defaultFormValues;
-    }
-
-    const animal = transformCritterbaseAPIResponseToForm(detailedCritter);
-    const crittersDeployments = deploymentData?.filter((a) => a.critter_id === detailedCritter.critter_id);
-    let deployments: IAnimalTelemetryDevice[] = [];
-    if (crittersDeployments) {
-      //Any suggestions on something better than this reduce is welcome.
-      //Idea is to transform flat rows of {device_id, ..., deployment_id, attachment_end, attachment_start}
-      //to {device_id, ..., deployments: [{deployment_id, attachment_start, attachment_end}]}
-      const red = crittersDeployments.reduce((acc: IAnimalTelemetryDevice[], curr) => {
-        const currObj = acc.find((a: any) => a.device_id === curr.device_id);
-        const { attachment_end, attachment_start, deployment_id, ...rest } = curr;
-        const deployment = {
-          deployment_id,
-          attachment_start: attachment_start?.split('T')?.[0] ?? '',
-          attachment_end: attachment_end?.split('T')?.[0]
-        };
-        if (!currObj) {
-          acc.push({ ...rest, deployments: [deployment] });
-        } else {
-          currObj.deployments?.push(deployment);
-        }
-        return acc;
-      }, []);
-      deployments = red;
-    } else {
-      deployments = [];
-    }
-    animal.device = deployments;
-    return animal;
-  }, [deploymentData, defaultFormValues, detailedCritter]);
+  // const defaultFormValues: IAnimal = useMemo(() => {
+  //   return {
+  //     general: {
+  //       wlh_id: '',
+  //       itis_tsn: '' as unknown as number,
+  //       itis_scientific_name: '',
+  //       animal_id: '',
+  //       sex: AnimalSex.UNKNOWN,
+  //       critter_id: ''
+  //     },
+  //     captures: [],
+  //     markings: [],
+  //     mortality: [],
+  //     collectionUnits: [],
+  //     measurements: [],
+  //     family: [],
+  //     images: [],
+  //     device: []
+  //   };
+  // }, []);
+  //
+  // const critterAsFormikValues = useMemo(() => {
+  //   if (!detailedCritter) {
+  //     return defaultFormValues;
+  //   }
+  //
+  //   const animal = transformCritterbaseAPIResponseToForm(detailedCritter);
+  //   const crittersDeployments = deploymentData?.filter((a) => a.critter_id === detailedCritter.critter_id);
+  //   let deployments: IAnimalTelemetryDevice[] = [];
+  //   if (crittersDeployments) {
+  //     //Any suggestions on something better than this reduce is welcome.
+  //     //Idea is to transform flat rows of {device_id, ..., deployment_id, attachment_end, attachment_start}
+  //     //to {device_id, ..., deployments: [{deployment_id, attachment_start, attachment_end}]}
+  //     const red = crittersDeployments.reduce((acc: IAnimalTelemetryDevice[], curr) => {
+  //       const currObj = acc.find((a: any) => a.device_id === curr.device_id);
+  //       const { attachment_end, attachment_start, deployment_id, ...rest } = curr;
+  //       const deployment = {
+  //         deployment_id,
+  //         attachment_start: attachment_start?.split('T')?.[0] ?? '',
+  //         attachment_end: attachment_end?.split('T')?.[0]
+  //       };
+  //       if (!currObj) {
+  //         acc.push({ ...rest, deployments: [deployment] });
+  //       } else {
+  //         currObj.deployments?.push(deployment);
+  //       }
+  //       return acc;
+  //     }, []);
+  //     deployments = red;
+  //   } else {
+  //     deployments = [];
+  //   }
+  //   animal.device = deployments;
+  //   return animal;
+  // }, [deploymentData, defaultFormValues, detailedCritter]);
 
   // const handleRemoveDeployment = async (deployment_id: string) => {
   //   try {
@@ -135,51 +128,51 @@ export const SurveyAnimalsPage = () => {
   //   refreshDeployments();
   // };
 
-  const handleCritterSave = async (currentFormValues: IAnimal, formMode: ANIMAL_FORM_MODE) => {
-    const postCritterPayload = async () => {
-      const critter = new Critter(currentFormValues);
-      setOpenAddDialog(false);
-      await bhApi.survey.createCritterAndAddToSurvey(projectId, surveyId, critter);
-    };
-    const patchCritterPayload = async () => {
-      const initialFormValues = critterAsFormikValues;
-      if (!initialFormValues) {
-        throw Error('Could not obtain initial form values.');
-      }
-      const { create: createCritter, update: updateCritter } = createCritterUpdatePayload(
-        initialFormValues,
-        currentFormValues
-      );
-      const surveyCritter = surveyCritters?.find(
-        (critter) => Number(critter.survey_critter_id) === Number(survey_critter_id)
-      );
-      if (!survey_critter_id || !surveyCritter) {
-        throw Error('The internal critter id for this row was not set correctly.');
-      }
-      await bhApi.survey.updateSurveyCritter(
-        projectId,
-        surveyId,
-        surveyCritter.survey_critter_id,
-        updateCritter,
-        createCritter
-      );
-    };
-    try {
-      if (formMode === ANIMAL_FORM_MODE.ADD) {
-        await postCritterPayload();
-        //Manually setting the message snackbar at this point
-        setMessageSnackbar('Animal added to survey', dialogContext);
-      } else {
-        await patchCritterPayload();
-      }
-      refreshDeployments();
-      refreshSurveyCritters();
-      return { success: true, msg: 'Successfully updated animal' };
-    } catch (err) {
-      setMessageSnackbar(`Submmision failed ${(err as Error).message}`, dialogContext);
-      return { success: false, msg: `Submmision failed ${(err as Error).message}` };
-    }
-  };
+  // const handleCritterSave = async (currentFormValues: IAnimal, formMode: ANIMAL_FORM_MODE) => {
+  //   const postCritterPayload = async () => {
+  //     const critter = new Critter(currentFormValues);
+  //     setOpenAddDialog(false);
+  //     await bhApi.survey.createCritterAndAddToSurvey(projectId, surveyId, critter);
+  //   };
+  //   const patchCritterPayload = async () => {
+  //     const initialFormValues = critterAsFormikValues;
+  //     if (!initialFormValues) {
+  //       throw Error('Could not obtain initial form values.');
+  //     }
+  //     const { create: createCritter, update: updateCritter } = createCritterUpdatePayload(
+  //       initialFormValues,
+  //       currentFormValues
+  //     );
+  //     const surveyCritter = surveyCritters?.find(
+  //       (critter) => Number(critter.survey_critter_id) === Number(survey_critter_id)
+  //     );
+  //     if (!survey_critter_id || !surveyCritter) {
+  //       throw Error('The internal critter id for this row was not set correctly.');
+  //     }
+  //     await bhApi.survey.updateSurveyCritter(
+  //       projectId,
+  //       surveyId,
+  //       surveyCritter.survey_critter_id,
+  //       updateCritter,
+  //       createCritter
+  //     );
+  //   };
+  //   try {
+  //     if (formMode === ANIMAL_FORM_MODE.ADD) {
+  //       await postCritterPayload();
+  //       //Manually setting the message snackbar at this point
+  //       setMessageSnackbar('Animal added to survey', dialogContext);
+  //     } else {
+  //       await patchCritterPayload();
+  //     }
+  //     refreshDeployments();
+  //     refreshSurveyCritters();
+  //     return { success: true, msg: 'Successfully updated animal' };
+  //   } catch (err) {
+  //     setMessageSnackbar(`Submmision failed ${(err as Error).message}`, dialogContext);
+  //     return { success: false, msg: `Submmision failed ${(err as Error).message}` };
+  //   }
+  // };
 
   // const uploadAttachment = async (file?: File, attachmentType?: AttachmentType) => {
   //   try {
@@ -287,7 +280,7 @@ export const SurveyAnimalsPage = () => {
         pageTitle="Manage Animals"
         sideBarComponent={
           <AnimalList
-            onAddButton={() => setOpenAddDialog(true)}
+            onAddButton={() => console.log('open dialog here')}
             refreshCritter={refreshCritter}
             //onSelectCritter={setDetailedCritter}
             surveyCritters={surveyCritters}
@@ -305,7 +298,7 @@ export const SurveyAnimalsPage = () => {
           />
         }
       />
-      <EditDialog
+      {/*<EditDialog
         dialogTitle={'Add New Animal'}
         open={openAddDialog}
         component={{
@@ -316,7 +309,7 @@ export const SurveyAnimalsPage = () => {
         dialogSaveButtonLabel="Create Animal"
         onCancel={() => setOpenAddDialog(false)}
         onSave={(values) => handleCritterSave(values, ANIMAL_FORM_MODE.ADD)}
-      />
+      />*/}
     </>
   );
 };

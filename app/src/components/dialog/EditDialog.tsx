@@ -7,8 +7,9 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import useTheme from '@mui/material/styles/useTheme';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import FormikDevDebugger from 'components/formik/FormikDevDebugger';
 import { Formik, FormikValues } from 'formik';
-import { PropsWithChildren } from 'react';
+import React, { PropsWithChildren } from 'react';
 
 export interface IEditDialogComponentProps<T> {
   element: any;
@@ -80,6 +81,16 @@ export interface IEditDialogProps<T> {
    * @memberof IEditDialogProps
    */
   onSave: (values: T) => void;
+
+  /**
+   * Enables FormikDevDebugger.
+   * Renders status of Formik values, errors and touched fields.
+   *
+   * NOTE: This will only render in development environments if enabled.
+   *
+   * @memberof IEditDialogProps
+   */
+  debug?: true;
 }
 
 /**
@@ -138,6 +149,7 @@ export const EditDialog = <T extends FormikValues>(props: PropsWithChildren<IEdi
             </Button>
           </DialogActions>
           {props.dialogError && <DialogContent>{props.dialogError}</DialogContent>}
+          {props.debug ? <FormikDevDebugger /> : null}
         </Dialog>
       )}
     </Formik>

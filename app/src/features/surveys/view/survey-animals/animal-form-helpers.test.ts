@@ -1,5 +1,6 @@
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import {
+  AnimalSex,
   IAnimal,
   IAnimalCapture,
   IAnimalCollectionUnit,
@@ -271,7 +272,7 @@ describe('animal form helpers', () => {
           itis_tsn: 1,
           animal_id: '',
           itis_scientific_name: undefined,
-          sex: undefined,
+          sex: AnimalSex.MALE,
           critter_id: undefined
         },
         captures: [capture, { ...capture, capture_id: '0ec88875-0219-4635-b7cf-8da8ba732fc1' }],
@@ -293,7 +294,7 @@ describe('animal form helpers', () => {
           animal_id: '',
           itis_scientific_name: undefined,
           wlh_id: 'wlh-b',
-          sex: undefined,
+          sex: AnimalSex.MALE,
           critter_id: undefined
         },
         captures: [{ ...capture, capture_comment: 'after' }],

@@ -92,6 +92,16 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     return formatArr.join(' | ');
   };
 
+  const AddButton = ({ label }: { label: string }) => (
+    <Button
+      startIcon={<Icon path={mdiPlus} size={1} />}
+      variant="contained"
+      color="primary"
+      onClick={handleOpenAddForm}>
+      {label}
+    </Button>
+  );
+
   if (!props.critter) {
     return (
       <AnimalSectionWrapper>
@@ -121,20 +131,10 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     handleClose: handleCloseForm
   } as const;
 
-  const AddButton = ({ label }: { label: string }) => (
-    <Button
-      startIcon={<Icon path={mdiPlus} size={1} />}
-      variant="contained"
-      color="primary"
-      onClick={handleOpenAddForm}>
-      {label}
-    </Button>
-  );
-
   if (props.section === 'General') {
     return (
       <AnimalSectionWrapper
-        form={<div>placeholder</div>}
+        form={<GeneralAnimalForm {...SECTION_FORM_PROPS} />}
         infoText={SurveyAnimalsI18N.animalGeneralHelp}
         section={props.section}
         critter={props.critter}>
@@ -146,7 +146,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
   if (props.section === 'Ecological Units') {
     return (
       <AnimalSectionWrapper
-        form={<GeneralAnimalForm />}
+        form={<div>test</div>}
         infoText={SurveyAnimalsI18N.animalCollectionUnitHelp}
         section={props.section}
         critter={props.critter}

@@ -90,7 +90,7 @@ export const AnimalGeneralSchema = yup.object({}).shape({
   animal_id: yup.string().required(req),
   itis_scientific_name: yup.string(),
   wlh_id: yup.string(),
-  sex: yup.mixed<AnimalSex>().oneOf(Object.values(AnimalSex)),
+  sex: yup.mixed<AnimalSex>().oneOf(Object.values(AnimalSex)).required(req),
   critter_id: yup.string()
 });
 

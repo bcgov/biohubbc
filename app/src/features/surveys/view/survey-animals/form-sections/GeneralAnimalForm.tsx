@@ -5,11 +5,11 @@ import CbSelectField from 'components/fields/CbSelectField';
 import CustomTextField from 'components/fields/CustomTextField';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
-import { useFormikContext } from 'formik';
-import { useDialogContext } from 'hooks/useContext';
-import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import { Field, FieldProps } from 'formik';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
+import { get } from 'lodash-es';
 import React from 'react';
+import { v4 } from 'uuid';
 import { AnimalFormProps, AnimalGeneralSchema, ANIMAL_FORM_MODE, isRequiredInSchema } from '../animal';
 
 /**
@@ -19,12 +19,12 @@ import { AnimalFormProps, AnimalGeneralSchema, ANIMAL_FORM_MODE, isRequiredInSch
  */
 
 const GeneralAnimalForm = (props: AnimalFormProps<ICritterSimpleResponse>) => {
-  const cbApi = useCritterbaseApi();
-  const dialog = useDialogContext();
+  // const cbApi = useCritterbaseApi();
+  // const dialog = useDialogContext();
 
-  const { setFieldValue } = useFormikContext();
+  //const { setFieldValue } = useFormikContext();
 
-  //const { errors, touched, setFieldValue } = useFormikContext<IAnimal>();
+  //const { errors, touched, setFieldValue } = useFormikContext();
 
   //const { animalKeyName } = ANIMAL_SECTIONS_FORM_MAP[SurveyAnimalsI18N.animalGeneralTitle];
   //
@@ -35,34 +35,49 @@ const GeneralAnimalForm = (props: AnimalFormProps<ICritterSimpleResponse>) => {
 
   return (
     <EditDialog
-      dialogTitle={props.formMode === ANIMAL_FORM_MODE.ADD ? 'Add Marking' : 'Edit Marking'}
+      dialogTitle={props.formMode === ANIMAL_FORM_MODE.ADD ? 'Add Critter' : 'Edit Critter'}
       open={props.open}
       onCancel={props.handleClose}
       onSave={handleSave}
+      debug
       component={{
-        initialValues: {},
-        validationSchema: CreateCritter,
+        initialValues: {
+          /**
+           * Omitting itis_scientific_name.
+           * Critterbase has to query for scientific name regardless if included.
+           */
+          critter_id: props.critter.critter_id ?? v4(),
+          sex: props.critter.animal_id ?? '',
+          itis_tsn: props.critter.itis_tsn,
+          animal_id: props.critter.animal_id,
+          wlh_id: props.critter.wlh_id
+        },
+        validationSchema: AnimalGeneralSchema,
         element: (
           <Grid container spacing={3}>
             <Grid item xs={12}>
               <HelpButtonTooltip content={SurveyAnimalsI18N.taxonHelp}>
-                <SpeciesAutocompleteField
-                  formikFieldName={'itis_tsn'}
-                  label="Species"
-                  required={true}
-                  // error={
-                  //   get(touched, getAnimalFieldName<IAnimalGeneral>(animalKeyName, 'itis_tsn'))
-                  //     ? get(errors, getAnimalFieldName<IAnimalGeneral>(animalKeyName, 'itis_tsn'))
-                  //     : undefined
-                  // }
-                  handleAddSpecies={(taxon) => {
-                    setFieldValue('itis_tsn', taxon.tsn);
-                    // setFieldValue(
-                    //   getAnimalFieldName<IAnimalGeneral>(animalKeyName, 'itis_scientific_name'),
-                    //   taxon.scientificName
-                    // );
-                  }}
-                />
+                <Field name={'itis_tsn'}>
+                  {({ field, form, meta }: FieldProps) => (
+                    <SpeciesAutocompleteField
+                      formikFieldName={'itis_tsn'}
+                      label="Species"
+                      required={isRequiredInSchema(AnimalGeneralSchema, 'itis_tsn')}
+                      error={meta.touched && meta.error ? meta.error : undefined}
+                      //value={props.critter.itis_scientific_name}
+                      defaultSpecies={{
+                        tsn: props.critter.itis_tsn,
+                        scientificName: props.critter.itis_scientific_name,
+                        commonName: null
+                      }}
+                      //value={get(form.values, 'itis_tsn')}
+                      handleAddSpecies={(taxon) => {
+                        console.log(get(form.values, 'itis_tsn'));
+                        form.setFieldValue('itis_tsn', taxon.tsn);
+                      }}
+                    />
+                  )}
+                </Field>
               </HelpButtonTooltip>
             </Grid>
             <Grid item xs={12}>
