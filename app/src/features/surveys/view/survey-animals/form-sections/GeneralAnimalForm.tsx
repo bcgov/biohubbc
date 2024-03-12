@@ -79,7 +79,7 @@ const GeneralAnimalForm = (props: GeneralAnimalFormProps<ICreateCritter>) => {
         initialValues: {
           /**
            * Omitting itis_scientific_name.
-           * Critterbase has to query for scientific name regardless if included.
+           * Critterbase queries scientific name regardless if included.
            */
           critter_id: props.critter?.critter_id ?? v4(),
           sex: props.critter?.sex as AnimalSex,
