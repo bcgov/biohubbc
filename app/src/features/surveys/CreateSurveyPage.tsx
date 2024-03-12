@@ -211,7 +211,7 @@ const CreateSurveyPage = () => {
             handleSubmit={(formikData) => handleSubmit(formikData as unknown as ICreateSurveyRequest)}
             formikRef={formikRef}
           />
-          <Stack mt={5} flexDirection="row" justifyContent="flex-end" gap={1}>
+          <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
             <LoadingButton
               loading={isSaving}
               type="submit"

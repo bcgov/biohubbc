@@ -222,7 +222,7 @@ const EditSurveyPage = () => {
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper sx={{ p: 5 }}>
           <EditSurveyForm initialSurveyData={surveyData} handleSubmit={handleSubmit} formikRef={formikRef} />
-          <Stack mt={5} flexDirection="row" justifyContent="flex-end" gap={1}>
+          <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
             <LoadingButton
               loading={isSaving}
               type="submit"
