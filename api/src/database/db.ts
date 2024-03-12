@@ -349,8 +349,8 @@ export const getDBConnection = function (keycloakToken: KeycloakUserInformation)
     sqlStatement: SQLStatement,
     zodSchema?: z.Schema<T, any, any>
   ): Promise<pg.QueryResult<T>> => {
-    if (process.env.NODE_ENV === 'production') {
-      // Don't run timers or zod schemas in production
+    if (process.env.DATABASE_RESPONSE_VALIDATION_ENABLED !== 'true') {
+      // Don't validate database responses against provided zod schema
       return _query(sqlStatement.text, sqlStatement.values);
     }
 
@@ -360,6 +360,7 @@ export const getDBConnection = function (keycloakToken: KeycloakUserInformation)
 
     if (!zodSchema) {
       defaultLog.silly({ label: '_sql', message: sqlStatement.text, queryExecutionTime: queryEnd - queryStart });
+      // No zod schema provided
       return response;
     }
 
@@ -392,8 +393,8 @@ export const getDBConnection = function (keycloakToken: KeycloakUserInformation)
   ) => {
     const { sql, bindings } = queryBuilder.toSQL().toNative();
 
-    if (process.env.NODE_ENV === 'production') {
-      // Don't run timers or zod schemas in production
+    if (process.env.DATABASE_RESPONSE_VALIDATION_ENABLED !== 'true') {
+      // Don't validate database responses against provided zod schema
       return _query(sql, bindings as any[]);
     }
 
@@ -403,6 +404,7 @@ export const getDBConnection = function (keycloakToken: KeycloakUserInformation)
 
     if (!zodSchema) {
       defaultLog.silly({ label: '_knex', message: sql, queryExecutionTime: queryEnd - queryStart });
+      // No zod schema provided
       return response;
     }
 

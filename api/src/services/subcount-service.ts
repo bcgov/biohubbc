@@ -1,4 +1,5 @@
 import { IDBConnection } from '../database/db';
+import { ObservationSubCountMeasurementRepository } from '../repositories/observation-subcount-measurement-repository';
 import {
   InsertObservationSubCount,
   InsertSubCountEvent,
@@ -6,7 +7,11 @@ import {
   SubCountEventRecord,
   SubCountRepository
 } from '../repositories/subcount-repository';
-import { CBMeasurementType, CritterbaseService } from './critterbase-service';
+import {
+  CBQualitativeMeasurementTypeDefinition,
+  CBQuantitativeMeasurementTypeDefinition,
+  CritterbaseService
+} from './critterbase-service';
 import { DBService } from './db-service';
 
 export class SubCountService extends DBService {
@@ -53,30 +58,50 @@ export class SubCountService extends DBService {
     // Delete child subcount_critter records, if any
     await this.subCountRepository.deleteSubCountCritterRecordsForObservationId(surveyId, surveyObservationIds);
 
-    // Delete child subcount_event records, if any
-    await this.subCountRepository.deleteSubCountEventRecordsForObservationId(surveyId, surveyObservationIds);
+    // Delete child observation measurements, if any
+    const repo = new ObservationSubCountMeasurementRepository(this.connection);
+    await repo.deleteObservationMeasurements(surveyObservationIds, surveyId);
 
     // Delete observation_subcount records, if any
     return this.subCountRepository.deleteObservationSubCountRecords(surveyId, surveyObservationIds);
   }
 
   /**
-   * Returns all measurement event ids for all observations in a given survey.
+   * Returns a unique set of all measurement type definitions for all measurements of all observations in the given
+   * survey.
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<CBMeasurementType[]>}
+   * @return {*}  {Promise<{
+   *     qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
+   *     quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
+   *   }>}
    * @memberof SubCountService
    */
-  async getMeasurementTypeDefinitionsForSurvey(surveyId: number): Promise<CBMeasurementType[]> {
-    const service = new CritterbaseService({
+  async getMeasurementTypeDefinitionsForSurvey(
+    surveyId: number
+  ): Promise<{
+    qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
+    quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
+  }> {
+    const observationSubCountMeasurementService = new ObservationSubCountMeasurementRepository(this.connection);
+
+    // Fetch all unique taxon_measurement_ids for qualitative and quantitative measurements
+    const [qualitativeTaxonMeasurementIds, quantitativeTaxonMeasurementIds] = await Promise.all([
+      observationSubCountMeasurementService.getObservationSubCountQualitativeTaxonMeasurementIds(surveyId),
+      observationSubCountMeasurementService.getObservationSubCountQuantitativeTaxonMeasurementIds(surveyId)
+    ]);
+
+    const critterbaseService = new CritterbaseService({
       keycloak_guid: this.connection.systemUserGUID(),
       username: this.connection.systemUserIdentifier()
     });
 
-    const subcountEventRecords = await this.subCountRepository.getSubCountEventRecordsBySurveyId(surveyId);
+    // Fetch all measurement type definitions from Critterbase for the unique taxon_measurement_ids
+    const response = await Promise.all([
+      critterbaseService.getQualitativeMeasurementTypeDefinition(qualitativeTaxonMeasurementIds),
+      critterbaseService.getQuantitativeMeasurementTypeDefinition(quantitativeTaxonMeasurementIds)
+    ]);
 
-    const eventIds = subcountEventRecords.map((record) => record.critterbase_event_id);
-
-    return service.getMeasurementTypeDefinitionsForEventIds(eventIds);
+    return { qualitative_measurements: response[0], quantitative_measurements: response[1] };
   }
 }

@@ -11,7 +11,7 @@ export const SIMS_OBSERVATIONS_HIDDEN_COLUMNS = 'SIMS_OBSERVATIONS_HIDDEN_COLUMN
 /**
  * Key used to cache the additional user-defined measurement columns added to the observations table.
  *
- * Should store a JSON stringified array of `GridColDef` objects.
+ * Should store a JSON stringified array of `CBMeasurementType` objects.
  */
 export const SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS = 'SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS';
 
