@@ -92,8 +92,12 @@ GET.apiDoc = {
                         format: 'date',
                         description: 'ISO 8601 date string for the project end date',
                         nullable: true
-                      }
-                    }
+                      },
+                      comments: {
+                        type: 'string',
+                        nullable: true,
+                        description: 'Comments'
+                    }}
                   },
                   participants: {
                     title: 'Project participants',

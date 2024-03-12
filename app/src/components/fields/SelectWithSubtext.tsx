@@ -86,7 +86,6 @@ const SelectWithSubtextField: React.FC<ISelectWithSubtextField> = (props) => {
           onOpen={(e) => {
             setMenuAnchorEl(e.currentTarget);
           }}
-          displayEmpty
           inputProps={{ id: props.id, 'aria-label': props.label }}
           renderValue={(value) => {
             // convert the selected `value` back into its matching `label`

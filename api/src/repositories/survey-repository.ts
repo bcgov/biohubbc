@@ -81,7 +81,7 @@ const SurveyRecord = z.object({
   start_date: z.string(),
   end_date: z.string().nullable(),
   additional_details: z.string().nullable(),
-  progress_id: z.number().nullable(),
+  progress_id: z.number(),
   comments: z.string().nullable(),
   create_date: z.string(),
   create_user: z.number(),

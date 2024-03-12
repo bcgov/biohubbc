@@ -134,7 +134,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
           <SelectWithSubtextField
             id={'survey_details.progress_id'}
             name={'survey_details.progress_id'}
-            label={'Status'}
+            label={'Progress'}
             options={props.progress}
           />
         </Grid>

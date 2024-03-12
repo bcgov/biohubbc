@@ -69,8 +69,8 @@ const SurveysListPage = () => {
       )
     },
     {
-      field: 'status',
-      headerName: 'Status',
+      field: 'progress',
+      headerName: 'Progress',
       flex: 0.5,
       disableColumnMenu: true,
       sortable: false,

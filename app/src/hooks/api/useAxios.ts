@@ -8,7 +8,7 @@ export class APIError extends Error {
   errors?: (string | object)[];
   requestURL?: string;
 
-  constructor(error: AxiosError<any>) {
+  constructor(error: AxiosError<any, any>) {
     super(error.response?.data?.message || error.message);
 
     this.name = error.response?.data?.name || error.name;
