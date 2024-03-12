@@ -149,6 +149,7 @@ const SamplingMethodForm = () => {
                     title={
                       <>
                         {getCodesName(codesContext.codesDataLoader.data, 'sample_methods', item.method_lookup_id || 0)}
+
                         {item.method_response_metric_id && (
                           <SamplingSiteMethodResponseMetricChip
                             method_response_metric_id={item.method_response_metric_id}

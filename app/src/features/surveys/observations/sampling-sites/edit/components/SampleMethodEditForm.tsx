@@ -29,6 +29,7 @@ import { useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { getCodesName } from 'utils/Utils';
 import { IEditSamplingSiteRequest } from './SampleSiteEditForm';
+import SamplingSiteMethodResponseMetricChip from '../../components/SamplingSiteMethodResponseMetricChip';
 
 export interface SampleMethodEditFormProps {
   name: string;
@@ -156,11 +157,20 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                       background: grey[100]
                     }}>
                     <CardHeader
-                      title={`${getCodesName(
-                        codesContext.codesDataLoader.data,
-                        'sample_methods',
-                        item.method_lookup_id || 0
-                      )}`}
+                      title={
+                        <>
+                          {getCodesName(
+                            codesContext.codesDataLoader.data,
+                            'sample_methods',
+                            item.method_lookup_id || 0
+                          )}
+                          {item.method_response_metric_id && (
+                            <SamplingSiteMethodResponseMetricChip
+                              method_response_metric_id={item.method_response_metric_id}
+                            />
+                          )}
+                        </>
+                      }
                       action={
                         <IconButton
                           onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
