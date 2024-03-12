@@ -3,6 +3,7 @@ import { ATTACHMENT_TYPE } from '../constants/attachments';
 import { IDBConnection } from '../database/db';
 import {
   GetAttachmentsWithSupplementalData,
+  IReportAttachmentAuthor,
   PostReportAttachmentMetadata,
   PutReportAttachmentMetadata
 } from '../models/project-survey-attachments';
@@ -10,9 +11,10 @@ import {
   AttachmentRepository,
   IProjectAttachment,
   IProjectReportAttachment,
-  IReportAttachmentAuthor,
+  IProjectReportAttachmentAuthor,
   ISurveyAttachment,
-  ISurveyReportAttachment
+  ISurveyReportAttachment,
+  ISurveyReportAttachmentAuthor
 } from '../repositories/attachment-repository';
 import { deleteFileFromS3, generateS3FileKey } from '../utils/file-utils';
 import { DBService } from './db-service';
@@ -74,10 +76,10 @@ export class AttachmentService extends DBService {
   /**
    * Finds all authors belonging to the given project report attachment
    * @param {number} reportAttachmentId the ID of the report attachment
-   * @return {Promise<IReportAttachmentAuthor[]>} Promise resolving all of the report authors
+   * @return {Promise<IProjectReportAttachmentAuthor[]>} Promise resolving all of the report authors
    * @memberof AttachmentService
    */
-  async getProjectReportAttachmentAuthors(reportAttachmentId: number): Promise<IReportAttachmentAuthor[]> {
+  async getProjectReportAttachmentAuthors(reportAttachmentId: number): Promise<IProjectReportAttachmentAuthor[]> {
     return this.attachmentRepository.getProjectReportAttachmentAuthors(reportAttachmentId);
   }
 
@@ -252,10 +254,10 @@ export class AttachmentService extends DBService {
   /**
    * Finds all authors belonging to the given survey attachment
    * @param {number} reportAttachmentId the ID of the report attachment
-   * @return {Promise<IReportAttachmentAuthor[]>} Promise resolving all of the report authors
+   * @return {Promise<ISurveyReportAttachmentAuthor[]>} Promise resolving all of the report authors
    * @memberof AttachmentService
    */
-  async getSurveyAttachmentAuthors(reportAttachmentId: number): Promise<IReportAttachmentAuthor[]> {
+  async getSurveyAttachmentAuthors(reportAttachmentId: number): Promise<ISurveyReportAttachmentAuthor[]> {
     return this.attachmentRepository.getSurveyReportAttachmentAuthors(reportAttachmentId);
   }
 

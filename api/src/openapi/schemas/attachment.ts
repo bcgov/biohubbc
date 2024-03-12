@@ -132,7 +132,7 @@ export const surveyReportAttachmentSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
   required: [
-    'survey_attachment_id',
+    'survey_report_attachment_id',
     'uuid',
     'file_name',
     'title',
@@ -143,7 +143,7 @@ export const surveyReportAttachmentSchema: OpenAPIV3.SchemaObject = {
     'file_size'
   ],
   properties: {
-    survey_attachment_id: {
+    survey_report_attachment_id: {
       description: 'Report metadata attachment id',
       type: 'number'
     },
@@ -162,6 +162,32 @@ export const projectReportAttachmentAuthorSchema: OpenAPIV3.SchemaObject = {
       type: 'number'
     },
     project_report_attachment_id: {
+      description: 'Report metadata attachment id',
+      type: 'number'
+    },
+    first_name: {
+      description: 'Report metadata author first name',
+      type: 'string'
+    },
+    last_name: {
+      description: 'Report metadata author last name',
+      type: 'string'
+    },
+    ...updateCreateUserPropertiesSchema.properties
+  }
+};
+
+export const surveyReportAttachmentAuthorSchema: OpenAPIV3.SchemaObject = {
+  title: 'Report attachment author response object',
+  type: 'object',
+  additionalProperties: false,
+  required: ['survey_report_author_id', 'survey_report_attachment_id', 'first_name', 'last_name', 'revision_count'],
+  properties: {
+    survey_report_author_id: {
+      description: 'Report metadata author id',
+      type: 'number'
+    },
+    survey_report_attachment_id: {
       description: 'Report metadata attachment id',
       type: 'number'
     },

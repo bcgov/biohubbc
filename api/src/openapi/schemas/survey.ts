@@ -120,7 +120,8 @@ export const focalSpeciesSchema: OpenAPIV3.SchemaObject = {
     },
     commonName: {
       description: 'Taxonomy common name',
-      type: 'string'
+      type: 'string',
+      nullable: true
     },
     scientificName: {
       description: 'Taxonomy scientific name',
@@ -140,7 +141,8 @@ export const ancillarySpeciesSchema: OpenAPIV3.SchemaObject = {
     },
     commonName: {
       description: 'Taxonomy common name',
-      type: 'string'
+      type: 'string',
+      nullable: true
     },
     scientificName: {
       description: 'Taxonomy scientific name',
@@ -182,7 +184,7 @@ export const surveyPermitSchema: OpenAPIV3.SchemaObject = {
           permit_id: {
             description: 'Permit id',
             type: 'integer',
-            minimum: 1
+            nullable: true
           },
           permit_number: {
             description: 'Permit number',
@@ -202,17 +204,18 @@ export const surveyFundingSourceDataSchema: OpenAPIV3.SchemaObject = {
   title: 'survey funding source response object',
   type: 'object',
   additionalProperties: false,
-  required: ['survey_funding_source_id', 'survey_id', 'funding_source_id', 'amount'],
+  required: ['funding_source_id', 'amount'],
   properties: {
     survey_funding_source_id: {
       description: 'Survey funding source id',
       type: 'integer',
-      minimum: 1
+      minimum: 1,
+      nullable: true
     },
     survey_id: {
       description: 'Survey id',
       type: 'integer',
-      minimum: 1
+      nullable: true
     },
     funding_source_id: {
       description: 'Funding source id',
@@ -313,10 +316,10 @@ export const surveyPartnershipsSchema: OpenAPIV3.SchemaObject = {
 export const surveyProprietorSchema: OpenAPIV3.SchemaObject = {
   title: 'survey proprietor response object',
   type: 'object',
+  nullable: true,
   additionalProperties: false,
   required: [
     'proprietor_type_name',
-    'proprietor_type_id',
     'first_nations_name',
     'first_nations_id',
     'category_rationale',
@@ -326,12 +329,13 @@ export const surveyProprietorSchema: OpenAPIV3.SchemaObject = {
   properties: {
     proprietor_type_name: {
       description: 'Proprietor type name',
-      type: 'string'
+      type: 'string',
+      nullable: true
     },
     proprietor_type_id: {
       description: 'Proprietor type id',
       type: 'integer',
-      minimum: 1
+      nullable: true
     },
     first_nations_name: {
       description: 'First nations name',
@@ -452,17 +456,17 @@ export const surveyBlockSchema: OpenAPIV3.SchemaObject = {
   title: 'Survey Block',
   type: 'object',
   additionalProperties: false,
-  required: ['survey_block_id', 'survey_id', 'name', 'description', 'sample_block_count'],
+  required: ['name', 'description', 'sample_block_count'],
   properties: {
     survey_block_id: {
       description: 'Survey block id',
       type: 'integer',
-      minimum: 1
+      nullable: true
     },
     survey_id: {
       description: 'Survey id',
       type: 'integer',
-      minimum: 1
+      nullable: true
     },
     name: {
       description: 'Name',
