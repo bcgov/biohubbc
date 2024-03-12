@@ -282,6 +282,7 @@ export function viewProject(): RequestHandler {
 
       const projectData = await projectService.getProjectById(Number(req.params.projectId));
 
+      // @TODO investigate if project supp data can be removed.
       const projectSupplementaryData = await projectService.getProjectSupplementaryDataById(
         Number(req.params.projectId)
       );

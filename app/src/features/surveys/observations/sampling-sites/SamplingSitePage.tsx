@@ -1,12 +1,10 @@
 import { LoadingButton } from '@mui/lab';
-import { Container } from '@mui/material';
+import { Container, Stack } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
-import { Theme } from '@mui/material/styles';
-import { makeStyles } from '@mui/styles';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { CreateSamplingSiteI18N } from 'constants/i18n';
@@ -20,24 +18,12 @@ import { Feature } from 'geojson';
 import History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetSurveyBlock, IGetSurveyStratum } from 'interfaces/useSurveyApi.interface';
 import { useContext, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
+import SamplingSiteGroupingsForm from './components/SamplingSiteGroupingsForm';
 import SamplingSiteHeader from './SamplingSiteHeader';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  actionButton: {
-    minWidth: '6rem',
-    '& + button': {
-      marginLeft: '0.5rem'
-    }
-  },
-  sectionDivider: {
-    height: '1px',
-    marginTop: theme.spacing(5),
-    marginBottom: theme.spacing(5)
-  }
-}));
 
 export interface ISurveySampleSite {
   name: string;
@@ -49,10 +35,11 @@ export interface ICreateSamplingSiteRequest {
   survey_id: number;
   survey_sample_sites: ISurveySampleSite[]; // extracted list from shape files
   methods: ISurveySampleMethodData[];
+  blocks: IGetSurveyBlock[];
+  stratums: IGetSurveyStratum[];
 }
 
 const SamplingSitePage = () => {
-  const classes = useStyles();
   const history = useHistory();
   const biohubApi = useBiohubApi();
 
@@ -163,7 +150,9 @@ const SamplingSitePage = () => {
           name: '',
           description: '',
           survey_sample_sites: [],
-          methods: []
+          methods: [],
+          blocks: [],
+          stratums: []
         }}
         validationSchema={samplingSiteYupSchema}
         validateOnBlur={true}
@@ -179,28 +168,32 @@ const SamplingSitePage = () => {
             breadcrumb="Add Sampling Sites"
           />
           <Box display="flex" flex="1 1 auto">
-            <Container maxWidth="xl">
-              <Box py={3}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 5
-                  }}>
+            <Container maxWidth="xl" sx={{ py: 3 }}>
+              <Paper sx={{ p: 5 }}>
+                <Stack gap={5}>
                   <HorizontalSplitFormComponent
                     title="Site Location"
                     summary="Import or draw sampling site locations used for this survey."
                     component={<SurveySamplingSiteImportForm />}></HorizontalSplitFormComponent>
 
-                  <Divider className={classes.sectionDivider} />
+                  <Divider />
 
                   <HorizontalSplitFormComponent
                     title="Sampling Methods"
                     summary="Specify sampling methods that were used to collect data."
                     component={<SamplingMethodForm />}></HorizontalSplitFormComponent>
 
-                  <Divider className={classes.sectionDivider} />
+                  <Divider />
 
-                  <Box display="flex" justifyContent="flex-end">
+                  <HorizontalSplitFormComponent
+                    title="Sampling Site Groupings"
+                    summary="Group similar sites by assigning them to groups or strata, 
+                    which you can add when creating or editing your Survey."
+                    component={<SamplingSiteGroupingsForm />}></HorizontalSplitFormComponent>
+
+                  <Divider />
+
+                  <Stack flexDirection="row" alignItems="center" justifyContent="flex-end" gap={1}>
                     <LoadingButton
                       type="submit"
                       variant="contained"
@@ -208,8 +201,7 @@ const SamplingSitePage = () => {
                       loading={isSubmitting}
                       onClick={() => {
                         formikRef.current?.submitForm();
-                      }}
-                      className={classes.actionButton}>
+                      }}>
                       Save and Exit
                     </LoadingButton>
                     <Button
@@ -219,13 +211,12 @@ const SamplingSitePage = () => {
                         history.push(
                           `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`
                         );
-                      }}
-                      className={classes.actionButton}>
+                      }}>
                       Cancel
                     </Button>
-                  </Box>
-                </Paper>
-              </Box>
+                  </Stack>
+                </Stack>
+              </Paper>
             </Container>
           </Box>
         </Box>

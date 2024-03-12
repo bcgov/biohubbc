@@ -22,7 +22,7 @@ export class SurveyCritterRepository extends BaseRepository {
    * @member SurveyRepository
    */
   async getCrittersInSurvey(surveyId: number): Promise<SurveyCritterRecord[]> {
-    defaultLog.debug({ label: 'getcrittersInSurvey', surveyId });
+    defaultLog.debug({ label: 'getCrittersInSurvey', surveyId });
     const queryBuilder = getKnex().table('critter').select().where('survey_id', surveyId);
     const response = await this.connection.knex(queryBuilder);
     return response.rows;
@@ -59,9 +59,15 @@ export class SurveyCritterRepository extends BaseRepository {
    * @returns {*}
    * @member SurveyRepository
    */
-  async removeCritterFromSurvey(critterId: number): Promise<void> {
+  async removeCritterFromSurvey(surveyId: number, critterId: number): Promise<void> {
     defaultLog.debug({ label: 'removeCritterFromSurvey', critterId });
-    const queryBuilder = getKnex().table('critter').delete().where({ critter_id: critterId });
+
+    const queryBuilder = getKnex()
+      .delete()
+      .from('critter')
+      .where({ critter_id: critterId })
+      .andWhere({ survey_id: surveyId });
+
     await this.connection.knex(queryBuilder);
   }
 

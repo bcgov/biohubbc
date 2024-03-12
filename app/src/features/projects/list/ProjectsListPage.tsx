@@ -155,62 +155,60 @@ const ProjectsListPage = () => {
         }
       />
 
-      <Container maxWidth="xl">
-        <Box py={3}>
-          <Paper elevation={0}>
-            <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Typography variant="h4" component="h2">
-                Records Found &zwnj;
-                <Typography
-                  component="span"
-                  color="textSecondary"
-                  lineHeight="inherit"
-                  fontSize="inherit"
-                  fontWeight={400}>
-                  ({Number(projectsDataLoader.data?.pagination.total || 0).toLocaleString()})
-                </Typography>
+      <Container maxWidth="xl" sx={{ py: 3 }}>
+        <Paper>
+          <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Typography variant="h4" component="h2">
+              Records Found &zwnj;
+              <Typography
+                component="span"
+                color="textSecondary"
+                lineHeight="inherit"
+                fontSize="inherit"
+                fontWeight={400}>
+                ({Number(projectsDataLoader.data?.pagination.total || 0).toLocaleString()})
               </Typography>
-              <Button
-                variant="text"
-                color="primary"
-                startIcon={<Icon path={mdiFilterOutline} size={0.8} />}
-                onClick={() => setIsFiltersOpen(!isFiltersOpen)}>
-                {!isFiltersOpen ? `Show Filters` : `Hide Filters`}
-              </Button>
-            </Toolbar>
-            <Divider></Divider>
-            {isFiltersOpen && (
-              <ProjectsListFilterForm
-                handleSubmit={(filterValues) => refreshProjectsList(filterValues)}
-                handleReset={() => refreshProjectsList()}
-              />
-            )}
-            <Box p={2}>
-              <StyledDataGrid
-                noRowsMessage="No projects found"
-                autoHeight
-                rows={projectRows}
-                rowCount={projectsDataLoader.data?.pagination.total ?? 0}
-                getRowId={(row) => row.project_id}
-                columns={columns}
-                pageSizeOptions={[...pageSizeOptions]}
-                paginationMode="server"
-                sortingMode="server"
-                sortModel={sortModel}
-                paginationModel={paginationModel}
-                onPaginationModelChange={setPaginationModel}
-                onSortModelChange={setSortModel}
-                rowSelection={false}
-                checkboxSelection={false}
-                disableRowSelectionOnClick
-                disableColumnSelector
-                disableColumnFilter
-                disableColumnMenu
-                sortingOrder={['asc', 'desc']}
-              />
-            </Box>
-          </Paper>
-        </Box>
+            </Typography>
+            <Button
+              variant="text"
+              color="primary"
+              startIcon={<Icon path={mdiFilterOutline} size={0.8} />}
+              onClick={() => setIsFiltersOpen(!isFiltersOpen)}>
+              {!isFiltersOpen ? `Show Filters` : `Hide Filters`}
+            </Button>
+          </Toolbar>
+          <Divider></Divider>
+          {isFiltersOpen && (
+            <ProjectsListFilterForm
+              handleSubmit={(filterValues) => refreshProjectsList(filterValues)}
+              handleReset={() => refreshProjectsList()}
+            />
+          )}
+          <Box p={2}>
+            <StyledDataGrid
+              noRowsMessage="No projects found"
+              autoHeight
+              rows={projectRows}
+              rowCount={projectsDataLoader.data?.pagination.total ?? 0}
+              getRowId={(row) => row.project_id}
+              columns={columns}
+              pageSizeOptions={[...pageSizeOptions]}
+              paginationMode="server"
+              sortingMode="server"
+              sortModel={sortModel}
+              paginationModel={paginationModel}
+              onPaginationModelChange={setPaginationModel}
+              onSortModelChange={setSortModel}
+              rowSelection={false}
+              checkboxSelection={false}
+              disableRowSelectionOnClick
+              disableColumnSelector
+              disableColumnFilter
+              disableColumnMenu
+              sortingOrder={['asc', 'desc']}
+            />
+          </Box>
+        </Paper>
       </Container>
     </>
   );

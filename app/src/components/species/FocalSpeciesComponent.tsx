@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import Stack from '@mui/material/Stack';
 import AlertBar from 'components/alert/AlertBar';
 import { useFormikContext } from 'formik';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
@@ -7,11 +7,13 @@ import SelectedSpecies from './components/SelectedSpecies';
 import SpeciesAutocompleteField from './components/SpeciesAutocompleteField';
 
 const FocalSpeciesComponent = () => {
-  const { values, setFieldValue, errors, submitCount } = useFormikContext<ITaxonomy[]>();
+  const { values, setFieldValue, setFieldError, errors, submitCount } = useFormikContext<ITaxonomy[]>();
 
   const selectedSpecies: ITaxonomy[] = get(values, 'species.focal_species') || [];
+
   const handleAddSpecies = (species: ITaxonomy) => {
     setFieldValue(`species.focal_species[${selectedSpecies.length}]`, species);
+    setFieldError(`species.focal_species`, undefined);
   };
 
   const handleRemoveSpecies = (species_id: number) => {
@@ -23,25 +25,24 @@ const FocalSpeciesComponent = () => {
   };
 
   return (
-    <>
+    <Stack>
+      {submitCount > 0 && errors && get(errors, 'species.focal_species') && (
+        <AlertBar
+          severity="error"
+          variant="outlined"
+          title="Focal Species missing"
+          text={get(errors, 'species.focal_species') || 'Select a species'}
+        />
+      )}
       <SpeciesAutocompleteField
         formikFieldName={'species.focal_species'}
         label={'Focal Species'}
         required={true}
         handleAddSpecies={handleAddSpecies}
+        clearOnSelect={true}
       />
       <SelectedSpecies selectedSpecies={selectedSpecies} handleRemoveSpecies={handleRemoveSpecies} />
-      {submitCount > 0 && errors && get(errors, 'species.focal_species') && (
-        <Box mt={3}>
-          <AlertBar
-            severity="error"
-            variant="standard"
-            title="Missing Species"
-            text={get(errors, 'species.focal_species') || 'Select a species'}
-          />
-        </Box>
-      )}
-    </>
+    </Stack>
   );
 };
 

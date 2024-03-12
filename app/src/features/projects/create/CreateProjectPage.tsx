@@ -1,5 +1,4 @@
 import { LoadingButton } from '@mui/lab';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
@@ -8,16 +7,33 @@ import Stack from '@mui/material/Stack';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { CreateProjectI18N } from 'constants/i18n';
+import { PROJECT_ROLE } from 'constants/roles';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { FormikProps } from 'formik';
 import * as History from 'history';
+import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
-import { useContext, useEffect, useRef, useState } from 'react';
+import {
+  ICreateProjectRequest,
+  IGetProjectParticipant,
+  IUpdateProjectRequest
+} from 'interfaces/useProjectApi.interface';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Prompt } from 'react-router-dom';
-import CreateProjectForm from './CreateProjectForm';
+import { ProjectDetailsFormInitialValues } from '../components/ProjectDetailsForm';
+import { ProjectIUCNFormInitialValues } from '../components/ProjectIUCNForm';
+import { ProjectObjectivesFormInitialValues } from '../components/ProjectObjectivesForm';
+import { ProjectUserRoleFormInitialValues } from '../components/ProjectUserForm';
+import EditProjectForm from '../edit/EditProjectForm';
+
+export const defaultProjectDataFormValues: ICreateProjectRequest = {
+  ...ProjectDetailsFormInitialValues,
+  ...ProjectObjectivesFormInitialValues,
+  ...ProjectIUCNFormInitialValues,
+  ...ProjectUserRoleFormInitialValues
+};
 
 /**
  * Page for creating a new project.
@@ -31,15 +47,36 @@ const CreateProjectPage = () => {
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const dialogContext = useContext(DialogContext);
   const codesContext = useContext(CodesContext);
 
-  const codes = codesContext.codesDataLoader.data;
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
+
+  const authStateContext = useAuthStateContext();
+
+  const initialParticipants: IGetProjectParticipant[] = useMemo(() => {
+    return [
+      {
+        system_user_id: authStateContext.simsUserWrapper?.systemUserId,
+        display_name: authStateContext.simsUserWrapper?.displayName,
+        email: authStateContext.simsUserWrapper?.email,
+        agency: authStateContext.simsUserWrapper?.agency,
+        identity_source: authStateContext.simsUserWrapper?.identitySource,
+        project_role_names: [PROJECT_ROLE.COORDINATOR]
+      } as IGetProjectParticipant
+    ];
+  }, [authStateContext.simsUserWrapper]);
+
+  const initialProjectData: ICreateProjectRequest = useMemo(() => {
+    return {
+      ...defaultProjectDataFormValues,
+      participants: initialParticipants
+    };
+  }, [initialParticipants]);
 
   const defaultCancelDialogProps = {
     dialogTitle: CreateProjectI18N.cancelTitle,
@@ -88,17 +125,22 @@ const CreateProjectPage = () => {
    * @return {*}
    */
   const createProject = async (projectPostObject: ICreateProjectRequest) => {
-    setIsLoading(true);
-    const response = await biohubApi.project.createProject(projectPostObject);
+    setIsSaving(true);
+    try {
+      const response = await biohubApi.project.createProject(projectPostObject);
 
-    if (!response?.id) {
-      showCreateErrorDialog({ dialogError: 'The response from the server was null, or did not contain a project ID.' });
-      return;
+      if (!response?.id) {
+        showCreateErrorDialog({
+          dialogError: 'The response from the server was null, or did not contain a project ID.'
+        });
+        return;
+      }
+
+      setEnableCancelCheck(false);
+      history.push(`/admin/projects/${response.id}`);
+    } finally {
+      setIsSaving(false);
     }
-
-    setEnableCancelCheck(false);
-    setIsLoading(false);
-    history.push(`/admin/projects/${response.id}`);
   };
 
   /**
@@ -127,7 +169,7 @@ const CreateProjectPage = () => {
     return true;
   };
 
-  if (!codes) {
+  if (!codesContext.codesDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -139,7 +181,7 @@ const CreateProjectPage = () => {
         buttonJSX={
           <>
             <LoadingButton
-              loading={isLoading}
+              loading={isSaving}
               type="submit"
               color="primary"
               variant="contained"
@@ -147,37 +189,35 @@ const CreateProjectPage = () => {
               data-testid="submit-project-button">
               Save and Exit
             </LoadingButton>
-            <Button color="primary" variant="outlined" onClick={handleCancel}>
+            <Button disabled={isSaving} color="primary" variant="outlined" onClick={handleCancel}>
               Cancel
             </Button>
           </>
         }
       />
 
-      <Container maxWidth="xl">
-        <Box py={3}>
-          <Paper
-            elevation={0}
-            sx={{
-              p: 5
-            }}>
-            <CreateProjectForm handleSubmit={createProject} codes={codes} formikRef={formikRef} />
-            <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
-              <LoadingButton
-                loading={isLoading}
-                type="submit"
-                color="primary"
-                variant="contained"
-                onClick={() => formikRef.current?.submitForm()}
-                data-testid="submit-project-button">
-                Save and Exit
-              </LoadingButton>
-              <Button color="primary" variant="outlined" onClick={handleCancel}>
-                Cancel
-              </Button>
-            </Stack>
-          </Paper>
-        </Box>
+      <Container maxWidth="xl" sx={{ py: 3 }}>
+        <Paper sx={{ p: 5 }}>
+          <EditProjectForm
+            initialProjectData={initialProjectData}
+            handleSubmit={(formikData) => createProject(formikData as ICreateProjectRequest)}
+            formikRef={formikRef as unknown as React.RefObject<FormikProps<IUpdateProjectRequest>>}
+          />
+          <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
+            <LoadingButton
+              loading={isSaving}
+              type="submit"
+              color="primary"
+              variant="contained"
+              onClick={() => formikRef.current?.submitForm()}
+              data-testid="submit-project-button">
+              Save and Exit
+            </LoadingButton>
+            <Button disabled={isSaving} color="primary" variant="outlined" onClick={handleCancel}>
+              Cancel
+            </Button>
+          </Stack>
+        </Paper>
       </Container>
     </>
   );

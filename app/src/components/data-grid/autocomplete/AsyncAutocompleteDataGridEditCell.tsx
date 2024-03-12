@@ -42,6 +42,10 @@ export interface IAsyncAutocompleteDataGridEditCell<
    * @memberof IAsyncAutocompleteDataGridEditCell
    */
   error?: boolean;
+  /**
+   * Optional function to render the autocomplete option.
+   */
+  renderOption?: (option: IAutocompleteDataGridOption<ValueType>) => JSX.Element;
 }
 
 /**
@@ -63,7 +67,8 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
     if (dataGridProps.hasFocus) {
       ref.current?.focus();
     }
-  }, [dataGridProps.hasFocus]);
+  }, [dataGridProps]);
+
   // The current data grid value
   const dataGridValue = dataGridProps.value;
   // The input field value
@@ -191,7 +196,7 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
       renderOption={(renderProps, renderOption) => {
         return (
           <Box component="li" {...renderProps}>
-            {renderOption.label}
+            {props.renderOption ? props.renderOption(renderOption) : <span>{renderOption.label}</span>}
           </Box>
         );
       }}

@@ -109,6 +109,7 @@ POST.apiDoc = {
  *
  * @return {*}  {RequestHandler}
  */
+// @TODO is this endpoint needed anymore? Do we submit attachments on their own?
 export function resubmitAttachment(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);

@@ -5,8 +5,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import { IStratum } from 'features/surveys/components/SurveySiteSelectionForm';
-import { IGetSurveyBlock } from 'interfaces/useSurveyApi.interface';
+import { IGetSurveyBlock, IGetSurveyStratum } from 'interfaces/useSurveyApi.interface';
 import { useContext } from 'react';
 
 /**
@@ -31,7 +30,8 @@ const SamplingMethods = () => {
     <Box component="dl">
       <Box className="row">
         <Typography component="dt">Site Selection Strategies</Typography>
-        <Box
+        <Typography
+          component="dd"
           flex="1 1 auto"
           sx={{
             '& dd': {
@@ -44,20 +44,16 @@ const SamplingMethods = () => {
             }
           }}>
           {site_selection.strategies?.map((strategy: string) => {
-            return (
-              <Typography component="dd" key={strategy}>
-                {strategy}
-              </Typography>
-            );
+            return <span key={strategy}>{strategy}</span>;
           })}
-        </Box>
+        </Typography>
       </Box>
 
       {site_selection.stratums.length > 0 && (
         <Box className="row" component="section">
           <Typography component="h4">Stratums</Typography>
           <List disablePadding>
-            {site_selection.stratums?.map((stratum: IStratum) => {
+            {site_selection.stratums?.map((stratum: IGetSurveyStratum) => {
               return (
                 <ListItem
                   key={`${stratum.name}-${stratum.description}`}

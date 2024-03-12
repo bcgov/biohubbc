@@ -1,6 +1,7 @@
 import { GridRenderEditCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import AsyncAutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AsyncAutocompleteDataGridEditCell';
 import { IAutocompleteDataGridOption } from 'components/data-grid/autocomplete/AutocompleteDataGrid.interface';
+import SpeciesCard from 'components/species/components/SpeciesCard';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTaxonomyContext } from 'hooks/useContext';
 import debounce from 'lodash-es/debounce';
@@ -82,6 +83,15 @@ const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel, ValueT
       getCurrentOption={getCurrentOption}
       getOptions={getOptions}
       error={props.error}
+      renderOption={(renderOption) => {
+        return (
+          <SpeciesCard
+            tsn={renderOption.value as number}
+            scientificName={renderOption.label}
+            commonName={renderOption.subtext || null}
+          />
+        );
+      }}
     />
   );
 };

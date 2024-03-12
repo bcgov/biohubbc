@@ -46,7 +46,7 @@ describe('SurveyRepository', () => {
 
       const repository = new SurveyCritterRepository(dbConnection);
 
-      const response = await repository.removeCritterFromSurvey(1);
+      const response = await repository.removeCritterFromSurvey(1, 1);
 
       expect(response).to.be.undefined;
     });

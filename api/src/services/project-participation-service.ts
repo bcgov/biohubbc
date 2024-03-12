@@ -92,12 +92,16 @@ export class ProjectParticipationService extends DBService {
   /**
    * Deletes a project participation record.
    *
+   * @param {number} projectId
    * @param {number} projectParticipationId
    * @return {*}  {Promise<ProjectParticipationRecord>}
    * @memberof ProjectParticipationService
    */
-  async deleteProjectParticipationRecord(projectParticipationId: number): Promise<ProjectParticipationRecord> {
-    return this.projectParticipationRepository.deleteProjectParticipationRecord(projectParticipationId);
+  async deleteProjectParticipationRecord(
+    projectId: number,
+    projectParticipationId: number
+  ): Promise<ProjectParticipationRecord> {
+    return this.projectParticipationRepository.deleteProjectParticipationRecord(projectId, projectParticipationId);
   }
 
   /**
@@ -335,7 +339,7 @@ export class ProjectParticipationService extends DBService {
     // delete
     participantsToDelete.forEach((item) => {
       promises.push(
-        this.projectParticipationRepository.deleteProjectParticipationRecord(item.project_participation_id)
+        this.projectParticipationRepository.deleteProjectParticipationRecord(projectId, item.project_participation_id)
       );
     });
 
