@@ -1,10 +1,12 @@
 import { default as dayjs } from 'dayjs';
 import xlsx, { CellObject } from 'xlsx';
+import { ApiGeneralError } from '../../errors/api-error';
 import {
   CBQualitativeMeasurementTypeDefinition,
   CBQuantitativeMeasurementTypeDefinition,
   CritterbaseService
 } from '../../services/critterbase-service';
+import { getLogger } from '../logger';
 import { MediaFile } from '../media/media-file';
 import { safeToLowerCase } from '../string-utils';
 import { replaceCellDates, trimCellWhitespace } from './cell-utils';
@@ -357,6 +359,14 @@ export function validateMeasurements(
   });
 }
 
+/**
+ * Preps provided work sheet row object data (rows) to be validated against given TsnMeasurementMap
+ *
+ * @param {Record<string, any>[]} rows
+ * @param {string[]} measurementColumns
+ * @param {TsnMeasurementMap} tsnMeasurementMap
+ * @returns {*} boolean
+ */
 export function validateCsvMeasurementColumns(
   rows: Record<string, any>[],
   measurementColumns: string[],
@@ -372,32 +382,48 @@ export function validateCsvMeasurementColumns(
   return validateMeasurements(mappedData, tsnMeasurementMap);
 }
 
+/**
+ * This function take a value and a measurement to validate against. `CBQuantitativeMeasurementTypeDefinition` can contain
+ * a range of valid values, so the incoming value is compared against the min max values in the type definition.
+ *
+ * @param {number} value The measurement value to validate
+ * @param {CBQuantitativeMeasurementTypeDefinition} measurement The type definition of the measurement from Critterbase
+ * @returns {*} Boolean
+ */
 export function isQuantitativeValueValid(value: number, measurement: CBQuantitativeMeasurementTypeDefinition): boolean {
   const min_value = measurement.min_value;
   const max_value = measurement.max_value;
-  let isValid = false;
 
   if (min_value && max_value) {
     if (min_value <= value && value <= max_value) {
-      isValid = true;
+      return true;
     }
   } else {
     if (min_value !== null && min_value <= value) {
-      isValid = true;
+      return true;
     }
 
     if (max_value !== null && value <= max_value) {
-      isValid = true;
+      return true;
     }
 
     if (min_value === null && max_value === null) {
-      isValid = true;
+      return true;
     }
   }
 
-  return isValid;
+  return false;
 }
 
+/**
+ *  This function validates the value provided against a Qualitative Measurement.
+ * As a string, the function will compare the value against known option labels and will return true if any are found.
+ * As a number, the function will compare the value against the option values (the position or index of the option) and will return true if any are found.
+ *
+ * @param {string | number} value the value to validate
+ * @param {CBQualitativeMeasurementTypeDefinition} measurement The type definition of the measurement from Critterbase
+ * @returns {*} Boolean
+ */
 export function isQualitativeValueValid(
   value: string | number,
   measurement: CBQualitativeMeasurementTypeDefinition
@@ -410,6 +436,14 @@ export function isQualitativeValueValid(
   return Boolean(foundOption);
 }
 
+/**
+ * This function pulls out any measurement (non required columns) from a CSV so they can be processed properly.
+ *
+ * @param {xlsx.WorkSheet} xlsxWorksheets The worksheet to pull the columns from
+ * @param {IXLSXCSVValidator} columnValidator Column validator
+ * @param {string} sheet The sheet to work on
+ * @returns {*} string[] The list of measurement columns found in the CSV
+ */
 export function getMeasurementColumnNameFromWorksheet(
   xlsxWorksheets: xlsx.WorkSheet,
   columnValidator: IXLSXCSVValidator,
@@ -435,10 +469,10 @@ export function getMeasurementColumnNameFromWorksheet(
 /**
  * Fetch all measurements from critter base for TSN numbers found in provided worksheet
  *
- * @param xlsxWorksheets
- * @param critterBaseService
- * @param sheet
- * @returns
+ * @param {xlsx.WorkSheet} xlsxWorksheets The worksheet to pull the columns from
+ * @param {CritterbaseService} critterBaseService
+ * @param {string} sheet The sheet to work on
+ * @returns {*} Promise<TsnMeasurementMap>
  */
 export async function getCBMeasurementsFromWorksheet(
   xlsxWorksheets: xlsx.WorkSheet,
@@ -455,16 +489,15 @@ export async function getCBMeasurementsFromWorksheet(
         // TODO: modify Critter Base to accept multiple TSN at once
         const measurements = await critterBaseService.getTaxonMeasurements(tsn);
         if (!measurements) {
-          // TODO: do we care if there are no measurements for a taxon?
+          // TODO: Any data for a TSN that has no measurements is invalid and should reject the uploaded CSV
         }
 
         tsnMeasurements[tsn] = measurements;
       }
     }
   } catch (error) {
-    console.log(error);
-    // TODO: should this throw an error?
-    // throw new ApiGeneralError('Error connecting to the Critterbase API');
+    getLogger('utils/xlsx-utils').error({ label: 'getCBMeasurementsFromWorksheet', message: 'error', error });
+    throw new ApiGeneralError('Error connecting to the Critterbase API');
   }
 
   return tsnMeasurements;
@@ -473,10 +506,10 @@ export async function getCBMeasurementsFromWorksheet(
 /**
  * Search for a measurement given xlsx column name and tsn id
  *
- * @param tsn
- * @param measurementColumnName
- * @param tsnMeasurements
- * @returns
+ * @param {string} tsn
+ * @param {string} measurementColumnName
+ * @param {TsnMeasurementMap} tsnMeasurements
+ * @returns {*} CBQuantitativeMeasurementTypeDefinition | CBQualitativeMeasurementTypeDefinition | null | undefined
  */
 export function findMeasurementFromTsnMeasurements(
   tsn: string,

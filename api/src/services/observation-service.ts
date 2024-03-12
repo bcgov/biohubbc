@@ -26,6 +26,7 @@ import {
   getWorksheetRowObjects,
   isMeasurementCBQualitativeTypeDefinition,
   IXLSXCSVValidator,
+  TsnMeasurementMap,
   validateCsvFile,
   validateCsvMeasurementColumns,
   validateWorksheetColumnTypes,
@@ -444,43 +445,9 @@ export class ObservationService extends DBService {
         quantitative: []
       };
 
-      measurementColumns.forEach((mColumn) => {
-        // Ignore blank columns
-        if (mColumn) {
-          const measurement = findMeasurementFromTsnMeasurements(
-            String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']),
-            mColumn,
-            tsnMeasurements
-          );
-
-          const rowData = row[mColumn];
-
-          // Ignore empty rows
-          if (rowData !== undefined) {
-            if (measurement) {
-              // if measurement is qualitative, find the option uuid
-              if (isMeasurementCBQualitativeTypeDefinition(measurement)) {
-                const foundOption = measurement.options.find(
-                  (option) =>
-                    option.option_label.toLowerCase() === String(rowData).toLowerCase() ||
-                    option.option_value === Number(rowData)
-                );
-                if (foundOption) {
-                  newSubcount.qualitative.push({
-                    measurement_id: measurement.taxon_measurement_id,
-                    measurement_option_id: foundOption.qualitative_option_id
-                  });
-                }
-              } else {
-                newSubcount.quantitative.push({
-                  measurement_id: measurement.taxon_measurement_id,
-                  measurement_value: Number(rowData)
-                });
-              }
-            }
-          }
-        }
-      });
+      const measurements = this._pullMeasurementsFromWorkSheetRowObject(row, measurementColumns, tsnMeasurements);
+      newSubcount.qualitative = measurements.qualitative;
+      newSubcount.quantitative = measurements.quantitative;
 
       return {
         standardColumns: {
@@ -505,13 +472,76 @@ export class ObservationService extends DBService {
   }
 
   /**
+   * This function is a helper method for the `processObservationCsvSubmission` function. It will take row data from an uploaded CSV
+   * and find and connect the CSV measurement data with proper measurement taxon ids (UUIDs) from the TsnMeasurementMap passed in.
+   * Any qualitative and quantitative measurements found are returned to be inserted into the database. This function assumes that the
+   * data in the CSV has already been validated.
+   *
+   * @param {Record<string, any>} row A worksheet row object from a CSV that was uploaded for processing
+   * @param {string[]} measurementColumns A list of the measurement columns found in a CSV uploaded
+   * @param {TsnMeasurementMap} tsnMeasurements Map of TSNs and their valid measurements
+   * @returns {*} Pick<InsertSubCount, 'qualitative' | 'quantitative'>
+   * @memberof ObservationService
+   */
+  _pullMeasurementsFromWorkSheetRowObject(
+    row: Record<string, any>,
+    measurementColumns: string[],
+    tsnMeasurements: TsnMeasurementMap
+  ): Pick<InsertSubCount, 'qualitative' | 'quantitative'> {
+    const foundMeasurements: Pick<InsertSubCount, 'qualitative' | 'quantitative'> = {
+      qualitative: [],
+      quantitative: []
+    };
+
+    measurementColumns.forEach((mColumn) => {
+      // Ignore blank columns
+      if (mColumn) {
+        const measurement = findMeasurementFromTsnMeasurements(
+          String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']),
+          mColumn,
+          tsnMeasurements
+        );
+
+        const rowData = row[mColumn];
+
+        // Ignore empty rows
+        if (rowData !== undefined) {
+          if (measurement) {
+            // if measurement is qualitative, find the option uuid
+            if (isMeasurementCBQualitativeTypeDefinition(measurement)) {
+              const foundOption = measurement.options.find(
+                (option) =>
+                  option.option_label.toLowerCase() === String(rowData).toLowerCase() ||
+                  option.option_value === Number(rowData)
+              );
+              if (foundOption) {
+                foundMeasurements.qualitative.push({
+                  measurement_id: measurement.taxon_measurement_id,
+                  measurement_option_id: foundOption.qualitative_option_id
+                });
+              }
+            } else {
+              foundMeasurements.quantitative.push({
+                measurement_id: measurement.taxon_measurement_id,
+                measurement_value: Number(rowData)
+              });
+            }
+          }
+        }
+      }
+    });
+
+    return foundMeasurements;
+  }
+
+  /**
    * Maps over an array of inserted/updated observation records in order to update its scientific
    * name to match its ITIS TSN.
    *
    * @template RecordWithTaxonFields
    * @param {RecordWithTaxonFields[]} records
    * @return {*}  {Promise<RecordWithTaxonFields[]>}
-   * @memberof ObservationServiceF
+   * @memberof ObservationService
    */
   async _attachItisScientificName<
     RecordWithTaxonFields extends Pick<ObservationRecord, 'itis_tsn' | 'itis_scientific_name'>
