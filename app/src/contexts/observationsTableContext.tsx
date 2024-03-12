@@ -322,6 +322,23 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'observation_date', sort: 'desc' }]);
 
   /**
+   * Returns true if the given row has a validation error.
+   *
+   * @param {GridCellParams} params
+   * @return {*}  {boolean}
+   */
+  const hasError = useCallback(
+    (params: GridCellParams): boolean => {
+      return Boolean(
+        validationModel[params.row.id]?.some((error) => {
+          return error.field === params.field;
+        })
+      );
+    },
+    [validationModel]
+  );
+
+  /**
    * Refreshes the observations table with the latest records from the server.
    *
    * @return {*}
@@ -372,7 +389,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     }
 
     return response;
-  }, [paginationModel.page, paginationModel.pageSize, refreshObservationsData, sortModel]);
+  }, [hasError, paginationModel.page, paginationModel.pageSize, refreshObservationsData, sortModel, surveyId]);
 
   /**
    * Gets all rows from the table, including values that have been edited in the table.
@@ -467,23 +484,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     return Object.keys(validation).length > 0 ? validation : null;
   }, [_getRowsWithEditedValues, _muiDataGridApiRef]);
-
-  /**
-   * Returns true if the given row has a validation error.
-   *
-   * @param {GridCellParams} params
-   * @return {*}  {boolean}
-   */
-  const hasError = useCallback(
-    (params: GridCellParams): boolean => {
-      return Boolean(
-        validationModel[params.row.id]?.some((error) => {
-          return error.field === params.field;
-        })
-      );
-    },
-    [validationModel]
-  );
 
   /**
    * Deletes the given records from the server and removes them from the table.
