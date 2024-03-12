@@ -89,7 +89,7 @@ const SubmitBiohubDialog = <Values extends FormikValues>(
     }
   };
 
-  const [formikRef] = useState(useRef<FormikProps<any>>(null));
+  const formikRef = useRef<FormikProps<any>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [showNoInformationDialog, setShowNoInformationDialog] = useState(false);
