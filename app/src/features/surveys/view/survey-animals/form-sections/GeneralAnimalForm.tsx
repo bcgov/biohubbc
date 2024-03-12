@@ -7,7 +7,6 @@ import SpeciesAutocompleteField from 'components/species/components/SpeciesAutoc
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { Field, FieldProps } from 'formik';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
-import { get } from 'lodash-es';
 import React from 'react';
 import { v4 } from 'uuid';
 import { AnimalFormProps, AnimalGeneralSchema, ANIMAL_FORM_MODE, isRequiredInSchema } from '../animal';
@@ -58,22 +57,19 @@ const GeneralAnimalForm = (props: AnimalFormProps<ICritterSimpleResponse>) => {
             <Grid item xs={12}>
               <HelpButtonTooltip content={SurveyAnimalsI18N.taxonHelp}>
                 <Field name={'itis_tsn'}>
-                  {({ field, form, meta }: FieldProps) => (
+                  {({ form, meta }: FieldProps) => (
                     <SpeciesAutocompleteField
                       formikFieldName={'itis_tsn'}
-                      label="Species"
+                      label="Taxon"
                       required={isRequiredInSchema(AnimalGeneralSchema, 'itis_tsn')}
                       error={meta.touched && meta.error ? meta.error : undefined}
-                      //value={props.critter.itis_scientific_name}
                       defaultSpecies={{
                         tsn: props.critter.itis_tsn,
                         scientificName: props.critter.itis_scientific_name,
                         commonName: null
                       }}
-                      //value={get(form.values, 'itis_tsn')}
-                      handleAddSpecies={(taxon) => {
-                        console.log(get(form.values, 'itis_tsn'));
-                        form.setFieldValue('itis_tsn', taxon.tsn);
+                      handleSpecies={(taxon) => {
+                        form.setFieldValue('itis_tsn', taxon?.tsn ?? '');
                       }}
                     />
                   )}

@@ -33,7 +33,7 @@ export interface ISpeciesAutocompleteFieldProps {
    * @type {(species: ITaxonomy) => void}
    * @memberof ISpeciesAutocompleteFieldProps
    */
-  handleAddSpecies: (species: ITaxonomy) => void;
+  handleSpecies: (species?: ITaxonomy) => void;
   /**
    * Default species to render for input and options.
    *
@@ -68,7 +68,7 @@ export interface ISpeciesAutocompleteFieldProps {
 }
 
 const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
-  const { formikFieldName, label, required, error, handleAddSpecies, defaultSpecies } = props;
+  const { formikFieldName, label, required, error, handleSpecies, defaultSpecies } = props;
 
   const biohubApi = useBiohubApi();
   const isMounted = useIsMounted();
@@ -97,6 +97,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
     if (!input) {
       setOptions([]);
       search.cancel();
+      handleSpecies();
       return;
     }
     setIsLoading(true);
@@ -129,7 +130,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
       }}
       onChange={(_, option) => {
         if (option) {
-          handleAddSpecies(option);
+          handleSpecies(option);
         }
       }}
       renderOption={(renderProps, renderOption) => {
@@ -141,8 +142,8 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
                 borderTop: '1px solid' + grey[300]
               }
             }}
-            key={renderOption.tsn}
-            {...renderProps}>
+            {...renderProps}
+            key={renderOption.tsn}>
             <Box py={1} width="100%">
               <SpeciesCard
                 commonName={renderOption.commonName}

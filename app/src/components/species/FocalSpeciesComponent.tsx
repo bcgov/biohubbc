@@ -10,8 +10,10 @@ const FocalSpeciesComponent = () => {
   const { values, setFieldValue, errors, submitCount } = useFormikContext<ITaxonomy[]>();
 
   const selectedSpecies: ITaxonomy[] = get(values, 'species.focal_species') || [];
-  const handleAddSpecies = (species: ITaxonomy) => {
-    setFieldValue(`species.focal_species[${selectedSpecies.length}]`, species);
+  const handleAddSpecies = (species?: ITaxonomy) => {
+    if (species) {
+      setFieldValue(`species.focal_species[${selectedSpecies.length}]`, species);
+    }
   };
 
   const handleRemoveSpecies = (species_id: number) => {
@@ -28,7 +30,7 @@ const FocalSpeciesComponent = () => {
         formikFieldName={'species.focal_species'}
         label={'Focal Species'}
         required={true}
-        handleAddSpecies={handleAddSpecies}
+        handleSpecies={handleAddSpecies}
         clearOnSelect={true}
       />
       <SelectedSpecies selectedSpecies={selectedSpecies} handleRemoveSpecies={handleRemoveSpecies} />

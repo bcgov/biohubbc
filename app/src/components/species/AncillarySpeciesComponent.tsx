@@ -11,8 +11,10 @@ const AncillarySpeciesComponent = () => {
 
   const selectedSpecies: ITaxonomy[] = get(values, 'species.ancillary_species') || [];
 
-  const handleAddSpecies = (species: ITaxonomy) => {
-    setFieldValue(`species.ancillary_species[${selectedSpecies.length}]`, species);
+  const handleAddSpecies = (species?: ITaxonomy) => {
+    if (species) {
+      setFieldValue(`species.ancillary_species[${selectedSpecies.length}]`, species);
+    }
     setErrors([]);
   };
 
@@ -30,7 +32,7 @@ const AncillarySpeciesComponent = () => {
         formikFieldName={'species.ancillary_species'}
         label={'Ancillary Species'}
         required={false}
-        handleAddSpecies={handleAddSpecies}
+        handleSpecies={handleAddSpecies}
         clearOnSelect={true}
       />
       <SelectedSpecies selectedSpecies={selectedSpecies} handleRemoveSpecies={handleRemoveSpecies} />
