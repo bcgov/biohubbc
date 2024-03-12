@@ -12,7 +12,7 @@ export type ICodeWithDescription = z.infer<typeof ICodeWithDescription>;
 
 export const ICode = ICodeWithDescription.pick({
   id: true,
-  name: true,
+  name: true
 });
 
 export type ICode = z.infer<typeof ICode>;

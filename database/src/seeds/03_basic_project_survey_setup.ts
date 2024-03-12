@@ -364,7 +364,7 @@ const insertSurveyData = (projectId: number, surveyName?: string) => `
     $$${faker.lorem.sentences(2)}$$,
     $$${faker.date.between({ from: '2010-01-01T00:00:00-08:00', to: '2015-01-01T00:00:00-08:00' }).toISOString()}$$,
     $$${faker.date.between({ from: '2020-01-01T00:00:00-08:00', to: '2025-01-01T00:00:00-08:00' }).toISOString()}$$,
-    1,
+    CEIL(RANDOM() * 3),
     $$${faker.person.firstName()}$$,
     $$${faker.person.lastName()}$$
   )
