@@ -66,7 +66,7 @@ GET.apiDoc = {
               type: 'string',
               nullable: true
             },
-            species_tsns: {
+            itis_tsns: {
               type: 'array',
               items: {
                 type: 'integer'
@@ -179,7 +179,7 @@ export function getProjectList(): RequestHandler {
         project_programs: req.query.project_programs
           ? String(req.query.project_programs).split(',').map(Number)
           : undefined,
-        species_tsns: req.query.species_tsns ? String(req.query.species_tsns).split(',').map(Number) : undefined,
+        itis_tsns: req.query.itis_tsns ? String(req.query.itis_tsns).split(',').map(Number) : undefined,
         start_date: req.query.start_date && String(req.query.start_date),
         end_date: req.query.end_date && String(req.query.end_date)
       };

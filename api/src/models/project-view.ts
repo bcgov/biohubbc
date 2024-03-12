@@ -9,7 +9,7 @@ export interface IProjectAdvancedFilters {
   end_date?: string;
   keyword?: string;
   project_name?: string;
-  species_tsns?: number[];
+  itis_tsns?: number[];
 }
 
 export interface IGetProject {

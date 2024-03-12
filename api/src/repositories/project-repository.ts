@@ -91,8 +91,8 @@ export class ProjectRepository extends BaseRepository {
     }
 
     // Focal Species filter
-    if (filterFields.species_tsns?.length) {
-      query.whereIn('sp.itis_tsn', filterFields.species_tsns);
+    if (filterFields.itis_tsns?.length) {
+      query.whereIn('sp.itis_tsn', filterFields.itis_tsns);
     }
 
     // Keyword Search filter
@@ -108,9 +108,7 @@ export class ProjectRepository extends BaseRepository {
 
     // Programs filter
     if (filterFields.project_programs?.length) {
-      query.havingRaw(
-        `array_agg(DISTINCT prog.program_id) && ARRAY[${filterFields.project_programs.join(',')}]::integer[]`
-      );
+      query.where('prog.program_id', 'IN', filterFields.project_programs);
     }
 
     return query;
