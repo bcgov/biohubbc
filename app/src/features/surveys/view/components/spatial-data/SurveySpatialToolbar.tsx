@@ -11,10 +11,13 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import { IStaticLayer } from 'components/map/components/StaticLayers';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { ISurveyMapSupplementaryLayer } from '../../SurveyMap';
+import SurveySpatialMapLegend from './SurveySpatialMapLegend';
 
 export enum SurveySpatialDatasetViewEnum {
   OBSERVATIONS = 'OBSERVATIONS',
@@ -33,6 +36,7 @@ interface ISurveySptialToolbarProps {
   updateDatasetView: (view: SurveySpatialDatasetViewEnum) => void;
   views: ISurveySpatialDatasetView[];
   activeView: SurveySpatialDatasetViewEnum;
+  layers: (ISurveyMapSupplementaryLayer | IStaticLayer)[];
 }
 
 const SurveySpatialToolbar = (props: ISurveySptialToolbarProps) => {
@@ -124,34 +128,37 @@ const SurveySpatialToolbar = (props: ISurveySptialToolbarProps) => {
         </Toolbar>
         <Divider flexItem></Divider>
         <Box p={2}>
-          <ToggleButtonGroup
-            value={props.activeView}
-            onChange={updateDatasetView}
-            exclusive
-            sx={{
-              display: 'flex',
-              gap: 1,
-              '& Button': {
-                py: 0.25,
-                px: 1.5,
-                border: 'none',
-                borderRadius: '4px !important',
-                fontSize: '0.875rem',
-                fontWeight: 700,
-                letterSpacing: '0.02rem'
-              }
-            }}>
-            {props.views.map((view) => (
-              <ToggleButton
-                key={view.value}
-                component={Button}
-                color="primary"
-                startIcon={<Icon path={view.icon} size={0.75} />}
-                value={view.value}>
-                {view.label}
-              </ToggleButton>
-            ))}
-          </ToggleButtonGroup>
+          <Box display="flex" justifyContent="space-between">
+            <ToggleButtonGroup
+              value={props.activeView}
+              onChange={updateDatasetView}
+              exclusive
+              sx={{
+                display: 'flex',
+                gap: 1,
+                '& Button': {
+                  py: 0.25,
+                  px: 1.5,
+                  border: 'none',
+                  borderRadius: '4px !important',
+                  fontSize: '0.875rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.02rem'
+                }
+              }}>
+              {props.views.map((view) => (
+                <ToggleButton
+                  key={view.value}
+                  component={Button}
+                  color="primary"
+                  startIcon={<Icon path={view.icon} size={0.75} />}
+                  value={view.value}>
+                  {view.label}
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+            <SurveySpatialMapLegend activeView={props.activeView} layers={props.layers} />
+          </Box>
         </Box>
       </Box>
     </>

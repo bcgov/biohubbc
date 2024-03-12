@@ -1,5 +1,8 @@
 import { mdiBroadcast, mdiEye } from '@mdi/js';
 import { Box, Paper } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import { Theme } from '@mui/system';
+import { IStaticLayer, IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TelemetryDataContext } from 'contexts/telemetryDataContext';
@@ -11,11 +14,24 @@ import useDataLoader from 'hooks/useDataLoader';
 import { ITelemetry } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useMemo, useState } from 'react';
+import { getCodesName } from 'utils/Utils';
 import { IAnimalDeployment } from '../../survey-animals/telemetry-device/device';
 import SurveyMap, { ISurveyMapPoint, ISurveyMapPointMetadata, ISurveyMapSupplementaryLayer } from '../../SurveyMap';
+import SurveyMapPopup from '../../SurveyMapPopup';
 import SurveySpatialObservationDataTable from './SurveySpatialObservationDataTable';
 import SurveySpatialTelemetryDataTable from './SurveySpatialTelemetryDataTable';
 import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './SurveySpatialToolbar';
+
+const useStyles = makeStyles((theme: Theme) => ({
+  popup: {
+    '& a': {
+      color: theme.palette.primary.contrastText
+    },
+    '& p': {
+      margin: 0
+    }
+  }
+}));
 
 const SurveySpatialData = () => {
   const [activeView, setActiveView] = useState<SurveySpatialDatasetViewEnum>(SurveySpatialDatasetViewEnum.OBSERVATIONS);
@@ -28,12 +44,31 @@ const SurveySpatialData = () => {
   const { projectId, surveyId } = useContext(SurveyContext);
 
   const biohubApi = useBiohubApi();
+  const classes = useStyles();
+
+  const OBSERVATIONS_COLOUR = '#1d79ad';
+  const STUDY_AREA_COLOUR = '#ed6b1a';
+  const SAMPLING_SITE_COLOUR = '#2016b5';
+  const TELEMETRY_COLOUR = '#ed1ad4';
+  const DEFAULT_COLOUR = '#6bbcfa';
 
   const observationsGeometryDataLoader = useDataLoader(() =>
     biohubApi.observation.getObservationsGeometry(projectId, surveyId)
   );
 
   observationsGeometryDataLoader.load();
+
+  const [mapPointMetadata, setMapPointMetadata] = useState<Record<string, ISurveyMapPointMetadata[]>>({});
+
+  const studyAreaLocations = useMemo(
+    () => surveyContext.surveyDataLoader.data?.surveyData.locations ?? [],
+    [surveyContext.surveyDataLoader.data]
+  );
+
+  const sampleSites = useMemo(
+    () => surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [],
+    [surveyContext.sampleSiteDataLoader.data]
+  );
 
   useEffect(() => {
     if (surveyContext.deploymentDataLoader.data) {
@@ -186,6 +221,7 @@ const SurveySpatialData = () => {
         return [
           {
             layerName: 'Observations',
+            layerColour: OBSERVATIONS_COLOUR,
             popupRecordTitle: 'Observation Record',
             mapPoints: observationPoints
           }
@@ -194,6 +230,7 @@ const SurveySpatialData = () => {
         return [
           {
             layerName: 'Telemetry',
+            layerColour: TELEMETRY_COLOUR,
             popupRecordTitle: 'Telemetry Record',
             mapPoints: telemetryPoints
           }
@@ -203,6 +240,97 @@ const SurveySpatialData = () => {
         return [];
     }
   }, [activeView, observationPoints, telemetryPoints]);
+
+  // Load map data
+  const staticLayers: IStaticLayer[] = [
+    {
+      layerName: 'Survey Areas',
+      layerColors: { color: STUDY_AREA_COLOUR, fillColor: STUDY_AREA_COLOUR },
+      features: studyAreaLocations.flatMap((location) => {
+        return location.geojson.map((feature, index) => {
+          return {
+            key: `${location.survey_location_id}-${index}`,
+            geoJSON: feature,
+            popup: (
+              <SurveyMapPopup
+                title={'Study Area'}
+                metadata={[{ label: 'Name', value: location.name }]}
+                isLoading={false}
+              />
+            )
+          };
+        });
+      })
+    },
+    {
+      layerName: 'Sample Sites',
+      layerColors: { color: SAMPLING_SITE_COLOUR, fillColor: SAMPLING_SITE_COLOUR },
+      features: sampleSites.map((sampleSite, index) => {
+        return {
+          key: `${sampleSite.survey_sample_site_id}-${index}`,
+          geoJSON: sampleSite.geojson,
+          popup: (
+            <SurveyMapPopup
+              isLoading={false}
+              title="Sampling Site"
+              metadata={[
+                {
+                  label: 'Methods',
+                  value: (sampleSite.sample_methods ?? [])
+                    .map(
+                      (method) =>
+                        getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_lookup_id) ?? ''
+                    )
+                    .filter(Boolean)
+                    .join(', ')
+                }
+              ]}
+            />
+          )
+        };
+      })
+    },
+    ...supplementaryLayers.map((supplementaryLayer) => {
+      return {
+        layerName: supplementaryLayer.layerName,
+        layerColors: {
+          fillColor: supplementaryLayer.layerColors?.fillColor || DEFAULT_COLOUR,
+          color: supplementaryLayer.layerColors?.color || DEFAULT_COLOUR
+        },
+        features: supplementaryLayer.mapPoints.map((mapPoint: ISurveyMapPoint, index: number): IStaticLayerFeature => {
+          const isLoading = !mapPointMetadata[mapPoint.key];
+
+          return {
+            key: mapPoint.key,
+            geoJSON: mapPoint.feature,
+            GeoJSONProps: {
+              onEachFeature: (feature, layer) => {
+                layer.on({
+                  popupopen: () => {
+                    if (mapPointMetadata[mapPoint.key]) {
+                      return;
+                    }
+
+                    mapPoint.onLoadMetadata().then((metadata) => {
+                      setMapPointMetadata((prev) => ({ ...prev, [mapPoint.key]: metadata }));
+                    });
+                  }
+                });
+              }
+            },
+            PopupProps: { className: classes.popup },
+            popup: (
+              <SurveyMapPopup
+                isLoading={isLoading}
+                title={supplementaryLayer.popupRecordTitle}
+                metadata={mapPointMetadata[mapPoint.key]}
+              />
+            )
+          };
+        })
+      };
+    })
+  ];
 
   return (
     <Paper>
@@ -225,10 +353,11 @@ const SurveySpatialData = () => {
           }
         ]}
         updateDatasetView={setActiveView}
+        layers={[...supplementaryLayers, ...staticLayers]}
       />
 
       <Box height={{ sm: 300, md: 500 }} position="relative">
-        <SurveyMap supplementaryLayers={supplementaryLayers} isLoading={isLoading} />
+        <SurveyMap staticLayers={staticLayers} supplementaryLayers={supplementaryLayers} isLoading={isLoading} />
       </Box>
       <Box p={2} position="relative">
         {activeView === SurveySpatialDatasetViewEnum.OBSERVATIONS && (
