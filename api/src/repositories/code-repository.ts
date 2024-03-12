@@ -44,7 +44,7 @@ export type IAllCodeSets = z.infer<typeof IAllCodeSets>;
 export class CodeRepository extends BaseRepository {
   async getSampleMethods() {
     const sql = SQL`
-    SELECT method_lookup_id as id, name, description FROM method_lookup;
+    SELECT method_lookup_id as id, name, description FROM method_lookup ORDER BY name ASC;
     `;
     const response = await this.connection.sql(sql);
     return response.rows;
