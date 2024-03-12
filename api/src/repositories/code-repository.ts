@@ -386,6 +386,12 @@ export class CodeRepository extends BaseRepository {
     return response.rows;
   }
 
+  /**
+   * Fetch site selection strategy codes
+   *
+   * @return {*}
+   * @memberof CodeRepository
+   */
   async getSiteSelectionStrategies() {
     const sqlStatement = SQL`
       SELECT
