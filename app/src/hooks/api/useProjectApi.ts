@@ -1,6 +1,7 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
+import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
 import {
   ICreateProjectRequest,
   ICreateProjectResponse,
@@ -11,7 +12,6 @@ import {
   IGetProjectsListResponse,
   IGetReportDetails,
   IGetUserProjectsListResponse,
-  IProjectAdvancedFilterRequest,
   IUpdateProjectRequest,
   IUploadAttachmentResponse,
   UPDATE_GET_ENTITIES
@@ -108,12 +108,12 @@ const useProjectApi = (axios: AxiosInstance) => {
    * Get projects list (potentially based on filter criteria).
    *
    * @param {ApiPaginationRequestOptions} [pagination]
-   * @param {IProjectAdvancedFilterRequest} filterFieldData
+   * @param {IProjectAdvancedFilters} filterFieldData
    * @return {*}  {Promise<IGetProjectsListResponse[]>}
    */
   const getProjectsList = async (
     pagination?: ApiPaginationRequestOptions,
-    filterFieldData?: IProjectAdvancedFilterRequest
+    filterFieldData?: IProjectAdvancedFilters
   ): Promise<IGetProjectsListResponse> => {
     const params = new URLSearchParams();
 

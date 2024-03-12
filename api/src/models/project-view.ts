@@ -4,13 +4,12 @@ import { ProjectUser } from '../repositories/project-participation-repository';
 import { SystemUser } from '../repositories/user-repository';
 
 export interface IProjectAdvancedFilters {
-  permit_number?: string;
   project_programs?: number[];
   start_date?: string;
   end_date?: string;
   keyword?: string;
   project_name?: string;
-  species?: number[];
+  itis_tsns?: number[];
 }
 
 export interface IGetProject {
