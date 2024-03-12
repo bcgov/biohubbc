@@ -39,7 +39,7 @@ export interface IGeneralInformationForm {
     survey_name: string;
     start_date: string;
     end_date: string;
-    progress: number | null;
+    progress_id: number | null;
     survey_types: number[];
   };
   species: {
@@ -60,7 +60,7 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
     survey_name: '',
     start_date: '',
     end_date: '',
-    progress: null,
+    progress_id: null,
     survey_types: []
   },
   species: {
@@ -85,7 +85,7 @@ export const GeneralInformationYupSchema = (customYupRules?: any) => {
           .array(yup.number())
           .min(1, 'One or more Types are required')
           .required('One or more Types are required'),
-        progress: yup.number().min(1, 'Survey Progress is Required').required('Survey Progress is Required').nullable()
+        progress_id: yup.number().min(1, 'Survey Progress is Required').required('Survey Progress is Required').nullable()
       }),
       species: yup.object().shape({
         focal_species: yup.array().min(1, 'You must specify a focal species').required('Required'),
@@ -134,7 +134,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         <Grid item xs={12}>
           <SelectWithSubtextField
             id={'survey_details.progress_id'}
-            name={'survey_details.progress'}
+            name={'survey_details.progress_id'}
             label={'Progress'}
             options={props.progress}
             required={true}
