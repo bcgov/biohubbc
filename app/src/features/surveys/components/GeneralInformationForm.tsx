@@ -84,7 +84,8 @@ export const GeneralInformationYupSchema = (customYupRules?: any) => {
         survey_types: yup
           .array(yup.number())
           .min(1, 'One or more Types are required')
-          .required('One or more Types are required')
+          .required('One or more Types are required'),
+        progress: yup.number().min(10, 'Survey Progress is Required').required('Survey Progress is Required')
       }),
       species: yup.object().shape({
         focal_species: yup.array().min(1, 'You must specify a focal species').required('Required'),
