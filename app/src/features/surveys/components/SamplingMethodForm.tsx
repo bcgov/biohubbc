@@ -25,6 +25,7 @@ import { useFormikContext } from 'formik';
 import { useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { getCodesName } from 'utils/Utils';
+import SamplingSiteMethodResponseMetricChip from '../observations/sampling-sites/components/SamplingSiteMethodResponseMetricChip';
 import { ICreateSamplingSiteRequest } from '../observations/sampling-sites/SamplingSitePage';
 import CreateSamplingMethod from './CreateSamplingMethod';
 import EditSamplingMethod from './EditSamplingMethod';
@@ -145,11 +146,16 @@ const SamplingMethodForm = () => {
                     background: grey[100]
                   }}>
                   <CardHeader
-                    title={`${getCodesName(
-                      codesContext.codesDataLoader.data,
-                      'sample_methods',
-                      item.method_lookup_id || 0
-                    )}`}
+                    title={
+                      <>
+                        {getCodesName(codesContext.codesDataLoader.data, 'sample_methods', item.method_lookup_id || 0)}
+                        {item.method_response_metric_id && (
+                          <SamplingSiteMethodResponseMetricChip
+                            method_response_metric_id={item.method_response_metric_id}
+                          />
+                        )}
+                      </>
+                    }
                     action={
                       <IconButton
                         onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>

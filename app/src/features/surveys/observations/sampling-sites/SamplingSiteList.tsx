@@ -414,6 +414,7 @@ const SamplingSiteList = () => {
                               <Typography
                                 variant="body2"
                                 component="div"
+                                title="Sampling Site"
                                 sx={{
                                   flex: '1 1 auto',
                                   fontWeight: 700,

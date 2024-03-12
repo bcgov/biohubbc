@@ -1,13 +1,14 @@
 import { mdiCalendarRange } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Chip, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
-import { blue, blueGrey, grey, purple, teal } from '@mui/material/colors';
+import { List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import { grey } from '@mui/material/colors';
 import { Box } from '@mui/system';
 import { CodesContext } from 'contexts/codesContext';
 import dayjs from 'dayjs';
 import { IGetSampleLocationDetails } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect } from 'react';
 import { getCodesName } from 'utils/Utils';
+import SamplingSiteMethodResponseMetricChip from './SamplingSiteMethodResponseMetricChip';
 
 interface ISamplingSiteMethodsPeriodsListProps {
   sampleSite: IGetSampleLocationDetails;
@@ -19,8 +20,6 @@ const SamplingSiteMethodsPeriodsList = (props: ISamplingSiteMethodsPeriodsListPr
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
-
-  const chipColours = [purple[300], blueGrey[300], blue[300], teal[300]];
 
   const formatDate = (dt: Date, time: boolean) => dayjs(dt).format(time ? 'MMM D, YYYY h:mm A' : 'MMM D, YYYY');
 
@@ -66,24 +65,7 @@ const SamplingSiteMethodsPeriodsList = (props: ISamplingSiteMethodsPeriodsListPr
                   sampleMethod.method_lookup_id
                 )}
               />
-              <Chip
-                size="small"
-                label={getCodesName(
-                  codesContext.codesDataLoader.data,
-                  'method_response_metrics',
-                  sampleMethod.method_response_metric_id
-                )}
-                sx={{
-                  opacity: 0.75,
-                  fontSize: '0.75rem',
-                  mx: 2,
-                  minWidth: 0,
-                  borderRadius: '5px',
-                  color: '#fff',
-                  backgroundColor: chipColours[sampleMethod.method_response_metric_id - 1],
-                  fontWeight: 700
-                }}
-              />
+              <SamplingSiteMethodResponseMetricChip method_response_metric_id={sampleMethod.method_response_metric_id} />
             </Box>
             <List disablePadding>
               {sampleMethod.sample_periods?.map((samplePeriod) => {
