@@ -97,7 +97,8 @@ GET.apiDoc = {
                         type: 'string',
                         nullable: true,
                         description: 'Comments'
-                    }}
+                      }
+                    }
                   },
                   participants: {
                     title: 'Project participants',
