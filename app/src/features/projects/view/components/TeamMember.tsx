@@ -3,12 +3,13 @@ import Icon from '@mdi/react';
 import { Box, Stack, Typography } from '@mui/material';
 import assert from 'assert';
 import { ProjectContext } from 'contexts/projectContext';
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 
 export interface IProjectParticipantsRoles {
   display_name: string;
   roles: string[];
   initials: string;
+  avatarColor: string;
 }
 
 const TeamMembers = () => {
@@ -24,20 +25,29 @@ const TeamMembers = () => {
     Observer: 3
   };
 
-  const projectTeamMembers: IProjectParticipantsRoles[] = projectContext.projectDataLoader.data.projectData.participants
-    .map((member) => {
-      const initials = member.display_name
-        .split(',')
-        .map((name) => name.trim().slice(0, 1).toUpperCase())
-        .reverse()
-        .join('');
-      return { display_name: member.display_name, roles: member.project_role_names, initials };
-    })
-    .sort((a, b) => {
-      const roleA = a.roles[0] || '';
-      const roleB = b.roles[0] || '';
-      return roleOrder[roleA] - roleOrder[roleB];
-    });
+  const projectTeamMembers: IProjectParticipantsRoles[] = useMemo(
+    () =>
+      projectContext.projectDataLoader.data?.projectData.participants
+        .map((member) => {
+          const initials = member.display_name
+            .split(',')
+            .map((name) => name.trim().slice(0, 1).toUpperCase())
+            .reverse()
+            .join('');
+          return {
+            display_name: member.display_name,
+            roles: member.project_role_names,
+            avatarColor: getRandomHexColor(member.system_user_id),
+            initials
+          };
+        })
+        .sort((a, b) => {
+          const roleA = a.roles[0] || '';
+          const roleB = b.roles[0] || '';
+          return roleOrder[roleA] - roleOrder[roleB];
+        }) || [],
+    [projectContext.projectDataLoader.data.projectData.participants]
+  );
 
   function getRandomHexColor(seed: number) {
     // Define a seeded random number generator
@@ -59,7 +69,7 @@ const TeamMembers = () => {
         <Box display="flex" alignItems="center" key={member.display_name}>
           <Box
             sx={{ height: '35px', width: '35px', minWidth: '35px', borderRadius: '50%' }}
-            bgcolor={getRandomHexColor(index)}
+            bgcolor={member.avatarColor}
             display="flex"
             alignItems="center"
             justifyContent="center"
