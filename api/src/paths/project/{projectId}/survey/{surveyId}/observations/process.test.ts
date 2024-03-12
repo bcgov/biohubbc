@@ -62,6 +62,6 @@ describe('processFile', () => {
 
     expect(mockGetDBConnection.calledOnce).to.be.true;
     expect(mockRes.status).to.be.calledWith(200);
-    expect(mockRes.json).to.be.calledWith({ surveyObservations: {} });
+    expect(mockRes.json).not.to.have.been.called;
   });
 });

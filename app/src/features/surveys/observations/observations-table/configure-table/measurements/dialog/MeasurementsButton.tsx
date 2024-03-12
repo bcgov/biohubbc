@@ -1,7 +1,7 @@
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import Button from '@mui/material/Button';
-import { MeasurementsDialog } from 'features/surveys/observations/measurements/dialog/MeasurementsDialog';
+import { MeasurementsDialog } from 'features/surveys/observations/observations-table/configure-table/measurements/dialog/MeasurementsDialog';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 

@@ -92,6 +92,8 @@ const phases = {
     tz: config.timezone.api,
     sso: config.sso.dev,
     logLevel: 'info',
+    apiResponseValidationEnabled: true,
+    databaseResponseValidationEnabled: true,
     nodeOptions: '--max_old_space_size=2250', // 75% of memoryLimit (bytes)
     cpuRequest: '50m',
     cpuLimit: '600m',
@@ -125,7 +127,9 @@ const phases = {
     s3KeyPrefix: 'sims',
     tz: config.timezone.api,
     sso: config.sso.test,
-    logLevel: (isStaticDeployment && 'info') || 'debug',
+    logLevel: 'info',
+    apiResponseValidationEnabled: true,
+    databaseResponseValidationEnabled: true,
     nodeOptions: '--max_old_space_size=2250', // 75% of memoryLimit (bytes)
     cpuRequest: '50m',
     cpuLimit: '1000m',
@@ -160,6 +164,8 @@ const phases = {
     tz: config.timezone.api,
     sso: config.sso.prod,
     logLevel: 'warn',
+    apiResponseValidationEnabled: false,
+    databaseResponseValidationEnabled: false,
     nodeOptions: '--max_old_space_size=2250', // 75% of memoryLimit (bytes)
     cpuRequest: '50m',
     cpuLimit: '1000m',
