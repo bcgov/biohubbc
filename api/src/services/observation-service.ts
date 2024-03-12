@@ -495,39 +495,45 @@ export class ObservationService extends DBService {
 
     measurementColumns.forEach((mColumn) => {
       // Ignore blank columns
-      if (mColumn) {
-        const measurement = findMeasurementFromTsnMeasurements(
-          String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']),
-          mColumn,
-          tsnMeasurements
+      if (!mColumn) {
+        return;
+      }
+
+      const measurement = findMeasurementFromTsnMeasurements(
+        String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']),
+        mColumn,
+        tsnMeasurements
+      );
+
+      const rowData = row[mColumn];
+
+      // Ignore empty rows
+      if (rowData === undefined) {
+        return;
+      }
+      // Ignore empty measurements
+      if (!measurement) {
+        return;
+      }
+
+      // if measurement is qualitative, find the option uuid
+      if (isMeasurementCBQualitativeTypeDefinition(measurement)) {
+        const foundOption = measurement.options.find(
+          (option) =>
+            option.option_label.toLowerCase() === String(rowData).toLowerCase() ||
+            option.option_value === Number(rowData)
         );
-
-        const rowData = row[mColumn];
-
-        // Ignore empty rows
-        if (rowData !== undefined) {
-          if (measurement) {
-            // if measurement is qualitative, find the option uuid
-            if (isMeasurementCBQualitativeTypeDefinition(measurement)) {
-              const foundOption = measurement.options.find(
-                (option) =>
-                  option.option_label.toLowerCase() === String(rowData).toLowerCase() ||
-                  option.option_value === Number(rowData)
-              );
-              if (foundOption) {
-                foundMeasurements.qualitative.push({
-                  measurement_id: measurement.taxon_measurement_id,
-                  measurement_option_id: foundOption.qualitative_option_id
-                });
-              }
-            } else {
-              foundMeasurements.quantitative.push({
-                measurement_id: measurement.taxon_measurement_id,
-                measurement_value: Number(rowData)
-              });
-            }
-          }
+        if (foundOption) {
+          foundMeasurements.qualitative.push({
+            measurement_id: measurement.taxon_measurement_id,
+            measurement_option_id: foundOption.qualitative_option_id
+          });
         }
+      } else {
+        foundMeasurements.quantitative.push({
+          measurement_id: measurement.taxon_measurement_id,
+          measurement_value: Number(rowData)
+        });
       }
     });
 
