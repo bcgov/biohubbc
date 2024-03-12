@@ -93,7 +93,7 @@ GET.apiDoc = {
                       nullable: true
                     },
                     progress_id: {
-                      type: 'number'
+                      type: 'integer'
                     },
                     focal_species: {
                       type: 'array',

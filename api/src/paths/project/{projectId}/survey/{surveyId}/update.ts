@@ -89,7 +89,7 @@ PUT.apiDoc = {
                   }
                 },
                 progress_id: {
-                  type: 'number'
+                  type: 'integer'
                 },
                 revision_count: {
                   type: 'number'

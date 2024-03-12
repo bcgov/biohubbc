@@ -102,7 +102,7 @@ GET.apiDoc = {
                         description: 'ISO 8601 date string for the funding end_date'
                       },
                       progress_id: {
-                        type: 'number'
+                        type: 'integer'
                       },
                       survey_types: {
                         type: 'array',

@@ -86,7 +86,7 @@ POST.apiDoc = {
                   nullable: true
                 },
                 progress_id: {
-                  type: 'number'
+                  type: 'integer'
                 },
                 survey_types: {
                   type: 'array',

@@ -2,9 +2,17 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { BaseRepository } from './base-repository';
 
-export const ICode = z.object({
+export const ICodeWithDescription = z.object({
   id: z.number(),
-  name: z.string()
+  name: z.string(),
+  description: z.string()
+});
+
+export type ICodeWithDescription = z.infer<typeof ICodeWithDescription>;
+
+export const ICode = ICodeWithDescription.pick({
+  id: true,
+  name: true,
 });
 
 export type ICode = z.infer<typeof ICode>;
@@ -67,7 +75,7 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -89,7 +97,7 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null ORDER BY name ASC;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -111,7 +119,7 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null ORDER BY name ASC;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -133,7 +141,7 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -155,7 +163,7 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -176,7 +184,7 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -195,7 +203,7 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICodeWithDescription);
 
     return response.rows;
   }
@@ -217,7 +225,7 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -239,7 +247,7 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date is null ORDER BY name ASC;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -261,7 +269,7 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -284,7 +292,7 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -307,7 +315,7 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -329,7 +337,7 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -351,7 +359,7 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -373,7 +381,7 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -389,7 +397,7 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -411,7 +419,7 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -434,7 +442,7 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICodeWithDescription);
 
     return response.rows;
   }
