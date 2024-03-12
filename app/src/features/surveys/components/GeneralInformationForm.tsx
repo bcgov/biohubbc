@@ -85,7 +85,11 @@ export const GeneralInformationYupSchema = (customYupRules?: any) => {
           .array(yup.number())
           .min(1, 'One or more Types are required')
           .required('One or more Types are required'),
-        progress_id: yup.number().min(1, 'Survey Progress is Required').required('Survey Progress is Required').nullable()
+        progress_id: yup
+          .number()
+          .min(1, 'Survey Progress is Required')
+          .required('Survey Progress is Required')
+          .nullable()
       }),
       species: yup.object().shape({
         focal_species: yup.array().min(1, 'You must specify a focal species').required('Required'),
