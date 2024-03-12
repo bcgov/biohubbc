@@ -1,11 +1,4 @@
-import {
-  mdiCalendarRange,
-  mdiChevronDown,
-  mdiDotsVertical,
-  mdiPencilOutline,
-  mdiPlus,
-  mdiTrashCanOutline
-} from '@mdi/js';
+import { mdiChevronDown, mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -18,8 +11,6 @@ import Divider from '@mui/material/Divider';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import IconButton from '@mui/material/IconButton';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
@@ -35,7 +26,7 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { getCodesName } from 'utils/Utils';
+import SamplingSiteMethodsPeriodsList from './components/SamplingSiteMethodsPeriodsList';
 
 const SamplingSiteList = () => {
   const surveyContext = useContext(SurveyContext);
@@ -382,6 +373,7 @@ const SamplingSiteList = () => {
                             display: 'none'
                           }
                         }}>
+                        <SamplingSiteMethodsPeriodsList sampleSite={sampleSite} />
                         <Box display="flex" alignItems="center" overflow="hidden">
                           <AccordionSummary
                             expandIcon={<Icon path={mdiChevronDown} size={1} />}
@@ -447,71 +439,7 @@ const SamplingSiteList = () => {
                           sx={{
                             pt: 0,
                             px: 2
-                          }}>
-                          <List
-                            disablePadding
-                            sx={{
-                              '& .MuiListItemText-primary': {
-                                typography: 'body2'
-                              }
-                            }}>
-                            {sampleSite.sample_methods?.map((sampleMethod) => {
-                              return (
-                                <ListItem
-                                  disableGutters
-                                  key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}`}
-                                  sx={{
-                                    display: 'block',
-                                    p: 0,
-                                    '& + li': {
-                                      mt: 1.5
-                                    }
-                                  }}>
-                                  <ListItemText
-                                    sx={{
-                                      px: 2,
-                                      py: 1,
-                                      background: grey[100]
-                                    }}
-                                    title="Sampling Method"
-                                    primary={getCodesName(
-                                      codesContext.codesDataLoader.data,
-                                      'sample_methods',
-                                      sampleMethod.method_lookup_id
-                                    )}
-                                  />
-                                  <List disablePadding>
-                                    {sampleMethod.sample_periods?.map((samplePeriod) => {
-                                      return (
-                                        <ListItem
-                                          dense
-                                          divider
-                                          disableGutters
-                                          sx={{
-                                            px: 1.5,
-                                            color: 'text.secondary'
-                                          }}
-                                          title="Sampling Period"
-                                          key={`${samplePeriod.survey_sample_method_id}-${samplePeriod.survey_sample_period_id}`}>
-                                          <ListItemIcon sx={{ minWidth: '32px' }} color="inherit">
-                                            <Icon path={mdiCalendarRange} size={0.75}></Icon>
-                                          </ListItemIcon>
-                                          <ListItemText>
-                                            <Typography variant="body2" component="div" color="inherit">
-                                              {`${samplePeriod.start_date} ${samplePeriod.start_time ?? ''} - ${
-                                                samplePeriod.end_date
-                                              } ${samplePeriod.end_time ?? ''}`}
-                                            </Typography>
-                                          </ListItemText>
-                                        </ListItem>
-                                      );
-                                    })}
-                                  </List>
-                                </ListItem>
-                              );
-                            })}
-                          </List>
-                        </AccordionDetails>
+                          }}></AccordionDetails>
                       </Accordion>
                     );
                   })}
