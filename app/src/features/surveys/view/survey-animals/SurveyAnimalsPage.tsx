@@ -7,7 +7,6 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useQuery } from 'hooks/useQuery';
-import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { setMessageSnackbar } from 'utils/Utils';
 import { AnimalSchema, AnimalSex, ANIMAL_FORM_MODE, Critter, IAnimal } from './animal';
@@ -28,12 +27,12 @@ export const SurveyAnimalsPage = () => {
 
   const [selectedSection, setSelectedSection] = useState<IAnimalSections>(SurveyAnimalsI18N.animalGeneralTitle);
   const [openAddDialog, setOpenAddDialog] = useState(false);
-  const [detailedCritter, setDetailedCritter] = useState<IDetailedCritterWithInternalId | undefined>();
+  //const [detailedCritter, setDetailedCritter] = useState<IDetailedCritterWithInternalId | undefined>();
 
   const {
     data: surveyCritters,
     load: loadCritters,
-    refresh: refreshCritters,
+    refresh: refreshSurveyCritters,
     isLoading: crittersLoading
   } = useDataLoader(() => bhApi.survey.getSurveyCritters(projectId, surveyId));
 
@@ -42,6 +41,12 @@ export const SurveyAnimalsPage = () => {
     load: loadDeployments,
     refresh: refreshDeployments
   } = useDataLoader(() => bhApi.survey.getDeploymentsInSurvey(projectId, surveyId));
+
+  const {
+    data: detailedCritter,
+    //load: loadCritter,
+    refresh: refreshCritter
+  } = useDataLoader(cbApi.critters.getDetailedCritter);
 
   loadCritters();
   loadDeployments();
@@ -55,11 +60,10 @@ export const SurveyAnimalsPage = () => {
       if (!focusCritter) {
         return;
       }
-      const critter = await cbApi.critters.getDetailedCritter(focusCritter.critter_id);
-      setDetailedCritter(critter);
+      await refreshCritter(focusCritter.critter_id);
     };
     getDetailedCritterOnMount();
-  }, [surveyCritters, survey_critter_id, detailedCritter, cbApi.critters]);
+  }, [surveyCritters, survey_critter_id, cbApi.critters, detailedCritter, refreshCritter]);
 
   const defaultFormValues: IAnimal = useMemo(() => {
     return {
@@ -169,7 +173,7 @@ export const SurveyAnimalsPage = () => {
         await patchCritterPayload();
       }
       refreshDeployments();
-      refreshCritters();
+      refreshSurveyCritters();
       return { success: true, msg: 'Successfully updated animal' };
     } catch (err) {
       setMessageSnackbar(`Submmision failed ${(err as Error).message}`, dialogContext);
@@ -284,14 +288,22 @@ export const SurveyAnimalsPage = () => {
         sideBarComponent={
           <AnimalList
             onAddButton={() => setOpenAddDialog(true)}
-            onSelectCritter={setDetailedCritter}
+            refreshCritter={refreshCritter}
+            //onSelectCritter={setDetailedCritter}
             surveyCritters={surveyCritters}
             isLoading={crittersLoading}
             selectedSection={selectedSection}
             onSelectSection={(section) => setSelectedSection(section)}
           />
         }
-        mainComponent={<AnimalSection critter={detailedCritter} section={selectedSection} />}
+        mainComponent={
+          <AnimalSection
+            key={selectedSection}
+            critter={detailedCritter}
+            section={selectedSection}
+            refreshCritter={refreshCritter}
+          />
+        }
       />
       <EditDialog
         dialogTitle={'Add New Animal'}

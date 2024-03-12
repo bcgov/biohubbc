@@ -65,8 +65,7 @@ type IQualitativeMeasurementResponse = {
   measurement_comment: string | null;
   measured_timestamp: string | null;
   measurement_name: string;
-  option_label: string;
-  option_value: number;
+  value: string;
 };
 
 type IQuantitativeMeasurementResponse = {
@@ -84,7 +83,7 @@ type IMortalityResponse = {
   mortality_id: string;
   location_id: string | null;
   mortality_timestamp: string;
-  location: ILocationResponse;
+  mortality_location: ILocationResponse;
   proximate_cause_of_death_id: string | null;
   proximate_cause_of_death_confidence: string;
   proximate_predated_by_itis_tsn: string | null;
@@ -94,13 +93,15 @@ type IMortalityResponse = {
   mortality_comment: string | null;
 };
 
-type IFamilyParentResponse = {
+export type IFamilyParentResponse = {
   family_id: string;
+  family_label: string;
   parent_critter_id: string;
 };
 
 type IFamilyChildResponse = {
   family_id: string;
+  family_label: string;
   child_critter_id: string;
 };
 

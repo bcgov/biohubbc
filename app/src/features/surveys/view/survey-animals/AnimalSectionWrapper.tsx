@@ -5,15 +5,15 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
 import React, { PropsWithChildren } from 'react';
 import { IAnimalSections } from './animal-sections';
 
 interface IAnimalSectionWrapperProps extends PropsWithChildren {
-  form: JSX.Element;
-  section: IAnimalSections;
-  critter?: IDetailedCritterWithInternalId;
-  infoText: string;
+  form?: JSX.Element;
+  section?: IAnimalSections;
+  infoText?: string;
+  critter?: ICritterDetailedResponse;
   addBtn?: JSX.Element;
 }
 export const AnimalSectionWrapper = (props: IAnimalSectionWrapperProps) => {
@@ -32,43 +32,59 @@ export const AnimalSectionWrapper = (props: IAnimalSectionWrapperProps) => {
         </Toolbar>
 
         <Divider flexItem></Divider>
-
-        <Box
-          flex="1 1 auto"
-          p={5}
-          sx={{
-            overflowY: 'auto',
-            background: grey[100]
-          }}>
+        {!props?.critter ? (
           <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            flex="1 1 auto"
+            p={3}
             sx={{
-              maxWidth: '1200px',
-              mx: 'auto'
+              overflowY: 'auto',
+              background: grey[100]
             }}>
-            <Box display="flex" flexDirection="row" alignItems="flex-start" mb={2}>
-              <Typography
-                component="h1"
-                variant="h2"
-                sx={{
-                  flex: '1 1 auto'
-                }}>
-                {props.section}
-              </Typography>
-              {props.addBtn ? props.addBtn : null}
-            </Box>
-
-            <Typography
-              variant="body1"
-              color="textSecondary"
-              maxWidth={'88ch'}
-              sx={{
-                mb: 5
-              }}>
-              {props.infoText}
+            <Typography component="span" variant="body2">
+              No Animal Selected
             </Typography>
-            {props.children}
           </Box>
-        </Box>
+        ) : (
+          <Box
+            flex="1 1 auto"
+            p={5}
+            sx={{
+              overflowY: 'auto',
+              background: grey[100]
+            }}>
+            <Box
+              sx={{
+                maxWidth: '1200px',
+                mx: 'auto'
+              }}>
+              <Box display="flex" flexDirection="row" alignItems="flex-start" mb={2}>
+                <Typography
+                  component="h1"
+                  variant="h2"
+                  sx={{
+                    flex: '1 1 auto'
+                  }}>
+                  {props.section}
+                </Typography>
+                {props.addBtn}
+              </Box>
+
+              <Typography
+                variant="body1"
+                color="textSecondary"
+                maxWidth={'88ch'}
+                sx={{
+                  mb: 5
+                }}>
+                {props.infoText}
+              </Typography>
+              {props.children}
+            </Box>
+          </Box>
+        )}
       </Paper>
     </>
   );

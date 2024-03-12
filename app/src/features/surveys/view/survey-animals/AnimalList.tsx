@@ -17,9 +17,9 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { SurveyAnimalsI18N } from 'constants/i18n';
-import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { useQuery } from 'hooks/useQuery';
-import { IDetailedCritterWithInternalId, ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
+import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { useHistory } from 'react-router-dom';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
 
@@ -28,7 +28,8 @@ interface IAnimalListProps {
   surveyCritters?: ISimpleCritterWithInternalId[];
   selectedSection: IAnimalSections;
   onSelectSection: (section: IAnimalSections) => void;
-  onSelectCritter: (critter?: IDetailedCritterWithInternalId) => void;
+  //onSelectCritter: (critter?: IDetailedCritterWithInternalId) => void;
+  refreshCritter: (critter_id: string) => Promise<ICritterDetailedResponse | undefined>;
   onAddButton: () => void;
 }
 
@@ -70,20 +71,20 @@ const ListPlaceholder = (props: { displaySkeleton: boolean }) =>
   );
 
 const AnimalList = (props: IAnimalListProps) => {
-  const { isLoading, selectedSection, onSelectSection, onSelectCritter, surveyCritters, onAddButton } = props;
+  const { isLoading, selectedSection, onSelectSection, refreshCritter, surveyCritters, onAddButton } = props;
 
   const history = useHistory();
-  const cbApi = useCritterbaseApi();
+  //const cbApi = useCritterbaseApi();
   const { cid: survey_critter_id } = useQuery();
 
   const handleCritterSelect = async (critter: ISimpleCritterWithInternalId) => {
     if (critter.survey_critter_id === Number(survey_critter_id)) {
       history.replace(history.location.pathname);
-      onSelectCritter();
+      //TODO: handle reset state
+      //onSelectCritter();
     } else {
+      refreshCritter(critter.critter_id);
       history.push(`?cid=${critter.survey_critter_id}`);
-      const detailedCritter = await cbApi.critters.getDetailedCritter(critter.critter_id);
-      onSelectCritter(detailedCritter);
     }
     onSelectSection(SurveyAnimalsI18N.animalGeneralTitle);
   };

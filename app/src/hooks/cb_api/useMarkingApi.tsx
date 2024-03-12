@@ -12,7 +12,13 @@ const useMarkingApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  return { createMarking, updateMarking };
+  const deleteMarking = async (markingID: string) => {
+    const { data } = await axios.delete(`/api/critterbase/markings/${markingID}`);
+
+    return data;
+  };
+
+  return { createMarking, updateMarking, deleteMarking };
 };
 
 export { useMarkingApi };

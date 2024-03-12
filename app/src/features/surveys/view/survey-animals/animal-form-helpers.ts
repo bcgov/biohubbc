@@ -1,6 +1,8 @@
-import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
 import { v4 } from 'uuid';
 import { AnimalSex, Critter, IAnimal, newFamilyIdPlaceholder } from './animal';
+
+//TODO: Is this file deprecated?
 
 /**
  * Takes the 'detailed' format response from the Critterbase DB and transforms the response into an object that is usable
@@ -10,7 +12,7 @@ import { AnimalSex, Critter, IAnimal, newFamilyIdPlaceholder } from './animal';
  * @param existingCritter The critter as seen from the Critterbase DB
  * @returns {*} IAnimal
  */
-export const transformCritterbaseAPIResponseToForm = (existingCritter: IDetailedCritterWithInternalId): IAnimal => {
+export const transformCritterbaseAPIResponseToForm = (existingCritter: ICritterDetailedResponse): IAnimal => {
   //This is a pretty long albeit straightforward function, which is why it's been lifted out of the main TSX file.
   //Perhaps some of this could be automated by iterating through each object entries, but I don't think
   //it's necessarily a bad thing to have it this explicit when so many parts need to be handled in particular ways.
@@ -81,7 +83,7 @@ export const transformCritterbaseAPIResponseToForm = (existingCritter: IDetailed
         measured_timestamp: meas.measured_timestamp ? new Date(meas.measured_timestamp) : ('' as unknown as Date),
         measurement_comment: meas.measurement_comment ?? '',
         measurement_name: meas.measurement_name ?? undefined,
-        option_label: meas.option_label
+        option_label: meas.value
       })),
       ...existingCritter.measurements.quantitative.map((meas) => ({
         ...meas,

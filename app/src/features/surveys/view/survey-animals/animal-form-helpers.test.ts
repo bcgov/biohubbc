@@ -50,7 +50,7 @@ describe('animal form helpers', () => {
             ultimate_cause_of_death_confidence: '',
             ultimate_predated_by_itis_tsn: null,
             mortality_comment: 'Mortality email Nov 11, 2020 & Sept 29th and 30, 2020',
-            location: {
+            mortality_location: {
               latitude: 52.676422548679,
               longitude: -124.9568080904715,
               coordinate_uncertainty: null,
@@ -138,8 +138,7 @@ describe('animal form helpers', () => {
               measurement_comment: 'Ported from BCTW, original data: < No >',
               measured_timestamp: null,
               measurement_name: 'Juvenile at heel indicator',
-              option_label: 'False',
-              option_value: 0
+              value: 'False'
             }
           ],
           quantitative: [
@@ -157,12 +156,14 @@ describe('animal form helpers', () => {
         },
         family_parent: [
           {
+            family_label: 'blah',
             family_id: 'd9ae9a17-4889-4628-bf32-3eb126bfb924',
             parent_critter_id: 'c8601a4a-3946-4d1a-8c3f-a07088112284'
           }
         ],
         family_child: [
           {
+            family_label: 'test',
             family_id: 'efc1021d-9527-4ceb-8393-33fb2868ec25',
             child_critter_id: 'c8601a4a-3946-4d1a-8c3f-a07088112284'
           }

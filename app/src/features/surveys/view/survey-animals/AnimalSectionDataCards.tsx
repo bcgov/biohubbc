@@ -10,7 +10,6 @@ import { TransitionGroup } from 'react-transition-group';
 import { setMessageSnackbar } from 'utils/Utils';
 import { IAnimal } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
-import GeneralAnimalSummary from './GeneralAnimalSummary';
 
 export type SubHeaderData = Record<string, string | number | null | undefined>;
 
@@ -179,7 +178,8 @@ export const AnimalSectionDataCards = (props: IAnimalSectionDataCardsProps) => {
           onEditClick(idx);
         };
         if (section === SurveyAnimalsI18N.animalGeneralTitle) {
-          return <GeneralAnimalSummary handleEdit={() => handleClickEdit(0)} />;
+          return null;
+          //return <GeneralAnimalSummary handleEdit={() => handleClickEdit(0)} />;
         }
         return (
           <TransitionGroup>

@@ -7,7 +7,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/system/Box';
 import { DialogContext } from 'contexts/dialogContext';
-import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
 import { useContext } from 'react';
 import { setMessageSnackbar } from 'utils/Utils';
 import { DetailsWrapper } from '../SurveyDetails';
@@ -23,17 +23,17 @@ interface GeneralAnimalSummaryProps {
    * Callback to be fired when edit action selected
    */
   handleEdit: () => void;
-  critter?: IDetailedCritterWithInternalId;
+  critter: ICritterDetailedResponse;
 }
 
 const GeneralAnimalSummary = (props: GeneralAnimalSummaryProps) => {
   const dialogContext = useContext(DialogContext);
 
   const animalGeneralDetails: Array<IGeneralDetail> = [
-    { title: 'Alias', value: props?.critter?.animal_id },
-    { title: 'Taxon', value: props?.critter?.itis_scientific_name },
-    { title: 'Sex', value: props?.critter?.sex },
-    { title: 'Wildlife Health ID', value: props?.critter?.wlh_id },
+    { title: 'Alias', value: props.critter?.animal_id },
+    { title: 'Taxon', value: props.critter.itis_scientific_name },
+    { title: 'Sex', value: props.critter.sex },
+    { title: 'Wildlife Health ID', value: props.critter?.wlh_id },
     {
       title: 'Critterbase ID',
       value: props?.critter?.critter_id,

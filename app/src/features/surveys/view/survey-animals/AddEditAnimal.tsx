@@ -33,7 +33,6 @@ import { CaptureAnimalFormContent } from './form-sections/CaptureAnimalForm';
 import { CollectionUnitAnimalFormContent } from './form-sections/CollectionUnitAnimalForm';
 import { FamilyAnimalFormContent } from './form-sections/FamilyAnimalForm';
 import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
-import { MarkingAnimalFormContent } from './form-sections/MarkingAnimalForm';
 import MeasurementAnimalFormContent from './form-sections/MeasurementAnimalForm';
 import { MortalityAnimalFormContent } from './form-sections/MortalityAnimalForm';
 import { IAnimalDeployment, IAnimalTelemetryDeviceFile } from './telemetry-device/device';
@@ -94,7 +93,7 @@ export const AddEditAnimal = (props: IAddEditAnimalProps) => {
   const renderSingleForm = (section: IAnimalSections) => {
     const sectionMap: Partial<Record<IAnimalSections, JSX.Element>> = {
       [SurveyAnimalsI18N.animalGeneralTitle]: <GeneralAnimalForm />,
-      [SurveyAnimalsI18N.animalMarkingTitle]: <MarkingAnimalFormContent index={selectedIndex} tsn={1} />,
+      //[SurveyAnimalsI18N.animalMarkingTitle]: <MarkingAnimalFormContent index={selectedIndex} tsn={1} />,
       [SurveyAnimalsI18N.animalMeasurementTitle]: (
         <MeasurementAnimalFormContent index={selectedIndex} measurements={measurements} mode={formMode} />
       ),

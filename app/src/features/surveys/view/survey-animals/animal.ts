@@ -1,5 +1,6 @@
 import { DATE_LIMIT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
+import { ICritterDetailedResponse, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { isEqual as deepEquals, omit, omitBy } from 'lodash-es';
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
@@ -17,6 +18,22 @@ export enum AnimalSex {
   UNKNOWN = 'Unknown',
   HERM = 'Hermaphroditic'
 }
+
+export type AnimalFormProps<T> =
+  | {
+      formObject?: never;
+      formMode: ANIMAL_FORM_MODE.ADD;
+      open: boolean;
+      handleClose: () => void;
+      critter: ICritterDetailedResponse | ICritterSimpleResponse;
+    }
+  | {
+      formObject: T;
+      formMode: ANIMAL_FORM_MODE.EDIT;
+      open: boolean;
+      handleClose: () => void;
+      critter: ICritterDetailedResponse | ICritterSimpleResponse;
+    };
 
 /**
  * Provides an acceptable amount of type security with formik field names for animal forms
@@ -126,11 +143,11 @@ export const AnimalMarkingSchema = yup.object({
 export const CreateCritterMarkingSchema = yup.object({
   marking_id: yup.string().optional(),
   critter_id: yup.string(),
-  marking_type_id: yup.string().required('Type is required'),
+  marking_type_id: yup.string().required('Marking type is required'),
   taxon_marking_body_location_id: yup.string().required('Body location required'),
-  primary_colour_id: yup.string().optional(),
-  secondary_colour_id: yup.string().optional(),
-  marking_comment: yup.string().optional()
+  primary_colour_id: yup.string().optional().nullable(),
+  secondary_colour_id: yup.string().optional().nullable(),
+  marking_comment: yup.string().optional().nullable()
 });
 
 export const AnimalCollectionUnitSchema = yup.object({}).shape({
