@@ -183,6 +183,7 @@ const SurveyMap = (props: ISurveyMapProps) => {
   const staticLayers: IStaticLayer[] = [
     {
       layerName: 'Study Areas',
+      layerColors: { color: '#e36600', fillColor: '#e36600' },
       features: studyAreaLocations.flatMap((location) => {
         return location.geojson.map((feature, index) => {
           return {
