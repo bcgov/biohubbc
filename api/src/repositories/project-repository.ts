@@ -1,6 +1,7 @@
-import { isArray } from 'lodash';
+import { Knex } from 'knex';
 import SQL, { SQLStatement } from 'sql-template-strings';
 import { z } from 'zod';
+import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostProjectObject } from '../models/project-create';
 import { PutObjectivesData, PutProjectData } from '../models/project-update';
@@ -28,6 +29,92 @@ const defaultLog = getLogger('repositories/project-repository');
  */
 export class ProjectRepository extends BaseRepository {
   /**
+   * Constructs a non-paginated query used to get a project list for users.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IProjectAdvancedFilters} filterFields
+   * @return {*}  Promise<Knex.QueryBuilder>
+   * @memberof ProjectRepository
+   */
+  _makeProjectListQuery(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IProjectAdvancedFilters
+  ): Knex.QueryBuilder {
+    const knex = getKnex();
+
+    const query = knex
+      .select([
+        'p.project_id',
+        'p.name',
+        'p.objectives',
+        'p.start_date',
+        'p.end_date',
+        knex.raw(`COALESCE(array_remove(array_agg(DISTINCT rl.region_name), null), '{}') as regions`),
+        knex.raw('array_agg(distinct prog.program_id) as project_programs')
+      ])
+      .from('project as p')
+
+      .leftJoin('project_program as pp', 'p.project_id', 'pp.project_id')
+      .leftJoin('survey as s', 's.project_id', 'p.project_id')
+      .leftJoin('study_species as sp', 'sp.survey_id', 's.survey_id')
+      .leftJoin('program as prog', 'prog.program_id', 'pp.program_id')
+      .leftJoin('project_region as pr', 'p.project_id', 'pr.project_id')
+      .leftJoin('region_lookup as rl', 'pr.region_id', 'rl.region_id')
+
+      .groupBy(['p.project_id', 'p.name', 'p.objectives', 'p.start_date', 'p.end_date']);
+
+    /*
+     * Ensure that users can only see project that they are participating in, unless
+     * they are an administrator.
+     */
+    if (!isUserAdmin) {
+      query.whereIn('p.project_id', (subQueryBuilder) => {
+        subQueryBuilder.select('project_id').from('project_participation').where('system_user_id', systemUserId);
+      });
+    }
+
+    // Start Date filter
+    if (filterFields.start_date) {
+      query.andWhere('p.start_date', '>=', filterFields.start_date);
+    }
+
+    // End Date filter
+    if (filterFields.end_date) {
+      query.andWhere('p.end_date', '<=', filterFields.end_date);
+    }
+
+    // Project Name filter (exact match)
+    if (filterFields.project_name) {
+      query.andWhere('p.name', filterFields.project_name);
+    }
+
+    // Focal Species filter
+    if (filterFields.itis_tsns?.length) {
+      query.whereIn('sp.itis_tsn', filterFields.itis_tsns);
+    }
+
+    // Keyword Search filter
+    if (filterFields.keyword) {
+      const keywordMatch = `%${filterFields.keyword}%`;
+      query.where((subQueryBuilder) => {
+        subQueryBuilder
+          .where('p.name', 'ilike', keywordMatch)
+          .orWhere('p.objectives', 'ilike', keywordMatch)
+          .orWhere('s.name', 'ilike', keywordMatch);
+      });
+    }
+
+    // Programs filter
+    if (filterFields.project_programs?.length) {
+      query.where('prog.program_id', 'IN', filterFields.project_programs);
+    }
+
+    return query;
+  }
+
+  /**
    * Retrieves the paginated list of all projects that are available to the user.
    *
    * @param {boolean} isUserAdmin
@@ -45,131 +132,18 @@ export class ProjectRepository extends BaseRepository {
   ): Promise<ProjectListData[]> {
     defaultLog.debug({ label: 'getProjectList', pagination });
 
-    const sqlStatement = SQL`
-      SELECT
-        p.project_id,
-        p.name,
-        p.start_date,
-        p.end_date,
-        COALESCE(array_remove(array_agg(DISTINCT rl.region_name), null), '{}') as regions,
-        array_agg(distinct p2.program_id) as project_programs
-      FROM
-        project as p
-      LEFT JOIN project_program pp
-        ON p.project_id = pp.project_id
-      LEFT JOIN program p2
-        ON p2.program_id = pp.program_id
-      LEFT OUTER JOIN survey as s
-        ON s.project_id = p.project_id
+    const query = this._makeProjectListQuery(isUserAdmin, systemUserId, filterFields);
 
-        
-      LEFT JOIN project_region pr
-        ON p.project_id = pr.project_id
-      LEFT JOIN region_lookup rl
-        ON pr.region_id = rl.region_id
-      WHERE 1 = 1
-    `;
-
-    if (!isUserAdmin) {
-      sqlStatement.append(SQL`
-        AND p.project_id IN (
-          SELECT
-            project_id
-          FROM
-            project_participation
-          where
-            system_user_id = ${systemUserId}
-        )
-      `);
-    }
-
-    if (filterFields && Object.keys(filterFields).length !== 0 && filterFields.constructor === Object) {
-      if (filterFields.start_date && !filterFields.end_date) {
-        sqlStatement.append(SQL` AND p.start_date >= ${filterFields.start_date}`);
-      }
-
-      if (!filterFields.start_date && filterFields.end_date) {
-        sqlStatement.append(SQL` AND p.end_date <= ${filterFields.end_date}`);
-      }
-
-      if (filterFields.start_date && filterFields.end_date) {
-        sqlStatement.append(
-          SQL` AND p.start_date >= ${filterFields.start_date} AND p.end_date <= ${filterFields.end_date}`
-        );
-      }
-
-      if (filterFields.project_name) {
-        sqlStatement.append(SQL` AND p.name = ${filterFields.project_name}`);
-      }
-
-      if (filterFields?.species && filterFields?.species?.length > 0) {
-        sqlStatement.append(SQL` AND sp.wldtaxonomic_units_id =${filterFields.species[0]}`);
-      }
-
-      if (filterFields.keyword) {
-        const keyword_string = '%'.concat(filterFields.keyword).concat('%');
-        sqlStatement.append(SQL` AND p.name ilike ${keyword_string}`);
-        sqlStatement.append(SQL` AND fs.name ilike ${keyword_string}`);
-        sqlStatement.append(SQL` OR s.name ilike ${keyword_string}`);
-      }
-    }
-
-    sqlStatement.append(SQL`
-      group by
-        p.project_id,
-        p.name,
-        p.start_date,
-        p.end_date
-    `);
-
-    /*
-      this is placed after the `group by` to take advantage of the `HAVING` clause
-      by placing the filter in the HAVING clause we are able to properly search
-      on program ids while still returning the full list that is associated to the project
-    */
-    if (filterFields.project_programs) {
-      let programs = filterFields.project_programs;
-      if (!isArray(filterFields.project_programs)) {
-        programs = [filterFields.project_programs];
-      }
-
-      // postgres arrays literals start and end with {}
-      sqlStatement.append(SQL` HAVING array_agg(distinct p2.program_id) && '{`);
-      programs.forEach((id, index) => {
-        // add the element
-        sqlStatement.append(id);
-
-        if (index !== programs.length - 1) {
-          // add a comma unless it is the last element in the array
-          sqlStatement.append(',');
-        }
-      });
-      sqlStatement.append(SQL`}'`);
-    }
-
-    if (pagination?.sort) {
-      sqlStatement
-        .append(SQL`ORDER BY `)
-        .append(pagination.sort)
-        .append(SQL` `);
-
-      if (pagination.order) {
-        sqlStatement.append(pagination.order === 'asc' ? SQL`ASC` : SQL`DESC`);
-      }
-    }
-
+    // Pagination
     if (pagination) {
-      sqlStatement.append(SQL`
-        LIMIT
-          ${pagination.limit}
-        OFFSET
-          ${(pagination.page - 1) * pagination.limit}
-      `);
+      query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        query.orderBy(pagination.sort, pagination.order);
+      }
     }
 
-    sqlStatement.append(';');
-
-    const response = await this.connection.sql(sqlStatement, ProjectListData);
+    const response = await this.connection.knex(query, ProjectListData);
 
     return response.rows;
   }
@@ -177,36 +151,22 @@ export class ProjectRepository extends BaseRepository {
   /**
    * Returns the total count of projects that are visible to the given user.
    *
+   * @param {IProjectAdvancedFilters} filterFields
    * @param {boolean} isUserAdmin
    * @param {(number | null)} systemUserId
    * @return {*}  {Promise<number>}
    * @memberof ProjectRepository
    */
-  async getProjectCount(isUserAdmin: boolean, systemUserId: number | null): Promise<number> {
-    const sqlStatement = SQL`
-      SELECT
-        COUNT(*) as project_count
-      FROM
-        project as p
-      WHERE 1 = 1
-    `;
+  async getProjectCount(
+    filterFields: IProjectAdvancedFilters,
+    isUserAdmin: boolean,
+    systemUserId: number | null
+  ): Promise<number> {
+    const projectsListQuery = this._makeProjectListQuery(isUserAdmin, systemUserId, filterFields);
 
-    if (!isUserAdmin) {
-      sqlStatement.append(SQL`
-        AND p.project_id IN (
-          SELECT
-            project_id
-          FROM
-            project_participation
-          where
-            system_user_id = ${systemUserId}
-        )
-      `);
-    }
+    const query = getKnex().from(projectsListQuery.as('temp')).count('* as project_count');
 
-    sqlStatement.append(';');
-
-    const response = await this.connection.sql(sqlStatement, z.object({ project_count: z.string().transform(Number) }));
+    const response = await this.connection.knex(query, z.object({ project_count: z.string().transform(Number) }));
 
     if (response?.rowCount < 1) {
       throw new ApiExecuteSQLError('Failed to get project count', [
