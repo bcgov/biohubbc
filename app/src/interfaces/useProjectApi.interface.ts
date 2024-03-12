@@ -42,21 +42,6 @@ export interface IProjectSupplementaryReportAttachmentData {
 }
 
 /**
- * An interface for an instance of filter fields for project advanced filter search
- */
-export interface IProjectAdvancedFilterRequest {
-  permit_number: string;
-  project_programs: number[];
-  start_date: string;
-  end_date: string;
-  keyword: string;
-  project_name: string;
-  agency_id: number;
-  agency_project_id: string;
-  species: number[];
-}
-
-/**
  * Get project attachments response object.
  *
  * @export

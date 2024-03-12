@@ -43,6 +43,23 @@ export const useConfigContext = (): IConfig => {
 };
 
 /**
+ * Returns an instance of `ICodesContext` from `CodesContext`.
+ *
+ * @return {*}  {ICodesContext}
+ */
+export const useCodesContext = (): ICodesContext => {
+  const context = useContext(CodesContext);
+
+  if (!context) {
+    throw Error(
+      'CodesContext is undefined, please verify you are calling useCodesContext() as child of an <CodesContextProvider> component.'
+    );
+  }
+
+  return context;
+};
+
+/**
  * Returns an instance of `IDialogContext` from `DialogContext`.
  *
  * @return {*}  {IDialogContext}
