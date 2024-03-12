@@ -16,7 +16,7 @@ const appTheme = createTheme({
   palette: {
     // https://material-ui.com/customization/palette/
     background: {
-      default: '#f1f1f1'
+      default: grey[100]
     },
     primary: {
       light: '#5469a4',
@@ -38,10 +38,10 @@ const appTheme = createTheme({
   typography: {
     fontFamily: ['BCSans', 'Verdana', 'Arial', 'sans-serif'].join(','),
     h1: {
-      fontSize: '1.875rem',
+      fontSize: '1.75rem',
       fontWeight: 700,
       paddingTop: '4px',
-      paddingBottom: '6px',
+      paddingBottom: '8px',
       display: '-webkit-box',
       WebkitLineClamp: '2',
       WebkitBoxOrient: 'vertical',
@@ -148,7 +148,7 @@ const appTheme = createTheme({
     },
     MuiButton: {
       defaultProps: {
-        disableElevation: true
+        // disableElevation: true
       },
       styleOverrides: {
         root: {

@@ -30,7 +30,8 @@ const SamplingMethods = () => {
     <Box component="dl">
       <Box className="row">
         <Typography component="dt">Site Selection Strategies</Typography>
-        <Box
+        <Typography
+          component="dd"
           flex="1 1 auto"
           sx={{
             '& dd': {
@@ -43,13 +44,9 @@ const SamplingMethods = () => {
             }
           }}>
           {site_selection.strategies?.map((strategy: string) => {
-            return (
-              <Typography component="dd" key={strategy}>
-                {strategy}
-              </Typography>
-            );
+            return <span key={strategy}>{strategy}</span>;
           })}
-        </Box>
+        </Typography>
       </Box>
 
       {site_selection.stratums.length > 0 && (
