@@ -22,6 +22,7 @@ export async function up(knex: Knex): Promise<void> {
       survey_progress_id                            integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       name                                          varchar(32)        NOT NULL,
       description                                   varchar(128),
+      record_effective_date                         timestamptz(6)     NOT NULL,
       record_end_date                               timestamptz(6),
       create_date                                   timestamptz(6)     DEFAULT now() NOT NULL,
       create_user                                   integer            NOT NULL,
@@ -35,6 +36,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN survey_progress.survey_progress_id IS 'Primary key for survey_progress.';
     COMMENT ON COLUMN survey_progress.name IS 'Name of the survey progress option.';
     COMMENT ON COLUMN survey_progress.description IS 'Description of the survey progress option.';
+    COMMENT ON COLUMN survey_progress.record_effective_date IS 'Start date of the survey progress option.';
     COMMENT ON COLUMN survey_progress.record_end_date IS 'End date of the survey progress option.';
     COMMENT ON COLUMN survey_progress.create_date IS 'The datetime the record was created.';
     COMMENT ON COLUMN survey_progress.create_user IS 'The id of the user who created the record as identified in the system user table.';
@@ -55,8 +57,11 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN survey.progress_id IS 'Foreign key referencing the progress value.';
     ALTER TABLE survey ADD CONSTRAINT survey_progress_fk FOREIGN KEY (progress_id) REFERENCES survey_progress(survey_progress_id);
     
+    -- Add index
+    CREATE INDEX survey_progress_idx1 ON survey(progress_id);
+
     ----------------------------------------------------------------------------------------
-    -- Add initial values
+    -- Add initial values to survey progress table
     ----------------------------------------------------------------------------------------
     INSERT INTO survey_progress (name, description)
     VALUES
@@ -66,7 +71,7 @@ export async function up(knex: Knex): Promise<void> {
     ),
     (
       'In progress',
-      'The Survey is underway and not all data has been collected or uploaded.'
+      'The Survey is underway and some data has not yet been collected or uploaded.'
     ),
     (
       'Completed',

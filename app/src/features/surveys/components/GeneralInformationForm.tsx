@@ -39,7 +39,7 @@ export interface IGeneralInformationForm {
     survey_name: string;
     start_date: string;
     end_date: string;
-    progress: number;
+    progress: number | null;
     survey_types: number[];
   };
   species: {
@@ -60,7 +60,7 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
     survey_name: '',
     start_date: '',
     end_date: '',
-    progress: 0,
+    progress: null,
     survey_types: []
   },
   species: {
@@ -85,7 +85,7 @@ export const GeneralInformationYupSchema = (customYupRules?: any) => {
           .array(yup.number())
           .min(1, 'One or more Types are required')
           .required('One or more Types are required'),
-        progress: yup.number().min(1, 'Survey Progress is Required').required('Survey Progress is Required')
+        progress: yup.number().min(1, 'Survey Progress is Required').required('Survey Progress is Required').nullable()
       }),
       species: yup.object().shape({
         focal_species: yup.array().min(1, 'You must specify a focal species').required('Required'),
