@@ -137,7 +137,7 @@ export const DetailsWrapper = (props: PropsWithChildren) => (
         gap: { xs: 0, md: '24px' },
         mt: 0,
         py: 1,
-        borderTop: '1px solid ' + grey[300]
+        borderTop: '1px solid ' + grey[200]
       },
       '& hr': {
         my: 3

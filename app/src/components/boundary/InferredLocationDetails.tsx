@@ -23,11 +23,11 @@ const InferredLocationDetails = (props: IInferredLocationDetailsProps) => {
         <Typography component="dt">
           {type} ({layerNames.length})
         </Typography>
-        <Box>
+        <Typography component="dd">
           {layerNames.map((name: string, index: number) => (
             <Typography
               key={name}
-              component="dd"
+              component="span"
               sx={{
                 display: 'inline-block',
                 mr: '5px'
@@ -36,7 +36,7 @@ const InferredLocationDetails = (props: IInferredLocationDetailsProps) => {
               {index < layerNames.length - 1 && ', '}
             </Typography>
           ))}
-        </Box>
+        </Typography>
       </Box>
     );
   };

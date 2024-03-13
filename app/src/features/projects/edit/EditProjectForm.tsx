@@ -1,7 +1,6 @@
-import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
-import { makeStyles } from '@mui/styles';
+import Stack from '@mui/material/Stack';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { CodesContext } from 'contexts/codesContext';
@@ -11,19 +10,6 @@ import { useContext } from 'react';
 import ProjectDetailsForm, { ProjectDetailsFormYupSchema } from '../components/ProjectDetailsForm';
 import ProjectObjectivesForm, { ProjectObjectivesFormYupSchema } from '../components/ProjectObjectivesForm';
 import ProjectUserForm, { ProjectUserRoleYupSchema } from '../components/ProjectUserForm';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  actionButton: {
-    minWidth: '6rem',
-    '& + button': {
-      marginLeft: '0.5rem'
-    }
-  },
-  sectionDivider: {
-    marginTop: theme.spacing(5),
-    marginBottom: theme.spacing(5)
-  }
-}));
 
 export interface IEditProjectForm {
   initialProjectData: IUpdateProjectRequest | ICreateProjectRequest;
@@ -45,8 +31,6 @@ const EditProjectForm = (props: IEditProjectForm) => {
   const codesContext = useContext(CodesContext);
   const codes = codesContext.codesDataLoader.data;
 
-  const classes = useStyles();
-
   const handleSubmit = async (formikData: IUpdateProjectRequest) => {
     props.handleSubmit(formikData);
   };
@@ -60,7 +44,7 @@ const EditProjectForm = (props: IEditProjectForm) => {
       validateOnChange={false}
       enableReinitialize={true}
       onSubmit={handleSubmit}>
-      <>
+      <Stack gap={5}>
         <FormikErrorSnackbar />
         <HorizontalSplitFormComponent
           title="General Information"
@@ -80,7 +64,7 @@ const EditProjectForm = (props: IEditProjectForm) => {
             </>
           }></HorizontalSplitFormComponent>
 
-        <Divider className={classes.sectionDivider} />
+        <Divider />
 
         <HorizontalSplitFormComponent
           title="Team Members"
@@ -88,8 +72,8 @@ const EditProjectForm = (props: IEditProjectForm) => {
           component={<ProjectUserForm roles={codes?.project_roles ?? []} />}
         />
 
-        <Divider className={classes.sectionDivider} />
-      </>
+        <Divider />
+      </Stack>
     </Formik>
   );
 };

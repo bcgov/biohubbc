@@ -118,8 +118,8 @@ describe('SurveyRepository', () => {
   describe('getSurveyTypesData', () => {
     it('returns rows', async () => {
       const mockRows = ([
-        { survey_id: 1, type_id: 1 },
-        { survey_id: 1, type_id: 2 }
+        { survey_id: 1, type_id: 1, progress_id: 1 },
+        { survey_id: 1, type_id: 2, progress_id: 1 }
       ] as unknown) as SurveyTypeRecord[];
 
       const mockResponse = ({ rows: mockRows, rowCount: 2 } as any) as Promise<QueryResult<any>>;
@@ -463,6 +463,7 @@ describe('SurveyRepository', () => {
         survey_details: {
           survey_name: 'name',
           start_date: 'start',
+          progress_id: 1,
           end_date: 'end',
           survey_types: [1, 2]
         },
@@ -490,6 +491,7 @@ describe('SurveyRepository', () => {
           survey_name: 'name',
           start_date: 'start',
           end_date: 'end',
+          progress_id: 1,
           survey_types: [1, 2]
         },
         purpose_and_methodology: {
@@ -516,6 +518,7 @@ describe('SurveyRepository', () => {
           survey_name: 'name',
           start_date: 'start',
           end_date: 'end',
+          progress_id: 1,
           survey_types: [1, 2]
         },
         purpose_and_methodology: {
