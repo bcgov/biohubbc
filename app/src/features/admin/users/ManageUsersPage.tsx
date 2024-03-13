@@ -119,19 +119,17 @@ const ManageUsersPage: React.FC = () => {
   return (
     <>
       <PageHeader title="Manage Users" />
-      <Container maxWidth="xl">
-        <Box py={3}>
-          <AccessRequestList
-            accessRequests={accessRequests}
-            codes={codes}
-            refresh={() => {
-              refreshAccessRequests();
-              refreshActiveUsers();
-            }}
-          />
-          <Box mt={3}>
-            <ActiveUsersList activeUsers={activeUsers} codes={codes} refresh={refreshActiveUsers} />
-          </Box>
+      <Container maxWidth="xl" sx={{ py: 3 }}>
+        <AccessRequestList
+          accessRequests={accessRequests}
+          codes={codes}
+          refresh={() => {
+            refreshAccessRequests();
+            refreshActiveUsers();
+          }}
+        />
+        <Box mt={3}>
+          <ActiveUsersList activeUsers={activeUsers} codes={codes} refresh={refreshActiveUsers} />
         </Box>
       </Container>
     </>
