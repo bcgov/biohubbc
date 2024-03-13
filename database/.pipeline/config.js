@@ -19,9 +19,7 @@ const isStaticDeployment = rawOptions.type === 'static';
 
 const branch = (isStaticDeployment && rawOptions.branch) || null;
 
-const tag =
-  (branch && `build-${pipelineConfigMap.version}-${changeId}-${branch}`) ||
-  `build-${pipelineConfigMap.version}-${changeId}`;
+const dbSetupDockerfilePath = './.docker/db/Dockerfile.setup';
 
 /**
  * Parses the npm cli command options and the git action context.

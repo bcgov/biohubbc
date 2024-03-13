@@ -8,6 +8,9 @@ const PROJECT_SEEDER_USER_IDENTIFIER = process.env.PROJECT_SEEDER_USER_IDENTIFIE
 const NUM_SEED_PROJECTS = Number(process.env.NUM_SEED_PROJECTS ?? 2);
 const NUM_SEED_SURVEYS_PER_PROJECT = Number(process.env.NUM_SEED_SURVEYS_PER_PROJECT ?? 2);
 
+const NUM_SEED_OBSERVATIONS_PER_SURVEY = Number(process.env.NUM_SEED_OBSERVATIONS_PER_SURVEY ?? 3);
+const NUM_SEED_SUBCOUNTS_PER_OBSERVATION = Number(process.env.NUM_SEED_SUBCOUNTS_PER_OBSERVATION ?? 1);
+
 const focalTaxonIdOptions = [
   { itis_tsn: 180703, itis_scientific_name: 'Alces alces' }, // Moose
   { itis_tsn: 180596, itis_scientific_name: 'Canis lupus' }, // Wolf
@@ -85,14 +88,20 @@ export async function seed(knex: Knex): Promise<void> {
           ${insertSurveySamplePeriodData(surveyId)}
         `);
 
-        const response1 = await knex.raw(insertSurveyObservationData(surveyId));
-        await knex.raw(insertObservationSubCount(response1.rows[0].survey_observation_id));
-
-        const response2 = await knex.raw(insertSurveyObservationData(surveyId));
-        await knex.raw(insertObservationSubCount(response2.rows[0].survey_observation_id));
-
-        const response3 = await knex.raw(insertSurveyObservationData(surveyId));
-        await knex.raw(insertObservationSubCount(response3.rows[0].survey_observation_id));
+        for (let k = 0; k < NUM_SEED_OBSERVATIONS_PER_SURVEY; k++) {
+          const createObservationResponse = await knex.raw(
+            // set the number of observations to minimum 20 times the number of subcounts (which are set to a number
+            // between 1 and 20) to ensure the sum of all subcounts is at least <= the observation count (to avoid
+            // constraint violations)
+            insertSurveyObservationData(
+              surveyId,
+              NUM_SEED_SUBCOUNTS_PER_OBSERVATION * 20 + faker.number.int({ min: 1, max: 20 })
+            )
+          );
+          for (let l = 0; l < NUM_SEED_SUBCOUNTS_PER_OBSERVATION; l++) {
+            await knex.raw(insertObservationSubCount(createObservationResponse.rows[0].survey_observation_id));
+          }
+        }
       }
     }
   }
@@ -603,7 +612,7 @@ const insertObservationSubCount = (surveyObservationId: number) => `
  * SQL to insert survey observation data. Requires sampling site, method, period.
  *
  */
-const insertSurveyObservationData = (surveyId: number) => `
+const insertSurveyObservationData = (surveyId: number, count: number) => `
   INSERT INTO survey_observation
   (
     survey_id,
@@ -625,16 +634,25 @@ const insertSurveyObservationData = (surveyId: number) => `
     $$${focalTaxonIdOptions[0].itis_scientific_name}$$,
     $$${faker.number.int({ min: 48, max: 60 })}$$,
     $$${faker.number.int({ min: -132, max: -116 })}$$,
-    $$${faker.number.int({ min: 1, max: 20 })}$$,
+    $$${count}$$,
     $$${faker.date
       .between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
       .toISOString()}$$::date,
     timestamp $$${faker.date
       .between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
       .toISOString()}$$::time,
-    (SELECT survey_sample_site_id FROM survey_sample_site LIMIT 1),
-    (SELECT survey_sample_method_id FROM survey_sample_method LIMIT 1),
-    (SELECT survey_sample_period_id FROM survey_sample_period LIMIT 1)
+
+    (SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1),
+    
+    (SELECT survey_sample_method_id FROM survey_sample_method WHERE survey_sample_site_id = (
+      SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1
+    ) LIMIT 1),
+
+    (SELECT survey_sample_period_id FROM survey_sample_period WHERE survey_sample_method_id = (
+      SELECT survey_sample_method_id FROM survey_sample_method WHERE survey_sample_site_id = (
+        SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1
+      ) LIMIT 1
+    ) LIMIT 1)
   )
   RETURNING survey_observation_id;
 `;

@@ -104,9 +104,9 @@ export class SamplePeriodRepository extends BaseRepository {
       WHERE
           ssp.survey_sample_method_id = ssm.survey_sample_method_id
       AND
-          sss.survey_id = surveyId
+          sss.survey_id = ${surveyId}
       AND
-          ssp.survey_sample_period_id = samplePeriod.survey_sample_period_id
+          ssp.survey_sample_period_id = ${samplePeriod.survey_sample_period_id}
       RETURNING
         ssp.*;
     `;

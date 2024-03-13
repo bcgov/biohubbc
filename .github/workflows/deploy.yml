@@ -80,7 +80,6 @@ jobs:
                 - 'database/package*.json'
                 - 'database/.pipeline/**'
                 - 'database/.docker/Dockerfile.setup'
-                - 'database/.docker/Dockerfile.migrate'
               paths_ignore:
                 - 'database/src/**/*.test.ts'
                 - 'database/**.md'

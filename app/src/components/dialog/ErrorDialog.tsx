@@ -96,7 +96,7 @@ export const ErrorDialog = (props: IErrorDialogProps) => {
         <DialogContentText id="alert-dialog-description">{props.dialogText}</DialogContentText>
         {props.dialogError && <DialogContentText id="alert-dialog-description">{props.dialogError}</DialogContentText>}
 
-        {props?.dialogErrorDetails?.length && (
+        {props?.dialogErrorDetails?.length ? (
           <>
             <Button color="primary" onClick={() => setIsExpanded(!isExpanded)}>
               {isExpanded ? 'Hide detailed error message' : 'Show detailed error message'}
@@ -105,6 +105,8 @@ export const ErrorDialog = (props: IErrorDialogProps) => {
               <ErrorDetailsList errors={props.dialogErrorDetails} />
             </Collapse>
           </>
+        ) : (
+          <></>
         )}
       </DialogContent>
 

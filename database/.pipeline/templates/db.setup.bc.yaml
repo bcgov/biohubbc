@@ -23,7 +23,7 @@ parameters:
     value: database
   - name: DB_SETUP_DOCKERFILE_PATH
     required: true
-    value: './.docker/db/Dockerfile.migrate'
+    value: './.docker/db/Dockerfile.setup'
   - name: SOURCE_REPOSITORY_URL
     required: true
     value: https://github.com/bcgov/biohubbc

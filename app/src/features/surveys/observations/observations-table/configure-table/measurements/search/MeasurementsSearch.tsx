@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import MeasurementsSearchAutocomplete from 'features/surveys/observations/measurements/search/MeasurementsSearchAutocomplete';
+import MeasurementsSearchAutocomplete from 'features/surveys/observations/observations-table/configure-table/measurements/search/MeasurementsSearchAutocomplete';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
@@ -32,7 +32,7 @@ export const MeasurementsSearch = (props: IMeasurementsSearchProps) => {
 
   const critterbaseApi = useCritterbaseApi();
 
-  const measurementsDataLoader = useDataLoader(critterbaseApi.lookup.getMeasurementTypeDefinitionsBySearachTerms);
+  const measurementsDataLoader = useDataLoader(critterbaseApi.xref.getMeasurementTypeDefinitionsBySearchTerm);
 
   return (
     <Box>
@@ -42,12 +42,8 @@ export const MeasurementsSearch = (props: IMeasurementsSearchProps) => {
       <MeasurementsSearchAutocomplete
         selectedOptions={selectedMeasurements}
         getOptions={async (inputValue: string) => {
-          const searchTerms = inputValue
-            .split(' ')
-            .map((item) => item.trim())
-            .filter(Boolean);
-          const response = await measurementsDataLoader.refresh(searchTerms);
-          return response || [];
+          const response = await measurementsDataLoader.refresh(inputValue);
+          return (response && [...response.qualitative, ...response.quantitative]) || [];
         }}
         onSelectOptions={onSelectOptions}
       />
