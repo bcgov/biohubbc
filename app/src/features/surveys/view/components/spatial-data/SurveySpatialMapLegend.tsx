@@ -1,12 +1,11 @@
 import { Typography } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import { IStaticLayer } from 'components/map/components/StaticLayers';
-import { ISurveyMapSupplementaryLayer } from '../../SurveyMap';
 import { SurveySpatialDatasetViewEnum } from './SurveySpatialToolbar';
 
 interface ISurveySpatialMapLegendProps {
   activeView: SurveySpatialDatasetViewEnum;
-  layers: (ISurveyMapSupplementaryLayer | IStaticLayer)[];
+  layers: IStaticLayer[];
 }
 
 const SurveySpatialMapLegend = (props: ISurveySpatialMapLegendProps) => {

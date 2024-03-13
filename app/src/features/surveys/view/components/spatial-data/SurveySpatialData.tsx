@@ -46,11 +46,11 @@ const SurveySpatialData = () => {
   const biohubApi = useBiohubApi();
   const classes = useStyles();
 
-  const OBSERVATIONS_COLOUR = '#1d79ad';
-  const STUDY_AREA_COLOUR = '#ed6b1a';
-  const SAMPLING_SITE_COLOUR = '#2016b5';
-  const TELEMETRY_COLOUR = '#ed1ad4';
-  const DEFAULT_COLOUR = '#6bbcfa';
+  const OBSERVATIONS_COLOUR = '#5e0b96';
+  const STUDY_AREA_COLOUR = '#1f7dff';
+  const SAMPLING_SITE_COLOUR = '#db6e00';
+  const TELEMETRY_COLOUR = '#0b8a57';
+  const DEFAULT_COLOUR = '#a7bfd1';
 
   const observationsGeometryDataLoader = useDataLoader(() =>
     biohubApi.observation.getObservationsGeometry(projectId, surveyId)
@@ -221,7 +221,7 @@ const SurveySpatialData = () => {
         return [
           {
             layerName: 'Observations',
-            layerColour: OBSERVATIONS_COLOUR,
+            layerColors: { fillColor: OBSERVATIONS_COLOUR, color: OBSERVATIONS_COLOUR },
             popupRecordTitle: 'Observation Record',
             mapPoints: observationPoints
           }
@@ -230,7 +230,7 @@ const SurveySpatialData = () => {
         return [
           {
             layerName: 'Telemetry',
-            layerColour: TELEMETRY_COLOUR,
+            layerColors: { fillColor: TELEMETRY_COLOUR, color: TELEMETRY_COLOUR },
             popupRecordTitle: 'Telemetry Record',
             mapPoints: telemetryPoints
           }
@@ -241,10 +241,9 @@ const SurveySpatialData = () => {
     }
   }, [activeView, observationPoints, telemetryPoints]);
 
-  // Load map data
   const staticLayers: IStaticLayer[] = [
     {
-      layerName: 'Survey Areas',
+      layerName: 'Study Areas',
       layerColors: { color: STUDY_AREA_COLOUR, fillColor: STUDY_AREA_COLOUR },
       features: studyAreaLocations.flatMap((location) => {
         return location.geojson.map((feature, index) => {
@@ -310,7 +309,6 @@ const SurveySpatialData = () => {
                     if (mapPointMetadata[mapPoint.key]) {
                       return;
                     }
-
                     mapPoint.onLoadMetadata().then((metadata) => {
                       setMapPointMetadata((prev) => ({ ...prev, [mapPoint.key]: metadata }));
                     });
@@ -353,7 +351,7 @@ const SurveySpatialData = () => {
           }
         ]}
         updateDatasetView={setActiveView}
-        layers={[...supplementaryLayers, ...staticLayers]}
+        layers={staticLayers}
       />
 
       <Box height={{ sm: 300, md: 500 }} position="relative">
