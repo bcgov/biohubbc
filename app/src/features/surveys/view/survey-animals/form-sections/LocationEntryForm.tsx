@@ -19,9 +19,10 @@ import { ChangeEvent, Fragment, useState } from 'react';
 import { LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { getLatLngAsUtm, getUtmAsLatLng } from 'utils/mapProjectionHelpers';
 import { coerceZero } from 'utils/Utils';
-import { getAnimalFieldName, IAnimal, ProjectionMode } from '../animal';
+//import { getAnimalFieldName, IAnimal, ProjectionMode } from '../animal';
 
 type Marker = 'primary' | 'secondary' | null;
+type ProjectionMode = 'wgs' | 'utm';
 
 export type LocationEntryFields<T> = {
   fieldsetTitle?: string;
@@ -34,33 +35,32 @@ export type LocationEntryFields<T> = {
 };
 
 type LocationEntryFormProps<T> = {
-  name: keyof IAnimal;
-  index: number;
+  //name: keyof IAnimal;
+  //index: number;
   value: T;
   primaryLocationFields: LocationEntryFields<T>;
   secondaryLocationFields?: LocationEntryFields<T>;
-  otherPrimaryFields?: JSX.Element[];
+  //otherPrimaryFields?: JSX.Element[];
   otherSecondaryFields?: JSX.Element[];
 };
 
 const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
-  name,
-  index,
+  //name,
+  //index,
   value,
   primaryLocationFields,
   secondaryLocationFields,
-  otherPrimaryFields,
   otherSecondaryFields
 }: LocationEntryFormProps<T>) => {
   const { setFieldValue } = useFormikContext();
   const [markerEnabled, setMarkerEnabled] = useState<Marker>(null);
 
   const handleMarkerPlacement = (e: LatLng, fields: LocationEntryFields<T>) => {
-    setFieldValue(getAnimalFieldName<T>(name, fields.latitude, index), e.lat.toFixed(3));
-    setFieldValue(getAnimalFieldName<T>(name, fields.longitude, index), e.lng.toFixed(3));
+    setFieldValue('latitude', e.lat.toFixed(3));
+    setFieldValue('longitude', e.lng.toFixed(3));
     const utm_coords = getLatLngAsUtm(e.lat, e.lng);
-    setFieldValue(getAnimalFieldName<T>(name, fields.utm_northing, index), utm_coords[1]);
-    setFieldValue(getAnimalFieldName<T>(name, fields.utm_easting, index), utm_coords[0]);
+    setFieldValue('utm_northing', utm_coords[1]);
+    setFieldValue('utm_easting', utm_coords[0]);
   };
 
   const setLatLonFromUTM = (fields: LocationEntryFields<T> | undefined) => {
@@ -69,8 +69,8 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
         value[fields.latitude] as unknown as number,
         value[fields.longitude] as unknown as number
       );
-      setFieldValue(getAnimalFieldName<T>(name, fields.utm_easting, index), utm_coords[0]);
-      setFieldValue(getAnimalFieldName<T>(name, fields.utm_northing, index), utm_coords[1]);
+      setFieldValue('utm_easting', utm_coords[0]);
+      setFieldValue('utm_northing', utm_coords[1]);
     }
   };
 
@@ -80,8 +80,8 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
         value[fields.utm_northing] as unknown as number,
         value[fields.utm_easting] as unknown as number
       );
-      setFieldValue(getAnimalFieldName<T>(name, fields.latitude, index), wgs_coords[1]);
-      setFieldValue(getAnimalFieldName<T>(name, fields.longitude, index), wgs_coords[0]);
+      setFieldValue('latitude', wgs_coords[1]);
+      setFieldValue('longitude', wgs_coords[0]);
     }
   };
 
@@ -95,7 +95,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
       setUTMFromLatLng(primaryLocationFields);
       setUTMFromLatLng(secondaryLocationFields);
     }
-    setFieldValue(getAnimalFieldName<T>(name, 'projection_mode', index), e.target.checked ? 'utm' : 'wgs');
+    setFieldValue('projection_mode', e.target.checked ? 'utm' : 'wgs');
   };
 
   const getCurrentMarkerPos = (fields: LocationEntryFields<T>): LatLng => {
@@ -123,35 +123,19 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
         {value?.projection_mode === 'wgs' ? (
           <Fragment>
             <Grid item xs={12} sm={4}>
-              <CustomTextField
-                other={{ required: true, type: 'number' }}
-                label="Latitude"
-                name={getAnimalFieldName<T>(name, fields.latitude, index)}
-              />
+              <CustomTextField other={{ required: true, type: 'number' }} label="Latitude" name={'latitude'} />
             </Grid>
             <Grid item xs={12} sm={4}>
-              <CustomTextField
-                other={{ required: true, type: 'number' }}
-                label="Longitude"
-                name={getAnimalFieldName<T>(name, fields.longitude, index)}
-              />
+              <CustomTextField other={{ required: true, type: 'number' }} label="Longitude" name={'longitude'} />
             </Grid>
           </Fragment>
         ) : (
           <Fragment>
             <Grid item xs={12} sm={4}>
-              <CustomTextField
-                other={{ required: true, type: 'number' }}
-                label="Northing"
-                name={getAnimalFieldName<T>(name, fields.utm_northing, index)}
-              />
+              <CustomTextField other={{ required: true, type: 'number' }} label="Northing" name={'utm_northing'} />
             </Grid>
             <Grid item xs={12} sm={4}>
-              <CustomTextField
-                other={{ required: true, type: 'number' }}
-                label="Easting"
-                name={getAnimalFieldName<T>(name, fields.utm_easting, index)}
-              />
+              <CustomTextField other={{ required: true, type: 'number' }} label="Easting" name={'utm_easting'} />
             </Grid>
           </Fragment>
         )}
@@ -163,7 +147,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
               type: 'number'
             }}
             label="Uncertainty (Meters)"
-            name={getAnimalFieldName<T>(name, fields.coordinate_uncertainty, index)}
+            name={'coordinate_uncertainty'}
           />
         </Grid>
       </Grid>
@@ -189,7 +173,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
           setMarkerEnabled(null);
         }}
         handleResize={(n) => {
-          setFieldValue(getAnimalFieldName<T>(name, fields.coordinate_uncertainty, index), n.toFixed(3));
+          setFieldValue('coordinate_uncertainty', n.toFixed(3));
         }}
       />
     );
@@ -274,7 +258,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
             </ToggleButtonGroup>
           </Stack>
           <LeafletMapContainer
-            id={`location-entry-${name}-${index}`}
+            id={`location-entry`}
             scrollWheelZoom={true}
             style={{ height: 400 }}
             center={MAP_DEFAULT_CENTER}

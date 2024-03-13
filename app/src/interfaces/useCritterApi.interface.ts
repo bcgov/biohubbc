@@ -32,7 +32,7 @@ type ICaptureResponse = {
   release_location: ILocationResponse | null;
 };
 
-type IMarkingResponse = {
+export type IMarkingResponse = {
   marking_id: string;
   capture_id: string;
   mortality_id: string | null;
@@ -54,9 +54,10 @@ type IMarkingResponse = {
   primary_colour: string | null;
   secondary_colour: string | null;
   text_colour: string | null;
+  marking_comment: string | null;
 };
 
-type IQualitativeMeasurementResponse = {
+export type IQualitativeMeasurementResponse = {
   measurement_qualitative_id: string;
   taxon_measurement_id: string;
   capture_id: string | null;
@@ -68,7 +69,7 @@ type IQualitativeMeasurementResponse = {
   value: string;
 };
 
-type IQuantitativeMeasurementResponse = {
+export type IQuantitativeMeasurementResponse = {
   measurement_quantitative_id: string;
   taxon_measurement_id: string;
   capture_id: string | null;
@@ -113,14 +114,6 @@ export type ICritterDetailedResponse = {
   animal_id: string | null;
   sex: string;
   responsible_region_nr_id: string;
-  //   create_user: string; // Deprecated
-  //   update_user: string; // Deprecated
-  //   create_timestamp: string; // Deprecated
-  //   update_timestamp: string; // Deprecated
-  //   critter_comment: string;
-  //   taxon: string; // Deprecated
-  //   responsible_region: string; // Deprecated
-  //   mortality_timestamp: string | null; // Deprecated
   collection_units: ICollectionUnitResponse[];
   mortality: IMortalityResponse[];
   captures: ICaptureResponse[];

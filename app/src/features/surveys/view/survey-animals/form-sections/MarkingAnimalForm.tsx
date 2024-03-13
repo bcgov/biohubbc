@@ -5,23 +5,23 @@ import CustomTextField from 'components/fields/CustomTextField';
 import FormikDevDebugger from 'components/formik/FormikDevDebugger';
 import { useDialogContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import { IMarkingResponse } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 import {
   AnimalFormProps,
   ANIMAL_FORM_MODE,
   CreateCritterMarkingSchema,
-  ICreateMarking,
-  ICritterMarking,
+  ICreateCritterMarking,
   isRequiredInSchema
 } from '../animal';
 
-export const MarkingAnimalForm = (props: AnimalFormProps<ICritterMarking>) => {
+export const MarkingAnimalForm = (props: AnimalFormProps<IMarkingResponse>) => {
   const cbApi = useCritterbaseApi();
   const dialog = useDialogContext();
 
   const [loading, setLoading] = useState(false);
 
-  const handleSave = async (values: ICreateMarking) => {
+  const handleSave = async (values: ICreateCritterMarking) => {
     setLoading(true);
     try {
       if (props.formMode === ANIMAL_FORM_MODE.ADD) {

@@ -1,7 +1,7 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
-import { Critter, ICreateCritter } from 'features/surveys/view/survey-animals/animal';
+import { ICreateCritter } from 'features/surveys/view/survey-animals/animal';
 import {
   IAnimalDeployment,
   IAnimalTelemetryDevice,
@@ -479,35 +479,37 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  /**
-   * Modifies the Critter into bulk payload body for Critterbase.
-   *
-   * @param {Critter} critter - Critter to add to Critterbase.
-   * @returns {[TODO:type]} [TODO:description]
-   */
-  const critterToBulkPayloadTransform = (critter: Critter) => {
-    const { measurements, mortalities, families, locations, collections, captures, markings, ...critterProps } =
-      critter;
-    return {
-      critters: [
-        {
-          critter_id: critterProps.critter_id,
-          animal_id: critterProps.animal_id,
-          wlh_id: critterProps.wlh_id,
-          sex: critterProps.sex,
-          itis_tsn: critterProps.itis_tsn
-        }
-      ],
-      qualitative_measurements: measurements.qualitative,
-      quantitative_measurements: measurements.quantitative,
-      mortalities,
-      families,
-      locations,
-      collections,
-      markings,
-      captures
-    };
-  };
+  //TODO: DEPRECATED?
+  //
+  // /**
+  //  * Modifies the Critter into bulk payload body for Critterbase.
+  //  *
+  //  * @param {Critter} critter - Critter to add to Critterbase.
+  //  * @returns {[TODO:type]} [TODO:description]
+  //  */
+  // const critterToBulkPayloadTransform = (critter: Critter) => {
+  //   const { measurements, mortalities, families, locations, collections, captures, markings, ...critterProps } =
+  //     critter;
+  //   return {
+  //     critters: [
+  //       {
+  //         critter_id: critterProps.critter_id,
+  //         animal_id: critterProps.animal_id,
+  //         wlh_id: critterProps.wlh_id,
+  //         sex: critterProps.sex,
+  //         itis_tsn: critterProps.itis_tsn
+  //       }
+  //     ],
+  //     qualitative_measurements: measurements.qualitative,
+  //     quantitative_measurements: measurements.quantitative,
+  //     mortalities,
+  //     families,
+  //     locations,
+  //     collections,
+  //     markings,
+  //     captures
+  //   };
+  // };
 
   /**
    * Create a critter and add it to the list of critters associated with this survey. This will create a new critter in Critterbase.
@@ -526,30 +528,31 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  /**
-   * Update a survey critter. Allows you to create, update, and delete associated rows like captures, mortalities etc in one request.
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {number} critterId
-   * @param {Critter} updateSection
-   * @param {Critter | undefined} createSection
-   * @returns {*}
-   */
-  const updateSurveyCritter = async (
-    projectId: number,
-    surveyId: number,
-    critterId: number,
-    updateSection: Critter,
-    createSection: Critter | undefined
-  ) => {
-    const payload = {
-      update: critterToBulkPayloadTransform(updateSection),
-      create: createSection ? critterToBulkPayloadTransform(createSection) : undefined
-    };
-    const { data } = await axios.patch(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}`, payload);
-    return data;
-  };
+  //TODO: DEPRECATED?
+  // /**
+  //  * Update a survey critter. Allows you to create, update, and delete associated rows like captures, mortalities etc in one request.
+  //  *
+  //  * @param {number} projectId
+  //  * @param {number} surveyId
+  //  * @param {number} critterId
+  //  * @param {Critter} updateSection
+  //  * @param {Critter | undefined} createSection
+  //  * @returns {*}
+  //  */
+  // const updateSurveyCritter = async (
+  //   projectId: number,
+  //   surveyId: number,
+  //   critterId: number,
+  //   updateSection: Critter,
+  //   createSection: Critter | undefined
+  // ) => {
+  //   const payload = {
+  //     update: critterToBulkPayloadTransform(updateSection),
+  //     create: createSection ? critterToBulkPayloadTransform(createSection) : undefined
+  //   };
+  //   const { data } = await axios.patch(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}`, payload);
+  //   return data;
+  // };
 
   /**
    * Remove a critter from the survey. Will not delete critter in critterbase.
@@ -687,8 +690,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getDeploymentsInSurvey,
     updateDeployment,
     getCritterTelemetry,
-    removeDeployment,
-    updateSurveyCritter
+    removeDeployment
   };
 };
 

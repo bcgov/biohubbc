@@ -1,4 +1,3 @@
-import { SurveyAnimalsI18N } from 'constants/i18n';
 import { SurveyContext } from 'contexts/surveyContext';
 import { SurveySectionFullPageLayout } from 'features/surveys/components/SurveySectionFullPageLayout';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -6,8 +5,8 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useQuery } from 'hooks/useQuery';
 import React, { useContext, useEffect, useState } from 'react';
-import { ANIMAL_FORM_MODE } from './animal';
-import { IAnimalSections } from './animal-sections';
+import { ANIMAL_FORM_MODE, ANIMAL_SECTION } from './animal';
+//import { IAnimalSections } from './animal-sections';
 import AnimalList from './AnimalList';
 import { AnimalSection } from './AnimalSection';
 import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
@@ -20,7 +19,7 @@ export const SurveyAnimalsPage = () => {
   //const dialogContext = useContext(DialogContext);
   const { surveyId, projectId } = useContext(SurveyContext);
 
-  const [selectedSection, setSelectedSection] = useState<IAnimalSections>(SurveyAnimalsI18N.animalGeneralTitle);
+  const [selectedSection, setSelectedSection] = useState<ANIMAL_SECTION>(ANIMAL_SECTION.GENERAL);
   const [openAddCritter, setOpenAddCritter] = useState(false);
   //const [detailedCritter, setDetailedCritter] = useState<IDetailedCritterWithInternalId | undefined>();
 

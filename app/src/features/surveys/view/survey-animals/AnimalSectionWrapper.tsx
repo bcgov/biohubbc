@@ -7,11 +7,11 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
 import React, { PropsWithChildren } from 'react';
-import { IAnimalSections } from './animal-sections';
+import { ANIMAL_SECTION } from './animal';
 
 interface IAnimalSectionWrapperProps extends PropsWithChildren {
   form?: JSX.Element;
-  section?: IAnimalSections;
+  section?: ANIMAL_SECTION;
   infoText?: string;
   critter?: ICritterDetailedResponse;
   addBtn?: JSX.Element;

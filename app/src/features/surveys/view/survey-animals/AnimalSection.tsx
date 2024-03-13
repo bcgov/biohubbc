@@ -13,8 +13,7 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
 import React, { useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
-import { ANIMAL_FORM_MODE } from './animal';
-import { IAnimalSections } from './animal-sections';
+import { ANIMAL_FORM_MODE, ANIMAL_SECTION } from './animal';
 import { AnimalSectionWrapper } from './AnimalSectionWrapper';
 import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 import { MarkingAnimalForm } from './form-sections/MarkingAnimalForm';
@@ -25,7 +24,7 @@ type SubHeaderData = Record<string, string | number | null | undefined>;
 interface IAnimalSectionProps {
   critter?: ICritterDetailedResponse;
   refreshCritter: (critter_id: string) => Promise<ICritterDetailedResponse | undefined>;
-  section: IAnimalSections;
+  section: ANIMAL_SECTION;
 }
 export const AnimalSection = (props: IAnimalSectionProps) => {
   const cbApi = useCritterbaseApi();
@@ -131,7 +130,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     handleClose: handleCloseForm
   } as const;
 
-  if (props.section === 'General') {
+  if (props.section === ANIMAL_SECTION.GENERAL) {
     return (
       <AnimalSectionWrapper
         form={<GeneralAnimalForm {...SECTION_FORM_PROPS} formMode={ANIMAL_FORM_MODE.EDIT} />}
@@ -143,7 +142,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     );
   }
 
-  if (props.section === 'Ecological Units') {
+  if (props.section === ANIMAL_SECTION.COLLECTION_UNITS) {
     return (
       <AnimalSectionWrapper
         form={<div>test</div>}
@@ -154,7 +153,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     );
   }
 
-  if (props.section === 'Markings') {
+  if (props.section === ANIMAL_SECTION.MARKINGS) {
     return (
       <AnimalSectionWrapper
         form={<MarkingAnimalForm {...SECTION_FORM_PROPS} />}
@@ -180,7 +179,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     );
   }
 
-  if (props.section === 'Measurements') {
+  if (props.section === ANIMAL_SECTION.MEASUREMENTS) {
     return (
       <AnimalSectionWrapper
         form={<div>placeholder</div>}
@@ -226,7 +225,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     );
   }
 
-  if (props.section === 'Mortality Events') {
+  if (props.section === ANIMAL_SECTION.MORTALITY) {
     return (
       <AnimalSectionWrapper
         form={<div>placeholder</div>}
@@ -259,7 +258,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     );
   }
 
-  if (props.section === 'Family') {
+  if (props.section === ANIMAL_SECTION.FAMILY) {
     return (
       <AnimalSectionWrapper
         form={<div>placeholder</div>}
@@ -301,7 +300,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     );
   }
 
-  if (props.section === 'Capture Events') {
+  if (props.section === ANIMAL_SECTION.CAPTURES) {
     return (
       <AnimalSectionWrapper
         form={<div>placeholder</div>}

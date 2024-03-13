@@ -1,4 +1,14 @@
-import { mdiChevronDown, mdiPlus } from '@mdi/js';
+import {
+  mdiChevronDown,
+  mdiFamilyTree,
+  mdiFormatListGroup,
+  mdiInformationOutline,
+  mdiPlus,
+  mdiRuler,
+  mdiSkullOutline,
+  mdiSpiderWeb,
+  mdiTagOutline
+} from '@mdi/js';
 import Icon from '@mdi/react';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -16,19 +26,17 @@ import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { SurveyAnimalsI18N } from 'constants/i18n';
 import { useQuery } from 'hooks/useQuery';
 import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
 import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { useHistory } from 'react-router-dom';
-import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
+import { ANIMAL_SECTION } from './animal';
 
 interface IAnimalListProps {
   isLoading?: boolean;
   surveyCritters?: ISimpleCritterWithInternalId[];
-  selectedSection: IAnimalSections;
-  onSelectSection: (section: IAnimalSections) => void;
-  //onSelectCritter: (critter?: IDetailedCritterWithInternalId) => void;
+  selectedSection: ANIMAL_SECTION;
+  onSelectSection: (section: ANIMAL_SECTION) => void;
   refreshCritter: (critter_id: string) => Promise<ICritterDetailedResponse | undefined>;
   onAddButton: () => void;
 }
@@ -77,6 +85,27 @@ const AnimalList = (props: IAnimalListProps) => {
   //const cbApi = useCritterbaseApi();
   const { cid: survey_critter_id } = useQuery();
 
+  const getSectionIcon = (section: ANIMAL_SECTION) => {
+    switch (section) {
+      case ANIMAL_SECTION.GENERAL:
+        return mdiInformationOutline;
+      case ANIMAL_SECTION.COLLECTION_UNITS:
+        return mdiFormatListGroup;
+      case ANIMAL_SECTION.MARKINGS:
+        return mdiTagOutline;
+      case ANIMAL_SECTION.MEASUREMENTS:
+        return mdiRuler;
+      case ANIMAL_SECTION.CAPTURES:
+        return mdiSpiderWeb;
+      case ANIMAL_SECTION.MORTALITY:
+        return mdiSkullOutline;
+      case ANIMAL_SECTION.FAMILY:
+        return mdiFamilyTree;
+      default:
+        return mdiInformationOutline;
+    }
+  };
+
   const handleCritterSelect = async (critter: ISimpleCritterWithInternalId) => {
     if (critter.survey_critter_id === Number(survey_critter_id)) {
       history.replace(history.location.pathname);
@@ -85,7 +114,7 @@ const AnimalList = (props: IAnimalListProps) => {
       refreshCritter(critter.critter_id);
       history.push(`?cid=${critter.survey_critter_id}`);
     }
-    onSelectSection(SurveyAnimalsI18N.animalGeneralTitle);
+    onSelectSection(ANIMAL_SECTION.GENERAL);
   };
 
   return (
@@ -179,7 +208,7 @@ const AnimalList = (props: IAnimalListProps) => {
                         fontSize: '0.875rem'
                       }
                     }}>
-                    {(Object.keys(ANIMAL_SECTIONS_FORM_MAP) as IAnimalSections[]).map((section) => (
+                    {(Object.keys(ANIMAL_SECTION) as ANIMAL_SECTION[]).map((section) => (
                       <ListItemButton
                         sx={{
                           px: 2,
@@ -194,7 +223,7 @@ const AnimalList = (props: IAnimalListProps) => {
                           onSelectSection(section);
                         }}>
                         <ListItemIcon>
-                          <Icon path={ANIMAL_SECTIONS_FORM_MAP[section].mdiIcon} size={1} />
+                          <Icon path={getSectionIcon(section)} size={1} />
                         </ListItemIcon>
                         <ListItemText>{section}</ListItemText>
                       </ListItemButton>
