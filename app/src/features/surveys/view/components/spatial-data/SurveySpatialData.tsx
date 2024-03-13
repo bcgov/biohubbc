@@ -49,7 +49,7 @@ const SurveySpatialData = () => {
   const OBSERVATIONS_COLOUR = '#5e0b96';
   const STUDY_AREA_COLOUR = '#1f7dff';
   const SAMPLING_SITE_COLOUR = '#db6e00';
-  const TELEMETRY_COLOUR = '#0b8a57';
+  const TELEMETRY_COLOUR = '#05786a';
   const DEFAULT_COLOUR = '#a7bfd1';
 
   const observationsGeometryDataLoader = useDataLoader(() =>
