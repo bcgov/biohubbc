@@ -221,7 +221,11 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
                 }
                 onClickEdit={() => handleOpenEditForm(measurement)}
                 onClickDelete={async () => {
-                  // handleDelete(deleteMarking, 'marking');
+                  handleDelete(
+                    cbApi.measurement.deleteQuantitativeMeasurement,
+                    measurement.measurement_quantitative_id,
+                    'measurement'
+                  );
                 }}
               />
             </Collapse>
@@ -237,7 +241,11 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
                 }
                 onClickEdit={() => handleOpenEditForm(measurement)}
                 onClickDelete={async () => {
-                  // handleDelete(deleteMarking, 'marking');
+                  handleDelete(
+                    cbApi.measurement.deleteQualitativeMeasurement,
+                    measurement.measurement_qualitative_id,
+                    'measurement'
+                  );
                 }}
               />
             </Collapse>

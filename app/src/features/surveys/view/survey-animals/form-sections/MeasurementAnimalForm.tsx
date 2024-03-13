@@ -3,12 +3,19 @@ import EditDialog from 'components/dialog/EditDialog';
 import { CbSelectWrapper } from 'components/fields/CbSelectFieldWrapper';
 import CustomTextField from 'components/fields/CustomTextField';
 import SingleDateField from 'components/fields/SingleDateField';
+import { Field } from 'formik';
 import { useDialogContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { IQualitativeMeasurementResponse, IQuantitativeMeasurementResponse } from 'interfaces/useCritterApi.interface';
-import { startCase } from 'lodash-es';
-import React, { useState } from 'react';
+import {
+  CBMeasurementType,
+  CBQualitativeMeasurementTypeDefinition,
+  CBQuantitativeMeasurementTypeDefinition,
+  IQualitativeMeasurementResponse,
+  IQuantitativeMeasurementResponse
+} from 'interfaces/useCritterApi.interface';
+import { has, startCase } from 'lodash-es';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   AnimalFormProps,
   ANIMAL_FORM_MODE,
@@ -29,96 +36,68 @@ export const MeasurementAnimalForm = (
   const cbApi = useCritterbaseApi();
   const dialog = useDialogContext();
 
-  const isQualitative = Boolean((props.formObject as IQualitativeMeasurementResponse)?.qualitative_option_id);
-  console.log({ isQualitative });
+  const [loading, setLoading] = useState(false);
+  const [measurementTypeDef, setMeasurementTypeDef] = useState<CBMeasurementType | undefined>();
 
   const { data: measurements, load: loadMeasurements } = useDataLoader(() =>
     cbApi.xref.getTaxonMeasurements(props.critter.itis_tsn)
   );
-
-  // const flatMeasurements = useMemo(
-  //   () => (measurements ? [...measurements.qualitative, ...measurements.quantitative] : []),
-  //   [measurements]
-  // );
-
   loadMeasurements();
 
-  //const { index, measurements, mode } = props;
+  const isQualitative = has(measurementTypeDef, 'options');
 
-  //const name: keyof IAnimal = 'measurements';
-  //const { values, handleChange, setFieldValue, handleBlur } = useFormikContext<IAnimal>();
-  // const taxonMeasurementId = values.measurements?.[index]?.taxon_measurement_id;
-  // const [currentMeasurement, setCurrentMeasurement] = useState<IMeasurementStub | undefined>(
-  //   measurements?.find((lookup_measurement) => lookup_measurement.taxon_measurement_id === taxonMeasurementId)
-  // );
-  // const isQuantMeasurement = has(currentMeasurement, 'unit');
-  //
-  // const taxonMeasurementIDName = getAnimalFieldName<IAnimalMeasurement>(name, 'taxon_measurement_id', index);
-  // const valueName = getAnimalFieldName<IAnimalMeasurement>(name, 'value', index);
-  // const optionName = getAnimalFieldName<IAnimalMeasurement>(name, 'qualitative_option_id', index);
+  const measurementDefs = useMemo(() => {
+    return measurements ? [...measurements.qualitative, ...measurements.quantitative] : [];
+  }, [measurements]);
 
-  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    const foundMeasurementDef = measurementDefs.find(
+      (measurement) => measurement.taxon_measurement_id === props.formObject?.taxon_measurement_id
+    );
+    setMeasurementTypeDef(foundMeasurementDef);
+  }, [measurementDefs, props?.formObject?.taxon_measurement_id]);
 
   const handleSave = async (values: ICreateCritterMeasurement) => {
     setLoading(true);
     try {
       if (props.formMode === ANIMAL_FORM_MODE.ADD) {
-        //await cbApi.marking.createMarking(values);
-        dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created marking.` });
+        isQualitative
+          ? await cbApi.measurement.createQualitativeMeasurement(values)
+          : await cbApi.measurement.createQuantitativeMeasurement(values);
+        dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created measurement.` });
       }
       if (props.formMode === ANIMAL_FORM_MODE.EDIT) {
-        //await cbApi.marking.updateMarking(values);
-        dialog.setSnackbar({ open: true, snackbarMessage: `Successfully edited marking.` });
+        isQualitative
+          ? await cbApi.measurement.updateQualitativeMeasurement(values)
+          : await cbApi.measurement.updateQuantitativeMeasurement(values);
+        dialog.setSnackbar({ open: true, snackbarMessage: `Successfully edited measurement.` });
       }
     } catch (err) {
-      dialog.setSnackbar({ open: true, snackbarMessage: `Critter marking request failed.` });
+      dialog.setSnackbar({ open: true, snackbarMessage: `Critter measurement request failed.` });
     } finally {
       props.handleClose();
       setLoading(false);
     }
   };
 
-  // useEffect(() => {
-  //   setCurrentMeasurement(measurements?.find((m) => m.taxon_measurement_id === taxonMeasurementId));
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [measurements]); //Sometimes will not display the correct fields without this useEffect but could have side effects, may need to revisit.
-  //
-  // const handleMeasurementTypeChange = (event: SelectChangeEvent<unknown>) => {
-  //   handleChange(event);
-  //   setFieldValue(valueName, '');
-  //   setFieldValue(optionName, '');
-  //   const m = measurements?.find((m) => m.taxon_measurement_id === event.target.value);
-  //   setCurrentMeasurement(m);
-  //   handleMeasurementName('', m?.measurement_name ?? '');
-  // };
-  //
-  // const validateValue = async (val: '' | number) => {
-  //   const min = currentMeasurement?.min_value ?? 0;
-  //   const max = currentMeasurement?.max_value;
-  //   const unit = currentMeasurement?.unit ? currentMeasurement.unit : ``;
-  //   if (val === '') {
-  //     return;
-  //   }
-  //   if (isNaN(val)) {
-  //     return `Must be a number`;
-  //   }
-  //   if (val < min) {
-  //     return `Measurement must be greater than ${min}${unit}`;
-  //   }
-  //   if (max && val > max) {
-  //     return `Measurement must be less than ${max}${unit}`;
-  //   }
-  // };
-
-  // const handleMeasurementName = (_value: string, label: string) => {
-  //   setFieldValue(getAnimalFieldName<IAnimalMeasurement>('measurements', 'measurement_name', index), label);
-  // };
-  //
-  // const handleQualOptionName = (_value: string, label: string) => {
-  //   setFieldValue(getAnimalFieldName<IAnimalMeasurement>('measurements', 'option_label', index), label);
-  // };
-
-  const measurementDefs = isQualitative ? measurements?.qualitative : measurements?.quantitative;
+  const validateQuantitativeMeasurement = async (val: '' | number) => {
+    const quantitativeTypeDef = measurementTypeDef as CBQuantitativeMeasurementTypeDefinition;
+    const min = quantitativeTypeDef?.min_value ?? 0;
+    const max = quantitativeTypeDef?.max_value;
+    const unit = quantitativeTypeDef?.unit ? quantitativeTypeDef.unit : ``;
+    if (val === '') {
+      return;
+    }
+    if (isNaN(val)) {
+      return `Must be a number`;
+    }
+    if (val < min) {
+      return `Measurement must be greater than ${min}${unit}`;
+    }
+    if (max && val > max) {
+      return `Measurement must be less than ${max}${unit}`;
+    }
+  };
 
   return (
     <EditDialog
@@ -130,11 +109,12 @@ export const MeasurementAnimalForm = (
       debug
       component={{
         initialValues: {
-          measurement_qualitative_id: props.formObject?.measurement_qualitative_id ?? '',
-          measurement_quantitative_id: props.formObject?.measurement_quantitative_id ?? '',
+          measurement_qualitative_id: props.formObject?.measurement_qualitative_id,
+          measurement_quantitative_id: props.formObject?.measurement_quantitative_id,
+          critter_id: props.critter.critter_id,
           taxon_measurement_id: props.formObject?.taxon_measurement_id ?? '',
           qualitative_option_id: props?.formObject?.qualitative_option_id,
-          value: props.formObject?.value,
+          value: props?.formObject?.measurement_quantitative_id ? props.formObject?.value : ('' as unknown as number),
           measured_timestamp: props.formObject?.measured_timestamp as unknown as Date,
           measurement_comment: props.formObject?.measurement_comment ? props.formObject?.measurement_comment : undefined
         },
@@ -145,53 +125,54 @@ export const MeasurementAnimalForm = (
               <CbSelectWrapper
                 label="Type"
                 name={'taxon_measurement_id'}
-                value={measurementDefs ? props.formObject?.taxon_measurement_id : ''}
-                //onChange={handleMeasurementTypeChange}
                 controlProps={{
                   required: isRequiredInSchema(CreateCritterMeasurementSchema, 'taxon_measurement_id'),
                   disabled: !measurementDefs?.length || props.formMode === ANIMAL_FORM_MODE.EDIT
                 }}>
                 {measurementDefs?.map((measurementDef) => (
-                  <MenuItem key={measurementDef.taxon_measurement_id} value={measurementDef.taxon_measurement_id}>
+                  <MenuItem
+                    key={measurementDef.taxon_measurement_id}
+                    value={measurementDef.taxon_measurement_id}
+                    onClick={() => setMeasurementTypeDef(measurementDef)}>
                     {startCase(measurementDef.measurement_name)}
                   </MenuItem>
                 ))}
-                {/*flatMeasurements.map((measurement) => (
-                  <MenuItem key={measurement.taxon_measurement_id} value={measurement.taxon_measurement_id}>
-                    {startCase(measurement.measurement_name)}
-                  </MenuItem>
-                ))*/}
               </CbSelectWrapper>
             </Grid>
-            {/*
             <Grid item xs={12}>
-              {!isQuantMeasurement && taxonMeasurementId ? (
-                <CbSelectField
+              {isQualitative ? (
+                <CbSelectWrapper
                   label="Value"
                   name={'qualitative_option_id'}
-                  id="qualitative_option"
-                  route="xref/taxon-qualitative-measurement-options"
-                  query={{ tsn: props?.critter.itis_tsn }}
                   controlProps={{
-                    required: true,
-                    disabled: !taxonMeasurementId
-                  }}
-                  handleChangeSideEffect={handleQualOptionName}
-                />
+                    required: isQualitative,
+                    disabled: !isQualitative
+                  }}>
+                  {(measurementTypeDef as CBQualitativeMeasurementTypeDefinition)?.options?.map((qualitativeOption) => (
+                    <MenuItem
+                      key={qualitativeOption.qualitative_option_id}
+                      value={qualitativeOption.qualitative_option_id}>
+                      {startCase(qualitativeOption.option_label)}
+                    </MenuItem>
+                  ))}
+                </CbSelectWrapper>
               ) : (
                 <Field
                   as={CustomTextField}
-                  name={valueName}
-                  handleBlur={handleBlur}
-                  label={currentMeasurement?.unit ? `Value [${currentMeasurement.unit}]` : `Value`}
+                  name={'value'}
+                  label={
+                    (measurementTypeDef as CBQuantitativeMeasurementTypeDefinition)?.unit
+                      ? `Value [${(measurementTypeDef as CBQuantitativeMeasurementTypeDefinition).unit}]`
+                      : `Value`
+                  }
                   other={{
-                    required: true,
-                    disabled: !taxonMeasurementId
+                    required: !isQualitative,
+                    disabled: isQualitative
                   }}
-                  validate={validateValue}
+                  validate={validateQuantitativeMeasurement}
                 />
               )}
-            </Grid>*/}
+            </Grid>
             <Grid item xs={12}>
               <SingleDateField
                 name={'measured_timestamp'}
@@ -217,5 +198,17 @@ export const MeasurementAnimalForm = (
     />
   );
 };
+// <CbSelectField
+//   label="Value"
+//   name={'qualitative_option_id'}
+//   id="qualitative_option"
+//   route="xref/taxon-qualitative-measurement-options"
+//   query={{ tsn: props?.critter.itis_tsn }}
+//   controlProps={{
+//     required: true
+//     //disabled: !taxonMeasurementId
+//   }}
+//   //handleChangeSideEffect={handleQualOptionName}
+// />
 
 export default MeasurementAnimalForm;
