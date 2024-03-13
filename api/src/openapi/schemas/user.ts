@@ -246,7 +246,7 @@ export const projectAndSystemUserSchema: OpenAPIV3.SchemaObject = {
 export const surveyParticipationAndSystemUserSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
-  required: ['survey_participation_id', 'survey_id', 'system_user_id', 'survey_job_id', 'survey_job_name'],
+  required: ['system_user_id', 'survey_job_name'],
   properties: {
     survey_participation_id: {
       type: 'number'

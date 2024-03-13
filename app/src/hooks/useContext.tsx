@@ -9,23 +9,6 @@ import { ITaxonomyContext, TaxonomyContext } from 'contexts/taxonomyContext';
 import { useContext } from 'react';
 
 /**
- * Returns an instance of `ICodesContext` from `CodesContext`.
- *
- * @return {*}  {ICodesContext}
- */
-export const useCodesContext = (): ICodesContext => {
-  const context = useContext(CodesContext);
-
-  if (!context) {
-    throw Error(
-      'CodeContext is undefined, please verify you are calling useCodeContext() as child of an <CodeContextProvider> component.'
-    );
-  }
-
-  return context;
-};
-
-/**
  * Returns an instance of `IConfig` from `ConfigContext`.
  *
  * @return {*}  {IConfig}

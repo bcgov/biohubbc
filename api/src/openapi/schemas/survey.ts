@@ -5,7 +5,7 @@ export const surveyDetailsSchema: OpenAPIV3.SchemaObject = {
   title: 'survey response object',
   type: 'object',
   additionalProperties: false,
-  required: ['id', 'project_id', 'uuid', 'survey_name', 'start_date', 'end_date', 'survey_types', 'revision_count'],
+  required: ['survey_name', 'start_date', 'survey_types'],
   properties: {
     id: {
       description: 'Survey id',
@@ -35,7 +35,6 @@ export const surveyDetailsSchema: OpenAPIV3.SchemaObject = {
     end_date: {
       description: 'Survey end date',
       type: 'string',
-      format: 'date',
       nullable: true
     },
     survey_types: {
@@ -260,7 +259,7 @@ export const surveyPurposeAndMethodologySchema: OpenAPIV3.SchemaObject = {
   title: 'survey purpose and methodology response object',
   type: 'object',
   additionalProperties: false,
-  required: ['intended_outcome_ids', 'additional_details', 'revision_count', 'vantage_code_ids'],
+  required: ['intended_outcome_ids', 'additional_details', 'vantage_code_ids'],
   properties: {
     intended_outcome_ids: {
       description: 'Intended outcome ids',
@@ -318,15 +317,17 @@ export const surveyProprietorSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   nullable: true,
   additionalProperties: false,
-  required: [
-    'proprietor_type_name',
-    'first_nations_name',
-    'first_nations_id',
-    'category_rationale',
-    'proprietor_name',
-    'disa_required'
-  ],
+  required: ['category_rationale', 'proprietor_name', 'disa_required'],
   properties: {
+    survey_data_proprietary: {
+      description: 'Survey data proprietary',
+      type: 'string'
+    },
+    proprietary_data_category: {
+      description: 'Proprietary data category',
+      type: 'integer',
+      nullable: true
+    },
     proprietor_type_name: {
       description: 'Proprietor type name',
       type: 'string',
@@ -345,7 +346,6 @@ export const surveyProprietorSchema: OpenAPIV3.SchemaObject = {
     first_nations_id: {
       description: 'First nations id',
       type: 'integer',
-      minimum: 1,
       nullable: true
     },
     category_rationale: {
@@ -358,7 +358,8 @@ export const surveyProprietorSchema: OpenAPIV3.SchemaObject = {
     },
     disa_required: {
       description: 'Disa required',
-      type: 'boolean'
+      oneOf: [{ type: 'string' }, { type: 'boolean' }],
+      nullable: true
     }
   }
 };
@@ -367,12 +368,23 @@ export const surveyLocationSchema: OpenAPIV3.SchemaObject = {
   title: 'survey location response object',
   type: 'object',
   additionalProperties: false,
-  required: ['survey_location_id', 'name', 'description', 'geojson', 'revision_count'],
+  required: ['name', 'description', 'geojson', 'revision_count'],
   properties: {
     survey_location_id: {
       description: 'Survey location id',
       type: 'integer',
-      minimum: 1
+      nullable: true
+    },
+    leaflet_id: {
+      description: 'Leaflet id',
+      type: 'integer',
+      nullable: true
+    },
+    uuid: {
+      description: 'Survey location uuid',
+      type: 'string',
+      format: 'uuid',
+      nullable: true
     },
     name: {
       description: 'Name',

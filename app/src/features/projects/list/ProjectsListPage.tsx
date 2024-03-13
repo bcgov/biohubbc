@@ -49,7 +49,7 @@ const ProjectsListPage = () => {
 
   const biohubApi = useBiohubApi();
 
-  const codesContext = useContext(CodesContext);
+  const codesContext = useCodesContext();
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
