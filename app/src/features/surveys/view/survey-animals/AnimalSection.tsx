@@ -11,7 +11,7 @@ import { EditDeleteStubCard } from 'features/surveys/components/EditDeleteStubCa
 import { useDialogContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { ANIMAL_FORM_MODE, ANIMAL_SECTION } from './animal';
 import { AnimalSectionWrapper } from './AnimalSectionWrapper';
@@ -20,6 +20,7 @@ import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 import { MarkingAnimalForm } from './form-sections/MarkingAnimalForm';
 import MeasurementAnimalForm from './form-sections/MeasurementAnimalForm';
 import GeneralAnimalSummary from './GeneralAnimalSummary';
+import MortalityAnimalForm from './form-sections/MortalityAnimalForm';
 
 type SubHeaderData = Record<string, string | number | null | undefined>;
 
@@ -249,7 +250,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
   if (props.section === ANIMAL_SECTION.MORTALITY) {
     return (
       <AnimalSectionWrapper
-        form={<div>placeholder</div>}
+        form={<MortalityAnimalForm {...SECTION_FORM_PROPS} />}
         infoText={SurveyAnimalsI18N.animalMortalityHelp}
         addBtn={
           props.critter.mortality.length === 0 ? (
