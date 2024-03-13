@@ -106,6 +106,7 @@ export const MeasurementAnimalForm = (
       onCancel={props.handleClose}
       onSave={handleSave}
       dialogLoading={loading}
+      size={'md'}
       debug
       component={{
         initialValues: {

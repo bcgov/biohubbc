@@ -7,6 +7,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import useTheme from '@mui/material/styles/useTheme';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { Breakpoint } from '@mui/system';
 import FormikDevDebugger from 'components/formik/FormikDevDebugger';
 import { Formik, FormikValues } from 'formik';
 import React, { PropsWithChildren } from 'react';
@@ -91,6 +92,8 @@ export interface IEditDialogProps<T> {
    * @memberof IEditDialogProps
    */
   debug?: true;
+
+  size?: Breakpoint;
 }
 
 /**
@@ -124,7 +127,8 @@ export const EditDialog = <T extends FormikValues>(props: PropsWithChildren<IEdi
         <Dialog
           data-testid="edit-dialog"
           fullScreen={fullScreen}
-          maxWidth="xl"
+          fullWidth={Boolean(props.size)}
+          maxWidth={props.size ?? 'xl'}
           open={props.open}
           aria-labelledby="edit-dialog-title"
           aria-describedby="edit-dialog-description">
