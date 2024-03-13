@@ -16,12 +16,21 @@ import { ObservationsTableI18N } from 'constants/i18n';
 import { getSurveySessionStorageKey, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS } from 'constants/session-storage';
 import { DialogContext } from 'contexts/dialogContext';
 import { default as dayjs } from 'dayjs';
-import { getMeasurementColumns } from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitionsUtils';
+import {
+  getMeasurementColumns,
+  isQualitativeMeasurementTypeDefinition,
+  isQuantitativeMeasurementTypeDefinition
+} from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitionsUtils';
 import { APIError } from 'hooks/api/useAxios';
-import { IObservationTableRowToSave, MeasurementColumnToSave } from 'hooks/api/useObservationApi';
+import { IObservationTableRowToSave, SubcountToSave } from 'hooks/api/useObservationApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useObservationsContext, useTaxonomyContext } from 'hooks/useContext';
-import { CBMeasurementType, CBMeasurementValue } from 'interfaces/useCritterApi.interface';
+import {
+  CBMeasurementType,
+  CBMeasurementValue,
+  CBQualitativeMeasurementTypeDefinition,
+  CBQuantitativeMeasurementTypeDefinition
+} from 'interfaces/useCritterApi.interface';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { firstOrNull } from 'utils/Utils';
@@ -29,7 +38,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
 import { SurveyContext } from './surveyContext';
 
-export interface IStandardObservationColumns {
+export type StandardObservationColumns = {
   survey_observation_id: number;
   itis_tsn: number | null;
   itis_scientific_name: string | null;
@@ -37,51 +46,37 @@ export interface IStandardObservationColumns {
   survey_sample_method_id: number | null;
   survey_sample_period_id: number | null;
   count: number | null;
+  observation_date: Date;
+  observation_time: string;
+  latitude: number | null;
+  longitude: number | null;
+};
+
+export type SubcountObservationColumns = {
+  observation_subcount_id: number | null;
   subcount: number | null;
-  observation_date: Date;
-  observation_time: string;
-  latitude: number | null;
-  longitude: number | null;
-}
-
-export interface IObservationRecord extends IStandardObservationColumns {
   [key: string]: any;
-}
+};
 
-export interface IObservationRecordWithSamplingData {
-  survey_observation_id: number;
-  itis_tsn: number | null;
-  itis_scientific_name: string | null;
-  survey_sample_site_id: number | null;
-  survey_sample_site_name: string | null;
-  survey_sample_method_id: number | null;
-  survey_sample_method_name: string | null;
-  survey_sample_period_id: number | null;
-  survey_sample_period_start_datetime: string | null;
-  count: number | null;
-  observation_date: Date;
-  observation_time: string;
-  latitude: number | null;
-  longitude: number | null;
-}
+export type ObservationRecord = StandardObservationColumns & SubcountObservationColumns;
 
 export type MeasurementColumn = {
   measurement: CBMeasurementType;
   colDef: GridColDef;
 };
 
-export interface IObservationRecordWithSamplingDataWithEventsWithAttributes extends IObservationRecordWithSamplingData {
-  subcount: number;
-  observation_subcount_events: string[];
-  observation_subcount_attributes: CBMeasurementValue[];
-}
-
-export interface ISupplementaryObservationData {
+export type SupplementaryObservationCountData = {
   observationCount: number;
-  measurementColumns: CBMeasurementType[];
-}
+};
 
-export interface IObservationTableRow extends Partial<IObservationRecord> {
+export type SupplementaryObservationMeasurementData = {
+  qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
+  quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
+};
+
+export type SupplementaryObservationData = SupplementaryObservationCountData & SupplementaryObservationMeasurementData;
+
+export interface IObservationTableRow extends Partial<ObservationRecord> {
   id: GridRowId;
 }
 
@@ -145,6 +140,15 @@ export type IObservationsTableContext = {
    * Deletes all of the given records and removes them from the Observation table.
    */
   deleteObservationRecords: (observationRecords: IObservationTableRow[]) => void;
+  /**
+   * Deletes all of the given measurement columns, for all observation records, and removes them from the Observation
+   * table.
+   *
+   * @param {string[]} measurementIds The critterbase taxon measurement ids to delete.
+   * @param {() => void} [onSuccess] Optional callback that fires after the user confirms the deletion, and the deletion
+   * is successful.
+   */
+  deleteObservationMeasurementColumns: (measurementIds: string[], onSuccess?: () => void) => void;
   /**
    * discards all changes made to observation records within the Observation Table. Abandons all newly added rows that
    * have not yet been saved, and reverts all edits to existing rows.
@@ -300,6 +304,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
   // Stores any measurement columns that are not part of the default observation table columns
   const [measurementColumns, setMeasurementColumns] = useState<MeasurementColumn[]>([]);
+  const _hasLoadedMeasurementColumns = useRef<boolean>(false);
 
   // Global disabled state for the observations table
   const [disabled, setDisabled] = useState(false);
@@ -314,7 +319,24 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   });
 
   // Sort model
-  const [sortModel, setSortModel] = useState<GridSortModel>([]);
+  const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'observation_date', sort: 'desc' }]);
+
+  /**
+   * Returns true if the given row has a validation error.
+   *
+   * @param {GridCellParams} params
+   * @return {*}  {boolean}
+   */
+  const hasError = useCallback(
+    (params: GridCellParams): boolean => {
+      return Boolean(
+        validationModel[params.row.id]?.some((error) => {
+          return error.field === params.field;
+        })
+      );
+    },
+    [validationModel]
+  );
 
   /**
    * Refreshes the observations table with the latest records from the server.
@@ -323,7 +345,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    */
   const refreshObservationRecords = useCallback(async () => {
     const sort = firstOrNull(sortModel);
-    return refreshObservationsData({
+
+    const response = await refreshObservationsData({
       limit: paginationModel.pageSize,
       sort: sort?.field || undefined,
       order: sort?.sort || undefined,
@@ -331,7 +354,42 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
       page: paginationModel.page + 1
     });
-  }, [paginationModel.page, paginationModel.pageSize, refreshObservationsData, sortModel]);
+
+    if (response) {
+      setMeasurementColumns(() => {
+        // Existing measurement definitions from the observations data
+        const existingMeasurementDefinitions = [
+          ...response.supplementaryObservationData.qualitative_measurements,
+          ...response.supplementaryObservationData.quantitative_measurements
+        ];
+
+        // Get all measurement definitions from local storage, if any
+        const measurementDefinitionsStringified = sessionStorage.getItem(
+          getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS)
+        );
+
+        let localStorageMeasurementDefinitions: CBMeasurementType[] = [];
+        if (measurementDefinitionsStringified) {
+          localStorageMeasurementDefinitions = JSON.parse(measurementDefinitionsStringified) as CBMeasurementType[];
+        }
+
+        // Remove any duplicate measurement definitions that already exist in the observations data
+        localStorageMeasurementDefinitions = localStorageMeasurementDefinitions.filter((item1) => {
+          return !existingMeasurementDefinitions.some(
+            (item2) => item2.taxon_measurement_id === item1.taxon_measurement_id
+          );
+        });
+
+        // Set measurement columns, including both existing and local storage measurement definitions
+        return getMeasurementColumns(
+          [...existingMeasurementDefinitions, ...localStorageMeasurementDefinitions],
+          hasError
+        );
+      });
+    }
+
+    return response;
+  }, [hasError, paginationModel.page, paginationModel.pageSize, refreshObservationsData, sortModel, surveyId]);
 
   /**
    * Gets all rows from the table, including values that have been edited in the table.
@@ -428,23 +486,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   }, [_getRowsWithEditedValues, _muiDataGridApiRef]);
 
   /**
-   * Returns true if the given row has a validation error.
-   *
-   * @param {GridCellParams} params
-   * @return {*}  {boolean}
-   */
-  const hasError = useCallback(
-    (params: GridCellParams): boolean => {
-      return Boolean(
-        validationModel[params.row.id]?.some((error) => {
-          return error.field === params.field;
-        })
-      );
-    },
-    [validationModel]
-  );
-
-  /**
    * Deletes the given records from the server and removes them from the table.
    *
    * @param {IObservationTableRow[]} observationRecords
@@ -467,12 +508,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       try {
         if (savedRowIdsToDelete.length) {
           // Delete previously saved records from the server, if any
-          const response = await biohubApi.observation.deleteObservationRecords(
-            projectId,
-            surveyId,
-            savedRowIdsToDelete
-          );
-          setObservationCount(response.supplementaryObservationData.observationCount);
+          await biohubApi.observation.deleteObservationRecords(projectId, surveyId, savedRowIdsToDelete);
+          // Refresh the table after deleting one or more records
+          refreshObservationRecords();
         }
 
         // Remove deleted row IDs from the validation model
@@ -526,7 +564,64 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         });
       }
     },
-    [savedRows, stagedRows, setYesNoDialog, setSnackbar, biohubApi.observation, projectId, surveyId, setErrorDialog]
+    [
+      savedRows,
+      stagedRows,
+      setYesNoDialog,
+      setSnackbar,
+      biohubApi.observation,
+      projectId,
+      surveyId,
+      refreshObservationRecords,
+      setErrorDialog
+    ]
+  );
+
+  /**
+   * Deletes the given records from the server and removes them from the table.
+   *
+   * @param {string[]} measurementIds The critterbase taxon measurement ids to delete.
+   * @return {*}  {Promise<void>}
+   */
+  const _deleteMeasurementColumns = useCallback(
+    async (measurementIds: string[]): Promise<void> => {
+      if (!measurementIds.length) {
+        return;
+      }
+
+      try {
+        // Delete measurement columns from the database
+        await biohubApi.observation.deleteObservationMeasurements(projectId, surveyId, measurementIds);
+
+        // Close yes-no dialog
+        setYesNoDialog({ open: false });
+
+        // Show snackbar for successful deletion
+        setSnackbar({
+          snackbarMessage: (
+            <Typography variant="body2" component="div">
+              {measurementIds.length === 1
+                ? ObservationsTableI18N.deleteSingleMeasurementColumnSuccessSnackbarMessage
+                : ObservationsTableI18N.deleteMultipleMeasurementColumnSuccessSnackbarMessage(measurementIds.length)}
+            </Typography>
+          ),
+          open: true
+        });
+      } catch {
+        // Close yes-no dialog
+        setYesNoDialog({ open: false });
+
+        // Show error dialog
+        setErrorDialog({
+          onOk: () => setErrorDialog({ open: false }),
+          onClose: () => setErrorDialog({ open: false }),
+          dialogTitle: ObservationsTableI18N.removeMeasurementColumnsErrorDialogTitle,
+          dialogText: ObservationsTableI18N.removeMeasurementColumnsErrorDialogText,
+          open: true
+        });
+      }
+    },
+    [setYesNoDialog, setSnackbar, biohubApi.observation, projectId, surveyId, setErrorDialog]
   );
 
   /**
@@ -585,6 +680,51 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       });
     },
     [_deleteRecords, setYesNoDialog]
+  );
+
+  /**
+   * Renders a dialog that prompts the user to delete the given measurement columns (from all observation records).
+   *
+   * @param {string[]} measurementIds The critterbase taxon measurement ids to delete.
+   * @param {() => void} [onSuccess] Optional callback that fires after the user confirms the deletion, and the deletion
+   * is successful.
+   * @return {*}
+   */
+  const deleteObservationMeasurementColumns = useCallback(
+    (measurementIds: string[], onSuccess?: () => void) => {
+      if (!measurementIds.length) {
+        return;
+      }
+
+      setYesNoDialog({
+        dialogTitle:
+          measurementIds.length === 1
+            ? ObservationsTableI18N.removeSingleMeasurementColumnDialogTitle
+            : ObservationsTableI18N.removeMultipleMeasurementColumnsDialogTitle(measurementIds.length),
+        dialogText:
+          measurementIds.length === 1
+            ? ObservationsTableI18N.removeSingleMeasurementColumnDialogText
+            : ObservationsTableI18N.removeMultipleMeasurementColumnsDialogText,
+        yesButtonProps: {
+          color: 'error',
+          loading: false
+        },
+        yesButtonLabel:
+          measurementIds.length === 1
+            ? ObservationsTableI18N.removeSingleMeasurementColumnButtonText
+            : ObservationsTableI18N.removeMultipleMeasurementColumnsButtonText,
+        noButtonProps: { color: 'primary', variant: 'outlined', disabled: false },
+        noButtonLabel: 'Cancel',
+        open: true,
+        onYes: async () => {
+          await _deleteMeasurementColumns(measurementIds);
+          onSuccess?.();
+        },
+        onClose: () => setYesNoDialog({ open: false }),
+        onNo: () => setYesNoDialog({ open: false })
+      });
+    },
+    [_deleteMeasurementColumns, setYesNoDialog]
   );
 
   /**
@@ -703,6 +843,14 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   // True if the data grid contains at least 1 unsaved record
   const hasUnsavedChanges = modifiedRowIds.length > 0 || stagedRows.length > 0;
 
+  // True if the taxonomy cache is still initializing or the observations data is still loading
+  const isLoading: boolean = useMemo(() => {
+    return !taxonomyCacheStatus.isInitialized || isLoadingObservationsData;
+  }, [isLoadingObservationsData, taxonomyCacheStatus.isInitialized]);
+
+  // True if the save process has started
+  const isSaving: boolean = _isSavingData.current || _isStoppingEdit.current;
+
   /**
    * Send all observation rows to the backend.
    */
@@ -751,43 +899,184 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     ]
   );
 
-  const isLoading: boolean = useMemo(() => {
-    return !taxonomyCacheStatus.isInitialized || isLoadingObservationsData;
-  }, [isLoadingObservationsData, taxonomyCacheStatus.isInitialized]);
+  /**
+   * Compiles all measurement columns and their values for the given row.
+   *
+   * @param {ObservationRecord} row
+   * @return {*}
+   */
+  const _getMeasurementsToSave = useCallback(
+    (row: ObservationRecord) => {
+      const measurementDefinitions = measurementColumns.map((item) => item.measurement);
 
-  const isSaving: boolean = _isSavingData.current || _isStoppingEdit.current;
+      const qualitative: SubcountToSave['qualitative'] = [];
+      const quantitative: SubcountToSave['quantitative'] = [];
 
+      // For each measurement column in the data grid
+      for (const measurementDefinition of measurementDefinitions) {
+        // If the row has a non-null/non-undefined value for the measurement column
+        if (row[measurementDefinition.taxon_measurement_id]) {
+          // If the measurement column is a qualitative measurement, add it to the qualitative array
+          if (isQualitativeMeasurementTypeDefinition(measurementDefinition)) {
+            qualitative.push({
+              measurement_id: measurementDefinition.taxon_measurement_id,
+              measurement_option_id: row[measurementDefinition.taxon_measurement_id]
+            });
+          }
+
+          // If the measurement column is a quantitative measurement, add it to the quantitative array
+          if (isQuantitativeMeasurementTypeDefinition(measurementDefinition)) {
+            quantitative.push({
+              measurement_id: measurementDefinition.taxon_measurement_id,
+              measurement_value: row[measurementDefinition.taxon_measurement_id]
+            });
+          }
+        }
+      }
+
+      // Return the qualitative and quantitative arrays
+      return { qualitative, quantitative };
+    },
+    [measurementColumns]
+  );
+
+  /**
+   * Compiles all subcount columns and their values for the given row.
+   *
+   * @param {ObservationRecord} row
+   * @return {*}
+   */
+  const _getSubcountsToSave = useCallback(
+    (row: ObservationRecord) => {
+      // Get all populated measurement column values for the row
+      const measurementsToSave = _getMeasurementsToSave(row);
+
+      // Return the subcount row to save
+      return {
+        observation_subcount_id: row.observation_subcount_id,
+        // Map the observation `count` value to the `subcount` value, for now.
+        // Why?: Currently there is no UI support for setting a subcount value.
+        // See https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-534
+        subcount: row.count,
+        qualitative: measurementsToSave.qualitative,
+        quantitative: measurementsToSave.quantitative
+      };
+    },
+    [_getMeasurementsToSave]
+  );
+
+  /**
+   * Compiles the given row into the format expected by the SIMS API.
+   *
+   * @param {ObservationRecord} row
+   * @return {*}  {IObservationTableRowToSave}
+   */
+  const _getRowToSave = useCallback(
+    (row: ObservationRecord): IObservationTableRowToSave => {
+      // Get all subcount row data for the observation row
+      const subcountsToSave = _getSubcountsToSave(row);
+
+      // Return the observation row to save
+      return {
+        standardColumns: {
+          survey_observation_id: row.survey_observation_id,
+          itis_tsn: row.itis_tsn,
+          itis_scientific_name: row.itis_scientific_name,
+          survey_sample_site_id: row.survey_sample_site_id,
+          survey_sample_method_id: row.survey_sample_method_id,
+          survey_sample_period_id: row.survey_sample_period_id,
+          count: row.count,
+          observation_date: row.observation_date,
+          observation_time: row.observation_time,
+          latitude: row.latitude,
+          longitude: row.longitude
+        },
+        // Set the subcount data for the observation row.
+        // Why? Currently the UI only supports 1 subcount record per observation record.
+        // See https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-534
+        subcounts: [subcountsToSave]
+      };
+    },
+    [_getSubcountsToSave]
+  );
+
+  /**
+   * Transforms the raw data grid rows into the format expected by the SIMS API.
+   *
+   * @return {*}  {IObservationTableRowToSave[]}
+   */
+  const _getRowsToSave = useCallback((): IObservationTableRowToSave[] => {
+    // Get all rows that have been modified
+    const modifiedRows: ObservationRecord[] = modifiedRowIds
+      .map((rowId) => _muiDataGridApiRef.current.getRow(rowId))
+      .filter(Boolean);
+
+    // Transform the modified rows into the format expected by the SIMS API
+    const rowsToSave: IObservationTableRowToSave[] = modifiedRows.map((modifiedRow) => _getRowToSave(modifiedRow));
+
+    return rowsToSave;
+  }, [_getRowToSave, _muiDataGridApiRef, modifiedRowIds]);
+
+  /**
+   * Transforms the raw observation data into the format expected by the observations data grid table.
+   *
+   * @param {IGetSurveyObservationsResponse} observationsData
+   * @return {*}  {IObservationTableRow[]}
+   */
+  const _getRowsToDisplay = useCallback((observationsData: IGetSurveyObservationsResponse): IObservationTableRow[] => {
+    // Spread all subcount rows into separate observation table rows, duplicating the parent observation standard row data
+    const rowsToDisplay: IObservationTableRow[] = observationsData.surveyObservations.flatMap((observationRow) => {
+      // Return a new row for each subcount, which contains the parent observation standard row data
+      return observationRow.subcounts.map((subcountRow) => {
+        // This code flattens out the array of subcount rows into a single array of observation rows, where each row
+        // contains a copy of the parent observation standard row data, and the unique subcount row data.
+        // Note: This code currently assumes that each observation record has exactly 1 subcount record.
+        // Why? Currently there is no UI support for handling multiple subcount records per observation record.
+        // See https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-534
+        return {
+          // Spread the standard observation row data into the row
+          id: String(observationRow.survey_observation_id),
+          ...observationRow,
+
+          // Spread the subcount row data into the row
+          observation_subcount_id: subcountRow.observation_subcount_id,
+          // Reduce the array of qualitative measurements into an object and spread into the row
+          ...subcountRow.qualitative_measurements.reduce((acc, cur) => {
+            return {
+              ...acc,
+              [cur.critterbase_taxon_measurement_id]: cur.critterbase_measurement_qualitative_option_id
+            };
+          }, {} as CBMeasurementValue),
+          // Reduce the array of quantitative measurements into an object and spread into the row
+          ...subcountRow.quantitative_measurements.reduce((acc, cur) => {
+            return {
+              ...acc,
+              [cur.critterbase_taxon_measurement_id]: cur.value
+            };
+          }, {} as CBMeasurementValue)
+        };
+      });
+    });
+
+    return rowsToDisplay;
+  }, []);
+
+  /**
+   * Load and set the initial measurement columns, if any.
+   * Should only run once on initial page load.
+   */
   useEffect(() => {
     if (isLoadingObservationsData || !observationsData) {
       // Observations data is still loading
       return;
     }
 
-    if (measurementColumns.length) {
-      // Already loaded measurement columns from local storage or existing observations data
+    if (_hasLoadedMeasurementColumns.current) {
+      // Already loaded measurement definitions
       return;
     }
 
-    setMeasurementColumns(() => {
-      if (!observationsData.supplementaryObservationData.measurementColumns.length) {
-        // Get measurement columns from local storage
-        const measurementColumnStringified = sessionStorage.getItem(
-          getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS)
-        );
-
-        if (!measurementColumnStringified) {
-          return [];
-        }
-
-        return JSON.parse(measurementColumnStringified);
-      }
-
-      // Measurement columns are available in the observations data, remove measurement columns from local storage
-      sessionStorage.removeItem(getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS));
-
-      // Get measurement columns from existing observations data
-      return [...getMeasurementColumns(observationsData.supplementaryObservationData.measurementColumns, hasError)];
-    });
+    _hasLoadedMeasurementColumns.current = true;
   }, [isLoadingObservationsData, observationsData, hasError, surveyId, measurementColumns.length]);
 
   /**
@@ -814,28 +1103,15 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       return;
     }
 
-    // Collect rows from the observations data loader
-    const existingRows = observationsData.surveyObservations.map((row) => {
-      return {
-        ...row,
-        // Spread the measurement column key/values into the row
-        ...row.observation_subcount_attributes.reduce((acc, cur: any) => {
-          return {
-            ...acc,
-            // TODO update to be more type safe, etc
-            [cur.taxon_measurement_id]: cur.value || cur.qualitative_option_id
-          };
-        }, {} as CBMeasurementValue),
-        id: String(row.survey_observation_id)
-      };
-    });
+    // Transform the raw observation data into the format expected by the observations data grid table
+    const rowsToDisplay = _getRowsToDisplay(observationsData);
 
     // Set initial rows for the table context
-    setSavedRows(existingRows);
+    setSavedRows(rowsToDisplay);
 
     // Set initial observations count
     setObservationCount(observationsData.supplementaryObservationData.observationCount);
-  }, [observationsData, hasLoadedObservationsData]);
+  }, [observationsData, hasLoadedObservationsData, _getRowsToDisplay]);
 
   /**
    * Runs onces on initial page load.
@@ -861,7 +1137,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     }
 
     const uniqueTaxonomicIds: number[] = Array.from(
-      observationsData.surveyObservations.reduce((acc: Set<number>, record: IObservationRecord) => {
+      observationsData.surveyObservations.reduce((acc: Set<number>, record) => {
         if (record.itis_tsn) {
           acc.add(record.itis_tsn);
         }
@@ -917,39 +1193,10 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     // All rows have transitioned to view mode
     _isStoppingEdit.current = false;
 
-    const rowModels = _muiDataGridApiRef.current.getRowModels();
-
-    const rowValues = Array.from(rowModels, ([_, value]) => value);
-
-    const measurements = measurementColumns.map((item) => item.measurement);
-
-    // Build the object expected by the SIMS API
-    const rowsToSave = rowValues.map((row) => {
-      const standardColumnsToSave: IStandardObservationColumns = row as IStandardObservationColumns;
-
-      const measurementColumnsToSave: MeasurementColumnToSave[] = [];
-
-      const rowEntries = Object.entries(row);
-      rowEntries.forEach(([key, value]) => {
-        const matchingMeasurement = measurements.find((item) => item.taxon_measurement_id === key);
-
-        if (matchingMeasurement) {
-          measurementColumnsToSave.push({
-            id: matchingMeasurement.taxon_measurement_id,
-            field: matchingMeasurement.measurement_name,
-            value: (value as any) || null
-          });
-        }
-      });
-
-      return {
-        standardColumns: standardColumnsToSave,
-        measurementColumns: measurementColumnsToSave
-      };
-    });
+    const rowsToSave = _getRowsToSave();
 
     _saveRecords(rowsToSave);
-  }, [_muiDataGridApiRef, _saveRecords, measurementColumns, modifiedRowIds, rowModesModel]);
+  }, [_getRowsToSave, _muiDataGridApiRef, _saveRecords, measurementColumns, modifiedRowIds, rowModesModel]);
 
   const observationsTableContext: IObservationsTableContext = useMemo(
     () => ({
@@ -965,6 +1212,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       addObservationRecord,
       saveObservationRecords,
       deleteObservationRecords,
+      deleteObservationMeasurementColumns,
       discardChanges,
       refreshObservationRecords,
       getSelectedObservationRecords,
@@ -998,6 +1246,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       addObservationRecord,
       saveObservationRecords,
       deleteObservationRecords,
+      deleteObservationMeasurementColumns,
       discardChanges,
       refreshObservationRecords,
       getSelectedObservationRecords,

@@ -1,6 +1,5 @@
 import { GridSortDirection } from '@mui/x-data-grid/models';
 import { AxiosInstance } from 'axios';
-import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 
 export type OrderBy = 'asc' | 'desc';
 
@@ -65,26 +64,10 @@ const useLookupApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  /**
-   * Get measurement definitions by search terms.
-   *
-   * TODO: Update this method to use the search terms to filter the measurement definitions.
-   *
-   * @param {string[]} searchTerms
-   * @return {*}  {Promise<CBMeasurementType[]>}
-   */
-  const getMeasurementTypeDefinitionsBySearachTerms = async (searchTerms: string[]): Promise<CBMeasurementType[]> => {
-    // TODO: this needs to be updated when itis_tsn is swapped over in critter base
-    const { data } = await axios.get(`/api/critterbase/xref/taxon-measurements`);
-
-    return data;
-  };
-
   return {
     getSelectOptions,
     getTaxonMeasurements,
-    getTaxonMarkingBodyLocations,
-    getMeasurementTypeDefinitionsBySearachTerms
+    getTaxonMarkingBodyLocations
   };
 };
 

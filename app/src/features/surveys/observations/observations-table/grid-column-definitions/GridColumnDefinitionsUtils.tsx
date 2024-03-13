@@ -83,12 +83,12 @@ export const getQualitativeMeasurementColumn = (
  *
  * @param {CBMeasurementType[]} measurements
  * @param {(params: GridCellParams) => boolean} hasError
- * @return {*}
+ * @return {*}  {MeasurementColumn[]}
  */
 export const getMeasurementColumns = (
   measurements: CBMeasurementType[],
   hasError: (params: GridCellParams) => boolean
-) => {
+): MeasurementColumn[] => {
   const measurementColumns: MeasurementColumn[] = [];
 
   for (const measurement of measurements) {

@@ -1,6 +1,6 @@
 import Collapse from '@mui/material/Collapse';
 import Stack from '@mui/material/Stack';
-import { MeasurementsListCard } from 'features/surveys/observations/measurements/list/MeasurementsListCard';
+import { MeasurementsListCard } from 'features/surveys/observations/observations-table/configure-table/measurements/list/MeasurementsListCard';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { TransitionGroup } from 'react-transition-group';
 
