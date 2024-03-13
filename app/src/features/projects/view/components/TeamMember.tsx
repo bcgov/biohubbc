@@ -1,4 +1,4 @@
-import { mdiCrown, mdiPencilOutline } from '@mdi/js';
+import { mdiAccountEdit, mdiCrown } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, Stack, Typography } from '@mui/material';
 import assert from 'assert';
@@ -74,28 +74,19 @@ const TeamMembers = () => {
             alignItems="center"
             justifyContent="center"
             mr={1}>
-            <Typography sx={{ fontSize: '0.9rem', color: '#fff' }} variant="body2">
+            <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 700 }}>
               {member.initials}
             </Typography>
           </Box>
           <Typography variant="body2" color="textSecondary" alignItems="center" display="flex">
             {member.display_name}
-            {member.roles.includes('Coordinator') && (
+            {member.roles.some((role) => ['Coordinator', 'Collaborator'].includes(role)) && (
               <Icon
                 title={member.roles.join(', ')}
                 color="gray"
-                path={mdiCrown}
-                size={0.75}
-                style={{ marginLeft: '8px' }}
-              />
-            )}
-            {member.roles.includes('Collaborator') && (
-              <Icon
-                title={member.roles.join(', ')}
-                color="gray"
-                path={mdiPencilOutline}
-                size={0.75}
-                style={{ marginLeft: '8px' }}
+                path={member.roles.includes('Coordinator') ? mdiCrown : mdiAccountEdit}
+                size={0.8}
+                style={{ marginLeft: '6px' }}
               />
             )}
           </Typography>
