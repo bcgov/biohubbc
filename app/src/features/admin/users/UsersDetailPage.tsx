@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import React, { useEffect, useState } from 'react';
@@ -41,10 +40,8 @@ const UsersDetailPage: React.FC = () => {
     <>
       <UsersDetailHeader userDetails={selectedUser} />
 
-      <Container maxWidth="xl">
-        <Box my={3}>
-          <UsersDetailProjects userDetails={selectedUser} />
-        </Box>
+      <Container maxWidth="xl" sx={{ py: 3 }}>
+        <UsersDetailProjects userDetails={selectedUser} />
       </Container>
     </>
   );

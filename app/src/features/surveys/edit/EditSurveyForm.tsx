@@ -1,7 +1,6 @@
-import { Stack, Theme, Typography } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
-import { makeStyles } from '@mui/styles';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
@@ -26,20 +25,6 @@ import SurveyFundingSourceForm, { SurveyFundingSourceFormYupSchema } from '../co
 import { SurveySiteSelectionYupSchema } from '../components/SurveySiteSelectionForm';
 import SurveyUserForm, { SurveyUserJobYupSchema } from '../components/SurveyUserForm';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  actionButton: {
-    minWidth: '6rem',
-    '& + button': {
-      marginLeft: '0.5rem'
-    }
-  },
-  sectionDivider: {
-    height: '1px',
-    marginTop: theme.spacing(5),
-    marginBottom: theme.spacing(5)
-  }
-}));
-
 export interface IEditSurveyForm {
   initialSurveyData: SurveyUpdateObject | ICreateSurveyRequest;
   handleSubmit: (formikData: IEditSurveyRequest) => void;
@@ -52,8 +37,6 @@ export interface IEditSurveyForm {
  * @return {*}
  */
 const EditSurveyForm = (props: IEditSurveyForm) => {
-  const classes = useStyles();
-
   const projectContext = useContext(ProjectContext);
   const projectData = projectContext.projectDataLoader.data?.projectData;
 
@@ -117,7 +100,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
       validateOnBlur={false}
       validateOnChange={false}
       onSubmit={props.handleSubmit}>
-      <>
+      <Stack gap={5}>
         <FormikErrorSnackbar />
         <HorizontalSplitFormComponent
           title="General Information"
@@ -138,7 +121,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
             />
           }></HorizontalSplitFormComponent>
 
-        <Divider className={classes.sectionDivider} />
+        <Divider />
 
         <HorizontalSplitFormComponent
           title="Purpose and Methodology"
@@ -157,7 +140,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
             />
           }></HorizontalSplitFormComponent>
 
-        <Divider className={classes.sectionDivider} />
+        <Divider />
 
         <HorizontalSplitFormComponent
           title="Survey Participants"
@@ -165,7 +148,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
           component={<SurveyUserForm jobs={codes.survey_jobs} />}
         />
 
-        <Divider className={classes.sectionDivider} />
+        <Divider />
 
         <HorizontalSplitFormComponent
           title="Funding Sources"
@@ -184,7 +167,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
           }
         />
 
-        <Divider className={classes.sectionDivider} />
+        <Divider />
 
         <HorizontalSplitFormComponent
           title="Sampling Strategy"
@@ -192,7 +175,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
           component={<SamplingStrategyForm />}
         />
 
-        <Divider className={classes.sectionDivider} />
+        <Divider />
 
         <HorizontalSplitFormComponent
           title="Study Area"
@@ -209,7 +192,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
           }
         />
 
-        <Divider className={classes.sectionDivider} />
+        <Divider />
 
         <HorizontalSplitFormComponent
           title="Proprietary Data"
@@ -228,11 +211,12 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
             />
           }></HorizontalSplitFormComponent>
 
-        <Divider className={classes.sectionDivider} />
+        <Divider />
 
         <HorizontalSplitFormComponent title="Agreements" component={<AgreementsForm />}></HorizontalSplitFormComponent>
-        <Divider className={classes.sectionDivider} />
-      </>
+
+        <Divider />
+      </Stack>
     </Formik>
   );
 };

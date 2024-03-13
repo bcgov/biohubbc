@@ -1,5 +1,4 @@
 import { LoadingButton } from '@mui/lab';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
@@ -174,30 +173,28 @@ const EditProjectPage = () => {
         }
       />
 
-      <Container maxWidth="xl">
-        <Box py={3}>
-          <Paper elevation={0} sx={{ p: 5 }}>
-            <EditProjectForm
-              initialProjectData={editProjectDataLoader.data ?? defaultProjectDataFormValues}
-              handleSubmit={updateProject}
-              formikRef={formikRef}
-            />
-            <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
-              <LoadingButton
-                loading={isSaving}
-                type="submit"
-                color="primary"
-                variant="contained"
-                onClick={() => formikRef.current?.submitForm()}
-                data-testid="submit-project-button">
-                Save and Exit
-              </LoadingButton>
-              <Button disabled={isSaving} color="primary" variant="outlined" onClick={handleCancel}>
-                Cancel
-              </Button>
-            </Stack>
-          </Paper>
-        </Box>
+      <Container maxWidth="xl" sx={{ py: 3 }}>
+        <Paper sx={{ p: 5 }}>
+          <EditProjectForm
+            initialProjectData={editProjectDataLoader.data ?? defaultProjectDataFormValues}
+            handleSubmit={updateProject}
+            formikRef={formikRef}
+          />
+          <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
+            <LoadingButton
+              loading={isSaving}
+              type="submit"
+              color="primary"
+              variant="contained"
+              onClick={() => formikRef.current?.submitForm()}
+              data-testid="submit-project-button">
+              Save and Exit
+            </LoadingButton>
+            <Button disabled={isSaving} color="primary" variant="outlined" onClick={handleCancel}>
+              Cancel
+            </Button>
+          </Stack>
+        </Paper>
       </Container>
     </>
   );
