@@ -37,6 +37,9 @@ export const surveyDetailsSchema: OpenAPIV3.SchemaObject = {
       type: 'string',
       nullable: true
     },
+    progress_id: {
+      type: 'integer'
+    },
     survey_types: {
       description: 'Survey types',
       type: 'array',
