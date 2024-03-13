@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box';
-import { grey } from '@mui/material/colors';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
@@ -21,14 +20,12 @@ const PageHeader = (props: IPageHeader) => {
 
   return (
     <Paper
-      elevation={0}
       square={true}
       id="pageTitle"
       sx={{
         position: { sm: 'relative', lg: 'sticky' },
         top: 0,
-        zIndex: 1002,
-        borderBottom: '1px solid' + grey[300]
+        zIndex: 1002
       }}>
       <Container maxWidth={'xl'} sx={{ py: { xs: 2, sm: 3 } }}>
         {breadCrumbJSX}
