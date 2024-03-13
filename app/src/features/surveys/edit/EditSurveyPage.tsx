@@ -37,7 +37,7 @@ const EditSurveyPage = () => {
 
   const surveyId = Number(urlParams['survey_id']);
 
-  const [formikRef] = useState(useRef<FormikProps<IEditSurveyRequest>>(null));
+  const formikRef = useRef<FormikProps<IEditSurveyRequest>>(null);
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);

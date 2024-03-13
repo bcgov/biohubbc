@@ -46,7 +46,7 @@ const SamplingSitePage = () => {
   const surveyContext = useContext(SurveyContext);
   const dialogContext = useContext(DialogContext);
 
-  const [formikRef] = useState(useRef<FormikProps<any>>(null));
+  const formikRef = useRef<FormikProps<any>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);

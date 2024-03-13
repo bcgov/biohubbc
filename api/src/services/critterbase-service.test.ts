@@ -90,9 +90,9 @@ describe('CritterbaseService', () => {
     describe('getTaxonMeasurements', () => {
       it('should retrieve taxon measurements', async () => {
         const mockGetRequest = sinon.stub(cb, '_makeGetRequest');
-        await cb.getTaxonMeasurements('asdf');
+        await cb.getTaxonMeasurements('123456');
         expect(mockGetRequest).to.have.been.calledOnceWith('/xref/taxon-measurements', [
-          { key: 'taxon_id', value: 'asdf' }
+          { key: 'tsn', value: '123456' }
         ]);
       });
     });
