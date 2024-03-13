@@ -160,7 +160,11 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
                 subHeader={formatSubHeader({ Category: unit.category_name })}
                 onClickEdit={() => handleOpenEditForm(unit)}
                 onClickDelete={async () => {
-                  //handleDelete(cbApi.marking.deleteMarking, marking.marking_id, 'marking');
+                  handleDelete(
+                    cbApi.collectionUnit.deleteCollectionUnit,
+                    unit.critter_collection_unit_id,
+                    'ecological unit'
+                  );
                 }}
               />
             </Collapse>

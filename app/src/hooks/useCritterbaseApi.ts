@@ -3,6 +3,7 @@ import { useConfigContext } from 'hooks/useContext';
 import { useMemo } from 'react';
 import useAxios from './api/useAxios';
 import { useAuthentication } from './cb_api/useAuthenticationApi';
+import { useCollectionUnitApi } from './cb_api/useCollectionUnitApi';
 import { useCritterApi } from './cb_api/useCritterApi';
 import { useFamilyApi } from './cb_api/useFamilyApi';
 import { useLookupApi } from './cb_api/useLookupApi';
@@ -30,6 +31,8 @@ export const useCritterbaseApi = () => {
 
   const marking = useMarkingApi(apiAxios);
 
+  const collectionUnit = useCollectionUnitApi(apiAxios);
+
   return useMemo(
     () => ({
       critters,
@@ -37,7 +40,8 @@ export const useCritterbaseApi = () => {
       lookup,
       family,
       xref,
-      marking
+      marking,
+      collectionUnit
     }),
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

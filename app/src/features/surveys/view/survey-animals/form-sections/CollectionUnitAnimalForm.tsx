@@ -1,9 +1,11 @@
 import { Grid } from '@mui/material';
 import EditDialog from 'components/dialog/EditDialog';
 import CbSelectField from 'components/fields/CbSelectField';
+import { Field, FieldProps } from 'formik';
 import { useDialogContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { ICollectionUnitResponse } from 'interfaces/useCritterApi.interface';
+import { get } from 'lodash-es';
 import React, { useState } from 'react';
 import {
   AnimalFormProps,
@@ -31,12 +33,11 @@ export const CollectionUnitAnimalForm = (props: AnimalFormProps<ICollectionUnitR
     setLoading(true);
     try {
       if (props.formMode === ANIMAL_FORM_MODE.ADD) {
-        console.log(cbApi);
-        //await cbApi.marking.createMarking(values);
+        await cbApi.collectionUnit.createCollectionUnit(values);
         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created ecological unit.` });
       }
       if (props.formMode === ANIMAL_FORM_MODE.EDIT) {
-        //await cbApi.marking.updateMarking(values);
+        await cbApi.collectionUnit.updateCollectionUnit(values);
         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully edited ecological unit.` });
       }
     } catch (err) {
@@ -46,7 +47,6 @@ export const CollectionUnitAnimalForm = (props: AnimalFormProps<ICollectionUnitR
       setLoading(false);
     }
   };
-  //console.log(props?.formObject?.collection_category_id);
 
   return (
     <EditDialog
@@ -80,18 +80,20 @@ export const CollectionUnitAnimalForm = (props: AnimalFormProps<ICollectionUnitR
               />
             </Grid>
             <Grid item xs={12}>
-              <CbSelectField
-                label="Name"
-                id={'collection_unit_id'}
-                route={`xref/collection-units/${
-                  props.formObject?.collection_category_id ?? props.critter?.collection_units[0]?.collection_category_id
-                }`}
-                name={'collection_unit_id'}
-                controlProps={{
-                  size: 'medium',
-                  required: isRequiredInSchema(CreateCritterCollectionUnitSchema, 'collection_unit_id')
-                }}
-              />
+              <Field name="collection_unit_id">
+                {({ form }: FieldProps) => (
+                  <CbSelectField
+                    label="Name"
+                    id={'collection_unit_id'}
+                    route={`xref/collection-units/${get(form.values, 'collection_category_id')}`}
+                    name={'collection_unit_id'}
+                    controlProps={{
+                      size: 'medium',
+                      required: isRequiredInSchema(CreateCritterCollectionUnitSchema, 'collection_unit_id')
+                    }}
+                  />
+                )}
+              </Field>
             </Grid>
           </Grid>
         )
