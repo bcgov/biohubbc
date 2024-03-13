@@ -1,7 +1,7 @@
-import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
+import Stack from '@mui/material/Stack';
 import ProjectAdvancedFilters, {
   IProjectAdvancedFilters,
   ProjectAdvancedFiltersInitialValues
@@ -15,11 +15,10 @@ export interface IProjectsListFilterFormProps {
 }
 
 const ProjectsListFilterForm: React.FC<IProjectsListFilterFormProps> = (props) => {
-
   const formikRef = useRef<FormikProps<IProjectAdvancedFilters>>(null);
 
   return (
-    <Box>
+    <>
       <Box p={3}>
         <Formik innerRef={formikRef} initialValues={ProjectAdvancedFiltersInitialValues} onSubmit={props.handleSubmit}>
           <Stack gap={3}>
@@ -46,7 +45,7 @@ const ProjectsListFilterForm: React.FC<IProjectsListFilterFormProps> = (props) =
         </Formik>
       </Box>
       <Divider></Divider>
-    </Box>
+    </>
   );
 };
 
