@@ -1216,9 +1216,48 @@ describe('SurveyService', () => {
     it('passes correct data to insert, update, and delete methods', async () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyService(dbConnection);
+
+      const geoJson1 = [
+        {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [1, 2]
+          },
+          properties: {}
+        }
+      ];
+
+      const geoJson2 = [
+        {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [3, 4]
+          },
+          properties: {}
+        }
+      ];
+
       const existingLocations = [
-        { survey_location_id: 30, name: 'Location 1' },
-        { survey_location_id: 31, name: 'Location 2' }
+        {
+          survey_location_id: 30,
+          name: 'Location 1',
+          description: 'Location 1 description',
+          geometry: {},
+          geography: '',
+          geojson: geoJson1,
+          revision_count: 0
+        },
+        {
+          survey_location_id: 31,
+          name: 'Location 2',
+          description: 'Location 2 description',
+          geometry: {},
+          geography: '',
+          geojson: geoJson2,
+          revision_count: 0
+        }
       ] as SurveyLocationRecord[];
 
       const getSurveyLocationsDataStub = sinon.stub(service, 'getSurveyLocationsData').resolves(existingLocations);
@@ -1231,12 +1270,15 @@ describe('SurveyService', () => {
       const insertSurveyLocationsStub = sinon.stub(service, 'insertSurveyLocations').resolves();
       const updateSurveyLocationStub = sinon.stub(service, 'updateSurveyLocation').resolves();
       const deleteSurveyLocationStub = sinon.stub(service, 'deleteSurveyLocation').resolves(existingLocations[1]);
+      const insertRegionStub = sinon.stub(service, 'insertRegion').resolves();
 
-      await service.insertUpdateDeleteSurveyLocation(20, inputData);
+      const surveyId = 20;
 
-      expect(getSurveyLocationsDataStub).to.be.calledOnceWith(20);
+      await service.insertUpdateDeleteSurveyLocation(surveyId, inputData);
 
-      expect(insertSurveyLocationsStub).to.be.calledOnceWith(20, { name: 'New Location' });
+      expect(getSurveyLocationsDataStub).to.be.calledOnceWith(surveyId);
+
+      expect(insertSurveyLocationsStub).to.be.calledOnceWith(surveyId, { name: 'New Location' });
 
       expect(updateSurveyLocationStub).to.be.calledOnceWith({
         survey_location_id: 30,
@@ -1244,6 +1286,9 @@ describe('SurveyService', () => {
       });
 
       expect(deleteSurveyLocationStub).to.be.calledOnceWith(31);
+
+      expect(insertRegionStub).to.be.calledWith(surveyId, geoJson1);
+      expect(insertRegionStub).to.be.calledWith(surveyId, geoJson2);
     });
   });
 
