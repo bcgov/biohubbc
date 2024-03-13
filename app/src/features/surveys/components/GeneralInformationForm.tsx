@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteField';
 import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
+import SelectWithSubtextField, { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
 import AncillarySpeciesComponent from 'components/species/AncillarySpeciesComponent';
 import FocalSpeciesComponent from 'components/species/FocalSpeciesComponent';
@@ -38,6 +39,7 @@ export interface IGeneralInformationForm {
     survey_name: string;
     start_date: string;
     end_date: string;
+    progress_id: number | null;
     survey_types: number[];
   };
   species: {
@@ -58,6 +60,7 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
     survey_name: '',
     start_date: '',
     end_date: '',
+    progress_id: null,
     survey_types: []
   },
   species: {
@@ -81,7 +84,12 @@ export const GeneralInformationYupSchema = (customYupRules?: any) => {
         survey_types: yup
           .array(yup.number())
           .min(1, 'One or more Types are required')
-          .required('One or more Types are required')
+          .required('One or more Types are required'),
+        progress_id: yup
+          .number()
+          .min(1, 'Survey Progress is Required')
+          .required('Survey Progress is Required')
+          .nullable()
       }),
       species: yup.object().shape({
         focal_species: yup.array().min(1, 'You must specify a focal species').required('Required'),
@@ -95,6 +103,7 @@ export interface IGeneralInformationFormProps {
   type: IMultiAutocompleteFieldOption[];
   projectStartDate: string;
   projectEndDate: string;
+  progress: ISelectWithSubtextFieldOption[];
 }
 
 /**
@@ -123,6 +132,15 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
             id={'survey_details.survey_types'}
             label={'Type'}
             options={props.type}
+            required={true}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <SelectWithSubtextField
+            id={'survey_details.progress_id'}
+            name={'survey_details.progress_id'}
+            label={'Progress'}
+            options={props.progress}
             required={true}
           />
         </Grid>
