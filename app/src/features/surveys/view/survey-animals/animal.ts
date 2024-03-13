@@ -200,6 +200,8 @@ export const CreateCritterCollectionUnitSchema = yup.object({}).shape({
   //category_name: yup.string().optional()
 });
 
+// @TODO needs updating
+
 export const AnimalMortalitySchema = yup.object({}).shape({
   mortality_id: yup.string(),
   location_id: yup.string(),
@@ -263,6 +265,7 @@ export const LocationSchema = yup.object({}).shape({
  *
  */
 export type ICreateCritter = InferType<typeof CreateCritterSchema>;
+
 export type ICreateCritterMarking = InferType<typeof CreateCritterMarkingSchema>;
 export type ICreateCritterMeasurement = InferType<typeof CreateCritterMeasurementSchema>;
 export type ICreateCritterCollectionUnit = InferType<typeof CreateCritterCollectionUnitSchema>;
@@ -279,7 +282,7 @@ export type ICreateCritterCollectionUnit = InferType<typeof CreateCritterCollect
 //
 // export type IAnimalMeasurement = InferType<typeof AnimalMeasurementSchema>;
 //
-// export type IAnimalMortality = InferType<typeof AnimalMortalitySchema>;
+export type IAnimalMortality = InferType<typeof AnimalMortalitySchema>;
 //
 // export type IAnimalRelationship = InferType<typeof AnimalRelationshipSchema>;
 //

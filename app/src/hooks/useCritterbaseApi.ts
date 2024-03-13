@@ -9,6 +9,7 @@ import { useFamilyApi } from './cb_api/useFamilyApi';
 import { useLookupApi } from './cb_api/useLookupApi';
 import { useMarkingApi } from './cb_api/useMarkingApi';
 import { useMeasurementApi } from './cb_api/useMeasurementApi';
+import { useMortalityApi } from './cb_api/useMortalityApi';
 // import { useMarkings } from './cb_api/useMarkings';
 
 /**
@@ -36,6 +37,8 @@ export const useCritterbaseApi = () => {
 
   const measurement = useMeasurementApi(apiAxios);
 
+  const mortality = useMortalityApi(apiAxios);
+
   return useMemo(
     () => ({
       critters,
@@ -45,7 +48,8 @@ export const useCritterbaseApi = () => {
       xref,
       marking,
       collectionUnit,
-      measurement
+      measurement,
+      mortality,
     }),
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

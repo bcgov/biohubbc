@@ -2,24 +2,25 @@ import { AxiosInstance } from 'axios';
 
 const useMortalityApi = (axios: AxiosInstance) => {
  
-  // TODO 
-  // const createMortality = async (payload: ICreateCritterMortality) => {
-  //   const { data } = await axios.post(`/api/critterbase/mortalitys/create`, payload);
-  //   return data;
-  // };
+  // TODO type
+  const createMortality = async (payload: any) => {
+    const { data } = await axios.post(`/api/critterbase/mortality/create`, payload);
+    return data;
+  };
 
-  // const updateMortality = async (payload: ICreateCritterMortality) => {
-  //   const { data } = await axios.patch(`/api/critterbase/mortalitys/${payload.mortality_id}`, payload);
-  //   return data;
-  // };
+  // TODO type
+  const updateMortality = async (payload: any) => {
+    const { data } = await axios.patch(`/api/critterbase/mortality/${payload.mortality_id}`, payload);
+    return data;
+  };
 
-  // const deleteMortality = async (mortalityID: string) => {
-  //   const { data } = await axios.delete(`/api/critterbase/mortalitys/${mortalityID}`);
+  const deleteMortality = async (mortalityID: string) => {
+    const { data } = await axios.delete(`/api/critterbase/mortality/${mortalityID}`);
 
-  //   return data;
-  // };
+    return data;
+  };
 
-  // return { createMortality, updateMortality, deleteMortality };
+  return { createMortality, updateMortality, deleteMortality };
 };
 
 export { useMortalityApi };
