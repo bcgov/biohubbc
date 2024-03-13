@@ -9,8 +9,13 @@ export interface IMeasurementStub {
   unit?: string;
 }
 
+export interface IXrefMeasurements {
+  qualitative: IMeasurementStub[];
+  quantitative: IMeasurementStub[];
+}
+
 export const useXrefApi = (axios: AxiosInstance) => {
-  const getTaxonMeasurements = async (tsn?: number): Promise<Array<IMeasurementStub> | undefined> => {
+  const getTaxonMeasurements = async (tsn?: number): Promise<IXrefMeasurements | undefined> => {
     if (!tsn) {
       return;
     }

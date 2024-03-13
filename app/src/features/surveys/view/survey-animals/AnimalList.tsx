@@ -208,7 +208,7 @@ const AnimalList = (props: IAnimalListProps) => {
                         fontSize: '0.875rem'
                       }
                     }}>
-                    {(Object.keys(ANIMAL_SECTION) as ANIMAL_SECTION[]).map((section) => (
+                    {(Object.values(ANIMAL_SECTION) as ANIMAL_SECTION[]).map((section) => (
                       <ListItemButton
                         sx={{
                           px: 2,

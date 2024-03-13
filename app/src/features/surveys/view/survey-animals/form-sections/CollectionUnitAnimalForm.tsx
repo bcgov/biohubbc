@@ -1,76 +1,103 @@
-// FIX: This file needs to be converted to new format
+import { Grid } from '@mui/material';
+import EditDialog from 'components/dialog/EditDialog';
+import CbSelectField from 'components/fields/CbSelectField';
+import { useDialogContext } from 'hooks/useContext';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import { ICollectionUnitResponse } from 'interfaces/useCritterApi.interface';
+import React, { useState } from 'react';
+import {
+  AnimalFormProps,
+  ANIMAL_FORM_MODE,
+  CreateCritterCollectionUnitSchema,
+  ICreateCritterCollectionUnit,
+  isRequiredInSchema
+} from '../animal';
 
-export {};
-// import { Grid } from '@mui/material';
-// import CbSelectField from 'components/fields/CbSelectField';
-// import { useFormikContext } from 'formik';
-// import {
-//   AnimalCollectionUnitSchema,
-//   getAnimalFieldName,
-//   IAnimal,
-//   IAnimalCollectionUnit,
-//   isRequiredInSchema
-// } from '../animal';
-//
-// interface ICollectionUnitAnimalFormContentProps {
-//   index: number;
-// }
-//
-// export const CollectionUnitAnimalFormContent = ({ index }: ICollectionUnitAnimalFormContentProps) => {
-//   const name: keyof IAnimal = 'collectionUnits';
-//
-//   const { values, setFieldValue } = useFormikContext<IAnimal>();
-//   //Animals may have multiple collection units, but only one instance of each category.
-//   //We use this and pass to the select component to ensure categories already used in the form can't be selected again.
-//   const disabledCategories = values.collectionUnits.reduce((acc: Record<string, boolean>, curr) => {
-//     if (curr.collection_category_id) {
-//       acc[curr.collection_category_id] = true;
-//     }
-//     return acc;
-//   }, {});
-//
-//   const handleCategoryName = (_value: string, label: string) => {
-//     setFieldValue(getAnimalFieldName<IAnimalCollectionUnit>(name, 'category_name', index), label);
-//   };
-//
-//   const handleUnitName = (_value: string, label: string) => {
-//     setFieldValue(getAnimalFieldName<IAnimalCollectionUnit>(name, 'unit_name', index), label);
-//   };
-//
-//   console.log(values.collectionUnits[index]);
-//
-//   return (
-//     <Grid container spacing={3}>
-//       <Grid item xs={12}>
-//         <CbSelectField
-//           label="Category"
-//           name={getAnimalFieldName<IAnimalCollectionUnit>(name, 'collection_category_id', index)}
-//           id={'collection_category_id'}
-//           disabledValues={disabledCategories}
-//           query={{ tsn: values.general.itis_tsn }}
-//           route={'xref/taxon-collection-categories'}
-//           controlProps={{
-//             size: 'medium',
-//             required: isRequiredInSchema(AnimalCollectionUnitSchema, 'collection_category_id')
-//           }}
-//           handleChangeSideEffect={handleCategoryName}
-//         />
-//       </Grid>
-//       <Grid item xs={12}>
-//         <CbSelectField
-//           label="Name"
-//           id={'collection_unit_id'}
-//           route={`xref/collection-units/${values.collectionUnits[index].collection_category_id}`}
-//           name={getAnimalFieldName<IAnimalCollectionUnit>(name, 'collection_unit_id', index)}
-//           controlProps={{
-//             size: 'medium',
-//             required: isRequiredInSchema(AnimalCollectionUnitSchema, 'collection_unit_id')
-//           }}
-//           handleChangeSideEffect={handleUnitName}
-//         />
-//       </Grid>
-//     </Grid>
-//   );
-// };
-//
-// export default CollectionUnitAnimalFormContent;
+export const CollectionUnitAnimalForm = (props: AnimalFormProps<ICollectionUnitResponse>) => {
+  const cbApi = useCritterbaseApi();
+  const dialog = useDialogContext();
+  //Animals may have multiple collection units, but only one instance of each category.
+  //We use this and pass to the select component to ensure categories already used in the form can't be selected again.
+  const disabledCategories = props.critter.collection_units.reduce((acc: Record<string, boolean>, curr) => {
+    if (curr.collection_category_id) {
+      acc[curr.collection_category_id] = true;
+    }
+    return acc;
+  }, {});
+
+  const [loading, setLoading] = useState(false);
+
+  const handleSave = async (values: ICreateCritterCollectionUnit) => {
+    setLoading(true);
+    try {
+      if (props.formMode === ANIMAL_FORM_MODE.ADD) {
+        console.log(cbApi);
+        //await cbApi.marking.createMarking(values);
+        dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created ecological unit.` });
+      }
+      if (props.formMode === ANIMAL_FORM_MODE.EDIT) {
+        //await cbApi.marking.updateMarking(values);
+        dialog.setSnackbar({ open: true, snackbarMessage: `Successfully edited ecological unit.` });
+      }
+    } catch (err) {
+      dialog.setSnackbar({ open: true, snackbarMessage: `Critter ecological unit request failed.` });
+    } finally {
+      props.handleClose();
+      setLoading(false);
+    }
+  };
+  //console.log(props?.formObject?.collection_category_id);
+
+  return (
+    <EditDialog
+      dialogTitle={props.formMode === ANIMAL_FORM_MODE.ADD ? 'Add Ecological Unit' : 'Edit Ecological Unit'}
+      open={props.open}
+      onCancel={props.handleClose}
+      onSave={handleSave}
+      dialogLoading={loading}
+      component={{
+        initialValues: {
+          critter_collection_unit_id: props.formObject?.critter_collection_unit_id,
+          critter_id: props.critter.critter_id,
+          collection_unit_id: props.formObject?.collection_unit_id ?? '',
+          collection_category_id: props.formObject?.collection_category_id ?? ''
+        },
+        validationSchema: CreateCritterCollectionUnitSchema,
+        element: (
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <CbSelectField
+                label="Category"
+                name={'collection_category_id'}
+                id={'collection_category_id'}
+                disabledValues={disabledCategories}
+                query={{ tsn: props.critter.itis_tsn }}
+                route={'xref/taxon-collection-categories'}
+                controlProps={{
+                  size: 'medium',
+                  required: isRequiredInSchema(CreateCritterCollectionUnitSchema, 'collection_category_id')
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <CbSelectField
+                label="Name"
+                id={'collection_unit_id'}
+                route={`xref/collection-units/${
+                  props.formObject?.collection_category_id ?? props.critter?.collection_units[0]?.collection_category_id
+                }`}
+                name={'collection_unit_id'}
+                controlProps={{
+                  size: 'medium',
+                  required: isRequiredInSchema(CreateCritterCollectionUnitSchema, 'collection_unit_id')
+                }}
+              />
+            </Grid>
+          </Grid>
+        )
+      }}
+    />
+  );
+};
+
+export default CollectionUnitAnimalForm;

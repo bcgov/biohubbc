@@ -1,14 +1,18 @@
-import { Grid } from '@mui/material';
+import { Grid, MenuItem } from '@mui/material';
 import EditDialog from 'components/dialog/EditDialog';
+import { CbSelectWrapper } from 'components/fields/CbSelectFieldWrapper';
 import CustomTextField from 'components/fields/CustomTextField';
 import SingleDateField from 'components/fields/SingleDateField';
 import { useDialogContext } from 'hooks/useContext';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import useDataLoader from 'hooks/useDataLoader';
 import { IQualitativeMeasurementResponse, IQuantitativeMeasurementResponse } from 'interfaces/useCritterApi.interface';
-import React, { useState } from 'react';
+import { startCase } from 'lodash-es';
+import React, { useMemo, useState } from 'react';
 import {
   AnimalFormProps,
   ANIMAL_FORM_MODE,
-  CreateCritterMeasurement,
+  CreateCritterMeasurementSchema,
   ICreateCritterMeasurement,
   isRequiredInSchema
 } from '../animal';
@@ -22,11 +26,24 @@ import {
 export const MeasurementAnimalForm = (
   props: AnimalFormProps<IQuantitativeMeasurementResponse & IQualitativeMeasurementResponse>
 ) => {
-  //const cbApi = useCritterbaseApi();
+  const cbApi = useCritterbaseApi();
   const dialog = useDialogContext();
 
-  const isQualitative = Boolean((props.formObject as IQualitativeMeasurementResponse).qualitative_option_id);
+  const isQualitative = Boolean((props.formObject as IQualitativeMeasurementResponse)?.qualitative_option_id);
   console.log(isQualitative);
+
+  const {
+    data: measurements,
+    load: loadMeasurements,
+    isReady
+  } = useDataLoader(() => cbApi.xref.getTaxonMeasurements(props.critter.itis_tsn));
+
+  const flatMeasurements = useMemo(
+    () => (measurements ? [...measurements.qualitative, ...measurements.quantitative] : []),
+    [measurements]
+  );
+
+  loadMeasurements();
 
   //const { index, measurements, mode } = props;
 
@@ -102,7 +119,7 @@ export const MeasurementAnimalForm = (
   // const handleQualOptionName = (_value: string, label: string) => {
   //   setFieldValue(getAnimalFieldName<IAnimalMeasurement>('measurements', 'option_label', index), label);
   // };
-
+  //
   return (
     <EditDialog
       dialogTitle={props.formMode === ANIMAL_FORM_MODE.ADD ? 'Add Measurement' : 'Edit Measurement'}
@@ -110,35 +127,38 @@ export const MeasurementAnimalForm = (
       onCancel={props.handleClose}
       onSave={handleSave}
       dialogLoading={loading}
+      debug
       component={{
         initialValues: {
           measurement_qualitative_id: props.formObject?.measurement_qualitative_id ?? '',
           measurement_quantitative_id: props.formObject?.measurement_quantitative_id ?? '',
           taxon_measurement_id: props.formObject?.taxon_measurement_id ?? '',
-          qualitative_option_id: props.formObject?.qualitative_option_id,
+          qualitative_option_id: props?.formObject?.qualitative_option_id,
           value: props.formObject?.value,
           measured_timestamp: props.formObject?.measured_timestamp as unknown as Date,
           measurement_comment: props.formObject?.measurement_comment ? props.formObject?.measurement_comment : undefined
         },
-        validationSchema: CreateCritterMeasurement,
+        validationSchema: CreateCritterMeasurementSchema,
         element: (
           <Grid container spacing={3}>
-            {/* <Grid item xs={12}>
+            <Grid item xs={12}>
               <CbSelectWrapper
                 label="Type"
                 name={'taxon_measurement_id'}
+                value={isReady ? props.formObject?.measurement_name : ''}
                 //onChange={handleMeasurementTypeChange}
                 controlProps={{
-                  required: isRequiredInSchema(AnimalMeasurementSchema, 'taxon_measurement_id')
-                  //disabled: !measurements?.length || mode === ANIMAL_FORM_MODE.EDIT
+                  required: isRequiredInSchema(CreateCritterMeasurementSchema, 'taxon_measurement_id'),
+                  disabled: !flatMeasurements?.length || props.formMode === ANIMAL_FORM_MODE.EDIT
                 }}>
-                {measurements?.map((m) => (
-                  <MenuItem key={m.taxon_measurement_id} value={m.taxon_measurement_id}>
-                    {startCase(m.measurement_name)}
+                {flatMeasurements.map((measurement) => (
+                  <MenuItem key={measurement.taxon_measurement_id} value={measurement.taxon_measurement_id}>
+                    {startCase(measurement.measurement_name)}
                   </MenuItem>
                 ))}
               </CbSelectWrapper>
             </Grid>
+            {/*
             <Grid item xs={12}>
               {!isQuantMeasurement && taxonMeasurementId ? (
                 <CbSelectField
@@ -170,7 +190,7 @@ export const MeasurementAnimalForm = (
             <Grid item xs={12}>
               <SingleDateField
                 name={'measured_timestamp'}
-                required={isRequiredInSchema(CreateCritterMeasurement, 'measured_timestamp')}
+                required={isRequiredInSchema(CreateCritterMeasurementSchema, 'measured_timestamp')}
                 label="Date Measurement Taken"
               />
             </Grid>
@@ -180,7 +200,7 @@ export const MeasurementAnimalForm = (
                   size: 'medium',
                   multiline: true,
                   minRows: 3,
-                  required: isRequiredInSchema(CreateCritterMeasurement, 'measurement_comment')
+                  required: isRequiredInSchema(CreateCritterMeasurementSchema, 'measurement_comment')
                 }}
                 label="Comments"
                 name={'measurement_comment'}

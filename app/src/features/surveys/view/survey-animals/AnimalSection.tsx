@@ -15,8 +15,10 @@ import React, { useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { ANIMAL_FORM_MODE, ANIMAL_SECTION } from './animal';
 import { AnimalSectionWrapper } from './AnimalSectionWrapper';
+import CollectionUnitAnimalForm from './form-sections/CollectionUnitAnimalForm';
 import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 import { MarkingAnimalForm } from './form-sections/MarkingAnimalForm';
+import MeasurementAnimalForm from './form-sections/MeasurementAnimalForm';
 import GeneralAnimalSummary from './GeneralAnimalSummary';
 
 type SubHeaderData = Record<string, string | number | null | undefined>;
@@ -145,11 +147,26 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
   if (props.section === ANIMAL_SECTION.COLLECTION_UNITS) {
     return (
       <AnimalSectionWrapper
-        form={<div>test</div>}
+        form={<CollectionUnitAnimalForm {...SECTION_FORM_PROPS} />}
+        addBtn={<AddButton label={SurveyAnimalsI18N.animalCollectionUnitAddBtn} />}
         infoText={SurveyAnimalsI18N.animalCollectionUnitHelp}
         section={props.section}
-        critter={props.critter}
-      />
+        critter={props.critter}>
+        <TransitionGroup>
+          {props.critter.collection_units.map((unit) => (
+            <Collapse key={unit.critter_collection_unit_id}>
+              <EditDeleteStubCard
+                header={unit.unit_name}
+                subHeader={formatSubHeader({ Category: unit.category_name })}
+                onClickEdit={() => handleOpenEditForm(unit)}
+                onClickDelete={async () => {
+                  //handleDelete(cbApi.marking.deleteMarking, marking.marking_id, 'marking');
+                }}
+              />
+            </Collapse>
+          ))}
+        </TransitionGroup>
+      </AnimalSectionWrapper>
     );
   }
 
@@ -182,7 +199,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
   if (props.section === ANIMAL_SECTION.MEASUREMENTS) {
     return (
       <AnimalSectionWrapper
-        form={<div>placeholder</div>}
+        form={<MeasurementAnimalForm {...SECTION_FORM_PROPS} />}
         infoText={SurveyAnimalsI18N.animalMeasurementHelp}
         addBtn={<AddButton label={SurveyAnimalsI18N.animalMeasurementAddBtn} />}
         section={props.section}

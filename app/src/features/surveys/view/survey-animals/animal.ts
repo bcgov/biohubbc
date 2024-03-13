@@ -1,8 +1,9 @@
 import { DATE_LIMIT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
-import { ICritterDetailedResponse, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
+import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
 import yup from 'utils/YupSchema';
 import { AnyObjectSchema, InferType } from 'yup';
+//TODO: Clean up commented code
 
 export enum ANIMAL_FORM_MODE {
   ADD = 'add',
@@ -26,51 +27,20 @@ export enum ANIMAL_SECTION {
   FAMILY = 'Family'
 }
 
-// export const ANIMAL_SECTION = {
-//   GENERAL: {
-//     title: 'General',
-//     icon: mdiInformationOutline
-//   },
-//   COLLECTION_UNITS: {
-//     title: 'Ecological Units',
-//     icon: mdiFormatListGroup
-//   },
-//   MARKINGS: {
-//     title: 'Markings',
-//     icon: mdiTagOutline
-//   },
-//   MEASUREMENTS: {
-//     title: 'Measurements',
-//     icon: mdiRuler
-//   },
-//   CAPTURES: {
-//     title: 'Captures',
-//     icon: mdiSpiderWeb
-//   },
-//   MORTALITY: {
-//     title: 'Mortality',
-//     icon: mdiSkullOutline
-//   },
-//   FAMILY: {
-//     title: 'Family',
-//     icon: mdiFamilyTree
-//   }
-// };
-
 export type AnimalFormProps<T> =
   | {
       formObject?: never;
       formMode: ANIMAL_FORM_MODE.ADD;
       open: boolean;
       handleClose: () => void;
-      critter: ICritterDetailedResponse | ICritterSimpleResponse;
+      critter: ICritterDetailedResponse;
     }
   | {
       formObject: T;
       formMode: ANIMAL_FORM_MODE.EDIT;
       open: boolean;
       handleClose: () => void;
-      critter: ICritterDetailedResponse | ICritterSimpleResponse;
+      critter: ICritterDetailedResponse;
     };
 
 /**
@@ -123,14 +93,14 @@ const dateSchema = yup
 
 export type ProjectionMode = 'wgs' | 'utm';
 
-export const AnimalGeneralSchema = yup.object({}).shape({
-  itis_tsn: yup.number().required(req),
-  animal_id: yup.string().required(req),
-  itis_scientific_name: yup.string(),
-  wlh_id: yup.string(),
-  sex: yup.mixed<AnimalSex>().oneOf(Object.values(AnimalSex)).required(req),
-  critter_id: yup.string()
-});
+// export const AnimalGeneralSchema = yup.object({}).shape({
+//   itis_tsn: yup.number().required(req),
+//   animal_id: yup.string().required(req),
+//   itis_scientific_name: yup.string(),
+//   wlh_id: yup.string(),
+//   sex: yup.mixed<AnimalSex>().oneOf(Object.values(AnimalSex)).required(req),
+//   critter_id: yup.string()
+// });
 
 export const AnimalCaptureSchema = yup.object({}).shape({
   capture_id: yup.string(),
@@ -166,19 +136,17 @@ export const AnimalCaptureSchema = yup.object({}).shape({
   release_comment: yup.string().optional()
 });
 
-export const AnimalMarkingSchema = yup.object({
-  marking_id: yup.string(),
-  marking_type_id: yup.string().required('Type is required'),
-  taxon_marking_body_location_id: yup.string().required('Location is required'),
-  primary_colour_id: yup.string().optional(),
-  secondary_colour_id: yup.string().optional(),
-  marking_comment: yup.string(),
-  primary_colour: yup.string().optional(),
-  marking_type: yup.string().optional(),
-  body_location: yup.string().optional()
-});
-
-//TODO: new schemas
+// export const AnimalMarkingSchema = yup.object({
+//   marking_id: yup.string(),
+//   marking_type_id: yup.string().required('Type is required'),
+//   taxon_marking_body_location_id: yup.string().required('Location is required'),
+//   primary_colour_id: yup.string().optional(),
+//   secondary_colour_id: yup.string().optional(),
+//   marking_comment: yup.string(),
+//   primary_colour: yup.string().optional(),
+//   marking_type: yup.string().optional(),
+//   body_location: yup.string().optional()
+// });
 
 export const CreateCritterSchema = yup.object({
   critter_id: yup.string().optional(),
@@ -187,7 +155,6 @@ export const CreateCritterSchema = yup.object({
   wlh_id: yup.string().optional(),
   sex: yup.mixed<AnimalSex>().oneOf(Object.values(AnimalSex)).required(req)
 });
-export type ICreateCritter = InferType<typeof CreateCritterSchema>;
 
 export const CreateCritterMarkingSchema = yup.object({
   marking_id: yup.string().optional(),
@@ -198,10 +165,10 @@ export const CreateCritterMarkingSchema = yup.object({
   secondary_colour_id: yup.string().optional().nullable(),
   marking_comment: yup.string().optional().nullable()
 });
-export type ICreateCritterMarking = InferType<typeof CreateCritterMarkingSchema>;
 
-export const CreateCritterMeasurement = yup.object({}).shape(
+export const CreateCritterMeasurementSchema = yup.object({}).shape(
   {
+    //critter_id
     measurement_qualitative_id: yup.string(),
     measurement_quantitative_id: yup.string(),
     taxon_measurement_id: yup.string().required('Type is required'),
@@ -220,14 +187,15 @@ export const CreateCritterMeasurement = yup.object({}).shape(
   },
   [['value', 'qualitative_option_id']]
 );
-export type ICreateCritterMeasurement = InferType<typeof CreateCritterMeasurement>;
 
-export const AnimalCollectionUnitSchema = yup.object({}).shape({
+export const CreateCritterCollectionUnitSchema = yup.object({}).shape({
+  critter_collection_unit_id: yup.string().optional(),
+  critter_id: yup.string().required(),
   collection_unit_id: yup.string().required('Name is required'),
-  collection_category_id: yup.string().required('Category is required'),
-  critter_collection_unit_id: yup.string(),
-  unit_name: yup.string().optional(),
-  category_name: yup.string().optional()
+  collection_category_id: yup.string().required('Category is required')
+  //collection_category_id: yup.string().required('Category is required'),
+  //unit_name: yup.string().optional(),
+  //category_name: yup.string().optional()
 });
 
 export const AnimalMortalitySchema = yup.object({}).shape({
@@ -287,6 +255,15 @@ export const LocationSchema = yup.object({}).shape({
   coordinate_uncertainty: yup.number(),
   coordinate_uncertainty_unit: yup.string()
 });
+
+/**
+ * Critter create payload types.
+ *
+ */
+export type ICreateCritter = InferType<typeof CreateCritterSchema>;
+export type ICreateCritterMarking = InferType<typeof CreateCritterMarkingSchema>;
+export type ICreateCritterMeasurement = InferType<typeof CreateCritterMeasurementSchema>;
+export type ICreateCritterCollectionUnit = InferType<typeof CreateCritterCollectionUnitSchema>;
 
 // //Animal form related types
 //

@@ -1,4 +1,4 @@
-type ICollectionUnitResponse = {
+export type ICollectionUnitResponse = {
   critter_collection_unit_id: string;
   category_name: string;
   unit_name: string;

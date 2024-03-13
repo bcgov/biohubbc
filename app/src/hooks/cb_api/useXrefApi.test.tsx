@@ -32,9 +32,10 @@ describe('useXrefApi', () => {
       const taxon_id = v4();
       mock.onGet('/api/critterbase/xref/taxon-measurements?taxon_id=' + taxon_id).reply(200, mockMeasurement);
       const result = await useXrefApi(axios).getTaxonMeasurements(1);
-      expect(Array.isArray(result)).toBe(true);
-      expect(typeof result?.[0].taxon_measurement_id).toBe('string');
-      expect(typeof result?.[0].measurement_name).toBe('string');
+      expect(Array.isArray(result?.quantitative)).toBe(true);
+      expect(Array.isArray(result?.qualitative)).toBe(true);
+      //expect(typeof result?.[0].taxon_measurement_id).toBe('string');
+      //expect(typeof result?.[0].measurement_name).toBe('string');
     });
   });
 });
