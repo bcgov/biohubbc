@@ -243,6 +243,7 @@ describe.skip('SurveyStudyArea', () => {
           survey_name: 'survey name is this',
           start_date: '1999-09-09',
           end_date: '2021-01-25',
+          progress_id: 1,
           survey_types: [1],
           revision_count: 0
         }

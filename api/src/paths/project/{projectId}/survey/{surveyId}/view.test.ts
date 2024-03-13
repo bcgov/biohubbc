@@ -24,6 +24,7 @@ describe('survey/{surveyId}/view', () => {
               survey_name: 'name',
               start_date: '2020-04-04',
               end_date: '2020-05-05',
+              progress_id: 1,
               survey_types: [1, 2],
               revision_count: 1
             },
@@ -99,6 +100,7 @@ describe('survey/{surveyId}/view', () => {
               survey_name: 'name',
               start_date: '2020-04-04',
               end_date: '2020-05-05',
+              progress_id: 1,
               survey_types: [1, 2],
               revision_count: 1
             },
