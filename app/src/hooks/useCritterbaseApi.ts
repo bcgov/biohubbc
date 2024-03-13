@@ -8,6 +8,7 @@ import { useCritterApi } from './cb_api/useCritterApi';
 import { useFamilyApi } from './cb_api/useFamilyApi';
 import { useLookupApi } from './cb_api/useLookupApi';
 import { useMarkingApi } from './cb_api/useMarkingApi';
+import { useMeasurementApi } from './cb_api/useMeasurementApi';
 // import { useMarkings } from './cb_api/useMarkings';
 
 /**
@@ -33,6 +34,8 @@ export const useCritterbaseApi = () => {
 
   const collectionUnit = useCollectionUnitApi(apiAxios);
 
+  const measurement = useMeasurementApi(apiAxios);
+
   return useMemo(
     () => ({
       critters,
@@ -41,7 +44,8 @@ export const useCritterbaseApi = () => {
       family,
       xref,
       marking,
-      collectionUnit
+      collectionUnit,
+      measurement
     }),
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

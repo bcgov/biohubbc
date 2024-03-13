@@ -45,6 +45,11 @@ const CbSelectField = (props: ICbSelectField) => {
   const selectParams = { route, query, orderBy };
 
   useEffect(() => {
+    // Skip fetching if route ends with an undefined id
+    // example: /xref/collection-units/{undefined}
+    if (route.endsWith('/')) {
+      return;
+    }
     refresh(selectParams);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(selectParams)]);

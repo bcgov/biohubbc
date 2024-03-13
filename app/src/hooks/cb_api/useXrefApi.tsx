@@ -1,5 +1,9 @@
 import { AxiosInstance } from 'axios';
-import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
+import {
+  CBMeasurementType,
+  CBQualitativeMeasurementTypeDefinition,
+  CBQuantitativeMeasurementTypeDefinition
+} from 'interfaces/useCritterApi.interface';
 
 export interface IMeasurementStub {
   taxon_measurement_id: string;
@@ -10,8 +14,8 @@ export interface IMeasurementStub {
 }
 
 export interface IXrefMeasurements {
-  qualitative: IMeasurementStub[];
-  quantitative: IMeasurementStub[];
+  qualitative: CBQualitativeMeasurementTypeDefinition[];
+  quantitative: CBQuantitativeMeasurementTypeDefinition[];
 }
 
 export const useXrefApi = (axios: AxiosInstance) => {

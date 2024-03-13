@@ -168,20 +168,22 @@ export const CreateCritterMarkingSchema = yup.object({
 
 export const CreateCritterMeasurementSchema = yup.object({}).shape(
   {
-    //critter_id
+    critter_id: yup.string().required(),
     measurement_qualitative_id: yup.string(),
     measurement_quantitative_id: yup.string(),
     taxon_measurement_id: yup.string().required('Type is required'),
-    qualitative_option_id: yup.string().when('value', {
-      is: (value: '' | number) => value === '' || value == null,
-      then: yup.string().required('Value is required'),
-      otherwise: yup.string()
-    }),
-    value: numSchema.when('qualitative_option_id', {
-      is: (qualitative_option_id: string) => !qualitative_option_id,
-      then: numSchema.required('Value is required'),
-      otherwise: numSchema
-    }),
+    qualitative_option_id: yup.string(),
+    value: numSchema,
+    // qualitative_option_id: yup.string().when('value', {
+    //   is: (value: '' | number) => value === '' || value == null,
+    //   then: yup.string().required('Value is required'),
+    //   otherwise: yup.string()
+    // }),
+    // value: numSchema.when('qualitative_option_id', {
+    //   is: (qualitative_option_id: string) => !qualitative_option_id,
+    //   then: numSchema.required('Value is required'),
+    //   otherwise: numSchema
+    // }),
     measured_timestamp: dateSchema.required('Date is required'),
     measurement_comment: yup.string()
   },
