@@ -8,7 +8,7 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IQualitativeMeasurementResponse, IQuantitativeMeasurementResponse } from 'interfaces/useCritterApi.interface';
 import { startCase } from 'lodash-es';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import {
   AnimalFormProps,
   ANIMAL_FORM_MODE,
@@ -30,18 +30,16 @@ export const MeasurementAnimalForm = (
   const dialog = useDialogContext();
 
   const isQualitative = Boolean((props.formObject as IQualitativeMeasurementResponse)?.qualitative_option_id);
-  console.log(isQualitative);
+  console.log({ isQualitative });
 
-  const {
-    data: measurements,
-    load: loadMeasurements,
-    isReady
-  } = useDataLoader(() => cbApi.xref.getTaxonMeasurements(props.critter.itis_tsn));
-
-  const flatMeasurements = useMemo(
-    () => (measurements ? [...measurements.qualitative, ...measurements.quantitative] : []),
-    [measurements]
+  const { data: measurements, load: loadMeasurements } = useDataLoader(() =>
+    cbApi.xref.getTaxonMeasurements(props.critter.itis_tsn)
   );
+
+  // const flatMeasurements = useMemo(
+  //   () => (measurements ? [...measurements.qualitative, ...measurements.quantitative] : []),
+  //   [measurements]
+  // );
 
   loadMeasurements();
 
@@ -119,7 +117,9 @@ export const MeasurementAnimalForm = (
   // const handleQualOptionName = (_value: string, label: string) => {
   //   setFieldValue(getAnimalFieldName<IAnimalMeasurement>('measurements', 'option_label', index), label);
   // };
-  //
+
+  const measurementDefs = isQualitative ? measurements?.qualitative : measurements?.quantitative;
+
   return (
     <EditDialog
       dialogTitle={props.formMode === ANIMAL_FORM_MODE.ADD ? 'Add Measurement' : 'Edit Measurement'}
@@ -145,17 +145,22 @@ export const MeasurementAnimalForm = (
               <CbSelectWrapper
                 label="Type"
                 name={'taxon_measurement_id'}
-                value={isReady ? props.formObject?.measurement_name : ''}
+                value={measurementDefs ? props.formObject?.taxon_measurement_id : ''}
                 //onChange={handleMeasurementTypeChange}
                 controlProps={{
                   required: isRequiredInSchema(CreateCritterMeasurementSchema, 'taxon_measurement_id'),
-                  disabled: !flatMeasurements?.length || props.formMode === ANIMAL_FORM_MODE.EDIT
+                  disabled: !measurementDefs?.length || props.formMode === ANIMAL_FORM_MODE.EDIT
                 }}>
-                {flatMeasurements.map((measurement) => (
+                {measurementDefs?.map((measurementDef) => (
+                  <MenuItem key={measurementDef.taxon_measurement_id} value={measurementDef.taxon_measurement_id}>
+                    {startCase(measurementDef.measurement_name)}
+                  </MenuItem>
+                ))}
+                {/*flatMeasurements.map((measurement) => (
                   <MenuItem key={measurement.taxon_measurement_id} value={measurement.taxon_measurement_id}>
                     {startCase(measurement.measurement_name)}
                   </MenuItem>
-                ))}
+                ))*/}
               </CbSelectWrapper>
             </Grid>
             {/*

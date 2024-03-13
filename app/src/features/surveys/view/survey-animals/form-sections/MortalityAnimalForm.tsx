@@ -1,5 +1,9 @@
 // FIX: update to new form format - sorry for the merge conflict Curtis
+//
 
+// Implement the useMortalityAPI
+// Convert MortalityAnimalForm to be similar to MarkingAnimalForm
+// Add MortalityAnimalForm to AnimalSection
 export {};
 // import Box from '@mui/material/Box';
 // import Grid from '@mui/material/Grid';
