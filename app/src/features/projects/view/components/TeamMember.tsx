@@ -65,31 +65,35 @@ const TeamMembers = () => {
 
   return (
     <Stack spacing={1}>
-      {projectTeamMembers.map((member, index) => (
-        <Box display="flex" alignItems="center" key={member.display_name}>
-          <Box
-            sx={{ height: '35px', width: '35px', minWidth: '35px', borderRadius: '50%' }}
-            bgcolor={member.avatarColor}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            mr={1}>
-            <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 700 }}>{member.initials}</Typography>
+      {projectTeamMembers.map((member, index) => {
+        const isCoordinator = member.roles.includes('Coordinator');
+        const isCollaborator = member.roles.includes('Collaborator');
+        return (
+          <Box display="flex" alignItems="center" key={member.display_name}>
+            <Box
+              sx={{ height: '35px', width: '35px', minWidth: '35px', borderRadius: '50%' }}
+              bgcolor={member.avatarColor}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              mr={1}>
+              <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 700 }}>{member.initials}</Typography>
+            </Box>
+            <Typography variant="body2" color="textSecondary" alignItems="center" display="flex">
+              {member.display_name}
+              {(isCoordinator || isCollaborator) && (
+                <Icon
+                  title={member.roles.join(', ')}
+                  color="gray"
+                  path={isCoordinator ? mdiCrown : mdiAccountEdit}
+                  size={0.8}
+                  style={{ marginLeft: '6px' }}
+                />
+              )}
+            </Typography>
           </Box>
-          <Typography variant="body2" color="textSecondary" alignItems="center" display="flex">
-            {member.display_name}
-            {member.roles.some((role) => ['Coordinator', 'Collaborator'].includes(role)) && (
-              <Icon
-                title={member.roles.join(', ')}
-                color="gray"
-                path={member.roles.includes('Coordinator') ? mdiCrown : mdiAccountEdit}
-                size={0.8}
-                style={{ marginLeft: '6px' }}
-              />
-            )}
-          </Typography>
-        </Box>
-      ))}
+        );
+      })}
     </Stack>
   );
 };
