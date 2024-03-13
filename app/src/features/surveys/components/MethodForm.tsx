@@ -132,7 +132,6 @@ const MethodForm = () => {
               labelId={'method_lookup_id-label'}
               label={'Method Type'}
               value={values.method_lookup_id}
-              displayEmpty
               inputProps={{ id: 'method_lookup_id', 'aria-label': 'Method Type' }}
               onChange={handleChange}
               sx={{ width: '100%', backgroundColor: '#fff' }}>

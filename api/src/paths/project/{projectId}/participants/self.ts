@@ -35,7 +35,8 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            ...projectAndSystemUserSchema
+            ...projectAndSystemUserSchema,
+            nullable: true
           }
         }
       }
