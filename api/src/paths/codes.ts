@@ -35,7 +35,8 @@ GET.apiDoc = {
               'administrative_activity_status_type',
               'intended_outcomes',
               'vantage_codes',
-              'site_selection_strategies'
+              'site_selection_strategies',
+              'survey_progress'
             ],
             properties: {
               management_action_type: {
@@ -312,6 +313,23 @@ GET.apiDoc = {
                       type: 'number'
                     },
                     name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              survey_progress: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'integer'
+                    },
+                    name: {
+                      type: 'string'
+                    },
+                    description: {
                       type: 'string'
                     }
                   }
