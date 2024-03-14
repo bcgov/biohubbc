@@ -405,9 +405,14 @@ const useSurveyApi = (axios: AxiosInstance) => {
               wlh_id: critter.wlh_id
             }
           ],
+      captures: critter.captures,
+      collections: critter.collections,
+      mortalities: critter.mortalities,
+      markings: critter.markings,
+      locations: critter.locations,
+      families: critter.families,
       qualitative_measurements: critter.measurements.qualitative,
-      quantitative_measurements: critter.measurements.quantitative,
-      ...critter
+      quantitative_measurements: critter.measurements.quantitative
     };
   };
 

@@ -243,6 +243,64 @@ export const critterBulkRequestObject: OpenAPIV3.SchemaObject = {
         ...mortalitySchema
       }
     },
+    families: {
+      title: 'family',
+      type: 'object',
+      additionalProperties: false,
+      required: ['families', 'parents', 'children'],
+      properties: {
+        families: {
+          type: 'array',
+          items: {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              family_id: {
+                type: 'string',
+                format: 'uuid'
+              },
+              family_label: {
+                type: 'string'
+              }
+            }
+          }
+        },
+        parents: {
+          type: 'array',
+          items: {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              family_id: {
+                type: 'string',
+                format: 'uuid'
+              },
+              parent_critter_id: {
+                type: 'string',
+                format: 'uuid'
+              }
+            }
+          }
+        },
+        children: {
+          type: 'array',
+          items: {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              family_id: {
+                type: 'string',
+                format: 'uuid'
+              },
+              child_critter_id: {
+                type: 'string',
+                format: 'uuid'
+              }
+            }
+          }
+        }
+      }
+    },
     qualitative_measurements: {
       title: 'qualitative measurements',
       type: 'array',

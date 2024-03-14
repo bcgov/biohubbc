@@ -155,15 +155,17 @@ export const projectReportAttachmentAuthorSchema: OpenAPIV3.SchemaObject = {
   title: 'Report attachment author response object',
   type: 'object',
   additionalProperties: false,
-  required: ['project_report_author_id', 'project_report_attachment_id', 'first_name', 'last_name', 'revision_count'],
+  required: ['first_name', 'last_name'],
   properties: {
     project_report_author_id: {
       description: 'Report metadata author id',
-      type: 'number'
+      type: 'number',
+      nullable: true
     },
     project_report_attachment_id: {
       description: 'Report metadata attachment id',
-      type: 'number'
+      type: 'number',
+      nullable: true
     },
     first_name: {
       description: 'Report metadata author first name',
@@ -181,15 +183,17 @@ export const surveyReportAttachmentAuthorSchema: OpenAPIV3.SchemaObject = {
   title: 'Report attachment author response object',
   type: 'object',
   additionalProperties: false,
-  required: ['survey_report_author_id', 'survey_report_attachment_id', 'first_name', 'last_name', 'revision_count'],
+  required: ['first_name', 'last_name'],
   properties: {
     survey_report_author_id: {
       description: 'Report metadata author id',
-      type: 'number'
+      type: 'number',
+      nullable: true
     },
     survey_report_attachment_id: {
       description: 'Report metadata attachment id',
-      type: 'number'
+      type: 'number',
+      nullable: true
     },
     first_name: {
       description: 'Report metadata author first name',
