@@ -5,13 +5,6 @@ import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import EditDialog from 'components/dialog/EditDialog';
@@ -26,12 +19,13 @@ import { ISystemUser } from 'interfaces/useUserApi.interface';
 import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
-import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
 import AddSystemUsersForm, {
   AddSystemUsersFormInitialValues,
   AddSystemUsersFormYupSchema,
   IAddSystemUsersForm
 } from './AddSystemUsersForm';
+import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { GridColDef } from '@mui/x-data-grid';
 
 export interface IActiveUsersListProps {
   activeUsers: ISystemUser[];
@@ -52,11 +46,86 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
   const biohubApi = useBiohubApi();
   const history = useHistory();
 
-  const [rowsPerPage, setRowsPerPage] = useState(20);
-  const [page, setPage] = useState(0);
   const dialogContext = useContext(DialogContext);
 
   const [openAddUserDialog, setOpenAddUserDialog] = useState(false);
+
+  const activeUsersColumnDefs: GridColDef<ISystemUser>[] = [
+    {
+      field: 'user_identifier',
+      headerName: 'Username',
+      flex: 1,
+      disableColumnMenu: true,
+      renderCell: (params) => {
+        return (
+          <Link sx={{ fontWeight: 700 }} underline="always" to={`/admin/users/${params.row.system_user_id}`} component={RouterLink}>
+            {params.row.user_identifier || 'No identifier'}
+          </Link>
+        );
+      }
+    },
+    {
+      field: 'role_names',
+      flex: 1,
+      headerName: 'Role',
+      disableColumnMenu: true,
+      valueGetter: (params) => {
+        return params.row.role_names[0]
+      },
+      renderCell: (params) => {
+        return (
+          <CustomMenuButton
+            buttonLabel={params.value ?? 'Not Applicable'}
+            buttonTitle={'Change User Permissions'}
+            buttonProps={{ variant: 'outlined', size: 'small' }}
+            menuItems={codes.system_roles
+              .sort((item1, item2) => {
+                return item1.name.localeCompare(item2.name);
+              })
+              .map((item) => {
+                return {
+                  menuLabel: item.name,
+                  menuOnClick: () => handleChangeUserPermissionsClick(params.row, item.name, item.id)
+                };
+              })}
+            buttonEndIcon={<Icon path={mdiChevronDown} size={1} />}
+          />
+        );
+      }
+    },
+    {
+      field: 'actions',
+      headerName: '',
+      type: 'actions',
+      width: 70,
+      disableColumnMenu: true,
+      resizable: false,
+      renderCell: (params) => {
+        return (
+          <CustomMenuIconButton
+            buttonTitle="Actions"
+            buttonIcon={<Icon path={mdiDotsVertical} size={1} />}
+            menuItems={[
+              {
+                menuIcon: <Icon path={mdiAccountDetailsOutline} size={1} />,
+                menuLabel: 'View Users Details',
+                menuOnClick: () =>
+                  history.push({
+                    pathname: `/admin/users/${params.row.system_user_id}`,
+                    state: params.row
+                  })
+              },
+              {
+                menuIcon: <Icon path={mdiTrashCanOutline} size={1} />,
+                menuLabel: 'Remove User',
+                menuOnClick: () => handleRemoveUserClick(params.row)
+              }
+            ]}
+          />
+        );
+      }
+    }
+  ];
 
   const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
     dialogContext.setSnackbar({ ...textDialogProps, open: true });
@@ -273,101 +342,12 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
         </Toolbar>
         <Divider></Divider>
         <Box p={2}>
-          <TableContainer>
-            <Table
-              sx={{
-                tableLayout: 'fixed'
-              }}>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Username</TableCell>
-                  <TableCell>Role</TableCell>
-                  <TableCell width={80} align="right"></TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody data-testid="active-users-table">
-                {!activeUsers?.length && (
-                  <TableRow data-testid={'active-users-row-0'}>
-                    <TableCell colSpan={6} style={{ textAlign: 'center' }}>
-                      No Active Users
-                    </TableCell>
-                  </TableRow>
-                )}
-                {activeUsers.length > 0 &&
-                  activeUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                    <TableRow data-testid={`active-user-row-${index}`} key={row.system_user_id}>
-                      <TableCell
-                        sx={{
-                          '& a': {
-                            fontWeight: 700
-                          }
-                        }}>
-                        <Link underline="always" to={`/admin/users/${row.system_user_id}`} component={RouterLink}>
-                          {row.user_identifier || 'No identifier'}
-                        </Link>
-                      </TableCell>
-                      <TableCell>
-                        <Box my={-1}>
-                          <CustomMenuButton
-                            buttonLabel={row.role_names.join(', ') || 'Not Applicable'}
-                            buttonTitle={'Change User Permissions'}
-                            buttonProps={{ variant: 'outlined', size: 'small' }}
-                            menuItems={codes.system_roles
-                              .sort((item1, item2) => {
-                                return item1.name.localeCompare(item2.name);
-                              })
-                              .map((item) => {
-                                return {
-                                  menuLabel: item.name,
-                                  menuOnClick: () => handleChangeUserPermissionsClick(row, item.name, item.id)
-                                };
-                              })}
-                            buttonEndIcon={<Icon path={mdiChevronDown} size={1} />}
-                          />
-                        </Box>
-                      </TableCell>
-                      <TableCell align="right">
-                        <Box my={-1}>
-                          <CustomMenuIconButton
-                            buttonTitle="Actions"
-                            buttonIcon={<Icon path={mdiDotsVertical} size={1} />}
-                            menuItems={[
-                              {
-                                menuIcon: <Icon path={mdiAccountDetailsOutline} size={1} />,
-                                menuLabel: 'View Users Details',
-                                menuOnClick: () =>
-                                  history.push({
-                                    pathname: `/admin/users/${row.system_user_id}`,
-                                    state: row
-                                  })
-                              },
-                              {
-                                menuIcon: <Icon path={mdiTrashCanOutline} size={1} />,
-                                menuLabel: 'Remove User',
-                                menuOnClick: () => handleRemoveUserClick(row)
-                              }
-                            ]}
-                          />
-                        </Box>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          {activeUsers?.length > 0 && (
-            <TablePagination
-              component={'div'}
-              rowsPerPageOptions={[5, 10, 15, 20]}
-              count={activeUsers.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={(event: unknown, newPage: number) => handleChangePage(event, newPage, setPage)}
-              onRowsPerPageChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                handleChangeRowsPerPage(event, setPage, setRowsPerPage)
-              }
-            />
-          )}
+          <StyledDataGrid<ISystemUser>
+            noRowsMessage='No Active Users'
+            columns={activeUsersColumnDefs}
+            rows={activeUsers}
+            getRowId={(row) => row.system_user_id}
+          />
         </Box>
       </Paper>
 
