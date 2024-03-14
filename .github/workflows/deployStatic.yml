@@ -158,7 +158,7 @@ jobs:
       - name: Build APP Image
         working-directory: "app/.pipeline/"
         run: |
-          DEBUG=* npm run build -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --branch=$BRANCH --type=static
+          DEBUG=* npm run build -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=$BRANCH --phase=build --branch=$BRANCH
 
   # Build the Database image
   buildDatabase:
@@ -210,7 +210,7 @@ jobs:
       - name: Build Database Image
         working-directory: "database/.pipeline/"
         run: |
-          DEBUG=* npm run db:build -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --branch=$BRANCH --type=static
+          DEBUG=* npm run db:build -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=$BRANCH --phase=build --branch=$BRANCH
 
   # Build the Database Setup image
   buildDatabaseSetup:
@@ -262,7 +262,7 @@ jobs:
       - name: Build Database Setup Image
         working-directory: "database/.pipeline/"
         run: |
-          DEBUG=* npm run db-setup:build -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --branch=$BRANCH --type=static
+          DEBUG=* npm run db-setup:build -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=$BRANCH --phase=build --branch=$BRANCH
 
   # Build the API image
   buildAPI:
@@ -314,7 +314,7 @@ jobs:
       - name: Build API Image
         working-directory: "api/.pipeline/"
         run: |
-          DEBUG=* npm run build -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --branch=$BRANCH --type=static
+          DEBUG=* npm run build -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=$BRANCH --phase=build --branch=$BRANCH
 
   # Deploy APP image
   deployAPP:
@@ -367,7 +367,7 @@ jobs:
       - name: Deploy APP Image
         working-directory: "app/.pipeline"
         run: |
-          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=$BRANCH --phase=deploy --branch=$BRANCH --type=static
+          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=$BRANCH --phase=deploy --branch=$BRANCH
 
   # Deploy Database image
   deployDatabase:
@@ -420,7 +420,7 @@ jobs:
       - name: Deploy Database Image
         working-directory: "database/.pipeline/"
         run: |
-          DEBUG=* npm run db:deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=$BRANCH --phase=deploy --branch=$BRANCH --type=static
+          DEBUG=* npm run db:deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=$BRANCH --phase=deploy --branch=$BRANCH
 
   # Deploy Database setup image
   deployDatabaseSetup:
@@ -474,7 +474,7 @@ jobs:
       - name: Deploy Database Setup Image
         working-directory: "database/.pipeline/"
         run: |
-          DEBUG=* npm run db-setup:deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=$BRANCH --phase=deploy --branch=$BRANCH --type=static
+          DEBUG=* npm run db-setup:deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=$BRANCH --phase=deploy --branch=$BRANCH
 
   # Deploy API image
   deployAPI:
@@ -528,7 +528,7 @@ jobs:
       - name: Deploy API Image
         working-directory: "api/.pipeline/"
         run: |
-          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=$BRANCH --phase=deploy --branch=$BRANCH --type=static
+          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=$BRANCH --phase=deploy --branch=$BRANCH
 
   # Clean build/deployment artifacts
   clean:

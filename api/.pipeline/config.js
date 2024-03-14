@@ -15,17 +15,9 @@ const changeId = rawOptions.pr;
 const pipelineConfigMapString = rawOptions.config;
 const pipelineConfigMap = JSON.parse(pipelineConfigMapString);
 
-// A static deployment is when the deployment is updating dev, test, or prod (rather than a temporary PR)
-// See `--type=static` in the `deployStatic.yml` git workflow
-const isStaticDeployment = rawOptions.type === 'static';
-
 // The branch name, which is either the branch name provided in the git action (for a static deploy) or the current git
 // branch name (in the case of a PR deploy)
-const branch = (isStaticDeployment && rawOptions.branch) || options.git.ref;
-
-const tag =
-  (branch && `build-${pipelineConfigMap.version}-${changeId}-${branch}`) ||
-  `build-${pipelineConfigMap.version}-${changeId}`;
+const branch = rawOptions.branch || null;
 
 const phases = {
   pr: {
@@ -37,7 +29,7 @@ const phases = {
       suffix: `-build-${changeId}`,
       instance: `${pipelineConfigMap.module.api}-build-${changeId}`,
       version: `${pipelineConfigMap.version}-${changeId}`,
-      tag: tag,
+      tag: `build-${pipelineConfigMap.version}-${changeId}`,
       branch: branch
     },
     deploy: {
@@ -64,7 +56,7 @@ const phases = {
       suffix: `-build-${changeId}`,
       instance: `${pipelineConfigMap.module.api}-build-${changeId}`,
       version: `${pipelineConfigMap.version}-${changeId}`,
-      tag: tag,
+      tag: `build-${pipelineConfigMap.version}-${changeId}-${branch}`,
       branch: branch
     },
     deploy: {
@@ -90,7 +82,7 @@ const phases = {
       suffix: `-build-${changeId}`,
       instance: `${pipelineConfigMap.module.api}-build-${changeId}`,
       version: `${pipelineConfigMap.version}-${changeId}`,
-      tag: tag,
+      tag: `build-${pipelineConfigMap.version}-${changeId}-${branch}`,
       branch: branch
     },
     deploy: {
@@ -117,7 +109,7 @@ const phases = {
       suffix: `-build-${changeId}`,
       instance: `${pipelineConfigMap.module.api}-build-${changeId}`,
       version: `${pipelineConfigMap.version}-${changeId}`,
-      tag: tag,
+      tag: `build-${pipelineConfigMap.version}-${changeId}-${branch}`,
       branch: branch
     },
     deploy: {
