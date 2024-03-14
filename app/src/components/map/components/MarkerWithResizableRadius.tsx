@@ -6,7 +6,7 @@ import { distanceInMetresBetweenCoordinates } from 'utils/mapProjectionHelpers';
 export type MarkerIconColor = 'green' | 'blue' | 'red';
 
 interface IClickMarkerProps {
-  position: LatLng;
+  position?: LatLng;
   radius: number;
   markerColor?: MarkerIconColor;
   listenForMouseEvents: boolean; //Have this here so you can NOOP the mouse events in the case of multiple instances of this component on same mapf
@@ -63,7 +63,7 @@ const MarkerWithResizableRadius = (props: IClickMarkerProps): JSX.Element => {
     },
     mousemove: (e) => {
       if (!listenForMouseEvents) return;
-      if (holdingMouse) {
+      if (holdingMouse && position) {
         //If we move mouse between mouse down and mouse up, then change radius of circle
         handleResize?.(distanceInMetresBetweenCoordinates(position, e.latlng));
       }
@@ -77,6 +77,10 @@ const MarkerWithResizableRadius = (props: IClickMarkerProps): JSX.Element => {
       map.dragging.enable();
     }
   });
+
+  if (!position) {
+    return <></>;
+  }
 
   return (
     <>

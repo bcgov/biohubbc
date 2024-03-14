@@ -334,6 +334,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     return (
       <AnimalSectionWrapper
         form={<CaptureAnimalForm {...SECTION_FORM_PROPS} />}
+        addBtn={<AddButton label={SurveyAnimalsI18N.animalCaptureAddBtn} />}
         infoText={SurveyAnimalsI18N.animalCaptureHelp}
         section={props.section}
         critter={props.critter}>

@@ -67,13 +67,13 @@ export const CaptureAnimalForm = (props: AnimalFormProps<ICaptureResponse>) => {
           release_comment: props?.formObject?.release_comment ?? undefined
         },
         validationSchema: CreateCritterCaptureSchema,
-        element: <CaptureForm />
+        element: <CaptureForm formMode={props.formMode} />
       }}
     />
   );
 };
 
-const CaptureForm = () => {
+const CaptureForm = (props: Pick<AnimalFormProps<ICaptureResponse>, 'formMode'>) => {
   const { values, setValues } = useFormikContext<ICreateCritterCapture>();
 
   const [showRelease, setShowRelease] = useState(false);
@@ -153,67 +153,76 @@ const CaptureForm = () => {
               name={'capture_location.coordinate_uncertainty'}
             />
           </Grid>
-        </Grid>
-        {values.release_location ? null : (
-          <FormControlLabel
-            control={
-              <Checkbox
-                size="small"
-                onChange={() => setShowRelease((show) => !show)}
-                checked={showRelease}
-                //disabled={!!value?.release_location_id}
-                //name={getAnimalFieldName<IAnimalCapture>(name, 'show_release', index)}
+          {props.formMode === ANIMAL_FORM_MODE.ADD ? (
+            <Grid item>
+              <FormControlLabel
+                control={
+                  <Checkbox size="small" onChange={() => setShowRelease((show) => !show)} checked={showRelease} />
+                }
+                label={SurveyAnimalsI18N.animalCaptureReleaseRadio}
               />
-            }
-            label={SurveyAnimalsI18N.animalCaptureReleaseRadio}
-          />
-        )}
+            </Grid>
+          ) : null}
+        </Grid>
       </Box>
 
-      <Box key="release-location" component="fieldset" mb={0}>
-        <Typography component="legend">Release Location</Typography>
-        <Grid container spacing={2}>
-          <Grid item sm={4}>
-            <Field
-              as={CustomTextField}
-              other={{ required: true, type: 'number' }}
-              label={isUtmProjection ? 'Northing' : 'Latitude'}
-              name={'release_location.latitude'}
-            />
+      {showRelease ? (
+        <Box key="release-location" component="fieldset" mb={0}>
+          <Typography component="legend">Release Location</Typography>
+          <Grid container spacing={2}>
+            <Grid item sm={4}>
+              <Field
+                as={CustomTextField}
+                other={{ required: true, type: 'number' }}
+                label={isUtmProjection ? 'Northing' : 'Latitude'}
+                name={'release_location.latitude'}
+              />
+            </Grid>
+            <Grid item sm={4}>
+              <CustomTextField
+                other={{ required: true, type: 'number' }}
+                label={isUtmProjection ? 'Easting' : 'Longitude'}
+                name={'release_location.longitude'}
+              />
+            </Grid>
+            <Grid item sm={4}>
+              <CustomTextField
+                other={{
+                  required: true,
+                  type: 'number'
+                }}
+                label="Uncertainty (Meters)"
+                name={'release_location.coordinate_uncertainty'}
+              />
+            </Grid>
           </Grid>
-          <Grid item sm={4}>
-            <CustomTextField
-              other={{ required: true, type: 'number' }}
-              label={isUtmProjection ? 'Easting' : 'Longitude'}
-              name={'release_location.longitude'}
-            />
-          </Grid>
-          <Grid item sm={4}>
-            <CustomTextField
-              other={{
-                required: true,
-                type: 'number'
-              }}
-              label="Uncertainty (Meters)"
-              name={'release_location.coordinate_uncertainty'}
-            />
-          </Grid>
-        </Grid>
-      </Box>
+        </Box>
+      ) : null}
+
       <FormLocationPreview
         projection={projection}
-        locations={[
-          {
-            title: 'Capture',
-            pingColour: 'blue',
-            fields: { latitude: 'capture_location.latitude', longitude: 'capture_location.longitude' }
-          },
-          {
-            title: 'Release',
-            pingColour: 'red',
-            fields: { latitude: 'release_location.latitude', longitude: 'release_location.longitude' }
-          }
-        ]}
+        locations={
+          showRelease
+            ? [
+                {
+                  title: 'Capture',
+                  pingColour: 'blue',
+                  fields: { latitude: 'capture_location.latitude', longitude: 'capture_location.longitude' }
+                },
+                {
+                  title: 'Release',
+                  pingColour: 'red',
+                  fields: { latitude: 'release_location.latitude', longitude: 'release_location.longitude' }
+                }
+              ]
+            : [
+                {
+                  title: 'Capture',
+                  pingColour: 'blue',
+                  fields: { latitude: 'capture_location.latitude', longitude: 'capture_location.longitude' }
+                }
+              ]
+        }
       />
 
       <Box component="fieldset">

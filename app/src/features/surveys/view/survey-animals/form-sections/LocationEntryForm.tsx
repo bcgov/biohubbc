@@ -16,7 +16,7 @@ import React, { useState } from 'react';
 import { LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { getLatLngAsUtm, getUtmAsLatLng, PROJECTION_MODE } from 'utils/mapProjectionHelpers';
 
-interface IFormLocation<T> {
+export interface IFormLocation<T> {
   title: string;
   pingColour: MarkerIconColor;
   fields: {
@@ -52,7 +52,7 @@ const FormLocationPreview = <T,>({ projection = PROJECTION_MODE.WGS, locations }
     setMarkerToggle(null);
   };
 
-  const renderMarker = (location: IFormLocation<T>): JSX.Element => {
+  const renderMarker = (location: IFormLocation<T>) => {
     let latitude = get(values, location.fields.latitude);
     let longitude = get(values, location.fields.longitude);
 
@@ -61,7 +61,7 @@ const FormLocationPreview = <T,>({ projection = PROJECTION_MODE.WGS, locations }
     }
 
     // Marking positions can be different than the fields if the projection is UTM.
-    const renderPosition = new LatLng(latitude, longitude);
+    const renderPosition = latitude && longitude ? new LatLng(latitude, longitude) : undefined;
 
     return (
       <MarkerWithResizableRadius
