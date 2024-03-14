@@ -191,6 +191,12 @@ GET.apiDoc = {
                           },
                           survey_block_id: {
                             type: 'number'
+                          },
+                          name: {
+                            type: 'string'
+                          },
+                          description: {
+                            type: 'string'
                           }
                         }
                       }
@@ -210,6 +216,12 @@ GET.apiDoc = {
                           },
                           survey_stratum_id: {
                             type: 'number'
+                          },
+                          name: {
+                            type: 'string'
+                          },
+                          description: {
+                            type: 'string'
                           }
                         }
                       }
@@ -419,6 +431,37 @@ POST.apiDoc = {
                 properties: {
                   survey_block_id: {
                     type: 'number'
+                  },
+                  survey_id: {
+                    type: 'integer'
+                  },
+                  name: {
+                    type: 'string'
+                  },
+                  description: {
+                    type: 'string'
+                  },
+                  sample_block_count: {
+                    type: 'number'
+                  },
+                  create_date: {
+                    type: 'string',
+                    nullable: true
+                  },
+                  create_user: {
+                    type: 'number',
+                    nullable: true
+                  },
+                  update_date: {
+                    type: 'string',
+                    nullable: true
+                  },
+                  update_user: {
+                    type: 'string',
+                    nullable: true
+                  },
+                  revision_count: {
+                    type: 'number'
                   }
                 }
               }
@@ -430,7 +473,38 @@ POST.apiDoc = {
                 additionalProperties: false,
                 required: ['survey_stratum_id'],
                 properties: {
+                  survey_id: {
+                    type: 'integer'
+                  },
                   survey_stratum_id: {
+                    type: 'number'
+                  },
+                  sample_stratum_count: {
+                    type: 'number'
+                  },
+                  name: {
+                    type: 'string'
+                  },
+                  description: {
+                    type: 'string'
+                  },
+                  create_date: {
+                    type: 'string',
+                    nullable: true
+                  },
+                  create_user: {
+                    type: 'string',
+                    nullable: true
+                  },
+                  update_date: {
+                    type: 'string',
+                    nullable: true
+                  },
+                  update_user: {
+                    type: 'string',
+                    nullable: true
+                  },
+                  revision_count: {
                     type: 'number'
                   }
                 }
