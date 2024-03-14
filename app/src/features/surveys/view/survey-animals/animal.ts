@@ -83,8 +83,12 @@ export const glt = (num: number, greater = true) => `Must be ${greater ? 'greate
 const req = 'Required';
 const mustBeNum = 'Must be a number';
 const numSchema = yup.number().typeError(mustBeNum);
+
 const latSchema = yup.number().min(-90, glt(-90)).max(90, glt(90, false)).typeError(mustBeNum);
 const lonSchema = yup.number().min(-180, glt(-180)).max(180, glt(180, false)).typeError(mustBeNum);
+const eastingSchema = yup.number().min(166640, glt(166640)).max(833360, glt(833360, false));
+const northingSchema = yup.number().min(0, glt(0)).max(9334080, glt(9334080, false));
+
 const dateSchema = yup
   .date()
   .min(dayjs(DATE_LIMIT.min), `Must be after ${DATE_LIMIT.min}`)
@@ -102,37 +106,80 @@ export type ProjectionMode = 'wgs' | 'utm';
 //   critter_id: yup.string()
 // });
 
-export const AnimalCaptureSchema = yup.object({}).shape({
-  capture_id: yup.string(),
-  capture_location_id: yup.string(),
-  release_location_id: yup.string(),
-  capture_longitude: lonSchema.when('projection_mode', { is: 'wgs', then: lonSchema.required(req) }),
-  capture_latitude: latSchema.when('projection_mode', { is: 'wgs', then: latSchema.required(req) }),
-  capture_utm_northing: numSchema.when('projection_mode', { is: 'utm', then: numSchema.required(req) }),
-  capture_utm_easting: numSchema.when('projection_mode', { is: 'utm', then: numSchema.required(req) }),
-  capture_timestamp: dateSchema.required(req),
-  capture_coordinate_uncertainty: numSchema.required(req),
+// export const AnimalCaptureSchema = yup.object({}).shape({
+//   capture_id: yup.string(),
+//   capture_location_id: yup.string(),
+//   release_location_id: yup.string(),
+//   capture_longitude: lonSchema.when('projection_mode', { is: 'wgs', then: lonSchema.required(req) }),
+//   capture_latitude: latSchema.when('projection_mode', { is: 'wgs', then: latSchema.required(req) }),
+//   capture_utm_northing: numSchema.when('projection_mode', { is: 'utm', then: numSchema.required(req) }),
+//   capture_utm_easting: numSchema.when('projection_mode', { is: 'utm', then: numSchema.required(req) }),
+//   capture_timestamp: dateSchema.required(req),
+//   capture_coordinate_uncertainty: numSchema.required(req),
+//   capture_comment: yup.string(),
+//   projection_mode: yup.mixed().oneOf(['wgs', 'utm']),
+//   show_release: yup.boolean().required(), // used for conditional required release fields
+//   release_longitude: lonSchema.when(['projection_mode', 'show_release'], {
+//     is: (projection_mode: ProjectionMode, show_release: boolean) => projection_mode === 'wgs' && show_release,
+//     then: lonSchema.required(req)
+//   }),
+//   release_latitude: latSchema.when(['projection_mode', 'show_release'], {
+//     is: (projection_mode: ProjectionMode, show_release: boolean) => projection_mode === 'wgs' && show_release,
+//     then: latSchema.required(req)
+//   }),
+//   release_utm_northing: numSchema.when(['projection_mode', 'show_release'], {
+//     is: (projection_mode: ProjectionMode, show_release: boolean) => projection_mode === 'utm' && show_release,
+//     then: numSchema.required(req)
+//   }),
+//   release_utm_easting: numSchema.when(['projection_mode', 'show_release'], {
+//     is: (projection_mode: ProjectionMode, show_release: boolean) => projection_mode === 'utm' && show_release,
+//     then: numSchema.required(req)
+//   }),
+//   release_coordinate_uncertainty: numSchema.when('show_release', { is: true, then: numSchema.required(req) }),
+//   release_timestamp: dateSchema /*.when('show_release', { is: true, then: dateSchema.required(req) }),*/,
+//   release_comment: yup.string().optional()
+// });
+
+export const LocationSchema = yup.object({}).shape({
+  /**
+   * This is useful for when you need to have different validation for the projection mode.
+   * example: easting/northing or lat/lng fields have different min max values.
+   */
+  projection_mode: yup.mixed().oneOf(['wgs', 'utm']).default('wgs'),
+
+  location_id: yup.string().optional(),
+  latitude: yup
+    .number()
+    .when('projection_mode', {
+      is: (projection_mode: ProjectionMode) => projection_mode === 'wgs',
+      then: latSchema
+    })
+    .when('projection_mode', {
+      is: (projection_mode: ProjectionMode) => projection_mode === 'utm',
+      then: northingSchema
+    }),
+  longitude: yup
+    .number()
+    .when('projection_mode', {
+      is: (projection_mode: ProjectionMode) => projection_mode === 'wgs',
+      then: lonSchema
+    })
+    .when('projection_mode', {
+      is: (projection_mode: ProjectionMode) => projection_mode === 'utm',
+      then: eastingSchema
+    }),
+  coordinate_uncertainty: yup.number(),
+  coordinate_uncertainty_unit: yup.string()
+});
+
+export const CreateCritterCaptureSchema = yup.object({
+  capture_id: yup.string().optional(),
+  critter_id: yup.string(),
+  capture_location: LocationSchema.optional(),
+  release_location: LocationSchema.optional(),
   capture_comment: yup.string(),
-  projection_mode: yup.mixed().oneOf(['wgs', 'utm']),
-  show_release: yup.boolean().required(), // used for conditional required release fields
-  release_longitude: lonSchema.when(['projection_mode', 'show_release'], {
-    is: (projection_mode: ProjectionMode, show_release: boolean) => projection_mode === 'wgs' && show_release,
-    then: lonSchema.required(req)
-  }),
-  release_latitude: latSchema.when(['projection_mode', 'show_release'], {
-    is: (projection_mode: ProjectionMode, show_release: boolean) => projection_mode === 'wgs' && show_release,
-    then: latSchema.required(req)
-  }),
-  release_utm_northing: numSchema.when(['projection_mode', 'show_release'], {
-    is: (projection_mode: ProjectionMode, show_release: boolean) => projection_mode === 'utm' && show_release,
-    then: numSchema.required(req)
-  }),
-  release_utm_easting: numSchema.when(['projection_mode', 'show_release'], {
-    is: (projection_mode: ProjectionMode, show_release: boolean) => projection_mode === 'utm' && show_release,
-    then: numSchema.required(req)
-  }),
-  release_coordinate_uncertainty: numSchema.when('show_release', { is: true, then: numSchema.required(req) }),
-  release_timestamp: dateSchema /*.when('show_release', { is: true, then: dateSchema.required(req) }),*/,
+  capture_timestamp: dateSchema,
+  release_timestamp: dateSchema.optional(),
   release_comment: yup.string().optional()
 });
 
@@ -250,14 +297,6 @@ export const AnimalRelationshipSchema = yup.object({}).shape({
 //   device: yup.array().of(AnimalTelemetryDeviceSchema).required()
 // });
 
-export const LocationSchema = yup.object({}).shape({
-  location_id: yup.string(),
-  latitude: yup.number(),
-  longitude: yup.number(),
-  coordinate_uncertainty: yup.number(),
-  coordinate_uncertainty_unit: yup.string()
-});
-
 /**
  * Critter create payload types.
  *
@@ -266,6 +305,7 @@ export type ICreateCritter = InferType<typeof CreateCritterSchema>;
 export type ICreateCritterMarking = InferType<typeof CreateCritterMarkingSchema>;
 export type ICreateCritterMeasurement = InferType<typeof CreateCritterMeasurementSchema>;
 export type ICreateCritterCollectionUnit = InferType<typeof CreateCritterCollectionUnitSchema>;
+export type ICreateCritterCapture = InferType<typeof CreateCritterCaptureSchema>;
 
 // //Animal form related types
 //

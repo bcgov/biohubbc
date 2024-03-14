@@ -28,27 +28,43 @@ const distanceInMetresBetweenCoordinates = (latlng1: LatLng, latlng2: LatLng): n
   return earthRadiusKm * c * 1000;
 };
 
-const utmProjection = `+proj=utm +zone=${10} +north +datum=WGS84 +units=m +no_defs`;
+const bcUtmZones = `+zone=7 +zone=8 +zone=9 +zone=10 +zone=11`;
+const utmProjection = `+proj=utm ${bcUtmZones} +north +datum=WGS84 +units=m +no_defs`;
 const wgs84Projection = `+proj=longlat +datum=WGS84 +no_defs`;
 
 /**
  * Returns the UTM Zone 10 coords as Latitude and Longitude
+ * Latitude === Northing (Y)
+ * Longitude === Easting (X)
+ *
  * @param northing
  * @param easting
- * @returns [longitude, latitude]
+ * @returns [latitude, longitude]
  */
-const getUtmAsLatLng = (northing: number, easting: number) => {
-  return proj4(utmProjection, wgs84Projection, [Number(easting), Number(northing)]).map((a) => Number(a.toFixed(3)));
+const getUtmAsLatLng = (northing: /*lat*/ number, easting: /*lng*/ number) => {
+  return proj4(utmProjection, wgs84Projection, [Number(easting), Number(northing)])
+    .map((a) => Number(a.toFixed(5)))
+    .reverse();
 };
 
 /**
  * Returns the WGS84 LatLng coords as UTM Zone 10 Northing and Easting
  * @param lat latitude, in degrees
  * @param lng longitude, in degrees
- * @returns [easting, northing]
+ * @returns [northing (latitude), easting (longitude)]
  */
 const getLatLngAsUtm = (lat: number, lng: number) => {
-  return proj4(wgs84Projection, utmProjection, [Number(lng), Number(lat)]).map((a) => Number(a.toFixed(3)));
+  return proj4(wgs84Projection, utmProjection, [Number(lng), Number(lat)])
+    .map((a) => Number(a.toFixed(0)))
+    .reverse();
 };
 
-export { getLatLngAsUtm, getUtmAsLatLng, distanceInMetresBetweenCoordinates };
+/**
+ * Validates a longitude or easting is a UTM projection value.
+ *
+ * @param {number} latOrEasting - WGS Latitude or UTM Easting.
+ * @returns {boolean}
+ */
+const isLongitudeUtmEasting = (latOrEasting: number) => latOrEasting >= 166640 && latOrEasting <= 833360;
+
+export { getLatLngAsUtm, getUtmAsLatLng, distanceInMetresBetweenCoordinates, isLongitudeUtmEasting };

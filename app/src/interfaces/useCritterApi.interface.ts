@@ -20,10 +20,10 @@ type ILocationResponse = {
   wmu_name: string | null; // Deprecated
 };
 
-type ICaptureResponse = {
+export type ICaptureResponse = {
   capture_id: string;
-  capture_location_id: string | null; // Deprecated -> Now included in capture_location
-  release_location_id: string | null; // Deprecated -> Now included in release_location
+  // capture_location_id: string | null; // Deprecated -> Now included in capture_location
+  // release_location_id: string | null; // Deprecated -> Now included in release_location
   capture_timestamp: string;
   release_timestamp: string | null;
   capture_comment: string | null;

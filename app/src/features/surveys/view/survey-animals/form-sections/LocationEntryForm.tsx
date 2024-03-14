@@ -1,13 +1,9 @@
 import Box from '@mui/material/Box';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
-import CustomTextField from 'components/fields/CustomTextField';
 import AdditionalLayers from 'components/map/components/AdditionalLayers';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { MapBaseCss } from 'components/map/components/MapBaseCss';
@@ -15,198 +11,59 @@ import { MarkerIconColor, MarkerWithResizableRadius } from 'components/map/compo
 import { MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
 import { useFormikContext } from 'formik';
 import { LatLng } from 'leaflet';
-import { ChangeEvent, Fragment, useState } from 'react';
+import { get } from 'lodash-es';
+import React, { useState } from 'react';
 import { LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
-import { getLatLngAsUtm, getUtmAsLatLng } from 'utils/mapProjectionHelpers';
-import { coerceZero } from 'utils/Utils';
-//import { getAnimalFieldName, IAnimal, ProjectionMode } from '../animal';
 
-type Marker = 'primary' | 'secondary' | null;
-type ProjectionMode = 'wgs' | 'utm';
-
-export type LocationEntryFields<T> = {
-  fieldsetTitle?: string;
-
-  latitude: keyof T;
-  longitude: keyof T;
-  coordinate_uncertainty: keyof T;
-  utm_northing: keyof T;
-  utm_easting: keyof T;
+type FormLocationsPreviewProps<T> = {
+  locations: Array<{
+    title: string;
+    pingColour: MarkerIconColor;
+    fields: {
+      latitude: keyof T;
+      longitude: keyof T;
+    };
+  }>;
 };
 
-type LocationEntryFormProps<T> = {
-  //name: keyof IAnimal;
-  //index: number;
-  value: T;
-  primaryLocationFields: LocationEntryFields<T>;
-  secondaryLocationFields?: LocationEntryFields<T>;
-  //otherPrimaryFields?: JSX.Element[];
-  otherSecondaryFields?: JSX.Element[];
-};
+const FormLocationPreview = <T,>(props: FormLocationsPreviewProps<T>) => {
+  const { setFieldValue, values } = useFormikContext<T>();
 
-const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
-  //name,
-  //index,
-  value,
-  primaryLocationFields,
-  secondaryLocationFields,
-  otherSecondaryFields
-}: LocationEntryFormProps<T>) => {
-  const { setFieldValue } = useFormikContext();
-  const [markerEnabled, setMarkerEnabled] = useState<Marker>(null);
+  const [markerToggle, setMarkerToggle] = useState<number | null>(null);
 
-  const handleMarkerPlacement = (e: LatLng, fields: LocationEntryFields<T>) => {
-    setFieldValue('latitude', e.lat.toFixed(3));
-    setFieldValue('longitude', e.lng.toFixed(3));
-    const utm_coords = getLatLngAsUtm(e.lat, e.lng);
-    setFieldValue('utm_northing', utm_coords[1]);
-    setFieldValue('utm_easting', utm_coords[0]);
-  };
-
-  const setLatLonFromUTM = (fields: LocationEntryFields<T> | undefined) => {
-    if (fields && (value[fields.latitude] || value[fields.longitude])) {
-      const utm_coords = getLatLngAsUtm(
-        value[fields.latitude] as unknown as number,
-        value[fields.longitude] as unknown as number
-      );
-      setFieldValue('utm_easting', utm_coords[0]);
-      setFieldValue('utm_northing', utm_coords[1]);
+  const handleSetMarkerLocation = (coords: LatLng) => {
+    if (markerToggle === null) {
+      return;
     }
+
+    setFieldValue(props.locations[markerToggle].fields.latitude as string, coords.lat);
+    setFieldValue(props.locations[markerToggle].fields.longitude as string, coords.lng);
+    setMarkerToggle(null);
   };
 
-  const setUTMFromLatLng = (fields: LocationEntryFields<T> | undefined) => {
-    if (fields && (value[fields.utm_northing] || value[fields.utm_easting])) {
-      const wgs_coords = getUtmAsLatLng(
-        value[fields.utm_northing] as unknown as number,
-        value[fields.utm_easting] as unknown as number
-      );
-      setFieldValue('latitude', wgs_coords[1]);
-      setFieldValue('longitude', wgs_coords[0]);
-    }
-  };
-
-  const onProjectionModeSwitch = (e: ChangeEvent<HTMLInputElement>) => {
-    //This gets called every time the toggle element fires. We need to do a projection each time so that the new fields that get shown
-    //will be in sync with the values from the ones that were just hidden.
-    if (value?.projection_mode === 'wgs') {
-      setLatLonFromUTM(primaryLocationFields);
-      setLatLonFromUTM(secondaryLocationFields);
-    } else {
-      setUTMFromLatLng(primaryLocationFields);
-      setUTMFromLatLng(secondaryLocationFields);
-    }
-    setFieldValue('projection_mode', e.target.checked ? 'utm' : 'wgs');
-  };
-
-  const getCurrentMarkerPos = (fields: LocationEntryFields<T>): LatLng => {
-    if (value?.projection_mode === 'utm') {
-      const latlng_coords = getUtmAsLatLng(
-        coerceZero(value[fields.utm_northing]),
-        coerceZero(value[fields.utm_easting])
-      );
-      return new LatLng(latlng_coords[1], latlng_coords[0]);
-    } else {
-      return new LatLng(coerceZero(value[fields.latitude]), coerceZero(value[fields.longitude]));
-    }
-  };
-
-  const handleMarkerSelected = (event: React.MouseEvent<HTMLElement>, enableMarker: Marker) => {
-    setMarkerEnabled(enableMarker);
-  };
-
-  const renderLocationFields = (fields?: LocationEntryFields<T>): JSX.Element => {
-    if (!fields) {
-      return <></>;
-    }
-    return (
-      <Grid container spacing={1}>
-        {value?.projection_mode === 'wgs' ? (
-          <Fragment>
-            <Grid item xs={12} sm={4}>
-              <CustomTextField other={{ required: true, type: 'number' }} label="Latitude" name={'latitude'} />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <CustomTextField other={{ required: true, type: 'number' }} label="Longitude" name={'longitude'} />
-            </Grid>
-          </Fragment>
-        ) : (
-          <Fragment>
-            <Grid item xs={12} sm={4}>
-              <CustomTextField other={{ required: true, type: 'number' }} label="Northing" name={'utm_northing'} />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <CustomTextField other={{ required: true, type: 'number' }} label="Easting" name={'utm_easting'} />
-            </Grid>
-          </Fragment>
-        )}
-
-        <Grid item xs={12} sm={4}>
-          <CustomTextField
-            other={{
-              required: true,
-              type: 'number'
-            }}
-            label="Uncertainty (Meters)"
-            name={'coordinate_uncertainty'}
-          />
-        </Grid>
-      </Grid>
-    );
-  };
-
-  const renderResizableMarker = (
-    fields: LocationEntryFields<T> | undefined,
-    listening: boolean,
-    color: MarkerIconColor
-  ): JSX.Element => {
-    if (!fields) {
-      return <></>;
-    }
+  const renderMarker = (position: LatLng, color: MarkerIconColor): JSX.Element => {
     return (
       <MarkerWithResizableRadius
-        radius={coerceZero(value[fields.coordinate_uncertainty] ?? NaN)}
-        position={getCurrentMarkerPos(fields)}
+        radius={0}
+        position={position}
         markerColor={color}
-        listenForMouseEvents={listening}
-        handlePlace={(p) => {
-          handleMarkerPlacement(p, fields);
-          setMarkerEnabled(null);
-        }}
-        handleResize={(n) => {
-          setFieldValue('coordinate_uncertainty', n.toFixed(3));
-        }}
+        listenForMouseEvents={markerToggle !== null}
+        handlePlace={handleSetMarkerLocation}
       />
     );
   };
 
   return (
-    <Stack flexDirection="column" gap={4} maxWidth={800}>
-      <Box component="fieldset">
-        {primaryLocationFields.fieldsetTitle ? (
-          <Typography component="legend">{primaryLocationFields.fieldsetTitle}</Typography>
-        ) : null}
-
-        <Stack gap={1} alignItems="flex-start">
-          {renderLocationFields(primaryLocationFields)}
-          <FormControlLabel
-            sx={{ ml: 0 }}
-            control={
-              <Checkbox size="small" checked={value.projection_mode === 'utm'} onChange={onProjectionModeSwitch} />
-            }
-            label="Use UTM Coordinates"
-          />
-        </Stack>
-      </Box>
-
-      {otherSecondaryFields ? (
-        <Box>
-          {otherSecondaryFields}
-          {renderLocationFields(secondaryLocationFields)}
-        </Box>
-      ) : null}
-
+    <Stack flexDirection="column" gap={4}>
       <Box component="fieldset" flex="0 0 auto">
         <Typography component="legend">Location Preview</Typography>
+        <ToggleButtonGroup value={markerToggle} onChange={(_event, value) => setMarkerToggle(value)} exclusive>
+          {props.locations.map((location, idx) => (
+            <ToggleButton size="small" color="primary" value={idx}>
+              {`Set ${location.title} Location`}
+            </ToggleButton>
+          ))}
+        </ToggleButtonGroup>
         <Paper
           variant="outlined"
           sx={{
@@ -231,32 +88,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
                   color: '#fff'
                 }
               }
-            }}>
-            <ToggleButtonGroup value={markerEnabled} onChange={handleMarkerSelected} exclusive>
-              {primaryLocationFields ? (
-                <ToggleButton
-                  size="small"
-                  value="primary"
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center'
-                  }}>
-                  {`Set ${primaryLocationFields?.fieldsetTitle ?? 'Primary Location'}`}
-                </ToggleButton>
-              ) : null}
-              {secondaryLocationFields ? (
-                <ToggleButton
-                  size="small"
-                  value="secondary"
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center'
-                  }}>
-                  {`Set ${secondaryLocationFields?.fieldsetTitle ?? 'Secondary Location'}`}
-                </ToggleButton>
-              ) : null}
-            </ToggleButtonGroup>
-          </Stack>
+            }}></Stack>
           <LeafletMapContainer
             id={`location-entry`}
             scrollWheelZoom={true}
@@ -265,14 +97,13 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
             zoom={MAP_DEFAULT_ZOOM}>
             <MapBaseCss />
             <AdditionalLayers
-              layers={[
-                renderResizableMarker(primaryLocationFields, markerEnabled === 'primary', 'blue'),
-                secondaryLocationFields ? (
-                  renderResizableMarker(secondaryLocationFields, markerEnabled === 'secondary', 'green')
-                ) : (
-                  <></>
-                )
-              ]}
+              layers={props.locations.map((location) => {
+                const latLng = new LatLng(
+                  get(values, location.fields.latitude),
+                  get(values, location.fields.longitude)
+                );
+                return renderMarker(latLng, location.pingColour);
+              })}
             />
             <LayersControl>
               <BaseLayerControls />
@@ -284,4 +115,4 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
   );
 };
 
-export default LocationEntryForm;
+export default FormLocationPreview;

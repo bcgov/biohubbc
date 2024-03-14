@@ -15,6 +15,7 @@ import React, { useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { ANIMAL_FORM_MODE, ANIMAL_SECTION } from './animal';
 import { AnimalSectionWrapper } from './AnimalSectionWrapper';
+import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
 import CollectionUnitAnimalForm from './form-sections/CollectionUnitAnimalForm';
 import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 import { MarkingAnimalForm } from './form-sections/MarkingAnimalForm';
@@ -332,7 +333,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
   if (props.section === ANIMAL_SECTION.CAPTURES) {
     return (
       <AnimalSectionWrapper
-        form={<div>placeholder</div>}
+        form={<CaptureAnimalForm {...SECTION_FORM_PROPS} />}
         infoText={SurveyAnimalsI18N.animalCaptureHelp}
         section={props.section}
         critter={props.critter}>
