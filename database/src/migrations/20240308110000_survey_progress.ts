@@ -74,17 +74,20 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
     -- Modify survey table to include survey_progress
     ----------------------------------------------------------------------------------------
-    ALTER TABLE survey ADD COLUMN progress_id INTEGER NOT NULL;
+    ALTER TABLE survey ADD COLUMN progress_id INTEGER;
     COMMENT ON COLUMN survey.progress_id IS 'Foreign key referencing the progress value.';
     ALTER TABLE survey ADD CONSTRAINT survey_progress_fk FOREIGN KEY (progress_id) REFERENCES survey_progress(survey_progress_id);
     
-    -- Add initial value to Survey table
+    -- Add initial values to Survey table
     UPDATE survey
     SET progress_id = (
       SELECT progress_id 
       FROM survey_progress 
       WHERE name = 'Planning'
     );
+
+    -- Add not null constraint
+    ALTER TABLE survey ALTER COLUMN progress_id SET NOT NULL;
     
     -- Add index
     CREATE INDEX survey_progress_idx1 ON survey(progress_id);
