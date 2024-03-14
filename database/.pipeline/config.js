@@ -11,13 +11,12 @@ const options = processOptions(rawOptions);
 // Get pull-request number from git action '--pr' arg
 const changeId = rawOptions.pr;
 
+// Get branch name from the git action '--branch' arg
+const branch = rawOptions.branch || null;
+
 // Get pipeline config map from git action '--config' arg
 const pipelineConfigMapString = rawOptions.config;
 const pipelineConfigMap = JSON.parse(pipelineConfigMapString);
-
-// The branch name, which is either the branch name provided in the git action (for a static deploy) or the current git
-// branch name (in the case of a PR deploy)
-const branch = rawOptions.branch || null;
 
 const phases = {
   pr: {
@@ -29,7 +28,7 @@ const phases = {
       instance: `${pipelineConfigMap.module.db}-build-${changeId}`,
       version: `${pipelineConfigMap.version}-${changeId}`,
       tag: `build-${pipelineConfigMap.version}-${changeId}`,
-      branch: branch
+      branch: options.git.ref
     },
     deploy: {
       ...pipelineConfigMap.database.pr.deploy,
