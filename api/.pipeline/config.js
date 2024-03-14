@@ -44,7 +44,7 @@ const phases = {
       host: `${pipelineConfigMap.module.api}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
       appHost: `${pipelineConfigMap.module.app}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
       sso: pipelineConfigMap.sso.pr,
-      s3KeyPrefix: `local/${changeId}/${pipelineConfigMap.name}`
+      s3KeyPrefix: `${pipelineConfigMap.s3KeyPrefix}/${changeId}`
     }
   },
   dev: {
@@ -127,5 +127,10 @@ const phases = {
     }
   }
 };
+
+if (options.phase === 'pr') {
+  console.debug(JSON.stringify(options, null, 2));
+  console.debug(JSON.stringify(phases, null, 2));
+}
 
 module.exports = exports = { phases, options };
