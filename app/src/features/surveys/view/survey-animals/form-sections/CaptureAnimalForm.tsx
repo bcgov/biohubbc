@@ -10,7 +10,7 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { ICaptureResponse } from 'interfaces/useCritterApi.interface';
 import { get } from 'lodash-es';
 import React, { useState } from 'react';
-import { getLatLngAsUtm, getUtmAsLatLng } from 'utils/mapProjectionHelpers';
+import { getLatLngAsUtm, getUtmAsLatLng, PROJECTION_MODE } from 'utils/mapProjectionHelpers';
 import {
   AnimalFormProps,
   ANIMAL_FORM_MODE,
@@ -77,17 +77,18 @@ const CaptureForm = () => {
   const { values, setValues } = useFormikContext<ICreateCritterCapture>();
 
   const [showRelease, setShowRelease] = useState(false);
-  const isUtmProjection = get(values, 'capture_location.projection_mode') === 'utm';
+  const projection = get(values, 'capture_location.projection_mode');
+  const isUtmProjection = get(values, 'capture_location.projection_mode') === PROJECTION_MODE.UTM;
 
   const handleProjectionChange = () => {
-    const switchProjection = isUtmProjection ? 'wgs' : 'utm';
+    const switchProjection = isUtmProjection ? PROJECTION_MODE.WGS : PROJECTION_MODE.UTM;
 
     const [captureLat, captureLon] = !isUtmProjection
       ? getLatLngAsUtm(values.capture_location.latitude, values.capture_location.longitude)
       : getUtmAsLatLng(values.capture_location.latitude, values.capture_location.longitude);
 
     const [releaseLat, releaseLon] = !isUtmProjection
-      ? getLatLngAsUtm(values.capture_location.latitude, values.capture_location.longitude)
+      ? getLatLngAsUtm(values.release_location.latitude, values.release_location.longitude)
       : getUtmAsLatLng(values.release_location.latitude, values.release_location.longitude);
 
     setValues({
@@ -200,6 +201,7 @@ const CaptureForm = () => {
         </Grid>
       </Box>
       <FormLocationPreview
+        projection={projection}
         locations={[
           {
             title: 'Capture',
@@ -213,49 +215,6 @@ const CaptureForm = () => {
           }
         ]}
       />
-
-      {/*<LocationEntryForm
-              //name={name}
-              //index={index}
-              //value={value}
-              primaryLocationFields={{
-                fieldsetTitle: 'Capture Location',
-                latitude: 'capture_latitude',
-                longitude: 'capture_longitude',
-                coordinate_uncertainty: 'capture_coordinate_uncertainty',
-                utm_northing: 'capture_utm_northing',
-                utm_easting: 'capture_utm_easting'
-              }}
-              secondaryLocationFields={
-                showRelease
-                  ? {
-                      latitude: 'release_latitude',
-                      longitude: 'release_longitude',
-                      coordinate_uncertainty: 'release_coordinate_uncertainty',
-                      utm_northing: 'release_utm_northing',
-                      utm_easting: 'release_utm_easting'
-                    }
-                  : undefined
-              }
-              otherSecondaryFields={[
-                <Box key="release-location" component="fieldset" mb={0}>
-                  <Typography component="legend">Release Location</Typography>
-                  <FormControlLabel
-                    sx={!showRelease ? { mt: -1, ml: 0 } : { mt: -1, ml: 0, mb: 2 }}
-                    control={
-                      <Checkbox
-                        size="small"
-                        onChange={() => setShowRelease((show) => !show)}
-                        checked={showRelease}
-                        //disabled={!!value?.release_location_id}
-                        //name={getAnimalFieldName<IAnimalCapture>(name, 'show_release', index)}
-                      />
-                    }
-                    label={SurveyAnimalsI18N.animalCaptureReleaseRadio}
-                  />
-                </Box>
-              ]}
-            />*/}
 
       <Box component="fieldset">
         <Typography component="legend">Additional Information</Typography>

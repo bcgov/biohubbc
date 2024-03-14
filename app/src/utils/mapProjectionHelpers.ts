@@ -1,6 +1,11 @@
 import { LatLng } from 'leaflet';
 import proj4 from 'proj4';
 
+export enum PROJECTION_MODE {
+  WGS = 'wgs',
+  UTM = 'UTM'
+}
+
 const degreesToRadians = (degrees: number): number => {
   return (degrees * Math.PI) / 180;
 };
@@ -28,8 +33,7 @@ const distanceInMetresBetweenCoordinates = (latlng1: LatLng, latlng2: LatLng): n
   return earthRadiusKm * c * 1000;
 };
 
-const bcUtmZones = `+zone=7 +zone=8 +zone=9 +zone=10 +zone=11`;
-const utmProjection = `+proj=utm ${bcUtmZones} +north +datum=WGS84 +units=m +no_defs`;
+const utmProjection = `+proj=utm +zone=10 +north +datum=WGS84 +units=m +no_defs`;
 const wgs84Projection = `+proj=longlat +datum=WGS84 +no_defs`;
 
 /**
@@ -59,12 +63,4 @@ const getLatLngAsUtm = (lat: number, lng: number) => {
     .reverse();
 };
 
-/**
- * Validates a longitude or easting is a UTM projection value.
- *
- * @param {number} latOrEasting - WGS Latitude or UTM Easting.
- * @returns {boolean}
- */
-const isLongitudeUtmEasting = (latOrEasting: number) => latOrEasting >= 166640 && latOrEasting <= 833360;
-
-export { getLatLngAsUtm, getUtmAsLatLng, distanceInMetresBetweenCoordinates, isLongitudeUtmEasting };
+export { getLatLngAsUtm, getUtmAsLatLng, distanceInMetresBetweenCoordinates };

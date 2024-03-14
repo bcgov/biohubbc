@@ -1,6 +1,7 @@
 import { DATE_LIMIT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
 import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
+import { PROJECTION_MODE } from 'utils/mapProjectionHelpers';
 import yup from 'utils/YupSchema';
 import { AnyObjectSchema, InferType } from 'yup';
 //TODO: Clean up commented code
@@ -95,8 +96,6 @@ const dateSchema = yup
   .max(dayjs(DATE_LIMIT.max), `Must be before ${DATE_LIMIT.max}`)
   .typeError('Invalid date format');
 
-export type ProjectionMode = 'wgs' | 'utm';
-
 // export const AnimalGeneralSchema = yup.object({}).shape({
 //   itis_tsn: yup.number().required(req),
 //   animal_id: yup.string().required(req),
@@ -145,27 +144,27 @@ export const LocationSchema = yup.object({}).shape({
    * This is useful for when you need to have different validation for the projection mode.
    * example: easting/northing or lat/lng fields have different min max values.
    */
-  projection_mode: yup.mixed().oneOf(['wgs', 'utm']).default('wgs'),
+  projection_mode: yup.mixed<PROJECTION_MODE>().oneOf(Object.values(PROJECTION_MODE)).default(PROJECTION_MODE.WGS),
 
   location_id: yup.string().optional(),
   latitude: yup
     .number()
     .when('projection_mode', {
-      is: (projection_mode: ProjectionMode) => projection_mode === 'wgs',
+      is: (projection_mode: PROJECTION_MODE) => projection_mode === PROJECTION_MODE.WGS,
       then: latSchema
     })
     .when('projection_mode', {
-      is: (projection_mode: ProjectionMode) => projection_mode === 'utm',
+      is: (projection_mode: PROJECTION_MODE) => projection_mode === PROJECTION_MODE.UTM,
       then: northingSchema
     }),
   longitude: yup
     .number()
     .when('projection_mode', {
-      is: (projection_mode: ProjectionMode) => projection_mode === 'wgs',
+      is: (projection_mode: PROJECTION_MODE) => projection_mode === PROJECTION_MODE.WGS,
       then: lonSchema
     })
     .when('projection_mode', {
-      is: (projection_mode: ProjectionMode) => projection_mode === 'utm',
+      is: (projection_mode: PROJECTION_MODE) => projection_mode === PROJECTION_MODE.UTM,
       then: eastingSchema
     }),
   coordinate_uncertainty: yup.number(),

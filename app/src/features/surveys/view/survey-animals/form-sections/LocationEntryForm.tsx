@@ -14,19 +14,23 @@ import { LatLng } from 'leaflet';
 import { get } from 'lodash-es';
 import React, { useState } from 'react';
 import { LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
+import { getLatLngAsUtm, getUtmAsLatLng, PROJECTION_MODE } from 'utils/mapProjectionHelpers';
+
+interface IFormLocation<T> {
+  title: string;
+  pingColour: MarkerIconColor;
+  fields: {
+    latitude: keyof T;
+    longitude: keyof T;
+  };
+}
 
 type FormLocationsPreviewProps<T> = {
-  locations: Array<{
-    title: string;
-    pingColour: MarkerIconColor;
-    fields: {
-      latitude: keyof T;
-      longitude: keyof T;
-    };
-  }>;
+  projection?: PROJECTION_MODE;
+  locations: IFormLocation<T>[];
 };
 
-const FormLocationPreview = <T,>(props: FormLocationsPreviewProps<T>) => {
+const FormLocationPreview = <T,>({ projection = PROJECTION_MODE.WGS, locations }: FormLocationsPreviewProps<T>) => {
   const { setFieldValue, values } = useFormikContext<T>();
 
   const [markerToggle, setMarkerToggle] = useState<number | null>(null);
@@ -35,18 +39,36 @@ const FormLocationPreview = <T,>(props: FormLocationsPreviewProps<T>) => {
     if (markerToggle === null) {
       return;
     }
+    let latitude = coords.lat;
+    let longitude = coords.lng;
 
-    setFieldValue(props.locations[markerToggle].fields.latitude as string, coords.lat);
-    setFieldValue(props.locations[markerToggle].fields.longitude as string, coords.lng);
+    if (projection === PROJECTION_MODE.UTM) {
+      [latitude, longitude] = getLatLngAsUtm(latitude, longitude);
+    }
+
+    setFieldValue(locations[markerToggle].fields.latitude as string, Number(latitude.toFixed(5)));
+    setFieldValue(locations[markerToggle].fields.longitude as string, Number(longitude.toFixed(5)));
+
     setMarkerToggle(null);
   };
 
-  const renderMarker = (position: LatLng, color: MarkerIconColor): JSX.Element => {
+  const renderMarker = (location: IFormLocation<T>): JSX.Element => {
+    let latitude = get(values, location.fields.latitude);
+    let longitude = get(values, location.fields.longitude);
+
+    if (projection === PROJECTION_MODE.UTM) {
+      [latitude, longitude] = getUtmAsLatLng(latitude, longitude);
+    }
+
+    // Marking positions can be different than the fields if the projection is UTM.
+    const renderPosition = new LatLng(latitude, longitude);
+
     return (
       <MarkerWithResizableRadius
+        key={location.title}
         radius={0}
-        position={position}
-        markerColor={color}
+        position={renderPosition}
+        markerColor={location.pingColour}
         listenForMouseEvents={markerToggle !== null}
         handlePlace={handleSetMarkerLocation}
       />
@@ -58,7 +80,7 @@ const FormLocationPreview = <T,>(props: FormLocationsPreviewProps<T>) => {
       <Box component="fieldset" flex="0 0 auto">
         <Typography component="legend">Location Preview</Typography>
         <ToggleButtonGroup value={markerToggle} onChange={(_event, value) => setMarkerToggle(value)} exclusive>
-          {props.locations.map((location, idx) => (
+          {locations.map((location, idx) => (
             <ToggleButton size="small" color="primary" value={idx}>
               {`Set ${location.title} Location`}
             </ToggleButton>
@@ -96,15 +118,7 @@ const FormLocationPreview = <T,>(props: FormLocationsPreviewProps<T>) => {
             center={MAP_DEFAULT_CENTER}
             zoom={MAP_DEFAULT_ZOOM}>
             <MapBaseCss />
-            <AdditionalLayers
-              layers={props.locations.map((location) => {
-                const latLng = new LatLng(
-                  get(values, location.fields.latitude),
-                  get(values, location.fields.longitude)
-                );
-                return renderMarker(latLng, location.pingColour);
-              })}
-            />
+            <AdditionalLayers layers={locations.map((location) => renderMarker(location))} />
             <LayersControl>
               <BaseLayerControls />
             </LayersControl>
