@@ -45,9 +45,9 @@ export interface IEditSurveySampleMethodData extends ISurveySampleMethodData {
 }
 
 export const SurveySampleMethodPeriodArrayItemInitialValues = {
-  method_lookup_id: '' as unknown as null,
-  survey_sample_period_id: '' as unknown as null,
-  survey_sample_method_id: '' as unknown as null,
+  method_lookup_id: null,
+  survey_sample_period_id: null,
+  survey_sample_method_id: null,
   start_date: '',
   end_date: '',
   start_time: '',
@@ -55,9 +55,9 @@ export const SurveySampleMethodPeriodArrayItemInitialValues = {
 };
 
 export const SurveySampleMethodDataInitialValues = {
-  survey_sample_method_id: '' as unknown as null,
-  survey_sample_site_id: '' as unknown as null,
-  method_lookup_id: '' as unknown as null,
+  survey_sample_method_id: null,
+  survey_sample_site_id: null,
+  method_lookup_id: null,
   description: '',
   periods: [SurveySampleMethodPeriodArrayItemInitialValues]
 };

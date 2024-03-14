@@ -81,6 +81,9 @@ PUT.apiDoc = {
               additionalProperties: false,
               required: ['name', 'description', 'methods', 'survey_sample_sites'],
               properties: {
+                survey_id: {
+                  type: 'integer'
+                },
                 name: {
                   type: 'string'
                 },
@@ -96,11 +99,20 @@ PUT.apiDoc = {
                   items: {
                     type: 'object',
                     additionalProperties: false,
-                    required: ['method_lookup_id', 'description', 'periods'],
+                    required: ['description', 'periods'],
                     properties: {
+                      survey_sample_site_id: {
+                        type: 'integer',
+                        nullable: true
+                      },
+                      survey_sample_method_id: {
+                        type: 'integer',
+                        nullable: true
+                      },
                       method_lookup_id: {
                         type: 'integer',
-                        minimum: 1
+                        minimum: 1,
+                        nullable: true
                       },
                       description: {
                         type: 'string'
@@ -113,6 +125,18 @@ PUT.apiDoc = {
                           additionalProperties: false,
                           required: ['start_date', 'end_date'],
                           properties: {
+                            survey_sample_period_id: {
+                              type: 'integer',
+                              nullable: true
+                            },
+                            survey_sample_method_id: {
+                              type: 'integer',
+                              nullable: true
+                            },
+                            method_lookup_id: {
+                              type: 'integer',
+                              nullable: true
+                            },
                             start_date: {
                               type: 'string'
                             },
@@ -158,6 +182,10 @@ PUT.apiDoc = {
                       }
                     }
                   }
+                },
+                survey_sample_sites: {
+                  type: 'array',
+                  items: GeoJSONFeature as object
                 }
               }
             }

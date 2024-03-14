@@ -338,6 +338,15 @@ POST.apiDoc = {
           additionalProperties: false,
           required: ['methods', 'survey_sample_sites'],
           properties: {
+            survey_id: {
+              type: 'integer'
+            },
+            name: {
+              type: 'string'
+            },
+            description: {
+              type: 'string'
+            },
             methods: {
               type: 'array',
               minItems: 1,
@@ -346,8 +355,17 @@ POST.apiDoc = {
                 additionalProperties: false,
                 required: ['method_lookup_id', 'description', 'periods'],
                 properties: {
+                  survey_sample_site_id: {
+                    type: 'integer',
+                    nullable: true
+                  },
+                  survey_sample_method_id: {
+                    type: 'integer',
+                    nullable: true
+                  },
                   method_lookup_id: {
-                    type: 'integer'
+                    type: 'integer',
+                    nullable: true
                   },
                   description: {
                     type: 'string'
@@ -360,6 +378,18 @@ POST.apiDoc = {
                       additionalProperties: false,
                       required: ['start_date', 'end_date'],
                       properties: {
+                        survey_sample_period_id: {
+                          type: 'integer',
+                          nullable: true
+                        },
+                        survey_sample_method_id: {
+                          type: 'integer',
+                          nullable: true
+                        },
+                        method_lookup_id: {
+                          type: 'integer',
+                          nullable: true
+                        },
                         start_date: {
                           type: 'string'
                         },
@@ -376,6 +406,32 @@ POST.apiDoc = {
                         }
                       }
                     }
+                  }
+                }
+              }
+            },
+            blocks: {
+              type: 'array',
+              items: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['survey_block_id'],
+                properties: {
+                  survey_block_id: {
+                    type: 'number'
+                  }
+                }
+              }
+            },
+            stratums: {
+              type: 'array',
+              items: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['survey_stratum_id'],
+                properties: {
+                  survey_stratum_id: {
+                    type: 'number'
                   }
                 }
               }
