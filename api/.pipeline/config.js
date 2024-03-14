@@ -1,80 +1,31 @@
 'use strict';
 
 const PipelineCli = require('pipeline-cli');
+const { processOptions } = require('./utils/utils');
 
 // Options passed in from the git action
 const rawOptions = PipelineCli.Util.parseArguments();
 
-// Pull-request number or branch name
+const options = processOptions(rawOptions);
+
+// Get pull-request number from git action '--pr' arg
 const changeId = rawOptions.pr;
 
-// Pipeline config map from openshift
-const rawPipelineConfigMap = rawOptions.config;
-// Validate the pipeline config map is not missing any fields
-const pipelineConfigMap = JSON.parse(rawPipelineConfigMap);
+// Get pipeline config map from git action '--config' arg
+const pipelineConfigMapString = rawOptions.config;
+const pipelineConfigMap = JSON.parse(pipelineConfigMapString);
 
 // A static deployment is when the deployment is updating dev, test, or prod (rather than a temporary PR)
 // See `--type=static` in the `deployStatic.yml` git workflow
 const isStaticDeployment = rawOptions.type === 'static';
 
-const branch = (isStaticDeployment && rawOptions.branch) || null;
+// The branch name, which is either the branch name provided in the git action (for a static deploy) or the current git
+// branch name (in the case of a PR deploy)
+const branch = (isStaticDeployment && rawOptions.branch) || options.git.ref;
 
 const tag =
   (branch && `build-${pipelineConfigMap.version}-${changeId}-${branch}`) ||
   `build-${pipelineConfigMap.version}-${changeId}`;
-
-/**
- * Parses the npm cli command options and the git action context.
- *
- * @param {*} options
- * @return {{
- *   git: {
- *     dir: '<string>',
- *     branch: {
- *       name: '<string>',
- *       remote: '<string>',
- *       merge: '<string>'
- *     },
- *     url: 'https://github.com/bcgov/biohubbc.git',
- *     uri: 'https://github.com/bcgov/biohubbc',
- *     http_url: 'https://github.com/bcgov/biohubbc.git',
- *     owner: 'bcgov',
- *     repository: 'biohubbc',
- *     pull_request: '<pr_number>',
- *     ref: '<string>',
- *     branch_ref: '<string>'
- *   },
- *   env: 'pr' | 'dev' | 'test' | 'prod',
- *   phase: 'build' | 'deploy',
- *   pr?: '<pr_number>',
- *   branch?: '<branch_name>',
- *   config: {}, // JSON config map
- *   type?: 'static'
- * }}
- */
-function processOptions(options) {
-  const result = { ...options };
-
-  // Check git
-  if (!result.git.url.includes('.git')) {
-    result.git.url = `${result.git.url}.git`;
-  }
-
-  if (!result.git.http_url.includes('.git')) {
-    result.git.http_url = `${result.git.http_url}.git`;
-  }
-
-  // Fixing repo
-  if (result.git.repository.includes('/')) {
-    const last = result.git.repository.split('/').pop();
-    const final = last.split('.')[0];
-    result.git.repository = final;
-  }
-
-  return result;
-}
-
-const options = processOptions(rawOptions);
 
 const phases = {
   pr: {
@@ -87,7 +38,7 @@ const phases = {
       instance: `${pipelineConfigMap.module.api}-build-${changeId}`,
       version: `${pipelineConfigMap.version}-${changeId}`,
       tag: tag,
-      branch: branch || options.git.ref
+      branch: branch
     },
     deploy: {
       ...pipelineConfigMap.api.pr.deploy,
@@ -114,7 +65,7 @@ const phases = {
       instance: `${pipelineConfigMap.module.api}-build-${changeId}`,
       version: `${pipelineConfigMap.version}-${changeId}`,
       tag: tag,
-      branch: branch || options.git.ref
+      branch: branch
     },
     deploy: {
       ...pipelineConfigMap.api.dev.deploy,
@@ -140,7 +91,7 @@ const phases = {
       instance: `${pipelineConfigMap.module.api}-build-${changeId}`,
       version: `${pipelineConfigMap.version}-${changeId}`,
       tag: tag,
-      branch: branch || options.git.ref
+      branch: branch
     },
     deploy: {
       ...pipelineConfigMap.api.test.deploy,
@@ -167,7 +118,7 @@ const phases = {
       instance: `${pipelineConfigMap.module.api}-build-${changeId}`,
       version: `${pipelineConfigMap.version}-${changeId}`,
       tag: tag,
-      branch: branch || options.git.ref
+      branch: branch
     },
     deploy: {
       ...pipelineConfigMap.api.prod.deploy,

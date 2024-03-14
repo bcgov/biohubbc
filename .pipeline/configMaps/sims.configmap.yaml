@@ -7,12 +7,12 @@ immutable: false
 data:
   config: |
     {
-      "name": "sims",
+      "name": "biohubbc",
       "version": "1.0.0",
       "module": {
-        "db": "sims-db",
-        "api": "sims-api",
-        "app": "sims-app"
+        "db": "biohubbc-db",
+        "api": "biohubbc-api",
+        "app": "biohubbc-app"
       },
       "api": {
         "pr": {
@@ -58,8 +58,8 @@ data:
           "deploy": {
             "namespace": "af2668-dev",
             "nodeEnv": "development",
-            "staticApiUrl": "api-dev-sims.apps.silver.devops.gov.bc.ca",
-            "staticAppUrl": "dev-sims.apps.silver.devops.gov.bc.ca",
+            "staticApiUrl": "api-dev-biohubbc.apps.silver.devops.gov.bc.ca",
+            "staticAppUrl": "dev-biohubbc.apps.silver.devops.gov.bc.ca",
             "tz": "America/Vancouver",
             "backboneInternalApiHost": "https://api-dev-biohub-platform.apps.silver.devops.gov.bc.ca",
             "backboneIntakePath": "/api/dwc/submission/queue",
@@ -91,8 +91,8 @@ data:
           "deploy": {
             "namespace": "af2668-test",
             "nodeEnv": "production",
-            "staticApiUrl": "api-test-sims.apps.silver.devops.gov.bc.ca",
-            "staticAppUrl": "test-sims.apps.silver.devops.gov.bc.ca",
+            "staticApiUrl": "api-test-biohubbc.apps.silver.devops.gov.bc.ca",
+            "staticAppUrl": "test-biohubbc.apps.silver.devops.gov.bc.ca",
             "tz": "America/Vancouver",
             "backboneInternalApiHost": "https://api-test-biohub-platform.apps.silver.devops.gov.bc.ca",
             "backboneIntakePath": "/api/dwc/submission/queue",
@@ -124,9 +124,9 @@ data:
           "deploy": {
             "namespace": "af2668-prod",
             "nodeEnv": "production",
-            "staticApiUrl": "api-sims.apps.silver.devops.gov.bc.ca",
-            "staticAppUrl": "sims.apps.silver.devops.gov.bc.ca",
-            "staticAppVanityUrl": "sims.nrs.gov.bc.ca",
+            "staticApiUrl": "api-biohubbc.apps.silver.devops.gov.bc.ca",
+            "staticAppUrl": "biohubbc.apps.silver.devops.gov.bc.ca",
+            "staticAppVanityUrl": "biohubbc.nrs.gov.bc.ca",
             "tz": "America/Vancouver",
             "backboneInternalApiHost": "https://api-biohub-platform.apps.silver.devops.gov.bc.ca",
             "backboneIntakePath": "/api/dwc/submission/queue",
@@ -185,8 +185,8 @@ data:
           "deploy": {
             "namespace": "af2668-dev",
             "nodeEnv": "development",
-            "staticApiUrl": "api-dev-sims.apps.silver.devops.gov.bc.ca",
-            "staticAppUrl": "dev-sims.apps.silver.devops.gov.bc.ca",
+            "staticApiUrl": "api-dev-biohubbc.apps.silver.devops.gov.bc.ca",
+            "staticAppUrl": "dev-biohubbc.apps.silver.devops.gov.bc.ca",
             "siteminderLogoutURL": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",
             "maxUploadNumFiles": 10,
             "maxUploadFileSize": 52428800,
@@ -213,8 +213,8 @@ data:
           "deploy": {
             "namespace": "af2668-test",
             "nodeEnv": "production",
-            "staticApiUrl": "api-test-sims.apps.silver.devops.gov.bc.ca",
-            "staticAppUrl": "test-sims.apps.silver.devops.gov.bc.ca",
+            "staticApiUrl": "api-test-biohubbc.apps.silver.devops.gov.bc.ca",
+            "staticAppUrl": "test-biohubbc.apps.silver.devops.gov.bc.ca",
             "siteminderLogoutURL": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",
             "maxUploadNumFiles": 10,
             "maxUploadFileSize": 52428800,
@@ -241,9 +241,9 @@ data:
           "deploy": {
             "namespace": "af2668-prod",
             "nodeEnv": "production",
-            "staticApiUrl": "api-sims.apps.silver.devops.gov.bc.ca",
-            "staticAppUrl": "sims.apps.silver.devops.gov.bc.ca",
-            "staticAppVanityUrl": "sims.nrs.gov.bc.ca",
+            "staticApiUrl": "api-biohubbc.apps.silver.devops.gov.bc.ca",
+            "staticAppUrl": "biohubbc.apps.silver.devops.gov.bc.ca",
+            "staticAppVanityUrl": "biohubbc.nrs.gov.bc.ca",
             "siteminderLogoutURL": "https://logon7.gov.bc.ca/clp-cgi/logoff.cgi",
             "maxUploadNumFiles": 10,
             "maxUploadFileSize": 52428800,
@@ -318,7 +318,7 @@ data:
             "namespace": "af2668-tools",
             "tz": "America/Vancouver",
             "sourceContextDir": "database",
-            "dbSetupDockerfilePath": "./.docker/db/Dockerfile.migrate",
+            "dbSetupDockerfilePath": "./.docker/db/Dockerfile.setup",
             "cpuRequest": "50m",
             "cpuLimit": "1000m",
             "memoryRequest": "100Mi",
@@ -344,7 +344,7 @@ data:
             "namespace": "af2668-tools",
             "tz": "America/Vancouver",
             "sourceContextDir": "database",
-            "dbSetupDockerfilePath": "./.docker/db/Dockerfile.migrate",
+            "dbSetupDockerfilePath": "./.docker/db/Dockerfile.setup",
             "cpuRequest": "50m",
             "cpuLimit": "1000m",
             "memoryRequest": "100Mi",
@@ -371,7 +371,7 @@ data:
           "host": "https://dev.loginproxy.gov.bc.ca/auth",
           "realm": "standard",
           "clientId": "sims-4461",
-          "keycloakSecret": "keycloak",
+          "keycloakSecret": "sims-keycloak",
           "serviceClient": {
             "serviceClientName": "sims-svc-4464",
             "keycloakSecretServiceClientPasswordKey": "sims_svc_client_password"
@@ -388,7 +388,7 @@ data:
           "host": "https://dev.loginproxy.gov.bc.ca/auth",
           "realm": "standard",
           "clientId": "sims-4461",
-          "keycloakSecret": "keycloak",
+          "keycloakSecret": "sims-keycloak",
           "serviceClient": {
             "serviceClientName": "sims-svc-4464",
             "keycloakSecretServiceClientPasswordKey": "sims_svc_client_password"
@@ -405,7 +405,7 @@ data:
           "host": "https://test.loginproxy.gov.bc.ca/auth",
           "realm": "standard",
           "clientId": "sims-4461",
-          "keycloakSecret": "keycloak",
+          "keycloakSecret": "sims-keycloak",
           "serviceClient": {
             "serviceClientName": "sims-svc-4464",
             "keycloakSecretServiceClientPasswordKey": "sims_svc_client_password"
@@ -422,7 +422,7 @@ data:
           "host": "https://loginproxy.gov.bc.ca/auth",
           "realm": "standard",
           "clientId": "sims-4461",
-          "keycloakSecret": "keycloak",
+          "keycloakSecret": "sims-keycloak",
           "serviceClient": {
             "serviceClientName": "sims-svc-4464",
             "keycloakSecretServiceClientPasswordKey": "sims_svc_client_password"

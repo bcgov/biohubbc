@@ -147,7 +147,7 @@ jobs:
       - name: Log in to OpenShift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
-      # Fetch config map and store in pipeline_config for use by subsequent jobs
+      # Fetch config map named 'sims-pipeline-config' and store in 'pipeline_config' variable for use by subsequent jobs
       - name: Fetch pipeline config map
         id: "get_config"
         run: |
@@ -165,7 +165,7 @@ jobs:
       fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch != github.head_ref ) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
-      APP_NAME: "sims-app"
+      APP_NAME: "biohubbc-app"
       PIPELINE_CONFIG: ${{ needs.getPipelineConfigMap.outputs.pipeline_config }}
     needs:
       - checkoutRepo
@@ -229,7 +229,7 @@ jobs:
       fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch != github.head_ref ) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
-      APP_NAME: "sims-db"
+      APP_NAME: "biohubbc-db"
       PIPELINE_CONFIG: ${{ needs.getPipelineConfigMap.outputs.pipeline_config }}
     needs:
       - checkoutRepo
@@ -350,7 +350,7 @@ jobs:
       fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.skipped_by.branch != github.head_ref ) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
-      APP_NAME: "sims-api"
+      APP_NAME: "biohubbc-api"
       PIPELINE_CONFIG: ${{ needs.getPipelineConfigMap.outputs.pipeline_config }}
     needs:
       - checkoutRepo

@@ -1,7 +1,7 @@
 kind: Secret
 apiVersion: v1
 metadata:
-  name: sims-object-store
+  name: biohubbc-object-store
 data:
   object_store_access_key_id: <fill in values>
   object_store_bucket_name: <fill in values>

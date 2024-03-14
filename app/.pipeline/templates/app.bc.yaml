@@ -1,15 +1,15 @@
 apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
-  name: sims-app-bc
+  name: biohubbc-app-bc
   labels:
-    build: sims-app
+    build: biohubbc-app
 parameters:
   - name: NAME
     displayName: Name
     description: Image name
     required: true
-    value: sims-app
+    value: biohubbc-app
   - name: SUFFIX
     displayName: Name Suffix
     description: A suffix appended to all objects

@@ -102,7 +102,7 @@ jobs:
       - name: Log in to OpenShift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
-      # Fetch config map and store in pipeline_config for use by subsequent jobs
+      # Fetch config map named 'sims-pipeline-config' and store in 'pipeline_config' variable for use by subsequent jobs
       - name: Fetch pipeline config map
         id: "get_config"
         run: |
@@ -599,7 +599,7 @@ jobs:
       # Clean the reamaining build/deployment artifacts
       - name: Clean remaining Artifacts
         env:
-          POD_SELECTOR: sims
+          POD_SELECTOR: biohubbc
         run: |
           oc --namespace af2668-dev   get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete --ignore-not-found " $1}' | bash
           oc --namespace af2668-tools get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete --ignore-not-found " $1}' | bash

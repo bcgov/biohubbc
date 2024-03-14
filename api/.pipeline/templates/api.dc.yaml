@@ -1,12 +1,12 @@
 apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
-  name: sims-api-dc
+  name: biohubbc-api-dc
   labels:
-    build: sims-api
+    build: biohubbc-api
 parameters:
   - name: NAME
-    value: sims-api
+    value: biohubbc-api
   - name: SUFFIX
     value: '-dev'
   - name: VERSION
@@ -115,7 +115,7 @@ parameters:
   # Object Store (S3)
   - name: OBJECT_STORE_SECRETS
     description: Secrets used to read and write to the S3 storage
-    value: 'sims-object-store'
+    value: 'biohubbc-object-store'
   - name: S3_KEY_PREFIX
     description: S3 key optional prefix
     required: false

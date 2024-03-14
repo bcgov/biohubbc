@@ -1,15 +1,15 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: sims-db-setup-dc
+  name: biohubbc-db-setup-dc
   labels:
-    build: sims-db-setup
+    build: biohubbc-db-setup
 parameters:
   - name: IMAGE
     description: 'Image for pod'
     required: true
   - name: NAME
-    value: sims-db-setup
+    value: biohubbc-db-setup
   - name: SUFFIX
     value: '-dev'
   - name: VERSION

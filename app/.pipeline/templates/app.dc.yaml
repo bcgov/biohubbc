@@ -1,12 +1,12 @@
 apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
-  name: sims-app-dc
+  name: biohubbc-app-dc
   labels:
-    build: sims-app
+    build: biohubbc-app
 parameters:
   - name: NAME
-    value: sims-app
+    value: biohubbc-app
   - name: SUFFIX
     value: 'dev'
   - name: VERSION
@@ -37,7 +37,7 @@ parameters:
     value: 'development'
   - name: OBJECT_STORE_SECRETS
     description: Secrets used to read and write to the S3 storage
-    value: 'sims-object-store'
+    value: 'biohubbc-object-store'
   - name: APP_PORT_DEFAULT
     description: Application default port
     value: '7100'
