@@ -84,7 +84,7 @@ export async function up(knex: Knex): Promise<void> {
       SELECT progress_id 
       FROM survey_progress 
       WHERE name = 'Planning'
-    )
+    );
     
     -- Add index
     CREATE INDEX survey_progress_idx1 ON survey(progress_id);
