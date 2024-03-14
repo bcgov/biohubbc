@@ -45,13 +45,9 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
 
   const biohubApi = useBiohubApi();
 
-  const [activeReviewDialog, setActiveReviewDialog] = useState<{
-    open: boolean;
-    request: IGetAccessRequestsListResponse | any;
-  }>({
-    open: false,
-    request: null
-  });
+  const [showReviewDialog, setShowReviewDialog] = useState<boolean>(false);
+  const [activeReview, setActiveReview] = useState<IGetAccessRequestsListResponse | null>(null);
+
 
   const dialogContext = useContext(DialogContext);
 
@@ -92,26 +88,28 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
   };
 
   const handleReviewDialogApprove = async (values: IReviewAccessRequestForm) => {
-    const updatedRequest = activeReviewDialog.request as IGetAccessRequestsListResponse;
+    if (!activeReview) {
+      return;
+    }
 
-    setActiveReviewDialog({ open: false, request: null });
+    setShowReviewDialog(false);
 
     try {
-      await biohubApi.admin.approveAccessRequest(updatedRequest.id, {
-        userGuid: updatedRequest.data.userGuid,
-        userIdentifier: updatedRequest.data.username,
-        identitySource: updatedRequest.data.identitySource,
-        email: updatedRequest.data.email,
-        displayName: updatedRequest.data.displayName,
+      await biohubApi.admin.approveAccessRequest(activeReview.id, {
+        userGuid: activeReview.data.userGuid,
+        userIdentifier: activeReview.data.username,
+        identitySource: activeReview.data.identitySource,
+        email: activeReview.data.email,
+        displayName: activeReview.data.displayName,
         roleIds: (values.system_role && [values.system_role]) || []
       });
 
       try {
         await biohubApi.admin.sendGCNotification(
           {
-            emailAddress: updatedRequest.data.email,
+            emailAddress: activeReview.data.email,
             phoneNumber: '',
-            userId: updatedRequest.id
+            userId: activeReview.id
           },
           {
             subject: 'SIMS: Your request for access has been approved.',
@@ -140,19 +138,21 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
   };
 
   const handleReviewDialogDeny = async () => {
-    const updatedRequest = activeReviewDialog.request as IGetAccessRequestsListResponse;
+    if (!activeReview) {
+      return;
+    }
 
-    setActiveReviewDialog({ open: false, request: null });
+    setShowReviewDialog(false);
 
     try {
-      await biohubApi.admin.denyAccessRequest(updatedRequest.id);
+      await biohubApi.admin.denyAccessRequest(activeReview.id);
 
       try {
         await biohubApi.admin.sendGCNotification(
           {
-            emailAddress: updatedRequest.data.email,
+            emailAddress: activeReview.data.email,
             phoneNumber: '',
-            userId: updatedRequest.id
+            userId: activeReview.id
           },
           {
             subject: 'SIMS: Your request for access has been denied.',
@@ -184,26 +184,26 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
     <>
       <RequestDialog
         dialogTitle={'Review Access Request'}
-        open={activeReviewDialog.open}
-        onClose={() => setActiveReviewDialog({ open: false, request: null })}
+        open={showReviewDialog}
+        onClose={() => setShowReviewDialog(false)}
         onDeny={handleReviewDialogDeny}
         onApprove={handleReviewDialogApprove}
         component={{
           initialValues: {
             ...ReviewAccessRequestFormInitialValues,
-            system_role: activeReviewDialog.request?.data?.role
+            system_role: ''
           },
           validationSchema: ReviewAccessRequestFormYupSchema,
-          element: (
+          element: activeReview ? (
             <ReviewAccessRequestForm
-              request={activeReviewDialog.request}
+              request={activeReview}
               system_roles={
                 codes?.system_roles?.map((item) => {
                   return { value: item.id, label: item.name };
                 }) || []
               }
             />
-          )
+          ) : <></>
         }}
       />
       <Paper>
@@ -258,7 +258,10 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
                           <Button
                             color="primary"
                             variant="contained"
-                            onClick={() => setActiveReviewDialog({ open: true, request: row })}>
+                            onClick={() => {
+                              setActiveReview(row);
+                              setShowReviewDialog(true);
+                            }}>
                             Review Request
                           </Button>
                         )}
