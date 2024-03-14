@@ -32,6 +32,8 @@ const validSystemRoles: SYSTEM_ROLE[] = [
   SYSTEM_ROLE.DATA_ADMINISTRATOR
 ];
 
+const pageSizeOptions = [5, 10, 25];
+
 const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>(props: IAttachmentsListProps<T>) => {
   const { attachments, handleDownload, handleDelete, handleViewDetails, handleRemoveOrResubmit } = props;
   
@@ -86,6 +88,7 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
       headerName: '',
       type: 'actions',
       width: 70,
+      sortable: false,
       disableColumnMenu: true,
       resizable: false,
       renderCell: (params) => {
@@ -112,7 +115,13 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
       noRowsMessage={props.emptyStateText ?? 'No Attachments'}
       columns={attachmentsListColumnDefs}
       rows={attachments}
+      pageSizeOptions={pageSizeOptions}
       initialState={{
+        pagination: {
+          paginationModel: {
+            pageSize: 5
+          }
+        },
         columns: {
           columnVisibilityModel: {
             actions: showTableActions

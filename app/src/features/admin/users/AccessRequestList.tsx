@@ -2,12 +2,6 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { AccessStatusChip } from 'components/chips/AccessStatusChip';
@@ -20,13 +14,15 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import ReviewAccessRequestForm, {
   IReviewAccessRequestForm,
   ReviewAccessRequestFormInitialValues,
   ReviewAccessRequestFormYupSchema
 } from './ReviewAccessRequestForm';
+import { GridColDef } from '@mui/x-data-grid';
+import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 
 export interface IAccessRequestListProps {
   accessRequests: IGetAccessRequestsListResponse[];
@@ -34,20 +30,19 @@ export interface IAccessRequestListProps {
   refresh: () => void;
 }
 
+const pageSizeOptions = [10, 25, 50];
+
 /**
  * Page to display a list of user access.
  *
- * @param {*} props
- * @return {*}
  */
-const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
+const AccessRequestList = (props: IAccessRequestListProps) => {
   const { accessRequests, codes, refresh } = props;
 
   const biohubApi = useBiohubApi();
 
   const [showReviewDialog, setShowReviewDialog] = useState<boolean>(false);
   const [activeReview, setActiveReview] = useState<IGetAccessRequestsListResponse | null>(null);
-
 
   const dialogContext = useContext(DialogContext);
 
@@ -86,6 +81,65 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
       dialogContext.setErrorDialog({ open: false });
     }
   };
+
+  const accessRequestsColumnDefs: GridColDef<IGetAccessRequestsListResponse>[] = [
+    {
+      field: 'username',
+      headerName: 'Username',
+      flex: 1,
+      disableColumnMenu: true,
+      valueGetter: (params) => {
+        return params.row.data?.username
+      }
+    },
+    {
+      field: 'create_date',
+      flex: 1,
+      headerName: 'Date of Request',
+      disableColumnMenu: true,
+      valueFormatter: (params) => {
+        return getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, params.value)
+      },
+    },
+    {
+      field: 'status_name',
+      width: 170,
+      headerName: 'Status',
+      disableColumnMenu: true,
+      renderCell: (params) => {
+        return (
+          <AccessStatusChip status={params.row.status_name} />
+        );
+      }
+    },
+    {
+      field: 'actions',
+      headerName: '',
+      type: 'actions',
+      flex: 1,
+      sortable: false,
+      disableColumnMenu: true,
+      resizable: false,
+      align: 'right',
+      renderCell: (params) => {
+        if (params.row.status_name !== AdministrativeActivityStatusType.PENDING) {
+          return <></>
+        }
+
+        return (
+          <Button
+            color="primary"
+            variant="contained"
+            onClick={() => {
+              setActiveReview(params.row);
+              setShowReviewDialog(true);
+            }}>
+            Review Request
+          </Button>
+        );
+      }
+    }
+  ];
 
   const handleReviewDialogApprove = async (values: IReviewAccessRequestForm) => {
     if (!activeReview) {
@@ -223,55 +277,19 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
         </Toolbar>
         <Divider></Divider>
         <Box p={2}>
-          <TableContainer>
-            <Table
-              sx={{
-                tableLayout: 'fixed'
-              }}>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Username</TableCell>
-                  <TableCell>Date of Request</TableCell>
-                  <TableCell width={170}>Status</TableCell>
-                  <TableCell align="right"></TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody data-testid="access-request-table">
-                {!accessRequests?.length && (
-                  <TableRow data-testid={'access-request-row-0'}>
-                    <TableCell colSpan={4} align="center">
-                      No Access Requests
-                    </TableCell>
-                  </TableRow>
-                )}
-                {accessRequests?.map((row, index) => {
-                  return (
-                    <TableRow data-testid={`access-request-row-${index}`} key={index}>
-                      <TableCell>{row.data?.username || ''}</TableCell>
-                      <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.create_date)}</TableCell>
-                      <TableCell>
-                        <AccessStatusChip status={row.status_name} />
-                      </TableCell>
-
-                      <TableCell align="right">
-                        {row.status_name === AdministrativeActivityStatusType.PENDING && (
-                          <Button
-                            color="primary"
-                            variant="contained"
-                            onClick={() => {
-                              setActiveReview(row);
-                              setShowReviewDialog(true);
-                            }}>
-                            Review Request
-                          </Button>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <StyledDataGrid
+            columns={accessRequestsColumnDefs}
+            rows={accessRequests}
+            noRowsMessage='No Access Requests'
+            pageSizeOptions={pageSizeOptions}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 10
+                }
+              },
+            }}
+          />
         </Box>
       </Paper>
     </>

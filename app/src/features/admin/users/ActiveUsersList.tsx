@@ -16,7 +16,7 @@ import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import AddSystemUsersForm, {
@@ -33,13 +33,13 @@ export interface IActiveUsersListProps {
   refresh: () => void;
 }
 
+const pageSizeOptions = [10, 25, 50];
+
 /**
  * Table to display a list of active users.
  *
- * @param {*} props
- * @return {*}
  */
-const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
+const ActiveUsersList = (props: IActiveUsersListProps) => {
   const { activeUsers, codes, refresh } = props;
 
   const authStateContext = useAuthStateContext();
@@ -98,6 +98,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
       headerName: '',
       type: 'actions',
       width: 70,
+      sortable: false,
       disableColumnMenu: true,
       resizable: false,
       renderCell: (params) => {
@@ -347,6 +348,14 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
             columns={activeUsersColumnDefs}
             rows={activeUsers}
             getRowId={(row) => row.system_user_id}
+            pageSizeOptions={pageSizeOptions}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 10
+                }
+              },
+            }}
           />
         </Box>
       </Paper>
