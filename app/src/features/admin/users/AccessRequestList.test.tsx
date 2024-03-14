@@ -5,7 +5,6 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IAccessRequestDataObject, IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { codes } from 'test-helpers/code-helpers';
-
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 
 jest.mock('../../../hooks/useBioHubApi');
@@ -23,14 +22,12 @@ jest.mock('@mui/x-data-grid', () => {
   const OriginalModule = jest.requireActual('@mui/x-data-grid');
 
   // Wrap the DataGrid component to add disableVirtualization prop
-  const MockedDataGrid = (props: any) => (
-    <OriginalModule.DataGrid {...props} disableVirtualization={true} />
-  );
+  const MockedDataGrid = (props: any) => <OriginalModule.DataGrid {...props} disableVirtualization={true} />;
 
   // Return the original module with the mocked DataGrid
   return {
     ...OriginalModule,
-    DataGrid: MockedDataGrid,
+    DataGrid: MockedDataGrid
   };
 });
 

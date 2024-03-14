@@ -2,16 +2,15 @@ import { mdiFileOutline, mdiLockOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
-
-import { PublishStatus } from 'constants/attachments';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
-import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
-import AttachmentsListItemMenuButton from './AttachmentsListItemMenuButton';
 import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { useContext } from 'react';
+import { PublishStatus } from 'constants/attachments';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
+import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
+import { useContext } from 'react';
+import AttachmentsListItemMenuButton from './AttachmentsListItemMenuButton';
 
 export interface IAttachmentsListProps<T extends IGetProjectAttachment | IGetSurveyAttachment> {
   attachments: T[];
@@ -22,26 +21,20 @@ export interface IAttachmentsListProps<T extends IGetProjectAttachment | IGetSur
   emptyStateText?: string;
 }
 
-const validProjectPermissions: PROJECT_PERMISSION[] = [
-  PROJECT_PERMISSION.COORDINATOR,
-  PROJECT_PERMISSION.COLLABORATOR
-];
+const validProjectPermissions: PROJECT_PERMISSION[] = [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR];
 
-const validSystemRoles: SYSTEM_ROLE[] = [
-  SYSTEM_ROLE.SYSTEM_ADMIN,
-  SYSTEM_ROLE.DATA_ADMINISTRATOR
-];
+const validSystemRoles: SYSTEM_ROLE[] = [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR];
 
 const pageSizeOptions = [5, 10, 25];
 
 const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>(props: IAttachmentsListProps<T>) => {
   const { attachments, handleDownload, handleDelete, handleViewDetails, handleRemoveOrResubmit } = props;
-  
+
   const projectAuthStateContext = useContext(ProjectAuthStateContext);
 
   const hasSystemRole = projectAuthStateContext.hasSystemRole(validSystemRoles);
   const hasProjectPermissions = projectAuthStateContext.hasProjectPermission(validProjectPermissions);
-  const showTableActions = hasSystemRole || hasProjectPermissions
+  const showTableActions = hasSystemRole || hasProjectPermissions;
 
   const attachmentsListColumnDefs: GridColDef<T>[] = [
     {
@@ -74,14 +67,14 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
               {params.value}
             </Link>
           </Stack>
-        )
+        );
       }
     },
     {
       field: 'fileType',
       flex: 1,
       headerName: 'Type',
-      disableColumnMenu: true,
+      disableColumnMenu: true
     },
     {
       field: 'actions',

@@ -63,7 +63,7 @@ describe('ActiveUsersList', () => {
           user_identifier: 'username',
           user_guid: 'user-guid',
           record_end_date: '2020-10-10',
-          role_names: ['role 1',],
+          role_names: ['role 1'],
           identity_source: 'idir',
           role_ids: [1],
           email: '',

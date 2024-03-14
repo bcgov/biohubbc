@@ -4,7 +4,9 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import { GridColDef } from '@mui/x-data-grid';
 import { AccessStatusChip } from 'components/chips/AccessStatusChip';
+import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import RequestDialog from 'components/dialog/RequestDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { AccessApprovalDispatchI18N, AccessDenialDispatchI18N, ReviewAccessRequestI18N } from 'constants/i18n';
@@ -12,7 +14,11 @@ import { AdministrativeActivityStatusType } from 'constants/misc';
 import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IAccessRequestDataObject, IGetAccessRequestsListResponse, IIDIRAccessRequestDataObject } from 'interfaces/useAdminApi.interface';
+import {
+  IAccessRequestDataObject,
+  IGetAccessRequestsListResponse,
+  IIDIRAccessRequestDataObject
+} from 'interfaces/useAdminApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { useContext, useState } from 'react';
 import { getFormattedDate } from 'utils/Utils';
@@ -21,8 +27,6 @@ import ReviewAccessRequestForm, {
   ReviewAccessRequestFormInitialValues,
   ReviewAccessRequestFormYupSchema
 } from './ReviewAccessRequestForm';
-import { GridColDef } from '@mui/x-data-grid';
-import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 
 export interface IAccessRequestListProps {
   accessRequests: IGetAccessRequestsListResponse[];
@@ -89,7 +93,7 @@ const AccessRequestList = (props: IAccessRequestListProps) => {
       flex: 1,
       disableColumnMenu: true,
       valueGetter: (params) => {
-        return params.row.data?.username
+        return params.row.data?.username;
       }
     },
     {
@@ -98,8 +102,8 @@ const AccessRequestList = (props: IAccessRequestListProps) => {
       headerName: 'Date of Request',
       disableColumnMenu: true,
       valueFormatter: (params) => {
-        return getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, params.value)
-      },
+        return getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, params.value);
+      }
     },
     {
       field: 'status_name',
@@ -107,9 +111,7 @@ const AccessRequestList = (props: IAccessRequestListProps) => {
       headerName: 'Status',
       disableColumnMenu: true,
       renderCell: (params) => {
-        return (
-          <AccessStatusChip status={params.row.status_name} />
-        );
+        return <AccessStatusChip status={params.row.status_name} />;
       }
     },
     {
@@ -123,7 +125,7 @@ const AccessRequestList = (props: IAccessRequestListProps) => {
       align: 'right',
       renderCell: (params) => {
         if (params.row.status_name !== AdministrativeActivityStatusType.PENDING) {
-          return <></>
+          return <></>;
         }
 
         return (
@@ -245,7 +247,8 @@ const AccessRequestList = (props: IAccessRequestListProps) => {
         component={{
           initialValues: {
             ...ReviewAccessRequestFormInitialValues,
-            system_role: (activeReview?.data as (IAccessRequestDataObject & IIDIRAccessRequestDataObject) | undefined)?.role ?? ''
+            system_role:
+              (activeReview?.data as (IAccessRequestDataObject & IIDIRAccessRequestDataObject) | undefined)?.role ?? ''
           },
           validationSchema: ReviewAccessRequestFormYupSchema,
           element: activeReview ? (
@@ -257,7 +260,9 @@ const AccessRequestList = (props: IAccessRequestListProps) => {
                 }) || []
               }
             />
-          ) : <></>
+          ) : (
+            <></>
+          )
         }}
       />
       <Paper>
@@ -280,14 +285,14 @@ const AccessRequestList = (props: IAccessRequestListProps) => {
           <StyledDataGrid
             columns={accessRequestsColumnDefs}
             rows={accessRequests}
-            noRowsMessage='No Access Requests'
+            noRowsMessage="No Access Requests"
             pageSizeOptions={pageSizeOptions}
             initialState={{
               pagination: {
                 paginationModel: {
                   pageSize: 10
                 }
-              },
+              }
             }}
           />
         </Box>

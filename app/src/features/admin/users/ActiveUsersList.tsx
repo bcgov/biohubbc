@@ -7,6 +7,8 @@ import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import { GridColDef } from '@mui/x-data-grid';
+import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import EditDialog from 'components/dialog/EditDialog';
 import { CustomMenuButton, CustomMenuIconButton } from 'components/toolbar/ActionToolbars';
 import { AddSystemUserI18N, DeleteSystemUserI18N, UpdateSystemUserI18N } from 'constants/i18n';
@@ -24,8 +26,6 @@ import AddSystemUsersForm, {
   AddSystemUsersFormYupSchema,
   IAddSystemUsersForm
 } from './AddSystemUsersForm';
-import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { GridColDef } from '@mui/x-data-grid';
 
 export interface IActiveUsersListProps {
   activeUsers: ISystemUser[];
@@ -58,7 +58,11 @@ const ActiveUsersList = (props: IActiveUsersListProps) => {
       disableColumnMenu: true,
       renderCell: (params) => {
         return (
-          <Link sx={{ fontWeight: 700 }} underline="always" to={`/admin/users/${params.row.system_user_id}`} component={RouterLink}>
+          <Link
+            sx={{ fontWeight: 700 }}
+            underline="always"
+            to={`/admin/users/${params.row.system_user_id}`}
+            component={RouterLink}>
             {params.row.user_identifier || 'No identifier'}
           </Link>
         );
@@ -70,7 +74,7 @@ const ActiveUsersList = (props: IActiveUsersListProps) => {
       headerName: 'Role',
       disableColumnMenu: true,
       valueGetter: (params) => {
-        return params.row.role_names[0]
+        return params.row.role_names[0];
       },
       renderCell: (params) => {
         return (
@@ -344,7 +348,7 @@ const ActiveUsersList = (props: IActiveUsersListProps) => {
         <Divider></Divider>
         <Box p={2}>
           <StyledDataGrid<ISystemUser>
-            noRowsMessage='No Active Users'
+            noRowsMessage="No Active Users"
             columns={activeUsersColumnDefs}
             rows={activeUsers}
             getRowId={(row) => row.system_user_id}
@@ -354,7 +358,7 @@ const ActiveUsersList = (props: IActiveUsersListProps) => {
                 paginationModel: {
                   pageSize: 10
                 }
-              },
+              }
             }}
           />
         </Box>
