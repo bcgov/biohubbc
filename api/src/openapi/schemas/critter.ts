@@ -262,7 +262,6 @@ export const critterBulkRequestObject: OpenAPIV3.SchemaObject = {
   }
 };
 
-
 const bulkResponseCounts: OpenAPIV3.SchemaObject = {
   title: 'Bulk operation counts',
   type: 'object',
