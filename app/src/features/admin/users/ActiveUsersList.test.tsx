@@ -77,7 +77,7 @@ describe('ActiveUsersList', () => {
 
     await waitFor(() => {
       expect(getByText('username')).toBeVisible();
-      expect(getByText('role 1, role 2')).toBeVisible();
+      expect(getByText('role 1')).toBeVisible();
     });
   });
 

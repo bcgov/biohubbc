@@ -278,6 +278,7 @@ const AccessRequestList = (props: IAccessRequestListProps) => {
         <Divider></Divider>
         <Box p={2}>
           <StyledDataGrid
+            disableVirtualization
             columns={accessRequestsColumnDefs}
             rows={accessRequests}
             noRowsMessage='No Access Requests'

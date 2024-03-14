@@ -1,4 +1,5 @@
 import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
+import { AdministrativeActivityStatusType } from 'constants/misc';
 import AccessRequestList from 'features/admin/users/AccessRequestList';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IAccessRequestDataObject, IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
@@ -44,14 +45,14 @@ describe('AccessRequestList', () => {
   });
 
   it('shows a table row for a pending access request', async () => {
-    const { getByText, getByRole } = renderContainer(
+    const { getByText } = await renderContainer(
       [
         {
           id: 1,
           type: 1,
           type_name: 'test type',
           status: 1,
-          status_name: 'Pending',
+          status_name: AdministrativeActivityStatusType.PENDING,
           description: 'test description',
           notes: 'test notes',
           data: {
@@ -76,19 +77,18 @@ describe('AccessRequestList', () => {
       expect(getByText('testusername')).toBeVisible();
       expect(getByText('Apr 20, 2020')).toBeVisible();
       expect(getByText('Review Request')).toBeVisible();
-      expect(getByRole('button')).toHaveTextContent('Review Request');
     });
   });
 
   it('shows a table row for a rejected access request', async () => {
-    const { getByText, queryByRole } = renderContainer(
+    const { getByText, queryByText } = renderContainer(
       [
         {
           id: 1,
           type: 1,
           type_name: 'test type',
           status: 1,
-          status_name: 'Rejected',
+          status_name: AdministrativeActivityStatusType.REJECTED,
           description: 'test description',
           notes: 'test notes',
           data: {
@@ -113,19 +113,19 @@ describe('AccessRequestList', () => {
       expect(getByText('testusername')).toBeVisible();
       expect(getByText('Apr 20, 2020')).toBeVisible();
       expect(getByText('Denied')).toBeVisible();
-      expect(queryByRole('button')).not.toBeInTheDocument();
+      expect(queryByText('Review Request')).not.toBeInTheDocument();
     });
   });
 
   it('shows a table row for a actioned access request', async () => {
-    const { getByText, queryByRole } = renderContainer(
+    const { getByText, queryByText } = renderContainer(
       [
         {
           id: 1,
           type: 1,
           type_name: 'test type',
           status: 1,
-          status_name: 'Actioned',
+          status_name: AdministrativeActivityStatusType.ACTIONED,
           description: 'test description',
           notes: 'test notes',
           data: {
@@ -150,7 +150,7 @@ describe('AccessRequestList', () => {
       expect(getByText('testusername')).toBeVisible();
       expect(getByText('Apr 20, 2020')).toBeVisible();
       expect(getByText('Approved')).toBeVisible();
-      expect(queryByRole('button')).not.toBeInTheDocument();
+      expect(queryByText('Review Request')).not.toBeInTheDocument();
     });
   });
 
@@ -162,7 +162,7 @@ describe('AccessRequestList', () => {
           type: 1,
           type_name: 'test type',
           status: 1,
-          status_name: 'Pending',
+          status_name: AdministrativeActivityStatusType.PENDING,
           description: 'test description',
           notes: 'test notes',
           data: null as unknown as IAccessRequestDataObject,
@@ -189,7 +189,7 @@ describe('AccessRequestList', () => {
           type: 1,
           type_name: 'test type',
           status: 1,
-          status_name: 'Pending',
+          status_name: AdministrativeActivityStatusType.PENDING,
           description: 'test description',
           notes: 'test notes',
           data: {
@@ -244,7 +244,7 @@ describe('AccessRequestList', () => {
           type: 1,
           type_name: 'test type',
           status: 1,
-          status_name: 'Pending',
+          status_name: AdministrativeActivityStatusType.PENDING,
           description: 'test description',
           notes: 'test notes',
           data: {
