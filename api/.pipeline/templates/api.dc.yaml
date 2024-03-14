@@ -222,6 +222,7 @@ objects:
                   value: ${VERSION}
                 - name: CHANGE_VERSION
                   value: ${CHANGE_ID}
+                # Node
                 - name: NODE_ENV
                   value: ${NODE_ENV}
                 - name: NODE_OPTIONS
