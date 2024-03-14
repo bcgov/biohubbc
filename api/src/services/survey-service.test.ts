@@ -1,4 +1,5 @@
 import chai, { expect } from 'chai';
+import { Feature } from 'geojson';
 import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
@@ -1217,7 +1218,7 @@ describe('SurveyService', () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyService(dbConnection);
 
-      const geoJson1 = [
+      const geoJson1: Feature[] = [
         {
           type: 'Feature',
           geometry: {
@@ -1228,7 +1229,7 @@ describe('SurveyService', () => {
         }
       ];
 
-      const geoJson2 = [
+      const geoJson2: Feature[] = [
         {
           type: 'Feature',
           geometry: {
@@ -1239,7 +1240,7 @@ describe('SurveyService', () => {
         }
       ];
 
-      const existingLocations = [
+      const existingLocationsMock = [
         {
           survey_location_id: 30,
           name: 'Location 1',
@@ -1250,45 +1251,69 @@ describe('SurveyService', () => {
           revision_count: 0
         },
         {
-          survey_location_id: 31,
+          survey_location_id: 40,
           name: 'Location 2',
           description: 'Location 2 description',
           geometry: {},
           geography: '',
-          geojson: geoJson2,
+          geojson: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [7, 8]
+              },
+              properties: {}
+            }
+          ],
           revision_count: 0
         }
       ] as SurveyLocationRecord[];
 
-      const getSurveyLocationsDataStub = sinon.stub(service, 'getSurveyLocationsData').resolves(existingLocations);
-
-      const inputData = [
-        { survey_location_id: 30, name: 'Updated Location 1' },
-        { name: 'New Location' }
-      ] as PostSurveyLocationData[];
-
+      const getSurveyLocationsDataStub = sinon.stub(service, 'getSurveyLocationsData').resolves(existingLocationsMock);
       const insertSurveyLocationsStub = sinon.stub(service, 'insertSurveyLocations').resolves();
       const updateSurveyLocationStub = sinon.stub(service, 'updateSurveyLocation').resolves();
-      const deleteSurveyLocationStub = sinon.stub(service, 'deleteSurveyLocation').resolves(existingLocations[1]);
+      const deleteSurveyLocationStub = sinon.stub(service, 'deleteSurveyLocation').resolves(existingLocationsMock[1]);
       const insertRegionStub = sinon.stub(service, 'insertRegion').resolves();
 
       const surveyId = 20;
+      const data: PostSurveyLocationData[] = [
+        {
+          survey_location_id: 30,
+          name: 'Updated Location 1',
+          description: 'Existing description',
+          geojson: geoJson1,
+          revision_count: 0
+        },
+        {
+          survey_location_id: undefined,
+          name: 'New Location',
+          description: 'New description',
+          geojson: geoJson2,
+          revision_count: undefined
+        }
+      ];
 
-      await service.insertUpdateDeleteSurveyLocation(surveyId, inputData);
+      await service.insertUpdateDeleteSurveyLocation(surveyId, data);
 
       expect(getSurveyLocationsDataStub).to.be.calledOnceWith(surveyId);
-
-      expect(insertSurveyLocationsStub).to.be.calledOnceWith(surveyId, { name: 'New Location' });
-
+      expect(insertSurveyLocationsStub).to.be.calledOnceWith(surveyId, {
+        survey_location_id: undefined,
+        name: 'New Location',
+        description: 'New description',
+        geojson: geoJson2,
+        revision_count: undefined
+      });
       expect(updateSurveyLocationStub).to.be.calledOnceWith({
         survey_location_id: 30,
-        name: 'Updated Location 1'
+        name: 'Updated Location 1',
+        description: 'Existing description',
+        geojson: geoJson1,
+        revision_count: 0
       });
-
-      expect(deleteSurveyLocationStub).to.be.calledOnceWith(31);
-
-      expect(insertRegionStub).to.be.calledWith(surveyId, geoJson1);
-      expect(insertRegionStub).to.be.calledWith(surveyId, geoJson2);
+      expect(deleteSurveyLocationStub).to.be.calledOnceWith(40);
+      expect(insertRegionStub).to.be.calledWith(surveyId, geoJson2); // from inserts
+      expect(insertRegionStub).to.be.calledWith(surveyId, geoJson1); // from updates
     });
   });
 
