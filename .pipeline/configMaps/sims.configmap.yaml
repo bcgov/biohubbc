@@ -2,7 +2,7 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: sims-pipeline-config
-  namespace: af2668-dev
+  namespace: af2668-tools
 immutable: false
 data:
   config: |

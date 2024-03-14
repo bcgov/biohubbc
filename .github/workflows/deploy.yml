@@ -147,11 +147,11 @@ jobs:
       - name: Log in to OpenShift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
-      # Fetch config map named 'sims-pipeline-config' and store in 'pipeline_config' variable for use by subsequent jobs
+      # Fetch config map named 'sims-pipeline-config' from the tools environment and store in 'pipeline_config' variable for use by subsequent jobs
       - name: Fetch pipeline config map
         id: "get_config"
         run: |
-          echo "pipeline_config=$( oc get configmap sims-pipeline-config -o jsonpath={.data.config} | jq -c )" >> "$GITHUB_OUTPUT"
+          echo "pipeline_config=$( oc -n af2668-tools get configmap sims-pipeline-config -o jsonpath={.data.config} | jq -c )" >> "$GITHUB_OUTPUT"
 
   # Build the web frontend app image
   buildAPP:

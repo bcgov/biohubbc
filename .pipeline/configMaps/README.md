@@ -1,14 +1,14 @@
 # Openshift Config Map
 
-`sims-pipeline-config.json` is a working sample of the config map that should be created in each openshift environment.
+`sims-pipeline-config.json` is a working sample of the config map that should be created in the tools environment.
 
 Note: The exact values in the sample config map may fall out of sync with what is in Openshift, as changes to values are made directly in Openshift (ex: updating cpu/memory limits in OpenShift, etc).
 
-**Note: Config maps should never contain secrets, passwords, or other sensitive values. They are not protected in OpenShift and their values may appear in logs, etc. Sensitive data should always be stored in Openshift secrets.**
+Note: Config maps should never contain secrets, passwords, or other sensitive values. They are not protected in OpenShift and their values may appear in logs, etc. Sensitive data should always be stored in Openshift secrets.
 
 ## Create Config Map in Openshift
 
-Under the target environment (dev, test, prod)
+Under the tools environment: `af2668-tools`
 
 #### Option 1
 
@@ -30,7 +30,7 @@ Under `Workloads` -> `ConfigMaps`
 
 ## Updating Config Map in Openshift
 
-Under the target environment (dev, test, prod)
+Under the tools environment: `af2668-tools`
 
 Under `Workloads` -> `ConfigMaps`
 
