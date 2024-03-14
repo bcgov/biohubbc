@@ -34,6 +34,7 @@ export class GetSurveyData {
   survey_name: string;
   start_date: string;
   end_date: string;
+  progress_id: number;
   survey_types: number[];
   revision_count: number;
 
@@ -44,6 +45,7 @@ export class GetSurveyData {
     this.survey_name = obj?.name || '';
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
+    this.progress_id = obj?.progress_id || null;
     this.survey_types = (obj?.survey_types?.length && obj.survey_types) || [];
     this.revision_count = obj?.revision_count || 0;
   }

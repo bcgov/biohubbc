@@ -247,7 +247,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
 
   return (
     <>
-      <Paper elevation={0}>
+      <Paper>
         <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
           <Typography variant="h4" component="h2">
             Active Users{' '}

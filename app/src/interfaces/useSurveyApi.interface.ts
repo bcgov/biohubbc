@@ -55,6 +55,7 @@ export interface IGetSurveyForViewResponseDetails {
   survey_name: string;
   start_date: string;
   end_date: string;
+  progress_id: number;
   survey_types: number[];
   revision_count: number;
 }
@@ -149,6 +150,7 @@ export interface SurveyBasicFieldsObject {
   name: string;
   start_date: string;
   end_date: string | null;
+  progress_id: number;
   focal_species: number[];
   focal_species_names: string[];
 }

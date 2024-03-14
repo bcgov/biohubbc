@@ -5,8 +5,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import useTheme from '@mui/material/styles/useTheme';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { MeasurementsList } from 'features/surveys/observations/measurements/list/MeasurementsList';
-import { MeasurementsSearch } from 'features/surveys/observations/measurements/search/MeasurementsSearch';
+import { MeasurementsList } from 'features/surveys/observations/observations-table/configure-table/measurements/list/MeasurementsList';
+import { MeasurementsSearch } from 'features/surveys/observations/observations-table/configure-table/measurements/search/MeasurementsSearch';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 

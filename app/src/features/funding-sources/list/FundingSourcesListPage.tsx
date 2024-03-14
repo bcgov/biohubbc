@@ -110,41 +110,39 @@ const FundingSourcesListPage: React.FC = () => {
         }
       />
 
-      <Container maxWidth="xl">
-        <Box py={3}>
-          <Paper elevation={0}>
-            <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Typography variant="h4" component="h2" data-testid="funding-source-list-found">
-                Records Found &zwnj;
-                <Typography
-                  component="span"
-                  color="textSecondary"
-                  lineHeight="inherit"
-                  fontSize="inherit"
-                  fontWeight={400}>
-                  ({Number(fundingSourceDataLoader.data?.length ?? 0).toLocaleString()})
-                </Typography>
+      <Container maxWidth="xl" sx={{ py: 3 }}>
+        <Paper>
+          <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Typography variant="h4" component="h2" data-testid="funding-source-list-found">
+              Records Found &zwnj;
+              <Typography
+                component="span"
+                color="textSecondary"
+                lineHeight="inherit"
+                fontSize="inherit"
+                fontWeight={400}>
+                ({Number(fundingSourceDataLoader.data?.length ?? 0).toLocaleString()})
               </Typography>
-            </Toolbar>
-            <Divider></Divider>
-            <Box p={2}>
-              <FundingSourcesTable
-                fundingSources={fundingSourceDataLoader.data ?? []}
-                onView={(fundingSourceId) => {
-                  openViewModal(fundingSourceId);
-                }}
-                onEdit={(fundingSourceId) => {
-                  setFundingSourceId(fundingSourceId);
-                  setIsEditModalOpen(true);
-                }}
-                onDelete={(fundingSourceId) => {
-                  setFundingSourceId(fundingSourceId);
-                  setIsDeleteModalOpen(true);
-                }}
-              />
-            </Box>
-          </Paper>
-        </Box>
+            </Typography>
+          </Toolbar>
+          <Divider></Divider>
+          <Box p={2}>
+            <FundingSourcesTable
+              fundingSources={fundingSourceDataLoader.data ?? []}
+              onView={(fundingSourceId) => {
+                openViewModal(fundingSourceId);
+              }}
+              onEdit={(fundingSourceId) => {
+                setFundingSourceId(fundingSourceId);
+                setIsEditModalOpen(true);
+              }}
+              onDelete={(fundingSourceId) => {
+                setFundingSourceId(fundingSourceId);
+                setIsDeleteModalOpen(true);
+              }}
+            />
+          </Box>
+        </Paper>
       </Container>
     </>
   );

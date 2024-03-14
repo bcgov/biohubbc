@@ -81,6 +81,7 @@ const SurveyRecord = z.object({
   start_date: z.string(),
   end_date: z.string().nullable(),
   additional_details: z.string().nullable(),
+  progress_id: z.number(),
   comments: z.string().nullable(),
   create_date: z.string(),
   create_user: z.number(),
@@ -120,11 +121,20 @@ export type StakeholderPartnershipRecord = z.infer<typeof StakeholderPartnership
 
 export type IndigenousPartnershipRecord = z.infer<typeof IndigenousPartnershipRecord>;
 
+export const SurveyProgressRecord = z.object({
+  survey_progress_id: z.number(),
+  name: z.string(),
+  description: z.string()
+});
+
+export type SurveyProgressRecord = z.infer<typeof SurveyProgressRecord>;
+
 export const SurveyBasicFields = z.object({
   survey_id: z.number(),
   name: z.string(),
   start_date: z.string(),
   end_date: z.string().nullable(),
+  progress_id: z.number(),
   focal_species: z.array(z.number()),
   focal_species_names: z.array(z.string())
 });
@@ -215,6 +225,28 @@ export class SurveyRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement, SurveyTypeRecord);
+
+    return response.rows;
+  }
+
+  /**
+   * Gets survey status records for a given survey ID
+   *
+   * @param {number} surveyId
+   * @returns {*}  {Promise<SurveyTypeRecord[]>}
+   * @memberof SurveyRepository
+   */
+  async getSurveyStatusData(surveyId: number): Promise<SurveyProgressRecord[]> {
+    const sqlStatement = SQL`
+      SELECT
+        *
+      FROM
+        survey_progress
+      WHERE
+        survey_id = ${surveyId};
+    `;
+
+    const response = await this.connection.sql(sqlStatement, SurveyProgressRecord);
 
     return response.rows;
   }
@@ -596,17 +628,20 @@ export class SurveyRepository extends BaseRepository {
         'survey.name',
         'survey.start_date',
         'survey.end_date',
+        'survey.progress_id',
         knex.raw('array_remove(array_agg(study_species.itis_tsn), NULL) AS focal_species')
       )
       .from('project')
       .leftJoin('survey', 'survey.project_id', 'project.project_id')
       .leftJoin('study_species', 'study_species.survey_id', 'survey.survey_id')
+      .leftJoin('survey_progress', 'survey_progress.survey_progress_id', 'survey.progress_id')
       .where('project.project_id', projectId)
       .where('study_species.is_focal', true)
       .groupBy('survey.survey_id')
       .groupBy('survey.name')
       .groupBy('survey.start_date')
-      .groupBy('survey.end_date');
+      .groupBy('survey.end_date')
+      .groupBy('survey.progress_id');
 
     if (pagination) {
       queryBuilder.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
@@ -666,12 +701,14 @@ export class SurveyRepository extends BaseRepository {
         name,
         start_date,
         end_date,
+        progress_id,
         additional_details
       ) VALUES (
         ${projectId},
         ${surveyData.survey_details.survey_name},
         ${surveyData.survey_details.start_date},
         ${surveyData.survey_details.end_date},
+        ${surveyData.survey_details.progress_id},
         ${surveyData.purpose_and_methodology.additional_details}
       )
       RETURNING
@@ -998,7 +1035,8 @@ export class SurveyRepository extends BaseRepository {
         ...fieldsToUpdate,
         name: surveyData.survey_details.name,
         start_date: surveyData.survey_details.start_date,
-        end_date: surveyData.survey_details.end_date
+        end_date: surveyData.survey_details.end_date,
+        progress_id: surveyData.survey_details.progress_id
       };
     }
 
