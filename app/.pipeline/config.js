@@ -119,8 +119,8 @@ const phases = {
 };
 
 if (options.phase === 'pr') {
-  console.debug(JSON.stringify(options, null, 2));
-  console.debug(JSON.stringify(phases, null, 2));
+  console.log(JSON.stringify(options));
+  console.log(JSON.stringify(phases));
 }
 
 module.exports = exports = { phases, options };
