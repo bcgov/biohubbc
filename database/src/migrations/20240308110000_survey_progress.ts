@@ -51,16 +51,6 @@ export async function up(knex: Knex): Promise<void> {
     CREATE TRIGGER journal_survey_progress AFTER INSERT OR UPDATE OR DELETE ON biohub.survey_progress FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
 
     ----------------------------------------------------------------------------------------
-    -- Modify survey table to include survey_progress
-    ----------------------------------------------------------------------------------------
-    ALTER TABLE survey ADD COLUMN progress_id INTEGER NOT NULL;
-    COMMENT ON COLUMN survey.progress_id IS 'Foreign key referencing the progress value.';
-    ALTER TABLE survey ADD CONSTRAINT survey_progress_fk FOREIGN KEY (progress_id) REFERENCES survey_progress(survey_progress_id);
-    
-    -- Add index
-    CREATE INDEX survey_progress_idx1 ON survey(progress_id);
-
-    ----------------------------------------------------------------------------------------
     -- Add initial values to survey progress table
     ----------------------------------------------------------------------------------------
     INSERT INTO survey_progress (name, description, record_effective_date)
@@ -80,6 +70,24 @@ export async function up(knex: Knex): Promise<void> {
       'The Survey is complete and all data and information has been uploaded.',
       'NOW()'
     );
+
+    ----------------------------------------------------------------------------------------
+    -- Modify survey table to include survey_progress
+    ----------------------------------------------------------------------------------------
+    ALTER TABLE survey ADD COLUMN progress_id INTEGER NOT NULL;
+    COMMENT ON COLUMN survey.progress_id IS 'Foreign key referencing the progress value.';
+    ALTER TABLE survey ADD CONSTRAINT survey_progress_fk FOREIGN KEY (progress_id) REFERENCES survey_progress(survey_progress_id);
+    
+    -- Add initial value to Survey table
+    UPDATE survey
+    SET progress_id = (
+      SELECT progress_id 
+      FROM survey_progress 
+      WHERE name = 'Planning'
+    )
+    
+    -- Add index
+    CREATE INDEX survey_progress_idx1 ON survey(progress_id);
 
     ----------------------------------------------------------------------------------------
     -- Add view for survey_progress table
