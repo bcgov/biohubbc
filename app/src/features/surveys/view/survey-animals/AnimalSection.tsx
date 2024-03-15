@@ -7,6 +7,7 @@ import grey from '@mui/material/colors/grey';
 import Typography from '@mui/material/Typography';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import { EditDeleteStubCard } from 'features/surveys/components/EditDeleteStubCard';
 import { useDialogContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
@@ -22,6 +23,8 @@ import { MarkingAnimalForm } from './form-sections/MarkingAnimalForm';
 import MeasurementAnimalForm from './form-sections/MeasurementAnimalForm';
 import GeneralAnimalSummary from './GeneralAnimalSummary';
 
+dayjs.extend(utc);
+
 type SubHeaderData = Record<string, string | number | null | undefined>;
 
 interface IAnimalSectionProps {
@@ -36,7 +39,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
   const [formMode, setFormMode] = useState<ANIMAL_FORM_MODE | undefined>(undefined);
   const [formObject, setFormObject] = useState<any | undefined>(undefined);
 
-  const formatDate = (dt: Date) => dayjs(dt).format('MMMM D, YYYY');
+  const formatDate = (dt: Date) => dayjs(dt).utc().format('MMMM D, YYYY');
 
   const handleOpenAddForm = () => {
     setFormObject(undefined);
