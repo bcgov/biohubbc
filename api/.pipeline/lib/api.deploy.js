@@ -64,9 +64,9 @@ const apiDeploy = async (settings) => {
         KEYCLOAK_API_HOST: phases[env][phase].sso.cssApi.cssApiHost,
         KEYCLOAK_API_ENVIRONMENT: phases[env][phase].sso.cssApi.cssApiEnvironment,
         // Log Level
-        LOG_LEVEL: phases[phase].logLevel,
-        API_RESPONSE_VALIDATION_ENABLED: phases[phase].apiResponseValidationEnabled,
-        DATABASE_RESPONSE_VALIDATION_ENABLED: phases[phase].databaseResponseValidationEnabled,
+        LOG_LEVEL: phases[env][phase].logLevel,
+        API_RESPONSE_VALIDATION_ENABLED: phases[env][phase].apiResponseValidationEnabled,
+        DATABASE_RESPONSE_VALIDATION_ENABLED: phases[env][phase].databaseResponseValidationEnabled,
         // Openshift Resources
         CPU_REQUEST: phases[env][phase].cpuRequest,
         CPU_LIMIT: phases[env][phase].cpuLimit,
