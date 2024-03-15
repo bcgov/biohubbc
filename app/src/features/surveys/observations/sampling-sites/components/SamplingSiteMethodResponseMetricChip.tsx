@@ -15,8 +15,6 @@ const SamplingSiteMethodResponseMetricChip = (props: ISamplingSiteMethodResponse
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
-  console.log(props.method_response_metric_id);
-
   return (
     <Chip
       size="small"
