@@ -5,7 +5,7 @@ import assert from 'assert';
 import { ProjectContext } from 'contexts/projectContext';
 import { useContext, useMemo } from 'react';
 
-export interface IProjectParticipantsRoles {
+interface IProjectParticipantsRoles {
   display_name: string;
   roles: string[];
   initials: string;
