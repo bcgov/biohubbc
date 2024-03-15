@@ -25,6 +25,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { IObservationTableRowToSave, SubcountToSave } from 'hooks/api/useObservationApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useObservationsContext, useTaxonomyContext } from 'hooks/useContext';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import {
   CBMeasurementType,
   CBMeasurementValue,
@@ -57,6 +58,11 @@ export type SubcountObservationColumns = {
   subcount: number | null;
   [key: string]: any;
 };
+
+export type TSNMeasurementMap = Record<
+  string,
+  { qualitative: CBQualitativeMeasurementTypeDefinition[]; quantitative: CBQuantitativeMeasurementTypeDefinition[] }
+>;
 
 export type ObservationRecord = StandardObservationColumns & SubcountObservationColumns;
 
@@ -410,11 +416,56 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     }) as IObservationTableRow[];
   }, [_muiDataGridApiRef]);
 
+  const tsnMeasurements = async (tsn: number): Promise<TSNMeasurementMap> => {
+    const map: TSNMeasurementMap = {};
+    // fetch this from critterbase
+    // add to current map if not already there
+    // return map
+
+    if (!map[tsn]) {
+      // fetch
+      try {
+        const response = await useCritterbaseApi().xref.getTaxonMeasurements(tsn);
+
+        map[String(tsn)] = response;
+      } catch (error) {
+        console.log('__________________');
+        console.log('__________________');
+        console.log('__________________');
+        console.log(error);
+      }
+    }
+    // a hold over until things work locally
+    map[String(tsn)] = { qualitative: [], quantitative: [] };
+    return map;
+  };
+
+  const _validateMeasurements = useCallback(
+    async (row: IObservationTableRow, measurementColumns: string[]): Promise<ObservationRowValidationError | null> => {
+      // need to fetch measurements for TSN
+      // search through measurements for same name
+      // check value
+      if (!row.itis_tsn && !measurementColumns.length) {
+        return null;
+      }
+
+      if (!row.itis_tsn && measurementColumns.length) {
+        return { field: 'itis_tsn', message: 'A taxon needs to be selected before adding measurements' };
+      }
+
+      const measurements = tsnMeasurements(Number(row.itis_tsn));
+
+      return null;
+    },
+    [_getRowsWithEditedValues, _muiDataGridApiRef]
+  );
+
   /**
    * Validates all rows belonging to the table. Returns null if validation passes, otherwise
    * returns the validation model
    */
   const _validateRows = useCallback((): ObservationTableValidationModel | null => {
+    console.log('__ Validation Begins __');
     const rowValues = _getRowsWithEditedValues();
     const tableColumns = _muiDataGridApiRef.current.getAllColumns?.() ?? [];
 
@@ -432,6 +483,20 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       'survey_sample_method_id',
       'survey_sample_period_id'
     ];
+
+    // build an array of all the standard non measurement columns
+    const nonMeasurementColumns: string[] = [
+      '__check__','actions', // add check box column and actions column (trash can) to filter these out of final measurement columns
+      ...(requiredColumns as string[]),
+      ...(samplingRequiredColumns as string[])
+    ];
+    console.log('Standard Columns:', nonMeasurementColumns);
+    // get measurement columns
+    const measurementColumns = tableColumns.filter((tc) => {
+      console.log(`${tc.field} ${tc.headerName}`);
+      return nonMeasurementColumns.indexOf(String(tc.field)) < 0;
+    });
+    console.log(measurementColumns);
 
     const validation = rowValues.reduce((tableModel: ObservationTableValidationModel, row: IObservationTableRow) => {
       const rowErrors: ObservationRowValidationError[] = [];
@@ -480,6 +545,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       return tableModel;
     }, {});
 
+    console.log('Validation results: ', validation);
     setValidationModel(validation);
 
     return Object.keys(validation).length > 0 ? validation : null;
