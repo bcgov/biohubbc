@@ -25,7 +25,6 @@ import { APIError } from 'hooks/api/useAxios';
 import { IObservationTableRowToSave, SubcountToSave } from 'hooks/api/useObservationApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useObservationsContext, useTaxonomyContext } from 'hooks/useContext';
-import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import {
   CBMeasurementType,
   CBMeasurementValue,
@@ -416,49 +415,49 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     }) as IObservationTableRow[];
   }, [_muiDataGridApiRef]);
 
-  const tsnMeasurements = async (tsn: number): Promise<TSNMeasurementMap> => {
-    const map: TSNMeasurementMap = {};
-    // fetch this from critterbase
-    // add to current map if not already there
-    // return map
+  // const tsnMeasurements = async (tsn: number): Promise<TSNMeasurementMap> => {
+  //   const map: TSNMeasurementMap = {};
+  //   // fetch this from critterbase
+  //   // add to current map if not already there
+  //   // return map
 
-    if (!map[tsn]) {
-      // fetch
-      try {
-        const response = await useCritterbaseApi().xref.getTaxonMeasurements(tsn);
+  //   if (!map[tsn]) {
+  //     // fetch
+  //     try {
+  //       const response = await useCritterbaseApi().xref.getTaxonMeasurements(tsn);
 
-        map[String(tsn)] = response;
-      } catch (error) {
-        console.log('__________________');
-        console.log('__________________');
-        console.log('__________________');
-        console.log(error);
-      }
-    }
-    // a hold over until things work locally
-    map[String(tsn)] = { qualitative: [], quantitative: [] };
-    return map;
-  };
+  //       map[String(tsn)] = response;
+  //     } catch (error) {
+  //       console.log('__________________');
+  //       console.log('__________________');
+  //       console.log('__________________');
+  //       console.log(error);
+  //     }
+  //   }
+  //   // a hold over until things work locally
+  //   map[String(tsn)] = { qualitative: [], quantitative: [] };
+  //   return map;
+  // };
 
-  const _validateMeasurements = useCallback(
-    async (row: IObservationTableRow, measurementColumns: string[]): Promise<ObservationRowValidationError | null> => {
-      // need to fetch measurements for TSN
-      // search through measurements for same name
-      // check value
-      if (!row.itis_tsn && !measurementColumns.length) {
-        return null;
-      }
+  // const _validateMeasurements = useCallback(
+  //   async (row: IObservationTableRow, measurementColumns: string[]): Promise<ObservationRowValidationError | null> => {
+  //     // need to fetch measurements for TSN
+  //     // search through measurements for same name
+  //     // check value
+  //     if (!row.itis_tsn && !measurementColumns.length) {
+  //       return null;
+  //     }
 
-      if (!row.itis_tsn && measurementColumns.length) {
-        return { field: 'itis_tsn', message: 'A taxon needs to be selected before adding measurements' };
-      }
+  //     if (!row.itis_tsn && measurementColumns.length) {
+  //       return { field: 'itis_tsn', message: 'A taxon needs to be selected before adding measurements' };
+  //     }
 
-      const measurements = tsnMeasurements(Number(row.itis_tsn));
+  //     const measurements = tsnMeasurements(Number(row.itis_tsn));
 
-      return null;
-    },
-    [_getRowsWithEditedValues, _muiDataGridApiRef]
-  );
+  //     return null;
+  //   },
+  //   [_getRowsWithEditedValues, _muiDataGridApiRef]
+  // );
 
   /**
    * Validates all rows belonging to the table. Returns null if validation passes, otherwise
@@ -486,7 +485,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     // build an array of all the standard non measurement columns
     const nonMeasurementColumns: string[] = [
-      '__check__','actions', // add check box column and actions column (trash can) to filter these out of final measurement columns
+      '__check__',
+      'actions', // add check box column and actions column (trash can) to filter these out of final measurement columns
       ...(requiredColumns as string[]),
       ...(samplingRequiredColumns as string[])
     ];
