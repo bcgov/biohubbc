@@ -8,11 +8,9 @@ import SelectWithSubtextField, { ISelectWithSubtextFieldOption } from 'component
 import StartEndDateFields from 'components/fields/StartEndDateFields';
 import AncillarySpeciesComponent from 'components/species/AncillarySpeciesComponent';
 import FocalSpeciesComponent from 'components/species/FocalSpeciesComponent';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { useFormikContext } from 'formik';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import React from 'react';
-import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import SurveyPermitForm, { SurveyPermitFormYupSchema } from '../SurveyPermitForm';
 
@@ -150,17 +148,6 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
             endName="survey_details.end_date"
             startRequired={true}
             endRequired={false}
-            startDateHelperText={`Start Date cannot precede ${getFormattedDate(
-              DATE_FORMAT.ShortMediumDateFormat,
-              props.projectStartDate
-            )}`}
-            endDateHelperText={
-              props.projectEndDate &&
-              `End Date cannot come after the Project End Date ${getFormattedDate(
-                DATE_FORMAT.ShortMediumDateFormat,
-                props.projectEndDate
-              )}`
-            }
           />
         </Grid>
       </Grid>
