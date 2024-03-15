@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
-import { DataGrid, DataGridProps } from '@mui/x-data-grid';
+import { DataGrid, DataGridProps, GridValidRowModel } from '@mui/x-data-grid';
 import { useCallback } from 'react';
 import StyledDataGridOverlay from './StyledDataGridOverlay';
 
@@ -10,13 +10,14 @@ const StyledLoadingOverlay = () => (
 export type StyledDataGridProps = DataGridProps & {
   noRowsMessage?: string;
 };
-export const StyledDataGrid = (props: StyledDataGridProps) => {
+export const StyledDataGrid = <R extends GridValidRowModel = any>(props: StyledDataGridProps) => {
   const noRowsOverlay = useCallback(
     () => <StyledDataGridOverlay message={props.noRowsMessage} />,
     [props.noRowsMessage]
   );
+
   return (
-    <DataGrid
+    <DataGrid<R>
       {...props}
       autoHeight
       slots={{
