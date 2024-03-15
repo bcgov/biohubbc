@@ -390,7 +390,7 @@ export class ObservationRepository extends BaseRepository {
           )
           .whereIn(
             'survey_observation_id',
-            knex('survey_observation').select('survey_observation_id').where('survey_id', 1)
+            knex('survey_observation').select('survey_observation_id').where('survey_id', surveyId)
           )
           .groupBy('survey_observation_id')
       )
@@ -418,7 +418,8 @@ export class ObservationRepository extends BaseRepository {
         'survey_observation.survey_sample_period_id',
         'w_survey_sample_period.survey_sample_period_id'
       )
-      .leftJoin('w_subcounts', 'w_subcounts.survey_observation_id', 'survey_observation.survey_observation_id')
+      // Note: inner join requires every observation record to have at least one subcount record, otherwise use left join
+      .innerJoin('w_subcounts', 'w_subcounts.survey_observation_id', 'survey_observation.survey_observation_id')
       .where('survey_observation.survey_id', surveyId);
 
     if (pagination) {
