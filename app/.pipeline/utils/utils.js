@@ -23,9 +23,9 @@
  *   },
  *   env: 'pr' | 'dev' | 'test' | 'prod',
  *   phase: 'build' | 'deploy',
- *   config: {}, // sims pipeline config map
- *   pr?: '<pr_number>', // For PR based deployments
- *   branch?: '<branch_name>', // For static (dev, test, prod) deployments
+ *   config: string, // sims pipeline config map (stringified JSON)
+ *   pr?: number, // For PR based deployments
+ *   branch?: string, // For static (dev, test, prod) deployments
  * }}
  */
 const processOptions = (options) => {

@@ -9,13 +9,13 @@ const rawOptions = PipelineCli.Util.parseArguments();
 const options = processOptions(rawOptions);
 
 // Get pull-request number from git action '--pr' arg
-const changeId = rawOptions.pr;
+const changeId = options.pr;
 
 // Get branch name from the git action '--branch' arg
-const branch = rawOptions.branch || null;
+const branch = options.branch || null;
 
 // Get pipeline config map from git action '--config' arg
-const pipelineConfigMapString = rawOptions.config;
+const pipelineConfigMapString = options.config;
 const pipelineConfigMap = JSON.parse(pipelineConfigMapString);
 
 const phases = {
