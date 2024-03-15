@@ -46,10 +46,10 @@ const SurveySpatialData = () => {
   const biohubApi = useBiohubApi();
   const classes = useStyles();
 
-  const OBSERVATIONS_COLOUR = '#5e0b96';
-  const STUDY_AREA_COLOUR = '#1f7dff';
-  const SAMPLING_SITE_COLOUR = '#db6e00';
-  const TELEMETRY_COLOUR = '#05786a';
+  const OBSERVATIONS_COLOUR = '#234075';
+  const STUDY_AREA_COLOUR = '#e3a82b';
+  const SAMPLING_SITE_COLOUR = '#4881c2';
+  const TELEMETRY_COLOUR = '#234075';
   const DEFAULT_COLOUR = '#a7bfd1';
 
   const observationsGeometryDataLoader = useDataLoader(() =>
@@ -167,7 +167,6 @@ const SurveySpatialData = () => {
    */
   const observationPoints: ISurveyMapPoint[] = useMemo(() => {
     return (observationsGeometryDataLoader.data?.surveyObservationsGeometry ?? []).map((observation) => {
-
       const point: ISurveyMapPoint = {
         feature: {
           type: 'Feature',

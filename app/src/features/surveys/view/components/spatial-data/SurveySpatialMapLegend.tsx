@@ -10,12 +10,19 @@ interface ISurveySpatialMapLegendProps {
 
 const SurveySpatialMapLegend = (props: ISurveySpatialMapLegendProps) => {
   return (
-    <Stack direction="row" spacing={2}>
+    <Stack direction="row" spacing={1}>
       {props?.layers.map(
         (item) =>
           item.layerColors && (
             <Box display="flex" alignItems="center">
-              <Box borderRadius="10%" height="1rem" width="1rem" bgcolor={item.layerColors.fillColor} m={1} />
+              <Box
+                border={item.layerColors.color}
+                borderRadius="10%"
+                height="1rem"
+                width="1rem"
+                bgcolor={item.layerColors.fillColor}
+                m={1}
+              />
               <Typography variant="body2" color="textSecondary" sx={{ fontWeight: 700 }}>
                 {item.layerName}
               </Typography>

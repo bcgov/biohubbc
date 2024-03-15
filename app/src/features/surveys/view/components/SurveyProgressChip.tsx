@@ -15,7 +15,7 @@ const SurveyProgressChip = (props: ISurveyProgressChipProps) => {
 
   const colorLookup: Record<string, string> = {
     Planning: '#84aac4',
-    'In progress': '#dbaa81',
+    'In progress': '#e3a82b',
     Completed: '#91bf9b'
   };
 
@@ -32,7 +32,8 @@ const SurveyProgressChip = (props: ISurveyProgressChipProps) => {
         '& .MuiChip-label': {
           mt: '1px',
           letterSpacing: '0.03rem',
-          color: '#fff'
+          color: '#fff',
+          fontWeight: 700
         }
       }}
       {...props}
