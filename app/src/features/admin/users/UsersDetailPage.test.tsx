@@ -54,7 +54,7 @@ describe('UsersDetailPage', () => {
       system_user_id: 1,
       user_identifier: 'LongerUserName',
       record_end_date: 'end',
-      role_names: ['role1', 'role2'],
+      role_names: ['role1'],
       user_guid: '',
       identity_source: 'idir',
       role_ids: [],

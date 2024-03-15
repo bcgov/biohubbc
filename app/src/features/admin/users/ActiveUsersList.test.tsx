@@ -63,9 +63,9 @@ describe('ActiveUsersList', () => {
           user_identifier: 'username',
           user_guid: 'user-guid',
           record_end_date: '2020-10-10',
-          role_names: ['role 1', 'role 2'],
+          role_names: ['role 1'],
           identity_source: 'idir',
-          role_ids: [],
+          role_ids: [1],
           email: '',
           display_name: '',
           agency: ''
@@ -77,7 +77,7 @@ describe('ActiveUsersList', () => {
 
     await waitFor(() => {
       expect(getByText('username')).toBeVisible();
-      expect(getByText('role 1, role 2')).toBeVisible();
+      expect(getByText('role 1')).toBeVisible();
     });
   });
 
