@@ -73,13 +73,18 @@ export const CaptureAnimalForm = (props: AnimalFormProps<ICaptureResponse>) => {
           capture_id: props?.formObject?.capture_id,
           critter_id: props.critter.critter_id,
           capture_location: {
-            latitude: props?.formObject?.capture_location?.latitude,
-            longitude: props?.formObject?.capture_location?.longitude,
-            coordinate_uncertainty: props?.formObject?.capture_location?.coordinate_uncertainty,
+            location_id: props?.formObject?.capture_location.location_id,
+            //projection_mode: projectionMode,
+            latitude: props?.formObject?.capture_location?.latitude ?? ('' as unknown as number),
+            longitude: props?.formObject?.capture_location?.longitude ?? ('' as unknown as number),
+            coordinate_uncertainty:
+              props?.formObject?.capture_location?.coordinate_uncertainty ?? ('' as unknown as number),
             coordinate_uncertainty_unit: props?.formObject?.capture_location?.coordinate_uncertainty_unit ?? 'm'
           },
           release_location: props?.formObject?.release_location
             ? {
+                location_id: props?.formObject?.release_location.location_id,
+                //projection_mode: projectionMode,
                 latitude: props?.formObject?.release_location?.latitude,
                 longitude: props?.formObject?.release_location?.longitude,
                 coordinate_uncertainty: props?.formObject?.release_location?.coordinate_uncertainty,
@@ -111,7 +116,6 @@ type CaptureFormProps = Pick<AnimalFormProps<ICaptureResponse>, 'formMode'> & {
 
 const CaptureFormFields = (props: CaptureFormProps) => {
   const { values, setValues } = useFormikContext<ICreateCritterCapture>();
-  console.log(values);
 
   const [showRelease, setShowRelease] = useState(false);
 

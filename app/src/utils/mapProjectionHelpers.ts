@@ -2,7 +2,7 @@ import { LatLng } from 'leaflet';
 import proj4 from 'proj4';
 
 export enum PROJECTION_MODE {
-  WGS = 'wgs',
+  WGS = 'WGS',
   UTM = 'UTM'
 }
 

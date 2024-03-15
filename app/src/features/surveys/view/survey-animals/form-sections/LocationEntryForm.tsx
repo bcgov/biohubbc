@@ -81,7 +81,7 @@ const FormLocationPreview = <T,>({ projection = PROJECTION_MODE.WGS, locations }
         <Typography component="legend">Location Preview</Typography>
         <ToggleButtonGroup value={markerToggle} onChange={(_event, value) => setMarkerToggle(value)} exclusive>
           {locations.map((location, idx) => (
-            <ToggleButton size="small" color="primary" value={idx}>
+            <ToggleButton key={`${location.title}-toggle`} size="small" color="primary" value={idx}>
               {`Set ${location.title} Location`}
             </ToggleButton>
           ))}

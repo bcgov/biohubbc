@@ -88,7 +88,7 @@ const dateSchema = yup
  *
  */
 
-export const LocationSchema = yup.object({}).shape({
+export const LocationSchema = yup.object().shape({
   /**
    * This is useful for when you need to have different validation for the projection mode.
    * example: easting/northing or lat/lng fields have different min max values.
@@ -126,7 +126,7 @@ export const CreateCritterCaptureSchema = yup.object({
   capture_id: yup.string().optional(),
   critter_id: yup.string().required(req),
   capture_location: LocationSchema.required(),
-  release_location: LocationSchema.optional(),
+  release_location: LocationSchema.optional().default(undefined),
   capture_comment: yup.string().optional(),
   capture_timestamp: dateSchema.required(req),
   release_timestamp: dateSchema.optional(),

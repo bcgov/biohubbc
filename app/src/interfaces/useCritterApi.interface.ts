@@ -7,6 +7,7 @@ export type ICollectionUnitResponse = {
 };
 
 type ILocationResponse = {
+  location_id: string;
   latitude: number;
   longitude: number;
   coordinate_uncertainty: number | null;
@@ -20,14 +21,12 @@ type ILocationResponse = {
 
 export type ICaptureResponse = {
   capture_id: string;
-  // capture_location_id: string | null; // Deprecated -> Now included in capture_location
-  // release_location_id: string | null; // Deprecated -> Now included in release_location
   capture_timestamp: string;
   release_timestamp: string | null;
   capture_comment: string | null;
   release_comment: string | null;
-  capture_location: ILocationResponse | null;
-  release_location: ILocationResponse | null;
+  capture_location: ILocationResponse;
+  release_location: ILocationResponse | null | undefined;
 };
 
 export type IMarkingResponse = {
