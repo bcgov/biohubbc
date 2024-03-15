@@ -68,7 +68,8 @@ const ObservationComponent = () => {
     survey_sample_site_id: method.survey_sample_site_id,
     sample_method_name:
       getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_lookup_id) ?? '',
-    response_metric: getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_response_metric_id) ?? ''
+    response_metric:
+      getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_response_metric_id) ?? ''
   }));
 
   // Collect sample periods

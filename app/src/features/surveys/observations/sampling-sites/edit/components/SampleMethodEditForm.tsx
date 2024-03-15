@@ -28,8 +28,8 @@ import { useFormikContext } from 'formik';
 import { useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { getCodesName } from 'utils/Utils';
-import { IEditSamplingSiteRequest } from './SampleSiteEditForm';
 import SamplingSiteMethodResponseMetricChip from '../../components/SamplingSiteMethodResponseMetricChip';
+import { IEditSamplingSiteRequest } from './SampleSiteEditForm';
 
 export interface SampleMethodEditFormProps {
   name: string;

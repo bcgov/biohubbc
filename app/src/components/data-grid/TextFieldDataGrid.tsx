@@ -25,7 +25,6 @@ const TextFieldDataGrid = <DataGridType extends GridValidRowModel>({
       value={dataGridProps.value ?? ''}
       variant="outlined"
       type="text"
-     
       {...textFieldProps}
     />
   );

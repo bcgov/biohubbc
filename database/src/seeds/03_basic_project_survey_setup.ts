@@ -96,7 +96,7 @@ export async function seed(knex: Knex): Promise<void> {
 
         const response3 = await knex.raw(insertSurveyObservationData(surveyId, 20));
         await knex.raw(insertObservationSubCount(response3.rows[0].survey_observation_id));
-        
+
         for (let k = 0; k < NUM_SEED_OBSERVATIONS_PER_SURVEY; k++) {
           const createObservationResponse = await knex.raw(
             // set the number of observations to minimum 20 times the number of subcounts (which are set to a number

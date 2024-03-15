@@ -46,7 +46,6 @@ export const IAllCodeSets = z.object({
   sample_methods: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape),
   survey_progress: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape),
   method_response_metrics: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape)
-
 });
 
 export type IAllCodeSets = z.infer<typeof IAllCodeSets>;
