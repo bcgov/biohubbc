@@ -44,18 +44,6 @@ const SamplingSiteMethodsPeriodsList = (props: ISamplingSiteMethodsPeriodsListPr
                 mt: 1.5
               }
             }}>
-            <Typography
-              variant="subtitle2"
-              color="textSecondary"
-              sx={{
-                fontSize: '12px',
-                fontWeight: 700,
-                letterSpacing: '0.02rem',
-                textTransform: 'uppercase',
-                mb: 1
-              }}>
-              Methods
-            </Typography>
             <Box
               style={{
                 display: 'flex',

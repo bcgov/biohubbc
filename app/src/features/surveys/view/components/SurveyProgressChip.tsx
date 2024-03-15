@@ -1,5 +1,5 @@
-import { Chip, ChipProps } from '@mui/material';
-import { grey } from '@mui/material/colors';
+import { Chip, ChipProps, Color } from '@mui/material';
+import { blue, green, grey, purple } from '@mui/material/colors';
 import { CodesContext } from 'contexts/codesContext';
 import { useContext } from 'react';
 
@@ -13,10 +13,10 @@ const SurveyProgressChip = (props: ISurveyProgressChipProps) => {
 
   const codeName = codes?.survey_progress.find((code) => code.id === props.progress_id)?.name;
 
-  const colorLookup: Record<string, string> = {
-    Planning: '#84aac4',
-    'In progress': '#e3a82b',
-    Completed: '#91bf9b'
+  const colorLookup: Record<string, Color> = {
+    Planning: blue,
+    'In progress': purple,
+    Completed: green
   };
 
   // Providing a default color in case codeName is undefined
@@ -25,15 +25,18 @@ const SurveyProgressChip = (props: ISurveyProgressChipProps) => {
   return (
     <Chip
       title="Survey status"
-      label={<>{codeName}</>}
+      size="small"
+      label={codeName}
       sx={{
-        backgroundColor: color,
-        ml: '5px',
+        opacity: 0.8,
+        backgroundColor: color[50],
+        borderRadius: '5px',
+        mx: '10px',
+        minWidth: 0,
         '& .MuiChip-label': {
-          mt: '1px',
-          letterSpacing: '0.03rem',
-          color: '#fff',
-          fontWeight: 700
+          color: color[700],
+          fontWeight: 700,
+          fontSize: '0.75rem'
         }
       }}
       {...props}

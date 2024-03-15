@@ -1,5 +1,5 @@
 import { Chip } from '@mui/material';
-import { grey } from '@mui/material/colors';
+import { purple } from '@mui/material/colors';
 import { CodesContext } from 'contexts/codesContext';
 import { useContext, useEffect } from 'react';
 import { getCodesName } from 'utils/Utils';
@@ -25,13 +25,16 @@ const SamplingSiteMethodResponseMetricChip = (props: ISamplingSiteMethodResponse
       )}
       title="Response metric"
       sx={{
-        fontSize: '0.75rem',
-        mx: 2,
-        minWidth: 0,
+        opacity: 0.8,
+        backgroundColor: purple[50],
         borderRadius: '5px',
-        color: '#fff',
-        backgroundColor: grey[500],
-        fontWeight: 700
+        mx: '10px',
+        minWidth: 0,
+        '& .MuiChip-label': {
+          color: purple[700],
+          fontWeight: 700,
+          fontSize: '0.75rem'
+        }
       }}
     />
   );
