@@ -3,6 +3,10 @@ apiVersion: v1
 metadata:
   name: sims-pipeline-config
   namespace: af2668-tools
+  annotations:
+    description: |
+      This config map is required by the sims pipeline. It provides all of the configuration settings and environment 
+      variables required by the pipeline.
 immutable: false
 data:
   config: |
