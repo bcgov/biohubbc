@@ -88,14 +88,15 @@ export async function seed(knex: Knex): Promise<void> {
           ${insertSurveySamplePeriodData(surveyId)}
         `);
 
-        const response1 = await knex.raw(insertSurveyObservationData(surveyId, 2));
-        await knex.raw(insertObservationSubCount(response1.rows[0].survey_observation_id, 1));
+        const response1 = await knex.raw(insertSurveyObservationData(surveyId, 20));
+        await knex.raw(insertObservationSubCount(response1.rows[0].survey_observation_id));
 
-        const response2 = await knex.raw(insertSurveyObservationData(surveyId, 5));
-        await knex.raw(insertObservationSubCount(response2.rows[0].survey_observation_id, 2));
+        const response2 = await knex.raw(insertSurveyObservationData(surveyId, 20));
+        await knex.raw(insertObservationSubCount(response2.rows[0].survey_observation_id));
 
-        const response3 = await knex.raw(insertSurveyObservationData(surveyId, 10));
-        await knex.raw(insertObservationSubCount(response3.rows[0].survey_observation_id, 3));
+        const response3 = await knex.raw(insertSurveyObservationData(surveyId, 20));
+        await knex.raw(insertObservationSubCount(response3.rows[0].survey_observation_id));
+        
         for (let k = 0; k < NUM_SEED_OBSERVATIONS_PER_SURVEY; k++) {
           const createObservationResponse = await knex.raw(
             // set the number of observations to minimum 20 times the number of subcounts (which are set to a number
@@ -107,9 +108,7 @@ export async function seed(knex: Knex): Promise<void> {
             )
           );
           for (let l = 0; l < NUM_SEED_SUBCOUNTS_PER_OBSERVATION; l++) {
-            await knex.raw(
-              insertObservationSubCount(surveyId, createObservationResponse.rows[0].survey_observation_id)
-            );
+            await knex.raw(insertObservationSubCount(createObservationResponse.rows[0].survey_observation_id));
           }
         }
       }
@@ -609,7 +608,7 @@ const insertSurveySamplePeriodData = (surveyId: number) =>
   );
 `;
 
-const insertObservationSubCount = (surveyObservationId: number, signId: number) => `
+const insertObservationSubCount = (surveyObservationId: number) => `
   INSERT INTO observation_subcount 
   (
     survey_observation_id,
@@ -620,7 +619,7 @@ const insertObservationSubCount = (surveyObservationId: number, signId: number) 
   (
     ${surveyObservationId},
     $$${faker.number.int({ min: 1, max: 20 })}$$,
-    ${signId}
+    $$${faker.number.int({ min: 1, max: 3 })}$$
   );
 `;
 

@@ -42,9 +42,20 @@ const SamplingSiteMethodsPeriodsList = (props: ISamplingSiteMethodsPeriodsListPr
               p: 0,
               '& + li': {
                 mt: 1.5
-              },
-              justifyContent: 'flex-start'
+              }
             }}>
+            <Typography
+              variant="subtitle2"
+              color="textSecondary"
+              sx={{
+                fontSize: '12px',
+                fontWeight: 700,
+                letterSpacing: '0.02rem',
+                textTransform: 'uppercase',
+                mb: 1
+              }}>
+              Methods
+            </Typography>
             <Box
               style={{
                 display: 'flex',
@@ -65,7 +76,9 @@ const SamplingSiteMethodsPeriodsList = (props: ISamplingSiteMethodsPeriodsListPr
                   sampleMethod.method_lookup_id
                 )}
               />
-              <SamplingSiteMethodResponseMetricChip method_response_metric_id={sampleMethod.method_response_metric_id} />
+              <SamplingSiteMethodResponseMetricChip
+                method_response_metric_id={sampleMethod.method_response_metric_id}
+              />
             </Box>
             <List disablePadding>
               {sampleMethod.sample_periods?.map((samplePeriod) => {
@@ -98,6 +111,50 @@ const SamplingSiteMethodsPeriodsList = (props: ISamplingSiteMethodsPeriodsListPr
                 );
               })}
             </List>
+          </ListItem>
+        );
+      })}
+      {props.sampleSite.sample_stratums?.map((sampleStratum) => {
+        return (
+          <ListItem
+            disableGutters
+            key={`${sampleStratum.survey_sample_site_id}-${sampleStratum.survey_sample_stratum_id}`}
+            sx={{
+              display: 'block',
+              p: 0,
+              '& + li': {
+                mt: 1.5
+              }
+            }}>
+            <Typography
+              variant="subtitle2"
+              color="textSecondary"
+              sx={{
+                fontSize: '12px',
+                fontWeight: 700,
+                letterSpacing: '0.02rem',
+                textTransform: 'uppercase',
+                mb: 1
+              }}>
+              Stratums
+            </Typography>
+            <Box
+              style={{
+                display: 'flex',
+                justifyContent: 'start',
+                alignItems: 'center',
+                backgroundColor: grey[100],
+                borderRadius: '5px'
+              }}>
+              <ListItemText
+                sx={{
+                  px: 2,
+                  py: 1
+                }}
+                title="Sampling Stratum"
+                primary={sampleStratum.name}
+              />
+            </Box>
           </ListItem>
         );
       })}
