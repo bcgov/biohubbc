@@ -1,8 +1,8 @@
 import { LoadingButton } from '@mui/lab';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import { Container } from '@mui/system';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -54,78 +54,57 @@ const SampleSiteEditForm = (props: ISampleSiteEditFormProps) => {
   const { submitForm } = useFormikContext<IEditSamplingSiteRequest>();
 
   return (
-    <>
-      <Container maxWidth="xl">
-        <Box py={3}>
-          <Paper
-            elevation={0}
-            sx={{
-              p: 5,
-              '& hr': {
-                height: '1px',
-                mt: 5,
-                mb: 5
-              }
-            }}>
-            <HorizontalSplitFormComponent
-              title="General Information"
-              summary="Specify the name and description for this sampling site"
-              component={<SampleSiteGeneralInformationForm />}></HorizontalSplitFormComponent>
+    <Container maxWidth="xl" sx={{ py: 3 }}>
+      <Paper sx={{ p: 5 }}>
+        <Stack gap={5}>
+          <HorizontalSplitFormComponent
+            title="General Information"
+            summary="Specify the name and description for this sampling site"
+            component={<SampleSiteGeneralInformationForm />}></HorizontalSplitFormComponent>
 
-            <Divider />
+          <Divider />
 
-            <HorizontalSplitFormComponent
-              title="Site Location"
-              summary="Import or draw sampling site locations used for this survey."
-              component={<SurveySamplingSiteEditForm />}></HorizontalSplitFormComponent>
+          <HorizontalSplitFormComponent
+            title="Site Location"
+            summary="Import or draw sampling site locations used for this survey."
+            component={<SurveySamplingSiteEditForm />}></HorizontalSplitFormComponent>
 
-            <Divider />
+          <Divider />
 
-            <HorizontalSplitFormComponent
-              title="Sampling Methods"
-              summary="Specify sampling methods that were used to collect data."
-              component={<SampleMethodEditForm name={'sampleSite.methods'} />}></HorizontalSplitFormComponent>
+          <HorizontalSplitFormComponent
+            title="Sampling Methods"
+            summary="Specify sampling methods that were used to collect data."
+            component={<SampleMethodEditForm name={'sampleSite.methods'} />}></HorizontalSplitFormComponent>
 
-            <Divider />
+          <Divider />
 
-            <HorizontalSplitFormComponent
-              title="Site Groups"
-              summary="Enter the stratum or group to which this site belongs."
-              component={<SamplingSiteGroupingsForm />}></HorizontalSplitFormComponent>
+          <HorizontalSplitFormComponent
+            title="Site Groups"
+            summary="Enter the stratum or group to which this site belongs."
+            component={<SamplingSiteGroupingsForm />}></HorizontalSplitFormComponent>
 
-            <Divider />
+          <Divider />
 
-            <Box display="flex" justifyContent="flex-end">
-              <Box
-                sx={{
-                  '& [class^="MuiButton"]': {
-                    minWidth: '6rem'
-                  }
-                }}>
-                <LoadingButton
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  loading={props.isSubmitting}
-                  onClick={() => submitForm()}>
-                  Save and Exit
-                </LoadingButton>
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  component={RouterLink}
-                  to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`}
-                  sx={{
-                    ml: 1
-                  }}>
-                  Cancel
-                </Button>
-              </Box>
-            </Box>
-          </Paper>
-        </Box>
-      </Container>
-    </>
+          <Stack flexDirection="row" alignItems="center" justifyContent="flex-end" gap={1}>
+            <LoadingButton
+              type="submit"
+              variant="contained"
+              color="primary"
+              loading={props.isSubmitting}
+              onClick={() => submitForm()}>
+              Save and Exit
+            </LoadingButton>
+            <Button
+              variant="outlined"
+              color="primary"
+              component={RouterLink}
+              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`}>
+              Cancel
+            </Button>
+          </Stack>
+        </Stack>
+      </Paper>
+    </Container>
   );
 };
 

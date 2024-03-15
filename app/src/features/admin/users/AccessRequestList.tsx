@@ -206,7 +206,7 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
           )
         }}
       />
-      <Paper elevation={0}>
+      <Paper>
         <Toolbar>
           <Typography variant="h4" component="h2">
             Access Requests{' '}

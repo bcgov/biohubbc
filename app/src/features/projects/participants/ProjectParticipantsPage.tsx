@@ -134,73 +134,69 @@ const ProjectParticipantsPage: React.FC = () => {
     <>
       <ProjectParticipantsHeader refresh={projectParticipantsDataLoader.refresh} />
 
-      <Container maxWidth="xl">
-        <Box my={3}>
-          <Paper>
-            <Toolbar>
-              <Typography component="h2" variant="h3" color="inherit">
-                Team Members
-              </Typography>
-            </Toolbar>
+      <Container maxWidth="xl" sx={{ py: 3 }}>
+        <Paper>
+          <Toolbar>
+            <Typography component="h2" variant="h3" color="inherit">
+              Team Members
+            </Typography>
+          </Toolbar>
 
-            <Divider></Divider>
+          <Divider></Divider>
 
-            <Box px={1}>
-              <Table sx={{ tableLayout: 'fixed' }}>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Username</TableCell>
-                    <TableCell>Type</TableCell>
-                    <TableCell>Project Role</TableCell>
-                    <TableCell width={80} align="right"></TableCell>
+          <Box p={2}>
+            <Table sx={{ tableLayout: 'fixed' }}>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Username</TableCell>
+                  <TableCell>Type</TableCell>
+                  <TableCell>Project Role</TableCell>
+                  <TableCell width={80} align="right"></TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {alphabetizeObjects(projectParticipantsDataLoader?.data ?? [], 'user_identifier').map((participant) => (
+                  <TableRow key={participant.project_participation_id}>
+                    <TableCell scope="row">{participant.user_identifier}</TableCell>
+                    <TableCell scope="row">
+                      {getFormattedIdentitySource(participant.identity_source as SYSTEM_IDENTITY_SOURCE)}
+                    </TableCell>
+                    <TableCell>
+                      <Box my={-1}>
+                        <ProjectParticipantsRoleMenu
+                          participant={participant}
+                          projectRoleCodes={codes.project_roles}
+                          refresh={projectParticipantsDataLoader.refresh}
+                        />
+                      </Box>
+                    </TableCell>
+
+                    <TableCell align="right">
+                      <Box my={-1}>
+                        <IconButton
+                          title="Remove Team Member"
+                          data-testid={'remove-project-participant-button'}
+                          onClick={() => handleDialogRemoveParticipantOpen(participant)}>
+                          <Icon path={mdiTrashCanOutline} size={1} />
+                        </IconButton>
+                      </Box>
+                    </TableCell>
                   </TableRow>
-                </TableHead>
-                <TableBody>
-                  {alphabetizeObjects(projectParticipantsDataLoader?.data ?? [], 'user_identifier').map(
-                    (participant) => (
-                      <TableRow key={participant.project_participation_id}>
-                        <TableCell scope="row">{participant.user_identifier}</TableCell>
-                        <TableCell scope="row">
-                          {getFormattedIdentitySource(participant.identity_source as SYSTEM_IDENTITY_SOURCE)}
-                        </TableCell>
-                        <TableCell>
-                          <Box my={-1}>
-                            <ProjectParticipantsRoleMenu
-                              participant={participant}
-                              projectRoleCodes={codes.project_roles}
-                              refresh={projectParticipantsDataLoader.refresh}
-                            />
-                          </Box>
-                        </TableCell>
+                ))}
 
-                        <TableCell align="right">
-                          <Box my={-1}>
-                            <IconButton
-                              title="Remove Team Member"
-                              data-testid={'remove-project-participant-button'}
-                              onClick={() => handleDialogRemoveParticipantOpen(participant)}>
-                              <Icon path={mdiTrashCanOutline} size={1} />
-                            </IconButton>
-                          </Box>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  )}
-
-                  {!projectParticipantsDataLoader.data && (
-                    <TableRow>
-                      <TableCell colSpan={3}>
-                        <Box display="flex" justifyContent="center">
-                          No Team Members
-                        </Box>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </Box>
-          </Paper>
-        </Box>
+                {!projectParticipantsDataLoader.data && (
+                  <TableRow>
+                    <TableCell colSpan={3}>
+                      <Box display="flex" justifyContent="center">
+                        No Team Members
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </Box>
+        </Paper>
       </Container>
     </>
   );

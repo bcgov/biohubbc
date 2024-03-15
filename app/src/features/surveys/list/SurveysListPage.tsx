@@ -14,6 +14,7 @@ import { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
+import SurveyProgressChip from '../view/components/SurveyProgressChip';
 
 const pageSizeOptions = [10, 25, 50];
 
@@ -68,24 +69,12 @@ const SurveysListPage = () => {
       )
     },
     {
-      field: 'focal_species_names',
-      headerName: 'Focal Species',
-      flex: 1,
+      field: 'progress',
+      headerName: 'Progress',
+      flex: 0.5,
       disableColumnMenu: true,
       sortable: false,
-      renderCell: (params) => (
-        <Typography
-          component="span"
-          variant="body2"
-          sx={{
-            display: 'inline-block',
-            '&::first-letter': {
-              textTransform: 'capitalize'
-            }
-          }}>
-          {params.value.join(', ')}
-        </Typography>
-      )
+      renderCell: (params) => <SurveyProgressChip progress_id={params.row.progress_id} />
     }
   ];
 

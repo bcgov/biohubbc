@@ -59,14 +59,14 @@ const ProjectDetails = () => {
   return (
     <Box>
       <Toolbar>
-        <Typography variant="h4" component="h3">
+        <Typography variant="h4" component="h2">
           Project Details
         </Typography>
       </Toolbar>
       <Divider></Divider>
       <Box p={3} className={classes.projectMetadata}>
         <Box component="section">
-          <Typography component="h4" className={classes.projectMetaSectionHeader}>
+          <Typography component="h3" className={classes.projectMetaSectionHeader}>
             Project Objectives
           </Typography>
           <Divider></Divider>
@@ -74,7 +74,7 @@ const ProjectDetails = () => {
         </Box>
 
         <Box component="section">
-          <Typography component="h4" className={classes.projectMetaSectionHeader}>
+          <Typography component="h3" className={classes.projectMetaSectionHeader}>
             General Information
           </Typography>
           <Divider></Divider>
