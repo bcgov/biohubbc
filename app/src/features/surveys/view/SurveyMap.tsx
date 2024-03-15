@@ -82,6 +82,7 @@ const SurveyMap = (props: ISurveyMapProps) => {
   );
 
   const bounds: LatLngBoundsExpression | undefined = useMemo(() => {
+
     const allMapFeatures: Feature[] = [
       ...props.supplementaryLayers.flatMap((supplementaryLayer) =>
         supplementaryLayer.mapPoints.map((mapPoint) => mapPoint.feature)
