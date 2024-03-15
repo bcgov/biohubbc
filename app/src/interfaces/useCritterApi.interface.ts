@@ -97,7 +97,7 @@ export type IFamilyParentResponse = {
   parent_critter_id: string;
 };
 
-type IFamilyChildResponse = {
+export type IFamilyChildResponse = {
   family_id: string;
   family_label: string;
   child_critter_id: string;

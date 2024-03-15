@@ -18,6 +18,7 @@ import { ANIMAL_FORM_MODE, ANIMAL_SECTION } from './animal';
 import { AnimalSectionWrapper } from './AnimalSectionWrapper';
 import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
 import CollectionUnitAnimalForm from './form-sections/CollectionUnitAnimalForm';
+import { FamilyAnimalForm } from './form-sections/FamilyAnimalForm';
 import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 import { MarkingAnimalForm } from './form-sections/MarkingAnimalForm';
 import MeasurementAnimalForm from './form-sections/MeasurementAnimalForm';
@@ -294,7 +295,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
   if (props.section === ANIMAL_SECTION.FAMILY) {
     return (
       <AnimalSectionWrapper
-        form={<div>placeholder</div>}
+        form={<FamilyAnimalForm {...SECTION_FORM_PROPS} />}
         infoText={SurveyAnimalsI18N.animalFamilyHelp}
         addBtn={<AddButton label={SurveyAnimalsI18N.animalFamilyAddBtn} />}
         section={props.section}

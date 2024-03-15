@@ -198,7 +198,7 @@ export const AnimalMortalitySchema = yup.object({
   projection_mode: yup.mixed().oneOf(['wgs', 'utm'])
 });
 
-export const AnimalRelationshipSchema = yup.object({}).shape({
+export const CreateCritterFamilySchema = yup.object({
   family_id: yup.string().required(req),
   relationship: yup.mixed().oneOf(['parent', 'child', 'sibling']).required(req)
 });
@@ -212,3 +212,4 @@ export type ICreateCritterMarking = InferType<typeof CreateCritterMarkingSchema>
 export type ICreateCritterMeasurement = InferType<typeof CreateCritterMeasurementSchema>;
 export type ICreateCritterCollectionUnit = InferType<typeof CreateCritterCollectionUnitSchema>;
 export type ICreateCritterCapture = InferType<typeof CreateCritterCaptureSchema>;
+export type ICreateCritterFamily = InferType<typeof CreateCritterFamilySchema>;
