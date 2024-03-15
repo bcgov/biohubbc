@@ -104,8 +104,7 @@ _Note: Run all commands in a terminal that supports make. On Mac you can use the
 
 ## Initialize the `./env` file.
 
-This will copy `./env_config/env.docker` to `./.env`.  
-This should only need to be run once.  
+This will copy `./env_config/env.docker` to `./.env`. .  
 The `.env` file may need additional editing to provide secrets for external services (like S3).  
 The `.env` file should never be committed!
 
@@ -115,6 +114,28 @@ make env
 
 Result of running `make env` for the first time:  
 ![make env screenshot](README/images/make/running_make_env.png "Running `make env`")
+
+### Modifying Environment Variables
+
+There are several places where environment variables need to be defined, depending on whether you are running the apps
+locally or in Openshift.
+
+Below are all of the relevant files that need to be updated when modifying environment variables.
+
+#### Local Development
+
+- `env.docker`
+- `docker-compose.yml`
+- `app/src/contexts/configContext.tsx`
+
+#### Deployed to OpenShift
+
+- `[api/app/database]/.pipeline/**`
+- `.pipeline/configMaps/sims.configmap.yaml`
+  - Changes to the configmap also need to be reflected in OpenShift. See [.pipeline/configMaps/README.md](.pipeline/configMaps/README.md)
+- `server/index.js`
+- `app/src/contexts/configContext.tsx`
+- OpenShift Secrets (tools, dev, test, prod)
 
 ## Start all Applications
 
@@ -303,20 +324,7 @@ If you already had PSQL installed, it is likely that the default port `5432` is 
 
 ## The App Works Locally But Not In OpenShift
 
-Ensure that any new environment variables have been included in all of the necessary files.
-
-Local Development
-
-- `env.docker`
-- `docker-compose.yml`
-- `app/src/contexts/configContext.tsx`
-
-Deployed to OpenShift
-
-- `[api/app/database]/.pipeline/**`
-- `server/index.js`
-- `app/src/contexts/configContext.tsx`
-- OpenShift Secrets [dev,test,prod]
+See the section on [Modifying Environment Variables](#modifying-environment-variables)
 
 # Helpful Tools
 
