@@ -13,7 +13,6 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
@@ -27,28 +26,6 @@ import { useBiohubApi } from '../../../hooks/useBioHubApi';
 import { CodeSet, IGetAllCodeSetsResponse } from '../../../interfaces/useCodesApi.interface';
 import { IGetUserProjectsListResponse } from '../../../interfaces/useProjectApi.interface';
 import { ISystemUser } from '../../../interfaces/useUserApi.interface';
-
-const useStyles = makeStyles(() => ({
-  actionButton: {
-    minWidth: '6rem',
-    '& + button': {
-      marginLeft: '0.5rem'
-    }
-  },
-  projectMembersTable: {
-    tableLayout: 'fixed',
-    '& td': {
-      verticalAlign: 'middle'
-    }
-  },
-  toolbarCount: {
-    fontWeight: 400
-  },
-  linkButton: {
-    textAlign: 'left',
-    fontWeight: 700
-  }
-}));
 
 export interface IProjectDetailsProps {
   userDetails: ISystemUser;
@@ -64,7 +41,6 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
   const urlParams = useParams();
   const biohubApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
-  const classes = useStyles();
 
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
   const [isLoadingCodes, setIsLoadingCodes] = useState(true);
@@ -177,18 +153,18 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
   }
 
   return (
-    <Paper elevation={0}>
+    <Paper>
       <Toolbar>
         <Typography data-testid="projects_header" variant="h4" component="h2">
           Assigned Projects &zwnj;
-          <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">
+          <Typography component="span" variant="inherit" color="textSecondary">
             ({assignedProjects?.length})
           </Typography>
         </Typography>
       </Toolbar>
       <Divider></Divider>
       <Box p={2}>
-        <Table className={classes.projectMembersTable}>
+        <Table sx={{ tableLayout: 'fixed' }}>
           <TableHead>
             <TableRow>
               <TableCell>Project Name</TableCell>

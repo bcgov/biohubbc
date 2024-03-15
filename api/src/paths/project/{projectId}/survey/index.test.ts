@@ -47,6 +47,7 @@ describe('survey list', () => {
       survey_id: 1001,
       name: 'Survey 1',
       start_date: '2023-01-01',
+      progress_id: 1,
       end_date: null,
       focal_species: [1],
       focal_species_names: ['Species 1']
@@ -55,6 +56,7 @@ describe('survey list', () => {
     const mockSurveyB = {
       survey_id: 1002,
       name: 'Survey 2',
+      progress_id: 2,
       start_date: '2023-04-04',
       end_date: '2024-05-05',
       focal_species: [1, 2],

@@ -71,7 +71,7 @@ POST.apiDoc = {
           properties: {
             survey_details: {
               type: 'object',
-              required: ['survey_name', 'start_date'],
+              required: ['survey_name', 'start_date', 'progress_id'],
               properties: {
                 survey_name: {
                   type: 'string'
@@ -84,6 +84,9 @@ POST.apiDoc = {
                   type: 'string',
                   description: 'ISO 8601 date string',
                   nullable: true
+                },
+                progress_id: {
+                  type: 'integer'
                 },
                 survey_types: {
                   type: 'array',

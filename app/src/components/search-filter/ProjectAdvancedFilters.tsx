@@ -93,10 +93,10 @@ const ProjectAdvancedFilters = () => {
         <Grid item xs={12}>
           <CustomTextField name="keyword" label="Keyword (or any portion of any word)" />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={4}>
           <CustomTextField name="project_name" label="Project Name" />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={4}>
           <MultiAutocompleteFieldVariableSize
             id="itis_tsns"
             label="Species"
