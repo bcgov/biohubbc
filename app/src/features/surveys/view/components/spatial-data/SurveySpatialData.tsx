@@ -132,6 +132,7 @@ const SurveySpatialData = () => {
    */
   const observationPoints: ISurveyMapPoint[] = useMemo(() => {
     return (observationsGeometryDataLoader.data?.surveyObservationsGeometry ?? []).map((observation) => {
+
       const point: ISurveyMapPoint = {
         feature: {
           type: 'Feature',
