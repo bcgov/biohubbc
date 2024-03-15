@@ -18,6 +18,7 @@ import { getCodesName } from 'utils/Utils';
 import { IAnimalDeployment } from '../../survey-animals/telemetry-device/device';
 import SurveyMap, { ISurveyMapPoint, ISurveyMapPointMetadata, ISurveyMapSupplementaryLayer } from '../../SurveyMap';
 import SurveyMapPopup from '../../SurveyMapPopup';
+import SurveySpatialMapLegend from './SurveySpatialMapLegend';
 import SurveySpatialObservationDataTable from './SurveySpatialObservationDataTable';
 import SurveySpatialTelemetryDataTable from './SurveySpatialTelemetryDataTable';
 import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './SurveySpatialToolbar';
@@ -48,7 +49,7 @@ const SurveySpatialData = () => {
 
   const OBSERVATIONS_COLOUR = '#234075';
   const STUDY_AREA_COLOUR = '#e3a82b';
-  const SAMPLING_SITE_COLOUR = '#4881c2';
+  const SAMPLING_SITE_COLOUR = '#17bbd1';
   const TELEMETRY_COLOUR = '#234075';
   const DEFAULT_COLOUR = '#a7bfd1';
 
@@ -357,6 +358,10 @@ const SurveySpatialData = () => {
       <Box height={{ sm: 300, md: 500 }} position="relative">
         <SurveyMap staticLayers={staticLayers} supplementaryLayers={supplementaryLayers} isLoading={isLoading} />
       </Box>
+      <Box pt={2} px={2}>
+        <SurveySpatialMapLegend activeView={activeView} layers={staticLayers} />
+      </Box>
+
       <Box p={2} position="relative">
         {activeView === SurveySpatialDatasetViewEnum.OBSERVATIONS && (
           <SurveySpatialObservationDataTable isLoading={isLoading} />

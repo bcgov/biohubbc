@@ -8,12 +8,13 @@ import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
 import { SurveyBasicFieldsObject } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
-import { firstOrNull } from 'utils/Utils';
+import { firstOrNull, getCodesName } from 'utils/Utils';
 import SurveyProgressChip from '../view/components/SurveyProgressChip';
 
 const pageSizeOptions = [10, 25, 50];
@@ -24,7 +25,9 @@ const pageSizeOptions = [10, 25, 50];
  * @return {*}
  */
 const SurveysListPage = () => {
+  const codesContext = useContext(CodesContext);
   const projectContext = useContext(ProjectContext);
+
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
     pageSize: pageSizeOptions[0]
@@ -67,8 +70,9 @@ const SurveysListPage = () => {
             to={`/admin/projects/${projectContext.projectId}/surveys/${params.row.survey_id}`}
             children={params.row.name}
           />
-            <SurveyProgressChip progress_id={params.row.progress_id} />
-       
+          {['Completed', 'In progress'].includes(
+            getCodesName(codesContext.codesDataLoader.data, 'survey_progress', params.row.progress_id || 0) ?? ''
+          ) && <SurveyProgressChip progress_id={params.row.progress_id} />}
         </>
       )
     }

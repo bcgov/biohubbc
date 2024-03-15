@@ -12,14 +12,14 @@ const SurveySpatialMapLegend = (props: ISurveySpatialMapLegendProps) => {
   return (
     <Stack direction="row" spacing={1}>
       {props?.layers.map(
-        (item) =>
+        (item, index) =>
           item.layerColors && (
-            <Box display="flex" alignItems="center">
+            <Box key={`${item.layerName}-${index}`} display="flex" alignItems="center">
               <Box
                 border={item.layerColors.color}
-                borderRadius="10%"
-                height="1rem"
-                width="1rem"
+                borderRadius="50%"
+                height="0.8rem"
+                width="0.8rem"
                 bgcolor={item.layerColors.fillColor}
                 m={1}
               />
