@@ -1,6 +1,6 @@
 [![img](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bcgov_biohubbc&metric=alert_status)](https://sonarcloud.io/dashboard?id=bcgov_biohubbc) [![codecov](https://codecov.io/gh/bcgov/biohubbc/branch/dev/graph/badge.svg?token=CF2ZR3T3U2)](https://codecov.io/gh/bcgov/biohubbc) [![BioHubBC](https://img.shields.io/endpoint?url=https://dashboard.cypress.io/badge/simple/w8oxci/dev&style=flat&logo=cypress)](https://dashboard.cypress.io/projects/w8oxci/runs)
 
-# BioDiversityHub BC - updated
+# Species Inventory Management System (SIMS)
 
 Sub-project under the SEISM Capital project, the source of BC’s species inventory data.
 
@@ -15,7 +15,7 @@ The objectives for the SIMS project are:
 
 ## Install Node/NPM
 
-- Requires Node version 12+
+- Requires Node version 14
 - https://nodejs.org/en/download/
 
 ## Install Git
@@ -106,7 +106,8 @@ _Note: Run all commands in a terminal that supports make. On Mac you can use the
 
 This will copy `./env_config/env.docker` to `./.env`.  
 This should only need to be run once.  
-This file may need additional editing to provide secrets for external services (like S3).
+The `.env` file may need additional editing to provide secrets for external services (like S3).  
+The `.env` file should never be committed!
 
 ```
 make env
@@ -166,7 +167,7 @@ After you've run `make clean`, running `make web` will launch new containers, wi
 make clean
 ```
 
-## View the logs for a container
+## Viewing the logs for a container
 
 ### API
 
@@ -192,24 +193,30 @@ make log-db
 make log-db-setup
 ```
 
-## Run Linter and Fix Issues
+## Linting and Formatting
+
+### Run Linter and Fix Issues
 
 Will run the projects code linter and attempt to fix all issues found.
-
-_Note: Not all formatting issues can be auto-fixed._
 
 ```
 make lint-fix
 ```
 
-## Run Formatter and Fix Issues
+### Run Formatter and Fix Issues
 
 Will run the projects code formatter and attempt to fix all issues found.
 
-_Note: Not all formatting issues can be auto-fixed._
-
 ```
 make format-fix
+```
+
+### Run Both Linter and Formatter and Fix Issues
+
+Will run both the projects code linter and code formatter and attempt to fix all issues found.
+
+```
+make fix
 ```
 
 ## Shell Into a Docker Container (database, api, app, etc)
