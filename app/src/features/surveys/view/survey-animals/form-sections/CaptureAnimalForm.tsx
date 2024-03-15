@@ -8,7 +8,6 @@ import { Field, useFormikContext } from 'formik';
 import { useDialogContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { ICaptureResponse } from 'interfaces/useCritterApi.interface';
-import { get } from 'lodash-es';
 import React, { useState } from 'react';
 import { getLatLngAsUtm, getUtmAsLatLng, PROJECTION_MODE } from 'utils/mapProjectionHelpers';
 import {
@@ -25,21 +24,35 @@ export const CaptureAnimalForm = (props: AnimalFormProps<ICaptureResponse>) => {
   const dialog = useDialogContext();
 
   const [loading, setLoading] = useState(false);
+  const [projectionMode, setProjectionMode] = useState(PROJECTION_MODE.WGS);
 
   const handleSave = async (values: ICreateCritterCapture) => {
     setLoading(true);
-    console.log(cbApi);
     try {
+      if (projectionMode === PROJECTION_MODE.UTM) {
+        if (values.release_location) {
+          const [latitude, longitude] = getUtmAsLatLng(
+            values.release_location.latitude,
+            values.release_location.longitude
+          );
+          values = { ...values, release_location: { ...values.release_location, latitude, longitude } };
+        }
+        const [latitude, longitude] = getUtmAsLatLng(
+          values.capture_location.latitude,
+          values.capture_location.longitude
+        );
+        values = { ...values, capture_location: { ...values.capture_location, latitude, longitude } };
+      }
       if (props.formMode === ANIMAL_FORM_MODE.ADD) {
-        //await cbApi.marking.createMarking(values);
-        dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created marking.` });
+        await cbApi.capture.createCapture(values);
+        dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created capture.` });
       }
       if (props.formMode === ANIMAL_FORM_MODE.EDIT) {
-        //await cbApi.marking.updateMarking(values);
-        dialog.setSnackbar({ open: true, snackbarMessage: `Successfully edited marking.` });
+        await cbApi.capture.updateCapture(values);
+        dialog.setSnackbar({ open: true, snackbarMessage: `Successfully edited capture.` });
       }
     } catch (err) {
-      dialog.setSnackbar({ open: true, snackbarMessage: `Critter marking request failed.` });
+      dialog.setSnackbar({ open: true, snackbarMessage: `Critter capture request failed.` });
     } finally {
       props.handleClose();
       setLoading(false);
@@ -59,30 +72,79 @@ export const CaptureAnimalForm = (props: AnimalFormProps<ICaptureResponse>) => {
         initialValues: {
           capture_id: props?.formObject?.capture_id,
           critter_id: props.critter.critter_id,
-          capture_location: props?.formObject?.capture_location,
-          release_location: props?.formObject?.release_location,
+          capture_location: {
+            latitude: props?.formObject?.capture_location?.latitude,
+            longitude: props?.formObject?.capture_location?.longitude,
+            coordinate_uncertainty: props?.formObject?.capture_location?.coordinate_uncertainty,
+            coordinate_uncertainty_unit: props?.formObject?.capture_location?.coordinate_uncertainty_unit ?? 'm'
+          },
+          release_location: props?.formObject?.release_location
+            ? {
+                latitude: props?.formObject?.release_location?.latitude,
+                longitude: props?.formObject?.release_location?.longitude,
+                coordinate_uncertainty: props?.formObject?.release_location?.coordinate_uncertainty,
+                coordinate_uncertainty_unit: props?.formObject?.release_location?.coordinate_uncertainty_unit ?? 'm'
+              }
+            : undefined,
           capture_timestamp: props?.formObject?.capture_timestamp as unknown as Date,
-          release_timestamp: props?.formObject?.release_timestamp as unknown as Date,
+          release_timestamp: (props?.formObject?.release_timestamp as unknown as Date) ?? undefined,
           capture_comment: props?.formObject?.capture_comment ?? undefined,
           release_comment: props?.formObject?.release_comment ?? undefined
         },
         validationSchema: CreateCritterCaptureSchema,
-        element: <CaptureForm formMode={props.formMode} />
+        element: (
+          <CaptureFormFields
+            formMode={props.formMode}
+            projectionMode={projectionMode}
+            handleProjection={setProjectionMode}
+          />
+        )
       }}
     />
   );
 };
 
-const CaptureForm = (props: Pick<AnimalFormProps<ICaptureResponse>, 'formMode'>) => {
+type CaptureFormProps = Pick<AnimalFormProps<ICaptureResponse>, 'formMode'> & {
+  projectionMode: PROJECTION_MODE;
+  handleProjection: (projection: PROJECTION_MODE) => void;
+};
+
+const CaptureFormFields = (props: CaptureFormProps) => {
   const { values, setValues } = useFormikContext<ICreateCritterCapture>();
+  console.log(values);
 
   const [showRelease, setShowRelease] = useState(false);
-  const projection = get(values, 'capture_location.projection_mode');
-  const isUtmProjection = get(values, 'capture_location.projection_mode') === PROJECTION_MODE.UTM;
+
+  const isUtmProjection = props.projectionMode === PROJECTION_MODE.UTM;
+
+  const disableUtmToggle =
+    !values.capture_location.latitude ||
+    !values.capture_location.longitude ||
+    (showRelease && !values?.release_location?.latitude) ||
+    !values?.release_location?.longitude;
+
+  const handleToggleRelease = () => {
+    /**
+     * If release is currently showing wipe existing values in release_location.
+     *
+     */
+    if (showRelease) {
+      setValues({
+        ...values,
+        release_location: undefined
+      });
+    }
+    setShowRelease(!showRelease);
+  };
 
   const handleProjectionChange = () => {
     const switchProjection = isUtmProjection ? PROJECTION_MODE.WGS : PROJECTION_MODE.UTM;
 
+    /**
+     * These projection conversions are expecting non null values for lat/lng.
+     * UI currently hides the UTM toggle when these values are not defined in the form.
+     *
+     */
     const [captureLat, captureLon] = !isUtmProjection
       ? getLatLngAsUtm(values.capture_location.latitude, values.capture_location.longitude)
       : getUtmAsLatLng(values.capture_location.latitude, values.capture_location.longitude);
@@ -106,6 +168,8 @@ const CaptureForm = (props: Pick<AnimalFormProps<ICaptureResponse>, 'formMode'>)
         longitude: releaseLon
       }
     });
+
+    props.handleProjection(switchProjection);
   };
 
   return (
@@ -113,7 +177,10 @@ const CaptureForm = (props: Pick<AnimalFormProps<ICaptureResponse>, 'formMode'>)
       <Box component="fieldset">
         <Box display="flex" justifyContent="space-between">
           <Typography component="legend">Event Dates</Typography>
-          <FormControlLabel control={<Switch onChange={handleProjectionChange} />} label="UTM" />
+          <FormControlLabel
+            control={<Switch onChange={handleProjectionChange} disabled={disableUtmToggle} />}
+            label="UTM"
+          />
         </Box>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
@@ -156,9 +223,7 @@ const CaptureForm = (props: Pick<AnimalFormProps<ICaptureResponse>, 'formMode'>)
           {props.formMode === ANIMAL_FORM_MODE.ADD ? (
             <Grid item>
               <FormControlLabel
-                control={
-                  <Checkbox size="small" onChange={() => setShowRelease((show) => !show)} checked={showRelease} />
-                }
+                control={<Checkbox size="small" onChange={handleToggleRelease} checked={showRelease} />}
                 label={SurveyAnimalsI18N.animalCaptureReleaseRadio}
               />
             </Grid>
@@ -200,7 +265,7 @@ const CaptureForm = (props: Pick<AnimalFormProps<ICaptureResponse>, 'formMode'>)
       ) : null}
 
       <FormLocationPreview
-        projection={projection}
+        projection={props.projectionMode}
         locations={
           showRelease
             ? [
@@ -224,7 +289,6 @@ const CaptureForm = (props: Pick<AnimalFormProps<ICaptureResponse>, 'formMode'>)
               ]
         }
       />
-
       <Box component="fieldset">
         <Typography component="legend">Additional Information</Typography>
         <CustomTextField

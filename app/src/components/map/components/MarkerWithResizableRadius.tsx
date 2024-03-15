@@ -7,7 +7,7 @@ export type MarkerIconColor = 'green' | 'blue' | 'red';
 
 interface IClickMarkerProps {
   position?: LatLng;
-  radius: number;
+  radius?: number;
   markerColor?: MarkerIconColor;
   listenForMouseEvents: boolean; //Have this here so you can NOOP the mouse events in the case of multiple instances of this component on same mapf
   handlePlace?: (p: LatLng) => void;
@@ -84,20 +84,22 @@ const MarkerWithResizableRadius = (props: IClickMarkerProps): JSX.Element => {
 
   return (
     <>
-      <Circle
-        bubblingMouseEvents={false}
-        eventHandlers={{
-          mousedown: (e) => {
-            if (!listenForMouseEvents) return;
-            map.dragging.disable(); //Need to disable map drag or else resizing circle will result in map moving
-            setHoldingMouse(true);
-            setLastMouseDown(e.latlng);
-          }
-        }}
-        color={markerColor ? iconMap[markerColor].hex : iconMap.blue.hex}
-        radius={radius}
-        center={position}
-      />
+      {props?.radius ? (
+        <Circle
+          bubblingMouseEvents={false}
+          eventHandlers={{
+            mousedown: (e) => {
+              if (!listenForMouseEvents) return;
+              map.dragging.disable(); //Need to disable map drag or else resizing circle will result in map moving
+              setHoldingMouse(true);
+              setLastMouseDown(e.latlng);
+            }
+          }}
+          color={markerColor ? iconMap[markerColor].hex : iconMap.blue.hex}
+          radius={radius}
+          center={position}
+        />
+      ) : null}
       <Marker icon={markerColor ? iconMap[markerColor].icon : iconMap.blue.icon} position={position}></Marker>
     </>
   );

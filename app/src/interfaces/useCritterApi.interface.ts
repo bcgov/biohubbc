@@ -10,14 +10,12 @@ type ILocationResponse = {
   latitude: number;
   longitude: number;
   coordinate_uncertainty: number | null;
+  coordinate_uncertainty_unit: string | null;
   temperature: number | null;
   location_comment: string | null;
   region_env_id: string | null;
   region_nr_id: string | null;
   wmu_id: string | null;
-  region_env_name: string | null; // Deprecated
-  region_nr_name: string | null; // Deprecated
-  wmu_name: string | null; // Deprecated
 };
 
 export type ICaptureResponse = {

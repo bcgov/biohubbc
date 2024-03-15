@@ -36,7 +36,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
   const [formMode, setFormMode] = useState<ANIMAL_FORM_MODE | undefined>(undefined);
   const [formObject, setFormObject] = useState<any | undefined>(undefined);
 
-  const formatDate = (dt: Date) => dayjs(dt).format('MMMM D, YYYY h:mm A');
+  const formatDate = (dt: Date) => dayjs(dt).format('MMMM D, YYYY');
 
   const handleOpenAddForm = () => {
     setFormObject(undefined);
@@ -320,7 +320,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
                 })}
                 onClickEdit={() => handleOpenEditForm(child)}
                 onClickDelete={async () => {
-                  // handleDelete(deleteMarking, 'marking');
+                  //handleDelete(cbApi.capture.deleteCapture, capture.capture_id, 'capture');
                 }}
               />
             </Collapse>
@@ -349,7 +349,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
                 })}
                 onClickEdit={() => handleOpenEditForm(capture)}
                 onClickDelete={async () => {
-                  // handleDelete(deleteMarking, 'marking');
+                  handleDelete(cbApi.capture.deleteCapture, capture.capture_id, 'capture');
                 }}
               />
             </Collapse>

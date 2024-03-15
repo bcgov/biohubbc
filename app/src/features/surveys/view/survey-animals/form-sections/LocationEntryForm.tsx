@@ -42,7 +42,7 @@ const FormLocationPreview = <T,>({ projection = PROJECTION_MODE.WGS, locations }
     let latitude = coords.lat;
     let longitude = coords.lng;
 
-    if (projection === PROJECTION_MODE.UTM) {
+    if (projection === PROJECTION_MODE.UTM && latitude && longitude) {
       [latitude, longitude] = getLatLngAsUtm(latitude, longitude);
     }
 
@@ -56,7 +56,7 @@ const FormLocationPreview = <T,>({ projection = PROJECTION_MODE.WGS, locations }
     let latitude = get(values, location.fields.latitude);
     let longitude = get(values, location.fields.longitude);
 
-    if (projection === PROJECTION_MODE.UTM) {
+    if (projection === PROJECTION_MODE.UTM && latitude && longitude) {
       [latitude, longitude] = getUtmAsLatLng(latitude, longitude);
     }
 
@@ -86,31 +86,7 @@ const FormLocationPreview = <T,>({ projection = PROJECTION_MODE.WGS, locations }
             </ToggleButton>
           ))}
         </ToggleButtonGroup>
-        <Paper
-          variant="outlined"
-          sx={{
-            position: 'relative',
-            height: 350
-          }}>
-          <Stack
-            sx={{
-              display: 'none',
-              position: 'absolute',
-              bottom: '10px',
-              right: '10px',
-              zIndex: '999',
-              transformOrigin: '50% 50%',
-              transform: 'translateX(-50%)',
-              '& .MuiToggleButton-root': {
-                px: 2,
-                fontSize: '12px',
-                fontWeight: 700,
-                '&.Mui-selected': {
-                  background: '#003366',
-                  color: '#fff'
-                }
-              }
-            }}></Stack>
+        <Paper variant="outlined">
           <LeafletMapContainer
             id={`location-entry`}
             scrollWheelZoom={true}
