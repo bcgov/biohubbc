@@ -1,4 +1,5 @@
 import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
+import { AdministrativeActivityStatusType } from 'constants/misc';
 import AccessRequestList from 'features/admin/users/AccessRequestList';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IAccessRequestDataObject, IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
@@ -15,6 +16,20 @@ const mockUseApi = {
     denyAccessRequest: jest.fn()
   }
 };
+
+// Mock the DataGrid component to disable virtualization
+jest.mock('@mui/x-data-grid', () => {
+  const OriginalModule = jest.requireActual('@mui/x-data-grid');
+
+  // Wrap the DataGrid component to add disableVirtualization prop
+  const MockedDataGrid = (props: any) => <OriginalModule.DataGrid {...props} disableVirtualization={true} />;
+
+  // Return the original module with the mocked DataGrid
+  return {
+    ...OriginalModule,
+    DataGrid: MockedDataGrid
+  };
+});
 
 const renderContainer = (
   accessRequests: IGetAccessRequestsListResponse[],
@@ -44,14 +59,14 @@ describe('AccessRequestList', () => {
   });
 
   it('shows a table row for a pending access request', async () => {
-    const { getByText, getByRole } = renderContainer(
+    const { getByText } = await renderContainer(
       [
         {
           id: 1,
           type: 1,
           type_name: 'test type',
           status: 1,
-          status_name: 'Pending',
+          status_name: AdministrativeActivityStatusType.PENDING,
           description: 'test description',
           notes: 'test notes',
           data: {
@@ -76,19 +91,18 @@ describe('AccessRequestList', () => {
       expect(getByText('testusername')).toBeVisible();
       expect(getByText('Apr 20, 2020')).toBeVisible();
       expect(getByText('Review Request')).toBeVisible();
-      expect(getByRole('button')).toHaveTextContent('Review Request');
     });
   });
 
   it('shows a table row for a rejected access request', async () => {
-    const { getByText, queryByRole } = renderContainer(
+    const { getByText, queryByText } = renderContainer(
       [
         {
           id: 1,
           type: 1,
           type_name: 'test type',
           status: 1,
-          status_name: 'Rejected',
+          status_name: AdministrativeActivityStatusType.REJECTED,
           description: 'test description',
           notes: 'test notes',
           data: {
@@ -113,19 +127,19 @@ describe('AccessRequestList', () => {
       expect(getByText('testusername')).toBeVisible();
       expect(getByText('Apr 20, 2020')).toBeVisible();
       expect(getByText('Denied')).toBeVisible();
-      expect(queryByRole('button')).not.toBeInTheDocument();
+      expect(queryByText('Review Request')).not.toBeInTheDocument();
     });
   });
 
   it('shows a table row for a actioned access request', async () => {
-    const { getByText, queryByRole } = renderContainer(
+    const { getByText, queryByText } = renderContainer(
       [
         {
           id: 1,
           type: 1,
           type_name: 'test type',
           status: 1,
-          status_name: 'Actioned',
+          status_name: AdministrativeActivityStatusType.ACTIONED,
           description: 'test description',
           notes: 'test notes',
           data: {
@@ -150,7 +164,7 @@ describe('AccessRequestList', () => {
       expect(getByText('testusername')).toBeVisible();
       expect(getByText('Apr 20, 2020')).toBeVisible();
       expect(getByText('Approved')).toBeVisible();
-      expect(queryByRole('button')).not.toBeInTheDocument();
+      expect(queryByText('Review Request')).not.toBeInTheDocument();
     });
   });
 
@@ -162,7 +176,7 @@ describe('AccessRequestList', () => {
           type: 1,
           type_name: 'test type',
           status: 1,
-          status_name: 'Pending',
+          status_name: AdministrativeActivityStatusType.PENDING,
           description: 'test description',
           notes: 'test notes',
           data: null as unknown as IAccessRequestDataObject,
@@ -182,14 +196,14 @@ describe('AccessRequestList', () => {
   it('opens the review dialog and calls approveAccessRequest on approval', async () => {
     const refresh = jest.fn();
 
-    const { getByText, getByRole, getByTestId } = renderContainer(
+    const { getByText, getByTestId } = renderContainer(
       [
         {
           id: 1,
           type: 1,
           type_name: 'test type',
           status: 1,
-          status_name: 'Pending',
+          status_name: AdministrativeActivityStatusType.PENDING,
           description: 'test description',
           notes: 'test notes',
           data: {
@@ -210,8 +224,7 @@ describe('AccessRequestList', () => {
       refresh
     );
 
-    const reviewButton = getByRole('button');
-    expect(reviewButton).toHaveTextContent('Review');
+    const reviewButton = getByText('Review Request');
     fireEvent.click(reviewButton);
 
     await waitFor(() => {
@@ -237,14 +250,14 @@ describe('AccessRequestList', () => {
   it('opens the review dialog and calls denyAccessRequest on denial', async () => {
     const refresh = jest.fn();
 
-    const { getByText, getByRole, getByTestId } = renderContainer(
+    const { getByText, getByTestId } = renderContainer(
       [
         {
           id: 1,
           type: 1,
           type_name: 'test type',
           status: 1,
-          status_name: 'Pending',
+          status_name: AdministrativeActivityStatusType.PENDING,
           description: 'test description',
           notes: 'test notes',
           data: {
@@ -265,8 +278,7 @@ describe('AccessRequestList', () => {
       refresh
     );
 
-    const reviewButton = getByRole('button');
-    expect(reviewButton).toHaveTextContent('Review');
+    const reviewButton = getByText('Review Request');
     fireEvent.click(reviewButton);
 
     await waitFor(() => {

@@ -2,22 +2,15 @@ import { mdiFileOutline, mdiLockOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import { ProjectRoleGuard } from 'components/security/Guards';
+import { GridColDef } from '@mui/x-data-grid';
+import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { PublishStatus } from 'constants/attachments';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
-import NoSurveySectionData from 'features/surveys/components/NoSurveySectionData';
+import { ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
-import { useState } from 'react';
+import { useContext } from 'react';
 import AttachmentsListItemMenuButton from './AttachmentsListItemMenuButton';
-
-//TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
 export interface IAttachmentsListProps<T extends IGetProjectAttachment | IGetSurveyAttachment> {
   attachments: T[];
@@ -28,86 +21,107 @@ export interface IAttachmentsListProps<T extends IGetProjectAttachment | IGetSur
   emptyStateText?: string;
 }
 
+const validProjectPermissions: PROJECT_PERMISSION[] = [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR];
+
+const validSystemRoles: SYSTEM_ROLE[] = [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR];
+
+const pageSizeOptions = [5, 10, 25];
+
 const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>(props: IAttachmentsListProps<T>) => {
   const { attachments, handleDownload, handleDelete, handleViewDetails, handleRemoveOrResubmit } = props;
 
-  // @TODO https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-533
-  const [rowsPerPage] = useState(10);
-  const [page] = useState(0);
+  const projectAuthStateContext = useContext(ProjectAuthStateContext);
 
-  if (!attachments.length) {
-    return <NoSurveySectionData text={props.emptyStateText ?? 'No Documents'} />;
-  }
+  const hasSystemRole = projectAuthStateContext.hasSystemRole(validSystemRoles);
+  const hasProjectPermissions = projectAuthStateContext.hasProjectPermission(validProjectPermissions);
+  const showTableActions = hasSystemRole || hasProjectPermissions;
+
+  const attachmentsListColumnDefs: GridColDef<T>[] = [
+    {
+      field: 'fileName',
+      headerName: 'Name',
+      flex: 1,
+      disableColumnMenu: true,
+      renderCell: (params) => {
+        const attachmentStatus = params.row.supplementaryAttachmentData?.event_timestamp
+          ? PublishStatus.SUBMITTED
+          : PublishStatus.UNSUBMITTED;
+
+        const icon: string = attachmentStatus === PublishStatus.SUBMITTED ? mdiLockOutline : mdiFileOutline;
+
+        return (
+          <Stack
+            flexDirection="row"
+            alignItems="center"
+            gap={2}
+            sx={{
+              '& svg': {
+                color: '#1a5a96'
+              },
+              '& a': {
+                fontWeight: 700
+              }
+            }}>
+            <Icon path={icon} size={1} />
+            <Link underline="always" onClick={() => handleDownload(params.row)} tabIndex={0}>
+              {params.value}
+            </Link>
+          </Stack>
+        );
+      }
+    },
+    {
+      field: 'fileType',
+      flex: 1,
+      headerName: 'Type',
+      disableColumnMenu: true
+    },
+    {
+      field: 'actions',
+      headerName: '',
+      type: 'actions',
+      width: 70,
+      sortable: false,
+      disableColumnMenu: true,
+      resizable: false,
+      renderCell: (params) => {
+        const attachmentStatus = params.row.supplementaryAttachmentData?.event_timestamp
+          ? PublishStatus.SUBMITTED
+          : PublishStatus.UNSUBMITTED;
+
+        return (
+          <AttachmentsListItemMenuButton
+            attachmentFileType={params.row.fileType}
+            attachmentStatus={attachmentStatus}
+            onDownloadFile={() => handleDownload(params.row)}
+            onDeleteFile={() => handleDelete(params.row)}
+            onViewDetails={() => handleViewDetails(params.row)}
+            onRemoveOrResubmit={() => handleRemoveOrResubmit(params.row)}
+          />
+        );
+      }
+    }
+  ];
 
   return (
-    <TableContainer>
-      <Table
-        aria-label="attachments-list-table"
-        sx={{
-          tableLayout: 'fixed'
-        }}>
-        <TableHead>
-          <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell>Type</TableCell>
-            <TableCell width="75"></TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {attachments.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((attachment) => {
-            const attachmentStatus = attachment.supplementaryAttachmentData?.event_timestamp
-              ? PublishStatus.SUBMITTED
-              : PublishStatus.UNSUBMITTED;
-
-            const icon: string = attachmentStatus === PublishStatus.SUBMITTED ? mdiLockOutline : mdiFileOutline;
-
-            return (
-              <TableRow hover={false} key={`${attachment.fileName}-${attachment.id}`}>
-                <TableCell
-                  scope="row"
-                  sx={{
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis'
-                  }}>
-                  <Stack
-                    flexDirection="row"
-                    alignItems="center"
-                    gap={2}
-                    sx={{
-                      '& svg': {
-                        color: '#1a5a96'
-                      },
-                      '& a': {
-                        fontWeight: 700
-                      }
-                    }}>
-                    <Icon path={icon} size={1} />
-                    <Link underline="always" onClick={() => handleDownload(attachment)} tabIndex={0}>
-                      {attachment.fileName}
-                    </Link>
-                  </Stack>
-                </TableCell>
-                <TableCell>{attachment.fileType}</TableCell>
-                <ProjectRoleGuard
-                  validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <TableCell align="right">
-                    <AttachmentsListItemMenuButton
-                      attachmentFileType={attachment.fileType}
-                      attachmentStatus={attachmentStatus}
-                      onDownloadFile={() => handleDownload(attachment)}
-                      onDeleteFile={() => handleDelete(attachment)}
-                      onViewDetails={() => handleViewDetails(attachment)}
-                      onRemoveOrResubmit={() => handleRemoveOrResubmit(attachment)}
-                    />
-                  </TableCell>
-                </ProjectRoleGuard>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <StyledDataGrid<T>
+      noRowsMessage={props.emptyStateText ?? 'No Attachments'}
+      columns={attachmentsListColumnDefs}
+      rows={attachments}
+      pageSizeOptions={pageSizeOptions}
+      initialState={{
+        pagination: {
+          paginationModel: {
+            pageSize: 5
+          }
+        },
+        columns: {
+          columnVisibilityModel: {
+            actions: showTableActions
+          }
+        }
+      }}
+    />
   );
 };
 
