@@ -6,7 +6,8 @@ metadata:
   annotations:
     description: |
       This config map is required by the sims pipeline. It provides all of the configuration settings and environment 
-      variables required by the pipeline.
+      variables required by the pipeline. This config is designed to exist, in the tools namespace, and 
+      provide all of the configuration settings required by the pipeline for all environments (PR, DEV, TEST, PROD).
 immutable: false
 data:
   config: |
