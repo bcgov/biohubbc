@@ -107,7 +107,6 @@ const SurveyUserForm = (props: ISurveyUserFormProps) => {
   };
 
   if (!searchUserDataLoader.data || !searchUserDataLoader.hasLoaded) {
-    console.log('searchUserDataLoader.data', searchUserDataLoader.data);
     // should probably replace this with a skeleton
     return <CircularProgress className="pageProgress" size={40} />;
   }
