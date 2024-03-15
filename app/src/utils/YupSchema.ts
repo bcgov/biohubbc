@@ -22,6 +22,21 @@ yup.addMethod(yup.array, 'isUniquePermitNumber', function (message: string) {
   });
 });
 
+yup.addMethod(yup.array, 'isUniqueFundingSource', function (message: string) {
+  return this.test('is-unique-funding-source-id', message, (values) => {
+    if (!values || !values.length) {
+      return true;
+    }
+
+    const seen = new Set();
+    const hasDuplicates = values.some((fundingSource) => {
+      return seen.size === seen.add(fundingSource.funding_source_id).size;
+    });
+
+    return !hasDuplicates;
+  });
+});
+
 yup.addMethod(yup.array, 'isUniqueIUCNClassificationDetail', function (message: string) {
   return this.test('is-unique-iucn-classification-detail', message, (values) => {
     if (!values || !values.length) {
