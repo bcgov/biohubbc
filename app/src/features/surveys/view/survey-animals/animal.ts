@@ -74,8 +74,6 @@ const numSchema = yup.number().typeError(mustBeNum);
 
 const latSchema = yup.number().min(-90, glt(-90)).max(90, glt(90, false)).typeError(mustBeNum);
 const lonSchema = yup.number().min(-180, glt(-180)).max(180, glt(180, false)).typeError(mustBeNum);
-const eastingSchema = yup.number().min(166640, glt(166640)).max(833360, glt(833360, false));
-const northingSchema = yup.number().min(0, glt(0)).max(9334080, glt(9334080, false));
 
 const dateSchema = yup
   .date()
@@ -104,7 +102,7 @@ export const LocationSchema = yup.object().shape({
     })
     .when('projection_mode', {
       is: (projection_mode: PROJECTION_MODE) => projection_mode === PROJECTION_MODE.UTM,
-      then: northingSchema
+      then: yup.number()
     })
     .required(req),
   longitude: yup
@@ -115,7 +113,7 @@ export const LocationSchema = yup.object().shape({
     })
     .when('projection_mode', {
       is: (projection_mode: PROJECTION_MODE) => projection_mode === PROJECTION_MODE.UTM,
-      then: eastingSchema
+      then: yup.number()
     })
     .required(req),
   coordinate_uncertainty: yup.number().required(req),

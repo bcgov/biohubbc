@@ -74,7 +74,6 @@ export const CaptureAnimalForm = (props: AnimalFormProps<ICaptureResponse>) => {
           critter_id: props.critter.critter_id,
           capture_location: {
             location_id: props?.formObject?.capture_location.location_id,
-            //projection_mode: projectionMode,
             latitude: props?.formObject?.capture_location?.latitude ?? ('' as unknown as number),
             longitude: props?.formObject?.capture_location?.longitude ?? ('' as unknown as number),
             coordinate_uncertainty:
@@ -83,10 +82,9 @@ export const CaptureAnimalForm = (props: AnimalFormProps<ICaptureResponse>) => {
           },
           release_location: props?.formObject?.release_location
             ? {
-                location_id: props?.formObject?.release_location.location_id,
-                //projection_mode: projectionMode,
-                latitude: props?.formObject?.release_location?.latitude,
-                longitude: props?.formObject?.release_location?.longitude,
+                location_id: props?.formObject?.release_location?.location_id,
+                latitude: props?.formObject?.release_location?.latitude ?? undefined,
+                longitude: props?.formObject?.release_location?.longitude ?? undefined,
                 coordinate_uncertainty: props?.formObject?.release_location?.coordinate_uncertainty,
                 coordinate_uncertainty_unit: props?.formObject?.release_location?.coordinate_uncertainty_unit ?? 'm'
               }
@@ -115,9 +113,9 @@ type CaptureFormProps = Pick<AnimalFormProps<ICaptureResponse>, 'formMode'> & {
 };
 
 const CaptureFormFields = (props: CaptureFormProps) => {
-  const { values, setValues } = useFormikContext<ICreateCritterCapture>();
+  const { values, setValues, setFieldValue } = useFormikContext<ICreateCritterCapture>();
 
-  const [showRelease, setShowRelease] = useState(false);
+  const [showRelease, setShowRelease] = useState(values.release_location);
 
   const isUtmProjection = props.projectionMode === PROJECTION_MODE.UTM;
 
@@ -127,18 +125,21 @@ const CaptureFormFields = (props: CaptureFormProps) => {
     (showRelease && !values?.release_location?.latitude) ||
     !values?.release_location?.longitude;
 
-  const handleToggleRelease = () => {
+  const handleShowRelease = () => {
     /**
      * If release is currently showing wipe existing values in release_location.
      *
      */
     if (showRelease) {
-      setValues({
-        ...values,
-        release_location: undefined
-      });
+      setFieldValue('release_location', undefined);
+      setShowRelease(false);
+      return;
     }
-    setShowRelease(!showRelease);
+    setValues({
+      ...values,
+      release_location: { latitude: '', longitude: '', coordinate_uncertainty: '', coordinate_uncertainty_unit: 'm' }
+    });
+    setShowRelease(true);
   };
 
   const handleProjectionChange = () => {
@@ -227,7 +228,7 @@ const CaptureFormFields = (props: CaptureFormProps) => {
           {props.formMode === ANIMAL_FORM_MODE.ADD ? (
             <Grid item>
               <FormControlLabel
-                control={<Checkbox size="small" onChange={handleToggleRelease} checked={showRelease} />}
+                control={<Checkbox size="small" onChange={handleShowRelease} checked={showRelease} />}
                 label={SurveyAnimalsI18N.animalCaptureReleaseRadio}
               />
             </Grid>
