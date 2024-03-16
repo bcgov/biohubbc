@@ -1,4 +1,4 @@
-import { mdiCalendarRangeOutline, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Alert from '@mui/material/Alert';
@@ -12,10 +12,7 @@ import Collapse from '@mui/material/Collapse';
 import { grey } from '@mui/material/colors';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
@@ -28,6 +25,7 @@ import { useFormikContext } from 'formik';
 import { useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { getCodesName } from 'utils/Utils';
+import SamplingPeriodsTimeline from '../../components/SamplingPeriodsTimeline';
 import SamplingSiteMethodResponseMetricChip from '../../components/SamplingSiteMethodResponseMetricChip';
 import { IEditSamplingSiteRequest } from './SampleSiteEditForm';
 
@@ -154,7 +152,10 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                   <Card
                     variant="outlined"
                     sx={{
-                      background: grey[100]
+                      background: grey[100],
+                      '& .MuiCardHeader-root': {
+                        pb: 0.5
+                      }
                     }}>
                     <CardHeader
                       title={
@@ -188,46 +189,45 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                         pt: 0,
                         pb: '12px !important'
                       }}>
-                      <Stack gap={3}>
-                        {item.description && (
-                          <Typography
-                            variant="body2"
-                            color="textSecondary"
-                            sx={{
-                              display: '-webkit-box',
-                              WebkitLineClamp: '2',
-                              WebkitBoxOrient: 'vertical',
-                              maxWidth: '92ch',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis'
-                            }}>
-                            {item.description}
-                          </Typography>
-                        )}
+                      <Stack gap={2}>
+                        {item.description.length ? (
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          sx={{
+                            display: '-webkit-box',
+                            WebkitLineClamp: '2',
+                            WebkitBoxOrient: 'vertical',
+                            maxWidth: '92ch',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis'
+                          }}>
+                          {item.description}
+                        </Typography>
+                      ) : (
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: grey[400],
+                            display: '-webkit-box',
+                            WebkitLineClamp: '2',
+                            WebkitBoxOrient: 'vertical',
+                            maxWidth: '92ch',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis'
+                          }}>
+                          <em>No description</em>
+                        </Typography>
+                      )}
 
                         <Box>
                           <Typography variant="body2" fontWeight={700}>
-                            Time Periods
+                            Periods
                           </Typography>
                           <Divider component="div" sx={{ mt: 1 }}></Divider>
-                          <List dense disablePadding>
-                            {item.periods.map((period) => (
-                              <ListItem
-                                key={`sample_period_${period.survey_sample_period_id}`}
-                                divider
-                                disableGutters
-                                sx={{ pl: 1.25 }}>
-                                <ListItemIcon sx={{ minWidth: '32px' }}>
-                                  <Icon path={mdiCalendarRangeOutline} size={0.75} />
-                                </ListItemIcon>
-                                <ListItemText
-                                  primary={`${period.start_date} ${period.start_time || ''} - ${period.end_date} ${
-                                    period.end_time || ''
-                                  }`}
-                                />
-                              </ListItem>
-                            ))}
-                          </List>
+                          <Box width="50%">
+                            <SamplingPeriodsTimeline samplePeriods={item.periods} />
+                          </Box>
                         </Box>
                       </Stack>
                     </CardContent>

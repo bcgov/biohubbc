@@ -1,4 +1,4 @@
-import { mdiArrowRight, mdiCalendarMonthOutline, mdiClockOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiArrowRightThin, mdiCalendarMonthOutline, mdiClockOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
@@ -18,7 +18,7 @@ import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useContext, useEffect } from 'react';
 import yup from 'utils/YupSchema';
 
-interface ISurveySampleMethodPeriodData {
+export interface ISurveySampleMethodPeriodData {
   survey_sample_period_id: number | null;
   survey_sample_method_id: number | null;
   start_date: string;
@@ -161,7 +161,7 @@ const MethodForm = () => {
             sx={{
               mb: 1
             }}>
-            Time Periods
+            Periods
           </Typography>
           <Box>
             <FieldArray
@@ -236,7 +236,7 @@ const MethodForm = () => {
                               </Stack>
 
                               <Box flex="0 0 auto" mt={2.25}>
-                                <Icon path={mdiArrowRight} size={0.8} />
+                                <Icon path={mdiArrowRightThin} size={1} />
                               </Box>
 
                               <Stack>

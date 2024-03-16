@@ -37,7 +37,7 @@ const SamplingSiteMethodsPeriodsList = (props: ISamplingSiteMethodsPeriodsListPr
       sx={{
         '& .MuiListItemText-primary': {
           fontWeight: 700,
-          fontSize: '0.8rem'
+          fontSize: '0.85rem'
         }
       }}>
       {stratumsWithColour.length > 0 && (
@@ -55,7 +55,7 @@ const SamplingSiteMethodsPeriodsList = (props: ISamplingSiteMethodsPeriodsListPr
       )}
       <Typography
         color="textSecondary"
-        mb={1}
+        mb={2}
         sx={{
           fontWeight: 700,
           letterSpacing: '0.02rem',
@@ -94,13 +94,10 @@ const SamplingSiteMethodsPeriodsList = (props: ISamplingSiteMethodsPeriodsListPr
                 )}
               />
               <SamplingSiteMethodResponseMetricChip
-                // strong
-                // inverse
                 method_response_metric_id={sampleMethod.method_response_metric_id}
               />
             </Box>
             {sampleMethod.sample_periods && <SamplingPeriodsTimeline samplePeriods={sampleMethod.sample_periods} />}
-            
           </ListItem>
         );
       })}
