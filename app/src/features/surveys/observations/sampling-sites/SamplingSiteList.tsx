@@ -1,5 +1,6 @@
 import { mdiChevronDown, mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Color, colors } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -28,6 +29,11 @@ import { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import SamplingSiteMethodsPeriodsList from './components/SamplingSiteMethodsPeriodsList';
 
+export interface IStratumChipColours {
+  stratum: string;
+  colour: Color;
+}
+
 const SamplingSiteList = () => {
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
@@ -49,6 +55,15 @@ const SamplingSiteList = () => {
   const [checkboxSelectedIds, setCheckboxSelectedIds] = useState<number[]>([]);
 
   const sampleSites = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
+
+  // Determine colours for stratum labels
+  const orderedColours = [colors.purple, colors.blue, colors.pink, colors.orange, colors.cyan, colors.teal];
+  const stratums = surveyContext.surveyDataLoader.data?.surveyData.site_selection.stratums;
+  const stratumChipColours: IStratumChipColours[] =
+    stratums?.map((stratum, index) => ({
+      stratum: stratum.name,
+      colour: orderedColours[index % orderedColours.length]
+    })) ?? [];
 
   const handleSampleSiteMenuClick = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -440,7 +455,10 @@ const SamplingSiteList = () => {
                             pt: 0,
                             px: 2
                           }}>
-                          <SamplingSiteMethodsPeriodsList sampleSite={sampleSite} />
+                          <SamplingSiteMethodsPeriodsList
+                            sampleSite={sampleSite}
+                            stratumChipColours={stratumChipColours}
+                          />
                         </AccordionDetails>
                       </Accordion>
                     );

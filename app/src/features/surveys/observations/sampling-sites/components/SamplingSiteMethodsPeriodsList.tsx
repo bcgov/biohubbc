@@ -1,17 +1,21 @@
-import { mdiCalendarRange } from '@mdi/js';
+import { mdiArrowRightThin } from '@mdi/js';
 import Icon from '@mdi/react';
-import { List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import { Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineSeparator } from '@mui/lab';
+import { colors, Grid, List, ListItem, ListItemText, Stack, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { Box } from '@mui/system';
+import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { CodesContext } from 'contexts/codesContext';
 import dayjs from 'dayjs';
 import { IGetSampleLocationDetails } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect } from 'react';
 import { getCodesName } from 'utils/Utils';
+import { IStratumChipColours } from '../SamplingSiteList';
 import SamplingSiteMethodResponseMetricChip from './SamplingSiteMethodResponseMetricChip';
 
 interface ISamplingSiteMethodsPeriodsListProps {
   sampleSite: IGetSampleLocationDetails;
+  stratumChipColours: IStratumChipColours[];
 }
 
 const SamplingSiteMethodsPeriodsList = (props: ISamplingSiteMethodsPeriodsListProps) => {
@@ -21,17 +25,50 @@ const SamplingSiteMethodsPeriodsList = (props: ISamplingSiteMethodsPeriodsListPr
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
-  const formatDate = (dt: Date, time: boolean) => dayjs(dt).format(time ? 'MMM D, YYYY h:mm A' : 'MMM D, YYYY');
+  const formatDate = (dt: Date, time: boolean) => dayjs(dt).format(time ? 'MMMM D, YYYY h:mm A' : 'MMMM D, YYYY');
+
+  const orderedColours = [colors.purple, colors.blue, colors.amber, colors.deepOrange, colors.pink];
+
+  const stratumsWithColour =
+    props.sampleSite.sample_stratums?.map((item, index) => ({
+      name: item.name,
+      description: item.description,
+      colour: orderedColours[index / (props.sampleSite.sample_stratums?.length ?? 1)]
+    })) ?? [];
 
   return (
     <List
       disablePadding
       sx={{
         '& .MuiListItemText-primary': {
-          typography: 'body2',
-          fontWeight: 700
+          fontWeight: 700,
+          fontSize: '0.8rem'
         }
       }}>
+      {stratumsWithColour.length > 0 && (
+        <Box mb={2}>
+          <Stack direction="row" spacing={1}>
+            {stratumsWithColour.map((stratum) => (
+              <ColouredRectangleChip
+                colour={props.stratumChipColours.find((colour) => colour.stratum === stratum.name)?.colour ?? grey}
+                label={stratum.name}
+                title="Stratum"
+              />
+            ))}
+          </Stack>
+        </Box>
+      )}
+      <Typography
+        color="textSecondary"
+        mb={1}
+        sx={{
+          fontWeight: 700,
+          letterSpacing: '0.02rem',
+          textTransform: 'uppercase',
+          fontSize: '0.7rem'
+        }}>
+        Methods
+      </Typography>
       {props.sampleSite.sample_methods?.map((sampleMethod) => {
         return (
           <ListItem
@@ -39,10 +76,7 @@ const SamplingSiteMethodsPeriodsList = (props: ISamplingSiteMethodsPeriodsListPr
             key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}`}
             sx={{
               display: 'block',
-              p: 0,
-              '& + li': {
-                mt: 1.5
-              }
+              p: 0
             }}>
             <Box
               style={{
@@ -65,84 +99,100 @@ const SamplingSiteMethodsPeriodsList = (props: ISamplingSiteMethodsPeriodsListPr
                 )}
               />
               <SamplingSiteMethodResponseMetricChip
+                // strong
+                // inverse
                 method_response_metric_id={sampleMethod.method_response_metric_id}
               />
             </Box>
-            <List disablePadding>
-              {sampleMethod.sample_periods?.map((samplePeriod) => {
+            <Timeline sx={{ alignItems: 'start', justifyContent: 'start' }}>
+              {/* <List disablePadding> */}
+              {sampleMethod.sample_periods?.map((samplePeriod, index) => {
                 return (
-                  <ListItem
-                    dense
-                    divider
-                    disableGutters
+                  <TimelineItem
                     sx={{
-                      px: 1.5,
-                      color: 'text.secondary'
+                      width: '100%',
+                      '&::before': {
+                        content: 'none'
+                      },
+                      minHeight: '50px',
+                      m: 0,
+                      p: 0
                     }}
-                    title="Sampling Period"
-                    key={`${samplePeriod.survey_sample_method_id}-${samplePeriod.survey_sample_period_id}`}>
-                    <ListItemIcon sx={{ minWidth: '25px' }} color="inherit">
-                      <Icon path={mdiCalendarRange} size={0.7}></Icon>
-                    </ListItemIcon>
-                    <ListItemText>
-                      <Typography variant="body2" component="div" color="inherit">
-                        {`${formatDate(
-                          [samplePeriod.start_date, samplePeriod.start_time].join('T') as unknown as Date,
-                          samplePeriod.start_time != null
-                        )} - ${formatDate(
-                          [samplePeriod.end_date, samplePeriod.end_time].join('T') as unknown as Date,
-                          samplePeriod.start_time != null
-                        )}`}
-                      </Typography>
-                    </ListItemText>
-                  </ListItem>
+                    key={samplePeriod.survey_sample_period_id}>
+                    <TimelineSeparator>
+                      <TimelineDot />
+                      {index < (sampleMethod.sample_periods?.length ?? 0) - 1 && (
+                        <TimelineConnector
+                          sx={{
+                            position: 'absolute',
+                            height: '100%',
+                            top: 15,
+                            opacity: 0.75
+                          }}
+                        />
+                      )}
+                    </TimelineSeparator>
+                    <TimelineContent
+                      sx={{
+                        '& .MuiTimelineItem-root': {
+                          width: '100%',
+                          flex: '1 1 auto'
+                        }
+                      }}>
+                      <Grid container xs={12} width="100%">
+                        <Grid item xs={5} flex="1 1 auto">
+                          <Typography variant="body2" component="div" fontWeight={700} color="textSecondary">
+                            {formatDate(samplePeriod.start_date as unknown as Date, false)}
+                          </Typography>
+                          <Typography variant="body2" component="div" fontWeight={500} color="textSecondary">
+                            {samplePeriod.start_time}
+                          </Typography>
+                        </Grid>
+                        <Grid item flex="0.5 1 auto" alignItems="start">
+                          <Icon path={mdiArrowRightThin} size={0.8} color={grey[400]} />
+                        </Grid>
+                        <Grid item xs={5} flex="1 1 auto">
+                          <Typography variant="body2" component="div" fontWeight={700} color="textSecondary">
+                            {formatDate(samplePeriod.end_date as unknown as Date, false)}
+                          </Typography>
+                          <Typography variant="body2" component="div" fontWeight={500} color="textSecondary">
+                            {samplePeriod.end_time}
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                    </TimelineContent>
+                  </TimelineItem>
+
+                  // <ListItem
+                  //   dense
+                  //   divider
+                  //   disableGutters
+                  //   sx={{
+                  //     py: 1,
+                  //     px: 3,
+                  //     color: 'text.secondary'
+                  //   }}
+                  //   title="Sampling Period"
+                  //   key={`${samplePeriod.survey_sample_method_id}-${samplePeriod.survey_sample_period_id}`}>
+                  //   <ListItemIcon sx={{ minWidth: '25px', mt: '1px' }} color="inherit">
+                  //     <Icon path={mdiCalendarRange} size={0.75} />
+                  //   </ListItemIcon>
+                  //   <ListItemText>
+                  // <Typography variant="body2" component="div" color="inherit" fontWeight={500}>
+                  //   {`${formatDate(
+                  //     [samplePeriod.start_date, samplePeriod.start_time].join('T') as unknown as Date,
+                  //     samplePeriod.start_time != null
+                  //   )} - ${formatDate(
+                  //     [samplePeriod.end_date, samplePeriod.end_time].join('T') as unknown as Date,
+                  //     samplePeriod.start_time != null
+                  //   )}`}
+                  // </Typography>
+                  //   </ListItemText>
+                  // </ListItem>
                 );
               })}
-            </List>
-          </ListItem>
-        );
-      })}
-      {props.sampleSite.sample_stratums?.map((sampleStratum) => {
-        return (
-          <ListItem
-            disableGutters
-            key={`${sampleStratum.survey_sample_site_id}-${sampleStratum.survey_sample_stratum_id}`}
-            sx={{
-              display: 'block',
-              p: 0,
-              '& + li': {
-                mt: 1.5
-              }
-            }}>
-            <Typography
-              variant="subtitle2"
-              color="textSecondary"
-              sx={{
-                fontSize: '12px',
-                fontWeight: 700,
-                letterSpacing: '0.02rem',
-                textTransform: 'uppercase',
-                mb: 1
-              }}>
-              Stratums
-            </Typography>
-            <Box
-              style={{
-                display: 'flex',
-                justifyContent: 'start',
-                alignItems: 'center',
-                backgroundColor: grey[100],
-                borderRadius: '5px'
-              }}>
-              <ListItemText
-                sx={{
-                  px: 2,
-                  py: 1
-                }}
-                title="Sampling Stratum"
-                primary={sampleStratum.name}
-              />
-            </Box>
+              {/* </List> */}
+            </Timeline>
           </ListItem>
         );
       })}

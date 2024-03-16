@@ -166,6 +166,8 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                           )}
                           {item.method_response_metric_id && (
                             <SamplingSiteMethodResponseMetricChip
+                              inverse
+                              strong
                               method_response_metric_id={item.method_response_metric_id}
                             />
                           )}
