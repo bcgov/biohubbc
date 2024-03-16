@@ -47,10 +47,10 @@ const SurveySpatialData = () => {
   const biohubApi = useBiohubApi();
   const classes = useStyles();
 
-  const OBSERVATIONS_COLOUR = '#d61818';
+  const OBSERVATIONS_COLOUR = '#ff5454';
   const STUDY_AREA_COLOUR = '#e3a82b';
   const SAMPLING_SITE_COLOUR = '#3897eb';
-  const TELEMETRY_COLOUR = '#d61818';
+  const TELEMETRY_COLOUR = '#ff5454';
   const DEFAULT_COLOUR = '#a7bfd1';
 
   const observationsGeometryDataLoader = useDataLoader(() =>
