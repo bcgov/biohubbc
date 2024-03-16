@@ -152,6 +152,8 @@ const SamplingMethodForm = () => {
                         {getCodesName(codesContext.codesDataLoader.data, 'sample_methods', item.method_lookup_id || 0)}
                         {item.method_response_metric_id && (
                           <SamplingSiteMethodResponseMetricChip
+                            sx={{ mt: -0.5 }}
+                            inverse
                             method_response_metric_id={item.method_response_metric_id}
                           />
                         )}
@@ -196,6 +198,7 @@ const SamplingMethodForm = () => {
                             WebkitLineClamp: '2',
                             WebkitBoxOrient: 'vertical',
                             maxWidth: '92ch',
+
                             overflow: 'hidden',
                             textOverflow: 'ellipsis'
                           }}>
@@ -207,7 +210,7 @@ const SamplingMethodForm = () => {
                           Periods
                         </Typography>
                         <Divider component="div" sx={{ mt: 1 }}></Divider>
-                        <Box width="50%">
+                        <Box sx={{ width: { xs: '100%', md: '50%', xl: '40%' } }}>
                           <SamplingPeriodsTimeline samplePeriods={item.periods} />
                         </Box>
                       </Box>

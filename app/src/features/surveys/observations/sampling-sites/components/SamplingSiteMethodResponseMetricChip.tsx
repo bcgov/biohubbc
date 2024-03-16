@@ -1,4 +1,5 @@
 import { grey } from '@mui/material/colors';
+import { SxProps } from '@mui/system';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { CodesContext } from 'contexts/codesContext';
 import { useContext, useEffect } from 'react';
@@ -8,6 +9,7 @@ interface ISamplingSiteMethodResponseMetricChipProps {
   method_response_metric_id: number;
   strong?: boolean;
   inverse?: boolean;
+  sx?: SxProps;
 }
 
 const SamplingSiteMethodResponseMetricChip = (props: ISamplingSiteMethodResponseMetricChipProps) => {
@@ -21,7 +23,7 @@ const SamplingSiteMethodResponseMetricChip = (props: ISamplingSiteMethodResponse
     <ColouredRectangleChip
       {...props} // Pass other props from ISamplingSiteMethodResponseMetricChipProps
       colour={grey}
-      sx={{ mx: 1 }}
+      sx={{ mx: 1, ...props.sx }}
       label={
         getCodesName(
           codesContext.codesDataLoader.data,

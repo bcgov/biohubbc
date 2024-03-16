@@ -1,6 +1,6 @@
 import { mdiArrowRightThin, mdiCalendarRange } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineSeparator } from '@mui/lab';
+import { Timeline, TimelineConnector, TimelineContent, TimelineItem, TimelineSeparator } from '@mui/lab';
 import { Grid, Theme, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { makeStyles } from '@mui/styles';
@@ -44,25 +44,27 @@ const SamplingPeriodsTimeline = (props: ISamplingPeriodsTimelineProps) => {
               p: 0
             }}
             key={samplePeriod.survey_sample_period_id}>
-            <TimelineSeparator>
+            <TimelineSeparator sx={{ minWidth: '12px' }}>
               {props.samplePeriods.length > 1 ? (
                 <>
-                  <TimelineDot sx={{ bgcolor: grey[300] }} />
+                  <Box sx={{ mt: 1, mx: 0, p: 0, minWidth: '12px', position: 'absolute', zIndex: 1 }}>
+                    <Icon path={mdiCalendarRange} size={0.7} color={grey[500]} />
+                  </Box>
                   {index < (props.samplePeriods?.length ?? 0) - 1 && (
                     <TimelineConnector
                       sx={{
                         bgcolor: grey[300],
                         position: 'absolute',
-                        height: '100%',
-                        top: 15,
+                        height: '80%',
+                        top: 22,
                         opacity: 0.75
                       }}
                     />
                   )}
                 </>
               ) : (
-                <Box sx={{ mt: 1, mx: 0, p: 0 }}>
-                  <Icon path={mdiCalendarRange} size={0.7} color={grey[400]} />
+                <Box sx={{ mt: 1, mx: 0, p: 0, minWidth: '12px' }}>
+                  <Icon path={mdiCalendarRange} size={0.7} color={grey[500]} />
                 </Box>
               )}
             </TimelineSeparator>

@@ -167,8 +167,7 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                           )}
                           {item.method_response_metric_id && (
                             <SamplingSiteMethodResponseMetricChip
-                              inverse
-                              strong
+                              sx={{ mt: -0.5 }}
                               method_response_metric_id={item.method_response_metric_id}
                             />
                           )}
@@ -191,41 +190,41 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                       }}>
                       <Stack gap={2}>
                         {item.description.length ? (
-                        <Typography
-                          variant="body2"
-                          color="textSecondary"
-                          sx={{
-                            display: '-webkit-box',
-                            WebkitLineClamp: '2',
-                            WebkitBoxOrient: 'vertical',
-                            maxWidth: '92ch',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis'
-                          }}>
-                          {item.description}
-                        </Typography>
-                      ) : (
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color: grey[400],
-                            display: '-webkit-box',
-                            WebkitLineClamp: '2',
-                            WebkitBoxOrient: 'vertical',
-                            maxWidth: '92ch',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis'
-                          }}>
-                          <em>No description</em>
-                        </Typography>
-                      )}
+                          <Typography
+                            variant="body2"
+                            color="textSecondary"
+                            sx={{
+                              display: '-webkit-box',
+                              WebkitLineClamp: '2',
+                              WebkitBoxOrient: 'vertical',
+                              maxWidth: '92ch',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis'
+                            }}>
+                            {item.description}
+                          </Typography>
+                        ) : (
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color: grey[400],
+                              display: '-webkit-box',
+                              WebkitLineClamp: '2',
+                              WebkitBoxOrient: 'vertical',
+                              maxWidth: '92ch',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis'
+                            }}>
+                            <em>No description</em>
+                          </Typography>
+                        )}
 
                         <Box>
                           <Typography variant="body2" fontWeight={700}>
                             Periods
                           </Typography>
                           <Divider component="div" sx={{ mt: 1 }}></Divider>
-                          <Box width="50%">
+                          <Box sx={{ width: { xs: '100%', md: '50%', xl: '40%' } }}>
                             <SamplingPeriodsTimeline samplePeriods={item.periods} />
                           </Box>
                         </Box>
