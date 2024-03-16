@@ -39,7 +39,7 @@ const SamplingPeriodsTimeline = (props: ISamplingPeriodsTimelineProps) => {
               '&::before': {
                 content: 'none'
               },
-              minHeight: props.samplePeriods.length ? '60px' : 0,
+              minHeight: props.samplePeriods.length ? '40px' : 0,
               m: 0,
               p: 0
             }}
@@ -48,7 +48,7 @@ const SamplingPeriodsTimeline = (props: ISamplingPeriodsTimelineProps) => {
               {props.samplePeriods.length > 1 ? (
                 <>
                   <Box sx={{ mt: 1, mx: 0, p: 0, minWidth: '12px', position: 'absolute', zIndex: 1 }}>
-                    <Icon path={mdiCalendarRange} size={0.7} color={grey[500]} />
+                    <Icon path={mdiCalendarRange} size={0.7} color={grey[400]} />
                   </Box>
                   {index < (props.samplePeriods?.length ?? 0) - 1 && (
                     <TimelineConnector

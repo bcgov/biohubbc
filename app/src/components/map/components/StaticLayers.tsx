@@ -1,5 +1,4 @@
 import { Feature } from 'geojson';
-import L from 'leaflet';
 import { PropsWithChildren, ReactElement, useMemo } from 'react';
 import {
   FeatureGroup,
@@ -54,13 +53,7 @@ const StaticLayers = (props: PropsWithChildren<IStaticLayersProps>) => {
                     <GeoJSON
                       key={`static-feature-${id}`}
                       style={{ ...layerColors }}
-                      pointToLayer={(feature, latlng) => {
-                        if (feature.properties?.radius) {
-                          return new L.Circle([latlng.lat, latlng.lng], feature.properties.radius);
-                        }
-
-                        return coloredPoint({ latlng });
-                      }}
+                      pointToLayer={(feature, latlng) => coloredPoint({ latlng, fillColor: layer.layerColors?.fillColor })}
                       data={item.geoJSON}
                       {...item.GeoJSONProps}>
                       {item.tooltip && (

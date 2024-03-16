@@ -1,6 +1,7 @@
 import { Typography } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import { IStaticLayer } from 'components/map/components/StaticLayers';
+import { generateMarkerIconUrl } from 'utils/mapUtils';
 import { SurveySpatialDatasetViewEnum } from './SurveySpatialToolbar';
 
 interface ISurveySpatialMapLegendProps {
@@ -9,20 +10,30 @@ interface ISurveySpatialMapLegendProps {
 }
 
 const SurveySpatialMapLegend = (props: ISurveySpatialMapLegendProps) => {
+  const observationsMapMarker = generateMarkerIconUrl(
+    props.layers.find((layer) => layer.layerName === 'Observations')?.layerColors?.fillColor
+  );
+
+  console.log(props.layers);
+
   return (
     <Stack direction="row" spacing={1}>
       {props?.layers.map(
         (item, index) =>
           item.layerColors && (
             <Box key={`${item.layerName}-${index}`} display="flex" alignItems="center">
-              <Box
-                border={item.layerColors.color}
-                borderRadius="50%"
-                height="0.8rem"
-                width="0.8rem"
-                bgcolor={item.layerColors.fillColor}
-                m={1}
-              />
+              {item.layerName === 'Observations' ? (
+                <Box component="img" src={observationsMapMarker} maxHeight="15px" m={1} />
+              ) : (
+                <Box
+                  border={item.layerColors.color}
+                  borderRadius="1px"
+                  height="0.8rem"
+                  width="0.8rem"
+                  bgcolor={item.layerColors.fillColor}
+                  m={1}
+                />
+              )}
               <Typography variant="body2" color="textSecondary" sx={{ fontWeight: 700 }}>
                 {item.layerName}
               </Typography>
