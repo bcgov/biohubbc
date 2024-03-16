@@ -4,6 +4,7 @@ import { Box, Stack, Typography } from '@mui/material';
 import assert from 'assert';
 import { ProjectContext } from 'contexts/projectContext';
 import { useContext, useMemo } from 'react';
+import { getRandomHexColor } from 'utils/Utils';
 
 interface IProjectParticipantsRoles {
   display_name: string;
@@ -48,20 +49,6 @@ const TeamMembers = () => {
         }) || [],
     [projectContext.projectDataLoader.data.projectData.participants]
   );
-
-  function getRandomHexColor(seed: number) {
-    // Define a seeded random number generator
-    const seededRandom = (min: number, max: number) => {
-      const x = Math.sin(seed++) * 10000;
-      return Math.floor((x - Math.floor(x)) * (max - min + 1)) + min;
-    };
-
-    // Generate a random color component and convert it to a two-digit hex value
-    const randomComponent = () => seededRandom(70, 150).toString(16).padStart(2, '0');
-
-    // Concatenate three random color components to form a hex color
-    return `#${randomComponent()}${randomComponent()}${randomComponent()}`;
-  }
 
   return (
     <Stack spacing={1}>
