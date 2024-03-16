@@ -1,16 +1,13 @@
-import { mdiArrowRightThin } from '@mdi/js';
-import Icon from '@mdi/react';
-import { Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineSeparator } from '@mui/lab';
-import { colors, Grid, List, ListItem, ListItemText, Stack, Typography } from '@mui/material';
+import { colors, List, ListItem, ListItemText, Stack, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { Box } from '@mui/system';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { CodesContext } from 'contexts/codesContext';
-import dayjs from 'dayjs';
 import { IGetSampleLocationDetails } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect } from 'react';
 import { getCodesName } from 'utils/Utils';
 import { IStratumChipColours } from '../SamplingSiteList';
+import SamplingPeriodsTimeline from './SamplingPeriodsTimeline';
 import SamplingSiteMethodResponseMetricChip from './SamplingSiteMethodResponseMetricChip';
 
 interface ISamplingSiteMethodsPeriodsListProps {
@@ -24,8 +21,6 @@ const SamplingSiteMethodsPeriodsList = (props: ISamplingSiteMethodsPeriodsListPr
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
-
-  const formatDate = (dt: Date, time: boolean) => dayjs(dt).format(time ? 'MMMM D, YYYY h:mm A' : 'MMMM D, YYYY');
 
   const orderedColours = [colors.purple, colors.blue, colors.amber, colors.deepOrange, colors.pink];
 
@@ -104,95 +99,8 @@ const SamplingSiteMethodsPeriodsList = (props: ISamplingSiteMethodsPeriodsListPr
                 method_response_metric_id={sampleMethod.method_response_metric_id}
               />
             </Box>
-            <Timeline sx={{ alignItems: 'start', justifyContent: 'start' }}>
-              {/* <List disablePadding> */}
-              {sampleMethod.sample_periods?.map((samplePeriod, index) => {
-                return (
-                  <TimelineItem
-                    sx={{
-                      width: '100%',
-                      '&::before': {
-                        content: 'none'
-                      },
-                      minHeight: '50px',
-                      m: 0,
-                      p: 0
-                    }}
-                    key={samplePeriod.survey_sample_period_id}>
-                    <TimelineSeparator>
-                      <TimelineDot />
-                      {index < (sampleMethod.sample_periods?.length ?? 0) - 1 && (
-                        <TimelineConnector
-                          sx={{
-                            position: 'absolute',
-                            height: '100%',
-                            top: 15,
-                            opacity: 0.75
-                          }}
-                        />
-                      )}
-                    </TimelineSeparator>
-                    <TimelineContent
-                      sx={{
-                        '& .MuiTimelineItem-root': {
-                          width: '100%',
-                          flex: '1 1 auto'
-                        }
-                      }}>
-                      <Grid container xs={12} width="100%">
-                        <Grid item xs={5} flex="1 1 auto">
-                          <Typography variant="body2" component="div" fontWeight={700} color="textSecondary">
-                            {formatDate(samplePeriod.start_date as unknown as Date, false)}
-                          </Typography>
-                          <Typography variant="body2" component="div" fontWeight={500} color="textSecondary">
-                            {samplePeriod.start_time}
-                          </Typography>
-                        </Grid>
-                        <Grid item flex="0.5 1 auto" alignItems="start">
-                          <Icon path={mdiArrowRightThin} size={0.8} color={grey[400]} />
-                        </Grid>
-                        <Grid item xs={5} flex="1 1 auto">
-                          <Typography variant="body2" component="div" fontWeight={700} color="textSecondary">
-                            {formatDate(samplePeriod.end_date as unknown as Date, false)}
-                          </Typography>
-                          <Typography variant="body2" component="div" fontWeight={500} color="textSecondary">
-                            {samplePeriod.end_time}
-                          </Typography>
-                        </Grid>
-                      </Grid>
-                    </TimelineContent>
-                  </TimelineItem>
-
-                  // <ListItem
-                  //   dense
-                  //   divider
-                  //   disableGutters
-                  //   sx={{
-                  //     py: 1,
-                  //     px: 3,
-                  //     color: 'text.secondary'
-                  //   }}
-                  //   title="Sampling Period"
-                  //   key={`${samplePeriod.survey_sample_method_id}-${samplePeriod.survey_sample_period_id}`}>
-                  //   <ListItemIcon sx={{ minWidth: '25px', mt: '1px' }} color="inherit">
-                  //     <Icon path={mdiCalendarRange} size={0.75} />
-                  //   </ListItemIcon>
-                  //   <ListItemText>
-                  // <Typography variant="body2" component="div" color="inherit" fontWeight={500}>
-                  //   {`${formatDate(
-                  //     [samplePeriod.start_date, samplePeriod.start_time].join('T') as unknown as Date,
-                  //     samplePeriod.start_time != null
-                  //   )} - ${formatDate(
-                  //     [samplePeriod.end_date, samplePeriod.end_time].join('T') as unknown as Date,
-                  //     samplePeriod.start_time != null
-                  //   )}`}
-                  // </Typography>
-                  //   </ListItemText>
-                  // </ListItem>
-                );
-              })}
-              {/* </List> */}
-            </Timeline>
+            {sampleMethod.sample_periods && <SamplingPeriodsTimeline samplePeriods={sampleMethod.sample_periods} />}
+            
           </ListItem>
         );
       })}

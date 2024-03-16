@@ -18,9 +18,9 @@ const ColouredRectangleChip = (props: IColouredRectangleChipProps) => {
         borderRadius: '5px',
         minWidth: 0,
         '& .MuiChip-label': {
-          color: props.inverse ? props.colour[100] : props.strong ? props.colour[700] : props.colour[500],
+          color: props.inverse ? props.colour[100] : props.strong ? props.colour[800] : props.colour[600],
           fontWeight: 700,
-          fontSize: '0.7rem',
+          fontSize: '0.75rem',
           p: 1
         },
         ...props.sx

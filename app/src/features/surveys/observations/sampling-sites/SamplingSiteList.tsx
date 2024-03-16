@@ -386,7 +386,8 @@ const SamplingSiteList = () => {
                           borderBottom: '1px solid' + grey[300],
                           '&:before': {
                             display: 'none'
-                          }
+                          },
+                          mb: 0
                         }}>
                         <Box display="flex" alignItems="center" overflow="hidden">
                           <AccordionSummary
