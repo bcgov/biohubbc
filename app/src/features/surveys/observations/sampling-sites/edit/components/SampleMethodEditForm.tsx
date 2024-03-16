@@ -224,7 +224,7 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                             Periods
                           </Typography>
                           <Divider component="div" sx={{ mt: 1 }}></Divider>
-                          <Box sx={{ width: { xs: '100%', md: '50%', xl: '40%' } }}>
+                          <Box sx={{ maxWidth: { xs: '100%', sm: '400px', xl: '300px' } }}>
                             <SamplingPeriodsTimeline samplePeriods={item.periods} />
                           </Box>
                         </Box>

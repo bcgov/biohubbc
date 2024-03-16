@@ -10,7 +10,7 @@ import {
   Tooltip,
   TooltipProps
 } from 'react-leaflet';
-import { coloredPoint } from 'utils/mapUtils';
+import { coloredCustomPointMarker, coloredPoint } from 'utils/mapUtils';
 
 export interface IStaticLayerFeature {
   geoJSON: Feature;
@@ -53,7 +53,11 @@ const StaticLayers = (props: PropsWithChildren<IStaticLayersProps>) => {
                     <GeoJSON
                       key={`static-feature-${id}`}
                       style={{ ...layerColors }}
-                      pointToLayer={(feature, latlng) => coloredPoint({ latlng, fillColor: layer.layerColors?.fillColor })}
+                      pointToLayer={(feature, latlng) =>
+                        layer.layerName === 'Observations'
+                          ? coloredCustomPointMarker({ latlng, fillColor: layer.layerColors?.fillColor })
+                          : coloredPoint({ latlng, fillColor: layer.layerColors?.fillColor })
+                      }
                       data={item.geoJSON}
                       {...item.GeoJSONProps}>
                       {item.tooltip && (

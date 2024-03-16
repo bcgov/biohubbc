@@ -27,6 +27,7 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import SamplingSiteMap from './components/SamplingSiteMap';
 import SamplingSiteMethodsPeriodsList from './components/SamplingSiteMethodsPeriodsList';
 
 export interface IStratumChipColours {
@@ -456,10 +457,35 @@ const SamplingSiteList = () => {
                             pt: 0,
                             px: 2
                           }}>
+                          <Typography
+                            color="textSecondary"
+                            mb={1}
+                            sx={{
+                              fontWeight: 700,
+                              letterSpacing: '0.02rem',
+                              textTransform: 'uppercase',
+                              fontSize: '0.7rem'
+                            }}>
+                            Methods
+                          </Typography>
                           <SamplingSiteMethodsPeriodsList
                             sampleSite={sampleSite}
                             stratumChipColours={stratumChipColours}
                           />
+                          <Typography
+                            color="textSecondary"
+                            mb={1}
+                            sx={{
+                              fontWeight: 700,
+                              letterSpacing: '0.02rem',
+                              textTransform: 'uppercase',
+                              fontSize: '0.7rem'
+                            }}>
+                            Location
+                          </Typography>
+                          <Box height="200px" width="100%">
+                            <SamplingSiteMap sampleSites={[sampleSite]} colour="#3897eb" isLoading={false} />
+                          </Box>
                         </AccordionDetails>
                       </Accordion>
                     );

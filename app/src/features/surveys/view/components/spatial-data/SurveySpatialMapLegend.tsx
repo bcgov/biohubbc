@@ -1,7 +1,7 @@
 import { Typography } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import { IStaticLayer } from 'components/map/components/StaticLayers';
-import { generateMarkerIconUrl } from 'utils/mapUtils';
+import { generateCustomPointMarkerUrl } from 'utils/mapUtils';
 import { SurveySpatialDatasetViewEnum } from './SurveySpatialToolbar';
 
 interface ISurveySpatialMapLegendProps {
@@ -10,11 +10,9 @@ interface ISurveySpatialMapLegendProps {
 }
 
 const SurveySpatialMapLegend = (props: ISurveySpatialMapLegendProps) => {
-  const observationsMapMarker = generateMarkerIconUrl(
+  const observationsMapMarker = generateCustomPointMarkerUrl(
     props.layers.find((layer) => layer.layerName === 'Observations')?.layerColors?.fillColor
   );
-
-  console.log(props.layers);
 
   return (
     <Stack direction="row" spacing={1}>

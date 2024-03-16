@@ -23,7 +23,17 @@ export interface MapPointProps {
   borderColor?: string;
 }
 
-export const generateMarkerIconUrl = (fillColor?: string) =>
+export const coloredPoint = (point: MapPointProps): L.CircleMarker<any> => {
+  return new L.CircleMarker(point.latlng, {
+    radius: 6,
+    fillOpacity: 1,
+    fillColor: point.fillColor ?? MapDefaultBlue,
+    color: point.borderColor ?? '#ffffff',
+    weight: 1
+  });
+};
+
+export const generateCustomPointMarkerUrl = (fillColor?: string) =>
   'data:image/svg+xml;base64,' +
   btoa(
     `<svg width="24px" height="24px" viewBox="-3 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="${
@@ -31,8 +41,8 @@ export const generateMarkerIconUrl = (fillColor?: string) =>
     }" d="m8.075 23.52c-6.811-9.878-8.075-10.891-8.075-14.52 0-4.971 4.029-9 9-9s9 4.029 9 9c0 3.629-1.264 4.64-8.075 14.516-.206.294-.543.484-.925.484s-.719-.19-.922-.48l-.002-.004z"/></svg>`
   );
 
-export const coloredPoint = (point: MapPointProps): L.Marker<any> => {
+export const coloredCustomPointMarker = (point: MapPointProps): L.Marker<any> => {
   return new L.Marker(point.latlng, {
-    icon: L.icon({ iconUrl: generateMarkerIconUrl(point?.fillColor), iconSize: [20, 15], iconAnchor: [12, 12] })
+    icon: L.icon({ iconUrl: generateCustomPointMarkerUrl(point?.fillColor), iconSize: [20, 15], iconAnchor: [12, 12] })
   });
 };

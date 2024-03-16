@@ -1,4 +1,4 @@
-import { colors, List, ListItem, ListItemText, Stack, Typography } from '@mui/material';
+import { colors, List, ListItem, ListItemText, Stack } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { Box } from '@mui/system';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
@@ -53,17 +53,6 @@ const SamplingSiteMethodsPeriodsList = (props: ISamplingSiteMethodsPeriodsListPr
           </Stack>
         </Box>
       )}
-      <Typography
-        color="textSecondary"
-        mb={2}
-        sx={{
-          fontWeight: 700,
-          letterSpacing: '0.02rem',
-          textTransform: 'uppercase',
-          fontSize: '0.7rem'
-        }}>
-        Methods
-      </Typography>
       {props.sampleSite.sample_methods?.map((sampleMethod) => {
         return (
           <ListItem
