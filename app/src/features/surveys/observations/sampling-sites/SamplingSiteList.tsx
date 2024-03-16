@@ -1,4 +1,13 @@
-import { mdiChevronDown, mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import {
+  mdiChevronDown,
+  mdiDotsVertical,
+  mdiMapMarker,
+  mdiPencilOutline,
+  mdiPlus,
+  mdiTrashCanOutline,
+  mdiVectorLine,
+  mdiVectorSquare
+} from '@mdi/js';
 import Icon from '@mdi/react';
 import { Color, colors } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
@@ -427,7 +436,6 @@ const SamplingSiteList = () => {
                                 }}
                                 inputProps={{ 'aria-label': 'controlled' }}
                               />
-
                               <Typography
                                 variant="body2"
                                 component="div"
@@ -440,6 +448,24 @@ const SamplingSiteList = () => {
                                 }}>
                                 {sampleSite.name}
                               </Typography>
+                              <Icon
+                                size={0.8}
+                                color={grey[400]}
+                                title={
+                                  sampleSite.geojson.geometry.type === 'Point'
+                                    ? 'Point sampling site'
+                                    : sampleSite.geojson.geometry.type === 'LineString'
+                                    ? 'Transect sampling site'
+                                    : 'Polygon sampling site'
+                                }
+                                path={
+                                  sampleSite.geojson.geometry.type === 'Point'
+                                    ? mdiMapMarker
+                                    : sampleSite.geojson.geometry.type === 'LineString'
+                                    ? mdiVectorLine
+                                    : mdiVectorSquare
+                                }
+                              />
                             </Stack>
                           </AccordionSummary>
                           <IconButton
