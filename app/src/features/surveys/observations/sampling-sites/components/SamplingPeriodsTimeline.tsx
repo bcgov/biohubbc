@@ -1,7 +1,7 @@
 import { mdiArrowRightThin, mdiCalendarRange } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineSeparator } from '@mui/lab';
-import { Grid, Theme, Typography } from '@mui/material';
+import { Theme, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { makeStyles } from '@mui/styles';
 import { Box } from '@mui/system';
@@ -30,7 +30,7 @@ const SamplingPeriodsTimeline = (props: ISamplingPeriodsTimelineProps) => {
   const classes = useStyles();
 
   return (
-    <Timeline sx={{ alignItems: 'start', justifyContent: 'start', p: 0, my: 1, ml: 2, mr: 0 }}>
+    <Timeline sx={{ alignItems: 'start', justifyContent: 'start', p: 0, my: 1, ml: 3, mr: 0 }}>
       {props.samplePeriods.length &&
         props.samplePeriods?.map((samplePeriod, index) => (
           <TimelineItem
@@ -44,7 +44,7 @@ const SamplingPeriodsTimeline = (props: ISamplingPeriodsTimelineProps) => {
               p: 0
             }}
             key={samplePeriod.survey_sample_period_id}>
-            <TimelineSeparator sx={{ minWidth: '12px' }}>
+            <TimelineSeparator sx={{ minWidth: '11px' }}>
               {props.samplePeriods.length > 1 ? (
                 <>
                   <TimelineDot sx={{ bgcolor: grey[300] }} />
@@ -61,7 +61,7 @@ const SamplingPeriodsTimeline = (props: ISamplingPeriodsTimelineProps) => {
                   )}
                 </>
               ) : (
-                <Box sx={{ mt: 1, mx: 0, p: 0, minWidth: '6px' }}>
+                <Box mt={1} display="flex" alignItems="center">
                   <Icon path={mdiCalendarRange} size={0.7} color={grey[500]} />
                 </Box>
               )}
@@ -73,28 +73,27 @@ const SamplingPeriodsTimeline = (props: ISamplingPeriodsTimelineProps) => {
                   flex: '1 1 auto'
                 }
               }}>
-              <Grid container xs={12} width="100%">
-                <Grid item xs={4}>
+              <Box width="100%" display="flex" justifyContent="space-between">
+                <Box minWidth="10ch">
                   <Typography component="dt" variant="subtitle2" className={classes.typographyDate}>
                     {formatDate(samplePeriod.start_date as unknown as Date, false)}
                   </Typography>
                   <Typography component="dt" variant="subtitle2" className={classes.typographyTime}>
                     {samplePeriod.start_time}
                   </Typography>
-                </Grid>
-                <Grid item xs={1} sx={{ display: 'flex', justifyContent: 'center', mr: 2 }}>
-                  {/* Add alignItems: 'center' to center the icon vertically */}
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'center', ml: 1.5, mr: 2 }}>
                   <Icon path={mdiArrowRightThin} size={0.9} color={grey[500]} />
-                </Grid>
-                <Grid item flex="1 1 auto">
+                </Box>
+                <Box flex="1 1 auto">
                   <Typography component="dt" variant="subtitle2" className={classes.typographyDate}>
                     {formatDate(samplePeriod.end_date as unknown as Date, false)}
                   </Typography>
                   <Typography component="dt" variant="subtitle2" className={classes.typographyTime}>
                     {samplePeriod.end_time}
                   </Typography>
-                </Grid>
-              </Grid>
+                </Box>
+              </Box>
             </TimelineContent>
           </TimelineItem>
         ))}

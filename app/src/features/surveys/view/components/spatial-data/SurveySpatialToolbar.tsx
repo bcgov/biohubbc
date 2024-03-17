@@ -16,6 +16,7 @@ import { ProjectRoleGuard } from 'components/security/Guards';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import SurveySpatialMapLegend from './SurveySpatialMapLegend';
 
 export enum SurveySpatialDatasetViewEnum {
   OBSERVATIONS = 'OBSERVATIONS',
@@ -155,6 +156,9 @@ const SurveySpatialToolbar = (props: ISurveySptialToolbarProps) => {
               </ToggleButton>
             ))}
           </ToggleButtonGroup>
+          <Box>
+            <SurveySpatialMapLegend activeView={props.activeView} layers={props.layers} />
+          </Box>
         </Box>
       </Box>
     </>

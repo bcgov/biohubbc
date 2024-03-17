@@ -3,6 +3,7 @@ import { Box, Paper } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { Theme } from '@mui/system';
 import { IStaticLayer, IStaticLayerFeature } from 'components/map/components/StaticLayers';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TelemetryDataContext } from 'contexts/telemetryDataContext';
@@ -14,17 +15,25 @@ import useDataLoader from 'hooks/useDataLoader';
 import { ITelemetry } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { getCodesName } from 'utils/Utils';
+import { getCodesName, getFormattedDate } from 'utils/Utils';
 import { IAnimalDeployment } from '../../survey-animals/telemetry-device/device';
 import SurveyMap, { ISurveyMapPoint, ISurveyMapPointMetadata, ISurveyMapSupplementaryLayer } from '../../SurveyMap';
 import SurveyMapPopup from '../../SurveyMapPopup';
-import SurveySpatialMapLegend from './SurveySpatialMapLegend';
+import SurveyMapTooltip from '../../SurveyMapTooltip';
 import SurveySpatialObservationDataTable from './SurveySpatialObservationDataTable';
 import SurveySpatialTelemetryDataTable from './SurveySpatialTelemetryDataTable';
 import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './SurveySpatialToolbar';
 
 const useStyles = makeStyles((theme: Theme) => ({
   popup: {
+    '& a': {
+      color: theme.palette.primary.contrastText
+    },
+    '& p': {
+      margin: 0
+    }
+  },
+  tooltip: {
     '& a': {
       color: theme.palette.primary.contrastText
     },
@@ -47,9 +56,9 @@ const SurveySpatialData = () => {
   const biohubApi = useBiohubApi();
   const classes = useStyles();
 
-  const OBSERVATIONS_COLOUR = '#ff5454';
+  const OBSERVATIONS_COLOUR = '#db4f4f'; //'#ff5454';
   const STUDY_AREA_COLOUR = '#e3a82b';
-  const SAMPLING_SITE_COLOUR = '#3897eb';
+  const SAMPLING_SITE_COLOUR = '#1f6fb5'; //'#3897eb';
   const TELEMETRY_COLOUR = '#ff5454';
   const DEFAULT_COLOUR = '#a7bfd1';
 
@@ -186,13 +195,19 @@ const SurveySpatialData = () => {
             { label: 'Taxon ID', value: String(response.itis_tsn) },
             { label: 'Count', value: String(response.count) },
             {
-              label: 'Location',
+              label: 'Coords',
               value: [response.latitude, response.longitude]
                 .filter((coord): coord is number => coord !== null)
                 .map((coord) => coord.toFixed(6))
                 .join(', ')
             },
-            { label: 'Date', value: dayjs(`${response.observation_date} ${response.observation_time}`).toISOString() }
+            {
+              label: 'Date',
+              value: getFormattedDate(
+                response.observation_time ? DATE_FORMAT.ShortMediumDateTimeFormat : DATE_FORMAT.ShortMediumDateFormat,
+                `${response.observation_date} ${response.observation_time}`
+              )
+            }
           ];
         }
       };
@@ -257,7 +272,9 @@ const SurveySpatialData = () => {
                 metadata={[{ label: 'Name', value: location.name }]}
                 isLoading={false}
               />
-            )
+            ),
+            tooltip: <SurveyMapTooltip label="Study Area" />,
+            TooltipProps: { className: classes.popup }
           };
         });
       })
@@ -286,7 +303,9 @@ const SurveySpatialData = () => {
                 }
               ]}
             />
-          )
+          ),
+          tooltip: <SurveyMapTooltip label={'Sampling Site'} />,
+          TooltipProps: { className: classes.popup }
         };
       })
     },
@@ -324,7 +343,9 @@ const SurveySpatialData = () => {
                 title={supplementaryLayer.popupRecordTitle}
                 metadata={mapPointMetadata[mapPoint.key]}
               />
-            )
+            ),
+            tooltip: <SurveyMapTooltip label="Observation" />,
+            TooltipProps: { className: classes.popup }
           };
         })
       };
@@ -357,9 +378,6 @@ const SurveySpatialData = () => {
 
       <Box height={{ sm: 300, md: 500 }} position="relative">
         <SurveyMap staticLayers={staticLayers} supplementaryLayers={supplementaryLayers} isLoading={isLoading} />
-      </Box>
-      <Box pt={2} px={2}>
-        <SurveySpatialMapLegend activeView={activeView} layers={staticLayers} />
       </Box>
 
       <Box p={2} position="relative">

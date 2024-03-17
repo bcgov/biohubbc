@@ -26,8 +26,8 @@ const SurveySpatialMapLegend = (props: ISurveySpatialMapLegendProps) => {
                 <Box
                   border={item.layerColors.color}
                   borderRadius="1px"
-                  height="0.8rem"
-                  width="0.8rem"
+                  height="0.85rem"
+                  width="0.85rem"
                   bgcolor={item.layerColors.fillColor}
                   m={1}
                 />

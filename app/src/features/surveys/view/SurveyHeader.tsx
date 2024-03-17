@@ -1,8 +1,9 @@
-import { mdiChevronDown, mdiCogOutline, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiCalendarRange, mdiChevronDown, mdiCogOutline, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
+import { grey } from '@mui/material/colors';
 import Link from '@mui/material/Link';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
@@ -143,10 +144,10 @@ const SurveyHeader = () => {
         }
         subTitleJSX={
           <Stack flexDirection="row" alignItems="center" gap={0.75} color="text.secondary">
-            <Typography component="span">Survey Timeline:</Typography>
+            <Icon path={mdiCalendarRange} size={0.8} color={grey[600]} style={{ marginTop: 1.5 }} />
             <Typography component="span">
               {getFormattedDateRangeString(
-                DATE_FORMAT.ShortMediumDateFormat,
+                DATE_FORMAT.MediumDateFormat,
                 surveyWithDetails.surveyData.survey_details.start_date,
                 surveyWithDetails.surveyData.survey_details.end_date
               )}

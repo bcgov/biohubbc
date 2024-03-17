@@ -9,7 +9,6 @@ import {
   mdiVectorSquare
 } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Color, colors } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -38,11 +37,8 @@ import { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import SamplingSiteMap from './components/SamplingSiteMap';
 import SamplingSiteMethodsPeriodsList from './components/SamplingSiteMethodsPeriodsList';
-
-export interface IStratumChipColours {
-  stratum: string;
-  colour: Color;
-}
+import SamplingSiteMethodPeriodsListSection from './edit/components/SamplingSiteMethodsPeriodsListSection';
+import SamplingStratumChips from './edit/components/SamplingStratumChips';
 
 const SamplingSiteList = () => {
   const surveyContext = useContext(SurveyContext);
@@ -65,15 +61,6 @@ const SamplingSiteList = () => {
   const [checkboxSelectedIds, setCheckboxSelectedIds] = useState<number[]>([]);
 
   const sampleSites = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
-
-  // Determine colours for stratum labels
-  const orderedColours = [colors.purple, colors.blue, colors.pink, colors.orange, colors.cyan, colors.teal];
-  const stratums = surveyContext.surveyDataLoader.data?.surveyData.site_selection.stratums;
-  const stratumChipColours: IStratumChipColours[] =
-    stratums?.map((stratum, index) => ({
-      stratum: stratum.name,
-      colour: orderedColours[index % orderedColours.length]
-    })) ?? [];
 
   const handleSampleSiteMenuClick = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -441,31 +428,32 @@ const SamplingSiteList = () => {
                                 component="div"
                                 title="Sampling Site"
                                 sx={{
-                                  flex: '1 1 auto',
                                   fontWeight: 700,
                                   overflow: 'hidden',
                                   textOverflow: 'ellipsis'
                                 }}>
                                 {sampleSite.name}
                               </Typography>
-                              <Icon
-                                size={0.8}
-                                color={grey[400]}
-                                title={
-                                  sampleSite.geojson.geometry.type === 'Point'
-                                    ? 'Point sampling site'
-                                    : sampleSite.geojson.geometry.type === 'LineString'
-                                    ? 'Transect sampling site'
-                                    : 'Polygon sampling site'
-                                }
-                                path={
-                                  sampleSite.geojson.geometry.type === 'Point'
-                                    ? mdiMapMarker
-                                    : sampleSite.geojson.geometry.type === 'LineString'
-                                    ? mdiVectorLine
-                                    : mdiVectorSquare
-                                }
-                              />
+                              <Box sx={{ minWidth: '20px', display: 'flex', alignItems: 'center' }}>
+                                <Icon
+                                  size={0.8}
+                                  color={grey[400]}
+                                  title={
+                                    sampleSite.geojson.geometry.type === 'Point'
+                                      ? 'Point sampling site'
+                                      : sampleSite.geojson.geometry.type === 'LineString'
+                                      ? 'Transect sampling site'
+                                      : 'Polygon sampling site'
+                                  }
+                                  path={
+                                    sampleSite.geojson.geometry.type === 'Point'
+                                      ? mdiMapMarker
+                                      : sampleSite.geojson.geometry.type === 'LineString'
+                                      ? mdiVectorLine
+                                      : mdiVectorSquare
+                                  }
+                                />
+                              </Box>
                             </Stack>
                           </AccordionSummary>
                           <IconButton
@@ -483,35 +471,22 @@ const SamplingSiteList = () => {
                             pt: 0,
                             px: 2
                           }}>
-                          <Typography
-                            color="textSecondary"
-                            mb={1}
-                            sx={{
-                              fontWeight: 700,
-                              letterSpacing: '0.02rem',
-                              textTransform: 'uppercase',
-                              fontSize: '0.7rem'
-                            }}>
-                            Methods
-                          </Typography>
-                          <SamplingSiteMethodsPeriodsList
-                            sampleSite={sampleSite}
-                            stratumChipColours={stratumChipColours}
+                          {sampleSite.sample_stratums && sampleSite.sample_stratums?.length > 0 && (
+                            <SamplingStratumChips sampleSite={sampleSite} />
+                          )}
+
+                          <SamplingSiteMethodPeriodsListSection
+                            title="Methods"
+                            body={<SamplingSiteMethodsPeriodsList sampleSite={sampleSite} />}
                           />
-                          <Typography
-                            color="textSecondary"
-                            mb={1}
-                            sx={{
-                              fontWeight: 700,
-                              letterSpacing: '0.02rem',
-                              textTransform: 'uppercase',
-                              fontSize: '0.7rem'
-                            }}>
-                            Location
-                          </Typography>
-                          <Box height="200px" width="100%">
-                            <SamplingSiteMap sampleSites={[sampleSite]} colour="#3897eb" isLoading={false} />
-                          </Box>
+                          <SamplingSiteMethodPeriodsListSection
+                            title="Location"
+                            body={
+                              <Box height="150px" width="100%">
+                                <SamplingSiteMap sampleSites={[sampleSite]} colour="#3897eb" isLoading={false} />
+                              </Box>
+                            }
+                          />
                         </AccordionDetails>
                       </Accordion>
                     );
