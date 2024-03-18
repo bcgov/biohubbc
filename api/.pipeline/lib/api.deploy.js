@@ -30,6 +30,7 @@ const apiDeploy = async (settings) => {
         API_HOST: phases[env][phase].API_HOST,
         APP_HOST: phases[env][phase].APP_HOST,
         CHANGE_ID: phases[env]['build'].CHANGE_ID,
+        MAX_REQ_BODY_SIZE: phases[env][phase].MAX_REQ_BODY_SIZE,
         // Node
         NODE_ENV: phases[env][phase].NODE_ENV,
         NODE_OPTIONS: phases[env][phase].NODE_OPTIONS,
@@ -47,8 +48,6 @@ const apiDeploy = async (settings) => {
         // BCTW / Critterbase
         BCTW_API_HOST: phases[env][phase].BCTW_API_HOST,
         CB_API_HOST: phases[env][phase].CB_API_HOST,
-        // S3
-        S3_KEY_PREFIX: phases[env][phase].S3_KEY_PREFIX,
         // Database
         TZ: phases[env][phase].TZ,
         DB_SERVICE_NAME: `${phases[env][phase].DB_NAME}-postgresql${phases[env][phase].SUFFIX}`,
@@ -69,9 +68,9 @@ const apiDeploy = async (settings) => {
         KEYCLOAK_API_ENVIRONMENT: phases[env][phase].SSO.cssApi.KEYCLOAK_API_ENVIRONMENT,
         // Object Store
         OBJECT_STORE_SECRET: phases[env][phase].OBJECT_STORE_SECRET,
-        MAX_REQ_BODY_SIZE: phases[env][phase].MAX_REQ_BODY_SIZE,
         MAX_UPLOAD_NUM_FILES: phases[env][phase].MAX_UPLOAD_NUM_FILES,
         MAX_UPLOAD_FILE_SIZE: phases[env][phase].MAX_UPLOAD_FILE_SIZE,
+        S3_KEY_PREFIX: phases[env][phase].S3_KEY_PREFIX,
         // Log Level
         LOG_LEVEL: phases[env][phase].LOG_LEVEL,
         API_RESPONSE_VALIDATION_ENABLED: phases[env][phase].API_RESPONSE_VALIDATION_ENABLED,

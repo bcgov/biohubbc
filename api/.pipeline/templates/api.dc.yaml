@@ -34,6 +34,10 @@ parameters:
   - name: API_PORT_DEFAULT_NAME
     description: Api default port name
     value: '6100-tcp'
+  - name: MAX_REQ_BODY_SIZE
+    description: The maximum request body size in bytes
+    required: false
+    value: '52428800'
   # Clamav
   - name: ENABLE_FILE_VIRUS_SCAN
     value: 'true'
@@ -116,6 +120,14 @@ parameters:
   - name: OBJECT_STORE_SECRET
     description: The name of the Openshift secret which contains the object store credentials.
     value: 'biohubbc-object-store'
+  - name: MAX_UPLOAD_NUM_FILES
+    description: The maximum number of files that can be uploaded at once
+    required: false
+    value: '10'
+  - name: MAX_UPLOAD_FILE_SIZE
+    description: The maximum file size in bytes
+    required: false
+    value: '52428800'
   - name: S3_KEY_PREFIX
     description: S3 key optional prefix
     required: false
@@ -222,6 +234,8 @@ objects:
                   value: ${VERSION}
                 - name: CHANGE_VERSION
                   value: ${CHANGE_ID}
+                - name: MAX_REQ_BODY_SIZE
+                  value: ${MAX_REQ_BODY_SIZE}
                 # Node
                 - name: NODE_ENV
                   value: ${NODE_ENV}
@@ -324,6 +338,12 @@ objects:
                     secretKeyRef:
                       key: object_store_bucket_name
                       name: ${OBJECT_STORE_SECRET}
+                - name: MAX_UPLOAD_NUM_FILES
+                  value: ${MAX_UPLOAD_NUM_FILES}
+                - name: MAX_UPLOAD_FILE_SIZE
+                  value: ${MAX_UPLOAD_FILE_SIZE}
+                - name: S3_KEY_PREFIX
+                  value: ${S3_KEY_PREFIX}
                 # Logging and Validation
                 - name: LOG_LEVEL
                   value: ${LOG_LEVEL}
