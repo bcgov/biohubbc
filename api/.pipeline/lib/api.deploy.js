@@ -50,7 +50,7 @@ const apiDeploy = async (settings) => {
         CB_API_HOST: phases[env][phase].CB_API_HOST,
         // Database
         TZ: phases[env][phase].TZ,
-        DB_SERVICE_NAME: `${phases[env][phase].DB_NAME}-postgresql${phases[env][phase].SUFFIX}`,
+        DB_SERVICE_NAME: phases[env][phase].DB_SERVICE_NAME,
         // Keycloak
         KEYCLOAK_HOST: phases[env][phase].SSO.KEYCLOAK_HOST,
         KEYCLOAK_REALM: phases[env][phase].SSO.KEYCLOAK_REALM,

@@ -21,18 +21,17 @@ const dbSetupDeploy = async (settings) => {
 
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../templates'));
 
-  const CHANGE_ID = phases[env][phase].CHANGE_ID;
-  const isName = `${phases[env][phase].NAME}-setup`;
-  const INSTANCE = `${isName}-${CHANGE_ID}`;
-  const isVersion = `${phases[env][phase].TAG}-setup`;
-  const imageStreamName = `${isName}:${isVersion}`;
-  const DB_NAME = `${phases[env][phase].NAME}-postgresql${phases[env][phase].SUFFIX}`;
+  const IMAGE_NAME = `${phases[env][phase].NAME}-setup`;
+  const INSTANCE = `${IMAGE_NAME}-${phases[env][phase].CHANGE_ID}`;
+  const IMAGE_VERSION = `${phases[env][phase].TAG}-setup`;
+  const IMAGESTREAM_NAME = `${IMAGE_NAME}:${IMAGE_VERSION}`;
+  const DB_SERVICE_NAME = `${phases[env][phase].NAME}-postgresql${phases[env][phase].SUFFIX}`;
 
   const objects = [];
   const imageStreamObjects = [];
 
   // Clean existing image
-  await checkAndClean(`istag/${imageStreamName}`, 10, 5, 0, oc).catch(() => {
+  await checkAndClean(`istag/${IMAGESTREAM_NAME}`, 10, 5, 0, oc).catch(() => {
     // Ignore errors, nothing to clean
   });
 
@@ -40,16 +39,16 @@ const dbSetupDeploy = async (settings) => {
   imageStreamObjects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.setup.is.yaml`, {
       param: {
-        NAME: `${isName}`
+        NAME: `${IMAGE_NAME}`
       }
     })
   );
 
-  oc.applyRecommendedLabels(imageStreamObjects, isName, env, CHANGE_ID, INSTANCE);
-  oc.importImageStreams(imageStreamObjects, isVersion, phases[env]['build'].NAMESPACE, phases[env]['build'].TAG);
+  oc.applyRecommendedLabels(imageStreamObjects, IMAGE_NAME, env, phases[env][phase].CHANGE_ID, INSTANCE);
+  oc.importImageStreams(imageStreamObjects, IMAGE_VERSION, phases[env]['build'].NAMESPACE, phases[env]['build'].TAG);
 
   // Get database setup image stream
-  const fetchedImageStreams = oc.get(`istag/${imageStreamName}`) || [];
+  const fetchedImageStreams = oc.get(`istag/${IMAGESTREAM_NAME}`) || [];
 
   if (!fetchedImageStreams.length) {
     console.debug('Unable to fetch Database image reference for use in database setup deployment');
@@ -58,7 +57,7 @@ const dbSetupDeploy = async (settings) => {
 
   const dbSetupImageStream = fetchedImageStreams[0];
 
-  const NAME = `${isName}${phases[env][phase].SUFFIX}`;
+  const NAME = `${IMAGE_NAME}${phases[env][phase].SUFFIX}`;
 
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.setup.dc.yaml`, {
@@ -66,11 +65,11 @@ const dbSetupDeploy = async (settings) => {
         NAME: NAME,
         SUFFIX: phases[env][phase].SUFFIX,
         VERSION: phases[env][phase].TAG,
-        CHANGE_ID: CHANGE_ID,
+        CHANGE_ID: phases[env][phase].CHANGE_ID,
         NODE_ENV: phases[env][phase].NODE_ENV,
-        DB_SERVICE_NAME: DB_NAME,
-        DB_SCHEMA: 'biohub',
-        DB_SCHEMA_DAPI_V1: 'biohub_dapi_v1',
+        DB_SERVICE_NAME: DB_SERVICE_NAME,
+        DB_SCHEMA: phases[env][phase].DB_SCHEMA,
+        DB_SCHEMA_DAPI_V1: phases[env][phase].DB_SCHEMA_DAPI_V1,
         IMAGE: dbSetupImageStream.image.dockerImageReference,
         // Development Seeding
         SEED_PROJECT_USER_IDENTIFIER: phases[env][phase].SEED_PROJECT_USER_IDENTIFIER,
@@ -94,7 +93,7 @@ const dbSetupDeploy = async (settings) => {
 
   // Wait to confirm if the db pod deployed successfully
   await waitForResourceToMeetCondition(
-    () => getResourceByRaw(`name=${DB_NAME}`, 'pod', settings, oc),
+    () => getResourceByRaw(`name=${DB_SERVICE_NAME}`, 'pod', settings, oc),
     isResourceRunning,
     30,
     5,
@@ -102,7 +101,7 @@ const dbSetupDeploy = async (settings) => {
   );
 
   // Deploy the db setup pod
-  oc.applyRecommendedLabels(objects, isName, env, CHANGE_ID, INSTANCE);
+  oc.applyRecommendedLabels(objects, IMAGE_NAME, env, phases[env][phase].CHANGE_ID, INSTANCE);
   await oc.applyAndDeploy(objects, phases[env][phase].INSTANCE);
 
   // Wait to confirm if the db setup pod deployed successfully
