@@ -539,7 +539,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
           }
 
           // Invalid
-          return { field: '', message: '' };
+          measurementErrors.push({ field: '', message: '' });
         });
       });
 
