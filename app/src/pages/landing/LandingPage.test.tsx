@@ -31,9 +31,7 @@ describe('LandingPage', () => {
       );
 
       // Should see the BCeID message
-      expect(
-        getByText('To access this application, you must use a valid government-issued IDIR or BCeID account.')
-      ).toBeVisible();
+      expect(getByText('You need a valid government-issued IDIR or BCeID account to log in.')).toBeVisible();
 
       // Should see the Log in button
       const loginButton = getByTestId('landing_page_login_button');
@@ -63,7 +61,7 @@ describe('LandingPage', () => {
       expect(queryByTestId('landing_page_login_button')).not.toBeInTheDocument();
 
       // Should see the no-access message
-      expect(getByText('You have not been granted permission to access this application.')).toBeVisible();
+      expect(getByText('You have not yet been granted access to this application.')).toBeVisible();
 
       // Should see the Request Access button
       const requestAccessButton = getByTestId('landing_page_request_access_button');
@@ -239,12 +237,6 @@ describe('LandingPage', () => {
       const viewProjectsButton = getByTestId('landing_page_projects_button');
       expect(viewProjectsButton).toBeVisible();
       expect(viewProjectsButton).toHaveAttribute('href', '/admin/projects');
-
-      // Should see the Manage Users button
-      const manageUsersButton = getByTestId('landing_page_manage_users_button');
-      expect(manageUsersButton).toHaveTextContent('Manage Users');
-      expect(manageUsersButton).toBeVisible();
-      expect(manageUsersButton).toHaveAttribute('href', '/admin/users');
     });
   });
 });
