@@ -208,7 +208,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
                 // Map geojson features into layer objects for leaflet
                 return {
                   layerName: location.name,
-                  features: location.geojson.map((geo) => ({ geoJSON: geo, key: location.uuid ?? v4() }))
+                  features: location.geojson.map((geo, index) => ({ geoJSON: geo, key: index }))
                 };
               })}
           />
