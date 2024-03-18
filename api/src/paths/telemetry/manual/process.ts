@@ -42,6 +42,7 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['submission_id'],
           properties: {
             submission_id: {
@@ -60,6 +61,7 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             properties: {
               success: {
                 type: 'boolean',

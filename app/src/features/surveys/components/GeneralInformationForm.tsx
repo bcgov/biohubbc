@@ -8,11 +8,9 @@ import SelectWithSubtextField, { ISelectWithSubtextFieldOption } from 'component
 import StartEndDateFields from 'components/fields/StartEndDateFields';
 import AncillarySpeciesComponent from 'components/species/AncillarySpeciesComponent';
 import FocalSpeciesComponent from 'components/species/FocalSpeciesComponent';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { useFormikContext } from 'formik';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import React from 'react';
-import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import SurveyPermitForm, { SurveyPermitFormYupSchema } from '../SurveyPermitForm';
 
@@ -72,15 +70,14 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
   }
 };
 
-export const GeneralInformationYupSchema = (customYupRules?: any) => {
+export const GeneralInformationYupSchema = () => {
   return yup
     .object()
     .shape({
       survey_details: yup.object().shape({
         survey_name: yup.string().required('Survey Name is Required'),
-        start_date: customYupRules?.start_date || yup.string().isValidDateString().required('Start Date is Required'),
-        end_date:
-          customYupRules?.end_date || yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date'),
+        start_date: yup.string().isValidDateString().required('Start Date is Required'),
+        end_date: yup.string().nullable().isValidDateString().isEndDateSameOrAfterStartDate('start_date'),
         survey_types: yup
           .array(yup.number())
           .min(1, 'One or more Types are required')
@@ -151,17 +148,6 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
             endName="survey_details.end_date"
             startRequired={true}
             endRequired={false}
-            startDateHelperText={`Start Date cannot precede ${getFormattedDate(
-              DATE_FORMAT.ShortMediumDateFormat,
-              props.projectStartDate
-            )}`}
-            endDateHelperText={
-              props.projectEndDate &&
-              `End Date cannot come after the Project End Date ${getFormattedDate(
-                DATE_FORMAT.ShortMediumDateFormat,
-                props.projectEndDate
-              )}`
-            }
           />
         </Grid>
       </Grid>

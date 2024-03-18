@@ -41,6 +41,7 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['surveyId', 'data'],
           properties: {
             surveyId: {
@@ -50,6 +51,7 @@ POST.apiDoc = {
             data: {
               description: 'Additional data to include in the submission to BioHub',
               type: 'object',
+              additionalProperties: false,
               required: ['submissionComment'],
               properties: {
                 submissionComment: {
@@ -71,6 +73,7 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             properties: {
               submission_uuid: {
                 type: 'string',

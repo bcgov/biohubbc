@@ -18,7 +18,7 @@ import {
   SurveySupplementaryData
 } from '../models/survey-view';
 import { AttachmentRepository } from '../repositories/attachment-repository';
-import { PostSurveyBlock, SurveyBlockRecord } from '../repositories/survey-block-repository';
+import { PostSurveyBlock, SurveyBlockRecordWithCount } from '../repositories/survey-block-repository';
 import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import {
   IGetLatestSurveyOccurrenceSubmission,
@@ -106,7 +106,7 @@ export class SurveyService extends DBService {
     };
   }
 
-  async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockRecord[]> {
+  async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockRecordWithCount[]> {
     const service = new SurveyBlockService(this.connection);
     return service.getSurveyBlocksForSurveyId(surveyId);
   }
@@ -314,17 +314,6 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Get a survey summary submission record for a given survey id.
-   *
-   * @param {number} surveyId
-   * @return {*}  {(Promise<{ survey_summary_submission_id: number | null }>)}
-   * @memberof SurveyService
-   */
-  async getSurveySummarySubmission(surveyId: number): Promise<{ survey_summary_submission_id: number | null }> {
-    return this.surveyRepository.getSurveySummarySubmission(surveyId);
-  }
-
-  /**
    * Get surveys by their ids.
    *
    * @param {number[]} surveyIds
@@ -492,7 +481,10 @@ export class SurveyService extends DBService {
     );
 
     if (postSurveyData.locations) {
+      // Insert survey locations
       promises.push(Promise.all(postSurveyData.locations.map((item) => this.insertSurveyLocations(surveyId, item))));
+      // Insert survey regions
+      promises.push(Promise.all(postSurveyData.locations.map((item) => this.insertRegion(surveyId, item.geojson))));
     }
 
     // Handle site selection strategies
@@ -552,14 +544,14 @@ export class SurveyService extends DBService {
   /**
    * Insert region data.
    *
-   * @param {number} projectId
+   * @param {number} surveyId
    * @param {Feature[]} features
    * @return {*}  {Promise<void>}
    * @memberof SurveyService
    */
-  async insertRegion(projectId: number, features: Feature[]): Promise<void> {
+  async insertRegion(surveyId: number, features: Feature[]): Promise<void> {
     const regionService = new RegionService(this.connection);
-    return regionService.addRegionsToSurveyFromFeatures(projectId, features);
+    return regionService.addRegionsToSurveyFromFeatures(surveyId, features);
   }
 
   /**
@@ -774,9 +766,9 @@ export class SurveyService extends DBService {
    *
    * @param {number} surveyId
    * @param {PostSurveyLocationData} data
-   * @returns {*} {Promise<any[]>}
+   * @returns {*} {Promise<void>}
    */
-  async insertUpdateDeleteSurveyLocation(surveyId: number, data: PostSurveyLocationData[]): Promise<any[]> {
+  async insertUpdateDeleteSurveyLocation(surveyId: number, data: PostSurveyLocationData[]): Promise<void> {
     const existingLocations = await this.getSurveyLocationsData(surveyId);
     // compare existing locations with passed in locations
     // any locations not found in both arrays will be deleted
@@ -791,7 +783,14 @@ export class SurveyService extends DBService {
     const updates = data.filter((item) => item.survey_location_id);
     const updatePromises = updates.map((item) => this.updateSurveyLocation(item));
 
-    return Promise.all([insertPromises, updatePromises, deletePromises]);
+    // Patch survey locations
+    await Promise.all([insertPromises, updatePromises, deletePromises]);
+
+    // Patch survey regions
+    await Promise.all([
+      ...inserts.map((item) => this.insertRegion(surveyId, item.geojson)),
+      ...updates.map((item) => this.insertRegion(surveyId, item.geojson))
+    ]);
   }
 
   /**

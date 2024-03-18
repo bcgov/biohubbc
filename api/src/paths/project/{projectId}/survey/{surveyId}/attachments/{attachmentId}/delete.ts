@@ -65,6 +65,7 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['attachmentType'],
           properties: {
             attachmentType: {

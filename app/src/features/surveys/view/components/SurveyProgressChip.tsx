@@ -34,7 +34,7 @@ const SurveyProgressChip = (props: ISurveyProgressChipProps) => {
         mx: '10px',
         minWidth: 0,
         '& .MuiChip-label': {
-          color: color[700],
+          color: color[800],
           fontWeight: 700,
           fontSize: '0.75rem'
         }

@@ -38,10 +38,12 @@ POST.apiDoc = {
         schema: {
           title: 'User Response Object',
           type: 'object',
+          additionalProperties: false,
           required: ['recipient', 'message'],
           properties: {
             recipient: {
               type: 'object',
+              additionalProperties: false,
               required: ['emailAddress', 'userId'],
               properties: {
                 emailAddress: {
@@ -57,6 +59,7 @@ POST.apiDoc = {
             },
             message: {
               type: 'object',
+              additionalProperties: false,
               required: ['subject', 'header', 'main_body1', 'main_body2', 'footer'],
               properties: {
                 subject: {
@@ -89,6 +92,7 @@ POST.apiDoc = {
           schema: {
             title: 'User Response Object',
             type: 'object',
+            additionalProperties: false,
             properties: {
               content: {
                 type: 'object'

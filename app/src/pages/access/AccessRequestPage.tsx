@@ -167,7 +167,13 @@ export const AccessRequestPage: React.FC = () => {
               </Typography>
               <Box mt={3}>
                 <Typography variant="body1" color="textSecondary">
-                  You will need to provide some additional details before you are granted access to this application.
+                  The Species Inventory Management System is intended for staff, contractors, and other partners who
+                  manage fish and wildlife data in collaboration with the Province. If you are instead looking to
+                  download data, please visit BiodiversityHub BC (coming soon).
+                  <br />
+                  <br />
+                  Please briefly describe why you are requesting access and how you will be using the Species Inventory
+                  Management System.
                 </Typography>
               </Box>
               <Box mt={4}>
