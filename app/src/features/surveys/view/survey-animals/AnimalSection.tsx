@@ -7,6 +7,7 @@ import grey from '@mui/material/colors/grey';
 import Typography from '@mui/material/Typography';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import { EditDeleteStubCard } from 'features/surveys/components/EditDeleteStubCard';
 import { useDialogContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
@@ -15,12 +16,16 @@ import { useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { ANIMAL_FORM_MODE, ANIMAL_SECTION } from './animal';
 import { AnimalSectionWrapper } from './AnimalSectionWrapper';
+import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
 import CollectionUnitAnimalForm from './form-sections/CollectionUnitAnimalForm';
+import { FamilyAnimalForm } from './form-sections/FamilyAnimalForm';
 import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 import { MarkingAnimalForm } from './form-sections/MarkingAnimalForm';
 import MeasurementAnimalForm from './form-sections/MeasurementAnimalForm';
 import GeneralAnimalSummary from './GeneralAnimalSummary';
 import MortalityAnimalForm from './form-sections/MortalityAnimalForm';
+
+dayjs.extend(utc);
 
 type SubHeaderData = Record<string, string | number | null | undefined>;
 
@@ -36,7 +41,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
   const [formMode, setFormMode] = useState<ANIMAL_FORM_MODE | undefined>(undefined);
   const [formObject, setFormObject] = useState<any | undefined>(undefined);
 
-  const formatDate = (dt: Date) => dayjs(dt).format('MMMM D, YYYY h:mm A');
+  const formatDate = (dt: Date) => dayjs(dt).utc().format('MMMM D, YYYY');
 
   const handleOpenAddForm = () => {
     setFormObject(undefined);
@@ -291,7 +296,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
   if (props.section === ANIMAL_SECTION.FAMILY) {
     return (
       <AnimalSectionWrapper
-        form={<div>placeholder</div>}
+        form={<FamilyAnimalForm {...SECTION_FORM_PROPS} />}
         infoText={SurveyAnimalsI18N.animalFamilyHelp}
         addBtn={<AddButton label={SurveyAnimalsI18N.animalFamilyAddBtn} />}
         section={props.section}
@@ -320,7 +325,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
                 })}
                 onClickEdit={() => handleOpenEditForm(child)}
                 onClickDelete={async () => {
-                  // handleDelete(deleteMarking, 'marking');
+                  //handleDelete(cbApi.capture.deleteCapture, capture.capture_id, 'capture');
                 }}
               />
             </Collapse>
@@ -333,7 +338,8 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
   if (props.section === ANIMAL_SECTION.CAPTURES) {
     return (
       <AnimalSectionWrapper
-        form={<div>placeholder</div>}
+        form={<CaptureAnimalForm {...SECTION_FORM_PROPS} />}
+        addBtn={<AddButton label={SurveyAnimalsI18N.animalCaptureAddBtn} />}
         infoText={SurveyAnimalsI18N.animalCaptureHelp}
         section={props.section}
         critter={props.critter}>
@@ -348,7 +354,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
                 })}
                 onClickEdit={() => handleOpenEditForm(capture)}
                 onClickDelete={async () => {
-                  // handleDelete(deleteMarking, 'marking');
+                  handleDelete(cbApi.capture.deleteCapture, capture.capture_id, 'capture');
                 }}
               />
             </Collapse>

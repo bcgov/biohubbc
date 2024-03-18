@@ -46,6 +46,7 @@ export const MarkingAnimalForm = (props: AnimalFormProps<IMarkingResponse>) => {
       open={props.open}
       onCancel={props.handleClose}
       onSave={handleSave}
+      size="md"
       dialogLoading={loading}
       component={{
         initialValues: {

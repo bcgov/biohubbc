@@ -24,8 +24,18 @@ export const useFamilyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  const createFamilyRelationship = async () => {
+    return '';
+  };
+
+  const editFamilyRelationship = async () => {
+    return '';
+  };
+
   return {
     getAllFamilies,
-    getImmediateFamily
+    getImmediateFamily,
+    createFamilyRelationship,
+    editFamilyRelationship
   };
 };

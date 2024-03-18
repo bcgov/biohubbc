@@ -3,6 +3,7 @@ import { useConfigContext } from 'hooks/useContext';
 import { useMemo } from 'react';
 import useAxios from './api/useAxios';
 import { useAuthentication } from './cb_api/useAuthenticationApi';
+import { useCaptureApi } from './cb_api/useCaptureApi';
 import { useCollectionUnitApi } from './cb_api/useCollectionUnitApi';
 import { useCritterApi } from './cb_api/useCritterApi';
 import { useFamilyApi } from './cb_api/useFamilyApi';
@@ -39,6 +40,8 @@ export const useCritterbaseApi = () => {
 
   const mortality = useMortalityApi(apiAxios);
 
+  const capture = useCaptureApi(apiAxios);
+
   return useMemo(
     () => ({
       critters,
@@ -50,6 +53,7 @@ export const useCritterbaseApi = () => {
       collectionUnit,
       measurement,
       mortality,
+      capture
     }),
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

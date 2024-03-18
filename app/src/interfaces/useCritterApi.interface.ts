@@ -7,29 +7,26 @@ export type ICollectionUnitResponse = {
 };
 
 type ILocationResponse = {
+  location_id: string;
   latitude: number;
   longitude: number;
   coordinate_uncertainty: number | null;
+  coordinate_uncertainty_unit: string | null;
   temperature: number | null;
   location_comment: string | null;
   region_env_id: string | null;
   region_nr_id: string | null;
   wmu_id: string | null;
-  region_env_name: string | null; // Deprecated
-  region_nr_name: string | null; // Deprecated
-  wmu_name: string | null; // Deprecated
 };
 
-type ICaptureResponse = {
+export type ICaptureResponse = {
   capture_id: string;
-  capture_location_id: string | null; // Deprecated -> Now included in capture_location
-  release_location_id: string | null; // Deprecated -> Now included in release_location
   capture_timestamp: string;
   release_timestamp: string | null;
   capture_comment: string | null;
   release_comment: string | null;
-  capture_location: ILocationResponse | null;
-  release_location: ILocationResponse | null;
+  capture_location: ILocationResponse;
+  release_location: ILocationResponse | null | undefined;
 };
 
 export type IMarkingResponse = {
@@ -100,7 +97,7 @@ export type IFamilyParentResponse = {
   parent_critter_id: string;
 };
 
-type IFamilyChildResponse = {
+export type IFamilyChildResponse = {
   family_id: string;
   family_label: string;
   child_critter_id: string;

@@ -93,6 +93,12 @@ export interface IEditDialogProps<T> {
    */
   debug?: true;
 
+  /**
+   * Adds a static size breakpoint for the dialog.
+   * Will stretch dialog to breakpoints max width.
+   *
+   * @memberof IEditDialogProps
+   */
   size?: Breakpoint;
 }
 
