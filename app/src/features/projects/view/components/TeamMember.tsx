@@ -50,7 +50,7 @@ const TeamMembers = () => {
     [projectContext.projectDataLoader.data.projectData.participants]
   );
 
-  console.log(projectTeamMembers)
+  console.log(projectTeamMembers);
 
   return (
     <Stack spacing={1}>
@@ -66,7 +66,7 @@ const TeamMembers = () => {
               alignItems="center"
               justifyContent="center"
               mr={1}>
-              <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 700 }}>{member.initials}</Typography>
+              <Typography sx={{ fontSize: '0.8rem', color: '#fff' }}>{member.initials}</Typography>
             </Box>
             <Typography variant="body2" color="textSecondary" alignItems="center" display="flex">
               {member.display_name}

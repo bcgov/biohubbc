@@ -520,10 +520,8 @@ export const firstOrNull = <T,>(arr: T[]): T | null => (arr.length > 0 ? arr[0] 
 export const getRandomHexColor = (seed: number, min = 100, max = 170): string => {
   const randomChannel = (): string => {
     const x = Math.sin(seed++) * 10000;
-    const randomNumber = Math.floor((x - Math.floor(x)) * (max - min + 1)) + min;
-    return randomNumber.toString(16).padStart(2, '0');
+    return (Math.floor((x - Math.floor(x)) * (max - min + 1)) + min).toString(16).padStart(2, '0');
   };
 
   return `#${randomChannel()}${randomChannel()}${randomChannel()}`;
 };
-
