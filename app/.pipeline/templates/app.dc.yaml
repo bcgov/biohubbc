@@ -11,7 +11,7 @@ parameters:
     value: 'dev'
   - name: VERSION
     value: '1.0'
-  - name: HOST
+  - name: APP_HOST
   - name: CHANGE_ID
     value: '0'
   - name: REACT_APP_BIOHUB_FEATURE_FLAG
@@ -250,7 +250,7 @@ objects:
       labels: {}
       name: ${NAME}${SUFFIX}
     spec:
-      host: ${HOST}
+      host: ${APP_HOST}
       tls:
         insecureEdgeTerminationPolicy: Redirect
         termination: edge

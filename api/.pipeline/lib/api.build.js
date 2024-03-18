@@ -14,7 +14,7 @@ const apiBuild = (settings) => {
   const env = settings.options.env;
   const phase = settings.options.phase;
 
-  const oc = new OpenShiftClientX(Object.assign({ namespace: phases[env][phase].namespace }, options));
+  const oc = new OpenShiftClientX(Object.assign({ namespace: phases[env][phase].NAMESPACE }, options));
 
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../templates'));
 
@@ -23,25 +23,25 @@ const apiBuild = (settings) => {
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api.bc.yaml`, {
       param: {
-        NAME: phases[env][phase].name,
-        SUFFIX: phases[env][phase].suffix,
-        VERSION: phases[env][phase].tag,
+        NAME: phases[env][phase].NAME,
+        SUFFIX: phases[env][phase].SUFFIX,
+        VERSION: phases[env][phase].TAG,
         SOURCE_REPOSITORY_URL: oc.git.http_url,
-        SOURCE_REPOSITORY_REF: phases[env][phase].branch,
-        CPU_REQUEST: phases[env][phase].cpuRequest,
-        CPU_LIMIT: phases[env][phase].cpuLimit,
-        MEMORY_REQUEST: phases[env][phase].memoryRequest,
-        MEMORY_LIMIT: phases[env][phase].memoryLimit
+        SOURCE_REPOSITORY_REF: phases[env][phase].BRANCH,
+        CPU_REQUEST: phases[env][phase].CPU_REQUEST,
+        CPU_LIMIT: phases[env][phase].CPU_LIMIT,
+        MEMORY_REQUEST: phases[env][phase].MEMORY_REQUEST,
+        MEMORY_LIMIT: phases[env][phase].MEMORY_LIMIT
       }
     })
   );
 
   oc.applyRecommendedLabels(
     objects,
-    phases[env][phase].name,
+    phases[env][phase].NAME,
     env,
-    phases[env][phase].changeId,
-    phases[env][phase].instance
+    phases[env][phase].CHANGE_ID,
+    phases[env][phase].INSTANCE
   );
   oc.applyAndBuild(objects);
 };

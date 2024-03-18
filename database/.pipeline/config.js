@@ -22,85 +22,85 @@ const phases = {
   pr: {
     build: {
       ...pipelineConfigMap.database.pr.build,
-      name: pipelineConfigMap.module.db,
-      changeId: changeId,
-      suffix: `-build-${changeId}`,
-      instance: `${pipelineConfigMap.module.db}-build-${changeId}`,
-      version: `${pipelineConfigMap.version}-${changeId}`,
-      tag: `build-${pipelineConfigMap.version}-${changeId}`,
-      branch: options.git.ref
+      NAME: pipelineConfigMap.module.db,
+      CHANGE_ID: changeId,
+      SUFFIX: `-build-${changeId}`,
+      INSTANCE: `${pipelineConfigMap.module.db}-build-${changeId}`,
+      VERSION: `${pipelineConfigMap.version}-${changeId}`,
+      TAG: `build-${pipelineConfigMap.version}-${changeId}`,
+      BRANCH: options.git.ref
     },
     deploy: {
       ...pipelineConfigMap.database.pr.deploy,
-      name: pipelineConfigMap.module.db,
-      changeId: changeId,
-      suffix: `-dev-${changeId}`,
-      instance: `${pipelineConfigMap.module.db}-pr-${changeId}`,
-      version: `pr-${changeId}`,
-      tag: `dev-${pipelineConfigMap.version}-${changeId}`
+      NAME: pipelineConfigMap.module.db,
+      CHANGE_ID: changeId,
+      SUFFIX: `-dev-${changeId}`,
+      INSTANCE: `${pipelineConfigMap.module.db}-pr-${changeId}`,
+      VERSION: `pr-${changeId}`,
+      TAG: `dev-${pipelineConfigMap.version}-${changeId}`
     }
   },
   dev: {
     build: {
       ...pipelineConfigMap.database.dev.build,
-      name: pipelineConfigMap.module.db,
-      changeId: changeId,
-      suffix: `-build-${changeId}`,
-      instance: `${pipelineConfigMap.module.db}-build-${changeId}`,
-      version: `${pipelineConfigMap.version}-${changeId}`,
-      tag: `build-${pipelineConfigMap.version}-${changeId}-${branch}`,
-      branch: branch
+      NAME: pipelineConfigMap.module.db,
+      CHANGE_ID: changeId,
+      SUFFIX: `-build-${changeId}`,
+      INSTANCE: `${pipelineConfigMap.module.db}-build-${changeId}`,
+      VERSION: `${pipelineConfigMap.version}-${changeId}`,
+      TAG: `build-${pipelineConfigMap.version}-${changeId}-${branch}`,
+      BRANCH: branch
     },
     deploy: {
       ...pipelineConfigMap.database.dev.deploy,
-      name: pipelineConfigMap.module.db,
-      changeId: 'deploy',
-      suffix: `-dev-deploy`,
-      instance: `${pipelineConfigMap.module.db}-dev-deploy`,
-      version: `deploy-${changeId}`,
-      tag: `dev-${pipelineConfigMap.version}-deploy`
+      NAME: pipelineConfigMap.module.db,
+      CHANGE_ID: 'deploy',
+      SUFFIX: `-dev-deploy`,
+      INSTANCE: `${pipelineConfigMap.module.db}-dev-deploy`,
+      VERSION: `deploy-${changeId}`,
+      TAG: `dev-${pipelineConfigMap.version}-deploy`
     }
   },
   test: {
     build: {
       ...pipelineConfigMap.database.test.build,
-      name: pipelineConfigMap.module.db,
-      changeId: changeId,
-      suffix: `-build-${changeId}`,
-      instance: `${pipelineConfigMap.module.db}-build-${changeId}`,
-      version: `${pipelineConfigMap.version}-${changeId}`,
-      tag: `build-${pipelineConfigMap.version}-${changeId}-${branch}`,
-      branch: branch
+      NAME: pipelineConfigMap.module.db,
+      CHANGE_ID: changeId,
+      SUFFIX: `-build-${changeId}`,
+      INSTANCE: `${pipelineConfigMap.module.db}-build-${changeId}`,
+      VERSION: `${pipelineConfigMap.version}-${changeId}`,
+      TAG: `build-${pipelineConfigMap.version}-${changeId}-${branch}`,
+      BRANCH: branch
     },
     deploy: {
       ...pipelineConfigMap.database.test.deploy,
-      name: pipelineConfigMap.module.db,
-      changeId: 'deploy',
-      suffix: `-test`,
-      instance: `${pipelineConfigMap.module.db}-test`,
-      version: `deploy-${changeId}`,
-      tag: `test-${pipelineConfigMap.version}`
+      NAME: pipelineConfigMap.module.db,
+      CHANGE_ID: 'deploy',
+      SUFFIX: `-test`,
+      INSTANCE: `${pipelineConfigMap.module.db}-test`,
+      VERSION: `deploy-${changeId}`,
+      TAG: `test-${pipelineConfigMap.version}`
     }
   },
   prod: {
     build: {
       ...pipelineConfigMap.database.prod.build,
-      name: pipelineConfigMap.module.db,
-      changeId: changeId,
-      suffix: `-build-${changeId}`,
-      instance: `${pipelineConfigMap.module.db}-build-${changeId}`,
-      version: `${pipelineConfigMap.version}-${changeId}`,
-      tag: `build-${pipelineConfigMap.version}-${changeId}-${branch}`,
-      branch: branch
+      NAME: pipelineConfigMap.module.db,
+      CHANGE_ID: changeId,
+      SUFFIX: `-build-${changeId}`,
+      INSTANCE: `${pipelineConfigMap.module.db}-build-${changeId}`,
+      VERSION: `${pipelineConfigMap.version}-${changeId}`,
+      TAG: `build-${pipelineConfigMap.version}-${changeId}-${branch}`,
+      BRANCH: branch
     },
     deploy: {
       ...pipelineConfigMap.database.prod.deploy,
-      name: pipelineConfigMap.module.db,
-      changeId: 'deploy',
-      suffix: `-prod`,
-      instance: `${pipelineConfigMap.module.db}-prod`,
-      version: `deploy-${changeId}`,
-      tag: `prod-${pipelineConfigMap.version}`
+      NAME: pipelineConfigMap.module.db,
+      CHANGE_ID: 'deploy',
+      SUFFIX: `-prod`,
+      INSTANCE: `${pipelineConfigMap.module.db}-prod`,
+      VERSION: `deploy-${changeId}`,
+      TAG: `prod-${pipelineConfigMap.version}`
     }
   }
 };

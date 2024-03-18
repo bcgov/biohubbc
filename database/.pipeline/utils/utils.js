@@ -86,7 +86,7 @@ const getResourceByRaw = (selector, type, settings, oc) => {
   const result = oc.raw('get', [type], {
     selector: selector,
     output: 'json',
-    namespace: phases[env][phase].namespace
+    namespace: phases[env][phase].NAMESPACE
   });
 
   if (!result.stdout || !result.stdout.trim()) {
@@ -280,23 +280,23 @@ const waitForResourceToMeetCondition = async (
 
     try {
       resource = getResourceFunction();
-    } catch {
+    } catch (_) {
       console.debug(`2 - waitForResourceToMeetCondition - Resource was not found`);
       return retry();
     }
 
-    if (!resource) {
-      console.debug(`3 - waitForResourceToMeetCondition - Resource was not found`);
-      return retry();
-    }
-
     try {
+      if (!resource) {
+        console.debug(`3 - waitForResourceToMeetCondition - Resource was not found`);
+        return retry();
+      }
+
       const isConditionMet = resourceConditionFunction(resource);
 
       if (!isConditionMet) {
         return retry();
       }
-    } catch {
+    } catch (_) {
       console.error(`6 - waitForResourceToMeetCondition - Error: waiting for resource failed`);
       throw new Error(`6 - waitForResourceToMeetCondition - Error: waiting for resource failed`);
     }
@@ -336,16 +336,16 @@ const checkAndClean = async (resourceName, numberOfRetries, timeoutBetweenRetrie
   const check = async () => {
     console.debug(`1 - checkAndClean - Waiting for resource begin`);
 
+    let resource;
+
     try {
-      let resource;
+      resource = getResourceByName(resourceName, oc);
+    } catch (_) {
+      console.debug(`2 - checkAndClean - Resource was not found`);
+      return retry();
+    }
 
-      try {
-        resource = getResourceByName(resourceName, oc);
-      } catch {
-        console.debug(`2 - checkAndClean - Resource was not found`);
-        return retry();
-      }
-
+    try {
       if (!resource) {
         console.debug(`3 - checkAndClean - Resource was not found`);
         return retry();
@@ -353,7 +353,7 @@ const checkAndClean = async (resourceName, numberOfRetries, timeoutBetweenRetrie
 
       console.debug(`4 - checkAndClean - Deleting resource: ${resourceName}`);
       deleteResourceByName(resourceName, oc);
-    } catch {
+    } catch (_) {
       console.error(`7 - checkAndClean - Error: waiting for resource failed`);
       throw new Error(`7 - checkAndClean - Error: waiting for resource failed`);
     }

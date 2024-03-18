@@ -299,6 +299,34 @@ pipeline-install: ## Runs `npm install` for all projects
 	@echo "==============================================="
 	@cd database/.pipeline && npm install && cd ../..
 
+pipeline-lint-fix: ## Runs `npm run lint-fix ` for all projects
+	@echo "==============================================="
+	@echo "Running /api/.pipeline lint-fix"
+	@echo "==============================================="
+	@cd api/.pipeline && npm run lint-fix && cd ../..
+	@echo "==============================================="
+	@echo "Running /app/.pipeline lint-fix"
+	@echo "==============================================="
+	@cd app/.pipeline && npm run lint-fix && cd ../..
+	@echo "==============================================="
+	@echo "Running /database/.pipeline lint-fix"
+	@echo "==============================================="
+	@cd database/.pipeline && npm run lint-fix && cd ../..
+
+pipeline-format-fix: ## Runs `npm run format-fix` for all projects
+	@echo "==============================================="
+	@echo "Running /api/.pipeline format-fix"
+	@echo "==============================================="
+	@cd api/.pipeline && npm run format-fix && cd ../..
+	@echo "==============================================="
+	@echo "Running /app/.pipeline format-fix"
+	@echo "==============================================="
+	@cd app/.pipeline && npm run format-fix && cd ../..
+	@echo "==============================================="
+	@echo "Running /database/.pipeline format-fix"
+	@echo "==============================================="
+	@cd database/.pipeline && npm run format-fix && cd ../..
+
 ## ------------------------------------------------------------------------------
 ## Run `docker logs <container> -f` commands for all projects
 ## - You can include additional parameters by appaending an `args` param

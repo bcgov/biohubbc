@@ -22,97 +22,97 @@ const phases = {
   pr: {
     build: {
       ...pipelineConfigMap.app.pr.build,
-      name: pipelineConfigMap.module.app,
-      changeId: changeId,
-      suffix: `-build-${changeId}`,
-      instance: `${pipelineConfigMap.module.app}-build-${changeId}`,
-      version: `${pipelineConfigMap.version}-${changeId}`,
-      tag: `build-${pipelineConfigMap.version}-${changeId}`,
-      branch: options.git.ref
+      NAME: pipelineConfigMap.module.app,
+      CHANGE_ID: changeId,
+      SUFFIX: `-build-${changeId}`,
+      INSTANCE: `${pipelineConfigMap.module.app}-build-${changeId}`,
+      VERSION: `${pipelineConfigMap.version}-${changeId}`,
+      TAG: `build-${pipelineConfigMap.version}-${changeId}`,
+      BRANCH: options.git.ref
     },
     deploy: {
       ...pipelineConfigMap.app.pr.deploy,
-      name: pipelineConfigMap.module.app,
-      changeId: changeId,
-      suffix: `-dev-${changeId}`,
-      instance: `${pipelineConfigMap.module.app}-pr-${changeId}`,
-      version: `pr-${changeId}`,
-      tag: `dev-${pipelineConfigMap.version}-${changeId}`,
-      host: `${pipelineConfigMap.module.app}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
-      apiHost: `${pipelineConfigMap.module.api}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
-      sso: pipelineConfigMap.sso.pr
+      NAME: pipelineConfigMap.module.app,
+      CHANGE_ID: changeId,
+      SUFFIX: `-dev-${changeId}`,
+      INSTANCE: `${pipelineConfigMap.module.app}-pr-${changeId}`,
+      VERSION: `pr-${changeId}`,
+      TAG: `dev-${pipelineConfigMap.version}-${changeId}`,
+      APP_HOST: `${pipelineConfigMap.module.app}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
+      API_HOST: `${pipelineConfigMap.module.api}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
+      SSO: pipelineConfigMap.SSO.pr
     }
   },
   dev: {
     build: {
       ...pipelineConfigMap.app.dev.build,
-      name: pipelineConfigMap.module.app,
-      changeId: changeId,
-      suffix: `-build-${changeId}`,
-      instance: `${pipelineConfigMap.module.app}-build-${changeId}`,
-      version: `${pipelineConfigMap.version}-${changeId}`,
-      tag: `build-${pipelineConfigMap.version}-${changeId}-${branch}`,
-      branch: branch
+      NAME: pipelineConfigMap.module.app,
+      CHANGE_ID: changeId,
+      SUFFIX: `-build-${changeId}`,
+      INSTANCE: `${pipelineConfigMap.module.app}-build-${changeId}`,
+      VERSION: `${pipelineConfigMap.version}-${changeId}`,
+      TAG: `build-${pipelineConfigMap.version}-${changeId}-${branch}`,
+      BRANCH: branch
     },
     deploy: {
       ...pipelineConfigMap.app.dev.deploy,
-      name: pipelineConfigMap.module.app,
-      changeId: 'deploy',
-      suffix: '-dev-deploy',
-      instance: `${pipelineConfigMap.module.app}-dev-deploy`,
-      version: `deploy-${changeId}`,
-      tag: `dev-${pipelineConfigMap.version}-deploy`,
-      host: pipelineConfigMap.app.dev.deploy.staticAppUrl,
-      apiHost: pipelineConfigMap.app.dev.deploy.staticApiUrl,
-      sso: pipelineConfigMap.sso.dev
+      NAME: pipelineConfigMap.module.app,
+      CHANGE_ID: 'deploy',
+      SUFFIX: '-dev-deploy',
+      INSTANCE: `${pipelineConfigMap.module.app}-dev-deploy`,
+      VERSION: `deploy-${changeId}`,
+      TAG: `dev-${pipelineConfigMap.version}-deploy`,
+      APP_HOST: pipelineConfigMap.app.dev.deploy.APP_HOST,
+      API_HOST: pipelineConfigMap.app.dev.deploy.API_HOST,
+      SSO: pipelineConfigMap.SSO.dev
     }
   },
   test: {
     build: {
       ...pipelineConfigMap.app.test.build,
-      name: pipelineConfigMap.module.app,
-      changeId: changeId,
-      suffix: `-build-${changeId}`,
-      instance: `${pipelineConfigMap.module.app}-build-${changeId}`,
-      version: `${pipelineConfigMap.version}-${changeId}`,
-      tag: `build-${pipelineConfigMap.version}-${changeId}-${branch}`,
-      branch: branch
+      NAME: pipelineConfigMap.module.app,
+      CHANGE_ID: changeId,
+      SUFFIX: `-build-${changeId}`,
+      INSTANCE: `${pipelineConfigMap.module.app}-build-${changeId}`,
+      VERSION: `${pipelineConfigMap.version}-${changeId}`,
+      TAG: `build-${pipelineConfigMap.version}-${changeId}-${branch}`,
+      BRANCH: branch
     },
     deploy: {
       ...pipelineConfigMap.app.test.deploy,
-      name: pipelineConfigMap.module.app,
-      changeId: 'deploy',
-      suffix: `-test`,
-      instance: `${pipelineConfigMap.module.app}-test`,
-      version: `deploy-${changeId}`,
-      tag: `test-${pipelineConfigMap.version}`,
-      host: pipelineConfigMap.app.test.deploy.staticAppUrl,
-      apiHost: pipelineConfigMap.app.test.deploy.staticApiUrl,
-      sso: pipelineConfigMap.sso.test
+      NAME: pipelineConfigMap.module.app,
+      CHANGE_ID: 'deploy',
+      SUFFIX: `-test`,
+      INSTANCE: `${pipelineConfigMap.module.app}-test`,
+      VERSION: `deploy-${changeId}`,
+      TAG: `test-${pipelineConfigMap.version}`,
+      APP_HOST: pipelineConfigMap.app.test.deploy.APP_HOST,
+      API_HOST: pipelineConfigMap.app.test.deploy.API_HOST,
+      SSO: pipelineConfigMap.SSO.test
     }
   },
   prod: {
     build: {
       ...pipelineConfigMap.app.prod.build,
-      name: pipelineConfigMap.module.app,
-      changeId: changeId,
-      suffix: `-build-${changeId}`,
-      instance: `${pipelineConfigMap.module.app}-build-${changeId}`,
-      version: `${pipelineConfigMap.version}-${changeId}`,
-      tag: `build-${pipelineConfigMap.version}-${changeId}-${branch}`,
-      branch: branch
+      NAME: pipelineConfigMap.module.app,
+      CHANGE_ID: changeId,
+      SUFFIX: `-build-${changeId}`,
+      INSTANCE: `${pipelineConfigMap.module.app}-build-${changeId}`,
+      VERSION: `${pipelineConfigMap.version}-${changeId}`,
+      TAG: `build-${pipelineConfigMap.version}-${changeId}-${branch}`,
+      BRANCH: branch
     },
     deploy: {
       ...pipelineConfigMap.app.prod.deploy,
-      name: pipelineConfigMap.module.app,
-      changeId: 'deploy',
-      suffix: `-prod`,
-      instance: `${pipelineConfigMap.module.app}-prod`,
-      version: `deploy-${changeId}`,
-      tag: `prod-${pipelineConfigMap.version}`,
-      host: pipelineConfigMap.app.prod.deploy.staticAppUrl,
-      apiHost: pipelineConfigMap.app.prod.deploy.staticApiUrl,
-      sso: pipelineConfigMap.sso.prod
+      NAME: pipelineConfigMap.module.app,
+      CHANGE_ID: 'deploy',
+      SUFFIX: `-prod`,
+      INSTANCE: `${pipelineConfigMap.module.app}-prod`,
+      VERSION: `deploy-${changeId}`,
+      TAG: `prod-${pipelineConfigMap.version}`,
+      APP_HOST: pipelineConfigMap.app.prod.deploy.APP_HOST,
+      API_HOST: pipelineConfigMap.app.prod.deploy.API_HOST,
+      SSO: pipelineConfigMap.SSO.prod
     }
   }
 };

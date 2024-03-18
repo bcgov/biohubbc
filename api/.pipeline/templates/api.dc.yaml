@@ -12,7 +12,7 @@ parameters:
   - name: VERSION
     description: Version of the application
     value: '1.0.0'
-  - name: HOST
+  - name: API_HOST
     description: Host name of the application
     required: true
   - name: APP_HOST
@@ -213,7 +213,7 @@ objects:
             - name: api
               env:
                 - name: API_HOST
-                  value: ${HOST}
+                  value: ${API_HOST}
                 - name: API_PORT
                   value: ${API_PORT_DEFAULT}
                 - name: APP_HOST
@@ -453,7 +453,7 @@ objects:
       labels: {}
       name: ${NAME}${SUFFIX}
     spec:
-      host: ${HOST}
+      host: ${API_HOST}
       tls:
         insecureEdgeTerminationPolicy: Redirect
         termination: edge
