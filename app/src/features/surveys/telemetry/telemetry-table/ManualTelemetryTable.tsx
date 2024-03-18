@@ -130,7 +130,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
                   return;
                 }
 
-                _muiDataGridApiRef?.current.setEditCellValue({
+                params.api.setEditCellValue({
                   id: params.id,
                   field: params.field,
                   value: event.target.value
@@ -181,7 +181,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
                   return;
                 }
 
-                _muiDataGridApiRef?.current.setEditCellValue({
+                params.api.setEditCellValue({
                   id: params.id,
                   field: params.field,
                   value: event.target.value
@@ -222,7 +222,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
               value: params.value ? dayjs(params.value).format('YYYY-MM-DD') : null,
               onChange: (event) => {
                 const value = dayjs(event.target.value).toDate();
-                _muiDataGridApiRef?.current.setEditCellValue({
+                params.api.setEditCellValue({
                   id: params.id,
                   field: params.field,
                   value
@@ -336,7 +336,8 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
         border: 'none',
         borderRadius: 0,
         '& .MuiDataGrid-columnHeaders': {
-          position: 'relative'
+          position: 'relative',
+          background: grey[50]
         },
         '& .MuiDataGrid-columnHeader:focus-within': {
           outline: 'none',

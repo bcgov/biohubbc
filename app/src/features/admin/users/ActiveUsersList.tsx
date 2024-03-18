@@ -258,7 +258,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
               sx={{
                 fontWeight: 400
               }}>
-              ({activeUsers?.length || 0})
+              ({Number(activeUsers?.length ?? 0).toLocaleString()})
             </Typography>
           </Typography>
           <Button
@@ -272,7 +272,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
           </Button>
         </Toolbar>
         <Divider></Divider>
-        <Box p={1}>
+        <Box p={2}>
           <TableContainer>
             <Table
               sx={{
@@ -296,7 +296,12 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                 {activeUsers.length > 0 &&
                   activeUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
                     <TableRow data-testid={`active-user-row-${index}`} key={row.system_user_id}>
-                      <TableCell>
+                      <TableCell
+                        sx={{
+                          '& a': {
+                            fontWeight: 700
+                          }
+                        }}>
                         <Link underline="always" to={`/admin/users/${row.system_user_id}`} component={RouterLink}>
                           {row.user_identifier || 'No identifier'}
                         </Link>

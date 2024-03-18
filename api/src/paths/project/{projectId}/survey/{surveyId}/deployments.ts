@@ -14,7 +14,11 @@ export const GET: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
+          validProjectPermissions: [
+            PROJECT_PERMISSION.COORDINATOR,
+            PROJECT_PERMISSION.COLLABORATOR,
+            PROJECT_PERMISSION.OBSERVER
+          ],
           surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },

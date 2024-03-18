@@ -3,10 +3,10 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import {
-  IDetailedCritterWithInternalId,
   IGetSampleSiteResponse,
   IGetSurveyAttachmentsResponse,
-  IGetSurveyForViewResponse
+  IGetSurveyForViewResponse,
+  ISimpleCritterWithInternalId
 } from 'interfaces/useSurveyApi.interface';
 import { createContext, PropsWithChildren, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router';
@@ -58,7 +58,7 @@ export interface ISurveyContext {
    * @type {DataLoader<[project_id: number, survey_id: number], IDetailedCritterWithInternalId[], unknown>}
    * @memberof ISurveyContext
    */
-  critterDataLoader: DataLoader<[project_id: number, survey_id: number], IDetailedCritterWithInternalId[], unknown>;
+  critterDataLoader: DataLoader<[project_id: number, survey_id: number], ISimpleCritterWithInternalId[], unknown>;
 
   /**
    * The project ID belonging to the current project
@@ -83,11 +83,7 @@ export const SurveyContext = createContext<ISurveyContext>({
   artifactDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSurveyAttachmentsResponse, unknown>,
   sampleSiteDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSampleSiteResponse, unknown>,
   deploymentDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IAnimalDeployment[], unknown>,
-  critterDataLoader: {} as DataLoader<
-    [project_id: number, survey_id: number],
-    IDetailedCritterWithInternalId[],
-    unknown
-  >,
+  critterDataLoader: {} as DataLoader<[project_id: number, survey_id: number], ISimpleCritterWithInternalId[], unknown>,
   projectId: -1,
   surveyId: -1
 });

@@ -53,7 +53,7 @@ export const SurveyObservationPage = () => {
             <ObservationsTableContextProvider>
               <ObservationsTableContext.Consumer>
                 {(context) => {
-                  if (!context._muiDataGridApiRef.current) {
+                  if (!context?._muiDataGridApiRef.current) {
                     return <CircularProgress className="pageProgress" size={40} />;
                   }
 

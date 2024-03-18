@@ -7,7 +7,7 @@ import { Field, useFormikContext } from 'formik';
 import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { useEffect } from 'react';
-import { ANIMAL_FORM_MODE, IAnimal } from '../animal';
+import { ANIMAL_FORM_MODE } from '../animal';
 import { DeploymentFormSection } from './DeploymentFormSection';
 import TelemetryFileUpload from './TelemetryFileUpload';
 
@@ -19,7 +19,8 @@ const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
   const { index, mode } = props;
 
   const telemetryApi = useTelemetryApi();
-  const { values, validateField } = useFormikContext<IAnimal>();
+  //TODO: update any type
+  const { values, validateField } = useFormikContext<any>();
   let device: any;
   if (values.device?.[index]) {
     device = values.device?.[index];
@@ -35,7 +36,9 @@ const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
     };
   }
 
-  const { data: deviceDetails, refresh } = useDataLoader(() => telemetryApi.devices.getDeviceDetails(device.device_id));
+  const { data: deviceDetails, refresh } = useDataLoader(() =>
+    telemetryApi.devices.getDeviceDetails(device.device_id, device.device_make)
+  );
 
   const validateDeviceMake = async (value: number | '') => {
     const deviceMake = deviceDetails?.device?.device_make;

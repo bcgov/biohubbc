@@ -6,6 +6,7 @@ import { SurveyBlockRecord } from '../repositories/survey-block-repository';
 import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import { SurveyUser } from '../repositories/survey-participation-repository';
 import { SystemUser } from '../repositories/user-repository';
+import { ITaxonomy } from '../services/platform-service';
 
 export type SurveyObject = {
   survey_details: GetSurveyData;
@@ -73,33 +74,27 @@ export class GetSurveyFundingSourceData {
 }
 
 export class GetFocalSpeciesData {
-  focal_species: number[];
-  focal_species_names: string[];
+  focal_species: ITaxonomy[];
 
   constructor(obj?: any[]) {
     this.focal_species = [];
-    this.focal_species_names = [];
 
     obj?.length &&
       obj.forEach((item: any) => {
-        this.focal_species.push(Number(item.id));
-        this.focal_species_names.push(item.label);
+        this.focal_species.push(item);
       });
   }
 }
 
 export class GetAncillarySpeciesData {
-  ancillary_species: number[];
-  ancillary_species_names: string[];
+  ancillary_species: ITaxonomy[];
 
   constructor(obj?: any[]) {
     this.ancillary_species = [];
-    this.ancillary_species_names = [];
 
     obj?.length &&
       obj.forEach((item: any) => {
-        this.ancillary_species.push(Number(item.id));
-        this.ancillary_species_names.push(item.label);
+        this.ancillary_species.push(item);
       });
   }
 }

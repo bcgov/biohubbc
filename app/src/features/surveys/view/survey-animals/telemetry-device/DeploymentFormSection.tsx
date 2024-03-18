@@ -12,7 +12,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useQuery } from 'hooks/useQuery';
 import { Fragment, useContext, useState } from 'react';
 import { dateRangesOverlap, setMessageSnackbar } from 'utils/Utils';
-import { ANIMAL_FORM_MODE, IAnimal } from '../animal';
+import { ANIMAL_FORM_MODE } from '../animal';
 import { IDeploymentTimespan } from './device';
 
 interface DeploymentFormSectionProps {
@@ -23,11 +23,12 @@ interface DeploymentFormSectionProps {
 
 export const DeploymentFormSection = (props: DeploymentFormSectionProps): JSX.Element => {
   const { index, mode, deviceDetails } = props;
-  const animalKeyName: keyof IAnimal = 'device';
+  const animalKeyName = 'device';
 
   const bhApi = useBiohubApi();
   const { cid: survey_critter_id } = useQuery();
-  const { values, validateField } = useFormikContext<IAnimal>();
+  //TODO: update any type
+  const { values, validateField } = useFormikContext<any>();
   const { surveyId, projectId } = useContext(SurveyContext);
   const dialogContext = useContext(DialogContext);
 
@@ -42,7 +43,8 @@ export const DeploymentFormSection = (props: DeploymentFormSectionProps): JSX.El
         setMessageSnackbar('No critter set!', dialogContext);
       }
       await bhApi.survey.removeDeployment(projectId, surveyId, Number(survey_critter_id), deployment_id);
-      const deployments = values.device[index].deployments;
+      //TODO: update any type
+      const deployments: any[] = values.device[index].deployments;
       const indexOfDeployment = deployments?.findIndex((deployment) => deployment.deployment_id === deployment_id);
       if (indexOfDeployment !== undefined) {
         deployments?.splice(indexOfDeployment);
@@ -85,7 +87,7 @@ export const DeploymentFormSection = (props: DeploymentFormSectionProps): JSX.El
   return (
     <>
       <Grid container spacing={3}>
-        {deployments?.map((deploy, i) => {
+        {deployments?.map((deploy: any, i: number) => {
           return (
             <Fragment key={`deployment-item-${deploy.deployment_id}`}>
               <Grid item xs={mode === ANIMAL_FORM_MODE.ADD ? 6 : 5.5}>

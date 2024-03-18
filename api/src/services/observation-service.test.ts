@@ -4,12 +4,13 @@ import sinonChai from 'sinon-chai';
 import {
   InsertObservation,
   ObservationRecord,
-  ObservationRecordWithSamplingData,
+  ObservationRecordWithSamplingDataWithEvents,
   ObservationRepository,
   UpdateObservation
 } from '../repositories/observation-repository';
 import * as file_utils from '../utils/file-utils';
 import { getMockDBConnection } from '../__mocks__/db';
+import { CritterbaseService } from './critterbase-service';
 import { ObservationService } from './observation-service';
 
 chai.use(sinonChai);
@@ -39,10 +40,11 @@ describe('ObservationService', () => {
         {
           survey_observation_id: 11,
           survey_id: 1,
-          wldtaxonomic_units_id: 2,
           latitude: 3,
           longitude: 4,
           count: 5,
+          itis_tsn: 6,
+          itis_scientific_name: 'itis_scientific_name',
           observation_date: '2023-01-01',
           observation_time: '12:00:00',
           create_date: '2023-04-04',
@@ -57,10 +59,11 @@ describe('ObservationService', () => {
         {
           survey_observation_id: 6,
           survey_id: 1,
-          wldtaxonomic_units_id: 7,
           latitude: 8,
           longitude: 9,
           count: 10,
+          itis_tsn: 6,
+          itis_scientific_name: 'itis_scientific_name',
           observation_date: '2023-02-02',
           observation_time: '13:00:00',
           create_date: '2023-03-03',
@@ -81,19 +84,21 @@ describe('ObservationService', () => {
       const observations: (InsertObservation | UpdateObservation)[] = [
         {
           survey_id: 1,
-          wldtaxonomic_units_id: 2,
           latitude: 3,
           longitude: 4,
           count: 5,
+          itis_tsn: 6,
+          itis_scientific_name: 'itis_scientific_name',
           observation_date: '2023-01-01',
           observation_time: '12:00:00'
         } as InsertObservation,
         {
           survey_observation_id: 6,
-          wldtaxonomic_units_id: 7,
           latitude: 8,
           longitude: 9,
           count: 10,
+          itis_tsn: 6,
+          itis_scientific_name: 'itis_scientific_name',
           observation_date: '2023-02-02',
           observation_time: '13:00:00'
         } as UpdateObservation
@@ -113,14 +118,15 @@ describe('ObservationService', () => {
     it('Gets observations by survey id', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      const mockObservations: ObservationRecordWithSamplingData[] = [
+      const mockObservations: ObservationRecordWithSamplingDataWithEvents[] = [
         {
           survey_observation_id: 11,
           survey_id: 1,
-          wldtaxonomic_units_id: 2,
           latitude: 3,
           longitude: 4,
           count: 5,
+          itis_tsn: 6,
+          itis_scientific_name: 'itis_scientific_name',
           observation_date: '2023-01-01',
           observation_time: '12:00:00',
           create_date: '2023-04-04',
@@ -133,15 +139,18 @@ describe('ObservationService', () => {
           survey_sample_site_name: 'SITE_NAME',
           survey_sample_site_id: 1,
           survey_sample_method_id: 1,
-          survey_sample_period_id: 1
+          survey_sample_period_id: 1,
+          subcount: 5,
+          observation_subcount_events: []
         },
         {
           survey_observation_id: 6,
           survey_id: 1,
-          wldtaxonomic_units_id: 7,
           latitude: 8,
           longitude: 9,
           count: 10,
+          itis_tsn: 6,
+          itis_scientific_name: 'itis_scientific_name',
           observation_date: '2023-02-02',
           observation_time: '13:00:00',
           create_date: '2023-03-03',
@@ -154,17 +163,24 @@ describe('ObservationService', () => {
           survey_sample_site_name: 'SITE_NAME',
           survey_sample_site_id: 1,
           survey_sample_method_id: 1,
-          survey_sample_period_id: 1
+          survey_sample_period_id: 1,
+          subcount: 10,
+          observation_subcount_events: []
         }
       ];
 
       const mockSupplementaryData = {
-        observationCount: 1
+        observationCount: 1,
+        measurementColumns: []
       };
 
       const getSurveyObservationsStub = sinon
         .stub(ObservationRepository.prototype, 'getSurveyObservationsWithSamplingData')
         .resolves(mockObservations);
+
+      const getMeasurementValuesForEventIdsStub = sinon
+        .stub(CritterbaseService.prototype, 'getMeasurementValuesForEventIds')
+        .resolves([]);
 
       const getSurveyObservationSupplementaryDataStub = sinon
         .stub(ObservationService.prototype, 'getSurveyObservationsSupplementaryData')
@@ -174,12 +190,24 @@ describe('ObservationService', () => {
 
       const observationService = new ObservationService(mockDBConnection);
 
-      const response = await observationService.getSurveyObservationsWithSupplementaryAndSamplingData(surveyId);
+      const response = await observationService.getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData(
+        surveyId
+      );
 
       expect(getSurveyObservationsStub).to.be.calledOnceWith(surveyId);
+      expect(getMeasurementValuesForEventIdsStub).to.be.calledOnceWith([]);
       expect(getSurveyObservationSupplementaryDataStub).to.be.calledOnceWith(surveyId);
       expect(response).to.eql({
-        surveyObservations: mockObservations,
+        surveyObservations: [
+          {
+            ...mockObservations[0],
+            observation_subcount_attributes: []
+          },
+          {
+            ...mockObservations[1],
+            observation_subcount_attributes: []
+          }
+        ],
         supplementaryObservationData: mockSupplementaryData
       });
     });

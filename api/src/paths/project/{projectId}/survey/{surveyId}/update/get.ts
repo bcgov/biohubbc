@@ -115,32 +115,46 @@ GET.apiDoc = {
                   species: {
                     description: 'Survey Species',
                     type: 'object',
-                    required: ['focal_species', 'focal_species_names', 'ancillary_species', 'ancillary_species_names'],
+                    required: ['focal_species', 'ancillary_species'],
                     properties: {
                       ancillary_species: {
                         nullable: true,
                         type: 'array',
                         items: {
-                          type: 'number'
-                        }
-                      },
-                      ancillary_species_names: {
-                        nullable: true,
-                        type: 'array',
-                        items: {
-                          type: 'string'
+                          type: 'object',
+                          required: ['tsn', 'commonName', 'scientificName'],
+                          properties: {
+                            tsn: {
+                              type: 'integer'
+                            },
+                            commonName: {
+                              type: 'string',
+                              nullable: true
+                            },
+                            scientificName: {
+                              type: 'string'
+                            }
+                          }
                         }
                       },
                       focal_species: {
+                        nullable: true,
                         type: 'array',
                         items: {
-                          type: 'number'
-                        }
-                      },
-                      focal_species_names: {
-                        type: 'array',
-                        items: {
-                          type: 'string'
+                          type: 'object',
+                          required: ['tsn', 'commonName', 'scientificName'],
+                          properties: {
+                            tsn: {
+                              type: 'integer'
+                            },
+                            commonName: {
+                              type: 'string',
+                              nullable: true
+                            },
+                            scientificName: {
+                              type: 'string'
+                            }
+                          }
                         }
                       }
                     }

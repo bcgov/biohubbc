@@ -5,6 +5,11 @@ import { OpenAPIV3 } from 'openapi-types';
 import swaggerUIExperss from 'swagger-ui-express';
 import { defaultPoolConfig, initDBPool } from './database/db';
 import { ensureHTTPError, HTTPErrorType } from './errors/http-error';
+import {
+  authorizeAndAuthenticateMiddleware,
+  getCritterbaseProxyMiddleware,
+  replaceAuthorizationHeaderMiddleware
+} from './middleware/critterbase-proxy';
 import { rootAPIDoc } from './openapi/root-api-doc';
 import { authenticateRequest, authenticateRequestOptional } from './request-handlers/security/authentication';
 import { getLogger } from './utils/logger';
@@ -26,15 +31,28 @@ const app: express.Express = express();
 
 // Enable CORS
 app.use(function (req: Request, res: Response, next: NextFunction) {
-  defaultLog.info(`${req.method} ${req.url}`);
+  defaultLog.debug(`${req.method} ${req.url}`);
 
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization, responseType');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE, HEAD');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Cache-Control', 'no-store');
 
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
   next();
 });
+
+// Enable Critterbase API proxy
+app.use(
+  '/api/critterbase',
+  authorizeAndAuthenticateMiddleware,
+  replaceAuthorizationHeaderMiddleware,
+  getCritterbaseProxyMiddleware()
+);
 
 // Initialize express-openapi framework
 const openAPIFramework = initialize({

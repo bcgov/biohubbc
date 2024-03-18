@@ -217,12 +217,12 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
               sx={{
                 fontWeight: 400
               }}>
-              ({accessRequests?.length || 0})
+              ({Number(accessRequests?.length ?? 0).toLocaleString()})
             </Typography>
           </Typography>
         </Toolbar>
         <Divider></Divider>
-        <Box p={1}>
+        <Box p={2}>
           <TableContainer>
             <Table
               sx={{

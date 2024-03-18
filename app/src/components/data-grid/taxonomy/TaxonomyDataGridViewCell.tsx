@@ -1,7 +1,8 @@
 import Typography from '@mui/material/Typography';
 import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
-import { TaxonomyContext } from 'contexts/taxonomyContext';
-import { useContext } from 'react';
+import { useTaxonomyContext } from 'hooks/useContext';
+import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
+import { useEffect, useState } from 'react';
 
 export interface ITaxonomyDataGridViewCellProps<DataGridType extends GridValidRowModel> {
   dataGridProps: GridRenderCellParams<DataGridType>;
@@ -20,15 +21,25 @@ const TaxonomyDataGridViewCell = <DataGridType extends GridValidRowModel>(
 ) => {
   const { dataGridProps } = props;
 
-  const taxonomyContext = useContext(TaxonomyContext);
+  const taxonomyContext = useTaxonomyContext();
+
+  const [taxon, setTaxon] = useState<ITaxonomy | null>(null);
+
+  useEffect(() => {
+    const response = taxonomyContext.getCachedSpeciesTaxonomyById(dataGridProps.value);
+
+    if (!response) {
+      return;
+    }
+
+    setTaxon(response);
+  }, [taxonomyContext, dataGridProps.value]);
 
   if (!dataGridProps.value) {
     return null;
   }
 
-  const response = taxonomyContext.getCachedSpeciesTaxonomyById(dataGridProps.value);
-
-  if (!response) {
+  if (!taxon) {
     return null;
   }
 
@@ -40,9 +51,33 @@ const TaxonomyDataGridViewCell = <DataGridType extends GridValidRowModel>(
         overflow: 'hidden',
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
-        color: props.error ? 'error' : undefined
+        color: props.error ? 'error' : undefined,
+        '& .speciesCommonName': {
+          display: 'inline-block',
+          '&::first-letter': {
+            textTransform: 'capitalize'
+          }
+        }
       }}>
-      {response.label}
+      {taxon.commonName ? (
+        <>
+          <Typography
+            component="span"
+            variant="body2"
+            className="speciesCommonName"
+            sx={{
+              display: 'inline-block',
+              '&::first-letter': {
+                textTransform: 'capitalize'
+              }
+            }}>
+            {taxon.commonName}
+          </Typography>
+          &nbsp;(<em>{taxon.scientificName}</em>)
+        </>
+      ) : (
+        <em>{taxon.scientificName}</em>
+      )}
     </Typography>
   );
 };

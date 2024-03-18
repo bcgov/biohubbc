@@ -122,12 +122,12 @@ const FundingSourcesListPage: React.FC = () => {
                   lineHeight="inherit"
                   fontSize="inherit"
                   fontWeight={400}>
-                  ({fundingSourceDataLoader.data?.length || 0})
+                  ({Number(fundingSourceDataLoader.data?.length ?? 0).toLocaleString()})
                 </Typography>
               </Typography>
             </Toolbar>
             <Divider></Divider>
-            <Box pt={0} pb={1} px={3}>
+            <Box p={2}>
               <FundingSourcesTable
                 fundingSources={fundingSourceDataLoader.data ?? []}
                 onView={(fundingSourceId) => {

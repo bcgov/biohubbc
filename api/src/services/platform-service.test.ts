@@ -40,7 +40,7 @@ describe('PlatformService', () => {
 
     it('throws error when axios request fails', async () => {
       process.env.BACKBONE_INTAKE_ENABLED = 'true';
-      process.env.BACKBONE_API_HOST = 'http://backbone-host.dev/';
+      process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
 
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
@@ -70,7 +70,7 @@ describe('PlatformService', () => {
 
     it('should submit survey to BioHub successfully', async () => {
       process.env.BACKBONE_INTAKE_ENABLED = 'true';
-      process.env.BACKBONE_API_HOST = 'http://backbone-host.dev/';
+      process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
 
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);

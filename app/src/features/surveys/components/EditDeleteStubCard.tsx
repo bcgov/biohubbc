@@ -11,7 +11,7 @@ interface IEditDeleteStubCardProps {
   /*
    * sub header text of the card
    */
-  subHeader: string;
+  subHeader?: string;
 
   /*
    * edit handler - undefined prevents edit action from rendering

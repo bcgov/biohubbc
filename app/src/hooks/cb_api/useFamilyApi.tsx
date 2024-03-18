@@ -5,28 +5,37 @@ export type IFamily = {
   family_label: string;
 };
 
-const useFamilyApi = (axios: AxiosInstance) => {
+export type IImmediateFamily = {
+  parents: any[];
+  siblings: any[];
+  children: any;
+};
+
+export const useFamilyApi = (axios: AxiosInstance) => {
   const getAllFamilies = async (): Promise<IFamily[]> => {
-    try {
-      const { data } = await axios.get('/api/critter-data/family');
-      return data;
-    } catch (e) {
-      if (e instanceof Error) {
-        console.log(e.message);
-      }
-    }
-    return [];
+    const { data } = await axios.get('/api/critterbase/family');
+
+    return data;
   };
 
-  const getImmediateFamily = async (family_id: string): Promise<{ parents: any[]; siblings: any[]; children: any }> => {
-    const { data } = await axios.get(`/api/critter-data/family/${family_id}`);
+  const getImmediateFamily = async (family_id: string): Promise<IImmediateFamily> => {
+    const { data } = await axios.get(`/api/critterbase/family/${family_id}`);
+
     return data;
+  };
+
+  const createFamilyRelationship = async () => {
+    return '';
+  };
+
+  const editFamilyRelationship = async () => {
+    return '';
   };
 
   return {
     getAllFamilies,
-    getImmediateFamily
+    getImmediateFamily,
+    createFamilyRelationship,
+    editFamilyRelationship
   };
 };
-
-export { useFamilyApi };

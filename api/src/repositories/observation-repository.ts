@@ -2,9 +2,12 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
+import { CBMeasurementValue } from '../services/critterbase-service';
 import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
+
+const defaultLog = getLogger('repositories/observation-repository');
 
 /**
  * Interface reflecting survey observations retrieved from the database
@@ -12,7 +15,8 @@ import { BaseRepository } from './base-repository';
 export const ObservationRecord = z.object({
   survey_observation_id: z.number(),
   survey_id: z.number(),
-  wldtaxonomic_units_id: z.number(),
+  itis_tsn: z.number(),
+  itis_scientific_name: z.string().nullable(),
   survey_sample_site_id: z.number().nullable(),
   survey_sample_method_id: z.number().nullable(),
   survey_sample_period_id: z.number().nullable(),
@@ -38,6 +42,21 @@ export const ObservationRecordWithSamplingData = ObservationRecord.extend({
 
 export type ObservationRecordWithSamplingData = z.infer<typeof ObservationRecordWithSamplingData>;
 
+export const ObservationRecordWithSamplingDataWithEvents = ObservationRecordWithSamplingData.extend({
+  subcount: z.number().nullable(),
+  observation_subcount_events: z.array(z.string())
+});
+
+export type ObservationRecordWithSamplingDataWithEvents = z.infer<typeof ObservationRecordWithSamplingDataWithEvents>;
+
+export const ObservationRecordWithSamplingDataWithEventsWithAttributes = ObservationRecordWithSamplingDataWithEvents.extend(
+  { observation_subcount_attributes: z.array(CBMeasurementValue) }
+);
+
+export type ObservationRecordWithSamplingDataWithEventsWithAttributes = z.infer<
+  typeof ObservationRecordWithSamplingDataWithEventsWithAttributes
+>;
+
 export const ObservationGeometryRecord = z.object({
   survey_observation_id: z.number(),
   geometry: z.string().transform((jsonString) => JSON.parse(jsonString))
@@ -50,8 +69,9 @@ export type ObservationGeometryRecord = z.infer<typeof ObservationGeometryRecord
  */
 export type InsertObservation = Pick<
   ObservationRecord,
+  | 'itis_tsn'
+  | 'itis_scientific_name'
   | 'survey_id'
-  | 'wldtaxonomic_units_id'
   | 'latitude'
   | 'longitude'
   | 'count'
@@ -67,8 +87,9 @@ export type InsertObservation = Pick<
  */
 export type UpdateObservation = Pick<
   ObservationRecord,
+  | 'itis_tsn'
+  | 'itis_scientific_name'
   | 'survey_observation_id'
-  | 'wldtaxonomic_units_id'
   | 'latitude'
   | 'longitude'
   | 'count'
@@ -94,8 +115,6 @@ export const ObservationSubmissionRecord = z.object({
 });
 
 export type ObservationSubmissionRecord = z.infer<typeof ObservationSubmissionRecord>;
-
-const defaultLog = getLogger('repositories/observation-repository');
 
 export class ObservationRepository extends BaseRepository {
   /**
@@ -145,17 +164,12 @@ export class ObservationRepository extends BaseRepository {
     surveyId: number,
     observations: (InsertObservation | UpdateObservation)[]
   ): Promise<ObservationRecord[]> {
-    if (!observations.length) {
-      // no observations to create or update, leave early
-      return [];
-    }
     const sqlStatement = SQL`
       INSERT INTO
         survey_observation
       (
         survey_observation_id,
         survey_id,
-        wldtaxonomic_units_id,
         survey_sample_site_id,
         survey_sample_method_id,
         survey_sample_period_id,
@@ -163,7 +177,9 @@ export class ObservationRepository extends BaseRepository {
         latitude,
         longitude,
         observation_date,
-        observation_time
+        observation_time,
+        itis_tsn,
+        itis_scientific_name
       )
       OVERRIDING SYSTEM VALUE
       VALUES
@@ -175,7 +191,6 @@ export class ObservationRepository extends BaseRepository {
           return `(${[
             observation['survey_observation_id'] || 'DEFAULT',
             surveyId,
-            observation.wldtaxonomic_units_id,
             observation.survey_sample_site_id ?? 'NULL',
             observation.survey_sample_method_id ?? 'NULL',
             observation.survey_sample_period_id ?? 'NULL',
@@ -183,7 +198,9 @@ export class ObservationRepository extends BaseRepository {
             observation.latitude,
             observation.longitude,
             `'${observation.observation_date}'`,
-            `'${observation.observation_time}'`
+            `'${observation.observation_time}'`,
+            observation.itis_tsn ?? 'NULL',
+            observation.itis_scientific_name ? `'${observation.itis_scientific_name}'` : 'NULL'
           ].join(', ')})`;
         })
         .join(', ')
@@ -193,7 +210,8 @@ export class ObservationRepository extends BaseRepository {
       ON CONFLICT
         (survey_observation_id)
       DO UPDATE SET
-        wldtaxonomic_units_id = EXCLUDED.wldtaxonomic_units_id,
+        itis_tsn = EXCLUDED.itis_tsn,
+        itis_scientific_name = EXCLUDED.itis_scientific_name,
         survey_sample_site_id = EXCLUDED.survey_sample_site_id,
         survey_sample_method_id = EXCLUDED.survey_sample_method_id,
         survey_sample_period_id = EXCLUDED.survey_sample_period_id,
@@ -205,8 +223,9 @@ export class ObservationRepository extends BaseRepository {
     `);
 
     sqlStatement.append(`
-      RETURNING*;
+      RETURNING *;
     `);
+
     const response = await this.connection.sql(sqlStatement, ObservationRecord);
 
     return response.rows;
@@ -218,24 +237,36 @@ export class ObservationRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {Promise<ObservationRecord[]>}
+   * @return {*}  {Promise<ObservationRecordWithSamplingDataWithEvents[]>}
    * @memberof ObservationRepository
    */
   async getSurveyObservationsWithSamplingData(
     surveyId: number,
     pagination?: ApiPaginationOptions
-  ): Promise<ObservationRecordWithSamplingData[]> {
+  ): Promise<ObservationRecordWithSamplingDataWithEvents[]> {
     defaultLog.debug({ label: 'getSurveyObservationsWithSamplingData', surveyId, pagination });
 
     const knex = getKnex();
 
-    const allRowsQuery = knex
+    const queryBuilder = knex
       .with(
         'survey_sample_method_with_name',
         knex
           .select(['ml.name as survey_sample_method_name', 'ssm.survey_sample_method_id'])
           .from({ ssm: 'survey_sample_method ' })
           .leftJoin({ ml: 'method_lookup' }, 'ml.method_lookup_id', 'ssm.method_lookup_id')
+      )
+      .with(
+        'observation_subcount_events',
+        knex
+          .select([
+            'os.survey_observation_id',
+            'os.subcount',
+            knex.raw(`array_remove(array_agg(sa.critterbase_event_id), NULL) as critterbase_event_ids`)
+          ])
+          .from({ os: 'observation_subcount' })
+          .leftJoin({ sa: 'subcount_event' }, 'os.observation_subcount_id', 'sa.observation_subcount_id')
+          .groupBy(['os.survey_observation_id', 'os.subcount'])
       )
       .select([
         // Select all columns from survey_observation
@@ -251,10 +282,12 @@ export class ObservationRepository extends BaseRepository {
 
         // Select columns from the joined survey_sample_period table
         'ssp.survey_sample_period_id',
-        knex.raw('(??::date + ??::time)::timestamp as survey_sample_period_start_datetime', [
+        knex.raw(`(??::date + COALESCE(??, '00:00:00')::time)::timestamp as survey_sample_period_start_datetime`, [
           'ssp.start_date',
           'ssp.start_time'
-        ])
+        ]),
+        'osa.subcount',
+        'osa.critterbase_event_ids as observation_subcount_events'
       ])
       // Alias survey_observation as so
       .from({ so: 'survey_observation' })
@@ -271,16 +304,20 @@ export class ObservationRepository extends BaseRepository {
 
       // Join sample period onto observation
       .leftJoin({ ssp: 'survey_sample_period' }, 'so.survey_sample_period_id', 'ssp.survey_sample_period_id') // Join survey_sample_period
+
+      // Join aggregated observation attributes
+      .leftJoin({ osa: 'observation_subcount_events' }, 'so.survey_observation_id', 'osa.survey_observation_id')
       .where('so.survey_id', surveyId);
 
-    const paginatedQuery = !pagination
-      ? allRowsQuery
-      : allRowsQuery.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+    if (pagination) {
+      queryBuilder.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
 
-    const query =
-      pagination?.sort && pagination.order ? paginatedQuery.orderBy(pagination.sort, pagination.order) : paginatedQuery;
+      if (pagination.sort && pagination.order) {
+        queryBuilder.orderBy(pagination.sort, pagination.order);
+      }
+    }
 
-    const response = await this.connection.knex(query, ObservationRecordWithSamplingData);
+    const response = await this.connection.knex(queryBuilder, ObservationRecordWithSamplingDataWithEvents);
 
     return response.rows;
   }
@@ -439,18 +476,20 @@ export class ObservationRepository extends BaseRepository {
   }
 
   /**
-   * Deletes all of the given survey observations by ID.
+   * Deletes all survey observation records for the given observation ids.
    *
+   * @param {number} surveyId
    * @param {number[]} observationIds
    * @return {*}  {Promise<number>}
    * @memberof ObservationRepository
    */
-  async deleteObservationsByIds(observationIds: number[]): Promise<number> {
+  async deleteObservationsByIds(surveyId: number, observationIds: number[]): Promise<number> {
     const queryBuilder = getKnex()
       .queryBuilder()
       .delete()
       .from('survey_observation')
       .whereIn('survey_observation_id', observationIds)
+      .andWhere('survey_id', surveyId)
       .returning('*');
 
     const response = await this.connection.knex(queryBuilder, ObservationRecord);

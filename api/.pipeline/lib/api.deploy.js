@@ -35,16 +35,15 @@ const apiDeploy = async (settings) => {
         NODE_ENV: phases[phase].nodeEnv,
         NODE_OPTIONS: phases[phase].nodeOptions,
         // BioHub Platform (aka: Backbone)
-        BACKBONE_API_HOST: phases[phase].backboneApiHost,
+        BACKBONE_INTERNAL_API_HOST: phases[phase].backboneInternalApiHost,
         BACKBONE_INTAKE_PATH: phases[phase].backboneIntakePath,
         BACKBONE_ARTIFACT_INTAKE_PATH: phases[phase].backboneArtifactIntakePath,
         BACKBONE_INTAKE_ENABLED: phases[phase].backboneIntakeEnabled,
+        BIOHUB_TAXON_PATH: phases[phase].biohubTaxonPath,
+        BIOHUB_TAXON_TSN_PATH: phases[phase].biohubTaxonTsnPath,
         // BCTW / Critterbase
         BCTW_API_HOST: phases[phase].bctwApiHost,
         CB_API_HOST: phases[phase].critterbaseApiHost,
-        // Elastic Search
-        ELASTICSEARCH_URL: phases[phase].elasticsearchURL,
-        ELASTICSEARCH_TAXONOMY_INDEX: phases[phase].elasticsearchTaxonomyIndex,
         // S3
         S3_KEY_PREFIX: phases[phase].s3KeyPrefix,
         // Database

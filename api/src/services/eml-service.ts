@@ -1,4 +1,3 @@
-import { SearchHit } from '@elastic/elasticsearch/lib/api/types';
 import bbox from '@turf/bbox';
 import circle from '@turf/circle';
 import { AllGeoJSON, featureCollection } from '@turf/helpers';
@@ -17,7 +16,6 @@ import { CodeService } from './code-service';
 import { DBService } from './db-service';
 import { ProjectService } from './project-service';
 import { SurveyService } from './survey-service';
-import { ITaxonomySource, TaxonomyService } from './taxonomy-service';
 
 const NOT_SUPPLIED = 'Not Supplied';
 const EMPTY_STRING = ``;
@@ -936,39 +934,6 @@ export class EmlService extends DBService {
   }
 
   /**
-   * Retrieves taxonomic coverage details for the given survey's focal species.
-   *
-   * @param {SurveyObject} surveyData
-   * @return {*}  {Promise<Record<string, any>>}
-   * @memberof EmlService
-   */
-  async _getSurveyFocalTaxonomicCoverage(surveyData: SurveyObject): Promise<Record<string, any>> {
-    const taxonomySearchService = new TaxonomyService();
-
-    const response = await taxonomySearchService.getTaxonomyFromIds(surveyData.species.focal_species);
-
-    const taxonomicClassification: Record<string, any>[] = [];
-
-    response.forEach((taxonResult: SearchHit<ITaxonomySource>) => {
-      const { _source } = taxonResult;
-
-      if (_source) {
-        taxonomicClassification.push({
-          taxonRankName: _source.tty_name,
-          taxonRankValue: [_source.unit_name1, _source.unit_name2, _source.unit_name3].filter(Boolean).join(' '),
-          commonName: _source.english_name,
-          taxonId: {
-            $: { provider: EMPTY_STRING },
-            _: taxonResult._id
-          }
-        });
-      }
-    });
-
-    return { taxonomicClassification };
-  }
-
-  /**
    * Creates an object representing the design description for the given survey
    *
    * @param {SurveyObject} surveyData
@@ -1041,7 +1006,7 @@ export class EmlService extends DBService {
         coverage: {
           ...this._getSurveyGeographicCoverage(surveyData),
           temporalCoverage: this._getSurveyTemporalCoverage(surveyData),
-          taxonomicCoverage: await this._getSurveyFocalTaxonomicCoverage(surveyData)
+          taxonomicCoverage: [] //await this._getSurveyFocalTaxonomicCoverage(surveyData)
         }
       },
       designDescription: await this._getSurveyDesignDescription(surveyData)

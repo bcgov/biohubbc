@@ -7,8 +7,9 @@ import { ISurveyLocationForm } from 'features/surveys/components/StudyAreaForm';
 import { ISurveyFundingSource, ISurveyFundingSourceForm } from 'features/surveys/components/SurveyFundingSourceForm';
 import { ISurveySiteSelectionForm } from 'features/surveys/components/SurveySiteSelectionForm';
 import { Feature } from 'geojson';
-import { StringBoolean } from 'types/misc';
-import { ICritterDetailedResponse } from './useCritterApi.interface';
+import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
+import { ApiPaginationResponseParams, StringBoolean } from 'types/misc';
+import { ICritterDetailedResponse, ICritterSimpleResponse } from './useCritterApi.interface';
 
 /**
  * Create survey post object.
@@ -44,10 +45,7 @@ export interface ISurveyBlockForm {
 }
 
 export interface IParticipantsJobForm {
-  participants: {
-    system_user_id: number;
-    survey_job_name: string;
-  }[];
+  participants: IGetSurveyParticipant[];
 }
 
 export interface IGetSurveyForViewResponseDetails {
@@ -150,8 +148,8 @@ export interface SurveyUpdateObject extends ISurveyLocationForm {
     revision_count: number;
   };
   species?: {
-    focal_species: number[];
-    ancillary_species: number[];
+    focal_species: ITaxonomy[];
+    ancillary_species: ITaxonomy[];
   };
   permit?: {
     permits: {
@@ -183,17 +181,10 @@ export interface SurveyUpdateObject extends ISurveyLocationForm {
     category_rationale: string;
     disa_required: StringBoolean;
   };
-  participants?: {
-    identity_source: string;
-    email: string | null;
-    display_name: string;
-    agency: string | null;
-    survey_job_id: number;
-    system_user_id: number;
-    survey_job_name: string;
-  }[];
+  participants?: IGetSurveyParticipant[];
 }
 
+// TODO remove in subsequent PR
 export interface SurveySupplementaryData {
   occurrence_submission: {
     occurrence_submission_id: number | null;
@@ -250,11 +241,11 @@ export interface ISurveySupplementaryData {
  * Get survey basic fields response object.
  *
  * @export
- * @interface IGetSurveyForListResponse
+ * @interface IGetSurveyListResponse
  */
-export interface IGetSurveyForListResponse {
-  surveyData: SurveyBasicFieldsObject;
-  surveySupplementaryData: ISurveySupplementaryData;
+export interface IGetSurveyListResponse {
+  surveys: SurveyBasicFieldsObject[];
+  pagination: ApiPaginationResponseParams;
 }
 
 /**
@@ -277,10 +268,8 @@ export interface IGetSurveyDetailsResponse {
 }
 
 export interface IGetSpecies {
-  focal_species: number[];
-  focal_species_names: string[];
-  ancillary_species: number[];
-  ancillary_species_names: string[];
+  focal_species: ITaxonomy[];
+  ancillary_species: ITaxonomy[];
 }
 
 export interface IGetSurveyAttachment {
@@ -347,6 +336,10 @@ export interface IUpdateAgreementsForm {
 
 export interface IGetSurveyForUpdateResponse {
   surveyData: SurveyUpdateObject;
+}
+
+export interface ISimpleCritterWithInternalId extends ICritterSimpleResponse {
+  survey_critter_id: number;
 }
 
 export interface IDetailedCritterWithInternalId extends ICritterDetailedResponse {

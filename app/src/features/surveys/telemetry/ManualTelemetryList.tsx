@@ -24,7 +24,7 @@ import { default as dayjs } from 'dayjs';
 import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
-import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual as _deepEquals } from 'lodash';
 import { get } from 'lodash-es';
 import { useContext, useEffect, useMemo, useState } from 'react';
@@ -50,7 +50,7 @@ export const AnimalDeploymentSchema = AnimalTelemetryDeviceSchema.shape({
 export type AnimalDeployment = InferType<typeof AnimalDeploymentSchema>;
 
 export interface ICritterDeployment {
-  critter: IDetailedCritterWithInternalId;
+  critter: ISimpleCritterWithInternalId;
   deployment: IAnimalDeployment;
 }
 
@@ -96,8 +96,8 @@ const ManualTelemetryList = () => {
     surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
   }, []);
 
-  const deployments = useMemo(() => surveyContext.deploymentDataLoader.data, [surveyContext.deploymentDataLoader.data]);
-  const critters = useMemo(() => surveyContext.critterDataLoader.data, [surveyContext.critterDataLoader.data]);
+  const deployments = surveyContext.deploymentDataLoader.data;
+  const critters = surveyContext.critterDataLoader.data;
 
   const critterDeployments: ICritterDeployment[] = useMemo(() => {
     const data: ICritterDeployment[] = [];
@@ -118,10 +118,13 @@ const ManualTelemetryList = () => {
     setDeviceId(device_id);
 
     const critterDeployment = critterDeployments.find((item) => item.deployment.device_id === device_id);
-    const deviceDetails = await telemetryApi.devices.getDeviceDetails(device_id);
 
     // need to map deployment back into object for initial values
     if (critterDeployment) {
+      const deviceDetails = await telemetryApi.devices.getDeviceDetails(
+        device_id,
+        critterDeployment.deployment.device_make
+      );
       const editData: AnimalDeployment = {
         survey_critter_id: Number(critterDeployment.critter?.survey_critter_id),
         deployments: [
@@ -449,7 +452,7 @@ const ManualTelemetryList = () => {
                                   {item.animal_id}
                                 </Typography>
                                 <Typography variant="subtitle2" color="textSecondary">
-                                  {item.taxon} - {item.sex}
+                                  {item.itis_scientific_name} - {item.sex}
                                 </Typography>
                               </Box>
                             </MenuItem>
@@ -507,7 +510,7 @@ const ManualTelemetryList = () => {
                   <Typography variant="h3" component="h2" flexGrow={1}>
                     Deployments &zwnj;
                     <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
-                      ({critterDeployments?.length ?? 0})
+                      ({Number(critterDeployments?.length ?? 0).toLocaleString()})
                     </Typography>
                   </Typography>
                   <Button
@@ -559,9 +562,10 @@ const ManualTelemetryList = () => {
                         )}
                         {critterDeployments?.map((item) => (
                           <ManualTelemetryCard
-                            key={`${item.deployment.device_id}:${item.deployment.attachment_start}`}
+                            key={`${item.deployment.device_id}:${item.deployment.device_make}:${item.deployment.attachment_start}`}
                             device_id={item.deployment.device_id}
-                            name={String(item.critter.animal_id ?? item.critter.taxon)}
+                            device_make={item.deployment.device_make}
+                            name={String(item.critter.animal_id ?? item.critter.itis_scientific_name)}
                             start_date={item.deployment.attachment_start}
                             end_date={item.deployment.attachment_end}
                             onMenu={(event, id) => {

@@ -1,4 +1,5 @@
 import { LoadingButton } from '@mui/lab';
+import { Container } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -6,7 +7,6 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import { Theme } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
-import { Container } from '@mui/system';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { CreateSamplingSiteI18N } from 'constants/i18n';
@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export interface ISurveySampleSite {
   name: string;
   description: string;
-  feature: Feature;
+  geojson: Feature;
 }
 
 export interface ICreateSamplingSiteRequest {
@@ -71,7 +71,7 @@ const SamplingSitePage = () => {
   const samplingSiteYupSchema = yup.object({
     survey_sample_sites: yup
       .array(
-        yup.object({ name: yup.string().default(''), description: yup.string().default(''), feature: yup.object({}) })
+        yup.object({ name: yup.string().default(''), description: yup.string().default(''), geojson: yup.object({}) })
       )
       .min(1, 'At least one sampling site location is required'),
     methods: yup

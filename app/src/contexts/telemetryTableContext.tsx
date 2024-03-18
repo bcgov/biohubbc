@@ -168,7 +168,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
   /**
    * Gets all rows from the table, including values that have been edited in the table.
    */
-  const _getRowsWithEditedValues = (): IManualTelemetryTableRow[] => {
+  const _getRowsWithEditedValues = useCallback((): IManualTelemetryTableRow[] => {
     const rowValues = Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values()) as IManualTelemetryTableRow[];
 
     return rowValues.map((row) => {
@@ -182,20 +182,20 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
         {}
       );
     }) as IManualTelemetryTableRow[];
-  };
+  }, [_muiDataGridApiRef]);
 
   /**
    * Returns all columns belonging to thte telemetry table.
    */
   const getColumns = useCallback(() => {
     return _muiDataGridApiRef.current.getAllColumns?.() ?? [];
-  }, [_muiDataGridApiRef.current.getAllColumns]);
+  }, [_muiDataGridApiRef]);
 
   /**
    * Validates all rows belonging to the table. Returns null if validation passes, otherwise
    * returns the validation model
    */
-  const _validateRows = (): TelemetryTableValidationModel | null => {
+  const _validateRows = useCallback((): TelemetryTableValidationModel | null => {
     const rowValues = _getRowsWithEditedValues();
     const tableColumns = getColumns();
 
@@ -240,7 +240,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
     setValidationModel(validation);
 
     return Object.keys(validation).length > 0 ? validation : null;
-  };
+  }, [_getRowsWithEditedValues, getColumns]);
 
   useEffect(() => {
     setRecordCount(rows.length);
@@ -310,7 +310,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
         });
       }
     },
-    [addedRowIds, dialogContext]
+    [addedRowIds, dialogContext, telemetryApi]
   );
 
   const getSelectedRecords: () => IManualTelemetryTableRow[] = useCallback(() => {
@@ -396,7 +396,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
     setAddedRowIds((current) => [...current, id]);
 
     // Set edit mode for the new row
-    _muiDataGridApiRef.current.startRowEditMode({ id, fieldToFocus: 'wldtaxonomic_units' });
+    _muiDataGridApiRef.current.startRowEditMode({ id, fieldToFocus: 'itis_tsn' });
   }, [_muiDataGridApiRef, rows]);
 
   /**
@@ -436,7 +436,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
 
     // Store ids of rows that were in edit mode
     setModifiedRowIds(editingIdsToSave);
-  }, [_muiDataGridApiRef, isStoppingEdit, rows]);
+  }, [_muiDataGridApiRef, _validateRows, isStoppingEdit, rows]);
 
   /**
    * Transition all rows tracked by `modifiedRowIds` to view mode.
@@ -658,6 +658,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
     [
       _muiDataGridApiRef,
       rows,
+      getColumns,
       addRecord,
       saveRecords,
       deleteRecords,
@@ -668,8 +669,8 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
       hasUnsavedChanges,
       rowSelectionModel,
       isLoading,
-      validationModel,
       isSaving,
+      validationModel,
       recordCount
     ]
   );

@@ -627,13 +627,11 @@ describe('SummaryService', () => {
     it('should return valid XLSXCSV', () => {
       const file = new MediaFile('test.txt', 'text/plain', Buffer.of(0));
       const parse = sinon.stub(MediaUtils, 'parseUnknownMedia').returns(file);
-      sinon.stub(XLSXCSV, 'prototype').returns({
-        workbook: {
-          rawWorkbook: {
-            Custprops: {
-              sims_template_id: 1,
-              sims_csm_id: 1
-            }
+      sinon.stub(XLSXCSV.prototype, 'workbook').returns({
+        rawWorkbook: {
+          Custprops: {
+            sims_template_id: 1,
+            sims_csm_id: 1
           }
         }
       });
@@ -695,9 +693,10 @@ describe('SummaryService', () => {
 
     it('should return valid `ISummaryTemplateSpeciesData[]`', async () => {
       const service = mockService();
-      const mockSpecies = sinon
-        .stub(SurveyService.prototype, 'getSpeciesData')
-        .resolves({ focal_species: [], focal_species_names: [], ancillary_species: [], ancillary_species_names: [] });
+      const mockSpecies = sinon.stub(SurveyService.prototype, 'getSpeciesData').resolves({
+        focal_species: [],
+        ancillary_species: []
+      });
       const mockXLSX = ({
         workbook: {
           rawWorkbook: {

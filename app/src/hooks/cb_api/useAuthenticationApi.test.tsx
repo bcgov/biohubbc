@@ -17,7 +17,7 @@ describe('useAuthenticationApi', () => {
   const mockUuid = v4();
 
   it('basic success case', async () => {
-    mock.onPost('/api/critter-data/signup').reply(200, {
+    mock.onPost('/api/critterbase/signup').reply(200, {
       user_id: mockUuid
     });
 

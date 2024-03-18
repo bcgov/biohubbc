@@ -1,4 +1,14 @@
-import { mdiChevronDown, mdiPlus } from '@mdi/js';
+import {
+  mdiChevronDown,
+  mdiFamilyTree,
+  mdiFormatListGroup,
+  mdiInformationOutline,
+  mdiPlus,
+  mdiRuler,
+  mdiSkullOutline,
+  mdiSpiderWeb,
+  mdiTagOutline
+} from '@mdi/js';
 import Icon from '@mdi/react';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -16,18 +26,18 @@ import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { SurveyAnimalsI18N } from 'constants/i18n';
 import { useQuery } from 'hooks/useQuery';
-import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
-import { useMemo } from 'react';
+import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
+import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { useHistory } from 'react-router-dom';
-import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
+import { ANIMAL_SECTION } from './animal';
 
 interface IAnimalListProps {
   isLoading?: boolean;
-  critterData?: IDetailedCritterWithInternalId[];
-  selectedSection: IAnimalSections;
-  onSelectSection: (section: IAnimalSections) => void;
+  surveyCritters?: ISimpleCritterWithInternalId[];
+  selectedSection: ANIMAL_SECTION;
+  onSelectSection: (section: ANIMAL_SECTION) => void;
+  refreshCritter: (critter_id: string) => Promise<ICritterDetailedResponse | undefined>;
   onAddButton: () => void;
 }
 
@@ -69,24 +79,42 @@ const ListPlaceholder = (props: { displaySkeleton: boolean }) =>
   );
 
 const AnimalList = (props: IAnimalListProps) => {
-  const { isLoading, selectedSection, onSelectSection, critterData, onAddButton } = props;
-  const { cid: survey_critter_id } = useQuery();
+  const { isLoading, selectedSection, onSelectSection, refreshCritter, surveyCritters, onAddButton } = props;
 
   const history = useHistory();
+  //const cbApi = useCritterbaseApi();
+  const { cid: survey_critter_id } = useQuery();
 
-  const sortedCritterData = useMemo(() => {
-    return [...(critterData ?? [])].sort(
-      (a, b) => new Date(a.create_timestamp).getTime() - new Date(b.create_timestamp).getTime()
-    );
-  }, [critterData]);
-
-  const handleCritterSelect = (id: string) => {
-    if (id === survey_critter_id) {
-      history.replace(history.location.pathname);
-    } else {
-      history.push(`?cid=${id}`);
+  const getSectionIcon = (section: ANIMAL_SECTION) => {
+    switch (section) {
+      case ANIMAL_SECTION.GENERAL:
+        return mdiInformationOutline;
+      case ANIMAL_SECTION.COLLECTION_UNITS:
+        return mdiFormatListGroup;
+      case ANIMAL_SECTION.MARKINGS:
+        return mdiTagOutline;
+      case ANIMAL_SECTION.MEASUREMENTS:
+        return mdiRuler;
+      case ANIMAL_SECTION.CAPTURES:
+        return mdiSpiderWeb;
+      case ANIMAL_SECTION.MORTALITY:
+        return mdiSkullOutline;
+      case ANIMAL_SECTION.FAMILY:
+        return mdiFamilyTree;
+      default:
+        return mdiInformationOutline;
     }
-    onSelectSection(SurveyAnimalsI18N.animalGeneralTitle);
+  };
+
+  const handleCritterSelect = async (critter: ISimpleCritterWithInternalId) => {
+    if (critter.survey_critter_id === Number(survey_critter_id)) {
+      history.replace(history.location.pathname);
+      //onSelectCritter();
+    } else {
+      refreshCritter(critter.critter_id);
+      history.push(`?cid=${critter.survey_critter_id}`);
+    }
+    onSelectSection(ANIMAL_SECTION.GENERAL);
   };
 
   return (
@@ -123,10 +151,10 @@ const AnimalList = (props: IAnimalListProps) => {
           sx={{
             background: grey[100]
           }}>
-          {!sortedCritterData.length ? (
-            <ListPlaceholder displaySkeleton={!!isLoading && !sortedCritterData?.length} />
+          {!surveyCritters?.length ? (
+            <ListPlaceholder displaySkeleton={!!isLoading && !surveyCritters?.length} />
           ) : (
-            sortedCritterData.map((critter) => (
+            surveyCritters.map((critter) => (
               <Accordion
                 disableGutters
                 square
@@ -138,11 +166,11 @@ const AnimalList = (props: IAnimalListProps) => {
                   }
                 }}
                 key={critter.critter_id}
-                expanded={critter.survey_critter_id.toString() === survey_critter_id}>
+                expanded={critter.survey_critter_id === Number(survey_critter_id)}>
                 <Box display="flex" overflow="hidden" alignItems="center" className="sampleSiteHeader">
                   <AccordionSummary
                     expandIcon={<Icon path={mdiChevronDown} size={1} />}
-                    onClick={() => handleCritterSelect(critter.survey_critter_id.toString())}
+                    onClick={() => handleCritterSelect(critter)}
                     aria-controls="panel1bh-content"
                     sx={{
                       flex: '1 1 auto',
@@ -164,7 +192,7 @@ const AnimalList = (props: IAnimalListProps) => {
                         {critter.animal_id}
                       </Typography>
                       <Typography variant="body2" color="textSecondary">
-                        {critter.taxon} | {critter.sex}
+                        {critter.itis_scientific_name} | {critter.sex}
                       </Typography>
                     </Box>
                   </AccordionSummary>
@@ -180,7 +208,7 @@ const AnimalList = (props: IAnimalListProps) => {
                         fontSize: '0.875rem'
                       }
                     }}>
-                    {(Object.keys(ANIMAL_SECTIONS_FORM_MAP) as IAnimalSections[]).map((section) => (
+                    {(Object.values(ANIMAL_SECTION) as ANIMAL_SECTION[]).map((section) => (
                       <ListItemButton
                         sx={{
                           px: 2,
@@ -195,7 +223,7 @@ const AnimalList = (props: IAnimalListProps) => {
                           onSelectSection(section);
                         }}>
                         <ListItemIcon>
-                          <Icon path={ANIMAL_SECTIONS_FORM_MAP[section].mdiIcon} size={1} />
+                          <Icon path={getSectionIcon(section)} size={1} />
                         </ListItemIcon>
                         <ListItemText>{section}</ListItemText>
                       </ListItemButton>

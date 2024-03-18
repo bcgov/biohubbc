@@ -3,7 +3,7 @@ import { JSONPath } from 'jsonpath-plus';
 import { IDBConnection } from '../database/db';
 import { parseUTMString, utmToLatLng } from '../utils/spatial-utils';
 import { DBService } from './db-service';
-import { IEnrichedTaxonomyData, TaxonomyService } from './taxonomy-service';
+
 /**
  * Service to produce DWC data for a project.
  *
@@ -31,100 +31,6 @@ export class DwCService extends DBService {
       taxonSet.add(item.value['taxonID']);
     });
     return taxonSet;
-  }
-
-  /**
-   * Calls elastic search taxonomy service with the given set of taxon codes
-   *
-   * @param {Set<string>} set A set of taxon IDs
-   * @return {*}  {Promise<Map<string, IEnrichedTaxonomyData>>}
-   * @memberof DwCService
-   */
-  async getEnrichedDataForSpeciesSet(set: Set<string>): Promise<Map<string, IEnrichedTaxonomyData>> {
-    const taxonomyService = new TaxonomyService();
-    const taxonLibrary: Map<string, IEnrichedTaxonomyData> = new Map();
-
-    for (const item of set) {
-      const data = await taxonomyService.getEnrichedDataForSpeciesCode(item);
-      // skip null returns
-      if (data) {
-        taxonLibrary.set(item, data);
-      }
-    }
-
-    return taxonLibrary;
-  }
-
-  /**
-   * Find all nodes that contain `taxonID` and update them to include additional taxonomic information.
-   *
-   * @param {string} jsonObject
-   * @return {*}  {Promise<string>}
-   * @memberof DwCService
-   */
-  async decorateTaxonIDs(jsonObject: Record<any, any>): Promise<Record<any, any>> {
-    // Find and return all nodes that contain `taxonID`
-    const pathsToPatch = JSONPath({ path: '$..[taxonID]^', json: jsonObject, resultType: 'all' });
-
-    // Collect all unique taxon IDs
-    const taxonIds = this.collectTaxonIDs(pathsToPatch);
-
-    // Make a request for each unique taxon ID
-    // TODO this approach assumes that every not every row will have a unique taxon ID
-    // TODO investigate elastic search batch calls
-    const taxonData = await this.getEnrichedDataForSpeciesSet(taxonIds);
-
-    const patchOperations: Operation[] = [];
-
-    // Build patch operations
-    await Promise.all(
-      pathsToPatch.map(async (item: any) => {
-        const enrichedData = taxonData.get(item.value['taxonID']);
-
-        if (!enrichedData) {
-          // No matching taxon information found for provided taxonID code
-          return;
-        }
-
-        const taxonIdPatch: Operation = {
-          op: 'replace',
-          path: item.pointer + '/taxonID',
-          value: item.value['taxonID']
-        };
-
-        const scientificNamePatch: Operation = {
-          op: 'add',
-          path: item.pointer + '/scientificName',
-          value: enrichedData?.scientificName
-        };
-
-        const vernacularNamePatch: Operation = {
-          op: 'add',
-          path: item.pointer + '/vernacularName',
-          value: enrichedData?.englishName
-        };
-
-        patchOperations.push(taxonIdPatch, scientificNamePatch, vernacularNamePatch);
-      })
-    );
-
-    // Apply patch operations
-    return jsonpatch.applyPatch(jsonObject, patchOperations).newDocument;
-  }
-
-  /**
-   * Decorates the DwC json object
-   *
-   * @param {Record<any, any>} jsonObject
-   * @return {*}  {Promise<Record<any, any>>}
-   * @memberof DwCService
-   */
-  async decorateDwCJSON(jsonObject: Record<any, any>): Promise<Record<any, any>> {
-    const latlongDec = await this.decorateLatLong(jsonObject);
-
-    const taxonDec = await this.decorateTaxonIDs(latlongDec);
-
-    return taxonDec;
   }
 
   /**

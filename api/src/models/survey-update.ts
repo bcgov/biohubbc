@@ -1,6 +1,7 @@
 import { Feature } from 'geojson';
 import { SurveyStratum, SurveyStratumRecord } from '../repositories/site-selection-strategy-repository';
 import { PostSurveyBlock } from '../repositories/survey-block-repository';
+import { ITaxonomy } from '../services/platform-service';
 
 export class PutSurveyObject {
   survey_details: PutSurveyDetailsData;
@@ -96,8 +97,8 @@ export class PutSurveyDetailsData {
 }
 
 export class PutSurveySpeciesData {
-  focal_species: number[];
-  ancillary_species: number[];
+  focal_species: ITaxonomy[];
+  ancillary_species: ITaxonomy[];
 
   constructor(obj?: any) {
     this.focal_species = (obj?.focal_species?.length && obj?.focal_species) || [];

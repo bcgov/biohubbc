@@ -178,7 +178,7 @@ export class BctwService {
             new HTTP500('Connection to the BCTW API server was refused. Please try again later.', [error?.message])
           );
         }
-        const data = error.response?.data;
+        const data: any = error.response?.data;
         const errMsg = data?.error ?? data?.errors ?? data ?? 'Unknown error';
 
         return Promise.reject(
@@ -252,7 +252,7 @@ export class BctwService {
    * @memberof BctwService
    */
   async deployDevice(device: IDeployDevice): Promise<IDeploymentRecord> {
-    return await this.axiosInstance.post(DEPLOY_DEVICE_ENDPOINT, device);
+    return this.axiosInstance.post(DEPLOY_DEVICE_ENDPOINT, device);
   }
 
   /**
@@ -271,25 +271,30 @@ export class BctwService {
   }
 
   /**
-   * Get device hardware details by device id.
+   * Get device hardware details by device id and device make.
    *
-   * @param deviceId
+   * @param {number} deviceId
+   * @param {deviceMake} deviceMake
    * @returns {*} {Promise<IDevice[]>}
    * @memberof BctwService
    */
-  async getDeviceDetails(deviceId: number): Promise<IDevice[]> {
-    return this._makeGetRequest(`${GET_DEVICE_DETAILS}${deviceId}`);
+  async getDeviceDetails(deviceId: number, deviceMake: string): Promise<IDevice[]> {
+    return this._makeGetRequest(`${GET_DEVICE_DETAILS}${deviceId}`, { make: deviceMake });
   }
 
   /**
-   * Get deployments by device id, may return results for multiple critters.
+   * Get deployments by device id and device make, may return results for multiple critters.
    *
    * @param {number} deviceId
+   * @param {string} deviceMake
    * @returns {*} {Promise<IDeploymentRecord[]>}
    * @memberof BctwService
    */
-  async getDeviceDeployments(deviceId: number): Promise<IDeploymentRecord[]> {
-    return await this._makeGetRequest(GET_DEPLOYMENTS_BY_DEVICE_ENDPOINT, { device_id: String(deviceId) });
+  async getDeviceDeployments(deviceId: number, deviceMake: string): Promise<IDeploymentRecord[]> {
+    return this._makeGetRequest(GET_DEPLOYMENTS_BY_DEVICE_ENDPOINT, {
+      device_id: String(deviceId),
+      make: deviceMake
+    });
   }
 
   /**
