@@ -19,7 +19,7 @@ const pipelineConfigMapString = options.config;
 const pipelineConfigMap = JSON.parse(pipelineConfigMapString);
 
 /**
- * The pipeline settings.
+ * The pipeline settings for the API.
  *
  * The top-level keys are the pipeline environments (e.g. pr, dev, test, prod).
  * - This is specified by setting the '--env' arg in the git action.
@@ -32,7 +32,7 @@ const phases = {
     build: {
       ...pipelineConfigMap.api.pr.build,
       NAME: pipelineConfigMap.module.api,
-      DB_SERVICE_NAME: `${pipelineConfigMap.module.db}-postgresql${phases[env][phase].SUFFIX}`,
+      DB_NAME: pipelineConfigMap.module.db,
       CHANGE_ID: changeId,
       SUFFIX: `-build-${changeId}`,
       INSTANCE: `${pipelineConfigMap.module.api}-build-${changeId}`,
@@ -43,7 +43,7 @@ const phases = {
     deploy: {
       ...pipelineConfigMap.api.pr.deploy,
       NAME: pipelineConfigMap.module.api,
-      DB_SERVICE_NAME: `${pipelineConfigMap.module.db}-postgresql${phases[env][phase].SUFFIX}`,
+      DB_NAME: pipelineConfigMap.module.db,
       CHANGE_ID: changeId,
       SUFFIX: `-dev-${changeId}`,
       INSTANCE: `${pipelineConfigMap.module.api}-pr-${changeId}`,
@@ -59,7 +59,7 @@ const phases = {
     build: {
       ...pipelineConfigMap.api.dev.build,
       NAME: pipelineConfigMap.module.api,
-      DB_SERVICE_NAME: `${pipelineConfigMap.module.db}-postgresql${phases[env][phase].SUFFIX}`,
+      DB_NAME: pipelineConfigMap.module.db,
       CHANGE_ID: changeId,
       SUFFIX: `-build-${changeId}`,
       INSTANCE: `${pipelineConfigMap.module.api}-build-${changeId}`,
@@ -70,7 +70,7 @@ const phases = {
     deploy: {
       ...pipelineConfigMap.api.dev.deploy,
       NAME: pipelineConfigMap.module.api,
-      DB_SERVICE_NAME: `${pipelineConfigMap.module.db}-postgresql${phases[env][phase].SUFFIX}`,
+      DB_NAME: pipelineConfigMap.module.db,
       CHANGE_ID: 'deploy',
       SUFFIX: '-dev-deploy',
       INSTANCE: `${pipelineConfigMap.module.api}-dev-deploy`,
@@ -85,7 +85,7 @@ const phases = {
     build: {
       ...pipelineConfigMap.api.test.build,
       NAME: pipelineConfigMap.module.api,
-      DB_SERVICE_NAME: `${pipelineConfigMap.module.db}-postgresql${phases[env][phase].SUFFIX}`,
+      DB_NAME: pipelineConfigMap.module.db,
       CHANGE_ID: changeId,
       SUFFIX: `-build-${changeId}`,
       INSTANCE: `${pipelineConfigMap.module.api}-build-${changeId}`,
@@ -96,7 +96,7 @@ const phases = {
     deploy: {
       ...pipelineConfigMap.api.test.deploy,
       NAME: pipelineConfigMap.module.api,
-      DB_SERVICE_NAME: `${pipelineConfigMap.module.db}-postgresql${phases[env][phase].SUFFIX}`,
+      DB_NAME: pipelineConfigMap.module.db,
       CHANGE_ID: 'deploy',
       SUFFIX: `-test`,
       INSTANCE: `${pipelineConfigMap.module.api}-test`,
@@ -111,7 +111,7 @@ const phases = {
     build: {
       ...pipelineConfigMap.api.prod.build,
       NAME: pipelineConfigMap.module.api,
-      DB_SERVICE_NAME: `${pipelineConfigMap.module.db}-postgresql${phases[env][phase].SUFFIX}`,
+      DB_NAME: pipelineConfigMap.module.db,
 
       CHANGE_ID: changeId,
       SUFFIX: `-build-${changeId}`,
@@ -123,7 +123,7 @@ const phases = {
     deploy: {
       ...pipelineConfigMap.api.prod.deploy,
       NAME: pipelineConfigMap.module.api,
-      DB_SERVICE_NAME: `${pipelineConfigMap.module.db}-postgresql${phases[env][phase].SUFFIX}`,
+      DB_NAME: pipelineConfigMap.module.db,
       CHANGE_ID: 'deploy',
       SUFFIX: `-prod`,
       INSTANCE: `${pipelineConfigMap.module.api}-prod`,

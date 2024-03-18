@@ -19,6 +19,8 @@ const apiDeploy = async (settings) => {
 
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../templates'));
 
+  const DB_SERVICE_NAME = `${phases[env][phase].NAME}-postgresql${phases[env][phase].SUFFIX}`;
+
   let objects = [];
 
   objects.push(
@@ -50,7 +52,7 @@ const apiDeploy = async (settings) => {
         CB_API_HOST: phases[env][phase].CB_API_HOST,
         // Database
         TZ: phases[env][phase].TZ,
-        DB_SERVICE_NAME: phases[env][phase].DB_SERVICE_NAME,
+        DB_SERVICE_NAME: DB_SERVICE_NAME,
         // Keycloak
         KEYCLOAK_HOST: phases[env][phase].SSO.KEYCLOAK_HOST,
         KEYCLOAK_REALM: phases[env][phase].SSO.KEYCLOAK_REALM,

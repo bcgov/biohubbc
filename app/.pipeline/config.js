@@ -18,6 +18,15 @@ const branch = options.branch || null;
 const pipelineConfigMapString = options.config;
 const pipelineConfigMap = JSON.parse(pipelineConfigMapString);
 
+/**
+ * The pipeline settings for the APP.
+ *
+ * The top-level keys are the pipeline environments (e.g. pr, dev, test, prod).
+ * - This is specified by setting the '--env' arg in the git action.
+ *
+ * The second-level keys are the pipeline phases (e.g. build, deploy).
+ * - This is specified by setting the '--phase' arg in the git action.
+ */
 const phases = {
   pr: {
     build: {
