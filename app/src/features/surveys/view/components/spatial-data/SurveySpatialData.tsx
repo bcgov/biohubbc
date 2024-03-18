@@ -186,6 +186,7 @@ const SurveySpatialData = () => {
         return [
           {
             layerName: 'Observations',
+            paneZIndex: 504,
             popupRecordTitle: 'Observation Record',
             mapPoints: observationPoints
           }
@@ -194,6 +195,7 @@ const SurveySpatialData = () => {
         return [
           {
             layerName: 'Telemetry',
+            paneZIndex: 503,
             popupRecordTitle: 'Telemetry Record',
             mapPoints: telemetryPoints
           }

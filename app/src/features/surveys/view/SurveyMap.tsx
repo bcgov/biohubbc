@@ -28,6 +28,10 @@ export interface ISurveyMapSupplementaryLayer {
    */
   layerName: string;
   /**
+   * The order to render the layer.
+   */
+  paneZIndex?: number;
+  /**
    * The array of map points
    */
   mapPoints: ISurveyMapPoint[];
@@ -183,6 +187,7 @@ const SurveyMap = (props: ISurveyMapProps) => {
   const staticLayers: IStaticLayer[] = [
     {
       layerName: 'Study Areas',
+      paneZIndex: 501,
       features: studyAreaLocations.flatMap((location) => {
         return location.geojson.map((feature, index) => {
           return {
@@ -200,6 +205,7 @@ const SurveyMap = (props: ISurveyMapProps) => {
       })
     },
     {
+      paneZIndex: 502,
       layerName: 'Sample Sites',
       layerColors: { color: '#1f7dff', fillColor: '#1f7dff' },
       features: sampleSites.map((sampleSite, index) => {
@@ -230,6 +236,7 @@ const SurveyMap = (props: ISurveyMapProps) => {
     ...props.supplementaryLayers.map((supplementaryLayer) => {
       return {
         layerName: supplementaryLayer.layerName,
+        paneZIndex: supplementaryLayer.paneZIndex,
         layerColors: { fillColor: '#1f7dff', color: '#FFFFFF' },
         features: supplementaryLayer.mapPoints.map((mapPoint: ISurveyMapPoint, index: number): IStaticLayerFeature => {
           const isLoading = !mapPointMetadata[mapPoint.key];
