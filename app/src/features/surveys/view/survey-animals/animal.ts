@@ -188,23 +188,29 @@ export const CreateCritterCollectionUnitSchema = yup.object({
 // @TODO needs updating?
 export const AnimalMortalitySchema = yup.object({
   mortality_id: yup.string(),
-  location_id: yup.string(),
-  mortality_longitude: lonSchema.when('projection_mode', {
-    is: 'wgs',
-    then: lonSchema.required('Longitude is required')
-  }),
-  mortality_latitude: latSchema.when('projection_mode', {
-    is: 'wgs',
-    then: latSchema.required('Latitude is required')
-  }),
-  mortality_utm_northing: numSchema.when('projection_mode', {
-    is: 'utm',
-    then: numSchema.required('UTM Northing is required')
-  }),
-  mortality_utm_easting: numSchema.when('projection_mode', {
-    is: 'utm',
-    then: numSchema.required('UTM Easting is required')
-  }),
+
+  // TODO remove these, as they've been replaced with location
+  
+  // location_id: yup.string(),
+  // mortality_longitude: lonSchema.when('projection_mode', {
+  //   is: 'wgs',
+  //   then: lonSchema.required('Longitude is required')
+  // }),
+  // mortality_latitude: latSchema.when('projection_mode', {
+  //   is: 'wgs',
+  //   then: latSchema.required('Latitude is required')
+  // }),
+  // mortality_utm_northing: numSchema.when('projection_mode', {
+  //   is: 'utm',
+  //   then: numSchema.required('UTM Northing is required')
+  // }),
+  // mortality_utm_easting: numSchema.when('projection_mode', {
+  //   is: 'utm',
+  //   then: numSchema.required('UTM Easting is required')
+  // }),
+
+  location: LocationSchema.required(),
+
   mortality_timestamp: dateSchema.required('Mortality Date is required'),
   mortality_coordinate_uncertainty: numSchema,
   mortality_comment: yup.string(),
@@ -233,3 +239,4 @@ export type ICreateCritterMeasurement = InferType<typeof CreateCritterMeasuremen
 export type ICreateCritterCollectionUnit = InferType<typeof CreateCritterCollectionUnitSchema>;
 export type ICreateCritterCapture = InferType<typeof CreateCritterCaptureSchema>;
 export type ICreateCritterFamily = InferType<typeof CreateCritterFamilySchema>;
+export type ICreateCritterMortality = InferType<typeof AnimalMortalitySchema>;

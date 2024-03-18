@@ -1,15 +1,14 @@
 import { AxiosInstance } from 'axios';
+import { ICreateCritterMortality } from 'features/surveys/view/survey-animals/animal';
 
 const useMortalityApi = (axios: AxiosInstance) => {
  
-  // TODO type
-  const createMortality = async (payload: any) => {
+  const createMortality = async (payload: ICreateCritterMortality) => {
     const { data } = await axios.post(`/api/critterbase/mortality/create`, payload);
     return data;
   };
 
-  // TODO type
-  const updateMortality = async (payload: any) => {
+  const updateMortality = async (payload: ICreateCritterMortality) => {
     const { data } = await axios.patch(`/api/critterbase/mortality/${payload.mortality_id}`, payload);
     return data;
   };
