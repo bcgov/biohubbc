@@ -33,6 +33,10 @@ const apiDeploy = async (settings) => {
         // Node
         NODE_ENV: phases[env][phase].NODE_ENV,
         NODE_OPTIONS: phases[env][phase].NODE_OPTIONS,
+        // Clamav
+        ENABLE_FILE_VIRUS_SCAN: phases[env][phase].ENABLE_FILE_VIRUS_SCAN,
+        CLAMAV_HOST: phases[env][phase].CLAMAV_HOST,
+        CLAMAV_PORT: phases[env][phase].CLAMAV_PORT,
         // BioHub Platform (aka: Backbone)
         BACKBONE_INTERNAL_API_HOST: phases[env][phase].BACKBONE_INTERNAL_API_HOST,
         BACKBONE_INTAKE_PATH: phases[env][phase].BACKBONE_INTAKE_PATH,
@@ -63,6 +67,11 @@ const apiDeploy = async (settings) => {
         KEYCLOAK_API_CLIENT_SECRET_KEY: phases[env][phase].SSO.cssApi.KEYCLOAK_API_CLIENT_SECRET_KEY,
         KEYCLOAK_API_HOST: phases[env][phase].SSO.cssApi.KEYCLOAK_API_HOST,
         KEYCLOAK_API_ENVIRONMENT: phases[env][phase].SSO.cssApi.KEYCLOAK_API_ENVIRONMENT,
+        // Object Store
+        OBJECT_STORE_SECRET: phases[env][phase].OBJECT_STORE_SECRET,
+        MAX_REQ_BODY_SIZE: phases[env][phase].MAX_REQ_BODY_SIZE,
+        MAX_UPLOAD_NUM_FILES: phases[env][phase].MAX_UPLOAD_NUM_FILES,
+        MAX_UPLOAD_FILE_SIZE: phases[env][phase].MAX_UPLOAD_FILE_SIZE,
         // Log Level
         LOG_LEVEL: phases[env][phase].LOG_LEVEL,
         API_RESPONSE_VALIDATION_ENABLED: phases[env][phase].API_RESPONSE_VALIDATION_ENABLED,

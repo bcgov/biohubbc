@@ -3,13 +3,13 @@ import { Knex } from 'knex';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
 const DB_SCHEMA_DAPI_V1 = process.env.DB_SCHEMA_DAPI_V1;
-const PROJECT_SEEDER_USER_IDENTIFIER = process.env.PROJECT_SEEDER_USER_IDENTIFIER;
+const SEED_PROJECT_USER_IDENTIFIER = process.env.SEED_PROJECT_USER_IDENTIFIER;
 
-const NUM_SEED_PROJECTS = Number(process.env.NUM_SEED_PROJECTS ?? 2);
-const NUM_SEED_SURVEYS_PER_PROJECT = Number(process.env.NUM_SEED_SURVEYS_PER_PROJECT ?? 2);
+const SEED_NUM_PROJECTS = Number(process.env.SEED_NUM_PROJECTS ?? 2);
+const SEED_NUM_SURVEYS_PER_PROJECT = Number(process.env.SEED_NUM_SURVEYS_PER_PROJECT ?? 2);
 
-const NUM_SEED_OBSERVATIONS_PER_SURVEY = Number(process.env.NUM_SEED_OBSERVATIONS_PER_SURVEY ?? 3);
-const NUM_SEED_SUBCOUNTS_PER_OBSERVATION = Number(process.env.NUM_SEED_SUBCOUNTS_PER_OBSERVATION ?? 1);
+const SEED_NUM_OBSERVATIONS_PER_SURVEY = Number(process.env.SEED_NUM_OBSERVATIONS_PER_SURVEY ?? 3);
+const SEED_NUM_SUBCOUNTS_PER_OBSERVATION = Number(process.env.SEED_NUM_SUBCOUNTS_PER_OBSERVATION ?? 1);
 
 const focalTaxonIdOptions = [
   { itis_tsn: 180703, itis_scientific_name: 'Alces alces' }, // Moose
@@ -52,7 +52,7 @@ export async function seed(knex: Knex): Promise<void> {
   const checkProjectsResponse = await knex.raw(checkAnyProjectExists());
 
   if (!checkProjectsResponse.rows.length) {
-    for (let i = 0; i < NUM_SEED_PROJECTS; i++) {
+    for (let i = 0; i < SEED_NUM_PROJECTS; i++) {
       // Insert project data
       const createProjectResponse = await knex.raw(insertProjectData(`Seed Project ${i + 1}`));
       const projectId = createProjectResponse.rows[0].project_id;
@@ -65,7 +65,7 @@ export async function seed(knex: Knex): Promise<void> {
       `);
 
       // Insert survey data
-      for (let j = 0; j < NUM_SEED_SURVEYS_PER_PROJECT; j++) {
+      for (let j = 0; j < SEED_NUM_SURVEYS_PER_PROJECT; j++) {
         const createSurveyResponse = await knex.raw(insertSurveyData(projectId, `Seed Survey ${j + 1}`));
         const surveyId = createSurveyResponse.rows[0].survey_id;
 
@@ -88,17 +88,17 @@ export async function seed(knex: Knex): Promise<void> {
           ${insertSurveySamplePeriodData(surveyId)}
         `);
 
-        for (let k = 0; k < NUM_SEED_OBSERVATIONS_PER_SURVEY; k++) {
+        for (let k = 0; k < SEED_NUM_OBSERVATIONS_PER_SURVEY; k++) {
           const createObservationResponse = await knex.raw(
             // set the number of observations to minimum 20 times the number of subcounts (which are set to a number
             // between 1 and 20) to ensure the sum of all subcounts is at least <= the observation count (to avoid
             // constraint violations)
             insertSurveyObservationData(
               surveyId,
-              NUM_SEED_SUBCOUNTS_PER_OBSERVATION * 20 + faker.number.int({ min: 1, max: 20 })
+              SEED_NUM_SUBCOUNTS_PER_OBSERVATION * 20 + faker.number.int({ min: 1, max: 20 })
             )
           );
-          for (let l = 0; l < NUM_SEED_SUBCOUNTS_PER_OBSERVATION; l++) {
+          for (let l = 0; l < SEED_NUM_SUBCOUNTS_PER_OBSERVATION; l++) {
             await knex.raw(insertObservationSubCount(createObservationResponse.rows[0].survey_observation_id));
           }
         }
@@ -162,7 +162,7 @@ const insertSurveyParticipationData = (surveyId: number) => `
           FROM
             system_user su
           WHERE
-            su.user_identifier = '${PROJECT_SEEDER_USER_IDENTIFIER}'
+            su.user_identifier = '${SEED_PROJECT_USER_IDENTIFIER}'
         ), 1)
       ),
       1
@@ -414,7 +414,7 @@ const insertProjectParticipationData = (projectId: number) => `
           FROM
             system_user su
           WHERE
-            su.user_identifier = '${PROJECT_SEEDER_USER_IDENTIFIER}'
+            su.user_identifier = '${SEED_PROJECT_USER_IDENTIFIER}'
         ), 1)
       ),
       (SELECT project_role_id FROM project_role WHERE name = 'Coordinator' LIMIT 1)

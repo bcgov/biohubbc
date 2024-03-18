@@ -87,14 +87,14 @@ parameters:
     required: true
   # Keycloak secret
   - name: KEYCLOAK_SECRET
-    description: The name of the keycloak secret
+    description: The name of the Openshift secret which contains the keycloak credentials.
     required: true
   # Keycloak Service Client
   - name: KEYCLOAK_ADMIN_USERNAME
     description: keycloak host admin username
     required: true
   - name: KEYCLOAK_SECRET_ADMIN_PASSWORD_KEY
-    description: The key of the admin password in the keycloak secret
+    description: The key of the admin password field in the Openshift keycloak secret
     required: true
   # Keycloak CSS API
   - name: KEYCLOAK_API_TOKEN_URL
@@ -113,8 +113,8 @@ parameters:
     description: The css api environment to query (dev, test, prod)
     required: true
   # Object Store (S3)
-  - name: OBJECT_STORE_SECRETS
-    description: Secrets used to read and write to the S3 storage
+  - name: OBJECT_STORE_SECRET
+    description: The name of the Openshift secret which contains the object store credentials.
     value: 'biohubbc-object-store'
   - name: S3_KEY_PREFIX
     description: S3 key optional prefix
@@ -308,22 +308,22 @@ objects:
                   valueFrom:
                     secretKeyRef:
                       key: object_store_url
-                      name: ${OBJECT_STORE_SECRETS}
+                      name: ${OBJECT_STORE_SECRET}
                 - name: OBJECT_STORE_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:
                       key: object_store_access_key_id
-                      name: ${OBJECT_STORE_SECRETS}
+                      name: ${OBJECT_STORE_SECRET}
                 - name: OBJECT_STORE_SECRET_KEY_ID
                   valueFrom:
                     secretKeyRef:
                       key: object_store_secret_key_id
-                      name: ${OBJECT_STORE_SECRETS}
+                      name: ${OBJECT_STORE_SECRET}
                 - name: OBJECT_STORE_BUCKET_NAME
                   valueFrom:
                     secretKeyRef:
                       key: object_store_bucket_name
-                      name: ${OBJECT_STORE_SECRETS}
+                      name: ${OBJECT_STORE_SECRET}
                 # Logging and Validation
                 - name: LOG_LEVEL
                   value: ${LOG_LEVEL}
