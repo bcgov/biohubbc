@@ -68,16 +68,22 @@ export class ProjectParticipationRepository extends BaseRepository {
   /**
    *  Deletes a project participation record.
    *
+   * @param {number} projectId
    * @param {number} projectParticipationId
    * @return {*}  {Promise<ProjectParticipationRecord>}
    * @memberof ProjectParticipationRepository
    */
-  async deleteProjectParticipationRecord(projectParticipationId: number): Promise<ProjectParticipationRecord> {
+  async deleteProjectParticipationRecord(
+    projectId: number,
+    projectParticipationId: number
+  ): Promise<ProjectParticipationRecord> {
     const sqlStatement = SQL`
       DELETE FROM
         project_participation
       WHERE
         project_participation_id = ${projectParticipationId}
+      AND
+        project_id = ${projectId}
       RETURNING
         *;
     `;

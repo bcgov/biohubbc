@@ -431,7 +431,7 @@ const ManualTelemetryList = () => {
                       <Select
                         labelId="select-critter"
                         label={'Critter'}
-                        value={critterId}
+                        value={String(critterId)}
                         required
                         onChange={(e) => {
                           setCritterId(Number(e.target.value));

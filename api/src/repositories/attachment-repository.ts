@@ -52,9 +52,18 @@ export interface IReportAttachmentData {
   revision_count: number;
 }
 
-export interface IReportAttachmentAuthor {
+export interface IProjectReportAttachmentAuthor {
   project_report_author_id: number;
   project_report_attachment_id: number;
+  first_name: string;
+  last_name: string;
+  update_date: string;
+  revision_count: number;
+}
+
+export interface ISurveyReportAttachmentAuthor {
+  survey_report_author_id: number;
+  survey_report_attachment_id: number;
   first_name: string;
   last_name: string;
   update_date: string;
@@ -254,6 +263,13 @@ export class AttachmentRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql<IProjectReportAttachment>(sqlStatement);
+
+    if (response.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to get project report attachment by reportAttachmentId', [
+        'AttachmentRepository->getProjectReportAttachmentById',
+        'rowCount was null, undefined or > 1, expected rowCount === 1'
+      ]);
+    }
 
     return response.rows[0];
   }
@@ -529,6 +545,13 @@ export class AttachmentRepository extends BaseRepository {
 
     const response = await this.connection.sql<ISurveyReportAttachment>(sqlStatement);
 
+    if (response.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to get survey report attachment data', [
+        'AttachmentRepository->getSurveyReportAttachmentById',
+        'rowCount was !== 1, expected rowCount === 1'
+      ]);
+    }
+
     return response.rows[0];
   }
 
@@ -578,10 +601,10 @@ export class AttachmentRepository extends BaseRepository {
   /**
    * Query to return all of the authors belonging to a project report attachment
    * @param {number} reportAttachmentId The ID of the report attachment
-   * @return {Promise<IReportAttachmentAuthor[]>} Promise resolving the report authors
+   * @return {Promise<IProjectReportAttachmentAuthor[]>} Promise resolving the report authors
    * @memberof AttachmentRepository
    */
-  async getProjectReportAttachmentAuthors(reportAttachmentId: number): Promise<IReportAttachmentAuthor[]> {
+  async getProjectReportAttachmentAuthors(reportAttachmentId: number): Promise<IProjectReportAttachmentAuthor[]> {
     defaultLog.debug({ label: 'getProjectAttachmentAuthors' });
 
     const sqlStatement = SQL`
@@ -593,7 +616,7 @@ export class AttachmentRepository extends BaseRepository {
         project_report_attachment_id = ${reportAttachmentId}
       `;
 
-    const response = await this.connection.sql<IReportAttachmentAuthor>(sqlStatement);
+    const response = await this.connection.sql<IProjectReportAttachmentAuthor>(sqlStatement);
 
     return response.rows;
   }
@@ -601,10 +624,10 @@ export class AttachmentRepository extends BaseRepository {
   /**
    * Query to return all of the authors belonging to a survey report attachment
    * @param {number} reportAttachmentId The ID of the report attachment
-   * @return {Promise<IReportAttachmentAuthor[]>} Promise resolving the report authors
+   * @return {Promise<ISurveyReportAttachmentAuthor[]>} Promise resolving the report authors
    * @memberof AttachmentRepository
    */
-  async getSurveyReportAttachmentAuthors(reportAttachmentId: number): Promise<IReportAttachmentAuthor[]> {
+  async getSurveyReportAttachmentAuthors(reportAttachmentId: number): Promise<ISurveyReportAttachmentAuthor[]> {
     defaultLog.debug({ label: 'getSurveyAttachmentAuthors' });
 
     const sqlStatement = SQL`
@@ -616,7 +639,7 @@ export class AttachmentRepository extends BaseRepository {
         survey_report_attachment_id = ${reportAttachmentId};
       `;
 
-    const response = await this.connection.sql<IReportAttachmentAuthor>(sqlStatement);
+    const response = await this.connection.sql<ISurveyReportAttachmentAuthor>(sqlStatement);
 
     return response.rows;
   }
@@ -1033,7 +1056,7 @@ export class AttachmentRepository extends BaseRepository {
    * @return {*}  {Promise<{ key: string; uuid: string }>}
    * @memberof AttachmentRepository
    */
-  async deleteProjectAttachment(attachmentId: number): Promise<{ key: string; uuid: string }> {
+  async deleteProjectAttachmentRecord(attachmentId: number): Promise<{ key: string; uuid: string }> {
     const sqlStatement = SQL`
       DELETE
         from project_attachment
@@ -1047,7 +1070,7 @@ export class AttachmentRepository extends BaseRepository {
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete Project Attachment by id', [
-        'AttachmentRepository->deleteProjectAttachment',
+        'AttachmentRepository->deleteProjectAttachmentRecord',
         'rows was null or undefined, expected rows != null'
       ]);
     }
@@ -1062,7 +1085,7 @@ export class AttachmentRepository extends BaseRepository {
    * @return {*}  {Promise<{ key: string }>}
    * @memberof AttachmentRepository
    */
-  async deleteProjectReportAttachment(attachmentId: number): Promise<{ key: string; uuid: string }> {
+  async deleteProjectReportAttachmentRecord(attachmentId: number): Promise<{ key: string; uuid: string }> {
     const sqlStatement = SQL`
       DELETE
         from project_report_attachment
@@ -1076,7 +1099,7 @@ export class AttachmentRepository extends BaseRepository {
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete Project Report Attachment by id', [
-        'AttachmentRepository->deleteProjectReportAttachment',
+        'AttachmentRepository->deleteProjectReportAttachmentRecord',
         'rows was null or undefined, expected rows != null'
       ]);
     }
@@ -1271,7 +1294,7 @@ export class AttachmentRepository extends BaseRepository {
    * @return {*}  {Promise<{ key: string; uuid: string }>}
    * @memberof AttachmentRepository
    */
-  async deleteSurveyReportAttachment(attachmentId: number): Promise<{ key: string; uuid: string }> {
+  async deleteSurveyReportAttachmentRecord(attachmentId: number): Promise<{ key: string; uuid: string }> {
     const sqlStatement = SQL`
       DELETE
         from survey_report_attachment
@@ -1285,7 +1308,7 @@ export class AttachmentRepository extends BaseRepository {
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete Survey Report Attachment', [
-        'AttachmentRepository->deleteSurveyReportAttachment',
+        'AttachmentRepository->deleteSurveyReportAttachmentRecord',
         'rows was null or undefined, expected rows != null'
       ]);
     }
@@ -1300,7 +1323,7 @@ export class AttachmentRepository extends BaseRepository {
    * @return {*}  {Promise<{ key: string; uuid: string }>}
    * @memberof AttachmentRepository
    */
-  async deleteSurveyAttachment(attachmentId: number): Promise<{ key: string; uuid: string }> {
+  async deleteSurveyAttachmentRecord(attachmentId: number): Promise<{ key: string; uuid: string }> {
     const sqlStatement = SQL`
       DELETE
         from survey_attachment
@@ -1314,7 +1337,7 @@ export class AttachmentRepository extends BaseRepository {
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete Survey Attachment', [
-        'AttachmentRepository->deleteSurveyAttachment',
+        'AttachmentRepository->deleteSurveyAttachmentRecord',
         'rows was null or undefined, expected rows != null'
       ]);
     }

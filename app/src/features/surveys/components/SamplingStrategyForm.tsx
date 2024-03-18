@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
-import SurveyBlockSection from './SurveyBlockSection';
+import SurveyBlockSection from './SurveyBlockForm';
 import SurveySiteSelectionForm from './SurveySiteSelectionForm';
 import SurveyStratumForm from './SurveyStratumForm';
 
@@ -13,9 +13,7 @@ const SamplingStrategyForm = () => {
     <>
       <Box component="fieldset">
         <Typography component="legend">Site Selection Strategies</Typography>
-        <Box mt={1}>
-          <SurveySiteSelectionForm onChangeStratumEntryVisibility={setShowStratumForm} />
-        </Box>
+        <SurveySiteSelectionForm onChangeStratumEntryVisibility={setShowStratumForm} />
       </Box>
       <Collapse in={showStratumForm}>
         <Box component="fieldset" mt={5}>

@@ -27,7 +27,7 @@ describe('SamplePeriodService', () => {
       sinon.restore();
     });
 
-    it('Gets permit by admin user id', async () => {
+    it('Gets a sample period by survey method ID', async () => {
       const mockDBConnection = getMockDBConnection();
 
       const mockSamplePeriodRecords: SamplePeriodRecord[] = [
@@ -49,9 +49,10 @@ describe('SamplePeriodService', () => {
         .stub(SamplePeriodRepository.prototype, 'getSamplePeriodsForSurveyMethodId')
         .resolves(mockSamplePeriodRecords);
 
+      const mockSurveyId = 1;
       const surveySampleMethodId = 1;
       const samplePeriodService = new SamplePeriodService(mockDBConnection);
-      const response = await samplePeriodService.getSamplePeriodsForSurveyMethodId(surveySampleMethodId);
+      const response = await samplePeriodService.getSamplePeriodsForSurveyMethodId(mockSurveyId, surveySampleMethodId);
 
       expect(getSamplePeriodsForSurveyMethodIdStub).to.be.calledOnceWith(surveySampleMethodId);
       expect(response).to.eql(mockSamplePeriodRecords);
@@ -63,7 +64,7 @@ describe('SamplePeriodService', () => {
       sinon.restore();
     });
 
-    it('Gets permit by admin user id', async () => {
+    it('Deletes a sample period record', async () => {
       const mockDBConnection = getMockDBConnection();
 
       const mockSamplePeriodRecord: SamplePeriodRecord = {
@@ -83,9 +84,10 @@ describe('SamplePeriodService', () => {
         .stub(SamplePeriodRepository.prototype, 'deleteSamplePeriodRecord')
         .resolves(mockSamplePeriodRecord);
 
+      const mockSurveyId = 1;
       const surveySamplePeriodId = 1;
       const samplePeriodService = new SamplePeriodService(mockDBConnection);
-      const response = await samplePeriodService.deleteSamplePeriodRecord(surveySamplePeriodId);
+      const response = await samplePeriodService.deleteSamplePeriodRecord(mockSurveyId, surveySamplePeriodId);
 
       expect(deleteSamplePeriodRecordStub).to.be.calledOnceWith(surveySamplePeriodId);
       expect(response).to.eql(mockSamplePeriodRecord);
@@ -97,7 +99,7 @@ describe('SamplePeriodService', () => {
       sinon.restore();
     });
 
-    it('Gets permit by admin user id', async () => {
+    it('Inserts a sample period successfully', async () => {
       const mockDBConnection = getMockDBConnection();
 
       const mockSamplePeriodRecord: SamplePeriodRecord = {
@@ -137,7 +139,7 @@ describe('SamplePeriodService', () => {
       sinon.restore();
     });
 
-    it('Gets permit by admin user id', async () => {
+    it('Updates a sample period successfully', async () => {
       const mockDBConnection = getMockDBConnection();
 
       const mockSamplePeriodRecord: SamplePeriodRecord = {
@@ -165,16 +167,18 @@ describe('SamplePeriodService', () => {
         start_time: '12:00:00',
         end_time: '13:00:00'
       };
-      const samplePeriodService = new SamplePeriodService(mockDBConnection);
-      const response = await samplePeriodService.updateSamplePeriod(samplePeriod);
+      const mockSurveyId = 1001;
 
-      expect(updateSamplePeriodStub).to.be.calledOnceWith(samplePeriod);
+      const samplePeriodService = new SamplePeriodService(mockDBConnection);
+      const response = await samplePeriodService.updateSamplePeriod(mockSurveyId, samplePeriod);
+
+      expect(updateSamplePeriodStub).to.be.calledOnceWith(1001, samplePeriod);
       expect(response).to.eql(mockSamplePeriodRecord);
     });
   });
 
   describe('deleteSamplePeriodsNotInArray', () => {
-    it('should run without issue', async () => {
+    it('should delete sample sites not in array successfully', async () => {
       const mockDBConnection = getMockDBConnection();
 
       const mockSamplePeriodRecords: SamplePeriodRecord[] = [
@@ -201,21 +205,22 @@ describe('SamplePeriodService', () => {
         .resolves();
 
       const getObservationsCountBySamplePeriodIdStub = sinon
-        .stub(ObservationService.prototype, 'getObservationsCountBySamplePeriodId')
-        .resolves({ observationCount: 0 });
+        .stub(ObservationService.prototype, 'getObservationsCountBySamplePeriodIds')
+        .resolves(0);
 
+      const mockSurveyId = 1001;
       const surveySampleMethodId = 1;
       const samplePeriodService = new SamplePeriodService(mockDBConnection);
-      const response = await samplePeriodService.deleteSamplePeriodsNotInArray(surveySampleMethodId, [
+      const response = await samplePeriodService.deleteSamplePeriodsNotInArray(mockSurveyId, surveySampleMethodId, [
         { survey_sample_period_id: 2 } as SamplePeriodRecord
       ]);
 
-      expect(getSamplePeriodsForSurveyMethodIdStub).to.be.calledOnceWith(surveySampleMethodId);
+      expect(getSamplePeriodsForSurveyMethodIdStub).to.be.calledOnceWith(1001, surveySampleMethodId);
       expect(deleteSamplePeriodRecordsStub).to.be.calledOnceWith([mockSamplePeriodRecords[0].survey_sample_period_id]);
       expect(response).to.eql(undefined);
-      expect(getObservationsCountBySamplePeriodIdStub).to.be.calledOnceWith(
+      expect(getObservationsCountBySamplePeriodIdStub).to.be.calledOnceWith([
         mockSamplePeriodRecords[0].survey_sample_period_id
-      );
+      ]);
     });
   });
 });

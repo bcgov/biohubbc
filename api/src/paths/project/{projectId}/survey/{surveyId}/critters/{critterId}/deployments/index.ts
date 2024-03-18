@@ -61,6 +61,7 @@ POST.apiDoc = {
         schema: {
           title: 'Deploy device request object',
           type: 'object',
+          additionalProperties: false,
           properties: {
             critter_id: {
               type: 'string',
@@ -100,6 +101,7 @@ POST.apiDoc = {
           schema: {
             title: 'Deployment response object',
             type: 'object',
+            additionalProperties: false,
             properties: {
               message: {
                 type: 'string'
@@ -160,7 +162,7 @@ PATCH.apiDoc = {
       in: 'path',
       name: 'surveyId',
       schema: {
-        type: 'number'
+        type: 'integer'
       },
       required: true
     },
@@ -168,7 +170,7 @@ PATCH.apiDoc = {
       in: 'path',
       name: 'critterId',
       schema: {
-        type: 'number'
+        type: 'integer'
       }
     }
   ],
@@ -179,6 +181,7 @@ PATCH.apiDoc = {
         schema: {
           title: 'Deploy device request object',
           type: 'object',
+          additionalProperties: false,
           properties: {
             deployment_id: {
               type: 'string',
@@ -204,6 +207,7 @@ PATCH.apiDoc = {
           schema: {
             title: 'Deployment response object',
             type: 'object',
+            additionalProperties: false,
             properties: {
               message: {
                 type: 'string'
@@ -237,21 +241,30 @@ export function deployDevice(): RequestHandler {
       keycloak_guid: req['system_user']?.user_guid,
       username: req['system_user']?.user_identifier
     };
+
     const critterId = Number(req.params.critterId);
+    const newDeploymentId = v4(); // New deployment ID
+    const newDeploymentDevice = {
+      ...req.body,
+      deploymentId: newDeploymentId
+    };
+
     const connection = getDBConnection(req['keycloak_token']);
     const surveyCritterService = new SurveyCritterService(connection);
-    const bctw = new BctwService(user);
+    const bctwService = new BctwService(user);
+
     try {
       await connection.open();
-      const override_deployment_id = v4();
-      req.body.deployment_id = override_deployment_id;
-      await surveyCritterService.upsertDeployment(critterId, req.body.deployment_id);
-      await bctw.deployDevice(req.body);
+
+      await surveyCritterService.upsertDeployment(critterId, newDeploymentId);
+      await bctwService.deployDevice(newDeploymentDevice);
+
       await connection.commit();
       return res.status(201).json({ message: 'Deployment created.' });
     } catch (error) {
       defaultLog.error({ label: 'addDeployment', message: 'error', error });
       await connection.rollback();
+
       throw error;
     } finally {
       connection.release();

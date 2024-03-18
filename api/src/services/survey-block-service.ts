@@ -1,6 +1,12 @@
 import { IDBConnection } from '../database/db';
-import { PostSurveyBlock, SurveyBlockRecord, SurveyBlockRepository } from '../repositories/survey-block-repository';
+import {
+  PostSurveyBlock,
+  SurveyBlockRecord,
+  SurveyBlockRecordWithCount,
+  SurveyBlockRepository
+} from '../repositories/survey-block-repository';
 import { DBService } from './db-service';
+import { SampleBlockService } from './sample-block-service';
 
 export class SurveyBlockService extends DBService {
   surveyBlockRepository: SurveyBlockRepository;
@@ -14,11 +20,11 @@ export class SurveyBlockService extends DBService {
    * Gets Block Survey Records for a given survey id
    *
    * @param {number} surveyId
-   * @return {*} {Promise<SurveyBlockRecord[]>}
+   * @return {*} {Promise<SurveyBlockRecordWithCount[]>}
    * @returns
    */
-  async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockRecord[]> {
-    return await this.surveyBlockRepository.getSurveyBlocksForSurveyId(surveyId);
+  async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockRecordWithCount[]> {
+    return this.surveyBlockRepository.getSurveyBlocksForSurveyId(surveyId);
   }
 
   /**
@@ -29,6 +35,11 @@ export class SurveyBlockService extends DBService {
    * @memberof SurveyBlockService
    */
   async deleteSurveyBlock(surveyBlockId: number): Promise<SurveyBlockRecord> {
+    const sampleBlockService = new SampleBlockService(this.connection);
+
+    // When a Survey Block is deleted, also delete its associations to sampling sites to avoid orphaned Sample Block records
+    await sampleBlockService.deleteSampleBlockRecordsByBlockIds([surveyBlockId]);
+
     return this.surveyBlockRepository.deleteSurveyBlockRecord(surveyBlockId);
   }
 
@@ -49,13 +60,13 @@ export class SurveyBlockService extends DBService {
     // Get existing blocks
     const existingBlocks = await this.getSurveyBlocksForSurveyId(surveyId);
 
-    // Filter out any
+    // Filter out any blocks to delete
     const blocksToDelete = existingBlocks.filter(
       (item) => !blocks.find((incoming) => incoming.survey_block_id === item.survey_block_id)
     );
 
-    blocksToDelete.forEach((item) => {
-      promises.push(this.deleteSurveyBlock(item.survey_block_id));
+    blocksToDelete.forEach((block) => {
+      promises.push(this.deleteSurveyBlock(block.survey_block_id));
     });
 
     // update or insert block data

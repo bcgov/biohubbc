@@ -102,7 +102,7 @@ describe('ObservationRepository', () => {
     });
   });
 
-  describe('getSurveyObservationsWithSamplingData', () => {
+  describe('getSurveyObservationsWithSamplingDataWithAttributesData', () => {
     it('get all observations for a survey when some observation records exist', async () => {
       const mockRows = [{}, {}];
       const mockQueryResponse = ({ rows: mockRows, rowCount: 2 } as unknown) as QueryResult<any>;
@@ -115,7 +115,7 @@ describe('ObservationRepository', () => {
 
       const surveyId = 1;
 
-      const response = await repository.getSurveyObservationsWithSamplingData(surveyId);
+      const response = await repository.getSurveyObservationsWithSamplingDataWithAttributesData(surveyId);
 
       expect(response).to.be.eql(mockRows);
     });
@@ -132,7 +132,7 @@ describe('ObservationRepository', () => {
 
       const surveyId = 1;
 
-      const response = await repository.getSurveyObservationsWithSamplingData(surveyId);
+      const response = await repository.getSurveyObservationsWithSamplingDataWithAttributesData(surveyId);
 
       expect(response).to.be.eql(mockRows);
     });
@@ -201,7 +201,7 @@ describe('ObservationRepository', () => {
 
       const repo = new ObservationRepository(mockDBConnection);
 
-      const response = await repo.getObservationSubmissionById(5);
+      const response = await repo.getObservationSubmissionById(1, 5);
 
       expect(response).to.eql({ submission_id: 5 });
     });
@@ -216,7 +216,7 @@ describe('ObservationRepository', () => {
       const repo = new ObservationRepository(mockDBConnection);
 
       try {
-        await repo.getObservationSubmissionById(5);
+        await repo.getObservationSubmissionById(1, 5);
         expect.fail();
       } catch (error) {
         expect((error as Error).message).to.equal('Failed to get observation submission');
@@ -226,7 +226,7 @@ describe('ObservationRepository', () => {
 
   describe('getObservationsCountBySampleSiteIds', () => {
     it('gets the observation count by sample site ids', async () => {
-      const mockQueryResponse = ({ rows: [{ rowCount: 1 }], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockQueryResponse = ({ rows: [{ observation_count: 50 }], rowCount: 1 } as unknown) as QueryResult<any>;
 
       const mockDBConnection = getMockDBConnection({
         knex: sinon.stub().resolves(mockQueryResponse)
@@ -236,7 +236,7 @@ describe('ObservationRepository', () => {
 
       const response = await repo.getObservationsCountBySampleSiteIds(1, [1]);
 
-      expect(response).to.eql({ observationCount: 1 });
+      expect(response).to.eql(50);
     });
   });
 });

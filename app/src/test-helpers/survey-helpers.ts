@@ -13,6 +13,7 @@ export const surveyObject: SurveyViewObject = {
     survey_name: 'survey name',
     start_date: '1998-10-10',
     end_date: '2021-02-26',
+    progress_id: 1,
     survey_types: [1],
     revision_count: 0
   },
@@ -132,6 +133,7 @@ export const getSurveyForListResponse: IGetSurveyListResponse = {
       name: 'Moose Survey 1',
       start_date: '2021-04-09 11:53:53',
       end_date: '2021-05-09 11:53:53',
+      progress_id: 1,
       focal_species: [1],
       focal_species_names: ['species 1']
     },
@@ -140,6 +142,7 @@ export const getSurveyForListResponse: IGetSurveyListResponse = {
       name: 'Moose Survey 2',
       start_date: '2021-04-09 11:53:53',
       end_date: '2021-06-10 11:53:53',
+      progress_id: 1,
       focal_species: [3],
       focal_species_names: ['species 3']
     }

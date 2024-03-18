@@ -2,6 +2,7 @@ import { OpenAPIV3 } from 'openapi-types';
 
 export const critterSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     critter_id: {
       type: 'string',
@@ -34,11 +35,11 @@ export const critterSchema: OpenAPIV3.SchemaObject = {
       nullable: true
     }
   },
-  additionalProperties: false
 };
 
 const locationSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     location_id: {
       type: 'string',
@@ -57,11 +58,11 @@ const locationSchema: OpenAPIV3.SchemaObject = {
       type: 'string'
     }
   },
-  additionalProperties: false
 };
 
 const captureSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     critter_id: {
       type: 'string',
@@ -97,11 +98,11 @@ const captureSchema: OpenAPIV3.SchemaObject = {
       type: 'string'
     }
   },
-  additionalProperties: false
 };
 
 const collectionUnits: OpenAPIV3.SchemaObject = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     critter_id: {
       type: 'string',
@@ -116,11 +117,11 @@ const collectionUnits: OpenAPIV3.SchemaObject = {
       format: 'uuid'
     }
   },
-  additionalProperties: false
 };
 
 const markingSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     critter_id: {
       type: 'string',
@@ -150,11 +151,11 @@ const markingSchema: OpenAPIV3.SchemaObject = {
       type: 'string'
     }
   },
-  additionalProperties: false
 };
 
 const mortalitySchema: OpenAPIV3.SchemaObject = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     mortality_id: { type: 'string', format: 'uuid' },
     critter_id: { type: 'string', format: 'uuid' },
@@ -169,11 +170,11 @@ const mortalitySchema: OpenAPIV3.SchemaObject = {
     projection_mode: { type: 'string', enum: ['wgs', 'utm'] },
     location: locationSchema
   },
-  additionalProperties: false
 };
 
 const qualitativeMeasurementSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     measurement_qualitative_id: { type: 'string', format: 'uuid' },
     taxon_measurement_id: { type: 'string' },
@@ -183,11 +184,11 @@ const qualitativeMeasurementSchema: OpenAPIV3.SchemaObject = {
     measured_timestamp: { type: 'string' },
     measurement_comment: { type: 'string' }
   },
-  additionalProperties: false
 };
 
 const quantitativeMeasurmentSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     measurement_qualitative_id: { type: 'string', format: 'uuid' },
     taxon_measurement_id: { type: 'string' },
@@ -201,7 +202,6 @@ const quantitativeMeasurmentSchema: OpenAPIV3.SchemaObject = {
     measured_timestamp: { type: 'string' },
     measurement_comment: { type: 'string' }
   },
-  additionalProperties: false
 };
 
 export const critterCreateRequestObject: OpenAPIV3.SchemaObject = {
@@ -231,6 +231,7 @@ export const critterCreateRequestObject: OpenAPIV3.SchemaObject = {
 export const critterBulkRequestObject: OpenAPIV3.SchemaObject = {
   title: 'Bulk post request object',
   type: 'object',
+  additionalProperties: false,
   properties: {
     critters: {
       title: 'critters',
@@ -423,7 +424,6 @@ export const critterBulkRequestObject: OpenAPIV3.SchemaObject = {
       }
     }
   },
-  additionalProperties: false
 };
 
 export const critterBulkRequestPatchObject: OpenAPIV3.SchemaObject = {
@@ -550,6 +550,7 @@ export const critterBulkRequestPatchObject: OpenAPIV3.SchemaObject = {
 const bulkResponseCounts: OpenAPIV3.SchemaObject = {
   title: 'Bulk operation counts',
   type: 'object',
+  additionalProperties: false,
   properties: {
     critters: { type: 'integer' },
     captures: { type: 'integer' },
@@ -563,25 +564,24 @@ const bulkResponseCounts: OpenAPIV3.SchemaObject = {
     family_parents: { type: 'integer' },
     family_children: { type: 'integer' }
   },
-  additionalProperties: false
 };
 
 export const bulkCreateResponse: OpenAPIV3.SchemaObject = {
   title: 'Critterbase bulk creation response object',
   type: 'object',
+  additionalProperties: false,
   properties: {
     created: bulkResponseCounts
   },
-  additionalProperties: false
 };
 
 export const bulkUpdateResponse: OpenAPIV3.SchemaObject = {
   title: 'Critterbase bulk update response object',
   type: 'object',
+  additionalProperties: false,
   properties: {
     created: bulkCreateResponse,
     updated: bulkResponseCounts,
     deleted: bulkResponseCounts
   },
-  additionalProperties: false
 };

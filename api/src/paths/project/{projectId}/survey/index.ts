@@ -8,8 +8,8 @@ import { SurveyService } from '../../../../services/survey-service';
 import { getLogger } from '../../../../utils/logger';
 import {
   ensureCompletePaginationOptions,
-  getPaginationOptionsFromRequest,
-  getPaginationResponse
+  makePaginationOptionsFromRequest,
+  makePaginationResponse
 } from '../../../../utils/pagination';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/index');
@@ -64,6 +64,7 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: ['surveys', 'pagination'],
             properties: {
               pagination: { ...paginationResponseSchema },
@@ -71,7 +72,8 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
-                  required: ['survey_id', 'name', 'start_date', 'end_date', 'focal_species'],
+                  additionalProperties: false,
+                  required: ['survey_id', 'name', 'start_date', 'end_date', 'progress_id', 'focal_species'],
                   properties: {
                     survey_id: {
                       type: 'integer',
@@ -92,10 +94,19 @@ GET.apiDoc = {
                       description: 'ISO 8601 date string',
                       nullable: true
                     },
+                    progress_id: {
+                      type: 'integer'
+                    },
                     focal_species: {
                       type: 'array',
                       items: {
                         type: 'integer'
+                      }
+                    },
+                    focal_species_names: {
+                      type: 'array',
+                      items: {
+                        type: 'string'
                       }
                     }
                   }
@@ -137,7 +148,7 @@ export function getSurveys(): RequestHandler {
       await connection.open();
 
       const projectId = Number(req.params.projectId);
-      const paginationOptions = getPaginationOptionsFromRequest(req);
+      const paginationOptions = makePaginationOptionsFromRequest(req);
 
       const surveyService = new SurveyService(connection);
       const surveys = await surveyService.getSurveysBasicFieldsByProjectId(
@@ -148,7 +159,7 @@ export function getSurveys(): RequestHandler {
 
       const response = {
         surveys,
-        pagination: getPaginationResponse(surveysTotalCount, paginationOptions)
+        pagination: makePaginationResponse(surveysTotalCount, paginationOptions)
       };
 
       await connection.commit();

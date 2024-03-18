@@ -34,9 +34,6 @@ const mockSurveyContext: ISurveyContext = {
   artifactDataLoader: {
     data: null
   } as DataLoader<any, any, any>,
-  summaryDataLoader: {
-    data: null
-  } as DataLoader<any, any, any>,
   sampleSiteDataLoader: {
     data: null
   } as DataLoader<any, any, any>,
@@ -133,7 +130,9 @@ describe('SurveyHeader', () => {
 
     await waitFor(() => {
       expect(
-        getByText('Are you sure you want to delete this survey? This action cannot be undone.')
+        getByText(
+          'Are you sure you want to delete this survey? This will remove all attachments, observations, and other related data. This action cannot be undone.'
+        )
       ).toBeInTheDocument();
     });
 

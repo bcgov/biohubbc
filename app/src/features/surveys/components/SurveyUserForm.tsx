@@ -126,7 +126,7 @@ const SurveyUserForm = (props: ISurveyUserFormProps) => {
       </Box>
       {errors?.['participants'] && values.participants.length > 0 && (
         <Box mt={3}>
-          <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
+          <AlertBar severity="error" variant="outlined" title={alertBarText().title} text={alertBarText().text} />
         </Box>
       )}
       <Box mt={3}>
@@ -135,7 +135,7 @@ const SurveyUserForm = (props: ISurveyUserFormProps) => {
           data-testid={'autocomplete-user-role-search'}
           filterSelectedOptions
           noOptionsText="No records found"
-          options={alphabetizeObjects(searchUserDataLoader.data, 'display_name')}
+          options={searchText.length > 2 ? alphabetizeObjects(searchUserDataLoader.data, 'display_name') : []}
           filterOptions={(options, state) => {
             const searchFilter = createFilterOptions<ISystemUser>({ ignoreCase: true });
             const unselectedOptions = options.filter(

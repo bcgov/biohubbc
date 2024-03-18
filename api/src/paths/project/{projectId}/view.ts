@@ -2,10 +2,10 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
+import { projectAndSystemUserSchema } from '../../../openapi/schemas/user';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { ProjectService } from '../../../services/project-service';
 import { getLogger } from '../../../utils/logger';
-
 const defaultLog = getLogger('paths/project/{projectId}/view');
 
 export const GET: Operation = [
@@ -58,20 +58,27 @@ GET.apiDoc = {
           schema: {
             title: 'Project get response object, for view purposes',
             type: 'object',
-            required: ['projectData', 'projectSupplementaryData'],
+            additionalProperties: false,
+            required: ['projectData'],
             properties: {
               projectData: {
                 type: 'object',
+                additionalProperties: false,
                 required: ['project', 'participants', 'objectives', 'iucn'],
                 properties: {
                   project: {
                     description: 'Basic project metadata',
                     type: 'object',
-                    required: ['project_id', 'project_name', 'project_programs', 'start_date', 'comments'],
+                    additionalProperties: false,
+                    required: ['project_id', 'uuid', 'project_name', 'project_programs', 'start_date', 'comments'],
                     properties: {
                       project_id: {
                         type: 'integer',
                         minimum: 1
+                      },
+                      uuid: {
+                        type: 'string',
+                        format: 'uuid'
                       },
                       project_name: {
                         type: 'string'
@@ -97,6 +104,10 @@ GET.apiDoc = {
                         type: 'string',
                         nullable: true,
                         description: 'Comments'
+                      },
+                      revision_count: {
+                        type: 'integer',
+                        minimum: 0
                       }
                     }
                   },
@@ -104,65 +115,35 @@ GET.apiDoc = {
                     title: 'Project participants',
                     type: 'array',
                     items: {
-                      type: 'object',
-                      required: [
-                        'project_participation_id',
-                        'project_id',
-                        'system_user_id',
-                        'project_role_ids',
-                        'project_role_names',
-                        'project_role_permissions'
-                      ],
-                      properties: {
-                        project_participation_id: {
-                          type: 'number'
-                        },
-                        project_id: {
-                          type: 'number'
-                        },
-                        system_user_id: {
-                          type: 'number'
-                        },
-                        project_role_ids: {
-                          type: 'array',
-                          items: {
-                            type: 'number'
-                          }
-                        },
-                        project_role_names: {
-                          type: 'array',
-                          items: {
-                            type: 'string'
-                          }
-                        },
-                        project_role_permissions: {
-                          type: 'array',
-                          items: {
-                            type: 'string'
-                          }
-                        }
-                      }
+                      ...projectAndSystemUserSchema
                     }
                   },
                   objectives: {
                     description: 'The project objectives',
                     type: 'object',
+                    additionalProperties: false,
                     required: ['objectives'],
                     properties: {
                       objectives: {
                         type: 'string'
+                      },
+                      revision_count: {
+                        type: 'integer',
+                        minimum: 0
                       }
                     }
                   },
                   iucn: {
                     description: 'The International Union for Conservation of Nature number',
                     type: 'object',
+                    additionalProperties: false,
                     required: ['classificationDetails'],
                     properties: {
                       classificationDetails: {
                         type: 'array',
                         items: {
                           type: 'object',
+                          additionalProperties: false,
                           properties: {
                             classification: {
                               type: 'number'
@@ -175,69 +156,6 @@ GET.apiDoc = {
                             }
                           }
                         }
-                      }
-                    }
-                  }
-                }
-              },
-              projectSupplementaryData: {
-                description: 'Project supplementary data',
-                type: 'object',
-                required: ['project_metadata_publish'],
-                properties: {
-                  project_metadata_publish: {
-                    description: 'Project metadata publish record',
-                    type: 'object',
-                    nullable: true,
-                    required: [
-                      'project_metadata_publish_id',
-                      'project_id',
-                      'event_timestamp',
-                      'submission_uuid',
-                      'create_date',
-                      'create_user',
-                      'update_date',
-                      'update_user',
-                      'revision_count'
-                    ],
-                    properties: {
-                      project_metadata_publish_id: {
-                        type: 'integer',
-                        minimum: 1
-                      },
-                      project_id: {
-                        type: 'integer',
-                        minimum: 1
-                      },
-                      event_timestamp: {
-                        oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                        description: 'ISO 8601 date string for the project start date'
-                      },
-                      submission_uuid: {
-                        type: 'string',
-                        format: 'uuid'
-                      },
-                      create_date: {
-                        oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                        description: 'ISO 8601 date string for the project start date'
-                      },
-                      create_user: {
-                        type: 'integer',
-                        minimum: 1
-                      },
-                      update_date: {
-                        oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                        description: 'ISO 8601 date string for the project start date',
-                        nullable: true
-                      },
-                      update_user: {
-                        type: 'integer',
-                        minimum: 1,
-                        nullable: true
-                      },
-                      revision_count: {
-                        type: 'integer',
-                        minimum: 0
                       }
                     }
                   }
@@ -282,13 +200,9 @@ export function viewProject(): RequestHandler {
 
       const projectData = await projectService.getProjectById(Number(req.params.projectId));
 
-      const projectSupplementaryData = await projectService.getProjectSupplementaryDataById(
-        Number(req.params.projectId)
-      );
-
       await connection.commit();
 
-      return res.status(200).json({ projectData: projectData, projectSupplementaryData: projectSupplementaryData });
+      return res.status(200).json({ projectData });
     } catch (error) {
       defaultLog.error({ label: 'getProjectForView', message: 'error', error });
       throw error;

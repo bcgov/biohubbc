@@ -214,3 +214,19 @@ export type CBQualitativeMeasurementTypeDefinition = {
  * Any Critterbase measurement type definition.
  */
 export type CBMeasurementType = CBQuantitativeMeasurementTypeDefinition | CBQualitativeMeasurementTypeDefinition;
+
+/**
+ * Response object when searching for measurement type definitions by itis tsn.
+ */
+export type CBMeasurementSearchByTsnResponse = {
+  qualitative: CBQualitativeMeasurementTypeDefinition[];
+  quantitative: CBQuantitativeMeasurementTypeDefinition[];
+};
+
+/**
+ * Response object when searching for measurement type definitions by search term.
+ */
+export type CBMeasurementSearchByTermResponse = {
+  qualitative: (CBQualitativeMeasurementTypeDefinition & { tsnHierarchy: number[] })[];
+  quantitative: (CBQuantitativeMeasurementTypeDefinition & { tsnHierarchy: number[] })[];
+};

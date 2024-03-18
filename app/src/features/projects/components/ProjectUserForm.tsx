@@ -4,6 +4,7 @@ import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Collapse from '@mui/material/Collapse';
+import grey from '@mui/material/colors/grey';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import AlertBar from 'components/alert/AlertBar';
@@ -32,7 +33,7 @@ export const ProjectUserRoleYupSchema = yup.object().shape({
     )
     .min(1)
     .hasAtLeastOneValue(
-      'A minimum of one team member must be assigned the coordinator role.',
+      'There must be at least one person with the Coordinator role.',
       'project_role_names',
       PROJECT_ROLE.COORDINATOR
     )
@@ -82,7 +83,10 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
   };
 
   const clearErrors = () => {
-    setErrors({ ...errors, participants: undefined });
+    const newErrors = { ...errors };
+    delete errors.participants;
+
+    setErrors(newErrors);
   };
 
   const alertBarText = (): { title: string; text: string } => {
@@ -138,7 +142,7 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
           sx={{
             maxWidth: '72ch'
           }}>
-          A minimum of one team member must be assigned the coordinator role.
+          There must be at least one person with the Coordinator role.
         </Typography>
         {errors?.['participants'] && !values.participants.length && (
           <Box mt={3}>
@@ -161,7 +165,7 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
             data-testid={'autocomplete-user-role-search'}
             filterSelectedOptions
             noOptionsText="No records found"
-            options={alphabetizeObjects(searchUserDataLoader.data, 'display_name')}
+            options={searchText.length > 2 ? alphabetizeObjects(searchUserDataLoader.data, 'display_name') : []}
             filterOptions={(options, state) => {
               const searchFilter = createFilterOptions<ISystemUser>({ ignoreCase: true });
               const unselectedOptions = options.filter(
@@ -201,13 +205,23 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
             )}
             renderOption={(renderProps, renderOption) => {
               return (
-                <Box component="li" {...renderProps} key={renderOption.system_user_id}>
-                  <UserCard
-                    name={renderOption.display_name}
-                    email={renderOption.email}
-                    agency={renderOption.agency}
-                    type={renderOption.identity_source}
-                  />
+                <Box
+                  component="li"
+                  sx={{
+                    '& + li': {
+                      borderTop: '1px solid' + grey[300]
+                    }
+                  }}
+                  key={renderOption.system_user_id}
+                  {...renderProps}>
+                  <Box py={0.5} width="100%">
+                    <UserCard
+                      name={renderOption.display_name}
+                      email={renderOption.email}
+                      agency={renderOption.agency}
+                      type={renderOption.identity_source}
+                    />
+                  </Box>
                 </Box>
               );
             }}

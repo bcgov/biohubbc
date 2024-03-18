@@ -14,7 +14,7 @@ export const POST: Operation = [
       or: [
         {
           validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
-          surveyId: Number(req.body.surveyId),
+          surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
         {
@@ -53,6 +53,7 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['observation_submission_id'],
           properties: {
             observation_submission_id: {
@@ -66,86 +67,7 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Validation results of the observation submission',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            nullable: true,
-            required: ['surveyObservations'],
-            properties: {
-              surveyObservations: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  required: [
-                    'itis_tsn',
-                    'itis_scientific_name',
-                    'survey_sample_site_id',
-                    'survey_sample_method_id',
-                    'survey_sample_period_id',
-                    'count',
-                    'subcount',
-                    'latitude',
-                    'longitude',
-                    'observation_date',
-                    'observation_time'
-                  ],
-                  properties: {
-                    survey_observation_id: {
-                      type: 'number',
-                      nullable: true
-                    },
-                    survey_id: {
-                      type: 'integer',
-                      minimum: 1
-                    },
-                    itis_tsn: {
-                      type: 'integer'
-                    },
-                    itis_scientific_name: {
-                      type: 'string'
-                    },
-                    survey_sample_site_id: {
-                      type: 'number'
-                    },
-                    survey_sample_method_id: {
-                      type: 'number'
-                    },
-                    survey_sample_period_id: {
-                      type: 'number'
-                    },
-                    count: {
-                      type: 'integer'
-                    },
-                    subcount: {
-                      type: 'integer'
-                    },
-                    latitude: {
-                      type: 'number'
-                    },
-                    longitude: {
-                      type: 'number'
-                    },
-                    observation_date: {
-                      type: 'string'
-                    },
-                    observation_time: {
-                      type: 'string'
-                    },
-                    revision_count: {
-                      type: 'integer',
-                      minimum: 0
-                    }
-                  },
-                  additionalProperties: false
-                }
-              }
-            },
-            additionalProperties: false
-          }
-        }
-      }
+      description: 'Process Observation File OK'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -167,6 +89,7 @@ POST.apiDoc = {
 
 export function processFile(): RequestHandler {
   return async (req, res) => {
+    const surveyId = Number(req.params.surveyId);
     const submissionId = req.body.observation_submission_id;
 
     const connection = getDBConnection(req['keycloak_token']);
@@ -175,11 +98,11 @@ export function processFile(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      const response = await observationService.processObservationCsvSubmission(submissionId);
-
-      res.status(200).json({ surveyObservations: response });
+      await observationService.processObservationCsvSubmission(surveyId, submissionId);
 
       await connection.commit();
+
+      res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'processFile', message: 'error', error });
       await connection.rollback();

@@ -4,14 +4,14 @@ import sinonChai from 'sinon-chai';
 import {
   InsertObservation,
   ObservationRecord,
-  ObservationRecordWithSamplingDataWithEvents,
+  ObservationRecordWithSamplingAndSubcountData,
   ObservationRepository,
   UpdateObservation
 } from '../repositories/observation-repository';
 import * as file_utils from '../utils/file-utils';
 import { getMockDBConnection } from '../__mocks__/db';
-import { CritterbaseService } from './critterbase-service';
 import { ObservationService } from './observation-service';
+import { SubCountService } from './subcount-service';
 
 chai.use(sinonChai);
 
@@ -114,11 +114,11 @@ describe('ObservationService', () => {
     });
   });
 
-  describe('getSurveyObservationsWithSupplementaryAndSamplingData', () => {
+  describe('getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData', () => {
     it('Gets observations by survey id', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      const mockObservations: ObservationRecordWithSamplingDataWithEvents[] = [
+      const mockObservations: ObservationRecordWithSamplingAndSubcountData[] = [
         {
           survey_observation_id: 11,
           survey_id: 1,
@@ -140,8 +140,7 @@ describe('ObservationService', () => {
           survey_sample_site_id: 1,
           survey_sample_method_id: 1,
           survey_sample_period_id: 1,
-          subcount: 5,
-          observation_subcount_events: []
+          subcounts: []
         },
         {
           survey_observation_id: 6,
@@ -164,27 +163,27 @@ describe('ObservationService', () => {
           survey_sample_site_id: 1,
           survey_sample_method_id: 1,
           survey_sample_period_id: 1,
-          subcount: 10,
-          observation_subcount_events: []
+          subcounts: []
         }
       ];
 
       const mockSupplementaryData = {
-        observationCount: 1,
-        measurementColumns: []
+        observationCount: 2,
+        qualitative_measurements: [],
+        quantitative_measurements: []
       };
 
       const getSurveyObservationsStub = sinon
-        .stub(ObservationRepository.prototype, 'getSurveyObservationsWithSamplingData')
+        .stub(ObservationRepository.prototype, 'getSurveyObservationsWithSamplingDataWithAttributesData')
         .resolves(mockObservations);
 
-      const getMeasurementValuesForEventIdsStub = sinon
-        .stub(CritterbaseService.prototype, 'getMeasurementValuesForEventIds')
-        .resolves([]);
+      const getSurveyObservationCountStub = sinon
+        .stub(ObservationRepository.prototype, 'getSurveyObservationCount')
+        .resolves(2);
 
-      const getSurveyObservationSupplementaryDataStub = sinon
-        .stub(ObservationService.prototype, 'getSurveyObservationsSupplementaryData')
-        .resolves(mockSupplementaryData);
+      const getMeasurementTypeDefinitionsForSurveyStub = sinon
+        .stub(SubCountService.prototype, 'getMeasurementTypeDefinitionsForSurvey')
+        .resolves({ qualitative_measurements: [], quantitative_measurements: [] });
 
       const surveyId = 1;
 
@@ -195,17 +194,15 @@ describe('ObservationService', () => {
       );
 
       expect(getSurveyObservationsStub).to.be.calledOnceWith(surveyId);
-      expect(getMeasurementValuesForEventIdsStub).to.be.calledOnceWith([]);
-      expect(getSurveyObservationSupplementaryDataStub).to.be.calledOnceWith(surveyId);
+      expect(getSurveyObservationCountStub).to.be.calledOnceWith(surveyId);
+      expect(getMeasurementTypeDefinitionsForSurveyStub).to.be.calledOnceWith(surveyId);
       expect(response).to.eql({
         surveyObservations: [
           {
-            ...mockObservations[0],
-            observation_subcount_attributes: []
+            ...mockObservations[0]
           },
           {
-            ...mockObservations[1],
-            observation_subcount_attributes: []
+            ...mockObservations[1]
           }
         ],
         supplementaryObservationData: mockSupplementaryData
@@ -264,9 +261,7 @@ describe('ObservationService', () => {
     it('Gets the number of observations by sample site ids', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      const mockObservationCount = {
-        observationCount: 1
-      };
+      const mockObservationCount = 1;
 
       const getObservationsCountBySampleSiteIdsStub = sinon
         .stub(ObservationRepository.prototype, 'getObservationsCountBySampleSiteIds')

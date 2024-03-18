@@ -1,16 +1,14 @@
 import { z } from 'zod';
-import { ProjectMetadataPublish } from '../repositories/history-publish-repository';
 import { ProjectUser } from '../repositories/project-participation-repository';
 import { SystemUser } from '../repositories/user-repository';
 
 export interface IProjectAdvancedFilters {
-  permit_number?: string;
   project_programs?: number[];
   start_date?: string;
   end_date?: string;
   keyword?: string;
   project_name?: string;
-  species?: number[];
+  itis_tsns?: number[];
 }
 
 export interface IGetProject {
@@ -86,10 +84,6 @@ export class GetIUCNClassificationData {
       }) ?? [];
   }
 }
-
-export type ProjectSupplementaryData = {
-  project_metadata_publish: ProjectMetadataPublish | null;
-};
 
 interface IGetAttachmentsSource {
   file_name: string;

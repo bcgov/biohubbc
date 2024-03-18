@@ -30,6 +30,11 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
 
   const observationsTableContext = useObservationsTableContext();
 
+  /**
+   * Callback fired when the column visibility model changes.
+   *
+   * @param {GridColumnVisibilityModel} model
+   */
   const onColumnVisibilityModelChange = useCallback(
     (model: GridColumnVisibilityModel) => {
       // Store current visibility model in session storage
@@ -44,6 +49,12 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     [observationsTableContext, surveyId]
   );
 
+  /**
+   * Callback fired when a row transitions from `view` mode to `edit` mode.
+   *
+   * @param {IObservationTableRow} newRow
+   * @return {*}
+   */
   const processRowUpdate = useCallback(
     (newRow: IObservationTableRow) => {
       if (observationsTableContext.savedRows.find((row) => row.id === newRow.id)) {
@@ -63,6 +74,14 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     [observationsTableContext]
   );
 
+  /**
+   * Callback fired when the row modes model changes.
+   * The row modes model stores the `view` vs `edit` state of the rows.
+   *
+   * Note: Any row not included in the model will default to `view` mode.
+   *
+   * @param {GridRowModesModel} model
+   */
   const onRowModesModelChange = useCallback(
     (model: GridRowModesModel) => {
       observationsTableContext.setRowModesModel(() => model);

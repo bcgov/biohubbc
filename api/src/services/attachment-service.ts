@@ -3,6 +3,7 @@ import { ATTACHMENT_TYPE } from '../constants/attachments';
 import { IDBConnection } from '../database/db';
 import {
   GetAttachmentsWithSupplementalData,
+  IReportAttachmentAuthor,
   PostReportAttachmentMetadata,
   PutReportAttachmentMetadata
 } from '../models/project-survey-attachments';
@@ -10,9 +11,10 @@ import {
   AttachmentRepository,
   IProjectAttachment,
   IProjectReportAttachment,
-  IReportAttachmentAuthor,
+  IProjectReportAttachmentAuthor,
   ISurveyAttachment,
-  ISurveyReportAttachment
+  ISurveyReportAttachment,
+  ISurveyReportAttachmentAuthor
 } from '../repositories/attachment-repository';
 import { deleteFileFromS3, generateS3FileKey } from '../utils/file-utils';
 import { DBService } from './db-service';
@@ -74,10 +76,10 @@ export class AttachmentService extends DBService {
   /**
    * Finds all authors belonging to the given project report attachment
    * @param {number} reportAttachmentId the ID of the report attachment
-   * @return {Promise<IReportAttachmentAuthor[]>} Promise resolving all of the report authors
+   * @return {Promise<IProjectReportAttachmentAuthor[]>} Promise resolving all of the report authors
    * @memberof AttachmentService
    */
-  async getProjectReportAttachmentAuthors(reportAttachmentId: number): Promise<IReportAttachmentAuthor[]> {
+  async getProjectReportAttachmentAuthors(reportAttachmentId: number): Promise<IProjectReportAttachmentAuthor[]> {
     return this.attachmentRepository.getProjectReportAttachmentAuthors(reportAttachmentId);
   }
 
@@ -89,54 +91,6 @@ export class AttachmentService extends DBService {
    */
   async getProjectReportAttachments(projectId: number): Promise<IProjectReportAttachment[]> {
     return this.attachmentRepository.getProjectReportAttachments(projectId);
-  }
-
-  /**
-   * Finds all of the project attachments and Supplementary Data for the given project ID.
-   *
-   * @param {number} projectId
-   * @return {*}  {Promise<GetAttachmentsData[]>}
-   * @memberof AttachmentService
-   */
-  async getProjectAttachmentsWithSupplementaryData(projectId: number): Promise<GetAttachmentsWithSupplementalData[]> {
-    const historyPublishService = new HistoryPublishService(this.connection);
-
-    const attachments = await this.attachmentRepository.getProjectAttachments(projectId);
-
-    return Promise.all(
-      attachments.map(async (attachment: any) => {
-        const supplementaryData = await historyPublishService.getProjectAttachmentPublishRecord(
-          attachment.project_attachment_id
-        );
-
-        return new GetAttachmentsWithSupplementalData(attachment, supplementaryData);
-      })
-    );
-  }
-
-  /**
-   * Finds all of the project Report attachments and Supplementary Data for the given project ID.
-   *
-   * @param {number} projectId
-   * @return {*}  {Promise<GetAttachmentsData[]>}
-   * @memberof AttachmentService
-   */
-  async getProjectReportAttachmentsWithSupplementaryData(
-    projectId: number
-  ): Promise<GetAttachmentsWithSupplementalData[]> {
-    const historyPublishService = new HistoryPublishService(this.connection);
-
-    const attachments = await this.attachmentRepository.getProjectReportAttachments(projectId);
-
-    return Promise.all(
-      attachments.map(async (attachment: any) => {
-        const supplementaryData = await historyPublishService.getProjectReportPublishRecord(
-          attachment.project_report_attachment_id
-        );
-
-        return new GetAttachmentsWithSupplementalData(attachment, supplementaryData);
-      })
-    );
   }
 
   /**
@@ -300,10 +254,10 @@ export class AttachmentService extends DBService {
   /**
    * Finds all authors belonging to the given survey attachment
    * @param {number} reportAttachmentId the ID of the report attachment
-   * @return {Promise<IReportAttachmentAuthor[]>} Promise resolving all of the report authors
+   * @return {Promise<ISurveyReportAttachmentAuthor[]>} Promise resolving all of the report authors
    * @memberof AttachmentService
    */
-  async getSurveyAttachmentAuthors(reportAttachmentId: number): Promise<IReportAttachmentAuthor[]> {
+  async getSurveyAttachmentAuthors(reportAttachmentId: number): Promise<ISurveyReportAttachmentAuthor[]> {
     return this.attachmentRepository.getSurveyReportAttachmentAuthors(reportAttachmentId);
   }
 
@@ -554,8 +508,8 @@ export class AttachmentService extends DBService {
    * @return {*}  {Promise<{ key: string }>}
    * @memberof AttachmentService
    */
-  async deleteProjectAttachment(attachmentId: number): Promise<{ key: string; uuid: string }> {
-    return this.attachmentRepository.deleteProjectAttachment(attachmentId);
+  async _deleteProjectAttachmentRecord(attachmentId: number): Promise<{ key: string; uuid: string }> {
+    return this.attachmentRepository.deleteProjectAttachmentRecord(attachmentId);
   }
 
   /**
@@ -565,8 +519,8 @@ export class AttachmentService extends DBService {
    * @return {*}  {Promise<{ key: string; uuid: string }>}
    * @memberof AttachmentService
    */
-  async deleteProjectReportAttachment(attachmentId: number): Promise<{ key: string; uuid: string }> {
-    return this.attachmentRepository.deleteProjectReportAttachment(attachmentId);
+  async _deleteProjectReportAttachmentRecord(attachmentId: number): Promise<{ key: string; uuid: string }> {
+    return this.attachmentRepository.deleteProjectReportAttachmentRecord(attachmentId);
   }
 
   /**
@@ -713,8 +667,8 @@ export class AttachmentService extends DBService {
    * @return {*}  {Promise<{ key: string; uuid: string }>}
    * @memberof AttachmentService
    */
-  async deleteSurveyReportAttachment(attachmentId: number): Promise<{ key: string; uuid: string }> {
-    return this.attachmentRepository.deleteSurveyReportAttachment(attachmentId);
+  async _deleteSurveyReportAttachmentRecord(attachmentId: number): Promise<{ key: string; uuid: string }> {
+    return this.attachmentRepository.deleteSurveyReportAttachmentRecord(attachmentId);
   }
 
   /**
@@ -724,8 +678,8 @@ export class AttachmentService extends DBService {
    * @return {*}  {Promise<{ key: string; uuid: string }>}
    * @memberof AttachmentService
    */
-  async deleteSurveyAttachment(attachmentId: number): Promise<{ key: string; uuid: string }> {
-    return this.attachmentRepository.deleteSurveyAttachment(attachmentId);
+  async _deleteSurveyAttachmentRecord(attachmentId: number): Promise<{ key: string; uuid: string }> {
+    return this.attachmentRepository.deleteSurveyAttachmentRecord(attachmentId);
   }
 
   /**
@@ -861,10 +815,8 @@ export class AttachmentService extends DBService {
    *
    * If (attachmentType = report):
    * - delete authors
-   * - delete publish record
    * - delete attachment
    * Else (attachmentType = attachment):
-   * - delete publish record
    * - delete attachment
    *
    * If attachment was published and user is admin:
@@ -876,26 +828,22 @@ export class AttachmentService extends DBService {
    * @return {*}  {Promise<void>}
    * @memberof AttachmentService
    */
-  async handleDeleteProjectAttachment(projectId: number, attachmentId: number, attachmentType: string): Promise<void> {
-    const historyPublishService = new HistoryPublishService(this.connection);
-
+  async deleteProjectAttachment(projectId: number, attachmentId: number, attachmentType: string): Promise<void> {
     let attachment: IProjectAttachment | IProjectReportAttachment | null;
 
     if (attachmentType === ATTACHMENT_TYPE.REPORT) {
       // Get the attachment
       attachment = await this.getProjectReportAttachmentById(projectId, attachmentId);
 
-      // Delete the publish record, authors, and attachment
-      await historyPublishService.deleteProjectReportAttachmentPublishRecord(attachmentId);
+      // Delete the authors, and attachment
       await this.deleteProjectReportAttachmentAuthors(attachmentId);
-      await this.deleteProjectReportAttachment(attachmentId);
+      await this._deleteProjectReportAttachmentRecord(attachmentId);
     } else {
       // Get the attachment
       attachment = await this.getProjectAttachmentById(projectId, attachmentId);
 
-      // Delete the publish record and attachment
-      await historyPublishService.deleteProjectAttachmentPublishRecord(attachmentId);
-      await this.deleteProjectAttachment(attachmentId);
+      // Delete the attachment
+      await this._deleteProjectAttachmentRecord(attachmentId);
     }
 
     // Delete the attachment from S3
@@ -919,7 +867,7 @@ export class AttachmentService extends DBService {
    * @return {*}  {Promise<void>}
    * @memberof AttachmentService
    */
-  async handleDeleteSurveyAttachment(surveyId: number, attachmentId: number, attachmentType: string): Promise<void> {
+  async deleteSurveyAttachment(surveyId: number, attachmentId: number, attachmentType: string): Promise<void> {
     const historyPublishService = new HistoryPublishService(this.connection);
 
     let attachment: ISurveyAttachment | ISurveyReportAttachment | null;
@@ -931,14 +879,14 @@ export class AttachmentService extends DBService {
       // Delete the publish record, authors, and attachment
       await historyPublishService.deleteSurveyReportAttachmentPublishRecord(attachmentId);
       await this.deleteSurveyReportAttachmentAuthors(attachmentId);
-      await this.deleteSurveyReportAttachment(attachmentId);
+      await this._deleteSurveyReportAttachmentRecord(attachmentId);
     } else {
       // Get the attachment
       attachment = await this.getSurveyAttachmentById(surveyId, attachmentId);
 
       // Delete the publish record and attachment
       await historyPublishService.deleteSurveyAttachmentPublishRecord(attachmentId);
-      await this.deleteSurveyAttachment(attachmentId);
+      await this._deleteSurveyAttachmentRecord(attachmentId);
     }
 
     // Delete the attachment from S3

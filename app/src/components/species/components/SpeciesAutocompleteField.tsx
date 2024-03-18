@@ -117,7 +117,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
       filterSelectedOptions
       noOptionsText="No matching options"
       options={options}
-      getOptionLabel={(option) => option.commonName || option.scientificName}
+      getOptionLabel={(option) => option.scientificName}
       isOptionEqualToValue={(option, value) => {
         return option.tsn === value.tsn;
       }}

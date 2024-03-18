@@ -1,49 +1,37 @@
 import { AxiosInstance } from 'axios';
 import {
-  CBMeasurementType,
-  CBQualitativeMeasurementTypeDefinition,
-  CBQuantitativeMeasurementTypeDefinition
+  CBMeasurementSearchByTermResponse,
+  CBMeasurementSearchByTsnResponse
 } from 'interfaces/useCritterApi.interface';
 
-export interface IMeasurementStub {
-  taxon_measurement_id: string;
-  measurement_name: string;
-  min_value?: number;
-  max_value?: number;
-  unit?: string;
-}
-
-export interface IXrefMeasurements {
-  qualitative: CBQualitativeMeasurementTypeDefinition[];
-  quantitative: CBQuantitativeMeasurementTypeDefinition[];
-}
-
 export const useXrefApi = (axios: AxiosInstance) => {
-  const getTaxonMeasurements = async (tsn?: number): Promise<IXrefMeasurements | undefined> => {
-    if (!tsn) {
-      return;
-    }
-    const { data } = await axios.get(`/api/critterbase/xref/taxon-measurements?tsn=${tsn}`);
+  /**
+   * Get measurement definitions by itis tsn.
+   *
+   * @param {number} itis_tsn
+   * @return {*}  {Promise<CBMeasurementSearchByTsnResponse>}
+   */
+  const getTaxonMeasurements = async (itis_tsn: number): Promise<CBMeasurementSearchByTsnResponse> => {
+    const { data } = await axios.get(`/api/critterbase/xref/taxon-measurements?tsn=${itis_tsn}`);
     return data;
   };
 
   /**
-   * Get measurement definitions by search terms.
+   * Get measurement definitions by search term.
    *
-   * TODO: Update this method to use the search terms to filter the measurement definitions.
-   *
-   * @param {string[]} searchTerms
-   * @return {*}  {Promise<CBMeasurementType[]>}
+   * @param {string} searchTerm
+   * @return {*}  {Promise<CBMeasurementSearchByTermResponse>}
    */
-  const getMeasurementTypeDefinitionsBySearachTerms = async (searchTerms: string[]): Promise<CBMeasurementType[]> => {
-    // TODO: this needs to be updated when itis_tsn is swapped over in critter base
-    const { data } = await axios.get(`/api/critterbase/xref/taxon-measurements`);
+  const getMeasurementTypeDefinitionsBySearchTerm = async (
+    searchTerm: string
+  ): Promise<CBMeasurementSearchByTermResponse> => {
+    const { data } = await axios.get(`/api/critterbase/xref/taxon-measurements/search?name=${searchTerm}`);
 
     return data;
   };
 
   return {
     getTaxonMeasurements,
-    getMeasurementTypeDefinitionsBySearachTerms
+    getMeasurementTypeDefinitionsBySearchTerm
   };
 };

@@ -39,6 +39,23 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Get Sample Site by ID
+   * TODO: Required? not used anywhere
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} sampleSiteId
+   * @return {*}  {Promise<void>}
+   */
+  const getSampleSiteById = async (
+    projectId: number,
+    surveyId: number,
+    sampleSiteId: number
+  ): Promise<IGetSampleSiteResponse> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/sample-site/${sampleSiteId}`);
+    return data;
+  };
+
+  /**
    * Edit Sample Site
    *
    * @param {number} projectId
@@ -87,6 +104,7 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
   return {
     createSamplingSites,
     getSampleSites,
+    getSampleSiteById,
     editSampleSite,
     deleteSampleSite,
     deleteSampleSites

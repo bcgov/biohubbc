@@ -1,13 +1,10 @@
-import { Stack, Theme, Typography } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
-import { makeStyles } from '@mui/styles';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
-import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
-import { default as dayjs } from 'dayjs';
 import SamplingStrategyForm from 'features/surveys/components/SamplingStrategyForm';
 import SurveyPartnershipsForm, {
   SurveyPartnershipsFormYupSchema
@@ -15,8 +12,6 @@ import SurveyPartnershipsForm, {
 import { Formik, FormikProps } from 'formik';
 import { ICreateSurveyRequest, IEditSurveyRequest, SurveyUpdateObject } from 'interfaces/useSurveyApi.interface';
 import React, { useContext } from 'react';
-import { getFormattedDate } from 'utils/Utils';
-import yup from 'utils/YupSchema';
 import AgreementsForm, { AgreementsYupSchema } from '../components/AgreementsForm';
 import GeneralInformationForm, { GeneralInformationYupSchema } from '../components/GeneralInformationForm';
 import ProprietaryDataForm, { ProprietaryDataYupSchema } from '../components/ProprietaryDataForm';
@@ -25,20 +20,6 @@ import StudyAreaForm, { SurveyLocationYupSchema } from '../components/StudyAreaF
 import SurveyFundingSourceForm, { SurveyFundingSourceFormYupSchema } from '../components/SurveyFundingSourceForm';
 import { SurveySiteSelectionYupSchema } from '../components/SurveySiteSelectionForm';
 import SurveyUserForm, { SurveyUserJobYupSchema } from '../components/SurveyUserForm';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  actionButton: {
-    minWidth: '6rem',
-    '& + button': {
-      marginLeft: '0.5rem'
-    }
-  },
-  sectionDivider: {
-    height: '1px',
-    marginTop: theme.spacing(5),
-    marginBottom: theme.spacing(5)
-  }
-}));
 
 export interface IEditSurveyForm {
   initialSurveyData: SurveyUpdateObject | ICreateSurveyRequest;
@@ -52,8 +33,6 @@ export interface IEditSurveyForm {
  * @return {*}
  */
 const EditSurveyForm = (props: IEditSurveyForm) => {
-  const classes = useStyles();
-
   const projectContext = useContext(ProjectContext);
   const projectData = projectContext.projectDataLoader.data?.projectData;
 
@@ -64,42 +43,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
     return <></>;
   }
 
-  const surveyEditYupSchemas = GeneralInformationYupSchema({
-    start_date: yup
-      .string()
-      .isValidDateString()
-      .isAfterDate(
-        projectData.project.start_date,
-        DATE_FORMAT.ShortDateFormat,
-        `Survey start date cannot be before project start date ${
-          projectData && getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, projectData.project.start_date)
-        }`
-      )
-      .isAfterDate(
-        dayjs(DATE_LIMIT.min).toISOString(),
-        DATE_FORMAT.ShortDateFormat,
-        `Survey start date cannot be before ${getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, DATE_LIMIT.min)}`
-      )
-      .required('Start Date is Required'),
-    end_date: yup
-      .string()
-      .isValidDateString()
-      .isEndDateSameOrAfterStartDate('start_date')
-      .isBeforeDate(
-        projectData.project.end_date,
-        DATE_FORMAT.ShortDateFormat,
-        `Survey end date cannot be after project end date ${
-          projectData && getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, projectData.project.end_date)
-        }`
-      )
-      .isBeforeDate(
-        dayjs(DATE_LIMIT.max).toISOString(),
-        DATE_FORMAT.ShortDateFormat,
-        `Survey end date cannot be after ${getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, DATE_LIMIT.max)}`
-      )
-      .nullable()
-      .optional()
-  })
+  const surveyEditYupSchemas = GeneralInformationYupSchema()
     .concat(PurposeAndMethodologyYupSchema)
     .concat(ProprietaryDataYupSchema)
     .concat(SurveyFundingSourceFormYupSchema)
@@ -117,7 +61,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
       validateOnBlur={false}
       validateOnChange={false}
       onSubmit={props.handleSubmit}>
-      <>
+      <Stack gap={5}>
         <FormikErrorSnackbar />
         <HorizontalSplitFormComponent
           title="General Information"
@@ -128,12 +72,17 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
                   return { value: item.id, label: item.name };
                 }) || []
               }
+              progress={
+                codes?.survey_progress?.map((item) => {
+                  return { value: item.id, label: item.name, subText: item.description };
+                }) || []
+              }
               projectStartDate={projectData.project.start_date}
               projectEndDate={projectData.project.end_date}
             />
           }></HorizontalSplitFormComponent>
 
-        <Divider className={classes.sectionDivider} />
+        <Divider />
 
         <HorizontalSplitFormComponent
           title="Purpose and Methodology"
@@ -152,7 +101,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
             />
           }></HorizontalSplitFormComponent>
 
-        <Divider className={classes.sectionDivider} />
+        <Divider />
 
         <HorizontalSplitFormComponent
           title="Survey Participants"
@@ -160,7 +109,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
           component={<SurveyUserForm jobs={codes.survey_jobs} />}
         />
 
-        <Divider className={classes.sectionDivider} />
+        <Divider />
 
         <HorizontalSplitFormComponent
           title="Funding Sources"
@@ -169,21 +118,17 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
             <Box>
               <Box component="fieldset">
                 <Typography component="legend">Add Funding Sources</Typography>
-                <Box mt={1}>
-                  <SurveyFundingSourceForm />
-                </Box>
+                <SurveyFundingSourceForm />
               </Box>
               <Box component="fieldset" mt={5}>
                 <Typography component="legend">Additional Partnerships</Typography>
-                <Box mt={1}>
-                  <SurveyPartnershipsForm />
-                </Box>
+                <SurveyPartnershipsForm />
               </Box>
             </Box>
           }
         />
 
-        <Divider className={classes.sectionDivider} />
+        <Divider />
 
         <HorizontalSplitFormComponent
           title="Sampling Strategy"
@@ -191,7 +136,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
           component={<SamplingStrategyForm />}
         />
 
-        <Divider className={classes.sectionDivider} />
+        <Divider />
 
         <HorizontalSplitFormComponent
           title="Study Area"
@@ -208,7 +153,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
           }
         />
 
-        <Divider className={classes.sectionDivider} />
+        <Divider />
 
         <HorizontalSplitFormComponent
           title="Proprietary Data"
@@ -227,11 +172,12 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
             />
           }></HorizontalSplitFormComponent>
 
-        <Divider className={classes.sectionDivider} />
+        <Divider />
 
         <HorizontalSplitFormComponent title="Agreements" component={<AgreementsForm />}></HorizontalSplitFormComponent>
-        <Divider className={classes.sectionDivider} />
-      </>
+
+        <Divider />
+      </Stack>
     </Formik>
   );
 };

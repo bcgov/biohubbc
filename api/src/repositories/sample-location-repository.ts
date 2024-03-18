@@ -6,12 +6,14 @@ import { ApiExecuteSQLError } from '../errors/api-error';
 import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
+import { SampleBlockRecord, UpdateSampleBlockRecord } from './sample-blocks-repository';
 import { SampleMethodRecord, UpdateSampleMethodRecord } from './sample-method-repository';
 import { SamplePeriodRecord } from './sample-period-repository';
+import { SampleStratumRecord, UpdateSampleStratumRecord } from './sample-stratums-repository';
 
 /**
  * An aggregate record that includes a single sample site, all of its child sample methods, and for each child sample
- * method, all of its child sample periods.
+ * method, all of its child sample periods. Also includes any survey blocks or survey stratums that this site belongs to.
  */
 export const SampleLocationRecord = z.object({
   survey_sample_site_id: z.number(),
@@ -39,6 +41,26 @@ export const SampleLocationRecord = z.object({
         )
       }).shape
     )
+  ),
+  sample_blocks: z.array(
+    SampleBlockRecord.pick({
+      survey_sample_block_id: true,
+      survey_block_id: true,
+      survey_sample_site_id: true
+    }).extend({
+      name: z.string(),
+      description: z.string()
+    })
+  ),
+  sample_stratums: z.array(
+    SampleStratumRecord.pick({
+      survey_sample_stratum_id: true,
+      survey_stratum_id: true,
+      survey_sample_site_id: true
+    }).extend({
+      name: z.string(),
+      description: z.string()
+    })
   )
 });
 export type SampleLocationRecord = z.infer<typeof SampleLocationRecord>;
@@ -84,6 +106,8 @@ export type UpdateSampleLocationRecord = {
   description: string;
   geojson: Feature;
   methods: UpdateSampleMethodRecord[];
+  blocks: UpdateSampleBlockRecord[];
+  stratums: UpdateSampleStratumRecord[];
 };
 
 /**
@@ -95,7 +119,7 @@ export type UpdateSampleLocationRecord = {
  */
 export class SampleLocationRepository extends BaseRepository {
   /**
-   * Gets a paginated set of survey Sample Locations for the given survey.
+   * Gets a paginated set of Sample Locations for the given survey for a given Survey
    *
    * @param {number} surveyId
    * @return {*}  {Promise<SampleLocationRecord[]>}
@@ -113,15 +137,15 @@ export class SampleLocationRepository extends BaseRepository {
         qb.select(
           'ssp.survey_sample_method_id',
           knex.raw(`
-            json_agg(json_build_object(
-              'survey_sample_period_id', ssp.survey_sample_period_id,
-              'survey_sample_method_id', ssp.survey_sample_method_id,
-              'start_date', ssp.start_date,
-              'start_time', ssp.start_time,
-              'end_date', ssp.end_date,
-              'end_time', ssp.end_time
-            )) as sample_periods
-          `)
+          json_agg(json_build_object(
+            'survey_sample_period_id', ssp.survey_sample_period_id,
+            'survey_sample_method_id', ssp.survey_sample_method_id,
+            'start_date', ssp.start_date,
+            'start_time', ssp.start_time,
+            'end_date', ssp.end_date,
+            'end_time', ssp.end_time
+          )) as sample_periods
+        `)
         )
           .from({ ssp: 'survey_sample_period' })
           .groupBy('ssp.survey_sample_method_id');
@@ -131,29 +155,67 @@ export class SampleLocationRepository extends BaseRepository {
         qb.select(
           'ssm.survey_sample_site_id',
           knex.raw(`
-            json_agg(json_build_object(
-              'survey_sample_method_id', ssm.survey_sample_method_id,
-              'survey_sample_site_id', ssm.survey_sample_site_id,
-              'method_lookup_id', ssm.method_lookup_id,
-              'description', ssm.description,
-              'sample_periods', COALESCE(wssp.sample_periods, '[]'::json)
-            )) as sample_methods`)
+          json_agg(json_build_object(
+            'survey_sample_method_id', ssm.survey_sample_method_id,
+            'survey_sample_site_id', ssm.survey_sample_site_id,
+            'method_lookup_id', ssm.method_lookup_id,
+            'description', ssm.description,
+            'sample_periods', COALESCE(wssp.sample_periods, '[]'::json)
+          )) as sample_methods`)
         )
           .from({ ssm: 'survey_sample_method' })
           .leftJoin('w_survey_sample_period as wssp', 'wssp.survey_sample_method_id', 'ssm.survey_sample_method_id')
           .groupBy('ssm.survey_sample_site_id');
       })
-      // Fetch sample sites and include the corresponding sample methods
+      .with('w_survey_sample_block', (qb) => {
+        // Aggregate sample blocks into an array of objects
+        qb.select(
+          'ssb.survey_sample_site_id',
+          knex.raw(`
+          json_agg(json_build_object(
+            'survey_sample_block_id', ssb.survey_sample_block_id,
+            'survey_sample_site_id', ssb.survey_sample_site_id,
+            'survey_block_id', ssb.survey_block_id,
+            'name', sb.name,
+            'description', sb.description
+          )) as sample_blocks`)
+        )
+          .from({ ssb: 'survey_sample_block' })
+          .leftJoin('survey_block as sb', 'sb.survey_block_id', 'ssb.survey_block_id')
+          .groupBy('ssb.survey_sample_site_id');
+      })
+      .with('w_survey_sample_stratum', (qb) => {
+        // Aggregate sample stratums into an array of objects
+        qb.select(
+          'ssst.survey_sample_site_id',
+          knex.raw(`
+          json_agg(json_build_object(
+            'survey_sample_stratum_id', ssst.survey_sample_stratum_id,
+            'survey_sample_site_id', ssst.survey_sample_site_id,
+            'survey_stratum_id', ssst.survey_stratum_id,
+            'name', ss.name,
+            'description', ss.description
+          )) as sample_stratums`)
+        )
+          .from({ ssst: 'survey_sample_stratum' })
+          .leftJoin('survey_stratum as ss', 'ss.survey_stratum_id', 'ssst.survey_stratum_id')
+          .groupBy('ssst.survey_sample_site_id');
+      })
+      // Fetch sample sites and include the corresponding sample methods, blocks, and stratums
       .select(
         'sss.survey_sample_site_id',
         'sss.survey_id',
         'sss.name',
         'sss.description',
         'sss.geojson',
-        knex.raw(`COALESCE(wssm.sample_methods, '[]'::json) as sample_methods`)
+        knex.raw(`COALESCE(wssm.sample_methods, '[]'::json) as sample_methods,
+      COALESCE(wssb.sample_blocks, '[]'::json) as sample_blocks,
+      COALESCE(wssst.sample_stratums, '[]'::json) as sample_stratums`)
       )
       .from({ sss: 'survey_sample_site' })
       .leftJoin('w_survey_sample_method as wssm', 'wssm.survey_sample_site_id', 'sss.survey_sample_site_id')
+      .leftJoin('w_survey_sample_block as wssb', 'wssb.survey_sample_site_id', 'sss.survey_sample_site_id')
+      .leftJoin('w_survey_sample_stratum as wssst', 'wssst.survey_sample_site_id', 'sss.survey_sample_site_id')
       .where('sss.survey_id', surveyId);
 
     if (pagination) {
@@ -165,6 +227,7 @@ export class SampleLocationRepository extends BaseRepository {
     }
 
     const response = await this.connection.knex(queryBuilder, SampleLocationRecord);
+
     return response.rows;
   }
 
@@ -197,6 +260,38 @@ export class SampleLocationRepository extends BaseRepository {
     }
 
     return response.rows[0].sample_site_count;
+  }
+
+  /**
+   * Gets a sample site record by sample site ID.
+   *
+   * @param {number} surveyId
+   * @param {number} surveySampleSiteId
+   * @return {*}  {Promise<SampleSiteRecord>}
+   * @memberof SampleLocationService
+   */
+  async getSurveySampleSiteById(surveyId: number, surveySampleSiteId: number): Promise<SampleSiteRecord> {
+    const sqlStatement = SQL`
+      SELECT
+        sss.*
+      FROM
+        survey_sample_site as sss
+      WHERE
+        sss.survey_id = ${surveyId}
+      AND
+        sss.survey_sample_site_id = ${surveySampleSiteId}
+    `;
+
+    const response = await this.connection.sql(sqlStatement, SampleSiteRecord);
+
+    if (response?.rowCount < 1) {
+      throw new ApiExecuteSQLError('Failed to get sample site by ID', [
+        'SampleLocationRepository->getSurveySampleSiteById',
+        'rowCount was < 1, expected rowCount > 0'
+      ]);
+    }
+
+    return response.rows[0];
   }
 
   /**
@@ -300,16 +395,19 @@ export class SampleLocationRepository extends BaseRepository {
   /**
    * Deletes a survey sample site record.
    *
+   * @param {number} surveyId
    * @param {number} surveySampleSiteId
    * @return {*}  {Promise<SampleSiteRecord>}
    * @memberof SampleLocationRepository
    */
-  async deleteSampleSiteRecord(surveySampleSiteId: number): Promise<SampleSiteRecord> {
+  async deleteSampleSiteRecord(surveyId: number, surveySampleSiteId: number): Promise<SampleSiteRecord> {
     const sqlStatement = SQL`
       DELETE FROM
         survey_sample_site
       WHERE
         survey_sample_site_id = ${surveySampleSiteId}
+      AND
+        survey_id = ${surveyId}
       RETURNING
         *;
     `;

@@ -26,6 +26,7 @@ import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
+import SurveyProgressChip from './components/SurveyProgressChip';
 
 /**
  * Survey header for a single-survey view.
@@ -47,8 +48,8 @@ const SurveyHeader = () => {
   const dialogContext = useContext(DialogContext);
 
   const defaultYesNoDialogProps = {
-    dialogTitle: 'Delete Survey?',
-    dialogText: 'Are you sure you want to delete this survey? This action cannot be undone.',
+    dialogTitle: DeleteSurveyI18N.deleteTitle,
+    dialogText: DeleteSurveyI18N.deleteText,
     open: false,
     onClose: () => dialogContext.setYesNoDialog({ open: false }),
     onNo: () => dialogContext.setYesNoDialog({ open: false }),
@@ -102,7 +103,7 @@ const SurveyHeader = () => {
       history.push(`/admin/projects/${surveyContext.projectId}`);
     } catch (error) {
       const apiError = error as APIError;
-      showDeleteErrorDialog({ dialogText: apiError.message, open: true });
+      showDeleteErrorDialog({ dialogErrorDetails: [apiError.message], open: true });
       return error;
     }
   };
@@ -150,6 +151,8 @@ const SurveyHeader = () => {
                 surveyWithDetails.surveyData.survey_details.end_date
               )}
             </Typography>
+
+            <SurveyProgressChip progress_id={surveyWithDetails.surveyData.survey_details.progress_id} />
           </Stack>
         }
         buttonJSX={
