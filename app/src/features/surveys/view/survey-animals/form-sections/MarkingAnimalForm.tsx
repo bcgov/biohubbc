@@ -15,6 +15,12 @@ import {
   isRequiredInSchema
 } from '../animal';
 
+/**
+ * This component renders a 'critter marking' create / edit dialog.
+ *
+ * @param {AnimalFormProps<IMarkingResponse>} props - Generic AnimalFormProps.
+ * @returns {*}
+ */
 export const MarkingAnimalForm = (props: AnimalFormProps<IMarkingResponse>) => {
   const cbApi = useCritterbaseApi();
   const dialog = useDialogContext();

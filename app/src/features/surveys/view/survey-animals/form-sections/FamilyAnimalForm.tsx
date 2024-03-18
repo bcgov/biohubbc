@@ -39,6 +39,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
+/**
+ * This component renders a 'critter family relationship' create / edit dialog.
+ *
+ * @param {AnimalFormProps<IFamilyParentResponse>} props - Generic AnimalFormProps.
+ * @returns {*}
+ */
 export const FamilyAnimalForm = (props: AnimalFormProps<IFamilyParentResponse | IFamilyChildResponse>) => {
   const cbApi = useCritterbaseApi();
   const dialog = useDialogContext();

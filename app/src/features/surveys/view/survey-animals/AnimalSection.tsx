@@ -22,18 +22,40 @@ import { FamilyAnimalForm } from './form-sections/FamilyAnimalForm';
 import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 import { MarkingAnimalForm } from './form-sections/MarkingAnimalForm';
 import MeasurementAnimalForm from './form-sections/MeasurementAnimalForm';
-import GeneralAnimalSummary from './GeneralAnimalSummary';
 import MortalityAnimalForm from './form-sections/MortalityAnimalForm';
+import GeneralAnimalSummary from './GeneralAnimalSummary';
 
 dayjs.extend(utc);
 
 type SubHeaderData = Record<string, string | number | null | undefined>;
 
 interface IAnimalSectionProps {
+  /**
+   * Detailed Critter from Critterbase.
+   * In most cases the Critter will be defined with the exception of adding new.
+   */
   critter?: ICritterDetailedResponse;
+  /**
+   * Callback to refresh the detailed Critter.
+   * Children with the transition component are dependent on the Critter updating to trigger the transitions.
+   */
   refreshCritter: (critter_id: string) => Promise<ICritterDetailedResponse | undefined>;
+  /**
+   * The selected section.
+   * Example: 'Captures' | 'Markings'.
+   */
   section: ANIMAL_SECTION;
 }
+
+/**
+ * This component acts as a switch for the animal form sections.
+ *
+ * Goal was to make the form sections share common props and also make it flexible
+ * handling the different requirements / needs of the individual sections.
+ *
+ * @param {IAnimalSectionProps} props
+ * @returns {*}
+ */
 export const AnimalSection = (props: IAnimalSectionProps) => {
   const cbApi = useCritterbaseApi();
   const dialog = useDialogContext();

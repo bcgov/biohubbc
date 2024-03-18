@@ -19,6 +19,15 @@ import {
 } from '../animal';
 import FormLocationPreview from './LocationEntryForm';
 
+/**
+ * This component renders a 'critter capture' create / edit dialog.
+ *
+ * Ties into the LocationEntryForm to display capture / release details on map.
+ * Handles additional conversion of UTM <--> WGS coordinates during edit and submission.
+ *
+ * @param {AnimalFormProps<ICaptureResponse>} props - Generic AnimalFormProps.
+ * @returns {*}
+ */
 export const CaptureAnimalForm = (props: AnimalFormProps<ICaptureResponse>) => {
   const cbApi = useCritterbaseApi();
   const dialog = useDialogContext();

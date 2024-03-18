@@ -15,6 +15,12 @@ import {
   isRequiredInSchema
 } from '../animal';
 
+/**
+ * This component renders a 'critter collection unit' create / edit dialog.
+ *
+ * @param {AnimalFormProps<ICollectionUnitResponse>} props - Generic AnimalFormProps.
+ * @returns {*}
+ */
 export const CollectionUnitAnimalForm = (props: AnimalFormProps<ICollectionUnitResponse>) => {
   const cbApi = useCritterbaseApi();
   const dialog = useDialogContext();

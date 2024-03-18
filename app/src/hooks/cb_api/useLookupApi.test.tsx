@@ -30,8 +30,11 @@ describe('useLookupApi', () => {
     const mockEnumLookup = ['A', 'B'];
 
     it('should return a lookup table in a format to be used by select components', async () => {
-      mock.onGet('/api/critterbase/lookups/colours?format=asSelect').reply(200, mockLookup);
-      const result = await useLookupApi(axios).getSelectOptions({ route: 'lookups/colours' });
+      mock.onGet('/api/critterbase/lookups/colours').reply(200, mockLookup);
+      const result = await useLookupApi(axios).getSelectOptions({
+        route: 'lookups/colours',
+        query: { format: 'asSelect' }
+      });
       expect(Array.isArray(result)).toBe(true);
       expect(typeof result).not.toBe('string');
       const res = result as ICbSelectRows[];
@@ -41,8 +44,12 @@ describe('useLookupApi', () => {
     });
 
     it('should order lookups by asc if param provided', async () => {
-      mock.onGet('/api/critterbase/lookups/colours?format=asSelect').reply(200, mockLookup);
-      const result = await useLookupApi(axios).getSelectOptions({ route: 'lookups/colours', orderBy: 'asc' });
+      mock.onGet('/api/critterbase/lookups/colours').reply(200, mockLookup);
+      const result = await useLookupApi(axios).getSelectOptions({
+        route: 'lookups/colours',
+        query: { format: 'asSelect' },
+        orderBy: 'asc'
+      });
       const res = result as ICbSelectRows[];
       expect(res[0].key).toBe('colour_id');
       expect(res[0].value).toBe('Blue');
@@ -53,24 +60,36 @@ describe('useLookupApi', () => {
     });
 
     it('should order string lookups by asc if param provided', async () => {
-      mock.onGet('/api/critterbase/lookups/colours?format=asSelect').reply(200, mockEnumLookup);
-      const result = await useLookupApi(axios).getSelectOptions({ route: 'lookups/colours', orderBy: 'asc' });
+      mock.onGet('/api/critterbase/lookups/colours').reply(200, mockEnumLookup);
+      const result = await useLookupApi(axios).getSelectOptions({
+        route: 'lookups/colours',
+        query: { format: 'asSelect' },
+        orderBy: 'asc'
+      });
       const res = result as ICbSelectRows[];
       expect(res[0]).toBe('A');
       expect(res[1]).toBe('B');
     });
 
     it('should order string lookups by desc if param provided', async () => {
-      mock.onGet('/api/critterbase/lookups/colours?format=asSelect').reply(200, mockEnumLookup);
-      const result = await useLookupApi(axios).getSelectOptions({ route: 'lookups/colours', orderBy: 'desc' });
+      mock.onGet('/api/critterbase/lookups/colours').reply(200, mockEnumLookup);
+      const result = await useLookupApi(axios).getSelectOptions({
+        route: 'lookups/colours',
+        query: { format: 'asSelect' },
+        orderBy: 'desc'
+      });
       const res = result as ICbSelectRows[];
       expect(res[0]).toBe('B');
       expect(res[1]).toBe('A');
     });
 
     it('should order lookups by desc if param provided', async () => {
-      mock.onGet('/api/critterbase/lookups/colours?format=asSelect').reply(200, mockLookup);
-      const result = await useLookupApi(axios).getSelectOptions({ route: 'lookups/colours', orderBy: 'desc' });
+      mock.onGet('/api/critterbase/lookups/colours').reply(200, mockLookup);
+      const result = await useLookupApi(axios).getSelectOptions({
+        route: 'lookups/colours',
+        query: { format: 'asSelect' },
+        orderBy: 'desc'
+      });
       const res = result as ICbSelectRows[];
       expect(res[0].key).toBe('colour_id');
       expect(res[0].value).toBe('Green');

@@ -25,11 +25,11 @@ import {
 } from '../animal';
 
 /**
- * Renders the Measurement form inputs
+ * This component renders a 'critter measurement' create / edit dialog.
  *
- * @return {*}
+ * @param {AnimalFormProps<IQuantitativeMeasurementResponse | IQualitativeMeasurementResponse>} props - Generic AnimalFormProps.
+ * @returns {*}
  */
-
 export const MeasurementAnimalForm = (
   props: AnimalFormProps<IQuantitativeMeasurementResponse & IQualitativeMeasurementResponse>
 ) => {

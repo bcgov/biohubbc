@@ -16,6 +16,17 @@ interface IAnimalSectionWrapperProps extends PropsWithChildren {
   critter?: ICritterDetailedResponse;
   addBtn?: JSX.Element;
 }
+/**
+ * Wrapper for the selected section main content.
+ *
+ * This component renders beside the AnimalList navbar.
+ * In most cases it displays the currently selected critter + the attribute data cards.
+ *
+ * Note: All props can be undefined to easily handle the empty state.
+ *
+ * @param {IAnimalSectionWrapperProps} props
+ * @returns {*}
+ */
 export const AnimalSectionWrapper = (props: IAnimalSectionWrapperProps) => {
   return (
     <>

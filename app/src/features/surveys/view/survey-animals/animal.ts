@@ -39,13 +39,31 @@ export enum ANIMAL_SECTION {
 
 export type AnimalFormProps<T> =
   | {
+      /**
+       * When formMode 'ADD' formObject is undefined.
+       */
       formObject?: never;
+      /**
+       * The form mode -> Add / EDIT.
+       */
       formMode: ANIMAL_FORM_MODE.ADD;
+      /**
+       * The dialog open state.
+       */
       open: boolean;
+      /**
+       * Callback when dialog closes.
+       */
       handleClose: () => void;
+      /**
+       * Critterbase detailed critter object.
+       */
       critter: ICritterDetailedResponse;
     }
   | {
+      /**
+       * When formMode 'EDIT' formObject is defined.
+       */
       formObject: T;
       formMode: ANIMAL_FORM_MODE.EDIT;
       open: boolean;

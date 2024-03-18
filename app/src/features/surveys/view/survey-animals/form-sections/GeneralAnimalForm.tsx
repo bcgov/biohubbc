@@ -35,11 +35,12 @@ export type GeneralAnimalFormProps<T> =
     };
 
 /**
- * Renders the General section for the Individual Animal form
+ * This component renders a 'critter' create / edit dialog.
+ * Handles the basic properties of a Critterbase critter.
  *
- * @return {*}
+ * @param {GeneralAnimalFormProps<ICreateCritter>} props
+ * @returns {*}
  */
-
 const GeneralAnimalForm = (props: GeneralAnimalFormProps<ICreateCritter>) => {
   const cbApi = useCritterbaseApi();
   const bhApi = useBiohubApi();
