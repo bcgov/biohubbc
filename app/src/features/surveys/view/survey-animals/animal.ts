@@ -167,6 +167,7 @@ export const CreateCritterCollectionUnitSchema = yup.object({
   collection_category_id: yup.string().required('Category is required')
 });
 
+// @TODO needs updating?
 export const AnimalMortalitySchema = yup.object({
   mortality_id: yup.string(),
   location_id: yup.string(),
@@ -208,6 +209,7 @@ export const CreateCritterFamilySchema = yup.object({
  *
  */
 export type ICreateCritter = InferType<typeof CreateCritterSchema>;
+
 export type ICreateCritterMarking = InferType<typeof CreateCritterMarkingSchema>;
 export type ICreateCritterMeasurement = InferType<typeof CreateCritterMeasurementSchema>;
 export type ICreateCritterCollectionUnit = InferType<typeof CreateCritterCollectionUnitSchema>;

@@ -10,6 +10,7 @@ import { useFamilyApi } from './cb_api/useFamilyApi';
 import { useLookupApi } from './cb_api/useLookupApi';
 import { useMarkingApi } from './cb_api/useMarkingApi';
 import { useMeasurementApi } from './cb_api/useMeasurementApi';
+import { useMortalityApi } from './cb_api/useMortalityApi';
 // import { useMarkings } from './cb_api/useMarkings';
 
 /**
@@ -37,6 +38,8 @@ export const useCritterbaseApi = () => {
 
   const measurement = useMeasurementApi(apiAxios);
 
+  const mortality = useMortalityApi(apiAxios);
+
   const capture = useCaptureApi(apiAxios);
 
   return useMemo(
@@ -49,6 +52,7 @@ export const useCritterbaseApi = () => {
       marking,
       collectionUnit,
       measurement,
+      mortality,
       capture
     }),
 
