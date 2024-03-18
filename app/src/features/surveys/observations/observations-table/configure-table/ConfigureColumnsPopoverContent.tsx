@@ -17,6 +17,7 @@ import { GridColDef } from '@mui/x-data-grid';
 import { IObservationTableRow, MeasurementColumn } from 'contexts/observationsTableContext';
 import { MeasurementsButton } from 'features/surveys/observations/observations-table/configure-table/measurements/dialog/MeasurementsButton';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
+import ExportHeadersButton from '../export-button/ExportHeadersButton';
 
 export interface IConfigureColumnsPopoverContentProps {
   hideableColumns: GridColDef<IObservationTableRow>[];
@@ -55,6 +56,9 @@ export const ConfigureColumnsPopoverContent = (props: IConfigureColumnsPopoverCo
         <Typography component="div" variant="body2" fontWeight={700} textTransform={'uppercase'}>
           Configure Observations
         </Typography>
+        <ExportHeadersButton
+          // TODO
+        />
         <MeasurementsButton
           disabled={disabledAddMeasurements}
           selectedMeasurements={measurementColumns.map((item) => item.measurement)}
