@@ -50,6 +50,8 @@ const TeamMembers = () => {
     [projectContext.projectDataLoader.data.projectData.participants]
   );
 
+  console.log(projectTeamMembers)
+
   return (
     <Stack spacing={1}>
       {projectTeamMembers.map((member, index) => {
