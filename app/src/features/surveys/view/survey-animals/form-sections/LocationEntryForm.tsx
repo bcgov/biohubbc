@@ -12,7 +12,7 @@ import { MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
 import { useFormikContext } from 'formik';
 import { LatLng } from 'leaflet';
 import { get } from 'lodash-es';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { getLatLngAsUtm, getUtmAsLatLng, PROJECTION_MODE } from 'utils/mapProjectionHelpers';
 
