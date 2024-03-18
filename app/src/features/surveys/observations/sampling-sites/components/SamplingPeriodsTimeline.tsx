@@ -16,8 +16,7 @@ interface ISamplingPeriodsTimelineProps {
 const useStyles = makeStyles((theme: Theme) => ({
   typographyDate: {
     fontSize: '0.85rem',
-    color: theme.palette.text.secondary,
-    fontWeight: 700
+    color: theme.palette.text.secondary
   },
   typographyTime: {
     fontSize: '0.85rem',
@@ -30,7 +29,7 @@ const SamplingPeriodsTimeline = (props: ISamplingPeriodsTimelineProps) => {
   const classes = useStyles();
 
   return (
-    <Timeline sx={{ alignItems: 'start', justifyContent: 'start', p: 0, my: 1, ml: 3, mr: 0 }}>
+    <Timeline sx={{ alignItems: 'start', justifyContent: 'start', p: 0, my: 1, ml: 2, mr: 0 }}>
       {props.samplePeriods.length &&
         props.samplePeriods?.map((samplePeriod, index) => (
           <TimelineItem
@@ -74,7 +73,7 @@ const SamplingPeriodsTimeline = (props: ISamplingPeriodsTimelineProps) => {
                 }
               }}>
               <Box width="100%" display="flex" justifyContent="space-between">
-                <Box minWidth="10ch">
+                <Box>
                   <Typography component="dt" variant="subtitle2" className={classes.typographyDate}>
                     {formatDate(samplePeriod.start_date as unknown as Date, false)}
                   </Typography>
@@ -82,7 +81,7 @@ const SamplingPeriodsTimeline = (props: ISamplingPeriodsTimelineProps) => {
                     {samplePeriod.start_time}
                   </Typography>
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'center', ml: 1.5, mr: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', mx: 1 }}>
                   <Icon path={mdiArrowRightThin} size={0.9} color={grey[500]} />
                 </Box>
                 <Box flex="1 1 auto">

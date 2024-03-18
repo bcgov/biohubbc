@@ -15,6 +15,7 @@ interface IEditSamplingMethodProps {
 
 const EditSamplingMethod: React.FC<IEditSamplingMethodProps> = (props) => {
   const { open, initialData, onSubmit, onClose } = props;
+
   return (
     <>
       <EditDialog
