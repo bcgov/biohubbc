@@ -13,6 +13,7 @@ export const useXrefApi = (axios: AxiosInstance) => {
    */
   const getTaxonMeasurements = async (itis_tsn: number): Promise<CBMeasurementSearchByTsnResponse> => {
     const { data } = await axios.get(`/api/critterbase/xref/taxon-measurements?tsn=${itis_tsn}`);
+    console.log(`ITIS: ${itis_tsn} Data: `, data);
     return data;
   };
 
