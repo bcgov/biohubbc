@@ -37,28 +37,26 @@ const ProjectPage = () => {
   return (
     <>
       <ProjectHeader />
-      <Container maxWidth="xl">
-        <Box py={3}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} lg={4}>
-              <Paper elevation={0}>
-                <ProjectDetails />
-              </Paper>
-            </Grid>
-            <Grid item xs={12} lg={8}>
-              <Box mb={3}>
-                <Paper elevation={0}>
-                  <SurveysListPage />
-                </Paper>
-              </Box>
-              <Box mb={3}>
-                <Paper elevation={0}>
-                  <ProjectAttachments />
-                </Paper>
-              </Box>
-            </Grid>
+      <Container maxWidth="xl" sx={{ py: 3 }}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} lg={4}>
+            <Paper>
+              <ProjectDetails />
+            </Paper>
           </Grid>
-        </Box>
+          <Grid item xs={12} lg={8}>
+            <Box mb={3}>
+              <Paper>
+                <SurveysListPage />
+              </Paper>
+            </Box>
+            <Box mb={3}>
+              <Paper>
+                <ProjectAttachments />
+              </Paper>
+            </Box>
+          </Grid>
+        </Grid>
       </Container>
     </>
   );

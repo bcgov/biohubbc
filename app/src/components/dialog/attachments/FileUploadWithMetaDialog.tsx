@@ -85,7 +85,7 @@ const FileUploadWithMetaDialog: React.FC<IFileUploadWithMetaDialogProps> = (prop
 
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const [formikRef] = useState(useRef<FormikProps<any>>(null));
+  const formikRef = useRef<FormikProps<any>>(null);
 
   const [isFinishing, setIsFinishing] = useState(false);
 

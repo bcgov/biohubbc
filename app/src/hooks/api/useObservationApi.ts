@@ -1,8 +1,8 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import {
-  IObservationRecord,
-  IStandardObservationColumns,
-  ISupplementaryObservationData
+  ObservationRecord,
+  StandardObservationColumns,
+  SupplementaryObservationCountData
 } from 'contexts/observationsTableContext';
 import {
   IGetSurveyObservationsGeometryResponse,
@@ -10,15 +10,22 @@ import {
 } from 'interfaces/useObservationApi.interface';
 import { ApiPaginationRequestOptions } from 'types/misc';
 
-export interface MeasurementColumnToSave {
-  id: string;
-  field: string;
-  value: string | number | null;
+export interface SubcountToSave {
+  observation_subcount_id: number | null;
+  subcount: number | null;
+  qualitative: {
+    measurement_id: string;
+    measurement_option_id: string;
+  }[];
+  quantitative: {
+    measurement_id: string;
+    measurement_value: number;
+  }[];
 }
 
 export interface IObservationTableRowToSave {
-  standardColumns: IStandardObservationColumns;
-  measurementColumns: MeasurementColumnToSave[];
+  standardColumns: StandardObservationColumns;
+  subcounts: SubcountToSave[];
 }
 
 /**
@@ -41,16 +48,8 @@ const useObservationApi = (axios: AxiosInstance) => {
     surveyId: number,
     surveyObservations: IObservationTableRowToSave[]
   ): Promise<void> => {
-    // TODO: There is currently no way in the UI to add a sub count value
-    // TODO: Business requirement to use sub counts as the primary count value
-    const dataToSave = surveyObservations.map((item: IObservationTableRowToSave) => {
-      item.standardColumns.subcount = item.standardColumns.count;
-      return item;
-    });
-
-    // TODO `IObservationRecord[]` might not be the actual return value once measurements are being returned
-    await axios.put<IGetSurveyObservationsResponse>(`/api/project/${projectId}/survey/${surveyId}/observations`, {
-      surveyObservations: dataToSave
+    await axios.put(`/api/project/${projectId}/survey/${surveyId}/observations`, {
+      surveyObservations
     });
   };
 
@@ -86,12 +85,6 @@ const useObservationApi = (axios: AxiosInstance) => {
       `/api/project/${projectId}/survey/${surveyId}/observations${urlParamsString}`
     );
 
-    // TODO: Using sub count value here as observation count may be depreciated
-    // TODO: Business requirement to use sub counts as the primary count value
-    data.surveyObservations = data.surveyObservations.map((item: any) => {
-      item.count = item.subcount;
-      return item;
-    });
     return data;
   };
 
@@ -107,8 +100,8 @@ const useObservationApi = (axios: AxiosInstance) => {
     projectId: number,
     surveyId: number,
     surveyObservationId: number
-  ): Promise<IObservationRecord> => {
-    const { data } = await axios.get<IObservationRecord>(
+  ): Promise<ObservationRecord> => {
+    const { data } = await axios.get<ObservationRecord>(
       `/api/project/${projectId}/survey/${surveyId}/observations/${surveyObservationId}`
     );
 
@@ -185,21 +178,44 @@ const useObservationApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Deletes all of the observations having the given ID.
+   * Deletes all of the observation records having the given observation id.
    *
    * @param {number} projectId
    * @param {number} surveyId
    * @param {((string | number)[])} surveyObservationIds
-   * @return {*}  {Promise<number>}
+   * @return {*}  {Promise<{ supplementaryObservationData: SupplementaryObservationCountData }>}
    */
   const deleteObservationRecords = async (
     projectId: number,
     surveyId: number,
     surveyObservationIds: (string | number)[]
-  ): Promise<{ supplementaryObservationData: ISupplementaryObservationData }> => {
-    const { data } = await axios.post<{ supplementaryObservationData: ISupplementaryObservationData }>(
+  ): Promise<{ supplementaryObservationData: SupplementaryObservationCountData }> => {
+    const { data } = await axios.post<{ supplementaryObservationData: SupplementaryObservationCountData }>(
       `/api/project/${projectId}/survey/${surveyId}/observations/delete`,
       { surveyObservationIds }
+    );
+
+    return data;
+  };
+
+  /**
+   * Deletes all of the observation measurements, from all observation records, having the given taxon measurement id.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {string[]} measurementIds The critterbase taxon measurement ids to delete.
+   * @return {*}  {Promise<void>}
+   */
+  const deleteObservationMeasurements = async (
+    projectId: number,
+    surveyId: number,
+    measurementIds: string[]
+  ): Promise<void> => {
+    const { data } = await axios.post<void>(
+      `/api/project/${projectId}/survey/${surveyId}/observations/measurements/delete`,
+      {
+        measurement_ids: measurementIds
+      }
     );
 
     return data;
@@ -211,6 +227,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     getObservationRecord,
     getObservationsGeometry,
     deleteObservationRecords,
+    deleteObservationMeasurements,
     uploadCsvForImport,
     processCsvSubmission
   };

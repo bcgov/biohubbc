@@ -1,7 +1,6 @@
 import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
-import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import {
   IDetailedCritterWithInternalId,
   IGetSampleSiteResponse,
@@ -25,14 +24,6 @@ export interface ISurveyContext {
    * @memberof ISurveyContext
    */
   surveyDataLoader: DataLoader<[project_id: number, survey_id: number], IGetSurveyForViewResponse, unknown>;
-
-  /**
-   * The Data Loader used to load survey summary submission data
-   *
-   * @type {DataLoader<[project_id: number, survey_id: number], IGetSummaryResultsResponse, unknown>}
-   * @memberof ISurveyContext
-   */
-  summaryDataLoader: DataLoader<[project_id: number, survey_id: number], IGetSummaryResultsResponse, unknown>;
 
   /**
    * The Data Loader used to load survey data
@@ -79,7 +70,6 @@ export interface ISurveyContext {
 
 export const SurveyContext = createContext<ISurveyContext>({
   surveyDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSurveyForViewResponse, unknown>,
-  summaryDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSummaryResultsResponse, unknown>,
   artifactDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSurveyAttachmentsResponse, unknown>,
   sampleSiteDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSampleSiteResponse, unknown>,
   deploymentDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IAnimalDeployment[], unknown>,
@@ -95,7 +85,6 @@ export const SurveyContext = createContext<ISurveyContext>({
 export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
   const biohubApi = useBiohubApi();
   const surveyDataLoader = useDataLoader(biohubApi.survey.getSurveyForView);
-  const summaryDataLoader = useDataLoader(biohubApi.survey.getSurveySummarySubmission);
   const artifactDataLoader = useDataLoader(biohubApi.survey.getSurveyAttachments);
   const sampleSiteDataLoader = useDataLoader(biohubApi.samplingSite.getSampleSites);
   const deploymentDataLoader = useDataLoader(biohubApi.survey.getDeploymentsInSurvey);
@@ -119,7 +108,6 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
   const surveyId = Number(urlParams['survey_id']);
 
   surveyDataLoader.load(projectId, surveyId);
-  summaryDataLoader.load(projectId, surveyId);
   artifactDataLoader.load(projectId, surveyId);
   sampleSiteDataLoader.load(projectId, surveyId);
   deploymentDataLoader.load(projectId, surveyId);
@@ -136,7 +124,6 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
         surveyId !== surveyDataLoader.data?.surveyData.survey_details.id)
     ) {
       surveyDataLoader.refresh(projectId, surveyId);
-      summaryDataLoader.refresh(projectId, surveyId);
       artifactDataLoader.refresh(projectId, surveyId);
       sampleSiteDataLoader.refresh(projectId, surveyId);
     }
@@ -147,7 +134,6 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
   const surveyContext: ISurveyContext = useMemo(() => {
     return {
       surveyDataLoader,
-      summaryDataLoader,
       artifactDataLoader,
       sampleSiteDataLoader,
       critterDataLoader,
@@ -157,7 +143,6 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
     };
   }, [
     surveyDataLoader,
-    summaryDataLoader,
     artifactDataLoader,
     sampleSiteDataLoader,
     critterDataLoader,

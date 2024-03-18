@@ -1,5 +1,4 @@
 import { LoadingButton } from '@mui/lab';
-import Box from '@mui/material/Box';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -38,7 +37,7 @@ const EditSurveyPage = () => {
 
   const surveyId = Number(urlParams['survey_id']);
 
-  const [formikRef] = useState(useRef<FormikProps<IEditSurveyRequest>>(null));
+  const formikRef = useRef<FormikProps<IEditSurveyRequest>>(null);
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
@@ -220,28 +219,26 @@ const EditSurveyPage = () => {
         }
       />
 
-      <Box my={3}>
-        <Container maxWidth="xl">
-          <Box p={5} component={Paper} display="block">
-            <EditSurveyForm initialSurveyData={surveyData} handleSubmit={handleSubmit} formikRef={formikRef} />
-            <Stack mt={5} flexDirection="row" justifyContent="flex-end" gap={1}>
-              <LoadingButton
-                loading={isSaving}
-                type="submit"
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  formikRef.current?.submitForm();
-                }}>
-                Save and Exit
-              </LoadingButton>
-              <Button disabled={isSaving} variant="outlined" color="primary" onClick={handleCancel}>
-                Cancel
-              </Button>
-            </Stack>
-          </Box>
-        </Container>
-      </Box>
+      <Container maxWidth="xl" sx={{ py: 3 }}>
+        <Paper sx={{ p: 5 }}>
+          <EditSurveyForm initialSurveyData={surveyData} handleSubmit={handleSubmit} formikRef={formikRef} />
+          <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
+            <LoadingButton
+              loading={isSaving}
+              type="submit"
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                formikRef.current?.submitForm();
+              }}>
+              Save and Exit
+            </LoadingButton>
+            <Button disabled={isSaving} variant="outlined" color="primary" onClick={handleCancel}>
+              Cancel
+            </Button>
+          </Stack>
+        </Paper>
+      </Container>
     </>
   );
 };

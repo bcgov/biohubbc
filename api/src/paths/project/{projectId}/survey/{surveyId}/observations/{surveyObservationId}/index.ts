@@ -75,8 +75,10 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: [
               'survey_observation_id',
+              'survey_id',
               'latitude',
               'longitude',
               'count',
@@ -84,6 +86,9 @@ GET.apiDoc = {
               'itis_scientific_name',
               'observation_date',
               'observation_time',
+              'survey_sample_site_id',
+              'survey_sample_method_id',
+              'survey_sample_period_id',
               'create_user',
               'create_date',
               'update_user',
@@ -96,18 +101,6 @@ GET.apiDoc = {
               },
               survey_id: {
                 type: 'integer'
-              },
-              survey_sample_site_id: {
-                type: 'integer',
-                nullable: true
-              },
-              survey_sample_method_id: {
-                type: 'integer',
-                nullable: true
-              },
-              survey_sample_period_id: {
-                type: 'integer',
-                nullable: true
               },
               latitude: {
                 type: 'number'
@@ -122,13 +115,26 @@ GET.apiDoc = {
                 type: 'integer'
               },
               itis_scientific_name: {
-                type: 'string'
+                type: 'string',
+                nullable: true
               },
               observation_date: {
                 type: 'string'
               },
               observation_time: {
                 type: 'string'
+              },
+              survey_sample_site_id: {
+                type: 'integer',
+                nullable: true
+              },
+              survey_sample_method_id: {
+                type: 'integer',
+                nullable: true
+              },
+              survey_sample_period_id: {
+                type: 'integer',
+                nullable: true
               },
               create_date: {
                 oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
@@ -152,8 +158,7 @@ GET.apiDoc = {
                 type: 'integer',
                 minimum: 0
               }
-            },
-            additionalProperties: false
+            }
           }
         }
       }

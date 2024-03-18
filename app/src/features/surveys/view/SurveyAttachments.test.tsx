@@ -26,7 +26,6 @@ const mockBiohubApi = useBiohubApi as jest.Mock;
 const mockUseApi = {
   survey: {
     getSurveyForView: jest.fn(),
-    getSurveySummarySubmission: jest.fn(),
     getSurveyAttachments: jest.fn(),
     deleteSurveyAttachment: jest.fn()
   },

@@ -64,6 +64,7 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: ['surveys', 'pagination'],
             properties: {
               pagination: { ...paginationResponseSchema },
@@ -71,7 +72,8 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
-                  required: ['survey_id', 'name', 'start_date', 'end_date', 'focal_species'],
+                  additionalProperties: false,
+                  required: ['survey_id', 'name', 'start_date', 'end_date', 'progress_id', 'focal_species'],
                   properties: {
                     survey_id: {
                       type: 'integer',
@@ -92,10 +94,19 @@ GET.apiDoc = {
                       description: 'ISO 8601 date string',
                       nullable: true
                     },
+                    progress_id: {
+                      type: 'integer'
+                    },
                     focal_species: {
                       type: 'array',
                       items: {
                         type: 'integer'
+                      }
+                    },
+                    focal_species_names: {
+                      type: 'array',
+                      items: {
+                        type: 'string'
                       }
                     }
                   }

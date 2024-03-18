@@ -92,6 +92,8 @@ const phases = {
     sso: config.sso.dev,
     featureFlags: 'API_FF_SUBMIT_BIOHUB',
     logLevel: 'info',
+    apiResponseValidationEnabled: true,
+    databaseResponseValidationEnabled: true,
     nodeOptions: '--max_old_space_size=2250', // 75% of memoryLimit (bytes)
     cpuRequest: '50m',
     cpuLimit: '600m',
@@ -124,8 +126,10 @@ const phases = {
     s3KeyPrefix: 'sims',
     tz: config.timezone.api,
     sso: config.sso.test,
-    featureFlags: 'API_FF_SUBMIT_BIOHUB',
     logLevel: 'info',
+    apiResponseValidationEnabled: true,
+    databaseResponseValidationEnabled: true,
+    featureFlags: 'API_FF_SUBMIT_BIOHUB',
     nodeOptions: '--max_old_space_size=2250', // 75% of memoryLimit (bytes)
     cpuRequest: '50m',
     cpuLimit: '1000m',
@@ -160,6 +164,8 @@ const phases = {
     sso: config.sso.prod,
     featureFlags: 'API_FF_SUBMIT_BIOHUB',
     logLevel: 'warn',
+    apiResponseValidationEnabled: false,
+    databaseResponseValidationEnabled: false,
     nodeOptions: '--max_old_space_size=2250', // 75% of memoryLimit (bytes)
     cpuRequest: '50m',
     cpuLimit: '1000m',

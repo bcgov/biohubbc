@@ -36,6 +36,7 @@ GET.apiDoc = {
             type: 'array',
             items: {
               type: 'object',
+              additionalProperties: false,
               properties: {
                 id: { type: 'number' },
                 code: { type: 'string' },

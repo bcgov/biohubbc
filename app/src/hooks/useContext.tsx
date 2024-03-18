@@ -1,3 +1,4 @@
+import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { ConfigContext, IConfig } from 'contexts/configContext';
 import { DialogContext, IDialogContext } from 'contexts/dialogContext';
 import { IObservationsContext, ObservationsContext } from 'contexts/observationsContext';
@@ -18,6 +19,23 @@ export const useConfigContext = (): IConfig => {
   if (!context) {
     throw Error(
       'ConfigContext is undefined, please verify you are calling useConfigContext() as child of an <ConfigContextProvider> component.'
+    );
+  }
+
+  return context;
+};
+
+/**
+ * Returns an instance of `ICodesContext` from `CodesContext`.
+ *
+ * @return {*}  {ICodesContext}
+ */
+export const useCodesContext = (): ICodesContext => {
+  const context = useContext(CodesContext);
+
+  if (!context) {
+    throw Error(
+      'CodesContext is undefined, please verify you are calling useCodesContext() as child of an <CodesContextProvider> component.'
     );
   }
 

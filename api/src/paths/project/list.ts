@@ -66,8 +66,7 @@ GET.apiDoc = {
               type: 'string',
               nullable: true
             },
-            // TODO rename this to imply ITIS TSN filtering
-            species: {
+            itis_tsns: {
               type: 'array',
               items: {
                 type: 'integer'
@@ -85,12 +84,14 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: ['projects', 'pagination'],
             properties: {
               projects: {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   required: [
                     'project_id',
                     'name',
@@ -127,6 +128,10 @@ GET.apiDoc = {
                       items: {
                         type: 'string'
                       }
+                    },
+                    completion_status: {
+                      type: 'string',
+                      enum: ['Completed', 'Active']
                     }
                   }
                 }
@@ -174,7 +179,17 @@ export function getProjectList(): RequestHandler {
         req['system_user']['role_names']
       );
       const systemUserId = connection.systemUserId();
-      const filterFields: IProjectAdvancedFilters = req.query || {};
+      const filterFields: IProjectAdvancedFilters = {
+        keyword: req.query.keyword && String(req.query.keyword),
+        project_name: req.query.project_name && String(req.query.project_name),
+        project_programs: req.query.project_programs
+          ? String(req.query.project_programs).split(',').map(Number)
+          : undefined,
+        itis_tsns: req.query.itis_tsns ? String(req.query.itis_tsns).split(',').map(Number) : undefined,
+        start_date: req.query.start_date && String(req.query.start_date),
+        end_date: req.query.end_date && String(req.query.end_date)
+      };
+
       const paginationOptions = makePaginationOptionsFromRequest(req);
 
       const projectService = new ProjectService(connection);
@@ -184,7 +199,8 @@ export function getProjectList(): RequestHandler {
         filterFields,
         ensureCompletePaginationOptions(paginationOptions)
       );
-      const projectsTotalCount = await projectService.getProjectCount(isUserAdmin, systemUserId);
+
+      const projectsTotalCount = await projectService.getProjectCount(filterFields, isUserAdmin, systemUserId);
 
       const response = {
         projects,

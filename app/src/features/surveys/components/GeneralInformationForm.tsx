@@ -4,14 +4,13 @@ import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteField';
 import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
+import SelectWithSubtextField, { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
 import AncillarySpeciesComponent from 'components/species/AncillarySpeciesComponent';
 import FocalSpeciesComponent from 'components/species/FocalSpeciesComponent';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { useFormikContext } from 'formik';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import React from 'react';
-import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import SurveyPermitForm, { SurveyPermitFormYupSchema } from '../SurveyPermitForm';
 
@@ -38,6 +37,7 @@ export interface IGeneralInformationForm {
     survey_name: string;
     start_date: string;
     end_date: string;
+    progress_id: number | null;
     survey_types: number[];
   };
   species: {
@@ -58,6 +58,7 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
     survey_name: '',
     start_date: '',
     end_date: '',
+    progress_id: null,
     survey_types: []
   },
   species: {
@@ -69,19 +70,23 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
   }
 };
 
-export const GeneralInformationYupSchema = (customYupRules?: any) => {
+export const GeneralInformationYupSchema = () => {
   return yup
     .object()
     .shape({
       survey_details: yup.object().shape({
         survey_name: yup.string().required('Survey Name is Required'),
-        start_date: customYupRules?.start_date || yup.string().isValidDateString().required('Start Date is Required'),
-        end_date:
-          customYupRules?.end_date || yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date'),
+        start_date: yup.string().isValidDateString().required('Start Date is Required'),
+        end_date: yup.string().nullable().isValidDateString().isEndDateSameOrAfterStartDate('start_date'),
         survey_types: yup
           .array(yup.number())
           .min(1, 'One or more Types are required')
-          .required('One or more Types are required')
+          .required('One or more Types are required'),
+        progress_id: yup
+          .number()
+          .min(1, 'Survey Progress is Required')
+          .required('Survey Progress is Required')
+          .nullable()
       }),
       species: yup.object().shape({
         focal_species: yup.array().min(1, 'You must specify a focal species').required('Required'),
@@ -95,6 +100,7 @@ export interface IGeneralInformationFormProps {
   type: IMultiAutocompleteFieldOption[];
   projectStartDate: string;
   projectEndDate: string;
+  progress: ISelectWithSubtextFieldOption[];
 }
 
 /**
@@ -127,23 +133,21 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
           />
         </Grid>
         <Grid item xs={12}>
+          <SelectWithSubtextField
+            id={'survey_details.progress_id'}
+            name={'survey_details.progress_id'}
+            label={'Progress'}
+            options={props.progress}
+            required={true}
+          />
+        </Grid>
+        <Grid item xs={12}>
           <StartEndDateFields
             formikProps={formikProps}
             startName="survey_details.start_date"
             endName="survey_details.end_date"
             startRequired={true}
             endRequired={false}
-            startDateHelperText={`Start Date cannot precede ${getFormattedDate(
-              DATE_FORMAT.ShortMediumDateFormat,
-              props.projectStartDate
-            )}`}
-            endDateHelperText={
-              props.projectEndDate &&
-              `End Date cannot come after the Project End Date ${getFormattedDate(
-                DATE_FORMAT.ShortMediumDateFormat,
-                props.projectEndDate
-              )}`
-            }
           />
         </Grid>
       </Grid>
