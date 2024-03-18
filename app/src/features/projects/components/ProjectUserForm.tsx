@@ -165,7 +165,7 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
             data-testid={'autocomplete-user-role-search'}
             filterSelectedOptions
             noOptionsText="No records found"
-            options={alphabetizeObjects(searchUserDataLoader.data, 'display_name')}
+            options={searchText.length > 2 ? alphabetizeObjects(searchUserDataLoader.data, 'display_name') : []}
             filterOptions={(options, state) => {
               const searchFilter = createFilterOptions<ISystemUser>({ ignoreCase: true });
               const unselectedOptions = options.filter(
