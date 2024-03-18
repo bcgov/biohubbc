@@ -172,6 +172,9 @@ export const UnAuthGuard = (props: PropsWithChildren<IGuardProps>) => {
  * Feature flags are used to disable child components. to enabled a child component, simply remove all associated
  * feature flags from the config (via the `REACT_APP_FEATURE_FLAGS` env var).
  *
+ * Note: Recommend conforming to a consistent pattern when defining feature flags, to make feature flags easy to
+ * identify (ie: `[APP/API]_FF_<string>`)
+ *
  * @param {*} props
  * @return {*}
  */

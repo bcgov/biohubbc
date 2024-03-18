@@ -75,12 +75,24 @@ const request = require('request');
         clientId: process.env.REACT_APP_KEYCLOAK_CLIENT_ID
       },
       SITEMINDER_LOGOUT_URL: process.env.REACT_APP_SITEMINDER_LOGOUT_URL,
+      /**
+       * File upload settings
+       */
       MAX_UPLOAD_NUM_FILES: Number(process.env.REACT_APP_MAX_UPLOAD_NUM_FILES),
       MAX_UPLOAD_FILE_SIZE: Number(process.env.REACT_APP_MAX_UPLOAD_FILE_SIZE),
       S3_PUBLIC_HOST_URL: `https://${OBJECT_STORE_URL}/${OBJECT_STORE_BUCKET_NAME}`,
+      /**
+       * BioHub settings
+       */
       BACKBONE_PUBLIC_API_HOST: process.env.REACT_APP_BACKBONE_PUBLIC_API_HOST,
       BIOHUB_TAXON_PATH: process.env.REACT_APP_BIOHUB_TAXON_PATH,
       BIOHUB_TAXON_TSN_PATH: process.env.REACT_APP_BIOHUB_TAXON_TSN_PATH,
+      /**
+       * Feature flags
+       *
+       * Note: Recommend conforming to a consistent pattern when defining feature flags, to make feature flags easy to
+       * identify (ie: `[APP/API]_FF_<string>`)
+       */
       FEATURE_FLAGS: parseFeatureFlagsString(process.env.REACT_APP_FEATURE_FLAGS)
     };
 
