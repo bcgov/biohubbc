@@ -156,7 +156,7 @@ const SurveyHeader = () => {
             validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <Stack flexDirection="row" alignItems="center" gap={2}>
-              <FeatureFlagGuard featureFlags={['APP_FF_PUBLISH_BIOHUB']}>
+              <FeatureFlagGuard featureFlags={['APP_FF_SUBMIT_BIOHUB']}>
                 <ProjectRoleGuard
                   validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
