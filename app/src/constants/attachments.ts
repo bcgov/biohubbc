@@ -4,13 +4,6 @@ export enum AttachmentType {
   OTHER = 'Other'
 }
 
-export enum AttachmentStatus {
-  PENDING_REVIEW = 'PENDING_REVIEW',
-  SECURED = 'SECURED',
-  UNSECURED = 'UNSECURED',
-  SUBMITTED = 'SUBMITTED'
-}
-
 export enum PublishStatus {
   NO_DATA = 'NO_DATA',
   UNSUBMITTED = 'UNSUBMITTED',

@@ -29,24 +29,6 @@ const renderContainer = ({
 };
 
 describe('EditDialog', () => {
-  it.skip('matches the snapshot when not open', () => {
-    const { baseElement } = renderContainer({ dialogTitle: 'this is a test', dialogText: 'this is text', open: false });
-
-    expect(baseElement).toMatchSnapshot();
-  });
-
-  it.skip('matches the snapshot when open, with no error message', () => {
-    const { baseElement } = renderContainer({ dialogTitle: 'this is a test', dialogText: 'this is text' });
-
-    expect(baseElement).toMatchSnapshot();
-  });
-
-  it.skip('matches snapshot when open, with error message', () => {
-    const { baseElement } = renderContainer({ dialogTitle: 'this is a test', dialogText: 'This is an error' });
-
-    expect(baseElement).toMatchSnapshot();
-  });
-
   it('calls the onYes prop when `Yes` button is clicked', async () => {
     const { findByText } = renderContainer({ dialogTitle: 'this is a test', dialogText: 'this is text' });
 
