@@ -40,7 +40,7 @@ const phases = {
       TAG: `dev-${pipelineConfigMap.version}-${changeId}`,
       APP_HOST: `${pipelineConfigMap.module.app}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
       API_HOST: `${pipelineConfigMap.module.api}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
-      SSO: pipelineConfigMap.SSO.pr
+      SSO: pipelineConfigMap.sso.pr
     }
   },
   dev: {
@@ -64,7 +64,7 @@ const phases = {
       TAG: `dev-${pipelineConfigMap.version}-deploy`,
       APP_HOST: pipelineConfigMap.app.dev.deploy.APP_HOST,
       API_HOST: pipelineConfigMap.app.dev.deploy.API_HOST,
-      SSO: pipelineConfigMap.SSO.dev
+      SSO: pipelineConfigMap.sso.dev
     }
   },
   test: {
@@ -88,7 +88,7 @@ const phases = {
       TAG: `test-${pipelineConfigMap.version}`,
       APP_HOST: pipelineConfigMap.app.test.deploy.APP_HOST,
       API_HOST: pipelineConfigMap.app.test.deploy.API_HOST,
-      SSO: pipelineConfigMap.SSO.test
+      SSO: pipelineConfigMap.sso.test
     }
   },
   prod: {
@@ -112,7 +112,7 @@ const phases = {
       TAG: `prod-${pipelineConfigMap.version}`,
       APP_HOST: pipelineConfigMap.app.prod.deploy.APP_HOST,
       API_HOST: pipelineConfigMap.app.prod.deploy.API_HOST,
-      SSO: pipelineConfigMap.SSO.prod
+      SSO: pipelineConfigMap.sso.prod
     }
   }
 };

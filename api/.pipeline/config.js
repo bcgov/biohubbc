@@ -42,7 +42,7 @@ const phases = {
       TAG: `dev-${pipelineConfigMap.version}-${changeId}`,
       API_HOST: `${pipelineConfigMap.module.api}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
       APP_HOST: `${pipelineConfigMap.module.app}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
-      SSO: pipelineConfigMap.SSO.pr,
+      SSO: pipelineConfigMap.sso.pr,
       S3_KEY_PREFIX: `${pipelineConfigMap.S3_KEY_PREFIX}/${changeId}`
     }
   },
@@ -69,7 +69,7 @@ const phases = {
       TAG: `dev-${pipelineConfigMap.version}-deploy`,
       API_HOST: pipelineConfigMap.api.dev.deploy.API_HOST,
       APP_HOST: pipelineConfigMap.api.dev.deploy.APP_HOST,
-      SSO: pipelineConfigMap.SSO.dev
+      SSO: pipelineConfigMap.sso.dev
     }
   },
   test: {
@@ -95,7 +95,7 @@ const phases = {
       TAG: `test-${pipelineConfigMap.version}`,
       API_HOST: pipelineConfigMap.api.test.deploy.API_HOST,
       APP_HOST: pipelineConfigMap.api.test.deploy.APP_HOST,
-      SSO: pipelineConfigMap.SSO.test
+      SSO: pipelineConfigMap.sso.test
     }
   },
   prod: {
@@ -122,7 +122,7 @@ const phases = {
       TAG: `prod-${pipelineConfigMap.version}`,
       API_HOST: pipelineConfigMap.api.prod.deploy.API_HOST,
       APP_HOST: pipelineConfigMap.api.prod.deploy.APP_VANITY_URL,
-      SSO: pipelineConfigMap.SSO.prod
+      SSO: pipelineConfigMap.sso.prod
     }
   }
 };
