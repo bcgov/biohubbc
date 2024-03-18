@@ -1,11 +1,6 @@
-import { IMarker, IMarkerLayer } from 'components/map/components/MarkerCluster';
-import { IStaticLayer } from 'components/map/components/StaticLayers';
-import DatasetPopup from 'components/map/DatasetPopup';
-import FeaturePopup, { BoundaryCentroidFeature, BoundaryFeature, OccurrenceFeature } from 'components/map/FeaturePopup';
-import { LAYER_NAME, SPATIAL_COMPONENT_TYPE } from 'constants/spatial';
+import { SPATIAL_COMPONENT_TYPE } from 'constants/spatial';
 import { Feature } from 'geojson';
-import { EmptyObject, ISpatialData, ITaxaData } from 'interfaces/useDwcaApi.interface';
-import { LatLngTuple } from 'leaflet';
+import { EmptyObject, ISpatialData } from 'interfaces/useDwcaApi.interface';
 import { isObject } from 'lodash-es';
 
 export interface IDataResult {
@@ -14,57 +9,27 @@ export interface IDataResult {
   count: number;
 }
 
+export type OccurrenceFeature = Feature & { properties: OccurrenceFeatureProperties };
+
+export type OccurrenceFeatureProperties = {
+  type: SPATIAL_COMPONENT_TYPE.OCCURRENCE;
+};
+
+export type BoundaryFeature = Feature & { properties: BoundaryFeatureProperties };
+
+export type BoundaryFeatureProperties = {
+  type: SPATIAL_COMPONENT_TYPE.BOUNDARY;
+};
+
+export type BoundaryCentroidFeature = Feature & { properties: BoundaryCentroidFeatureProperties };
+
+export type BoundaryCentroidFeatureProperties = {
+  type: SPATIAL_COMPONENT_TYPE.BOUNDARY_CENTROID;
+};
+
 export interface ISpatialDataGroupedBySpecies {
   [species: string]: ISpatialData[];
 }
-
-export const parseSpatialDataByType = (spatialDataRecords: ISpatialData[]) => {
-  const occurrencesMarkerLayer: IMarkerLayer = { layerName: LAYER_NAME.OCCURRENCES, markers: [] };
-  const boundaryStaticLayer: IStaticLayer = { layerName: LAYER_NAME.BOUNDARIES, features: [] };
-
-  for (const spatialRecord of spatialDataRecords) {
-    for (const feature of spatialRecord.spatial_data.features) {
-      if (feature.geometry.type === 'GeometryCollection') {
-        // Not expecting or supporting geometry collections
-        continue;
-      }
-
-      if (isOccurrenceFeature(feature)) {
-        if (!!feature?.geometry.coordinates[0] && !!feature?.geometry.coordinates[1]) {
-          // check if species has been toggled on/ off
-          const marker = occurrenceMarkerSetup(feature.geometry.coordinates as LatLngTuple, spatialRecord.taxa_data);
-          if (marker) {
-            occurrencesMarkerLayer.markers.push(marker);
-          }
-        }
-      }
-
-      if (isBoundaryFeature(feature)) {
-        // check if dataset has been toggled
-        const ids = getSubmissionSpatialComponentIds(spatialRecord);
-
-        boundaryStaticLayer.features.push({
-          geoJSON: feature,
-          key: feature.id || feature.properties.id,
-          popup: <FeaturePopup submissionSpatialComponentIds={ids} />
-        });
-      }
-
-      if (isBoundaryCentroidFeature(feature)) {
-        // check if dataset has been toggled
-        const ids = getSubmissionSpatialComponentIds(spatialRecord);
-
-        boundaryStaticLayer.features.push({
-          geoJSON: feature,
-          key: feature.id || feature.properties.id,
-          popup: <DatasetPopup submissionSpatialComponentIds={ids} />
-        });
-      }
-    }
-  }
-
-  return { markerLayers: [occurrencesMarkerLayer], staticLayers: [boundaryStaticLayer] };
-};
 
 /**
  * Helper function to *consistently* make React keys from an array of submission_spatial_component_ids.
@@ -82,28 +47,6 @@ const makeKeyFromIds = (submissionSpatialComponentIds: number[]): string => {
  */
 const getSubmissionSpatialComponentIds = (spatialRecord: ISpatialData): number[] => {
   return spatialRecord.taxa_data.map((record: any) => record.submission_spatial_component_id);
-};
-
-/**
- * Takes a geographic point and an array of taxonomy data, and produces an IMarker whose
- * FeaturePopup contains submission spatial component ID.
- * @param latLng The geograhic point of the marker
- * @param taxaData The taxonomic data for the point (namely submission_spatial_component_ids)
- * @returns An IMarker
- */
-const occurrenceMarkerSetup = (latLng: LatLngTuple, taxaData: ITaxaData[]): IMarker | null => {
-  const submission_ids: number[] = taxaData.map((item: ITaxaData) => item.submission_spatial_component_id);
-
-  if (submission_ids.length > 0) {
-    return {
-      position: latLng,
-      key: makeKeyFromIds(submission_ids),
-      popup: <FeaturePopup submissionSpatialComponentIds={submission_ids} />,
-      count: submission_ids.length
-    };
-  }
-
-  return null;
 };
 
 /**

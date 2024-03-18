@@ -73,9 +73,11 @@ PUT.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           properties: {
             sampleMethod: {
               type: 'object',
+              additionalProperties: false,
               properties: {
                 method_lookup_id: {
                   type: 'integer'

@@ -11,6 +11,8 @@ import { MediaFile } from '../media/media-file';
 import { safeToLowerCase } from '../string-utils';
 import { replaceCellDates, trimCellWhitespace } from './cell-utils';
 
+const defaultLog = getLogger('src/utils/xlsx-utils/worksheet-utils');
+
 export interface IXLSXCSVValidator {
   columnNames: string[];
   columnTypes: string[];
@@ -326,35 +328,45 @@ export function validateMeasurements(
   tsnMeasurementMap: TsnMeasurementMap
 ): boolean {
   return data.every((item) => {
+    defaultLog.debug({ label: 'validateMeasurements', message: 'validating item', item });
     const measurements = tsnMeasurementMap[item.tsn];
-    if (measurements) {
-      // only validate if the column has data
-      if (item.measurement_value) {
-        // find the correct measurement
-        if (measurements.qualitative.length > 0) {
-          const measurement = measurements.qualitative.find(
-            (measurement) => measurement.measurement_name.toLowerCase() === item.measurement_name.toLowerCase()
-          );
-          if (measurement) {
-            return isQualitativeValueValid(item.measurement_value, measurement);
-          }
-        }
 
-        if (measurements.quantitative.length > 0) {
-          const measurement = measurements.quantitative.find(
-            (measurement) => measurement.measurement_name.toLowerCase() === item.measurement_name.toLowerCase()
-          );
-          if (measurement) {
-            return isQuantitativeValueValid(Number(item.measurement_value), measurement);
-          }
-        }
-        // Has measurements for tsn
-        // Has data but no matches found, entry is invalid
-        return false;
-      } else {
-        return true;
+    if (!measurements) {
+      defaultLog.debug({ label: 'validateMeasurements', message: 'no measurements found for tsn', tsn: item.tsn });
+      return false;
+    }
+
+    if (!item.measurement_value) {
+      // only validate if the column has data
+      return true;
+    }
+
+    // find the correct measurement
+    if (measurements.qualitative.length > 0) {
+      const measurement = measurements.qualitative.find(
+        (measurement) => measurement.measurement_name.toLowerCase() === item.measurement_name.toLowerCase()
+      );
+      if (measurement) {
+        return isQualitativeValueValid(item.measurement_value, measurement);
       }
     }
+
+    if (measurements.quantitative.length > 0) {
+      const measurement = measurements.quantitative.find(
+        (measurement) => measurement.measurement_name.toLowerCase() === item.measurement_name.toLowerCase()
+      );
+      if (measurement) {
+        return isQuantitativeValueValid(Number(item.measurement_value), measurement);
+      }
+    }
+
+    // Has measurements for tsn
+    // Has data but no matches found, entry is invalid
+    defaultLog.debug({
+      label: 'validateMeasurements',
+      message: 'no matching measurement found for tsn',
+      tsn: item.tsn
+    });
     return false;
   });
 }
@@ -398,20 +410,26 @@ export function isQuantitativeValueValid(value: number, measurement: CBQuantitat
     if (min_value <= value && value <= max_value) {
       return true;
     }
-  } else {
-    if (min_value !== null && min_value <= value) {
-      return true;
-    }
-
-    if (max_value !== null && value <= max_value) {
-      return true;
-    }
-
-    if (min_value === null && max_value === null) {
-      return true;
-    }
   }
 
+  if (min_value !== null && min_value <= value) {
+    return true;
+  }
+
+  if (max_value !== null && value <= max_value) {
+    return true;
+  }
+
+  if (min_value === null && max_value === null) {
+    return true;
+  }
+
+  defaultLog.debug({
+    label: 'isQuantitativeValueValid',
+    message: 'quantitative measurement error',
+    value,
+    measurement
+  });
   return false;
 }
 
@@ -433,6 +451,7 @@ export function isQualitativeValueValid(
     (option) => option.option_value === value || option.option_label.toLowerCase() === String(value).toLowerCase()
   );
 
+  defaultLog.debug({ label: 'isQualitativeValueValid', message: 'qualitative measurement error', value, measurement });
   return Boolean(foundOption);
 }
 
@@ -541,6 +560,15 @@ export function findMeasurementFromTsnMeasurements(
   return foundMeasurement;
 }
 
+/**
+ * Type guard to check if a given item is a `CBQualitativeMeasurementTypeDefinition`.
+ *
+ * Qualitative measurements have an `options` property, while quantitative measurements do not.
+ *
+ * @export
+ * @param {(CBQuantitativeMeasurementTypeDefinition | CBQualitativeMeasurementTypeDefinition)} item
+ * @return {*}  {item is CBQualitativeMeasurementTypeDefinition}
+ */
 export function isMeasurementCBQualitativeTypeDefinition(
   item: CBQuantitativeMeasurementTypeDefinition | CBQualitativeMeasurementTypeDefinition
 ): item is CBQualitativeMeasurementTypeDefinition {

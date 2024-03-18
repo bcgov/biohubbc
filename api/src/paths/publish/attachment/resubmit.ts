@@ -37,6 +37,7 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['projectId', 'fileName', 'parentName', 'formValues', 'path'],
           properties: {
             projectId: {

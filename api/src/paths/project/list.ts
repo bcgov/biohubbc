@@ -84,12 +84,14 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: ['projects', 'pagination'],
             properties: {
               projects: {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   required: [
                     'project_id',
                     'name',
@@ -126,6 +128,10 @@ GET.apiDoc = {
                       items: {
                         type: 'string'
                       }
+                    },
+                    completion_status: {
+                      type: 'string',
+                      enum: ['Completed', 'Active']
                     }
                   }
                 }

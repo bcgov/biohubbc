@@ -36,6 +36,7 @@ POST.apiDoc = {
             type: 'array',
             items: {
               type: 'object',
+              additionalProperties: false,
               properties: {
                 id: { type: 'string' },
                 deployment_id: { type: 'string', format: 'uuid' },

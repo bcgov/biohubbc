@@ -88,11 +88,13 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             properties: {
               samplePeriods: {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     survey_sample_period_id: {
                       type: 'integer'
@@ -255,9 +257,11 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           properties: {
             samplePeriod: {
               type: 'object',
+              additionalProperties: false,
               properties: {
                 start_date: {
                   type: 'string'

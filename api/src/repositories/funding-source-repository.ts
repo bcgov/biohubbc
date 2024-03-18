@@ -285,16 +285,16 @@ export class FundingSourceRepository extends BaseRepository {
    */
   async getFundingSourceSupplementaryData(fundingSourceId: number): Promise<FundingSourceSupplementaryData> {
     const sqlStatement = SQL`
-      SELECT
-        COUNT(survey_funding_source.funding_source_id)::int as survey_reference_count,
-        COALESCE(SUM(survey_funding_source.amount)::numeric::int, 0) as survey_reference_amount_total
-      FROM
-        funding_source
-      LEFT JOIN
-        survey_funding_source
-      ON
-        funding_source.funding_source_id = survey_funding_source.funding_source_id
-      WHERE
+        SELECT
+          COUNT(survey_funding_source.funding_source_id)::int as survey_reference_count,
+          COALESCE(SUM(survey_funding_source.amount)::numeric, 0) as survey_reference_amount_total
+        FROM
+          funding_source
+        LEFT JOIN
+          survey_funding_source
+        ON
+          funding_source.funding_source_id = survey_funding_source.funding_source_id
+        WHERE
         funding_source.funding_source_id = ${fundingSourceId};
     `;
 

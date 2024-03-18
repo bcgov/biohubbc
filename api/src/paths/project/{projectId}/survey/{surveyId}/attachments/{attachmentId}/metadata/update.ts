@@ -4,6 +4,7 @@ import { ATTACHMENT_TYPE } from '../../../../../../../../constants/attachments';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../database/db';
 import { PutReportAttachmentMetadata } from '../../../../../../../../models/project-survey-attachments';
+import { surveyReportAttachmentAuthorSchema } from '../../../../../../../../openapi/schemas/attachment';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../../../../services/attachment-service';
 import { getLogger } from '../../../../../../../../utils/logger';
@@ -71,6 +72,7 @@ PUT.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           description: 'Attachment metadata for attachments of type: Report.',
           required: ['attachment_type', 'attachment_meta', 'revision_count'],
           properties: {
@@ -80,6 +82,7 @@ PUT.apiDoc = {
             },
             attachment_meta: {
               type: 'object',
+              additionalProperties: false,
               required: ['title', 'year_published', 'authors', 'description'],
               properties: {
                 title: {
@@ -90,17 +93,7 @@ PUT.apiDoc = {
                 },
                 authors: {
                   type: 'array',
-                  items: {
-                    type: 'object',
-                    properties: {
-                      first_name: {
-                        type: 'string'
-                      },
-                      last_name: {
-                        type: 'string'
-                      }
-                    }
-                  }
+                  items: surveyReportAttachmentAuthorSchema
                 },
                 description: {
                   type: 'string'
