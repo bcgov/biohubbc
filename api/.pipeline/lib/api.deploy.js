@@ -29,7 +29,7 @@ const apiDeploy = async (settings) => {
         VERSION: phases[env][phase].TAG,
         API_HOST: phases[env][phase].API_HOST,
         APP_HOST: phases[env][phase].APP_HOST,
-        CHANGE_ID: phases[env].build.CHANGE_ID || phases[env][phase].CHANGE_ID,
+        CHANGE_ID: phases[env]['build'].CHANGE_ID,
         // Node
         NODE_ENV: phases[env][phase].NODE_ENV,
         NODE_OPTIONS: phases[env][phase].NODE_OPTIONS,
@@ -85,7 +85,7 @@ const apiDeploy = async (settings) => {
     phases[env][phase].CHANGE_ID,
     phases[env][phase].INSTANCE
   );
-  oc.importImageStreams(objects, phases[env][phase].TAG, phases[env].build.NAMESPACE, phases[env].build.TAG);
+  oc.importImageStreams(objects, phases[env][phase].TAG, phases[env]['build'].NAMESPACE, phases[env]['build'].TAG);
 
   await oc.applyAndDeploy(objects, phases[env][phase].INSTANCE);
 };

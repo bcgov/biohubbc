@@ -22,7 +22,7 @@ const appDeploy = async (settings) => {
         SUFFIX: phases[env][phase].SUFFIX,
         VERSION: phases[env][phase].TAG,
         APP_HOST: phases[env][phase].APP_HOST,
-        CHANGE_ID: phases[env].build.CHANGE_ID || phases[env][phase].CHANGE_ID,
+        CHANGE_ID: phases[env]['build'].CHANGE_ID,
         REACT_APP_API_HOST: phases[env][phase].API_HOST,
         REACT_APP_SITEMINDER_LOGOUT_URL: phases[env][phase].SITEMINDER_LOGOUT_URL,
         // File Upload Settings
@@ -58,7 +58,7 @@ const appDeploy = async (settings) => {
     phases[env][phase].CHANGE_ID,
     phases[env][phase].INSTANCE
   );
-  oc.importImageStreams(objects, phases[env][phase].TAG, phases[env].build.NAMESPACE, phases[env].build.TAG);
+  oc.importImageStreams(objects, phases[env][phase].TAG, phases[env]['build'].NAMESPACE, phases[env]['build'].TAG);
 
   await oc.applyAndDeploy(objects, phases[env][phase].INSTANCE);
 };

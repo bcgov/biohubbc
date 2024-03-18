@@ -31,10 +31,10 @@ const dbDeploy = async (settings) => {
         NAME: NAME,
         DATABASE_SERVICE_NAME: `${NAME}-postgresql${phases[env][phase].SUFFIX}`,
         IMAGE_STREAM_NAME: NAME,
-        IMAGE_STREAM_VERSION: phases[env].build.TAG,
+        IMAGE_STREAM_VERSION: phases[env]['build'].TAG,
         POSTGRESQL_DATABASE: 'biohubbc',
         TZ: phases[env][phase].TZ,
-        IMAGE_STREAM_NAMESPACE: phases[env].build.NAMESPACE,
+        IMAGE_STREAM_NAMESPACE: phases[env]['build'].NAMESPACE,
         VOLUME_CAPACITY: phases[env][phase].VOLUME_CAPACITY,
         // Openshift Resources
         CPU_REQUEST: phases[env][phase].CPU_REQUEST,
@@ -47,7 +47,7 @@ const dbDeploy = async (settings) => {
   );
 
   oc.applyRecommendedLabels(objects, NAME, env, CHANGE_ID, INSTANCE);
-  oc.importImageStreams(objects, phases[env][phase].TAG, phases[env].build.NAMESPACE, phases[env].build.TAG);
+  oc.importImageStreams(objects, phases[env][phase].TAG, phases[env]['build'].NAMESPACE, phases[env]['build'].TAG);
 
   await oc.applyAndDeploy(objects, INSTANCE);
 };

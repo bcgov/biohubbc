@@ -46,7 +46,7 @@ const dbSetupDeploy = async (settings) => {
   );
 
   oc.applyRecommendedLabels(imageStreamObjects, isName, env, CHANGE_ID, INSTANCE);
-  oc.importImageStreams(imageStreamObjects, isVersion, phases[env].build.NAMESPACE, phases[env].build.TAG);
+  oc.importImageStreams(imageStreamObjects, isVersion, phases[env]['build'].NAMESPACE, phases[env]['build'].TAG);
 
   // Get database setup image stream
   const fetchedImageStreams = oc.get(`istag/${imageStreamName}`) || [];
