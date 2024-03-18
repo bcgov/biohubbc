@@ -63,6 +63,7 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['surveySampleSiteIds'],
           properties: {
             surveySampleSiteIds: {

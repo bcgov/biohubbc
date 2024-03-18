@@ -53,6 +53,7 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           properties: {
             surveyObservationIds: {
               type: 'array',
@@ -80,21 +81,21 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: ['supplementaryObservationData'],
             properties: {
               supplementaryObservationData: {
                 type: 'object',
+                additionalProperties: false,
                 required: ['observationCount'],
                 properties: {
                   observationCount: {
                     type: 'integer',
                     minimum: 0
                   }
-                },
-                additionalProperties: false
+                }
               }
-            },
-            additionalProperties: false
+            }
           }
         }
       }

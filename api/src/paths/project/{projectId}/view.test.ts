@@ -32,10 +32,8 @@ describe('project/{projectId}/view', () => {
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
       const viewProjectResult = { project: { project_id: 1 } } as IGetProject;
-      const supplementaryProjectData = { project_metadata_publish: null };
 
       sinon.stub(ProjectService.prototype, 'getProjectById').resolves(viewProjectResult);
-      sinon.stub(ProjectService.prototype, 'getProjectSupplementaryDataById').resolves(supplementaryProjectData);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -49,8 +47,7 @@ describe('project/{projectId}/view', () => {
 
       expect(mockRes.statusValue).to.equal(200);
       expect(mockRes.jsonValue).to.eql({
-        projectData: viewProjectResult,
-        projectSupplementaryData: supplementaryProjectData
+        projectData: viewProjectResult
       });
     });
 
