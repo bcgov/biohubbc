@@ -510,3 +510,20 @@ export const setMessageSnackbar = (message: string, context: IDialogContext) => 
  * @returns T
  */
 export const firstOrNull = <T,>(arr: T[]): T | null => (arr.length > 0 ? arr[0] : null);
+
+/**
+ * Generates a random hex color from the given RNG seed.
+ *
+ * @param seed
+ * @returns
+ */
+export const getRandomHexColor = (seed: number, min = 70, max = 150): string => {
+  // Generate a random color component and convert it to a two-digit hex value
+  const randomChannel = () => {
+    const x = Math.sin(seed) * 10000;
+    return Math.floor((x - Math.floor(x)) * (max - min + 1)) + min.toString(16).padStart(2, '0');
+  };
+
+  // Concatenate three random color components to form a hex color
+  return `#${randomChannel()}${randomChannel()}${randomChannel()}`;
+};
