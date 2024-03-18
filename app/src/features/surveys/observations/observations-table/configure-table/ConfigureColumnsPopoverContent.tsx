@@ -56,14 +56,14 @@ export const ConfigureColumnsPopoverContent = (props: IConfigureColumnsPopoverCo
         <Typography component="div" variant="body2" fontWeight={700} textTransform={'uppercase'}>
           Configure Observations
         </Typography>
-        <ExportHeadersButton
-          // TODO
-        />
-        <MeasurementsButton
-          disabled={disabledAddMeasurements}
-          selectedMeasurements={measurementColumns.map((item) => item.measurement)}
-          onAddMeasurements={onAddMeasurements}
-        />
+        <Stack direction='row' alignItems='center' gap={2}>
+          <ExportHeadersButton />
+          <MeasurementsButton
+            disabled={disabledAddMeasurements}
+            selectedMeasurements={measurementColumns.map((item) => item.measurement)}
+            onAddMeasurements={onAddMeasurements}
+          />
+        </Stack>
       </Stack>
 
       <Divider flexItem />
