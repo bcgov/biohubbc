@@ -19,7 +19,7 @@ const apiDeploy = async (settings) => {
 
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../templates'));
 
-  const DB_SERVICE_NAME = `${phases[env][phase].NAME}-postgresql${phases[env][phase].SUFFIX}`;
+  const DB_SERVICE_NAME = `${phases[env][phase].DB_NAME}-postgresql${phases[env][phase].SUFFIX}`;
 
   let objects = [];
 
