@@ -1,8 +1,8 @@
 import { ViewProjectI18N } from 'constants/i18n';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useDialogContext } from 'hooks/useContext';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
+import useDataLoaderError from 'hooks/useDataLoaderError';
 import { IGetProjectAttachmentsResponse, IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyListResponse } from 'interfaces/useSurveyApi.interface';
 import { createContext, PropsWithChildren, useEffect, useMemo } from 'react';
@@ -62,36 +62,15 @@ export const ProjectContextProvider = (props: PropsWithChildren<Record<never, an
 
   const biohubApi = useBiohubApi();
 
-  // Dialog context used to display project loading error messages.
-  const dialogContext = useDialogContext();
-  const defaultErrorDialogProps = {
-    dialogTitle: ViewProjectI18N.viewProjectErrorDialogTitle,
-    dialogText: ViewProjectI18N.viewProjectErrorDialogText,
-    open: false,
-    onClose: () => {
-      dialogContext.setErrorDialog({ open: false });
-    },
-    onOk: () => {
-      dialogContext.setErrorDialog({ open: false });
-    }
-  };
+  const projectDataLoader = useDataLoader(biohubApi.project.getProjectForView);
 
-  const showProjectLoadFailureDialog = (error: any) => {
-    dialogContext.setErrorDialog({
-      ...defaultErrorDialogProps,
-      open: true,
-      dialogErrorDetails: (error as APIError).errors
-    });
-  };
-
-  const projectDataLoader = useDataLoader(async (projectId: number) => {
-    try {
-      const response = await biohubApi.project.getProjectForView(projectId);
-      return response;
-    } catch (error) {
-      showProjectLoadFailureDialog(error);
-      return null as unknown as IGetProjectForViewResponse;
-    }
+  useDataLoaderError(projectDataLoader, (dataLoader) => {
+    return {
+      dialogTitle: ViewProjectI18N.viewProjectErrorDialogTitle,
+      dialogText: ViewProjectI18N.viewProjectErrorDialogText,
+      dialogError: (dataLoader.error as APIError).message,
+      dialogErrorDetails: (dataLoader.error as APIError).errors
+    };
   });
 
   const surveysListDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions) =>
