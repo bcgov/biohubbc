@@ -460,7 +460,7 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch method response metrics
    *
-   * @return {*}
+   * @return {ICodeWithDescription}
    * @memberof CodeRepository
    */
   async getMethodResponseMetrics() {

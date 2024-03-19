@@ -156,7 +156,7 @@ PUT.apiDoc = {
                         }
                       },
                       method_response_metric_id: {
-                        type: 'number',
+                        type: 'integer',
                         minimum: 1
                       }
                     }
