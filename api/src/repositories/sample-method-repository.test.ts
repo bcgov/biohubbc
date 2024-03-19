@@ -53,6 +53,7 @@ describe('SampleMethodRepository', () => {
       const sampleMethod: UpdateSampleMethodRecord = {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
+        method_response_metric_id: 1,
         method_lookup_id: 3,
         description: 'description',
         periods: [
@@ -89,6 +90,7 @@ describe('SampleMethodRepository', () => {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
         method_lookup_id: 3,
+        method_response_metric_id: 1,
         description: 'description',
         periods: [
           {
@@ -129,6 +131,7 @@ describe('SampleMethodRepository', () => {
       const sampleMethod: InsertSampleMethodRecord = {
         survey_sample_site_id: 2,
         method_lookup_id: 3,
+        method_response_metric_id: 1,
         description: 'description',
         periods: [
           {
@@ -160,6 +163,7 @@ describe('SampleMethodRepository', () => {
 
       const sampleMethod: InsertSampleMethodRecord = {
         survey_sample_site_id: 2,
+        method_response_metric_id: 1,
         method_lookup_id: 3,
         description: 'description',
         periods: [

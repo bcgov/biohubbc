@@ -37,6 +37,7 @@ describe('SampleMethodService', () => {
           survey_sample_method_id: 1,
           survey_sample_site_id: 2,
           method_lookup_id: 3,
+          method_response_metric_id: 1,
           description: 'description',
           create_date: '2023-05-06',
           create_user: 1,
@@ -79,6 +80,7 @@ describe('SampleMethodService', () => {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
         method_lookup_id: 3,
+        method_response_metric_id: 1,
         description: 'description',
         create_date: '2023-05-06',
         create_user: 1,
@@ -118,6 +120,7 @@ describe('SampleMethodService', () => {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
         method_lookup_id: 3,
+        method_response_metric_id: 1,
         description: 'description',
         create_date: '2023-05-06',
         create_user: 1,
@@ -149,6 +152,7 @@ describe('SampleMethodService', () => {
       const sampleMethod: InsertSampleMethodRecord = {
         survey_sample_site_id: 2,
         method_lookup_id: 3,
+        method_response_metric_id: 1,
         description: 'description',
         periods: [
           {
@@ -201,6 +205,7 @@ describe('SampleMethodService', () => {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
         method_lookup_id: 3,
+        method_response_metric_id: 1,
         description: 'description',
         create_date: '2023-05-06',
         create_user: 1,
@@ -221,6 +226,7 @@ describe('SampleMethodService', () => {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
         method_lookup_id: 3,
+        method_response_metric_id: 1,
         description: 'description',
         periods: [
           {
@@ -263,6 +269,7 @@ describe('SampleMethodService', () => {
         survey_sample_method_id: mockSampleMethodId,
         survey_sample_site_id: 2,
         method_lookup_id: 3,
+        method_response_metric_id: 1,
         description: 'description',
         create_date: '2023-05-06',
         create_user: 1,
