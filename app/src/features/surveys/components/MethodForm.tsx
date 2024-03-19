@@ -131,8 +131,6 @@ const MethodForm = () => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
-  console.log(values);
-
   return (
     <form>
       <Stack gap={3} width={900}>

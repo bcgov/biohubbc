@@ -162,8 +162,6 @@ export class SampleMethodRepository extends BaseRepository {
    * @memberof SampleMethodRepository
    */
   async deleteSampleMethodRecord(surveyId: number, surveySampleMethodId: number): Promise<SampleMethodRecord> {
-    // @TODO join on surveyId
-    surveyId;
     const sqlStatement = SQL`
       DELETE FROM survey_sample_method
       USING survey_sample_site sss

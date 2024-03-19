@@ -200,7 +200,7 @@ describe('SampleMethodService', () => {
 
     it('Updates a sample method successfully', async () => {
       const mockDBConnection = getMockDBConnection();
-      
+
       const mockSampleMethodRecord: SampleMethodRecord = {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
