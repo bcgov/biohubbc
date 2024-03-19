@@ -105,6 +105,8 @@ export class SamplePeriodRepository extends BaseRepository {
         ssp.survey_sample_method_id = ssm.survey_sample_method_id
     AND
         ssp.survey_sample_period_id = ${samplePeriod.survey_sample_period_id}
+    AND
+        sss.survey_id = ${surveyId}
     RETURNING
       ssp.*;
 
@@ -183,6 +185,8 @@ export class SamplePeriodRepository extends BaseRepository {
         ssm.survey_sample_site_id = sss.survey_sample_site_id
       WHERE
         ssp.survey_sample_period_id = ${surveySamplePeriodId};
+      AND
+        sss.survey_id = ${surveyId}
       `;
 
     const response = await this.connection.sql(sqlStatement, SamplePeriodRecord);
@@ -204,15 +208,18 @@ export class SamplePeriodRepository extends BaseRepository {
    * @returns {*} {Promise<SamplePeriodRecord[]>} an array of promises for the deleted periods
    * @memberof SamplePeriodRepository
    */
-  async deleteSamplePeriods(periodsToDelete: number[]): Promise<SamplePeriodRecord[]> {
+  async deleteSamplePeriods(surveyId: number, periodsToDelete: number[]): Promise<SamplePeriodRecord[]> {
     const knex = getKnex();
 
     const sqlStatement = knex
       .queryBuilder()
       .delete()
-      .from('survey_sample_period')
+      .from('survey_sample_period as ssp')
+      .leftJoin('survey_sample_method as ssm', 'ssm.survey_sample_method_id', 'ssp.survey_sample_method_id')
+      .leftJoin('survey_sample_site as sss', 'sss.survey_sample_site_id', 'ssm.survey_sample_site_id')
       .whereIn('survey_sample_period_id', periodsToDelete)
-      .returning('*');
+      .andWhere('survey_id', surveyId)
+      .returning('ssp.*');
 
     const response = await this.connection.knex(sqlStatement, SamplePeriodRecord);
 
