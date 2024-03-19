@@ -174,7 +174,7 @@ GET.apiDoc = {
                               }
                             }
                           },
-                          method_response_metric_id: { type: 'number', minimum: 1 }
+                          method_response_metric_id: { type: 'integer', minimum: 1 }
                         }
                       }
                     },
@@ -423,7 +423,7 @@ POST.apiDoc = {
                     }
                   },
                   method_response_metric_id: {
-                    type: 'number',
+                    type: 'integer',
                     minimum: 1
                   }
                 }
