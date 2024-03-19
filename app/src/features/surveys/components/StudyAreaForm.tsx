@@ -114,8 +114,6 @@ const StudyAreaForm = () => {
       }
     });
 
-    console.log(data);
-
     // set values
     setFieldValue('locations', data);
   };
