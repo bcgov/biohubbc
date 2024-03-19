@@ -58,19 +58,48 @@ const SurveysListPage = () => {
       flex: 1,
       disableColumnMenu: true,
       renderCell: (params) => (
-        <>
-          <Link
-            style={{ overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700 }}
-            data-testid={params.row.name}
-            underline="always"
-            title={params.row.name}
-            component={RouterLink}
-            to={`/admin/projects/${projectContext.projectId}/surveys/${params.row.survey_id}`}
-            children={params.row.name}
-          />
-          <SurveyProgressChip progress_id={params.row.progress_id} />
-        </>
+        <Link
+          style={{ overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700 }}
+          data-testid={params.row.name}
+          underline="always"
+          title={params.row.name}
+          component={RouterLink}
+          to={`/admin/projects/${projectContext.projectId}/surveys/${params.row.survey_id}`}
+          children={params.row.name}
+        />
       )
+    },
+    {
+      field: 'progress',
+      headerName: 'Progress',
+      flex: 0.25,
+      disableColumnMenu: true,
+      renderCell: (params) => (
+        <Box>
+          <SurveyProgressChip progress_id={params.row.progress_id} />
+        </Box>
+      )
+    },
+    {
+      field: 'start_date',
+      headerName: 'Start Date',
+      flex: 0.25,
+      disableColumnMenu: true,
+      renderCell: (params) => <Typography variant="body2">{params.row.start_date}</Typography>
+    },
+    {
+      field: 'end_date',
+      headerName: 'End Date',
+      flex: 0.25,
+      disableColumnMenu: true,
+      renderCell: (params) =>
+        params.row.end_date ? (
+          <Typography variant="body2">{params.row.end_date}</Typography>
+        ) : (
+          <Typography variant="body2" color="textSecondary">
+            None
+          </Typography>
+        )
     }
   ];
 

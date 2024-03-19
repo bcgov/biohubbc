@@ -31,13 +31,13 @@ const SurveyProgressChip = (props: ISurveyProgressChipProps) => {
         opacity: 0.8,
         backgroundColor: color[50],
         borderRadius: '5px',
-        mx: '10px',
         minWidth: 0,
         '& .MuiChip-label': {
-          color: color[800],
+          color: color[900],
           fontWeight: 700,
           fontSize: '0.8rem'
-        }
+        },
+        ...props.sx
       }}
       {...props}
     />
