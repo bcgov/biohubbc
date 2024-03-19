@@ -174,8 +174,8 @@ GET.apiDoc = {
                               }
                             }
                           },
-                        method_response_metric_id: { type: 'number', minimum: 1 }
-                        },
+                          method_response_metric_id: { type: 'number', minimum: 1 }
+                        }
                       }
                     },
                     sample_blocks: {
