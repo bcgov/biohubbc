@@ -147,9 +147,6 @@ const appTheme = createTheme({
       }
     },
     MuiButton: {
-      defaultProps: {
-        // disableElevation: true
-      },
       styleOverrides: {
         root: {
           '&:focus': {
@@ -180,13 +177,6 @@ const appTheme = createTheme({
     MuiButtonBase: {
       defaultProps: {
         disableRipple: true
-      }
-    },
-    MuiChip: {
-      styleOverrides: {
-        root: {
-          minWidth: '6rem;'
-        }
       }
     },
     MuiContainer: {
@@ -243,6 +233,13 @@ const appTheme = createTheme({
         root: {
           background: '#fff',
           '&.Mui-error': {}
+        }
+      }
+    },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          fontFamily: 'inherit'
         }
       }
     },

@@ -4,7 +4,7 @@ import InputLabel from '@mui/material/InputLabel';
 import ListItemText from '@mui/material/ListItemText';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 import React, { useState } from 'react';
@@ -24,52 +24,12 @@ export interface ISelectWithSubtextField {
   required?: boolean;
 }
 
-const updatedSelect = createTheme({
-  components: {
-    MuiMenu: {
-      styleOverrides: {
-        paper: {
-          minWidth: '72ch !important',
-          maxWidth: '72ch !important',
-          maxHeight: 500
-        }
-      }
-    },
-    MuiMenuItem: {
-      styleOverrides: {
-        root: {
-          whiteSpace: 'break-spaces',
-          borderBottom: '1px solid rgba(0, 0, 0, 0.12)'
-        }
-      }
-    },
-    MuiListItemText: {
-      styleOverrides: {
-        primary: {
-          fontSize: '14px',
-          fontWeight: 700
-        },
-        secondary: {
-          marginTop: appTheme.spacing(0.5)
-        }
-      }
-    },
-    MuiInputLabel: {
-      styleOverrides: {
-        root: {
-          paddingRight: '20px'
-        }
-      }
-    }
-  }
-});
-
 const SelectWithSubtextField: React.FC<ISelectWithSubtextField> = (props) => {
   const { values, touched, errors, handleChange } = useFormikContext<ISelectWithSubtextFieldOption>();
   const [menuAnchorEl, setMenuAnchorEl] = useState<(EventTarget & Element) | null>(null);
 
   return (
-    <ThemeProvider theme={updatedSelect}>
+    <ThemeProvider theme={appTheme}>
       <FormControl
         fullWidth
         variant="outlined"
@@ -103,9 +63,17 @@ const SelectWithSubtextField: React.FC<ISelectWithSubtextField> = (props) => {
               vertical: 'top',
               horizontal: 'left'
             }
-          }}>
+          }}
+        >
           {props.options.map((item) => (
-            <MenuItem key={item.value} value={item.value}>
+            <MenuItem key={item.value} value={item.value}
+              sx={{
+                '& .MuiListItemText-primary': {
+                  fontSize: '0.875rem',
+                  fontWeight: 700
+                }
+              }}
+            >
               <ListItemText primary={item.label} secondary={item.subText} />
             </MenuItem>
           ))}
