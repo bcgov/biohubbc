@@ -1,9 +1,9 @@
-import { mdiTable } from "@mdi/js";
-import Icon from "@mdi/react";
-import Button from "@mui/material/Button";
-import dayjs from "dayjs";
-import { useObservationsTableContext } from "hooks/useContext";
-import { makeCsvObjectUrl } from "utils/Utils";
+import { mdiTable } from '@mdi/js';
+import Icon from '@mdi/react';
+import Button from '@mui/material/Button';
+import dayjs from 'dayjs';
+import { useObservationsTableContext } from 'hooks/useContext';
+import { makeCsvObjectUrl } from 'utils/Utils';
 
 // Fields which will not be included in the downloaded CSV template
 const excludedFields = [
@@ -11,7 +11,7 @@ const excludedFields = [
   'survey_sample_site_id',
   'survey_sample_method_id',
   'survey_sample_period_id',
-  'actions',
+  'actions'
 ];
 
 const ExportHeadersButton = () => {
@@ -34,15 +34,13 @@ const ExportHeadersButton = () => {
     anchorElement.href = url;
     anchorElement.download = fileName;
     anchorElement.click();
-  }
+  };
 
   return (
-    <Button
-      startIcon={<Icon path={mdiTable} size={0.75} />}
-      variant='outlined'
-      onClick={handleDownload}
-    >Export Headers</Button>
-  )
-}
+    <Button startIcon={<Icon path={mdiTable} size={0.75} />} variant="outlined" onClick={handleDownload}>
+      Export Headers
+    </Button>
+  );
+};
 
-export default ExportHeadersButton
+export default ExportHeadersButton;

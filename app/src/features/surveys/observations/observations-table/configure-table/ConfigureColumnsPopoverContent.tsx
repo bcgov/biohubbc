@@ -56,7 +56,7 @@ export const ConfigureColumnsPopoverContent = (props: IConfigureColumnsPopoverCo
         <Typography component="div" variant="body2" fontWeight={700} textTransform={'uppercase'}>
           Configure Observations
         </Typography>
-        <Stack direction='row' alignItems='center' gap={2}>
+        <Stack direction="row" alignItems="center" gap={2}>
           <ExportHeadersButton />
           <MeasurementsButton
             disabled={disabledAddMeasurements}
