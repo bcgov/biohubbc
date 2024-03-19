@@ -1,24 +1,24 @@
 import { Knex } from 'knex';
 
 const taxon_lookup = [
-  { wldtaxonomic_units_id: 2012, tsn: 180599, scientificName: "Canis latrans" },
-  { wldtaxonomic_units_id: 2013, tsn: 180596, scientificName: "Canis lupus" },
-  { wldtaxonomic_units_id: 828, tsn: 175693, scientificName: "Galliformes" },
-  { wldtaxonomic_units_id: 2019, tsn: 180551, scientificName: "Gulo gulo" },
-  { wldtaxonomic_units_id: 1594, tsn: 175841, scientificName: "Tympanuchus phasianellus" },
-  { wldtaxonomic_units_id: 1718, tsn: 177929, scientificName: "Strix nebulosa" },
-  { wldtaxonomic_units_id: 2037, tsn: 180543, scientificName: "Ursus arctos" },
-  { wldtaxonomic_units_id: 2062, tsn: 180713, scientificName: "Oreamnos americanus" },
-  { wldtaxonomic_units_id: 2068, tsn: 180698, scientificName: "Odocoileus hemionus" },
-  { wldtaxonomic_units_id: 2065, tsn: 898198, scientificName: "Alces americanus" },
-  { wldtaxonomic_units_id: 2070, tsn: 180701, scientificName: "Rangifer tarandus" },
-  { wldtaxonomic_units_id: 2069, tsn: 180699, scientificName: "Odocoileus virginianus" },
-  { wldtaxonomic_units_id: 23918, tsn: 898933, scientificName: "Bison bison athabascae" },
-  { wldtaxonomic_units_id: 23922, tsn: 898808, scientificName: "Ovis dalli stonei" },
-  { wldtaxonomic_units_id: 23920, tsn: 180711, scientificName: "Ovis canadensis" },
-  { wldtaxonomic_units_id: 35369, tsn: 1086061, scientificName: "Pekania pennanti" },
-  { wldtaxonomic_units_id: 35370, tsn: 180695, scientificName: "Cervus elaphus" },
-  { wldtaxonomic_units_id: 28516, tsn: 180691, scientificName: "Equus caballus" },
+  { wldtaxonomic_units_id: 2012, tsn: 180599, scientificName: 'Canis latrans' },
+  { wldtaxonomic_units_id: 2013, tsn: 180596, scientificName: 'Canis lupus' },
+  { wldtaxonomic_units_id: 828, tsn: 175693, scientificName: 'Galliformes' },
+  { wldtaxonomic_units_id: 2019, tsn: 180551, scientificName: 'Gulo gulo' },
+  { wldtaxonomic_units_id: 1594, tsn: 175841, scientificName: 'Tympanuchus phasianellus' },
+  { wldtaxonomic_units_id: 1718, tsn: 177929, scientificName: 'Strix nebulosa' },
+  { wldtaxonomic_units_id: 2037, tsn: 180543, scientificName: 'Ursus arctos' },
+  { wldtaxonomic_units_id: 2062, tsn: 180713, scientificName: 'Oreamnos americanus' },
+  { wldtaxonomic_units_id: 2068, tsn: 180698, scientificName: 'Odocoileus hemionus' },
+  { wldtaxonomic_units_id: 2065, tsn: 898198, scientificName: 'Alces americanus' },
+  { wldtaxonomic_units_id: 2070, tsn: 180701, scientificName: 'Rangifer tarandus' },
+  { wldtaxonomic_units_id: 2069, tsn: 180699, scientificName: 'Odocoileus virginianus' },
+  { wldtaxonomic_units_id: 23918, tsn: 898933, scientificName: 'Bison bison athabascae' },
+  { wldtaxonomic_units_id: 23922, tsn: 898808, scientificName: 'Ovis dalli stonei' },
+  { wldtaxonomic_units_id: 23920, tsn: 180711, scientificName: 'Ovis canadensis' },
+  { wldtaxonomic_units_id: 35369, tsn: 1086061, scientificName: 'Pekania pennanti' },
+  { wldtaxonomic_units_id: 35370, tsn: 180695, scientificName: 'Cervus elaphus' },
+  { wldtaxonomic_units_id: 28516, tsn: 180691, scientificName: 'Equus caballus' }
 ];
 
 /**
