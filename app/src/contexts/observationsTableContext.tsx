@@ -461,6 +461,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       measurementColumns: string[]
     ): Promise<ObservationRowValidationError[] | null> => {
       const measurementErrors: ObservationRowValidationError[] = [];
+      console.log(row);
       // need to fetch measurements for TSN
       // search through measurements for same name
       // check value
@@ -474,8 +475,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       }
 
       const measurements = await tsnMeasurements(Number(row.itis_tsn));
-      console.log('_____________________________');
-      console.log('TSN MEASUREMENTS', measurements);
+      console.log(
+        `TSN MEASUREMENTS: Qual: ${measurements?.qualitative.length} Quant: ${measurements?.quantitative.length}`
+      );
       if (!measurements) {
         //TODO: create a validation error saying we couldn't find any data for that taxon
         return [
@@ -486,35 +488,39 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         ];
       }
 
-      const subCount: SubcountObservationColumns[] = row['subcounts'];
-      subCount.forEach((item: SubcountObservationColumns) => {
+      const subCounts: SubcountObservationColumns[] = row['subcounts'];
+      subCounts.forEach((subCount: SubcountObservationColumns) => {
         // Validate any qualitative measurements this row has
-        item.qualitative_measurements.forEach((qm) => {
+        subCount.qualitative_measurements.forEach((qm) => {
           const foundMeasurement = measurements.qualitative.find(
             (q) => q.taxon_measurement_id === qm.critterbase_taxon_measurement_id
           );
           if (!foundMeasurement) {
             // TODO: nothing found but we have a qualitative measurement, no bueno
-            return { field: '', message: 'Qualitative Measurement is invalid for the given species.' };
+            measurementErrors.push({
+              field: 'itis_tsn',
+              message: 'Qualitative Measurement is invalid for the given species.'
+            });
           }
 
-          const foundOption = foundMeasurement.options.find(
+          const foundOption = foundMeasurement?.options.find(
             (op) => op.qualitative_option_id === qm.critterbase_measurement_qualitative_option_id
           );
 
           if (!foundOption) {
             // TODO: nothing found but we have a qualitative measurement, no bueno
-            return { field: '', message: 'Invalid option selected for taxon.' };
+            measurementErrors.push({ field: 'itis_tsn', message: 'Invalid option selected for taxon.' });
           }
         });
 
-        item.quantitative_measurements.forEach((qm) => {
+        subCount.quantitative_measurements.forEach((qm) => {
           const foundMeasurement = measurements.quantitative.find(
             (q) => q.taxon_measurement_id === qm.critterbase_taxon_measurement_id
           );
           if (!foundMeasurement) {
             // TODO: nothing found but we have a qualitative measurement, no bueno
-            return { field: '', message: '' };
+            measurementErrors.push({ field: 'itis_tsn', message: 'Invalid option selected for taxon.' });
+            return;
           }
           const min_value = foundMeasurement.min_value;
           const max_value = foundMeasurement.max_value;
@@ -539,7 +545,10 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
           }
 
           // Invalid
-          measurementErrors.push({ field: '', message: '' });
+          measurementErrors.push({
+            field: 'itis_tsn',
+            message: `Value provided is outside of the valid range ${min_value} < ${value} < ${max_value}`
+          });
         });
       });
 
@@ -588,11 +597,11 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     const measurementColumns = tableColumns.filter((tc) => {
       return nonMeasurementColumns.indexOf(String(tc.field)) < 0;
     });
-    console.log(measurementColumns);
+    console.log(measurementColumns.length);
 
     const validation = await rowValues.reduce(
       async (tableModel: Promise<ObservationTableValidationModel>, row: IObservationTableRow) => {
-        const rowErrors: ObservationRowValidationError[] = [];
+        let rowErrors: ObservationRowValidationError[] = [];
 
         // Validate missing columns
         const missingColumns: Set<keyof IObservationTableRow> = new Set(
@@ -635,7 +644,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
         if (nonMeasurementColumns.length > 0) {
           const results = await _validateMeasurements(row, nonMeasurementColumns);
-          console.log(results);
+          if (results) {
+            rowErrors = [...results, ...rowErrors];
+          }
         }
 
         if (rowErrors.length > 0) {
@@ -1117,6 +1128,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    */
   const _getSubcountsToSave = useCallback(
     (row: ObservationRecord) => {
+      console.log(`__ AFTER THE VALIDATION __ GET SUB COUNTS TO SAVE`);
       // Get all populated measurement column values for the row
       const measurementsToSave = _getMeasurementsToSave(row);
 
