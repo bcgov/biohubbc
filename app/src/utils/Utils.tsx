@@ -517,13 +517,11 @@ export const firstOrNull = <T,>(arr: T[]): T | null => (arr.length > 0 ? arr[0] 
  * @param seed
  * @returns
  */
-export const getRandomHexColor = (seed: number, min = 70, max = 150): string => {
-  // Generate a random color component and convert it to a two-digit hex value
-  const randomChannel = () => {
-    const x = Math.sin(seed) * 10000;
-    return Math.floor((x - Math.floor(x)) * (max - min + 1)) + min.toString(16).padStart(2, '0');
+export const getRandomHexColor = (seed: number, min = 100, max = 170): string => {
+  const randomChannel = (): string => {
+    const x = Math.sin(seed++) * 10000;
+    return (Math.floor((x - Math.floor(x)) * (max - min + 1)) + min).toString(16).padStart(2, '0');
   };
 
-  // Concatenate three random color components to form a hex color
   return `#${randomChannel()}${randomChannel()}${randomChannel()}`;
 };
