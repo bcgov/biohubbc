@@ -16,8 +16,7 @@ interface ISamplingPeriodsTimelineProps {
 const useStyles = makeStyles((theme: Theme) => ({
   typographyDate: {
     fontSize: '0.85rem',
-    color: theme.palette.text.secondary,
-    fontWeight: 500
+    color: theme.palette.text.secondary
   },
   typographyTime: {
     fontSize: '0.85rem',

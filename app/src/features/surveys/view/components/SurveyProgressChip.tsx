@@ -27,6 +27,7 @@ const SurveyProgressChip = (props: ISurveyProgressChipProps) => {
       title="Survey status"
       size="small"
       label={codeName}
+      {...props}
       sx={{
         opacity: 0.8,
         backgroundColor: color[50],
@@ -37,9 +38,8 @@ const SurveyProgressChip = (props: ISurveyProgressChipProps) => {
           fontWeight: 700,
           fontSize: '0.8rem'
         },
-        ...props.sx
+        ...props?.sx
       }}
-      {...props}
     />
   );
 };
