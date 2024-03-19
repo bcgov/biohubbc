@@ -317,7 +317,7 @@ describe('SampleLocationService', () => {
       expect(insertSampleMethodStub).to.be.calledOnceWith({
         survey_sample_site_id: survey_sample_site_id,
         method_lookup_id: 4,
-        
+
         method_response_metric_id: 1,
         description: 'Cool method',
         periods: []
