@@ -70,6 +70,8 @@ export class SampleMethodRepository extends BaseRepository {
             survey_sample_site
           WHERE
             survey_sample_site_id = ${surveySampleSiteId}
+          AND
+            survey_id = ${surveyId}
           LIMIT 1
         )
       ;
@@ -86,7 +88,7 @@ export class SampleMethodRepository extends BaseRepository {
    * @return {*}  {Promise<SampleMethodRecord>}
    * @memberof SampleMethodRepository
    */
-  async updateSampleMethod(sampleMethod: UpdateSampleMethodRecord): Promise<SampleMethodRecord> {
+  async updateSampleMethod(surveyId: number, sampleMethod: UpdateSampleMethodRecord): Promise<SampleMethodRecord> {
     const sql = SQL`
       UPDATE survey_sample_method
       SET
@@ -94,8 +96,12 @@ export class SampleMethodRepository extends BaseRepository {
         method_lookup_id = ${sampleMethod.method_lookup_id},
         description=${sampleMethod.description},
         method_response_metric_id=${sampleMethod.method_response_metric_id}
+      INNER JOIN 
+        survey_sample_site ssm ON ssm.survey_sample_site_id = sss.survey_sample_site_id
       WHERE
         survey_sample_method_id = ${sampleMethod.survey_sample_method_id}
+      AND
+        survey_id = ${surveyId}
       RETURNING
         *;`;
 
@@ -160,11 +166,15 @@ export class SampleMethodRepository extends BaseRepository {
     surveyId;
     const sqlStatement = SQL`
       DELETE FROM
-        survey_sample_method
+        survey_sample_method sss
+      INNER JOIN 
+        survey_sample_site ssm ON ssm.survey_sample_site_id = sss.survey_sample_site_id
       WHERE
         survey_sample_method_id = ${surveySampleMethodId}
+      AND
+        survey_id = ${surveyId}
       RETURNING
-        *;
+        sss.*;
     `;
 
     const response = await this.connection.sql(sqlStatement, SampleMethodRecord);

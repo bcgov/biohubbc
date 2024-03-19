@@ -76,7 +76,7 @@ describe('SampleMethodRepository', () => {
         ]
       };
       const repo = new SampleMethodRepository(dbConnectionObj);
-      const response = await repo.updateSampleMethod(sampleMethod);
+      const response = await repo.updateSampleMethod(1, sampleMethod);
 
       expect(dbConnectionObj.sql).to.have.been.calledOnce;
       expect(response).to.eql(mockRow);
@@ -114,7 +114,7 @@ describe('SampleMethodRepository', () => {
       const repo = new SampleMethodRepository(dbConnectionObj);
 
       try {
-        await repo.updateSampleMethod(sampleMethod);
+        await repo.updateSampleMethod(1, sampleMethod);
       } catch (error) {
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to update sample method');
         expect(dbConnectionObj.sql).to.have.been.calledOnce;
