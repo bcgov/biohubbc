@@ -53,6 +53,7 @@ export const critterbaseCommonLookupResponse: SchemaObject = {
   type: 'array',
   items: {
     type: 'object',
+    additionalProperties: false,
     properties: {
       key: {
         type: 'string'

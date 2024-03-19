@@ -74,6 +74,7 @@ DELETE.apiDoc = {
           schema: {
             title: 'Deployment response object',
             type: 'object',
+            additionalProperties: false,
             properties: {
               message: {
                 type: 'string'
