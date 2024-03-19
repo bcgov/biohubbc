@@ -54,15 +54,14 @@ export const codes: IGetAllCodeSetsResponse = {
   ],
   sample_methods: [
     { id: 1, name: 'Camera Trap', description: 'Description 1' },
-    { id: 2, name: 'Dip Net', description: 'Description 2' }
+    { id: 2, name: 'Aerial Transect', description: 'Description 2' }
   ],
   survey_progress: [
     { id: 1, name: 'Planning', description: 'Description 1' },
-    { id: 1, name: 'Camera Trap', description: 'Description 1' },
-    { id: 2, name: 'Dip Net', description: 'Description 2' }
+    { id: 1, name: 'In progress', description: 'Description 1' }
   ],
   method_response_metrics: [
-    { id: 1, name: 'Abundance', description: 'Description 1' },
+    { id: 1, name: 'Count', description: 'Description 1' },
     { id: 2, name: 'Presence-absence', description: 'Description 2' }
   ]
 };

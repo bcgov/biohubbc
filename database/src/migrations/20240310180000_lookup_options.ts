@@ -1,11 +1,13 @@
 import { Knex } from 'knex';
 
 /**
- * Create new tables with initial seed data:
- * - sign
+ *
+ * Update lookup values:
+ * - Update method_lookup options
+ * - Update site_strategy options
  *
  * Update existing tables:
- * - Add 'progress' column to Survey table
+ * - Add description column to method_lookup
  *
  * @export
  * @param {Knex} knex
