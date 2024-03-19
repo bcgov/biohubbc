@@ -80,11 +80,13 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             properties: {
               sampleMethods: {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     survey_sample_method_id: {
                       type: 'integer'
@@ -238,9 +240,11 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           properties: {
             sampleMethod: {
               type: 'object',
+              additionalProperties: false,
               properties: {
                 methodName: {
                   type: 'string'

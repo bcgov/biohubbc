@@ -12,7 +12,6 @@ describe('SurveyProprietaryData', () => {
 
   it('renders correctly with proprietor data', () => {
     const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, IGetSurveyForViewResponse, any>;
-    const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
@@ -25,7 +24,6 @@ describe('SurveyProprietaryData', () => {
           surveyId: 1,
           surveyDataLoader: mockSurveyDataLoader,
           artifactDataLoader: mockArtifactDataLoader,
-          summaryDataLoader: mockSummaryDataLoader,
           sampleSiteDataLoader: mockSampleSiteDataLoader,
           critterDataLoader: mockCritterDataLoader,
           deploymentDataLoader: mockDeploymentDataLoader
@@ -43,7 +41,6 @@ describe('SurveyProprietaryData', () => {
     const mockSurveyDataLoader = {
       data: { ...getSurveyForViewResponse, surveyData: { ...getSurveyForViewResponse.surveyData, proprietor: null } }
     } as DataLoader<any, IGetSurveyForViewResponse, any>;
-    const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
@@ -56,7 +53,6 @@ describe('SurveyProprietaryData', () => {
           surveyId: 1,
           surveyDataLoader: mockSurveyDataLoader,
           artifactDataLoader: mockArtifactDataLoader,
-          summaryDataLoader: mockSummaryDataLoader,
           sampleSiteDataLoader: mockSampleSiteDataLoader,
           critterDataLoader: mockCritterDataLoader,
           deploymentDataLoader: mockDeploymentDataLoader
@@ -72,7 +68,6 @@ describe('SurveyProprietaryData', () => {
 
   it('renders an empty fragment if survey data has not loaded or is undefined', () => {
     const mockSurveyDataLoader = { data: undefined } as DataLoader<any, IGetSurveyForViewResponse, any>;
-    const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
@@ -85,7 +80,6 @@ describe('SurveyProprietaryData', () => {
           surveyId: 1,
           surveyDataLoader: mockSurveyDataLoader,
           artifactDataLoader: mockArtifactDataLoader,
-          summaryDataLoader: mockSummaryDataLoader,
           sampleSiteDataLoader: mockSampleSiteDataLoader,
           critterDataLoader: mockCritterDataLoader,
           deploymentDataLoader: mockDeploymentDataLoader

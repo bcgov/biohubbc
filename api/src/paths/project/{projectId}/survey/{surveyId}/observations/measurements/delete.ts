@@ -61,6 +61,7 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           properties: {
             measurement_ids: {
               description: 'An array of measurement ids (critterbase taxon measurement ids) to delete',

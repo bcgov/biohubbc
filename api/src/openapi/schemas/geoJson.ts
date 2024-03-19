@@ -11,6 +11,7 @@ import { OpenAPIV3 } from 'openapi-types';
 export const GeoJSONPoint: OpenAPIV3.SchemaObject = {
   title: 'GeoJSON Point',
   type: 'object',
+  additionalProperties: false,
   required: ['type', 'coordinates'],
   properties: {
     type: {
@@ -37,6 +38,7 @@ export const GeoJSONPoint: OpenAPIV3.SchemaObject = {
 export const GeoJSONLineString: OpenAPIV3.SchemaObject = {
   title: 'GeoJSON LineString',
   type: 'object',
+  additionalProperties: false,
   required: ['type', 'coordinates'],
   properties: {
     type: {
@@ -67,6 +69,7 @@ export const GeoJSONLineString: OpenAPIV3.SchemaObject = {
 export const GeoJSONPolygon: OpenAPIV3.SchemaObject = {
   title: 'GeoJSON Polygon',
   type: 'object',
+  additionalProperties: false,
   required: ['type', 'coordinates'],
   properties: {
     type: {
@@ -100,6 +103,7 @@ export const GeoJSONPolygon: OpenAPIV3.SchemaObject = {
 export const GeoJSONMultiPoint: OpenAPIV3.SchemaObject = {
   title: 'GeoJSON MultiPoint',
   type: 'object',
+  additionalProperties: false,
   required: ['type', 'coordinates'],
   properties: {
     type: {
@@ -129,6 +133,7 @@ export const GeoJSONMultiPoint: OpenAPIV3.SchemaObject = {
 export const GeoJSONMultiLineString: OpenAPIV3.SchemaObject = {
   title: 'GeoJSON MultiLineString',
   type: 'object',
+  additionalProperties: false,
   required: ['type', 'coordinates'],
   properties: {
     type: {
@@ -162,6 +167,7 @@ export const GeoJSONMultiLineString: OpenAPIV3.SchemaObject = {
 export const GeoJSONMultiPolygon: OpenAPIV3.SchemaObject = {
   title: 'GeoJSON MultiPolygon',
   type: 'object',
+  additionalProperties: false,
   required: ['type', 'coordinates'],
   properties: {
     type: {
@@ -198,6 +204,7 @@ export const GeoJSONMultiPolygon: OpenAPIV3.SchemaObject = {
 export const GeoJSONGeometryCollection: OpenAPIV3.SchemaObject = {
   title: 'GeoJSON GeometryCollection',
   type: 'object',
+  additionalProperties: false,
   required: ['type', 'geometries'],
   properties: {
     type: {
@@ -230,6 +237,7 @@ export const GeoJSONGeometryCollection: OpenAPIV3.SchemaObject = {
 export const GeoJSONFeature: OpenAPIV3.SchemaObject = {
   title: 'GeoJSON Feature',
   type: 'object',
+  additionalProperties: false,
   required: ['type', 'properties', 'geometry'],
   properties: {
     type: {
@@ -275,6 +283,7 @@ export const GeoJSONFeature: OpenAPIV3.SchemaObject = {
 export const GeoJSONFeatureCollection: OpenAPIV3.SchemaObject = {
   title: 'GeoJSON FeatureCollection',
   type: 'object',
+  additionalProperties: false,
   required: ['type', 'features'],
   properties: {
     type: {
@@ -286,6 +295,7 @@ export const GeoJSONFeatureCollection: OpenAPIV3.SchemaObject = {
       items: {
         title: 'GeoJSON Feature',
         type: 'object',
+        additionalProperties: false,
         required: ['type', 'properties', 'geometry'],
         properties: {
           type: {

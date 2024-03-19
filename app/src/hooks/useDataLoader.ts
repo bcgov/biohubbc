@@ -117,7 +117,7 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
 
   const load = async (...args: AFArgs) => {
     if (oneTimeLoad) {
-      return;
+      return data;
     }
 
     setOneTimeLoad(true);

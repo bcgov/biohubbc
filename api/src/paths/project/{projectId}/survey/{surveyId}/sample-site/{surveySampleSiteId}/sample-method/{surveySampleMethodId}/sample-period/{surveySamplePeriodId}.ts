@@ -91,9 +91,11 @@ PUT.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           properties: {
             samplePeriod: {
               type: 'object',
+              additionalProperties: false,
               properties: {
                 start_date: {
                   type: 'string'

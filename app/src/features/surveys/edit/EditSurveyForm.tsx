@@ -3,10 +3,8 @@ import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
-import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
-import { default as dayjs } from 'dayjs';
 import SamplingStrategyForm from 'features/surveys/components/SamplingStrategyForm';
 import SurveyPartnershipsForm, {
   SurveyPartnershipsFormYupSchema
@@ -14,8 +12,6 @@ import SurveyPartnershipsForm, {
 import { Formik, FormikProps } from 'formik';
 import { ICreateSurveyRequest, IEditSurveyRequest, SurveyUpdateObject } from 'interfaces/useSurveyApi.interface';
 import React, { useContext } from 'react';
-import { getFormattedDate } from 'utils/Utils';
-import yup from 'utils/YupSchema';
 import AgreementsForm, { AgreementsYupSchema } from '../components/AgreementsForm';
 import GeneralInformationForm, { GeneralInformationYupSchema } from '../components/GeneralInformationForm';
 import ProprietaryDataForm, { ProprietaryDataYupSchema } from '../components/ProprietaryDataForm';
@@ -47,42 +43,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
     return <></>;
   }
 
-  const surveyEditYupSchemas = GeneralInformationYupSchema({
-    start_date: yup
-      .string()
-      .isValidDateString()
-      .isAfterDate(
-        projectData.project.start_date,
-        DATE_FORMAT.ShortDateFormat,
-        `Survey start date cannot be before project start date ${
-          projectData && getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, projectData.project.start_date)
-        }`
-      )
-      .isAfterDate(
-        dayjs(DATE_LIMIT.min).toISOString(),
-        DATE_FORMAT.ShortDateFormat,
-        `Survey start date cannot be before ${getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, DATE_LIMIT.min)}`
-      )
-      .required('Start Date is Required'),
-    end_date: yup
-      .string()
-      .isValidDateString()
-      .isEndDateSameOrAfterStartDate('start_date')
-      .isBeforeDate(
-        projectData.project.end_date,
-        DATE_FORMAT.ShortDateFormat,
-        `Survey end date cannot be after project end date ${
-          projectData && getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, projectData.project.end_date)
-        }`
-      )
-      .isBeforeDate(
-        dayjs(DATE_LIMIT.max).toISOString(),
-        DATE_FORMAT.ShortDateFormat,
-        `Survey end date cannot be after ${getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, DATE_LIMIT.max)}`
-      )
-      .nullable()
-      .optional()
-  })
+  const surveyEditYupSchemas = GeneralInformationYupSchema()
     .concat(PurposeAndMethodologyYupSchema)
     .concat(ProprietaryDataYupSchema)
     .concat(SurveyFundingSourceFormYupSchema)

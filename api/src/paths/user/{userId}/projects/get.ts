@@ -50,6 +50,7 @@ GET.apiDoc = {
             items: {
               title: 'Project Get Response Object',
               type: 'object',
+              additionalProperties: false,
               required: [
                 'project_participation_id',
                 'project_id',

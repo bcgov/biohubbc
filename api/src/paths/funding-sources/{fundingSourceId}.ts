@@ -48,10 +48,12 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: ['funding_source', 'funding_source_survey_references'],
             properties: {
               funding_source: {
                 type: 'object',
+                additionalProperties: false,
                 required: [
                   'funding_source_id',
                   'name',
@@ -84,6 +86,16 @@ GET.apiDoc = {
                     type: 'number',
                     minimum: 0,
                     description: 'The total amount from all references to this funding source by all surveys.'
+                  },
+                  start_date: {
+                    type: 'string',
+                    format: 'date',
+                    nullable: true
+                  },
+                  end_date: {
+                    type: 'string',
+                    format: 'date',
+                    nullable: true
                   }
                 }
               },
@@ -91,6 +103,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   required: [
                     'survey_funding_source_id',
                     'survey_id',
@@ -114,7 +127,8 @@ GET.apiDoc = {
                       minimum: 1
                     },
                     amount: {
-                      type: 'number'
+                      type: 'number',
+                      minimum: 0
                     },
                     revision_count: {
                       type: 'integer',
@@ -223,6 +237,7 @@ PUT.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['name', 'description', 'revision_count'],
           properties: {
             funding_source_id: {
@@ -234,6 +249,16 @@ PUT.apiDoc = {
             },
             description: {
               type: 'string'
+            },
+            start_date: {
+              type: 'string',
+              format: 'date',
+              nullable: true
+            },
+            end_date: {
+              type: 'string',
+              format: 'date',
+              nullable: true
             },
             revision_count: {
               type: 'integer',
@@ -251,6 +276,7 @@ PUT.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: ['funding_source_id'],
             properties: {
               funding_source_id: {
@@ -349,6 +375,7 @@ DELETE.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: ['funding_source_id'],
             properties: {
               funding_source_id: {

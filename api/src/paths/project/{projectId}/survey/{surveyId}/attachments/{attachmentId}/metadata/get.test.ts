@@ -5,8 +5,8 @@ import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../../errors/http-error';
 import {
-  IReportAttachmentAuthor,
-  ISurveyReportAttachment
+  ISurveyReportAttachment,
+  ISurveyReportAttachmentAuthor
 } from '../../../../../../../../repositories/attachment-repository';
 import { AttachmentService } from '../../../../../../../../services/attachment-service';
 import { getMockDBConnection } from '../../../../../../../../__mocks__/db';
@@ -64,7 +64,7 @@ describe('getSurveyReportDetails', () => {
 
     const getSurveyAttachmentAuthorsStub = sinon
       .stub(AttachmentService.prototype, 'getSurveyAttachmentAuthors')
-      .resolves([({ author: 2 } as unknown) as IReportAttachmentAuthor]);
+      .resolves([({ author: 2 } as unknown) as ISurveyReportAttachmentAuthor]);
 
     const expectedResponse = {
       metadata: { survey_report_attachment_id: 1 },

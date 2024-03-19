@@ -112,6 +112,17 @@ declare module 'yup' {
     ): yup.StringSchema<string | undefined, Record<string, any>, string | undefined>;
 
     /**
+     * Determine if the array of funding sources has duplicates
+     *
+     * @param {string} message
+     * @return {*}  {(yup.StringSchema<string | undefined, Record<string, any>, string | undefined>)}
+     * @memberof ArraySchema
+     */
+    isUniqueFundingSource(
+      message: string
+    ): yup.StringSchema<string | undefined, Record<string, any>, string | undefined>;
+
+    /**
      * Determine if the array of classification details has duplicates
      *
      * @param {string} message='IUCN Classifications must be unique' - error message if this check fails

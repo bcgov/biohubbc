@@ -1,5 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { ATTACHMENT_TYPE } from '../../../../constants/attachments';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
@@ -57,11 +58,14 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
+            required: ['attachmentsList', 'reportAttachmentsList'],
             properties: {
               attachmentsList: {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   required: ['id', 'fileName', 'fileType', 'lastModified', 'size'],
                   properties: {
                     id: {
@@ -74,7 +78,34 @@ GET.apiDoc = {
                       type: 'string'
                     },
                     lastModified: {
+                      type: 'string',
+                      nullable: true
+                    },
+                    size: {
+                      type: 'number'
+                    }
+                  }
+                }
+              },
+              reportAttachmentsList: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['id', 'fileName', 'fileType', 'lastModified', 'size'],
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    fileName: {
                       type: 'string'
+                    },
+                    fileType: {
+                      type: 'string'
+                    },
+                    lastModified: {
+                      type: 'string',
+                      nullable: true
                     },
                     size: {
                       type: 'number'
@@ -108,14 +139,34 @@ export function getAttachments(): RequestHandler {
 
       const attachmentService = new AttachmentService(connection);
 
-      const attachmentsData = await attachmentService.getProjectAttachmentsWithSupplementaryData(projectId);
-      const reportAttachmentsData = await attachmentService.getProjectReportAttachmentsWithSupplementaryData(projectId);
+      const attachmentsData = await attachmentService.getProjectAttachments(projectId);
+      const reportAttachmentsData = await attachmentService.getProjectReportAttachments(projectId);
+
+      const attachmentsList = attachmentsData.map((attachment) => {
+        return {
+          id: attachment.project_attachment_id,
+          fileName: attachment.file_name,
+          fileType: attachment.file_type,
+          lastModified: attachment.update_date,
+          size: attachment.file_size
+        };
+      });
+
+      const reportAttachmentsList = reportAttachmentsData.map((attachment) => {
+        return {
+          id: attachment.project_report_attachment_id,
+          fileName: attachment.file_name,
+          fileType: ATTACHMENT_TYPE.REPORT,
+          lastModified: attachment.last_modified,
+          size: attachment.file_size
+        };
+      });
 
       await connection.commit();
 
       return res.status(200).json({
-        attachmentsList: attachmentsData,
-        reportAttachmentsList: reportAttachmentsData
+        attachmentsList: attachmentsList,
+        reportAttachmentsList: reportAttachmentsList
       });
     } catch (error) {
       defaultLog.error({ label: 'getProjectAttachments', message: 'error', error });

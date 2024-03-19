@@ -315,6 +315,13 @@ const useProjectApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get project attachment details based on project ID and attachment ID
+   *
+   * @param {number} projectId
+   * @param {number} attachmentId
+   * @return {*}  {Promise<IGetAttachmentDetails>}
+   */
   const getProjectAttachmentDetails = async (
     projectId: number,
     attachmentId: number

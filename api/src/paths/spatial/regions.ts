@@ -52,12 +52,14 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: ['regions'],
             properties: {
               regions: {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   required: ['regionName', 'sourceLayer'],
                   properties: {
                     regionName: {

@@ -15,6 +15,7 @@ export const manual_telemetry_responses = {
           type: 'array',
           items: {
             type: 'object',
+            additionalProperties: false,
             properties: {
               telemetry_manual_id: { type: 'string' },
               deployment_id: { type: 'string' },
@@ -116,6 +117,7 @@ POST.apiDoc = {
           items: {
             title: 'manual telemetry records',
             type: 'object',
+            additionalProperties: false,
             required: ['deployment_id', 'latitude', 'longitude', 'acquisition_date'],
             properties: {
               deployment_id: {
@@ -187,6 +189,7 @@ PATCH.apiDoc = {
           items: {
             title: 'manual telemetry records',
             type: 'object',
+            additionalProperties: false,
             required: ['telemetry_manual_id'],
             minProperties: 2,
             properties: {

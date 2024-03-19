@@ -52,9 +52,18 @@ export interface IReportAttachmentData {
   revision_count: number;
 }
 
-export interface IReportAttachmentAuthor {
+export interface IProjectReportAttachmentAuthor {
   project_report_author_id: number;
   project_report_attachment_id: number;
+  first_name: string;
+  last_name: string;
+  update_date: string;
+  revision_count: number;
+}
+
+export interface ISurveyReportAttachmentAuthor {
+  survey_report_author_id: number;
+  survey_report_attachment_id: number;
   first_name: string;
   last_name: string;
   update_date: string;
@@ -592,10 +601,10 @@ export class AttachmentRepository extends BaseRepository {
   /**
    * Query to return all of the authors belonging to a project report attachment
    * @param {number} reportAttachmentId The ID of the report attachment
-   * @return {Promise<IReportAttachmentAuthor[]>} Promise resolving the report authors
+   * @return {Promise<IProjectReportAttachmentAuthor[]>} Promise resolving the report authors
    * @memberof AttachmentRepository
    */
-  async getProjectReportAttachmentAuthors(reportAttachmentId: number): Promise<IReportAttachmentAuthor[]> {
+  async getProjectReportAttachmentAuthors(reportAttachmentId: number): Promise<IProjectReportAttachmentAuthor[]> {
     defaultLog.debug({ label: 'getProjectAttachmentAuthors' });
 
     const sqlStatement = SQL`
@@ -607,7 +616,7 @@ export class AttachmentRepository extends BaseRepository {
         project_report_attachment_id = ${reportAttachmentId}
       `;
 
-    const response = await this.connection.sql<IReportAttachmentAuthor>(sqlStatement);
+    const response = await this.connection.sql<IProjectReportAttachmentAuthor>(sqlStatement);
 
     return response.rows;
   }
@@ -615,10 +624,10 @@ export class AttachmentRepository extends BaseRepository {
   /**
    * Query to return all of the authors belonging to a survey report attachment
    * @param {number} reportAttachmentId The ID of the report attachment
-   * @return {Promise<IReportAttachmentAuthor[]>} Promise resolving the report authors
+   * @return {Promise<ISurveyReportAttachmentAuthor[]>} Promise resolving the report authors
    * @memberof AttachmentRepository
    */
-  async getSurveyReportAttachmentAuthors(reportAttachmentId: number): Promise<IReportAttachmentAuthor[]> {
+  async getSurveyReportAttachmentAuthors(reportAttachmentId: number): Promise<ISurveyReportAttachmentAuthor[]> {
     defaultLog.debug({ label: 'getSurveyAttachmentAuthors' });
 
     const sqlStatement = SQL`
@@ -630,7 +639,7 @@ export class AttachmentRepository extends BaseRepository {
         survey_report_attachment_id = ${reportAttachmentId};
       `;
 
-    const response = await this.connection.sql<IReportAttachmentAuthor>(sqlStatement);
+    const response = await this.connection.sql<ISurveyReportAttachmentAuthor>(sqlStatement);
 
     return response.rows;
   }

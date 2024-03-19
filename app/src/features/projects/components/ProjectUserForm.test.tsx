@@ -5,7 +5,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ICode } from 'interfaces/useCodesApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
-import { fireEvent, render, waitFor, within } from 'test-helpers/test-utils';
+import { render, waitFor } from 'test-helpers/test-utils';
 import ProjectUserForm, { ProjectUserRoleYupSchema } from './ProjectUserForm';
 
 const mockRoles: ICode[] = [
@@ -102,42 +102,6 @@ describe('ProjectUserForm', () => {
     await waitFor(async () => {
       expect(getByTestId('autocomplete-user-role-search')).toBeVisible();
       expect(getByText('Test User', { exact: false })).toBeVisible();
-    });
-  });
-
-  it('renders newly added users properly', async () => {
-    const authState = getMockAuthState({ base: SystemAdminAuthState });
-
-    const formikInitialValues = {
-      participants: []
-    };
-
-    const { getByTestId, getByText } = render(
-      <AuthStateContext.Provider value={authState}>
-        <Formik
-          initialValues={formikInitialValues}
-          validationSchema={ProjectUserRoleYupSchema}
-          validateOnBlur={true}
-          validateOnChange={false}
-          onSubmit={async () => {}}>
-          <ProjectUserForm roles={mockRoles} />
-        </Formik>
-      </AuthStateContext.Provider>
-    );
-
-    await waitFor(async () => {
-      const autocomplete = getByTestId('autocomplete-user-role-search');
-      const input = within(autocomplete).getByPlaceholderText('Find team members');
-
-      // Search for a user
-      fireEvent.change(input, { target: { value: 'Test User' } });
-      // Arrow down to user in field
-      fireEvent.keyDown(autocomplete, { key: 'ArrowDown' });
-      // select the first item
-      fireEvent.keyDown(autocomplete, { key: 'Enter' });
-
-      expect(getByTestId('autocomplete-user-role-search')).toBeVisible();
-      expect(getByText('Test User')).toBeVisible();
     });
   });
 

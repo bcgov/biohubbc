@@ -64,11 +64,13 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             properties: {
               participants: {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     survey_participation_id: {
                       type: 'number'
@@ -197,11 +199,13 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           properties: {
             participants: {
               type: 'array',
               items: {
                 type: 'object',
+                additionalProperties: false,
                 nullable: true,
                 required: ['system_user_id', 'survey_job_name'],
                 properties: {

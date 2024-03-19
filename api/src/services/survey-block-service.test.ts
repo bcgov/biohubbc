@@ -89,6 +89,7 @@ describe('SurveyBlockService', () => {
 
       const getOldBlocks = sinon.stub(SurveyBlockService.prototype, 'getSurveyBlocksForSurveyId').resolves([
         {
+          sample_block_count: 0,
           survey_block_id: 10,
           survey_id: 1,
           name: 'Old Block',
@@ -100,6 +101,7 @@ describe('SurveyBlockService', () => {
           revision_count: 1
         },
         {
+          sample_block_count: 0,
           survey_block_id: 11,
           survey_id: 1,
           name: 'Old Block',

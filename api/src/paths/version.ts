@@ -13,6 +13,7 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             properties: {
               version: {
                 description: 'API Version',
