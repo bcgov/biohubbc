@@ -5,7 +5,7 @@ import { Knex } from 'knex';
  * - method_response_metric
  *
  * Update existing tables:
- * - Add 'progress' column to Survey table
+ * - Add 'method_response_metric_id' column to Survey table
  *
  * @export
  * @param {Knex} knex
@@ -19,9 +19,9 @@ export async function up(knex: Knex): Promise<void> {
     SET search_path = biohub;
 
     CREATE TABLE method_response_metric (
-      method_response_metric_id                     integer          GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+      method_response_metric_id                     integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       name                                          varchar(32)        NOT NULL,
-      description                                   varchar(256),
+      description                                   varchar(128),
       record_end_date                               timestamptz(6),
       create_date                                   timestamptz(6)     DEFAULT now() NOT NULL,
       create_user                                   integer            NOT NULL,
@@ -49,20 +49,13 @@ export async function up(knex: Knex): Promise<void> {
     CREATE TRIGGER journal_method_response_metric AFTER INSERT OR UPDATE OR DELETE ON biohub.method_response_metric FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
 
     ----------------------------------------------------------------------------------------
-    -- Modify sample method table to include method_response_metric
-    ----------------------------------------------------------------------------------------
-    ALTER TABLE survey_sample_method ADD COLUMN method_response_metric_id INTEGER NOT NULL;
-    COMMENT ON COLUMN survey_sample_method.method_response_metric_id IS 'Foreign key referencing the response metric id.';
-    ALTER TABLE survey_sample_method ADD CONSTRAINT method_response_metric_fk FOREIGN KEY (method_response_metric_id) REFERENCES method_response_metric(method_response_metric_id);
-    
-    ----------------------------------------------------------------------------------------
     -- Add initial values
     ----------------------------------------------------------------------------------------
     INSERT INTO method_response_metric (name, description)
     VALUES
     (
       'Count',
-      'Counting the number of individuals of a species at a sampling site.'
+      'Counting the number of individuals at a sampling site.'
     ),
     (
       'Presence-absence',
@@ -70,12 +63,33 @@ export async function up(knex: Knex): Promise<void> {
     ),
     (
       'Percent cover',
-      'Measuring the spatial coverage of species at a sampling site.'
+      'Estimating the percentage area that a species covers at a sampling site.'
     ),
     (
       'Biomass',
-      'Measuring the weight or mass of species at a sampling site.'
+      'Measuring the weight or biomass of a species at a sampling site.'
     );
+
+    ----------------------------------------------------------------------------------------
+    -- Modify sample method table to include method_response_metric
+    ----------------------------------------------------------------------------------------
+    ALTER TABLE survey_sample_method ADD COLUMN method_response_metric_id INTEGER;
+    COMMENT ON COLUMN survey_sample_method.method_response_metric_id IS 'Foreign key referencing the response metric value.';
+    
+    -- Add initial values to survey_sample_method table
+    UPDATE survey_sample_method
+    SET method_response_metric_id = (
+      SELECT method_response_metric_id 
+      FROM method_response_metric 
+      WHERE name = 'Count'
+    );
+
+    -- Add not null constraint
+    ALTER TABLE survey_sample_method ALTER COLUMN method_response_metric_id SET NOT NULL;
+    ALTER TABLE survey_sample_method ADD CONSTRAINT method_response_metric_fk FOREIGN KEY (method_response_metric_id) REFERENCES method_response_metric(method_response_metric_id);
+    
+    -- Add index
+    CREATE INDEX method_response_metric_idx1 ON survey_sample_method(method_response_metric_id);
 
     ----------------------------------------------------------------------------------------
     -- Add view for method_response_metric table

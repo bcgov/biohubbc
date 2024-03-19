@@ -14,10 +14,16 @@ import { Knex } from 'knex';
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`--sql
     ----------------------------------------------------------------------------------------
-    -- Update existing method_lookup values
+    -- Add description to method lookup table
     ----------------------------------------------------------------------------------------
     SET search_path = biohub;
-
+    
+    ALTER TABLE method_lookup ADD COLUMN description VARCHAR(512);
+    COMMENT ON COLUMN method_lookup.description IS 'Description of the method lookup option.';
+    
+    ----------------------------------------------------------------------------------------
+    -- Update existing method_lookup values
+    ----------------------------------------------------------------------------------------
     -- Update 'Electrofishing'
     UPDATE method_lookup
     SET name = 'Electrofishing',
@@ -41,10 +47,8 @@ export async function up(knex: Knex): Promise<void> {
 
 
     ----------------------------------------------------------------------------------------
-    -- Add new existing method_lookup values
+    -- Add new method_lookup values
     ----------------------------------------------------------------------------------------
-
-
     INSERT INTO method_lookup (name, description)
     VALUES
     (
@@ -90,6 +94,13 @@ export async function up(knex: Knex): Promise<void> {
       'Selecting sites haphazardly without a probability-based strategy.',
       'NOW()'
     );
+
+    ----------------------------------------------------------------------------------------
+    -- Replace method_lookup view to include description
+    ----------------------------------------------------------------------------------------
+    SET SEARCH_PATH=biohub_dapi_v1;
+
+    CREATE OR REPLACE VIEW method_lookup AS SELECT * FROM biohub.method_lookup;
     `);
 }
 
