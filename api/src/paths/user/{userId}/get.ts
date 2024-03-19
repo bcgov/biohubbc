@@ -49,15 +49,19 @@ GET.apiDoc = {
           schema: {
             title: 'User Response Object',
             type: 'object',
+            additionalProperties: false,
             required: [
               'system_user_id',
               'user_identifier',
+              'identity_source',
               'user_guid',
               'record_end_date',
               'role_ids',
               'role_names',
               'email',
               'display_name',
+              'given_name',
+              'family_name',
               'agency'
             ],
             properties: {
@@ -68,6 +72,11 @@ GET.apiDoc = {
               },
               user_identifier: {
                 description: 'The unique user identifier',
+                type: 'string',
+                maxLength: 200,
+                nullable: true
+              },
+              identity_source: {
                 type: 'string'
               },
               user_guid: {
@@ -96,13 +105,26 @@ GET.apiDoc = {
                 }
               },
               email: {
-                type: 'string'
+                type: 'string',
+                maxLength: 100
               },
               display_name: {
-                type: 'string'
+                type: 'string',
+                maxLength: 100
+              },
+              given_name: {
+                type: 'string',
+                maxLength: 100,
+                nullable: true
+              },
+              family_name: {
+                type: 'string',
+                maxLength: 100,
+                nullable: true
               },
               agency: {
                 type: 'string',
+                maxLength: 100,
                 nullable: true
               }
             }

@@ -43,6 +43,7 @@ POST.apiDoc = {
         schema: {
           title: 'User Response Object',
           type: 'object',
+          additionalProperties: false,
           required: ['userIdentifier', 'identitySource', 'displayName', 'email'],
           properties: {
             userGuid: {

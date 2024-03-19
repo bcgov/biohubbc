@@ -15,6 +15,7 @@ const vendor_telemetry_responses = {
           type: 'array',
           items: {
             type: 'object',
+            additionalProperties: false,
             properties: {
               telemetry_id: { type: 'string', format: 'uuid' },
               deployment_id: { type: 'string', format: 'uuid' },

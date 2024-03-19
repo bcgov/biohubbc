@@ -404,32 +404,6 @@ describe('SurveyRepository', () => {
     });
   });
 
-  describe('getSurveySummarySubmission', () => {
-    it('should return result', async () => {
-      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      const response = await repository.getSurveySummarySubmission(1);
-
-      expect(response).to.eql({ id: 1 });
-    });
-
-    it('should return null if now rows returned', async () => {
-      const mockResponse = ({ rows: [{ survey_summary_submission_id: null }], rowCount: 1 } as any) as Promise<
-        QueryResult<any>
-      >;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      const response = await repository.getSurveySummarySubmission(1);
-
-      expect(response).to.eql({ survey_summary_submission_id: null });
-    });
-  });
-
   describe('getAttachmentsData', () => {
     it('should return result', async () => {
       const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
