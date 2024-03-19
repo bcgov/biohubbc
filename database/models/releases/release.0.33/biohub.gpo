@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE ERStudioGeneratePhysicalModelWizard SYSTEM "">
+<!--Name		  : Embarcadero Project File
+Description   : This file contains an Embarcadero generated data file.
+Version	   : Version 1.00
+Creation Date : 10/12/21 - 13:50:42
+Last Update   : 10/12/21 - 13:50:42
+-->
+<ERStudioGeneratePhysicalModelWizard><GeneratePhysicalModelWizPropertyValue GeneratePhysicalModelWizPropertyValue=""/>
+<BooleanVariables m_bEraseData="0" m_bFallbackProtection="0" m_bFileBasedXML="1" m_bFix="0" m_bGenerateAKIndex="1" m_bGenerateFKIndex="1" m_bGenerateIEIndex="1" m_bGeneratePKClustered="0" m_bGeneratePKIndex="1" m_bIncludeContainedObjects="0" m_bIncludeDrawingShape="0" m_bIncludeSubjectAreas="0" m_bIncludeSubmodels="0" m_bIncludeTextBlocks="0" m_bIsDimensionalModel="0" m_bLogDataChanges="0" m_bNotLoggedInitially="0" m_bPadIndex="0" m_bReplacementStrategy="0" m_bSelectAllBDO="0" m_bSelectAllEntity="1" m_bSelectAllRole="0" m_bSelectAllUser="0" m_bSelectAllView="0" m_bSortInTempDb="0" m_bTableStorage="0" m_bUnbalancedSplit="0" m_bValidateModel="1"/>
+<NumberVariables m_SpaceHandling="2" m_TargetDatabaseId="113" m_nCaseShift="1" m_nCollectionConversionOption="1" m_nExtFKHandling="0" m_nGBPCache="0" m_nHandlingNonspecificRel="0" m_nIdxOwnershipHandling="0" m_nInvalidCharHandling="0" m_nLockMode="0" m_nMySQLTableType="0" m_nPartialSettingHandling="1" m_nPrefetchStrategy="0" m_nSaveSettingsOption="1" m_nStorageType="0" m_nTblOwnershipHandling="0" m_nViewGenOption="-1" m_nViewOwnershipHandling="0"/>
+<CStringVariables m_PhysicalModelName="BioHub.0.33" m_TargetDatabase="PostgreSQL 10.x-12.x" m_csAfterJournal="" m_csBeforeJournal="" m_csChecksumControl="" m_csDB2IndexInclude="" m_csDatabase="" m_csDatablockSize="" m_csDupRowControl="" m_csExternalNSTemplatePath="" m_csIdentityGap="" m_csIdxBufferPool="" m_csIdxExtentGrowthFactor="" m_csIdxFillfactor="" m_csIdxFreeListGroups="" m_csIdxFreeLists="" m_csIdxInitialExtentSize="" m_csIdxMaxExtents="" m_csIdxMaxRowsPerPage="" m_csIdxMaxTransactions="" m_csIdxMinExtents="" m_csIdxMinTransactions="" m_csIdxNextExtentSize="" m_csIndexNewOwner="" m_csIndexPctFree="" m_csIndexPctUsed="" m_csIndexStorage="" m_csLongStorage="" m_csReservePageGap="" m_csSelectedDatatypeMapping="PostgreSQL 10.x-12.x (system)" m_csSelectedNSTemplateName="[none]" m_csSybaseLockingScheme="" m_csTableNewOwner="" m_csTablePctFree="" m_csTablePctUsed="" m_csTablePrefix="" m_csTableStorage="" m_csTableSuffix="" m_csTblBufferPool="" m_csTblExtentGrowthFactor="" m_csTblFillfactor="" m_csTblFreeListGroups="" m_csTblFreeLists="" m_csTblInitialExtentSize="" m_csTblMaxExtents="" m_csTblMaxRowsPerPage="" m_csTblMaxTransactions="" m_csTblMinExtents="" m_csTblMinTransactions="" m_csTblNextExtentSize="" m_csTextImageFileGroup="" m_csViewNewOwner="" m_csViewPrefix="" m_csViewSuffix=""/>
+<GenPhysicalDataObjectList><m_EntityList/>
+<m_ViewList/>
+<m_UserList/>
+<m_RoleList/>
+</GenPhysicalDataObjectList>
+</ERStudioGeneratePhysicalModelWizard>
+
+

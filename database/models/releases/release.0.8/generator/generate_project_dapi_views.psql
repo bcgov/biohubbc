@@ -1,0 +1,9 @@
+-- generate_project_dapi_views.psql
+\c biohub
+set search_path=biohub;
+\o 'project_dapi_views.sql'
+\t
+select 'create or replace view '||tablename||' as select * from '||schemaname||'.'||tablename||';' from pg_tables 
+    where schemaname='biohub' and tablename != 'audit_log' order by tablename;
+\t
+\o

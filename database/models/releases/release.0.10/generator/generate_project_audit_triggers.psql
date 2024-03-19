@@ -1,0 +1,12 @@
+-- generate_project_audit_triggers.psql
+\c biohub
+set search_path=biohub;
+\o 'project_audit_triggers.sql'
+\t
+select 'drop trigger if exists audit_'||tablename||' on '||schemaname||'.'||tablename||';' from pg_tables 
+    where schemaname='biohub' and tablename != 'audit_log';
+
+select 'create trigger audit_'||tablename||' before insert or update or delete on '||schemaname||'.'||tablename||' for each row execute procedure tr_audit_trigger();' from pg_tables 
+    where schemaname='biohub' and tablename != 'audit_log';
+\t
+\o

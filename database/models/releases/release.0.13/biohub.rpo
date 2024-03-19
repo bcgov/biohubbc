@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE ERStudioReportWizard SYSTEM "">
+<!--Name		  : Embarcadero Project File
+Description   : This file contains an Embarcadero generated data file.
+Version	   : Version 1.00
+Creation Date : 04/20/21 - 12:58:45
+Last Update   : 04/20/21 - 12:58:45
+-->
+<ERStudioReportWizard><ReportWizardPropertyValue ReportWizardPropertyValue=""/>
+<OptionVariables m_bAttachTypeTOC="1" m_bAttachmentTOC="1" m_bAttrAttachment="1" m_bAttrBaseEntity="1" m_bAttrColumnName="1" m_bAttrDataMovementRules="1" m_bAttrDef="1" m_bAttrDetail="1" m_bAttrDomainRestrict="1" m_bAttrGIDomain="1" m_bAttrGenInfo="1" m_bAttrHeader="1" m_bAttrLogicalRolename="1" m_bAttrNSTemplate="1" m_bAttrName="1" m_bAttrNote="1" m_bAttrProp="1" m_bAttrReferenceVal="1" m_bAttrRolename="1" m_bAttrSecurityProperty="1" m_bAttrSum="1" m_bAttributeLogPhysOnly="1" m_bAttributeTOC="1" m_bAttributeWhereUsed="1" m_bBusinessDataObjectAnchor="1" m_bBusinessDataObjectAttachment="1" m_bBusinessDataObjectContainedObjects="1" m_bBusinessDataObjectDefinition="1" m_bBusinessDataObjectDet="1" m_bBusinessDataObjectHeader="1" m_bBusinessDataObjectLogicalName="1" m_bBusinessDataObjectNote="1" m_bBusinessDataObjectPhysicalName="1" m_bBusinessDataObjectSecurityProperty="1" m_bBusinessDataObjectWhereUsed="1" m_bBusinessDataObjectsTOC="1" m_bColumnCapacityPlanningMetrics="1" m_bColumnDataMovement="1" m_bDB2OSNotEnforced="1" m_bDefaultTOC="1" m_bDenormTOC="1" m_bDiagramAttachment="1" m_bDiagramAuthor="1" m_bDiagramCompany="1" m_bDiagramCopyrightOwner="1" m_bDiagramCopyrightYear="1" m_bDiagramDescription="1" m_bDiagramHeader="1" m_bDiagramName="1" m_bDiagramVersion="1" m_bDomainTOC="1" m_bEntAttachment="1" m_bEntGenInfo="1" m_bEntSecurityProperty="1" m_bEntityDDL="1" m_bEntityDRC="1" m_bEntityDef="1" m_bEntityDetail="1" m_bEntityDistributeColumns="1" m_bEntityDoNotGenerate="1" m_bEntityHeader="1" m_bEntityHiveBucketing="1" m_bEntityHiveSkewing="1" m_bEntityLogPhysOnly="1" m_bEntityMultiDimensionColumns="1" m_bEntityNSTemplate="1" m_bEntityName="1" m_bEntityNote="1" m_bEntityOrganizationKeyCols="1" m_bEntityOwner="1" m_bEntityPK="1" m_bEntityPartition="1" m_bEntityPostSQL="1" m_bEntityPreSQL="1" m_bEntityRel="1" m_bEntityStorage="1" m_bEntityTOC="1" m_bEntityTblName="1" m_bEntityType="1" m_bEntityWhereUsed="1" m_bHTMLReport="1" m_bIdxAttachment="1" m_bIdxDDLCode="1" m_bIdxDetail="1" m_bIdxDisabled="1" m_bIdxEntName="1" m_bIdxGenInfo="1" m_bIdxHeader="1" m_bIdxKeys="1" m_bIdxName="1" m_bIdxNoValidate="1" m_bIdxOption="1" m_bIdxPKConstrName="1" m_bIdxPartition="1" m_bIdxProperties="1" m_bIdxStorage="1" m_bIdxSum="1" m_bIdxType="1" m_bIdxUnique="1" m_bIndexLogPhysOnly="1" m_bIndexTOC="1" m_bModelAttachment="1" m_bModelDBType="1" m_bModelHeader="1" m_bModelNSTemplate="1" m_bModelName="1" m_bModelNotation="1" m_bModelPostSQL="1" m_bModelPreSQL="1" m_bModelSecurityProperty="1" m_bModelTOC="1" m_bNSTemplateTOC="1" m_bNoCheck="1" m_bNotForReplication="1" m_bPBAliases="1" m_bPBAttachmentTypes="1" m_bPBAttachments="1" m_bPBBusinessDataObjects="1" m_bPBColumns="1" m_bPBDataFlows="1" m_bPBDefaults="1" m_bPBDomains="1" m_bPBEntities="1" m_bPBIndexes="1" m_bPBMaterializedViews="1" m_bPBObjTransform="1" m_bPBObjectTypes="1" m_bPBPackages="1" m_bPBProcedures="1" m_bPBReferenceValues="1" m_bPBRelationships="1" m_bPBRoles="1" m_bPBRules="1" m_bPBSchemas="1" m_bPBSecurityProperties="1" m_bPBSecurityTypes="1" m_bPBShapes="1" m_bPBStorageObjects="1" m_bPBSubjectAreas="1" m_bPBSupertypes="1" m_bPBSynonyms="1" m_bPBTransformations="1" m_bPBTriggers="1" m_bPBUserTypes="1" m_bPBUsers="1" m_bPBViewRels="1" m_bPBViews="1" m_bPortraitImageOrientation="1" m_bPortraitPageOrientation="1" m_bRefValTOC="1" m_bRelAttachment="1" m_bRelCard="1" m_bRelChild="1" m_bRelDeferrable="1" m_bRelDeferred="1" m_bRelDesc="1" m_bRelDetail="1" m_bRelDisabled="1" m_bRelDoNotGenerate="1" m_bRelExst="1" m_bRelGenInfo="1" m_bRelHeader="1" m_bRelKey="1" m_bRelLogPhysOnly="1" m_bRelLogicalName="1" m_bRelName="1" m_bRelNoValidate="1" m_bRelParent="1" m_bRelPropagated="1" m_bRelTrig="1" m_bRelType="1" m_bRelationTOC="1" m_bRemoveImagePageTitles="1" m_bRoleTOC="1" m_bRuleTOC="1" m_bSchemaObjTOC="1" m_bSchemaTOC="1" m_bSecurityPropTOC="1" m_bSecurityTypeTOC="1" m_bShapesTOC="1" m_bSubModelAttachment="1" m_bSubModelDBType="1" m_bSubModelDefinition="1" m_bSubModelHeader="1" m_bSubModelName="1" m_bSubModelParent="1" m_bSubModelSecurityProperty="1" m_bSubjectAreasTOC="1" m_bSubmodelNSTemplate="1" m_bSubmodelTOC="1" m_bSupertypeAttachment="1" m_bSupertypeDet="1" m_bSupertypeDiscriminator="1" m_bSupertypeHeader="1" m_bSupertypeSubtypes="1" m_bSupertypeType="1" m_bTOC="1" m_bTableCapacityPlanningMetrics="1" m_bTableDataMovement="1" m_bTableLabel="1" m_bTablePermission="1" m_bTableSysName="1" m_bTitle="1" m_bUDTTOC="1" m_bUserTOC="1" m_bViewAttachment="1" m_bViewAttrSum="1" m_bViewDDL="1" m_bViewDef="1" m_bViewDetail="1" m_bViewGenInfo="1" m_bViewHeader="1" m_bViewLogPhysOnly="1" m_bViewName="1" m_bViewNote="1" m_bViewOwner="1" m_bViewPermission="1" m_bViewSecurityProperty="1" m_bViewTOC="1" m_bViewWhereUsed="1"/>
+<NumberVariables m_nModelImageQuality="75" m_nModelImageZoomLevel="100"/>
+<CStringVariables m_Title="BioHub.DM1" m_YourCompany="" m_YourName="charlie.garrettjones@quartech.com" m_csCopyrightYear="2020-2021 " m_csCreatedDate="20201203" m_csDirectory="C:\quartech\min of environment\projects\biohub\models\releases\release.0.12\logical_model_report" m_csFilename="Report.RTF" m_csImageFile="" m_csImageType="JPG" m_csLink="" m_csModifiedDate="20210309" m_csReportDescription="" m_csReportTitle="" m_csVersion="1.0"/>
+<ReportObjectData><ModelList><Model><Object ObjectName="Logical" OwnerName=""/>
+<Submodel><Object ObjectName="Main Model" OwnerName="Logical"/>
+<EntityList><SelectedAll SelectedAll="1"/>
+</EntityList>
+<TransformationList/>
+<ComponentList/>
+<ViewList/>
+<RelationshipList><SelectedAll SelectedAll="1"/>
+</RelationshipList>
+<SuperTypeList/>
+<ShapeList/>
+<BusinessDataObjectList/>
+<SubjectAreaList/>
+<Variables m_bGenerateImage="1" m_bSelectForReport="1" m_nModelImageQuality="100" m_nModelImageZoomLevel="100"/>
+<BufferPoolList/>
+<TriggerList/>
+<DatabaseList/>
+<MaterializedViewList/>
+<NodeGroupList/>
+<PackageList/>
+<ObjectTypeList/>
+<ProcedureList/>
+<FunctionList/>
+<RollbackSegmentList/>
+<SequenceList/>
+<SynonymList/>
+<AliasList/>
+<StoGroupList/>
+<TablespaceList/>
+<AuxTableList/>
+<SummaryTableList/>
+<UserList/>
+<RoleList/>
+<SchemaList/>
+</Submodel>
+<ObjectTransformList/>
+<Variables m_bGenerateImage="1" m_bSelectForReport="1" m_nModelImageQuality="100" m_nModelImageZoomLevel="100"/>
+</Model>
+<Model><Object ObjectName="BioHu.0.11" OwnerName=""/>
+<Submodel><Object ObjectName="Main Model" OwnerName="BioHu.0.11"/>
+<EntityList/>
+<TransformationList/>
+<ComponentList/>
+<ViewList/>
+<RelationshipList/>
+<SuperTypeList/>
+<ShapeList/>
+<BusinessDataObjectList/>
+<SubjectAreaList/>
+<Variables m_nModelImageQuality="100" m_nModelImageZoomLevel="100"/>
+<BufferPoolList/>
+<TriggerList/>
+<DatabaseList/>
+<MaterializedViewList/>
+<NodeGroupList/>
+<PackageList/>
+<ObjectTypeList/>
+<ProcedureList/>
+<FunctionList/>
+<RollbackSegmentList/>
+<SequenceList/>
+<SynonymList/>
+<AliasList/>
+<StoGroupList/>
+<TablespaceList/>
+<AuxTableList/>
+<SummaryTableList/>
+<UserList/>
+<RoleList/>
+<SchemaList/>
+</Submodel>
+<ObjectTransformList/>
+<Variables m_nModelImageQuality="100" m_nModelImageZoomLevel="100"/>
+</Model>
+<Model><Object ObjectName="BioHub.0.1" OwnerName=""/>
+<Submodel><Object ObjectName="Main Model" OwnerName="BioHub.0.1"/>
+<EntityList/>
+<TransformationList/>
+<ComponentList/>
+<ViewList/>
+<RelationshipList/>
+<SuperTypeList/>
+<ShapeList/>
+<BusinessDataObjectList/>
+<SubjectAreaList/>
+<Variables m_nModelImageQuality="100" m_nModelImageZoomLevel="100"/>
+<BufferPoolList/>
+<TriggerList/>
+<DatabaseList/>
+<MaterializedViewList/>
+<NodeGroupList/>
+<PackageList/>
+<ObjectTypeList/>
+<ProcedureList/>
+<FunctionList/>
+<RollbackSegmentList/>
+<SequenceList/>
+<SynonymList/>
+<AliasList/>
+<StoGroupList/>
+<TablespaceList/>
+<AuxTableList/>
+<SummaryTableList/>
+<UserList/>
+<RoleList/>
+<SchemaList/>
+</Submodel>
+<ObjectTransformList/>
+<Variables m_nModelImageQuality="100" m_nModelImageZoomLevel="100"/>
+</Model>
+<Model><Object ObjectName="BioHub.0.10" OwnerName=""/>
+<Submodel><Object ObjectName="Main Model" OwnerName="BioHub.0.10"/>
+<EntityList/>
+<TransformationList/>
+<ComponentList/>
+<ViewList/>
+<RelationshipList/>
+<SuperTypeList/>
+<ShapeList/>
+<BusinessDataObjectList/>
+<SubjectAreaList/>
+<Variables m_nModelImageQuality="100" m_nModelImageZoomLevel="100"/>
+<BufferPoolList/>
+<TriggerList/>
+<DatabaseList/>
+<MaterializedViewList/>
+<NodeGroupList/>
+<PackageList/>
+<ObjectTypeList/>
+<ProcedureList/>
+<FunctionList/>
+<RollbackSegmentList/>
+<SequenceList/>
+<SynonymList/>
+<AliasList/>
+<StoGroupList/>
+<TablespaceList/>
+<AuxTableList/>
+<SummaryTableList/>
+<UserList/>
+<RoleList/>
+<SchemaList/>
+</Submodel>
+<ObjectTransformList/>
+<Variables m_nModelImageQuality="100" m_nModelImageZoomLevel="100"/>
+</Model>
+<Model><Object ObjectName="BioHub.0.12" OwnerName=""/>
+<Submodel><Object ObjectName="Main Model" OwnerName="BioHub.0.12"/>
+<EntityList/>
+<TransformationList/>
+<ComponentList/>
+<ViewList/>
+<RelationshipList/>
+<SuperTypeList/>
+<ShapeList/>
+<BusinessDataObjectList/>
+<SubjectAreaList><SelectedAll SelectedAll="1"/>
+</SubjectAreaList>
+<Variables m_nModelImageQuality="100" m_nModelImageZoomLevel="100"/>
+<BufferPoolList/>
+<TriggerList/>
+<DatabaseList/>
+<MaterializedViewList/>
+<NodeGroupList/>
+<PackageList/>
+<ObjectTypeList/>
+<ProcedureList/>
+<FunctionList/>
+<RollbackSegmentList/>
+<SequenceList/>
+<SynonymList/>
+<AliasList/>
+<StoGroupList/>
+<TablespaceList/>
+<AuxTableList/>
+<SummaryTableList/>
+<UserList/>
+<RoleList/>
+<SchemaList/>
+</Submodel>
+<ObjectTransformList/>
+<Variables m_nModelImageQuality="100" m_nModelImageZoomLevel="100"/>
+</Model>
+<Model><Object ObjectName="BioHub.0.2" OwnerName=""/>
+<Submodel><Object ObjectName="Main Model" OwnerName="BioHub.0.2"/>
+<EntityList/>
+<TransformationList/>
+<ComponentList/>
+<ViewList/>
+<RelationshipList/>
+<SuperTypeList/>
+<ShapeList/>
+<BusinessDataObjectList/>
+<SubjectAreaList/>
+<Variables m_nModelImageQuality="100" m_nModelImageZoomLevel="100"/>
+<BufferPoolList/>
+<TriggerList/>
+<DatabaseList/>
+<MaterializedViewList/>
+<NodeGroupList/>
+<PackageList/>
+<ObjectTypeList/>
+<ProcedureList/>
+<FunctionList/>
+<RollbackSegmentList/>
+<SequenceList/>
+<SynonymList/>
+<AliasList/>
+<StoGroupList/>
+<TablespaceList/>
+<AuxTableList/>
+<SummaryTableList/>
+<UserList/>
+<RoleList/>
+<SchemaList/>
+</Submodel>
+<ObjectTransformList/>
+<Variables m_nModelImageQuality="100" m_nModelImageZoomLevel="100"/>
+</Model>
+<Model><Object ObjectName="BioHub.0.3" OwnerName=""/>
+<Submodel><Object ObjectName="Main Model" OwnerName="BioHub.0.3"/>
+<EntityList/>
+<TransformationList/>
+<ComponentList/>
+<ViewList/>
+<RelationshipList/>
+<SuperTypeList/>
+<ShapeList/>
+<BusinessDataObjectList/>
+<SubjectAreaList/>
+<Variables m_nModelImageQuality="100" m_nModelImageZoomLevel="100"/>
+<BufferPoolList/>
+<TriggerList/>
+<DatabaseList/>
+<MaterializedViewList/>
+<NodeGroupList/>
+<PackageList/>
+<ObjectTypeList/>
+<ProcedureList/>
+<FunctionList/>
+<RollbackSegmentList/>
+<SequenceList/>
+<SynonymList/>
+<AliasList/>
+<StoGroupList/>
+<TablespaceList/>
+<AuxTableList/>
+<SummaryTableList/>
+<UserList/>
+<RoleList/>
+<SchemaList/>
+</Submodel>
+<ObjectTransformList/>
+<Variables m_nModelImageQuality="100" m_nModelImageZoomLevel="100"/>
+</Model>
+<Model><Object ObjectName="BioHub.0.4" OwnerName=""/>
+<Submodel><Object ObjectName="Main Model" OwnerName="BioHub.0.4"/>
+<EntityList/>
+<TransformationList/>
+<ComponentList/>
+<ViewList/>
+<RelationshipList/>
+<SuperTypeList/>
+<ShapeList/>
+<BusinessDataObjectList/>
+<SubjectAreaList/>
+<Variables m_nModelImageQuality="100" m_nModelImageZoomLevel="100"/>
+<BufferPoolList/>
+<TriggerList/>
+<DatabaseList/>
+<MaterializedViewList/>
+<NodeGroupList/>
+<PackageList/>
+<ObjectTypeList/>
+<ProcedureList/>
+<FunctionList/>
+<RollbackSegmentList/>
+<SequenceList/>
+<SynonymList/>
+<AliasList/>
+<StoGroupList/>
+<TablespaceList/>
+<AuxTableList/>
+<SummaryTableList/>
+<UserList/>
+<RoleList/>
+<SchemaList/>
+</Submodel>
+<ObjectTransformList/>
+<Variables m_nModelImageQuality="100" m_nModelImageZoomLevel="100"/>
+</Model>
+<Model><Object ObjectName="BioHub.0.5" OwnerName=""/>
+<Submodel><Object ObjectName="Main Model" OwnerName="BioHub.0.5"/>
+<EntityList/>
+<TransformationList/>
+<ComponentList/>
+<ViewList/>
+<RelationshipList/>
+<SuperTypeList/>
+<ShapeList/>
+<BusinessDataObjectList/>
+<SubjectAreaList/>
+<Variables m_nModelImageQuality="100" m_nModelImageZoomLevel="100"/>
+<BufferPoolList/>
+<TriggerList/>
+<DatabaseList/>
+<MaterializedViewList/>
+<NodeGroupList/>
+<PackageList/>
+<ObjectTypeList/>
+<ProcedureList/>
+<FunctionList/>
+<RollbackSegmentList/>
+<SequenceList/>
+<SynonymList/>
+<AliasList/>
+<StoGroupList/>
+<TablespaceList/>
+<AuxTableList/>
+<SummaryTableList/>
+<UserList/>
+<RoleList/>
+<SchemaList/>
+</Submodel>
+<ObjectTransformList/>
+<Variables m_nModelImageQuality="100" m_nModelImageZoomLevel="100"/>
+</Model>
+<Model><Object ObjectName="BioHub.0.6" OwnerName=""/>
+<Submodel><Object ObjectName="Main Model" OwnerName="BioHub.0.6"/>
+<EntityList/>
+<TransformationList/>
+<ComponentList/>
+<ViewList/>
+<RelationshipList/>
+<SuperTypeList/>
+<ShapeList/>
+<BusinessDataObjectList/>
+<SubjectAreaList/>
+<Variables m_nModelImageQuality="100" m_nModelImageZoomLevel="100"/>
+<BufferPoolList/>
+<TriggerList/>
+<DatabaseList/>
+<MaterializedViewList/>
+<NodeGroupList/>
+<PackageList/>
+<ObjectTypeList/>
+<ProcedureList/>
+<FunctionList/>
+<RollbackSegmentList/>
+<SequenceList/>
+<SynonymList/>
+<AliasList/>
+<StoGroupList/>
+<TablespaceList/>
+<AuxTableList/>
+<SummaryTableList/>
+<UserList/>
+<RoleList/>
+<SchemaList/>
+</Submodel>
+<ObjectTransformList/>
+<Variables m_nModelImageQuality="100" m_nModelImageZoomLevel="100"/>
+</Model>
+<Model><Object ObjectName="BioHub.0.7" OwnerName=""/>
+<Submodel><Object ObjectName="Main Model" OwnerName="BioHub.0.7"/>
+<EntityList/>
+<TransformationList/>
+<ComponentList/>
+<ViewList/>
+<RelationshipList/>
+<SuperTypeList/>
+<ShapeList/>
+<BusinessDataObjectList/>
+<SubjectAreaList/>
+<Variables m_nModelImageQuality="100" m_nModelImageZoomLevel="100"/>
+<BufferPoolList/>
+<TriggerList/>
+<DatabaseList/>
+<MaterializedViewList/>
+<NodeGroupList/>
+<PackageList/>
+<ObjectTypeList/>
+<ProcedureList/>
+<FunctionList/>
+<RollbackSegmentList/>
+<SequenceList/>
+<SynonymList/>
+<AliasList/>
+<StoGroupList/>
+<TablespaceList/>
+<AuxTableList/>
+<SummaryTableList/>
+<UserList/>
+<RoleList/>
+<SchemaList/>
+</Submodel>
+<ObjectTransformList/>
+<Variables m_nModelImageQuality="100" m_nModelImageZoomLevel="100"/>
+</Model>
+<Model><Object ObjectName="BioHub.0.8" OwnerName=""/>
+<Submodel><Object ObjectName="Main Model" OwnerName="BioHub.0.8"/>
+<EntityList/>
+<TransformationList/>
+<ComponentList/>
+<ViewList/>
+<RelationshipList/>
+<SuperTypeList/>
+<ShapeList/>
+<BusinessDataObjectList/>
+<SubjectAreaList/>
+<Variables m_nModelImageQuality="100" m_nModelImageZoomLevel="100"/>
+<BufferPoolList/>
+<TriggerList/>
+<DatabaseList/>
+<MaterializedViewList/>
+<NodeGroupList/>
+<PackageList/>
+<ObjectTypeList/>
+<ProcedureList/>
+<FunctionList/>
+<RollbackSegmentList/>
+<SequenceList/>
+<SynonymList/>
+<AliasList/>
+<StoGroupList/>
+<TablespaceList/>
+<AuxTableList/>
+<SummaryTableList/>
+<UserList/>
+<RoleList/>
+<SchemaList/>
+</Submodel>
+<ObjectTransformList/>
+<Variables m_nModelImageQuality="100" m_nModelImageZoomLevel="100"/>
+</Model>
+<Model><Object ObjectName="BioHub.0.9" OwnerName=""/>
+<Submodel><Object ObjectName="Main Model" OwnerName="BioHub.0.9"/>
+<EntityList/>
+<TransformationList/>
+<ComponentList/>
+<ViewList/>
+<RelationshipList/>
+<SuperTypeList/>
+<ShapeList/>
+<BusinessDataObjectList/>
+<SubjectAreaList/>
+<Variables m_nModelImageQuality="100" m_nModelImageZoomLevel="100"/>
+<BufferPoolList/>
+<TriggerList/>
+<DatabaseList/>
+<MaterializedViewList/>
+<NodeGroupList/>
+<PackageList/>
+<ObjectTypeList/>
+<ProcedureList/>
+<FunctionList/>
+<RollbackSegmentList/>
+<SequenceList/>
+<SynonymList/>
+<AliasList/>
+<StoGroupList/>
+<TablespaceList/>
+<AuxTableList/>
+<SummaryTableList/>
+<UserList/>
+<RoleList/>
+<SchemaList/>
+</Submodel>
+<ObjectTransformList/>
+<Variables m_nModelImageQuality="100" m_nModelImageZoomLevel="100"/>
+</Model>
+</ModelList>
+<DataDictionary><SecurityTypeList/>
+<SecurityPropertyList/>
+<AttachmentTypeList/>
+<AttachmentList/>
+<DefaultList/>
+<RuleList/>
+<UserDataTypeList/>
+<DomainList/>
+<ReferenceValueList/>
+<NSTemplateList/>
+</DataDictionary>
+</ReportObjectData>
+</ERStudioReportWizard>
+
+
