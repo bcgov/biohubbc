@@ -462,10 +462,7 @@ export class ObservationRepository extends BaseRepository {
       .from('survey_observation')
       .where('survey_id', surveyId);
 
-    const response = await this.connection.knex(
-      query,
-      ObservationGeometryRecord
-    );
+    const response = await this.connection.knex(query, ObservationGeometryRecord);
 
     return response.rows;
   }
