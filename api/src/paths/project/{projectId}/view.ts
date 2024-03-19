@@ -191,7 +191,6 @@ GET.apiDoc = {
  */
 export function viewProject(): RequestHandler {
   return async (req, res) => {
-    throw new Error('This is a sample error for testing purposes and should not be committed.');
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
