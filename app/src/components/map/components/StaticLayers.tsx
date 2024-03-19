@@ -46,7 +46,6 @@ const StaticLayers = (props: PropsWithChildren<IStaticLayersProps>) => {
             <LayersControl.Overlay checked={true} name={layer.layerName} key={`static-layer-${layer.layerName}`}>
               <FeatureGroup key={`static-feature-group-${layer.layerName}`}>
                 {layer.features.map((item, index) => {
-                 
                   const id = item.key || item.geoJSON.id || index;
 
                   return (

@@ -16,7 +16,8 @@ interface ISamplingPeriodsTimelineProps {
 const useStyles = makeStyles((theme: Theme) => ({
   typographyDate: {
     fontSize: '0.85rem',
-    color: theme.palette.text.secondary
+    color: theme.palette.text.secondary,
+    fontWeight: 500
   },
   typographyTime: {
     fontSize: '0.85rem',
@@ -46,11 +47,11 @@ const SamplingPeriodsTimeline = (props: ISamplingPeriodsTimelineProps) => {
             <TimelineSeparator sx={{ minWidth: '11px' }}>
               {props.samplePeriods.length > 1 ? (
                 <>
-                  <TimelineDot sx={{ bgcolor: grey[300] }} />
+                  <TimelineDot sx={{ bgcolor: grey[400] }} />
                   {index < (props.samplePeriods?.length ?? 0) - 1 && (
                     <TimelineConnector
                       sx={{
-                        bgcolor: grey[300],
+                        bgcolor: grey[400],
                         position: 'absolute',
                         height: '85%',
                         top: 22,
