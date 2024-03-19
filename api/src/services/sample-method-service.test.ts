@@ -102,8 +102,8 @@ describe('SampleMethodService', () => {
       const sampleMethodService = new SampleMethodService(mockDBConnection);
       const response = await sampleMethodService.deleteSampleMethodRecord(mockSurveyId, mockSamplePeriodId);
 
-      expect(deleteSampleMethodRecordStub).to.be.calledOnceWith(1001, mockSampleMethodId);
-      expect(deleteSamplePeriodRecordStub).to.be.calledOnceWith([mockSamplePeriodId]);
+      expect(deleteSampleMethodRecordStub).to.be.calledOnceWith(mockSurveyId, mockSampleMethodId);
+      expect(deleteSamplePeriodRecordStub).to.be.calledOnceWith(mockSurveyId, [mockSamplePeriodId]);
       expect(response).to.eql(mockSampleMethodRecord);
     });
   });
@@ -200,7 +200,7 @@ describe('SampleMethodService', () => {
 
     it('Updates a sample method successfully', async () => {
       const mockDBConnection = getMockDBConnection();
-
+      
       const mockSampleMethodRecord: SampleMethodRecord = {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
@@ -249,7 +249,7 @@ describe('SampleMethodService', () => {
       const sampleMethodService = new SampleMethodService(mockDBConnection);
       const response = await sampleMethodService.updateSampleMethod(mockSurveyId, sampleMethod);
 
-      expect(updateSampleMethodStub).to.be.calledOnceWith(sampleMethod);
+      expect(updateSampleMethodStub).to.be.calledOnceWith(mockSurveyId, sampleMethod);
       expect(response).to.eql(mockSampleMethodRecord);
     });
   });
