@@ -57,6 +57,7 @@ export type SubcountObservationColumns = {
   observation_subcount_id: number | null;
   subcount: number | null;
   qualitative_measurements: {
+    field: string;
     critterbase_taxon_measurement_id: string;
     critterbase_measurement_qualitative_option_id: string;
   }[];
@@ -347,6 +348,14 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    */
   const hasError = useCallback(
     (params: GridCellParams): boolean => {
+      if (
+        params.field === '295b6def-df90-410d-b63d-859d2905e733' ||
+        params.field === '"fc5fa9a9-cb06-490b-a0c0-0a0be35ffa77"'
+      ) {
+        console.log('__ Has Errors __');
+        console.log(params);
+        console.log(validationModel);
+      }
       return Boolean(
         validationModel[params.row.id]?.some((error) => {
           return error.field === params.field;
@@ -461,11 +470,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       measurementColumns: string[]
     ): Promise<ObservationRowValidationError[] | null> => {
       const measurementErrors: ObservationRowValidationError[] = [];
-      console.log(row);
-      // need to fetch measurements for TSN
-      // search through measurements for same name
-      // check value
-
+      console.log(`Measurement Row to Validate: `, row);
       if (!row.itis_tsn && !measurementColumns.length) {
         return null;
       }
@@ -479,7 +484,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         `TSN MEASUREMENTS: Qual: ${measurements?.qualitative.length} Quant: ${measurements?.quantitative.length}`
       );
       if (!measurements) {
-        //TODO: create a validation error saying we couldn't find any data for that taxon
         return [
           {
             field: 'itis_tsn',
@@ -488,7 +492,12 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         ];
       }
 
-      const subCounts: SubcountObservationColumns[] = row['subcounts'];
+      const subCounts: SubcountObservationColumns[] | undefined = row['subcounts'];
+
+      console.log('Sub Counts for row: ', subCounts);
+      if (!subCounts) {
+        return null;
+      }
       subCounts.forEach((subCount: SubcountObservationColumns) => {
         // Validate any qualitative measurements this row has
         subCount.qualitative_measurements.forEach((qm) => {
@@ -498,9 +507,10 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
           if (!foundMeasurement) {
             // TODO: nothing found but we have a qualitative measurement, no bueno
             measurementErrors.push({
-              field: 'itis_tsn',
+              field: qm.critterbase_taxon_measurement_id,
               message: 'Qualitative Measurement is invalid for the given species.'
             });
+            return;
           }
 
           const foundOption = foundMeasurement?.options.find(
@@ -508,8 +518,10 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
           );
 
           if (!foundOption) {
-            // TODO: nothing found but we have a qualitative measurement, no bueno
-            measurementErrors.push({ field: 'itis_tsn', message: 'Invalid option selected for taxon.' });
+            measurementErrors.push({
+              field: qm.critterbase_taxon_measurement_id,
+              message: 'Invalid option selected for taxon.'
+            });
           }
         });
 
@@ -518,8 +530,10 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
             (q) => q.taxon_measurement_id === qm.critterbase_taxon_measurement_id
           );
           if (!foundMeasurement) {
-            // TODO: nothing found but we have a qualitative measurement, no bueno
-            measurementErrors.push({ field: 'itis_tsn', message: 'Invalid option selected for taxon.' });
+            measurementErrors.push({
+              field: qm.critterbase_taxon_measurement_id,
+              message: 'Invalid option selected for taxon.'
+            });
             return;
           }
           const min_value = foundMeasurement.min_value;
@@ -546,7 +560,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
           // Invalid
           measurementErrors.push({
-            field: 'itis_tsn',
+            field: qm.critterbase_taxon_measurement_id,
             message: `Value provided is outside of the valid range ${min_value} < ${value} < ${max_value}`
           });
         });
@@ -652,6 +666,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         if (rowErrors.length > 0) {
           const waitedModel = await tableModel;
           waitedModel[row.id] = rowErrors;
+          tableModel = Promise.resolve(waitedModel);
         }
 
         return tableModel;
@@ -959,7 +974,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     // Validate rows
     const validationErrors = await _validateRows();
-
+    console.log(`SAVE ACTION`, validationErrors);
     if (validationErrors) {
       return;
     }
@@ -1004,6 +1019,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    * Transition all rows tracked by `modifiedRowIds` to edit mode.
    */
   const discardChanges = useCallback(() => {
+    console.log(`__ -- __ -- Discard Changes __`);
     // Remove any rows from the modified rows array
     setModifiedRowIds([]);
     // Remove any newly created rows
@@ -1036,6 +1052,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    */
   const _saveRecords = useCallback(
     async (rowsToSave: IObservationTableRowToSave[]) => {
+      console.log(`__saveRecords`);
       try {
         await biohubApi.observation.insertUpdateObservationRecords(projectId, surveyId, rowsToSave);
 
@@ -1304,7 +1321,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     }
 
     if (!observationsData) {
-      // No obserations data has laoded
+      // No observation data has loaded
       return;
     }
 
