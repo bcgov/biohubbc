@@ -6,31 +6,6 @@ import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import RequestSubmitted from './RequestSubmitted';
 
 describe('RequestSubmitted', () => {
-  it.skip('renders a spinner when the sims user information is still loading', () => {
-    const authState = getMockAuthState({
-      base: SystemUserAuthState,
-      overrides: { simsUserWrapper: { isLoading: true } }
-    });
-
-    const history = createMemoryHistory();
-
-    history.push('/access-request');
-
-    const { asFragment } = render(
-      <AuthStateContext.Provider value={authState}>
-        <Router history={history}>
-          <RequestSubmitted />
-        </Router>
-      </AuthStateContext.Provider>
-    );
-
-    // does not change location
-    expect(history.location.pathname).toEqual('/access-request');
-
-    // renders a spinner
-    expect(asFragment()).toMatchSnapshot();
-  });
-
   it.skip('redirects to `/admin/projects` when user has at least 1 system role', () => {
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
@@ -65,33 +40,6 @@ describe('RequestSubmitted', () => {
     );
 
     expect(history.location.pathname).toEqual('/');
-  });
-
-  it.skip('renders correctly when user has no role but has a pending access requests', () => {
-    const authState = getMockAuthState({
-      base: SystemUserAuthState,
-      overrides: { simsUserWrapper: { hasAccessRequest: true } }
-    });
-
-    const history = createMemoryHistory();
-
-    history.push('/access-request');
-
-    const { getByText, asFragment } = render(
-      <AuthStateContext.Provider value={authState}>
-        <Router history={history}>
-          <RequestSubmitted />
-        </Router>
-      </AuthStateContext.Provider>
-    );
-
-    // does not change location
-    expect(history.location.pathname).toEqual('/access-request');
-
-    expect(getByText('Log Out')).toBeVisible();
-
-    // renders the component in full
-    expect(asFragment()).toMatchSnapshot();
   });
 
   describe('Log Out', () => {
