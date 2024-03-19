@@ -16,7 +16,7 @@ export const LandingIntro = () => {
           }
         />
       </Grid>
-      <Grid item xs={10} md={6}>
+      <Grid item xs={12} md={6}>
         <QuestionAnswer
           title="Who can gain access?"
           subtext={
@@ -27,7 +27,7 @@ export const LandingIntro = () => {
           }
         />
       </Grid>
-      <Grid item xs={10} md={6}>
+      <Grid item xs={12} md={6}>
         <QuestionAnswer
           title="What's the benefit?"
           subtext={
@@ -39,7 +39,7 @@ export const LandingIntro = () => {
           }
         />
       </Grid>
-      <Grid item xs={10} md={6}>
+      <Grid item xs={12} md={6}>
         <QuestionAnswer
           title="How can I get started?"
           subtext={
