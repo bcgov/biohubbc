@@ -175,6 +175,6 @@ export class SampleMethodService extends DBService {
       }
     }
 
-    return this.sampleMethodRepository.updateSampleMethod(sampleMethod);
+    return this.sampleMethodRepository.updateSampleMethod(surveyId, sampleMethod);
   }
 }

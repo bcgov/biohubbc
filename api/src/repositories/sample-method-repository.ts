@@ -90,20 +90,20 @@ export class SampleMethodRepository extends BaseRepository {
    */
   async updateSampleMethod(surveyId: number, sampleMethod: UpdateSampleMethodRecord): Promise<SampleMethodRecord> {
     const sql = SQL`
-      UPDATE survey_sample_method
+      UPDATE survey_sample_method ssm
       SET
-        survey_sample_site_id=${sampleMethod.survey_sample_site_id},
-        method_lookup_id = ${sampleMethod.method_lookup_id},
-        description=${sampleMethod.description},
-        method_response_metric_id=${sampleMethod.method_response_metric_id}
-      INNER JOIN 
-        survey_sample_site ssm ON ssm.survey_sample_site_id = sss.survey_sample_site_id
+          survey_sample_site_id = ${sampleMethod.survey_sample_site_id},
+          method_lookup_id = ${sampleMethod.method_lookup_id},
+          description = ${sampleMethod.description},
+          method_response_metric_id = ${sampleMethod.method_response_metric_id}
+      FROM 
+          survey_sample_site sss
       WHERE
-        survey_sample_method_id = ${sampleMethod.survey_sample_method_id}
-      AND
-        survey_id = ${surveyId}
-      RETURNING
-        *;`;
+          ssm.survey_sample_site_id = sss.survey_sample_site_id
+          AND ssm.survey_sample_method_id = ${sampleMethod.survey_sample_method_id}
+          AND sss.survey_id = ${surveyId}
+      RETURNING ssm.*;
+    `;
 
     const response = await this.connection.sql(sql);
 
@@ -165,16 +165,13 @@ export class SampleMethodRepository extends BaseRepository {
     // @TODO join on surveyId
     surveyId;
     const sqlStatement = SQL`
-      DELETE FROM
-        survey_sample_method sss
-      INNER JOIN 
-        survey_sample_site ssm ON ssm.survey_sample_site_id = sss.survey_sample_site_id
+      DELETE FROM survey_sample_method
+      USING survey_sample_site sss
       WHERE
-        survey_sample_method_id = ${surveySampleMethodId}
-      AND
-        survey_id = ${surveyId}
-      RETURNING
-        sss.*;
+          survey_sample_method.survey_sample_site_id = sss.survey_sample_site_id
+          AND survey_sample_method_id = ${surveySampleMethodId}
+          AND survey_id = ${surveyId}
+      RETURNING *;
     `;
 
     const response = await this.connection.sql(sqlStatement, SampleMethodRecord);
