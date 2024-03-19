@@ -15,9 +15,11 @@ import PageHeader from 'components/layout/PageHeader';
 import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import { ListProjectsI18N } from 'constants/i18n';
 import { SYSTEM_ROLE } from 'constants/roles';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useCodesContext } from 'hooks/useContext';
+import { useCodesContext, useDialogContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { IProjectsListItemData } from 'interfaces/useProjectApi.interface';
 import { useEffect, useState } from 'react';
@@ -51,13 +53,48 @@ const ProjectsListPage = () => {
 
   const codesContext = useCodesContext();
 
+  // Dialog context used to display projects list loading error messages.
+  const dialogContext = useDialogContext();
+  const defaultErrorDialogProps = {
+    dialogTitle: ListProjectsI18N.listProjectsErrorDialogTitle,
+    dialogText: ListProjectsI18N.listProjectsErrorDialogText,
+    open: false,
+    onClose: () => {
+      dialogContext.setErrorDialog({ open: false });
+    },
+    onOk: () => {
+      dialogContext.setErrorDialog({ open: false });
+    }
+  };
+
+  const showProjectsListLoadFailureDialog = (error: any) => {
+    dialogContext.setErrorDialog({
+      ...defaultErrorDialogProps,
+      open: true,
+      dialogErrorDetails: (error as APIError).errors
+    });
+  };
+
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
   const projectsDataLoader = useDataLoader(
-    (pagination: ApiPaginationRequestOptions, filter?: IProjectAdvancedFilters) => {
-      return biohubApi.project.getProjectsList(pagination, filter);
+    async (pagination: ApiPaginationRequestOptions, filter?: IProjectAdvancedFilters) => {
+      try {
+        const response = await biohubApi.project.getProjectsList(pagination, filter);
+        return response;
+      } catch (error) {
+        showProjectsListLoadFailureDialog(error);
+        return {
+          projects: [],
+          pagination: {
+            current_page: 1,
+            last_page: 1,
+            total: 0
+          }
+        };
+      }
     }
   );
 

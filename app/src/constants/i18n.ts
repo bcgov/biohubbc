@@ -16,6 +16,18 @@ export const EditProjectI18N = {
     'An error has occurred while attempting to edit your project, please try again. If the error persists, please contact your system administrator.'
 };
 
+export const ListProjectsI18N = {
+  listProjectsErrorDialogTitle: 'Failed to load projects list data',
+  listProjectsErrorDialogText:
+    'An error occurred while retrieving your list of projects. Please try again. If the error persists, please contact your system administrator.'
+};
+
+export const ViewProjectI18N = {
+  viewProjectErrorDialogTitle: 'Failed to load project data',
+  viewProjectErrorDialogText:
+    'The data for this project could not be retrieved. Please try again. If the error persists, please contact your system administrator.'
+};
+
 export const CreateSurveyI18N = {
   cancelTitle: 'Discard changes and exit?',
   cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
