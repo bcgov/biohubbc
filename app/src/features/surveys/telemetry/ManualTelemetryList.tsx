@@ -94,6 +94,8 @@ const ManualTelemetryList = () => {
   useEffect(() => {
     surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
     surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const deployments = surveyContext.deploymentDataLoader.data;

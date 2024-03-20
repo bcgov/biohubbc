@@ -102,13 +102,18 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
   const [editedGeometry, setEditedGeometry] = useState<Feature[] | undefined>(undefined);
 
   useEffect(() => {
-    if (editedGeometry) {
-      updateStaticLayers(editedGeometry);
+    if (!editedGeometry) {
+      return;
     }
+
+    updateStaticLayers(editedGeometry);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editedGeometry]);
 
   useEffect(() => {
     updateStaticLayers(samplingSiteGeoJsonFeatures);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [samplingSiteGeoJsonFeatures]);
 
   return (
