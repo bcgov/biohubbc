@@ -579,9 +579,9 @@ export const ObservationQualitativeMeasurementColDef = (props: {
       );
     },
     renderEditCell: (params) => {
-      const error = hasError(params);
-
-      return <AutocompleteDataGridEditCell dataGridProps={params} options={qualitativeOptions} error={error} />;
+      return (
+        <AutocompleteDataGridEditCell dataGridProps={params} options={qualitativeOptions} error={hasError(params)} />
+      );
     }
   };
 };

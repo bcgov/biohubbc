@@ -348,14 +348,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    */
   const hasError = useCallback(
     (params: GridCellParams): boolean => {
-      if (
-        params.field === '295b6def-df90-410d-b63d-859d2905e733' ||
-        params.field === '"fc5fa9a9-cb06-490b-a0c0-0a0be35ffa77"'
-      ) {
-        console.log('__ Has Errors __');
-        console.log(params);
-        console.log(validationModel);
-      }
+      // TODO: issue with measurement columns not getting the validation model, it is always empty
+      // console.log('__ Has Errors __');
+      // console.log(`Row ID: ${params.row.id}`, params.field, validationModel);
       return Boolean(
         validationModel[params.row.id]?.some((error) => {
           return error.field === params.field;
@@ -455,9 +450,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
         tsnMeasurementMap[String(tsn)] = response;
       } catch (error) {
-        console.log('__________________');
-        console.log('__________________');
-        console.log('__________________');
         console.log(error);
       }
     }
@@ -492,78 +484,67 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         ];
       }
 
-      const subCounts: SubcountObservationColumns[] | undefined = row['subcounts'];
-
-      console.log('Sub Counts for row: ', subCounts);
-      if (!subCounts) {
+      if (!measurementColumns) {
         return null;
       }
-      subCounts.forEach((subCount: SubcountObservationColumns) => {
-        // Validate any qualitative measurements this row has
-        subCount.qualitative_measurements.forEach((qm) => {
-          const foundMeasurement = measurements.qualitative.find(
-            (q) => q.taxon_measurement_id === qm.critterbase_taxon_measurement_id
-          );
-          if (!foundMeasurement) {
-            // TODO: nothing found but we have a qualitative measurement, no bueno
+      // ok need to re work this as a flat object instead of doing what I was doing before...
+      measurementColumns.forEach((measurementColumn) => {
+        const data = row[measurementColumn];
+        if (data) {
+          // actually have data, need to validate
+          console.log(data);
+
+          const foundQualitative = measurements.qualitative.find((q) => q.taxon_measurement_id === measurementColumn);
+          if (foundQualitative) {
+            const foundOption = foundQualitative.options.find((op) => op.qualitative_option_id === String(data));
+
+            if (!foundOption) {
+              // found measurement, no option, no bueno
+              measurementErrors.push({
+                field: measurementColumn,
+                message: 'Invalid option selected for taxon.'
+              });
+            }
+          }
+
+          const foundQuantitative = measurements.quantitative.find((q) => q.taxon_measurement_id === measurementColumn);
+          if (foundQuantitative) {
+            const min_value = foundQuantitative.min_value;
+            const max_value = foundQuantitative.max_value;
+            const value = Number(data);
+
+            if (min_value && max_value) {
+              if (min_value <= value && value <= max_value) {
+                return true;
+              }
+            } else {
+              if (min_value !== null && min_value <= value) {
+                return true;
+              }
+
+              if (max_value !== null && value <= max_value) {
+                return true;
+              }
+
+              if (min_value === null && max_value === null) {
+                return true;
+              }
+            }
+
+            // Invalid
             measurementErrors.push({
-              field: qm.critterbase_taxon_measurement_id,
-              message: 'Qualitative Measurement is invalid for the given species.'
+              field: measurementColumn,
+              message: `Value provided is outside of the valid range ${min_value} < ${value} < ${max_value}`
             });
-            return;
           }
 
-          const foundOption = foundMeasurement?.options.find(
-            (op) => op.qualitative_option_id === qm.critterbase_measurement_qualitative_option_id
-          );
-
-          if (!foundOption) {
+          if (!foundQualitative && !foundQuantitative) {
             measurementErrors.push({
-              field: qm.critterbase_taxon_measurement_id,
-              message: 'Invalid option selected for taxon.'
+              field: measurementColumn,
+              message: `Invalid measurement set for taxon.`
             });
           }
-        });
-
-        subCount.quantitative_measurements.forEach((qm) => {
-          const foundMeasurement = measurements.quantitative.find(
-            (q) => q.taxon_measurement_id === qm.critterbase_taxon_measurement_id
-          );
-          if (!foundMeasurement) {
-            measurementErrors.push({
-              field: qm.critterbase_taxon_measurement_id,
-              message: 'Invalid option selected for taxon.'
-            });
-            return;
-          }
-          const min_value = foundMeasurement.min_value;
-          const max_value = foundMeasurement.max_value;
-          const value = Number(qm.value);
-
-          if (min_value && max_value) {
-            if (min_value <= value && value <= max_value) {
-              return true;
-            }
-          } else {
-            if (min_value !== null && min_value <= value) {
-              return true;
-            }
-
-            if (max_value !== null && value <= max_value) {
-              return true;
-            }
-
-            if (min_value === null && max_value === null) {
-              return true;
-            }
-          }
-
-          // Invalid
-          measurementErrors.push({
-            field: qm.critterbase_taxon_measurement_id,
-            message: `Value provided is outside of the valid range ${min_value} < ${value} < ${max_value}`
-          });
-        });
+        }
       });
 
       if (measurementErrors.length > 0) {
@@ -608,10 +589,11 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     ];
 
     // get measurement columns
-    const measurementColumns = tableColumns.filter((tc) => {
-      return nonMeasurementColumns.indexOf(String(tc.field)) < 0;
-    });
-    console.log(measurementColumns.length);
+    const measurementColumns = tableColumns
+      .filter((tc) => {
+        return nonMeasurementColumns.indexOf(String(tc.field)) < 0;
+      })
+      .map((item) => item.field);
 
     const validation = await rowValues.reduce(
       async (tableModel: Promise<ObservationTableValidationModel>, row: IObservationTableRow) => {
@@ -657,7 +639,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         }
 
         if (nonMeasurementColumns.length > 0) {
-          const results = await _validateMeasurements(row, nonMeasurementColumns);
+          const results = await _validateMeasurements(row, measurementColumns);
           if (results) {
             rowErrors = [...results, ...rowErrors];
           }
@@ -666,7 +648,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         if (rowErrors.length > 0) {
           const waitedModel = await tableModel;
           waitedModel[row.id] = rowErrors;
-          tableModel = Promise.resolve(waitedModel);
         }
 
         return tableModel;
@@ -674,7 +655,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       Promise.resolve({})
     );
 
-    console.log('Validation results: ', validation);
+    console.log('______ Validation results: ', validation);
     setValidationModel(validation);
 
     return Object.keys(validation).length > 0 ? validation : null;
