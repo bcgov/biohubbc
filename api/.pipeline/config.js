@@ -94,7 +94,7 @@ const phases = {
     logLevel: 'info',
     apiResponseValidationEnabled: true,
     databaseResponseValidationEnabled: true,
-    nodeOptions: '--max_old_space_size=2250', // 75% of memoryLimit (bytes)
+    nodeOptions: '--max_old_space_size=3000', // 75% of memoryLimit (bytes)
     cpuRequest: '50m',
     cpuLimit: '600m',
     memoryRequest: '100Mi',
@@ -130,7 +130,7 @@ const phases = {
     logLevel: 'info',
     apiResponseValidationEnabled: true,
     databaseResponseValidationEnabled: true,
-    nodeOptions: '--max_old_space_size=2250', // 75% of memoryLimit (bytes)
+    nodeOptions: '--max_old_space_size=3000', // 75% of memoryLimit (bytes)
     cpuRequest: '50m',
     cpuLimit: '1000m',
     memoryRequest: '100Mi',
@@ -166,7 +166,7 @@ const phases = {
     logLevel: 'warn',
     apiResponseValidationEnabled: false,
     databaseResponseValidationEnabled: false,
-    nodeOptions: '--max_old_space_size=2250', // 75% of memoryLimit (bytes)
+    nodeOptions: '--max_old_space_size=6000', // 75% of memoryLimit (bytes)
     cpuRequest: '50m',
     cpuLimit: '2000m',
     memoryRequest: '100Mi',
