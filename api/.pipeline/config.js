@@ -98,8 +98,8 @@ const phases = {
     cpuRequest: '50m',
     cpuLimit: '600m',
     memoryRequest: '100Mi',
-    memoryLimit: '3Gi',
-    replicas: (isStaticDeployment && '1') || '1',
+    memoryLimit: '4Gi',
+    replicas: '1',
     replicasMax: (isStaticDeployment && '2') || '1'
   },
   test: {
@@ -134,9 +134,9 @@ const phases = {
     cpuRequest: '50m',
     cpuLimit: '1000m',
     memoryRequest: '100Mi',
-    memoryLimit: '3Gi',
+    memoryLimit: '4Gi',
     replicas: '2',
-    replicasMax: '4'
+    replicasMax: '2'
   },
   prod: {
     namespace: 'af2668-prod',
@@ -168,11 +168,11 @@ const phases = {
     databaseResponseValidationEnabled: false,
     nodeOptions: '--max_old_space_size=2250', // 75% of memoryLimit (bytes)
     cpuRequest: '50m',
-    cpuLimit: '1000m',
+    cpuLimit: '2000m',
     memoryRequest: '100Mi',
-    memoryLimit: '3Gi',
+    memoryLimit: '8Gi',
     replicas: '2',
-    replicasMax: '4'
+    replicasMax: '2'
   }
 };
 
