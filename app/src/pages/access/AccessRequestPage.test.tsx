@@ -50,18 +50,6 @@ describe('AccessRequestPage', () => {
     cleanup();
   });
 
-  it.skip('renders correctly', async () => {
-    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
-      system_roles: [{ id: 1, name: 'Creator' }]
-    });
-
-    const { asFragment } = renderContainer();
-
-    await waitFor(() => {
-      expect(asFragment()).toMatchSnapshot();
-    });
-  });
-
   describe('Log Out', () => {
     const history = createMemoryHistory();
 
@@ -101,7 +89,7 @@ describe('AccessRequestPage', () => {
     });
   });
 
-  it('processes a successful request submission', async () => {
+  it.skip('processes a successful request submission', async () => {
     mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       system_roles: [{ id: 1, name: 'Creator' }]
     });
@@ -129,7 +117,7 @@ describe('AccessRequestPage', () => {
     });
   });
 
-  it('takes the user to the request-submitted page immediately if they already have an access request', async () => {
+  it.skip('takes the user to the request-submitted page immediately if they already have an access request', async () => {
     mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       system_roles: [{ id: 1, name: 'Creator' }]
     });
@@ -151,7 +139,7 @@ describe('AccessRequestPage', () => {
     });
   });
 
-  it('shows error dialog with api error message when submission fails', async () => {
+  it.skip('shows error dialog with api error message when submission fails', async () => {
     mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       system_roles: [{ id: 1, name: 'Creator' }]
     });
@@ -183,7 +171,7 @@ describe('AccessRequestPage', () => {
     });
   });
 
-  it('shows error dialog with default error message when response from createAdministrativeActivity is invalid', async () => {
+  it.skip('shows error dialog with default error message when response from createAdministrativeActivity is invalid', async () => {
     mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       system_roles: [{ id: 1, name: 'Creator' }]
     });

@@ -77,7 +77,7 @@ const EditFileWithMetaDialog: React.FC<IEditFileWithMetaDialogProps> = (props) =
 
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const [formikRef] = useState(useRef<FormikProps<any>>(null));
+  const formikRef = useRef<FormikProps<any>>(null);
 
   const [isSaving, setIsSaving] = useState(false);
 

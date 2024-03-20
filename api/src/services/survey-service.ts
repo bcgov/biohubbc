@@ -18,8 +18,7 @@ import {
   SurveySupplementaryData
 } from '../models/survey-view';
 import { AttachmentRepository } from '../repositories/attachment-repository';
-import { PublishStatus } from '../repositories/history-publish-repository';
-import { PostSurveyBlock, SurveyBlockRecord } from '../repositories/survey-block-repository';
+import { PostSurveyBlock, SurveyBlockRecordWithCount } from '../repositories/survey-block-repository';
 import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import {
   IGetLatestSurveyOccurrenceSubmission,
@@ -31,17 +30,17 @@ import {
   SurveyRepository
 } from '../repositories/survey-repository';
 import { getLogger } from '../utils/logger';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
 import { FundingSourceService } from './funding-source-service';
 import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
-import { PlatformService } from './platform-service';
+import { ITaxonomy, PlatformService } from './platform-service';
 import { RegionService } from './region-service';
 import { SiteSelectionStrategyService } from './site-selection-strategy-service';
 import { SurveyBlockService } from './survey-block-service';
 import { SurveyLocationService } from './survey-location-service';
 import { SurveyParticipationService } from './survey-participation-service';
-import { TaxonomyService } from './taxonomy-service';
 
 const defaultLog = getLogger('services/survey-service');
 
@@ -107,7 +106,7 @@ export class SurveyService extends DBService {
     };
   }
 
-  async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockRecord[]> {
+  async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockRecordWithCount[]> {
     const service = new SurveyBlockService(this.connection);
     return service.getSurveyBlocksForSurveyId(surveyId);
   }
@@ -174,15 +173,25 @@ export class SurveyService extends DBService {
    * @memberof SurveyService
    */
   async getSpeciesData(surveyId: number): Promise<GetFocalSpeciesData & GetAncillarySpeciesData> {
-    const response = await this.surveyRepository.getSpeciesData(surveyId);
+    const studySpeciesResponse = await this.surveyRepository.getSpeciesData(surveyId);
 
-    const focalSpeciesIds = response.filter((item) => item.is_focal).map((item) => item.wldtaxonomic_units_id);
-    const ancillarySpeciesIds = response.filter((item) => !item.is_focal).map((item) => item.wldtaxonomic_units_id);
+    const [focalSpeciesIds, ancillarySpeciesIds] = studySpeciesResponse.reduce(
+      ([focal, ancillary]: [number[], number[]], studySpecies) => {
+        if (studySpecies.is_focal) {
+          focal.push(studySpecies.itis_tsn);
+        } else {
+          ancillary.push(studySpecies.itis_tsn);
+        }
 
-    const taxonomyService = new TaxonomyService();
+        return [focal, ancillary];
+      },
+      [[], []]
+    );
 
-    const focalSpecies = await taxonomyService.getSpeciesFromIds(focalSpeciesIds);
-    const ancillarySpecies = await taxonomyService.getSpeciesFromIds(ancillarySpeciesIds);
+    const platformService = new PlatformService(this.connection);
+
+    const focalSpecies = await platformService.getTaxonomyByTsns(focalSpeciesIds);
+    const ancillarySpecies = await platformService.getTaxonomyByTsns(ancillarySpeciesIds);
 
     return { ...new GetFocalSpeciesData(focalSpecies), ...new GetAncillarySpeciesData(ancillarySpecies) };
   }
@@ -305,17 +314,6 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Get a survey summary submission record for a given survey id.
-   *
-   * @param {number} surveyId
-   * @return {*}  {(Promise<{ survey_summary_submission_id: number | null }>)}
-   * @memberof SurveyService
-   */
-  async getSurveySummarySubmission(surveyId: number): Promise<{ survey_summary_submission_id: number | null }> {
-    return this.surveyRepository.getSurveySummarySubmission(surveyId);
-  }
-
-  /**
    * Get surveys by their ids.
    *
    * @param {number[]} surveyIds
@@ -340,14 +338,19 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Fetches a subset of survey fields for all surveys under a project.
+   * Fetches a subset of survey fields for a paginated list of surveys under
+   * a given project.
    *
    * @param {number} projectId
+   * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<SurveyBasicFields[]>}
    * @memberof SurveyService
    */
-  async getSurveysBasicFieldsByProjectId(projectId: number): Promise<SurveyBasicFields[]> {
-    const surveys = await this.surveyRepository.getSurveysBasicFieldsByProjectId(projectId);
+  async getSurveysBasicFieldsByProjectId(
+    projectId: number,
+    pagination?: ApiPaginationOptions
+  ): Promise<SurveyBasicFields[]> {
+    const surveys = await this.surveyRepository.getSurveysBasicFieldsByProjectId(projectId, pagination);
 
     // Build an array of all unique focal species ids from all surveys
     const uniqueFocalSpeciesIds = Array.from(
@@ -355,15 +358,15 @@ export class SurveyService extends DBService {
     );
 
     // Fetch focal species data for all species ids
-    const taxonomyService = new TaxonomyService();
-    const focalSpecies = await taxonomyService.getSpeciesFromIds(uniqueFocalSpeciesIds);
+    const platformService = new PlatformService(this.connection);
+    const focalSpecies = await platformService.getTaxonomyByTsns(uniqueFocalSpeciesIds);
 
     // Decorate the surveys response with their matching focal species labels
     const decoratedSurveys: SurveyBasicFields[] = [];
     for (const survey of surveys) {
       const matchingFocalSpeciesNames = focalSpecies
-        .filter((item) => survey.focal_species.includes(Number(item.id)))
-        .map((item) => item.label);
+        .filter((item) => survey.focal_species.includes(Number(item.tsn)))
+        .map((item) => [item.commonName, `(${item.scientificName})`].filter(Boolean).join(' '));
 
       decoratedSurveys.push({ ...survey, focal_species_names: matchingFocalSpeciesNames });
     }
@@ -372,29 +375,14 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Creates a survey and uploads the affected metadata to BioHub
+   * Returns the total number of surveys belonging to the given project.
    *
    * @param {number} projectId
-   * @param {PostSurveyObject} postSurveyData
    * @return {*}  {Promise<number>}
    * @memberof SurveyService
    */
-  async createSurveyAndUploadMetadataToBioHub(projectId: number, postSurveyData: PostSurveyObject): Promise<number> {
-    const surveyId = await this.createSurvey(projectId, postSurveyData);
-
-    try {
-      // Publish survey metadata
-      const publishSurveyPromise = this.platformService.submitSurveyDwCMetadataToBioHub(surveyId);
-
-      // Publish project metadata (which needs to be updated now that the survey metadata has changed)
-      const publishProjectPromise = this.platformService.submitProjectDwCMetadataToBioHub(projectId);
-
-      await Promise.all([publishSurveyPromise, publishProjectPromise]);
-    } catch (error) {
-      defaultLog.warn({ label: 'createSurveyAndUploadMetadataToBioHub', message: 'error', error });
-    }
-
-    return surveyId;
+  async getSurveyCountByProjectId(projectId: number): Promise<number> {
+    return this.surveyRepository.getSurveyCountByProjectId(projectId);
   }
 
   /**
@@ -421,15 +409,15 @@ export class SurveyService extends DBService {
     // Handle focal species associated to this survey
     promises.push(
       Promise.all(
-        postSurveyData.species.focal_species.map((speciesId: number) => this.insertFocalSpecies(speciesId, surveyId))
+        postSurveyData.species.focal_species.map((species: ITaxonomy) => this.insertFocalSpecies(species.tsn, surveyId))
       )
     );
 
     // Handle ancillary species associated to this survey
     promises.push(
       Promise.all(
-        postSurveyData.species.ancillary_species.map((speciesId: number) =>
-          this.insertAncillarySpecies(speciesId, surveyId)
+        postSurveyData.species.ancillary_species.map((species: ITaxonomy) =>
+          this.insertAncillarySpecies(species.tsn, surveyId)
         )
       )
     );
@@ -493,7 +481,10 @@ export class SurveyService extends DBService {
     );
 
     if (postSurveyData.locations) {
+      // Insert survey locations
       promises.push(Promise.all(postSurveyData.locations.map((item) => this.insertSurveyLocations(surveyId, item))));
+      // Insert survey regions
+      promises.push(Promise.all(postSurveyData.locations.map((item) => this.insertRegion(surveyId, item.geojson))));
     }
 
     // Handle site selection strategies
@@ -553,14 +544,14 @@ export class SurveyService extends DBService {
   /**
    * Insert region data.
    *
-   * @param {number} projectId
+   * @param {number} surveyId
    * @param {Feature[]} features
    * @return {*}  {Promise<void>}
    * @memberof SurveyService
    */
-  async insertRegion(projectId: number, features: Feature[]): Promise<void> {
+  async insertRegion(surveyId: number, features: Feature[]): Promise<void> {
     const regionService = new RegionService(this.connection);
-    return regionService.addRegionsToSurveyFromFeatures(projectId, features);
+    return regionService.addRegionsToSurveyFromFeatures(surveyId, features);
   }
 
   /**
@@ -693,35 +684,6 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Updates provided survey information and submits affected metadata to BioHub
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {PutSurveyObject} putSurveyData
-   * @returns {*} {Promise<void>}
-   * @memberof SurveyService
-   */
-  async updateSurveyAndUploadMetadataToBiohub(
-    projectId: number,
-    surveyId: number,
-    putSurveyData: PutSurveyObject
-  ): Promise<void> {
-    await this.updateSurvey(surveyId, putSurveyData);
-
-    try {
-      // Publish survey metadata
-      const publishSurveyPromise = this.platformService.submitSurveyDwCMetadataToBioHub(surveyId);
-
-      // Publish project metadata (which needs to be updated now that the survey metadata has changed)
-      const publishProjectPromise = this.platformService.submitProjectDwCMetadataToBioHub(projectId);
-
-      await Promise.all([publishSurveyPromise, publishProjectPromise]);
-    } catch (error) {
-      defaultLog.warn({ label: 'updateSurveyAndUploadMetadataToBiohub', message: 'error', error });
-    }
-  }
-
-  /**
    * Updates provided survey information.
    *
    * @param {number} surveyId
@@ -804,9 +766,9 @@ export class SurveyService extends DBService {
    *
    * @param {number} surveyId
    * @param {PostSurveyLocationData} data
-   * @returns {*} {Promise<any[]>}
+   * @returns {*} {Promise<void>}
    */
-  async insertUpdateDeleteSurveyLocation(surveyId: number, data: PostSurveyLocationData[]): Promise<any[]> {
+  async insertUpdateDeleteSurveyLocation(surveyId: number, data: PostSurveyLocationData[]): Promise<void> {
     const existingLocations = await this.getSurveyLocationsData(surveyId);
     // compare existing locations with passed in locations
     // any locations not found in both arrays will be deleted
@@ -821,7 +783,14 @@ export class SurveyService extends DBService {
     const updates = data.filter((item) => item.survey_location_id);
     const updatePromises = updates.map((item) => this.updateSurveyLocation(item));
 
-    return Promise.all([insertPromises, updatePromises, deletePromises]);
+    // Patch survey locations
+    await Promise.all([insertPromises, updatePromises, deletePromises]);
+
+    // Patch survey regions
+    await Promise.all([
+      ...inserts.map((item) => this.insertRegion(surveyId, item.geojson)),
+      ...updates.map((item) => this.insertRegion(surveyId, item.geojson))
+    ]);
   }
 
   /**
@@ -889,12 +858,12 @@ export class SurveyService extends DBService {
 
     const promises: Promise<any>[] = [];
 
-    surveyData.species.focal_species.forEach((focalSpeciesId: number) =>
-      promises.push(this.insertFocalSpecies(focalSpeciesId, surveyId))
+    surveyData.species.focal_species.forEach((focalSpecies: ITaxonomy) =>
+      promises.push(this.insertFocalSpecies(focalSpecies.tsn, surveyId))
     );
 
-    surveyData.species.ancillary_species.forEach((ancillarySpeciesId: number) =>
-      promises.push(this.insertAncillarySpecies(ancillarySpeciesId, surveyId))
+    surveyData.species.ancillary_species.forEach((ancillarySpecies: ITaxonomy) =>
+      promises.push(this.insertAncillarySpecies(ancillarySpecies.tsn, surveyId))
     );
 
     return Promise.all(promises);
@@ -935,7 +904,7 @@ export class SurveyService extends DBService {
 
       existingParticipantsToDelete.forEach((participant: any) => {
         promises.push(
-          this.surveyParticipationService.deleteSurveyParticipationRecord(participant.survey_participation_id)
+          this.surveyParticipationService.deleteSurveyParticipationRecord(surveyId, participant.survey_participation_id)
         );
       });
 
@@ -950,7 +919,8 @@ export class SurveyService extends DBService {
       if (participant.survey_participation_id) {
         // Update participant
         promises.push(
-          this.surveyParticipationService.updateSurveyParticipant(
+          this.surveyParticipationService.updateSurveyParticipantJob(
+            surveyId,
             participant.survey_participation_id,
             participant.survey_job_name
           )
@@ -1281,42 +1251,5 @@ export class SurveyService extends DBService {
    */
   async deleteOccurrenceSubmission(submissionId: number): Promise<number> {
     return this.surveyRepository.deleteOccurrenceSubmission(submissionId);
-  }
-
-  /**
-   * Publish status for a given survey id
-   *
-   * @param {number} surveyId
-   * @return {*}  {Promise<PublishStatus>}
-   * @memberof SurveyService
-   */
-  async surveyPublishStatus(surveyId: number): Promise<PublishStatus> {
-    const surveyAttachmentsPublishStatus = await this.historyPublishService.surveyAttachmentsPublishStatus(surveyId);
-
-    const surveyReportsPublishStatus = await this.historyPublishService.surveyReportsPublishStatus(surveyId);
-
-    const observationPublishStatus = await this.historyPublishService.observationPublishStatus(surveyId);
-
-    const summaryPublishStatus = await this.historyPublishService.summaryPublishStatus(surveyId);
-
-    if (
-      surveyAttachmentsPublishStatus === PublishStatus.NO_DATA &&
-      surveyReportsPublishStatus === PublishStatus.NO_DATA &&
-      observationPublishStatus === PublishStatus.NO_DATA &&
-      summaryPublishStatus === PublishStatus.NO_DATA
-    ) {
-      return PublishStatus.NO_DATA;
-    }
-
-    if (
-      surveyAttachmentsPublishStatus === PublishStatus.UNSUBMITTED ||
-      surveyReportsPublishStatus === PublishStatus.UNSUBMITTED ||
-      observationPublishStatus === PublishStatus.UNSUBMITTED ||
-      summaryPublishStatus === PublishStatus.UNSUBMITTED
-    ) {
-      return PublishStatus.UNSUBMITTED;
-    }
-
-    return PublishStatus.SUBMITTED;
   }
 }

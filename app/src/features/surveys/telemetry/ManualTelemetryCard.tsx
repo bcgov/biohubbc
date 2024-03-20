@@ -1,13 +1,16 @@
 import { mdiCalendarRange, mdiChevronDown, mdiDotsVertical } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, IconButton } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
+import Box from '@mui/material/Box';
+import grey from '@mui/material/colors/grey';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import moment from 'moment';
+import { default as dayjs } from 'dayjs';
 export interface ManualTelemetryCardProps {
   device_id: number;
+  device_make: string;
   name: string; // should be animal alias
   start_date: string;
   end_date?: string;
@@ -18,42 +21,45 @@ export interface ManualTelemetryCardProps {
 const ManualTelemetryCard = (props: ManualTelemetryCardProps) => {
   return (
     <Accordion
+      disableGutters
+      square
       sx={{
-        boxShadow: 'none'
+        boxShadow: 'none',
+        borderBottom: '1px solid' + grey[300],
+        '&:before': {
+          display: 'none'
+        }
       }}>
-      <Box display="flex" overflow="hidden" alignItems="center" pr={1.5} height={55}>
+      <Box display="flex" alignItems="center" overflow="hidden">
         <AccordionSummary
           expandIcon={<Icon path={mdiChevronDown} size={1} />}
           sx={{
             flex: '1 1 auto',
-            overflow: 'hidden',
-            py: 0.25,
-            pr: 1.5,
+            py: 0,
+            pr: 8.5,
             pl: 2,
-            gap: '24px',
+            height: 70,
+            overflow: 'hidden',
             '& .MuiAccordionSummary-content': {
               flex: '1 1 auto',
+              py: 0,
+              pl: 0,
               overflow: 'hidden',
               whiteSpace: 'nowrap'
             }
           }}>
           <Box>
-            <Typography
-              sx={{
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                typography: 'body2',
-                fontWeight: 700,
-                fontSize: '0.9rem'
-              }}>
+            <Typography variant="body2" fontWeight="bold" sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {props.name}
             </Typography>
-            <Typography variant="subtitle2" color="textSecondary">
-              Device ID: {props.device_id}
+            <Typography variant="body2" color="textSecondary">
+              {props.device_make} Device ID: {props.device_id}
             </Typography>
           </Box>
         </AccordionSummary>
         <IconButton
+          sx={{ position: 'absolute', right: '24px' }}
+          edge="end"
           onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => props.onMenu(event, props.device_id)}
           aria-label="settings">
           <Icon path={mdiDotsVertical} size={1} />
@@ -67,8 +73,8 @@ const ManualTelemetryCard = (props: ManualTelemetryCardProps) => {
         <Box display={'flex'}>
           <Icon path={mdiCalendarRange} size={0.75} />
           <Typography ml={1} variant="body2" component={'div'} color={'inherit'}>
-            {moment(props.start_date).format('YYYY-MM-DD')}{' '}
-            {props.end_date ? '- ' + moment(props.end_date).format('YYYY-MM-DD') : ''}
+            {dayjs(props.start_date).format('YYYY-MM-DD')}{' '}
+            {props.end_date ? '- ' + dayjs(props.end_date).format('YYYY-MM-DD') : ''}
           </Typography>
         </Box>
       </AccordionDetails>

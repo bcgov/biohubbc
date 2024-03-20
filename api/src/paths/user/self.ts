@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/http-error';
+import { systemUserSchema } from '../../openapi/schemas/user';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { UserService } from '../../services/user-service';
 import { getLogger } from '../../utils/logger';
@@ -35,65 +36,7 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            title: 'User Response Object',
-            type: 'object',
-            required: [
-              'system_user_id',
-              'user_identifier',
-              'user_guid',
-              'record_end_date',
-              'role_ids',
-              'role_names',
-              'email',
-              'display_name',
-              'agency'
-            ],
-            properties: {
-              system_user_id: {
-                description: 'user id',
-                type: 'integer',
-                minimum: 1
-              },
-              user_identifier: {
-                description: 'The unique user identifier',
-                type: 'string'
-              },
-              user_guid: {
-                type: 'string',
-                description: 'The GUID for the user.',
-                nullable: true
-              },
-              record_end_date: {
-                oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                description: 'Determines if the user record has expired',
-                nullable: true
-              },
-              role_ids: {
-                description: 'list of role ids for the user',
-                type: 'array',
-                items: {
-                  type: 'integer',
-                  minimum: 1
-                }
-              },
-              role_names: {
-                description: 'list of role names for the user',
-                type: 'array',
-                items: {
-                  type: 'string'
-                }
-              },
-              email: {
-                type: 'string'
-              },
-              display_name: {
-                type: 'string'
-              },
-              agency: {
-                type: 'string',
-                nullable: true
-              }
-            }
+            ...systemUserSchema
           }
         }
       }
@@ -105,7 +48,7 @@ GET.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'

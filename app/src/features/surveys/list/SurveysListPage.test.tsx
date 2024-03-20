@@ -44,7 +44,7 @@ describe('SurveysListPage', () => {
       projectDataLoader: {
         data: getProjectForViewResponse
       } as DataLoader<any, any, any>,
-      surveysListDataLoader: { data: [] } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: [], refresh: jest.fn() } as unknown as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
       projectId: 1
     };
@@ -77,9 +77,9 @@ describe('SurveysListPage', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Surveys')).toBeInTheDocument();
+      expect(getByText(/^Surveys/)).toBeInTheDocument();
       expect(getByText('Create Survey')).toBeInTheDocument();
-      expect(getByText('No Surveys')).toBeInTheDocument();
+      expect(getByText('No surveys found')).toBeInTheDocument();
     });
   });
 
@@ -103,7 +103,11 @@ describe('SurveysListPage', () => {
       projectDataLoader: {
         data: getProjectForViewResponse
       } as DataLoader<any, any, any>,
-      surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: getSurveyForListResponse, refresh: jest.fn() } as unknown as DataLoader<
+        any,
+        any,
+        any
+      >,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
       projectId: 1
     };
@@ -125,7 +129,7 @@ describe('SurveysListPage', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Surveys')).toBeInTheDocument();
+      expect(getByText(/^Surveys/)).toBeInTheDocument();
       expect(getByText('Create Survey')).toBeInTheDocument();
       expect(getByText('Moose Survey 1')).toBeInTheDocument();
       expect(getByText('Moose Survey 2')).toBeInTheDocument();

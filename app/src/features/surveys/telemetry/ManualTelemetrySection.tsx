@@ -11,7 +11,7 @@ const ManualTelemetrySection = () => {
     <Box>
       <Toolbar>
         <Typography variant="h4" component="h2" sx={{ flex: '1 1 auto' }}>
-          Manual Telemetry
+          Telemetry
         </Typography>
         <Button
           component={RouterLink}
@@ -23,8 +23,8 @@ const ManualTelemetrySection = () => {
         </Button>
       </Toolbar>
       <Divider></Divider>
-      <Box p={3}>
-        <NoSurveySectionData text="No telemetry data available" paperVariant="outlined" />
+      <Box p={2}>
+        <NoSurveySectionData text="No telemetry data available" />
       </Box>
     </Box>
   );

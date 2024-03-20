@@ -26,6 +26,7 @@ export interface IMeasurementStub {
   max_value?: number;
   unit?: string;
 }
+
 const useLookupApi = (axios: AxiosInstance) => {
   const getSelectOptions = async ({ route, param, query, orderBy }: SelectOptionsProps) => {
     const _param = param ? `/${param}` : ``;

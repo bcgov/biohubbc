@@ -15,7 +15,7 @@ describe('ProjectParticipationRepository', () => {
 
       const repository = new ProjectParticipationRepository(dbConnection);
 
-      const response = await repository.deleteProjectParticipationRecord(1);
+      const response = await repository.deleteProjectParticipationRecord(1, 1);
 
       expect(response).to.eql({ id: 1 });
     });
@@ -27,7 +27,7 @@ describe('ProjectParticipationRepository', () => {
       const repository = new ProjectParticipationRepository(dbConnection);
 
       try {
-        await repository.deleteProjectParticipationRecord(1);
+        await repository.deleteProjectParticipationRecord(1, 1);
         expect.fail();
       } catch (error) {
         expect((error as Error).message).to.equal('Failed to delete project participation record');
@@ -66,7 +66,7 @@ describe('ProjectParticipationRepository', () => {
     });
   });
 
-  describe('getProjectParticipantByUserGuid', () => {
+  describe('getProjectParticipantByProjectIdAndUserGuid', () => {
     it('should return result', async () => {
       const mockResponse = ({
         rows: [
@@ -83,7 +83,7 @@ describe('ProjectParticipationRepository', () => {
       const projectId = 1;
       const userGuid = '123-456-789';
 
-      const response = await repository.getProjectParticipantByUserGuid(projectId, userGuid);
+      const response = await repository.getProjectParticipantByProjectIdAndUserGuid(projectId, userGuid);
 
       expect(response).to.eql({ user_guid: '123-456-789' });
     });
@@ -97,7 +97,44 @@ describe('ProjectParticipationRepository', () => {
       const projectId = 1;
       const userGuid = '123-456-789';
 
-      const response = await repository.getProjectParticipantByUserGuid(projectId, userGuid);
+      const response = await repository.getProjectParticipantByProjectIdAndUserGuid(projectId, userGuid);
+
+      expect(response).to.eql(null);
+    });
+  });
+
+  describe('getProjectParticipantBySurveyIdAndUserGuid', () => {
+    it('should return result', async () => {
+      const mockResponse = ({
+        rows: [
+          {
+            user_guid: '123-456-789'
+          }
+        ],
+        rowCount: 1
+      } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new ProjectParticipationRepository(dbConnection);
+
+      const surveyId = 1;
+      const userGuid = '123-456-789';
+
+      const response = await repository.getProjectParticipantBySurveyIdAndUserGuid(surveyId, userGuid);
+
+      expect(response).to.eql({ user_guid: '123-456-789' });
+    });
+
+    it('should return null', async () => {
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new ProjectParticipationRepository(dbConnection);
+
+      const surveyId = 1;
+      const userGuid = '123-456-789';
+
+      const response = await repository.getProjectParticipantBySurveyIdAndUserGuid(surveyId, userGuid);
 
       expect(response).to.eql(null);
     });

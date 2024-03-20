@@ -17,9 +17,9 @@ import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import { DateTimeFields } from 'components/fields/DateTimeFields';
 import { CodesContext } from 'contexts/codesContext';
+import { default as dayjs } from 'dayjs';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import get from 'lodash-es/get';
-import moment from 'moment';
 import { useContext, useEffect } from 'react';
 import yup from 'utils/YupSchema';
 
@@ -45,9 +45,9 @@ export interface IEditSurveySampleMethodData extends ISurveySampleMethodData {
 }
 
 export const SurveySampleMethodPeriodArrayItemInitialValues = {
-  method_lookup_id: '' as unknown as null,
-  survey_sample_period_id: '' as unknown as null,
-  survey_sample_method_id: '' as unknown as null,
+  method_lookup_id: null,
+  survey_sample_period_id: null,
+  survey_sample_method_id: null,
   start_date: '',
   end_date: '',
   start_time: '',
@@ -55,9 +55,9 @@ export const SurveySampleMethodPeriodArrayItemInitialValues = {
 };
 
 export const SurveySampleMethodDataInitialValues = {
-  survey_sample_method_id: '' as unknown as null,
-  survey_sample_site_id: '' as unknown as null,
-  method_lookup_id: '' as unknown as null,
+  survey_sample_method_id: null,
+  survey_sample_site_id: null,
+  method_lookup_id: null,
   description: '',
   periods: [SurveySampleMethodPeriodArrayItemInitialValues]
 };
@@ -91,8 +91,8 @@ export const SamplingSiteMethodYupSchema = yup.object({
           const { start_date, end_date, start_time, end_time } = value;
 
           if (start_date === end_date && start_time && end_time) {
-            return moment(`${start_date} ${start_time}`, 'YYYY-MM-DD HH:mm:ss').isBefore(
-              moment(`${end_date} ${end_time}`, 'YYYY-MM-DD HH:mm:ss')
+            return dayjs(`${start_date} ${start_time}`, 'YYYY-MM-DD HH:mm:ss').isBefore(
+              dayjs(`${end_date} ${end_time}`, 'YYYY-MM-DD HH:mm:ss')
             );
           }
           return true;
@@ -132,7 +132,6 @@ const MethodForm = () => {
               labelId={'method_lookup_id-label'}
               label={'Method Type'}
               value={values.method_lookup_id}
-              displayEmpty
               inputProps={{ id: 'method_lookup_id', 'aria-label': 'Method Type' }}
               onChange={handleChange}
               sx={{ width: '100%', backgroundColor: '#fff' }}>

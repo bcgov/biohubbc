@@ -7,6 +7,7 @@ import { ApiExecuteSQLError } from '../errors/api-error';
 import {
   DatabaseUserInformation,
   getUserGuid,
+  getUserIdentifier,
   getUserIdentitySource,
   KeycloakUserInformation,
   ServiceClientUserInformation
@@ -186,6 +187,20 @@ export interface IDBConnection {
    * @memberof IDBConnection
    */
   systemUserId: () => number;
+  /**
+   * Get the identifier of the system user in context.
+   *
+   * @throws If the connection is not open.
+   * @memberof IDBConnection
+   */
+  systemUserIdentifier: () => string;
+  /**
+   * Get the GUID of the system user in context.
+   *
+   * @throws If the connection is not open.
+   * @memberof IDBConnection
+   */
+  systemUserGUID: () => string;
 }
 
 /**
@@ -334,8 +349,8 @@ export const getDBConnection = function (keycloakToken: KeycloakUserInformation)
     sqlStatement: SQLStatement,
     zodSchema?: z.Schema<T, any, any>
   ): Promise<pg.QueryResult<T>> => {
-    if (process.env.NODE_ENV === 'production') {
-      // Don't run timers or zod schemas in production
+    if (process.env.DATABASE_RESPONSE_VALIDATION_ENABLED !== 'true') {
+      // Don't validate database responses against provided zod schema
       return _query(sqlStatement.text, sqlStatement.values);
     }
 
@@ -345,6 +360,7 @@ export const getDBConnection = function (keycloakToken: KeycloakUserInformation)
 
     if (!zodSchema) {
       defaultLog.silly({ label: '_sql', message: sqlStatement.text, queryExecutionTime: queryEnd - queryStart });
+      // No zod schema provided
       return response;
     }
 
@@ -354,7 +370,7 @@ export const getDBConnection = function (keycloakToken: KeycloakUserInformation)
     const zodEnd = Date.now();
 
     defaultLog.silly({
-      label: '_sq + zod',
+      label: '_sql + zod',
       message: sqlStatement.text,
       queryExecutionTime: queryEnd - queryStart,
       zodExecutionTime: zodEnd - zodStart
@@ -377,8 +393,8 @@ export const getDBConnection = function (keycloakToken: KeycloakUserInformation)
   ) => {
     const { sql, bindings } = queryBuilder.toSQL().toNative();
 
-    if (process.env.NODE_ENV === 'production') {
-      // Don't run timers or zod schemas in production
+    if (process.env.DATABASE_RESPONSE_VALIDATION_ENABLED !== 'true') {
+      // Don't validate database responses against provided zod schema
       return _query(sql, bindings as any[]);
     }
 
@@ -388,6 +404,7 @@ export const getDBConnection = function (keycloakToken: KeycloakUserInformation)
 
     if (!zodSchema) {
       defaultLog.silly({ label: '_knex', message: sql, queryExecutionTime: queryEnd - queryStart });
+      // No zod schema provided
       return response;
     }
 
@@ -480,6 +497,22 @@ export const getDBConnection = function (keycloakToken: KeycloakUserInformation)
     return response?.rows?.[0].api_set_context;
   };
 
+  const _getSystemUserIdentifier = () => {
+    if (!_client || !_isOpen) {
+      throw Error('DBConnection is not open');
+    }
+
+    return getUserIdentifier(_token);
+  };
+
+  const _getSystemUserGUID = () => {
+    if (!_client || !_isOpen) {
+      throw Error('DBConnection is not open');
+    }
+
+    return getUserGuid(_token);
+  };
+
   return {
     open: asyncErrorWrapper(_open),
     query: asyncErrorWrapper(_query),
@@ -488,7 +521,9 @@ export const getDBConnection = function (keycloakToken: KeycloakUserInformation)
     release: syncErrorWrapper(_release),
     commit: asyncErrorWrapper(_commit),
     rollback: asyncErrorWrapper(_rollback),
-    systemUserId: syncErrorWrapper(_getSystemUserID)
+    systemUserId: syncErrorWrapper(_getSystemUserID),
+    systemUserIdentifier: syncErrorWrapper(_getSystemUserIdentifier),
+    systemUserGUID: syncErrorWrapper(_getSystemUserGUID)
   };
 };
 

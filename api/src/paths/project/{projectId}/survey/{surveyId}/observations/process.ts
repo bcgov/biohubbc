@@ -5,7 +5,6 @@ import { getDBConnection } from '../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ObservationService } from '../../../../../../services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
-import { surveyObservationsResponseSchema } from './index';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/process');
 
@@ -15,7 +14,7 @@ export const POST: Operation = [
       or: [
         {
           validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
-          projectId: Number(req.body.project_id),
+          surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
         {
@@ -54,6 +53,7 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['observation_submission_id'],
           properties: {
             observation_submission_id: {
@@ -67,14 +67,7 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Validation results of the observation submission',
-      content: {
-        'application/json': {
-          schema: {
-            ...surveyObservationsResponseSchema
-          }
-        }
-      }
+      description: 'Process Observation File OK'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -96,6 +89,7 @@ POST.apiDoc = {
 
 export function processFile(): RequestHandler {
   return async (req, res) => {
+    const surveyId = Number(req.params.surveyId);
     const submissionId = req.body.observation_submission_id;
 
     const connection = getDBConnection(req['keycloak_token']);
@@ -104,11 +98,11 @@ export function processFile(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      const response = await observationService.processObservationCsvSubmission(submissionId);
-
-      res.status(200).json({ surveyObservations: response });
+      await observationService.processObservationCsvSubmission(surveyId, submissionId);
 
       await connection.commit();
+
+      res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'processFile', message: 'error', error });
       await connection.rollback();

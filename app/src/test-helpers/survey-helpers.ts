@@ -1,8 +1,6 @@
-import { PublishStatus } from 'constants/attachments';
-import { IGetObservationSubmissionResponse } from 'interfaces/useDwcaApi.interface';
 import {
-  IGetSurveyForListResponse,
   IGetSurveyForViewResponse,
+  IGetSurveyListResponse,
   SurveySupplementaryData,
   SurveyViewObject
 } from 'interfaces/useSurveyApi.interface';
@@ -15,6 +13,7 @@ export const surveyObject: SurveyViewObject = {
     survey_name: 'survey name',
     start_date: '1998-10-10',
     end_date: '2021-02-26',
+    progress_id: 1,
     survey_types: [1],
     revision_count: 0
   },
@@ -59,10 +58,8 @@ export const surveyObject: SurveyViewObject = {
     stakeholder_partnerships: ['partner 3', 'partner 4']
   },
   species: {
-    focal_species: [1],
-    focal_species_names: ['focal species 1'],
-    ancillary_species: [2],
-    ancillary_species_names: ['ancillary species 2']
+    focal_species: [{ tsn: 1, commonName: 'focal species 1', scientificName: 'scientific name 1' }],
+    ancillary_species: [{ tsn: 2, commonName: 'focal species 2', scientificName: 'scientific name 2' }]
   },
   site_selection: {
     strategies: [],
@@ -100,7 +97,7 @@ export const surveySupplementaryData: SurveySupplementaryData = {
     occurrence_submission_publish_id: 1,
     occurrence_submission_id: 1,
     event_timestamp: '2000-05-10 11:53:53',
-    queue_id: 1,
+    submission_uuid: '123-456-789',
     create_date: '2000-06-10 11:53:53',
     create_user: 1,
     update_date: null,
@@ -115,7 +112,7 @@ export const surveySupplementaryData: SurveySupplementaryData = {
     survey_metadata_publish_id: 1,
     survey_id: 1,
     event_timestamp: '2000-11-10 11:53:53',
-    queue_id: 1,
+    submission_uuid: '123-456-789',
     create_date: '2000-12-10 11:53:53',
     create_user: 1,
     update_date: '2000-12-20 11:53:53',
@@ -129,52 +126,33 @@ export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
   surveySupplementaryData: surveySupplementaryData
 };
 
-export const getObservationSubmissionResponse: IGetObservationSubmissionResponse = {
-  surveyObservationData: {
-    occurrence_submission_id: 1,
-    inputFileName: 'input_file_name.txt',
-    status: 'status',
-    isValidating: false,
-    messageTypes: []
-  },
-  surveyObservationSupplementaryData: {
-    occurrence_submission_publish_id: 1,
-    occurrence_submission_id: 2,
-    event_timestamp: '2022-02-15',
-    queue_id: 3,
-    create_date: '2022-02-15',
-    create_user: 4,
-    update_date: null,
-    update_user: null,
-    revision_count: 0
-  }
-};
-
-export const getSurveyForListResponse: IGetSurveyForListResponse[] = [
-  {
-    surveyData: {
+export const getSurveyForListResponse: IGetSurveyListResponse = {
+  surveys: [
+    {
       survey_id: 1,
       name: 'Moose Survey 1',
       start_date: '2021-04-09 11:53:53',
       end_date: '2021-05-09 11:53:53',
+      progress_id: 1,
       focal_species: [1],
       focal_species_names: ['species 1']
     },
-    surveySupplementaryData: {
-      publishStatus: PublishStatus.NO_DATA
-    }
-  },
-  {
-    surveyData: {
+    {
       survey_id: 2,
       name: 'Moose Survey 2',
       start_date: '2021-04-09 11:53:53',
       end_date: '2021-06-10 11:53:53',
+      progress_id: 1,
       focal_species: [3],
       focal_species_names: ['species 3']
-    },
-    surveySupplementaryData: {
-      publishStatus: PublishStatus.NO_DATA
     }
+  ],
+  pagination: {
+    current_page: 1,
+    last_page: 1,
+    total: 2,
+    order: undefined,
+    sort: undefined,
+    per_page: 15
   }
-];
+};

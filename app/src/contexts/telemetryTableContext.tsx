@@ -1,11 +1,11 @@
 import Typography from '@mui/material/Typography';
 import { GridRowId, GridRowSelectionModel, GridValidRowModel, useGridApiRef } from '@mui/x-data-grid';
-import { GridApiCommunity } from '@mui/x-data-grid/internals';
+import { GridApiCommunity, GridStateColDef } from '@mui/x-data-grid/internals';
 import { TelemetryTableI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
+import { default as dayjs } from 'dayjs';
 import { APIError } from 'hooks/api/useAxios';
 import { ICreateManualTelemetry, IUpdateManualTelemetry, useTelemetryApi } from 'hooks/useTelemetryApi';
-import moment from 'moment';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
@@ -40,6 +40,10 @@ export type ITelemetryTableContext = {
    * A setState setter for the `rows`
    */
   setRows: React.Dispatch<React.SetStateAction<IManualTelemetryTableRow[]>>;
+  /**
+   * Returns all columns belonging to the telemetry table
+   */
+  getColumns: () => GridStateColDef[];
   /**
    * Appends a new blank record to the telemetry rows
    */
@@ -110,6 +114,7 @@ export const TelemetryTableContext = createContext<ITelemetryTableContext>({
   _muiDataGridApiRef: null as unknown as React.MutableRefObject<GridApiCommunity>,
   rows: [],
   setRows: () => {},
+  getColumns: () => [],
   addRecord: () => {},
   saveRecords: () => {},
   deleteRecords: () => undefined,
@@ -163,7 +168,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
   /**
    * Gets all rows from the table, including values that have been edited in the table.
    */
-  const _getRowsWithEditedValues = (): IManualTelemetryTableRow[] => {
+  const _getRowsWithEditedValues = useCallback((): IManualTelemetryTableRow[] => {
     const rowValues = Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values()) as IManualTelemetryTableRow[];
 
     return rowValues.map((row) => {
@@ -177,15 +182,22 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
         {}
       );
     }) as IManualTelemetryTableRow[];
-  };
+  }, [_muiDataGridApiRef]);
+
+  /**
+   * Returns all columns belonging to thte telemetry table.
+   */
+  const getColumns = useCallback(() => {
+    return _muiDataGridApiRef.current.getAllColumns?.() ?? [];
+  }, [_muiDataGridApiRef]);
 
   /**
    * Validates all rows belonging to the table. Returns null if validation passes, otherwise
    * returns the validation model
    */
-  const _validateRows = (): TelemetryTableValidationModel | null => {
+  const _validateRows = useCallback((): TelemetryTableValidationModel | null => {
     const rowValues = _getRowsWithEditedValues();
-    const tableColumns = _muiDataGridApiRef.current.getAllColumns();
+    const tableColumns = getColumns();
 
     const requiredColumns: (keyof IManualTelemetryTableRow)[] = [
       'deployment_id',
@@ -209,7 +221,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
       });
 
       // Validate date value
-      if (row.date && !moment(row.date).isValid()) {
+      if (row.date && !dayjs(row.date).isValid()) {
         rowErrors.push({ field: 'date', message: 'Invalid date' });
       }
 
@@ -228,7 +240,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
     setValidationModel(validation);
 
     return Object.keys(validation).length > 0 ? validation : null;
-  };
+  }, [_getRowsWithEditedValues, getColumns]);
 
   useEffect(() => {
     setRecordCount(rows.length);
@@ -298,7 +310,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
         });
       }
     },
-    [addedRowIds, dialogContext]
+    [addedRowIds, dialogContext, telemetryApi]
   );
 
   const getSelectedRecords: () => IManualTelemetryTableRow[] = useCallback(() => {
@@ -384,7 +396,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
     setAddedRowIds((current) => [...current, id]);
 
     // Set edit mode for the new row
-    _muiDataGridApiRef.current.startRowEditMode({ id, fieldToFocus: 'wldtaxonomic_units' });
+    _muiDataGridApiRef.current.startRowEditMode({ id, fieldToFocus: 'itis_tsn' });
   }, [_muiDataGridApiRef, rows]);
 
   /**
@@ -424,7 +436,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
 
     // Store ids of rows that were in edit mode
     setModifiedRowIds(editingIdsToSave);
-  }, [_muiDataGridApiRef, isStoppingEdit, rows]);
+  }, [_muiDataGridApiRef, _validateRows, isStoppingEdit, rows]);
 
   /**
    * Transition all rows tracked by `modifiedRowIds` to view mode.
@@ -475,7 +487,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
                 telemetry_manual_id: String(item.id),
                 latitude: Number(item.latitude),
                 longitude: Number(item.longitude),
-                acquisition_date: moment(`${moment(item.date).format('YYYY-MM-DD')} ${item.time}`).format(
+                acquisition_date: dayjs(`${dayjs(item.date).format('YYYY-MM-DD')} ${item.time}`).format(
                   'YYYY-MM-DD HH:mm:ss'
                 )
               });
@@ -485,7 +497,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
                 deployment_id: String(item.deployment_id),
                 latitude: Number(item.latitude),
                 longitude: Number(item.longitude),
-                acquisition_date: moment(`${moment(item.date).format('YYYY-MM-DD')} ${item.time}`).format(
+                acquisition_date: dayjs(`${dayjs(item.date).format('YYYY-MM-DD')} ${item.time}`).format(
                   'YYYY-MM-DD HH:mm:ss'
                 )
               });
@@ -566,8 +578,8 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
         deployment_id: item.deployment_id,
         latitude: item.latitude,
         longitude: item.longitude,
-        date: moment(item.acquisition_date).format('YYYY-MM-DD'),
-        time: moment(item.acquisition_date).format('HH:mm:ss'),
+        date: dayjs(item.acquisition_date).format('YYYY-MM-DD'),
+        time: dayjs(item.acquisition_date).format('HH:mm:ss'),
         telemetry_type: item.telemetry_type
       };
     });
@@ -625,6 +637,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
       _muiDataGridApiRef,
       rows,
       setRows,
+      getColumns,
       addRecord,
       saveRecords,
       deleteRecords,
@@ -645,6 +658,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
     [
       _muiDataGridApiRef,
       rows,
+      getColumns,
       addRecord,
       saveRecords,
       deleteRecords,
@@ -655,8 +669,8 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
       hasUnsavedChanges,
       rowSelectionModel,
       isLoading,
-      validationModel,
       isSaving,
+      validationModel,
       recordCount
     ]
   );

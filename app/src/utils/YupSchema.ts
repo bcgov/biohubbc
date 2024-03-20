@@ -4,7 +4,7 @@
  */
 
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import moment from 'moment';
+import { default as dayjs } from 'dayjs';
 import * as yup from 'yup';
 
 yup.addMethod(yup.array, 'isUniquePermitNumber', function (message: string) {
@@ -16,6 +16,21 @@ yup.addMethod(yup.array, 'isUniquePermitNumber', function (message: string) {
     const seen = new Set();
     const hasDuplicates = values.some((permit) => {
       return seen.size === seen.add(permit.permit_number).size;
+    });
+
+    return !hasDuplicates;
+  });
+});
+
+yup.addMethod(yup.array, 'isUniqueFundingSource', function (message: string) {
+  return this.test('is-unique-funding-source-id', message, (values) => {
+    if (!values || !values.length) {
+      return true;
+    }
+
+    const seen = new Set();
+    const hasDuplicates = values.some((fundingSource) => {
+      return seen.size === seen.add(fundingSource.funding_source_id).size;
     });
 
     return !hasDuplicates;
@@ -68,7 +83,7 @@ yup.addMethod(
         return true;
       }
 
-      return moment(value, dateFormat, true).isValid();
+      return dayjs(value, dateFormat, true).isValid();
     });
   }
 );
@@ -83,8 +98,8 @@ yup.addMethod(
         return true;
       }
 
-      const endDateTime = moment(`2020-10-20 ${this.parent.end_time}`, DATE_FORMAT.ShortDateTimeFormat);
-      const startDateTime = moment(`2020-10-20 ${this.parent[startTimeName]}`, DATE_FORMAT.ShortDateTimeFormat);
+      const endDateTime = dayjs(`2020-10-20 ${this.parent.end_time}`, DATE_FORMAT.ShortDateTimeFormat);
+      const startDateTime = dayjs(`2020-10-20 ${this.parent[startTimeName]}`, DATE_FORMAT.ShortDateTimeFormat);
 
       // compare valid start and end times
       return startDateTime.isBefore(endDateTime);
@@ -106,13 +121,13 @@ yup.addMethod(
         return true;
       }
 
-      if (!moment(this.parent[startDateName], dateFormat, true).isValid()) {
+      if (!dayjs(this.parent[startDateName], dateFormat, true).isValid()) {
         // don't validate start_date if it is invalid
         return true;
       }
 
       // compare valid start and end dates
-      return moment(this.parent[startDateName], dateFormat, true).isBefore(moment(value, dateFormat, true));
+      return dayjs(this.parent[startDateName], dateFormat, true).isBefore(dayjs(value, dateFormat, true));
     });
   }
 );
@@ -131,13 +146,16 @@ yup.addMethod(
         return true;
       }
 
-      if (!moment(this.parent[startDateName], dateFormat, true).isValid()) {
+      if (!dayjs(this.parent[startDateName], dateFormat, true).isValid()) {
         // don't validate start_date if it is invalid
         return true;
       }
 
       // compare valid start and end dates
-      return moment(this.parent[startDateName], dateFormat, true).isSameOrBefore(moment(value, dateFormat, true));
+      return (
+        dayjs(this.parent[startDateName], dateFormat, true).isSame(dayjs(value, dateFormat, true)) ||
+        dayjs(this.parent[startDateName], dateFormat, true).isBefore(dayjs(value, dateFormat, true))
+      );
     });
   }
 );
@@ -152,7 +170,7 @@ yup.addMethod(
         return true;
       }
 
-      if (moment(value, dateFormat).isAfter(moment(maxDate))) {
+      if (dayjs(value, dateFormat).isAfter(dayjs(maxDate))) {
         return false;
       }
 
@@ -171,7 +189,7 @@ yup.addMethod(
         return true;
       }
 
-      if (moment(value, dateFormat).isBefore(moment(minDate))) {
+      if (dayjs(value, dateFormat).isBefore(dayjs(minDate))) {
         return false;
       }
 
@@ -216,7 +234,7 @@ yup.addMethod(yup.array, 'hasUniqueDateRanges', function (message: string, start
     // convert values to object of timestamps
     // sort based on start date
     const sortedValues = values
-      .map((item) => ({ start: moment(item[startKey]).unix(), end: moment(item[endKey]).unix() }))
+      .map((item) => ({ start: dayjs(item[startKey]).unix(), end: dayjs(item[endKey]).unix() }))
       .sort((a, b) => a.start - b.start);
 
     // loop through sorted values

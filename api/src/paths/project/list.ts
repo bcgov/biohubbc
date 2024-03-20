@@ -3,9 +3,15 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { IProjectAdvancedFilters } from '../../models/project-view';
+import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
 import { ProjectService } from '../../services/project-service';
 import { getLogger } from '../../utils/logger';
+import {
+  ensureCompletePaginationOptions,
+  makePaginationOptionsFromRequest,
+  makePaginationResponse
+} from '../../utils/pagination';
 
 const defaultLog = getLogger('paths/projects');
 
@@ -30,6 +36,7 @@ GET.apiDoc = {
       Bearer: []
     }
   ],
+  parameters: [...paginationRequestQueryParamSchema],
   requestBody: {
     description: 'Project list search filter criteria object.',
     content: {
@@ -47,7 +54,7 @@ GET.apiDoc = {
             project_programs: {
               type: 'array',
               items: {
-                type: 'number'
+                type: 'integer'
               },
               nullable: true
             },
@@ -59,10 +66,10 @@ GET.apiDoc = {
               type: 'string',
               nullable: true
             },
-            species: {
+            itis_tsns: {
               type: 'array',
               items: {
-                type: 'number'
+                type: 'integer'
               }
             }
           }
@@ -76,26 +83,27 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            type: 'array',
-            items: {
-              title: 'Survey get response object, for view purposes',
-              type: 'object',
-              required: ['projectData', 'projectSupplementaryData'],
-              properties: {
-                projectData: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['projects', 'pagination'],
+            properties: {
+              projects: {
+                type: 'array',
+                items: {
                   type: 'object',
+                  additionalProperties: false,
                   required: [
-                    'id',
+                    'project_id',
                     'name',
                     'project_programs',
+                    'completion_status',
                     'start_date',
                     'end_date',
-                    'completion_status',
                     'regions'
                   ],
                   properties: {
-                    id: {
-                      type: 'number'
+                    project_id: {
+                      type: 'integer'
                     },
                     name: {
                       type: 'string'
@@ -103,7 +111,7 @@ GET.apiDoc = {
                     project_programs: {
                       type: 'array',
                       items: {
-                        type: 'number'
+                        type: 'integer'
                       }
                     },
                     start_date: {
@@ -120,20 +128,15 @@ GET.apiDoc = {
                       items: {
                         type: 'string'
                       }
-                    }
-                  }
-                },
-                projectSupplementaryData: {
-                  type: 'object',
-                  required: ['publishStatus'],
-                  properties: {
-                    publishStatus: {
+                    },
+                    completion_status: {
                       type: 'string',
-                      enum: ['NO_DATA', 'UNSUBMITTED', 'SUBMITTED']
+                      enum: ['Completed', 'Active']
                     }
                   }
                 }
-              }
+              },
+              pagination: { ...paginationResponseSchema }
             }
           }
         }
@@ -146,7 +149,7 @@ GET.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -164,6 +167,8 @@ GET.apiDoc = {
  */
 export function getProjectList(): RequestHandler {
   return async (req, res) => {
+    defaultLog.debug({ label: 'getProjectList' });
+
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
@@ -174,25 +179,37 @@ export function getProjectList(): RequestHandler {
         req['system_user']['role_names']
       );
       const systemUserId = connection.systemUserId();
-      const filterFields: IProjectAdvancedFilters = req.query || {};
+      const filterFields: IProjectAdvancedFilters = {
+        keyword: req.query.keyword && String(req.query.keyword),
+        project_name: req.query.project_name && String(req.query.project_name),
+        project_programs: req.query.project_programs
+          ? String(req.query.project_programs).split(',').map(Number)
+          : undefined,
+        itis_tsns: req.query.itis_tsns ? String(req.query.itis_tsns).split(',').map(Number) : undefined,
+        start_date: req.query.start_date && String(req.query.start_date),
+        end_date: req.query.end_date && String(req.query.end_date)
+      };
+
+      const paginationOptions = makePaginationOptionsFromRequest(req);
 
       const projectService = new ProjectService(connection);
-
-      const projects = await projectService.getProjectList(isUserAdmin, systemUserId, filterFields);
-
-      const projectListWithStatus = await Promise.all(
-        projects.map(async (project: any) => {
-          const status = await projectService.projectPublishStatus(project.id);
-          return {
-            projectData: project,
-            projectSupplementaryData: { publishStatus: status }
-          };
-        })
+      const projects = await projectService.getProjectList(
+        isUserAdmin,
+        systemUserId,
+        filterFields,
+        ensureCompletePaginationOptions(paginationOptions)
       );
+
+      const projectsTotalCount = await projectService.getProjectCount(filterFields, isUserAdmin, systemUserId);
+
+      const response = {
+        projects,
+        pagination: makePaginationResponse(projectsTotalCount, paginationOptions)
+      };
 
       await connection.commit();
 
-      return res.status(200).json(projectListWithStatus);
+      return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'getProjectList', message: 'error', error });
       throw error;

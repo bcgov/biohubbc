@@ -1,4 +1,4 @@
-import { AxiosInstance, CancelTokenSource } from 'axios';
+import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import { Critter } from 'features/surveys/view/survey-animals/animal';
@@ -8,23 +8,19 @@ import {
   IDeploymentTimespan,
   ITelemetryPointCollection
 } from 'features/surveys/view/survey-animals/telemetry-device/device';
-import {
-  IGetAttachmentDetails,
-  IGetReportDetails,
-  IUploadAttachmentResponse
-} from 'interfaces/useProjectApi.interface';
-import { IGetSummaryResultsResponse, IUploadSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
+import { IGetReportDetails, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
   IDetailedCritterWithInternalId,
   IGetSurveyAttachmentsResponse,
-  IGetSurveyForListResponse,
   IGetSurveyForUpdateResponse,
   IGetSurveyForViewResponse,
+  IGetSurveyListResponse,
   SurveyUpdateObject
 } from 'interfaces/useSurveyApi.interface';
 import qs from 'qs';
+import { ApiPaginationRequestOptions } from 'types/misc';
 
 /**
  * Returns a set of supported api methods for working with surveys.
@@ -75,10 +71,29 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * Fetches a subset of survey fields for all surveys under a project.
    *
    * @param {number} projectId
+   * @param {ApiPaginationRequestOptions} [pagination]
    * @return {*}  {Promise<IGetSurveysListResponse[]>}
    */
-  const getSurveysBasicFieldsByProjectId = async (projectId: number): Promise<IGetSurveyForListResponse[]> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey`);
+  const getSurveysBasicFieldsByProjectId = async (
+    projectId: number,
+    pagination?: ApiPaginationRequestOptions
+  ): Promise<IGetSurveyListResponse> => {
+    let urlParamsString = '';
+
+    if (pagination) {
+      const params = new URLSearchParams();
+      params.append('page', pagination.page.toString());
+      params.append('limit', pagination.limit.toString());
+      if (pagination.sort) {
+        params.append('sort', pagination.sort);
+      }
+      if (pagination.order) {
+        params.append('order', pagination.order);
+      }
+      urlParamsString = `?${params.toString()}`;
+    }
+
+    const { data } = await axios.get(`/api/project/${projectId}/survey${urlParamsString}`);
 
     return data;
   };
@@ -105,7 +120,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {File} file
    * @param {string} attachmentType
    * @param {CancelTokenSource} [cancelTokenSource]
-   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<string[]>}
    */
   const uploadSurveyAttachments = async (
@@ -113,7 +128,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     surveyId: number,
     file: File,
     cancelTokenSource?: CancelTokenSource,
-    onProgress?: (progressEvent: ProgressEvent) => void
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
   ): Promise<IUploadAttachmentResponse> => {
     const req_message = new FormData();
 
@@ -134,7 +149,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} surveyId
    * @param {File} file
    * @param {CancelTokenSource} [cancelTokenSource]
-   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<IUploadAttachmentResponse>}
    */
   const uploadSurveyKeyx = async (
@@ -142,7 +157,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     surveyId: number,
     file: File,
     cancelTokenSource?: CancelTokenSource,
-    onProgress?: (progressEvent: ProgressEvent) => void
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
   ): Promise<IUploadAttachmentResponse> => {
     const req_message = new FormData();
 
@@ -168,7 +183,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {File} file
    * @param {string} attachmentType
    * @param {CancelTokenSource} [cancelTokenSource]
-   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<string[]>}
    */
   const uploadSurveyReports = async (
@@ -178,7 +193,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
 
     attachmentMeta?: IReportMetaForm,
     cancelTokenSource?: CancelTokenSource,
-    onProgress?: (progressEvent: ProgressEvent) => void
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
   ): Promise<IUploadAttachmentResponse> => {
     const req_message = new FormData();
 
@@ -213,7 +228,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} surveyId
    * @param {string} attachmentType
    * @param {CancelTokenSource} [cancelTokenSource]
-   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<string[]>}
    */
   const updateSurveyReportMetadata = async (
@@ -323,88 +338,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get summary submission S3 url based on survey and summary ID
-   *
-   * @param {AxiosInstance} axios
-   * @returns {*} {Promise<string>}
-   */
-  const getSummarySubmissionSignedURL = async (
-    projectId: number,
-    surveyId: number,
-    summaryId: number
-  ): Promise<string> => {
-    const { data } = await axios.get(
-      `/api/project/${projectId}/survey/${surveyId}/summary/submission/${summaryId}/getSignedUrl`
-    );
-
-    return data;
-  };
-
-  /**
-   * Delete summary submission based on summary ID
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {number} summaryId
-   * @returns {*} {Promise<number>}
-   */
-  const deleteSummarySubmission = async (projectId: number, surveyId: number, summaryId: number): Promise<number> => {
-    const { data } = await axios.delete(
-      `/api/project/${projectId}/survey/${surveyId}/summary/submission/${summaryId}/delete`
-    );
-
-    return data;
-  };
-
-  /**
-   * Upload survey summary results.
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {File} file
-   * @param {CancelTokenSource} [cancelTokenSource]
-   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
-   * @return {*}  {Promise<string[]>}
-   */
-  const uploadSurveySummaryResults = async (
-    projectId: number,
-    surveyId: number,
-    file: File,
-    cancelTokenSource?: CancelTokenSource,
-    onProgress?: (progressEvent: ProgressEvent) => void
-  ): Promise<IUploadSummaryResultsResponse> => {
-    const req_message = new FormData();
-
-    req_message.append('media', file);
-
-    const { data } = await axios.post(
-      `/api/project/${projectId}/survey/${surveyId}/summary/submission/upload`,
-      req_message,
-      {
-        cancelToken: cancelTokenSource?.token,
-        onUploadProgress: onProgress
-      }
-    );
-
-    return data;
-  };
-
-  /**
-   * Get observation submission S3 url based on survey and submission ID
-   *
-   * @param {AxiosInstance} axios
-   * @returns {*} {Promise<string>}
-   */
-  const getSurveySummarySubmission = async (
-    projectId: number,
-    surveyId: number
-  ): Promise<IGetSummaryResultsResponse> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/summary/submission/get`);
-
-    return data;
-  };
-
-  /**
    * Get survey report metadata based on project ID, surveyID, attachment ID, and attachmentType
    *
    * @param {number} projectId
@@ -427,21 +360,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
         }
       }
     );
-
-    return data;
-  };
-
-  const getSurveyAttachmentDetails = async (
-    projectId: number,
-    surveyId: number,
-    attachmentId: number
-  ): Promise<IGetAttachmentDetails> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/get`, {
-      params: {},
-      paramsSerializer: (params: any) => {
-        return qs.stringify(params);
-      }
-    });
 
     return data;
   };
@@ -483,13 +401,18 @@ const useSurveyApi = (axios: AxiosInstance) => {
               critter_id: critter.critter_id,
               animal_id: critter.animal_id,
               sex: critter.sex,
-              taxon_id: critter.taxon_id,
+              itis_tsn: critter.itis_tsn,
               wlh_id: critter.wlh_id
             }
           ],
+      captures: critter.captures,
+      collections: critter.collections,
+      mortalities: critter.mortalities,
+      markings: critter.markings,
+      locations: critter.locations,
+      families: critter.families,
       qualitative_measurements: critter.measurements.qualitative,
-      quantitative_measurements: critter.measurements.quantitative,
-      ...critter
+      quantitative_measurements: critter.measurements.quantitative
     };
   };
 
@@ -612,6 +535,16 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get all telemetry points for a critter in a survey within a given time span.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} critterId
+   * @param {string} startDate
+   * @param {string} endDate
+   * @return {*}  {Promise<ITelemetryPointCollection>}
+   */
   const getCritterTelemetry = async (
     projectId: number,
     surveyId: number,
@@ -656,15 +589,10 @@ const useSurveyApi = (axios: AxiosInstance) => {
     uploadSurveyReports,
     updateSurveyReportMetadata,
     getSurveyReportDetails,
-    getSurveyAttachmentDetails,
-    uploadSurveySummaryResults,
-    getSurveySummarySubmission,
     getSurveyAttachments,
     deleteSurveyAttachment,
     getSurveyAttachmentSignedURL,
     deleteSurvey,
-    getSummarySubmissionSignedURL,
-    deleteSummarySubmission,
     getSurveyCritters,
     createCritterAndAddToSurvey,
     removeCritterFromSurvey,

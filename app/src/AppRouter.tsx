@@ -1,6 +1,7 @@
 import { AuthenticatedRouteGuard, SystemRoleRouteGuard } from 'components/security/RouteGuards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContextProvider } from 'contexts/codesContext';
+import { DialogContextProvider } from 'contexts/dialogContext';
 import AdminUsersRouter from 'features/admin/AdminUsersRouter';
 import FundingSourcesRouter from 'features/funding-sources/FundingSourcesRouter';
 import ProjectsRouter from 'features/projects/ProjectsRouter';
@@ -11,7 +12,6 @@ import NotFoundPage from 'pages/404/NotFoundPage';
 import AccessRequestPage from 'pages/access/AccessRequestPage';
 import RequestSubmitted from 'pages/access/RequestSubmitted';
 import { LandingPage } from 'pages/landing/LandingPage';
-import { Playground } from 'pages/Playground';
 import React from 'react';
 import { Redirect, Switch, useLocation } from 'react-router-dom';
 import RouteWithTitle from 'utils/RouteWithTitle';
@@ -36,18 +36,12 @@ const AppRouter: React.FC = () => {
         </BaseLayout>
       </RouteWithTitle>
 
-      {process.env.NODE_ENV === 'development' && (
-        <RouteWithTitle path="/playground" title={'Playground'}>
-          <BaseLayout>
-            <Playground />
-          </BaseLayout>
-        </RouteWithTitle>
-      )}
-
       <RouteWithTitle path="/access-request" title={getTitle('Access Request')}>
         <BaseLayout>
           <AuthenticatedRouteGuard>
-            <AccessRequestPage />
+            <DialogContextProvider>
+              <AccessRequestPage />
+            </DialogContextProvider>
           </AuthenticatedRouteGuard>
         </BaseLayout>
       </RouteWithTitle>
@@ -75,8 +69,10 @@ const AppRouter: React.FC = () => {
       <RouteWithTitle path="/admin/users" title={getTitle('Users')}>
         <BaseLayout>
           <AuthenticatedRouteGuard>
-            <SystemRoleRouteGuard validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-              <AdminUsersRouter />
+            <SystemRoleRouteGuard validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
+              <DialogContextProvider>
+                <AdminUsersRouter />
+              </DialogContextProvider>
             </SystemRoleRouteGuard>
           </AuthenticatedRouteGuard>
         </BaseLayout>
@@ -86,9 +82,11 @@ const AppRouter: React.FC = () => {
         <BaseLayout>
           <AuthenticatedRouteGuard>
             <SystemRoleRouteGuard validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-              <CodesContextProvider>
-                <FundingSourcesRouter />
-              </CodesContextProvider>
+              <DialogContextProvider>
+                <CodesContextProvider>
+                  <FundingSourcesRouter />
+                </CodesContextProvider>
+              </DialogContextProvider>
             </SystemRoleRouteGuard>
           </AuthenticatedRouteGuard>
         </BaseLayout>

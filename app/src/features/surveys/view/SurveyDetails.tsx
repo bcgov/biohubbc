@@ -8,6 +8,8 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import { ProjectRoleGuard } from 'components/security/Guards';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import Permits from 'features/surveys/view/components/Permits';
 import SurveyParticipants from 'features/surveys/view/components/SurveyParticipants';
 import SurveyProprietaryData from 'features/surveys/view/components/SurveyProprietaryData';
@@ -33,15 +35,19 @@ const SurveyDetails = () => {
         <Typography variant="h4" component="h2" sx={{ flex: '1 1 auto' }}>
           Survey Details
         </Typography>
-        <Button
-          variant="outlined"
-          color="primary"
-          component={RouterLink}
-          aria-label="Edit Details"
-          to="edit"
-          startIcon={<Icon path={mdiPencil} size={0.75} />}>
-          Edit
-        </Button>
+        <ProjectRoleGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <Button
+            variant="outlined"
+            color="primary"
+            component={RouterLink}
+            aria-label="Edit Details"
+            to="edit"
+            startIcon={<Icon path={mdiPencil} size={0.75} />}>
+            Edit
+          </Button>
+        </ProjectRoleGuard>
       </Toolbar>
 
       <Divider sx={{ m: 0 }}></Divider>
@@ -131,7 +137,7 @@ export const DetailsWrapper = (props: PropsWithChildren) => (
         gap: { xs: 0, md: '24px' },
         mt: 0,
         py: 1,
-        borderTop: '1px solid ' + grey[300]
+        borderTop: '1px solid ' + grey[200]
       },
       '& hr': {
         my: 3

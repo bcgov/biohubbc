@@ -3,7 +3,7 @@ import { AxiosInstance } from 'axios';
 const useAuthentication = (axios: AxiosInstance) => {
   const signUp = async (): Promise<{ user_id: string } | null> => {
     try {
-      const { data } = await axios.post('/api/critter-data/signup');
+      const { data } = await axios.post('/api/critterbase/signup');
       return data;
     } catch (e) {
       if (e instanceof Error) {

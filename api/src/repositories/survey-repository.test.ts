@@ -3,6 +3,7 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { ApiExecuteSQLError } from '../errors/api-error';
 import { GetReportAttachmentsData } from '../models/project-view';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
@@ -32,6 +33,32 @@ describe('SurveyRepository', () => {
       const response = await repository.deleteSurvey(1);
 
       expect(response).to.eql(undefined);
+    });
+  });
+
+  describe('getSurveyCountByProjectId', () => {
+    it('should return the survey count successfully', async () => {
+      const mockResponse = ({ rows: [{ survey_count: 69 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const dbConnectionObj = getMockDBConnection({ sql: () => mockResponse });
+
+      const repo = new SurveyRepository(dbConnectionObj);
+      const response = await repo.getSurveyCountByProjectId(1001);
+
+      expect(response).to.eql(69);
+    });
+
+    it('should throw an exception if row count is 0', async () => {
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
+
+      const repo = new SurveyRepository(dbConnectionObj);
+
+      try {
+        await repo.getSurveyCountByProjectId(1001);
+      } catch (error) {
+        expect(dbConnectionObj.sql).to.have.been.calledOnce;
+        expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to get survey count');
+      }
     });
   });
 
@@ -91,8 +118,8 @@ describe('SurveyRepository', () => {
   describe('getSurveyTypesData', () => {
     it('returns rows', async () => {
       const mockRows = ([
-        { survey_id: 1, type_id: 1 },
-        { survey_id: 1, type_id: 2 }
+        { survey_id: 1, type_id: 1, progress_id: 1 },
+        { survey_id: 1, type_id: 2, progress_id: 1 }
       ] as unknown) as SurveyTypeRecord[];
 
       const mockResponse = ({ rows: mockRows, rowCount: 2 } as any) as Promise<QueryResult<any>>;
@@ -377,32 +404,6 @@ describe('SurveyRepository', () => {
     });
   });
 
-  describe('getSurveySummarySubmission', () => {
-    it('should return result', async () => {
-      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      const response = await repository.getSurveySummarySubmission(1);
-
-      expect(response).to.eql({ id: 1 });
-    });
-
-    it('should return null if now rows returned', async () => {
-      const mockResponse = ({ rows: [{ survey_summary_submission_id: null }], rowCount: 1 } as any) as Promise<
-        QueryResult<any>
-      >;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      const response = await repository.getSurveySummarySubmission(1);
-
-      expect(response).to.eql({ survey_summary_submission_id: null });
-    });
-  });
-
   describe('getAttachmentsData', () => {
     it('should return result', async () => {
       const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
@@ -462,6 +463,7 @@ describe('SurveyRepository', () => {
         survey_details: {
           survey_name: 'name',
           start_date: 'start',
+          progress_id: 1,
           end_date: 'end',
           survey_types: [1, 2]
         },
@@ -489,6 +491,7 @@ describe('SurveyRepository', () => {
           survey_name: 'name',
           start_date: 'start',
           end_date: 'end',
+          progress_id: 1,
           survey_types: [1, 2]
         },
         purpose_and_methodology: {
@@ -515,6 +518,7 @@ describe('SurveyRepository', () => {
           survey_name: 'name',
           start_date: 'start',
           end_date: 'end',
+          progress_id: 1,
           survey_types: [1, 2]
         },
         purpose_and_methodology: {

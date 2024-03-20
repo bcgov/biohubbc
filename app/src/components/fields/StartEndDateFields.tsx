@@ -2,11 +2,11 @@ import { mdiCalendarEnd, mdiCalendarStart } from '@mdi/js';
 import Icon from '@mdi/react';
 import Grid from '@mui/material/Grid';
 import { DatePicker } from '@mui/x-date-pickers';
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
+import { default as dayjs } from 'dayjs';
 import get from 'lodash-es/get';
-import moment from 'moment';
 import React from 'react';
 
 interface IStartEndDateFieldsProps {
@@ -15,8 +15,6 @@ interface IStartEndDateFieldsProps {
   endName: string;
   startRequired: boolean;
   endRequired: boolean;
-  startDateHelperText?: string;
-  endDateHelperText?: string;
 }
 
 const CalendarStartIcon = () => {
@@ -37,9 +35,7 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
     startName,
     endName,
     startRequired,
-    endRequired,
-    startDateHelperText,
-    endDateHelperText
+    endRequired
   } = props;
 
   const rawStartDateValue = get(values, startName);
@@ -47,18 +43,18 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
 
   const formattedStartDateValue =
     (rawStartDateValue &&
-      moment(rawStartDateValue, DATE_FORMAT.ShortDateFormat).isValid() &&
-      moment(rawStartDateValue, DATE_FORMAT.ShortDateFormat)) ||
+      dayjs(rawStartDateValue, DATE_FORMAT.ShortDateFormat).isValid() &&
+      dayjs(rawStartDateValue, DATE_FORMAT.ShortDateFormat)) ||
     null;
 
   const formattedEndDateValue =
     (rawEndDateValue &&
-      moment(rawEndDateValue, DATE_FORMAT.ShortDateFormat).isValid() &&
-      moment(rawEndDateValue, DATE_FORMAT.ShortDateFormat)) ||
+      dayjs(rawEndDateValue, DATE_FORMAT.ShortDateFormat).isValid() &&
+      dayjs(rawEndDateValue, DATE_FORMAT.ShortDateFormat)) ||
     null;
 
   return (
-    <LocalizationProvider dateAdapter={AdapterMoment}>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Grid container item spacing={3}>
         <Grid item xs={6}>
           <DatePicker
@@ -72,7 +68,7 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
                 required: startRequired,
                 variant: 'outlined',
                 error: get(touched, startName) && Boolean(get(errors, startName)),
-                helperText: (get(touched, startName) && get(errors, startName)) || startDateHelperText,
+                helperText: get(touched, startName) && get(errors, startName),
                 inputProps: {
                   'data-testid': 'start_date'
                 },
@@ -84,18 +80,18 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
             }}
             label="Start Date"
             format={DATE_FORMAT.ShortDateFormat}
-            minDate={moment(DATE_LIMIT.min)}
-            maxDate={moment(DATE_LIMIT.max)}
+            minDate={dayjs(DATE_LIMIT.min)}
+            maxDate={dayjs(DATE_LIMIT.max)}
             value={formattedStartDateValue}
             onChange={(value) => {
-              if (!value || String(value.creationData().input) === 'Invalid Date') {
+              if (!value || String(value) === 'Invalid Date') {
                 // The creation input value will be 'Invalid Date' when the date field is cleared (empty), and will
                 // contain an actual date string value if the field is not empty but is invalid.
                 setFieldValue(startName, null);
                 return;
               }
 
-              setFieldValue(startName, moment(value).format(DATE_FORMAT.ShortDateFormat));
+              setFieldValue(startName, dayjs(value).format(DATE_FORMAT.ShortDateFormat));
             }}
           />
         </Grid>
@@ -111,7 +107,7 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
                 required: endRequired,
                 variant: 'outlined',
                 error: get(touched, endName) && Boolean(get(errors, endName)),
-                helperText: (get(touched, endName) && get(errors, endName)) || endDateHelperText,
+                helperText: get(touched, endName) && get(errors, endName),
                 inputProps: {
                   'data-testid': 'end_date'
                 },
@@ -123,18 +119,18 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
             }}
             label="End Date"
             format={DATE_FORMAT.ShortDateFormat}
-            minDate={moment(DATE_LIMIT.min)}
-            maxDate={moment(DATE_LIMIT.max)}
+            minDate={dayjs(DATE_LIMIT.min)}
+            maxDate={dayjs(DATE_LIMIT.max)}
             value={formattedEndDateValue}
-            onChange={(value: moment.Moment | null) => {
-              if (!value || String(value.creationData().input) === 'Invalid Date') {
+            onChange={(value: dayjs.Dayjs | null) => {
+              if (!value || String(value) === 'Invalid Date') {
                 // The creation input value will be 'Invalid Date' when the date field is cleared (empty), and will
                 // contain an actual date string value if the field is not empty but is invalid.
                 setFieldValue(endName, null);
                 return;
               }
 
-              setFieldValue(endName, moment(value).format(DATE_FORMAT.ShortDateFormat));
+              setFieldValue(endName, dayjs(value).format(DATE_FORMAT.ShortDateFormat));
             }}
           />
         </Grid>

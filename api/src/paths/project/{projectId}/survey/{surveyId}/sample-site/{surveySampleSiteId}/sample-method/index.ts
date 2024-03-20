@@ -5,6 +5,7 @@ import { getDBConnection } from '../../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../../errors/http-error';
 import { InsertSampleMethodRecord } from '../../../../../../../../repositories/sample-method-repository';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
+import { SampleLocationService } from '../../../../../../../../services/sample-location-service';
 import { SampleMethodService } from '../../../../../../../../services/sample-method-service';
 import { getLogger } from '../../../../../../../../utils/logger';
 
@@ -17,8 +18,12 @@ export const GET: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
-          projectId: Number(req.params.projectId),
+          validProjectPermissions: [
+            PROJECT_PERMISSION.COORDINATOR,
+            PROJECT_PERMISSION.COLLABORATOR,
+            PROJECT_PERMISSION.OBSERVER
+          ],
+          surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
         {
@@ -75,11 +80,13 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             properties: {
               sampleMethods: {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     survey_sample_method_id: {
                       type: 'integer'
@@ -147,16 +154,17 @@ export function getSurveySampleMethodRecords(): RequestHandler {
       throw new HTTP400('Missing required param `surveySampleSiteId`');
     }
 
+    const surveySampleSiteId = Number(req.params.surveySampleSiteId);
+    const surveyId = Number(req.params.surveyId);
+
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const surveySampleSiteId = Number(req.params.surveySampleSiteId);
-
       await connection.open();
 
       const sampleMethodService = new SampleMethodService(connection);
 
-      const result = await sampleMethodService.getSampleMethodsForSurveySampleSiteId(surveySampleSiteId);
+      const result = await sampleMethodService.getSampleMethodsForSurveySampleSiteId(surveyId, surveySampleSiteId);
 
       await connection.commit();
 
@@ -177,7 +185,7 @@ export const POST: Operation = [
       or: [
         {
           validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
-          projectId: Number(req.params.projectId),
+          surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
         {
@@ -232,9 +240,11 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           properties: {
             sampleMethod: {
               type: 'object',
+              additionalProperties: false,
               properties: {
                 methodName: {
                   type: 'string'
@@ -281,12 +291,23 @@ export function createSurveySampleSiteRecord(): RequestHandler {
       throw new HTTP400('Missing required body param `sampleMethod`');
     }
 
+    const surveyId = Number(req.params.surveyId);
+    const surveySampleSiteId = Number(req.params.surveySampleSiteId);
+
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const sampleMethod: InsertSampleMethodRecord = req.body.sampleMethod;
+      const sampleSiteService = new SampleLocationService(connection);
 
-      sampleMethod.survey_sample_site_id = Number(req.params.surveySampleSiteId);
+      const sampleSite = sampleSiteService.getSurveySampleSiteById(surveyId, surveySampleSiteId);
+      if (!sampleSite) {
+        throw new HTTP400('The given sample site does not belong to the given survey');
+      }
+
+      const sampleMethod: InsertSampleMethodRecord = {
+        ...req.body.sampleMethod,
+        survey_sample_site_id: surveySampleSiteId
+      };
 
       await connection.open();
 

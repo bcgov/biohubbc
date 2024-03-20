@@ -27,6 +27,7 @@ const GeoJSONTelemetryPointsAPISchema: OpenAPIV3.SchemaObject = {
           ...GeoJSONFeatureCollectionFeaturesItems?.properties,
           properties: {
             type: 'object',
+            additionalProperties: false,
             required: ['collar_id', 'device_id', 'date_recorded', 'deployment_id', 'critter_id'],
             properties: {
               collar_id: {
@@ -85,6 +86,7 @@ const GeoJSONTelemetryPointsAPISchema: OpenAPIV3.SchemaObject = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     collection_unit_id: {
                       type: 'string',
@@ -133,6 +135,7 @@ const GeoJSONTelemetryTracksAPISchema: OpenAPIV3.SchemaObject = {
           ...GeoJSONFeatureCollectionFeaturesItems?.properties,
           properties: {
             type: 'object',
+            additionalProperties: false,
             required: ['critter_id', 'deployment_id'],
             properties: {
               critter_id: {
@@ -160,7 +163,7 @@ export const GET: Operation = [
       or: [
         {
           validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
-          projectId: Number(req.params.projectId),
+          surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
         {
@@ -223,6 +226,7 @@ GET.apiDoc = {
           schema: {
             title: 'Telemetry response',
             type: 'object',
+            additionalProperties: false,
             required: ['tracks', 'points'],
             properties: {
               points: GeoJSONTelemetryPointsAPISchema,
@@ -239,7 +243,7 @@ GET.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -256,35 +260,37 @@ export function getCritterTelemetry(): RequestHandler {
       keycloak_guid: req['system_user']?.user_guid,
       username: req['system_user']?.user_identifier
     };
+
     const critterId = Number(req.params.critterId);
     const surveyId = Number(req.params.surveyId);
-    const startDate = String(req.query.startDate);
-    const endDate = String(req.query.endDate);
+
     const connection = getDBConnection(req['keycloak_token']);
     const surveyCritterService = new SurveyCritterService(connection);
-    const bctw = new BctwService(user);
+    const bctwService = new BctwService(user);
+
     try {
       await connection.open();
       const surveyCritters = await surveyCritterService.getCrittersInSurvey(surveyId);
-      const thisCritter = surveyCritters.find((a) => a.critter_id === critterId);
-      if (!thisCritter) {
+
+      const critter = surveyCritters.find((surveyCritter) => surveyCritter.critter_id === critterId);
+      if (!critter) {
         throw new HTTP400('Specified critter was not part of this survey.');
       }
-      const points = await bctw.getCritterTelemetryPoints(
-        thisCritter.critterbase_critter_id,
-        new Date(startDate),
-        new Date(endDate)
-      );
-      const tracks = await bctw.getCritterTelemetryTracks(
-        thisCritter.critterbase_critter_id,
-        new Date(startDate),
-        new Date(endDate)
-      );
+
+      const startDate = new Date(String(req.query.startDate));
+      const endDate = new Date(String(req.query.endDate));
+
+      const points = await bctwService.getCritterTelemetryPoints(critter.critterbase_critter_id, startDate, endDate);
+
+      const tracks = await bctwService.getCritterTelemetryTracks(critter.critterbase_critter_id, startDate, endDate);
+
       await connection.commit();
+
       return res.status(200).json({ points, tracks });
     } catch (error) {
       defaultLog.error({ label: 'telemetry', message: 'error', error });
       await connection.rollback();
+
       throw error;
     } finally {
       connection.release();

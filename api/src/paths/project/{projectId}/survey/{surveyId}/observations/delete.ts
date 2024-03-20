@@ -5,7 +5,6 @@ import { getDBConnection } from '../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ObservationService } from '../../../../../../services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
-import { surveyObservationsSupplementaryData } from './index';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/delete');
 
@@ -15,7 +14,7 @@ export const POST: Operation = [
       or: [
         {
           validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
-          projectId: Number(req.params.projectId),
+          surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
         {
@@ -54,6 +53,7 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           properties: {
             surveyObservationIds: {
               type: 'array',
@@ -81,9 +81,20 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: ['supplementaryObservationData'],
             properties: {
-              supplementaryObservationData: { ...surveyObservationsSupplementaryData }
+              supplementaryObservationData: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['observationCount'],
+                properties: {
+                  observationCount: {
+                    type: 'integer',
+                    minimum: 0
+                  }
+                }
+              }
             }
           }
         }
@@ -108,7 +119,7 @@ POST.apiDoc = {
 };
 
 /**
- * Fetch all observations for a survey.
+ * Deletes survey observations.
  *
  * @export
  * @return {*}  {RequestHandler}
@@ -129,12 +140,13 @@ export function deleteSurveyObservations(): RequestHandler {
       const deleteObservationIds =
         req.body?.surveyObservationIds?.map((observationId: string | number) => Number(observationId)) ?? [];
 
-      await observationService.deleteObservationsByIds(deleteObservationIds);
-      const supplementaryObservationData = await observationService.getSurveyObservationsSupplementaryData(surveyId);
+      await observationService.deleteObservationsByIds(surveyId, deleteObservationIds);
+
+      const observationCount = await observationService.getSurveyObservationCount(surveyId);
 
       await connection.commit();
 
-      return res.status(200).json({ supplementaryObservationData });
+      return res.status(200).json({ supplementaryObservationData: { observationCount } });
     } catch (error) {
       defaultLog.error({ label: 'deleteSurveyObservations', message: 'error', error });
       await connection.rollback();

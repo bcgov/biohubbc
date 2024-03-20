@@ -9,7 +9,6 @@ import {
   getFormattedDateRangeString,
   getFormattedFileSize,
   getFormattedIdentitySource,
-  getKeyByValue,
   getTitle,
   pluralize
 } from './Utils';
@@ -106,12 +105,12 @@ describe('getFormattedAmount', () => {
 
 describe('getFormattedDate', () => {
   beforeAll(() => {
-    // ignore warning about invalid date string being passed to moment
+    // ignore warning about invalid date string being passed to dayjs
     jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   it('returns empty string if invalid date is provided', async () => {
-    const date = '12312312312312312';
+    const date = 'INVALID DATE STRING';
     const formattedDateString = getFormattedDate(DATE_FORMAT.MediumDateFormat, date);
     expect(formattedDateString).toEqual('');
   });
@@ -125,19 +124,19 @@ describe('getFormattedDate', () => {
 
 describe('getFormattedDateRangeString', () => {
   beforeAll(() => {
-    // ignore warning about invalid date string being passed to moment
+    // ignore warning about invalid date string being passed to dayjs
     jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   it('returns empty string if invalid startDate is provided', async () => {
-    const startDate = '12312312312312312';
+    const startDate = 'INVALID DATE STRING';
     const formattedDateString = getFormattedDateRangeString(DATE_FORMAT.MediumDateFormat, startDate);
     expect(formattedDateString).toEqual('');
   });
 
   it('returns empty string if invalid endDate is provided', async () => {
     const startDate = '2021-03-04T22:44:55.478682';
-    const endDate = '12312312312312312';
+    const endDate = 'INVALID DATE STRING';
     const formattedDateString = getFormattedDateRangeString(DATE_FORMAT.MediumDateFormat, startDate, endDate);
     expect(formattedDateString).toEqual('');
   });
@@ -240,44 +239,6 @@ describe('getTitle', () => {
     const title = getTitle('Test Page');
 
     expect(title).toEqual('SIMS - Test Page');
-  });
-});
-
-describe('getKeyByValue', () => {
-  it('returns undefined if the object contains no keys and the value is undefined', () => {
-    const response = getKeyByValue({}, undefined);
-
-    expect(response).toEqual(undefined);
-  });
-
-  it('returns undefined if the object contains no keys and the value is defined', () => {
-    const response = getKeyByValue({}, 'value');
-
-    expect(response).toEqual(undefined);
-  });
-
-  it('returns undefined if the object contains some keys and the value is undefined', () => {
-    const response = getKeyByValue({ name: 'Test' }, undefined);
-
-    expect(response).toEqual(undefined);
-  });
-
-  it('returns undefined if the object contains some keys and the value is defined but not in the object', () => {
-    const response = getKeyByValue({ name: 'Test' }, 'notfound');
-
-    expect(response).toEqual(undefined);
-  });
-
-  it('returns a string key if the object contains a key having the given value', () => {
-    const response = getKeyByValue({ name: 'Test' }, 'Test');
-
-    expect(response).toEqual('name');
-  });
-
-  it('returns a numeric key if the object contains a key having the given value', () => {
-    const response = getKeyByValue(['One', 'Two', 'Test'], 'Test');
-
-    expect(response).toEqual('2');
   });
 });
 

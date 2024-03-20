@@ -1,7 +1,9 @@
 import { GridColDef } from '@mui/x-data-grid';
-import { CustomDataGrid } from 'components/data-grid/CustomDataGrid';
+import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { ProjectRoleGuard } from 'components/security/Guards';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { default as dayjs } from 'dayjs';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
-import moment from 'moment';
 import SurveyAnimalsTableActions from './SurveyAnimalsTableActions';
 import { IAnimalDeployment } from './telemetry-device/device';
 
@@ -9,7 +11,7 @@ interface ISurveyAnimalsTableEntry {
   survey_critter_id: number;
   critter_id: string;
   animal_id: string | null;
-  taxon: string;
+  itis_scientific_name: string;
   deployments?: IAnimalDeployment[];
 }
 
@@ -44,7 +46,7 @@ export const SurveyAnimalsTable = ({
 
   const columns: GridColDef<ISurveyAnimalsTableEntry>[] = [
     {
-      field: 'taxon',
+      field: 'itis_scientific_name',
       headerName: 'Species',
       flex: 1
     },
@@ -65,7 +67,7 @@ export const SurveyAnimalsTable = ({
       flex: 1,
       valueGetter: (params) => {
         const currentDeploys = params.row.deployments?.filter(
-          (device: IAnimalDeployment) => !device.attachment_end || moment(device.attachment_end).isAfter(moment())
+          (device: IAnimalDeployment) => !device.attachment_end || dayjs(device.attachment_end).isAfter(dayjs())
         );
         return currentDeploys?.length
           ? currentDeploys.map((device: IAnimalDeployment) => device.device_id).join(', ')
@@ -78,7 +80,7 @@ export const SurveyAnimalsTable = ({
       flex: 1,
       valueGetter: (params) => {
         const previousDeploys = params.row.deployments?.filter(
-          (device: IAnimalDeployment) => device.attachment_end && moment(device.attachment_end).isBefore(moment())
+          (device: IAnimalDeployment) => device.attachment_end && dayjs(device.attachment_end).isBefore(dayjs())
         );
         return previousDeploys?.length
           ? previousDeploys.map((device: IAnimalDeployment) => device.device_id).join(', ')
@@ -93,20 +95,24 @@ export const SurveyAnimalsTable = ({
       align: 'right',
       maxWidth: 50,
       renderCell: (params) => (
-        <SurveyAnimalsTableActions
-          critter_id={params.row.survey_critter_id}
-          devices={params.row?.deployments}
-          onMenuOpen={onMenuOpen}
-          onEditCritter={onEditCritter}
-          onRemoveCritter={onRemoveCritter}
-          onMapOpen={onMapOpen}
-        />
+        <ProjectRoleGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <SurveyAnimalsTableActions
+            critter_id={params.row.survey_critter_id}
+            devices={params.row?.deployments}
+            onMenuOpen={onMenuOpen}
+            onEditCritter={onEditCritter}
+            onRemoveCritter={onRemoveCritter}
+            onMapOpen={onMapOpen}
+          />
+        </ProjectRoleGuard>
       )
     }
   ];
 
   return (
-    <CustomDataGrid
+    <StyledDataGrid
       autoHeight
       rows={animalDeviceData}
       getRowId={(row) => row.critter_id}

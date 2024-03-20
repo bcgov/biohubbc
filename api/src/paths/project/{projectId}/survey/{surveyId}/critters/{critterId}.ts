@@ -16,7 +16,7 @@ export const DELETE: Operation = [
       or: [
         {
           validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
-          projectId: Number(req.params.projectId),
+          surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
         {
@@ -35,7 +35,7 @@ export const PATCH: Operation = [
       or: [
         {
           validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
-          projectId: Number(req.params.projectId),
+          surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
         {
@@ -85,7 +85,7 @@ DELETE.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -138,7 +138,7 @@ PATCH.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -152,12 +152,17 @@ PATCH.apiDoc = {
 export function removeCritterFromSurvey(): RequestHandler {
   return async (req, res) => {
     const critterId = Number(req.params.critterId);
+    const surveyId = Number(req.params.surveyId);
+
     const connection = getDBConnection(req['keycloak_token']);
-    const surveyService = new SurveyCritterService(connection);
+    const surveyCritterService = new SurveyCritterService(connection);
+
     try {
       await connection.open();
-      const result = await surveyService.removeCritterFromSurvey(critterId);
+
+      const result = await surveyCritterService.removeCritterFromSurvey(surveyId, critterId);
       await connection.commit();
+
       return res.status(200).json(result);
     } catch (error) {
       defaultLog.error({ label: 'removeCritterFromSurvey', message: 'error', error });

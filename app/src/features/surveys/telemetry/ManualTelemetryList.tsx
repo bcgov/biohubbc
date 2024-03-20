@@ -1,10 +1,10 @@
 import { mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
-import { ListItemIcon, Menu, MenuItem, Select, useMediaQuery, useTheme } from '@mui/material';
+import { Divider, ListItemIcon, Menu, MenuItem, Paper, Select, Stack, useMediaQuery, useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import { grey } from '@mui/material/colors';
+import grey from '@mui/material/colors/grey';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -15,18 +15,18 @@ import InputLabel from '@mui/material/InputLabel';
 import { MenuProps } from '@mui/material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { SkeletonList } from 'components/loading/SkeletonLoaders';
+import { SkeletonListStack } from 'components/loading/SkeletonLoaders';
 import { AttachmentType } from 'constants/attachments';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TelemetryDataContext } from 'contexts/telemetryDataContext';
+import { default as dayjs } from 'dayjs';
 import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual as _deepEquals } from 'lodash';
 import { get } from 'lodash-es';
-import moment from 'moment';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { datesSameNullable } from 'utils/Utils';
 import yup from 'utils/YupSchema';
@@ -96,8 +96,8 @@ const ManualTelemetryList = () => {
     surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
   }, []);
 
-  const deployments = useMemo(() => surveyContext.deploymentDataLoader.data, [surveyContext.deploymentDataLoader.data]);
-  const critters = useMemo(() => surveyContext.critterDataLoader.data, [surveyContext.critterDataLoader.data]);
+  const deployments = surveyContext.deploymentDataLoader.data;
+  const critters = surveyContext.critterDataLoader.data;
 
   const critterDeployments: ICritterDeployment[] = useMemo(() => {
     const data: ICritterDeployment[] = [];
@@ -118,18 +118,21 @@ const ManualTelemetryList = () => {
     setDeviceId(device_id);
 
     const critterDeployment = critterDeployments.find((item) => item.deployment.device_id === device_id);
-    const deviceDetails = await telemetryApi.devices.getDeviceDetails(device_id);
 
     // need to map deployment back into object for initial values
     if (critterDeployment) {
+      const deviceDetails = await telemetryApi.devices.getDeviceDetails(
+        device_id,
+        critterDeployment.deployment.device_make
+      );
       const editData: AnimalDeployment = {
         survey_critter_id: Number(critterDeployment.critter?.survey_critter_id),
         deployments: [
           {
             deployment_id: critterDeployment.deployment.deployment_id,
-            attachment_start: moment(critterDeployment.deployment.attachment_start).format('YYYY-MM-DD'),
+            attachment_start: dayjs(critterDeployment.deployment.attachment_start).format('YYYY-MM-DD'),
             attachment_end: critterDeployment.deployment.attachment_end
-              ? moment(critterDeployment.deployment.attachment_end).format('YYYY-MM-DD')
+              ? dayjs(critterDeployment.deployment.attachment_end).format('YYYY-MM-DD')
               : null
           }
         ],
@@ -428,7 +431,7 @@ const ManualTelemetryList = () => {
                       <Select
                         labelId="select-critter"
                         label={'Critter'}
-                        value={critterId}
+                        value={String(critterId)}
                         required
                         onChange={(e) => {
                           setCritterId(Number(e.target.value));
@@ -449,7 +452,7 @@ const ManualTelemetryList = () => {
                                   {item.animal_id}
                                 </Typography>
                                 <Typography variant="subtitle2" color="textSecondary">
-                                  {item.taxon} - {item.sex}
+                                  {item.itis_scientific_name} - {item.sex}
                                 </Typography>
                               </Box>
                             </MenuItem>
@@ -496,20 +499,18 @@ const ManualTelemetryList = () => {
                 </DialogActions>
               </Dialog>
 
-              <Box display="flex" flexDirection="column" height="100%">
+              <Paper component={Stack} flexDirection="column" height="100%" overflow="hidden">
                 <Toolbar
+                  disableGutters
                   sx={{
-                    flex: '0 0 auto'
+                    flex: '0 0 auto',
+                    pr: 3,
+                    pl: 2
                   }}>
-                  <Typography
-                    sx={{
-                      flexGrow: '1',
-                      fontSize: '1.125rem',
-                      fontWeight: 700
-                    }}>
+                  <Typography variant="h3" component="h2" flexGrow={1}>
                     Deployments &zwnj;
                     <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
-                      ({critterDeployments?.length ?? 0})
+                      ({Number(critterDeployments?.length ?? 0).toLocaleString()})
                     </Typography>
                   </Typography>
                   <Button
@@ -526,33 +527,57 @@ const ManualTelemetryList = () => {
                     Add
                   </Button>
                 </Toolbar>
+                <Divider flexItem></Divider>
                 <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
-                  {/* Display list of skeleton components while waiting for a response */}
-                  {surveyContext.deploymentDataLoader.isLoading && <SkeletonList />}
                   <Box
+                    position="absolute"
+                    top="0"
+                    right="0"
+                    bottom="0"
+                    left="0"
                     sx={{
-                      position: 'absolute',
-                      width: '100%',
-                      height: '100%',
-                      overflowY: 'auto',
-                      p: 1,
                       background: grey[100]
                     }}>
-                    {critterDeployments?.map((item) => (
-                      <ManualTelemetryCard
-                        key={`${item.deployment.device_id}:${item.deployment.attachment_start}`}
-                        device_id={item.deployment.device_id}
-                        name={String(item.critter.animal_id ?? item.critter.taxon)}
-                        start_date={item.deployment.attachment_start}
-                        end_date={item.deployment.attachment_end}
-                        onMenu={(event, id) => {
-                          handleMenuOpen(event, id);
-                        }}
-                      />
-                    ))}
+                    {surveyContext.deploymentDataLoader.isLoading ? (
+                      <SkeletonListStack />
+                    ) : (
+                      <>
+                        {!critterDeployments.length && (
+                          <Stack
+                            sx={{
+                              background: grey[100]
+                            }}
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="center"
+                            flex="1 1 auto"
+                            position="absolute"
+                            top={0}
+                            right={0}
+                            left={0}
+                            bottom={0}
+                            height="100%">
+                            <Typography variant="body2">No Deployments</Typography>
+                          </Stack>
+                        )}
+                        {critterDeployments?.map((item) => (
+                          <ManualTelemetryCard
+                            key={`${item.deployment.device_id}:${item.deployment.device_make}:${item.deployment.attachment_start}`}
+                            device_id={item.deployment.device_id}
+                            device_make={item.deployment.device_make}
+                            name={String(item.critter.animal_id ?? item.critter.itis_scientific_name)}
+                            start_date={item.deployment.attachment_start}
+                            end_date={item.deployment.attachment_end}
+                            onMenu={(event, id) => {
+                              handleMenuOpen(event, id);
+                            }}
+                          />
+                        ))}
+                      </>
+                    )}
                   </Box>
                 </Box>
-              </Box>
+              </Paper>
             </>
           );
         }}

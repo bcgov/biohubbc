@@ -1,13 +1,28 @@
+import { default as dayjs } from 'dayjs';
 import { IDBConnection } from '../database/db';
+import { ApiGeneralError } from '../errors/api-error';
 import { TelemetryRepository, TelemetrySubmissionRecord } from '../repositories/telemetry-repository';
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { parseS3File } from '../utils/media/media-utils';
-import { constructWorksheets, constructXLSXWorkbook, validateCsvFile } from '../utils/xlsx-utils/worksheet-utils';
+import {
+  constructWorksheets,
+  constructXLSXWorkbook,
+  getWorksheetRowObjects,
+  IXLSXCSVValidator,
+  validateCsvFile
+} from '../utils/xlsx-utils/worksheet-utils';
+import { BctwService, ICreateManualTelemetry } from './bctw-service';
+import { ICritterbaseUser } from './critterbase-service';
 import { DBService } from './db-service';
+import { SurveyCritterService } from './survey-critter-service';
 
-const telemetryCSVColumnValidator = {
+const telemetryCSVColumnValidator: IXLSXCSVValidator = {
   columnNames: ['DEVICE_ID', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
-  columnTypes: ['number', 'date', 'string', 'number', 'number']
+  columnTypes: ['number', 'date', 'string', 'number', 'number'],
+  columnAliases: {
+    LATITUDE: ['LAT'],
+    LONGITUDE: ['LON', 'LONG', 'LNG']
+  }
 };
 
 export class TelemetryService extends DBService {
@@ -43,7 +58,7 @@ export class TelemetryService extends DBService {
     return { submission_id: result.survey_telemetry_submission_id, key };
   }
 
-  async processTelemetryCsvSubmission(submissionId: number): Promise<any[]> {
+  async processTelemetryCsvSubmission(submissionId: number, user: ICritterbaseUser): Promise<any[]> {
     // step 1 get submission record
     const submission = await this.getTelemetrySubmissionById(submissionId);
 
@@ -55,7 +70,7 @@ export class TelemetryService extends DBService {
 
     // step 4 validate csv
     if (mediaFile.mimetype !== 'text/csv') {
-      throw new Error(
+      throw new ApiGeneralError(
         `Failed to process file for importing telemetry. Incorrect file type. Expected CSV received ${mediaFile.mimetype}`
       );
     }
@@ -65,16 +80,73 @@ export class TelemetryService extends DBService {
     const xlsxWorksheets = constructWorksheets(xlsxWorkBook);
 
     // step 6 validate columns
-    if (validateCsvFile(xlsxWorksheets, telemetryCSVColumnValidator)) {
-      throw new Error('Failed to process file for importing telemetry. Invalid CSV file.');
+    if (!validateCsvFile(xlsxWorksheets, telemetryCSVColumnValidator)) {
+      throw new ApiGeneralError('Failed to process file for importing telemetry. Invalid CSV file.');
     }
 
-    // step 7 fetch survey deployments
-    // const bctwService = new  BctwService()
+    const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheets['Sheet1']);
 
-    // step 8 create dictionary of deployments (alias-device_id)
-    // step 9 map data from csv/ dictionary into telemetry records
-    // step 10 send to telemetry service api
+    // step 7 fetch survey deployments
+    const bctwService = new BctwService(user);
+    const critterService = new SurveyCritterService(this.connection);
+
+    const critters = await critterService.getCrittersInSurvey(submission.survey_id);
+    const critterIds = critters.map((item) => item.critterbase_critter_id);
+
+    const deployments = await bctwService.getDeploymentsByCritterId(critterIds);
+
+    // step 8 parse file data and find deployment ids based on device id and attachment dates
+    const itemsToAdd: ICreateManualTelemetry[] = [];
+    worksheetRowObjects.forEach((row) => {
+      const deviceId = Number(row['DEVICE_ID']);
+      const start = row['DATE'];
+      const time = row['TIME'];
+      const dateTime = dayjs(`${start} ${time}`);
+
+      const foundDeployment = deployments.find((item) => {
+        const currentStart = dayjs(item.attachment_start);
+        const currentEnd = dayjs(item.attachment_end);
+        // check the device ids match
+        if (item.device_id === deviceId) {
+          // check the date is same or after the device deployment start date
+          if (dateTime.isAfter(currentStart) || dateTime.isSame(currentStart)) {
+            if (item.attachment_end) {
+              // check if the date is same or before the device was removed
+              if (dateTime.isBefore(currentEnd) || dateTime.isSame(currentEnd)) {
+                return true;
+              }
+            } else {
+              // no attachment end date means the device is still active and is a match
+              return true;
+            }
+          }
+        }
+        return false;
+      });
+
+      if (foundDeployment) {
+        itemsToAdd.push({
+          deployment_id: foundDeployment.deployment_id,
+          acquisition_date: dateTime.format('YYYY-MM-DD HH:mm:ss'),
+          latitude: row['LATITUDE'],
+          longitude: row['LONGITUDE']
+        });
+      } else {
+        throw new ApiGeneralError(
+          `No deployment was found for device: ${deviceId} on: ${dateTime.format('YYYY-MM-DD HH:mm:ss')}`
+        );
+      }
+    });
+
+    // step 9 create telemetries
+    if (itemsToAdd.length > 0) {
+      try {
+        return bctwService.createManualTelemetry(itemsToAdd);
+      } catch (error) {
+        throw new ApiGeneralError('Error adding Manual Telemetry');
+      }
+    }
+
     return [];
   }
 

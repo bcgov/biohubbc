@@ -1,12 +1,14 @@
-import Box from '@mui/material/Box';
+import { LoadingButton } from '@mui/lab';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
+import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import PageHeader from 'components/layout/PageHeader';
 import { EditSurveyI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
@@ -21,7 +23,6 @@ import { IEditSurveyRequest, SurveyUpdateObject } from 'interfaces/useSurveyApi.
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
-import SurveyBaseHeader from '../view/components/SurveyBaseHeader';
 import EditSurveyForm from './EditSurveyForm';
 
 /**
@@ -36,10 +37,11 @@ const EditSurveyPage = () => {
 
   const surveyId = Number(urlParams['survey_id']);
 
-  const [formikRef] = useState(useRef<FormikProps<IEditSurveyRequest>>(null));
+  const formikRef = useRef<FormikProps<IEditSurveyRequest>>(null);
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
   const dialogContext = useContext(DialogContext);
 
@@ -47,13 +49,12 @@ const EditSurveyPage = () => {
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
-  const codes = codesContext.codesDataLoader.data;
 
   const projectContext = useContext(ProjectContext);
+
   useEffect(() => {
     projectContext.projectDataLoader.load(projectContext.projectId);
   }, [projectContext.projectDataLoader, projectContext.projectId]);
-  const projectData = projectContext.projectDataLoader.data?.projectData;
 
   const surveyContext = useContext(SurveyContext);
 
@@ -119,6 +120,7 @@ const EditSurveyPage = () => {
    * @return {*}
    */
   const handleSubmit = async (values: IEditSurveyRequest) => {
+    setIsSaving(true);
     try {
       const response = await biohubApi.survey.updateSurvey(
         projectContext.projectId,
@@ -137,7 +139,7 @@ const EditSurveyPage = () => {
 
       surveyContext.surveyDataLoader.refresh(projectContext.projectId, surveyContext.surveyId);
 
-      history.push(`/admin/projects/${projectData?.project.project_id}/surveys/${response.id}/details`);
+      history.push(`/admin/projects/${projectContext.projectId}/surveys/${response.id}/details`);
     } catch (error) {
       const apiError = error as APIError;
       showEditErrorDialog({
@@ -145,6 +147,8 @@ const EditSurveyPage = () => {
         dialogError: apiError?.message,
         dialogErrorDetails: apiError?.errors
       });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -174,62 +178,67 @@ const EditSurveyPage = () => {
     return true;
   };
 
-  if (!codes || !projectData || !surveyData) {
+  if (!codesContext.codesDataLoader.data || !projectContext.projectDataLoader.data || !surveyData) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
-      <SurveyBaseHeader
+      <PageHeader
         title="Edit Survey Details"
-        breadCrumb={
-          <Breadcrumbs>
-            <Link
-              component={RouterLink}
-              variant="body2"
-              underline="hover"
-              to={`/admin/projects/${projectData.project.project_id}/`}
-              aria-current="page">
-              {projectData.project.project_name}
+        breadCrumbJSX={
+          <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
+            <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectContext.projectId}/`}>
+              {projectContext.projectDataLoader.data.projectData.project.project_name}
             </Link>
             <Link
               component={RouterLink}
-              variant="body2"
               underline="hover"
-              to={`/admin/projects/${projectData.project.project_id}/surveys/${surveyId}/details`}
-              aria-current="page">
+              to={`/admin/projects/${projectContext.projectId}/surveys/${surveyId}/details`}>
               {surveyData && surveyData.survey_details && surveyData.survey_details.survey_name}
             </Link>
-            <Typography variant="body2" component="span">
+            <Typography component="a" color="textSecondary" aria-current="page">
               Edit Survey Details
             </Typography>
           </Breadcrumbs>
         }
         buttonJSX={
-          <Stack flexDirection="row" gap={1}>
-            <Button color="primary" variant="contained" onClick={() => formikRef.current?.submitForm()}>
+          <>
+            <LoadingButton
+              loading={isSaving}
+              color="primary"
+              variant="contained"
+              onClick={() => formikRef.current?.submitForm()}>
               Save and Exit
-            </Button>
-            <Button color="primary" variant="outlined" onClick={handleCancel}>
+            </LoadingButton>
+            <Button disabled={isSaving} color="primary" variant="outlined" onClick={handleCancel}>
               Cancel
             </Button>
-          </Stack>
+          </>
         }
       />
 
-      <Box my={3}>
-        <Container maxWidth="xl">
-          <EditSurveyForm
-            codes={codes}
-            projectData={projectData}
-            surveyData={surveyData}
-            handleSubmit={handleSubmit}
-            handleCancel={handleCancel}
-            formikRef={formikRef}
-          />
-        </Container>
-      </Box>
+      <Container maxWidth="xl" sx={{ py: 3 }}>
+        <Paper sx={{ p: 5 }}>
+          <EditSurveyForm initialSurveyData={surveyData} handleSubmit={handleSubmit} formikRef={formikRef} />
+          <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
+            <LoadingButton
+              loading={isSaving}
+              type="submit"
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                formikRef.current?.submitForm();
+              }}>
+              Save and Exit
+            </LoadingButton>
+            <Button disabled={isSaving} variant="outlined" color="primary" onClick={handleCancel}>
+              Cancel
+            </Button>
+          </Stack>
+        </Paper>
+      </Container>
     </>
   );
 };

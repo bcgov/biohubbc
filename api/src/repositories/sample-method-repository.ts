@@ -2,19 +2,27 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
-import { InsertSamplePeriodRecord, SamplePeriodRecord, UpdateSamplePeriodRecord } from './sample-period-repository';
+import { InsertSamplePeriodRecord, UpdateSamplePeriodRecord } from './sample-period-repository';
 
+/**
+ * Insert object for a single sample method record.
+ */
 export type InsertSampleMethodRecord = Pick<
   SampleMethodRecord,
   'survey_sample_site_id' | 'method_lookup_id' | 'description'
 > & { periods: InsertSamplePeriodRecord[] };
 
+/**
+ * Update object for a single sample method record.
+ */
 export type UpdateSampleMethodRecord = Pick<
   SampleMethodRecord,
   'survey_sample_method_id' | 'survey_sample_site_id' | 'method_lookup_id' | 'description'
 > & { periods: UpdateSamplePeriodRecord[] };
 
-// This describes a row in the database for Survey Sample Method
+/**
+ * A survey_sample_method record.
+ */
 export const SampleMethodRecord = z.object({
   survey_sample_method_id: z.number(),
   survey_sample_site_id: z.number(),
@@ -24,8 +32,7 @@ export const SampleMethodRecord = z.object({
   create_user: z.number(),
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
-  revision_count: z.number(),
-  sample_periods: z.array(SamplePeriodRecord).default([])
+  revision_count: z.number()
 });
 export type SampleMethodRecord = z.infer<typeof SampleMethodRecord>;
 
@@ -40,15 +47,33 @@ export class SampleMethodRepository extends BaseRepository {
   /**
    * Gets all survey Sample Methods.
    *
+   * @param {number} surveyId
    * @param {number} surveySampleSiteId
    * @return {*}  {Promise<SampleMethodRecord[]>}
    * @memberof SampleMethodRepository
    */
-  async getSampleMethodsForSurveySampleSiteId(surveySampleSiteId: number): Promise<SampleMethodRecord[]> {
+  async getSampleMethodsForSurveySampleSiteId(
+    surveyId: number,
+    surveySampleSiteId: number
+  ): Promise<SampleMethodRecord[]> {
     const sql = SQL`
-      SELECT *
-      FROM survey_sample_method
-      WHERE survey_sample_site_id = ${surveySampleSiteId};
+      SELECT
+        *
+      FROM
+        survey_sample_method
+      WHERE
+        survey_sample_site_id = (
+          SELECT
+            survey_sample_site_id
+          FROM
+            survey_sample_site
+          WHERE
+            survey_sample_site_id = ${surveySampleSiteId}
+          AND
+            survey_id = ${surveyId}
+          LIMIT 1
+        )
+      ;
     `;
 
     const response = await this.connection.sql(sql, SampleMethodRecord);
@@ -95,17 +120,18 @@ export class SampleMethodRepository extends BaseRepository {
    */
   async insertSampleMethod(sampleMethod: InsertSampleMethodRecord): Promise<SampleMethodRecord> {
     const sqlStatement = SQL`
-    INSERT INTO survey_sample_method (
-      survey_sample_site_id,
-      method_lookup_id,
-      description
-    ) VALUES (
-      ${sampleMethod.survey_sample_site_id},
-      ${sampleMethod.method_lookup_id},
-      ${sampleMethod.description}
-      )
+      INSERT INTO survey_sample_method (
+        survey_sample_site_id,
+        method_lookup_id,
+        description
+      ) VALUES (
+        ${sampleMethod.survey_sample_site_id},
+        ${sampleMethod.method_lookup_id},
+        ${sampleMethod.description}
+        )
       RETURNING
-        *;`;
+        *;
+    `;
 
     const response = await this.connection.sql(sqlStatement, SampleMethodRecord);
 
@@ -122,11 +148,14 @@ export class SampleMethodRepository extends BaseRepository {
   /**
    * Deletes a survey Sample method.
    *
+   * @param {number} surveyId
    * @param {number} surveySampleMethodId
    * @return {*}  {Promise<SampleMethodRecord>}
    * @memberof SampleMethodRepository
    */
-  async deleteSampleMethodRecord(surveySampleMethodId: number): Promise<SampleMethodRecord> {
+  async deleteSampleMethodRecord(surveyId: number, surveySampleMethodId: number): Promise<SampleMethodRecord> {
+    // @TODO join on surveyId
+    surveyId;
     const sqlStatement = SQL`
       DELETE FROM
         survey_sample_method

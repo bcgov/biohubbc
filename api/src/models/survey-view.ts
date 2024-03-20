@@ -6,6 +6,7 @@ import { SurveyBlockRecord } from '../repositories/survey-block-repository';
 import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import { SurveyUser } from '../repositories/survey-participation-repository';
 import { SystemUser } from '../repositories/user-repository';
+import { ITaxonomy } from '../services/platform-service';
 
 export type SurveyObject = {
   survey_details: GetSurveyData;
@@ -33,9 +34,9 @@ export class GetSurveyData {
   survey_name: string;
   start_date: string;
   end_date: string;
+  progress_id: number;
   survey_types: number[];
   revision_count: number;
-  geometry: Feature[];
 
   constructor(obj?: any) {
     this.id = obj?.survey_id || null;
@@ -44,7 +45,7 @@ export class GetSurveyData {
     this.survey_name = obj?.name || '';
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
-    this.geometry = (obj?.geojson?.length && obj.geojson) || [];
+    this.progress_id = obj?.progress_id || null;
     this.survey_types = (obj?.survey_types?.length && obj.survey_types) || [];
     this.revision_count = obj?.revision_count || 0;
   }
@@ -75,33 +76,27 @@ export class GetSurveyFundingSourceData {
 }
 
 export class GetFocalSpeciesData {
-  focal_species: number[];
-  focal_species_names: string[];
+  focal_species: ITaxonomy[];
 
   constructor(obj?: any[]) {
     this.focal_species = [];
-    this.focal_species_names = [];
 
     obj?.length &&
       obj.forEach((item: any) => {
-        this.focal_species.push(Number(item.id));
-        this.focal_species_names.push(item.label);
+        this.focal_species.push(item);
       });
   }
 }
 
 export class GetAncillarySpeciesData {
-  ancillary_species: number[];
-  ancillary_species_names: string[];
+  ancillary_species: ITaxonomy[];
 
   constructor(obj?: any[]) {
     this.ancillary_species = [];
-    this.ancillary_species_names = [];
 
     obj?.length &&
       obj.forEach((item: any) => {
-        this.ancillary_species.push(Number(item.id));
-        this.ancillary_species_names.push(item.label);
+        this.ancillary_species.push(item);
       });
   }
 }

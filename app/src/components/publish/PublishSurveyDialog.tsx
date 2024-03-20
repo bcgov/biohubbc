@@ -19,7 +19,7 @@ import yup from 'utils/YupSchema';
 import PublishSurveyIdContent from './components/PublishSurveyContent';
 
 export interface ISubmitSurvey {
-  additionalInformation: string;
+  submissionComment: string;
   agreement1: boolean;
   agreement2: boolean;
   agreement3: boolean;
@@ -31,14 +31,14 @@ interface IPublishSurveyIdDialogProps {
 }
 
 const surveySubmitFormInitialValues: ISubmitSurvey = {
-  additionalInformation: '',
+  submissionComment: '',
   agreement1: false,
   agreement2: false,
   agreement3: false
 };
 
 const surveySubmitFormYupSchema = yup.object().shape({
-  additionalInformation: yup.string(),
+  submissionComment: yup.string(),
   agreement1: yup.boolean().oneOf([true], 'You must accept all agreements.'),
   agreement2: yup.boolean().oneOf([true], 'You must accept all agreements.'),
   agreement3: yup.boolean().oneOf([true], 'You must accept all agreements.')
@@ -146,11 +146,18 @@ const PublishSurveyDialog = (props: IPublishSurveyIdDialogProps) => {
                 <PublishSurveyIdContent />
               </DialogContent>
               <DialogActions>
-                <Typography component="span" variant="subtitle2" fontWeight="700" sx={{ mr: 2 }}>
+                <Typography component="span" variant="subtitle2" sx={{ mr: 2 }}>
                   <Typography component="span" color="textSecondary" variant="inherit">
-                    Last Published:
-                  </Typography>{' '}
-                  {publishDate}
+                    {publishDate ? (
+                      <span>
+                        Status:&nbsp;&nbsp;<b>Published ({publishDate})</b>
+                      </span>
+                    ) : (
+                      <span>
+                        Status:&nbsp;&nbsp;<b>Unpublished</b>
+                      </span>
+                    )}
+                  </Typography>
                 </Typography>
                 <LoadingButton
                   onClick={formikProps.submitForm}

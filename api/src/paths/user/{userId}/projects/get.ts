@@ -50,6 +50,7 @@ GET.apiDoc = {
             items: {
               title: 'Project Get Response Object',
               type: 'object',
+              additionalProperties: false,
               required: [
                 'project_participation_id',
                 'project_id',
@@ -106,7 +107,7 @@ GET.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'

@@ -3,6 +3,7 @@ import Typography from '@mui/material/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { useContext } from 'react';
 import { getFormattedDateRangeString } from 'utils/Utils';
 
@@ -61,12 +62,12 @@ const SurveyGeneralInformation = () => {
 
       <Box className="row">
         <Typography component="dt">Species of Interest</Typography>
-        <Box>
-          {species.focal_species_names?.map((focalSpecies: string, index: number) => {
+        <Typography component="dd">
+          {species.focal_species?.map((focalSpecies: ITaxonomy, index: number) => {
             return (
               <Typography
-                component="dd"
-                key={focalSpecies}
+                component="span"
+                key={focalSpecies.tsn}
                 sx={{
                   position: 'relative',
                   display: 'inline-block',
@@ -80,21 +81,21 @@ const SurveyGeneralInformation = () => {
                     display: 'none'
                   }
                 }}>
-                {focalSpecies}
+                {[focalSpecies.commonName, `(${focalSpecies.scientificName})`].filter(Boolean).join(' ')}
               </Typography>
             );
           })}
-        </Box>
+        </Typography>
       </Box>
 
       <Box className="row">
         <Typography component="dt">Secondary Species</Typography>
-        <Box display="inline-block">
-          {species.ancillary_species_names?.map((ancillarySpecies: string, index: number) => {
+        <Typography component="dd">
+          {species.ancillary_species?.map((ancillarySpecies: ITaxonomy, index: number) => {
             return (
               <Typography
-                component="dd"
-                key={ancillarySpecies}
+                component="span"
+                key={ancillarySpecies.tsn}
                 sx={{
                   position: 'relative',
                   display: 'inline-block',
@@ -108,14 +109,14 @@ const SurveyGeneralInformation = () => {
                     display: 'none'
                   }
                 }}>
-                {ancillarySpecies}
+                {[ancillarySpecies.commonName, `(${ancillarySpecies.scientificName})`].filter(Boolean).join(' ')}
               </Typography>
             );
           })}
-          {species.ancillary_species_names?.length <= 0 && (
+          {species.ancillary_species?.length <= 0 && (
             <Typography component="dd">No secondary species of interest</Typography>
           )}
-        </Box>
+        </Typography>
       </Box>
     </Box>
   );

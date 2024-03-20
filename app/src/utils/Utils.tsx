@@ -1,27 +1,30 @@
 import { Typography } from '@mui/material';
 import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
-import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
-import { Feature, GeoJsonProperties, Geometry, Polygon } from 'geojson';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import { default as dayjs } from 'dayjs';
+import { Feature, GeoJsonProperties, Geometry } from 'geojson';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { LatLngBounds } from 'leaflet';
 import _ from 'lodash';
-import moment from 'moment';
 import { IDialogContext } from '../contexts/dialogContext';
 
 /**
  * Checks if a url string starts with an `http[s]://` protocol, and adds `https://` if it does not. If the url
- * begins with `localhost`, the `http` protocol is used.
+ * begins with `localhost` or `host.docker.internal`, the `http` protocol is used.
  *
  * @param {string} url
  * @param {('http://' | 'https://')} [protocol='https://'] The protocol to add, if necessary. Defaults to `https://`.
  * @return {*}  {string} the url which is guaranteed to have an `http(s)://` protocol.
  */
 export const ensureProtocol = (url: string, protocol: 'http://' | 'https://' = 'https://'): string => {
-  if (url.startsWith('localhost')) {
+  if (url.startsWith('localhost') || url.startsWith('host.docker.internal')) {
     return `${'http://'}${url}`;
   }
 
-  if (url.startsWith('https://') || url.startsWith('http://localhost')) {
+  if (
+    url.startsWith('https://') ||
+    url.startsWith('http://localhost') ||
+    url.startsWith('http://host.docker.internal')
+  ) {
     return url;
   }
 
@@ -98,32 +101,14 @@ export const getFormattedDateRangeString = (
  * @return {string} formatted date string, or an empty string if unable to parse the date
  */
 export const getFormattedDate = (dateFormat: DATE_FORMAT, date: string): string => {
-  const dateMoment = moment(date);
+  const dateJs = dayjs(date);
 
-  if (!dateMoment.isValid()) {
+  if (!dateJs.isValid()) {
     //date was invalid
     return '';
   }
 
-  return dateMoment.format(dateFormat);
-};
-
-/**
- * Get a formatted time string.
- *
- * @param {TIME_FORMAT} timeFormat
- * @param {string} date ISO 8601 date string
- * @return {string} formatted time string, or an empty string if unable to parse the date
- */
-export const getFormattedTime = (timeFormat: TIME_FORMAT, date: string): string => {
-  const dateMoment = moment(date);
-
-  if (!dateMoment.isValid()) {
-    //date was invalid
-    return '';
-  }
-
-  return dateMoment.format(timeFormat);
+  return dateJs.format(dateFormat);
 };
 
 /**
@@ -173,47 +158,6 @@ export const getFormattedFileSize = (fileSize: number) => {
   // gigabyte size
   return `${(fileSize / 1000000000).toFixed(1)} GB`;
 };
-
-/**
- * Function to get an object key by the value
- * Ex: let obj = { 'role': 'admin' } -> getKeyByValue(obj, 'admin') will return 'role'
- *
- * @param {object} object
- * @param {any} value
- * @returns {any} key for the corresponding value
- */
-export function getKeyByValue(object: any, value: any) {
-  return Object.keys(object).find((key) => object[key] === value);
-}
-
-/**
- * Converts a `LatLngBounds` object into a GeoJSON Feature object.
- *
- * @export
- * @param {LatLngBounds} bounds
- * @return {*}  {Feature<Polygon>}
- */
-export function getFeatureObjectFromLatLngBounds(bounds: LatLngBounds): Feature<Polygon> {
-  const southWest = bounds.getSouthWest();
-  const northEast = bounds.getNorthEast();
-
-  return {
-    type: 'Feature',
-    properties: {},
-    geometry: {
-      type: 'Polygon',
-      coordinates: [
-        [
-          [southWest.lng, southWest.lat],
-          [southWest.lng, northEast.lat],
-          [northEast.lng, northEast.lat],
-          [northEast.lng, southWest.lat],
-          [southWest.lng, southWest.lat]
-        ]
-      ]
-    }
-  };
-}
 
 /**
  * Takes an array of objects and produces an object URL pointing to a Blob which contains
@@ -284,21 +228,7 @@ export const alphabetizeObjects = <T extends { [key: string]: any }>(data: T[], 
 export const coerceZero = (n: any): number => (isNaN(n ?? NaN) ? 0 : Number(n));
 
 /**
- * Format a field name in a way that's appropriate for a UI label
- * ie. format_field_name -> Format Field Name
- * @param str format_field_name
- * @returns Format Field Name
- */
-export const formatLabel = (str: string): string => {
-  return str
-    .split('_')
-    .map((a) => a.charAt(0).toUpperCase() + a.slice(1))
-    .join(' ');
-};
-
-/**
  * Checks if two dates are the same, but safe to use against nullish values.
- * By default moment(null).isSame(moment(null)) returns false, which is not always desirable.
  *
  * @param {NullishDate}
  * @param {NullishDate}
@@ -310,7 +240,7 @@ export const datesSameNullable = (date1: NullishDate, date2: NullishDate): boole
     //Note: intentionally loose equality
     return true;
   } else {
-    return moment(date1).isSame(moment(date2));
+    return dayjs(date1).isSame(dayjs(date2));
   }
 };
 
@@ -352,13 +282,13 @@ export const dateRangesOverlap = (
   startDateB: string,
   endDateB: string | null | undefined
 ): boolean => {
-  const startA = moment(startDateA);
-  const startB = moment(startDateB);
+  const startA = dayjs(startDateA);
+  const startB = dayjs(startDateB);
 
-  const endA = endDateA ? moment(endDateA) : moment('2300-01-01');
-  const endB = endDateB ? moment(endDateB) : moment('2300-01-01');
+  const endA = endDateA ? dayjs(endDateA) : dayjs('2300-01-01');
+  const endB = endDateB ? dayjs(endDateB) : dayjs('2300-01-01');
 
-  return startA.isSameOrBefore(endB) && endA.isSameOrAfter(startB);
+  return (startA.isSame(endB) || startA.isBefore(endB)) && (endA.isSame(startB) || endA.isAfter(startB));
 };
 
 /**
@@ -498,4 +428,27 @@ export const setMessageSnackbar = (message: string, context: IDialogContext) => 
       </Typography>
     )
   });
+};
+
+/**
+ * This will grab the first element from an array or return null if nothing is found
+ *
+ * @param arr array to check
+ * @returns T
+ */
+export const firstOrNull = <T,>(arr: T[]): T | null => (arr.length > 0 ? arr[0] : null);
+
+/**
+ * Generates a random hex color from the given RNG seed.
+ *
+ * @param seed
+ * @returns
+ */
+export const getRandomHexColor = (seed: number, min = 100, max = 170): string => {
+  const randomChannel = (): string => {
+    const x = Math.sin(seed++) * 10000;
+    return (Math.floor((x - Math.floor(x)) * (max - min + 1)) + min).toString(16).padStart(2, '0');
+  };
+
+  return `#${randomChannel()}${randomChannel()}${randomChannel()}`;
 };

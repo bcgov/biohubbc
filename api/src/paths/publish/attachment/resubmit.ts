@@ -37,6 +37,7 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['projectId', 'fileName', 'parentName', 'formValues', 'path'],
           properties: {
             projectId: {
@@ -93,7 +94,7 @@ POST.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -109,6 +110,7 @@ POST.apiDoc = {
  *
  * @return {*}  {RequestHandler}
  */
+// @TODO is this endpoint needed anymore? Do we submit attachments on their own?
 export function resubmitAttachment(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);

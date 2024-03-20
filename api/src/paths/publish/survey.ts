@@ -41,19 +41,23 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['surveyId', 'data'],
           properties: {
             surveyId: {
-              type: 'number'
+              type: 'integer',
+              minimum: 1
             },
             data: {
-              description: 'All survey data to upload',
+              description: 'Additional data to include in the submission to BioHub',
               type: 'object',
-              required: ['additionalInformation'],
+              additionalProperties: false,
+              required: ['submissionComment'],
               properties: {
-                additionalInformation: {
+                submissionComment: {
                   type: 'string',
-                  description: 'Additional information to include in the upload'
+                  description:
+                    'Submission comment to include in the submission to BioHub. May include sensitive information.'
                 }
               }
             }
@@ -69,9 +73,12 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             properties: {
-              submission_id: {
-                type: 'number'
+              submission_uuid: {
+                type: 'string',
+                format: 'uuid',
+                description: 'The UUID of the submission'
               }
             }
           }
@@ -85,7 +92,7 @@ POST.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'

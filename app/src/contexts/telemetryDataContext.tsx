@@ -13,7 +13,7 @@ export const TelemetryDataContext = createContext<ITelemetryDataContext>({
 export const TelemetryDataContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
   const telemetryApi = useTelemetryApi();
 
-  const telemetryDataLoader = useDataLoader(telemetryApi.getAllTelemetry);
+  const telemetryDataLoader = useDataLoader(telemetryApi.getAllTelemetryByDeploymentIds);
 
   const telemetryDataContext: ITelemetryDataContext = {
     telemetryDataLoader

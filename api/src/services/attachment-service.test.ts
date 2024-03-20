@@ -10,20 +10,15 @@ import {
   AttachmentRepository,
   IProjectAttachment,
   IProjectReportAttachment,
-  IReportAttachmentAuthor,
+  IProjectReportAttachmentAuthor,
   ISurveyAttachment,
-  ISurveyReportAttachment
+  ISurveyReportAttachment,
+  ISurveyReportAttachmentAuthor
 } from '../repositories/attachment-repository';
-import {
-  ProjectAttachmentPublish,
-  ProjectReportPublish,
-  SurveyAttachmentPublish,
-  SurveyReportPublish
-} from '../repositories/history-publish-repository';
+import { SurveyAttachmentPublish, SurveyReportPublish } from '../repositories/history-publish-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { AttachmentService } from './attachment-service';
 import { HistoryPublishService } from './history-publish-service';
-import { PlatformService } from './platform-service';
 
 chai.use(sinonChai);
 
@@ -55,62 +50,6 @@ describe('AttachmentService', () => {
 
           expect(repoStub).to.be.calledOnce;
           expect(response).to.eql(data);
-        });
-      });
-
-      describe('getProjectAttachmentsWithSupplementaryData', async () => {
-        it('should return a project attachment with supplementary data', async () => {
-          const dbConnection = getMockDBConnection();
-
-          const attachmentService = new AttachmentService(dbConnection);
-
-          const attachmentData = [
-            ({ project_attachment_id: 1, file_type: 'Attachment' } as unknown) as IProjectAttachment
-          ];
-
-          const supplementaryData = ({ project_attachment_publish_id: 1 } as unknown) as ProjectAttachmentPublish;
-
-          const attachmentRepoStub = sinon
-            .stub(AttachmentRepository.prototype, 'getProjectAttachments')
-            .resolves(attachmentData);
-
-          const supplementaryDataStub = sinon
-            .stub(HistoryPublishService.prototype, 'getProjectAttachmentPublishRecord')
-            .resolves(supplementaryData);
-
-          const response = await attachmentService.getProjectAttachmentsWithSupplementaryData(1);
-
-          expect(attachmentRepoStub).to.be.calledOnce;
-          expect(supplementaryDataStub).to.be.calledOnce;
-          expect(response[0].id).to.eql(attachmentData[0].project_attachment_id);
-          expect(response[0].supplementaryAttachmentData).to.eql(supplementaryData);
-        });
-      });
-
-      describe('getProjectReportAttachmentsWithSupplementaryData', async () => {
-        it('should return a project attachment with supplementary data', async () => {
-          const dbConnection = getMockDBConnection();
-
-          const attachmentService = new AttachmentService(dbConnection);
-
-          const attachmentData = [({ project_report_attachment_id: 1 } as unknown) as IProjectReportAttachment];
-
-          const supplementaryData = ({ project_report_publish_id: 1 } as unknown) as ProjectReportPublish;
-
-          const attachmentRepoStub = sinon
-            .stub(AttachmentRepository.prototype, 'getProjectReportAttachments')
-            .resolves(attachmentData);
-
-          const supplementaryDataStub = sinon
-            .stub(HistoryPublishService.prototype, 'getProjectReportPublishRecord')
-            .resolves(supplementaryData);
-
-          const response = await attachmentService.getProjectReportAttachmentsWithSupplementaryData(1);
-
-          expect(attachmentRepoStub).to.be.calledOnce;
-          expect(supplementaryDataStub).to.be.calledOnce;
-          expect(response[0].id).to.eql(attachmentData[0].project_report_attachment_id);
-          expect(response[0].supplementaryAttachmentData).to.eql(supplementaryData);
         });
       });
 
@@ -327,23 +266,23 @@ describe('AttachmentService', () => {
         });
       });
 
-      describe('deleteProjectAttachment', () => {
+      describe('_deleteProjectAttachmentRecord', () => {
         it('should return key string', async () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
           const data = { key: 'string', uuid: 'string' };
 
-          const repoStub = sinon.stub(AttachmentRepository.prototype, 'deleteProjectAttachment').resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'deleteProjectAttachmentRecord').resolves(data);
 
-          const response = await service.deleteProjectAttachment(1);
+          const response = await service._deleteProjectAttachmentRecord(1);
 
           expect(repoStub).to.be.calledOnce;
           expect(response).to.eql(data);
         });
       });
 
-      describe('handleDeleteProjectAttachment', () => {
+      describe('deleteProjectAttachment', () => {
         describe('delete report attachment', () => {
           it('should run without issue', async () => {
             const dbConnection = getMockDBConnection();
@@ -360,33 +299,14 @@ describe('AttachmentService', () => {
               .stub(AttachmentService.prototype, 'deleteProjectReportAttachmentAuthors')
               .resolves();
             const deleteProjectReportAttachmentStub = sinon
-              .stub(AttachmentService.prototype, 'deleteProjectReportAttachment')
+              .stub(AttachmentService.prototype, '_deleteProjectReportAttachmentRecord')
               .resolves();
             const getProjectAttachmentStub = sinon
               .stub(AttachmentService.prototype, 'getProjectAttachmentById')
               .resolves();
             const deleteProjectAttachmentStub = sinon
-              .stub(AttachmentService.prototype, 'deleteProjectAttachment')
+              .stub(AttachmentService.prototype, '_deleteProjectAttachmentRecord')
               .resolves();
-
-            const getProjectReportPublishStub = sinon
-              .stub(HistoryPublishService.prototype, 'getProjectReportPublishRecord')
-              .resolves(({
-                survey_report_publish_id: 1
-              } as unknown) as ProjectReportPublish);
-            const getProjectPublishStub = sinon
-              .stub(HistoryPublishService.prototype, 'getProjectAttachmentPublishRecord')
-              .resolves(({
-                survey_report_publish_id: 1
-              } as unknown) as ProjectAttachmentPublish);
-            const deleteProjectPublishStub = sinon
-              .stub(HistoryPublishService.prototype, 'deleteProjectAttachmentPublishRecord')
-              .resolves();
-            const deleteProjectReportPublishStub = sinon
-              .stub(HistoryPublishService.prototype, 'deleteProjectReportAttachmentPublishRecord')
-              .resolves();
-
-            const deleteFromBioHubStub = sinon.stub(PlatformService.prototype, 'deleteAttachmentFromBiohub').resolves();
 
             const mockS3Client = new AWS.S3();
             sinon.stub(AWS, 'S3').returns(mockS3Client);
@@ -397,86 +317,15 @@ describe('AttachmentService', () => {
                 })
             } as AWS.Request<AWS.S3.DeleteObjectOutput, AWS.AWSError>);
 
-            await service.handleDeleteProjectAttachment(1, 1, ATTACHMENT_TYPE.REPORT, true);
+            await service.deleteProjectAttachment(1, 1, ATTACHMENT_TYPE.REPORT);
 
             expect(getProjectReportStub).to.be.called;
-            expect(getProjectReportPublishStub).to.be.called;
-            expect(deleteProjectReportPublishStub).to.be.called;
-            expect(deleteProjectReportAuthorsStub).to.be.called;
-            expect(deleteProjectReportAttachmentStub).to.be.called;
-            expect(deleteFromBioHubStub).to.be.called;
-            expect(deleteS3).to.be.called;
-
-            expect(deleteProjectAttachmentStub).to.not.be.called;
-            expect(getProjectAttachmentStub).to.not.be.called;
-            expect(getProjectPublishStub).to.not.be.called;
-            expect(deleteProjectPublishStub).to.not.be.called;
-          });
-
-          it('should run without sending delete request to BioHub', async () => {
-            const dbConnection = getMockDBConnection();
-            const service = new AttachmentService(dbConnection);
-
-            const getProjectReportStub = sinon
-              .stub(AttachmentService.prototype, 'getProjectReportAttachmentById')
-              .resolves(({
-                key: 'key',
-                uuid: 'uuid',
-                project_report_attachment_id: 1
-              } as unknown) as IProjectReportAttachment);
-            const deleteProjectReportAuthorsStub = sinon
-              .stub(AttachmentService.prototype, 'deleteProjectReportAttachmentAuthors')
-              .resolves();
-            const deleteProjectReportAttachmentStub = sinon
-              .stub(AttachmentService.prototype, 'deleteProjectReportAttachment')
-              .resolves();
-            const getProjectAttachmentStub = sinon
-              .stub(AttachmentService.prototype, 'getProjectAttachmentById')
-              .resolves();
-            const deleteProjectAttachmentStub = sinon
-              .stub(AttachmentService.prototype, 'deleteProjectAttachment')
-              .resolves();
-
-            const getProjectReportPublishStub = sinon
-              .stub(HistoryPublishService.prototype, 'getProjectReportPublishRecord')
-              .resolves(null);
-            const getProjectPublishStub = sinon
-              .stub(HistoryPublishService.prototype, 'getProjectAttachmentPublishRecord')
-              .resolves(({
-                project_report_publish_id: 1
-              } as unknown) as ProjectAttachmentPublish);
-            const deleteProjectPublishStub = sinon
-              .stub(HistoryPublishService.prototype, 'deleteProjectAttachmentPublishRecord')
-              .resolves();
-            const deleteProjectReportPublishStub = sinon
-              .stub(HistoryPublishService.prototype, 'deleteProjectReportAttachmentPublishRecord')
-              .resolves();
-
-            const deleteFromBioHubStub = sinon.stub(PlatformService.prototype, 'deleteAttachmentFromBiohub').resolves();
-
-            const mockS3Client = new AWS.S3();
-            sinon.stub(AWS, 'S3').returns(mockS3Client);
-            const deleteS3 = sinon.stub(mockS3Client, 'deleteObject').returns({
-              promise: () =>
-                Promise.resolve({
-                  DeleteMarker: true
-                })
-            } as AWS.Request<AWS.S3.DeleteObjectOutput, AWS.AWSError>);
-
-            await service.handleDeleteProjectAttachment(1, 1, ATTACHMENT_TYPE.REPORT, false);
-
-            expect(getProjectReportStub).to.be.called;
-            expect(getProjectReportPublishStub).to.be.called;
-            expect(deleteProjectReportPublishStub).to.be.called;
             expect(deleteProjectReportAuthorsStub).to.be.called;
             expect(deleteProjectReportAttachmentStub).to.be.called;
             expect(deleteS3).to.be.called;
 
-            expect(deleteFromBioHubStub).to.not.be.called;
             expect(deleteProjectAttachmentStub).to.not.be.called;
             expect(getProjectAttachmentStub).to.not.be.called;
-            expect(getProjectPublishStub).to.not.be.called;
-            expect(deleteProjectPublishStub).to.not.be.called;
           });
         });
 
@@ -496,7 +345,7 @@ describe('AttachmentService', () => {
               .stub(AttachmentService.prototype, 'deleteProjectReportAttachmentAuthors')
               .resolves();
             const deleteProjectReportAttachmentStub = sinon
-              .stub(AttachmentService.prototype, 'deleteProjectReportAttachment')
+              .stub(AttachmentService.prototype, '_deleteProjectReportAttachmentRecord')
               .resolves();
             const getProjectAttachmentStub = sinon
               .stub(AttachmentService.prototype, 'getProjectAttachmentById')
@@ -506,27 +355,8 @@ describe('AttachmentService', () => {
                 project_attachment_id: 1
               } as unknown) as IProjectAttachment);
             const deleteProjectAttachmentStub = sinon
-              .stub(AttachmentService.prototype, 'deleteProjectAttachment')
+              .stub(AttachmentService.prototype, '_deleteProjectAttachmentRecord')
               .resolves();
-
-            const getProjectReportPublishStub = sinon
-              .stub(HistoryPublishService.prototype, 'getProjectReportPublishRecord')
-              .resolves(({
-                survey_report_publish_id: 1
-              } as unknown) as ProjectReportPublish);
-            const getProjectPublishStub = sinon
-              .stub(HistoryPublishService.prototype, 'getProjectAttachmentPublishRecord')
-              .resolves(({
-                survey_report_publish_id: 1
-              } as unknown) as ProjectAttachmentPublish);
-            const deleteProjectPublishStub = sinon
-              .stub(HistoryPublishService.prototype, 'deleteProjectAttachmentPublishRecord')
-              .resolves();
-            const deleteProjectReportPublishStub = sinon
-              .stub(HistoryPublishService.prototype, 'deleteProjectReportAttachmentPublishRecord')
-              .resolves();
-
-            const deleteFromBioHubStub = sinon.stub(PlatformService.prototype, 'deleteAttachmentFromBiohub').resolves();
 
             const mockS3Client = new AWS.S3();
             sinon.stub(AWS, 'S3').returns(mockS3Client);
@@ -537,88 +367,15 @@ describe('AttachmentService', () => {
                 })
             } as AWS.Request<AWS.S3.DeleteObjectOutput, AWS.AWSError>);
 
-            await service.handleDeleteProjectAttachment(1, 1, ATTACHMENT_TYPE.OTHER, true);
+            await service.deleteProjectAttachment(1, 1, ATTACHMENT_TYPE.OTHER);
 
             expect(getProjectAttachmentStub).to.be.called;
-            expect(getProjectPublishStub).to.be.called;
-            expect(deleteProjectPublishStub).to.be.called;
-            expect(deleteProjectAttachmentStub).to.be.called;
-            expect(deleteFromBioHubStub).to.be.called;
-            expect(deleteS3).to.be.called;
-
-            expect(getProjectReportStub).to.not.be.called;
-            expect(getProjectReportPublishStub).to.not.be.called;
-            expect(deleteProjectReportPublishStub).to.not.be.called;
-            expect(deleteProjectReportAuthorsStub).to.not.be.called;
-            expect(deleteProjectReportAttachmentStub).to.not.be.called;
-          });
-
-          it('should run without sending delete request to BioHub', async () => {
-            const dbConnection = getMockDBConnection();
-            const service = new AttachmentService(dbConnection);
-
-            const getProjectReportStub = sinon
-              .stub(AttachmentService.prototype, 'getProjectReportAttachmentById')
-              .resolves(({
-                key: 'key',
-                uuid: 'uuid',
-                project_report_attachment_id: 1
-              } as unknown) as IProjectReportAttachment);
-            const deleteProjectReportAuthorsStub = sinon
-              .stub(AttachmentService.prototype, 'deleteProjectReportAttachmentAuthors')
-              .resolves();
-            const deleteProjectReportAttachmentStub = sinon
-              .stub(AttachmentService.prototype, 'deleteProjectReportAttachment')
-              .resolves();
-            const getProjectAttachmentStub = sinon
-              .stub(AttachmentService.prototype, 'getProjectAttachmentById')
-              .resolves(({
-                key: 'key',
-                uuid: 'uuid',
-                project_attachment_id: 1
-              } as unknown) as IProjectAttachment);
-            const deleteProjectAttachmentStub = sinon
-              .stub(AttachmentService.prototype, 'deleteProjectAttachment')
-              .resolves();
-
-            const getProjectReportPublishStub = sinon
-              .stub(HistoryPublishService.prototype, 'getProjectReportPublishRecord')
-              .resolves(null);
-            const getProjectPublishStub = sinon
-              .stub(HistoryPublishService.prototype, 'getProjectAttachmentPublishRecord')
-              .resolves(null);
-            const deleteProjectPublishStub = sinon
-              .stub(HistoryPublishService.prototype, 'deleteProjectAttachmentPublishRecord')
-              .resolves();
-            const deleteProjectReportPublishStub = sinon
-              .stub(HistoryPublishService.prototype, 'deleteProjectReportAttachmentPublishRecord')
-              .resolves();
-
-            const deleteFromBioHubStub = sinon.stub(PlatformService.prototype, 'deleteAttachmentFromBiohub').resolves();
-
-            const mockS3Client = new AWS.S3();
-            sinon.stub(AWS, 'S3').returns(mockS3Client);
-            const deleteS3 = sinon.stub(mockS3Client, 'deleteObject').returns({
-              promise: () =>
-                Promise.resolve({
-                  DeleteMarker: true
-                })
-            } as AWS.Request<AWS.S3.DeleteObjectOutput, AWS.AWSError>);
-
-            await service.handleDeleteProjectAttachment(1, 1, ATTACHMENT_TYPE.OTHER, true);
-
-            expect(getProjectAttachmentStub).to.be.called;
-            expect(getProjectPublishStub).to.be.called;
-            expect(deleteProjectPublishStub).to.be.called;
             expect(deleteProjectAttachmentStub).to.be.called;
             expect(deleteS3).to.be.called;
 
             expect(getProjectReportStub).to.not.be.called;
-            expect(getProjectReportPublishStub).to.not.be.called;
-            expect(deleteProjectReportPublishStub).to.not.be.called;
             expect(deleteProjectReportAuthorsStub).to.not.be.called;
             expect(deleteProjectReportAttachmentStub).to.not.be.called;
-            expect(deleteFromBioHubStub).to.not.be.called;
           });
         });
       });
@@ -676,11 +433,11 @@ describe('AttachmentService', () => {
       });
 
       describe('getProjectReportAttachmentAuthors', () => {
-        it('should return IReportAttachmentAuthor[]', async () => {
+        it('should return IProjectReportAttachmentAuthor[]', async () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = [({ id: 1 } as unknown) as IReportAttachmentAuthor];
+          const data = [({ id: 1 } as unknown) as IProjectReportAttachmentAuthor];
 
           const repoStub = sinon
             .stub(AttachmentRepository.prototype, 'getProjectReportAttachmentAuthors')
@@ -902,16 +659,18 @@ describe('AttachmentService', () => {
         });
       });
 
-      describe('deleteProjectReportAttachment', () => {
+      describe('_deleteProjectReportAttachmentRecord', () => {
         it('should return key string', async () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
           const data = { key: 'string', uuid: 'string' };
 
-          const repoStub = sinon.stub(AttachmentRepository.prototype, 'deleteProjectReportAttachment').resolves(data);
+          const repoStub = sinon
+            .stub(AttachmentRepository.prototype, 'deleteProjectReportAttachmentRecord')
+            .resolves(data);
 
-          const response = await service.deleteProjectReportAttachment(1);
+          const response = await service._deleteProjectReportAttachmentRecord(1);
 
           expect(repoStub).to.be.calledOnce;
           expect(response).to.eql(data);
@@ -954,23 +713,23 @@ describe('AttachmentService', () => {
         });
       });
 
-      describe('deleteSurveyAttachment', () => {
+      describe('_deleteSurveyAttachmentRecord', () => {
         it('should return key string', async () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
           const data = { key: 'string', uuid: 'string' };
 
-          const repoStub = sinon.stub(AttachmentRepository.prototype, 'deleteSurveyAttachment').resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'deleteSurveyAttachmentRecord').resolves(data);
 
-          const response = await service.deleteSurveyAttachment(1);
+          const response = await service._deleteSurveyAttachmentRecord(1);
 
           expect(repoStub).to.be.calledOnce;
           expect(response).to.eql(data);
         });
       });
 
-      describe('handleDeleteSurveyAttachment', () => {
+      describe('deleteSurveyAttachment', () => {
         describe('delete other attachment', () => {
           it('should run without issue', async () => {
             const dbConnection = getMockDBConnection();
@@ -984,16 +743,6 @@ describe('AttachmentService', () => {
                 uuid: 'uuid',
                 key: 's3/key'
               } as unknown) as ISurveyAttachment);
-            const reportPublishStatusStub = sinon
-              .stub(HistoryPublishService.prototype, 'getSurveyReportPublishRecord')
-              .resolves(({
-                survey_report_publish_id: 1
-              } as unknown) as SurveyReportPublish);
-            const attachmentPublishStatusStub = sinon
-              .stub(HistoryPublishService.prototype, 'getSurveyAttachmentPublishRecord')
-              .resolves(({
-                survey_attachment_publish_id: 1
-              } as unknown) as SurveyAttachmentPublish);
             const deleteSurveyReportPublishStub = sinon
               .stub(HistoryPublishService.prototype, 'deleteSurveyReportAttachmentPublishRecord')
               .resolves();
@@ -1004,11 +753,11 @@ describe('AttachmentService', () => {
               .stub(AttachmentService.prototype, 'deleteSurveyReportAttachmentAuthors')
               .resolves();
             const deleteSurveyReportStub = sinon
-              .stub(AttachmentService.prototype, 'deleteSurveyReportAttachment')
+              .stub(AttachmentService.prototype, '_deleteSurveyReportAttachmentRecord')
               .resolves();
 
             const deleteSurveyAttachmentStub = sinon
-              .stub(AttachmentService.prototype, 'deleteSurveyAttachment')
+              .stub(AttachmentService.prototype, '_deleteSurveyAttachmentRecord')
               .resolves();
 
             const getSurveyReportStub = sinon
@@ -1020,8 +769,6 @@ describe('AttachmentService', () => {
                 key: 's3/key'
               } as unknown) as ISurveyReportAttachment);
 
-            const deleteFromBioHubStub = sinon.stub(PlatformService.prototype, 'deleteAttachmentFromBiohub').resolves();
-
             const mockS3Client = new AWS.S3();
             sinon.stub(AWS, 'S3').returns(mockS3Client);
             const deleteS3 = sinon.stub(mockS3Client, 'deleteObject').returns({
@@ -1031,17 +778,14 @@ describe('AttachmentService', () => {
                 })
             } as AWS.Request<AWS.S3.DeleteObjectOutput, AWS.AWSError>);
 
-            await service.handleDeleteSurveyAttachment(1, 1, ATTACHMENT_TYPE.OTHER, true);
+            await service.deleteSurveyAttachment(1, 1, ATTACHMENT_TYPE.OTHER);
 
             expect(getSurveyAttachmentStub).to.be.called;
-            expect(attachmentPublishStatusStub).to.be.called;
             expect(attachmentPublishDeleteStub).to.be.called;
             expect(deleteSurveyAttachmentStub).to.be.called;
-            expect(deleteFromBioHubStub).to.be.called;
             expect(deleteS3).to.be.called;
 
             expect(getSurveyReportStub).to.be.not.called;
-            expect(reportPublishStatusStub).to.be.not.called;
             expect(deleteSurveyReportPublishStub).to.be.not.called;
             expect(deleteSurveyReportAuthorsStub).to.be.not.called;
             expect(deleteSurveyReportStub).to.be.not.called;
@@ -1061,11 +805,6 @@ describe('AttachmentService', () => {
                 uuid: 'uuid',
                 key: 's3/key'
               } as unknown) as ISurveyAttachment);
-            const reportPublishStatusStub = sinon
-              .stub(HistoryPublishService.prototype, 'getSurveyReportPublishRecord')
-              .resolves(({
-                survey_report_publish_id: 1
-              } as unknown) as SurveyReportPublish);
             const attachmentPublishStatusStub = sinon
               .stub(HistoryPublishService.prototype, 'getSurveyAttachmentPublishRecord')
               .resolves(({
@@ -1081,7 +820,7 @@ describe('AttachmentService', () => {
               .stub(AttachmentService.prototype, 'deleteSurveyReportAttachmentAuthors')
               .resolves();
             const deleteSurveyReportStub = sinon
-              .stub(AttachmentService.prototype, 'deleteSurveyReportAttachment')
+              .stub(AttachmentService.prototype, '_deleteSurveyReportAttachmentRecord')
               .resolves();
 
             const getSurveyReportStub = sinon
@@ -1093,8 +832,6 @@ describe('AttachmentService', () => {
                 key: 's3/key'
               } as unknown) as ISurveyReportAttachment);
 
-            const deleteFromBioHubStub = sinon.stub(PlatformService.prototype, 'deleteAttachmentFromBiohub').resolves();
-
             const mockS3Client = new AWS.S3();
             sinon.stub(AWS, 'S3').returns(mockS3Client);
             const deleteS3 = sinon.stub(mockS3Client, 'deleteObject').returns({
@@ -1104,84 +841,14 @@ describe('AttachmentService', () => {
                 })
             } as AWS.Request<AWS.S3.DeleteObjectOutput, AWS.AWSError>);
 
-            await service.handleDeleteSurveyAttachment(1, 1, ATTACHMENT_TYPE.REPORT, true);
+            await service.deleteSurveyAttachment(1, 1, ATTACHMENT_TYPE.REPORT);
 
             expect(getSurveyReportStub).to.be.called;
-            expect(reportPublishStatusStub).to.be.called;
-            expect(deleteSurveyReportPublishStub).to.be.called;
-            expect(deleteSurveyReportAuthorsStub).to.be.called;
-            expect(deleteSurveyReportStub).to.be.called;
-            expect(deleteFromBioHubStub).to.be.called;
-            expect(deleteS3).to.be.called;
-
-            expect(getSurveyAttachmentStub).to.be.not.called;
-            expect(attachmentPublishStatusStub).to.be.not.called;
-            expect(attachmentPublishDeleteStub).to.be.not.called;
-          });
-
-          it('should not send request to biohub to delete', async () => {
-            const dbConnection = getMockDBConnection();
-            const service = new AttachmentService(dbConnection);
-
-            const getSurveyAttachmentStub = sinon
-              .stub(AttachmentService.prototype, 'getSurveyAttachmentById')
-              .resolves(({
-                survey_report_attachment_id: 1,
-                survey_attachment_id: 1,
-                uuid: 'uuid',
-                key: 's3/key'
-              } as unknown) as ISurveyAttachment);
-            const reportPublishStatusStub = sinon
-              .stub(HistoryPublishService.prototype, 'getSurveyReportPublishRecord')
-              .resolves(null);
-            const attachmentPublishStatusStub = sinon
-              .stub(HistoryPublishService.prototype, 'getSurveyAttachmentPublishRecord')
-              .resolves(({
-                survey_attachment_publish_id: 1
-              } as unknown) as SurveyAttachmentPublish);
-            const deleteSurveyReportPublishStub = sinon
-              .stub(HistoryPublishService.prototype, 'deleteSurveyReportAttachmentPublishRecord')
-              .resolves();
-            const attachmentPublishDeleteStub = sinon
-              .stub(HistoryPublishService.prototype, 'deleteSurveyAttachmentPublishRecord')
-              .resolves();
-            const deleteSurveyReportAuthorsStub = sinon
-              .stub(AttachmentService.prototype, 'deleteSurveyReportAttachmentAuthors')
-              .resolves();
-            const deleteSurveyReportStub = sinon
-              .stub(AttachmentService.prototype, 'deleteSurveyReportAttachment')
-              .resolves();
-
-            const getSurveyReportStub = sinon
-              .stub(AttachmentService.prototype, 'getSurveyReportAttachmentById')
-              .resolves(({
-                survey_report_attachment_id: 1,
-                survey_attachment_id: 1,
-                uuid: 'uuid',
-                key: 's3/key'
-              } as unknown) as ISurveyReportAttachment);
-
-            const deleteFromBioHubStub = sinon.stub(PlatformService.prototype, 'deleteAttachmentFromBiohub').resolves();
-
-            const mockS3Client = new AWS.S3();
-            sinon.stub(AWS, 'S3').returns(mockS3Client);
-            const deleteS3 = sinon.stub(mockS3Client, 'deleteObject').returns({
-              promise: () =>
-                Promise.resolve({
-                  DeleteMarker: true
-                })
-            } as AWS.Request<AWS.S3.DeleteObjectOutput, AWS.AWSError>);
-
-            await service.handleDeleteSurveyAttachment(1, 1, ATTACHMENT_TYPE.REPORT, false);
-
-            expect(getSurveyReportStub).to.be.called;
-            expect(reportPublishStatusStub).to.be.called;
             expect(deleteSurveyReportPublishStub).to.be.called;
             expect(deleteSurveyReportAuthorsStub).to.be.called;
             expect(deleteSurveyReportStub).to.be.called;
             expect(deleteS3).to.be.called;
 
-            expect(deleteFromBioHubStub).to.be.not.called;
             expect(getSurveyAttachmentStub).to.be.not.called;
             expect(attachmentPublishStatusStub).to.be.not.called;
             expect(attachmentPublishDeleteStub).to.be.not.called;
@@ -1362,11 +1029,11 @@ describe('AttachmentService', () => {
       });
 
       describe('getSurveyAttachmentAuthors', () => {
-        it('should return IReportAttachmentAuthor[]', async () => {
+        it('should return ISurveyReportAttachmentAuthor[]', async () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = [({ id: 1 } as unknown) as IReportAttachmentAuthor];
+          const data = [({ id: 1 } as unknown) as ISurveyReportAttachmentAuthor];
 
           const repoStub = sinon
             .stub(AttachmentRepository.prototype, 'getSurveyReportAttachmentAuthors')
@@ -1548,16 +1215,18 @@ describe('AttachmentService', () => {
         });
       });
 
-      describe('deleteSurveyReportAttachment', () => {
+      describe('_deleteSurveyReportAttachmentRecord', () => {
         it('should return key string', async () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
           const data = { key: 'string', uuid: 'string' };
 
-          const repoStub = sinon.stub(AttachmentRepository.prototype, 'deleteSurveyReportAttachment').resolves(data);
+          const repoStub = sinon
+            .stub(AttachmentRepository.prototype, 'deleteSurveyReportAttachmentRecord')
+            .resolves(data);
 
-          const response = await service.deleteSurveyReportAttachment(1);
+          const response = await service._deleteSurveyReportAttachmentRecord(1);
 
           expect(repoStub).to.be.calledOnce;
           expect(response).to.eql(data);

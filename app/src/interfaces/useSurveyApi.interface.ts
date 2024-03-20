@@ -7,7 +7,8 @@ import { ISurveyLocationForm } from 'features/surveys/components/StudyAreaForm';
 import { ISurveyFundingSource, ISurveyFundingSourceForm } from 'features/surveys/components/SurveyFundingSourceForm';
 import { ISurveySiteSelectionForm } from 'features/surveys/components/SurveySiteSelectionForm';
 import { Feature } from 'geojson';
-import { StringBoolean } from 'types/misc';
+import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
+import { ApiPaginationResponseParams, StringBoolean } from 'types/misc';
 import { ICritterDetailedResponse } from './useCritterApi.interface';
 
 /**
@@ -40,14 +41,12 @@ export interface ISurveyBlockForm {
     survey_block_id: number | null;
     name: string;
     description: string;
+    sample_block_count: number;
   }[];
 }
 
 export interface IParticipantsJobForm {
-  participants: {
-    system_user_id: number;
-    survey_job_name: string;
-  }[];
+  participants: IGetSurveyParticipant[];
 }
 
 export interface IGetSurveyForViewResponseDetails {
@@ -56,6 +55,7 @@ export interface IGetSurveyForViewResponseDetails {
   survey_name: string;
   start_date: string;
   end_date: string;
+  progress_id: number;
   survey_types: number[];
   revision_count: number;
 }
@@ -116,6 +116,19 @@ export interface IGetSurveyBlock {
   update_date: string | null;
   update_user: number | null;
   revision_count: number;
+  sample_block_count: number;
+}
+
+export interface IGetSurveyStratum {
+  survey_stratum_id: number;
+  name: string;
+  description: string;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
+  sample_stratum_count: number;
 }
 
 export interface SurveyViewObject {
@@ -137,6 +150,7 @@ export interface SurveyBasicFieldsObject {
   name: string;
   start_date: string;
   end_date: string | null;
+  progress_id: number;
   focal_species: number[];
   focal_species_names: string[];
 }
@@ -150,8 +164,8 @@ export interface SurveyUpdateObject extends ISurveyLocationForm {
     revision_count: number;
   };
   species?: {
-    focal_species: number[];
-    ancillary_species: number[];
+    focal_species: ITaxonomy[];
+    ancillary_species: ITaxonomy[];
   };
   permit?: {
     permits: {
@@ -183,17 +197,10 @@ export interface SurveyUpdateObject extends ISurveyLocationForm {
     category_rationale: string;
     disa_required: StringBoolean;
   };
-  participants?: {
-    identity_source: string;
-    email: string | null;
-    display_name: string;
-    agency: string | null;
-    survey_job_id: number;
-    system_user_id: number;
-    survey_job_name: string;
-  }[];
+  participants?: IGetSurveyParticipant[];
 }
 
+// TODO remove in subsequent PR
 export interface SurveySupplementaryData {
   occurrence_submission: {
     occurrence_submission_id: number | null;
@@ -202,7 +209,7 @@ export interface SurveySupplementaryData {
     occurrence_submission_publish_id: number;
     occurrence_submission_id: number;
     event_timestamp: string;
-    queue_id: number;
+    submission_uuid: string;
     create_date: string;
     create_user: number;
     update_date: string | null;
@@ -227,7 +234,7 @@ export interface SurveySupplementaryData {
     survey_metadata_publish_id: number;
     survey_id: number;
     event_timestamp: string;
-    queue_id: number;
+    submission_uuid: string;
     create_date: string;
     create_user: number;
     update_date: string | null;
@@ -250,11 +257,11 @@ export interface ISurveySupplementaryData {
  * Get survey basic fields response object.
  *
  * @export
- * @interface IGetSurveyForListResponse
+ * @interface IGetSurveyListResponse
  */
-export interface IGetSurveyForListResponse {
-  surveyData: SurveyBasicFieldsObject;
-  surveySupplementaryData: ISurveySupplementaryData;
+export interface IGetSurveyListResponse {
+  surveys: SurveyBasicFieldsObject[];
+  pagination: ApiPaginationResponseParams;
 }
 
 /**
@@ -277,10 +284,8 @@ export interface IGetSurveyDetailsResponse {
 }
 
 export interface IGetSpecies {
-  focal_species: number[];
-  focal_species_names: string[];
-  ancillary_species: number[];
-  ancillary_species_names: string[];
+  focal_species: ITaxonomy[];
+  ancillary_species: ITaxonomy[];
 }
 
 export interface IGetSurveyAttachment {
@@ -359,11 +364,13 @@ export type IEditSurveyRequest = IGeneralInformationForm &
   ISurveyLocationForm &
   IProprietaryDataForm &
   IUpdateAgreementsForm & { partnerships: IGetSurveyForViewResponsePartnerships } & ISurveySiteSelectionForm &
-  IParticipantsJobForm;
+  IParticipantsJobForm &
+  ISurveyBlockForm;
 
 export interface IGetSampleSiteResponse {
-  sampleSites: IGetSampleLocationRecord[];
+  sampleSites: IGetSampleLocationDetails[];
 }
+
 export interface IGetSampleLocationRecord {
   survey_sample_site_id: number;
   survey_id: number;
@@ -376,7 +383,49 @@ export interface IGetSampleLocationRecord {
   update_date: string | null;
   update_user: number | null;
   revision_count: number;
+}
+
+export interface IGetSampleLocationDetails {
+  survey_sample_site_id: number;
+  survey_id: number;
+  name: string;
+  description: string;
+  geojson: Feature;
+  geography: string;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
   sample_methods: IGetSampleMethodRecord[] | undefined;
+  sample_blocks: IGetSampleBlockDetails[] | undefined;
+  sample_stratums: IGetSampleStratumDetails[] | undefined;
+}
+
+export interface IGetSampleBlockDetails {
+  survey_sample_block_id: number;
+  survey_sample_site_id: number;
+  survey_block_id: number;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
+  name: string;
+  description: string;
+}
+
+export interface IGetSampleStratumDetails {
+  survey_sample_stratum_id: number;
+  survey_sample_site_id: number;
+  survey_stratum_id: number;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
+  name: string;
+  description: string;
 }
 
 export interface IGetSampleMethodRecord {

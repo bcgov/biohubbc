@@ -51,8 +51,6 @@ describe('SurveyDetails', () => {
     }
   } as DataLoader<any, IGetSurveyForViewResponse, any>;
   const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
-  const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
-  const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
   const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
   const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
   const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
@@ -66,8 +64,6 @@ describe('SurveyDetails', () => {
             surveyId: 1,
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
-            observationDataLoader: mockObservationsDataLoader,
-            summaryDataLoader: mockSummaryDataLoader,
             sampleSiteDataLoader: mockSampleSiteDataLoader,
             critterDataLoader: mockCritterDataLoader,
             deploymentDataLoader: mockDeploymentDataLoader

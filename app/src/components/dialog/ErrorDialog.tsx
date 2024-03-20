@@ -64,7 +64,7 @@ export interface IErrorDialogProps {
  * @param {*} props
  * @return {*}
  */
-export const ErrorDialog: React.FC<IErrorDialogProps> = (props) => {
+export const ErrorDialog = (props: IErrorDialogProps) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   const ErrorDetailsList = (errorProps: { errors: (string | object)[] }) => {
@@ -94,20 +94,19 @@ export const ErrorDialog: React.FC<IErrorDialogProps> = (props) => {
 
       <DialogContent>
         <DialogContentText id="alert-dialog-description">{props.dialogText}</DialogContentText>
-        {props.dialogError && (
+        {props.dialogError && <DialogContentText id="alert-dialog-description">{props.dialogError}</DialogContentText>}
+
+        {props?.dialogErrorDetails?.length ? (
           <>
-            <DialogContentText id="alert-dialog-description">{props.dialogError}</DialogContentText>
-            {props?.dialogErrorDetails?.length ? (
-              <>
-                <Button color="primary" onClick={() => setIsExpanded(!isExpanded)}>
-                  {isExpanded ? 'Hide detailed error message' : 'Show detailed error message'}
-                </Button>
-                <Collapse in={isExpanded}>
-                  <ErrorDetailsList errors={props.dialogErrorDetails} />
-                </Collapse>
-              </>
-            ) : null}
+            <Button color="primary" onClick={() => setIsExpanded(!isExpanded)}>
+              {isExpanded ? 'Hide detailed error message' : 'Show detailed error message'}
+            </Button>
+            <Collapse in={isExpanded}>
+              <ErrorDetailsList errors={props.dialogErrorDetails} />
+            </Collapse>
           </>
+        ) : (
+          <></>
         )}
       </DialogContent>
 

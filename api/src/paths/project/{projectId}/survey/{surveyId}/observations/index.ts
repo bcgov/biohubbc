@@ -1,12 +1,16 @@
-import { SchemaObject } from 'ajv';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { InsertObservation, UpdateObservation } from '../../../../../../repositories/observation-repository';
+import {
+  paginationRequestQueryParamSchema,
+  paginationResponseSchema
+} from '../../../../../../openapi/schemas/pagination';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ObservationService } from '../../../../../../services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
+import { ensureCompletePaginationOptions, makePaginationResponse } from '../../../../../../utils/pagination';
+import { ApiPaginationOptions } from '../../../../../../zod-schema/pagination';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation');
 
@@ -20,7 +24,7 @@ export const GET: Operation = [
             PROJECT_PERMISSION.COLLABORATOR,
             PROJECT_PERMISSION.OBSERVER
           ],
-          projectId: Number(req.params.projectId),
+          surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
         {
@@ -39,7 +43,7 @@ export const PUT: Operation = [
       or: [
         {
           validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
-          projectId: Number(req.params.projectId),
+          surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
         {
@@ -49,92 +53,8 @@ export const PUT: Operation = [
       ]
     };
   }),
-  insertUpdateSurveyObservations()
+  insertUpdateSurveyObservationsWithMeasurements()
 ];
-
-export const surveyObservationsSupplementaryData: SchemaObject = {
-  type: 'object',
-  required: ['observationCount'],
-  properties: {
-    observationCount: {
-      type: 'integer',
-      minimum: 0
-    }
-  }
-};
-
-export const surveyObservationsResponseSchema: SchemaObject = {
-  type: 'object',
-  nullable: true,
-  required: ['surveyObservations'],
-  properties: {
-    surveyObservations: {
-      type: 'array',
-      items: {
-        type: 'object',
-        required: [
-          'survey_observation_id',
-          'wldtaxonomic_units_id',
-          'latitude',
-          'longitude',
-          'count',
-          'observation_date',
-          'observation_time',
-          'create_user',
-          'create_date',
-          'update_user',
-          'update_date',
-          'revision_count'
-        ],
-        properties: {
-          survey_observation_id: {
-            type: 'integer'
-          },
-          wldtaxonomic_units_id: {
-            type: 'integer'
-          },
-          latitude: {
-            type: 'number'
-          },
-          longitude: {
-            type: 'number'
-          },
-          count: {
-            type: 'integer'
-          },
-          observation_date: {
-            type: 'string'
-          },
-          observation_time: {
-            type: 'string'
-          },
-          create_date: {
-            oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-            description: 'ISO 8601 date string for the project start date'
-          },
-          create_user: {
-            type: 'integer',
-            minimum: 1
-          },
-          update_date: {
-            oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-            description: 'ISO 8601 date string for the project start date',
-            nullable: true
-          },
-          update_user: {
-            type: 'integer',
-            minimum: 1,
-            nullable: true
-          },
-          revision_count: {
-            type: 'integer',
-            minimum: 0
-          }
-        }
-      }
-    }
-  }
-};
 
 GET.apiDoc = {
   description: 'Get all observations for the survey.',
@@ -149,7 +69,7 @@ GET.apiDoc = {
       in: 'path',
       name: 'projectId',
       schema: {
-        type: 'number',
+        type: 'integer',
         minimum: 1
       },
       required: true
@@ -158,11 +78,12 @@ GET.apiDoc = {
       in: 'path',
       name: 'surveyId',
       schema: {
-        type: 'number',
+        type: 'integer',
         minimum: 1
       },
       required: true
-    }
+    },
+    ...paginationRequestQueryParamSchema
   ],
   responses: {
     200: {
@@ -170,13 +91,290 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            ...surveyObservationsResponseSchema,
-            required: ['surveyObservations', 'supplementaryObservationData'],
+            description: 'Survey get response object, for view purposes',
+            type: 'object',
+            additionalProperties: false,
+            required: ['surveyObservations', 'supplementaryObservationData', 'pagination'],
             properties: {
-              ...surveyObservationsResponseSchema.properties,
-              supplementaryObservationData: { ...surveyObservationsSupplementaryData }
-            },
-            title: 'Survey get response object, for view purposes'
+              surveyObservations: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: [
+                    'survey_observation_id',
+                    'survey_id',
+                    'itis_tsn',
+                    'itis_scientific_name',
+                    'survey_sample_site_id',
+                    'survey_sample_method_id',
+                    'survey_sample_period_id',
+                    'latitude',
+                    'longitude',
+                    'count',
+                    'observation_time',
+                    'observation_date',
+                    'create_date',
+                    'create_user',
+                    'update_date',
+                    'update_user',
+                    'revision_count',
+                    'survey_sample_site_name',
+                    'survey_sample_method_name',
+                    'survey_sample_period_start_datetime'
+                  ],
+                  properties: {
+                    survey_observation_id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    survey_id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    itis_tsn: {
+                      type: 'integer'
+                    },
+                    itis_scientific_name: {
+                      type: 'string',
+                      nullable: true
+                    },
+                    survey_sample_site_id: {
+                      type: 'integer',
+                      minimum: 1,
+                      nullable: true
+                    },
+                    survey_sample_method_id: {
+                      type: 'integer',
+                      minimum: 1,
+                      nullable: true
+                    },
+                    survey_sample_period_id: {
+                      type: 'integer',
+                      minimum: 1,
+                      nullable: true
+                    },
+                    latitude: {
+                      type: 'number'
+                    },
+                    longitude: {
+                      type: 'number'
+                    },
+                    count: {
+                      type: 'integer'
+                    },
+                    observation_time: {
+                      type: 'string'
+                    },
+                    observation_date: {
+                      type: 'string'
+                    },
+                    create_date: {
+                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                      description: 'ISO 8601 date string for the project start date'
+                    },
+                    create_user: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    update_date: {
+                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                      description: 'ISO 8601 date string for the project start date',
+                      nullable: true
+                    },
+                    update_user: {
+                      type: 'integer',
+                      minimum: 1,
+                      nullable: true
+                    },
+                    revision_count: {
+                      type: 'integer',
+                      minimum: 0
+                    },
+                    survey_sample_site_name: {
+                      type: 'string',
+                      nullable: true
+                    },
+                    survey_sample_method_name: {
+                      type: 'string',
+                      nullable: true
+                    },
+                    survey_sample_period_start_datetime: {
+                      type: 'string',
+                      nullable: true
+                    },
+                    subcounts: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        additionalProperties: false,
+                        required: [
+                          'observation_subcount_id',
+                          'subcount',
+                          'qualitative_measurements',
+                          'quantitative_measurements'
+                        ],
+                        properties: {
+                          observation_subcount_id: {
+                            type: 'integer'
+                          },
+                          subcount: {
+                            type: 'number'
+                          },
+                          qualitative_measurements: {
+                            type: 'array',
+                            items: {
+                              type: 'object',
+                              additionalProperties: false,
+                              required: [
+                                'critterbase_taxon_measurement_id',
+                                'critterbase_measurement_qualitative_option_id'
+                              ],
+                              properties: {
+                                critterbase_taxon_measurement_id: {
+                                  type: 'string',
+                                  format: 'uuid'
+                                },
+                                critterbase_measurement_qualitative_option_id: {
+                                  type: 'string',
+                                  format: 'uuid'
+                                }
+                              }
+                            }
+                          },
+                          quantitative_measurements: {
+                            type: 'array',
+                            items: {
+                              type: 'object',
+                              additionalProperties: false,
+                              required: ['critterbase_taxon_measurement_id', 'value'],
+                              properties: {
+                                critterbase_taxon_measurement_id: {
+                                  type: 'string',
+                                  format: 'uuid'
+                                },
+                                value: {
+                                  type: 'number'
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              supplementaryObservationData: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['observationCount', 'qualitative_measurements', 'quantitative_measurements'],
+                properties: {
+                  observationCount: {
+                    type: 'integer',
+                    minimum: 0
+                  },
+                  qualitative_measurements: {
+                    description: 'All qualitative measurement type definitions for the survey.',
+                    type: 'array',
+                    items: {
+                      description: 'A qualitative measurement type definition, with array of valid/accepted options',
+                      type: 'object',
+                      additionalProperties: false,
+                      required: ['itis_tsn', 'taxon_measurement_id', 'measurement_name', 'measurement_desc', 'options'],
+                      properties: {
+                        itis_tsn: {
+                          type: 'integer',
+                          nullable: true
+                        },
+                        taxon_measurement_id: {
+                          type: 'string'
+                        },
+                        measurement_name: {
+                          type: 'string'
+                        },
+                        measurement_desc: {
+                          type: 'string',
+                          nullable: true
+                        },
+                        options: {
+                          description: 'Valid options for the measurement.',
+                          type: 'array',
+                          items: {
+                            type: 'object',
+                            additionalProperties: false,
+                            required: ['qualitative_option_id', 'option_label', 'option_value', 'option_desc'],
+                            properties: {
+                              qualitative_option_id: {
+                                type: 'string'
+                              },
+                              option_label: {
+                                type: 'string',
+                                nullable: true
+                              },
+                              option_value: {
+                                type: 'number'
+                              },
+                              option_desc: {
+                                type: 'string',
+                                nullable: true
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  quantitative_measurements: {
+                    description: 'All quantitative measurement type definitions for the survey.',
+                    type: 'array',
+                    items: {
+                      description: 'A quantitative measurement type definition, with possible min/max constraint.',
+                      type: 'object',
+                      additionalProperties: false,
+                      required: [
+                        'itis_tsn',
+                        'taxon_measurement_id',
+                        'measurement_name',
+                        'measurement_desc',
+                        'min_value',
+                        'max_value',
+                        'unit'
+                      ],
+                      properties: {
+                        itis_tsn: {
+                          type: 'integer',
+                          nullable: true
+                        },
+                        taxon_measurement_id: {
+                          type: 'string'
+                        },
+                        measurement_name: {
+                          type: 'string'
+                        },
+                        measurement_desc: {
+                          type: 'string',
+                          nullable: true
+                        },
+                        min_value: {
+                          type: 'number',
+                          nullable: true
+                        },
+                        max_value: {
+                          type: 'number',
+                          nullable: true
+                        },
+                        unit: {
+                          type: 'string',
+                          nullable: true
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              pagination: { ...paginationResponseSchema }
+            }
           }
         }
       }
@@ -225,38 +423,134 @@ PUT.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           properties: {
             surveyObservations: {
               description: 'Survey observation records.',
               type: 'array',
               items: {
+                description: 'A single survey observation record.',
                 type: 'object',
-                required: [
-                  'wldtaxonomic_units_id',
-                  'count',
-                  'latitude',
-                  'longitude',
-                  'observation_date',
-                  'observation_time'
-                ],
+                additionalProperties: false,
+                required: ['standardColumns', 'subcounts'],
                 properties: {
-                  wldtaxonomic_units_id: {
-                    oneOf: [{ type: 'integer' }, { type: 'string' }]
+                  standardColumns: {
+                    description: 'Standard column data for an observation record.',
+                    type: 'object',
+                    additionalProperties: false,
+                    required: [
+                      'itis_tsn',
+                      'survey_sample_site_id',
+                      'survey_sample_method_id',
+                      'survey_sample_period_id',
+                      'count',
+                      'latitude',
+                      'longitude',
+                      'observation_date',
+                      'observation_time'
+                    ],
+                    properties: {
+                      survey_observation_id: {
+                        type: 'integer',
+                        minimum: 1,
+                        nullable: true
+                      },
+                      survey_id: {
+                        type: 'integer',
+                        minimum: 1
+                      },
+                      itis_tsn: {
+                        type: 'integer'
+                      },
+                      itis_scientific_name: {
+                        type: 'string',
+                        nullable: true
+                      },
+                      survey_sample_site_id: {
+                        type: 'integer',
+                        minimum: 1,
+                        nullable: true
+                      },
+                      survey_sample_method_id: {
+                        type: 'integer',
+                        minimum: 1,
+                        nullable: true
+                      },
+                      survey_sample_period_id: {
+                        type: 'integer',
+                        minimum: 1,
+                        nullable: true
+                      },
+                      count: {
+                        type: 'integer'
+                      },
+                      subcount: {
+                        type: 'integer'
+                      },
+                      latitude: {
+                        type: 'number'
+                      },
+                      longitude: {
+                        type: 'number'
+                      },
+                      observation_date: {
+                        type: 'string'
+                      },
+                      observation_time: {
+                        type: 'string'
+                      },
+                      revision_count: {
+                        type: 'integer',
+                        minimum: 0
+                      }
+                    }
                   },
-                  count: {
-                    type: 'number'
-                  },
-                  latitude: {
-                    type: 'number'
-                  },
-                  longitude: {
-                    type: 'number'
-                  },
-                  observation_date: {
-                    type: 'string'
-                  },
-                  observation_time: {
-                    type: 'string'
+                  subcounts: {
+                    description: 'An array of observation subcount and measurement data',
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      additionalProperties: false,
+                      properties: {
+                        observation_subcount_id: {
+                          type: 'number',
+                          nullable: true
+                        },
+                        subcount: {
+                          type: 'number'
+                        },
+                        qualitative: {
+                          type: 'array',
+                          items: {
+                            type: 'object',
+                            additionalProperties: false,
+                            properties: {
+                              measurement_id: {
+                                type: 'string'
+                              },
+                              measurement_option_id: {
+                                type: 'string'
+                              }
+                            }
+                          }
+                        },
+                        quantitative: {
+                          type: 'array',
+                          items: {
+                            type: 'object',
+                            additionalProperties: false,
+                            properties: {
+                              measurement_id: {
+                                type: 'string'
+                              },
+                              measurement_value: {
+                                type: 'number'
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -267,13 +561,8 @@ PUT.apiDoc = {
     }
   },
   responses: {
-    200: {
-      description: 'Update OK',
-      content: {
-        'application/json': {
-          schema: { ...surveyObservationsResponseSchema }
-        }
-      }
+    204: {
+      description: 'Update OK'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -294,6 +583,19 @@ PUT.apiDoc = {
 };
 
 /**
+ * This record maps observation table sampling site site ID columns to sampling data
+ * columns that can be sorted on.
+ *
+ * TODO We should probably modify frontend functionality to make requests to sort on these
+ * columns.
+ */
+const samplingSiteSortingColumnName: Record<string, string> = {
+  survey_sample_site_id: 'survey_sample_site_name',
+  survey_sample_method_id: 'survey_sample_method_name',
+  survey_sample_period_id: 'survey_sample_period_start_datetime'
+};
+
+/**
  * Fetch all observations for a survey.
  *
  * @export
@@ -302,8 +604,20 @@ PUT.apiDoc = {
 export function getSurveyObservations(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
-
     defaultLog.debug({ label: 'getSurveyObservations', surveyId });
+
+    const page: number | undefined = req.query.page ? Number(req.query.page) : undefined;
+    const limit: number | undefined = req.query.limit ? Number(req.query.limit) : undefined;
+    const order: 'asc' | 'desc' | undefined = req.query.order ? (String(req.query.order) as 'asc' | 'desc') : undefined;
+
+    const sortQuery: string | undefined = req.query.sort ? String(req.query.sort) : undefined;
+    let sort = sortQuery;
+
+    if (sortQuery && samplingSiteSortingColumnName[sortQuery]) {
+      sort = samplingSiteSortingColumnName[sortQuery];
+    }
+
+    const paginationOptions: Partial<ApiPaginationOptions> = { page, limit, order, sort };
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -312,8 +626,18 @@ export function getSurveyObservations(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      const observationData = await observationService.getSurveyObservationsWithSupplementaryData(surveyId);
-      return res.status(200).json(observationData);
+      const observationData = await observationService.getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData(
+        surveyId,
+        ensureCompletePaginationOptions(paginationOptions)
+      );
+
+      const observationCount = observationData.supplementaryObservationData.observationCount;
+
+      return res.status(200).json({
+        surveyObservations: observationData.surveyObservations,
+        supplementaryObservationData: observationData.supplementaryObservationData,
+        pagination: makePaginationResponse(observationCount, paginationOptions)
+      });
     } catch (error) {
       defaultLog.error({ label: 'getSurveyObservations', message: 'error', error });
       await connection.rollback();
@@ -331,7 +655,7 @@ export function getSurveyObservations(): RequestHandler {
  * @export
  * @return {*}  {RequestHandler}
  */
-export function insertUpdateSurveyObservations(): RequestHandler {
+export function insertUpdateSurveyObservationsWithMeasurements(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
 
@@ -344,29 +668,15 @@ export function insertUpdateSurveyObservations(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      // Sanitize all incoming records
-      const records: (InsertObservation | UpdateObservation)[] = req.body.surveyObservations.map((record: any) => {
-        return {
-          survey_observation_id: record.survey_observation_id,
-          wldtaxonomic_units_id: Number(record.wldtaxonomic_units_id),
-          survey_sample_site_id: record.survey_sample_site_id,
-          survey_sample_method_id: record.survey_sample_method_id,
-          survey_sample_period_id: record.survey_sample_period_id,
-          latitude: record.latitude,
-          longitude: record.longitude,
-          count: record.count,
-          observation_date: record.observation_date,
-          observation_time: record.observation_time
-        } as InsertObservation | UpdateObservation;
-      });
+      const observationRows = req.body.surveyObservations;
 
-      const surveyObservations = await observationService.insertUpdateSurveyObservations(surveyId, records);
+      await observationService.insertUpdateSurveyObservationsWithMeasurements(surveyId, observationRows);
 
       await connection.commit();
 
-      return res.status(200).json({ surveyObservations });
+      return res.status(204).send();
     } catch (error) {
-      defaultLog.error({ label: 'insertUpdateSurveyObservations', message: 'error', error });
+      defaultLog.error({ label: 'insertUpdateSurveyObservationsWithMeasurements', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

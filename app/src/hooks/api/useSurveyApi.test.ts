@@ -6,8 +6,10 @@ import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
   IDetailedCritterWithInternalId,
-  IGetSurveyForListResponse
+  IGetSurveyListResponse,
+  SurveyBasicFieldsObject
 } from 'interfaces/useSurveyApi.interface';
+import { ApiPaginationResponseParams } from 'types/misc';
 import { v4 } from 'uuid';
 import useSurveyApi from './useSurveyApi';
 
@@ -47,18 +49,18 @@ describe('useSurveyApi', () => {
     it('fetches an array of surveys', async () => {
       const projectId = 1;
 
-      const res: IGetSurveyForListResponse[] = [
-        { surveyData: { survey_id: 1 }, surveySupplementaryData: {} } as IGetSurveyForListResponse,
-        { surveyData: { survey_id: 2 }, surveySupplementaryData: {} } as IGetSurveyForListResponse
-      ];
+      const res: IGetSurveyListResponse = {
+        surveys: [{ survey_id: 1 }, { survey_id: 2 }] as SurveyBasicFieldsObject[],
+        pagination: null as unknown as ApiPaginationResponseParams
+      };
 
       mock.onGet(`/api/project/${projectId}/survey`).reply(200, res);
 
       const result = await useSurveyApi(axios).getSurveysBasicFieldsByProjectId(projectId);
 
-      expect(result.length).toEqual(2);
-      expect(result[0].surveyData.survey_id).toEqual(1);
-      expect(result[1].surveyData.survey_id).toEqual(2);
+      expect(result.surveys.length).toEqual(2);
+      expect(result.surveys[0].survey_id).toEqual(1);
+      expect(result.surveys[1].survey_id).toEqual(2);
     });
   });
 
@@ -67,8 +69,8 @@ describe('useSurveyApi', () => {
       const animal: IAnimal = {
         general: {
           animal_id: '1',
-          taxon_id: v4(),
-          taxon_name: '1',
+          itis_tsn: v4(),
+          itis_scientific_name: '1',
           wlh_id: 'a',
           sex: AnimalSex.UNKNOWN,
           critter_id: v4()

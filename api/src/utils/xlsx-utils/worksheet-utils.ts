@@ -1,8 +1,28 @@
-import moment from 'moment';
+import { default as dayjs } from 'dayjs';
 import xlsx, { CellObject } from 'xlsx';
+import { ApiGeneralError } from '../../errors/api-error';
+import {
+  CBQualitativeMeasurementTypeDefinition,
+  CBQuantitativeMeasurementTypeDefinition,
+  CritterbaseService
+} from '../../services/critterbase-service';
+import { getLogger } from '../logger';
 import { MediaFile } from '../media/media-file';
-import { safeToLowerCase, safeTrim } from '../string-utils';
+import { safeToLowerCase } from '../string-utils';
 import { replaceCellDates, trimCellWhitespace } from './cell-utils';
+
+const defaultLog = getLogger('src/utils/xlsx-utils/worksheet-utils');
+
+export interface IXLSXCSVValidator {
+  columnNames: string[];
+  columnTypes: string[];
+  columnAliases?: Record<string, string[]>;
+}
+
+export type TsnMeasurementMap = Record<
+  string,
+  { qualitative: CBQualitativeMeasurementTypeDefinition[]; quantitative: CBQuantitativeMeasurementTypeDefinition[] }
+>;
 
 /**
  * Returns true if the given cell is a date type cell.
@@ -12,9 +32,9 @@ import { replaceCellDates, trimCellWhitespace } from './cell-utils';
  * @param {xlsx.ParsingOptions} [options]
  * @return {*}  {xlsx.WorkBook}
  */
-export function constructXLSXWorkbook(file: MediaFile, options?: xlsx.ParsingOptions): xlsx.WorkBook {
+export const constructXLSXWorkbook = (file: MediaFile, options?: xlsx.ParsingOptions): xlsx.WorkBook => {
   return xlsx.read(file.buffer, { cellDates: true, cellNF: true, cellHTML: false, ...options });
-}
+};
 
 /**
  * Constructs a CSVWorksheets from the given workbook
@@ -23,7 +43,7 @@ export function constructXLSXWorkbook(file: MediaFile, options?: xlsx.ParsingOpt
  * @param {xlsx.WorkBook} workbook
  * @return {*}  {CSVWorksheets}
  */
-export function constructWorksheets(workbook: xlsx.WorkBook): xlsx.WorkSheet {
+export const constructWorksheets = (workbook: xlsx.WorkBook): xlsx.WorkSheet => {
   const worksheets: xlsx.WorkSheet = {};
 
   Object.entries(workbook.Sheets).forEach(([key, value]) => {
@@ -31,16 +51,16 @@ export function constructWorksheets(workbook: xlsx.WorkBook): xlsx.WorkSheet {
   });
 
   return worksheets;
-}
+};
 
 /**
- * Get the headers for the given worksheet.
+ * Get the headers for the given worksheet, then transforms them to uppercase.
  *
  * @export
  * @param {xlsx.WorkSheet} worksheet
  * @return {*}  {string[]}
  */
-export function getWorksheetHeaders(worksheet: xlsx.WorkSheet): string[] {
+export const getWorksheetHeaders = (worksheet: xlsx.WorkSheet): string[] => {
   const originalRange = getWorksheetRange(worksheet);
 
   if (!originalRange) {
@@ -54,15 +74,18 @@ export function getWorksheetHeaders(worksheet: xlsx.WorkSheet): string[] {
     range: customRange
   });
 
-  let headers = [];
+  let headers: string[] = [];
 
   if (aoaHeaders.length > 0) {
     // Parse the headers array from the array of arrays produced by calling `xlsx.utils.sheet_to_json`
-    headers = aoaHeaders[0].map(safeTrim);
+    headers = aoaHeaders[0]
+      .map(String)
+      .filter(Boolean)
+      .map((header) => header.trim().toUpperCase());
   }
 
   return headers;
-}
+};
 
 /**
  * Get the headers for the given worksheet, with all values converted to lowercase.
@@ -71,9 +94,9 @@ export function getWorksheetHeaders(worksheet: xlsx.WorkSheet): string[] {
  * @param {xlsx.WorkSheet} worksheet
  * @return {*}  {string[]}
  */
-export function getHeadersLowerCase(worksheet: xlsx.WorkSheet): string[] {
+export const getHeadersLowerCase = (worksheet: xlsx.WorkSheet): string[] => {
   return getWorksheetHeaders(worksheet).map(safeToLowerCase);
-}
+};
 
 /**
  * Get the index of the given header name.
@@ -83,9 +106,9 @@ export function getHeadersLowerCase(worksheet: xlsx.WorkSheet): string[] {
  * @param {string} headerName
  * @return {*}  {number}
  */
-export function getHeaderIndex(worksheet: xlsx.WorkSheet, headerName: string): number {
+export const getHeaderIndex = (worksheet: xlsx.WorkSheet, headerName: string): number => {
   return getWorksheetHeaders(worksheet).indexOf(headerName);
-}
+};
 
 /**
  * Return an array of row value arrays.
@@ -94,7 +117,7 @@ export function getHeaderIndex(worksheet: xlsx.WorkSheet, headerName: string): n
  * @param {xlsx.WorkSheet} worksheet
  * @return {*}  {string[][]}
  */
-export function getWorksheetRows(worksheet: xlsx.WorkSheet): string[][] {
+export const getWorksheetRows = (worksheet: xlsx.WorkSheet): string[][] => {
   const originalRange = getWorksheetRange(worksheet);
 
   if (!originalRange) {
@@ -127,7 +150,7 @@ export function getWorksheetRows(worksheet: xlsx.WorkSheet): string[][] {
   }
 
   return rowsToReturn;
-}
+};
 
 /**
  * Return an array of row value arrays.
@@ -136,7 +159,7 @@ export function getWorksheetRows(worksheet: xlsx.WorkSheet): string[][] {
  * @param {xlsx.WorkSheet} worksheet
  * @return {*}  {Record<string, any>[]}
  */
-export function getWorksheetRowObjects(worksheet: xlsx.WorkSheet): Record<string, any>[] {
+export const getWorksheetRowObjects = (worksheet: xlsx.WorkSheet): Record<string, any>[] => {
   const ref = worksheet['!ref'];
 
   if (!ref) {
@@ -158,53 +181,56 @@ export function getWorksheetRowObjects(worksheet: xlsx.WorkSheet): Record<string
   });
 
   return rowObjectsArray;
-}
+};
 
 /**
  * Return boolean indicating whether the worksheet has the expected headers.
  *
  * @export
  * @param {xlsx.WorkSheet} worksheet
- * @param {string[]} expectedHeaders
+ * @param {IXLSXCSVValidator} columnValidator
  * @return {*}  {boolean}
  */
-export function validateWorksheetHeaders(worksheet: xlsx.WorkSheet, expectedHeaders: string[]): boolean {
+export const validateWorksheetHeaders = (worksheet: xlsx.WorkSheet, columnValidator: IXLSXCSVValidator): boolean => {
+  const { columnNames, columnAliases } = columnValidator;
+
   const worksheetHeaders = getWorksheetHeaders(worksheet);
 
-  if (worksheetHeaders.length !== expectedHeaders.length) {
-    return false;
-  }
-
-  return expectedHeaders.every((header) => worksheetHeaders.includes(header));
-}
+  return columnNames.every((expectedHeader) => {
+    return (
+      columnAliases?.[expectedHeader]?.some((alias) => worksheetHeaders.includes(alias)) ||
+      worksheetHeaders.includes(expectedHeader)
+    );
+  });
+};
 
 /**
- * Return boolean indicating whether the worksheet has correct column types.
+ * Return boolean indicating whether the worksheet has correct column types. This only checks the required columns in the `columnValidator`
  *
  * @export
  * @param {xlsx.WorkSheet} worksheet
  * @param {string[]} rowValueTypes
  * @return {*}  {boolean}
  */
-export function validateWorksheetColumnTypes(worksheet: xlsx.WorkSheet, rowValueTypes: string[]): boolean {
+export const validateWorksheetColumnTypes = (
+  worksheet: xlsx.WorkSheet,
+  columnValidator: IXLSXCSVValidator
+): boolean => {
+  const rowValueTypes: string[] = columnValidator.columnTypes;
   const worksheetRows = getWorksheetRows(worksheet);
 
   return worksheetRows.every((row) => {
-    if (row.length !== rowValueTypes.length) {
-      return false;
-    }
-
-    return Object.values(row).every((value, index) => {
+    return Object.values(columnValidator.columnNames).every((_, index) => {
+      const value = row[index];
       const type = typeof value;
-
       if (rowValueTypes[index] === 'date') {
-        return moment(value).isValid();
+        return dayjs(value).isValid();
       }
 
       return rowValueTypes[index] === type;
     });
   });
-}
+};
 
 /**
  * Get a worksheet by name.
@@ -214,9 +240,9 @@ export function validateWorksheetColumnTypes(worksheet: xlsx.WorkSheet, rowValue
  * @param {string} sheetName
  * @return {*}  {xlsx.WorkSheet}
  */
-export function getWorksheetByName(workbook: xlsx.WorkBook, sheetName: string): xlsx.WorkSheet {
+export const getWorksheetByName = (workbook: xlsx.WorkBook, sheetName: string): xlsx.WorkSheet => {
   return workbook.Sheets[sheetName];
-}
+};
 
 /**
  * Get a worksheets decoded range object, or return undefined if the worksheet is missing range information.
@@ -225,7 +251,7 @@ export function getWorksheetByName(workbook: xlsx.WorkBook, sheetName: string): 
  * @param {xlsx.WorkSheet} worksheet
  * @return {*}  {(xlsx.Range | undefined)}
  */
-export function getWorksheetRange(worksheet: xlsx.WorkSheet): xlsx.Range | undefined {
+export const getWorksheetRange = (worksheet: xlsx.WorkSheet): xlsx.Range | undefined => {
   const ref = worksheet['!ref'];
 
   if (!ref) {
@@ -233,7 +259,7 @@ export function getWorksheetRange(worksheet: xlsx.WorkSheet): xlsx.Range | undef
   }
 
   return xlsx.utils.decode_range(ref);
-}
+};
 /**
  * Iterates over the cells in the worksheet and:
  * - Trims whitespace from cell values.
@@ -242,7 +268,7 @@ export function getWorksheetRange(worksheet: xlsx.WorkSheet): xlsx.Range | undef
  * https://stackoverflow.com/questions/61789174/how-can-i-remove-all-the-spaces-in-the-cells-of-excelsheet-using-nodejs-code
  * @param worksheet
  */
-export function prepareWorksheetCells(worksheet: xlsx.WorkSheet) {
+export const prepareWorksheetCells = (worksheet: xlsx.WorkSheet) => {
   const range = getWorksheetRange(worksheet);
 
   if (!range) {
@@ -264,12 +290,8 @@ export function prepareWorksheetCells(worksheet: xlsx.WorkSheet) {
       cell = trimCellWhitespace(cell);
     }
   }
-}
+};
 
-export interface IXLSXCSVValidator {
-  columnNames: string[];
-  columnTypes: string[];
-}
 /**
  * Validates the given CSV file against the given column validator
  *
@@ -283,14 +305,272 @@ export function validateCsvFile(
   sheet = 'Sheet1'
 ): boolean {
   // Validate the worksheet headers
-  if (!validateWorksheetHeaders(xlsxWorksheets[sheet], columnValidator.columnNames)) {
+  if (!validateWorksheetHeaders(xlsxWorksheets[sheet], columnValidator)) {
     return false;
   }
 
   // Validate the worksheet column types
-  if (!validateWorksheetColumnTypes(xlsxWorksheets[sheet], columnValidator.columnTypes)) {
+  if (!validateWorksheetColumnTypes(xlsxWorksheets[sheet], columnValidator)) {
     return false;
   }
 
   return true;
+}
+
+export interface IMeasurementDataToValidate {
+  tsn: string;
+  measurement_name: string;
+  measurement_value: string | number;
+}
+
+export function validateMeasurements(
+  data: IMeasurementDataToValidate[],
+  tsnMeasurementMap: TsnMeasurementMap
+): boolean {
+  return data.every((item) => {
+    defaultLog.debug({ label: 'validateMeasurements', message: 'validating item', item });
+    const measurements = tsnMeasurementMap[item.tsn];
+
+    if (!measurements) {
+      defaultLog.debug({ label: 'validateMeasurements', message: 'no measurements found for tsn', tsn: item.tsn });
+      return false;
+    }
+
+    if (!item.measurement_value) {
+      // only validate if the column has data
+      return true;
+    }
+
+    // find the correct measurement
+    if (measurements.qualitative.length > 0) {
+      const measurement = measurements.qualitative.find(
+        (measurement) => measurement.measurement_name.toLowerCase() === item.measurement_name.toLowerCase()
+      );
+      if (measurement) {
+        return isQualitativeValueValid(item.measurement_value, measurement);
+      }
+    }
+
+    if (measurements.quantitative.length > 0) {
+      const measurement = measurements.quantitative.find(
+        (measurement) => measurement.measurement_name.toLowerCase() === item.measurement_name.toLowerCase()
+      );
+      if (measurement) {
+        return isQuantitativeValueValid(Number(item.measurement_value), measurement);
+      }
+    }
+
+    // Has measurements for tsn
+    // Has data but no matches found, entry is invalid
+    defaultLog.debug({
+      label: 'validateMeasurements',
+      message: 'no matching measurement found for tsn',
+      tsn: item.tsn
+    });
+    return false;
+  });
+}
+
+/**
+ * Preps provided work sheet row object data (rows) to be validated against given TsnMeasurementMap
+ *
+ * @param {Record<string, any>[]} rows
+ * @param {string[]} measurementColumns
+ * @param {TsnMeasurementMap} tsnMeasurementMap
+ * @returns {*} boolean
+ */
+export function validateCsvMeasurementColumns(
+  rows: Record<string, any>[],
+  measurementColumns: string[],
+  tsnMeasurementMap: TsnMeasurementMap
+): boolean {
+  const mappedData: IMeasurementDataToValidate[] = rows.flatMap((row) => {
+    return measurementColumns.map((mColumn) => ({
+      tsn: String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']),
+      measurement_name: mColumn,
+      measurement_value: row[mColumn]
+    }));
+  });
+  return validateMeasurements(mappedData, tsnMeasurementMap);
+}
+
+/**
+ * This function take a value and a measurement to validate against. `CBQuantitativeMeasurementTypeDefinition` can contain
+ * a range of valid values, so the incoming value is compared against the min max values in the type definition.
+ *
+ * @param {number} value The measurement value to validate
+ * @param {CBQuantitativeMeasurementTypeDefinition} measurement The type definition of the measurement from Critterbase
+ * @returns {*} Boolean
+ */
+export function isQuantitativeValueValid(value: number, measurement: CBQuantitativeMeasurementTypeDefinition): boolean {
+  const min_value = measurement.min_value;
+  const max_value = measurement.max_value;
+
+  if (min_value && max_value) {
+    if (min_value <= value && value <= max_value) {
+      return true;
+    }
+  }
+
+  if (min_value !== null && min_value <= value) {
+    return true;
+  }
+
+  if (max_value !== null && value <= max_value) {
+    return true;
+  }
+
+  if (min_value === null && max_value === null) {
+    return true;
+  }
+
+  defaultLog.debug({
+    label: 'isQuantitativeValueValid',
+    message: 'quantitative measurement error',
+    value,
+    measurement
+  });
+  return false;
+}
+
+/**
+ *  This function validates the value provided against a Qualitative Measurement.
+ * As a string, the function will compare the value against known option labels and will return true if any are found.
+ * As a number, the function will compare the value against the option values (the position or index of the option) and will return true if any are found.
+ *
+ * @param {string | number} value the value to validate
+ * @param {CBQualitativeMeasurementTypeDefinition} measurement The type definition of the measurement from Critterbase
+ * @returns {*} Boolean
+ */
+export function isQualitativeValueValid(
+  value: string | number,
+  measurement: CBQualitativeMeasurementTypeDefinition
+): boolean {
+  // check if data is in the options for the
+  const foundOption = measurement.options.find(
+    (option) => option.option_value === value || option.option_label.toLowerCase() === String(value).toLowerCase()
+  );
+
+  defaultLog.debug({ label: 'isQualitativeValueValid', message: 'qualitative measurement error', value, measurement });
+  return Boolean(foundOption);
+}
+
+/**
+ * This function pulls out any measurement (non required columns) from a CSV so they can be processed properly.
+ *
+ * @param {xlsx.WorkSheet} xlsxWorksheets The worksheet to pull the columns from
+ * @param {IXLSXCSVValidator} columnValidator Column validator
+ * @param {string} sheet The sheet to work on
+ * @returns {*} string[] The list of measurement columns found in the CSV
+ */
+export function getMeasurementColumnNameFromWorksheet(
+  xlsxWorksheets: xlsx.WorkSheet,
+  columnValidator: IXLSXCSVValidator,
+  sheet = 'Sheet1'
+): string[] {
+  const columns = getWorksheetHeaders(xlsxWorksheets[sheet]);
+  let aliasColumns: string[] = [];
+  // Create a list of all column names and aliases
+  if (columnValidator.columnAliases) {
+    aliasColumns = Object.values(columnValidator.columnAliases).flat();
+  }
+  const requiredColumns = [...columnValidator.columnNames, ...aliasColumns];
+  return columns
+    .map((column) => {
+      // only return column names not in the validation CSV Column validator (extra/measurement columns)
+      if (!requiredColumns.includes(column)) {
+        return column;
+      }
+    })
+    .filter((c): c is string => Boolean(c)); // remove undefined/ nulls from the array
+}
+
+/**
+ * Fetch all measurements from critter base for TSN numbers found in provided worksheet
+ *
+ * @param {xlsx.WorkSheet} xlsxWorksheets The worksheet to pull the columns from
+ * @param {CritterbaseService} critterBaseService
+ * @param {string} sheet The sheet to work on
+ * @returns {*} Promise<TsnMeasurementMap>
+ */
+export async function getCBMeasurementsFromWorksheet(
+  xlsxWorksheets: xlsx.WorkSheet,
+  critterBaseService: CritterbaseService,
+  sheet = 'Sheet1'
+): Promise<TsnMeasurementMap> {
+  const tsnMeasurements: TsnMeasurementMap = {};
+  const rows = getWorksheetRowObjects(xlsxWorksheets[sheet]);
+
+  try {
+    for (const row of rows) {
+      const tsn = String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']);
+      if (!tsnMeasurements[tsn]) {
+        // TODO: modify Critter Base to accept multiple TSN at once
+        const measurements = await critterBaseService.getTaxonMeasurements(tsn);
+        if (!measurements) {
+          // TODO: Any data for a TSN that has no measurements is invalid and should reject the uploaded CSV
+        }
+
+        tsnMeasurements[tsn] = measurements;
+      }
+    }
+  } catch (error) {
+    getLogger('utils/xlsx-utils').error({ label: 'getCBMeasurementsFromWorksheet', message: 'error', error });
+    throw new ApiGeneralError('Error connecting to the Critterbase API');
+  }
+
+  return tsnMeasurements;
+}
+
+/**
+ * Search for a measurement given xlsx column name and tsn id
+ *
+ * @param {string} tsn
+ * @param {string} measurementColumnName
+ * @param {TsnMeasurementMap} tsnMeasurements
+ * @returns {*} CBQuantitativeMeasurementTypeDefinition | CBQualitativeMeasurementTypeDefinition | null | undefined
+ */
+export function findMeasurementFromTsnMeasurements(
+  tsn: string,
+  measurementColumnName: string,
+  tsnMeasurements: TsnMeasurementMap
+): CBQuantitativeMeasurementTypeDefinition | CBQualitativeMeasurementTypeDefinition | null | undefined {
+  let foundMeasurement:
+    | CBQuantitativeMeasurementTypeDefinition
+    | CBQualitativeMeasurementTypeDefinition
+    | null
+    | undefined = null;
+  const measurements = tsnMeasurements[tsn];
+  if (measurements) {
+    // find the correct measurement
+    if (measurements.qualitative.length > 0) {
+      foundMeasurement = measurements.qualitative.find(
+        (measurement) => measurement.measurement_name.toLowerCase() === measurementColumnName.toLowerCase()
+      );
+    }
+
+    // don't bother searching if we already found a measurement
+    if (measurements.quantitative.length > 0 && !foundMeasurement) {
+      foundMeasurement = measurements.quantitative.find(
+        (measurement) => measurement.measurement_name.toLowerCase() === measurementColumnName.toLowerCase()
+      );
+    }
+  }
+
+  return foundMeasurement;
+}
+
+/**
+ * Type guard to check if a given item is a `CBQualitativeMeasurementTypeDefinition`.
+ *
+ * Qualitative measurements have an `options` property, while quantitative measurements do not.
+ *
+ * @export
+ * @param {(CBQuantitativeMeasurementTypeDefinition | CBQualitativeMeasurementTypeDefinition)} item
+ * @return {*}  {item is CBQualitativeMeasurementTypeDefinition}
+ */
+export function isMeasurementCBQualitativeTypeDefinition(
+  item: CBQuantitativeMeasurementTypeDefinition | CBQualitativeMeasurementTypeDefinition
+): item is CBQualitativeMeasurementTypeDefinition {
+  return 'options' in item;
 }

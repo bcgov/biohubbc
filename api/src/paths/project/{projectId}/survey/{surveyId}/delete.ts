@@ -4,7 +4,6 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../constants/roles'
 import { getDBConnection } from '../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../services/attachment-service';
-import { PlatformService } from '../../../../../services/platform-service';
 import { SurveyService } from '../../../../../services/survey-service';
 import { deleteFileFromS3 } from '../../../../../utils/file-utils';
 import { getLogger } from '../../../../../utils/logger';
@@ -17,7 +16,7 @@ export const DELETE: Operation = [
       or: [
         {
           validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
-          projectId: Number(req.params.projectId),
+          surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
         {
@@ -81,7 +80,6 @@ DELETE.apiDoc = {
 
 export function deleteSurvey(): RequestHandler {
   return async (req, res) => {
-    const projectId = Number(req.params.projectId);
     const surveyId = Number(req.params.surveyId);
 
     const connection = getDBConnection(req['keycloak_token']);
@@ -113,14 +111,6 @@ export function deleteSurvey(): RequestHandler {
 
       if (deleteResult.some((deleteResult) => !deleteResult)) {
         return res.status(200).json(null);
-      }
-
-      try {
-        // Publish project metadata to BioHub (which needs to be updated now that the survey has been deleted)
-        const platformService = new PlatformService(connection);
-        await platformService.submitProjectDwCMetadataToBioHub(projectId);
-      } catch (error) {
-        defaultLog.error({ label: 'deleteSurvey->submitProjectDwCMetadataToBioHub', message: 'error', error });
       }
 
       await connection.commit();

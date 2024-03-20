@@ -72,7 +72,7 @@ jspm_packages/
 .yarn-integrity
 
 # env file used by local and docker builds/runs
-.env
+*.env
 .env.test
 
 # parcel-bundler cache (https://parceljs.org/)

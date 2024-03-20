@@ -2,9 +2,15 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
+import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../../../openapi/schemas/pagination';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { SurveyService } from '../../../../services/survey-service';
 import { getLogger } from '../../../../utils/logger';
+import {
+  ensureCompletePaginationOptions,
+  makePaginationOptionsFromRequest,
+  makePaginationResponse
+} from '../../../../utils/pagination';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/index');
 
@@ -48,7 +54,8 @@ GET.apiDoc = {
         minimum: 1
       },
       required: true
-    }
+    },
+    ...paginationRequestQueryParamSchema
   ],
   responses: {
     200: {
@@ -56,14 +63,17 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            type: 'array',
-            items: {
-              type: 'object',
-              required: ['surveyData', 'surveySupplementaryData'],
-              properties: {
-                surveyData: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['surveys', 'pagination'],
+            properties: {
+              pagination: { ...paginationResponseSchema },
+              surveys: {
+                type: 'array',
+                items: {
                   type: 'object',
-                  required: ['survey_id', 'name', 'start_date', 'end_date', 'focal_species', 'focal_species_names'],
+                  additionalProperties: false,
+                  required: ['survey_id', 'name', 'start_date', 'end_date', 'progress_id', 'focal_species'],
                   properties: {
                     survey_id: {
                       type: 'integer',
@@ -84,6 +94,9 @@ GET.apiDoc = {
                       description: 'ISO 8601 date string',
                       nullable: true
                     },
+                    progress_id: {
+                      type: 'integer'
+                    },
                     focal_species: {
                       type: 'array',
                       items: {
@@ -95,16 +108,6 @@ GET.apiDoc = {
                       items: {
                         type: 'string'
                       }
-                    }
-                  }
-                },
-                surveySupplementaryData: {
-                  type: 'object',
-                  required: ['publishStatus'],
-                  properties: {
-                    publishStatus: {
-                      type: 'string',
-                      enum: ['NO_DATA', 'UNSUBMITTED', 'SUBMITTED']
                     }
                   }
                 }
@@ -121,7 +124,7 @@ GET.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -144,20 +147,20 @@ export function getSurveys(): RequestHandler {
     try {
       await connection.open();
 
+      const projectId = Number(req.params.projectId);
+      const paginationOptions = makePaginationOptionsFromRequest(req);
+
       const surveyService = new SurveyService(connection);
-
-      const surveys = await surveyService.getSurveysBasicFieldsByProjectId(Number(req.params.projectId));
-
-      const response = await Promise.all(
-        surveys.map(async (survey) => {
-          const surveyPublishStatus = await surveyService.surveyPublishStatus(survey.survey_id);
-
-          return {
-            surveyData: survey,
-            surveySupplementaryData: { publishStatus: surveyPublishStatus }
-          };
-        })
+      const surveys = await surveyService.getSurveysBasicFieldsByProjectId(
+        projectId,
+        ensureCompletePaginationOptions(paginationOptions)
       );
+      const surveysTotalCount = await surveyService.getSurveyCountByProjectId(projectId);
+
+      const response = {
+        surveys,
+        pagination: makePaginationResponse(surveysTotalCount, paginationOptions)
+      };
 
       await connection.commit();
 

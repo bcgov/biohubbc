@@ -122,15 +122,3 @@ export interface PostParticipantData {
   system_user_id: number;
   project_role_names: PROJECT_ROLE[];
 }
-
-export class PostDraftData {
-  name: string;
-  data: object;
-
-  constructor(obj?: any) {
-    defaultLog.debug({ label: 'PostDraftData', message: 'params', obj });
-
-    this.name = obj?.name || null;
-    this.data = (obj?.data && obj.data) || {};
-  }
-}

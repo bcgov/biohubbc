@@ -29,6 +29,12 @@ export const getMockDBConnection = (config?: Partial<IDBConnection>): IDBConnect
     systemUserId: () => {
       return (null as unknown) as number;
     },
+    systemUserGUID: () => {
+      return (null as unknown) as string;
+    },
+    systemUserIdentifier: () => {
+      return (null as unknown) as string;
+    },
     open: async () => {
       // do nothing
     },

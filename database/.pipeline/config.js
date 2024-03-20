@@ -19,12 +19,7 @@ const deployChangeId = (isStaticDeployment && 'deploy') || changeId;
 const branch = (isStaticDeployment && options.branch) || null;
 const tag = (branch && `build-${version}-${changeId}-${branch}`) || `build-${version}-${changeId}`;
 
-// Default: run both seeding and migrations
-let dbSetupDockerfilePath = './.docker/db/Dockerfile.setup';
-if (isStaticDeployment && options.branch === 'prod') {
-  // If this is static build to prod, then only run the migrations
-  dbSetupDockerfilePath = './.docker/db/Dockerfile.migrate';
-}
+const dbSetupDockerfilePath = './.docker/db/Dockerfile.setup';
 
 const processOptions = (options) => {
   const result = { ...options };
@@ -78,9 +73,9 @@ const phases = {
     dbSetupDockerfilePath: dbSetupDockerfilePath,
     volumeCapacity: (isStaticDeployment && '3Gi') || '500Mi',
     cpuRequest: '50m',
-    cpuLimit: '400m',
+    cpuLimit: '600m',
     memoryRequest: '100Mi',
-    memoryLimit: '2Gi',
+    memoryLimit: '3Gi',
     replicas: '1'
   },
   test: {

@@ -32,10 +32,6 @@ describe('GetSurveyData', () => {
     it('sets start_date', () => {
       expect(data.start_date).to.equal(null);
     });
-
-    it('sets geojson', () => {
-      expect(data.geometry).to.eql([]);
-    });
   });
 
   describe('All values provided', () => {
@@ -65,10 +61,6 @@ describe('GetSurveyData', () => {
       expect(data.start_date).to.equal(obj.start_date);
     });
 
-    it('sets geojson', () => {
-      expect(data.geometry).to.equal(obj.geojson);
-    });
-
     it('sets revision_count', function () {
       expect(data.revision_count).to.equal('count');
     });
@@ -86,18 +78,14 @@ describe('GetFocalSpeciesData', () => {
     it('sets focal_species', () => {
       expect(data.focal_species).to.eql([]);
     });
-
-    it('sets focal_species_names', () => {
-      expect(data.focal_species_names).to.eql([]);
-    });
   });
 
   describe('All values provided', () => {
     let data: GetFocalSpeciesData;
 
     const obj = [
-      { id: 1, label: 'species1' },
-      { id: 2, label: 'species2' }
+      { tsn: 1, commonName: 'species1' },
+      { tsn: 2, commonName: 'species2' }
     ];
 
     before(() => {
@@ -105,11 +93,10 @@ describe('GetFocalSpeciesData', () => {
     });
 
     it('sets focal_species', () => {
-      expect(data.focal_species).to.eql([1, 2]);
-    });
-
-    it('sets focal_species_names', () => {
-      expect(data.focal_species_names).to.eql(['species1', 'species2']);
+      expect(data.focal_species).to.eql([
+        { tsn: 1, commonName: 'species1' },
+        { tsn: 2, commonName: 'species2' }
+      ]);
     });
   });
 });
@@ -125,18 +112,14 @@ describe('GetAncillarySpeciesData', () => {
     it('sets ancillary_species', () => {
       expect(data.ancillary_species).to.eql([]);
     });
-
-    it('sets ancillary_species_names', () => {
-      expect(data.ancillary_species_names).to.eql([]);
-    });
   });
 
   describe('All values provided', () => {
     let data: GetAncillarySpeciesData;
 
     const obj = [
-      { id: 1, label: 'species1' },
-      { id: 2, label: 'species2' }
+      { tsn: 1, commonName: 'species1' },
+      { tsn: 2, commonName: 'species2' }
     ];
 
     before(() => {
@@ -144,11 +127,10 @@ describe('GetAncillarySpeciesData', () => {
     });
 
     it('sets ancillary_species', () => {
-      expect(data.ancillary_species).to.eql([1, 2]);
-    });
-
-    it('sets ancillary_species_names', () => {
-      expect(data.ancillary_species_names).to.eql(['species1', 'species2']);
+      expect(data.ancillary_species).to.eql([
+        { tsn: 1, commonName: 'species1' },
+        { tsn: 2, commonName: 'species2' }
+      ]);
     });
   });
 });

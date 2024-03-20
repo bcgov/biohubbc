@@ -1,4 +1,4 @@
-import { CancelTokenSource } from 'axios';
+import { AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { ConfigContext } from 'contexts/configContext';
 import { useContext } from 'react';
 import useAxios from './api/useAxios';
@@ -52,33 +52,71 @@ export const useTelemetryApi = () => {
   const axios = useAxios(config?.API_HOST);
   const devices = useDeviceApi(axios);
 
-  const getAllTelemetry = async (ids: string[]): Promise<ITelemetry[]> => {
-    const { data } = await axios.post<ITelemetry[]>('/api/telemetry/deployments', ids);
+  /**
+   * Get list of manual and vendor telemetry by deployment ids
+   *
+   * @param {string[]} deploymentIds BCTW deployment ids
+   * @return {*}  {Promise<ITelemetry[]>}
+   */
+  const getAllTelemetryByDeploymentIds = async (deploymentIds: string[]): Promise<ITelemetry[]> => {
+    const { data } = await axios.post<ITelemetry[]>('/api/telemetry/deployments', deploymentIds);
     return data;
   };
 
-  const getVendorTelemetry = async (ids: string[]): Promise<IVendorTelemetry[]> => {
-    const { data } = await axios.post<IVendorTelemetry[]>('/api/telemetry/vendor/deployments', ids);
+  /**
+   * Get a list of vendor retrieved telemetry by deployment ids
+   *
+   * @param {string[]} deploymentIds Vendor telemetry deployment ids
+   * @return {*}  {Promise<IVendorTelemetry[]>}
+   */
+  const getVendorTelemetryByDeploymentIds = async (deploymentIds: string[]): Promise<IVendorTelemetry[]> => {
+    const { data } = await axios.post<IVendorTelemetry[]>('/api/telemetry/vendor/deployments', deploymentIds);
     return data;
   };
 
-  const getManualTelemetry = async (ids: string[]): Promise<IManualTelemetry[]> => {
-    const { data } = await axios.post<IManualTelemetry[]>('/api/telemetry/manual/deployments', ids);
+  /**
+   * Get a list of manually created telemetry by deployment ids
+   *
+   * @param {string[]} deploymentIds Manual Telemetry deployment ids
+   * @return {*}  {Promise<IManualTelemetry[]>}
+   */
+  const getManualTelemetryByDeploymentIds = async (deploymentIds: string[]): Promise<IManualTelemetry[]> => {
+    const { data } = await axios.post<IManualTelemetry[]>('/api/telemetry/manual/deployments', deploymentIds);
     return data;
   };
 
-  const createManualTelemetry = async (postData: ICreateManualTelemetry[]): Promise<ICreateManualTelemetry[]> => {
-    const { data } = await axios.post<IManualTelemetry[]>('/api/telemetry/manual', postData);
+  /**
+   * Bulk create Manual Telemetry
+   *
+   * @param {ICreateManualTelemetry[]} manualTelemetry Manual Telemetry create objects
+   * @return {*}  {Promise<ICreateManualTelemetry[]>}
+   */
+  const createManualTelemetry = async (
+    manualTelemetry: ICreateManualTelemetry[]
+  ): Promise<ICreateManualTelemetry[]> => {
+    const { data } = await axios.post<IManualTelemetry[]>('/api/telemetry/manual', manualTelemetry);
     return data;
   };
 
-  const updateManualTelemetry = async (updateData: IUpdateManualTelemetry[]) => {
-    const { data } = await axios.patch<IManualTelemetry[]>('/api/telemetry/manual', updateData);
+  /**
+   * Bulk update Manual Telemetry
+   *
+   * @param {IUpdateManualTelemetry[]} manualTelemetry Manual Telemetry update objects
+   * @return {*}
+   */
+  const updateManualTelemetry = async (manualTelemetry: IUpdateManualTelemetry[]) => {
+    const { data } = await axios.patch<IManualTelemetry[]>('/api/telemetry/manual', manualTelemetry);
     return data;
   };
 
-  const deleteManualTelemetry = async (ids: string[]) => {
-    const { data } = await axios.post<IManualTelemetry[]>('/api/telemetry/manual/delete', ids);
+  /**
+   * Delete manual telemetry records
+   *
+   * @param {string[]} telemetryIds Manual Telemetry ids to delete
+   * @return {*}
+   */
+  const deleteManualTelemetry = async (telemetryIds: string[]) => {
+    const { data } = await axios.post<IManualTelemetry[]>('/api/telemetry/manual/delete', telemetryIds);
     return data;
   };
 
@@ -89,7 +127,7 @@ export const useTelemetryApi = () => {
    * @param {number} surveyId
    * @param {File} file
    * @param {CancelTokenSource} [cancelTokenSource]
-   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<{ submission_id: number }>}
    */
   const uploadCsvForImport = async (
@@ -97,7 +135,7 @@ export const useTelemetryApi = () => {
     surveyId: number,
     file: File,
     cancelTokenSource?: CancelTokenSource,
-    onProgress?: (progressEvent: ProgressEvent) => void
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
   ): Promise<{ submission_id: number }> => {
     const formData = new FormData();
 
@@ -111,7 +149,6 @@ export const useTelemetryApi = () => {
         onUploadProgress: onProgress
       }
     );
-
     return data;
   };
 
@@ -131,11 +168,11 @@ export const useTelemetryApi = () => {
 
   return {
     devices,
-    getAllTelemetry,
-    getManualTelemetry,
+    getAllTelemetryByDeploymentIds,
+    getManualTelemetryByDeploymentIds,
     createManualTelemetry,
     updateManualTelemetry,
-    getVendorTelemetry,
+    getVendorTelemetryByDeploymentIds,
     deleteManualTelemetry,
     uploadCsvForImport,
     processTelemetryCsvSubmission

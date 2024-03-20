@@ -1,4 +1,5 @@
 import chai, { expect } from 'chai';
+import { Feature } from 'geojson';
 import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
@@ -18,7 +19,6 @@ import {
   SurveyObject
 } from '../models/survey-view';
 import { FundingSourceRepository } from '../repositories/funding-source-repository';
-import { PublishStatus } from '../repositories/history-publish-repository';
 import { IPermitModel } from '../repositories/permit-repository';
 import { SurveyLocationRecord, SurveyLocationRepository } from '../repositories/survey-location-repository';
 import {
@@ -38,7 +38,6 @@ import { SurveyBlockService } from './survey-block-service';
 import { SurveyLocationService } from './survey-location-service';
 import { SurveyParticipationService } from './survey-participation-service';
 import { SurveyService } from './survey-service';
-import { TaxonomyService } from './taxonomy-service';
 
 chai.use(sinonChai);
 
@@ -119,6 +118,19 @@ describe('SurveyService', () => {
         site_selection: { stratums: [], strategies: [] },
         blocks: []
       });
+    });
+  });
+
+  describe('getSurveyCountByProjectId', () => {
+    it('should return the survey count successfully', async () => {
+      const dbConnectionObj = getMockDBConnection();
+
+      const repoStub = sinon.stub(SurveyRepository.prototype, 'getSurveyCountByProjectId').resolves(20);
+      const surveyService = new SurveyService(dbConnectionObj);
+      const response = await surveyService.getSurveyCountByProjectId(1001);
+
+      expect(repoStub).to.be.calledOnceWith(1001);
+      expect(response).to.equal(20);
     });
   });
 
@@ -380,18 +392,15 @@ describe('SurveyService', () => {
       const data = ({ id: 1 } as unknown) as IGetSpeciesData;
 
       const repoStub = sinon.stub(SurveyRepository.prototype, 'getSpeciesData').resolves([data]);
-
-      const serviceStub1 = sinon
-        .stub(TaxonomyService.prototype, 'getSpeciesFromIds')
-        .resolves([{ id: '1', label: 'string' }]);
+      const getTaxonomyByTsnsStub = sinon.stub(PlatformService.prototype, 'getTaxonomyByTsns').resolves([]);
 
       const response = await service.getSpeciesData(1);
 
       expect(repoStub).to.be.calledOnce;
-      expect(serviceStub1).to.be.calledTwice;
+      expect(getTaxonomyByTsnsStub).to.be.calledTwice;
       expect(response).to.eql({
-        ...new GetFocalSpeciesData([{ id: '1', label: 'string' }]),
-        ...new GetAncillarySpeciesData([{ id: '1', label: 'string' }])
+        ...new GetFocalSpeciesData([]),
+        ...new GetAncillarySpeciesData([])
       });
     });
   });
@@ -504,22 +513,6 @@ describe('SurveyService', () => {
       const repoStub = sinon.stub(SurveyRepository.prototype, 'getLatestSurveyOccurrenceSubmission').resolves(data);
 
       const response = await service.getLatestSurveyOccurrenceSubmission(1);
-
-      expect(repoStub).to.be.calledOnce;
-      expect(response).to.eql(data);
-    });
-  });
-
-  describe('getSurveySummarySubmission', () => {
-    it('returns the first row on success', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new SurveyService(dbConnection);
-
-      const data = { survey_summary_submission_id: 1 };
-
-      const repoStub = sinon.stub(SurveyRepository.prototype, 'getSurveySummarySubmission').resolves(data);
-
-      const response = await service.getSurveySummarySubmission(1);
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(data);
@@ -1216,151 +1209,6 @@ describe('SurveyService', () => {
     });
   });
 
-  describe('createSurveyAndUploadMetadataToBioHub', () => {
-    it('returns projectId on success', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new SurveyService(dbConnection);
-
-      const projectId = 1;
-      const surveyId = 2;
-      const surveyData = (null as unknown) as PostSurveyObject;
-
-      const createSurveyStub = sinon.stub(SurveyService.prototype, 'createSurvey').resolves(surveyId);
-      const submitSurveyDwCMetadataToBioHubStub = sinon
-        .stub(PlatformService.prototype, 'submitSurveyDwCMetadataToBioHub')
-        .resolves();
-      const submitProjectDwCMetadataToBioHubStub = sinon
-        .stub(PlatformService.prototype, 'submitProjectDwCMetadataToBioHub')
-        .resolves();
-
-      const response = await service.createSurveyAndUploadMetadataToBioHub(projectId, surveyData);
-
-      expect(createSurveyStub).to.be.calledOnce;
-      expect(submitSurveyDwCMetadataToBioHubStub).to.be.calledOnceWith(surveyId);
-      expect(submitProjectDwCMetadataToBioHubStub).to.be.calledOnceWith(projectId);
-      expect(response).to.eql(surveyId);
-    });
-  });
-
-  describe('updateSurveyAndUploadMetadataToBiohub', () => {
-    it('successfully updates survey and submits data to BioHub', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new SurveyService(dbConnection);
-
-      const surveyId = 1;
-      const projectId = 2;
-      const surveyData = (null as unknown) as PutSurveyObject;
-
-      const updateSurveyStub = sinon.stub(SurveyService.prototype, 'updateSurvey').resolves();
-      const submitSurveyDwCMetadataToBioHubStub = sinon
-        .stub(PlatformService.prototype, 'submitSurveyDwCMetadataToBioHub')
-        .resolves();
-      const submitProjectDwCMetadataToBioHubStub = sinon
-        .stub(PlatformService.prototype, 'submitProjectDwCMetadataToBioHub')
-        .resolves();
-
-      const response = await service.updateSurveyAndUploadMetadataToBiohub(projectId, surveyId, surveyData);
-
-      expect(updateSurveyStub).to.be.calledOnceWith(surveyId, surveyData);
-      expect(submitSurveyDwCMetadataToBioHubStub).to.be.calledOnceWith(surveyId);
-      expect(submitProjectDwCMetadataToBioHubStub).to.be.calledOnceWith(projectId);
-      expect(response).to.eql(undefined);
-    });
-  });
-
-  describe('surveyPublishStatus', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('returns NO_DATA when all survey data returned as no_data', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new SurveyService(dbConnection);
-
-      const surveyAttachmentsPublishStatusStub = sinon
-        .stub(HistoryPublishService.prototype, 'surveyAttachmentsPublishStatus')
-        .resolves(PublishStatus.NO_DATA);
-
-      const surveyReportsPublishStatusStub = sinon
-        .stub(HistoryPublishService.prototype, 'surveyReportsPublishStatus')
-        .resolves(PublishStatus.NO_DATA);
-
-      const observationPublishStatusStub = sinon
-        .stub(HistoryPublishService.prototype, 'observationPublishStatus')
-        .resolves(PublishStatus.NO_DATA);
-
-      const summaryPublishStatusStub = sinon
-        .stub(HistoryPublishService.prototype, 'summaryPublishStatus')
-        .resolves(PublishStatus.NO_DATA);
-
-      const response = await service.surveyPublishStatus(20);
-
-      expect(surveyAttachmentsPublishStatusStub).to.be.calledOnce;
-      expect(surveyReportsPublishStatusStub).to.be.calledOnce;
-      expect(observationPublishStatusStub).to.be.calledOnce;
-      expect(summaryPublishStatusStub).to.be.calledOnce;
-      expect(response).to.eql(PublishStatus.NO_DATA);
-    });
-
-    it('returns SUBMITTED when all survey data returned are submitted or no_data', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new SurveyService(dbConnection);
-
-      const surveyAttachmentsPublishStatusStub = sinon
-        .stub(HistoryPublishService.prototype, 'surveyAttachmentsPublishStatus')
-        .resolves(PublishStatus.SUBMITTED);
-
-      const surveyReportsPublishStatusStub = sinon
-        .stub(HistoryPublishService.prototype, 'surveyReportsPublishStatus')
-        .resolves(PublishStatus.NO_DATA);
-
-      const observationPublishStatusStub = sinon
-        .stub(HistoryPublishService.prototype, 'observationPublishStatus')
-        .resolves(PublishStatus.NO_DATA);
-
-      const summaryPublishStatusStub = sinon
-        .stub(HistoryPublishService.prototype, 'summaryPublishStatus')
-        .resolves(PublishStatus.NO_DATA);
-
-      const response = await service.surveyPublishStatus(20);
-
-      expect(surveyAttachmentsPublishStatusStub).to.be.calledOnce;
-      expect(surveyReportsPublishStatusStub).to.be.calledOnce;
-      expect(observationPublishStatusStub).to.be.calledOnce;
-      expect(summaryPublishStatusStub).to.be.calledOnce;
-      expect(response).to.eql(PublishStatus.SUBMITTED);
-    });
-
-    it('returns UNSUBMITTED when some survey data returned are unsubmitted', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new SurveyService(dbConnection);
-
-      const surveyAttachmentsPublishStatusStub = sinon
-        .stub(HistoryPublishService.prototype, 'surveyAttachmentsPublishStatus')
-        .resolves(PublishStatus.UNSUBMITTED);
-
-      const surveyReportsPublishStatusStub = sinon
-        .stub(HistoryPublishService.prototype, 'surveyReportsPublishStatus')
-        .resolves(PublishStatus.NO_DATA);
-
-      const observationPublishStatusStub = sinon
-        .stub(HistoryPublishService.prototype, 'observationPublishStatus')
-        .resolves(PublishStatus.NO_DATA);
-
-      const summaryPublishStatusStub = sinon
-        .stub(HistoryPublishService.prototype, 'summaryPublishStatus')
-        .resolves(PublishStatus.NO_DATA);
-
-      const response = await service.surveyPublishStatus(20);
-
-      expect(surveyAttachmentsPublishStatusStub).to.be.calledOnce;
-      expect(surveyReportsPublishStatusStub).to.be.calledOnce;
-      expect(observationPublishStatusStub).to.be.calledOnce;
-      expect(summaryPublishStatusStub).to.be.calledOnce;
-      expect(response).to.eql(PublishStatus.UNSUBMITTED);
-    });
-  });
-
   describe('insertUpdateDeleteSurveyLocation', () => {
     afterEach(() => {
       sinon.restore();
@@ -1369,34 +1217,103 @@ describe('SurveyService', () => {
     it('passes correct data to insert, update, and delete methods', async () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyService(dbConnection);
-      const existingLocations = [
-        { survey_location_id: 30, name: 'Location 1' },
-        { survey_location_id: 31, name: 'Location 2' }
+
+      const geoJson1: Feature[] = [
+        {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [1, 2]
+          },
+          properties: {}
+        }
+      ];
+
+      const geoJson2: Feature[] = [
+        {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [3, 4]
+          },
+          properties: {}
+        }
+      ];
+
+      const existingLocationsMock = [
+        {
+          survey_location_id: 30,
+          name: 'Location 1',
+          description: 'Location 1 description',
+          geometry: {},
+          geography: '',
+          geojson: geoJson1,
+          revision_count: 0
+        },
+        {
+          survey_location_id: 40,
+          name: 'Location 2',
+          description: 'Location 2 description',
+          geometry: {},
+          geography: '',
+          geojson: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [7, 8]
+              },
+              properties: {}
+            }
+          ],
+          revision_count: 0
+        }
       ] as SurveyLocationRecord[];
 
-      const getSurveyLocationsDataStub = sinon.stub(service, 'getSurveyLocationsData').resolves(existingLocations);
-
-      const inputData = [
-        { survey_location_id: 30, name: 'Updated Location 1' },
-        { name: 'New Location' }
-      ] as PostSurveyLocationData[];
-
+      const getSurveyLocationsDataStub = sinon.stub(service, 'getSurveyLocationsData').resolves(existingLocationsMock);
       const insertSurveyLocationsStub = sinon.stub(service, 'insertSurveyLocations').resolves();
       const updateSurveyLocationStub = sinon.stub(service, 'updateSurveyLocation').resolves();
-      const deleteSurveyLocationStub = sinon.stub(service, 'deleteSurveyLocation').resolves(existingLocations[1]);
+      const deleteSurveyLocationStub = sinon.stub(service, 'deleteSurveyLocation').resolves(existingLocationsMock[1]);
+      const insertRegionStub = sinon.stub(service, 'insertRegion').resolves();
 
-      await service.insertUpdateDeleteSurveyLocation(20, inputData);
+      const surveyId = 20;
+      const data: PostSurveyLocationData[] = [
+        {
+          survey_location_id: 30,
+          name: 'Updated Location 1',
+          description: 'Existing description',
+          geojson: geoJson1,
+          revision_count: 0
+        },
+        {
+          survey_location_id: undefined,
+          name: 'New Location',
+          description: 'New description',
+          geojson: geoJson2,
+          revision_count: undefined
+        }
+      ];
 
-      expect(getSurveyLocationsDataStub).to.be.calledOnceWith(20);
+      await service.insertUpdateDeleteSurveyLocation(surveyId, data);
 
-      expect(insertSurveyLocationsStub).to.be.calledOnceWith(20, { name: 'New Location' });
-
+      expect(getSurveyLocationsDataStub).to.be.calledOnceWith(surveyId);
+      expect(insertSurveyLocationsStub).to.be.calledOnceWith(surveyId, {
+        survey_location_id: undefined,
+        name: 'New Location',
+        description: 'New description',
+        geojson: geoJson2,
+        revision_count: undefined
+      });
       expect(updateSurveyLocationStub).to.be.calledOnceWith({
         survey_location_id: 30,
-        name: 'Updated Location 1'
+        name: 'Updated Location 1',
+        description: 'Existing description',
+        geojson: geoJson1,
+        revision_count: 0
       });
-
-      expect(deleteSurveyLocationStub).to.be.calledOnceWith(31);
+      expect(deleteSurveyLocationStub).to.be.calledOnceWith(40);
+      expect(insertRegionStub).to.be.calledWith(surveyId, geoJson2); // from inserts
+      expect(insertRegionStub).to.be.calledWith(surveyId, geoJson1); // from updates
     });
   });
 
@@ -1482,14 +1399,14 @@ describe('getPartnershipsData', () => {
   it('returns the first row on success', async () => {
     const dbConnection = getMockDBConnection();
     const service = new ProjectService(dbConnection);
-    
+
     const data = new GetPartnershipsData([{ id: 1 }], [{ id: 1 }]);
-    
+
     const repoStub1 = sinon.stub(ProjectRepository.prototype, 'getIndigenousPartnershipsRows').resolves([{ id: 1 }]);
     const repoStub2 = sinon.stub(ProjectRepository.prototype, 'getStakeholderPartnershipsRows').resolves([{ id: 1 }]);
-    
+
     const response = await service.getPartnershipsData(1);
-    
+
     expect(repoStub1).to.be.calledOnce;
     expect(repoStub2).to.be.calledOnce;
     expect(response).to.eql(data);

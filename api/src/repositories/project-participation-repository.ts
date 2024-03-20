@@ -68,16 +68,22 @@ export class ProjectParticipationRepository extends BaseRepository {
   /**
    *  Deletes a project participation record.
    *
+   * @param {number} projectId
    * @param {number} projectParticipationId
    * @return {*}  {Promise<ProjectParticipationRecord>}
    * @memberof ProjectParticipationRepository
    */
-  async deleteProjectParticipationRecord(projectParticipationId: number): Promise<ProjectParticipationRecord> {
+  async deleteProjectParticipationRecord(
+    projectId: number,
+    projectParticipationId: number
+  ): Promise<ProjectParticipationRecord> {
     const sqlStatement = SQL`
       DELETE FROM
         project_participation
       WHERE
         project_participation_id = ${projectParticipationId}
+      AND
+        project_id = ${projectId}
       RETURNING
         *;
     `;
@@ -186,7 +192,7 @@ export class ProjectParticipationRepository extends BaseRepository {
   }
 
   /**
-   * Get a project user by project and system user guid. Returns null if the system user is not a participant of the
+   * Get a project user by project id and system user guid. Returns null if the system user is not a participant of the
    * project.
    *
    * @param {number} projectId
@@ -194,12 +200,12 @@ export class ProjectParticipationRepository extends BaseRepository {
    * @return {*}  {(Promise<(ProjectUser & SystemUser) | null>)}
    * @memberof ProjectParticipationRepository
    */
-  async getProjectParticipantByUserGuid(
+  async getProjectParticipantByProjectIdAndUserGuid(
     projectId: number,
     userGuid: string
   ): Promise<(ProjectUser & SystemUser) | null> {
     const knex = getKnex();
-    const queryBuilder = knex.queryBuilder().select().from('region_lookup');
+    const queryBuilder = knex.queryBuilder();
 
     queryBuilder
       .select(
@@ -233,7 +239,77 @@ export class ProjectParticipationRepository extends BaseRepository {
       .leftJoin('user_identity_source as uis', 'uis.user_identity_source_id', 'su.user_identity_source_id')
       .where('su.record_end_date', null)
       .where('pp.project_id', projectId)
-      .where('su.user_guid', userGuid)
+      .where(knex.raw(`LOWER(su.user_guid) = LOWER('${userGuid}')`))
+      .groupBy('su.system_user_id')
+      .groupBy('su.record_end_date')
+      .groupBy('su.user_identifier')
+      .groupBy('su.user_guid')
+      .groupBy('uis.name')
+      .groupBy('su.email')
+      .groupBy('su.display_name')
+      .groupBy('su.given_name')
+      .groupBy('su.family_name')
+      .groupBy('su.agency')
+      .groupBy('pp.project_participation_id')
+      .groupBy('pp.project_id')
+      .groupBy('pp.create_date')
+      .orderBy('pp.create_date', 'desc');
+
+    const response = await this.connection.knex(queryBuilder, ProjectUser.merge(SystemUser));
+
+    return response.rows?.[0] || null;
+  }
+
+  /**
+   * Get a project user by survey id and system user guid. Returns null if the system user is not a participant of the
+   * project.
+   *
+   * @param {number} surveyId
+   * @param {string} userGuid
+   * @return {*}  {(Promise<(ProjectUser & SystemUser) | null>)}
+   * @memberof ProjectParticipationRepository
+   */
+  async getProjectParticipantBySurveyIdAndUserGuid(
+    surveyId: number,
+    userGuid: string
+  ): Promise<(ProjectUser & SystemUser) | null> {
+    const knex = getKnex();
+    const queryBuilder = knex.queryBuilder();
+
+    queryBuilder
+      .select(
+        knex.raw(`
+          su.system_user_id,
+          su.user_identifier,
+          su.user_guid,
+          su.record_end_date,
+          uis.name AS identity_source,
+          array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
+          array_remove(array_agg(sr.name), NULL) AS role_names,
+          su.email,
+          su.display_name,
+          su.given_name,
+          su.family_name,
+          su.agency,
+          pp.project_participation_id,
+          pp.project_id,
+          array_remove(array_agg(pr.project_role_id), NULL) AS project_role_ids,
+          array_remove(array_agg(pr.name), NULL) AS project_role_names,
+          array_remove(array_agg(pp2.name), NULL) as project_role_permissions
+        `)
+      )
+      .from('project_participation as pp')
+      .leftJoin('project_role as pr', 'pp.project_role_id', 'pr.project_role_id')
+      .leftJoin('project_role_permission as prp', 'pp.project_role_id', 'prp.project_role_id')
+      .leftJoin('project_permission as pp2', 'pp2.project_permission_id', 'prp.project_permission_id')
+      .leftJoin('system_user as su', 'pp.system_user_id', 'su.system_user_id')
+      .leftJoin('system_user_role as sur', 'su.system_user_id', 'sur.system_user_id')
+      .leftJoin('system_role as sr', 'sur.system_role_id', 'sr.system_role_id')
+      .leftJoin('user_identity_source as uis', 'uis.user_identity_source_id', 'su.user_identity_source_id')
+      .leftJoin('survey as s', 's.project_id', 'pp.project_id')
+      .where('su.record_end_date', null)
+      .where('s.survey_id', surveyId)
+      .where(knex.raw(`LOWER(su.user_guid) = LOWER('${userGuid}')`))
       .groupBy('su.system_user_id')
       .groupBy('su.record_end_date')
       .groupBy('su.user_identifier')

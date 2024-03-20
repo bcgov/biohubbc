@@ -23,10 +23,10 @@ const SurveyStudyArea = () => {
     wmu: []
   });
 
+  const locations = surveyContext.surveyDataLoader.data?.surveyData?.locations;
+
   useEffect(() => {
     let isMounted = true;
-
-    const locations = surveyContext.surveyDataLoader.data?.surveyData?.locations;
 
     const getRegions = async (features: Feature[]) => {
       try {
@@ -55,20 +55,24 @@ const SurveyStudyArea = () => {
       }
     };
 
-    if (locations) {
-      const features: Feature[] = [];
-      locations.forEach((item) => {
-        item.geojson.forEach((geo) => {
-          features.push(geo);
-        });
-      });
-      getRegions(features);
+    if (!locations) {
+      return;
     }
+
+    const features: Feature[] = [];
+
+    locations.forEach((item) => {
+      item.geojson.forEach((geo) => {
+        features.push(geo);
+      });
+    });
+
+    getRegions(features);
 
     return () => {
       isMounted = false;
     };
-  }, [biohubApi.spatial, surveyContext.surveyDataLoader.data?.surveyData?.locations]);
+  }, [biohubApi.spatial, locations]);
 
   return (
     <Box component="dl">

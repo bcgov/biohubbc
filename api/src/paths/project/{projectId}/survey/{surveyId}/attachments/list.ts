@@ -18,7 +18,7 @@ export const GET: Operation = [
             PROJECT_PERMISSION.COLLABORATOR,
             PROJECT_PERMISSION.OBSERVER
           ],
-          projectId: Number(req.params.projectId),
+          surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
         {
@@ -66,6 +66,7 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: ['attachmentsList', 'reportAttachmentsList'],
             properties: {
               attachmentsList: {
@@ -74,6 +75,7 @@ GET.apiDoc = {
                 items: {
                   description: 'Survey attachment data with supplementary data',
                   type: 'object',
+                  additionalProperties: false,
                   required: ['id', 'fileName', 'fileType', 'lastModified', 'size', 'supplementaryAttachmentData'],
                   properties: {
                     id: {
@@ -103,6 +105,7 @@ GET.apiDoc = {
                     supplementaryAttachmentData: {
                       description: 'Attachment supplementary data',
                       type: 'object',
+                      additionalProperties: false,
                       nullable: true,
                       properties: {
                         survey_attachment_publish_id: {
@@ -118,8 +121,7 @@ GET.apiDoc = {
                           description: 'ISO 8601 date string for the project start date'
                         },
                         artifact_revision_id: {
-                          type: 'integer',
-                          minimum: 1
+                          type: 'string'
                         },
                         create_date: {
                           oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
@@ -154,6 +156,7 @@ GET.apiDoc = {
                 items: {
                   description: 'Survey attachment data with supplementary data',
                   type: 'object',
+                  additionalProperties: false,
                   required: ['id', 'fileName', 'fileType', 'lastModified', 'size', 'supplementaryAttachmentData'],
                   properties: {
                     id: {
@@ -183,6 +186,7 @@ GET.apiDoc = {
                     supplementaryAttachmentData: {
                       description: 'Attachment supplementary data',
                       type: 'object',
+                      additionalProperties: false,
                       nullable: true,
                       properties: {
                         survey_report_publish_id: {
@@ -198,8 +202,7 @@ GET.apiDoc = {
                           description: 'ISO 8601 date string for the project start date'
                         },
                         artifact_revision_id: {
-                          type: 'integer',
-                          minimum: 1
+                          type: 'string'
                         },
                         create_date: {
                           oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],

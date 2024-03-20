@@ -1,17 +1,23 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
+import { ICritterbaseUser } from '../../../services/critterbase-service';
 import { TelemetryService } from '../../../services/telemetry-service';
 import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('/api/telemetry/manual/process');
 
 export const POST: Operation = [
-  authorizeRequestHandler(() => {
+  authorizeRequestHandler((req) => {
     return {
-      and: [
+      or: [
+        {
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
+          projectId: Number(req.body.project_id),
+          discriminator: 'ProjectPermission'
+        },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
           discriminator: 'SystemRole'
@@ -30,24 +36,13 @@ POST.apiDoc = {
       Bearer: []
     }
   ],
-  parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      required: true
-    },
-    {
-      in: 'path',
-      name: 'surveyId',
-      required: true
-    }
-  ],
   requestBody: {
     description: 'Request body',
     content: {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['submission_id'],
           properties: {
             submission_id: {
@@ -66,6 +61,7 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             properties: {
               success: {
                 type: 'boolean',
@@ -97,19 +93,22 @@ POST.apiDoc = {
 export function processFile(): RequestHandler {
   return async (req, res) => {
     const submissionId = req.body.submission_id;
-
+    const user: ICritterbaseUser = {
+      keycloak_guid: req['system_user']?.user_guid,
+      username: req['system_user']?.user_identifier
+    };
     const connection = getDBConnection(req['keycloak_token']);
     try {
       await connection.open();
 
       const service = new TelemetryService(connection);
 
-      await service.processTelemetryCsvSubmission(submissionId);
+      await service.processTelemetryCsvSubmission(submissionId, user);
 
       res.status(200).json({ success: true });
 
       await connection.commit();
-    } catch (error) {
+    } catch (error: any) {
       defaultLog.error({ label: 'processFile', message: 'error', error });
       await connection.rollback();
       throw error;

@@ -23,6 +23,14 @@ export const SurveyStratumRecord = z.object({
 
 export type SurveyStratumRecord = z.infer<typeof SurveyStratumRecord>;
 
+export const SurveyStratumDetails = z
+  .object({
+    sample_stratum_count: z.number()
+  })
+  .extend(SurveyStratumRecord.shape);
+
+export type SurveyStratumDetails = z.infer<typeof SurveyStratumDetails>;
+
 export const SiteSelectionData = z.object({
   strategies: z.array(z.string()),
   stratums: z.array(SurveyStratumRecord)
@@ -56,11 +64,37 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
       .where('sss.survey_id', surveyId)
       .leftJoin('site_strategy as ss', 'ss.site_strategy_id', 'sss.site_strategy_id');
 
-    const stratumsQuery = getKnex().select().from('survey_stratum').where('survey_id', surveyId);
+    const stratumsQuery = getKnex()
+      .select(
+        'ss.survey_stratum_id',
+        'ss.survey_id',
+        'ss.name',
+        'ss.description',
+        'ss.create_date',
+        'ss.create_user',
+        'ss.update_date',
+        'ss.update_user',
+        'ss.revision_count',
+        getKnex().raw('COUNT(sss.survey_stratum_id)::INTEGER AS sample_stratum_count')
+      )
+      .from('survey_stratum as ss')
+      .leftJoin('survey_sample_stratum as sss', 'ss.survey_stratum_id', 'sss.survey_stratum_id')
+      .where('ss.survey_id', surveyId)
+      .groupBy(
+        'ss.survey_stratum_id',
+        'ss.survey_id',
+        'ss.name',
+        'ss.description',
+        'ss.create_date',
+        'ss.create_user',
+        'ss.update_date',
+        'ss.update_user',
+        'ss.revision_count'
+      );
 
     const [strategiesResponse, stratumsResponse] = await Promise.all([
       this.connection.knex(strategiesQuery, z.object({ name: z.string() })),
-      this.connection.knex(stratumsQuery, SurveyStratumRecord)
+      this.connection.knex(stratumsQuery, SurveyStratumDetails)
     ]);
 
     const strategies = strategiesResponse.rows.map((row) => row.name);

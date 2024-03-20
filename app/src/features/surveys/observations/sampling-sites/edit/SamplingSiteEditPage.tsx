@@ -39,7 +39,9 @@ const SamplingSiteEditPage = () => {
       name: '',
       description: '',
       survey_sample_sites: [],
-      methods: []
+      methods: [],
+      blocks: [],
+      stratums: []
     }
   });
 
@@ -60,10 +62,15 @@ const SamplingSiteEditPage = () => {
             methods:
               data.sample_methods?.map((item) => {
                 return {
-                  ...item,
+                  survey_sample_method_id: item.survey_sample_method_id,
+                  survey_sample_site_id: item.survey_sample_site_id,
+                  method_lookup_id: item.method_lookup_id,
+                  description: item.description,
                   periods: item.sample_periods || []
                 };
-              }) || []
+              }) || [],
+            blocks: data.sample_blocks || [],
+            stratums: data.sample_stratums || []
           }
         };
         setInitialFormData(formInitialValues);
@@ -101,7 +108,9 @@ const SamplingSiteEditPage = () => {
           survey_id: values.sampleSite.survey_id,
           survey_sample_sites: values.sampleSite.survey_sample_sites as unknown as Feature[],
           geojson: values.sampleSite.survey_sample_sites[0],
-          methods: values.sampleSite.methods
+          methods: values.sampleSite.methods,
+          blocks: values.sampleSite.blocks,
+          stratums: values.sampleSite.stratums
         }
       };
 

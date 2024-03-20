@@ -84,12 +84,15 @@ const phases = {
     nodeEnv: 'development',
     sso: config.sso.dev,
     cpuRequest: '50m',
-    cpuLimit: '200m',
+    cpuLimit: '300m',
     memoryRequest: '100Mi',
-    memoryLimit: '333Mi',
+    memoryLimit: '500Mi',
     replicas: (isStaticDeployment && '1') || '1',
     replicasMax: (isStaticDeployment && '2') || '1',
-    biohubFeatureFlag: 'true'
+    biohubFeatureFlag: 'true',
+    backbonePublicApiHost: 'https://api-dev-biohub-platform.apps.silver.devops.gov.bc.ca',
+    biohubTaxonPath: '/api/taxonomy/taxon',
+    biohubTaxonTsnPath: '/api/taxonomy/taxon/tsn'
   },
   test: {
     namespace: 'af2668-test',
@@ -113,7 +116,10 @@ const phases = {
     memoryLimit: '500Mi',
     replicas: '2',
     replicasMax: '3',
-    biohubFeatureFlag: 'false'
+    biohubFeatureFlag: 'false',
+    backbonePublicApiHost: 'https://api-test-biohub-platform.apps.silver.devops.gov.bc.ca',
+    biohubTaxonPath: '/api/taxonomy/taxon',
+    biohubTaxonTsnPath: '/api/taxonomy/taxon/tsn'
   },
   prod: {
     namespace: 'af2668-prod',
@@ -137,7 +143,10 @@ const phases = {
     memoryLimit: '500Mi',
     replicas: '2',
     replicasMax: '3',
-    biohubFeatureFlag: 'false'
+    biohubFeatureFlag: 'false',
+    backbonePublicApiHost: 'https://api-biohub-platform.apps.silver.devops.gov.bc.ca',
+    biohubTaxonPath: '/api/taxonomy/taxon',
+    biohubTaxonTsnPath: '/api/taxonomy/taxon/tsn'
   }
 };
 

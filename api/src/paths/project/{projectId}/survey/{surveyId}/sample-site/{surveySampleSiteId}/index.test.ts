@@ -4,6 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../errors/http-error';
+import { UpdateSampleSiteRecord } from '../../../../../../../repositories/sample-location-repository';
 import { ObservationService } from '../../../../../../../services/observation-service';
 import { SampleLocationService } from '../../../../../../../services/sample-location-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
@@ -95,15 +96,22 @@ describe('updateSurveySampleSite', () => {
         survey_sample_site_id: 1,
         name: 'name',
         description: 'description',
-        geojson: 'geojson',
+        geojson: {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {},
+          id: 'testid1'
+        },
         geography: 'geography',
         create_date: 'create_date',
         create_user: 1,
         update_date: 'update_date',
         update_user: 2,
         revision_count: 1,
-        sample_methods: []
-      }
+        methods: [],
+        blocks: [],
+        stratums: []
+      } as UpdateSampleSiteRecord
     };
 
     sinon.stub(SampleLocationService.prototype, 'updateSampleLocationMethodPeriod').rejects(new Error('an error'));
@@ -126,27 +134,32 @@ describe('updateSurveySampleSite', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      surveyId: '1',
+      surveyId: '1001',
       surveySampleSiteId: '2'
     };
 
-    const sampleSite = {
-      survey_id: 1,
-      survey_sample_site_id: 1,
-      name: 'name',
-      description: 'description',
-      geojson: 'geojson',
-      geography: 'geography',
-      create_date: 'create_date',
-      create_user: 1,
-      update_date: 'update_date',
-      update_user: 2,
-      revision_count: 1,
-      sample_methods: []
-    };
-
     mockReq.body = {
-      sampleSite: sampleSite
+      sampleSite: {
+        survey_id: 1001,
+        survey_sample_site_id: 2,
+        name: 'name',
+        description: 'description',
+        geojson: {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {},
+          id: 'testid1'
+        },
+        geography: 'geography',
+        create_date: 'create_date',
+        create_user: 1,
+        update_date: 'update_date',
+        update_user: 2,
+        revision_count: 1,
+        methods: [],
+        blocks: [],
+        stratums: []
+      } as UpdateSampleSiteRecord
     };
 
     const updateSampleLocationMethodPeriodStub = sinon
@@ -157,7 +170,7 @@ describe('updateSurveySampleSite', () => {
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(updateSampleLocationMethodPeriodStub).to.have.been.calledOnceWithExactly(sampleSite);
+    expect(updateSampleLocationMethodPeriodStub).to.have.been.calledOnceWithExactly(1001, mockReq.body.sampleSite);
     expect(mockRes.status).to.have.been.calledWith(204);
   });
 });
@@ -196,15 +209,15 @@ describe('deleteSurveySampleSiteRecord', () => {
     }
   });
 
-  it('should work', async () => {
+  it('should successfully delete a survey sample site record', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     const getObservationsCountBySampleSiteIdStub = sinon
-      .stub(ObservationService.prototype, 'getObservationsCountBySampleSiteId')
-      .resolves({ observationCount: 0 });
+      .stub(ObservationService.prototype, 'getObservationsCountBySampleSiteIds')
+      .resolves(0);
 
     const deleteSampleLocationRecordStub = sinon
-      .stub(SampleLocationService.prototype, 'deleteSampleLocationRecord')
+      .stub(SampleLocationService.prototype, 'deleteSampleSiteRecord')
       .resolves();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();

@@ -2,10 +2,8 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
-import { SystemUser } from '../../../../../repositories/user-repository';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../services/attachment-service';
-import { UserService } from '../../../../../services/user-service';
 import { getLogger } from '../../../../../utils/logger';
 import { attachmentApiDocObject } from '../../../../../utils/shared-api-docs';
 
@@ -61,6 +59,7 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['attachmentType'],
           properties: {
             attachmentType: {
@@ -104,13 +103,10 @@ export function deleteAttachment(): RequestHandler {
 
       const attachmentService = new AttachmentService(connection);
 
-      const systemUserObject: SystemUser = req['system_user'];
-
-      await attachmentService.handleDeleteProjectAttachment(
+      await attachmentService.deleteProjectAttachment(
         Number(req.params.projectId),
         Number(req.params.attachmentId),
-        req.body.attachmentType,
-        UserService.isAdmin(systemUserObject)
+        req.body.attachmentType
       );
 
       await connection.commit();

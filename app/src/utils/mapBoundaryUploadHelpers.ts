@@ -1,5 +1,6 @@
 import { gpx, kml } from '@tmcw/togeojson';
 import bbox from '@turf/bbox';
+import truncate from '@turf/truncate';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { BBox, Feature, GeoJsonProperties, Geometry } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
@@ -58,6 +59,9 @@ export const parseShapeFile = async (file: File): Promise<Feature[]> => {
           } else {
             features = geojson.features;
           }
+
+          // Truncate lat/lng decimal precision to 6 decimal places (111 mm precision at equator).
+          features.forEach((item) => truncate<Feature<any, any>>(item, { precision: 6, coordinates: 3, mutate: true }));
 
           // Ensure each Feature has a non-null ID
           // This will allow the map to re render newly uploaded features properly
@@ -121,6 +125,9 @@ export const handleGPXUpload = async (file: File) => {
     const sanitizedGeoJSON: Feature[] = [];
     geoJson.features.forEach((feature: Feature) => {
       if (feature.geometry) {
+        // Truncate lat/lng decimal precision to 6 decimal places (111 mm precision at equator).
+        truncate<Feature<any, any>>(feature, { precision: 6, coordinates: 3, mutate: true });
+
         sanitizedGeoJSON.push(feature);
       }
     });
@@ -152,6 +159,9 @@ export const handleKMLUpload = async (file: File) => {
   const sanitizedGeoJSON: Feature[] = [];
   geojson.features.forEach((feature: Feature) => {
     if (feature.geometry) {
+      // Truncate lat/lng decimal precision to 6 decimal places (111 mm precision at equator).
+      truncate<Feature<any, any>>(feature, { precision: 6, coordinates: 3, mutate: true });
+
       sanitizedGeoJSON.push(feature);
     }
   });
@@ -256,72 +266,4 @@ export const calculateUpdatedMapBounds = (features: Feature[]): LatLngBoundsExpr
   }
 
   return latLngBoundsFromBoundingBox(bboxCoords);
-};
-
-/**
- * Leaflet does not know how to draw Multipolygons or GeometryCollections
- * that are not in proper GeoJSON format so we manually convert to a Feature[]
- * of GeoJSON objects which it can draw using the <GeoJSON /> tag for
- * non-editable geometries
- *
- * We also set the bounds based on those geometries so the extent is set
- *
- * @param {*} geometry
- * @param {string} [id]
- * @return {*}
- */
-export const generateValidGeometryCollection = (geometry: any, id?: string) => {
-  const geometryCollection: Feature[] = [];
-  const bounds: any[] = [];
-
-  if (!geometry || !geometry.length) {
-    return { geometryCollection, bounds };
-  }
-
-  if (geometry[0]?.type === 'MultiPolygon') {
-    geometry[0].coordinates.forEach((geoCoords: any) => {
-      geometryCollection.push({
-        id: id || uuidv4(),
-        type: 'Feature',
-        geometry: {
-          type: 'Polygon',
-          coordinates: geoCoords
-        },
-        properties: {}
-      });
-    });
-  } else if (geometry[0]?.type === 'GeometryCollection') {
-    geometry[0].geometries.forEach((geometry: any) => {
-      geometryCollection.push({
-        id: id || uuidv4(),
-        type: 'Feature',
-        geometry,
-        properties: {}
-      });
-    });
-  } else if (geometry[0]?.type !== 'Feature') {
-    geometryCollection.push({
-      id: id || uuidv4(),
-      type: 'Feature',
-      geometry: geometry[0],
-      properties: {}
-    });
-  } else {
-    geometryCollection.push(geometry[0]);
-  }
-
-  const allGeosFeatureCollection = {
-    type: 'FeatureCollection',
-    features: geometryCollection
-  };
-
-  if (geometry[0]?.type !== 'Point') {
-    const bboxCoords = bbox(allGeosFeatureCollection);
-
-    bounds.push([bboxCoords[1], bboxCoords[0]], [bboxCoords[3], bboxCoords[2]]);
-
-    return { geometryCollection, bounds };
-  }
-
-  return { geometryCollection };
 };

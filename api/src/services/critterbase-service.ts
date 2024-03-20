@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { URLSearchParams } from 'url';
+import { z } from 'zod';
 import { ApiError, ApiErrorType } from '../errors/api-error';
 import { KeycloakService } from './keycloak-service';
 
@@ -136,6 +137,99 @@ export interface ICbSelectRows {
   value: string;
 }
 
+/**
+ * A Critterbase quantitative measurement.
+ */
+export const CBQuantitativeMeasurement = z.object({
+  event_id: z.string(),
+  measurement_quantitative_id: z.string(),
+  taxon_measurement_id: z.string(),
+  value: z.number(),
+  measurement_comment: z.string(),
+  measured_timestamp: z.string()
+});
+
+export type CBQuantitativeMeasurement = z.infer<typeof CBQuantitativeMeasurement>;
+
+/**
+ * A Critterbase qualitative measurement value.
+ */
+const CBQualitativeMeasurement = z.object({
+  event_id: z.string(),
+  measurement_qualitative_id: z.string(),
+  taxon_measurement_id: z.string(),
+  qualitative_option_id: z.string(),
+  measurement_comment: z.string(),
+  measured_timestamp: z.string()
+});
+
+export type CBQualitativeMeasurement = z.infer<typeof CBQualitativeMeasurement>;
+
+/**
+ * Any Critterbase measurement value.
+ */
+export const CBMeasurementValue = z.union([CBQuantitativeMeasurement, CBQualitativeMeasurement]);
+
+export type CBMeasurementValue = z.infer<typeof CBMeasurementValue>;
+
+/**
+ * A Critterbase qualitative measurement unit.
+ */
+export const CBMeasurementUnit = z.enum(['millimeter', 'centimeter', 'meter', 'milligram', 'gram', 'kilogram']);
+
+export type CBMeasurementUnit = z.infer<typeof CBMeasurementUnit>;
+
+/**
+ * A Critterbase quantitative measurement type definition.
+ */
+const CBQuantitativeMeasurementTypeDefinition = z.object({
+  itis_tsn: z.number().nullable(),
+  taxon_measurement_id: z.string(),
+  measurement_name: z.string(),
+  measurement_desc: z.string().nullable(),
+  min_value: z.number().nullable(),
+  max_value: z.number().nullable(),
+  unit: CBMeasurementUnit.nullable()
+});
+
+export type CBQuantitativeMeasurementTypeDefinition = z.infer<typeof CBQuantitativeMeasurementTypeDefinition>;
+
+/**
+ * A Critterbase qualitative measurement option definition (ie. drop-down option).
+ */
+const CBQualitativeOption = z.object({
+  taxon_measurement_id: z.string(),
+  qualitative_option_id: z.string(),
+  option_label: z.string(),
+  option_value: z.number(),
+  option_desc: z.string().nullable()
+});
+
+export type CBQualitativeOption = z.infer<typeof CBQualitativeOption>;
+
+/**
+ * A Critterbase qualitative measurement type definition.
+ */
+const CBQualitativeMeasurementTypeDefinition = z.object({
+  itis_tsn: z.number().nullable(),
+  taxon_measurement_id: z.string(),
+  measurement_name: z.string(),
+  measurement_desc: z.string().nullable(),
+  options: z.array(CBQualitativeOption)
+});
+
+export type CBQualitativeMeasurementTypeDefinition = z.infer<typeof CBQualitativeMeasurementTypeDefinition>;
+
+/**
+ * Any Critterbase measurement type definition.
+ */
+export const CBMeasurementType = z.union([
+  CBQuantitativeMeasurementTypeDefinition,
+  CBQualitativeMeasurementTypeDefinition
+]);
+
+export type CBMeasurementType = z.infer<typeof CBMeasurementType>;
+
 const lookups = '/lookups';
 const xref = '/xref';
 const lookupsEnum = lookups + '/enum';
@@ -190,6 +284,7 @@ export class CritterbaseService {
   constructor(user: ICritterbaseUser) {
     this.user = user;
     this.keycloak = new KeycloakService();
+
     this.axiosInstance = axios.create({
       headers: {
         user: this.getUserHeader()
@@ -243,6 +338,7 @@ export class CritterbaseService {
       appendParams.append(p.key, p.value);
     }
     const url = `${endpoint}?${appendParams.toString()}`;
+
     const response = await this.axiosInstance.get(url);
     return response.data;
   }
@@ -251,8 +347,14 @@ export class CritterbaseService {
     return this._makeGetRequest(CbRoutes[route], params);
   }
 
-  async getTaxonMeasurements(taxon_id: string) {
-    return this._makeGetRequest(CbRoutes['taxon-measurements'], [{ key: 'taxon_id', value: taxon_id }]);
+  async getTaxonMeasurements(
+    tsn: string
+  ): Promise<{
+    qualitative: CBQualitativeMeasurementTypeDefinition[];
+    quantitative: CBQuantitativeMeasurementTypeDefinition[];
+  }> {
+    const response = await this._makeGetRequest(CbRoutes['taxon-measurements'], [{ key: 'tsn', value: tsn }]);
+    return response;
   }
 
   async getTaxonBodyLocations(taxon_id: string) {
@@ -299,5 +401,39 @@ export class CritterbaseService {
   async signUp() {
     const response = await this.axiosInstance.post(SIGNUP_ENDPOINT);
     return response.data;
+  }
+
+  /**
+   * Get qualitative measurement type definitions by Critterbase taxon measurement ids.
+   *
+   * @param {string[]} taxon_measurement_ids
+   * @return {*}  {CBQualitativeMeasurementTypeDefinition[]}
+   * @memberof CritterbaseService
+   */
+  async getQualitativeMeasurementTypeDefinition(
+    taxon_measurement_ids: string[]
+  ): Promise<CBQualitativeMeasurementTypeDefinition[]> {
+    const { data } = await this.axiosInstance.post(`/xref/taxon-qualitative-measurements`, {
+      taxon_measurement_ids: taxon_measurement_ids
+    });
+
+    return data;
+  }
+
+  /**
+   * Get qualitative measurement type definitions by Critterbase taxon measurement ids.
+   *
+   * @param {string[]} taxon_measurement_ids
+   * @return {*}  {CBQuantitativeMeasurementTypeDefinition[]}
+   * @memberof CritterbaseService
+   */
+  async getQuantitativeMeasurementTypeDefinition(
+    taxon_measurement_ids: string[]
+  ): Promise<CBQuantitativeMeasurementTypeDefinition[]> {
+    const { data } = await this.axiosInstance.post(`/xref/taxon-quantitative-measurements`, {
+      taxon_measurement_ids: taxon_measurement_ids
+    });
+
+    return data;
   }
 }

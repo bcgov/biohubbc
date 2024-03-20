@@ -1,165 +1,234 @@
 import { mdiFilterOutline, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Theme } from '@mui/material';
+import { Collapse } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
+import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
-import ProjectsSubmissionAlertBar from 'components/publish/ProjectListSubmissionAlertBar';
+import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
+import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import PageHeader from 'components/layout/PageHeader';
 import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
 import { SystemRoleGuard } from 'components/security/Guards';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import { ListProjectsI18N } from 'constants/i18n';
 import { SYSTEM_ROLE } from 'constants/roles';
-import { CodesContext } from 'contexts/codesContext';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useCodesContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import React, { useContext, useEffect, useState } from 'react';
+import useDataLoaderError from 'hooks/useDataLoaderError';
+import { IProjectsListItemData } from 'interfaces/useProjectApi.interface';
+import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { ApiPaginationRequestOptions } from 'types/misc';
+import { firstOrNull, getFormattedDate } from 'utils/Utils';
 import ProjectsListFilterForm from './ProjectsListFilterForm';
-import ProjectsListTable from './ProjectsListTable';
 
-//TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+interface IProjectsListTableRow extends Omit<IProjectsListItemData, 'project_programs'> {
+  project_programs: string;
+}
 
-const useStyles = makeStyles((theme: Theme) => ({
-  pageTitleContainer: {
-    maxWidth: '170ch',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis'
-  },
-  pageTitle: {
-    display: '-webkit-box',
-    '-webkit-line-clamp': 2,
-    '-webkit-box-orient': 'vertical',
-    paddingTop: theme.spacing(0.5),
-    paddingBottom: theme.spacing(0.5),
-    overflow: 'hidden'
-  },
-  pageTitleActions: {
-    paddingTop: theme.spacing(0.75),
-    paddingBottom: theme.spacing(0.75)
-  },
-  actionButton: {
-    marginLeft: theme.spacing(1),
-    minWidth: '6rem'
-  },
-  toolbarCount: {
-    fontWeight: 400
-  },
-  filtersBox: {
-    background: '#f7f8fa'
-  }
-}));
+const pageSizeOptions = [10, 25, 50];
 
 /**
  * Page to display a list of projects.
  *
  * @return {*}
  */
-const ProjectsListPage: React.FC = () => {
-  const classes = useStyles();
+const ProjectsListPage = () => {
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: pageSizeOptions[0]
+  });
+
+  const [sortModel, setSortModel] = useState<GridSortModel>([]);
+  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IProjectAdvancedFilters | undefined>(undefined);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+
   const biohubApi = useBiohubApi();
 
-  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const codesContext = useCodesContext();
 
-  const codesContext = useContext(CodesContext);
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
-  const projectsDataLoader = useDataLoader((filter?: IProjectAdvancedFilters) =>
-    biohubApi.project.getProjectsList(filter)
+  const projectsDataLoader = useDataLoader(
+    (pagination: ApiPaginationRequestOptions, filter?: IProjectAdvancedFilters) => {
+      return biohubApi.project.getProjectsList(pagination, filter);
+    }
   );
-  projectsDataLoader.load();
 
-  const draftsDataLoader = useDataLoader(() => biohubApi.draft.getDraftsList());
-  draftsDataLoader.load();
+  useDataLoaderError(projectsDataLoader, (dataLoader) => {
+    return {
+      dialogTitle: ListProjectsI18N.listProjectsErrorDialogTitle,
+      dialogText: ListProjectsI18N.listProjectsErrorDialogText,
+      dialogError: (dataLoader.error as APIError).message,
+      dialogErrorDetails: (dataLoader.error as APIError).errors
+    };
+  });
 
-  /**
-   * Handle filtering project results.
-   */
-  const handleSubmit = async (filterValues: IProjectAdvancedFilters) => {
-    projectsDataLoader.refresh(filterValues);
+  const getProjectPrograms = (project: IProjectsListItemData) => {
+    return (
+      codesContext.codesDataLoader.data?.program
+        .filter((code) => project.project_programs.includes(code.id))
+        .map((code) => code.name)
+        .join(', ') || ''
+    );
   };
 
-  const handleReset = async () => {
-    projectsDataLoader.refresh();
+  const refreshProjectsList = () => {
+    const sort = firstOrNull(sortModel);
+    const pagination = {
+      limit: paginationModel.pageSize,
+      sort: sort?.field || undefined,
+      order: sort?.sort || undefined,
+
+      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+      page: paginationModel.page + 1
+    };
+
+    return projectsDataLoader.refresh(pagination, advancedFiltersModel);
   };
 
-  if (!codesContext.codesDataLoader.data || !projectsDataLoader.data || !draftsDataLoader.data) {
-    return <CircularProgress className="pageProgress" size={40} />;
-  }
+  const projectRows =
+    projectsDataLoader.data?.projects.map((project) => {
+      return {
+        ...project,
+        project_programs: getProjectPrograms(project)
+      };
+    }) ?? [];
+
+  const columns: GridColDef<IProjectsListTableRow>[] = [
+    {
+      field: 'name',
+      headerName: 'Name',
+      flex: 1,
+      disableColumnMenu: true,
+      renderCell: (params) => (
+        <Link
+          style={{ overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700 }}
+          data-testid={params.row.name}
+          underline="always"
+          title={params.row.name}
+          component={RouterLink}
+          to={`/admin/projects/${params.row.project_id}`}
+          children={params.row.name}
+        />
+      )
+    },
+    {
+      field: 'project_programs',
+      headerName: 'Programs',
+      flex: 1
+    },
+    {
+      field: 'regions',
+      headerName: 'Regions',
+      flex: 1
+    },
+    {
+      field: 'start_date',
+      headerName: 'Start Date',
+      minWidth: 150,
+      valueGetter: ({ value }) => (value ? new Date(value) : undefined),
+      valueFormatter: ({ value }) => (value ? getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, value) : undefined)
+    },
+    {
+      field: 'end_date',
+      headerName: 'End Date',
+      minWidth: 150,
+      valueGetter: ({ value }) => (value ? new Date(value) : undefined),
+      valueFormatter: ({ value }) => (value ? getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, value) : undefined)
+    }
+  ];
+
+  // Refresh projects when pagination or sort changes
+  useEffect(() => {
+    refreshProjectsList();
+  }, [sortModel, paginationModel, advancedFiltersModel]);
 
   /**
    * Displays project list.
    */
   return (
     <>
-      <Paper square={true} elevation={0}>
-        <Container maxWidth="xl">
-          <Box py={4}>
-            <Box display="flex" justifyContent="space-between">
-              <Box className={classes.pageTitleContainer}>
-                <Typography variant="h1" className={classes.pageTitle}>
-                  Projects
-                </Typography>
-              </Box>
-              <Box flex="0 0 auto" className={classes.pageTitleActions}>
-                <SystemRoleGuard
-                  validSystemRoles={[
-                    SYSTEM_ROLE.SYSTEM_ADMIN,
-                    SYSTEM_ROLE.PROJECT_CREATOR,
-                    SYSTEM_ROLE.DATA_ADMINISTRATOR
-                  ]}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<Icon path={mdiPlus} size={1} />}
-                    component={RouterLink}
-                    to={'/admin/projects/create'}>
-                    Create Project
-                  </Button>
-                </SystemRoleGuard>
-              </Box>
-            </Box>
-          </Box>
-        </Container>
-      </Paper>
-      <Container maxWidth="xl">
-        <Box py={3}>
-          <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-            <ProjectsSubmissionAlertBar projects={projectsDataLoader.data} />
+      <PageHeader
+        title="Projects"
+        buttonJSX={
+          <SystemRoleGuard
+            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_CREATOR, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Icon path={mdiPlus} size={1} />}
+              component={RouterLink}
+              to={'/admin/projects/create'}>
+              Create Project
+            </Button>
           </SystemRoleGuard>
-          <Paper elevation={0}>
-            <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Typography variant="h4" component="h2">
-                Records Found &zwnj;
-                <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">
-                  ({projectsDataLoader.data?.length || 0})
-                </Typography>
+        }
+      />
+
+      <Container maxWidth="xl" sx={{ py: 3 }}>
+        <Paper>
+          <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Typography variant="h4" component="h2">
+              Records Found &zwnj;
+              <Typography
+                component="span"
+                color="textSecondary"
+                lineHeight="inherit"
+                fontSize="inherit"
+                fontWeight={400}>
+                ({Number(projectsDataLoader.data?.pagination.total || 0).toLocaleString()})
               </Typography>
-              <Button
-                variant="text"
-                color="primary"
-                startIcon={<Icon path={mdiFilterOutline} size={0.8} />}
-                onClick={() => setIsFiltersOpen(!isFiltersOpen)}>
-                {!isFiltersOpen ? `Show Filters` : `Hide Filters`}
-              </Button>
-            </Toolbar>
-            <Divider></Divider>
-            {isFiltersOpen && <ProjectsListFilterForm handleSubmit={handleSubmit} handleReset={handleReset} />}
-            <Box py={1} pb={2} px={3}>
-              <ProjectsListTable
-                projects={projectsDataLoader.data}
-                drafts={draftsDataLoader.data}
-                codes={codesContext.codesDataLoader.data}
-              />
-            </Box>
-          </Paper>
-        </Box>
+            </Typography>
+            <Button
+              variant="text"
+              color="primary"
+              startIcon={<Icon path={mdiFilterOutline} size={0.8} />}
+              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}>
+              {!showAdvancedFilters ? 'Show Filters' : 'Hide Filters'}
+            </Button>
+          </Toolbar>
+          <Divider></Divider>
+          <Collapse in={showAdvancedFilters}>
+            <ProjectsListFilterForm
+              handleSubmit={setAdvancedFiltersModel}
+              handleReset={() => setAdvancedFiltersModel(undefined)}
+            />
+          </Collapse>
+          <Box p={2}>
+            <StyledDataGrid
+              noRowsMessage="No projects found"
+              autoHeight
+              rows={projectRows}
+              rowCount={projectsDataLoader.data?.pagination.total ?? 0}
+              getRowId={(row) => row.project_id}
+              columns={columns}
+              pageSizeOptions={[...pageSizeOptions]}
+              paginationMode="server"
+              sortingMode="server"
+              sortModel={sortModel}
+              paginationModel={paginationModel}
+              onPaginationModelChange={setPaginationModel}
+              onSortModelChange={setSortModel}
+              rowSelection={false}
+              checkboxSelection={false}
+              disableRowSelectionOnClick
+              disableColumnSelector
+              disableColumnFilter
+              disableColumnMenu
+              sortingOrder={['asc', 'desc']}
+            />
+          </Box>
+        </Paper>
       </Container>
     </>
   );

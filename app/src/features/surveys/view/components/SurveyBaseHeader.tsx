@@ -25,36 +25,20 @@ const SurveyBaseHeader = (props: ISurveyHeader) => {
       square={true}
       id="pageTitle"
       sx={{
-        position: 'sticky',
+        position: { sm: 'relative', xl: 'sticky' },
         top: 0,
         zIndex: 1002,
-        py: 3,
-        borderBottomStyle: 'solid',
-        borderBottomWidth: '1px',
-        borderBottomColor: grey[300]
+        borderBottom: '1px solid' + grey[300]
       }}>
-      <Container maxWidth="xl">
+      <Container maxWidth="xl" sx={{ py: { xs: 2, sm: 3 } }}>
         {breadCrumb}
         <Stack
           alignItems="flex-start"
-          flexDirection={{ xs: 'column', lg: 'row' }}
+          flexDirection={{ xs: 'column', md: 'row' }}
           justifyContent="space-between"
           gap={3}>
           <Box>
-            <Typography
-              component="h1"
-              variant="h2"
-              sx={{
-                ml: '-2px',
-                display: '-webkit-box',
-                WebkitLineClamp: '2',
-                WebkitBoxOrient: 'vertical',
-                maxWidth: '72ch',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
-              }}>
-              {title}
-            </Typography>
+            <Typography variant="h1">{title}</Typography>
             {subTitle}
           </Box>
           {buttonJSX}

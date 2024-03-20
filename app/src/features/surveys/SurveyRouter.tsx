@@ -1,5 +1,6 @@
 import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { DialogContextProvider } from 'contexts/dialogContext';
 import SurveyPage from 'features/surveys/view/SurveyPage';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
@@ -27,46 +28,89 @@ const SurveyRouter: React.FC = () => {
         to="/admin/projects/:id/surveys/:survey_id/details"
       />
 
+      {/* Survey Page Routes */}
       <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/details" title={getTitle('Surveys')}>
-        <SurveyPage />
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[
+            PROJECT_PERMISSION.COORDINATOR,
+            PROJECT_PERMISSION.COLLABORATOR,
+            PROJECT_PERMISSION.OBSERVER
+          ]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <DialogContextProvider>
+            <SurveyPage />
+          </DialogContextProvider>
+        </ProjectRoleRouteGuard>
       </RouteWithTitle>
 
-      <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/observations" title={getTitle('Observations')}>
-        <SurveyObservationPage />
-      </RouteWithTitle>
-
+      {/* Observations Routes */}
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/telemetry"
-        title={getTitle('Manual Telemetry')}>
-        <ManualTelemetryPage />
-      </RouteWithTitle>
-      <RouteWithTitle exact path={'/admin/projects/:id/surveys/:survey_id/animals'} title={getTitle('Manage Animals')}>
-        <SurveyAnimalsPage />
+        path="/admin/projects/:id/surveys/:survey_id/observations"
+        title={getTitle('Manage Observations')}>
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <SurveyObservationPage />
+        </ProjectRoleRouteGuard>
       </RouteWithTitle>
 
-      {/* Sample Site Routes */}
+      {/* Telemetry Routes */}
+      <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/telemetry" title={getTitle('Telemetry')}>
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <DialogContextProvider>
+            <ManualTelemetryPage />
+          </DialogContextProvider>
+        </ProjectRoleRouteGuard>
+      </RouteWithTitle>
+
+      {/* Animals Routes */}
+      <RouteWithTitle exact path={'/admin/projects/:id/surveys/:survey_id/animals'} title={getTitle('Manage Animals')}>
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <DialogContextProvider>
+            <SurveyAnimalsPage />
+          </DialogContextProvider>
+        </ProjectRoleRouteGuard>
+      </RouteWithTitle>
+
+      {/* Sample Site Routes  TODO: Remove unused path and page */}
       <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/sampling" title={getTitle('Sampling Sites')}>
-        <SamplingSitePage />
+        <DialogContextProvider>
+          <SamplingSitePage />
+        </DialogContextProvider>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
         path="/admin/projects/:id/surveys/:survey_id/sampling/:survey_sample_site_id/edit"
         title={getTitle('Edit Sampling Site')}>
-        <SamplingSiteEditPage />
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <DialogContextProvider>
+            <SamplingSiteEditPage />
+          </DialogContextProvider>
+        </ProjectRoleRouteGuard>
       </RouteWithTitle>
 
-      {/* Survey Locations */}
+      {/* Survey Locations TODO: Remove unused path and page */}
       <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/locations" title={getTitle('Survey Area')}>
-        <SurveyLocationPage />
+        <DialogContextProvider>
+          <SurveyLocationPage />
+        </DialogContextProvider>
       </RouteWithTitle>
 
       <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/edit" title={getTitle('Edit Survey')}>
         <ProjectRoleRouteGuard
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-          <EditSurveyPage />
+          <DialogContextProvider>
+            <EditSurveyPage />
+          </DialogContextProvider>
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
     </Switch>

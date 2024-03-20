@@ -12,10 +12,11 @@ import {
   GetSurveyPurposeAndMethodologyData
 } from '../models/survey-view';
 import { getLogger } from '../utils/logger';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
 
 export interface IGetSpeciesData {
-  wldtaxonomic_units_id: string;
+  itis_tsn: number;
   is_focal: boolean;
 }
 
@@ -76,10 +77,11 @@ const SurveyRecord = z.object({
   project_id: z.number(),
   survey_id: z.number(),
   name: z.string().nullable(),
-  uuid: z.string().nullable(),
+  uuid: z.string().uuid().nullable(),
   start_date: z.string(),
   end_date: z.string().nullable(),
   additional_details: z.string().nullable(),
+  progress_id: z.number(),
   comments: z.string().nullable(),
   create_date: z.string(),
   create_user: z.number(),
@@ -119,11 +121,20 @@ export type StakeholderPartnershipRecord = z.infer<typeof StakeholderPartnership
 
 export type IndigenousPartnershipRecord = z.infer<typeof IndigenousPartnershipRecord>;
 
+export const SurveyProgressRecord = z.object({
+  survey_progress_id: z.number(),
+  name: z.string(),
+  description: z.string()
+});
+
+export type SurveyProgressRecord = z.infer<typeof SurveyProgressRecord>;
+
 export const SurveyBasicFields = z.object({
   survey_id: z.number(),
   name: z.string(),
   start_date: z.string(),
   end_date: z.string().nullable(),
+  progress_id: z.number(),
   focal_species: z.array(z.number()),
   focal_species_names: z.array(z.string())
 });
@@ -219,6 +230,28 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
+   * Gets survey status records for a given survey ID
+   *
+   * @param {number} surveyId
+   * @returns {*}  {Promise<SurveyTypeRecord[]>}
+   * @memberof SurveyRepository
+   */
+  async getSurveyStatusData(surveyId: number): Promise<SurveyProgressRecord[]> {
+    const sqlStatement = SQL`
+      SELECT
+        *
+      FROM
+        survey_progress
+      WHERE
+        survey_id = ${surveyId};
+    `;
+
+    const response = await this.connection.sql(sqlStatement, SurveyProgressRecord);
+
+    return response.rows;
+  }
+
+  /**
    * Get species data for a given survey ID
    *
    * @param {number} surveyId
@@ -228,7 +261,7 @@ export class SurveyRepository extends BaseRepository {
   async getSpeciesData(surveyId: number): Promise<IGetSpeciesData[]> {
     const sqlStatement = SQL`
       SELECT
-        wldtaxonomic_units_id,
+        itis_tsn,
         is_focal
       FROM
         study_species
@@ -262,7 +295,7 @@ export class SurveyRepository extends BaseRepository {
         sv.survey_id = s.survey_id
       LEFT OUTER JOIN
         survey_intended_outcome io
-      ON 
+      ON
         io.survey_id = s.survey_id
       WHERE
         s.survey_id = ${surveyId}
@@ -479,31 +512,6 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * Get survey summary submission for a given survey id.
-   *
-   * @param {number} surveyId
-   * @return {*}  {(Promise<{ survey_summary_submission_id: number | null }>)}
-   * @memberof SurveyRepository
-   */
-  async getSurveySummarySubmission(surveyId: number): Promise<{ survey_summary_submission_id: number | null }> {
-    // Note: `max()` will always return a row, even if the table is empty. The value will be `null` in this case.
-    const sqlStatement = SQL`
-      SELECT
-        max(survey_summary_submission_id) as survey_summary_submission_id
-      FROM
-        survey_summary_submission
-      WHERE
-        survey_id = ${surveyId}
-      AND
-        delete_timestamp IS NULL;
-      `;
-
-    const response = await this.connection.sql<{ survey_summary_submission_id: number | null }>(sqlStatement);
-
-    return response.rows[0];
-  }
-
-  /**
    * Get Survey attachments data for a given surveyId
    *
    * @param {number} surveyId
@@ -578,10 +586,14 @@ export class SurveyRepository extends BaseRepository {
    * Fetches a subset of survey fields for all surveys under a project.
    *
    * @param {number} projectId
+   * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<Omit<SurveyBasicFields, 'focal_species_names'>[]>}
    * @memberof SurveyRepository
    */
-  async getSurveysBasicFieldsByProjectId(projectId: number): Promise<Omit<SurveyBasicFields, 'focal_species_names'>[]> {
+  async getSurveysBasicFieldsByProjectId(
+    projectId: number,
+    pagination?: ApiPaginationOptions
+  ): Promise<Omit<SurveyBasicFields, 'focal_species_names'>[]> {
     const knex = getKnex();
 
     const queryBuilder = knex
@@ -591,21 +603,62 @@ export class SurveyRepository extends BaseRepository {
         'survey.name',
         'survey.start_date',
         'survey.end_date',
-        knex.raw('array_remove(array_agg(study_species.wldtaxonomic_units_id), NULL) AS focal_species')
+        'survey.progress_id',
+        knex.raw('array_remove(array_agg(study_species.itis_tsn), NULL) AS focal_species')
       )
       .from('project')
       .leftJoin('survey', 'survey.project_id', 'project.project_id')
       .leftJoin('study_species', 'study_species.survey_id', 'survey.survey_id')
+      .leftJoin('survey_progress', 'survey_progress.survey_progress_id', 'survey.progress_id')
       .where('project.project_id', projectId)
       .where('study_species.is_focal', true)
       .groupBy('survey.survey_id')
       .groupBy('survey.name')
       .groupBy('survey.start_date')
-      .groupBy('survey.end_date');
+      .groupBy('survey.end_date')
+      .groupBy('survey.progress_id');
+
+    if (pagination) {
+      queryBuilder.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        queryBuilder.orderBy(pagination.sort, pagination.order);
+      }
+    }
 
     const response = await this.connection.knex(queryBuilder, SurveyBasicFields.omit({ focal_species_names: true }));
 
     return response.rows;
+  }
+
+  /**
+   * Returns the total number of surveys belonging to the given project.
+   *
+   * @param {number} projectId
+   * @return {*}  {Promise<number>}
+   * @memberof SurveyService
+   */
+  async getSurveyCountByProjectId(projectId: number): Promise<number> {
+    const sqlStatement = SQL`
+      SELECT
+        COUNT(*) as survey_count
+      FROM
+        survey as s
+      WHERE
+        s.project_id = ${projectId}
+      ;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, z.object({ survey_count: z.string().transform(Number) }));
+
+    if (response?.rowCount < 1) {
+      throw new ApiExecuteSQLError('Failed to get survey count', [
+        'SurveyRepository->getSurveyCountByProjectId',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0].survey_count;
   }
 
   /**
@@ -623,12 +676,14 @@ export class SurveyRepository extends BaseRepository {
         name,
         start_date,
         end_date,
+        progress_id,
         additional_details
       ) VALUES (
         ${projectId},
         ${surveyData.survey_details.survey_name},
         ${surveyData.survey_details.start_date},
         ${surveyData.survey_details.end_date},
+        ${surveyData.survey_details.progress_id},
         ${surveyData.purpose_and_methodology.additional_details}
       )
       RETURNING
@@ -687,7 +742,7 @@ export class SurveyRepository extends BaseRepository {
   async insertFocalSpecies(focal_species_id: number, surveyId: number): Promise<number> {
     const sqlStatement = SQL`
       INSERT INTO study_species (
-        wldtaxonomic_units_id,
+        itis_tsn,
         is_focal,
         survey_id
       ) VALUES (
@@ -721,7 +776,7 @@ export class SurveyRepository extends BaseRepository {
   async insertAncillarySpecies(ancillary_species_id: number, surveyId: number): Promise<number> {
     const sqlStatement = SQL`
       INSERT INTO study_species (
-        wldtaxonomic_units_id,
+        itis_tsn,
         is_focal,
         survey_id
       ) VALUES (
@@ -955,7 +1010,8 @@ export class SurveyRepository extends BaseRepository {
         ...fieldsToUpdate,
         name: surveyData.survey_details.name,
         start_date: surveyData.survey_details.start_date,
-        end_date: surveyData.survey_details.end_date
+        end_date: surveyData.survey_details.end_date,
+        progress_id: surveyData.survey_details.progress_id
       };
     }
 

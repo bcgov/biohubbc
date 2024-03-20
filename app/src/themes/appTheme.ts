@@ -1,4 +1,4 @@
-import { grey } from '@mui/material/colors';
+import grey from '@mui/material/colors/grey';
 import { createTheme } from '@mui/material/styles';
 import 'styles.scss';
 import 'styles/fonts.scss';
@@ -16,7 +16,7 @@ const appTheme = createTheme({
   palette: {
     // https://material-ui.com/customization/palette/
     background: {
-      default: '#f1f1f1'
+      default: grey[100]
     },
     primary: {
       light: '#5469a4',
@@ -38,19 +38,27 @@ const appTheme = createTheme({
   typography: {
     fontFamily: ['BCSans', 'Verdana', 'Arial', 'sans-serif'].join(','),
     h1: {
-      fontSize: '2.25rem',
-      fontWeight: 700
+      fontSize: '1.75rem',
+      fontWeight: 700,
+      paddingTop: '4px',
+      paddingBottom: '8px',
+      display: '-webkit-box',
+      WebkitLineClamp: '2',
+      WebkitBoxOrient: 'vertical',
+      maxWidth: '72ch',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis'
     },
     h2: {
-      fontSize: '1.875rem',
-      fontWeight: 700
-    },
-    h3: {
       fontSize: '1.5rem',
       fontWeight: 700
     },
-    h4: {
+    h3: {
       fontSize: '1.25rem',
+      fontWeight: 700
+    },
+    h4: {
+      fontSize: '1.125rem',
       fontWeight: 700
     },
     h5: {
@@ -111,10 +119,9 @@ const appTheme = createTheme({
     MuiBreadcrumbs: {
       styleOverrides: {
         root: {
-          marginTop: '-6px',
-          marginBottom: '10px',
-          marginLeft: '-4px',
-          fontSize: '0.9rem'
+          marginTop: '-4px',
+          marginBottom: '4px',
+          marginLeft: '-4px'
         },
         li: {
           maxWidth: '40ch',
@@ -122,26 +129,26 @@ const appTheme = createTheme({
           whiteSpace: 'nowrap',
           '& a': {
             display: 'block',
-            fontSize: 'inherit',
+            fontSize: '0.9rem',
             overflow: 'hidden',
             textOverflow: 'ellipsis'
           },
           '& span': {
             display: 'block',
-            fontSize: 'inherit',
+            fontSize: '0.9rem',
             overflow: 'hidden',
             textOverflow: 'ellipsis'
           }
         },
         separator: {
-          marginLeft: '4px',
-          marginRight: '4px'
+          marginRight: '4px',
+          marginLeft: '4px'
         }
       }
     },
     MuiButton: {
       defaultProps: {
-        disableElevation: true
+        // disableElevation: true
       },
       styleOverrides: {
         root: {
@@ -293,29 +300,41 @@ const appTheme = createTheme({
     MuiTable: {
       styleOverrides: {
         root: {
-          fontSize: '0.9rem',
+          fontSize: '0.875rem',
+          '& tr:last-of-type td': {
+            borderBottom: 'none'
+          },
+          '& thead': {
+            background: grey[50]
+          },
           '& th': {
             letterSpacing: '0.02rem',
             textTransform: 'uppercase',
             paddingTop: '12px',
-            paddingBottom: '12px'
+            paddingBottom: '12px',
+            height: '52px'
           },
-          '& tr:last-of-type td': {
-            borderBottom: 'none'
+          '& td': {
+            height: '52px'
           },
-          '& .MuiLink-root': {
-            fontFamily: 'inherit',
-            fontSize: 'inherit'
+          '& th:first-of-type, td:first-of-type': {
+            paddingLeft: '16px'
+          },
+          '& th:last-of-type, td:last-of-type': {
+            paddingRight: '16px'
           }
         }
       }
     },
     MuiTableCell: {
       styleOverrides: {
+        root: {
+          paddingRight: '8px',
+          paddingLeft: '8px'
+        },
         head: {
           fontSize: '0.875rem',
-          fontWeight: 700,
-          color: grey[600]
+          fontWeight: 700
         }
       }
     },

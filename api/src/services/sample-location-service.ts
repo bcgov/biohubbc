@@ -1,26 +1,31 @@
-import { Feature } from '@turf/helpers';
 import { IDBConnection } from '../database/db';
+import { InsertSampleBlockRecord } from '../repositories/sample-blocks-repository';
 import {
+  InsertSampleSiteRecord,
   SampleLocationRecord,
   SampleLocationRepository,
-  UpdateSampleSiteRecord
+  SampleSiteRecord,
+  UpdateSampleLocationRecord
 } from '../repositories/sample-location-repository';
 import { InsertSampleMethodRecord } from '../repositories/sample-method-repository';
+import { InsertSampleStratumRecord } from '../repositories/sample-stratums-repository';
+import { getLogger } from '../utils/logger';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
+import { SampleBlockService } from './sample-block-service';
 import { SampleMethodService } from './sample-method-service';
-
-interface SampleSite {
-  name: string;
-  description: string;
-  feature: Feature;
-}
+import { SampleStratumService } from './sample-stratum-service';
 
 export interface PostSampleLocations {
   survey_sample_site_id: number | null;
   survey_id: number;
-  survey_sample_sites: SampleSite[];
+  survey_sample_sites: InsertSampleSiteRecord[];
   methods: InsertSampleMethodRecord[];
+  blocks: InsertSampleBlockRecord[];
+  stratums: InsertSampleStratumRecord[];
 }
+
+const defaultLog = getLogger('services/sample-location-service');
 
 /**
  * Sample Location Repository
@@ -38,37 +43,86 @@ export class SampleLocationService extends DBService {
   }
 
   /**
-   * Gets all survey Sample Locations.
+   * Gets a paginated set of survey Sample Locations for the given survey.
    *
    * @param {number} surveyId
+   * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<SampleLocationRecord[]>}
    * @memberof SampleLocationService
    */
-  async getSampleLocationsForSurveyId(surveyId: number): Promise<SampleLocationRecord[]> {
-    return await this.sampleLocationRepository.getSampleLocationsForSurveyId(surveyId);
+  async getSampleLocationsForSurveyId(
+    surveyId: number,
+    pagination?: ApiPaginationOptions
+  ): Promise<SampleLocationRecord[]> {
+    return this.sampleLocationRepository.getSampleLocationsForSurveyId(surveyId, pagination);
+  }
+
+  /**
+   * Returns the total count of sample locations belonging to the given survey.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<number>}
+   * @memberof SampleLocationService
+   */
+  async getSampleLocationsCountBySurveyId(surveyId: number): Promise<number> {
+    return this.sampleLocationRepository.getSampleLocationsCountBySurveyId(surveyId);
+  }
+
+  /**
+   * Gets a sample site record by sample site ID.
+   *
+   * @param {number} surveyId
+   * @param {number} surveySampleSiteId
+   * @return {*}  {Promise<SampleSiteRecord>}
+   * @memberof SampleLocationService
+   */
+  async getSurveySampleSiteById(surveyId: number, surveySampleSiteId: number): Promise<SampleSiteRecord> {
+    return this.sampleLocationRepository.getSurveySampleSiteById(surveyId, surveySampleSiteId);
   }
 
   /**
    * Deletes a survey Sample Location.
    *
+   * @param {number} surveyId
    * @param {number} surveySampleSiteId
-   * @return {*}  {Promise<SampleLocationRecord>}
+   * @return {*}  {Promise<SampleSiteRecord>}
    * @memberof SampleLocationService
    */
-  async deleteSampleLocationRecord(surveySampleSiteId: number): Promise<SampleLocationRecord> {
+  async deleteSampleSiteRecord(surveyId: number, surveySampleSiteId: number): Promise<SampleSiteRecord> {
     const sampleMethodService = new SampleMethodService(this.connection);
+    const sampleBlockService = new SampleBlockService(this.connection);
+    const sampleStratumService = new SampleStratumService(this.connection);
 
     // Delete all methods associated with the sample location
-    const existingSampleMethods = await sampleMethodService.getSampleMethodsForSurveySampleSiteId(surveySampleSiteId);
+    const existingSampleMethods = await sampleMethodService.getSampleMethodsForSurveySampleSiteId(
+      surveyId,
+      surveySampleSiteId
+    );
     for (const item of existingSampleMethods) {
-      await sampleMethodService.deleteSampleMethodRecord(item.survey_sample_method_id);
+      await sampleMethodService.deleteSampleMethodRecord(surveyId, item.survey_sample_method_id);
     }
 
-    return this.sampleLocationRepository.deleteSampleLocationRecord(surveySampleSiteId);
+    // Delete all blocks associated with the sample location
+    const existingSampleBlocks = await sampleBlockService.getSampleBlocksForSurveySampleSiteId(surveySampleSiteId);
+
+    await sampleBlockService.deleteSampleBlockRecords(existingSampleBlocks.map((item) => item.survey_sample_block_id));
+
+    // Delete all stratums associated with a sample location
+    const existingSampleStratums = await sampleStratumService.getSampleStratumsForSurveySampleSiteId(
+      surveySampleSiteId
+    );
+
+    await sampleStratumService.deleteSampleStratumRecords(
+      existingSampleStratums.map((item) => item.survey_sample_stratum_id)
+    );
+
+    // Lastly, delete the site itself
+    return this.sampleLocationRepository.deleteSampleSiteRecord(surveyId, surveySampleSiteId);
   }
 
   /**
-   * Inserts survey Sample Locations.
+   * Inserts survey sample locations (a survey_sample_site record plus associated survey_sample_method and
+   * survey_sample_period records).
    *
    * It is a business requirement to use strings from the properties field of provided geometry
    * to determine the name and description of sampling locations when possible.
@@ -78,30 +132,29 @@ export class SampleLocationService extends DBService {
    * integer id + 1 in the db.
    *
    * @param {PostSampleLocations} sampleLocations
-   * @return {*}  {Promise<SampleLocationRecord[]>}
+   * @return {*}  {Promise<SampleSiteRecord[]>}
    * @memberof SampleLocationService
    */
-  async insertSampleLocations(sampleLocations: PostSampleLocations): Promise<SampleLocationRecord[]> {
-    const methodService = new SampleMethodService(this.connection);
-    // Create a sample location for each feature found
-    const promises = sampleLocations.survey_sample_sites.map((item) => {
-      const sampleLocation = {
-        survey_id: sampleLocations.survey_id,
-        name: item.name,
-        description: item.description,
-        geojson: item.feature
-      };
+  async insertSampleLocations(sampleLocations: PostSampleLocations): Promise<SampleSiteRecord[]> {
+    defaultLog.debug({ label: 'insertSampleLocations' });
 
-      return this.sampleLocationRepository.insertSampleLocation(sampleLocation);
+    // Create a sample site record for each feature found
+    const promises = sampleLocations.survey_sample_sites.map((sampleLocation) => {
+      return this.sampleLocationRepository.insertSampleSite(sampleLocations.survey_id, sampleLocation);
     });
-    const results = await Promise.all<SampleLocationRecord>(promises);
 
-    // Loop through all newly reaction sample locations
-    // For reach sample location, create methods and associated with sample location id
-    const methodPromises = results.map((sampleSite: SampleLocationRecord) =>
+    const sampleSiteRecords = await Promise.all(promises);
+
+    const methodService = new SampleMethodService(this.connection);
+    const blockService = new SampleBlockService(this.connection);
+    const stratumService = new SampleStratumService(this.connection);
+
+    // Loop through all newly created sample sites
+    // For reach sample site, create associated sample methods
+    const methodPromises = sampleSiteRecords.map((sampleSiteRecord) =>
       sampleLocations.methods.map((item) => {
         const sampleMethod = {
-          survey_sample_site_id: sampleSite.survey_sample_site_id,
+          survey_sample_site_id: sampleSiteRecord.survey_sample_site_id,
           method_lookup_id: item.method_lookup_id,
           description: item.description,
           periods: item.periods
@@ -109,25 +162,97 @@ export class SampleLocationService extends DBService {
         return methodService.insertSampleMethod(sampleMethod);
       })
     );
+
     await Promise.all(methodPromises);
 
-    return results;
+    // Loop through all newly created sample sites
+    // For reach sample site, create associated sample blocks
+    const blockPromises = sampleSiteRecords.map((sampleSiteRecord) =>
+      sampleLocations.blocks.map((item) => {
+        const sampleBlock = {
+          survey_sample_site_id: sampleSiteRecord.survey_sample_site_id,
+          survey_block_id: item.survey_block_id
+        };
+        return blockService.insertSampleBlock(sampleBlock);
+      })
+    );
+
+    await Promise.all(blockPromises);
+
+    // Loop through all newly created sample sites
+    // For reach sample site, create associated sample stratums
+    const stratumPromises = sampleSiteRecords.map((sampleSiteRecord) =>
+      sampleLocations.stratums.map((item) => {
+        const sampleStratum = {
+          survey_sample_site_id: sampleSiteRecord.survey_sample_site_id,
+          survey_stratum_id: item.survey_stratum_id
+        };
+        return stratumService.insertSampleStratum(sampleStratum);
+      })
+    );
+
+    await Promise.all(stratumPromises);
+
+    return sampleSiteRecords;
   }
 
   /**
    * Updates a survey entire Sample Site Record, with Location and associated methods and periods.
    *
-   * @param {UpdateSampleSiteRecord} sampleSite
+   * @param {number} surveyId
+   * @param {UpdateSampleLocationRecord} sampleSite
    * @memberof SampleLocationService
    */
-  async updateSampleLocationMethodPeriod(sampleSite: UpdateSampleSiteRecord) {
+  async updateSampleLocationMethodPeriod(surveyId: number, sampleSite: UpdateSampleLocationRecord) {
     const methodService = new SampleMethodService(this.connection);
+    const blockService = new SampleBlockService(this.connection);
+    const stratumService = new SampleStratumService(this.connection);
 
     // Update the main sample location
-    await this.sampleLocationRepository.updateSampleLocation(sampleSite);
+    await this.sampleLocationRepository.updateSampleSite(sampleSite);
 
     // Check for methods to delete
-    await methodService.deleteSampleMethodsNotInArray(sampleSite.survey_sample_site_id, sampleSite.methods);
+    await methodService.deleteSampleMethodsNotInArray(
+      sampleSite.survey_id,
+      sampleSite.survey_sample_site_id,
+      sampleSite.methods
+    );
+
+    // Check for blocks to delete
+    await blockService.deleteSampleBlocksNotInArray(sampleSite.survey_sample_site_id, sampleSite.blocks);
+
+    // Check for stratums to delete
+    await stratumService.deleteSampleStratumsNotInArray(sampleSite.survey_sample_site_id, sampleSite.stratums);
+
+    // Loop through all blocks
+    // For each block, check if it exists
+    // If it exists, update it
+    // If it does not exist, create it
+    if (sampleSite.blocks) {
+      for (const item of sampleSite.blocks) {
+        if (!item.survey_sample_block_id) {
+          const sampleBlock = {
+            survey_sample_site_id: sampleSite.survey_sample_site_id,
+            survey_block_id: item.survey_block_id
+          };
+          await blockService.insertSampleBlock(sampleBlock);
+        }
+      }
+    }
+
+    // Loop through all stratums
+    // For each stratum, check if it exists
+    // If it exists, update it
+    // If it does not exist, create it
+    for (const item of sampleSite.stratums) {
+      if (!item.survey_sample_stratum_id) {
+        const sampleStratum = {
+          survey_sample_site_id: sampleSite.survey_sample_site_id,
+          survey_stratum_id: item.survey_stratum_id
+        };
+        await stratumService.insertSampleStratum(sampleStratum);
+      }
+    }
 
     // Loop through all methods
     // For each method, check if it exists
@@ -142,7 +267,7 @@ export class SampleLocationService extends DBService {
           description: item.description,
           periods: item.periods
         };
-        await methodService.updateSampleMethod(sampleMethod);
+        await methodService.updateSampleMethod(surveyId, sampleMethod);
       } else {
         const sampleMethod = {
           survey_sample_site_id: sampleSite.survey_sample_site_id,

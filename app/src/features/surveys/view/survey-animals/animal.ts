@@ -1,6 +1,6 @@
 import { DATE_LIMIT } from 'constants/dateTimeFormats';
+import { default as dayjs } from 'dayjs';
 import { isEqual as deepEquals, omit, omitBy } from 'lodash-es';
-import moment from 'moment';
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
 import { AnyObjectSchema, InferType, reach } from 'yup';
@@ -62,16 +62,16 @@ const latSchema = yup.number().min(-90, glt(-90)).max(90, glt(90, false)).typeEr
 const lonSchema = yup.number().min(-180, glt(-180)).max(180, glt(180, false)).typeError(mustBeNum);
 const dateSchema = yup
   .date()
-  .min(moment(DATE_LIMIT.min), `Must be after ${DATE_LIMIT.min}`)
-  .max(moment(DATE_LIMIT.max), `Must be before ${DATE_LIMIT.max}`)
+  .min(dayjs(DATE_LIMIT.min), `Must be after ${DATE_LIMIT.min}`)
+  .max(dayjs(DATE_LIMIT.max), `Must be before ${DATE_LIMIT.max}`)
   .typeError('Invalid date format');
 
 export type ProjectionMode = 'wgs' | 'utm';
 
 export const AnimalGeneralSchema = yup.object({}).shape({
-  taxon_id: yup.string().required(req),
+  itis_tsn: yup.string().required(req),
   animal_id: yup.string().required(req),
-  taxon_name: yup.string(),
+  itis_scientific_name: yup.string(),
   wlh_id: yup.string(),
   sex: yup.mixed<AnimalSex>().oneOf(Object.values(AnimalSex)),
   critter_id: yup.string()
@@ -314,7 +314,7 @@ type ICritterRelationships = {
 
 export class Critter {
   critter_id: string;
-  taxon_id: string;
+  itis_tsn: string;
   animal_id: string;
   wlh_id?: string;
   sex?: AnimalSex;
@@ -329,10 +329,10 @@ export class Critter {
   locations: ICritterLocation[];
   collections: ICritterCollection[];
 
-  private taxon_name?: string;
+  private itis_scientific_name?: string;
 
   get name(): string {
-    return `${this.animal_id}-${this.taxon_name}`;
+    return `${this.animal_id}-${this.itis_scientific_name}`;
   }
 
   _formatCritterCaptures(animal_captures: IAnimalCapture[]): ICapturesAndLocations {
@@ -454,7 +454,7 @@ export class Critter {
   _formatCritterQualitativeMeasurements(animal_measurements: IAnimalMeasurement[]): ICritterQualitativeMeasurement[] {
     const filteredQualitativeMeasurements = animal_measurements.filter((measurement) => {
       if (measurement.qualitative_option_id && measurement.value) {
-        console.log('Qualitative measurement must only contain option_id and no value.');
+        // Qualitative measurement must only contain option_id and no value
         return false;
       }
       return measurement.qualitative_option_id;
@@ -525,8 +525,8 @@ export class Critter {
 
   constructor(animal: IAnimal) {
     this.critter_id = animal.general.critter_id ? animal.general.critter_id : v4();
-    this.taxon_id = animal.general.taxon_id;
-    this.taxon_name = animal.general.taxon_name;
+    this.itis_tsn = animal.general.itis_tsn;
+    this.itis_scientific_name = animal.general.itis_scientific_name;
     this.animal_id = animal.general.animal_id;
     this.wlh_id = animal.general.wlh_id;
     this.sex = animal.general.sex;

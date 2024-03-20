@@ -40,6 +40,7 @@ POST.apiDoc = {
           schema: {
             title: 'Administrative Activity Response Object',
             type: 'object',
+            additionalProperties: false,
             required: ['id', 'date'],
             properties: {
               id: {
@@ -61,7 +62,7 @@ POST.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -87,6 +88,7 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: ['has_pending_access_request', 'has_one_or_more_project_roles'],
             properties: {
               has_pending_access_request: {
@@ -107,7 +109,7 @@ GET.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -143,7 +145,12 @@ export function createAdministrativeActivity(): RequestHandler {
 
       await connection.commit();
 
-      await administrativeActivityService.sendAccessRequestNotificationEmailToAdmin();
+      try {
+        await administrativeActivityService.sendAccessRequestNotificationEmailToAdmin();
+      } catch (error) {
+        // If email notifiation fails to send, simply log the error and continue.
+        defaultLog.error({ label: 'administrativeActivity', message: 'createAdministrativeActivity', error });
+      }
 
       return res.status(200).json(response);
     } catch (error) {

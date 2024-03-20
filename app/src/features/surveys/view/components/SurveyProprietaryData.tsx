@@ -45,7 +45,9 @@ const SurveyProprietaryData = () => {
           </Box>
           <Box className="row">
             <Typography component="dt">Category Rationale</Typography>
-            <Typography data-testid="survey_category_rationale">{proprietor.category_rationale}</Typography>
+            <Typography component="dd" data-testid="survey_category_rationale">
+              {proprietor.category_rationale}
+            </Typography>
           </Box>
         </Box>
       )}

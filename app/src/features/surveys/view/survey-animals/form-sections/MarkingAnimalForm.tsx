@@ -18,12 +18,12 @@ import { ANIMAL_SECTIONS_FORM_MAP } from '../animal-sections';
 
 type MarkingAnimalFormProps =
   | {
-      taxon_id: string; // temp will probably place inside a context
+      itis_tsn: string; // temp will probably place inside a context
       display: 'button';
       marking?: never;
     }
   | {
-      taxon_id: string;
+      itis_tsn: string;
       display: 'card';
       marking: IAnimalMarking;
     };
@@ -48,7 +48,6 @@ export const MarkingAnimalForm = (props: MarkingAnimalFormProps) => {
         onCancel={() => setDialogMode(null)}
         onSave={(values) => {
           setDialogMode(null);
-          console.log(values);
         }}
       />
       {props.display === 'button' ? (
@@ -102,7 +101,7 @@ export const MarkingAnimalFormContent = ({ index }: IMarkingAnimalFormContentPro
           name={getAnimalFieldName<IAnimalMarking>(name, 'taxon_marking_body_location_id', index)}
           id="marking_body_location"
           route="xref/taxon-marking-body-locations"
-          query={`taxon_id=${values.general.taxon_id}`}
+          query={`itis_tsn=${values.general.itis_tsn}`}
           controlProps={{
             size: 'medium',
             required: isRequiredInSchema(AnimalMarkingSchema, 'taxon_marking_body_location_id')

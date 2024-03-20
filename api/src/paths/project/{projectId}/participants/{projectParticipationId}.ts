@@ -61,6 +61,7 @@ PUT.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['roleId'],
           properties: {
             roleId: {
@@ -83,7 +84,7 @@ PUT.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -108,15 +109,15 @@ export function putProjectParticipantRole(): RequestHandler {
       const projectParticipationService = new ProjectParticipationService(connection);
 
       // Get project participant state before updates are made
-      const projectParticipantsResponse1 = await projectParticipationService.getProjectParticipants(
-        Number(req.params.projectId)
-      );
-      const projectHasLeadResponse1 = projectParticipationService.doAllProjectsHaveAProjectLead(
-        projectParticipantsResponse1
-      );
+      let projectParticipants = await projectParticipationService.getProjectParticipants(projectId);
+
+      let projectHasLead = projectParticipationService.doAllProjectsHaveAProjectLead(projectParticipants);
 
       // Delete the user's old participation record, returning the old record
-      const result = await projectParticipationService.deleteProjectParticipationRecord(projectParticipationId);
+      const result = await projectParticipationService.deleteProjectParticipationRecord(
+        projectId,
+        projectParticipationId
+      );
 
       if (!result || !result.system_user_id) {
         // The delete result is missing necessary data, fail the request
@@ -131,18 +132,15 @@ export function putProjectParticipantRole(): RequestHandler {
 
       // If the project participant state before the changes was already invalid, then don't bother checking the state
       // after the changes. This situation should ideally never happen.
-      if (projectHasLeadResponse1) {
+      if (projectHasLead) {
         // Get project participant state after updates were made
-        const projectParticipantsResponse2 = await projectParticipationService.getProjectParticipants(
-          Number(req.params.projectId)
-        );
-        const projectHasLeadResponse2 = projectParticipationService.doAllProjectsHaveAProjectLead(
-          projectParticipantsResponse2
-        );
+        projectParticipants = await projectParticipationService.getProjectParticipants(projectId);
+
+        projectHasLead = projectParticipationService.doAllProjectsHaveAProjectLead(projectParticipants);
 
         // If any project that the user is on now no longer has a coordinator, then these updates must have been
         // responsible, and so should not be allowed. A project must always have at least 1 coordinator role.
-        if (!projectHasLeadResponse2) {
+        if (!projectHasLead) {
           throw new HTTP400(
             `Cannot update project user. User is the only ${PROJECT_ROLE.COORDINATOR} for the project.`
           );
@@ -220,7 +218,7 @@ DELETE.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -244,12 +242,14 @@ export function deleteProjectParticipant(): RequestHandler {
       const projectParticipationService = new ProjectParticipationService(connection);
 
       // Check coordinator roles before deleting user
-      const projectParticipantsResponse1 = await projectParticipationService.getProjectParticipants(projectId);
-      const projectHasLeadResponse1 = projectParticipationService.doAllProjectsHaveAProjectLead(
-        projectParticipantsResponse1
-      );
+      let projectParticipants = await projectParticipationService.getProjectParticipants(projectId);
 
-      const result = await projectParticipationService.deleteProjectParticipationRecord(projectParticipationId);
+      let projectHasLead = projectParticipationService.doAllProjectsHaveAProjectLead(projectParticipants);
+
+      const result = await projectParticipationService.deleteProjectParticipationRecord(
+        projectId,
+        projectParticipationId
+      );
 
       if (!result || !result.system_user_id) {
         // The delete result is missing necessary data, fail the request
@@ -258,13 +258,13 @@ export function deleteProjectParticipant(): RequestHandler {
 
       // If coordinator roles are invalid skip check to prevent removal of only coordinator of project
       // (Project is already missing coordinator and is in a bad state)
-      if (projectHasLeadResponse1) {
-        const projectParticipantsResponse2 = await projectParticipationService.getProjectParticipants(projectId);
-        const projectHasLeadResponse2 = projectParticipationService.doAllProjectsHaveAProjectLead(
-          projectParticipantsResponse2
-        );
+      if (projectHasLead) {
+        // Get project participant state after updates were made
+        projectParticipants = await projectParticipationService.getProjectParticipants(projectId);
 
-        if (!projectHasLeadResponse2) {
+        projectHasLead = projectParticipationService.doAllProjectsHaveAProjectLead(projectParticipants);
+
+        if (!projectHasLead) {
           throw new HTTP400(
             `Cannot delete project user. User is the only ${PROJECT_ROLE.COORDINATOR} for the project.`
           );

@@ -1,5 +1,5 @@
+import { default as dayjs } from 'dayjs';
 import { Feature } from 'geojson';
-import moment from 'moment';
 import { COMPLETION_STATUS } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/http-error';
@@ -13,15 +13,14 @@ import {
   IGetProject,
   IProjectAdvancedFilters,
   ProjectData,
-  ProjectSupplementaryData
+  ProjectListData
 } from '../models/project-view';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
-import { PublishStatus } from '../repositories/history-publish-repository';
 import { ProjectUser } from '../repositories/project-participation-repository';
 import { ProjectRepository } from '../repositories/project-repository';
 import { SystemUser } from '../repositories/user-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
-import { getLogger } from '../utils/logger';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { AttachmentService } from './attachment-service';
 import { DBService } from './db-service';
 import { HistoryPublishService } from './history-publish-service';
@@ -29,8 +28,6 @@ import { PlatformService } from './platform-service';
 import { ProjectParticipationService } from './project-participation-service';
 import { RegionService } from './region-service';
 import { SurveyService } from './survey-service';
-
-const defaultLog = getLogger('services/project-service');
 
 export class ProjectService extends DBService {
   attachmentService: AttachmentService;
@@ -50,26 +47,56 @@ export class ProjectService extends DBService {
     this.surveyService = new SurveyService(connection);
   }
 
+  /**
+   * Retrieves the paginated list of all projects that are available to the user.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IProjectAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {(Promise<(ProjectListData & { completion_status: COMPLETION_STATUS })[]>)}
+   * @memberof ProjectService
+   */
   async getProjectList(
     isUserAdmin: boolean,
     systemUserId: number | null,
-    filterFields: IProjectAdvancedFilters
-  ): Promise<any> {
-    const response = await this.projectRepository.getProjectList(isUserAdmin, systemUserId, filterFields);
+    filterFields: IProjectAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<(ProjectListData & { completion_status: COMPLETION_STATUS })[]> {
+    const response = await this.projectRepository.getProjectList(isUserAdmin, systemUserId, filterFields, pagination);
 
     return response.map((row) => ({
-      id: row.project_id,
-      name: row.project_name,
-      start_date: row.start_date,
-      end_date: row.end_date,
+      ...row,
       completion_status:
-        (row.end_date && moment(row.end_date).endOf('day').isBefore(moment()) && COMPLETION_STATUS.COMPLETED) ||
-        COMPLETION_STATUS.ACTIVE,
-      project_programs: row.project_programs,
-      regions: row.regions
+        (row.end_date && dayjs(row.end_date).endOf('day').isBefore(dayjs()) && COMPLETION_STATUS.COMPLETED) ||
+        COMPLETION_STATUS.ACTIVE
     }));
   }
 
+  /**
+   * Returns the total count of projects that are visible to the given user.
+   *
+   * @param {IProjectAdvancedFilters} filterFields
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @return {*}  {Promise<number>}
+   * @memberof ProjectService
+   */
+  async getProjectCount(
+    filterFields: IProjectAdvancedFilters,
+    isUserAdmin: boolean,
+    systemUserId: number | null
+  ): Promise<number> {
+    return this.projectRepository.getProjectCount(filterFields, isUserAdmin, systemUserId);
+  }
+
+  /**
+   * Retrieves a single project by its ID.
+   *
+   * @param {number} projectId
+   * @return {*}  {Promise<IGetProject>}
+   * @memberof ProjectService
+   */
   async getProjectById(projectId: number): Promise<IGetProject> {
     const [projectData, objectiveData, projectParticipantsData, iucnData] = await Promise.all([
       this.getProjectData(projectId),
@@ -84,19 +111,6 @@ export class ProjectService extends DBService {
       participants: projectParticipantsData,
       iucn: iucnData
     };
-  }
-
-  /**
-   * Get Project supplementary data for a given project ID
-   *
-   * @param {number} projectId
-   * @returns {*} {Promise<ProjectSupplementaryData>}
-   * @memberof ProjectService
-   */
-  async getProjectSupplementaryDataById(projectId: number): Promise<ProjectSupplementaryData> {
-    const projectMetadataPublish = await this.historyPublishService.getProjectMetadataPublishRecord(projectId);
-
-    return { project_metadata_publish: projectMetadataPublish };
   }
 
   async getProjectEntitiesById(projectId: number, entities: string[]): Promise<Partial<IGetProject>> {
@@ -167,25 +181,6 @@ export class ProjectService extends DBService {
 
   async getReportAttachmentsData(projectId: number): Promise<GetReportAttachmentsData> {
     return this.projectRepository.getReportAttachmentsData(projectId);
-  }
-
-  /**
-   *
-   *
-   * @param {PostProjectObject} postProjectData
-   * @return {*}  {Promise<number>}
-   * @memberof ProjectService
-   */
-  async createProjectAndUploadMetadataToBioHub(postProjectData: PostProjectObject): Promise<number> {
-    const projectId = await this.createProject(postProjectData);
-
-    try {
-      await this.platformService.submitProjectDwCMetadataToBioHub(projectId);
-    } catch (error) {
-      defaultLog.warn({ label: 'createProjectAndUploadMetadataToBioHub', message: 'error', error });
-    }
-
-    return projectId;
   }
 
   /**
@@ -280,32 +275,6 @@ export class ProjectService extends DBService {
   async insertPrograms(projectId: number, projectPrograms: number[]): Promise<void> {
     await this.projectRepository.deletePrograms(projectId);
     await this.projectRepository.insertProgram(projectId, projectPrograms);
-  }
-
-  /**
-   * Updates the project and uploads affected metadata to BioHub
-   *
-   * @param {number} projectId
-   * @param {IUpdateProject} entities
-   * @return {*}  {Promise<void>}
-   * @memberof ProjectService
-   */
-  async updateProjectAndUploadMetadataToBioHub(projectId: number, entities: IUpdateProject): Promise<void> {
-    await this.updateProject(projectId, entities);
-
-    try {
-      // Publish project metadata
-      const publishProjectPromise = this.platformService.submitProjectDwCMetadataToBioHub(projectId);
-
-      // Publish all survey metadata (which needs to be updated now that the project metadata has changed)
-      const publishSurveysPromise = this.surveyService.getSurveyIdsByProjectId(projectId).then((surveyIds) => {
-        return surveyIds.map((item) => this.platformService.submitSurveyDwCMetadataToBioHub(item.id));
-      });
-
-      await Promise.all([publishProjectPromise, publishSurveysPromise]);
-    } catch (error) {
-      defaultLog.warn({ label: 'updateProjectAndUploadMetadataToBioHub', message: 'error', error });
-    }
   }
 
   /**
@@ -425,65 +394,5 @@ export class ProjectService extends DBService {
     }
 
     return true;
-  }
-
-  /**
-   * Returns publish status of a given project
-   *
-   * @param {number} projectId
-   * @return {*}  {Promise<PublishStatus>}
-   * @memberof ProjectService
-   */
-  async projectPublishStatus(projectId: number): Promise<PublishStatus> {
-    const attachmentsPublishStatus = await this.historyPublishService.projectAttachmentsPublishStatus(projectId);
-
-    const reportsPublishStatus = await this.historyPublishService.projectReportsPublishStatus(projectId);
-
-    const surveysPublishStatus = await this.hasUnpublishedSurveys(projectId);
-
-    if (
-      attachmentsPublishStatus === PublishStatus.NO_DATA &&
-      reportsPublishStatus === PublishStatus.NO_DATA &&
-      surveysPublishStatus === PublishStatus.NO_DATA
-    ) {
-      return PublishStatus.NO_DATA;
-    }
-
-    if (
-      attachmentsPublishStatus === PublishStatus.UNSUBMITTED ||
-      reportsPublishStatus === PublishStatus.UNSUBMITTED ||
-      surveysPublishStatus === PublishStatus.UNSUBMITTED
-    ) {
-      return PublishStatus.UNSUBMITTED;
-    }
-
-    return PublishStatus.SUBMITTED;
-  }
-
-  /**
-   * Returns publish status of all surveys for a project
-   *
-   * @param {number} projectId
-   * @return {*}  {Promise<PublishStatus>}
-   * @memberof ProjectService
-   */
-  async hasUnpublishedSurveys(projectId: number): Promise<PublishStatus> {
-    const surveyIds = (await this.surveyService.getSurveyIdsByProjectId(projectId)).map((item: { id: any }) => item.id);
-
-    const surveyStatusArray = await Promise.all(
-      surveyIds.map(async (surveyId) => {
-        return this.surveyService.surveyPublishStatus(surveyId);
-      })
-    );
-
-    if (surveyStatusArray.length === 0 || surveyStatusArray.every((status) => status === PublishStatus.NO_DATA)) {
-      return PublishStatus.NO_DATA;
-    }
-
-    if (surveyStatusArray.some((status) => status === PublishStatus.UNSUBMITTED)) {
-      return PublishStatus.UNSUBMITTED;
-    }
-
-    return PublishStatus.SUBMITTED;
   }
 }
