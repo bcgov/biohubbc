@@ -21,6 +21,10 @@ import {
   isQualitativeMeasurementTypeDefinition,
   isQuantitativeMeasurementTypeDefinition
 } from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitionsUtils';
+import {
+  validateObservationTableRow,
+  validateObservationTableRowMeasurements
+} from 'features/surveys/observations/observations-table/validation/ValidationUtils';
 import { APIError } from 'hooks/api/useAxios';
 import { IObservationTableRowToSave, SubcountToSave } from 'hooks/api/useObservationApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -68,16 +72,18 @@ export type SubcountObservationColumns = {
   [key: string]: any;
 };
 
-export type TSNMeasurementMap = Record<
-  string,
-  { qualitative: CBQualitativeMeasurementTypeDefinition[]; quantitative: CBQuantitativeMeasurementTypeDefinition[] }
->;
+export type TSNMeasurement = {
+  qualitative: CBQualitativeMeasurementTypeDefinition[];
+  quantitative: CBQuantitativeMeasurementTypeDefinition[];
+};
+
+export type TSNMeasurementMap = Record<string, TSNMeasurement>;
 
 export type ObservationRecord = StandardObservationColumns & SubcountObservationColumns;
 
 export type MeasurementColumn = {
   measurement: CBMeasurementType;
-  colDef: GridColDef;
+  colDef: GridColDef; // TODO: we can remove the colDef from this definition
 };
 
 export type SupplementaryObservationCountData = {
@@ -429,18 +435,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     }) as IObservationTableRow[];
   }, [_muiDataGridApiRef]);
 
-  const tsnMeasurements = async (
-    tsn: number
-  ): Promise<
-    | {
-        qualitative: CBQualitativeMeasurementTypeDefinition[];
-        quantitative: CBQuantitativeMeasurementTypeDefinition[];
-      }
-    | null
-    | undefined
-  > => {
+  const tsnMeasurements = async (tsn: number): Promise<TSNMeasurement | null | undefined> => {
     // TODO: treat this like species and cache these bad bois
-
     if (!tsnMeasurementMap[tsn]) {
       try {
         const response = await critterbaseApi.xref.getTaxonMeasurements(tsn);
@@ -572,18 +568,26 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     // build an array of all the standard non measurement columns
     const nonMeasurementColumns: string[] = [
-      '__check__',
-      'actions', // add check box column and actions column (trash can) to filter these out of final measurement columns
+      '__check__', // add check box column to filter out when looking for measurement columns
+      'actions', // actions column (trash can) to filter out when looking for measurement columns
       ...(requiredColumns as string[]),
       ...(samplingRequiredColumns as string[])
     ];
 
-    // get measurement columns
+    // filter all table columns out that do not appear in the nonMeasurementColumns array
     const measurementColumns = tableColumns
       .filter((tc) => {
         return nonMeasurementColumns.indexOf(String(tc.field)) < 0;
       })
       .map((item) => item.field);
+
+    for (const row of rowValues) {
+      console.log('HOT NEW VALIDATION');
+      const standardColumnErrors = validateObservationTableRow(row, requiredColumns, tableColumns);
+      const measurementErrors = await validateObservationTableRowMeasurements(row, measurementColumns, tsnMeasurements);
+
+      console.log('HOT NEW VALIDATION ERRORS', standardColumnErrors, measurementErrors);
+    }
 
     const validation = await rowValues.reduce(
       async (tableModel: Promise<ObservationTableValidationModel>, row: IObservationTableRow) => {
@@ -596,7 +600,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         const missingSamplingColumns: (keyof IObservationTableRow)[] = samplingRequiredColumns.filter(
           (column) => !row[column]
         );
-
+        console.log(missingSamplingColumns);
+        console.log(row);
         // If an observation is not an incidental record, then all sampling columns are required.
         if (!missingSamplingColumns.includes('survey_sample_site_id')) {
           // Record is non-incidental, namely one or more of its sampling columns is non-empty.
