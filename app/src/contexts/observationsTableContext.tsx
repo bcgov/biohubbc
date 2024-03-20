@@ -348,9 +348,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    */
   const hasError = useCallback(
     (params: GridCellParams): boolean => {
-      // TODO: issue with measurement columns not getting the validation model, it is always empty
-      // console.log('__ Has Errors __');
-      // console.log(`Row ID: ${params.row.id}`, params.field, validationModel);
       return Boolean(
         validationModel[params.row.id]?.some((error) => {
           return error.field === params.field;
@@ -462,7 +459,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       measurementColumns: string[]
     ): Promise<ObservationRowValidationError[] | null> => {
       const measurementErrors: ObservationRowValidationError[] = [];
-      console.log(`Measurement Row to Validate: `, row);
       if (!row.itis_tsn && !measurementColumns.length) {
         return null;
       }
@@ -472,9 +468,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       }
 
       const measurements = await tsnMeasurements(Number(row.itis_tsn));
-      console.log(
-        `TSN MEASUREMENTS: Qual: ${measurements?.qualitative.length} Quant: ${measurements?.quantitative.length}`
-      );
       if (!measurements) {
         return [
           {
@@ -487,13 +480,11 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       if (!measurementColumns) {
         return null;
       }
-      // ok need to re work this as a flat object instead of doing what I was doing before...
+
+      // go through each measurement on the table and validate against he taxon
       measurementColumns.forEach((measurementColumn) => {
         const data = row[measurementColumn];
         if (data) {
-          // actually have data, need to validate
-          console.log(data);
-
           const foundQualitative = measurements.qualitative.find((q) => q.taxon_measurement_id === measurementColumn);
           if (foundQualitative) {
             const foundOption = foundQualitative.options.find((op) => op.qualitative_option_id === String(data));
@@ -561,7 +552,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    * returns the validation model
    */
   const _validateRows = useCallback(async (): Promise<ObservationTableValidationModel | null> => {
-    console.log('__ Validation Begins __');
     const rowValues = _getRowsWithEditedValues();
     const tableColumns = _muiDataGridApiRef.current.getAllColumns?.() ?? [];
 
@@ -638,7 +628,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
           rowErrors.push({ field: 'observation_time', message: 'Invalid time' });
         }
 
-        if (nonMeasurementColumns.length > 0) {
+        if (measurementColumns.length > 0) {
           const results = await _validateMeasurements(row, measurementColumns);
           if (results) {
             rowErrors = [...results, ...rowErrors];
@@ -648,6 +638,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         if (rowErrors.length > 0) {
           const waitedModel = await tableModel;
           waitedModel[row.id] = rowErrors;
+          tableModel = Promise.resolve(waitedModel);
         }
 
         return tableModel;
@@ -655,7 +646,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       Promise.resolve({})
     );
 
-    console.log('______ Validation results: ', validation);
     setValidationModel(validation);
 
     return Object.keys(validation).length > 0 ? validation : null;
@@ -955,7 +945,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     // Validate rows
     const validationErrors = await _validateRows();
-    console.log(`SAVE ACTION`, validationErrors);
     if (validationErrors) {
       return;
     }
@@ -1000,7 +989,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    * Transition all rows tracked by `modifiedRowIds` to edit mode.
    */
   const discardChanges = useCallback(() => {
-    console.log(`__ -- __ -- Discard Changes __`);
     // Remove any rows from the modified rows array
     setModifiedRowIds([]);
     // Remove any newly created rows
@@ -1033,7 +1021,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    */
   const _saveRecords = useCallback(
     async (rowsToSave: IObservationTableRowToSave[]) => {
-      console.log(`__saveRecords`);
       try {
         await biohubApi.observation.insertUpdateObservationRecords(projectId, surveyId, rowsToSave);
 
@@ -1126,7 +1113,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    */
   const _getSubcountsToSave = useCallback(
     (row: ObservationRecord) => {
-      console.log(`__ AFTER THE VALIDATION __ GET SUB COUNTS TO SAVE`);
       // Get all populated measurement column values for the row
       const measurementsToSave = _getMeasurementsToSave(row);
 
