@@ -9,7 +9,6 @@ import {
   getFormattedDateRangeString,
   getFormattedFileSize,
   getFormattedIdentitySource,
-  getKeyByValue,
   getTitle,
   pluralize
 } from './Utils';
@@ -240,44 +239,6 @@ describe('getTitle', () => {
     const title = getTitle('Test Page');
 
     expect(title).toEqual('SIMS - Test Page');
-  });
-});
-
-describe('getKeyByValue', () => {
-  it('returns undefined if the object contains no keys and the value is undefined', () => {
-    const response = getKeyByValue({}, undefined);
-
-    expect(response).toEqual(undefined);
-  });
-
-  it('returns undefined if the object contains no keys and the value is defined', () => {
-    const response = getKeyByValue({}, 'value');
-
-    expect(response).toEqual(undefined);
-  });
-
-  it('returns undefined if the object contains some keys and the value is undefined', () => {
-    const response = getKeyByValue({ name: 'Test' }, undefined);
-
-    expect(response).toEqual(undefined);
-  });
-
-  it('returns undefined if the object contains some keys and the value is defined but not in the object', () => {
-    const response = getKeyByValue({ name: 'Test' }, 'notfound');
-
-    expect(response).toEqual(undefined);
-  });
-
-  it('returns a string key if the object contains a key having the given value', () => {
-    const response = getKeyByValue({ name: 'Test' }, 'Test');
-
-    expect(response).toEqual('name');
-  });
-
-  it('returns a numeric key if the object contains a key having the given value', () => {
-    const response = getKeyByValue(['One', 'Two', 'Test'], 'Test');
-
-    expect(response).toEqual('2');
   });
 });
 
