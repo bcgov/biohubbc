@@ -434,19 +434,23 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     }) as IObservationTableRow[];
   }, [_muiDataGridApiRef]);
 
-  const tsnMeasurements = async (tsn: number): Promise<TSNMeasurement | null | undefined> => {
-    // TODO: treat this like species and cache these bad bois
+  /**
+   * Fetches measurement definitions from Critterbase for a given itis_tsn number
+   */
+  const tsnMeasurements = useCallback(async (tsn: number): Promise<TSNMeasurement | null | undefined> => {
+    // TODO: update this to be cached like the species information
     if (!tsnMeasurementMap[tsn]) {
       try {
         const response = await critterbaseApi.xref.getTaxonMeasurements(tsn);
 
         tsnMeasurementMap[String(tsn)] = response;
       } catch (error) {
+        // TODO: what should this do?
         console.log(error);
       }
     }
     return tsnMeasurementMap[tsn];
-  };
+  }, []);
 
   /**
    * Validates all rows belonging to the table. Returns null if validation passes, otherwise
