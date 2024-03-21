@@ -1,9 +1,5 @@
 import { FeatureFlagGuard } from 'components/security/Guards';
-import {
-  AuthenticatedRouteGuard,
-  SystemRoleRouteGuard,
-  UnAuthenticatedRouteGuard
-} from 'components/security/RouteGuards';
+import { AuthenticatedRouteGuard, SystemRoleRouteGuard } from 'components/security/RouteGuards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { ConfigContext, IConfig } from 'contexts/configContext';
@@ -607,79 +603,6 @@ describe('RouteGuards', () => {
           expect(history.location.pathname).toEqual(initialPath);
           expect(getByTestId('success-component')).toBeVisible();
           expect(signinRedirectStub).toHaveBeenCalledTimes(0);
-        });
-      });
-    });
-  });
-
-  describe('UnAuthenticatedRouteGuard', () => {
-    describe('unauthenticated', () => {
-      afterAll(() => {
-        cleanup();
-      });
-
-      it('renders the route', async () => {
-        const authState = getMockAuthState({
-          base: nullAuthState,
-          overrides: {
-            auth: {
-              isAuthenticated: false
-            }
-          }
-        });
-
-        const initialPath = '/unauth/route';
-        const history = createMemoryHistory({ initialEntries: [initialPath] });
-
-        const { getByTestId } = render(
-          <AuthStateContext.Provider value={authState}>
-            <Router history={history}>
-              <UnAuthenticatedRouteGuard>
-                <Success />
-              </UnAuthenticatedRouteGuard>
-            </Router>
-          </AuthStateContext.Provider>
-        );
-
-        await waitFor(() => {
-          expect(history.location.pathname).toEqual(initialPath);
-          expect(getByTestId('success-component')).toBeVisible();
-        });
-      });
-    });
-
-    describe('authenticated', () => {
-      afterAll(() => {
-        cleanup();
-      });
-
-      it('redirects to the landing page', async () => {
-        const authState = getMockAuthState({
-          base: nullAuthState,
-          overrides: {
-            auth: {
-              isAuthenticated: true
-            }
-          }
-        });
-
-        const initialPath = '/auth/route';
-        const history = createMemoryHistory({ initialEntries: [initialPath] });
-
-        render(
-          <AuthStateContext.Provider value={authState}>
-            <Router history={history}>
-              <UnAuthenticatedRouteGuard>
-                <Success />
-              </UnAuthenticatedRouteGuard>
-            </Router>
-          </AuthStateContext.Provider>
-        );
-
-        const expectedPath = '/';
-
-        await waitFor(() => {
-          expect(history.location.pathname).toEqual(expectedPath);
         });
       });
     });

@@ -94,12 +94,12 @@ const phases = {
     logLevel: 'info',
     apiResponseValidationEnabled: true,
     databaseResponseValidationEnabled: true,
-    nodeOptions: '--max_old_space_size=2250', // 75% of memoryLimit (bytes)
+    nodeOptions: '--max_old_space_size=3000', // 75% of memoryLimit (bytes)
     cpuRequest: '50m',
     cpuLimit: '600m',
     memoryRequest: '100Mi',
-    memoryLimit: '3Gi',
-    replicas: (isStaticDeployment && '1') || '1',
+    memoryLimit: '4Gi',
+    replicas: '1',
     replicasMax: (isStaticDeployment && '2') || '1'
   },
   test: {
@@ -127,16 +127,16 @@ const phases = {
     tz: config.timezone.api,
     sso: config.sso.test,
     logLevel: 'info',
+    featureFlags: 'API_FF_SUBMIT_BIOHUB',
     apiResponseValidationEnabled: true,
     databaseResponseValidationEnabled: true,
-    featureFlags: 'API_FF_SUBMIT_BIOHUB',
-    nodeOptions: '--max_old_space_size=2250', // 75% of memoryLimit (bytes)
+    nodeOptions: '--max_old_space_size=3000', // 75% of memoryLimit (bytes)
     cpuRequest: '50m',
     cpuLimit: '1000m',
     memoryRequest: '100Mi',
-    memoryLimit: '3Gi',
+    memoryLimit: '4Gi',
     replicas: '2',
-    replicasMax: '4'
+    replicasMax: '2'
   },
   prod: {
     namespace: 'af2668-prod',
@@ -166,13 +166,13 @@ const phases = {
     logLevel: 'warn',
     apiResponseValidationEnabled: false,
     databaseResponseValidationEnabled: false,
-    nodeOptions: '--max_old_space_size=2250', // 75% of memoryLimit (bytes)
+    nodeOptions: '--max_old_space_size=6000', // 75% of memoryLimit (bytes)
     cpuRequest: '50m',
-    cpuLimit: '1000m',
+    cpuLimit: '2000m',
     memoryRequest: '100Mi',
-    memoryLimit: '3Gi',
+    memoryLimit: '8Gi',
     replicas: '2',
-    replicasMax: '4'
+    replicasMax: '2'
   }
 };
 

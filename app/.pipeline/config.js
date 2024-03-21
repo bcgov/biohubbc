@@ -116,7 +116,7 @@ const phases = {
     memoryRequest: '100Mi',
     memoryLimit: '500Mi',
     replicas: '2',
-    replicasMax: '3',
+    replicasMax: '2',
     backbonePublicApiHost: 'https://api-test-biohub-platform.apps.silver.devops.gov.bc.ca',
     biohubTaxonPath: '/api/taxonomy/taxon',
     biohubTaxonTsnPath: '/api/taxonomy/taxon/tsn'
@@ -139,11 +139,11 @@ const phases = {
     sso: config.sso.prod,
     featureFlags: 'APP_FF_SUBMIT_BIOHUB',
     cpuRequest: '50m',
-    cpuLimit: '500m',
+    cpuLimit: '1000m',
     memoryRequest: '100Mi',
-    memoryLimit: '500Mi',
+    memoryLimit: '1Gi',
     replicas: '2',
-    replicasMax: '3',
+    replicasMax: '2',
     backbonePublicApiHost: 'https://api-biohub-platform.apps.silver.devops.gov.bc.ca',
     biohubTaxonPath: '/api/taxonomy/taxon',
     biohubTaxonTsnPath: '/api/taxonomy/taxon/tsn'
