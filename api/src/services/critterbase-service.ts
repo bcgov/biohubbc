@@ -21,7 +21,7 @@ export interface ICritter {
   animal_id: string;
   sex: string;
   itis_tsn: number;
-  itis_scientific_name: number;
+  itis_scientific_name: string;
   critter_comment: string;
 }
 
