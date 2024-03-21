@@ -38,44 +38,71 @@ const request = require('request');
   // Express APP
   const app = express();
   // Getting Port
-  const port = process.env.APP_PORT || 7100;
+  const port = process.env.APP_PORT;
   // Resource path
   const resourcePath = path.resolve(__dirname, '../build');
   // Setting express static
   app.use(express.static(resourcePath));
 
+  /**
+   * Parses a valid feature flag string into an array of feature flag strings.
+   *
+   * @param {string} featureFlagsString
+   * @return {*}  {string[]}
+   */
+  const parseFeatureFlagsString = (featureFlagsString) => {
+    if (!featureFlagsString) {
+      return [];
+    }
+
+    return featureFlagsString.split(',');
+  };
+
   // App config
   app.use('/config', (_, resp) => {
-    const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
-    const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME || 'gblhvt';
+    const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL;
+    const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME;
 
     const config = {
-      API_HOST: process.env.REACT_APP_API_HOST || 'localhost',
-      CHANGE_VERSION: process.env.CHANGE_VERSION || 'NA',
-      NODE_ENV: process.env.NODE_ENV || 'development',
-      REACT_APP_NODE_ENV: process.env.REACT_APP_NODE_ENV || 'dev',
-      VERSION: `${process.env.VERSION || 'NA'}(build #${process.env.CHANGE_VERSION || 'NA'})`,
+      API_HOST: process.env.REACT_APP_API_HOST,
+      CHANGE_VERSION: process.env.CHANGE_VERSION,
+      NODE_ENV: process.env.NODE_ENV,
+      REACT_APP_NODE_ENV: process.env.REACT_APP_NODE_ENV,
+      VERSION: `${process.env.VERSION}(build #${process.env.CHANGE_VERSION})`,
       KEYCLOAK_CONFIG: {
         authority: process.env.REACT_APP_KEYCLOAK_HOST,
         realm: process.env.REACT_APP_KEYCLOAK_REALM,
         clientId: process.env.REACT_APP_KEYCLOAK_CLIENT_ID
       },
       SITEMINDER_LOGOUT_URL: process.env.REACT_APP_SITEMINDER_LOGOUT_URL,
-      MAX_UPLOAD_NUM_FILES: Number(process.env.REACT_APP_MAX_UPLOAD_NUM_FILES) || 10,
-      MAX_UPLOAD_FILE_SIZE: Number(process.env.REACT_APP_MAX_UPLOAD_FILE_SIZE) || 52428800,
+      /**
+       * File upload settings
+       */
+      MAX_UPLOAD_NUM_FILES: Number(process.env.REACT_APP_MAX_UPLOAD_NUM_FILES),
+      MAX_UPLOAD_FILE_SIZE: Number(process.env.REACT_APP_MAX_UPLOAD_FILE_SIZE),
       S3_PUBLIC_HOST_URL: `https://${OBJECT_STORE_URL}/${OBJECT_STORE_BUCKET_NAME}`,
-      BIOHUB_FEATURE_FLAG: process.env.REACT_APP_BIOHUB_FEATURE_FLAG === 'true',
-      BACKBONE_PUBLIC_API_HOST: process.env.REACT_APP_BACKBONE_PUBLIC_API_HOST || '',
-      BIOHUB_TAXON_PATH: process.env.REACT_APP_BIOHUB_TAXON_PATH || '',
-      BIOHUB_TAXON_TSN_PATH: process.env.REACT_APP_BIOHUB_TAXON_TSN_PATH || ''
+      /**
+       * BioHub settings
+       */
+      BACKBONE_PUBLIC_API_HOST: process.env.REACT_APP_BACKBONE_PUBLIC_API_HOST,
+      BIOHUB_TAXON_PATH: process.env.REACT_APP_BIOHUB_TAXON_PATH,
+      BIOHUB_TAXON_TSN_PATH: process.env.REACT_APP_BIOHUB_TAXON_TSN_PATH,
+      /**
+       * Feature flags
+       *
+       * Note: Recommend conforming to a consistent pattern when defining feature flags, to make feature flags easy to
+       * identify (ie: `[APP/API]_FF_<string>`)
+       */
+      FEATURE_FLAGS: parseFeatureFlagsString(process.env.REACT_APP_FEATURE_FLAGS)
     };
+
     resp.status(200).json(config);
   });
 
   // Health check
   app.use('/healthcheck', (_, resp) => {
     // Request server api
-    const host = process.env.REACT_APP_API_HOST || process.env.LOCAL_API_HOST || 'localhost';
+    const host = process.env.REACT_APP_API_HOST;
     request(`https://${host}/`, (err, res) => {
       if (err) {
         console.log(`Error: ${err}, host: ${host}`);

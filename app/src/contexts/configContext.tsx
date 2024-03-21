@@ -17,32 +17,33 @@ export interface IConfig {
   MAX_UPLOAD_NUM_FILES: number;
   MAX_UPLOAD_FILE_SIZE: number;
   S3_PUBLIC_HOST_URL: string;
-  BIOHUB_FEATURE_FLAG: boolean;
   BACKBONE_PUBLIC_API_HOST: string;
   BIOHUB_TAXON_PATH: string;
   BIOHUB_TAXON_TSN_PATH: string;
+  /**
+   * Used in conjunction with the feature flag guard (FeatureFlagGuard) to disable components.
+   *
+   * @type {string[]}
+   * @memberof IConfig
+   */
+  FEATURE_FLAGS: string[];
 }
 
-export const ConfigContext = React.createContext<IConfig | undefined>({
-  API_HOST: '',
-  CHANGE_VERSION: '',
-  NODE_ENV: '',
-  REACT_APP_NODE_ENV: '',
-  VERSION: '',
-  KEYCLOAK_CONFIG: {
-    authority: '',
-    realm: '',
-    clientId: ''
-  },
-  SITEMINDER_LOGOUT_URL: '',
-  MAX_UPLOAD_NUM_FILES: 10,
-  MAX_UPLOAD_FILE_SIZE: 52428800,
-  S3_PUBLIC_HOST_URL: '',
-  BIOHUB_FEATURE_FLAG: false,
-  BACKBONE_PUBLIC_API_HOST: '',
-  BIOHUB_TAXON_PATH: '',
-  BIOHUB_TAXON_TSN_PATH: ''
-});
+export const ConfigContext = React.createContext<IConfig | undefined>(undefined);
+
+/**
+ * Parses a valid feature flag string into an array of feature flag strings.
+ *
+ * @param {string} featureFlagsString
+ * @return {*}  {string[]}
+ */
+const parseFeatureFlagsString = (featureFlagsString: string): string[] => {
+  if (!featureFlagsString) {
+    return [];
+  }
+
+  return featureFlagsString.split(',');
+};
 
 /**
  * Return the app config based on locally set environment variables.
@@ -74,13 +75,25 @@ const getLocalConfig = (): IConfig => {
       clientId: process.env.REACT_APP_KEYCLOAK_CLIENT_ID || ''
     },
     SITEMINDER_LOGOUT_URL: process.env.REACT_APP_SITEMINDER_LOGOUT_URL || '',
+    /**
+     * File upload settings
+     */
     MAX_UPLOAD_NUM_FILES: Number(process.env.REACT_APP_MAX_UPLOAD_NUM_FILES) || 10,
     MAX_UPLOAD_FILE_SIZE: Number(process.env.REACT_APP_MAX_UPLOAD_FILE_SIZE) || 52428800,
     S3_PUBLIC_HOST_URL: ensureProtocol(`${OBJECT_STORE_URL}/${OBJECT_STORE_BUCKET_NAME}`, 'https://'),
-    BIOHUB_FEATURE_FLAG: process.env.REACT_APP_BIOHUB_FEATURE_FLAG === 'true',
+    /**
+     * BioHub settings
+     */
     BACKBONE_PUBLIC_API_HOST: process.env.REACT_APP_BACKBONE_PUBLIC_API_HOST || '',
     BIOHUB_TAXON_PATH: process.env.REACT_APP_BIOHUB_TAXON_PATH || '',
-    BIOHUB_TAXON_TSN_PATH: process.env.REACT_APP_BIOHUB_TAXON_TSN_PATH || ''
+    BIOHUB_TAXON_TSN_PATH: process.env.REACT_APP_BIOHUB_TAXON_TSN_PATH || '',
+    /**
+     * Feature flags
+     *
+     * Note: Recommend conforming to a consistent pattern when defining feature flags, to make feature flags easy to
+     * identify (ie: `[APP/API]_FF_<string>`)
+     */
+    FEATURE_FLAGS: parseFeatureFlagsString(process.env.REACT_APP_FEATURE_FLAGS || '')
   };
 };
 
