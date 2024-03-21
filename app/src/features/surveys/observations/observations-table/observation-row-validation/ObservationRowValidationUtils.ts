@@ -7,6 +7,14 @@ import {
   CBQuantitativeMeasurementTypeDefinition
 } from 'interfaces/useCritterApi.interface';
 
+/**
+ * Validates a given observation table row against the given measurement columns.
+ *
+ * @param {IObservationTableRow} row The observation table row to validate
+ * @param {string[]} measurementColumns A list of the measurement columns to validate
+ * @param {(tsn: number) => Promise<TSNMeasurement | null | undefined>} getTSNMeasurements A function that fetches measurement definitions from Critterbase based on the row itis_tsn value
+ * @returns {*} Promise<ObservationRowValidationError[]>
+ */
 export const validateObservationTableRowMeasurements = async (
   row: IObservationTableRow,
   measurementColumns: string[],
@@ -18,6 +26,7 @@ export const validateObservationTableRowMeasurements = async (
     return [];
   }
 
+  // Fetch measurement definitions for the provided itis_tsn
   const measurements = await getTSNMeasurements(Number(row.itis_tsn));
   if (!measurements) {
     return [
@@ -28,7 +37,7 @@ export const validateObservationTableRowMeasurements = async (
     ];
   }
 
-  // go through each measurement on the table and validate against he taxon
+  // go through each measurement on the table and validate against the measurement definition from Critterbase
   measurementColumns.forEach((measurementColumn) => {
     const data = row[measurementColumn];
     if (data) {
@@ -58,6 +67,7 @@ export const validateObservationTableRowMeasurements = async (
         }
       }
 
+      // A measurement column has data but no measurements were found for the itis_tsn
       if (!foundQualitative && !foundQuantitative) {
         measurementErrors.push({
           field: measurementColumn,
@@ -67,13 +77,18 @@ export const validateObservationTableRowMeasurements = async (
     }
   });
 
-  if (measurementErrors.length > 0) {
-    return measurementErrors;
-  } else {
-    return [];
-  }
+  return measurementErrors;
 };
 
+/**
+ * This validates if the provided option UUID exists within the given list of CBQualitativeOption.
+ * Returns null if the option is valid or an ObservationRowValidationError if it is not found
+ *
+ * @param {string} field The column key for the data being validated
+ * @param {string} value The options UUID to look for
+ * @param {CBQualitativeOption[]} options
+ * @returns {*} ObservationRowValidationError | null
+ */
 const _validateQualitativeMeasurement = (
   field: string,
   value: string,
@@ -91,6 +106,16 @@ const _validateQualitativeMeasurement = (
   return null;
 };
 
+/**
+ *  Validates if a given value is in between min and max values from a Quantitative Measurement definition in Critterbase.
+ *  Returns null if the value is valid or a ObservationRowValidationError describing that the value is out of the valid range.
+ *
+ * @param {string} field The column key for the data being validated
+ * @param {number} value The number to validate
+ * @param {number | null} minValue The min value provided by the measurement definition from Critterbase
+ * @param {number | null} maxValue The max value provided by the measurement definition from Critterbase
+ * @returns {*} ObservationRowValidationError | null
+ */
 const _validateQuantitativeMeasurement = (
   field: string,
   value: number,
@@ -122,7 +147,19 @@ const _validateQuantitativeMeasurement = (
   };
 };
 
-export const findMissingSamplingColumns = (row: IObservationTableRow, tableColumns: GridColDef[]) => {
+/**
+ * This function will validate sample site data is input correctly.
+ * If the Sampling Site is set, both method and period become required.
+ * If no Sampling Site is set, then no sampling columns are required and the data is valid.
+ *
+ * @param {IObservationTableRow} row The observation table row to validate
+ * @param {GridColDef[]} tableColumns Grid column definitions array. Used to find the column field
+ * @returns {*} ObservationRowValidationError | null
+ */
+export const findMissingSamplingColumns = (
+  row: IObservationTableRow,
+  tableColumns: GridColDef[]
+): ObservationRowValidationError[] => {
   const errors: ObservationRowValidationError[] = [];
   // if this row has survey_sample_site_id we need to validate that the other 2 sampling columns are also present
   if (row['survey_sample_site_id']) {
@@ -140,15 +177,23 @@ export const findMissingSamplingColumns = (row: IObservationTableRow, tableColum
   return errors;
 };
 
+/**
+ * This function will scan through the provided row and check if any of the required columns are missing (no data set).
+ * Any missing columns create a ObservationRowValidationError describing the missing column and returns that array.
+ *
+ * @param {IObservationTableRow} row The observation table row to validate
+ * @param {(keyof IObservationTableRow)[]} requiredColumns An array of required columns to look for
+ * @param {GridColDef[]} tableColumns Grid column definitions array. Used to find the column field
+ * @returns {*} ObservationRowValidationError[]
+ */
 export const findMissingColumns = (
   row: IObservationTableRow,
   requiredColumns: (keyof IObservationTableRow)[],
   tableColumns: GridColDef[]
-) => {
+): ObservationRowValidationError[] => {
   const errors: ObservationRowValidationError[] = [];
   requiredColumns.forEach((column) => {
     if (!row[column]) {
-      // uh oh, missing required column
       const header = tableColumns.find((tc) => tc.field === column)?.headerName;
       errors.push({ field: column, message: `Missing column: ${header}` });
     }
@@ -157,6 +202,15 @@ export const findMissingColumns = (
   return errors;
 };
 
+/**
+ * This function validates the given row for required columns, sampling columns and the date and time columns.
+ * An array of errors is returned containing any validation errors.
+ *
+ * @param {IObservationTableRow} row The observation row to validate
+ * @param {(keyof IObservationTableRow)[]} requiredColumns
+ * @param {GridColDef[]} tableColumns Grid column definitions for the table
+ * @returns {*} ObservationRowValidationError[]
+ */
 export const validateObservationTableRow = (
   row: IObservationTableRow,
   requiredColumns: (keyof IObservationTableRow)[],
