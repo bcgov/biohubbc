@@ -125,20 +125,12 @@ export type ICritterDetailedResponse = {
 
 export interface ICritterSimpleResponse {
   critter_id: string;
-  wlh_id: string;
-  animal_id: string;
+  wlh_id: string | null;
+  animal_id: string | null;
   sex: string;
-  //   taxon: string; // Deprecated
   itis_tsn: number;
   itis_scientific_name: string;
-  //TODO: Remove
-  /**
-   * These two properties are available in the detailed critter response.
-   * Business rules allowed multiple mortality records.
-   * mortality_timestamp == mortality[0].mortality_timestamp
-   */
-  //collection_units: ICollectionUnitResponse[]; // Deprecated - This can come back if needed though
-  //mortality_timestamp?: string; // Deprecated - This can comeback if needed through.
+  responsible_region_nr_id: string | null;
 }
 
 /**

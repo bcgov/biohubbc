@@ -429,6 +429,15 @@ const useSurveyApi = (axios: AxiosInstance) => {
       throw Error('Calling this with any amount other than 1 deployments currently unsupported.');
     }
     const flattened = { ...body, ...body.deployments[0] };
+
+    delete flattened.deployment_id;
+    delete flattened.deployments;
+    if (!flattened.device_model) {
+      delete flattened.device_model;
+    }
+
+    console.log(flattened);
+
     const { data } = await axios.post(
       `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`,
       flattened

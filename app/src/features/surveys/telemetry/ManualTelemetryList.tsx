@@ -32,12 +32,7 @@ import { datesSameNullable } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import { InferType } from 'yup';
 import { ANIMAL_FORM_MODE } from '../view/survey-animals/animal';
-import {
-  AnimalTelemetryDeviceSchema,
-  Device,
-  IAnimalDeployment,
-  IAnimalTelemetryDevice
-} from '../view/survey-animals/telemetry-device/device';
+import { AnimalTelemetryDeviceSchema, Device, IAnimalDeployment } from '../view/survey-animals/telemetry-device/device';
 import TelemetryDeviceForm from '../view/survey-animals/telemetry-device/TelemetryDeviceForm';
 import ManualTelemetryCard from './ManualTelemetryCard';
 
@@ -151,6 +146,8 @@ const ManualTelemetryList = () => {
   };
 
   const handleSubmit = async (data: AnimalDeployment) => {
+    console.log(data);
+
     if (formMode === ANIMAL_FORM_MODE.ADD) {
       // ADD NEW DEPLOYMENT
       await handleAddDeployment(data);
@@ -234,19 +231,27 @@ const ManualTelemetryList = () => {
   };
 
   const handleAddDeployment = async (data: AnimalDeployment) => {
-    const payload = data as IAnimalTelemetryDevice & { critter_id: string };
     try {
       const critter = critters?.find((a) => a.survey_critter_id === data.survey_critter_id);
 
       if (!critter) {
         throw new Error('Invalid critter data');
       }
-      data.critter_id = critter?.critter_id;
+
       await biohubApi.survey.addDeployment(
         surveyContext.projectId,
         surveyContext.surveyId,
         Number(data.survey_critter_id),
-        payload
+        //Being explicit here for simplicity.
+        {
+          critter_id: critter.critter_id,
+          device_id: data.device_id,
+          device_make: data.device_make ?? undefined,
+          frequency: data.frequency,
+          frequency_unit: data.frequency_unit,
+          device_model: data.device_model,
+          deployments: data.deployments
+        }
       );
       surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
       // success snack bar
