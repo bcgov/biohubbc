@@ -23,7 +23,7 @@ export const layerNameHandler: Record<string, any> = {
     if (!feature?.properties) {
       return 'Unparsable Feature';
     }
-    return `${feature.properties.CARIBOU_POPULATION_ID} - ${feature.properties.HERD_NAME}`;
+    return feature.properties.HERD_NAME;
   }
 };
 
@@ -105,14 +105,12 @@ export const layerContentHandlers: Record<string, any> = {
         return { tooltip: 'Unparsable Feature', content: [] };
       }
 
-      const tooltip = `${feature.properties.CARIBOU_POPULATION_ID} - ${feature.properties.HERD_NAME}`;
+      const tooltip = feature.properties.HERD_NAME;
 
       const content = (
         <>
-          <div key={`${feature.id}-region`}>
-            {`Caribou Population Unit: ${feature.properties.CARIBOU_POPULATION_ID}`}
-          </div>
           <div key={`${feature.id}-herd-name`}>{`Herd Name: ${feature.properties.HERD_NAME}`}</div>
+          <div key={`${feature.id}-herd-number`}>{`Herd Number: ${feature.properties.HERD_NUMBER}`}</div>
         </>
       );
 
