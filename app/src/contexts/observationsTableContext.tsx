@@ -15,7 +15,6 @@ import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import { ObservationsTableI18N } from 'constants/i18n';
 import { getSurveySessionStorageKey, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS } from 'constants/session-storage';
 import { DialogContext } from 'contexts/dialogContext';
-import { default as dayjs } from 'dayjs';
 import {
   getMeasurementColumns,
   isQualitativeMeasurementTypeDefinition,
@@ -24,7 +23,7 @@ import {
 import {
   validateObservationTableRow,
   validateObservationTableRowMeasurements
-} from 'features/surveys/observations/observations-table/validation/ValidationUtils';
+} from 'features/surveys/observations/observations-table/observation-row-validation/ObservationRowValidationUtils';
 import { APIError } from 'hooks/api/useAxios';
 import { IObservationTableRowToSave, SubcountToSave } from 'hooks/api/useObservationApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -449,100 +448,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     return tsnMeasurementMap[tsn];
   };
 
-  const _validateMeasurements = useCallback(
-    async (
-      row: IObservationTableRow,
-      measurementColumns: string[]
-    ): Promise<ObservationRowValidationError[] | null> => {
-      const measurementErrors: ObservationRowValidationError[] = [];
-      if (!row.itis_tsn && !measurementColumns.length) {
-        return null;
-      }
-
-      if (!row.itis_tsn && measurementColumns.length) {
-        return [{ field: 'itis_tsn', message: 'A taxon needs to be selected before adding measurements' }];
-      }
-
-      const measurements = await tsnMeasurements(Number(row.itis_tsn));
-      if (!measurements) {
-        return [
-          {
-            field: 'itis_tsn',
-            message: 'No valid measurements were found for this taxon. Please contact an administrator.'
-          }
-        ];
-      }
-
-      if (!measurementColumns) {
-        return null;
-      }
-
-      // go through each measurement on the table and validate against he taxon
-      measurementColumns.forEach((measurementColumn) => {
-        const data = row[measurementColumn];
-        if (data) {
-          const foundQualitative = measurements.qualitative.find((q) => q.taxon_measurement_id === measurementColumn);
-          if (foundQualitative) {
-            const foundOption = foundQualitative.options.find((op) => op.qualitative_option_id === String(data));
-
-            if (!foundOption) {
-              // found measurement, no option, no bueno
-              measurementErrors.push({
-                field: measurementColumn,
-                message: 'Invalid option selected for taxon.'
-              });
-            }
-          }
-
-          const foundQuantitative = measurements.quantitative.find((q) => q.taxon_measurement_id === measurementColumn);
-          if (foundQuantitative) {
-            const min_value = foundQuantitative.min_value;
-            const max_value = foundQuantitative.max_value;
-            const value = Number(data);
-
-            if (min_value && max_value) {
-              if (min_value <= value && value <= max_value) {
-                return true;
-              }
-            } else {
-              if (min_value !== null && min_value <= value) {
-                return true;
-              }
-
-              if (max_value !== null && value <= max_value) {
-                return true;
-              }
-
-              if (min_value === null && max_value === null) {
-                return true;
-              }
-            }
-
-            // Invalid
-            measurementErrors.push({
-              field: measurementColumn,
-              message: `Value provided is outside of the valid range ${min_value} < ${value} < ${max_value}`
-            });
-          }
-
-          if (!foundQualitative && !foundQuantitative) {
-            measurementErrors.push({
-              field: measurementColumn,
-              message: `Invalid measurement set for taxon.`
-            });
-          }
-        }
-      });
-
-      if (measurementErrors.length > 0) {
-        return measurementErrors;
-      } else {
-        return null;
-      }
-    },
-    [_getRowsWithEditedValues, _muiDataGridApiRef]
-  );
-
   /**
    * Validates all rows belonging to the table. Returns null if validation passes, otherwise
    * returns the validation model
@@ -580,76 +485,19 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         return nonMeasurementColumns.indexOf(String(tc.field)) < 0;
       })
       .map((item) => item.field);
-
+    const validation: ObservationTableValidationModel = {};
     for (const row of rowValues) {
-      console.log('HOT NEW VALIDATION');
+      // check standard required columns
       const standardColumnErrors = validateObservationTableRow(row, requiredColumns, tableColumns);
+
+      // check any measurement columns found
       const measurementErrors = await validateObservationTableRowMeasurements(row, measurementColumns, tsnMeasurements);
 
-      console.log('HOT NEW VALIDATION ERRORS', standardColumnErrors, measurementErrors);
+      const totalErrors = [...standardColumnErrors, ...measurementErrors];
+      if (totalErrors.length > 0) {
+        validation[row.id] = totalErrors;
+      }
     }
-
-    const validation = await rowValues.reduce(
-      async (tableModel: Promise<ObservationTableValidationModel>, row: IObservationTableRow) => {
-        let rowErrors: ObservationRowValidationError[] = [];
-
-        // Validate missing columns
-        const missingColumns: Set<keyof IObservationTableRow> = new Set(
-          requiredColumns.filter((column) => !row[column])
-        );
-        const missingSamplingColumns: (keyof IObservationTableRow)[] = samplingRequiredColumns.filter(
-          (column) => !row[column]
-        );
-        console.log(missingSamplingColumns);
-        console.log(row);
-        // If an observation is not an incidental record, then all sampling columns are required.
-        if (!missingSamplingColumns.includes('survey_sample_site_id')) {
-          // Record is non-incidental, namely one or more of its sampling columns is non-empty.
-          missingSamplingColumns.forEach((column) => missingColumns.add(column));
-
-          if (missingColumns.has('survey_sample_site_id')) {
-            // If sampling site is missing, then a sampling method may not be selected
-            missingColumns.add('survey_sample_method_id');
-          }
-
-          if (missingColumns.has('survey_sample_method_id')) {
-            // If sampling method is missing, then a sampling period may not be selected
-            missingColumns.add('survey_sample_period_id');
-          }
-        }
-
-        Array.from(missingColumns).forEach((field: keyof IObservationTableRow) => {
-          const columnName = tableColumns.find((column) => column.field === field)?.headerName ?? field;
-          rowErrors.push({ field, message: `Missing column: ${columnName}` });
-        });
-
-        // Validate date value
-        if (row.observation_date && !dayjs(row.observation_date).isValid()) {
-          rowErrors.push({ field: 'observation_date', message: 'Invalid date' });
-        }
-
-        // Validate time value
-        if (row.observation_time === 'Invalid date') {
-          rowErrors.push({ field: 'observation_time', message: 'Invalid time' });
-        }
-
-        if (measurementColumns.length > 0) {
-          const results = await _validateMeasurements(row, measurementColumns);
-          if (results) {
-            rowErrors = [...results, ...rowErrors];
-          }
-        }
-
-        if (rowErrors.length > 0) {
-          const waitedModel = await tableModel;
-          waitedModel[row.id] = rowErrors;
-          tableModel = Promise.resolve(waitedModel);
-        }
-
-        return tableModel;
-      },
-      Promise.resolve({})
-    );
 
     setValidationModel(validation);
 
