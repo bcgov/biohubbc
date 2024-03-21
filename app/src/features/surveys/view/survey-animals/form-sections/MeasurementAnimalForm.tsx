@@ -60,18 +60,23 @@ export const MeasurementAnimalForm = (
   const handleSave = async (values: ICreateCritterMeasurement) => {
     setLoading(true);
     try {
-      if (props.formMode === ANIMAL_FORM_MODE.ADD) {
-        isQualitative
+      if (isQualitative) {
+        delete values.measurement_quantitative_id;
+        delete values.value;
+
+        props.formMode === ANIMAL_FORM_MODE.ADD
           ? await cbApi.measurement.createQualitativeMeasurement(values)
-          : await cbApi.measurement.createQuantitativeMeasurement(values);
-        dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created measurement.` });
-      }
-      if (props.formMode === ANIMAL_FORM_MODE.EDIT) {
-        isQualitative
-          ? await cbApi.measurement.updateQualitativeMeasurement(values)
+          : await cbApi.measurement.updateQualitativeMeasurement(values);
+      } else {
+        delete values.measurement_qualitative_id;
+        delete values.qualitative_option_id;
+        values = { ...values, value: Number(values.value) };
+
+        props.formMode === ANIMAL_FORM_MODE.ADD
+          ? await cbApi.measurement.createQuantitativeMeasurement(values)
           : await cbApi.measurement.updateQuantitativeMeasurement(values);
-        dialog.setSnackbar({ open: true, snackbarMessage: `Successfully edited measurement.` });
       }
+      dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created measurement.` });
     } catch (err) {
       dialog.setSnackbar({ open: true, snackbarMessage: `Critter measurement request failed.` });
     } finally {

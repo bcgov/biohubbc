@@ -3,12 +3,26 @@ import { ICreateCritter } from 'features/surveys/view/survey-animals/animal';
 import { ICritterDetailedResponse, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 
 const useCritterApi = (axios: AxiosInstance) => {
-  const createCritter = async (payload: ICreateCritter) => {
+  /**
+   * Create a critter.
+   *
+   * @async
+   * @param {ICreateCritter} payload - Create critter payload.
+   * @returns {Promise<ICritterSimpleResponse>} Simple critterbase critter.
+   */
+  const createCritter = async (payload: ICreateCritter): Promise<ICritterSimpleResponse> => {
     const { data } = await axios.post(`/api/critterbase/critters/create`, payload);
     return data;
   };
 
-  const updateCritter = async (payload: ICreateCritter) => {
+  /**
+   * Update a critter.
+   *
+   * @async
+   * @param {ICraeteCritter} payload - Update critter payload.
+   * @returns {Promise<ICritterSimpleResponse>} Simple critterbase critter.
+   */
+  const updateCritter = async (payload: ICreateCritter): Promise<ICritterSimpleResponse> => {
     const { data } = await axios.patch(`/api/critterbase/critters/${payload.critter_id}`, payload);
     return data;
   };
@@ -20,10 +34,7 @@ const useCritterApi = (axios: AxiosInstance) => {
    * @param {string} critter_id - Critter identifier.
    * @returns {Promise<ICritterDetailedResponse>}
    */
-  const getDetailedCritter = async (critter_id?: string): Promise<ICritterDetailedResponse | undefined> => {
-    if (!critter_id) {
-      return;
-    }
+  const getDetailedCritter = async (critter_id: string): Promise<ICritterDetailedResponse> => {
     const { data } = await axios.get(`/api/critterbase/critters/${critter_id}?format=detailed`);
     return data;
   };
@@ -36,7 +47,7 @@ const useCritterApi = (axios: AxiosInstance) => {
    * @returns {Promise<ICritterSimpleResponse>}
    */
   const getMultipleCrittersByIds = async (critter_ids: string[]): Promise<ICritterSimpleResponse[]> => {
-    const { data } = await axios.post(`/api/critterbase/critters/`, { critter_ids });
+    const { data } = await axios.post(`/api/critterbase/critters`, { critter_ids });
     return data;
   };
 

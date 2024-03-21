@@ -11,7 +11,6 @@ import { useLookupApi } from './cb_api/useLookupApi';
 import { useMarkingApi } from './cb_api/useMarkingApi';
 import { useMeasurementApi } from './cb_api/useMeasurementApi';
 import { useMortalityApi } from './cb_api/useMortalityApi';
-// import { useMarkings } from './cb_api/useMarkings';
 
 /**
  * Returns a set of supported api methods.
