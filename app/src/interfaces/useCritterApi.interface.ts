@@ -77,17 +77,17 @@ export type IQuantitativeMeasurementResponse = {
   measurement_name: string;
 };
 
-type IMortalityResponse = {
+export type IMortalityResponse = {
   mortality_id: string;
   location_id: string | null;
   mortality_timestamp: string;
-  mortality_location: ILocationResponse;
+  location: ILocationResponse;
   proximate_cause_of_death_id: string | null;
   proximate_cause_of_death_confidence: string;
-  proximate_predated_by_itis_tsn: string | null;
+  proximate_predated_by_itis_tsn: number | null;
   ultimate_cause_of_death_id: string | null;
   ultimate_cause_of_death_confidence: string;
-  ultimate_predated_by_itis_tsn: string | null;
+  ultimate_predated_by_itis_tsn: number | null;
   mortality_comment: string | null;
 };
 

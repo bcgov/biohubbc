@@ -30,7 +30,10 @@ type FormLocationsPreviewProps<T> = {
   locations: IFormLocation<T>[];
 };
 
-const FormLocationPreview = <T,>({ projection = PROJECTION_MODE.WGS, locations }: FormLocationsPreviewProps<T>) => {
+export const FormLocationPreview = <T,>({
+  projection = PROJECTION_MODE.WGS,
+  locations
+}: FormLocationsPreviewProps<T>) => {
   const { setFieldValue, values } = useFormikContext<T>();
 
   const [markerToggle, setMarkerToggle] = useState<number | null>(null);

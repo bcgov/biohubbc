@@ -58,6 +58,13 @@ export interface ISpeciesAutocompleteFieldProps {
    */
   required?: boolean;
   /**
+   * If field is disabled.
+   *
+   * @type {boolean}
+   * @memberof ISpeciesAutocompleteFieldProps
+   */
+  disabled?: boolean;
+  /**
    * Clear the input value after a selection is made
    * Defaults to false
    *
@@ -113,6 +120,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
   return (
     <Autocomplete
       id={props.formikFieldName}
+      disabled={props.disabled}
       data-testid={props.formikFieldName}
       filterSelectedOptions
       noOptionsText="No matching options"
@@ -123,7 +131,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
       }}
       filterOptions={(item) => item}
       inputValue={inputValue}
-      onInputChange={(_, value, reason) => {
+      onInputChange={(_, _value, reason) => {
         if (props.clearOnSelect && reason === 'reset') {
           setInputValue('');
         }

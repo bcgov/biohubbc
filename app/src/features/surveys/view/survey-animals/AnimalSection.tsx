@@ -300,12 +300,12 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
               <EditDeleteStubCard
                 header={formatDate(new Date(mortality.mortality_timestamp))}
                 subHeader={formatSubHeader({
-                  Latitude: mortality.mortality_location.latitude,
-                  Longitude: mortality.mortality_location.longitude
+                  Latitude: mortality.location.latitude,
+                  Longitude: mortality.location.longitude
                 })}
                 onClickEdit={() => handleOpenEditForm(mortality)}
                 onClickDelete={async () => {
-                  // handleDelete(deleteMarking, 'marking');
+                  handleDelete(cbApi.mortality.deleteMortality, mortality.mortality_id, 'mortality');
                 }}
               />
             </Collapse>

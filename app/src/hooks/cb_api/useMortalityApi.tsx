@@ -2,7 +2,6 @@ import { AxiosInstance } from 'axios';
 import { ICreateCritterMortality } from 'features/surveys/view/survey-animals/animal';
 
 const useMortalityApi = (axios: AxiosInstance) => {
- 
   const createMortality = async (payload: ICreateCritterMortality) => {
     const { data } = await axios.post(`/api/critterbase/mortality/create`, payload);
     return data;

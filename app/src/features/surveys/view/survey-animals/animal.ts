@@ -185,42 +185,17 @@ export const CreateCritterCollectionUnitSchema = yup.object({
   collection_category_id: yup.string().required('Category is required')
 });
 
-// @TODO needs updating?
-export const AnimalMortalitySchema = yup.object({
-  mortality_id: yup.string(),
-
-  // TODO remove these, as they've been replaced with location
-  
-  // location_id: yup.string(),
-  // mortality_longitude: lonSchema.when('projection_mode', {
-  //   is: 'wgs',
-  //   then: lonSchema.required('Longitude is required')
-  // }),
-  // mortality_latitude: latSchema.when('projection_mode', {
-  //   is: 'wgs',
-  //   then: latSchema.required('Latitude is required')
-  // }),
-  // mortality_utm_northing: numSchema.when('projection_mode', {
-  //   is: 'utm',
-  //   then: numSchema.required('UTM Northing is required')
-  // }),
-  // mortality_utm_easting: numSchema.when('projection_mode', {
-  //   is: 'utm',
-  //   then: numSchema.required('UTM Easting is required')
-  // }),
-
+export const CreateCritterMortalitySchema = yup.object({
+  mortality_id: yup.string().optional(),
   location: LocationSchema.required(),
-
   mortality_timestamp: dateSchema.required('Mortality Date is required'),
-  mortality_coordinate_uncertainty: numSchema,
-  mortality_comment: yup.string(),
+  mortality_comment: yup.string().optional(),
   proximate_cause_of_death_id: yup.string().uuid().required(req),
   proximate_cause_of_death_confidence: yup.string().nullable(),
-  proximate_predated_by_itis_tsn: yup.string().uuid(),
-  ultimate_cause_of_death_id: yup.string().uuid(),
-  ultimate_cause_of_death_confidence: yup.string(),
-  ultimate_predated_by_itis_tsn: yup.string().uuid(),
-  projection_mode: yup.mixed().oneOf(['wgs', 'utm'])
+  proximate_predated_by_itis_tsn: yup.number().optional(),
+  ultimate_cause_of_death_id: yup.string().uuid().optional(),
+  ultimate_cause_of_death_confidence: yup.string().optional(),
+  ultimate_predated_by_itis_tsn: yup.number().optional()
 });
 
 export const CreateCritterFamilySchema = yup.object({
@@ -239,4 +214,4 @@ export type ICreateCritterMeasurement = InferType<typeof CreateCritterMeasuremen
 export type ICreateCritterCollectionUnit = InferType<typeof CreateCritterCollectionUnitSchema>;
 export type ICreateCritterCapture = InferType<typeof CreateCritterCaptureSchema>;
 export type ICreateCritterFamily = InferType<typeof CreateCritterFamilySchema>;
-export type ICreateCritterMortality = InferType<typeof AnimalMortalitySchema>;
+export type ICreateCritterMortality = InferType<typeof CreateCritterMortalitySchema>;
