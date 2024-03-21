@@ -68,6 +68,7 @@ PUT.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['surveyJobName'],
           properties: {
             surveyJobName: {

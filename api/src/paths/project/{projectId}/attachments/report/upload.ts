@@ -8,7 +8,7 @@ import { AttachmentService } from '../../../../../services/attachment-service';
 import { scanFileForVirus, uploadFileToS3 } from '../../../../../utils/file-utils';
 import { getLogger } from '../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/attachments/upload');
+const defaultLog = getLogger('/api/project/{projectId}/attachments/report/upload');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -53,6 +53,7 @@ POST.apiDoc = {
       'multipart/form-data': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['media', 'attachmentMeta'],
           properties: {
             media: {
@@ -61,6 +62,7 @@ POST.apiDoc = {
             },
             attachmentMeta: {
               type: 'object',
+              additionalProperties: false,
               required: ['title', 'year_published', 'authors', 'description'],
               properties: {
                 title: {
@@ -75,6 +77,7 @@ POST.apiDoc = {
                   type: 'array',
                   items: {
                     type: 'object',
+                    additionalProperties: false,
                     required: ['first_name', 'last_name'],
                     properties: {
                       first_name: {
@@ -103,6 +106,7 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             description: 'Result object',
             required: ['attachmentId', 'revision_count'],
             properties: {

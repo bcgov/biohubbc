@@ -61,6 +61,7 @@ POST.apiDoc = {
         schema: {
           title: 'Deploy device request object',
           type: 'object',
+          additionalProperties: false,
           properties: {
             critter_id: {
               type: 'string',
@@ -100,6 +101,7 @@ POST.apiDoc = {
           schema: {
             title: 'Deployment response object',
             type: 'object',
+            additionalProperties: false,
             properties: {
               message: {
                 type: 'string'
@@ -179,6 +181,7 @@ PATCH.apiDoc = {
         schema: {
           title: 'Deploy device request object',
           type: 'object',
+          additionalProperties: false,
           properties: {
             deployment_id: {
               type: 'string',
@@ -191,8 +194,7 @@ PATCH.apiDoc = {
               type: 'string',
               nullable: true
             }
-          },
-          additionalProperties: false
+          }
         }
       }
     }
@@ -205,6 +207,7 @@ PATCH.apiDoc = {
           schema: {
             title: 'Deployment response object',
             type: 'object',
+            additionalProperties: false,
             properties: {
               message: {
                 type: 'string'

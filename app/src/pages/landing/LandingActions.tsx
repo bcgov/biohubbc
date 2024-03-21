@@ -29,8 +29,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     gap: '0.5em'
   },
   heroButton: {
-    minWidth: '120px',
-    padding: '0.75em 1.5em',
+    minWidth: '175px',
+    padding: '1em 1.5em',
     color: theme.palette.primary.main,
     backgroundColor: '#fcba19',
     fontWeight: 700,
@@ -93,9 +93,6 @@ const LandingActions = () => {
     <Box className={classes.actionsContainer}>
       <UnAuthGuard>
         <>
-          <Typography>
-            To access this application, you must use a valid government-issued IDIR or BCeID account.
-          </Typography>
           <Box className={classes.heroActions}>
             <Button
               component="a"
@@ -107,6 +104,7 @@ const LandingActions = () => {
               Log In
             </Button>
           </Box>
+          <Typography>You need a valid government-issued IDIR or BCeID account to log in.</Typography>
           <Typography>
             Don't have an account? &zwnj;
             <a
@@ -131,7 +129,7 @@ const LandingActions = () => {
           )}
         </Typography>
         {mayMakeAccessRequest && (
-          <Typography variant="body2">You have not been granted permission to access this application.</Typography>
+          <Typography variant="body2">You have not yet been granted access to this application.</Typography>
         )}
         {isAwaitingAccessApproval && (
           <Alert
@@ -163,20 +161,6 @@ const LandingActions = () => {
               size="large"
               children={<>Request&nbsp;Access</>}
               data-testid="landing_page_request_access_button"
-            />
-          )}
-          {(hasAdministrativeRole || (!hasAdministrativeRole && hasProjectCreationRole)) && (
-            <Typography component="span">OR</Typography>
-          )}
-          {hasAdministrativeRole && (
-            <Button
-              component={Link}
-              to="/admin/users"
-              variant="contained"
-              className={classes.heroButton}
-              size="large"
-              children={<>Manage&nbsp;Users</>}
-              data-testid="landing_page_manage_users_button"
             />
           )}
           {!hasAdministrativeRole && hasProjectCreationRole && (

@@ -47,6 +47,7 @@ PATCH.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['roles'],
           properties: {
             roles: {

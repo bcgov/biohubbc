@@ -1,5 +1,6 @@
 import { mdiClose, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Box, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import Collapse from '@mui/material/Collapse';
@@ -54,7 +55,7 @@ export const SurveyFundingSourceFormInitialValues: ISurveyFundingSourceForm = {
 };
 
 export const SurveyFundingSourceFormYupSchema = yup.object().shape({
-  funding_sources: yup.array(SurveyFundingSourceYupSchema)
+  funding_sources: yup.array(SurveyFundingSourceYupSchema).isUniqueFundingSource('Funding sources must be unique')
 });
 
 /**
@@ -64,7 +65,7 @@ export const SurveyFundingSourceFormYupSchema = yup.object().shape({
  */
 const SurveyFundingSourceForm = () => {
   const formikProps = useFormikContext<IEditSurveyRequest>();
-  const { values, handleChange, handleSubmit } = formikProps;
+  const { values, handleChange, handleSubmit, errors } = formikProps;
 
   const biohubApi = useBiohubApi();
   const fundingSourcesDataLoader = useDataLoader(() => biohubApi.funding.getAllFundingSources());
@@ -139,6 +140,11 @@ const SurveyFundingSourceForm = () => {
                 );
               })}
             </TransitionGroup>
+            {errors.funding_sources && !Array.isArray(errors?.funding_sources) && (
+              <Box mt={3}>
+                <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.funding_sources}</Typography>
+              </Box>
+            )}
             <Button
               data-testid="funding-form-add-button"
               variant="outlined"

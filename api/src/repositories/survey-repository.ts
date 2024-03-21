@@ -512,31 +512,6 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * Get survey summary submission for a given survey id.
-   *
-   * @param {number} surveyId
-   * @return {*}  {(Promise<{ survey_summary_submission_id: number | null }>)}
-   * @memberof SurveyRepository
-   */
-  async getSurveySummarySubmission(surveyId: number): Promise<{ survey_summary_submission_id: number | null }> {
-    // Note: `max()` will always return a row, even if the table is empty. The value will be `null` in this case.
-    const sqlStatement = SQL`
-      SELECT
-        max(survey_summary_submission_id) as survey_summary_submission_id
-      FROM
-        survey_summary_submission
-      WHERE
-        survey_id = ${surveyId}
-      AND
-        delete_timestamp IS NULL;
-      `;
-
-    const response = await this.connection.sql<{ survey_summary_submission_id: number | null }>(sqlStatement);
-
-    return response.rows[0];
-  }
-
-  /**
    * Get Survey attachments data for a given surveyId
    *
    * @param {number} surveyId

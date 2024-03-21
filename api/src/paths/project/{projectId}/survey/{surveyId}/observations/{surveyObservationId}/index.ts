@@ -75,6 +75,7 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: [
               'survey_observation_id',
               'survey_id',
@@ -157,8 +158,7 @@ GET.apiDoc = {
                 type: 'integer',
                 minimum: 0
               }
-            },
-            additionalProperties: false
+            }
           }
         }
       }

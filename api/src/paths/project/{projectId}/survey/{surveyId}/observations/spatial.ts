@@ -34,6 +34,7 @@ export const GET: Operation = [
 
 export const surveyObservationsSupplementaryData: SchemaObject = {
   type: 'object',
+  additionalProperties: false,
   required: ['observationCount'],
   properties: {
     observationCount: {
@@ -47,6 +48,7 @@ export const surveyObservationsSupplementaryData: SchemaObject = {
           {
             description: 'A quantitative (number) measurement, with possible min/max constraint.',
             type: 'object',
+            additionalProperties: false,
             required: [
               'itis_tsn',
               'taxon_measurement_id',
@@ -83,12 +85,12 @@ export const surveyObservationsSupplementaryData: SchemaObject = {
                 type: 'string',
                 nullable: true
               }
-            },
-            additionalProperties: false
+            }
           },
           {
             description: 'A qualitative (string) measurement, with array of valid/accepted options',
             type: 'object',
+            additionalProperties: false,
             required: ['itis_tsn', 'taxon_measurement_id', 'measurement_name', 'measurement_desc', 'options'],
             properties: {
               itis_tsn: {
@@ -110,6 +112,7 @@ export const surveyObservationsSupplementaryData: SchemaObject = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   required: [
                     'taxon_measurement_id',
                     'qualitative_option_id',
@@ -135,18 +138,15 @@ export const surveyObservationsSupplementaryData: SchemaObject = {
                       type: 'string',
                       nullable: true
                     }
-                  },
-                  additionalProperties: false
+                  }
                 }
               }
-            },
-            additionalProperties: false
+            }
           }
         ]
       }
     }
-  },
-  additionalProperties: false
+  }
 };
 
 GET.apiDoc = {
@@ -184,24 +184,26 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             nullable: true,
             required: ['supplementaryObservationData', 'surveyObservationsGeometry'],
             properties: {
               supplementaryObservationData: {
                 type: 'object',
+                additionalProperties: false,
                 required: ['observationCount'],
                 properties: {
                   observationCount: {
                     type: 'integer',
                     minimum: 0
                   }
-                },
-                additionalProperties: false
+                }
               },
               surveyObservationsGeometry: {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   required: ['survey_observation_id', 'geometry'],
                   properties: {
                     survey_observation_id: {
@@ -210,12 +212,10 @@ GET.apiDoc = {
                     geometry: {
                       type: 'object'
                     }
-                  },
-                  additionalProperties: false
+                  }
                 }
               }
-            },
-            additionalProperties: false
+            }
           }
         }
       }

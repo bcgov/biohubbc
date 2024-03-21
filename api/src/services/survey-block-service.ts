@@ -1,5 +1,10 @@
 import { IDBConnection } from '../database/db';
-import { PostSurveyBlock, SurveyBlockRecord, SurveyBlockRepository } from '../repositories/survey-block-repository';
+import {
+  PostSurveyBlock,
+  SurveyBlockRecord,
+  SurveyBlockRecordWithCount,
+  SurveyBlockRepository
+} from '../repositories/survey-block-repository';
 import { DBService } from './db-service';
 import { SampleBlockService } from './sample-block-service';
 
@@ -15,10 +20,10 @@ export class SurveyBlockService extends DBService {
    * Gets Block Survey Records for a given survey id
    *
    * @param {number} surveyId
-   * @return {*} {Promise<SurveyBlockRecord[]>}
+   * @return {*} {Promise<SurveyBlockRecordWithCount[]>}
    * @returns
    */
-  async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockRecord[]> {
+  async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockRecordWithCount[]> {
     return this.surveyBlockRepository.getSurveyBlocksForSurveyId(surveyId);
   }
 

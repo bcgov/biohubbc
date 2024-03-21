@@ -73,12 +73,17 @@ PUT.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['sampleSite'],
           properties: {
             sampleSite: {
               type: 'object',
+              additionalProperties: false,
               required: ['name', 'description', 'methods', 'survey_sample_sites'],
               properties: {
+                survey_id: {
+                  type: 'integer'
+                },
                 name: {
                   type: 'string'
                 },
@@ -93,11 +98,21 @@ PUT.apiDoc = {
                   minItems: 1,
                   items: {
                     type: 'object',
-                    required: ['method_lookup_id', 'description', 'periods'],
+                    additionalProperties: false,
+                    required: ['description', 'periods'],
                     properties: {
+                      survey_sample_site_id: {
+                        type: 'integer',
+                        nullable: true
+                      },
+                      survey_sample_method_id: {
+                        type: 'integer',
+                        nullable: true
+                      },
                       method_lookup_id: {
                         type: 'integer',
-                        minimum: 1
+                        minimum: 1,
+                        nullable: true
                       },
                       description: {
                         type: 'string'
@@ -107,8 +122,21 @@ PUT.apiDoc = {
                         minItems: 1,
                         items: {
                           type: 'object',
+                          additionalProperties: false,
                           required: ['start_date', 'end_date'],
                           properties: {
+                            survey_sample_period_id: {
+                              type: 'integer',
+                              nullable: true
+                            },
+                            survey_sample_method_id: {
+                              type: 'integer',
+                              nullable: true
+                            },
+                            method_lookup_id: {
+                              type: 'integer',
+                              nullable: true
+                            },
                             start_date: {
                               type: 'string'
                             },
@@ -133,6 +161,7 @@ PUT.apiDoc = {
                   type: 'array',
                   items: {
                     type: 'object',
+                    additionalProperties: false,
                     required: ['survey_block_id'],
                     properties: {
                       survey_block_id: {
@@ -145,6 +174,7 @@ PUT.apiDoc = {
                   type: 'array',
                   items: {
                     type: 'object',
+                    additionalProperties: false,
                     required: ['survey_stratum_id'],
                     properties: {
                       survey_stratum_id: {
@@ -152,6 +182,10 @@ PUT.apiDoc = {
                       }
                     }
                   }
+                },
+                survey_sample_sites: {
+                  type: 'array',
+                  items: GeoJSONFeature as object
                 }
               }
             }

@@ -40,6 +40,7 @@ POST.apiDoc = {
           schema: {
             title: 'Administrative Activity Response Object',
             type: 'object',
+            additionalProperties: false,
             required: ['id', 'date'],
             properties: {
               id: {
@@ -87,6 +88,7 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: ['has_pending_access_request', 'has_one_or_more_project_roles'],
             properties: {
               has_pending_access_request: {

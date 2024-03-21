@@ -33,7 +33,7 @@ export const ProjectUserRoleYupSchema = yup.object().shape({
     )
     .min(1)
     .hasAtLeastOneValue(
-      'A minimum of one team member must be assigned the coordinator role.',
+      'There must be at least one person with the Coordinator role.',
       'project_role_names',
       PROJECT_ROLE.COORDINATOR
     )
@@ -142,7 +142,7 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
           sx={{
             maxWidth: '72ch'
           }}>
-          A minimum of one team member must be assigned the coordinator role.
+          There must be at least one person with the Coordinator role.
         </Typography>
         {errors?.['participants'] && !values.participants.length && (
           <Box mt={3}>
@@ -165,7 +165,7 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
             data-testid={'autocomplete-user-role-search'}
             filterSelectedOptions
             noOptionsText="No records found"
-            options={alphabetizeObjects(searchUserDataLoader.data, 'display_name')}
+            options={searchText.length > 2 ? alphabetizeObjects(searchUserDataLoader.data, 'display_name') : []}
             filterOptions={(options, state) => {
               const searchFilter = createFilterOptions<ISystemUser>({ ignoreCase: true });
               const unselectedOptions = options.filter(

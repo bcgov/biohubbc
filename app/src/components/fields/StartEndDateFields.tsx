@@ -15,8 +15,6 @@ interface IStartEndDateFieldsProps {
   endName: string;
   startRequired: boolean;
   endRequired: boolean;
-  startDateHelperText?: string;
-  endDateHelperText?: string;
 }
 
 const CalendarStartIcon = () => {
@@ -37,9 +35,7 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
     startName,
     endName,
     startRequired,
-    endRequired,
-    startDateHelperText,
-    endDateHelperText
+    endRequired
   } = props;
 
   const rawStartDateValue = get(values, startName);
@@ -72,7 +68,7 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
                 required: startRequired,
                 variant: 'outlined',
                 error: get(touched, startName) && Boolean(get(errors, startName)),
-                helperText: (get(touched, startName) && get(errors, startName)) || startDateHelperText,
+                helperText: get(touched, startName) && get(errors, startName),
                 inputProps: {
                   'data-testid': 'start_date'
                 },
@@ -111,7 +107,7 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
                 required: endRequired,
                 variant: 'outlined',
                 error: get(touched, endName) && Boolean(get(errors, endName)),
-                helperText: (get(touched, endName) && get(errors, endName)) || endDateHelperText,
+                helperText: get(touched, endName) && get(errors, endName),
                 inputProps: {
                   'data-testid': 'end_date'
                 },

@@ -38,7 +38,7 @@ const AllUserIdentitySources = [
 ];
 
 PUT.apiDoc = {
-  description: "Update a user's system access request and add any specified system roles to the user.",
+  description: 'Update a users system access request and add any specified system roles to the user.',
   tags: ['user'],
   security: [
     {
@@ -61,6 +61,7 @@ PUT.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['userGuid', 'userIdentifier', 'identitySource', 'displayName', 'email'],
           properties: {
             userGuid: {
