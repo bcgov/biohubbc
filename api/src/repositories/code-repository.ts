@@ -1,6 +1,7 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { BaseRepository } from './base-repository';
+import { QueryResult } from 'pg';
 
 export const ICodeWithDescription = z.object({
   id: z.number(),
@@ -475,7 +476,7 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICodeWithDescription);
 
     return response.rows;
   }
