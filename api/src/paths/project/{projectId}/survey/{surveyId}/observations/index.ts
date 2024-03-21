@@ -7,9 +7,18 @@ import {
   paginationResponseSchema
 } from '../../../../../../openapi/schemas/pagination';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { ObservationService } from '../../../../../../services/observation-service';
+import { CritterbaseService } from '../../../../../../services/critterbase-service';
+import {
+  InsertUpdateObservationsWithMeasurements,
+  ObservationService
+} from '../../../../../../services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
 import { ensureCompletePaginationOptions, makePaginationResponse } from '../../../../../../utils/pagination';
+import {
+  getCBMeasurementsFromTSN,
+  IMeasurementDataToValidate,
+  validateMeasurements
+} from '../../../../../../utils/xlsx-utils/worksheet-utils';
 import { ApiPaginationOptions } from '../../../../../../zod-schema/pagination';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation');
@@ -665,9 +674,48 @@ export function insertUpdateSurveyObservationsWithMeasurements(): RequestHandler
 
       const observationService = new ObservationService(connection);
 
-      const observationRows = req.body.surveyObservations;
+      const observationRows: InsertUpdateObservationsWithMeasurements[] = req.body.surveyObservations;
 
-      await observationService.insertUpdateSurveyObservationsWithMeasurements(surveyId, observationRows);
+      const critterBaseService = new CritterbaseService({
+        keycloak_guid: req['system_user']?.user_guid,
+        username: req['system_user']?.user_identifier
+      });
+
+      // Fetch measurement definitions from CritterBase
+      const tsns = observationRows.map((item: any) => String(item.standardColumns.itis_tsn));
+      const tsnMeasurementsMap = await getCBMeasurementsFromTSN(tsns, critterBaseService);
+
+      // Map observation subcount data into objects to a IMeasurementDataToValidate array
+      const measurementsToValidate: IMeasurementDataToValidate[] = observationRows.flatMap(
+        (item: InsertUpdateObservationsWithMeasurements) => {
+          return item.subcounts.flatMap((subcount) => {
+            const qualitativeValues = subcount.qualitative.map((qualitative) => {
+              return {
+                tsn: String(item.standardColumns.itis_tsn),
+                measurement_name: qualitative.measurement_id,
+                measurement_value: qualitative.measurement_option_id
+              };
+            });
+
+            const quantitativeValues: IMeasurementDataToValidate[] = subcount.quantitative.map((quantitative) => {
+              return {
+                tsn: String(item.standardColumns.itis_tsn),
+                measurement_name: quantitative.measurement_id,
+                measurement_value: quantitative.measurement_value
+              };
+            });
+
+            return [...qualitativeValues, ...quantitativeValues];
+          });
+        }
+      );
+
+      // Validate measurement data against fetched measurement definition
+      if (!validateMeasurements(measurementsToValidate, tsnMeasurementsMap)) {
+        throw new Error('Failed to save observation data, measurement values failed validation.');
+      }
+
+      await observationService.insertUpdateSurveyObservationsWithMeasurements(surveyId, []);
 
       await connection.commit();
 

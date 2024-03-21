@@ -333,7 +333,9 @@ export function validateMeasurements(
         // find the correct measurement
         if (measurements.qualitative.length > 0) {
           const measurement = measurements.qualitative.find(
-            (measurement) => measurement.measurement_name.toLowerCase() === item.measurement_name.toLowerCase()
+            (measurement) =>
+              measurement.measurement_name.toLowerCase() === item.measurement_name.toLowerCase() ||
+              measurement.taxon_measurement_id === item.measurement_name
           );
           if (measurement) {
             return isQualitativeValueValid(item.measurement_value, measurement);
@@ -342,7 +344,9 @@ export function validateMeasurements(
 
         if (measurements.quantitative.length > 0) {
           const measurement = measurements.quantitative.find(
-            (measurement) => measurement.measurement_name.toLowerCase() === item.measurement_name.toLowerCase()
+            (measurement) =>
+              measurement.measurement_name.toLowerCase() === item.measurement_name.toLowerCase() ||
+              measurement.taxon_measurement_id === item.measurement_name
           );
           if (measurement) {
             return isQuantitativeValueValid(Number(item.measurement_value), measurement);
@@ -479,16 +483,23 @@ export async function getCBMeasurementsFromWorksheet(
   critterBaseService: CritterbaseService,
   sheet = 'Sheet1'
 ): Promise<TsnMeasurementMap> {
-  const tsnMeasurements: TsnMeasurementMap = {};
   const rows = getWorksheetRowObjects(xlsxWorksheets[sheet]);
+  const tsns = rows.map((row) => String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']));
+  return getCBMeasurementsFromTSN(tsns, critterBaseService);
+}
 
+export async function getCBMeasurementsFromTSN(
+  tsns: string[],
+  critterBaseService: CritterbaseService
+): Promise<TsnMeasurementMap> {
+  const tsnMeasurements: TsnMeasurementMap = {};
   try {
-    for (const row of rows) {
-      const tsn = String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']);
+    for (const tsn of tsns) {
       if (!tsnMeasurements[tsn]) {
         // TODO: modify Critter Base to accept multiple TSN at once
         const measurements = await critterBaseService.getTaxonMeasurements(tsn);
         if (!measurements) {
+          throw `No measurements for tsn: ${tsn}`;
           // TODO: Any data for a TSN that has no measurements is invalid and should reject the uploaded CSV
         }
 
@@ -499,7 +510,6 @@ export async function getCBMeasurementsFromWorksheet(
     getLogger('utils/xlsx-utils').error({ label: 'getCBMeasurementsFromWorksheet', message: 'error', error });
     throw new ApiGeneralError('Error connecting to the Critterbase API');
   }
-
   return tsnMeasurements;
 }
 
