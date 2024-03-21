@@ -97,23 +97,6 @@ export const ProjectRoleGuard = (props: PropsWithChildren<IProjectRoleGuardProps
 };
 
 /**
- * This function checks if the logged in user has any of the passed in roles
- *
- * @param roles
- * @returns {*} boolean
- */
-export const HasProjectOrSystemRole = (roles: IProjectRoleGuardProps): boolean => {
-  const { validProjectRoles, validSystemRoles, validProjectPermissions } = roles;
-  const projectAuthStateContext = useContext(ProjectAuthStateContext);
-
-  return (
-    projectAuthStateContext.hasSystemRole(validSystemRoles) ||
-    projectAuthStateContext.hasProjectRole(validProjectRoles) ||
-    projectAuthStateContext.hasProjectPermission(validProjectPermissions)
-  );
-};
-
-/**
  * Renders `props.children` only if the user is authenticated.
  *
  * @param {*} props

@@ -54,68 +54,6 @@ describe.skip('ProjectPage', () => {
     cleanup();
   });
 
-  it.skip('renders a spinner if no project is loaded', () => {
-    const { asFragment } = render(
-      <DialogContextProvider>
-        <Router history={history}>
-          <ProjectPage />
-        </Router>
-      </DialogContextProvider>
-    );
-
-    expect(asFragment()).toMatchSnapshot();
-  });
-
-  it.skip('renders project page when project is loaded (project is active)', async () => {
-    mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
-      activity: [{ id: 1, name: 'activity 1' }]
-    } as any);
-
-    const { asFragment, findByText } = render(
-      <DialogContextProvider>
-        <Router history={history}>
-          <ProjectPage />
-        </Router>
-      </DialogContextProvider>
-    );
-
-    const projectHeaderText = await findByText('Test Project Name', { selector: 'h1 span' });
-    expect(projectHeaderText).toBeVisible();
-
-    await waitFor(() => {
-      expect(asFragment()).toMatchSnapshot();
-    });
-  });
-
-  it.skip('renders project page when project is loaded (project is completed)', async () => {
-    mockUseApi.project.getProjectForView.mockResolvedValue({
-      ...getProjectForViewResponse,
-      projectData: {
-        ...getProjectForViewResponse.projectData,
-        project: { ...getProjectForViewResponse.projectData.project, completion_status: 'Completed' }
-      }
-    });
-    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
-      activity: [{ id: 1, name: 'activity 1' }]
-    } as any);
-
-    const { asFragment, findByText } = render(
-      <DialogContextProvider>
-        <Router history={history}>
-          <ProjectPage />
-        </Router>
-      </DialogContextProvider>
-    );
-
-    const projectHeaderText = await findByText('Test Project Name', { selector: 'h1 span' });
-    expect(projectHeaderText).toBeVisible();
-
-    await waitFor(() => {
-      expect(asFragment()).toMatchSnapshot();
-    });
-  });
-
   it.skip('deletes project and takes user to the projects list page when user is a system administrator', async () => {
     mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
@@ -290,34 +228,5 @@ describe.skip('ProjectPage', () => {
     expect(projectHeaderText).toBeVisible();
 
     expect(queryByTestId('delete-project-button')).toBeNull();
-  });
-
-  it('renders correctly with no end date', async () => {
-    mockUseApi.project.getProjectForView.mockResolvedValue({
-      ...getProjectForViewResponse,
-      projectData: {
-        ...getProjectForViewResponse.projectData,
-        project: {
-          ...getProjectForViewResponse.projectData.project,
-          end_date: null as unknown as string
-        }
-      }
-    });
-    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
-      activity: [{ id: 1, name: 'activity 1' }]
-    } as any);
-
-    const { asFragment, findByText } = render(
-      <Router history={history}>
-        <ProjectPage />
-      </Router>
-    );
-
-    const projectHeaderText = await findByText('Test Project Name', { selector: 'h1 span' });
-    expect(projectHeaderText).toBeVisible();
-
-    await waitFor(() => {
-      expect(asFragment()).toMatchSnapshot();
-    });
   });
 });

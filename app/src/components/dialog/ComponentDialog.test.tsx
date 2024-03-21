@@ -24,18 +24,6 @@ const renderContainer = ({ dialogTitle, open = true }: { dialogTitle: string; op
 };
 
 describe('ComponentDialog', () => {
-  it.skip('matches the snapshot when not open', () => {
-    const { baseElement } = renderContainer({ dialogTitle: 'this is a test', open: false });
-
-    expect(baseElement).toMatchSnapshot();
-  });
-
-  it.skip('matches snapshot when open', () => {
-    const { baseElement } = renderContainer({ dialogTitle: 'this is a test' });
-
-    expect(baseElement).toMatchSnapshot();
-  });
-
   it('calls the onClose prop when `Close` button is clicked', async () => {
     const { findByText } = renderContainer({ dialogTitle: 'this is a test' });
 

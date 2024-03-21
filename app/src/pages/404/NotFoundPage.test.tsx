@@ -6,16 +6,6 @@ import NotFoundPage from './NotFoundPage';
 const history = createMemoryHistory();
 
 describe('NotFoundPage', () => {
-  it.skip('renders correctly', () => {
-    const { asFragment } = render(
-      <Router history={history}>
-        <NotFoundPage />
-      </Router>
-    );
-
-    expect(asFragment()).toMatchSnapshot();
-  });
-
   it('takes the user home when they click the return home button', () => {
     const { getByText } = render(
       <Router history={history}>
