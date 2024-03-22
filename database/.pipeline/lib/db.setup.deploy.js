@@ -14,24 +14,24 @@ const {
 const dbSetupDeploy = async (settings) => {
   const phases = settings.phases;
   const options = settings.options;
-  const phase = settings.options.env;
+  const env = settings.options.env;
+  const phase = settings.options.phase;
 
-  const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
+  const oc = new OpenShiftClientX(Object.assign({ namespace: phases[env][phase].NAMESPACE }, options));
 
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../templates'));
 
-  const changeId = phases[phase].changeId;
-  const isName = `${phases[phase].name}-setup`;
-  const instance = `${isName}-${changeId}`;
-  const isVersion = `${phases[phase].tag}-setup`;
-  const imageStreamName = `${isName}:${isVersion}`;
-  const dbName = `${phases[phase].name}-postgresql${phases[phase].suffix}`;
+  const IMAGE_NAME = `${phases[env][phase].NAME}-setup`;
+  const INSTANCE = `${IMAGE_NAME}-${phases[env][phase].CHANGE_ID}`;
+  const IMAGE_VERSION = `${phases[env][phase].TAG}-setup`;
+  const IMAGESTREAM_NAME = `${IMAGE_NAME}:${IMAGE_VERSION}`;
+  const DB_SERVICE_NAME = `${phases[env][phase].NAME}-postgresql${phases[env][phase].SUFFIX}`;
 
   const objects = [];
   const imageStreamObjects = [];
 
   // Clean existing image
-  await checkAndClean(`istag/${imageStreamName}`, 10, 5, 0, oc).catch(() => {
+  await checkAndClean(`istag/${IMAGESTREAM_NAME}`, 10, 5, 0, oc).catch(() => {
     // Ignore errors, nothing to clean
   });
 
@@ -39,54 +39,61 @@ const dbSetupDeploy = async (settings) => {
   imageStreamObjects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.setup.is.yaml`, {
       param: {
-        NAME: `${isName}`
+        NAME: `${IMAGE_NAME}`
       }
     })
   );
 
-  oc.applyRecommendedLabels(imageStreamObjects, isName, phase, `${changeId}`, instance);
-  oc.importImageStreams(imageStreamObjects, isVersion, phases.build.namespace, phases.build.tag);
+  oc.applyRecommendedLabels(imageStreamObjects, IMAGE_NAME, env, phases[env][phase].CHANGE_ID, INSTANCE);
+  oc.importImageStreams(imageStreamObjects, IMAGE_VERSION, phases[env]['build'].NAMESPACE, phases[env]['build'].TAG);
 
   // Get database setup image stream
-  const fetchedImageStreams = oc.get(`istag/${imageStreamName}`) || [];
+  const fetchedImageStreams = oc.get(`istag/${IMAGESTREAM_NAME}`) || [];
 
   if (!fetchedImageStreams.length) {
-    console.log('Unable to fetch Database image reference for use in database setup deployment');
+    console.debug('Unable to fetch Database image reference for use in database setup deployment');
     process.exit(0);
   }
 
   const dbSetupImageStream = fetchedImageStreams[0];
 
-  const name = `${isName}${phases[phase].suffix}`;
+  const NAME = `${IMAGE_NAME}${phases[env][phase].SUFFIX}`;
 
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.setup.dc.yaml`, {
       param: {
-        NAME: name,
-        SUFFIX: phases[phase].suffix,
-        VERSION: phases[phase].tag,
-        CHANGE_ID: changeId,
-        NODE_ENV: phases[phase].nodeEnv,
-        DB_SERVICE_NAME: dbName,
-        DB_SCHEMA: 'biohub',
-        DB_SCHEMA_DAPI_V1: 'biohub_dapi_v1',
+        NAME: NAME,
+        SUFFIX: phases[env][phase].SUFFIX,
+        VERSION: phases[env][phase].TAG,
+        CHANGE_ID: phases[env][phase].CHANGE_ID,
+        NODE_ENV: phases[env][phase].NODE_ENV,
+        DB_SERVICE_NAME: DB_SERVICE_NAME,
+        DB_SCHEMA: phases[env][phase].DB_SCHEMA,
+        DB_SCHEMA_DAPI_V1: phases[env][phase].DB_SCHEMA_DAPI_V1,
         IMAGE: dbSetupImageStream.image.dockerImageReference,
-        CPU_REQUEST: '50m',
-        CPU_LIMIT: '1000m',
-        MEMORY_REQUEST: '100Mi',
-        MEMORY_LIMIT: '1.5Gi'
+        // Development Seeding
+        SEED_PROJECT_USER_IDENTIFIER: phases[env][phase].SEED_PROJECT_USER_IDENTIFIER,
+        SEED_NUM_PROJECTS: phases[env][phase].SEED_NUM_PROJECTS,
+        SEED_NUM_SURVEYS_PER_PROJECT: phases[env][phase].SEED_NUM_SURVEYS_PER_PROJECT,
+        SEED_NUM_OBSERVATIONS_PER_SURVEY: phases[env][phase].SEED_NUM_OBSERVATIONS_PER_SURVEY,
+        SEED_NUM_SUBCOUNTS_PER_OBSERVATION: phases[env][phase].SEED_NUM_SUBCOUNTS_PER_OBSERVATION,
+        // Openshift Resources
+        CPU_REQUEST: phases[env][phase].CPU_REQUEST,
+        CPU_LIMIT: phases[env][phase].CPU_LIMIT,
+        MEMORY_REQUEST: phases[env][phase].MEMORY_REQUEST,
+        MEMORY_LIMIT: phases[env][phase].MEMORY_LIMIT
       }
     })
   );
 
   // Clean existing setup pod
-  await checkAndClean(`pod/${name}`, 10, 5, 0, oc).catch(() => {
+  await checkAndClean(`pod/${NAME}`, 10, 5, 0, oc).catch(() => {
     // Ignore errors, nothing to clean
   });
 
   // Wait to confirm if the db pod deployed successfully
   await waitForResourceToMeetCondition(
-    () => getResourceByRaw(`name=${dbName}`, 'pod', settings, oc),
+    () => getResourceByRaw(`name=${DB_SERVICE_NAME}`, 'pod', settings, oc),
     isResourceRunning,
     30,
     5,
@@ -94,11 +101,11 @@ const dbSetupDeploy = async (settings) => {
   );
 
   // Deploy the db setup pod
-  oc.applyRecommendedLabels(objects, isName, phase, `${changeId}`, instance);
-  await oc.applyAndDeploy(objects, phases[phase].instance);
+  oc.applyRecommendedLabels(objects, IMAGE_NAME, env, phases[env][phase].CHANGE_ID, INSTANCE);
+  await oc.applyAndDeploy(objects, phases[env][phase].INSTANCE);
 
   // Wait to confirm if the db setup pod deployed successfully
-  await waitForResourceToMeetCondition(() => getResourceByName(`pod/${name}`, oc), isResourceComplete, 30, 5, 0);
+  await waitForResourceToMeetCondition(() => getResourceByName(`pod/${NAME}`, oc), isResourceComplete, 30, 5, 0);
 };
 
 module.exports = { dbSetupDeploy };

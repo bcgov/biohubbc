@@ -1,120 +1,116 @@
 'use strict';
 
-let options = require('pipeline-cli').Util.parseArguments();
+const PipelineCli = require('pipeline-cli');
+const { processOptions } = require('./utils/utils');
 
-// The root config for common values
-const config = require('../../.config/config.json');
+// Options passed in from the git action
+const rawOptions = PipelineCli.Util.parseArguments();
 
-const name = config.module.db;
+const options = processOptions(rawOptions);
 
-const version = config.version;
+// Get pull-request number from git action '--pr' arg
+const changeId = options.pr;
 
-const changeId = options.pr; // pull-request number or branch name
+// Get branch name from the git action '--branch' arg
+const branch = options.branch || null;
 
-// A static deployment is when the deployment is updating dev, test, or prod (rather than a temporary PR)
-// See `--type=static` in the `deployStatic.yml` git workflow
-const isStaticDeployment = options.type === 'static';
+// Get pipeline config map from git action '--config' arg
+const pipelineConfigMapString = options.config;
+const pipelineConfigMap = JSON.parse(pipelineConfigMapString);
 
-const deployChangeId = (isStaticDeployment && 'deploy') || changeId;
-const branch = (isStaticDeployment && options.branch) || null;
-const tag = (branch && `build-${version}-${changeId}-${branch}`) || `build-${version}-${changeId}`;
-
-const dbSetupDockerfilePath = './.docker/db/Dockerfile.setup';
-
-const processOptions = (options) => {
-  const result = { ...options };
-
-  // Check git
-  if (!result.git.url.includes('.git')) {
-    result.git.url = `${result.git.url}.git`;
-  }
-
-  if (!result.git.http_url.includes('.git')) {
-    result.git.http_url = `${result.git.http_url}.git`;
-  }
-
-  // Fixing repo
-  if (result.git.repository.includes('/')) {
-    const last = result.git.repository.split('/').pop();
-    const final = last.split('.')[0];
-    result.git.repository = final;
-  }
-
-  return result;
-};
-
-options = processOptions(options);
-
+/**
+ * The pipeline settings for the Database and Database Setup.
+ *
+ * The top-level keys are the pipeline environments (e.g. pr, dev, test, prod).
+ * - This is specified by setting the '--env' arg in the git action.
+ *
+ * The second-level keys are the pipeline phases (e.g. build, deploy).
+ * - This is specified by setting the '--phase' arg in the git action.
+ */
 const phases = {
-  build: {
-    namespace: 'af2668-tools',
-    name: `${name}`,
-    phase: 'build',
-    changeId: changeId,
-    suffix: `-build-${changeId}`,
-    instance: `${name}-build-${changeId}`,
-    version: `${version}-${changeId}`,
-    tag: tag,
-    tz: config.timezone.db,
-    branch: branch,
-    dbSetupDockerfilePath: dbSetupDockerfilePath
+  pr: {
+    build: {
+      ...pipelineConfigMap.database.pr.build,
+      NAME: pipelineConfigMap.module.db,
+      CHANGE_ID: changeId,
+      SUFFIX: `-build-${changeId}`,
+      INSTANCE: `${pipelineConfigMap.module.db}-build-${changeId}`,
+      VERSION: `${pipelineConfigMap.version}-${changeId}`,
+      TAG: `build-${pipelineConfigMap.version}-${changeId}`,
+      BRANCH: options.git.ref
+    },
+    deploy: {
+      ...pipelineConfigMap.database.pr.deploy,
+      NAME: pipelineConfigMap.module.db,
+      CHANGE_ID: changeId,
+      SUFFIX: `-dev-${changeId}`,
+      INSTANCE: `${pipelineConfigMap.module.db}-pr-${changeId}`,
+      VERSION: `pr-${changeId}`,
+      TAG: `dev-${pipelineConfigMap.version}-${changeId}`
+    }
   },
   dev: {
-    namespace: 'af2668-dev',
-    name: `${name}`,
-    phase: 'dev',
-    changeId: deployChangeId,
-    suffix: `-dev-${deployChangeId}`,
-    instance: `${name}-dev-${deployChangeId}`,
-    version: `${deployChangeId}-${changeId}`,
-    tag: `dev-${version}-${deployChangeId}`,
-    nodeEnv: 'development',
-    tz: config.timezone.db,
-    dbSetupDockerfilePath: dbSetupDockerfilePath,
-    volumeCapacity: (isStaticDeployment && '3Gi') || '500Mi',
-    cpuRequest: '50m',
-    cpuLimit: '600m',
-    memoryRequest: '100Mi',
-    memoryLimit: '4Gi',
-    replicas: '1'
+    build: {
+      ...pipelineConfigMap.database.dev.build,
+      NAME: pipelineConfigMap.module.db,
+      CHANGE_ID: changeId,
+      SUFFIX: `-build-${changeId}`,
+      INSTANCE: `${pipelineConfigMap.module.db}-build-${changeId}`,
+      VERSION: `${pipelineConfigMap.version}-${changeId}`,
+      TAG: `build-${pipelineConfigMap.version}-${changeId}-${branch}`,
+      BRANCH: branch
+    },
+    deploy: {
+      ...pipelineConfigMap.database.dev.deploy,
+      NAME: pipelineConfigMap.module.db,
+      CHANGE_ID: 'deploy',
+      SUFFIX: `-dev-deploy`,
+      INSTANCE: `${pipelineConfigMap.module.db}-dev-deploy`,
+      VERSION: `deploy-${changeId}`,
+      TAG: `dev-${pipelineConfigMap.version}-deploy`
+    }
   },
   test: {
-    namespace: 'af2668-test',
-    name: `${name}`,
-    phase: 'test',
-    changeId: deployChangeId,
-    suffix: `-test`,
-    instance: `${name}-test`,
-    version: `${version}`,
-    tag: `test-${version}`,
-    nodeEnv: 'production',
-    tz: config.timezone.db,
-    dbSetupDockerfilePath: dbSetupDockerfilePath,
-    volumeCapacity: '20Gi',
-    cpuRequest: '50m',
-    cpuLimit: '2000m',
-    memoryRequest: '100Mi',
-    memoryLimit: '5Gi',
-    replicas: '1'
+    build: {
+      ...pipelineConfigMap.database.test.build,
+      NAME: pipelineConfigMap.module.db,
+      CHANGE_ID: changeId,
+      SUFFIX: `-build-${changeId}`,
+      INSTANCE: `${pipelineConfigMap.module.db}-build-${changeId}`,
+      VERSION: `${pipelineConfigMap.version}-${changeId}`,
+      TAG: `build-${pipelineConfigMap.version}-${changeId}-${branch}`,
+      BRANCH: branch
+    },
+    deploy: {
+      ...pipelineConfigMap.database.test.deploy,
+      NAME: pipelineConfigMap.module.db,
+      CHANGE_ID: 'deploy',
+      SUFFIX: `-test`,
+      INSTANCE: `${pipelineConfigMap.module.db}-test`,
+      VERSION: `deploy-${changeId}`,
+      TAG: `test-${pipelineConfigMap.version}`
+    }
   },
   prod: {
-    namespace: 'af2668-prod',
-    name: `${name}`,
-    phase: 'prod',
-    changeId: deployChangeId,
-    suffix: `-prod`,
-    instance: `${name}-prod`,
-    version: `${version}`,
-    tag: `prod-${version}`,
-    nodeEnv: 'production',
-    tz: config.timezone.db,
-    dbSetupDockerfilePath: dbSetupDockerfilePath,
-    volumeCapacity: '20Gi',
-    cpuRequest: '50m',
-    cpuLimit: '4000m',
-    memoryRequest: '100Mi',
-    memoryLimit: '10Gi',
-    replicas: '1'
+    build: {
+      ...pipelineConfigMap.database.prod.build,
+      NAME: pipelineConfigMap.module.db,
+      CHANGE_ID: changeId,
+      SUFFIX: `-build-${changeId}`,
+      INSTANCE: `${pipelineConfigMap.module.db}-build-${changeId}`,
+      VERSION: `${pipelineConfigMap.version}-${changeId}`,
+      TAG: `build-${pipelineConfigMap.version}-${changeId}-${branch}`,
+      BRANCH: branch
+    },
+    deploy: {
+      ...pipelineConfigMap.database.prod.deploy,
+      NAME: pipelineConfigMap.module.db,
+      CHANGE_ID: 'deploy',
+      SUFFIX: `-prod`,
+      INSTANCE: `${pipelineConfigMap.module.db}-prod`,
+      VERSION: `deploy-${changeId}`,
+      TAG: `prod-${pipelineConfigMap.version}`
+    }
   }
 };
 

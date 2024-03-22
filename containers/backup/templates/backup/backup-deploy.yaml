@@ -207,6 +207,10 @@ parameters:
     description: The path on which to mount the verification volume.  This is used by the database server to contain the database configuration and data files. For Mongo, please use /var/lib/mongodb/data . For MSSQL, please use /var/opt/mssql/data. For MariaDB, please use /var/lib/mysql/data
     required: true
     value: /var/lib/pgsql/data
+  - name: OBJECT_STORE_SECRET
+    displayName: Object Store Secret
+    description: The name of the secret containing the object store credentials.
+    value: biohubbc-object-store
   - name: OBJECT_STORE_URL
     displayName: Object Store URL
     description: URL for the object store
@@ -446,22 +450,22 @@ objects:
                 - name: OBJECT_STORE_URL
                   valueFrom:
                     secretKeyRef:
-                      name: biohubbc-object-store
+                      name: ${OBJECT_STORE_SECRET}
                       key: object_store_url
                 - name: OBJECT_STORE_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:
-                      name: biohubbc-object-store
+                      name: ${OBJECT_STORE_SECRET}
                       key: object_store_access_key_id
                 - name: OBJECT_STORE_SECRET_KEY_ID
                   valueFrom:
                     secretKeyRef:
-                      name: biohubbc-object-store
+                      name: ${OBJECT_STORE_SECRET}
                       key: object_store_secret_key_id
                 - name: OBJECT_STORE_BUCKET_NAME
                   valueFrom:
                     secretKeyRef:
-                      name: biohubbc-object-store
+                      name: ${OBJECT_STORE_SECRET}
                       key: object_store_bucket_name
               resources:
                 requests:

@@ -12,42 +12,44 @@ const path = require('path');
 const dbDeploy = async (settings) => {
   const phases = settings.phases;
   const options = settings.options;
-  const phase = settings.options.env;
+  const env = settings.options.env;
+  const phase = settings.options.phase;
 
-  const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
+  const oc = new OpenShiftClientX(Object.assign({ namespace: phases[env][phase].NAMESPACE }, options));
 
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../templates'));
 
-  const name = `${phases[phase].name}`;
-  const instance = `${phases[phase].instance}`;
-  const changeId = `${phases[phase].changeId}`;
+  const NAME = `${phases[env][phase].NAME}`;
+  const INSTANCE = `${phases[env][phase].INSTANCE}`;
+  const CHANGE_ID = `${phases[env][phase].CHANGE_ID}`;
 
   const objects = [];
 
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.dc.yaml`, {
       param: {
-        NAME: name,
-        DATABASE_SERVICE_NAME: `${name}-postgresql${phases[phase].suffix}`,
-        IMAGE_STREAM_NAME: name,
-        IMAGE_STREAM_VERSION: phases.build.tag,
+        NAME: NAME,
+        DATABASE_SERVICE_NAME: `${NAME}-postgresql${phases[env][phase].SUFFIX}`,
+        IMAGE_STREAM_NAME: NAME,
+        IMAGE_STREAM_VERSION: phases[env]['build'].TAG,
         POSTGRESQL_DATABASE: 'biohubbc',
-        TZ: phases[phase].tz,
-        IMAGE_STREAM_NAMESPACE: phases.build.namespace,
-        VOLUME_CAPACITY: phases[phase].volumeCapacity,
-        CPU_REQUEST: phases[phase].cpuRequest,
-        CPU_LIMIT: phases[phase].cpuLimit,
-        MEMORY_REQUEST: phases[phase].memoryRequest,
-        MEMORY_LIMIT: phases[phase].memoryLimit,
-        REPLICAS: phases[phase].replicas
+        TZ: phases[env][phase].TZ,
+        IMAGE_STREAM_NAMESPACE: phases[env]['build'].NAMESPACE,
+        VOLUME_CAPACITY: phases[env][phase].VOLUME_CAPACITY,
+        // Openshift Resources
+        CPU_REQUEST: phases[env][phase].CPU_REQUEST,
+        CPU_LIMIT: phases[env][phase].CPU_LIMIT,
+        MEMORY_REQUEST: phases[env][phase].MEMORY_REQUEST,
+        MEMORY_LIMIT: phases[env][phase].MEMORY_LIMIT,
+        REPLICAS: phases[env][phase].REPLICAS
       }
     })
   );
 
-  oc.applyRecommendedLabels(objects, name, phase, changeId, instance);
-  oc.importImageStreams(objects, phases[phase].tag, phases.build.namespace, phases.build.tag);
-  
-  await oc.applyAndDeploy(objects, instance);
+  oc.applyRecommendedLabels(objects, NAME, env, CHANGE_ID, INSTANCE);
+  oc.importImageStreams(objects, phases[env][phase].TAG, phases[env]['build'].NAMESPACE, phases[env]['build'].TAG);
+
+  await oc.applyAndDeploy(objects, INSTANCE);
 };
 
 module.exports = { dbDeploy };

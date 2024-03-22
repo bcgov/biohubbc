@@ -12,77 +12,92 @@ const path = require('path');
 const apiDeploy = async (settings) => {
   const phases = settings.phases;
   const options = settings.options;
-  const phase = settings.options.env;
+  const env = settings.options.env;
+  const phase = settings.options.phase;
 
-  const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
+  const oc = new OpenShiftClientX(Object.assign({ namespace: phases[env][phase].NAMESPACE }, options));
 
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../templates'));
 
-  const changeId = phases[phase].changeId;
+  const DB_SERVICE_NAME = `${phases[env][phase].DB_NAME}-postgresql${phases[env][phase].SUFFIX}`;
 
   let objects = [];
 
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api.dc.yaml`, {
       param: {
-        NAME: phases[phase].name,
-        SUFFIX: phases[phase].suffix,
-        VERSION: phases[phase].tag,
-        HOST: phases[phase].host,
-        APP_HOST: phases[phase].appHost,
-        CHANGE_ID: phases.build.changeId || changeId,
+        NAME: phases[env][phase].NAME,
+        SUFFIX: phases[env][phase].SUFFIX,
+        VERSION: phases[env][phase].TAG,
+        API_HOST: phases[env][phase].API_HOST,
+        APP_HOST: phases[env][phase].APP_HOST,
+        CHANGE_ID: phases[env]['build'].CHANGE_ID,
+        MAX_REQ_BODY_SIZE: phases[env][phase].MAX_REQ_BODY_SIZE,
         // Node
-        NODE_ENV: phases[phase].nodeEnv,
-        NODE_OPTIONS: phases[phase].nodeOptions,
+        NODE_ENV: phases[env][phase].NODE_ENV,
+        NODE_OPTIONS: phases[env][phase].NODE_OPTIONS,
+        // Clamav
+        ENABLE_FILE_VIRUS_SCAN: phases[env][phase].ENABLE_FILE_VIRUS_SCAN,
+        CLAMAV_HOST: phases[env][phase].CLAMAV_HOST,
+        CLAMAV_PORT: phases[env][phase].CLAMAV_PORT,
         // BioHub Platform (aka: Backbone)
-        BACKBONE_INTERNAL_API_HOST: phases[phase].backboneInternalApiHost,
-        BACKBONE_INTAKE_PATH: phases[phase].backboneIntakePath,
-        BACKBONE_ARTIFACT_INTAKE_PATH: phases[phase].backboneArtifactIntakePath,
-        BACKBONE_INTAKE_ENABLED: phases[phase].backboneIntakeEnabled,
-        BIOHUB_TAXON_PATH: phases[phase].biohubTaxonPath,
-        BIOHUB_TAXON_TSN_PATH: phases[phase].biohubTaxonTsnPath,
+        BACKBONE_INTERNAL_API_HOST: phases[env][phase].BACKBONE_INTERNAL_API_HOST,
+        BACKBONE_INTAKE_PATH: phases[env][phase].BACKBONE_INTAKE_PATH,
+        BACKBONE_ARTIFACT_INTAKE_PATH: phases[env][phase].BACKBONE_ARTIFACT_INTAKE_PATH,
+        BIOHUB_TAXON_PATH: phases[env][phase].BIOHUB_TAXON_PATH,
+        BIOHUB_TAXON_TSN_PATH: phases[env][phase].BIOHUB_TAXON_TSN_PATH,
+        BACKBONE_INTAKE_ENABLED: phases[env][phase].BACKBONE_INTAKE_ENABLED,
         // BCTW / Critterbase
-        BCTW_API_HOST: phases[phase].bctwApiHost,
-        CB_API_HOST: phases[phase].critterbaseApiHost,
-        // S3
-        S3_KEY_PREFIX: phases[phase].s3KeyPrefix,
+        BCTW_API_HOST: phases[env][phase].BCTW_API_HOST,
+        CB_API_HOST: phases[env][phase].CB_API_HOST,
         // Database
-        TZ: phases[phase].tz,
-        DB_SERVICE_NAME: `${phases[phase].dbName}-postgresql${phases[phase].suffix}`,
+        TZ: phases[env][phase].TZ,
+        DB_SERVICE_NAME: DB_SERVICE_NAME,
         // Keycloak
-        KEYCLOAK_HOST: phases[phase].sso.host,
-        KEYCLOAK_REALM: phases[phase].sso.realm,
-        KEYCLOAK_CLIENT_ID: phases[phase].sso.clientId,
+        KEYCLOAK_HOST: phases[env][phase].SSO.KEYCLOAK_HOST,
+        KEYCLOAK_REALM: phases[env][phase].SSO.KEYCLOAK_REALM,
+        KEYCLOAK_CLIENT_ID: phases[env][phase].SSO.KEYCLOAK_CLIENT_ID,
         // Keycloak secret
-        KEYCLOAK_SECRET: phases[phase].sso.keycloakSecret,
+        KEYCLOAK_SECRET: phases[env][phase].SSO.KEYCLOAK_SECRET,
         // Keycloak Service Client
-        KEYCLOAK_ADMIN_USERNAME: phases[phase].sso.serviceClient.serviceClientName,
-        KEYCLOAK_SECRET_ADMIN_PASSWORD_KEY: phases[phase].sso.serviceClient.keycloakSecretServiceClientPasswordKey,
+        KEYCLOAK_ADMIN_USERNAME: phases[env][phase].SSO.serviceClient.KEYCLOAK_ADMIN_USERNAME,
+        KEYCLOAK_SECRET_ADMIN_PASSWORD_KEY: phases[env][phase].SSO.serviceClient.KEYCLOAK_SECRET_ADMIN_PASSWORD_KEY,
         // Keycloak CSS API
-        KEYCLOAK_API_TOKEN_URL: phases[phase].sso.cssApi.cssApiTokenUrl,
-        KEYCLOAK_API_CLIENT_ID: phases[phase].sso.cssApi.cssApiClientId,
-        KEYCLOAK_API_CLIENT_SECRET_KEY: phases[phase].sso.cssApi.keycloakSecretCssApiSecretKey,
-        KEYCLOAK_API_HOST: phases[phase].sso.cssApi.cssApiHost,
-        KEYCLOAK_API_ENVIRONMENT: phases[phase].sso.cssApi.cssApiEnvironment,
+        KEYCLOAK_API_TOKEN_URL: phases[env][phase].SSO.cssApi.KEYCLOAK_API_TOKEN_URL,
+        KEYCLOAK_API_CLIENT_ID: phases[env][phase].SSO.cssApi.KEYCLOAK_API_CLIENT_ID,
+        KEYCLOAK_API_CLIENT_SECRET_KEY: phases[env][phase].SSO.cssApi.KEYCLOAK_API_CLIENT_SECRET_KEY,
+        KEYCLOAK_API_HOST: phases[env][phase].SSO.cssApi.KEYCLOAK_API_HOST,
+        KEYCLOAK_API_ENVIRONMENT: phases[env][phase].SSO.cssApi.KEYCLOAK_API_ENVIRONMENT,
+        // Object Store
+        OBJECT_STORE_SECRET: phases[env][phase].OBJECT_STORE_SECRET,
+        MAX_UPLOAD_NUM_FILES: phases[env][phase].MAX_UPLOAD_NUM_FILES,
+        MAX_UPLOAD_FILE_SIZE: phases[env][phase].MAX_UPLOAD_FILE_SIZE,
+        S3_KEY_PREFIX: phases[env][phase].S3_KEY_PREFIX,
         // Log Level
-        LOG_LEVEL: phases[phase].logLevel,
-        API_RESPONSE_VALIDATION_ENABLED: phases[phase].apiResponseValidationEnabled,
-        DATABASE_RESPONSE_VALIDATION_ENABLED: phases[phase].databaseResponseValidationEnabled,
+        LOG_LEVEL: phases[env][phase].LOG_LEVEL,
+        API_RESPONSE_VALIDATION_ENABLED: phases[env][phase].API_RESPONSE_VALIDATION_ENABLED,
+        DATABASE_RESPONSE_VALIDATION_ENABLED: phases[env][phase].DATABASE_RESPONSE_VALIDATION_ENABLED,
         // Openshift Resources
-        CPU_REQUEST: phases[phase].cpuRequest,
-        CPU_LIMIT: phases[phase].cpuLimit,
-        MEMORY_REQUEST: phases[phase].memoryRequest,
-        MEMORY_LIMIT: phases[phase].memoryLimit,
-        REPLICAS: phases[phase].replicas,
-        REPLICAS_MAX: phases[phase].replicasMax
+        CPU_REQUEST: phases[env][phase].CPU_REQUEST,
+        CPU_LIMIT: phases[env][phase].CPU_LIMIT,
+        MEMORY_REQUEST: phases[env][phase].MEMORY_REQUEST,
+        MEMORY_LIMIT: phases[env][phase].MEMORY_LIMIT,
+        REPLICAS: phases[env][phase].REPLICAS,
+        REPLICAS_MAX: phases[env][phase].REPLICAS_MAX
       }
     })
   );
 
-  oc.applyRecommendedLabels(objects, phases[phase].name, phase, `${changeId}`, phases[phase].instance);
-  oc.importImageStreams(objects, phases[phase].tag, phases.build.namespace, phases.build.tag);
+  oc.applyRecommendedLabels(
+    objects,
+    phases[env][phase].NAME,
+    env,
+    phases[env][phase].CHANGE_ID,
+    phases[env][phase].INSTANCE
+  );
+  oc.importImageStreams(objects, phases[env][phase].TAG, phases[env]['build'].NAMESPACE, phases[env]['build'].TAG);
 
-  await oc.applyAndDeploy(objects, phases[phase].instance);
+  await oc.applyAndDeploy(objects, phases[env][phase].INSTANCE);
 };
 
 module.exports = { apiDeploy };

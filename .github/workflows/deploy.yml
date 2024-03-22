@@ -46,7 +46,8 @@ jobs:
       # Set to `true` if the latest commit message contains `ignore-skip` anywhere in the message OR the base branch
       # is dev, test, or prod.
       # Used to disable duplicate action skipping, if needed.
-      ignore_skip: ${{ contains(steps.head_commit_message.outputs.commit_message, 'ignore-skip') || 
+      ignore_skip:
+        ${{ contains(steps.head_commit_message.outputs.commit_message, 'ignore-skip') ||
         github.head_ref == 'dev' || github.head_ref == 'test' || github.head_ref == 'prod' }}
     steps:
       - id: skip_check
@@ -129,6 +130,29 @@ jobs:
         with:
           node-version: 14
 
+  # Fetch the pipeline config map from Openshift
+  getPipelineConfigMap:
+    name: Get Pipeline Config
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: ${{ github.event.pull_request.merged == false }}
+    env:
+      PR_NUMBER: ${{ github.event.number }}
+    outputs:
+      pipeline_config: ${{ steps.get_config.outputs.pipeline_config }}
+    steps:
+      # Log in to OpenShift.
+      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
+      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
+      - name: Log in to OpenShift
+        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+
+      # Fetch config map named 'sims-pipeline-config' from the tools environment and store in 'pipeline_config' variable for use by subsequent jobs
+      - name: Fetch pipeline config map
+        id: "get_config"
+        run: |
+          echo "pipeline_config=$( oc -n af2668-tools get configmap sims-pipeline-config -o jsonpath={.data.config} | jq -c )" >> "$GITHUB_OUTPUT"
+
   # Build the web frontend app image
   buildAPP:
     name: Build APP Image
@@ -142,9 +166,11 @@ jobs:
     env:
       PR_NUMBER: ${{ github.event.number }}
       APP_NAME: "biohubbc-app"
+      PIPELINE_CONFIG: ${{ needs.getPipelineConfigMap.outputs.pipeline_config }}
     needs:
       - checkoutRepo
       - skipDuplicateActions
+      - getPipelineConfigMap
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
@@ -189,7 +215,7 @@ jobs:
       - name: Build APP Image
         working-directory: app/.pipeline/
         run: |
-          DEBUG=* npm run build -- --pr=$PR_NUMBER
+          DEBUG=* npm run build -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=pr --phase=build
 
   # Build the Database image
   buildDatabase:
@@ -204,9 +230,11 @@ jobs:
     env:
       PR_NUMBER: ${{ github.event.number }}
       APP_NAME: "biohubbc-db"
+      PIPELINE_CONFIG: ${{ needs.getPipelineConfigMap.outputs.pipeline_config }}
     needs:
       - checkoutRepo
       - skipDuplicateActions
+      - getPipelineConfigMap
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
@@ -251,7 +279,7 @@ jobs:
       - name: Build Database Image
         working-directory: database/.pipeline/
         run: |
-          DEBUG=* npm run db:build -- --pr=$PR_NUMBER
+          DEBUG=* npm run db:build -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=pr --phase=build
 
   # Build the Database Setup image
   buildDatabaseSetup:
@@ -265,9 +293,11 @@ jobs:
       fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch != github.head_ref ) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
+      PIPELINE_CONFIG: ${{ needs.getPipelineConfigMap.outputs.pipeline_config }}
     needs:
       - checkoutRepo
       - skipDuplicateActions
+      - getPipelineConfigMap
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
@@ -306,7 +336,7 @@ jobs:
       - name: Build Database Setup Image
         working-directory: database/.pipeline/
         run: |
-          DEBUG=* npm run db-setup:build -- --pr=$PR_NUMBER
+          DEBUG=* npm run db-setup:build -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=pr --phase=build
 
   # Build the API image
   buildAPI:
@@ -321,9 +351,11 @@ jobs:
     env:
       PR_NUMBER: ${{ github.event.number }}
       APP_NAME: "biohubbc-api"
+      PIPELINE_CONFIG: ${{ needs.getPipelineConfigMap.outputs.pipeline_config }}
     needs:
       - checkoutRepo
       - skipDuplicateActions
+      - getPipelineConfigMap
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
@@ -368,7 +400,7 @@ jobs:
       - name: Build API Image
         working-directory: api/.pipeline/
         run: |
-          DEBUG=* npm run build -- --pr=$PR_NUMBER
+          DEBUG=* npm run build -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=pr --phase=build
 
   # Deploy APP image
   deployAPP:
@@ -382,7 +414,10 @@ jobs:
       fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch != github.head_ref ) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
+      PIPELINE_CONFIG: ${{ needs.getPipelineConfigMap.outputs.pipeline_config }}
     needs:
+      - skipDuplicateActions
+      - getPipelineConfigMap
       - buildAPP
     steps:
       # Install Node - for `node` and `npm` commands
@@ -422,7 +457,7 @@ jobs:
       - name: Deploy APP Image
         working-directory: app/.pipeline
         run: |
-          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=dev
+          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=pr --phase=deploy
 
   # Deploy Database image
   deployDatabase:
@@ -436,7 +471,10 @@ jobs:
       fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch != github.head_ref ) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
+      PIPELINE_CONFIG: ${{ needs.getPipelineConfigMap.outputs.pipeline_config }}
     needs:
+      - skipDuplicateActions
+      - getPipelineConfigMap
       - buildDatabase
     steps:
       # Install Node - for `node` and `npm` commands
@@ -476,7 +514,7 @@ jobs:
       - name: Deploy Database Image
         working-directory: database/.pipeline/
         run: |
-          DEBUG=* npm run db:deploy -- --pr=$PR_NUMBER --env=dev
+          DEBUG=* npm run db:deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=pr --phase=deploy
 
   # Deploy Database image
   deployDatabaseSetup:
@@ -490,7 +528,10 @@ jobs:
       fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch != github.head_ref ) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
+      PIPELINE_CONFIG: ${{ needs.getPipelineConfigMap.outputs.pipeline_config }}
     needs:
+      - skipDuplicateActions
+      - getPipelineConfigMap
       - buildDatabaseSetup
       - deployDatabase
     steps:
@@ -531,7 +572,7 @@ jobs:
       - name: Deploy Database Setup Image
         working-directory: database/.pipeline/
         run: |
-          DEBUG=* npm run db-setup:deploy -- --pr=$PR_NUMBER --env=dev
+          DEBUG=* npm run db-setup:deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=pr --phase=deploy
 
   # Deploy API image
   deployAPI:
@@ -547,7 +588,10 @@ jobs:
       fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.skipped_by.branch != github.head_ref ) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
+      PIPELINE_CONFIG: ${{ needs.getPipelineConfigMap.outputs.pipeline_config }}
     needs:
+      - skipDuplicateActions
+      - getPipelineConfigMap
       - buildAPI
       - deployDatabase
     steps:
@@ -588,7 +632,7 @@ jobs:
       - name: Deploy API Image
         working-directory: api/.pipeline/
         run: |
-          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=dev
+          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=pr --phase=deploy
 
   # Report the overall status of all jobs.
   # Why? Skipped jobs are not considered successes when specifying requird jobs in the GitHub PR settings. Rather than
@@ -605,6 +649,7 @@ jobs:
       - checkEnv
       - skipDuplicateActions
       - checkoutRepo
+      - getPipelineConfigMap
       - buildAPP
       - buildDatabase
       - buildDatabaseSetup

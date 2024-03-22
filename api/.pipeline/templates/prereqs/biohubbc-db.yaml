@@ -1,7 +1,7 @@
 kind: Secret
 apiVersion: v1
 metadata:
-  name: biohubbc-creds
+  name: sims-database
 data:
   database-admin: <fill in value>
   database-admin-password: <fill in value>

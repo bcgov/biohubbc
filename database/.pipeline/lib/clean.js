@@ -3,81 +3,85 @@
 const { OpenShiftClientX } = require('pipeline-cli');
 const { checkAndClean } = require('../utils/utils');
 
+/**
+ * Run OC commands to clean all build and deployment artifacts (pods, imagestreams, builds/deployment configs, etc).
+ *
+ * @param {*} settings
+ */
 const clean = async (settings) => {
   const phases = settings.phases;
   const options = settings.options;
-  const target_phase = options.phase;
+  const env = settings.options.env;
+  const phase = settings.options.phase;
 
-  const oc = new OpenShiftClientX(Object.assign({ namespace: phases.build.namespace }, options));
+  const oc = new OpenShiftClientX(Object.assign({ namespace: phases[env]['build'].NAMESPACE }, options));
 
-  for (let phaseKey in phases) {
-    if (!Object.prototype.hasOwnProperty.call(phases, phaseKey)) {
-      continue;
+  if (!Object.prototype.hasOwnProperty.call(phases, env)) {
+    // <env> is not a field of phases
+    return;
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(phases[env], phase)) {
+    // <phase> is not a field of phases[env]
+    return;
+  }
+
+  // Get build configs
+  let buildConfigs = oc.get('bc', {
+    selector: `app=${phases[env][phase].INSTANCE},env-id=${phases[env][phase].CHANGE_ID},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
+    namespace: phases[env][phase].NAMESPACE
+  });
+
+  // Clean build configs
+  buildConfigs.forEach((buildConfig) => {
+    if (buildConfig.spec.output.to.kind == 'ImageStreamTag') {
+      oc.delete([`ImageStreamTag/${buildConfig.spec.output.to.name}`], {
+        'ignore-not-found': 'true',
+        wait: 'true',
+        namespace: phases[env][phase].NAMESPACE
+      });
     }
+  });
 
-    if (phaseKey !== target_phase) {
-      continue;
-    }
+  // get deployment configs
+  let deploymentConfigs = oc.get('dc', {
+    selector: `app=${phases[env][phase].INSTANCE},env-id=${phases[env][phase].CHANGE_ID},env-name=${env},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
+    namespace: phases[env][phase].NAMESPACE
+  });
 
-    const phaseObj = phases[phaseKey];
-
-    // Get build configs
-    let buildConfigs = oc.get('bc', {
-      selector: `app=${phaseObj.instance},env-id=${phaseObj.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
-      namespace: phaseObj.namespace
-    });
-
-    // Clean build configs
-    buildConfigs.forEach((bc) => {
-      if (bc.spec.output.to.kind == 'ImageStreamTag') {
-        oc.delete([`ImageStreamTag/${bc.spec.output.to.name}`], {
+  // Clean deployment configs
+  deploymentConfigs.forEach((deploymentConfig) => {
+    deploymentConfig.spec.triggers.forEach((trigger) => {
+      if (trigger.type == 'ImageChange' && trigger.imageChangeParams.from.kind == 'ImageStreamTag') {
+        oc.delete([`ImageStreamTag/${trigger.imageChangeParams.from.name}`], {
           'ignore-not-found': 'true',
           wait: 'true',
-          namespace: phaseObj.namespace
+          namespace: phases[env][phase].NAMESPACE
         });
       }
     });
+  });
 
-    // get deployment configs
-    let deploymentConfigs = oc.get('dc', {
-      selector: `app=${phaseObj.instance},env-id=${phaseObj.changeId},env-name=${phaseKey},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
-      namespace: phaseObj.namespace
-    });
-
-    // Clean deployment configs
-    deploymentConfigs.forEach((dc) => {
-      dc.spec.triggers.forEach((trigger) => {
-        if (trigger.type == 'ImageChange' && trigger.imageChangeParams.from.kind == 'ImageStreamTag') {
-          oc.delete([`ImageStreamTag/${trigger.imageChangeParams.from.name}`], {
-            'ignore-not-found': 'true',
-            wait: 'true',
-            namespace: phaseObj.namespace
-          });
-        }
-      });
-    });
-
-    // Cleaning other pods
-    if (phaseKey !== 'build') {
-      const newOC = new OpenShiftClientX(Object.assign({ namespace: phases[phaseKey].namespace }, options));
-      const setupPod = `${phases[phaseKey].name}-setup${phases[phaseKey].suffix}`;
-      await checkAndClean(`pod/${setupPod}`, 10, 5, 0, newOC).catch(() => {
-        // Ignore errors, nothing to clean
-      });
-    }
-
-    oc.raw('delete', ['all'], {
-      selector: `app=${phaseObj.instance},env-id=${phaseObj.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
-      wait: 'true',
-      namespace: phaseObj.namespace
-    });
-
-    oc.raw('delete', ['all,pvc,secrets,Secrets,secret,configmap,endpoints,Endpoints'], {
-      selector: `app=${phaseObj.instance},env-id=${phaseObj.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
-      wait: 'true',
-      namespace: phaseObj.namespace
+  // Cleaning other pods
+  if (phase !== 'build') {
+    const newOC = new OpenShiftClientX(Object.assign({ namespace: phases[env][phase].NAMESPACE }, options));
+    const setupPod = `${phases[env][phase].NAME}-setup${phases[env][phase].SUFFIX}`;
+    await checkAndClean(`pod/${setupPod}`, 10, 5, 0, newOC).catch(() => {
+      // Ignore errors, nothing to clean
     });
   }
+
+  oc.raw('delete', ['all'], {
+    selector: `app=${phases[env][phase].INSTANCE},env-id=${phases[env][phase].CHANGE_ID},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
+    wait: 'true',
+    namespace: phases[env][phase].NAMESPACE
+  });
+
+  oc.raw('delete', ['all,pvc,secrets,Secrets,secret,configmap,endpoints,Endpoints'], {
+    selector: `app=${phases[env][phase].INSTANCE},env-id=${phases[env][phase].CHANGE_ID},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
+    wait: 'true',
+    namespace: phases[env][phase].NAMESPACE
+  });
 };
 
 module.exports = { clean };

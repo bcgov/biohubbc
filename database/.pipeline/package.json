@@ -20,7 +20,8 @@
     "lint": "eslint . --ignore-pattern 'node_modules' --ext .js,.ts",
     "lint-fix": "eslint . --fix --ignore-pattern 'node_modules' --ext .js,.ts",
     "format": "prettier --check \"./**/*.{js,jsx,ts,tsx,css,scss}\"",
-    "format-fix": "prettier --write \"./**/*.{js,jsx,ts,tsx,json,css,scss}\""
+    "format-fix": "prettier --write \"./**/*.{js,jsx,ts,tsx,json,css,scss}\"",
+    "fix": "npm-run-all -l -s lint-fix format-fix"
   },
   "dependencies": {
     "debug": "^4.2.0",
@@ -31,6 +32,11 @@
     "pipeline-cli": "git+https://github.com/bcgov/biohubbc-pipeline-cli.git"
   },
   "devDependencies": {
-    "prettier": "~2.3.2"
+    "eslint": "~7.32.0",
+    "eslint-config-prettier": "~6.15.0",
+    "eslint-plugin-prettier": "~3.3.1",
+    "npm-run-all": "~4.1.5",
+    "prettier": "^2.3.2",
+    "prettier-plugin-organize-imports": "~2.3.4"
   }
 }

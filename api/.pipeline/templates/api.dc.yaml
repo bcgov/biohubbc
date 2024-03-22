@@ -12,7 +12,7 @@ parameters:
   - name: VERSION
     description: Version of the application
     value: '1.0.0'
-  - name: HOST
+  - name: API_HOST
     description: Host name of the application
     required: true
   - name: APP_HOST
@@ -27,11 +27,17 @@ parameters:
     required: true
     value: 'development'
   - name: NODE_OPTIONS
+    description: Optional node options. See https://nodejs.org/api/cli.html#node_optionsoptions
+    value: ''
   - name: API_PORT_DEFAULT
     value: '6100'
   - name: API_PORT_DEFAULT_NAME
     description: Api default port name
     value: '6100-tcp'
+  - name: MAX_REQ_BODY_SIZE
+    description: The maximum request body size in bytes
+    required: false
+    value: '52428800'
   # Clamav
   - name: ENABLE_FILE_VIRUS_SCAN
     value: 'true'
@@ -85,14 +91,14 @@ parameters:
     required: true
   # Keycloak secret
   - name: KEYCLOAK_SECRET
-    description: The name of the keycloak secret
+    description: The name of the Openshift secret which contains the keycloak credentials.
     required: true
   # Keycloak Service Client
   - name: KEYCLOAK_ADMIN_USERNAME
     description: keycloak host admin username
     required: true
   - name: KEYCLOAK_SECRET_ADMIN_PASSWORD_KEY
-    description: The key of the admin password in the keycloak secret
+    description: The key of the admin password field in the Openshift keycloak secret
     required: true
   # Keycloak CSS API
   - name: KEYCLOAK_API_TOKEN_URL
@@ -111,9 +117,17 @@ parameters:
     description: The css api environment to query (dev, test, prod)
     required: true
   # Object Store (S3)
-  - name: OBJECT_STORE_SECRETS
-    description: Secrets used to read and write to the S3 storage
+  - name: OBJECT_STORE_SECRET
+    description: The name of the Openshift secret which contains the object store credentials.
     value: 'biohubbc-object-store'
+  - name: MAX_UPLOAD_NUM_FILES
+    description: The maximum number of files that can be uploaded at once
+    required: false
+    value: '10'
+  - name: MAX_UPLOAD_FILE_SIZE
+    description: The maximum file size in bytes
+    required: false
+    value: '52428800'
   - name: S3_KEY_PREFIX
     description: S3 key optional prefix
     required: false
@@ -211,7 +225,7 @@ objects:
             - name: api
               env:
                 - name: API_HOST
-                  value: ${HOST}
+                  value: ${API_HOST}
                 - name: API_PORT
                   value: ${API_PORT_DEFAULT}
                 - name: APP_HOST
@@ -220,6 +234,9 @@ objects:
                   value: ${VERSION}
                 - name: CHANGE_VERSION
                   value: ${CHANGE_ID}
+                - name: MAX_REQ_BODY_SIZE
+                  value: ${MAX_REQ_BODY_SIZE}
+                # Node
                 - name: NODE_ENV
                   value: ${NODE_ENV}
                 - name: NODE_OPTIONS
@@ -305,22 +322,28 @@ objects:
                   valueFrom:
                     secretKeyRef:
                       key: object_store_url
-                      name: ${OBJECT_STORE_SECRETS}
+                      name: ${OBJECT_STORE_SECRET}
                 - name: OBJECT_STORE_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:
                       key: object_store_access_key_id
-                      name: ${OBJECT_STORE_SECRETS}
+                      name: ${OBJECT_STORE_SECRET}
                 - name: OBJECT_STORE_SECRET_KEY_ID
                   valueFrom:
                     secretKeyRef:
                       key: object_store_secret_key_id
-                      name: ${OBJECT_STORE_SECRETS}
+                      name: ${OBJECT_STORE_SECRET}
                 - name: OBJECT_STORE_BUCKET_NAME
                   valueFrom:
                     secretKeyRef:
                       key: object_store_bucket_name
-                      name: ${OBJECT_STORE_SECRETS}
+                      name: ${OBJECT_STORE_SECRET}
+                - name: MAX_UPLOAD_NUM_FILES
+                  value: ${MAX_UPLOAD_NUM_FILES}
+                - name: MAX_UPLOAD_FILE_SIZE
+                  value: ${MAX_UPLOAD_FILE_SIZE}
+                - name: S3_KEY_PREFIX
+                  value: ${S3_KEY_PREFIX}
                 # Logging and Validation
                 - name: LOG_LEVEL
                   value: ${LOG_LEVEL}
@@ -450,7 +473,7 @@ objects:
       labels: {}
       name: ${NAME}${SUFFIX}
     spec:
-      host: ${HOST}
+      host: ${API_HOST}
       tls:
         insecureEdgeTerminationPolicy: Redirect
         termination: edge
