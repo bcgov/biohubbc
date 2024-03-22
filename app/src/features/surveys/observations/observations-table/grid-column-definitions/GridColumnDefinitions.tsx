@@ -229,15 +229,20 @@ export const ObservationCountColDef = (props: {
     renderEditCell: (params) => {
       const error: boolean = hasError(params);
 
+      const maxCount =
+        props.sampleMethodOptions.find(
+          (option) => option.survey_sample_method_id === params.row.survey_sample_method_id
+        )?.response_metric === 'Presence-absence'
+          ? 1
+          : undefined;
+
       return (
         <TextFieldDataGrid
           dataGridProps={params}
           textFieldProps={{
+            type: 'number',
             inputProps: {
-              max:
-                props.sampleMethodOptions.find(
-                  (option) => option.survey_sample_method_id === params.row.survey_sample_method_id
-                )?.response_metric === 'Presence-absence' && 1,
+              max: maxCount,
               inputMode: 'numeric'
             },
             name: params.field,
