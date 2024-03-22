@@ -34,7 +34,7 @@ export const critterSchema: OpenAPIV3.SchemaObject = {
       type: 'string',
       nullable: true
     }
-  },
+  }
 };
 
 const locationSchema: OpenAPIV3.SchemaObject = {
@@ -57,7 +57,7 @@ const locationSchema: OpenAPIV3.SchemaObject = {
     coordinate_uncertainty_unit: {
       type: 'string'
     }
-  },
+  }
 };
 
 const captureSchema: OpenAPIV3.SchemaObject = {
@@ -97,7 +97,7 @@ const captureSchema: OpenAPIV3.SchemaObject = {
     release_comment: {
       type: 'string'
     }
-  },
+  }
 };
 
 const collectionUnits: OpenAPIV3.SchemaObject = {
@@ -116,7 +116,7 @@ const collectionUnits: OpenAPIV3.SchemaObject = {
       type: 'string',
       format: 'uuid'
     }
-  },
+  }
 };
 
 const markingSchema: OpenAPIV3.SchemaObject = {
@@ -150,7 +150,7 @@ const markingSchema: OpenAPIV3.SchemaObject = {
     marking_comment: {
       type: 'string'
     }
-  },
+  }
 };
 
 const mortalitySchema: OpenAPIV3.SchemaObject = {
@@ -169,7 +169,7 @@ const mortalitySchema: OpenAPIV3.SchemaObject = {
     ultimate_predated_by_itis_tsn: { type: 'string', format: 'uuid' },
     projection_mode: { type: 'string', enum: ['wgs', 'utm'] },
     location: locationSchema
-  },
+  }
 };
 
 const qualitativeMeasurementSchema: OpenAPIV3.SchemaObject = {
@@ -183,7 +183,7 @@ const qualitativeMeasurementSchema: OpenAPIV3.SchemaObject = {
     },
     measured_timestamp: { type: 'string' },
     measurement_comment: { type: 'string' }
-  },
+  }
 };
 
 const quantitativeMeasurmentSchema: OpenAPIV3.SchemaObject = {
@@ -201,7 +201,7 @@ const quantitativeMeasurmentSchema: OpenAPIV3.SchemaObject = {
     },
     measured_timestamp: { type: 'string' },
     measurement_comment: { type: 'string' }
-  },
+  }
 };
 
 export const critterCreateRequestObject: OpenAPIV3.SchemaObject = {
@@ -323,74 +323,6 @@ export const critterBulkRequestObject: OpenAPIV3.SchemaObject = {
         ...markingSchema
       }
     },
-    //TODO: Is this still needed or remove?
-    // measurements: {
-    //   title: 'measurements',
-    //   type: 'object',
-    //   properties: {
-    //     qualitative: {
-    //       type: 'array',
-    //       items: {
-    //         type: 'object',
-    //         properties: {
-    //           critter_id: {
-    //             type: 'string'
-    //           },
-    //           measurement_qualitative_id: {
-    //             type: 'string'
-    //           },
-    //           measurement_quantitative_id: {
-    //             type: 'string'
-    //           },
-    //           taxon_measurement_id: {
-    //             type: 'string'
-    //           },
-    //           qualitative_option_id: {
-    //             type: 'string'
-    //           },
-    //           measured_timestamp: {
-    //             type: 'string'
-    //           },
-    //           measurement_comment: {
-    //             type: 'string'
-    //           }
-    //         },
-    //         additionalProperties: false
-    //       }
-    //     },
-    //     quantitative: {
-    //       type: 'array',
-    //       items: {
-    //         type: 'object',
-    //         properties: {
-    //           critter_id: {
-    //             type: 'string'
-    //           },
-    //           measurement_qualitative_id: {
-    //             type: 'string'
-    //           },
-    //           measurement_quantitative_id: {
-    //             type: 'string'
-    //           },
-    //           taxon_measurement_id: {
-    //             type: 'string'
-    //           },
-    //           value: {
-    //             type: 'number'
-    //           },
-    //           measured_timestamp: {
-    //             type: 'string'
-    //           },
-    //           measurement_comment: {
-    //             type: 'string'
-    //           }
-    //         },
-    //         additionalProperties: false
-    //       }
-    //     }
-    //   },
-    //   additionalProperties: false
-    // },
     locations: {
       title: 'locations',
       type: 'array',
@@ -423,7 +355,7 @@ export const critterBulkRequestObject: OpenAPIV3.SchemaObject = {
         ...quantitativeMeasurmentSchema
       }
     }
-  },
+  }
 };
 
 export const critterBulkRequestPatchObject: OpenAPIV3.SchemaObject = {
@@ -563,7 +495,7 @@ const bulkResponseCounts: OpenAPIV3.SchemaObject = {
     families: { type: 'integer' },
     family_parents: { type: 'integer' },
     family_children: { type: 'integer' }
-  },
+  }
 };
 
 export const bulkCreateResponse: OpenAPIV3.SchemaObject = {
@@ -572,7 +504,7 @@ export const bulkCreateResponse: OpenAPIV3.SchemaObject = {
   additionalProperties: false,
   properties: {
     created: bulkResponseCounts
-  },
+  }
 };
 
 export const bulkUpdateResponse: OpenAPIV3.SchemaObject = {
@@ -583,5 +515,5 @@ export const bulkUpdateResponse: OpenAPIV3.SchemaObject = {
     created: bulkCreateResponse,
     updated: bulkResponseCounts,
     deleted: bulkResponseCounts
-  },
+  }
 };

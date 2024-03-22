@@ -7,47 +7,46 @@ import { authorizeRequest } from './../request-handlers/security/authorization';
 import { getLogger } from './../utils/logger';
 
 const defaultLog = getLogger('middleware/critterbase-proxy');
+/**
+ * Currently supported Critterbase delete endpoints.
+ *
+ */
+const allowedDeleteRoutesRegex: RegExp[] = [
+  /**
+   * example: allows requests to /api/critterbase/captures/:id
+   * but rejects requests to /api/critterbase/captures/:id/other-path
+   *
+   */
+  /^\/api\/critterbase\/captures\/[^/]+$/,
+  /^\/api\/critterbase\/markings\/[^/]+$/,
+  /^\/api\/critterbase\/family\/[^/]+$/,
+  /^\/api\/critterbase\/measurements\/qualitative\/[^/]+$/,
+  /^\/api\/critterbase\/measurements\/quantitative\/[^/]+$/,
+  /^\/api\/critterbase\/collectionUnits\/[^/]+$/,
+  /^\/api\/critterbase\/mortality\/[^/]+$/
+];
 
 /**
- * Restrict the proxy to these Critterbase routes.
- * TODO: remove this if not needed anymore.
+ * Filters requests coming into the CritterbaseProxy.
+ * Handles different request methods differently. With extra
+ * scrutiny around delete requests.
+ *
+ * @param {string} pathname - Critterbase pathname.
+ * @param {Request} req - Express request.
+ * @returns {boolean} If request can be passed to CritterbaeProxy.
  */
-// const proxyRoutes = [
-//   // auth
-//   '/api/critterbase/signup',
-//   // critters
-//   '/api/critterbase/critters',
-//   '/api/critterbase/critters/:critterId',
-//   // lookups
-//   '/api/critterbase/lookups/**',
-//   // family
-//   '/api/critterbase/family',
-//   '/api/critterbase/family/:familyId',
-//   // xref
-//   '/api/critterbase/xref/collection-units',
-//   '/api/critterbase/xref/taxon-marking-body-locations',
-//   '/api/critterbase/xref/taxon-measurements'
-// ];
-
 const proxyFilter = (pathname: string, req: Request) => {
-  // Reject requests not coming from the SIMS APP.
+  // Reject requests NOT coming directly from SIMS APP / frontend.
   if (req.headers.origin !== process.env.APP_HOST) {
     return false;
   }
-  //TODO: update this to be explicit endpoints.
+  // Only supporting specific delete requests.
   if (req.method === 'DELETE') {
-    return true;
+    return allowedDeleteRoutesRegex.some((regex) => regex.test(pathname));
   }
-  // Currently support all POST requests.
-  if (req.method === 'POST') {
+  // Support all POST / PATCH / GET requests.
+  if (req.method === 'POST' || req.method === 'PATCH' || req.method === 'GET') {
     return true;
-  }
-  if (req.method === 'PATCH') {
-    return true;
-  }
-  // Currently support all Critterbase GET requests.
-  if (req.method === 'GET') {
-    return Boolean(pathname.match(/^\/api\/critterbase(\/|$)/));
   }
   // Block all other requests.
   return false;

@@ -398,11 +398,6 @@ export class CritterbaseService {
     return response.data;
   }
 
-  //TODO: DEPRECATED remove + remove tests
-  // async filterCritters(data: IFilterCritters, format: 'default' | 'detailed' = 'default') {
-  //   const response = await this.axiosInstance.post(`${FILTER_ENDPOINT}?format=${format}`, data);
-  //   return response.data;
-  // }
   async getMultipleCrittersByIds(critter_ids: string[]) {
     const response = await this.axiosInstance.post(CRITTER_ENDPOINT, { critter_ids });
     return response.data;

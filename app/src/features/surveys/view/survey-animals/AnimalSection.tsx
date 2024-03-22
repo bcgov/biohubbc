@@ -43,7 +43,8 @@ interface IAnimalSectionProps {
   refreshCritter: (critter_id: string) => Promise<ICritterDetailedResponse | undefined>;
   /**
    * The selected section.
-   * Example: 'Captures' | 'Markings'.
+   *
+   * example: 'Captures' | 'Markings'.
    */
   section: ANIMAL_SECTION;
 }
@@ -61,19 +62,19 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
   const cbApi = useCritterbaseApi();
   const dialog = useDialogContext();
 
-  const [formMode, setFormMode] = useState<ANIMAL_FORM_MODE | undefined>(undefined);
-  const [formObject, setFormObject] = useState<any | undefined>(undefined);
+  const [formObject, setFormObject] = useState<any>(undefined);
+  const [openForm, setOpenForm] = useState(false);
 
   const formatDate = (dt: Date) => dayjs(dt).utc().format('MMMM D, YYYY');
 
   const handleOpenAddForm = () => {
     setFormObject(undefined);
-    setFormMode(ANIMAL_FORM_MODE.ADD);
+    setOpenForm(true);
   };
 
   const handleOpenEditForm = (editObject: any) => {
     setFormObject(editObject);
-    setFormMode(ANIMAL_FORM_MODE.EDIT);
+    setOpenForm(true);
   };
 
   const refreshDetailedCritter = async () => {
@@ -84,7 +85,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
 
   const handleCloseForm = () => {
     setFormObject(undefined);
-    setFormMode(undefined);
+    setOpenForm(false);
     refreshDetailedCritter();
   };
 
@@ -110,6 +111,14 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     });
   };
 
+  /**
+   * Formats the data card sub header to a unified format.
+   *
+   * example: 'marking: ear tag | colour: blue'
+   *
+   * @param {SubHeaderData} subHeaderData - [TODO:description]
+   * @returns {[TODO:type]} [TODO:description]
+   */
   const formatSubHeader = (subHeaderData: SubHeaderData) => {
     const formatArr: string[] = [];
     const entries = Object.entries(subHeaderData);
@@ -132,6 +141,10 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     </Button>
   );
 
+  /**
+   * If the critter is not defined, render the empty state.
+   *
+   */
   if (!props.critter) {
     return (
       <AnimalSectionWrapper>
@@ -153,14 +166,22 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     );
   }
 
+  /**
+   * Shared animal form props.
+   *
+   */
   const SECTION_FORM_PROPS = {
-    formMode: formMode ? formMode : ANIMAL_FORM_MODE.ADD,
+    formMode: formObject ? ANIMAL_FORM_MODE.EDIT : ANIMAL_FORM_MODE.ADD,
     formObject: formObject,
     critter: props.critter,
-    open: !!formMode,
+    open: openForm,
     handleClose: handleCloseForm
   } as const;
 
+  /**
+   * Switch statements for the different form sections.
+   *
+   */
   if (props.section === ANIMAL_SECTION.GENERAL) {
     return (
       <AnimalSectionWrapper
