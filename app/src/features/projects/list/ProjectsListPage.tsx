@@ -148,6 +148,7 @@ const ProjectsListPage = () => {
 
     projectsDataLoader.refresh(pagination, advancedFiltersModel);
 
+    // Adding a DataLoader as a dependency causes an infinite rerender loop if a useEffect calls `.refresh`
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortModel, paginationModel, advancedFiltersModel]);
 

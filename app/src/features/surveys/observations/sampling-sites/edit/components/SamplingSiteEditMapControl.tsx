@@ -107,8 +107,7 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
     }
 
     updateStaticLayers(editedGeometry);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editedGeometry]);
+  }, [editedGeometry, updateStaticLayers]);
 
   useEffect(() => {
     updateStaticLayers(samplingSiteGeoJsonFeatures);

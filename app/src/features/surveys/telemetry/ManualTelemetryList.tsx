@@ -95,6 +95,7 @@ const ManualTelemetryList = () => {
     surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
     surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
 
+    // Adding a DataLoader as a dependency causes an infinite rerender loop if a useEffect calls `.refresh`
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
