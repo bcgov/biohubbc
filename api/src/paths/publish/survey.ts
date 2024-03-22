@@ -52,12 +52,27 @@ POST.apiDoc = {
               description: 'Additional data to include in the submission to BioHub',
               type: 'object',
               additionalProperties: false,
-              required: ['submissionComment'],
+              required: ['submissionComment', 'agreement1', 'agreement2', 'agreement3'],
               properties: {
                 submissionComment: {
                   type: 'string',
                   description:
                     'Submission comment to include in the submission to BioHub. May include sensitive information.'
+                },
+                agreement1: {
+                  type: 'boolean',
+                  enum: [true],
+                  description: 'Publishing agreement 1. Agreement must be accepted.'
+                },
+                agreement2: {
+                  type: 'boolean',
+                  enum: [true],
+                  description: 'Publishing agreement 2. Agreement must be accepted.'
+                },
+                agreement3: {
+                  type: 'boolean',
+                  enum: [true],
+                  description: 'Publishing agreement 3. Agreement must be accepted.'
                 }
               }
             }
