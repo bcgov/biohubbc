@@ -27,26 +27,31 @@ const SamplingMethods = () => {
   } = surveyForViewData;
 
   return (
-    <Box component="dl">
-      <Box className="row">
-        <Typography component="dt">Site Selection Strategies</Typography>
-        <Typography
-          component="dd"
-          flex="1 1 auto"
-          sx={{
-            '& dd': {
-              position: 'relative',
-              display: 'inline-block',
-              mr: 0.75
+    <Box>
+      <Box component="dl"
+        sx={{
+          '& dd span': {
+            position: 'relative',
+            display: 'inline-block',
+            mr: 1.25,
+            '&::after': {
+              content: `','`,
+              position: 'absolute',
+              top: 0
             },
-            '& dd:not(:last-child):after': {
-              content: '","'
+            '&:last-child::after': {
+              display: 'none'
             }
-          }}>
-          {site_selection.strategies?.map((strategy: string) => {
-            return <span key={strategy}>{strategy}</span>;
-          })}
-        </Typography>
+          }
+        }}>
+        <Box className="row">
+          <Typography component="dt">Site Selection Strategies</Typography>
+          <Typography component="dd">
+            {site_selection.strategies?.map((strategy: string) => {
+              return <span key={strategy}>{strategy}</span>;
+            })}
+          </Typography>
+        </Box>
       </Box>
 
       {site_selection.stratums.length > 0 && (

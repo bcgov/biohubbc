@@ -22,34 +22,56 @@ const Partnerships = () => {
   const codes = codesContext.codesDataLoader.data;
   const surveyData = surveyContext.surveyDataLoader.data.surveyData;
 
-  const hasIndigenousPartnerships = Boolean(surveyData.partnerships.indigenous_partnerships?.length);
-  const hasStakeholderPartnerships = Boolean(surveyData.partnerships.stakeholder_partnerships?.length);
-
   return (
-    <Box component="dl">
+    <Box component="dl"
+      sx={{
+        '& dd span': {
+          position: 'relative',
+          display: 'inline-block',
+          mr: 1.25,
+          '&::after': {
+            content: `','`,
+            position: 'absolute',
+            top: 0
+          },
+          '&:last-child::after': {
+            display: 'none'
+          }
+        }
+      }}
+    >
       <Box className="row">
         <Typography component="dt">Indigenous Partnerships</Typography>
-        {surveyData.partnerships.indigenous_partnerships?.map((indigenousPartnership: number) => {
-          return (
-            <Typography component="dd" key={`first-nations-${indigenousPartnership}`}>
-              {codes.first_nations?.find((item: any) => item.id === indigenousPartnership)?.name}
-            </Typography>
-          );
-        })}
-        {!hasIndigenousPartnerships && <Typography component="dd">None</Typography>}
+        <Typography component="dd">
+          {surveyData.partnerships.indigenous_partnerships.length ? (
+            surveyData.partnerships.indigenous_partnerships?.map((indigenousPartnership: number) => {
+              return (
+                <span key={`first-nations-${indigenousPartnership}`}>
+                  {codes.first_nations?.find((item: any) => item.id === indigenousPartnership)?.name}
+                </span>
+              );
+            })
+          ) : (
+            <span>None</span>
+          )}
+        </Typography>
       </Box>
 
       <Box className="row">
         <Typography component="dt">Other Partnerships</Typography>
-        {surveyData.partnerships.stakeholder_partnerships?.map((stakeholderPartnership: string) => {
-          return (
-            <Typography component="dd" key={`stakeholder-${stakeholderPartnership}`}>
-              {stakeholderPartnership}
-            </Typography>
-          );
-        })}
-
-        {!hasStakeholderPartnerships && <Typography component="dd">None</Typography>}
+        <Typography component="dd">
+          {surveyData.partnerships.stakeholder_partnerships.length ? (
+            surveyData.partnerships.stakeholder_partnerships?.map((stakeholderPartnership: string) => {
+              return (
+                <span key={`stakeholder-${stakeholderPartnership}`}>
+                  {stakeholderPartnership}
+                </span>
+              );
+            })
+          ) : (
+            <span>None</span>
+          )}
+        </Typography>
       </Box>
     </Box>
   );
