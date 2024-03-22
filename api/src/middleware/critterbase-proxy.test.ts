@@ -7,24 +7,24 @@ describe('CritterbaseProxy', () => {
   describe('proxyFilter', () => {
     sinon.stub(CbProxy, 'getSimsAppHostUrl').returns('SIMS');
 
-    it.only('should reject all requests not coming from SIMS APP', () => {
+    it('should reject all requests not coming from SIMS APP', () => {
       expect(CbProxy.proxyFilter('test', { headers: { origin: 'NOT-SIMS' } } as Request)).to.be.false;
     });
-    it.only('should allow requests coming from SIMS APP', () => {
+    it('should allow requests coming from SIMS APP', () => {
       expect(CbProxy.proxyFilter('test', { headers: { origin: 'SIMS' } } as Request)).to.be.false;
     });
 
-    it.only('should allow all GET/POST/PATCH requests', () => {
+    it('should allow all GET/POST/PATCH requests', () => {
       expect(CbProxy.proxyFilter('test', { method: 'GET', headers: { origin: 'SIMS' } } as Request)).to.be.true;
       expect(CbProxy.proxyFilter('test', { method: 'POST', headers: { origin: 'SIMS' } } as Request)).to.be.true;
       expect(CbProxy.proxyFilter('test', { method: 'PATCH', headers: { origin: 'SIMS' } } as Request)).to.be.true;
     });
 
-    it.only('should reject unknown request methods', () => {
+    it('should reject unknown request methods', () => {
       expect(CbProxy.proxyFilter('test', { method: 'UNKNOWN', headers: { origin: 'SIMS' } } as Request)).to.be.false;
     });
 
-    it.only('should allow DELETE requests to capture endpoint', () => {
+    it('should allow DELETE requests to capture endpoint', () => {
       expect(
         CbProxy.proxyFilter('/api/critterbase/captures/id', {
           method: 'DELETE',
@@ -40,7 +40,7 @@ describe('CritterbaseProxy', () => {
       ).to.be.false;
     });
 
-    it.only('should allow DELETE requests to markings endpoint', () => {
+    it('should allow DELETE requests to markings endpoint', () => {
       expect(
         CbProxy.proxyFilter('/api/critterbase/markings/id', {
           method: 'DELETE',
@@ -56,7 +56,7 @@ describe('CritterbaseProxy', () => {
       ).to.be.false;
     });
 
-    it.only('should allow DELETE requests to measurement qualitative endpoint', () => {
+    it('should allow DELETE requests to measurement qualitative endpoint', () => {
       expect(
         CbProxy.proxyFilter('/api/critterbase/measurements/qualitative/id', {
           method: 'DELETE',
@@ -72,7 +72,7 @@ describe('CritterbaseProxy', () => {
       ).to.be.false;
     });
 
-    it.only('should allow DELETE requests to collection units endpoint', () => {
+    it('should allow DELETE requests to collection units endpoint', () => {
       expect(
         CbProxy.proxyFilter('/api/critterbase/collectionUnits/id', {
           method: 'DELETE',
@@ -88,7 +88,7 @@ describe('CritterbaseProxy', () => {
       ).to.be.false;
     });
 
-    it.only('should allow DELETE requests to collection units endpoint', () => {
+    it('should allow DELETE requests to collection units endpoint', () => {
       expect(
         CbProxy.proxyFilter('/api/critterbase/mortality/id', {
           method: 'DELETE',
