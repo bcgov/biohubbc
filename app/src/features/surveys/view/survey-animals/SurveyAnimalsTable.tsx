@@ -34,7 +34,6 @@ export const SurveyAnimalsTable = ({
 }: ISurveyAnimalsTableProps): JSX.Element => {
   const animalDeviceData: ISurveyAnimalsTableEntry[] = deviceData
     ? [...animalData] // spreading this prevents this error "TypeError: Cannot assign to read only property '0' of object '[object Array]' in typescript"
-        .sort() // TODO NICK ((a, b) => new Date(a.create_timestamp).getTime() - new Date(b.create_timestamp).getTime()) //This sort needed to avoid arbitrary reordering of the table when it refreshes after adding or editing
         .map((animal) => {
           const deployments = deviceData.filter((device) => device.critter_id === animal.critter_id);
           return {

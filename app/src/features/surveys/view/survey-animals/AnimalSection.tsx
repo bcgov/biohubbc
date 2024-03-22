@@ -116,8 +116,8 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
    *
    * example: 'marking: ear tag | colour: blue'
    *
-   * @param {SubHeaderData} subHeaderData - [TODO:description]
-   * @returns {[TODO:type]} [TODO:description]
+   * @param {SubHeaderData} subHeaderData - Key value pairs.
+   * @returns {string} Formatted sub-header.
    */
   const formatSubHeader = (subHeaderData: SubHeaderData) => {
     const formatArr: string[] = [];
@@ -131,7 +131,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     return formatArr.join(' | ');
   };
 
-  const AddButton = ({ label }: { label: string }) => (
+  const getAddButton = (label: string) => (
     <Button
       startIcon={<Icon path={mdiPlus} size={1} />}
       variant="contained"
@@ -198,7 +198,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     return (
       <AnimalSectionWrapper
         form={<CollectionUnitAnimalForm {...SECTION_FORM_PROPS} />}
-        addBtn={<AddButton label={SurveyAnimalsI18N.animalCollectionUnitAddBtn} />}
+        addBtn={getAddButton(SurveyAnimalsI18N.animalCollectionUnitAddBtn)}
         infoText={SurveyAnimalsI18N.animalCollectionUnitHelp}
         section={props.section}
         critter={props.critter}>
@@ -228,7 +228,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     return (
       <AnimalSectionWrapper
         form={<MarkingAnimalForm {...SECTION_FORM_PROPS} />}
-        addBtn={<AddButton label={SurveyAnimalsI18N.animalMarkingAddBtn} />}
+        addBtn={getAddButton(SurveyAnimalsI18N.animalMarkingAddBtn)}
         infoText={SurveyAnimalsI18N.animalMarkingHelp}
         section={props.section}
         critter={props.critter}>
@@ -255,7 +255,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
       <AnimalSectionWrapper
         form={<MeasurementAnimalForm {...SECTION_FORM_PROPS} />}
         infoText={SurveyAnimalsI18N.animalMeasurementHelp}
-        addBtn={<AddButton label={SurveyAnimalsI18N.animalMeasurementAddBtn} />}
+        addBtn={getAddButton(SurveyAnimalsI18N.animalMeasurementAddBtn)}
         section={props.section}
         critter={props.critter}>
         <TransitionGroup>
@@ -310,9 +310,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
         form={<MortalityAnimalForm {...SECTION_FORM_PROPS} />}
         infoText={SurveyAnimalsI18N.animalMortalityHelp}
         addBtn={
-          props.critter.mortality.length === 0 ? (
-            <AddButton label={SurveyAnimalsI18N.animalMortalityAddBtn} />
-          ) : undefined
+          props.critter.mortality.length === 0 ? getAddButton(SurveyAnimalsI18N.animalMortalityAddBtn) : undefined
         }
         section={props.section}
         critter={props.critter}>
@@ -342,7 +340,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
       <AnimalSectionWrapper
         form={<FamilyAnimalForm {...SECTION_FORM_PROPS} />}
         infoText={SurveyAnimalsI18N.animalFamilyHelp}
-        addBtn={<AddButton label={SurveyAnimalsI18N.animalFamilyAddBtn} />}
+        addBtn={getAddButton(SurveyAnimalsI18N.animalFamilyAddBtn)}
         section={props.section}
         critter={props.critter}>
         <TransitionGroup>
@@ -391,7 +389,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     return (
       <AnimalSectionWrapper
         form={<CaptureAnimalForm {...SECTION_FORM_PROPS} />}
-        addBtn={<AddButton label={SurveyAnimalsI18N.animalCaptureAddBtn} />}
+        addBtn={getAddButton(SurveyAnimalsI18N.animalCaptureAddBtn)}
         infoText={SurveyAnimalsI18N.animalCaptureHelp}
         section={props.section}
         critter={props.critter}>

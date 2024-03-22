@@ -82,7 +82,6 @@ const AnimalList = (props: IAnimalListProps) => {
   const { isLoading, selectedSection, onSelectSection, refreshCritter, surveyCritters, onAddButton } = props;
 
   const history = useHistory();
-  //const cbApi = useCritterbaseApi();
   const { cid: survey_critter_id } = useQuery();
 
   const getSectionIcon = (section: ANIMAL_SECTION) => {
@@ -109,7 +108,6 @@ const AnimalList = (props: IAnimalListProps) => {
   const handleCritterSelect = async (critter: ISimpleCritterWithInternalId) => {
     if (critter.survey_critter_id === Number(survey_critter_id)) {
       history.replace(history.location.pathname);
-      //onSelectCritter();
     } else {
       refreshCritter(critter.critter_id);
       history.push(`?cid=${critter.survey_critter_id}`);

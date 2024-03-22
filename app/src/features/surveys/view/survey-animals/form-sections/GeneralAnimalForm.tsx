@@ -10,7 +10,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { ICritterDetailedResponse, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { v4 } from 'uuid';
 import { AnimalSex, ANIMAL_FORM_MODE, CreateCritterSchema, ICreateCritter, isRequiredInSchema } from '../animal';
 
@@ -53,7 +53,6 @@ const GeneralAnimalForm = (props: GeneralAnimalFormProps<ICreateCritter>) => {
     try {
       if (props.formMode === ANIMAL_FORM_MODE.ADD) {
         await bhApi.survey.createCritterAndAddToSurvey(props.projectId, props.surveyId, values);
-        //await cbApi.critters.createCritter(values);
         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created critter.` });
       }
       if (props.formMode === ANIMAL_FORM_MODE.EDIT) {
