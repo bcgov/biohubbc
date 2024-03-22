@@ -440,14 +440,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   const tsnMeasurements = useCallback(async (tsn: number): Promise<TSNMeasurement | null | undefined> => {
     // TODO: update this to be cached like the species information
     if (!tsnMeasurementMap[tsn]) {
-      try {
-        const response = await critterbaseApi.xref.getTaxonMeasurements(tsn);
+      const response = await critterbaseApi.xref.getTaxonMeasurements(tsn);
 
-        tsnMeasurementMap[String(tsn)] = response;
-      } catch (error) {
-        // TODO: what should this do?
-        console.log(error);
-      }
+      tsnMeasurementMap[String(tsn)] = response;
     }
     return tsnMeasurementMap[tsn];
   }, []);
@@ -801,8 +796,19 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     }
 
     // Validate rows
-    const validationErrors = await _validateRows();
-    if (validationErrors) {
+    try {
+      const validationErrors = await _validateRows();
+      if (validationErrors) {
+        return;
+      }
+    } catch (error) {
+      setErrorDialog({
+        onOk: () => setErrorDialog({ open: false }),
+        onClose: () => setErrorDialog({ open: false }),
+        dialogTitle: ObservationsTableI18N.fetchingTSNMeasurementErrorDialogTitle,
+        dialogText: ObservationsTableI18N.fetchingTSNMeasurementErrorDialogText,
+        open: true
+      });
       return;
     }
 
