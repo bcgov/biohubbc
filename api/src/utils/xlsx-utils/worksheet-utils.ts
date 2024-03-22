@@ -10,6 +10,7 @@ import { getLogger } from '../logger';
 import { MediaFile } from '../media/media-file';
 import { safeToLowerCase } from '../string-utils';
 import { replaceCellDates, trimCellWhitespace } from './cell-utils';
+import { DEFAULT_XLSX_SHEET_NAME } from '../media/xlsx/xlsx-file';
 
 const defaultLog = getLogger('src/utils/xlsx-utils/worksheet-utils');
 
@@ -302,7 +303,7 @@ export const prepareWorksheetCells = (worksheet: xlsx.WorkSheet) => {
 export function validateCsvFile(
   xlsxWorksheets: xlsx.WorkSheet,
   columnValidator: IXLSXCSVValidator,
-  sheet = 'Sheet1'
+  sheet = DEFAULT_XLSX_SHEET_NAME
 ): boolean {
   // Validate the worksheet headers
   if (!validateWorksheetHeaders(xlsxWorksheets[sheet], columnValidator)) {
@@ -466,7 +467,7 @@ export function isQualitativeValueValid(
 export function getMeasurementColumnNameFromWorksheet(
   xlsxWorksheets: xlsx.WorkSheet,
   columnValidator: IXLSXCSVValidator,
-  sheet = 'Sheet1'
+  sheet = DEFAULT_XLSX_SHEET_NAME
 ): string[] {
   const columns = getWorksheetHeaders(xlsxWorksheets[sheet]);
   let aliasColumns: string[] = [];
@@ -496,7 +497,7 @@ export function getMeasurementColumnNameFromWorksheet(
 export async function getCBMeasurementsFromWorksheet(
   xlsxWorksheets: xlsx.WorkSheet,
   critterBaseService: CritterbaseService,
-  sheet = 'Sheet1'
+  sheet = DEFAULT_XLSX_SHEET_NAME
 ): Promise<TsnMeasurementMap> {
   const tsnMeasurements: TsnMeasurementMap = {};
   const rows = getWorksheetRowObjects(xlsxWorksheets[sheet]);

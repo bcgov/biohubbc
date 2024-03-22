@@ -42,6 +42,7 @@ import { DBService } from './db-service';
 import { ObservationSubCountMeasurementService } from './observation-subcount-measurement-service';
 import { PlatformService } from './platform-service';
 import { SubCountService } from './subcount-service';
+import { DEFAULT_XLSX_SHEET_NAME } from '../utils/media/xlsx/xlsx-file';
 
 const defaultLog = getLogger('services/observation-service');
 
@@ -103,12 +104,12 @@ export class ObservationService extends DBService {
    */
   validateCsvFile(xlsxWorksheets: xlsx.WorkSheet, columnValidator: IXLSXCSVValidator): boolean {
     // Validate the worksheet headers
-    if (!validateWorksheetHeaders(xlsxWorksheets['Sheet1'], columnValidator)) {
+    if (!validateWorksheetHeaders(xlsxWorksheets[DEFAULT_XLSX_SHEET_NAME], columnValidator)) {
       return false;
     }
 
     // Validate the worksheet column types
-    if (!validateWorksheetColumnTypes(xlsxWorksheets['Sheet1'], columnValidator)) {
+    if (!validateWorksheetColumnTypes(xlsxWorksheets[DEFAULT_XLSX_SHEET_NAME], columnValidator)) {
       return false;
     }
 
@@ -430,7 +431,7 @@ export class ObservationService extends DBService {
     const measurementColumns = getMeasurementColumnNameFromWorksheet(xlsxWorksheets, observationCSVColumnValidator);
 
     // Get the worksheet row objects
-    const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheets['Sheet1']);
+    const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheets[DEFAULT_XLSX_SHEET_NAME]);
     // Validate measurement data against
     if (!validateCsvMeasurementColumns(worksheetRowObjects, measurementColumns, tsnMeasurements)) {
       throw new Error('Failed to process file for importing observations. Measurement column validator failed.');

@@ -1,8 +1,9 @@
 import xlsx from 'xlsx';
 import { CSVWorkBook, CSVWorksheet, ICsvState } from '../csv/csv-file';
-import { DEFAULT_XLSX_SHEET } from '../dwc/dwc-archive-file';
 import { IMediaState, MediaFile, MediaValidation } from '../media-file';
 import { ValidationSchemaParser } from '../validation/validation-schema-parser';
+
+export const DEFAULT_XLSX_SHEET_NAME = 'Sheet1' as const;
 
 /**
  * Supports XLSX CSV files.
@@ -119,7 +120,7 @@ export class XLSXCSV {
   worksheetToBuffer(worksheet: xlsx.WorkSheet): Buffer {
     const newWorkbook = xlsx.utils.book_new();
 
-    xlsx.utils.book_append_sheet(newWorkbook, worksheet, DEFAULT_XLSX_SHEET);
+    xlsx.utils.book_append_sheet(newWorkbook, worksheet, DEFAULT_XLSX_SHEET_NAME);
 
     return xlsx.write(newWorkbook, { type: 'buffer', bookType: 'csv' });
   }

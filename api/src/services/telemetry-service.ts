@@ -15,6 +15,7 @@ import { BctwService, ICreateManualTelemetry } from './bctw-service';
 import { ICritterbaseUser } from './critterbase-service';
 import { DBService } from './db-service';
 import { SurveyCritterService } from './survey-critter-service';
+import { DEFAULT_XLSX_SHEET_NAME } from '../utils/media/xlsx/xlsx-file';
 
 const telemetryCSVColumnValidator: IXLSXCSVValidator = {
   columnNames: ['DEVICE_ID', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
@@ -84,7 +85,7 @@ export class TelemetryService extends DBService {
       throw new ApiGeneralError('Failed to process file for importing telemetry. Invalid CSV file.');
     }
 
-    const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheets['Sheet1']);
+    const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheets[DEFAULT_XLSX_SHEET_NAME]);
 
     // step 7 fetch survey deployments
     const bctwService = new BctwService(user);
