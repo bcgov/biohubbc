@@ -447,7 +447,7 @@ export function isQualitativeValueValid(
   value: string | number,
   measurement: CBQualitativeMeasurementTypeDefinition
 ): boolean {
-  // check if data is in the options for the
+  // Check for option value, label OR option uuid
   const foundOption = measurement.options.find(
     (option) =>
       option.option_value === Number(value) ||
@@ -507,6 +507,14 @@ export async function getCBMeasurementsFromWorksheet(
   return getCBMeasurementsFromTSN(tsns, critterBaseService);
 }
 
+/**
+ * Fetches measurement definitions from critterbase for a given list of TSNs and creates and returns a map with all data fetched
+ * Throws if a TSN does not return measurements.
+ *
+ * @param {string[]} tsns List of TSNs
+ * @param {CritterbaseService} critterBaseService Critterbase service
+ * @returns {*} Promise<TsnMeasurementMap>
+ */
 export async function getCBMeasurementsFromTSN(
   tsns: string[],
   critterBaseService: CritterbaseService
@@ -515,7 +523,6 @@ export async function getCBMeasurementsFromTSN(
   try {
     for (const tsn of tsns) {
       if (!tsnMeasurements[tsn]) {
-        // TODO: modify Critter Base to accept multiple TSN at once
         const measurements = await critterBaseService.getTaxonMeasurements(tsn);
         if (!measurements) {
           throw `No measurements found for tsn: ${tsn}`;
