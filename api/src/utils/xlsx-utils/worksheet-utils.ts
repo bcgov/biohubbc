@@ -319,10 +319,17 @@ export function validateCsvFile(
 
 export interface IMeasurementDataToValidate {
   tsn: string;
-  measurement_name: string;
+  measurement_key: string; // Column name, Grid table field or measurement_taxon_id to validate
   measurement_value: string | number;
 }
 
+/**
+ * Checks if all passed in measurement data is valid or returns false at first invalid measurement.
+ *
+ * @param {IMeasurementDataToValidate[]} data The measurement data to validate
+ * @param {TsnMeasurementMap} tsnMeasurementMap An object map of measurement definitions from Critterbase organized by TSN numbers
+ * @returns {*} boolean Results of validation
+ */
 export function validateMeasurements(
   data: IMeasurementDataToValidate[],
   tsnMeasurementMap: TsnMeasurementMap
@@ -336,8 +343,8 @@ export function validateMeasurements(
         if (measurements.qualitative.length > 0) {
           const measurement = measurements.qualitative.find(
             (measurement) =>
-              measurement.measurement_name.toLowerCase() === item.measurement_name.toLowerCase() ||
-              measurement.taxon_measurement_id === item.measurement_name
+              measurement.measurement_name.toLowerCase() === item.measurement_key.toLowerCase() ||
+              measurement.taxon_measurement_id === item.measurement_key
           );
           if (measurement) {
             return isQualitativeValueValid(item.measurement_value, measurement);
@@ -347,8 +354,8 @@ export function validateMeasurements(
         if (measurements.quantitative.length > 0) {
           const measurement = measurements.quantitative.find(
             (measurement) =>
-              measurement.measurement_name.toLowerCase() === item.measurement_name.toLowerCase() ||
-              measurement.taxon_measurement_id === item.measurement_name
+              measurement.measurement_name.toLowerCase() === item.measurement_key.toLowerCase() ||
+              measurement.taxon_measurement_id === item.measurement_key
           );
           if (measurement) {
             return isQuantitativeValueValid(Number(item.measurement_value), measurement);
@@ -381,7 +388,7 @@ export function validateCsvMeasurementColumns(
   const mappedData: IMeasurementDataToValidate[] = rows.flatMap((row) => {
     return measurementColumns.map((mColumn) => ({
       tsn: String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']),
-      measurement_name: mColumn,
+      measurement_key: mColumn,
       measurement_value: row[mColumn]
     }));
   });
@@ -442,7 +449,10 @@ export function isQualitativeValueValid(
 ): boolean {
   // check if data is in the options for the
   const foundOption = measurement.options.find(
-    (option) => option.option_value === value || option.option_label.toLowerCase() === String(value).toLowerCase()
+    (option) =>
+      option.option_value === Number(value) ||
+      option.option_label.toLowerCase() === String(value).toLowerCase() ||
+      option.qualitative_option_id.toLowerCase() === String(value)
   );
 
   defaultLog.debug({ label: 'isQualitativeValueValid', message: 'qualitative measurement error', value, measurement });

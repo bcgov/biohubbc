@@ -695,7 +695,7 @@ export function insertUpdateSurveyObservationsWithMeasurements(): RequestHandler
             const qualitativeValues = subcount.qualitative.map((qualitative) => {
               return {
                 tsn: String(item.standardColumns.itis_tsn),
-                measurement_name: qualitative.measurement_id,
+                measurement_key: qualitative.measurement_id,
                 measurement_value: qualitative.measurement_option_id
               };
             });
@@ -703,7 +703,7 @@ export function insertUpdateSurveyObservationsWithMeasurements(): RequestHandler
             const quantitativeValues: IMeasurementDataToValidate[] = subcount.quantitative.map((quantitative) => {
               return {
                 tsn: String(item.standardColumns.itis_tsn),
-                measurement_name: quantitative.measurement_id,
+                measurement_key: quantitative.measurement_id,
                 measurement_value: quantitative.measurement_value
               };
             });
