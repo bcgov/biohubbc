@@ -46,7 +46,9 @@ export const layerContentHandlers: Record<string, any> = {
           <div
             key={`${feature.id}-game-management-zone-name`}>{`Game Management Zone Name: ${feature.properties.GAME_MANAGEMENT_ZONE_NAME}`}</div>
           <div key={`${feature.id}-area`}>
-            {`Region Area: ${(feature.properties.FEATURE_AREA_SQM / 10000).toFixed(0)} ha`}
+            {`Region Area: ${(feature.properties.FEATURE_AREA_SQM / 10000).toLocaleString(undefined, {
+              maximumFractionDigits: 0
+            })} ha`}
           </div>
         </>
       );
@@ -69,7 +71,9 @@ export const layerContentHandlers: Record<string, any> = {
           <div
             key={`${feature.id}-lands-designation`}>{`Lands Designation: ${feature.properties.PROTECTED_LANDS_DESIGNATION}`}</div>
           <div key={`${feature.id}-area`}>
-            {`Region Area: ${(feature.properties.FEATURE_AREA_SQM / 10000).toFixed(0)} ha`}
+            {`Region Area: ${(feature.properties.FEATURE_AREA_SQM / 10000).toLocaleString(undefined, {
+              maximumFractionDigits: 0
+            })} ha`}
           </div>
         </>
       );
@@ -90,7 +94,9 @@ export const layerContentHandlers: Record<string, any> = {
         <>
           <div key={`${feature.id}-region`}>{`Region Name: ${feature.properties.REGION_NAME}`}</div>
           <div key={`${feature.id}-area`}>
-            {`Region Area: ${(feature.properties.FEATURE_AREA_SQM / 10000).toFixed(0)} ha`}
+            {`Region Area: ${(feature.properties.FEATURE_AREA_SQM / 10000).toLocaleString(undefined, {
+              maximumFractionDigits: 0
+            })} ha`}
           </div>
         </>
       );
