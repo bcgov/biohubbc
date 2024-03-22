@@ -1,10 +1,9 @@
 import { Typography } from '@mui/material';
 import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
-import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
-import { Feature, GeoJsonProperties, Geometry, Polygon } from 'geojson';
+import { Feature, GeoJsonProperties, Geometry } from 'geojson';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { LatLngBounds } from 'leaflet';
 import _ from 'lodash';
 import { IDialogContext } from '../contexts/dialogContext';
 
@@ -113,24 +112,6 @@ export const getFormattedDate = (dateFormat: DATE_FORMAT, date: string): string 
 };
 
 /**
- * Get a formatted time string.
- *
- * @param {TIME_FORMAT} timeFormat
- * @param {string} date ISO 8601 date string
- * @return {string} formatted time string, or an empty string if unable to parse the date
- */
-export const getFormattedTime = (timeFormat: TIME_FORMAT, date: string): string => {
-  const dateJs = dayjs(date);
-
-  if (!dateJs.isValid()) {
-    //date was invalid
-    return '';
-  }
-
-  return dateJs.format(timeFormat);
-};
-
-/**
  * Get a formatted amount string.
  *
  * @param {number} [amount]
@@ -177,47 +158,6 @@ export const getFormattedFileSize = (fileSize: number) => {
   // gigabyte size
   return `${(fileSize / 1000000000).toFixed(1)} GB`;
 };
-
-/**
- * Function to get an object key by the value
- * Ex: let obj = { 'role': 'admin' } -> getKeyByValue(obj, 'admin') will return 'role'
- *
- * @param {object} object
- * @param {any} value
- * @returns {any} key for the corresponding value
- */
-export function getKeyByValue(object: any, value: any) {
-  return Object.keys(object).find((key) => object[key] === value);
-}
-
-/**
- * Converts a `LatLngBounds` object into a GeoJSON Feature object.
- *
- * @export
- * @param {LatLngBounds} bounds
- * @return {*}  {Feature<Polygon>}
- */
-export function getFeatureObjectFromLatLngBounds(bounds: LatLngBounds): Feature<Polygon> {
-  const southWest = bounds.getSouthWest();
-  const northEast = bounds.getNorthEast();
-
-  return {
-    type: 'Feature',
-    properties: {},
-    geometry: {
-      type: 'Polygon',
-      coordinates: [
-        [
-          [southWest.lng, southWest.lat],
-          [southWest.lng, northEast.lat],
-          [northEast.lng, northEast.lat],
-          [northEast.lng, southWest.lat],
-          [southWest.lng, southWest.lat]
-        ]
-      ]
-    }
-  };
-}
 
 /**
  * Takes an array of objects and produces an object URL pointing to a Blob which contains
@@ -286,19 +226,6 @@ export const alphabetizeObjects = <T extends { [key: string]: any }>(data: T[], 
  * @returns n if a number, 0 otherwise
  */
 export const coerceZero = (n: any): number => (isNaN(n ?? NaN) ? 0 : Number(n));
-
-/**
- * Format a field name in a way that's appropriate for a UI label
- * ie. format_field_name -> Format Field Name
- * @param str format_field_name
- * @returns Format Field Name
- */
-export const formatLabel = (str: string): string => {
-  return str
-    .split('_')
-    .map((a) => a.charAt(0).toUpperCase() + a.slice(1))
-    .join(' ');
-};
 
 /**
  * Checks if two dates are the same, but safe to use against nullish values.
@@ -517,13 +444,11 @@ export const firstOrNull = <T,>(arr: T[]): T | null => (arr.length > 0 ? arr[0] 
  * @param seed
  * @returns
  */
-export const getRandomHexColor = (seed: number, min = 70, max = 150): string => {
-  // Generate a random color component and convert it to a two-digit hex value
-  const randomChannel = () => {
-    const x = Math.sin(seed) * 10000;
-    return Math.floor((x - Math.floor(x)) * (max - min + 1)) + min.toString(16).padStart(2, '0');
+export const getRandomHexColor = (seed: number, min = 100, max = 170): string => {
+  const randomChannel = (): string => {
+    const x = Math.sin(seed++) * 10000;
+    return (Math.floor((x - Math.floor(x)) * (max - min + 1)) + min).toString(16).padStart(2, '0');
   };
 
-  // Concatenate three random color components to form a hex color
   return `#${randomChannel()}${randomChannel()}${randomChannel()}`;
 };

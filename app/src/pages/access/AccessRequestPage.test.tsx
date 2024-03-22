@@ -50,18 +50,6 @@ describe('AccessRequestPage', () => {
     cleanup();
   });
 
-  it.skip('renders correctly', async () => {
-    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
-      system_roles: [{ id: 1, name: 'Creator' }]
-    });
-
-    const { asFragment } = renderContainer();
-
-    await waitFor(() => {
-      expect(asFragment()).toMatchSnapshot();
-    });
-  });
-
   describe('Log Out', () => {
     const history = createMemoryHistory();
 
