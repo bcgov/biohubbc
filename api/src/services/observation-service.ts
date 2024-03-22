@@ -17,6 +17,7 @@ import {
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { parseS3File } from '../utils/media/media-utils';
+import { DEFAULT_XLSX_SHEET_NAME } from '../utils/media/xlsx/xlsx-file';
 import {
   constructWorksheets,
   constructXLSXWorkbook,
@@ -42,7 +43,6 @@ import { DBService } from './db-service';
 import { ObservationSubCountMeasurementService } from './observation-subcount-measurement-service';
 import { PlatformService } from './platform-service';
 import { SubCountService } from './subcount-service';
-import { DEFAULT_XLSX_SHEET_NAME } from '../utils/media/xlsx/xlsx-file';
 
 const defaultLog = getLogger('services/observation-service');
 

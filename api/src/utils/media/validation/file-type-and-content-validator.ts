@@ -71,9 +71,7 @@ export type SubmissionRequiredFilesValidatorConfig = {
  * @param {SubmissionRequiredFilesValidatorConfig} [config]
  * @return {*}  {(XLSXCSVValidator)}
  */
-export const getRequiredFilesValidator = (
-  config?: SubmissionRequiredFilesValidatorConfig
-): XLSXCSVValidator => {
+export const getRequiredFilesValidator = (config?: SubmissionRequiredFilesValidatorConfig): XLSXCSVValidator => {
   return (file: any) => {
     if (!config) {
       // No required files specified

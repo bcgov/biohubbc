@@ -9,11 +9,7 @@ import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
 import { GetAttachmentsData, GetSurveyProprietorData, GetSurveyPurposeAndMethodologyData } from '../models/survey-view';
 import { getMockDBConnection } from '../__mocks__/db';
-import {
-  SurveyRecord,
-  SurveyRepository,
-  SurveyTypeRecord
-} from './survey-repository';
+import { SurveyRecord, SurveyRepository, SurveyTypeRecord } from './survey-repository';
 
 chai.use(sinonChai);
 

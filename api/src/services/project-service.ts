@@ -11,7 +11,7 @@ import {
   GetReportAttachmentsData,
   IGetProject,
   IProjectAdvancedFilters,
-ProjectData,
+  ProjectData,
   ProjectListData
 } from '../models/project-view';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
@@ -34,7 +34,7 @@ import { SurveyService } from './survey-service';
  * @export
  * @enum {string}
  */
-enum COMPLETION_STATUS {
+export enum COMPLETION_STATUS {
   COMPLETED = 'Completed',
   ACTIVE = 'Active'
 }

@@ -69,7 +69,7 @@ describe('getFileMimeTypeValidator', () => {
 
     const validator = getFileMimeTypeValidator(validMimetypes);
 
-    const mediaFile = new MediaFile('otherName', 'otherMime', Buffer.from(''));
+    const mediaFile = new MediaFile('otherName', 'validMime', Buffer.from(''));
 
     const xlsxCSV = new XLSXCSV(mediaFile);
 

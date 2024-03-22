@@ -8,9 +8,9 @@ import {
 } from '../../services/critterbase-service';
 import { getLogger } from '../logger';
 import { MediaFile } from '../media/media-file';
+import { DEFAULT_XLSX_SHEET_NAME } from '../media/xlsx/xlsx-file';
 import { safeToLowerCase } from '../string-utils';
 import { replaceCellDates, trimCellWhitespace } from './cell-utils';
-import { DEFAULT_XLSX_SHEET_NAME } from '../media/xlsx/xlsx-file';
 
 const defaultLog = getLogger('src/utils/xlsx-utils/worksheet-utils');
 

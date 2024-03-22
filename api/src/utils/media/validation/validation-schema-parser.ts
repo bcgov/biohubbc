@@ -15,12 +15,12 @@ import {
   getValidRangeFieldsValidator
 } from '../csv/validation/csv-row-validator';
 import { getParentChildKeyMatchValidator } from '../xlsx/validation/xlsx-validation';
+import { XLSXCSVValidator } from '../xlsx/xlsx-file';
 import {
   getFileEmptyValidator,
   getFileMimeTypeValidator,
   getRequiredFilesValidator
 } from './file-type-and-content-validator';
-import { XLSXCSVValidator } from '../xlsx/xlsx-file';
 
 export const ValidationRulesRegistry = {
   registry: [
@@ -97,7 +97,7 @@ export class ValidationSchemaParser {
     }
   }
 
-  getSubmissionValidations(): (XLSXCSVValidator)[] {
+  getSubmissionValidations(): XLSXCSVValidator[] {
     const validationSchemas = this.getSubmissionValidationSchemas();
 
     const rules: XLSXCSVValidator[] = [];
