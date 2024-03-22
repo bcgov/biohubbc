@@ -35,9 +35,9 @@ const allowedDeleteRoutesRegex: RegExp[] = [
  * @param {Request} req - Express request.
  * @returns {boolean} If request can be passed to CritterbaeProxy.
  */
-const proxyFilter = (pathname: string, req: Request) => {
+export const proxyFilter = (pathname: string, req: Request) => {
   // Reject requests NOT coming directly from SIMS APP / frontend.
-  if (req.headers.origin !== process.env.APP_HOST) {
+  if (req.headers.origin !== getSimsAppHostUrl()) {
     return false;
   }
   // Only supporting specific delete requests.
@@ -53,11 +53,20 @@ const proxyFilter = (pathname: string, req: Request) => {
 };
 
 /**
+ * Get the SIMS APP host URL.
+ *
+ * @return {*}
+ */
+export const getSimsAppHostUrl = () => {
+  return process.env.APP_HOST;
+};
+
+/**
  * Get the Critterbase API host URL.
  *
  * @return {*}
  */
-const getCritterbaseApiHostUrl = () => {
+export const getCritterbaseApiHostUrl = () => {
   return process.env.CB_API_HOST;
 };
 
