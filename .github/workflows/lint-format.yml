@@ -20,18 +20,18 @@ jobs:
       # Install Node - for `node` and `npm` commands
       # Note: This already uses actions/cache internally, so repeat calls in subsequent jobs are not a performance hit
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 14
 
       - name: Checkout Target Branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
 
       # Cache the repo
       - name: Cache repo
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: cache-repo
         env:
           cache-name: cache-repo
@@ -48,13 +48,13 @@ jobs:
       - checkoutRepo
     steps:
       - name: Setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 14
 
       # Load repo from cache
       - name: Cache repo
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: cache-repo
         env:
           cache-name: cache-repo
@@ -65,11 +65,11 @@ jobs:
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # api
       - name: Cache api node modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-api-node-modules
         with:
@@ -93,7 +93,7 @@ jobs:
 
       # app
       - name: Cache app node modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-app-node-modules
         with:
@@ -117,7 +117,7 @@ jobs:
 
       # database
       - name: Cache database node modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-database-node-modules
         with:
