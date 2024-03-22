@@ -68,7 +68,7 @@ export class XLSXCSV {
   validateMedia(validationSchemaParser: ValidationSchemaParser): void {
     const validators = validationSchemaParser.getSubmissionValidations();
 
-    this.validate(validators as XLSXCSVValidator[]);
+    this.validate(validators);
   }
 
   /**
