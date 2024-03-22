@@ -1,12 +1,11 @@
 import CheckBox from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlank from '@mui/icons-material/CheckBoxOutlineBlank';
-import { ListItemText } from '@mui/material';
+import { ListItem, ListItemIcon, ListItemText } from '@mui/material';
 import Autocomplete, {
   AutocompleteChangeReason,
   AutocompleteInputChangeReason,
   createFilterOptions
 } from '@mui/material/Autocomplete';
-import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import Chip from '@mui/material/Chip';
 import TextField from '@mui/material/TextField';
@@ -131,17 +130,27 @@ const MultiAutocompleteField: React.FC<IMultiAutocompleteField> = (props) => {
       filterOptions={createFilterOptions({ limit: props.filterLimit })}
       renderOption={(renderProps, renderOption, { selected }) => {
         return (
-          <Box component="li" {...renderProps}>
-            <Checkbox
-              icon={<CheckBoxOutlineBlank fontSize="small" />}
-              checkedIcon={<CheckBox fontSize="small" />}
-              checked={selected}
-              disabled={props.options.includes(renderOption) || false}
-              value={renderOption.value}
-              color="default"
-            />
+          <ListItem
+            {...renderProps}
+            sx={{
+              '& .MuiListItemText-primary': {
+                fontSize: '0.875rem',
+                fontWeight: 700
+              }
+            }}
+          >
+            <ListItemIcon>
+              <Checkbox
+                icon={<CheckBoxOutlineBlank fontSize="small" />}
+                checkedIcon={<CheckBox fontSize="small" />}
+                checked={selected}
+                disabled={props.options.includes(renderOption) || false}
+                value={renderOption.value}
+                color="default"
+              />
+            </ListItemIcon>
             <ListItemText primary={renderOption.label} secondary={renderOption.subText} />
-          </Box>
+          </ListItem>
         );
       }}
       renderInput={(params) => (
