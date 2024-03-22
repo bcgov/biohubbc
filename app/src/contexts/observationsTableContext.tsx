@@ -343,7 +343,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'observation_date', sort: 'desc' }]);
 
   // TSN Measurement Map
-  const tsnMeasurementMap: TSNMeasurementMap = {};
+  const tsnMeasurementMapRef = useRef<TSNMeasurementMap>({});
 
   /**
    * Returns true if the given row has a validation error.
@@ -438,13 +438,14 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    * Fetches measurement definitions from Critterbase for a given itis_tsn number
    */
   const tsnMeasurements = useCallback(async (tsn: number): Promise<TSNMeasurement | null | undefined> => {
-    // TODO: update this to be cached like the species information
-    if (!tsnMeasurementMap[tsn]) {
+    const currentMap = tsnMeasurementMapRef.current;
+    if (!currentMap[tsn]) {
       const response = await critterbaseApi.xref.getTaxonMeasurements(tsn);
 
-      tsnMeasurementMap[String(tsn)] = response;
+      currentMap[String(tsn)] = response;
+      tsnMeasurementMapRef.current = currentMap;
     }
-    return tsnMeasurementMap[tsn];
+    return currentMap[tsn];
   }, []);
 
   /**
