@@ -1,4 +1,4 @@
-import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import assert from 'assert';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
@@ -31,17 +31,13 @@ const GeneralInformation = () => {
       .join(', ') || '';
 
   return (
-    <Grid component="dl" container spacing={0}>
-      <Grid item sm={6}>
-        <Typography component="dt" color="textSecondary" variant="subtitle2">
-          Program
-        </Typography>
+    <Box component="dl">
+      <Box className="row">
+        <Typography component="dt">Program</Typography>
         <Typography component="dd">{projectPrograms ? <>{projectPrograms}</> : 'No Programs'}</Typography>
-      </Grid>
-      <Grid item sm={6}>
-        <Typography component="dt" color="textSecondary" variant="subtitle2">
-          Timeline
-        </Typography>
+      </Box>
+      <Box className="row">
+        <Typography component="dt">Timeline</Typography>
         <Typography component="dd">
           {projectData.project.end_date ? (
             <>
@@ -58,8 +54,8 @@ const GeneralInformation = () => {
             </>
           )}
         </Typography>
-      </Grid>
-    </Grid>
+      </Box>
+    </Box>
   );
 };
 
