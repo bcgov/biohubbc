@@ -116,7 +116,7 @@ const phases = {
     memoryLimit: '500Mi',
     replicas: '2',
     replicasMax: '2',
-    biohubFeatureFlag: 'false',
+    biohubFeatureFlag: 'true',
     backbonePublicApiHost: 'https://api-test-biohub-platform.apps.silver.devops.gov.bc.ca',
     biohubTaxonPath: '/api/taxonomy/taxon',
     biohubTaxonTsnPath: '/api/taxonomy/taxon/tsn'
