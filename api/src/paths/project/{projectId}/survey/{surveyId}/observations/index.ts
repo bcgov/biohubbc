@@ -718,7 +718,7 @@ export function insertUpdateSurveyObservationsWithMeasurements(): RequestHandler
         throw new Error('Failed to save observation data, measurement values failed validation.');
       }
 
-      await observationService.insertUpdateSurveyObservationsWithMeasurements(surveyId, []);
+      await observationService.insertUpdateSurveyObservationsWithMeasurements(surveyId, observationRows);
 
       await connection.commit();
 

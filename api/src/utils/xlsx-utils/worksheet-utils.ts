@@ -508,8 +508,7 @@ export async function getCBMeasurementsFromTSN(
         // TODO: modify Critter Base to accept multiple TSN at once
         const measurements = await critterBaseService.getTaxonMeasurements(tsn);
         if (!measurements) {
-          throw `No measurements for tsn: ${tsn}`;
-          // TODO: Any data for a TSN that has no measurements is invalid and should reject the uploaded CSV
+          throw `No measurements found for tsn: ${tsn}`;
         }
 
         tsnMeasurements[tsn] = measurements;
@@ -517,7 +516,7 @@ export async function getCBMeasurementsFromTSN(
     }
   } catch (error) {
     getLogger('utils/xlsx-utils').error({ label: 'getCBMeasurementsFromWorksheet', message: 'error', error });
-    throw new ApiGeneralError('Error connecting to the Critterbase API');
+    throw new ApiGeneralError(`Error connecting to the Critterbase API: ${error}`);
   }
   return tsnMeasurements;
 }
