@@ -21,6 +21,11 @@ export enum AnimalSex {
   HERM = 'Hermaphroditic'
 }
 
+export enum AnimalRelationship {
+  CHILD = 'children',
+  PARENT = 'parents'
+}
+
 export enum ANIMAL_SECTION {
   GENERAL = 'General',
   COLLECTION_UNITS = 'Ecological Units',
@@ -199,8 +204,10 @@ export const CreateCritterMortalitySchema = yup.object({
 });
 
 export const CreateCritterFamilySchema = yup.object({
-  family_id: yup.string().required(req),
-  relationship: yup.mixed().oneOf(['parent', 'child', 'sibling']).required(req)
+  critter_id: yup.string().uuid().required(),
+  family_id: yup.string().optional(),
+  family_label: yup.string().optional(),
+  relationship: yup.mixed().oneOf(Object.values(AnimalRelationship)).required(req)
 });
 
 /**

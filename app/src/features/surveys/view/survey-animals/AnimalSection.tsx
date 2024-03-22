@@ -14,7 +14,7 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
-import { ANIMAL_FORM_MODE, ANIMAL_SECTION } from './animal';
+import { AnimalRelationship, ANIMAL_FORM_MODE, ANIMAL_SECTION } from './animal';
 import { AnimalSectionWrapper } from './AnimalSectionWrapper';
 import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
 import CollectionUnitAnimalForm from './form-sections/CollectionUnitAnimalForm';
@@ -28,6 +28,7 @@ import GeneralAnimalSummary from './GeneralAnimalSummary';
 dayjs.extend(utc);
 
 type SubHeaderData = Record<string, string | number | null | undefined>;
+type DeleteFn = (...args: any[]) => Promise<unknown>;
 
 interface IAnimalSectionProps {
   /**
@@ -87,7 +88,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
     refreshDetailedCritter();
   };
 
-  const handleDelete = async (deleteService: (id: string) => Promise<unknown>, id: string, name: string) => {
+  const handleDelete = async <T extends DeleteFn>(name: string, deleteService: T, ...args: Parameters<T>) => {
     const closeConfirmDialog = () => dialog.setYesNoDialog({ open: false });
 
     dialog.setYesNoDialog({
@@ -97,7 +98,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
       onYes: async () => {
         closeConfirmDialog();
         try {
-          await deleteService(id);
+          await deleteService(...args);
           await refreshDetailedCritter();
           dialog.setSnackbar({ open: true, snackbarMessage: `Successfully deleted ${name}` });
         } catch (err) {
@@ -189,9 +190,9 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
                 onClickEdit={() => handleOpenEditForm(unit)}
                 onClickDelete={async () => {
                   handleDelete(
+                    'ecological unit',
                     cbApi.collectionUnit.deleteCollectionUnit,
-                    unit.critter_collection_unit_id,
-                    'ecological unit'
+                    unit.critter_collection_unit_id
                   );
                 }}
               />
@@ -218,7 +219,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
                 subHeader={formatSubHeader({ Location: marking.body_location, Colour: marking.primary_colour })}
                 onClickEdit={() => handleOpenEditForm(marking)}
                 onClickDelete={async () => {
-                  handleDelete(cbApi.marking.deleteMarking, marking.marking_id, 'marking');
+                  handleDelete('marking', cbApi.marking.deleteMarking, marking.marking_id);
                 }}
               />
             </Collapse>
@@ -249,9 +250,9 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
                 onClickEdit={() => handleOpenEditForm(measurement)}
                 onClickDelete={async () => {
                   handleDelete(
+                    'measurement',
                     cbApi.measurement.deleteQuantitativeMeasurement,
-                    measurement.measurement_quantitative_id,
-                    'measurement'
+                    measurement.measurement_quantitative_id
                   );
                 }}
               />
@@ -269,9 +270,9 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
                 onClickEdit={() => handleOpenEditForm(measurement)}
                 onClickDelete={async () => {
                   handleDelete(
+                    'measurement',
                     cbApi.measurement.deleteQualitativeMeasurement,
-                    measurement.measurement_qualitative_id,
-                    'measurement'
+                    measurement.measurement_qualitative_id
                   );
                 }}
               />
@@ -305,7 +306,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
                 })}
                 onClickEdit={() => handleOpenEditForm(mortality)}
                 onClickDelete={async () => {
-                  handleDelete(cbApi.mortality.deleteMortality, mortality.mortality_id, 'mortality');
+                  handleDelete('mortality', cbApi.mortality.deleteMortality, mortality.mortality_id);
                 }}
               />
             </Collapse>
@@ -333,7 +334,11 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
                 })}
                 onClickEdit={() => handleOpenEditForm(parent)}
                 onClickDelete={async () => {
-                  // handleDelete(deleteMarking, 'marking');
+                  handleDelete('parent relationship', cbApi.family.deleteRelationship, {
+                    relationship: AnimalRelationship.PARENT,
+                    familyID: parent.family_id,
+                    critterID: props.critter?.critter_id ?? ''
+                  });
                 }}
               />
             </Collapse>
@@ -347,7 +352,11 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
                 })}
                 onClickEdit={() => handleOpenEditForm(child)}
                 onClickDelete={async () => {
-                  //handleDelete(cbApi.capture.deleteCapture, capture.capture_id, 'capture');
+                  handleDelete('child relationship', cbApi.family.deleteRelationship, {
+                    relationship: AnimalRelationship.CHILD,
+                    familyID: child.family_id,
+                    critterID: props.critter?.critter_id ?? ''
+                  });
                 }}
               />
             </Collapse>
@@ -376,7 +385,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
                 })}
                 onClickEdit={() => handleOpenEditForm(capture)}
                 onClickDelete={async () => {
-                  handleDelete(cbApi.capture.deleteCapture, capture.capture_id, 'capture');
+                  handleDelete('capture', cbApi.capture.deleteCapture, capture.capture_id);
                 }}
               />
             </Collapse>

@@ -10,7 +10,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { Breakpoint } from '@mui/system';
 import FormikDevDebugger from 'components/formik/FormikDevDebugger';
 import { Formik, FormikValues } from 'formik';
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 
 export interface IEditDialogComponentProps<T> {
   element: any;

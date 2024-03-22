@@ -12,7 +12,7 @@ import { useDialogContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { IMortalityResponse } from 'interfaces/useCritterApi.interface';
 import { mapValues } from 'lodash-es';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   AnimalFormProps,
   ANIMAL_FORM_MODE,
@@ -36,7 +36,6 @@ const MortalityAnimalForm = (props: AnimalFormProps<IMortalityResponse>) => {
 
   const handleSave = async (values: ICreateCritterMortality) => {
     setLoading(true);
-
     // Replaces empty strings with null values.
     const patchedValues = mapValues(values, (value) => (value === '' ? null : value));
 
@@ -81,9 +80,9 @@ const MortalityAnimalForm = (props: AnimalFormProps<IMortalityResponse>) => {
           proximate_cause_of_death_id: props.formObject?.proximate_cause_of_death_id ?? '',
           proximate_cause_of_death_confidence: props.formObject?.proximate_cause_of_death_confidence,
           proximate_predated_by_itis_tsn: props.formObject?.proximate_predated_by_itis_tsn ?? undefined,
-          ultimate_cause_of_death_id: props.formObject?.proximate_cause_of_death_id ?? undefined,
-          ultimate_cause_of_death_confidence: props.formObject?.proximate_cause_of_death_confidence,
-          ultimate_predated_by_itis_tsn: props.formObject?.proximate_predated_by_itis_tsn ?? undefined
+          ultimate_cause_of_death_id: props.formObject?.ultimate_cause_of_death_id ?? undefined,
+          ultimate_cause_of_death_confidence: props.formObject?.ultimate_cause_of_death_confidence,
+          ultimate_predated_by_itis_tsn: props.formObject?.ultimate_predated_by_itis_tsn ?? undefined
         },
         validationSchema: CreateCritterMortalitySchema,
         element: <MortalityForm formObject={props.formObject} />
