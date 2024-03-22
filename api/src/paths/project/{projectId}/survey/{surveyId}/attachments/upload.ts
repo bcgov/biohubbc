@@ -55,6 +55,7 @@ POST.apiDoc = {
       'multipart/form-data': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['media'],
           properties: {
             media: {
@@ -73,6 +74,7 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: ['attachmentId', 'revision_count'],
             properties: {
               attachmentId: {

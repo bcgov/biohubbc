@@ -15,12 +15,15 @@ import PageHeader from 'components/layout/PageHeader';
 import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import { ListProjectsI18N } from 'constants/i18n';
 import { SYSTEM_ROLE } from 'constants/roles';
-import { CodesContext } from 'contexts/codesContext';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useCodesContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
+import useDataLoaderError from 'hooks/useDataLoaderError';
 import { IProjectsListItemData } from 'interfaces/useProjectApi.interface';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull, getFormattedDate } from 'utils/Utils';
@@ -49,7 +52,7 @@ const ProjectsListPage = () => {
 
   const biohubApi = useBiohubApi();
 
-  const codesContext = useContext(CodesContext);
+  const codesContext = useCodesContext();
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
@@ -60,6 +63,15 @@ const ProjectsListPage = () => {
       return biohubApi.project.getProjectsList(pagination, filter);
     }
   );
+
+  useDataLoaderError(projectsDataLoader, (dataLoader) => {
+    return {
+      dialogTitle: ListProjectsI18N.listProjectsErrorDialogTitle,
+      dialogText: ListProjectsI18N.listProjectsErrorDialogText,
+      dialogError: (dataLoader.error as APIError).message,
+      dialogErrorDetails: (dataLoader.error as APIError).errors
+    };
+  });
 
   const getProjectPrograms = (project: IProjectsListItemData) => {
     return (

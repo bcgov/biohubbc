@@ -102,12 +102,14 @@ GET.apiDoc = {
           schema: {
             description: 'Survey get response object, for view purposes',
             type: 'object',
+            additionalProperties: false,
             required: ['surveyObservations', 'supplementaryObservationData', 'pagination'],
             properties: {
               surveyObservations: {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   required: [
                     'survey_observation_id',
                     'survey_id',
@@ -214,6 +216,7 @@ GET.apiDoc = {
                       type: 'array',
                       items: {
                         type: 'object',
+                        additionalProperties: false,
                         required: [
                           'observation_subcount_id',
                           'subcount',
@@ -231,6 +234,7 @@ GET.apiDoc = {
                             type: 'array',
                             items: {
                               type: 'object',
+                              additionalProperties: false,
                               required: [
                                 'critterbase_taxon_measurement_id',
                                 'critterbase_measurement_qualitative_option_id'
@@ -244,14 +248,14 @@ GET.apiDoc = {
                                   type: 'string',
                                   format: 'uuid'
                                 }
-                              },
-                              additionalProperties: false
+                              }
                             }
                           },
                           quantitative_measurements: {
                             type: 'array',
                             items: {
                               type: 'object',
+                              additionalProperties: false,
                               required: ['critterbase_taxon_measurement_id', 'value'],
                               properties: {
                                 critterbase_taxon_measurement_id: {
@@ -261,20 +265,18 @@ GET.apiDoc = {
                                 value: {
                                   type: 'number'
                                 }
-                              },
-                              additionalProperties: false
+                              }
                             }
                           }
-                        },
-                        additionalProperties: false
+                        }
                       }
                     }
-                  },
-                  additionalProperties: false
+                  }
                 }
               },
               supplementaryObservationData: {
                 type: 'object',
+                additionalProperties: false,
                 required: ['observationCount', 'qualitative_measurements', 'quantitative_measurements'],
                 properties: {
                   observationCount: {
@@ -287,6 +289,7 @@ GET.apiDoc = {
                     items: {
                       description: 'A qualitative measurement type definition, with array of valid/accepted options',
                       type: 'object',
+                      additionalProperties: false,
                       required: ['itis_tsn', 'taxon_measurement_id', 'measurement_name', 'measurement_desc', 'options'],
                       properties: {
                         itis_tsn: {
@@ -308,6 +311,7 @@ GET.apiDoc = {
                           type: 'array',
                           items: {
                             type: 'object',
+                            additionalProperties: false,
                             required: ['qualitative_option_id', 'option_label', 'option_value', 'option_desc'],
                             properties: {
                               qualitative_option_id: {
@@ -324,12 +328,10 @@ GET.apiDoc = {
                                 type: 'string',
                                 nullable: true
                               }
-                            },
-                            additionalProperties: false
+                            }
                           }
                         }
-                      },
-                      additionalProperties: false
+                      }
                     }
                   },
                   quantitative_measurements: {
@@ -338,6 +340,7 @@ GET.apiDoc = {
                     items: {
                       description: 'A quantitative measurement type definition, with possible min/max constraint.',
                       type: 'object',
+                      additionalProperties: false,
                       required: [
                         'itis_tsn',
                         'taxon_measurement_id',
@@ -374,16 +377,13 @@ GET.apiDoc = {
                           type: 'string',
                           nullable: true
                         }
-                      },
-                      additionalProperties: false
+                      }
                     }
                   }
-                },
-                additionalProperties: false
+                }
               },
               pagination: { ...paginationResponseSchema }
-            },
-            additionalProperties: false
+            }
           }
         }
       }
@@ -432,6 +432,7 @@ PUT.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           properties: {
             surveyObservations: {
               description: 'Survey observation records.',
@@ -439,11 +440,13 @@ PUT.apiDoc = {
               items: {
                 description: 'A single survey observation record.',
                 type: 'object',
+                additionalProperties: false,
                 required: ['standardColumns', 'subcounts'],
                 properties: {
                   standardColumns: {
                     description: 'Standard column data for an observation record.',
                     type: 'object',
+                    additionalProperties: false,
                     required: [
                       'itis_tsn',
                       'survey_sample_site_id',
@@ -509,14 +512,14 @@ PUT.apiDoc = {
                         type: 'integer',
                         minimum: 0
                       }
-                    },
-                    additionalProperties: true
+                    }
                   },
                   subcounts: {
                     description: 'An array of observation subcount and measurement data',
                     type: 'array',
                     items: {
                       type: 'object',
+                      additionalProperties: false,
                       properties: {
                         observation_subcount_id: {
                           type: 'number',
@@ -529,6 +532,7 @@ PUT.apiDoc = {
                           type: 'array',
                           items: {
                             type: 'object',
+                            additionalProperties: false,
                             properties: {
                               measurement_id: {
                                 type: 'string'
@@ -543,6 +547,7 @@ PUT.apiDoc = {
                           type: 'array',
                           items: {
                             type: 'object',
+                            additionalProperties: false,
                             properties: {
                               measurement_id: {
                                 type: 'string'
@@ -556,12 +561,10 @@ PUT.apiDoc = {
                       }
                     }
                   }
-                },
-                additionalProperties: false
+                }
               }
             }
-          },
-          additionalProperties: false
+          }
         }
       }
     }

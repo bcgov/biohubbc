@@ -1,5 +1,8 @@
+import { ViewProjectI18N } from 'constants/i18n';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
+import useDataLoaderError from 'hooks/useDataLoaderError';
 import { IGetProjectAttachmentsResponse, IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyListResponse } from 'interfaces/useSurveyApi.interface';
 import { createContext, PropsWithChildren, useEffect, useMemo } from 'react';
@@ -58,7 +61,18 @@ export const ProjectContextProvider = (props: PropsWithChildren<Record<never, an
   const projectId = Number(urlParams['id']);
 
   const biohubApi = useBiohubApi();
+
   const projectDataLoader = useDataLoader(biohubApi.project.getProjectForView);
+
+  useDataLoaderError(projectDataLoader, (dataLoader) => {
+    return {
+      dialogTitle: ViewProjectI18N.viewProjectErrorDialogTitle,
+      dialogText: ViewProjectI18N.viewProjectErrorDialogText,
+      dialogError: (dataLoader.error as APIError).message,
+      dialogErrorDetails: (dataLoader.error as APIError).errors
+    };
+  });
+
   const surveysListDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions) =>
     biohubApi.survey.getSurveysBasicFieldsByProjectId(projectId, pagination)
   );

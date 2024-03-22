@@ -11,6 +11,8 @@ import { MediaFile } from '../media/media-file';
 import { safeToLowerCase } from '../string-utils';
 import { replaceCellDates, trimCellWhitespace } from './cell-utils';
 
+const defaultLog = getLogger('src/utils/xlsx-utils/worksheet-utils');
+
 export interface IXLSXCSVValidator {
   columnNames: string[];
   columnTypes: string[];
@@ -402,20 +404,26 @@ export function isQuantitativeValueValid(value: number, measurement: CBQuantitat
     if (min_value <= value && value <= max_value) {
       return true;
     }
-  } else {
-    if (min_value !== null && min_value <= value) {
-      return true;
-    }
-
-    if (max_value !== null && value <= max_value) {
-      return true;
-    }
-
-    if (min_value === null && max_value === null) {
-      return true;
-    }
   }
 
+  if (min_value !== null && min_value <= value) {
+    return true;
+  }
+
+  if (max_value !== null && value <= max_value) {
+    return true;
+  }
+
+  if (min_value === null && max_value === null) {
+    return true;
+  }
+
+  defaultLog.debug({
+    label: 'isQuantitativeValueValid',
+    message: 'quantitative measurement error',
+    value,
+    measurement
+  });
   return false;
 }
 
@@ -437,6 +445,7 @@ export function isQualitativeValueValid(
     (option) => option.option_value === value || option.option_label.toLowerCase() === String(value).toLowerCase()
   );
 
+  defaultLog.debug({ label: 'isQualitativeValueValid', message: 'qualitative measurement error', value, measurement });
   return Boolean(foundOption);
 }
 
@@ -551,6 +560,15 @@ export function findMeasurementFromTsnMeasurements(
   return foundMeasurement;
 }
 
+/**
+ * Type guard to check if a given item is a `CBQualitativeMeasurementTypeDefinition`.
+ *
+ * Qualitative measurements have an `options` property, while quantitative measurements do not.
+ *
+ * @export
+ * @param {(CBQuantitativeMeasurementTypeDefinition | CBQualitativeMeasurementTypeDefinition)} item
+ * @return {*}  {item is CBQualitativeMeasurementTypeDefinition}
+ */
 export function isMeasurementCBQualitativeTypeDefinition(
   item: CBQuantitativeMeasurementTypeDefinition | CBQualitativeMeasurementTypeDefinition
 ): item is CBQualitativeMeasurementTypeDefinition {

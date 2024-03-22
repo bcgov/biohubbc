@@ -61,6 +61,7 @@ PUT.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['roleId'],
           properties: {
             roleId: {

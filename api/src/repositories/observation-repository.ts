@@ -390,7 +390,7 @@ export class ObservationRepository extends BaseRepository {
           )
           .whereIn(
             'survey_observation_id',
-            knex('survey_observation').select('survey_observation_id').where('survey_id', 1)
+            knex('survey_observation').select('survey_observation_id').where('survey_id', surveyId)
           )
           .groupBy('survey_observation_id')
       )
