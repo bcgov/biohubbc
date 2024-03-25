@@ -14,11 +14,6 @@ import {
 } from '../../../../../../services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
 import { ensureCompletePaginationOptions, makePaginationResponse } from '../../../../../../utils/pagination';
-import {
-  getCBMeasurementsFromTSN,
-  IMeasurementDataToValidate,
-  validateMeasurements
-} from '../../../../../../utils/xlsx-utils/worksheet-utils';
 import { ApiPaginationOptions } from '../../../../../../zod-schema/pagination';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation');
@@ -684,37 +679,9 @@ export function insertUpdateSurveyObservationsWithMeasurements(): RequestHandler
         username: req['system_user']?.user_identifier
       });
 
-      // Fetch measurement definitions from CritterBase
-      const tsns = observationRows.map((item: any) => String(item.standardColumns.itis_tsn));
-      const tsnMeasurementsMap = await getCBMeasurementsFromTSN(tsns, critterBaseService);
-
-      // Map observation subcount data into objects to a IMeasurementDataToValidate array
-      const measurementsToValidate: IMeasurementDataToValidate[] = observationRows.flatMap(
-        (item: InsertUpdateObservationsWithMeasurements) => {
-          return item.subcounts.flatMap((subcount) => {
-            const qualitativeValues = subcount.qualitative.map((qualitative) => {
-              return {
-                tsn: String(item.standardColumns.itis_tsn),
-                measurement_key: qualitative.measurement_id,
-                measurement_value: qualitative.measurement_option_id
-              };
-            });
-
-            const quantitativeValues: IMeasurementDataToValidate[] = subcount.quantitative.map((quantitative) => {
-              return {
-                tsn: String(item.standardColumns.itis_tsn),
-                measurement_key: quantitative.measurement_id,
-                measurement_value: quantitative.measurement_value
-              };
-            });
-
-            return [...qualitativeValues, ...quantitativeValues];
-          });
-        }
-      );
-
       // Validate measurement data against fetched measurement definition
-      if (!validateMeasurements(measurementsToValidate, tsnMeasurementsMap)) {
+      const isValid = await observationService.validateSurveyObservations(observationRows, critterBaseService);
+      if (!isValid) {
         throw new Error('Failed to save observation data, measurement values failed validation.');
       }
 
