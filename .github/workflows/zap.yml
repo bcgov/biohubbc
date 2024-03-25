@@ -9,7 +9,7 @@ jobs:
       CYPRESS_password: ${{ secrets.CYPRESS_PASSWORD }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: dev
       - name: Subtitute Password
@@ -22,6 +22,6 @@ jobs:
         uses: zaproxy/action-full-scan@v0.3.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          docker_name: 'owasp/zap2docker-stable'
-          target: 'https://dev-biohubbc.apps.silver.devops.gov.bc.ca/'
-          cmd_options: '-a'  
+          docker_name: "owasp/zap2docker-stable"
+          target: "https://dev-biohubbc.apps.silver.devops.gov.bc.ca/"
+          cmd_options: "-a"

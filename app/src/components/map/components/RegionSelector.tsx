@@ -24,6 +24,10 @@ export const RegionSelector = (props: IRegionSelectorProps) => {
     {
       key: 'pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG',
       name: 'NRM Regional Boundaries'
+    },
+    {
+      key: 'pub:WHSE_WILDLIFE_INVENTORY.GCPB_CARIBOU_POPULATION_SP',
+      name: 'Caribou Population Units'
     }
   ];
 
