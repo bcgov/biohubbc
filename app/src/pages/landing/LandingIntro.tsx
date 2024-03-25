@@ -53,7 +53,7 @@ export const LandingIntro = () => {
       </Grid>
 
       <Grid item xs={12} mt={5}>
-        <Box maxWidth="100%" component="img" src="/assets/manage-observations.jpg" />
+        <Box maxWidth="100%" component="img" src="/assets/manage-observations.jpg" alt="Manage Observations interface of the Species Inventory Management System Application" />
       </Grid>
     </Grid>
   );
