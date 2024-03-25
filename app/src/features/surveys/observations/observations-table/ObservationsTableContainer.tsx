@@ -95,10 +95,7 @@ const ObservationComponent = () => {
     ObservationLatitudeColDef({ hasError: observationsTableContext.hasError }),
     ObservationLongitudeColDef({ hasError: observationsTableContext.hasError }),
     // Add measurement columns to the table
-    ...getMeasurementColumnDefinitions(
-      observationsTableContext.measurementColumns.map((item) => item.measurement),
-      observationsTableContext.hasError
-    ),
+    ...getMeasurementColumnDefinitions(observationsTableContext.measurementColumns, observationsTableContext.hasError),
     ObservationActionsColDef({
       disabled: observationsTableContext.isSaving,
       onDelete: observationsTableContext.deleteObservationRecords

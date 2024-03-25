@@ -15,7 +15,6 @@ import { ObservationsTableI18N } from 'constants/i18n';
 import { getSurveySessionStorageKey, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS } from 'constants/session-storage';
 import { DialogContext } from 'contexts/dialogContext';
 import {
-  getMeasurementColumns,
   isQualitativeMeasurementTypeDefinition,
   isQuantitativeMeasurementTypeDefinition
 } from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitionsUtils';
@@ -78,10 +77,6 @@ export type TSNMeasurement = {
 export type TSNMeasurementMap = Record<string, TSNMeasurement>;
 
 export type ObservationRecord = StandardObservationColumns & SubcountObservationColumns;
-
-export type MeasurementColumn = {
-  measurement: CBMeasurementType;
-};
 
 export type SupplementaryObservationCountData = {
   observationCount: number;
@@ -253,11 +248,11 @@ export type IObservationsTableContext = {
   /**
    * User-added measurement columns that are not part of the default observation table columns.
    */
-  measurementColumns: MeasurementColumn[];
+  measurementColumns: CBMeasurementType[];
   /**
    * Sets the user-added measurement columns.
    */
-  setMeasurementColumns: React.Dispatch<React.SetStateAction<MeasurementColumn[]>>;
+  setMeasurementColumns: React.Dispatch<React.SetStateAction<CBMeasurementType[]>>;
   /**
    * Used to disable the entire table.
    */
@@ -322,7 +317,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   const [validationModel, setValidationModel] = useState<ObservationTableValidationModel>({});
 
   // Stores any measurement columns that are not part of the default observation table columns
-  const [measurementColumns, setMeasurementColumns] = useState<MeasurementColumn[]>([]);
+  const [measurementColumns, setMeasurementColumns] = useState<CBMeasurementType[]>([]);
   const _hasLoadedMeasurementColumns = useRef<boolean>(false);
 
   // Global disabled state for the observations table
@@ -403,10 +398,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         });
 
         // Set measurement columns, including both existing and local storage measurement definitions
-        return getMeasurementColumns(
-          [...existingMeasurementDefinitions, ...localStorageMeasurementDefinitions],
-          hasError
-        );
+        return [...existingMeasurementDefinitions, ...localStorageMeasurementDefinitions];
       });
     }
 
@@ -934,13 +926,11 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    */
   const _getMeasurementsToSave = useCallback(
     (row: ObservationRecord) => {
-      const measurementDefinitions = measurementColumns.map((item) => item.measurement);
-
       const qualitative: SubcountToSave['qualitative'] = [];
       const quantitative: SubcountToSave['quantitative'] = [];
 
       // For each measurement column in the data grid
-      for (const measurementDefinition of measurementDefinitions) {
+      for (const measurementDefinition of measurementColumns) {
         // If the row has a non-null/non-undefined value for the measurement column
         if (row[measurementDefinition.taxon_measurement_id]) {
           // If the measurement column is a qualitative measurement, add it to the qualitative array

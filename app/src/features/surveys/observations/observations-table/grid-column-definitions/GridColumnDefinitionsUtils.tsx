@@ -1,5 +1,5 @@
 import { GridCellParams, GridColDef } from '@mui/x-data-grid';
-import { IObservationTableRow, MeasurementColumn } from 'contexts/observationsTableContext';
+import { IObservationTableRow } from 'contexts/observationsTableContext';
 import {
   ObservationQualitativeMeasurementColDef,
   ObservationQuantitativeMeasurementColDef
@@ -76,32 +76,6 @@ export const getQualitativeMeasurementColumn = (
       hasError: hasError
     })
   };
-};
-
-/**
- * Given an array of measurement type definitions, returns an array of measurement columns.
- *
- * @param {CBMeasurementType[]} measurements
- * @param {(params: GridCellParams) => boolean} hasError
- * @return {*}  {MeasurementColumn[]}
- */
-export const getMeasurementColumns = (
-  measurements: CBMeasurementType[],
-  hasError: (params: GridCellParams) => boolean
-): MeasurementColumn[] => {
-  const measurementColumns: MeasurementColumn[] = [];
-
-  for (const measurement of measurements) {
-    if (isQuantitativeMeasurementTypeDefinition(measurement)) {
-      measurementColumns.push(getQuantitativeMeasurementColumn(measurement, hasError));
-    }
-
-    if (isQualitativeMeasurementTypeDefinition(measurement)) {
-      measurementColumns.push(getQualitativeMeasurementColumn(measurement, hasError));
-    }
-  }
-
-  return measurementColumns;
 };
 
 export const getMeasurementColumnDefinitions = (

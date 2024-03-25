@@ -14,7 +14,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { GridColDef } from '@mui/x-data-grid';
-import { IObservationTableRow, MeasurementColumn } from 'contexts/observationsTableContext';
+import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { MeasurementsButton } from 'features/surveys/observations/observations-table/configure-table/measurements/dialog/MeasurementsButton';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import ExportHeadersButton from '../export-button/ExportHeadersButton';
@@ -26,7 +26,7 @@ export interface IConfigureColumnsPopoverContentProps {
   onToggledShowHideAll: () => void;
   disabledAddMeasurements: boolean;
   disabledRemoveMeasurements: boolean;
-  measurementColumns: MeasurementColumn[];
+  measurementColumns: CBMeasurementType[];
   onRemoveMeasurements: (measurementFields: string[]) => void;
   onAddMeasurements: (measurements: CBMeasurementType[]) => void;
 }
@@ -60,7 +60,7 @@ export const ConfigureColumnsPopoverContent = (props: IConfigureColumnsPopoverCo
           <ExportHeadersButton />
           <MeasurementsButton
             disabled={disabledAddMeasurements}
-            selectedMeasurements={measurementColumns.map((item) => item.measurement)}
+            selectedMeasurements={measurementColumns}
             onAddMeasurements={onAddMeasurements}
           />
         </Stack>
@@ -108,7 +108,7 @@ export const ConfigureColumnsPopoverContent = (props: IConfigureColumnsPopoverCo
             <ListItem
               key={column.field}
               secondaryAction={
-                measurementColumns.some((item) => item.measurement.taxon_measurement_id === column.field) && (
+                measurementColumns.some((item) => item.taxon_measurement_id === column.field) && (
                   <IconButton
                     disabled={disabledRemoveMeasurements}
                     edge="end"
