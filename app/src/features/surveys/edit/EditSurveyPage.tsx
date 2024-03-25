@@ -44,8 +44,8 @@ const EditSurveyPage = () => {
   const [isSaving, setIsSaving] = useState(false);
 
   const dialogContext = useContext(DialogContext);
-
   const codesContext = useContext(CodesContext);
+
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
@@ -58,25 +58,15 @@ const EditSurveyPage = () => {
 
   const surveyContext = useContext(SurveyContext);
 
-  const editSurveyDL = useDataLoader((projectId: number, surveyId: number) =>
+  const editSurveyDataLoader = useDataLoader((projectId: number, surveyId: number) =>
     biohubApi.survey.getSurveyForUpdate(projectId, surveyId)
   );
 
-  if (!editSurveyDL.data && surveyId) {
-    editSurveyDL.load(projectContext.projectId, surveyId);
+  if (surveyId) {
+    editSurveyDataLoader.load(projectContext.projectId, surveyId);
   }
-  const surveyData = editSurveyDL.data?.surveyData;
 
-  useEffect(() => {
-    const setFormikValues = (data: IEditSurveyRequest) => {
-      formikRef.current?.setValues(data);
-    };
-
-    if (editSurveyDL.data) {
-      setFormikValues(editSurveyDL.data.surveyData as unknown as IEditSurveyRequest);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editSurveyDL]);
+  const surveyData = editSurveyDataLoader.data?.surveyData;
 
   const defaultCancelDialogProps = {
     dialogTitle: EditSurveyI18N.cancelTitle,
