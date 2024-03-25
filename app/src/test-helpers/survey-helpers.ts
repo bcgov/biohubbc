@@ -90,24 +90,6 @@ export const surveyObject: SurveyViewObject = {
 };
 
 export const surveySupplementaryData: SurveySupplementaryData = {
-  occurrence_submission: {
-    occurrence_submission_id: 1
-  },
-  occurrence_submission_publish: {
-    occurrence_submission_publish_id: 1,
-    occurrence_submission_id: 1,
-    event_timestamp: '2000-05-10 11:53:53',
-    submission_uuid: '123-456-789',
-    create_date: '2000-06-10 11:53:53',
-    create_user: 1,
-    update_date: null,
-    update_user: null,
-    revision_count: 1
-  },
-  survey_summary_submission: {
-    survey_summary_submission_id: null
-  },
-  survey_summary_submission_publish: null,
   survey_metadata_publish: {
     survey_metadata_publish_id: 1,
     survey_id: 1,

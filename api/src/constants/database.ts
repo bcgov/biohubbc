@@ -19,7 +19,7 @@ export enum SCHEMAS {
 }
 
 /**
- * The source system of a DwCA data set submission.
+ * The source system for a dataset submission.
  *
  * Typically an external system that is participating in BioHub by submitting data to the BioHub Platform Backbone.
  *
