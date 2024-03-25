@@ -83,11 +83,9 @@ const ProjectAttachmentsList = () => {
 
           showSnackBar({
             snackbarMessage: (
-              <>
-                <Typography variant="body2" component="div">
-                  Attachment: <strong>{attachment.fileName}</strong> removed from application.
-                </Typography>
-              </>
+              <Typography variant="body2" component="div">
+                '{attachment.fileName}' deleted.
+              </Typography>
             ),
             open: true
           });

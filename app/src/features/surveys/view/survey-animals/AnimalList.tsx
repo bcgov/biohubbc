@@ -62,7 +62,7 @@ const ListPlaceholder = (props: { displaySkeleton: boolean }) =>
       bottom={0}
       height="100%"
       sx={{
-        background: grey[50]
+        background: grey[100]
       }}>
       <Typography variant="body2">No Animals</Typography>
     </Stack>
