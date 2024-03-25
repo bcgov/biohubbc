@@ -1,4 +1,3 @@
-import { ThemeProvider } from '@emotion/react';
 import { render } from '@testing-library/react';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
@@ -6,7 +5,6 @@ import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interfac
 import { AuthProvider, AuthProviderProps } from 'react-oidc-context';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { cleanup, waitFor } from 'test-helpers/test-utils';
-import appTheme from 'themes/appTheme';
 import { ANIMAL_SECTION } from './animal';
 import { AnimalSection } from './AnimalSection';
 jest.mock('../../../../hooks/useCritterbaseApi');
@@ -23,18 +21,20 @@ const authConfig: AuthProviderProps = {
 };
 
 const animalSection = (section: ANIMAL_SECTION, critter?: IDetailedCritterWithInternalId) => (
-  <ThemeProvider theme={appTheme}>
-    <AuthProvider {...authConfig}>
-      <AuthStateContext.Provider value={authState}>
-        <AnimalSection section={section} refreshCritter={mockRefreshCritter} critter={critter} />
-      </AuthStateContext.Provider>
-    </AuthProvider>
-  </ThemeProvider>
+  <AuthProvider {...authConfig}>
+    <AuthStateContext.Provider value={authState}>
+      <AnimalSection section={section} refreshCritter={mockRefreshCritter} critter={critter} />
+    </AuthStateContext.Provider>
+  </AuthProvider>
 );
 
 describe('AnimalSection', () => {
   beforeEach(() => {
-    mockCritterbaseApi.mockImplementation(() => {});
+    mockCritterbaseApi.mockImplementation(() => ({
+      family: {
+        getAllFamilies: jest.fn()
+      }
+    }));
   });
   afterEach(() => {
     cleanup();

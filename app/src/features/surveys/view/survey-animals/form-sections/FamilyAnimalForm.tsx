@@ -1,6 +1,5 @@
-import { Box, Button, Checkbox, FormControlLabel, Grid, MenuItem, Paper, Theme, Typography } from '@mui/material';
+import { Box, Button, Checkbox, FormControlLabel, Grid, MenuItem, Paper, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import { makeStyles } from '@mui/styles';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import EditDialog from 'components/dialog/EditDialog';
 import { CbSelectWrapper } from 'components/fields/CbSelectFieldWrapper';
@@ -19,28 +18,6 @@ import {
   isRequiredInSchema
 } from '../animal';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  surveyMetadataContainer: {
-    '& dt': {
-      flex: '0 0 40%'
-    },
-    '& dd': {
-      flex: '1 1 auto'
-    },
-    '& h4': {
-      fontSize: '14px',
-      fontWeight: 700,
-      letterSpacing: '0.02rem',
-      textTransform: 'uppercase',
-      color: grey[600],
-      '& + hr': {
-        marginTop: theme.spacing(1.5),
-        marginBottom: theme.spacing(1.5)
-      }
-    }
-  }
-}));
-
 /**
  * This component renders a 'critter family relationship' create / edit dialog.
  *
@@ -50,7 +27,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 export const FamilyAnimalForm = (props: AnimalFormProps<IFamilyParentResponse | IFamilyChildResponse>) => {
   const cbApi = useCritterbaseApi();
   const dialog = useDialogContext();
-  const classes = useStyles();
 
   const [showFamilyStructure, setShowFamilyStructure] = useState(false);
   const [createNewFamily, setCreateNewFamily] = useState(false);
@@ -184,7 +160,26 @@ export const FamilyAnimalForm = (props: AnimalFormProps<IFamilyParentResponse | 
               dialogTitle={'Family Structure'}
               open={showFamilyStructure}
               onClose={() => setShowFamilyStructure(false)}>
-              <Box className={classes.surveyMetadataContainer}>
+              <Box
+                sx={{
+                  '& dt': {
+                    flex: '0 0 40%'
+                  },
+                  '& dd': {
+                    flex: '1 1 auto'
+                  },
+                  '& h4': {
+                    fontSize: '14px',
+                    fontWeight: 700,
+                    letterSpacing: '0.02rem',
+                    textTransform: 'uppercase',
+                    color: grey[600],
+                    '& + hr': {
+                      mt: 1.5,
+                      mb: 1.5
+                    }
+                  }
+                }}>
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
                   Family ID
                 </Typography>
