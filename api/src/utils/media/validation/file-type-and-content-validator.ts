@@ -1,5 +1,4 @@
 import { safeToLowerCase } from '../../string-utils';
-import { DWCArchive, DWCArchiveValidator } from '../dwc/dwc-archive-file';
 import { MediaValidator } from '../media-file';
 import { XLSXCSV, XLSXCSVValidator } from '../xlsx/xlsx-file';
 
@@ -30,9 +29,9 @@ export type MimetypeValidatorConfig = {
  * Return a validator function that checks the mimetype of the file.
  *
  * @param {MimetypeValidatorConfig} [config]
- * @return {*}  {(DWCArchiveValidator | XLSXCSVValidator)}
+ * @return {*}  {(XLSXCSVValidator)}
  */
-export const getFileMimeTypeValidator = (config?: MimetypeValidatorConfig): DWCArchiveValidator | XLSXCSVValidator => {
+export const getFileMimeTypeValidator = (config?: MimetypeValidatorConfig): XLSXCSVValidator => {
   return (file: any) => {
     if (!config) {
       return file;
@@ -70,11 +69,9 @@ export type SubmissionRequiredFilesValidatorConfig = {
  * Return a validator function that checks that the file contains all required files.
  *
  * @param {SubmissionRequiredFilesValidatorConfig} [config]
- * @return {*}  {(DWCArchiveValidator | XLSXCSVValidator)}
+ * @return {*}  {(XLSXCSVValidator)}
  */
-export const getRequiredFilesValidator = (
-  config?: SubmissionRequiredFilesValidatorConfig
-): DWCArchiveValidator | XLSXCSVValidator => {
+export const getRequiredFilesValidator = (config?: SubmissionRequiredFilesValidatorConfig): XLSXCSVValidator => {
   return (file: any) => {
     if (!config) {
       // No required files specified
@@ -86,42 +83,12 @@ export const getRequiredFilesValidator = (
       return file;
     }
 
-    if (file instanceof DWCArchive) {
-      checkRequiredFieldsInDWCArchive(file, config);
-    } else if (file instanceof XLSXCSV) {
+    if (file instanceof XLSXCSV) {
       checkRequiredFieldsInXLSXCSV(file, config);
     }
 
     return file;
   };
-};
-
-/**
- * Check that the DWCArchive contains all required files.
- *
- * @param {DWCArchive} dwcArchive
- * @param {SubmissionRequiredFilesValidatorConfig} config
- * @return {*}
- */
-const checkRequiredFieldsInDWCArchive = (dwcArchive: DWCArchive, config: SubmissionRequiredFilesValidatorConfig) => {
-  // If there are no files in the archive, then add errors for all required files
-  if (!dwcArchive.rawFile.mediaFiles || !dwcArchive.rawFile.mediaFiles.length) {
-    dwcArchive.mediaValidation.addFileErrors(
-      config.submission_required_files_validator.required_files.map((requiredFile) => {
-        return `Missing required file: ${requiredFile}`;
-      })
-    );
-
-    return dwcArchive;
-  }
-
-  const fileNames = dwcArchive.rawFile.mediaFiles.map((mediaFile) => mediaFile.name);
-
-  config.submission_required_files_validator.required_files.forEach((requiredFile) => {
-    if (!fileNames.includes(safeToLowerCase(requiredFile))) {
-      dwcArchive.mediaValidation.addFileErrors([`Missing required file: ${requiredFile}`]);
-    }
-  });
 };
 
 /**

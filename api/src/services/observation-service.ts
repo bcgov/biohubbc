@@ -17,6 +17,7 @@ import {
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { parseS3File } from '../utils/media/media-utils';
+import { DEFAULT_XLSX_SHEET_NAME } from '../utils/media/xlsx/xlsx-file';
 import {
   constructWorksheets,
   constructXLSXWorkbook,
@@ -103,12 +104,12 @@ export class ObservationService extends DBService {
    */
   validateCsvFile(xlsxWorksheets: xlsx.WorkSheet, columnValidator: IXLSXCSVValidator): boolean {
     // Validate the worksheet headers
-    if (!validateWorksheetHeaders(xlsxWorksheets['Sheet1'], columnValidator)) {
+    if (!validateWorksheetHeaders(xlsxWorksheets[DEFAULT_XLSX_SHEET_NAME], columnValidator)) {
       return false;
     }
 
     // Validate the worksheet column types
-    if (!validateWorksheetColumnTypes(xlsxWorksheets['Sheet1'], columnValidator)) {
+    if (!validateWorksheetColumnTypes(xlsxWorksheets[DEFAULT_XLSX_SHEET_NAME], columnValidator)) {
       return false;
     }
 
@@ -430,7 +431,7 @@ export class ObservationService extends DBService {
     const measurementColumns = getMeasurementColumnNameFromWorksheet(xlsxWorksheets, observationCSVColumnValidator);
 
     // Get the worksheet row objects
-    const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheets['Sheet1']);
+    const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheets[DEFAULT_XLSX_SHEET_NAME]);
     // Validate measurement data against
     if (!validateCsvMeasurementColumns(worksheetRowObjects, measurementColumns, tsnMeasurements)) {
       throw new Error('Failed to process file for importing observations. Measurement column validator failed.');
