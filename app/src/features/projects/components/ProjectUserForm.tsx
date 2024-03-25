@@ -148,7 +148,7 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
           <Box mt={3}>
             <AlertBar
               severity="error"
-              variant="standard"
+              variant="outlined"
               title={'No team members added'}
               text={'At least one team member needs to be added to this project.'}
             />
@@ -156,7 +156,7 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
         )}
         {errors?.['participants'] && values.participants.length > 0 && (
           <Box mt={3}>
-            <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
+            <AlertBar severity="error" variant="outlined" title={alertBarText().title} text={alertBarText().text} />
           </Box>
         )}
         <Box mt={3}>
