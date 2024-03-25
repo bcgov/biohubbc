@@ -462,7 +462,7 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
     if (telemetryDataContext.telemetryDataLoader.isReady) {
       telemetryDataContext.telemetryDataLoader.refresh(deployment_ids);
     }
-  }, [telemetryDataContext.telemetryDataLoader]);
+  }, [deployment_ids, telemetryDataContext.telemetryDataLoader]);
 
   // True if the data grid contains at least 1 unsaved record
   const hasUnsavedChanges = modifiedRowIds.length > 0 || addedRowIds.length > 0;

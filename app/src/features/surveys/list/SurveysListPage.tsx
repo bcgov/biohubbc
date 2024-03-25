@@ -31,7 +31,8 @@ const SurveysListPage = () => {
   });
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
-  const refreshSurveyList = () => {
+  // Refresh survey list when pagination or sort changes
+  useEffect(() => {
     const sort = firstOrNull(sortModel);
     const pagination: ApiPaginationRequestOptions = {
       limit: paginationModel.pageSize,
@@ -42,12 +43,10 @@ const SurveysListPage = () => {
       page: paginationModel.page + 1
     };
 
-    return projectContext.surveysListDataLoader.refresh(pagination);
-  };
+    projectContext.surveysListDataLoader.refresh(pagination);
 
-  // Refresh survey list when pagination or sort changes
-  useEffect(() => {
-    refreshSurveyList();
+    // Adding a DataLoader as a dependency causes an infinite rerender loop if a useEffect calls `.refresh`
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortModel, paginationModel]);
 
   const columns: GridColDef<SurveyBasicFieldsObject>[] = [
