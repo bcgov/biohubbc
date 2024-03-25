@@ -184,9 +184,10 @@ export class SamplePeriodRepository extends BaseRepository {
       ON
         ssm.survey_sample_site_id = sss.survey_sample_site_id
       WHERE
-        ssp.survey_sample_period_id = ${surveySamplePeriodId};
+        ssp.survey_sample_period_id = ${surveySamplePeriodId}
       AND
         sss.survey_id = ${surveyId}
+      ;
       `;
 
     const response = await this.connection.sql(sqlStatement, SamplePeriodRecord);
