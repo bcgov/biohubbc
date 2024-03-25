@@ -246,16 +246,21 @@ const insertSurveyFundingData = (surveyId: number) => `
  */
 const insertSurveyFocalSpeciesData = (surveyId: number) => {
   const focalSpecies = focalTaxonIdOptions[Math.floor(Math.random() * focalTaxonIdOptions.length)];
+  const testValue = [
+    2012, 2013, 828, 2019, 1594, 1718, 2037, 2062, 2068, 2065, 2070, 2069, 23918, 23922, 23920, 35369, 35370, 28516
+  ][Math.floor(Math.random() * 18)];
 
   return `
     INSERT into study_species
       (
         survey_id,
+        wldtaxonomic_units_id,
         itis_tsn,
         is_focal
       )
     VALUES (
       ${surveyId},
+      ${testValue},
       ${focalSpecies.itis_tsn},
       'Y'
     );
@@ -616,10 +621,16 @@ const insertObservationSubCount = (surveyObservationId: number) => `
  * SQL to insert survey observation data. Requires sampling site, method, period.
  *
  */
-const insertSurveyObservationData = (surveyId: number, count: number) => `
+const insertSurveyObservationData = (surveyId: number, count: number) => {
+  const testValue = [
+    2012, 2013, 828, 2019, 1594, 1718, 2037, 2062, 2068, 2065, 2070, 2069, 23918, 23922, 23920, 35369, 35370, 28516
+  ][Math.floor(Math.random() * 18)];
+
+  return `
   INSERT INTO survey_observation
   (
     survey_id,
+    wldtaxonomic_units_id,
     itis_tsn,
     itis_scientific_name,
     latitude,
@@ -634,6 +645,7 @@ const insertSurveyObservationData = (surveyId: number, count: number) => `
   VALUES
   (
     ${surveyId},
+    ${testValue},
     $$${focalTaxonIdOptions[0].itis_tsn}$$,
     $$${focalTaxonIdOptions[0].itis_scientific_name}$$,
     $$${faker.number.int({ min: 48, max: 60 })}$$,
@@ -660,6 +672,7 @@ const insertSurveyObservationData = (surveyId: number, count: number) => `
   )
   RETURNING survey_observation_id;
 `;
+};
 
 /**
  * SQL to insert Project data
