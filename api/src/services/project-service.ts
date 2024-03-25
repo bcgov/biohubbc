@@ -1,6 +1,5 @@
 import { default as dayjs } from 'dayjs';
 import { Feature } from 'geojson';
-import { COMPLETION_STATUS } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/http-error';
 import { IPostIUCN, PostProjectObject } from '../models/project-create';
@@ -28,6 +27,17 @@ import { PlatformService } from './platform-service';
 import { ProjectParticipationService } from './project-participation-service';
 import { RegionService } from './region-service';
 import { SurveyService } from './survey-service';
+
+/**
+ * Project Completion Status
+ *
+ * @export
+ * @enum {string}
+ */
+export enum COMPLETION_STATUS {
+  COMPLETED = 'Completed',
+  ACTIVE = 'Active'
+}
 
 export class ProjectService extends DBService {
   attachmentService: AttachmentService;
