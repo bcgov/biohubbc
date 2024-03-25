@@ -13,8 +13,10 @@ import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 export const SurveyAnimalsPage = () => {
   const bhApi = useBiohubApi();
   const cbApi = useCritterbaseApi();
-  const { cid: survey_critter_id } = useQuery();
   const { surveyId, projectId } = useContext(SurveyContext);
+  const { cid } = useQuery();
+
+  const survey_critter_id = Number(cid);
 
   const [selectedSection, setSelectedSection] = useState<ANIMAL_SECTION>(ANIMAL_SECTION.GENERAL);
   const [openAddCritter, setOpenAddCritter] = useState(false);

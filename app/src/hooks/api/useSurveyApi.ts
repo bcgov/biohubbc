@@ -436,8 +436,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
       delete flattened.device_model;
     }
 
-    console.log(flattened);
-
     const { data } = await axios.post(
       `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`,
       flattened

@@ -5,8 +5,8 @@ const DB_SCHEMA = process.env.DB_SCHEMA;
 const DB_SCHEMA_DAPI_V1 = process.env.DB_SCHEMA_DAPI_V1;
 const PROJECT_SEEDER_USER_IDENTIFIER = process.env.PROJECT_SEEDER_USER_IDENTIFIER;
 
-const NUM_SEED_PROJECTS = Number(process.env.NUM_SEED_PROJECTS ?? 1);
-const NUM_SEED_SURVEYS_PER_PROJECT = Number(process.env.NUM_SEED_SURVEYS_PER_PROJECT ?? 1);
+const NUM_SEED_PROJECTS = Number(process.env.NUM_SEED_PROJECTS ?? 2);
+const NUM_SEED_SURVEYS_PER_PROJECT = Number(process.env.NUM_SEED_SURVEYS_PER_PROJECT ?? 2);
 
 const NUM_SEED_OBSERVATIONS_PER_SURVEY = Number(process.env.NUM_SEED_OBSERVATIONS_PER_SURVEY ?? 3);
 const NUM_SEED_SUBCOUNTS_PER_OBSERVATION = Number(process.env.NUM_SEED_SUBCOUNTS_PER_OBSERVATION ?? 1);
@@ -598,7 +598,7 @@ const insertSurveySamplePeriodData = (surveyId: number) =>
 `;
 
 const insertObservationSubCount = (surveyObservationId: number) => `
-  INSERT INTO observation_subcount 
+  INSERT INTO observation_subcount
   (
     survey_observation_id,
     subcount
@@ -645,7 +645,7 @@ const insertSurveyObservationData = (surveyId: number, count: number) => `
       .toISOString()}$$::time,
 
     (SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1),
-    
+
     (SELECT survey_sample_method_id FROM survey_sample_method WHERE survey_sample_site_id = (
       SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1
     ) LIMIT 1),

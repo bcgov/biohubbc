@@ -146,8 +146,6 @@ const ManualTelemetryList = () => {
   };
 
   const handleSubmit = async (data: AnimalDeployment) => {
-    console.log(data);
-
     if (formMode === ANIMAL_FORM_MODE.ADD) {
       // ADD NEW DEPLOYMENT
       await handleAddDeployment(data);

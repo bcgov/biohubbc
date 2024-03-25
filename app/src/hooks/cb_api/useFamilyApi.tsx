@@ -3,15 +3,20 @@ import { AnimalRelationship, ICreateCritterFamily } from 'features/surveys/view/
 import { IFamilyChildResponse, IFamilyParentResponse } from 'interfaces/useCritterApi.interface';
 import { v4 } from 'uuid';
 
+interface ICritterStub {
+  critter_id: string;
+  animal_id: string | null;
+}
+
 export type IFamily = {
   family_id: string;
   family_label: string;
 };
 
 export type IImmediateFamily = {
-  parents: any[];
-  siblings: any[];
-  children: any;
+  parents: ICritterStub[];
+  siblings: ICritterStub[];
+  children: ICritterStub[];
 };
 
 type CreateChildRelationship = Omit<ICreateCritterFamily, 'relationship' | 'critter_id'> & { child_critter_id: string };

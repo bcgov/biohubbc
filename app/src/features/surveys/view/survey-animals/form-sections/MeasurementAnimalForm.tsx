@@ -15,7 +15,7 @@ import {
   IQuantitativeMeasurementResponse
 } from 'interfaces/useCritterApi.interface';
 import { has, startCase } from 'lodash-es';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   AnimalFormProps,
   ANIMAL_FORM_MODE,
@@ -204,17 +204,5 @@ export const MeasurementAnimalForm = (
     />
   );
 };
-// <CbSelectField
-//   label="Value"
-//   name={'qualitative_option_id'}
-//   id="qualitative_option"
-//   route="xref/taxon-qualitative-measurement-options"
-//   query={{ tsn: props?.critter.itis_tsn }}
-//   controlProps={{
-//     required: true
-//     //disabled: !taxonMeasurementId
-//   }}
-//   //handleChangeSideEffect={handleQualOptionName}
-// />
 
 export default MeasurementAnimalForm;

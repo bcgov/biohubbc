@@ -217,28 +217,24 @@ export const FamilyAnimalForm = (props: AnimalFormProps<IFamilyParentResponse | 
                 <Paper variant="outlined" sx={{ p: 1, mb: 2 }}>
                   <Typography component="h4">Children:</Typography>
                   <ul>
-                    {familyHierarchy?.children.map(
-                      (
-                        a: { critter_id: string; animal_id: string } //I will type this better I promise
-                      ) => (
-                        <li key={a.critter_id}>
-                          <Grid container>
-                            <Grid item xs={6}>
-                              <Typography component="dt" variant="subtitle2" color="textSecondary">
-                                Critter ID
-                              </Typography>
-                              <Typography>{a.critter_id}</Typography>
-                            </Grid>
-                            <Grid item xs={6}>
-                              <Typography component="dt" variant="subtitle2" color="textSecondary">
-                                Animal ID
-                              </Typography>
-                              <Typography>{a.animal_id}</Typography>
-                            </Grid>
+                    {familyHierarchy?.children.map((critter) => (
+                      <li key={critter.critter_id}>
+                        <Grid container>
+                          <Grid item xs={6}>
+                            <Typography component="dt" variant="subtitle2" color="textSecondary">
+                              Critter ID
+                            </Typography>
+                            <Typography>{critter.critter_id}</Typography>
                           </Grid>
-                        </li>
-                      )
-                    )}
+                          <Grid item xs={6}>
+                            <Typography component="dt" variant="subtitle2" color="textSecondary">
+                              Animal ID
+                            </Typography>
+                            <Typography>{critter.animal_id}</Typography>
+                          </Grid>
+                        </Grid>
+                      </li>
+                    ))}
                   </ul>
                 </Paper>
               </Box>

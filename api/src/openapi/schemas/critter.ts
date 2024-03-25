@@ -17,7 +17,7 @@ export const critterSchema: OpenAPIV3.SchemaObject = {
       nullable: true
     },
     itis_tsn: {
-      type: 'number'
+      type: 'integer'
     },
     itis_scientific_name: {
       type: 'string'
@@ -163,10 +163,10 @@ const mortalitySchema: OpenAPIV3.SchemaObject = {
     mortality_comment: { type: 'string' },
     proximate_cause_of_death_id: { type: 'string', format: 'uuid' },
     proximate_cause_of_death_confidence: { type: 'string' },
-    proximate_predated_by_itis_tsn: { type: 'string', format: 'uuid' },
+    proximate_predated_by_itis_tsn: { type: 'integer' },
     ultimate_cause_of_death_id: { type: 'string', format: 'uuid' },
     ultimate_cause_of_death_confidence: { type: 'string' },
-    ultimate_predated_by_itis_tsn: { type: 'string', format: 'uuid' },
+    ultimate_predated_by_itis_tsn: { type: 'integer' },
     projection_mode: { type: 'string', enum: ['wgs', 'utm'] },
     location: locationSchema
   }
@@ -219,7 +219,7 @@ export const critterCreateRequestObject: OpenAPIV3.SchemaObject = {
       type: 'string'
     },
     itis_tsn: {
-      type: 'number'
+      type: 'integer'
     },
     sex: {
       type: 'string'
