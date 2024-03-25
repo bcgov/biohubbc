@@ -460,19 +460,19 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch method response metrics
    *
-   * @return {ICodeWithDescription}
+   * @return {Promise<ICodeWithDescription[]>}
    * @memberof CodeRepository
    */
-  async getMethodResponseMetrics() {
+  async getMethodResponseMetrics(): Promise<ICodeWithDescription[]> {
     const sqlStatement = SQL`
       SELECT
-        method_response_metric_id as id,
+        method_response_metric_id AS id,
         name,
         description
       FROM
         method_response_metric
       WHERE
-        record_end_date is null;
+        record_end_date IS null;
     `;
 
     const response = await this.connection.sql(sqlStatement, ICodeWithDescription);
