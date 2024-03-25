@@ -121,25 +121,6 @@ export interface IBulkCreate {
   families: IFamilyPayload[];
 }
 
-interface IFilterObj {
-  body: string[];
-  negate: boolean;
-}
-
-export interface IFilterCritters {
-  critter_ids?: IFilterObj;
-  animal_ids?: IFilterObj;
-  wlh_ids?: IFilterObj;
-  collection_units?: IFilterObj;
-  taxon_name_commons?: IFilterObj;
-}
-
-export interface ICbSelectRows {
-  key: string;
-  id: string;
-  value: string;
-}
-
 /**
  * A Critterbase quantitative measurement.
  */
