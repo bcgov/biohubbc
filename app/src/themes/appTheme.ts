@@ -31,8 +31,8 @@ const appTheme = createTheme({
       main: '#D8292F'
     },
     text: {
-      primary: '#313132',
-      secondary: '#757575'
+      primary: '#292929',
+      secondary: '#464341'
     }
   },
   typography: {
