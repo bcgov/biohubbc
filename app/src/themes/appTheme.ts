@@ -95,6 +95,8 @@ const appTheme = createTheme({
         }
       }
     },
+
+    // Alert
     MuiAlert: {
       styleOverrides: {
         outlinedError: {
@@ -109,13 +111,8 @@ const appTheme = createTheme({
         }
       }
     },
-    MuiAutocomplete: {
-      styleOverrides: {
-        tag: {
-          fontWeight: 400
-        }
-      }
-    },
+
+    // Breadcrumbs
     MuiBreadcrumbs: {
       styleOverrides: {
         root: {
@@ -146,6 +143,13 @@ const appTheme = createTheme({
         }
       }
     },
+
+    // Buttons
+    MuiButtonBase: {
+      defaultProps: {
+        disableRipple: true
+      }
+    },
     MuiButton: {
       styleOverrides: {
         root: {
@@ -174,11 +178,18 @@ const appTheme = createTheme({
         }
       }
     },
-    MuiButtonBase: {
-      defaultProps: {
-        disableRipple: true
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          '&:focus': {
+            outline: '3px solid #3B99FC',
+            outlineOffset: '-3px'
+          }
+        }
       }
     },
+
+    // Containers
     MuiContainer: {
       styleOverrides: {
         root: {
@@ -187,6 +198,8 @@ const appTheme = createTheme({
         }
       }
     },
+
+    // Dialog
     MuiDialog: {
       styleOverrides: {
         paperWidthXl: {
@@ -194,6 +207,7 @@ const appTheme = createTheme({
         }
       }
     },
+
     MuiDialogTitle: {
       styleOverrides: {
         root: {
@@ -218,21 +232,12 @@ const appTheme = createTheme({
         }
       }
     },
-    MuiIconButton: {
-      styleOverrides: {
-        root: {
-          '&:focus': {
-            outline: '3px solid #3B99FC',
-            outlineOffset: '-3px'
-          }
-        }
-      }
-    },
+
+    // Inputs
     MuiInputBase: {
       styleOverrides: {
         root: {
-          background: '#fff',
-          '&.Mui-error': {}
+          background: '#fff'
         }
       }
     },
@@ -253,6 +258,15 @@ const appTheme = createTheme({
         }
       }
     },
+    MuiAutocomplete: {
+      styleOverrides: {
+        tag: {
+          fontWeight: 400
+        }
+      }
+    },
+
+    // Link
     MuiLink: {
       styleOverrides: {
         root: {
@@ -263,14 +277,8 @@ const appTheme = createTheme({
         }
       }
     },
-    MuiLinearProgress: {
-      styleOverrides: {
-        root: {
-          height: '6px',
-          borderRadius: '3px'
-        }
-      }
-    },
+
+    // List
     MuiListItem: {
       styleOverrides: {
         root: {
@@ -287,13 +295,18 @@ const appTheme = createTheme({
         }
       }
     },
-    MuiPaper: {
+
+    // Progress Indicator
+    MuiLinearProgress: {
       styleOverrides: {
-        rounded: {
-          borderRadius: '6px'
+        root: {
+          height: '6px',
+          borderRadius: '3px'
         }
       }
     },
+
+    // Table (Standard)
     MuiTable: {
       styleOverrides: {
         root: {
@@ -335,6 +348,8 @@ const appTheme = createTheme({
         }
       }
     },
+
+    // Tabs
     MuiTab: {
       styleOverrides: {
         root: {
@@ -344,6 +359,7 @@ const appTheme = createTheme({
         }
       }
     },
+
     MuiToggleButton: {
       styleOverrides: {
         root: {
@@ -351,6 +367,8 @@ const appTheme = createTheme({
         }
       }
     },
+
+    // Toolbar
     MuiToolbar: {
       styleOverrides: {
         root: {
@@ -362,23 +380,5 @@ const appTheme = createTheme({
     }
   }
 });
-
-declare module '@mui/material/styles' {
-  interface Palette {
-    bcgovblue: Palette['primary'];
-  }
-
-  // allow configuration using `createTheme`
-  interface PaletteOptions {
-    bcgovblue?: PaletteOptions['primary'];
-  }
-}
-
-// Update the Button's color prop options
-declare module '@mui/material/Button' {
-  interface ButtonPropsColorOverrides {
-    bcgovblue: true;
-  }
-}
 
 export default appTheme;
