@@ -102,7 +102,7 @@ export const ConfigureColumnsContainer = (props: IConfigureColumnsContainerProps
         // Remove the measurement columns from the table context
         observationsTableContext.setMeasurementColumns((currentColumns) => {
           const remainingColumns = currentColumns.filter(
-            (currentColumn) => !measurementColumnsToRemove.includes(currentColumn.colDef.field)
+            (currentColumn) => !measurementColumnsToRemove.includes(currentColumn.measurement.taxon_measurement_id)
           );
 
           // Store all remaining measurement definitions in local storage
@@ -139,7 +139,10 @@ export const ConfigureColumnsContainer = (props: IConfigureColumnsContainerProps
     observationsTableContext.setMeasurementColumns((currentColumns) => {
       const newColumns = measurementColumnsToAdd.filter(
         (columnToAdd) =>
-          !currentColumns.find((currentColumn) => currentColumn.colDef.field === columnToAdd.colDef.field)
+          !currentColumns.find(
+            (currentColumn) =>
+              currentColumn.measurement.taxon_measurement_id === columnToAdd.measurement.taxon_measurement_id
+          )
       );
 
       // Store all measurement definitions in local storage

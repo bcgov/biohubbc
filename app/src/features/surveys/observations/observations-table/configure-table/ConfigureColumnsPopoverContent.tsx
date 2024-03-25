@@ -108,7 +108,7 @@ export const ConfigureColumnsPopoverContent = (props: IConfigureColumnsPopoverCo
             <ListItem
               key={column.field}
               secondaryAction={
-                measurementColumns.some((item) => item.colDef.field === column.field) && (
+                measurementColumns.some((item) => item.measurement.taxon_measurement_id === column.field) && (
                   <IconButton
                     disabled={disabledRemoveMeasurements}
                     edge="end"

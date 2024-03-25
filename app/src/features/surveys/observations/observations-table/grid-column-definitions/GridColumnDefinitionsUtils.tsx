@@ -1,5 +1,5 @@
-import { GridCellParams } from '@mui/x-data-grid';
-import { MeasurementColumn } from 'contexts/observationsTableContext';
+import { GridCellParams, GridColDef } from '@mui/x-data-grid';
+import { IObservationTableRow, MeasurementColumn } from 'contexts/observationsTableContext';
 import {
   ObservationQualitativeMeasurementColDef,
   ObservationQuantitativeMeasurementColDef
@@ -102,4 +102,32 @@ export const getMeasurementColumns = (
   }
 
   return measurementColumns;
+};
+
+export const getMeasurementColumnDefinitions = (
+  measurements: CBMeasurementType[],
+  hasError: (params: GridCellParams) => boolean
+): GridColDef<IObservationTableRow>[] => {
+  const colDefs: GridColDef<IObservationTableRow>[] = [];
+  for (const measurement of measurements) {
+    if (isQuantitativeMeasurementTypeDefinition(measurement)) {
+      colDefs.push(
+        ObservationQuantitativeMeasurementColDef({
+          measurement: measurement,
+          hasError: hasError
+        })
+      );
+    }
+
+    if (isQualitativeMeasurementTypeDefinition(measurement)) {
+      colDefs.push(
+        ObservationQualitativeMeasurementColDef({
+          measurement: measurement,
+          measurementOptions: measurement.options,
+          hasError: hasError
+        })
+      );
+    }
+  }
+  return colDefs;
 };

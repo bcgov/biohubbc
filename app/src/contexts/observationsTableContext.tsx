@@ -1,7 +1,6 @@
 import Typography from '@mui/material/Typography';
 import {
   GridCellParams,
-  GridColDef,
   GridColumnVisibilityModel,
   GridPaginationModel,
   GridRowId,
@@ -82,7 +81,6 @@ export type ObservationRecord = StandardObservationColumns & SubcountObservation
 
 export type MeasurementColumn = {
   measurement: CBMeasurementType;
-  colDef: GridColDef; // TODO: we can remove the colDef from this definition
 };
 
 export type SupplementaryObservationCountData = {

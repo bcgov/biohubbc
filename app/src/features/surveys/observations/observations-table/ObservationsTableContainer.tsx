@@ -42,7 +42,7 @@ import {
 } from 'interfaces/useSurveyApi.interface';
 import { useContext } from 'react';
 import { getCodesName } from 'utils/Utils';
-import { getMeasurementColumns } from './grid-column-definitions/GridColumnDefinitionsUtils';
+import { getMeasurementColumnDefinitions } from './grid-column-definitions/GridColumnDefinitionsUtils';
 
 const ObservationComponent = () => {
   const codesContext = useContext(CodesContext);
@@ -95,10 +95,10 @@ const ObservationComponent = () => {
     ObservationLatitudeColDef({ hasError: observationsTableContext.hasError }),
     ObservationLongitudeColDef({ hasError: observationsTableContext.hasError }),
     // Add measurement columns to the table
-    ...getMeasurementColumns(
+    ...getMeasurementColumnDefinitions(
       observationsTableContext.measurementColumns.map((item) => item.measurement),
       observationsTableContext.hasError
-    ).map((item) => item.colDef),
+    ),
     ObservationActionsColDef({
       disabled: observationsTableContext.isSaving,
       onDelete: observationsTableContext.deleteObservationRecords
