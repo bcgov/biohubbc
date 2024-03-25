@@ -499,18 +499,19 @@ export class ObservationService extends DBService {
         return;
       }
 
-      const measurement = findMeasurementFromTsnMeasurements(
-        String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']),
-        mColumn,
-        tsnMeasurements
-      );
-
       const rowData = row[mColumn];
 
       // Ignore empty rows
       if (rowData === undefined) {
         return;
       }
+
+      const measurement = findMeasurementFromTsnMeasurements(
+        String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']),
+        mColumn,
+        tsnMeasurements
+      );
+
       // Ignore empty measurements
       if (!measurement) {
         return;

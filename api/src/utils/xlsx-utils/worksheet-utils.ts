@@ -306,11 +306,13 @@ export function validateCsvFile(
 ): boolean {
   // Validate the worksheet headers
   if (!validateWorksheetHeaders(xlsxWorksheets[sheet], columnValidator)) {
+    defaultLog.debug({ label: 'validateCsvFile', message: 'Invalid: Headers' });
     return false;
   }
 
   // Validate the worksheet column types
   if (!validateWorksheetColumnTypes(xlsxWorksheets[sheet], columnValidator)) {
+    defaultLog.debug({ label: 'validateCsvFile', message: 'Invalid: Column types' });
     return false;
   }
 
@@ -336,38 +338,43 @@ export function validateMeasurements(
 ): boolean {
   return data.every((item) => {
     const measurements = tsnMeasurementMap[item.tsn];
-    if (measurements) {
-      // only validate if the column has data
-      if (item.measurement_value) {
-        // find the correct measurement
-        if (measurements.qualitative.length > 0) {
-          const measurement = measurements.qualitative.find(
-            (measurement) =>
-              measurement.measurement_name.toLowerCase() === item.measurement_key.toLowerCase() ||
-              measurement.taxon_measurement_id === item.measurement_key
-          );
-          if (measurement) {
-            return isQualitativeValueValid(item.measurement_value, measurement);
-          }
-        }
 
-        if (measurements.quantitative.length > 0) {
-          const measurement = measurements.quantitative.find(
-            (measurement) =>
-              measurement.measurement_name.toLowerCase() === item.measurement_key.toLowerCase() ||
-              measurement.taxon_measurement_id === item.measurement_key
-          );
-          if (measurement) {
-            return isQuantitativeValueValid(Number(item.measurement_value), measurement);
-          }
-        }
-        // Has measurements for tsn
-        // Has data but no matches found, entry is invalid
-        return false;
-      } else {
-        return true;
+    if (!measurements) {
+      defaultLog.debug({ label: 'validateMeasurements', message: 'Invalid: No measurements' });
+      return false;
+    }
+
+    // only validate if the column has data
+    if (!item.measurement_value) {
+      return true;
+    }
+
+    // find the correct measurement
+    if (measurements.qualitative.length > 0) {
+      const measurement = measurements.qualitative.find(
+        (measurement) =>
+          measurement.measurement_name.toLowerCase() === item.measurement_key.toLowerCase() ||
+          measurement.taxon_measurement_id === item.measurement_key
+      );
+      if (measurement) {
+        return isQualitativeValueValid(item.measurement_value, measurement);
       }
     }
+
+    if (measurements.quantitative.length > 0) {
+      const measurement = measurements.quantitative.find(
+        (measurement) =>
+          measurement.measurement_name.toLowerCase() === item.measurement_key.toLowerCase() ||
+          measurement.taxon_measurement_id === item.measurement_key
+      );
+      if (measurement) {
+        return isQuantitativeValueValid(Number(item.measurement_value), measurement);
+      }
+    }
+
+    // Has measurements for tsn
+    // Has data but no matches found, entry is invalid
+    defaultLog.debug({ label: 'validateMeasurements', message: 'Invalid', item });
     return false;
   });
 }
@@ -425,12 +432,7 @@ export function isQuantitativeValueValid(value: number, measurement: CBQuantitat
     return true;
   }
 
-  defaultLog.debug({
-    label: 'isQuantitativeValueValid',
-    message: 'quantitative measurement error',
-    value,
-    measurement
-  });
+  defaultLog.debug({ label: 'isQuantitativeValueValid', message: 'Invalid', value, measurement });
   return false;
 }
 
@@ -455,8 +457,12 @@ export function isQualitativeValueValid(
       option.qualitative_option_id.toLowerCase() === String(value)
   );
 
-  defaultLog.debug({ label: 'isQualitativeValueValid', message: 'qualitative measurement error', value, measurement });
-  return Boolean(foundOption);
+  if (foundOption) {
+    return true;
+  }
+
+  defaultLog.debug({ label: 'isQualitativeValueValid', message: 'Invalid', value, measurement });
+  return false;
 }
 
 /**
@@ -551,29 +557,37 @@ export function findMeasurementFromTsnMeasurements(
   measurementColumnName: string,
   tsnMeasurements: TsnMeasurementMap
 ): CBQuantitativeMeasurementTypeDefinition | CBQualitativeMeasurementTypeDefinition | null | undefined {
-  let foundMeasurement:
-    | CBQuantitativeMeasurementTypeDefinition
-    | CBQualitativeMeasurementTypeDefinition
-    | null
-    | undefined = null;
   const measurements = tsnMeasurements[tsn];
-  if (measurements) {
-    // find the correct measurement
-    if (measurements.qualitative.length > 0) {
-      foundMeasurement = measurements.qualitative.find(
-        (measurement) => measurement.measurement_name.toLowerCase() === measurementColumnName.toLowerCase()
-      );
-    }
 
-    // don't bother searching if we already found a measurement
-    if (measurements.quantitative.length > 0 && !foundMeasurement) {
-      foundMeasurement = measurements.quantitative.find(
-        (measurement) => measurement.measurement_name.toLowerCase() === measurementColumnName.toLowerCase()
-      );
+  if (!measurements) {
+    // No measurements for tsn
+    return null;
+  }
+
+  if (measurements.qualitative.length > 0) {
+    const qualitativeMeasurement = measurements.qualitative.find(
+      (measurement) => measurement.measurement_name.toLowerCase() === measurementColumnName.toLowerCase()
+    );
+
+    if (qualitativeMeasurement) {
+      // Found qualitative measurement  for tsn
+      return qualitativeMeasurement;
     }
   }
 
-  return foundMeasurement;
+  if (measurements.quantitative.length > 0) {
+    const quantitativeMeasurement = measurements.quantitative.find(
+      (measurement) => measurement.measurement_name.toLowerCase() === measurementColumnName.toLowerCase()
+    );
+
+    if (quantitativeMeasurement) {
+      // Found quantitative measurement for tsn
+      return quantitativeMeasurement;
+    }
+  }
+
+  // No measurements found for tsn
+  return null;
 }
 
 /**
