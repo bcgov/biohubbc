@@ -157,7 +157,8 @@ export class SampleLocationService extends DBService {
           survey_sample_site_id: sampleSiteRecord.survey_sample_site_id,
           method_lookup_id: item.method_lookup_id,
           description: item.description,
-          periods: item.periods
+          periods: item.periods,
+          method_response_metric_id: item.method_response_metric_id
         };
         return methodService.insertSampleMethod(sampleMethod);
       })
@@ -264,6 +265,7 @@ export class SampleLocationService extends DBService {
           survey_sample_site_id: sampleSite.survey_sample_site_id,
           survey_sample_method_id: item.survey_sample_method_id,
           method_lookup_id: item.method_lookup_id,
+          method_response_metric_id: item.method_response_metric_id,
           description: item.description,
           periods: item.periods
         };
@@ -272,6 +274,7 @@ export class SampleLocationService extends DBService {
         const sampleMethod = {
           survey_sample_site_id: sampleSite.survey_sample_site_id,
           method_lookup_id: item.method_lookup_id,
+          method_response_metric_id: item.method_response_metric_id,
           description: item.description,
           periods: item.periods
         };
