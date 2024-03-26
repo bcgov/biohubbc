@@ -10,6 +10,8 @@ ENV PORT=5432
 
 USER 0
 
+COPY ./libexec/fix-permissions /usr/libexec/fix-permissions
+
 RUN apt-get update \
     && apt-cache showpkg postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR \
     && apt-get install -y --no-install-recommends \
