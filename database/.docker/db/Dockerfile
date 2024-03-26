@@ -1,3 +1,7 @@
+# ########################################################################################################
+# This DockerFile is used for local development (via docker-compose) only.
+# ########################################################################################################
+
 ARG POSTGRES_VERSION=12.5
 
 FROM postgres:$POSTGRES_VERSION

@@ -3,6 +3,9 @@ kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
   name: ${NAME}-build-template
+  annotations:
+    description: |
+      This template is used to create a build configuration that generates a PostgreSQL 12 with PostGIS 3.1 image.
 parameters:
   - name: NAME
     displayName: Name

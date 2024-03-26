@@ -10,9 +10,7 @@ https://www.postman.com/downloads/
 
 ## 2. Import the API Collection and Environment files for SIMS and BIoHub.
 
-- Download the API Collection file and Environment Variables file
-  - [BioHub Collection.postman_collection.json](https://nrs.objectstore.gov.bc.ca/gblhvt/postman/BioHub%20Collection.postman_collection.json)
-  - [BioHub Collection.postman_environment.json](https://nrs.objectstore.gov.bc.ca/gblhvt/postman/BioHub%20Collection.postman_environment.json)
+- Download the API Collection file and Environment Variables files from `https://nrs.objectstore.gov.bc.ca/gblhvt/postman/`
 - In Postman, on the `Collections` tab
 - Click the `Import` button
 - Select and import both the API Collection file and the Environment Variables file.
@@ -53,4 +51,4 @@ There are 2 kinds of authentication that are supported by this Postman collectio
 - Update the collection in the Postman app, and export the API Collection file and/or Environment Variables file.
   - Note: Environment variables marked secret should automatically be scrubbed from the exported environment variables file, but it
   - is always best to double check just in case.
-- Upload the files to S3 under ./postman
+- Upload the files to S3 under `./postman`
