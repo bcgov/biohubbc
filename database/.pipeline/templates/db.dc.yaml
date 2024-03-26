@@ -7,72 +7,73 @@ metadata:
   labels:
     build: biohubbc-db
 parameters:
-  - description: The name of the OpenShift Service exposed for the database.
+  - name: NAME
     displayName: Database Service Name
-    name: NAME
+    description: The name of the OpenShift Service exposed for the database.
     required: true
     value: 'postgresql'
-  - description: The OpenShift ImageStream name.
-    displayName: IMAGE_STREAM_NAME
-    name: IMAGE_STREAM_NAME
-    value: 'postgis-postgres'
-  - description: The OpenShift Namespace where the ImageStream resides.
-    displayName: Namespace
-    name: IMAGE_STREAM_NAMESPACE
-    value: 'af2668-tools'
-  - description: The name of the OpenShift Service exposed for the database.
+  - name: DATABASE_SERVICE_NAME
     displayName: Database Service Name
-    name: DATABASE_SERVICE_NAME
+    description: The name of the OpenShift Service exposed for the database.
     required: true
     value: 'postgresql'
-  - description: Username for PostgreSQL user that will be used for accessing the database.
+  - name: POSTGRESQL_USER
     displayName: PostgreSQL Connection Username
-    name: POSTGRESQL_USER
+    description: Username for PostgreSQL user that will be used for accessing the database.
     required: true
     value: 'postgres'
-  - description: Admin Username for PostgreSQL user that will be used for accessing the database.
+  - name: POSTGRESQL_ADMIN_USER
     displayName: PostgreSQL Admin Connection Username
-    name: POSTGRESQL_ADMIN_USER
+    description: Admin Username for PostgreSQL user that will be used for accessing the database.
     required: true
     value: 'postgres'
-  - description: Password for the PostgreSQL connection user.
+  - name: POSTGRESQL_PASSWORD
     displayName: PostgreSQL Connection Password
+    description: Password for the PostgreSQL connection user.
     from: '[a-zA-Z0-9]{16}'
     generate: expression
-    name: POSTGRESQL_PASSWORD
     required: true
-  - description: Password for the PostgreSQL admin user.
+  - name: POSTGRESQL_ADMIN_PASSWORD
     displayName: PostgreSQL Admin Connection Password
+    description: Password for the PostgreSQL admin user.
     from: '[a-zA-Z0-9]{16}'
     generate: expression
-    name: POSTGRESQL_ADMIN_PASSWORD
     required: true
-  - description: Name of the PostgreSQL database accessed.
+  - name: POSTGRESQL_DATABASE
     displayName: PostgreSQL Database Name
-    name: POSTGRESQL_DATABASE
+    description: Name of the PostgreSQL database accessed.
     required: true
     value: 'biohubbc'
   - name: TZ
+    displayName: Time Zone
     description: Database timezone
     required: false
     value: 'America/Vancouver'
-  - description: Volume space available for data, e.g. 512Mi, 2Gi.
+  - name: VOLUME_CAPACITY
     displayName: Volume Capacity
-    name: VOLUME_CAPACITY
+    description: Volume space available for data, e.g. 512Mi, 2Gi.
     required: true
     value: '500Mi'
-  - description: Version of PostgreSQL image to be used (9.2, 9.4, 9.5 or latest).
+  - name: IMAGE_STREAM_NAME
+    displayName: IMAGE_STREAM_NAME
+    description: The OpenShift ImageStream name.
+    value: 'postgres-postgis'
+  - name: IMAGE_STREAM_NAMESPACE
+    displayName: Namespace
+    description: The OpenShift Namespace where the ImageStream resides.
+    value: 'af2668-tools'
+  - name: IMAGE_STREAM_VERSION
     displayName: Version of PostgreSQL Image
-    name: IMAGE_STREAM_VERSION
+    description: Version of PostgreSQL image to be used (9.2, 9.4, 9.5 or latest).
     required: true
     value: '12-31'
-  - description: Indicator to enable pgcrypto extension (provided out-of-the-box with PostgreSQL).
+  - name: PGCRYPTO_EXTENSION
     displayName: Flag to enable pgcrypto PostgreSQL extension.
-    name: PGCRYPTO_EXTENSION
+    description: Indicator to enable pgcrypto extension (provided out-of-the-box with PostgreSQL).
     value: 'Y'
-  - description: Indicator to enable postgis extension (from official PostgeSQL YUM repo).
+  - name: POSTGIS_EXTENSION
     displayName: Flag to enable postgis PostgreSQL extension.
-    name: POSTGIS_EXTENSION
+    description: Indicator to enable postgis extension (from official PostgeSQL YUM repo).
     value: 'Y'
   - name: CPU_REQUEST
     value: '50m'

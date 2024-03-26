@@ -1,0 +1,153 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: ${NAME}-build-template
+parameters:
+  - name: NAME
+    displayName: Name
+    description: The name assigned to all of the objects defined in this template.
+    required: true
+    value: postgres-postgis
+  - name: SUFFIX
+    displayName: Suffix
+    description: A name suffix used for all objects
+    required: false
+    value:
+  - name: APP_NAME
+    displayName: App Name
+    description: Used to group components together in the OpenShift console.
+    required: true
+    value: biohubbc
+  - name: APP_GROUP
+    displayName: App Group
+    description: The name assigned to all of the deployments in this project.
+    required: true
+    value: biohubbc
+  - name: GIT_REPO_URL
+    displayName: Git Repo URL
+    description: The URL to your GIT repo.
+    required: true
+    value: https://github.com/bcgov/biohubbc.git
+  - name: GIT_REF
+    displayName: Git Reference
+    description: The git reference or branch.
+    required: true
+    value: postgres_upgrade
+  - name: SOURCE_CONTEXT_DIR
+    displayName: Source Context Directory
+    description: The source context directory.
+    required: false
+    value: containers/postgres15-2
+  - name: OUTPUT_IMAGE_TAG
+    displayName: Output Image Tag
+    description: The tag given to the built image.
+    required: true
+    value: "15"
+  - name: DOCKER_FILE_PATH
+    displayName: Docker File Path
+    description: The path to the docker file.
+    required: true
+    value: Dockerfile
+  - name: SOURCE_IMAGE_KIND
+    displayName: Source Image Kind
+    description: The 'kind' (type) of the source image; typically ImageStreamTag, or DockerImage.
+    required: false
+    value: DockerImage
+  - name: SOURCE_IMAGE_NAME
+    displayName: Source Image Name
+    description: The name of the source image. If specified, this overrides the 'FROM' spec in the Docker file.
+    required: false
+    value:
+  - name: SOURCE_IMAGE_TAG
+    displayName: Source Image Tag
+    description: The tag of the source image. If specified, this overrides the 'FROM' spec in the Docker file.
+    required: false
+    value:
+  - name: CPU_LIMIT
+    displayName: Resources CPU Limit
+    description: The resources CPU limit (in cores) for this build; 0 = use default.
+    required: true
+    value: "0"
+  - name: MEMORY_LIMIT
+    displayName: Resources Memory Limit
+    description: The resources Memory limit (in Mi, Gi, etc) for this build; 0Mi = use default.
+    required: true
+    value: 0Mi
+  - name: CPU_REQUEST
+    displayName: Resources CPU Request
+    description: The resources CPU request (in cores) for this build; 0 = use default.
+    required: true
+    value: "0"
+  - name: MEMORY_REQUEST
+    displayName: Resources Memory Request
+    description: The resources Memory request (in Mi, Gi, etc) for this build; 0Mi = use default.
+    required: true
+    value: 0Mi
+objects:
+  - kind: ImageStream
+    apiVersion: image.openshift.io/v1
+    metadata:
+      name: ${NAME}
+      labels:
+        name: ${NAME}
+        app: ${APP_NAME}${SUFFIX}
+        app-group: ${APP_GROUP}
+
+  - kind: BuildConfig
+    apiVersion: build.openshift.io/v1
+    metadata:
+      name: ${NAME}
+      labels:
+        name: ${NAME}
+        app: ${APP_NAME}${SUFFIX}
+        app-group: ${APP_GROUP}
+    spec:
+      runPolicy: Serial
+      source:
+        type: Git
+        git:
+          ref: ${GIT_REF}
+          uri: ${GIT_REPO_URL}
+        contextDir: ${SOURCE_CONTEXT_DIR}
+        # secrets:
+        #   - secret:
+        #       name: platform-services-controlled-etc-pki-entitlement
+        #     destinationDir: etc-pki-entitlement
+        # configMaps:
+        #   - configMap:
+        #       name: platform-services-controlled-rhsm-conf
+        #     destinationDir: rhsm-conf
+        #   - configMap:
+        #       name: platform-services-controlled-rhsm-ca
+        #     destinationDir: rhsm-ca
+      strategy:
+        type: Docker
+        dockerStrategy:
+          noCache: true
+          imageOptimizationPolicy: SkipLayers
+          dockerfilePath: ${DOCKER_FILE_PATH}
+          # from:
+          #   kind: ${SOURCE_IMAGE_KIND}
+          #   name: ${SOURCE_IMAGE_NAME}:${SOURCE_IMAGE_TAG}
+          volumes:
+            - name: etc-pki-entitlement
+              mounts:
+                - destinationPath: /etc/pki/entitlement
+              source:
+                type: Secret
+                secret:
+                  secretName: platform-services-controlled-etc-pki-entitlement
+      output:
+        to:
+          kind: ImageStreamTag
+          name: ${NAME}:${OUTPUT_IMAGE_TAG}
+      resources:
+        requests:
+          cpu: ${CPU_REQUEST}
+          memory: ${MEMORY_REQUEST}
+        limits:
+          cpu: ${CPU_LIMIT}
+          memory: ${MEMORY_LIMIT}
+      triggers:
+        - type: ImageChange
+        - type: ConfigChange

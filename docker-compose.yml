@@ -10,6 +10,7 @@ services:
       dockerfile: Dockerfile
       args:
         - POSTGRES_VERSION=${POSTGRES_VERSION}
+        - POSTGIS_MAJOR=${POSTGIS_MAJOR}
         - POSTGIS_VERSION=${POSTGIS_VERSION}
         - TZ=${DB_TZ}
     ports:
