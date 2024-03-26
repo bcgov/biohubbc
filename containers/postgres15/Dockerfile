@@ -8,19 +8,6 @@ ENV TZ=America/Vancouver
 
 ENV PORT=5432
 
-# install postgis packages
-# RUN mkdir -p /opt/apps
-# RUN apt-get -qq update
-# RUN apt-get -qq install -y --no-install-recommends postgresql-$PG_MAJOR-postgis-$POSTGIS_VERSION
-# RUN apt-get -qq install -y --no-install-recommends postgresql-$PG_MAJOR-postgis-$POSTGIS_VERSION-scripts
-# RUN apt-get -qq install -y --no-install-recommends postgresql-$PG_MAJOR-pgrouting
-# RUN apt-get -qq install -y --no-install-recommends postgresql-$PG_MAJOR-pgrouting-scripts
-# RUN apt-get -qq install -y --no-install-recommends postgresql-server-dev-$PG_MAJOR
-# RUN apt-get -qq install -y --no-install-recommends pgbadger pg-activity wget unzip nano
-# RUN apt-get -qq purge -y --auto-remove postgresql-server-dev-$PG_MAJOR
-# RUN apt-get -qq autoremove -y
-# RUN apt-get -qq clean
-
 USER 0
 
 RUN apt-get update \
@@ -36,16 +23,9 @@ RUN apt-get update \
     postgresql-$PG_MAJOR-pgrouting-scripts \
     && rm -rf /var/lib/apt/lists/*
 
-# RUN usermod -G "" postgres
-# RUN mkdir -p /var/lib/pgsql/data
-# RUN /usr/libexec/fix-permissions /var/lib/pgsql /var/run/postgresql
-
-# # RUN apt-get install -y --no-install-recommends postgresql-server-dev-$PG_MAJOR
-# # RUN apt-get install -y --no-install-recommends pgbadger pg-z wget unzip nano
-# # RUN apt-get purge -y --auto-remove postgresql-server-dev-$PG_MAJOR
-# RUN apt-get autoremove -y
-# RUN apt-get clean
-# # && rm -rf /var/lib/apt/lists/*
+RUN usermod -G "" postgres
+RUN mkdir -p /var/lib/pgsql/data
+RUN /usr/libexec/fix-permissions /var/lib/pgsql /var/run/postgresql
 
 # set time zone
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
