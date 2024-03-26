@@ -22,8 +22,8 @@
     "fix": "npm-run-all -l -s lint-fix format-fix"
   },
   "engines": {
-    "node": ">= 14.0.0",
-    "npm": ">= 6.0.0"
+    "node": ">= 18.0.0",
+    "npm": ">= 10.0.0"
   },
   "dependencies": {
     "@babel/core": "^7.21.8",

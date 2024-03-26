@@ -15,7 +15,7 @@ The objectives for the SIMS project are:
 
 ## Install Node/NPM
 
-- Requires Node version 12+
+- Requires Node version 18+
 - https://nodejs.org/en/download/
 
 ## Install Git

@@ -29,7 +29,7 @@ parameters:
     value: dev
   - name: BASE_IMAGE_URL
     required: true
-    value: image-registry.openshift-image-registry.svc:5000/openshift/nodejs:14-ubi8
+    value: image-registry.openshift-image-registry.svc:5000/openshift/nodejs-18:1-98.1711398651
   - name: SOURCE_IMAGE_NAME
     required: true
     value: nodejs
