@@ -1,7 +1,6 @@
 import Typography from '@mui/material/Typography';
 import {
   GridCellParams,
-  GridColDef,
   GridColumnVisibilityModel,
   GridPaginationModel,
   GridRowId,
@@ -15,16 +14,19 @@ import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import { ObservationsTableI18N } from 'constants/i18n';
 import { getSurveySessionStorageKey, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS } from 'constants/session-storage';
 import { DialogContext } from 'contexts/dialogContext';
-import { default as dayjs } from 'dayjs';
 import {
-  getMeasurementColumns,
   isQualitativeMeasurementTypeDefinition,
   isQuantitativeMeasurementTypeDefinition
 } from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitionsUtils';
+import {
+  validateObservationTableRow,
+  validateObservationTableRowMeasurements
+} from 'features/surveys/observations/observations-table/observation-row-validation/ObservationRowValidationUtils';
 import { APIError } from 'hooks/api/useAxios';
 import { IObservationTableRowToSave, SubcountToSave } from 'hooks/api/useObservationApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useObservationsContext, useTaxonomyContext } from 'hooks/useContext';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import {
   CBMeasurementType,
   CBMeasurementValue,
@@ -55,15 +57,26 @@ export type StandardObservationColumns = {
 export type SubcountObservationColumns = {
   observation_subcount_id: number | null;
   subcount: number | null;
+  qualitative_measurements: {
+    field: string;
+    critterbase_taxon_measurement_id: string;
+    critterbase_measurement_qualitative_option_id: string;
+  }[];
+  quantitative_measurements: {
+    critterbase_taxon_measurement_id: string;
+    value: number;
+  }[];
   [key: string]: any;
 };
 
-export type ObservationRecord = StandardObservationColumns & SubcountObservationColumns;
-
-export type MeasurementColumn = {
-  measurement: CBMeasurementType;
-  colDef: GridColDef;
+export type TSNMeasurement = {
+  qualitative: CBQualitativeMeasurementTypeDefinition[];
+  quantitative: CBQuantitativeMeasurementTypeDefinition[];
 };
+
+export type TSNMeasurementMap = Record<string, TSNMeasurement>;
+
+export type ObservationRecord = StandardObservationColumns & SubcountObservationColumns;
 
 export type SupplementaryObservationCountData = {
   observationCount: number;
@@ -235,11 +248,11 @@ export type IObservationsTableContext = {
   /**
    * User-added measurement columns that are not part of the default observation table columns.
    */
-  measurementColumns: MeasurementColumn[];
+  measurementColumns: CBMeasurementType[];
   /**
    * Sets the user-added measurement columns.
    */
-  setMeasurementColumns: React.Dispatch<React.SetStateAction<MeasurementColumn[]>>;
+  setMeasurementColumns: React.Dispatch<React.SetStateAction<CBMeasurementType[]>>;
   /**
    * Used to disable the entire table.
    */
@@ -265,6 +278,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       refresh: refreshObservationsData
     }
   } = useObservationsContext();
+  const critterbaseApi = useCritterbaseApi();
 
   const { cacheSpeciesTaxonomyByIds } = useTaxonomyContext();
 
@@ -303,7 +317,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   const [validationModel, setValidationModel] = useState<ObservationTableValidationModel>({});
 
   // Stores any measurement columns that are not part of the default observation table columns
-  const [measurementColumns, setMeasurementColumns] = useState<MeasurementColumn[]>([]);
+  const [measurementColumns, setMeasurementColumns] = useState<CBMeasurementType[]>([]);
   const _hasLoadedMeasurementColumns = useRef<boolean>(false);
 
   // Global disabled state for the observations table
@@ -320,6 +334,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
   // Sort model
   const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'observation_date', sort: 'desc' }]);
+
+  // TSN Measurement Map
+  const tsnMeasurementMapRef = useRef<TSNMeasurementMap>({});
 
   /**
    * Returns true if the given row has a validation error.
@@ -381,10 +398,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         });
 
         // Set measurement columns, including both existing and local storage measurement definitions
-        return getMeasurementColumns(
-          [...existingMeasurementDefinitions, ...localStorageMeasurementDefinitions],
-          hasError
-        );
+        return [...existingMeasurementDefinitions, ...localStorageMeasurementDefinitions];
       });
     }
 
@@ -411,10 +425,24 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   }, [_muiDataGridApiRef]);
 
   /**
+   * Fetches measurement definitions from Critterbase for a given itis_tsn number
+   */
+  const tsnMeasurements = useCallback(async (tsn: number): Promise<TSNMeasurement | null | undefined> => {
+    const currentMap = tsnMeasurementMapRef.current;
+    if (!currentMap[tsn]) {
+      const response = await critterbaseApi.xref.getTaxonMeasurements(tsn);
+
+      currentMap[String(tsn)] = response;
+      tsnMeasurementMapRef.current = currentMap;
+    }
+    return currentMap[tsn];
+  }, []);
+
+  /**
    * Validates all rows belonging to the table. Returns null if validation passes, otherwise
    * returns the validation model
    */
-  const _validateRows = useCallback((): ObservationTableValidationModel | null => {
+  const _validateRows = useCallback(async (): Promise<ObservationTableValidationModel | null> => {
     const rowValues = _getRowsWithEditedValues();
     const tableColumns = _muiDataGridApiRef.current.getAllColumns?.() ?? [];
 
@@ -433,52 +461,33 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       'survey_sample_period_id'
     ];
 
-    const validation = rowValues.reduce((tableModel: ObservationTableValidationModel, row: IObservationTableRow) => {
-      const rowErrors: ObservationRowValidationError[] = [];
+    // build an array of all the standard non measurement columns
+    const nonMeasurementColumns: string[] = [
+      '__check__', // add check box column to filter out when looking for measurement columns
+      'actions', // actions column (trash can) to filter out when looking for measurement columns
+      ...(requiredColumns as string[]),
+      ...(samplingRequiredColumns as string[])
+    ];
 
-      // Validate missing columns
-      const missingColumns: Set<keyof IObservationTableRow> = new Set(requiredColumns.filter((column) => !row[column]));
-      const missingSamplingColumns: (keyof IObservationTableRow)[] = samplingRequiredColumns.filter(
-        (column) => !row[column]
-      );
+    // filter all table columns out that do not appear in the nonMeasurementColumns array
+    const measurementColumns = tableColumns
+      .filter((tc) => {
+        return nonMeasurementColumns.indexOf(String(tc.field)) < 0;
+      })
+      .map((item) => item.field);
+    const validation: ObservationTableValidationModel = {};
+    for (const row of rowValues) {
+      // check standard required columns
+      const standardColumnErrors = validateObservationTableRow(row, requiredColumns, tableColumns);
 
-      // If an observation is not an incidental record, then all sampling columns are required.
-      if (!missingSamplingColumns.includes('survey_sample_site_id')) {
-        // Record is non-incidental, namely one or more of its sampling columns is non-empty.
-        missingSamplingColumns.forEach((column) => missingColumns.add(column));
+      // check any measurement columns found
+      const measurementErrors = await validateObservationTableRowMeasurements(row, measurementColumns, tsnMeasurements);
 
-        if (missingColumns.has('survey_sample_site_id')) {
-          // If sampling site is missing, then a sampling method may not be selected
-          missingColumns.add('survey_sample_method_id');
-        }
-
-        if (missingColumns.has('survey_sample_method_id')) {
-          // If sampling method is missing, then a sampling period may not be selected
-          missingColumns.add('survey_sample_period_id');
-        }
+      const totalErrors = [...standardColumnErrors, ...measurementErrors];
+      if (totalErrors.length > 0) {
+        validation[row.id] = totalErrors;
       }
-
-      Array.from(missingColumns).forEach((field: keyof IObservationTableRow) => {
-        const columnName = tableColumns.find((column) => column.field === field)?.headerName ?? field;
-        rowErrors.push({ field, message: `Missing column: ${columnName}` });
-      });
-
-      // Validate date value
-      if (row.observation_date && !dayjs(row.observation_date).isValid()) {
-        rowErrors.push({ field: 'observation_date', message: 'Invalid date' });
-      }
-
-      // Validate time value
-      if (row.observation_time === 'Invalid date') {
-        rowErrors.push({ field: 'observation_time', message: 'Invalid time' });
-      }
-
-      if (rowErrors.length > 0) {
-        tableModel[row.id] = rowErrors;
-      }
-
-      return tableModel;
-    }, {});
+    }
 
     setValidationModel(validation);
 
@@ -771,16 +780,26 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   /**
    * Transition all editable rows from edit mode to view mode.
    */
-  const saveObservationRecords = useCallback(() => {
+  const saveObservationRecords = useCallback(async () => {
     if (_isStoppingEdit.current) {
       // Stop edit mode already in progress
       return;
     }
 
     // Validate rows
-    const validationErrors = _validateRows();
-
-    if (validationErrors) {
+    try {
+      const validationErrors = await _validateRows();
+      if (validationErrors) {
+        return;
+      }
+    } catch (error) {
+      setErrorDialog({
+        onOk: () => setErrorDialog({ open: false }),
+        onClose: () => setErrorDialog({ open: false }),
+        dialogTitle: ObservationsTableI18N.fetchingTSNMeasurementErrorDialogTitle,
+        dialogText: ObservationsTableI18N.fetchingTSNMeasurementErrorDialogText,
+        open: true
+      });
       return;
     }
 
@@ -907,13 +926,11 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    */
   const _getMeasurementsToSave = useCallback(
     (row: ObservationRecord) => {
-      const measurementDefinitions = measurementColumns.map((item) => item.measurement);
-
       const qualitative: SubcountToSave['qualitative'] = [];
       const quantitative: SubcountToSave['quantitative'] = [];
 
       // For each measurement column in the data grid
-      for (const measurementDefinition of measurementDefinitions) {
+      for (const measurementDefinition of measurementColumns) {
         // If the row has a non-null/non-undefined value for the measurement column
         if (row[measurementDefinition.taxon_measurement_id]) {
           // If the measurement column is a qualitative measurement, add it to the qualitative array
@@ -1123,7 +1140,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     }
 
     if (!observationsData) {
-      // No obserations data has laoded
+      // No observation data has loaded
       return;
     }
 
