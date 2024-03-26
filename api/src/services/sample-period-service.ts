@@ -58,8 +58,8 @@ export class SamplePeriodService extends DBService {
    * @returns {*} {Promise<SamplePeriodRecord[]>} an array of promises for the deleted periods
    * @memberof SamplePeriodService
    */
-  async deleteSamplePeriodRecords(periodsToDelete: number[]): Promise<SamplePeriodRecord[]> {
-    return this.samplePeriodRepository.deleteSamplePeriods(periodsToDelete);
+  async deleteSamplePeriodRecords(surveyId: number, periodsToDelete: number[]): Promise<SamplePeriodRecord[]> {
+    return this.samplePeriodRepository.deleteSamplePeriods(surveyId, periodsToDelete);
   }
 
   /**
@@ -121,7 +121,7 @@ export class SamplePeriodService extends DBService {
         throw new HTTP400('Cannot delete a sample period that is associated with an observation');
       }
 
-      await this.deleteSamplePeriodRecords(existingSamplePeriodIds);
+      await this.deleteSamplePeriodRecords(surveyId, existingSamplePeriodIds);
     }
   }
 }

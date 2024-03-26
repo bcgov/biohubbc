@@ -37,7 +37,8 @@ GET.apiDoc = {
               'intended_outcomes',
               'vantage_codes',
               'site_selection_strategies',
-              'survey_progress'
+              'survey_progress',
+              'method_response_metrics'
             ],
             properties: {
               management_action_type: {
@@ -322,6 +323,9 @@ GET.apiDoc = {
                     },
                     name: {
                       type: 'string'
+                    },
+                    description: {
+                      type: 'string'
                     }
                   }
                 }
@@ -330,6 +334,25 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  properties: {
+                    id: {
+                      type: 'integer'
+                    },
+                    name: {
+                      type: 'string'
+                    },
+                    description: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              method_response_metrics: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['id', 'name', 'description'],
                   properties: {
                     id: {
                       type: 'integer'
