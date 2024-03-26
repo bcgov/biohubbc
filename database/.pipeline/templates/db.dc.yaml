@@ -132,16 +132,16 @@ objects:
       resources:
         requests:
           storage: '${VOLUME_CAPACITY}'
-  - kind: ImageStream
-    apiVersion: image.openshift.io/v1
-    metadata:
-      name: '${IMAGE_STREAM_NAME}'
-      labels:
-        shared: 'true'
-      annotations: {}
-    spec:
-      lookupPolicy:
-        local: false
+  # - kind: ImageStream
+  #   apiVersion: image.openshift.io/v1
+  #   metadata:
+  #     name: '${IMAGE_STREAM_NAME}'
+  #     labels:
+  #       shared: 'true'
+  #     annotations: {}
+  #   spec:
+  #     lookupPolicy:
+  #       local: false
 
   - kind: DeploymentConfig
     apiVersion: apps.openshift.io/v1

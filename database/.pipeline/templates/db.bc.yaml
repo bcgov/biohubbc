@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: postgresql null
+  name: postgresql
 parameters:
   - name: NAME
     displayName: Name

@@ -36,6 +36,10 @@ RUN apt-get update \
     postgresql-$PG_MAJOR-pgrouting-scripts \
     && rm -rf /var/lib/apt/lists/*
 
+# RUN usermod -G "" postgres
+# RUN mkdir -p /var/lib/pgsql/data
+# RUN /usr/libexec/fix-permissions /var/lib/pgsql /var/run/postgresql
+
 # # RUN apt-get install -y --no-install-recommends postgresql-server-dev-$PG_MAJOR
 # # RUN apt-get install -y --no-install-recommends pgbadger pg-z wget unzip nano
 # # RUN apt-get purge -y --auto-remove postgresql-server-dev-$PG_MAJOR
