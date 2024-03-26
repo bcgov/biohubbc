@@ -166,22 +166,22 @@ objects:
           containers:
             - name: postgresql
               env:
-                - name: POSTGRESQL_USER
+                - name: POSTGRES_USER
                   valueFrom:
                     secretKeyRef:
-                      key: database-user
+                      key: database-admin
                       name: '${DATABASE_SERVICE_NAME}'
-                - name: POSTGRESQL_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      key: database-user-password
-                      name: '${DATABASE_SERVICE_NAME}'
-                - name: POSTGRESQL_ADMIN_PASSWORD
+                - name: POSTGRES_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       key: database-admin-password
                       name: '${DATABASE_SERVICE_NAME}'
-                - name: POSTGRESQL_DATABASE
+                # - name: POSTGRESQL_ADMIN_PASSWORD
+                #   valueFrom:
+                #     secretKeyRef:
+                #       key: database-admin-password
+                #       name: '${DATABASE_SERVICE_NAME}'
+                - name: POSTGRES_DB
                   valueFrom:
                     secretKeyRef:
                       key: database-name

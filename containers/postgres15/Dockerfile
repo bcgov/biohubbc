@@ -21,6 +21,8 @@ ENV PORT=5432
 # RUN apt-get -qq autoremove -y
 # RUN apt-get -qq clean
 
+USER 0
+
 RUN apt-get update \
     && apt-cache showpkg postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR \
     && apt-get install -y --no-install-recommends \
@@ -47,6 +49,8 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # copy postgis init script to docker init directory
 RUN mkdir -p /docker-entrypoint-initdb.d
 COPY ./create_postgis.sql /docker-entrypoint-initdb.d/postgis.sql
+
+USER 26
 
 EXPOSE $PORT
 
