@@ -37,6 +37,7 @@ describe('SampleMethodService', () => {
           survey_sample_method_id: 1,
           survey_sample_site_id: 2,
           method_lookup_id: 3,
+          method_response_metric_id: 1,
           description: 'description',
           create_date: '2023-05-06',
           create_user: 1,
@@ -79,6 +80,7 @@ describe('SampleMethodService', () => {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
         method_lookup_id: 3,
+        method_response_metric_id: 1,
         description: 'description',
         create_date: '2023-05-06',
         create_user: 1,
@@ -100,8 +102,8 @@ describe('SampleMethodService', () => {
       const sampleMethodService = new SampleMethodService(mockDBConnection);
       const response = await sampleMethodService.deleteSampleMethodRecord(mockSurveyId, mockSamplePeriodId);
 
-      expect(deleteSampleMethodRecordStub).to.be.calledOnceWith(1001, mockSampleMethodId);
-      expect(deleteSamplePeriodRecordStub).to.be.calledOnceWith([mockSamplePeriodId]);
+      expect(deleteSampleMethodRecordStub).to.be.calledOnceWith(mockSurveyId, mockSampleMethodId);
+      expect(deleteSamplePeriodRecordStub).to.be.calledOnceWith(mockSurveyId, [mockSamplePeriodId]);
       expect(response).to.eql(mockSampleMethodRecord);
     });
   });
@@ -118,6 +120,7 @@ describe('SampleMethodService', () => {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
         method_lookup_id: 3,
+        method_response_metric_id: 1,
         description: 'description',
         create_date: '2023-05-06',
         create_user: 1,
@@ -149,6 +152,7 @@ describe('SampleMethodService', () => {
       const sampleMethod: InsertSampleMethodRecord = {
         survey_sample_site_id: 2,
         method_lookup_id: 3,
+        method_response_metric_id: 1,
         description: 'description',
         periods: [
           {
@@ -201,6 +205,7 @@ describe('SampleMethodService', () => {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
         method_lookup_id: 3,
+        method_response_metric_id: 1,
         description: 'description',
         create_date: '2023-05-06',
         create_user: 1,
@@ -221,6 +226,7 @@ describe('SampleMethodService', () => {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
         method_lookup_id: 3,
+        method_response_metric_id: 1,
         description: 'description',
         periods: [
           {
@@ -243,7 +249,7 @@ describe('SampleMethodService', () => {
       const sampleMethodService = new SampleMethodService(mockDBConnection);
       const response = await sampleMethodService.updateSampleMethod(mockSurveyId, sampleMethod);
 
-      expect(updateSampleMethodStub).to.be.calledOnceWith(sampleMethod);
+      expect(updateSampleMethodStub).to.be.calledOnceWith(mockSurveyId, sampleMethod);
       expect(response).to.eql(mockSampleMethodRecord);
     });
   });
@@ -263,6 +269,7 @@ describe('SampleMethodService', () => {
         survey_sample_method_id: mockSampleMethodId,
         survey_sample_site_id: 2,
         method_lookup_id: 3,
+        method_response_metric_id: 1,
         description: 'description',
         create_date: '2023-05-06',
         create_user: 1,
