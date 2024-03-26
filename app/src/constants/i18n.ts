@@ -320,7 +320,7 @@ export const ObservationsTableI18N = {
   // Fetching TSN Measurements from CritterBase error
   fetchingTSNMeasurementErrorDialogTitle: 'Error fetching measurement validation',
   fetchingTSNMeasurementErrorDialogText:
-    'We ran into an error fetching measurement data from Critterbase, taxon selected may not be supported. Please try again. If the error persists, please contact your system administrator.'
+    'An error occurred while fetching measurement data from Critterbase. The selected taxon may not be supported. Please try again. If the error persists, please contact your system administrator.'
 };
 
 export const TelemetryTableI18N = {

@@ -532,7 +532,7 @@ export async function getCBMeasurementsFromTSN(
       if (!tsnMeasurements[tsn]) {
         const measurements = await critterBaseService.getTaxonMeasurements(tsn);
         if (!measurements) {
-          throw `No measurements found for tsn: ${tsn}`;
+          throw new Error(`No measurements found for tsn: ${tsn}`);
         }
 
         tsnMeasurements[tsn] = measurements;

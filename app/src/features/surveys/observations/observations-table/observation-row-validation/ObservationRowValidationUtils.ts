@@ -143,7 +143,7 @@ const _validateQuantitativeMeasurement = (
   // Measurement values are invalid, create an error and return
   return {
     field,
-    message: `Value provided is outside of the valid range ${minValue} < ${value} < ${maxValue}`
+    message: `Value provided is outside of the valid range [${minValue}, ${maxValue}]`
   };
 };
 
