@@ -28,7 +28,8 @@ const SamplingMethods = () => {
 
   return (
     <Box>
-      <Box component="dl"
+      <Box
+        component="dl"
         sx={{
           '& dd span': {
             position: 'relative',

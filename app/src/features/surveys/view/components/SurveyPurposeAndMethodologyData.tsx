@@ -23,7 +23,8 @@ const SurveyPurposeAndMethodologyData = () => {
   const surveyData = surveyContext.surveyDataLoader.data.surveyData;
 
   return (
-    <Box component="dl"
+    <Box
+      component="dl"
       sx={{
         '& dd span': {
           position: 'relative',
@@ -38,8 +39,7 @@ const SurveyPurposeAndMethodologyData = () => {
             display: 'none'
           }
         }
-      }}
-    >
+      }}>
       <Box className="row">
         <Typography component="dt">Ecological Variables</Typography>
         <Typography component="dd">

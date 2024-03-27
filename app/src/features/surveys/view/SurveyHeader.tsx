@@ -143,7 +143,9 @@ const SurveyHeader = () => {
         }
         subTitleJSX={
           <Stack flexDirection="row" alignItems="center" gap={0.75} color="text.secondary">
-            <Typography component="span">Survey Timeline:</Typography>
+            <Typography component="span">Status:</Typography>
+            <SurveyProgressChip progress_id={surveyWithDetails.surveyData.survey_details.progress_id} />
+            <Typography component="span">Timeline:</Typography>
             <Typography component="span">
               {getFormattedDateRangeString(
                 DATE_FORMAT.ShortMediumDateFormat,
@@ -151,8 +153,6 @@ const SurveyHeader = () => {
                 surveyWithDetails.surveyData.survey_details.end_date
               )}
             </Typography>
-
-            <SurveyProgressChip progress_id={surveyWithDetails.surveyData.survey_details.progress_id} />
           </Stack>
         }
         buttonJSX={

@@ -137,8 +137,7 @@ const MultiAutocompleteField: React.FC<IMultiAutocompleteField> = (props) => {
                 fontSize: '0.875rem',
                 fontWeight: 700
               }
-            }}
-          >
+            }}>
             <ListItemIcon>
               <Checkbox
                 icon={<CheckBoxOutlineBlank fontSize="small" />}

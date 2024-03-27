@@ -63,17 +63,17 @@ const SelectWithSubtextField: React.FC<ISelectWithSubtextField> = (props) => {
               vertical: 'top',
               horizontal: 'left'
             }
-          }}
-        >
+          }}>
           {props.options.map((item) => (
-            <MenuItem key={item.value} value={item.value}
+            <MenuItem
+              key={item.value}
+              value={item.value}
               sx={{
                 '& .MuiListItemText-primary': {
                   fontSize: '0.875rem',
                   fontWeight: 700
                 }
-              }}
-            >
+              }}>
               <ListItemText primary={item.label} secondary={item.subText} />
             </MenuItem>
           ))}

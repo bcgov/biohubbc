@@ -1,5 +1,7 @@
 import Box from '@mui/material/Box';
+import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
+import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import assert from 'assert';
@@ -8,8 +10,6 @@ import { useContext } from 'react';
 import GeneralInformation from './components/GeneralInformation';
 import ProjectObjectives from './components/ProjectObjectives';
 import TeamMembers from './components/TeamMember';
-import Stack from '@mui/material/Stack';
-import grey from '@mui/material/colors/grey';
 
 /**
  * Project details content for a project.
@@ -74,28 +74,24 @@ const ProjectDetails = () => {
           }
         }}>
         <Box component="section">
-          <Typography component="h3"
+          <Typography
+            component="h3"
             sx={{
               pb: 2,
               borderBottom: '1px solid ' + grey[200]
-            }}
-          >
+            }}>
             Project Objectives
           </Typography>
           <ProjectObjectives />
         </Box>
 
         <Box component="section">
-          <Typography component="h3">
-            General Information
-          </Typography>
+          <Typography component="h3">General Information</Typography>
           <GeneralInformation />
         </Box>
 
         <Box component="section">
-          <Typography component="h3">
-            Team Members
-          </Typography>
+          <Typography component="h3">Team Members</Typography>
           <TeamMembers />
         </Box>
       </Stack>

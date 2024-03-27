@@ -23,7 +23,8 @@ const Partnerships = () => {
   const surveyData = surveyContext.surveyDataLoader.data.surveyData;
 
   return (
-    <Box component="dl"
+    <Box
+      component="dl"
       sx={{
         '& dd span': {
           position: 'relative',
@@ -38,8 +39,7 @@ const Partnerships = () => {
             display: 'none'
           }
         }
-      }}
-    >
+      }}>
       <Box className="row">
         <Typography component="dt">Indigenous Partnerships</Typography>
         <Typography component="dd">
@@ -62,11 +62,7 @@ const Partnerships = () => {
         <Typography component="dd">
           {surveyData.partnerships.stakeholder_partnerships.length ? (
             surveyData.partnerships.stakeholder_partnerships?.map((stakeholderPartnership: string) => {
-              return (
-                <span key={`stakeholder-${stakeholderPartnership}`}>
-                  {stakeholderPartnership}
-                </span>
-              );
+              return <span key={`stakeholder-${stakeholderPartnership}`}>{stakeholderPartnership}</span>;
             })
           ) : (
             <span>None</span>
