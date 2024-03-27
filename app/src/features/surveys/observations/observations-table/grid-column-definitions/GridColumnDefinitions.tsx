@@ -519,7 +519,6 @@ export const ObservationQuantitativeMeasurementColDef = (props: {
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
   const { measurement, hasError } = props;
-
   return {
     field: measurement.taxon_measurement_id,
     headerName: measurement.measurement_name,
@@ -575,7 +574,6 @@ export const ObservationQualitativeMeasurementColDef = (props: {
     label: item.option_label,
     value: item.qualitative_option_id
   }));
-
   return {
     field: measurement.taxon_measurement_id,
     headerName: measurement.measurement_name,
@@ -593,9 +591,9 @@ export const ObservationQualitativeMeasurementColDef = (props: {
       );
     },
     renderEditCell: (params) => {
-      const error = hasError(params);
-
-      return <AutocompleteDataGridEditCell dataGridProps={params} options={qualitativeOptions} error={error} />;
+      return (
+        <AutocompleteDataGridEditCell dataGridProps={params} options={qualitativeOptions} error={hasError(params)} />
+      );
     }
   };
 };
