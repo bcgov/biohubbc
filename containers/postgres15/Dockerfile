@@ -33,8 +33,8 @@ RUN apt-get update \
 RUN usermod -a -G root postgres
 RUN mkdir -p /var/lib/pgsql/data
 RUN mkdir -p /var/run/postgresql
-RUN /usr/libexec/fix-permissions /var/lib/pgsql
-RUN /usr/libexec/fix-permissions /var/run/postgresql
+RUN bash /usr/libexec/fix-permissions /var/lib/pgsql
+RUN bash /usr/libexec/fix-permissions /var/run/postgresql
 
 # set time zone
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
