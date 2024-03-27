@@ -31,71 +31,6 @@ jobs:
           echo Git Branch Ref: ${{ github.head_ref }}
           echo PR in Draft: ${{ github.event.pull_request.draft }}
 
-  # Scans the commit against past commits, and determines if any jobs are skippable (due to no changes in target files).
-  # Note: this does not take into account the current branch and will check past workflows from any branch, so an
-  # additional check against the current branch is added to the `if` in the jobs below. This ensures that we only skip
-  # jobs if there are no changes AND the previous successful job was against the current branch.
-  skipDuplicateActions:
-    name: Check for duplicate actions
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    needs:
-      - checkEnv
-    outputs:
-      paths_result: ${{ steps.skip_check.outputs.paths_result }}
-      # Set to `true` if the latest commit message contains `ignore-skip` anywhere in the message OR the base branch
-      # is dev, test, or prod.
-      # Used to disable duplicate action skipping, if needed.
-      ignore_skip:
-        ${{ contains(steps.head_commit_message.outputs.commit_message, 'ignore-skip') ||
-        github.head_ref == 'dev' || github.head_ref == 'test' || github.head_ref == 'prod' }}
-    steps:
-      - id: skip_check
-        uses: fkirc/skip-duplicate-actions@v5
-        with:
-          paths_filter: |
-            app:
-              paths:
-                - 'app/src/**'
-                - 'app/package*.json'
-                - 'app/.pipeline/**'
-                - 'app/Dockerfile'
-                - 'app/server/**'
-                - 'app/public/**'
-              paths_ignore:
-                - 'app/src/**/*.test.ts'
-                - 'app/**.md'
-            api:
-              paths:
-                - 'api/src/**'
-                - 'api/package*.json'
-                - 'api/.pipeline/**'
-                - 'api/Dockerfile'
-              paths_ignore:
-                - 'api/src/**/*.test.ts'
-                - 'api/**.md'
-            database:
-              paths:
-                - 'database/src/**' 
-                - 'database/package*.json'
-                - 'database/.pipeline/**'
-                - 'database/.docker/Dockerfile.setup'
-              paths_ignore:
-                - 'database/src/**/*.test.ts'
-                - 'database/**.md'
-
-      # Get the head commit for this pull request, parse out the commit message, and assign to the `commit_message`
-      # output variable, which is then used to determine if the term `ignore-skip` is found in the commit message.
-      - name: Checkout head commit
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-      - name: Get head commit message
-        id: head_commit_message
-        run: |
-          echo commit message: $(git show -s --format=%s)
-          echo "commit_message=$(git show -s --format=%s)" >> $GITHUB_OUTPUT
-
   # Checkout the repo once and cache it for use in subsequent jobs
   checkoutRepo:
     name: Checkout and cache target branch
@@ -104,8 +39,6 @@ jobs:
     if: ${{ github.event.pull_request.merged == false }}
     env:
       PR_NUMBER: ${{ github.event.number }}
-    needs:
-      - skipDuplicateActions
     steps:
       - name: Checkout Target Branch
         uses: actions/checkout@v4
@@ -130,84 +63,16 @@ jobs:
         with:
           node-version: 18
 
-  # Build the web frontend app image
-  buildAPP:
-    name: Build APP Image
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    if: ${{ github.event.pull_request.merged == false &&
-      github.event.pull_request.draft == false &&
-      ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == false ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch != github.head_ref ) }}
-    env:
-      PR_NUMBER: ${{ github.event.number }}
-      APP_NAME: "biohubbc-app"
-    needs:
-      - checkoutRepo
-      - skipDuplicateActions
-    steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      # Load repo from cache
-      - name: Cache repo
-        uses: actions/cache@v4
-        id: cache-repo
-        env:
-          cache-name: cache-repo
-        with:
-          path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
-
-      # Checkout the branch if not restored via cache
-      - name: Checkout Target Branch
-        if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
-
-      # Log in to OpenShift.
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
-
-      # Scale down any existing OpenShift pods for this PR deployment
-      # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
-      # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
-      - name: Scale down app pods
-        run: oc get deploymentconfig --namespace af2668-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
-
-      # Install app pipeline node modules
-      # Note: This already caches node modules internally
-      - name: Install pipeline node modules
-        working-directory: app/.pipeline/
-        run: npm ci
-
-      # Build the app image
-      - name: Build APP Image
-        working-directory: app/.pipeline/
-        run: |
-          DEBUG=* npm run build -- --pr=$PR_NUMBER
-
   # Build the Database image
   buildDatabase:
     name: Build Database Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: ${{ github.event.pull_request.merged == false &&
-      github.event.pull_request.draft == false &&
-      ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip == false ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch != github.head_ref ) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
       APP_NAME: "biohubbc-db"
     needs:
       - checkoutRepo
-      - skipDuplicateActions
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
@@ -259,16 +124,10 @@ jobs:
     name: Build Database Setup Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: ${{ github.event.pull_request.merged == false &&
-      github.event.pull_request.draft == false &&
-      ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip == false ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch != github.head_ref ) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
       - checkoutRepo
-      - skipDuplicateActions
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
@@ -309,132 +168,11 @@ jobs:
         run: |
           DEBUG=* npm run db-setup:build -- --pr=$PR_NUMBER
 
-  # Build the API image
-  buildAPI:
-    name: Build API Image
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    if: ${{ github.event.pull_request.merged == false &&
-      github.event.pull_request.draft == false &&
-      ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip == false ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.skipped_by.branch != github.head_ref ) }}
-    env:
-      PR_NUMBER: ${{ github.event.number }}
-      APP_NAME: "biohubbc-api"
-    needs:
-      - checkoutRepo
-      - skipDuplicateActions
-    steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      # Load repo from cache
-      - name: Cache repo
-        uses: actions/cache@v4
-        id: cache-repo
-        env:
-          cache-name: cache-repo
-        with:
-          path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
-
-      # Checkout the branch if not restored via cache
-      - name: Checkout Target Branch
-        if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
-
-      # Log in to OpenShift.
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
-
-      # Scale down any existing OpenShift pods for this PR deployment
-      # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
-      # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
-      - name: Scale down api pods
-        run: oc get deploymentconfig --namespace af2668-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
-
-      # Install api pipeline node modules
-      # Note: This already caches node modules internally
-      - name: Install pipeline node modules
-        working-directory: api/.pipeline/
-        run: npm ci
-
-      # Build the api image
-      - name: Build API Image
-        working-directory: api/.pipeline/
-        run: |
-          DEBUG=* npm run build -- --pr=$PR_NUMBER
-
-  # Deploy APP image
-  deployAPP:
-    name: Deploy APP Image
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    if: ${{ github.event.pull_request.merged == false &&
-      github.event.pull_request.draft == false &&
-      ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == false ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch != github.head_ref ) }}
-    env:
-      PR_NUMBER: ${{ github.event.number }}
-    needs:
-      - buildAPP
-    steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      # Load repo from cache
-      - name: Cache repo
-        uses: actions/cache@v4
-        id: cache-repo
-        env:
-          cache-name: cache-repo
-        with:
-          path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
-
-      # Checkout the branch if not restored via cache
-      - name: Checkout Target Branch
-        if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
-
-      # Log in to OpenShift.
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
-
-      # Install app pipeline node modules
-      # Note: This already caches node modules internally
-      - name: Install pipeline node modules
-        working-directory: app/.pipeline
-        run: npm ci
-
-      # Deploy the app image
-      - name: Deploy APP Image
-        working-directory: app/.pipeline
-        run: |
-          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=dev
-
   # Deploy Database image
   deployDatabase:
     name: Deploy Database Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: ${{ github.event.pull_request.merged == false &&
-      github.event.pull_request.draft == false &&
-      ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip == false ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch != github.head_ref ) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
@@ -484,11 +222,6 @@ jobs:
     name: Deploy Database Setup Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: ${{ github.event.pull_request.merged == false &&
-      github.event.pull_request.draft == false &&
-      ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip == false ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch != github.head_ref ) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
@@ -534,63 +267,6 @@ jobs:
         run: |
           DEBUG=* npm run db-setup:deploy -- --pr=$PR_NUMBER --env=dev
 
-  # Deploy API image
-  deployAPI:
-    name: Deploy API Image
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    if: ${{ always() &&
-      ( needs.deployDatabase.result == 'success' || needs.deployDatabase.result == 'skipped' ) &&
-      github.event.pull_request.merged == false &&
-      github.event.pull_request.draft == false &&
-      ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip == false ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.skipped_by.branch != github.head_ref ) }}
-    env:
-      PR_NUMBER: ${{ github.event.number }}
-    needs:
-      - buildAPI
-      - deployDatabase
-    steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      # Load repo from cache
-      - name: Cache repo
-        uses: actions/cache@v4
-        id: cache-repo
-        env:
-          cache-name: cache-repo
-        with:
-          path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
-
-      # Checkout the branch if not restored via cache
-      - name: Checkout Target Branch
-        if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
-
-      # Log in to OpenShift.
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
-
-      # Install api pipeline node modules
-      # Note: This already caches node modules internally
-      - name: Install pipeline node modules
-        working-directory: api/.pipeline/
-        run: npm ci
-
-      # Deploy the api image
-      - name: Deploy API Image
-        working-directory: api/.pipeline/
-        run: |
-          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=dev
-
   # Report the overall status of all jobs.
   # Why? Skipped jobs are not considered successes when specifying requird jobs in the GitHub PR settings. Rather than
   # specify each job, we can specify this final job only, and use its status as an indicator of all previous jobs
@@ -604,30 +280,20 @@ jobs:
       github.event.pull_request.draft == false }}
     needs:
       - checkEnv
-      - skipDuplicateActions
       - checkoutRepo
-      - buildAPP
       - buildDatabase
       - buildDatabaseSetup
-      - buildAPI
-      - deployAPP
       - deployDatabase
       - deployDatabaseSetup
-      - deployAPI
     steps:
       - name: Log result
         run: |
           echo needs.checkEnv.result: ${{ needs.checkEnv.result }}
-          echo needs.skipDuplicateActions.result: ${{ needs.skipDuplicateActions.result }}
           echo needs.checkoutRepo.result: ${{ needs.checkoutRepo.result }}
-          echo needs.buildAPP.result: ${{ needs.buildAPP.result }}
           echo needs.buildDatabase.result: ${{ needs.buildDatabase.result }}
           echo needs.buildDatabaseSetup.result: ${{ needs.buildDatabaseSetup.result }}
-          echo needs.buildAPI.result: ${{ needs.buildAPI.result }}
-          echo needs.deployAPP.result: ${{ needs.deployAPP.result }}
           echo needs.deployDatabase.result: ${{ needs.deployDatabase.result }}
           echo needs.deployDatabaseSetup.result: ${{ needs.deployDatabaseSetup.result }}
-          echo needs.deployAPI.result: ${{ needs.deployAPI.result }}
 
       - name: Report success
         if: |
