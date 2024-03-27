@@ -13,21 +13,21 @@ interface IProjectParticipantsRoles {
   avatarColor: string;
 }
 
+// Define a custom sorting order for roles
+const roleOrder: { [key: string]: number } = {
+  Coordinator: 1,
+  Collaborator: 2,
+  Observer: 3
+};
+
 const TeamMembers = () => {
   const projectContext = useContext(ProjectContext);
 
   // Project data must be loaded by a parent before this component is rendered
   assert(projectContext.projectDataLoader.data);
 
-  // Define a custom sorting order for roles
-  const roleOrder: { [key: string]: number } = {
-    Coordinator: 1,
-    Collaborator: 2,
-    Observer: 3
-  };
-
-  const projectTeamMembers: IProjectParticipantsRoles[] = useMemo(
-    () =>
+  const projectTeamMembers: IProjectParticipantsRoles[] = useMemo(() => {
+    return (
       projectContext.projectDataLoader.data?.projectData.participants
         .map((member) => {
           const initials = member.display_name
@@ -46,9 +46,9 @@ const TeamMembers = () => {
           const roleA = a.roles[0] || '';
           const roleB = b.roles[0] || '';
           return roleOrder[roleA] - roleOrder[roleB];
-        }) || [],
-    [projectContext.projectDataLoader.data.projectData.participants]
-  );
+        }) ?? []
+    );
+  }, [projectContext.projectDataLoader.data.projectData.participants]);
 
   return (
     <Stack spacing={1}>
