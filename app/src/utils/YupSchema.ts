@@ -7,21 +7,6 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
 import * as yup from 'yup';
 
-yup.addMethod(yup.array, 'isUniqueFundingSource', function (message: string) {
-  return this.test('is-unique-funding-source-id', message, (values) => {
-    if (!values || !values.length) {
-      return true;
-    }
-
-    const seen = new Set();
-    const hasDuplicates = values.some((fundingSource) => {
-      return seen.size === seen.add(fundingSource.funding_source_id).size;
-    });
-
-    return !hasDuplicates;
-  });
-});
-
 yup.addMethod(yup.array, 'isUniqueIUCNClassificationDetail', function (message: string) {
   return this.test('is-unique-iucn-classification-detail', message, (values) => {
     if (!values || !values.length) {
