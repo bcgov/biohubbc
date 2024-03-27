@@ -50,9 +50,11 @@ describe('SampleMethodRepository', () => {
       const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
+      const surveyId = 1;
       const sampleMethod: UpdateSampleMethodRecord = {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
+        method_response_metric_id: 1,
         method_lookup_id: 3,
         description: 'description',
         periods: [
@@ -75,7 +77,7 @@ describe('SampleMethodRepository', () => {
         ]
       };
       const repo = new SampleMethodRepository(dbConnectionObj);
-      const response = await repo.updateSampleMethod(sampleMethod);
+      const response = await repo.updateSampleMethod(surveyId, sampleMethod);
 
       expect(dbConnectionObj.sql).to.have.been.calledOnce;
       expect(response).to.eql(mockRow);
@@ -85,10 +87,12 @@ describe('SampleMethodRepository', () => {
       const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
+      const surveyId = 1;
       const sampleMethod: UpdateSampleMethodRecord = {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
         method_lookup_id: 3,
+        method_response_metric_id: 1,
         description: 'description',
         periods: [
           {
@@ -112,7 +116,7 @@ describe('SampleMethodRepository', () => {
       const repo = new SampleMethodRepository(dbConnectionObj);
 
       try {
-        await repo.updateSampleMethod(sampleMethod);
+        await repo.updateSampleMethod(surveyId, sampleMethod);
       } catch (error) {
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to update sample method');
         expect(dbConnectionObj.sql).to.have.been.calledOnce;
@@ -129,6 +133,7 @@ describe('SampleMethodRepository', () => {
       const sampleMethod: InsertSampleMethodRecord = {
         survey_sample_site_id: 2,
         method_lookup_id: 3,
+        method_response_metric_id: 1,
         description: 'description',
         periods: [
           {
@@ -160,6 +165,7 @@ describe('SampleMethodRepository', () => {
 
       const sampleMethod: InsertSampleMethodRecord = {
         survey_sample_site_id: 2,
+        method_response_metric_id: 1,
         method_lookup_id: 3,
         description: 'description',
         periods: [

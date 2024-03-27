@@ -43,8 +43,9 @@ export const IAllCodeSets = z.object({
   vantage_codes: CodeSet(),
   survey_jobs: CodeSet(),
   site_selection_strategies: CodeSet(),
-  sample_methods: CodeSet(),
-  survey_progress: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape)
+  survey_progress: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape),
+  sample_methods: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape),
+  method_response_metrics: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape)
 });
 
 export type IAllCodeSets = z.infer<typeof IAllCodeSets>;
@@ -52,7 +53,7 @@ export type IAllCodeSets = z.infer<typeof IAllCodeSets>;
 export class CodeRepository extends BaseRepository {
   async getSampleMethods() {
     const sql = SQL`
-    SELECT method_lookup_id as id, name FROM method_lookup;
+    SELECT method_lookup_id as id, name, description FROM method_lookup;
     `;
     const response = await this.connection.sql(sql);
     return response.rows;
@@ -449,6 +450,29 @@ export class CodeRepository extends BaseRepository {
         survey_progress
       WHERE
         record_end_date is null;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, ICodeWithDescription);
+
+    return response.rows;
+  }
+
+  /**
+   * Fetch method response metrics
+   *
+   * @return {Promise<ICodeWithDescription[]>}
+   * @memberof CodeRepository
+   */
+  async getMethodResponseMetrics(): Promise<ICodeWithDescription[]> {
+    const sqlStatement = SQL`
+      SELECT
+        method_response_metric_id AS id,
+        name,
+        description
+      FROM
+        method_response_metric
+      WHERE
+        record_end_date IS null;
     `;
 
     const response = await this.connection.sql(sqlStatement, ICodeWithDescription);

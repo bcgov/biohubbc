@@ -19,9 +19,3 @@ export const ALL_OF_BC_BOUNDARY: Feature = {
     ]
   }
 };
-
-export enum SPATIAL_COMPONENT_TYPE {
-  OCCURRENCE = 'Occurrence',
-  BOUNDARY = 'Boundary',
-  BOUNDARY_CENTROID = 'Boundary Centroid'
-}

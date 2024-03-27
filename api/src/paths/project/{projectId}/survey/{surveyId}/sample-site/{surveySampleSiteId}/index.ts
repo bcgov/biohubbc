@@ -98,8 +98,9 @@ PUT.apiDoc = {
                   minItems: 1,
                   items: {
                     type: 'object',
-                    additionalProperties: false,
-                    required: ['description', 'periods'],
+                    // TODO: Set additionalProperties = false, which requires more extensive changes.
+                    // Removing the restriction here to properly test editing sampling sites
+                    required: ['method_lookup_id', 'description', 'periods', 'method_response_metric_id'],
                     properties: {
                       survey_sample_site_id: {
                         type: 'integer',
@@ -153,6 +154,10 @@ PUT.apiDoc = {
                             }
                           }
                         }
+                      },
+                      method_response_metric_id: {
+                        type: 'integer',
+                        minimum: 1
                       }
                     }
                   }

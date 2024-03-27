@@ -4,11 +4,10 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { SYSTEM_ROLE } from '../../constants/roles';
-import { COMPLETION_STATUS } from '../../constants/status';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
 import * as authorization from '../../request-handlers/security/authorization';
-import { ProjectService } from '../../services/project-service';
+import { COMPLETION_STATUS, ProjectService } from '../../services/project-service';
 import { getMockDBConnection } from '../../__mocks__/db';
 import * as list from './list';
 

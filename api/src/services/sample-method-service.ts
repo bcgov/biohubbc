@@ -58,7 +58,7 @@ export class SampleMethodService extends DBService {
     );
     const periodsToDelete = existingSamplePeriods.map((item) => item.survey_sample_period_id);
     // Delete all associated sample periods
-    await samplePeriodService.deleteSamplePeriodRecords(periodsToDelete);
+    await samplePeriodService.deleteSamplePeriodRecords(surveyId, periodsToDelete);
 
     return this.sampleMethodRepository.deleteSampleMethodRecord(surveyId, surveySampleMethodId);
   }
@@ -175,6 +175,6 @@ export class SampleMethodService extends DBService {
       }
     }
 
-    return this.sampleMethodRepository.updateSampleMethod(sampleMethod);
+    return this.sampleMethodRepository.updateSampleMethod(surveyId, sampleMethod);
   }
 }

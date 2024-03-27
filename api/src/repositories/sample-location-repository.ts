@@ -26,7 +26,8 @@ export const SampleLocationRecord = z.object({
       survey_sample_method_id: true,
       survey_sample_site_id: true,
       method_lookup_id: true,
-      description: true
+      description: true,
+      method_response_metric_id: true
     }).extend(
       z.object({
         sample_periods: z.array(
@@ -160,7 +161,8 @@ export class SampleLocationRepository extends BaseRepository {
             'survey_sample_site_id', ssm.survey_sample_site_id,
             'method_lookup_id', ssm.method_lookup_id,
             'description', ssm.description,
-            'sample_periods', COALESCE(wssp.sample_periods, '[]'::json)
+            'sample_periods', COALESCE(wssp.sample_periods, '[]'::json),
+            'method_response_metric_id', ssm.method_response_metric_id
           )) as sample_methods`)
         )
           .from({ ssm: 'survey_sample_method' })

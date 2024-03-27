@@ -17,18 +17,22 @@ import {
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { parseS3File } from '../utils/media/media-utils';
+import { DEFAULT_XLSX_SHEET_NAME } from '../utils/media/xlsx/xlsx-file';
 import {
   constructWorksheets,
   constructXLSXWorkbook,
   findMeasurementFromTsnMeasurements,
+  getCBMeasurementsFromTSN,
   getCBMeasurementsFromWorksheet,
   getMeasurementColumnNameFromWorksheet,
   getWorksheetRowObjects,
+  IMeasurementDataToValidate,
   isMeasurementCBQualitativeTypeDefinition,
   IXLSXCSVValidator,
   TsnMeasurementMap,
   validateCsvFile,
   validateCsvMeasurementColumns,
+  validateMeasurements,
   validateWorksheetColumnTypes,
   validateWorksheetHeaders
 } from '../utils/xlsx-utils/worksheet-utils';
@@ -103,12 +107,12 @@ export class ObservationService extends DBService {
    */
   validateCsvFile(xlsxWorksheets: xlsx.WorkSheet, columnValidator: IXLSXCSVValidator): boolean {
     // Validate the worksheet headers
-    if (!validateWorksheetHeaders(xlsxWorksheets['Sheet1'], columnValidator)) {
+    if (!validateWorksheetHeaders(xlsxWorksheets[DEFAULT_XLSX_SHEET_NAME], columnValidator)) {
       return false;
     }
 
     // Validate the worksheet column types
-    if (!validateWorksheetColumnTypes(xlsxWorksheets['Sheet1'], columnValidator)) {
+    if (!validateWorksheetColumnTypes(xlsxWorksheets[DEFAULT_XLSX_SHEET_NAME], columnValidator)) {
       return false;
     }
 
@@ -430,7 +434,7 @@ export class ObservationService extends DBService {
     const measurementColumns = getMeasurementColumnNameFromWorksheet(xlsxWorksheets, observationCSVColumnValidator);
 
     // Get the worksheet row objects
-    const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheets['Sheet1']);
+    const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheets[DEFAULT_XLSX_SHEET_NAME]);
     // Validate measurement data against
     if (!validateCsvMeasurementColumns(worksheetRowObjects, measurementColumns, tsnMeasurements)) {
       throw new Error('Failed to process file for importing observations. Measurement column validator failed.');
@@ -499,18 +503,19 @@ export class ObservationService extends DBService {
         return;
       }
 
-      const measurement = findMeasurementFromTsnMeasurements(
-        String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']),
-        mColumn,
-        tsnMeasurements
-      );
-
       const rowData = row[mColumn];
 
       // Ignore empty rows
       if (rowData === undefined) {
         return;
       }
+
+      const measurement = findMeasurementFromTsnMeasurements(
+        String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']),
+        mColumn,
+        tsnMeasurements
+      );
+
       // Ignore empty measurements
       if (!measurement) {
         return;
@@ -587,11 +592,56 @@ export class ObservationService extends DBService {
    */
   async deleteObservationsByIds(surveyId: number, observationIds: number[]): Promise<number> {
     // Remove any existing child subcount records (observation_subcount, subcount_event, subcount_critter) before
-    // deleteing survey_observation records
+    // deleting survey_observation records
     const service = new SubCountService(this.connection);
     await service.deleteObservationSubCountRecords(surveyId, observationIds);
 
     // Delete survey_observation records
     return this.observationRepository.deleteObservationsByIds(surveyId, observationIds);
+  }
+
+  /**
+   * Validates given observations against measurement definitions found in Critterbase.
+   * This validation is all or nothing, any failed validation will return a false value and stop processing.
+   *
+   * @param {InsertUpdateObservationsWithMeasurements[]} observationRows The observations to validate
+   * @param {CritterbaseService} critterBaseService Used to collection measurement definitions to validate against
+   * @returns {*} boolean True: Observations are valid False: Observations are invalid
+   */
+  async validateSurveyObservations(
+    observationRows: InsertUpdateObservationsWithMeasurements[],
+    critterBaseService: CritterbaseService
+  ): Promise<boolean> {
+    // Fetch measurement definitions from CritterBase
+    const tsns = observationRows.map((item: any) => String(item.standardColumns.itis_tsn));
+    const tsnMeasurementsMap = await getCBMeasurementsFromTSN(tsns, critterBaseService);
+
+    // Map observation subcount data into objects to a IMeasurementDataToValidate array
+    const measurementsToValidate: IMeasurementDataToValidate[] = observationRows.flatMap(
+      (item: InsertUpdateObservationsWithMeasurements) => {
+        return item.subcounts.flatMap((subcount) => {
+          const qualitativeValues = subcount.qualitative.map((qualitative) => {
+            return {
+              tsn: String(item.standardColumns.itis_tsn),
+              measurement_key: qualitative.measurement_id,
+              measurement_value: qualitative.measurement_option_id
+            };
+          });
+
+          const quantitativeValues: IMeasurementDataToValidate[] = subcount.quantitative.map((quantitative) => {
+            return {
+              tsn: String(item.standardColumns.itis_tsn),
+              measurement_key: quantitative.measurement_id,
+              measurement_value: quantitative.measurement_value
+            };
+          });
+
+          return [...qualitativeValues, ...quantitativeValues];
+        });
+      }
+    );
+
+    // Validate measurement data against fetched measurement definition
+    return validateMeasurements(measurementsToValidate, tsnMeasurementsMap);
   }
 }

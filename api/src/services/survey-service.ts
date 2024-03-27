@@ -1,5 +1,4 @@
 import { Feature } from 'geojson';
-import { MESSAGE_CLASS_NAME, SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PostSurveyLocationData, PutPartnershipsData, PutSurveyObject } from '../models/survey-update';
@@ -20,16 +19,7 @@ import {
 import { AttachmentRepository } from '../repositories/attachment-repository';
 import { PostSurveyBlock, SurveyBlockRecordWithCount } from '../repositories/survey-block-repository';
 import { SurveyLocationRecord } from '../repositories/survey-location-repository';
-import {
-  IGetLatestSurveyOccurrenceSubmission,
-  IObservationSubmissionInsertDetails,
-  IObservationSubmissionUpdateDetails,
-  IOccurrenceSubmissionMessagesResponse,
-  ISurveyProprietorModel,
-  SurveyBasicFields,
-  SurveyRepository
-} from '../repositories/survey-repository';
-import { getLogger } from '../utils/logger';
+import { ISurveyProprietorModel, SurveyBasicFields, SurveyRepository } from '../repositories/survey-repository';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
 import { FundingSourceService } from './funding-source-service';
@@ -41,15 +31,6 @@ import { SiteSelectionStrategyService } from './site-selection-strategy-service'
 import { SurveyBlockService } from './survey-block-service';
 import { SurveyLocationService } from './survey-location-service';
 import { SurveyParticipationService } from './survey-participation-service';
-
-const defaultLog = getLogger('services/survey-service');
-
-export interface IMessageTypeGroup {
-  severityLabel: MESSAGE_CLASS_NAME;
-  messageTypeLabel: SUBMISSION_MESSAGE_TYPE;
-  messageStatus: SUBMISSION_STATUS_TYPE;
-  messages: { id: number; message: string }[];
-}
 
 export class SurveyService extends DBService {
   attachmentRepository: AttachmentRepository;
@@ -246,28 +227,6 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Get Occurrence Submission for a given survey id.
-   *
-   * @param {number} surveyId
-   * @return {*}  {(Promise<{ occurrence_submission_id: number | null }>)}
-   * @memberof SurveyService
-   */
-  async getOccurrenceSubmission(surveyId: number): Promise<{ occurrence_submission_id: number | null }> {
-    return this.surveyRepository.getOccurrenceSubmission(surveyId);
-  }
-
-  /**
-   * Get latest Occurrence Submission or null for a given survey ID
-   *
-   * @param {number} surveyID
-   * @returns {*} {Promise<IGetLatestSurveyOccurrenceSubmission | null>}
-   * @memberof SurveyService
-   */
-  async getLatestSurveyOccurrenceSubmission(surveyId: number): Promise<IGetLatestSurveyOccurrenceSubmission | null> {
-    return this.surveyRepository.getLatestSurveyOccurrenceSubmission(surveyId);
-  }
-
-  /**
    * Gets the Proprietor Data to be be submitted
    * to BioHub as a Security Request
    *
@@ -277,40 +236,6 @@ export class SurveyService extends DBService {
    */
   async getSurveyProprietorDataForSecurityRequest(surveyId: number): Promise<ISurveyProprietorModel> {
     return this.surveyRepository.getSurveyProprietorDataForSecurityRequest(surveyId);
-  }
-
-  /**
-   * Retrieves all submission messages by the given submission ID, then groups them based on the message type.
-   * @param {number} submissionId The ID of the submission
-   * @returns {*} {Promise<IMessageTypeGroup[]>} Promise resolving the array of message groups containing the submission messages
-   */
-  async getOccurrenceSubmissionMessages(submissionId: number): Promise<IMessageTypeGroup[]> {
-    const messages = await this.surveyRepository.getOccurrenceSubmissionMessages(submissionId);
-    defaultLog.debug({ label: 'getOccurrenceSubmissionMessages', submissionId, messages });
-
-    return messages.reduce((typeGroups: IMessageTypeGroup[], message: IOccurrenceSubmissionMessagesResponse) => {
-      const groupIndex = typeGroups.findIndex((group) => {
-        return group.messageTypeLabel === message.type;
-      });
-
-      const messageObject = {
-        id: message.id,
-        message: message.message
-      };
-
-      if (groupIndex < 0) {
-        typeGroups.push({
-          severityLabel: message.class,
-          messageTypeLabel: message.type,
-          messageStatus: message.status,
-          messages: [messageObject]
-        });
-      } else {
-        typeGroups[groupIndex].messages.push(messageObject);
-      }
-
-      return typeGroups;
-    }, []);
   }
 
   /**
@@ -1217,39 +1142,5 @@ export class SurveyService extends DBService {
    */
   async deleteSurvey(surveyId: number): Promise<void> {
     return this.surveyRepository.deleteSurvey(surveyId);
-  }
-
-  /**
-   * Inserts a survey occurrence submission row.
-   *
-   * @param {IObservationSubmissionInsertDetails} submission The details of the submission
-   * @return {*} {Promise<{ submissionId: number }>} Promise resolving the ID of the submission upon successful insertion
-   */
-  async insertSurveyOccurrenceSubmission(
-    submission: IObservationSubmissionInsertDetails
-  ): Promise<{ submissionId: number }> {
-    return this.surveyRepository.insertSurveyOccurrenceSubmission(submission);
-  }
-
-  /**
-   * Updates a survey occurrence submission with the given details.
-   *
-   * @param {IObservationSubmissionUpdateDetails} submission The details of the submission to be updated
-   * @return {*} {Promise<{ submissionId: number }>} Promise resolving the ID of the submission upon successfully updating it
-   */
-  async updateSurveyOccurrenceSubmission(
-    submission: IObservationSubmissionUpdateDetails
-  ): Promise<{ submissionId: number }> {
-    return this.surveyRepository.updateSurveyOccurrenceSubmission(submission);
-  }
-
-  /**
-   * Soft-deletes an occurrence submission.
-   *
-   * @param {number} submissionId The ID of the submission to soft delete
-   * @returns {*} {number} The row count of the affected records, namely `1` if the delete succeeds, `0` if it does not
-   */
-  async deleteOccurrenceSubmission(submissionId: number): Promise<number> {
-    return this.surveyRepository.deleteOccurrenceSubmission(submissionId);
   }
 }
