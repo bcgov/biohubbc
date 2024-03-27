@@ -33,38 +33,51 @@ export const FamilyAnimalForm = (props: AnimalFormProps<IFamilyParentResponse | 
   const [loading, setLoading] = useState(false);
 
   const { data: familyHierarchy, load: loadHierarchy } = useDataLoader(cbApi.family.getImmediateFamily);
-  const { data: allFamilies, load: loadFamilies } = useDataLoader(cbApi.family.getAllFamilies);
+  const {
+    data: allFamilies,
+    load: loadFamilies,
+    refresh: refreshFamilies
+  } = useDataLoader(cbApi.family.getAllFamilies);
+
   loadFamilies();
+
+  const initialValues = {
+    critter_id: props.critter.critter_id,
+    family_id: props?.formObject?.family_id,
+    family_label: props?.formObject?.family_label ?? '',
+    relationship: (props?.formObject as IFamilyParentResponse)?.parent_critter_id
+      ? AnimalRelationship.PARENT
+      : AnimalRelationship.CHILD
+  };
 
   const handleSave = async (values: ICreateCritterFamily) => {
     setLoading(true);
     try {
       if (props.formMode === ANIMAL_FORM_MODE.ADD) {
-        values.relationship === AnimalRelationship.CHILD
-          ? await cbApi.family.createChildRelationship({
-              family_id: values.family_id,
-              family_label: values.family_label,
-              child_critter_id: values.critter_id
-            })
-          : await cbApi.family.createParentRelationship({
-              family_id: values.family_id,
-              family_label: values.family_label,
-              parent_critter_id: values.critter_id
-            });
+        createNewFamily ? delete values.family_id : delete values.family_label;
+        await cbApi.family.createFamilyRelationship(values);
 
         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created family relationship.` });
       }
       if (props.formMode === ANIMAL_FORM_MODE.EDIT) {
-        if (!values.family_id || !values.family_label) {
-          throw new Error(`FamilyID or label undefined`);
+        if (!values.family_id || !initialValues.family_id) {
+          throw new Error(`family_id should be defined`);
         }
-        await cbApi.family.editFamily(values.family_id, values.family_label);
+        await cbApi.family.editFamilyRelationship({
+          newRelationship: values.relationship,
+          oldRelationship: initialValues.relationship,
+          family_label: createNewFamily ? values.family_label : undefined,
+          old_family_id: initialValues.family_id,
+          new_family_id: values.family_id,
+          critter_id: values.critter_id
+        });
 
         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully edited family relationship.` });
       }
     } catch (err) {
       dialog.setSnackbar({ open: true, snackbarMessage: `Critter family relationship request failed.` });
     } finally {
+      refreshFamilies();
       props.handleClose();
       setLoading(false);
     }
@@ -79,32 +92,27 @@ export const FamilyAnimalForm = (props: AnimalFormProps<IFamilyParentResponse | 
       size="md"
       dialogLoading={loading}
       component={{
-        initialValues: {
-          critter_id: props.critter.critter_id,
-          family_id: props?.formObject?.family_id,
-          family_label: props?.formObject?.family_label ?? '',
-          relationship: (props?.formObject as IFamilyParentResponse)?.parent_critter_id
-            ? AnimalRelationship.PARENT
-            : AnimalRelationship.CHILD
-        },
+        initialValues,
         validationSchema: CreateCritterFamilySchema,
         element: (
           <Grid container spacing={3}>
-            {props.formMode === ANIMAL_FORM_MODE.ADD ? (
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={createNewFamily}
-                      color="primary"
-                      onChange={() => setCreateNewFamily((create) => !create)}
-                    />
-                  }
-                  label="Would you like to create a new critter family?"
-                />
-              </Grid>
-            ) : null}
-            {props.formMode === ANIMAL_FORM_MODE.EDIT || createNewFamily ? (
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={createNewFamily}
+                    color="primary"
+                    onChange={() => setCreateNewFamily((create) => !create)}
+                  />
+                }
+                label={
+                  props.formMode === ANIMAL_FORM_MODE.ADD
+                    ? 'Would you like to create a new critter family?'
+                    : 'Would you like to modify the family label?'
+                }
+              />
+            </Grid>
+            {createNewFamily ? (
               <Grid item xs={12}>
                 <CustomTextField label="Family" name="family_label" />
               </Grid>
@@ -132,8 +140,7 @@ export const FamilyAnimalForm = (props: AnimalFormProps<IFamilyParentResponse | 
                   name={'relationship'}
                   controlProps={{
                     size: 'medium',
-                    required: isRequiredInSchema(CreateCritterFamilySchema, 'relationship'),
-                    disabled: props.formMode === ANIMAL_FORM_MODE.EDIT
+                    required: isRequiredInSchema(CreateCritterFamilySchema, 'relationship')
                   }}>
                   <MenuItem key={'parent'} value={AnimalRelationship.PARENT}>
                     Parent in

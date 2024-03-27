@@ -9,7 +9,7 @@ import SpeciesCard from 'components/species/components/SpeciesCard';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
-import { debounce } from 'lodash-es';
+import { debounce, startCase } from 'lodash-es';
 import { ChangeEvent, useMemo, useState } from 'react';
 
 export interface ISpeciesAutocompleteFieldProps {
@@ -139,6 +139,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
       onChange={(_, option) => {
         if (option) {
           handleSpecies(option);
+          setInputValue(startCase(option.commonName ?? option.scientificName));
         }
       }}
       renderOption={(renderProps, renderOption) => {

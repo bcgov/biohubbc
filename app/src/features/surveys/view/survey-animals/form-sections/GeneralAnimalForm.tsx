@@ -3,9 +3,8 @@ import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import EditDialog from 'components/dialog/EditDialog';
 import CbSelectField from 'components/fields/CbSelectField';
 import CustomTextField from 'components/fields/CustomTextField';
-import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
+import { SpeciesAutoCompleteFormikField } from 'components/species/components/SpeciesAutoCompleteFormikField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
-import { Field, FieldProps } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
@@ -71,6 +70,7 @@ const GeneralAnimalForm = (props: GeneralAnimalFormProps<ICreateCritter>) => {
     <EditDialog
       dialogTitle={props.formMode === ANIMAL_FORM_MODE.ADD ? 'Add Critter' : 'Edit Critter'}
       open={props.open}
+      size="md"
       onCancel={props.handleClose}
       onSave={handleSave}
       dialogLoading={loading}
@@ -92,28 +92,10 @@ const GeneralAnimalForm = (props: GeneralAnimalFormProps<ICreateCritter>) => {
           <Grid container spacing={3}>
             <Grid item xs={12}>
               <HelpButtonTooltip content={SurveyAnimalsI18N.taxonHelp}>
-                <Field name={'itis_tsn'}>
-                  {({ form, meta }: FieldProps) => (
-                    <SpeciesAutocompleteField
-                      formikFieldName={'itis_tsn'}
-                      label="Taxon"
-                      required={isRequiredInSchema(CreateCritterSchema, 'itis_tsn')}
-                      error={meta.touched && meta.error ? meta.error : undefined}
-                      defaultSpecies={
-                        props.critter
-                          ? {
-                              tsn: props.critter.itis_tsn,
-                              scientificName: props.critter.itis_scientific_name,
-                              commonName: null
-                            }
-                          : undefined
-                      }
-                      handleSpecies={(taxon) => {
-                        form.setFieldValue('itis_tsn', taxon?.tsn ?? '');
-                      }}
-                    />
-                  )}
-                </Field>
+                <SpeciesAutoCompleteFormikField
+                  formikFieldName={'itis_tsn'}
+                  disabled={props.formMode === ANIMAL_FORM_MODE.EDIT}
+                />
               </HelpButtonTooltip>
             </Grid>
             <Grid item xs={12}>

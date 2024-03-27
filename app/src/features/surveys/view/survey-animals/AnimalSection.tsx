@@ -11,7 +11,7 @@ import utc from 'dayjs/plugin/utc';
 import { EditDeleteStubCard } from 'features/surveys/components/EditDeleteStubCard';
 import { useDialogContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
+import { ICritterDetailedResponse, IFamilyChildResponse } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { AnimalRelationship, ANIMAL_FORM_MODE, ANIMAL_SECTION } from './animal';
@@ -346,42 +346,27 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
         section={props.section}
         critter={props.critter}>
         <TransitionGroup>
-          {props.critter.family_parent.map((parent) => (
-            <Collapse key={parent.family_id}>
-              <EditDeleteStubCard
-                header={parent.family_label}
-                subHeader={formatSubHeader({
-                  Relationship: 'Parent'
-                })}
-                onClickEdit={() => handleOpenEditForm(parent)}
-                onClickDelete={async () => {
-                  handleDelete('parent relationship', cbApi.family.deleteRelationship, {
-                    relationship: AnimalRelationship.PARENT,
-                    familyID: parent.family_id,
-                    critterID: props.critter?.critter_id ?? ''
-                  });
-                }}
-              />
-            </Collapse>
-          ))}
-          {props.critter.family_child.map((child) => (
-            <Collapse key={child.family_id}>
-              <EditDeleteStubCard
-                header={child.family_label}
-                subHeader={formatSubHeader({
-                  Relationship: 'Child'
-                })}
-                onClickEdit={() => handleOpenEditForm(child)}
-                onClickDelete={async () => {
-                  handleDelete('child relationship', cbApi.family.deleteRelationship, {
-                    relationship: AnimalRelationship.CHILD,
-                    familyID: child.family_id,
-                    critterID: props.critter?.critter_id ?? ''
-                  });
-                }}
-              />
-            </Collapse>
-          ))}
+          {[...props.critter.family_child, ...props.critter.family_parent].map((family) => {
+            const isChild = (family as IFamilyChildResponse)?.child_critter_id;
+            return (
+              <Collapse key={family.family_id}>
+                <EditDeleteStubCard
+                  header={family.family_label}
+                  subHeader={formatSubHeader({
+                    Relationship: isChild ? 'Child' : 'Parent'
+                  })}
+                  onClickEdit={() => handleOpenEditForm({ ...family, critter_id: props.critter?.critter_id })}
+                  onClickDelete={async () => {
+                    handleDelete('family relationship', cbApi.family.deleteRelationship, {
+                      relationship: isChild ? AnimalRelationship.CHILD : AnimalRelationship.PARENT,
+                      family_id: family.family_id,
+                      critter_id: props.critter?.critter_id ?? ''
+                    });
+                  }}
+                />
+              </Collapse>
+            );
+          })}
         </TransitionGroup>
       </AnimalSectionWrapper>
     );
