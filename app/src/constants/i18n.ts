@@ -315,7 +315,12 @@ export const ObservationsTableI18N = {
   // Import observation records
   importRecordsSuccessSnackbarMessage: 'Observations imported successfully.',
   importRecordsErrorDialogTitle: 'Error Importing Observation Records',
-  importRecordsErrorDialogText: 'An error occurred while importing observation records.'
+  importRecordsErrorDialogText: 'An error occurred while importing observation records.',
+
+  // Fetching TSN Measurements from CritterBase error
+  fetchingTSNMeasurementErrorDialogTitle: 'Error fetching measurement validation',
+  fetchingTSNMeasurementErrorDialogText:
+    'An error occurred while fetching measurement data from Critterbase. The selected taxon may not be supported. Please try again. If the error persists, please contact your system administrator.'
 };
 
 export const TelemetryTableI18N = {
