@@ -339,7 +339,6 @@ export function validateMeasurements(
 ): boolean {
   return data.every((item) => {
     const measurements = tsnMeasurementMap[item.tsn];
-
     if (!measurements) {
       defaultLog.debug({ label: 'validateMeasurements', message: 'Invalid: No measurements' });
       return false;

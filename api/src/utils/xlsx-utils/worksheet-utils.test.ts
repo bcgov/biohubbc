@@ -10,8 +10,7 @@ import {
 } from '../../services/critterbase-service';
 import * as worksheet_utils from './worksheet-utils';
 
-describe.only('worksheet utils', () => {
-  describe('isMeasurementCBQualitativeTypeDefinition', () => {});
+describe('worksheet utils', () => {
   describe('isMeasurementCBQualitativeTypeDefinition', () => {
     it('returns a CBQualitativeMeasurementTypeDefinition', () => {
       const item: CBQualitativeMeasurementTypeDefinition = {
@@ -432,7 +431,7 @@ describe.only('worksheet utils', () => {
     });
   });
 
-  describe.only('isQuantitativeValueValid', () => {
+  describe('isQuantitativeValueValid', () => {
     describe('min max range set', () => {
       it('should be valid', () => {
         const measurement: CBQuantitativeMeasurementTypeDefinition = {
@@ -594,6 +593,188 @@ describe.only('worksheet utils', () => {
 
       expect(getWorksheetHeaderssStub).to.be.calledOnce;
       expect(result).to.equal(false);
+    });
+  });
+
+  describe('validateMeasurements', () => {
+    it('no data to validate return true', () => {
+      const tsnMap: worksheet_utils.TsnMeasurementMap = {
+        '123': {
+          qualitative: [
+            {
+              itis_tsn: 123,
+              taxon_measurement_id: 'taxon_1',
+              measurement_name: 'Neck Girth',
+              measurement_desc: '',
+              options: [
+                {
+                  taxon_measurement_id: 'taxon_1_1',
+                  qualitative_option_id: 'option_1',
+                  option_label: 'Neck Girth',
+                  option_value: 0,
+                  option_desc: ''
+                }
+              ]
+            }
+          ],
+          quantitative: [
+            {
+              itis_tsn: 123,
+              taxon_measurement_id: 'taxon_2',
+              measurement_name: 'legs',
+              measurement_desc: '',
+              min_value: null,
+              max_value: 4,
+              unit: CBMeasurementUnit.Enum.centimeter
+            }
+          ]
+        }
+      };
+      const data: worksheet_utils.IMeasurementDataToValidate[] = [];
+      const results = worksheet_utils.validateMeasurements(data, tsnMap);
+      expect(results).to.be.true;
+    });
+
+    it('no measurements returns false', () => {
+      const tsnMap: worksheet_utils.TsnMeasurementMap = {
+        '123': {
+          qualitative: [
+            {
+              itis_tsn: 123,
+              taxon_measurement_id: 'taxon_1',
+              measurement_name: 'Neck Girth',
+              measurement_desc: '',
+              options: [
+                {
+                  taxon_measurement_id: 'taxon_1_1',
+                  qualitative_option_id: 'option_1',
+                  option_label: 'Neck Girth',
+                  option_value: 0,
+                  option_desc: ''
+                }
+              ]
+            }
+          ],
+          quantitative: [
+            {
+              itis_tsn: 123,
+              taxon_measurement_id: 'taxon_2',
+              measurement_name: 'legs',
+              measurement_desc: '',
+              min_value: null,
+              max_value: 4,
+              unit: CBMeasurementUnit.Enum.centimeter
+            }
+          ]
+        }
+      };
+      const data: worksheet_utils.IMeasurementDataToValidate[] = [
+        {
+          tsn: '2',
+          measurement_key: 'taxon_1',
+          measurement_value: 'option_1'
+        }
+      ];
+      const results = worksheet_utils.validateMeasurements(data, tsnMap);
+      expect(results).to.be.false;
+    });
+
+    it('data provided is valid', () => {
+      const tsnMap: worksheet_utils.TsnMeasurementMap = {
+        '123': {
+          qualitative: [
+            {
+              itis_tsn: 123,
+              taxon_measurement_id: 'taxon_1',
+              measurement_name: 'Neck Girth',
+              measurement_desc: '',
+              options: [
+                {
+                  taxon_measurement_id: 'taxon_1_1',
+                  qualitative_option_id: 'option_1',
+                  option_label: 'Neck Girth',
+                  option_value: 0,
+                  option_desc: ''
+                }
+              ]
+            }
+          ],
+          quantitative: [
+            {
+              itis_tsn: 123,
+              taxon_measurement_id: 'taxon_2',
+              measurement_name: 'legs',
+              measurement_desc: '',
+              min_value: null,
+              max_value: 4,
+              unit: CBMeasurementUnit.Enum.centimeter
+            }
+          ]
+        }
+      };
+      const data: worksheet_utils.IMeasurementDataToValidate[] = [
+        {
+          tsn: '123',
+          measurement_key: 'taxon_1',
+          measurement_value: 'option_1'
+        },
+        {
+          tsn: '123',
+          measurement_key: 'taxon_2',
+          measurement_value: 3
+        }
+      ];
+      const results = worksheet_utils.validateMeasurements(data, tsnMap);
+      expect(results).to.be.true;
+    });
+
+    it('data provided, no measurements found, returns false', () => {
+      const tsnMap: worksheet_utils.TsnMeasurementMap = {
+        '123': {
+          qualitative: [
+            {
+              itis_tsn: 123,
+              taxon_measurement_id: 'taxon_1',
+              measurement_name: 'Neck Girth',
+              measurement_desc: '',
+              options: [
+                {
+                  taxon_measurement_id: 'taxon_1_1',
+                  qualitative_option_id: 'option_1',
+                  option_label: 'Neck Girth',
+                  option_value: 0,
+                  option_desc: ''
+                }
+              ]
+            }
+          ],
+          quantitative: [
+            {
+              itis_tsn: 123,
+              taxon_measurement_id: 'taxon_2',
+              measurement_name: 'legs',
+              measurement_desc: '',
+              min_value: null,
+              max_value: 4,
+              unit: CBMeasurementUnit.Enum.centimeter
+            }
+          ]
+        }
+      };
+      const data: worksheet_utils.IMeasurementDataToValidate[] = [
+        {
+          tsn: '123',
+          measurement_key: 'tax_1',
+          measurement_value: 'option_1'
+        },
+        {
+          tsn: '123',
+          measurement_key: 'tax_2',
+          measurement_value: 3
+        }
+      ];
+      const results = worksheet_utils.validateMeasurements(data, tsnMap);
+      expect(results).to.be.false;
     });
   });
 });
