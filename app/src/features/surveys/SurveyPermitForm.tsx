@@ -45,16 +45,29 @@ export const SurveyPermitFormInitialValues: ISurveyPermitForm = {
 
 export const SurveyPermitFormYupSchema = yup.object().shape({
   permit: yup.object().shape({
-    permits: yup
-      .array()
-      .of(
-        yup.object().shape({
-          permit_id: yup.number().nullable(true),
-          permit_number: yup.string().max(100, 'Cannot exceed 100 characters').required('Permit Number is Required'),
-          permit_type: yup.string().required('Permit Type is Required')
-        })
-      )
-      .isUniquePermitNumber('Permit numbers must be unique')
+    permits: yup.array().of(
+      yup.object().shape({
+        permit_id: yup.number().nullable(true),
+        permit_number: yup
+          .string()
+          .max(100, 'Cannot exceed 100 characters')
+          .required('Permit Number is Required')
+          .test('is-unique-permit-number', 'Permit numbers must be unique', function (permitNumber) {
+            const formValues = this.options.context;
+
+            if (!formValues?.permit?.permits?.length) {
+              return true;
+            }
+
+            return (
+              formValues.permit.permits.filter(
+                (permit: ISurveyPermitFormArrayItem) => permit.permit_number === permitNumber
+              ).length <= 1
+            );
+          }),
+        permit_type: yup.string().required('Permit Type is Required')
+      })
+    )
   })
 });
 
@@ -80,7 +93,7 @@ const SurveyPermitForm: React.FC = () => {
                 display: 'none'
               }
             }}>
-            {values.permit.permits?.map((permit, index) => {
+            {values.permit.permits?.map((permit: ISurveyPermitFormArrayItem, index) => {
               const permitNumberMeta = getFieldMeta(`permit.permits.[${index}].permit_number`);
               const permitTypeMeta = getFieldMeta(`permit.permits.[${index}].permit_type`);
 

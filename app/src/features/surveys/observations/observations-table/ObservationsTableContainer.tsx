@@ -41,6 +41,7 @@ import {
 } from 'interfaces/useSurveyApi.interface';
 import { useContext } from 'react';
 import { getCodesName } from 'utils/Utils';
+import ExportHeadersButton from './export-button/ExportHeadersButton';
 import { getMeasurementColumnDefinitions } from './grid-column-definitions/GridColumnDefinitionsUtils';
 
 const ObservationComponent = () => {
@@ -155,6 +156,7 @@ const ObservationComponent = () => {
               />
             </Box>
           </Collapse>
+          <ExportHeadersButton />
           <ConfigureColumnsContainer disabled={observationsTableContext.isSaving} columns={columns} />
           <BulkActionsButton disabled={observationsTableContext.isSaving} />
         </Stack>
