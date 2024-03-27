@@ -571,7 +571,7 @@ export function findMeasurementFromTsnMeasurements(
     );
 
     if (qualitativeMeasurement) {
-      // Found qualitative measurement  for tsn
+      // Found qualitative measurement by column/ measurement name
       return qualitativeMeasurement;
     }
   }
@@ -582,7 +582,7 @@ export function findMeasurementFromTsnMeasurements(
     );
 
     if (quantitativeMeasurement) {
-      // Found quantitative measurement for tsn
+      // Found quantitative measurement by column/ measurement name
       return quantitativeMeasurement;
     }
   }
