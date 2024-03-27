@@ -5,7 +5,8 @@ import xlsx from 'xlsx';
 import {
   CBMeasurementUnit,
   CBQualitativeMeasurementTypeDefinition,
-  CBQuantitativeMeasurementTypeDefinition
+  CBQuantitativeMeasurementTypeDefinition,
+  CritterbaseService
 } from '../../services/critterbase-service';
 import * as worksheet_utils from './worksheet-utils';
 
@@ -223,7 +224,326 @@ describe.only('worksheet utils', () => {
   });
 
   describe('getCBMeasurementsFromTSN', () => {
-    it('', async () => {});
+    afterEach(() => {
+      sinon.restore();
+    });
+    it('fetch definitions per tsn', async () => {
+      const fetch = sinon
+        .stub(CritterbaseService.prototype, 'getTaxonMeasurements')
+        .resolves({ qualitative: [], quantitative: [] });
+
+      const service = new CritterbaseService({ keycloak_guid: '', username: '' });
+      const results = await worksheet_utils.getCBMeasurementsFromTSN(['tsn', 'tsn1'], service);
+      expect(fetch).to.be.calledTwice;
+      expect(results).to.eql({
+        tsn: { qualitative: [], quantitative: [] },
+        tsn1: { qualitative: [], quantitative: [] }
+      });
+    });
+
+    it('throws when no measurements are fetched', async () => {
+      const fetch = sinon
+        .stub(CritterbaseService.prototype, 'getTaxonMeasurements')
+        .resolves((null as unknown) as { qualitative: []; quantitative: [] });
+
+      const service = new CritterbaseService({ keycloak_guid: '', username: '' });
+
+      try {
+        await worksheet_utils.getCBMeasurementsFromTSN(['tsn', 'tsn1'], service);
+        expect(fetch).to.be.calledOnce;
+        expect.fail();
+      } catch (error) {
+        expect((error as Error).message).contains('No measurements found for tsn: tsn');
+      }
+    });
+
+    it('throws when critterbase is unavailable', async () => {
+      const fetch = sinon.stub(CritterbaseService.prototype, 'getTaxonMeasurements').rejects();
+
+      const service = new CritterbaseService({ keycloak_guid: '', username: '' });
+
+      try {
+        await worksheet_utils.getCBMeasurementsFromTSN(['tsn', 'tsn1'], service);
+        expect(fetch).to.be.calledOnce;
+        expect.fail();
+      } catch (error) {
+        expect((error as Error).message).contains('Error connecting to the Critterbase API:');
+      }
+    });
+  });
+
+  describe('isQualitativeValueValid', () => {
+    it('qualitative measurement label value is valid', () => {
+      const measurement: CBQualitativeMeasurementTypeDefinition = {
+        itis_tsn: 1,
+        taxon_measurement_id: '',
+        measurement_name: 'Cool measurement',
+        measurement_desc: '',
+        options: [
+          {
+            taxon_measurement_id: 'taxon_1',
+            qualitative_option_id: 'option_1',
+            option_label: 'Hind Leg',
+            option_value: 0,
+            option_desc: ''
+          },
+          {
+            taxon_measurement_id: 'taxon_1',
+            qualitative_option_id: 'option_2',
+            option_label: 'Front Leg',
+            option_value: 1,
+            option_desc: ''
+          }
+        ]
+      };
+      const results = worksheet_utils.isQualitativeValueValid('Hind Leg', measurement);
+      expect(results).to.be.true;
+    });
+    it('qualitative measurement value is valid', () => {
+      const measurement: CBQualitativeMeasurementTypeDefinition = {
+        itis_tsn: 1,
+        taxon_measurement_id: '',
+        measurement_name: 'Cool measurement',
+        measurement_desc: '',
+        options: [
+          {
+            taxon_measurement_id: 'taxon_1',
+            qualitative_option_id: 'option_1',
+            option_label: 'Hind Leg',
+            option_value: 0,
+            option_desc: ''
+          },
+          {
+            taxon_measurement_id: 'taxon_1',
+            qualitative_option_id: 'option_2',
+            option_label: 'Front Leg',
+            option_value: 1,
+            option_desc: ''
+          }
+        ]
+      };
+      const results = worksheet_utils.isQualitativeValueValid(0, measurement);
+      expect(results).to.be.true;
+    });
+    it('qualitative measurement option id is valid', () => {
+      const measurement: CBQualitativeMeasurementTypeDefinition = {
+        itis_tsn: 1,
+        taxon_measurement_id: '',
+        measurement_name: 'Cool measurement',
+        measurement_desc: '',
+        options: [
+          {
+            taxon_measurement_id: 'taxon_1',
+            qualitative_option_id: 'option_1',
+            option_label: 'Hind Leg',
+            option_value: 0,
+            option_desc: ''
+          },
+          {
+            taxon_measurement_id: 'taxon_1',
+            qualitative_option_id: 'option_2',
+            option_label: 'Front Leg',
+            option_value: 1,
+            option_desc: ''
+          }
+        ]
+      };
+      const results = worksheet_utils.isQualitativeValueValid('option_2', measurement);
+      expect(results).to.be.true;
+    });
+
+    it('qualitative measurement label value is invalid', () => {
+      const measurement: CBQualitativeMeasurementTypeDefinition = {
+        itis_tsn: 1,
+        taxon_measurement_id: '',
+        measurement_name: 'Cool measurement',
+        measurement_desc: '',
+        options: [
+          {
+            taxon_measurement_id: 'taxon_1',
+            qualitative_option_id: 'option_1',
+            option_label: 'Hind Leg',
+            option_value: 0,
+            option_desc: ''
+          },
+          {
+            taxon_measurement_id: 'taxon_1',
+            qualitative_option_id: 'option_2',
+            option_label: 'Front Leg',
+            option_value: 1,
+            option_desc: ''
+          }
+        ]
+      };
+      const results = worksheet_utils.isQualitativeValueValid('Hide Leg', measurement);
+      expect(results).to.be.false;
+    });
+    it('qualitative measurement value is invalid', () => {
+      const measurement: CBQualitativeMeasurementTypeDefinition = {
+        itis_tsn: 1,
+        taxon_measurement_id: '',
+        measurement_name: 'Cool measurement',
+        measurement_desc: '',
+        options: [
+          {
+            taxon_measurement_id: 'taxon_1',
+            qualitative_option_id: 'option_1',
+            option_label: 'Hind Leg',
+            option_value: 0,
+            option_desc: ''
+          },
+          {
+            taxon_measurement_id: 'taxon_1',
+            qualitative_option_id: 'option_2',
+            option_label: 'Front Leg',
+            option_value: 1,
+            option_desc: ''
+          }
+        ]
+      };
+      const results = worksheet_utils.isQualitativeValueValid(2, measurement);
+      expect(results).to.be.false;
+    });
+    it('qualitative measurement option id is invalid', () => {
+      const measurement: CBQualitativeMeasurementTypeDefinition = {
+        itis_tsn: 1,
+        taxon_measurement_id: '',
+        measurement_name: 'Cool measurement',
+        measurement_desc: '',
+        options: [
+          {
+            taxon_measurement_id: 'taxon_1',
+            qualitative_option_id: 'option_1',
+            option_label: 'Hind Leg',
+            option_value: 0,
+            option_desc: ''
+          },
+          {
+            taxon_measurement_id: 'taxon_1',
+            qualitative_option_id: 'option_2',
+            option_label: 'Front Leg',
+            option_value: 1,
+            option_desc: ''
+          }
+        ]
+      };
+      const results = worksheet_utils.isQualitativeValueValid('option_32', measurement);
+      expect(results).to.be.false;
+    });
+  });
+
+  describe.only('isQuantitativeValueValid', () => {
+    describe('min max range set', () => {
+      it('should be valid', () => {
+        const measurement: CBQuantitativeMeasurementTypeDefinition = {
+          itis_tsn: 123,
+          taxon_measurement_id: 'taxon_2',
+          measurement_name: 'legs',
+          measurement_desc: '',
+          min_value: 1,
+          max_value: 4,
+          unit: CBMeasurementUnit.Enum.centimeter
+        };
+
+        const results = worksheet_utils.isQuantitativeValueValid(2, measurement);
+        expect(results).to.be.true;
+      });
+
+      it('should be invalid', () => {
+        const measurement: CBQuantitativeMeasurementTypeDefinition = {
+          itis_tsn: 123,
+          taxon_measurement_id: 'taxon_2',
+          measurement_name: 'legs',
+          measurement_desc: '',
+          min_value: 1,
+          max_value: 4,
+          unit: CBMeasurementUnit.Enum.centimeter
+        };
+
+        const results = worksheet_utils.isQuantitativeValueValid(5, measurement);
+        expect(results).to.be.false;
+      });
+    });
+
+    describe('min range set', () => {
+      it('should be valid', () => {
+        const measurement: CBQuantitativeMeasurementTypeDefinition = {
+          itis_tsn: 123,
+          taxon_measurement_id: 'taxon_2',
+          measurement_name: 'legs',
+          measurement_desc: '',
+          min_value: 1,
+          max_value: null,
+          unit: CBMeasurementUnit.Enum.centimeter
+        };
+
+        const results = worksheet_utils.isQuantitativeValueValid(100, measurement);
+        expect(results).to.be.true;
+      });
+
+      it('should be invalid', () => {
+        const measurement: CBQuantitativeMeasurementTypeDefinition = {
+          itis_tsn: 123,
+          taxon_measurement_id: 'taxon_2',
+          measurement_name: 'legs',
+          measurement_desc: '',
+          min_value: 2,
+          max_value: null,
+          unit: CBMeasurementUnit.Enum.centimeter
+        };
+
+        const results = worksheet_utils.isQuantitativeValueValid(1, measurement);
+        expect(results).to.be.false;
+      });
+    });
+    describe('max range set', () => {
+      it('should be valid', () => {
+        const measurement: CBQuantitativeMeasurementTypeDefinition = {
+          itis_tsn: 123,
+          taxon_measurement_id: 'taxon_2',
+          measurement_name: 'legs',
+          measurement_desc: '',
+          min_value: null,
+          max_value: 10,
+          unit: CBMeasurementUnit.Enum.centimeter
+        };
+
+        const results = worksheet_utils.isQuantitativeValueValid(10, measurement);
+        expect(results).to.be.true;
+      });
+
+      it('should be invalid', () => {
+        const measurement: CBQuantitativeMeasurementTypeDefinition = {
+          itis_tsn: 123,
+          taxon_measurement_id: 'taxon_2',
+          measurement_name: 'legs',
+          measurement_desc: '',
+          min_value: null,
+          max_value: 1000,
+          unit: CBMeasurementUnit.Enum.centimeter
+        };
+
+        const results = worksheet_utils.isQuantitativeValueValid(2000, measurement);
+        expect(results).to.be.false;
+      });
+    });
+
+    describe('no range set', () => {
+      it('should be valid', () => {
+        const measurement: CBQuantitativeMeasurementTypeDefinition = {
+          itis_tsn: 123,
+          taxon_measurement_id: 'taxon_2',
+          measurement_name: 'legs',
+          measurement_desc: '',
+          min_value: null,
+          max_value: null,
+          unit: CBMeasurementUnit.Enum.centimeter
+        };
+
+        const results = worksheet_utils.isQuantitativeValueValid(10, measurement);
+        expect(results).to.be.true;
+      });
+    });
   });
 
   describe('validateWorksheetHeaders', () => {

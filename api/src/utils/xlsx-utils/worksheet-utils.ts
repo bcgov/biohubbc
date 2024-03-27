@@ -419,18 +419,18 @@ export function isQuantitativeValueValid(value: number, measurement: CBQuantitat
     if (min_value <= value && value <= max_value) {
       return true;
     }
-  }
+  } else {
+    if (min_value !== null && min_value <= value) {
+      return true;
+    }
 
-  if (min_value !== null && min_value <= value) {
-    return true;
-  }
+    if (max_value !== null && value <= max_value) {
+      return true;
+    }
 
-  if (max_value !== null && value <= max_value) {
-    return true;
-  }
-
-  if (min_value === null && max_value === null) {
-    return true;
+    if (min_value === null && max_value === null) {
+      return true;
+    }
   }
 
   defaultLog.debug({ label: 'isQuantitativeValueValid', message: 'Invalid', value, measurement });
