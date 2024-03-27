@@ -193,66 +193,66 @@ jobs:
           DEBUG=* npm run build -- --pr=$PR_NUMBER
 
   # Build the Database image
-  #   buildDatabase:
-  #     name: Build Database Image
-  #     runs-on: ubuntu-latest
-  #     timeout-minutes: 20
-  #     if: ${{ github.event.pull_request.merged == false &&
-  #       github.event.pull_request.draft == false &&
-  #       ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
-  #       fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip == false ||
-  #       fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch != github.head_ref ) }}
-  #     env:
-  #       PR_NUMBER: ${{ github.event.number }}
-  #       APP_NAME: "biohubbc-db"
-  #     needs:
-  #       - checkoutRepo
-  #       - skipDuplicateActions
-  #     steps:
-  #       # Install Node - for `node` and `npm` commands
-  #       - name: Setup Node.js
-  #         uses: actions/setup-node@v4
-  #         with:
-  #           node-version: 18
+  buildDatabase:
+    name: Build Database Image
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: ${{ github.event.pull_request.merged == false &&
+      github.event.pull_request.draft == false &&
+      ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip == false ||
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch != github.head_ref ) }}
+    env:
+      PR_NUMBER: ${{ github.event.number }}
+      APP_NAME: "biohubbc-db"
+    needs:
+      - checkoutRepo
+      - skipDuplicateActions
+    steps:
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
 
-  #       # Load repo from cache
-  #       - name: Cache repo
-  #         uses: actions/cache@v4
-  #         id: cache-repo
-  #         env:
-  #           cache-name: cache-repo
-  #         with:
-  #           path: ${{ github.workspace }}/*
-  #           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+      # Load repo from cache
+      - name: Cache repo
+        uses: actions/cache@v4
+        id: cache-repo
+        env:
+          cache-name: cache-repo
+        with:
+          path: ${{ github.workspace }}/*
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
 
-  #       # Checkout the branch if not restored via cache
-  #       - name: Checkout Target Branch
-  #         if: steps.cache-repo.outputs.cache-hit != 'true'
-  #         uses: actions/checkout@v4
+      # Checkout the branch if not restored via cache
+      - name: Checkout Target Branch
+        if: steps.cache-repo.outputs.cache-hit != 'true'
+        uses: actions/checkout@v4
 
-  #       # Log in to OpenShift.
-  #       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-  #       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-  #       - name: Log in to OpenShift
-  #         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+      # Log in to OpenShift.
+      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
+      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
+      - name: Log in to OpenShift
+        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
-  #       # Scale down any existing OpenShift pods for this PR deployment
-  #       # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
-  #       # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
-  #       - name: Scale down database pods
-  #         run: oc get deploymentconfig --namespace af2668-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
+      # Scale down any existing OpenShift pods for this PR deployment
+      # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
+      # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
+      - name: Scale down database pods
+        run: oc get deploymentconfig --namespace af2668-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
 
-  #       # Install database pipeline node modules
-  #       # Note: This already caches node modules internally
-  #       - name: Install pipeline node modules
-  #         working-directory: database/.pipeline/
-  #         run: npm ci
+      # Install database pipeline node modules
+      # Note: This already caches node modules internally
+      - name: Install pipeline node modules
+        working-directory: database/.pipeline/
+        run: npm ci
 
-  #       # Build the database image
-  #       - name: Build Database Image
-  #         working-directory: database/.pipeline/
-  #         run: |
-  #           DEBUG=* npm run db:build -- --pr=$PR_NUMBER
+      # Build the database image
+      - name: Build Database Image
+        working-directory: database/.pipeline/
+        run: |
+          DEBUG=* npm run db:build -- --pr=$PR_NUMBER
 
   # Build the Database Setup image
   buildDatabaseSetup:
@@ -437,8 +437,8 @@ jobs:
       fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch != github.head_ref ) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
-    # needs:
-    #   - buildDatabase
+    needs:
+      - buildDatabase
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
@@ -607,6 +607,7 @@ jobs:
       - skipDuplicateActions
       - checkoutRepo
       - buildAPP
+      - buildDatabase
       - buildDatabaseSetup
       - buildAPI
       - deployAPP
@@ -620,6 +621,7 @@ jobs:
           echo needs.skipDuplicateActions.result: ${{ needs.skipDuplicateActions.result }}
           echo needs.checkoutRepo.result: ${{ needs.checkoutRepo.result }}
           echo needs.buildAPP.result: ${{ needs.buildAPP.result }}
+          echo needs.buildDatabase.result: ${{ needs.buildDatabase.result }}
           echo needs.buildDatabaseSetup.result: ${{ needs.buildDatabaseSetup.result }}
           echo needs.buildAPI.result: ${{ needs.buildAPI.result }}
           echo needs.deployAPP.result: ${{ needs.deployAPP.result }}
