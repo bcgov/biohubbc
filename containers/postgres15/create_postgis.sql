@@ -1,0 +1,13 @@
+-- Enable PostGIS (includes raster)
+CREATE EXTENSION IF NOT EXISTS postgis CASCADE;
+CREATE EXTENSION IF NOT EXISTS postgis_raster CASCADE;
+
+-- Enable Topology and Routing
+CREATE EXTENSION IF NOT EXISTS postgis_topology CASCADE;
+CREATE EXTENSION IF NOT EXISTS postgis_sfcgal CASCADE;
+CREATE EXTENSION IF NOT EXISTS pgRouting CASCADE;
+
+-- Enable Helper functions
+CREATE EXTENSION IF NOT EXISTS fuzzystrmatch CASCADE;
+CREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE;
+

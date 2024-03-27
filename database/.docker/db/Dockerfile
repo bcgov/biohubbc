@@ -1,25 +1,45 @@
-ARG POSTGRES_VERSION=12.5
+FROM postgres:15-bullseye
 
-FROM postgres:$POSTGRES_VERSION
+# ENV POSTGRES_VERSION=15
+ENV POSTGIS_MAJOR 3
+ENV POSTGIS_VERSION 3.4.2+dfsg-1.pgdg110+1
 
-# read env variables
-ARG TZ=America/Vancouver
-ARG POSTGIS_VERSION=3
+ENV TZ=America/Vancouver
 
 ENV PORT=5432
 
 # install postgis packages
-RUN mkdir -p /opt/apps
-RUN apt-get -qq update
-RUN apt-get -qq install -y --no-install-recommends postgresql-$PG_MAJOR-postgis-$POSTGIS_VERSION
-RUN apt-get -qq install -y --no-install-recommends postgresql-$PG_MAJOR-postgis-$POSTGIS_VERSION-scripts
-RUN apt-get -qq install -y --no-install-recommends postgresql-$PG_MAJOR-pgrouting
-RUN apt-get -qq install -y --no-install-recommends postgresql-$PG_MAJOR-pgrouting-scripts
-RUN apt-get -qq install -y --no-install-recommends postgresql-server-dev-$PG_MAJOR
-RUN apt-get -qq install -y --no-install-recommends pgbadger pg-activity wget unzip nano
-RUN apt-get -qq purge -y --auto-remove postgresql-server-dev-$PG_MAJOR
-RUN apt-get -qq autoremove -y
-RUN apt-get -qq clean
+# RUN mkdir -p /opt/apps
+# RUN apt-get -qq update
+# RUN apt-get -qq install -y --no-install-recommends postgresql-$PG_MAJOR-postgis-$POSTGIS_VERSION
+# RUN apt-get -qq install -y --no-install-recommends postgresql-$PG_MAJOR-postgis-$POSTGIS_VERSION-scripts
+# RUN apt-get -qq install -y --no-install-recommends postgresql-$PG_MAJOR-pgrouting
+# RUN apt-get -qq install -y --no-install-recommends postgresql-$PG_MAJOR-pgrouting-scripts
+# RUN apt-get -qq install -y --no-install-recommends postgresql-server-dev-$PG_MAJOR
+# RUN apt-get -qq install -y --no-install-recommends pgbadger pg-activity wget unzip nano
+# RUN apt-get -qq purge -y --auto-remove postgresql-server-dev-$PG_MAJOR
+# RUN apt-get -qq autoremove -y
+# RUN apt-get -qq clean
+
+RUN apt-get update \
+    && apt-cache showpkg postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR \
+    && apt-get install -y --no-install-recommends \
+    # ca-certificates: for accessing remote raster files;
+    #   fix: https://github.com/postgis/docker-postgis/issues/307
+    ca-certificates \
+    \
+    postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR=$POSTGIS_VERSION \
+    postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR-scripts \
+    postgresql-$PG_MAJOR-pgrouting \
+    postgresql-$PG_MAJOR-pgrouting-scripts \
+    && rm -rf /var/lib/apt/lists/*
+
+# # RUN apt-get install -y --no-install-recommends postgresql-server-dev-$PG_MAJOR
+# # RUN apt-get install -y --no-install-recommends pgbadger pg-z wget unzip nano
+# # RUN apt-get purge -y --auto-remove postgresql-server-dev-$PG_MAJOR
+# RUN apt-get autoremove -y
+# RUN apt-get clean
+# # && rm -rf /var/lib/apt/lists/*
 
 # set time zone
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone

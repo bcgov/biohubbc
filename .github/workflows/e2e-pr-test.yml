@@ -56,7 +56,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 14
+          node-version: 18
 
       - name: E2E Smoke tests
         uses: cypress-io/github-action@v6
