@@ -19,24 +19,10 @@ export type IImmediateFamily = {
   children: ICritterStub[];
 };
 
-// type CreateChildRelationship = Omit<ICreateCritterFamily, 'relationship' | 'critter_id'> & { child_critter_id: string };
-// type CreateParentRelationship = Omit<ICreateCritterFamily, 'relationship' | 'critter_id'> & {
-//   parent_critter_id: string;
-// };
-
 type CreateFamilyRelationshipPayload = {
   relationship: AnimalRelationship;
   family_label?: string;
   family_id?: string;
-  critter_id: string;
-};
-
-type UpdateFamilyRelationshipPayload = {
-  newRelationship: AnimalRelationship;
-  oldRelationship: AnimalRelationship;
-  family_label?: string;
-  old_family_id: string;
-  new_family_id: string;
   critter_id: string;
 };
 
@@ -94,41 +80,19 @@ export const useFamilyApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  const editFamilyRelationship = async (payload: UpdateFamilyRelationshipPayload) => {
-    const { old_family_id, new_family_id, family_label, critter_id, oldRelationship, newRelationship } = payload;
-
-    // update the family if family_label is provided
-    if (family_label) {
-      await editFamily(old_family_id, family_label);
-    }
-
-    await deleteRelationship({
-      family_id: old_family_id,
-      critter_id,
-      relationship: oldRelationship
-    });
-
-    const data = await createFamilyRelationship({
-      family_id: new_family_id,
-      family_label: undefined,
-      critter_id,
-      relationship: newRelationship
-    });
-
-    return data;
-  };
-
-  const createFamilyRelationship = async (payload: CreateFamilyRelationshipPayload) => {
-    let familyID = payload.family_id;
-
-    if (payload.family_label) {
-      const family = await createFamily(payload.family_label);
-      familyID = family.family_id;
-    }
-
+  /**
+   * Create (parent or child) relationship of a family.
+   *
+   * @async
+   * @param {CreateFamilyRelationshipPayload} payload - Create relationship payload.
+   * @returns {Promise<IFamilyParentResponse | IFamilyChildResponse>}
+   */
+  const createFamilyRelationship = async (
+    payload: CreateFamilyRelationshipPayload
+  ): Promise<IFamilyParentResponse | IFamilyChildResponse> => {
     if (payload.relationship === AnimalRelationship.CHILD) {
       const { data } = await axios.post(`/api/critterbase/family/children`, {
-        family_id: familyID,
+        family_id: payload.family_id,
         child_critter_id: payload.critter_id
       });
 
@@ -136,7 +100,7 @@ export const useFamilyApi = (axios: AxiosInstance) => {
     }
 
     const { data } = await axios.post(`/api/critterbase/family/parents`, {
-      family_id: familyID,
+      family_id: payload.family_id,
       parent_critter_id: payload.critter_id
     });
 
@@ -171,7 +135,6 @@ export const useFamilyApi = (axios: AxiosInstance) => {
     editFamily,
     deleteRelationship,
     createFamily,
-    createFamilyRelationship,
-    editFamilyRelationship
+    createFamilyRelationship
   };
 };

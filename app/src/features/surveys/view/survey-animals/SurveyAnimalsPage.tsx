@@ -64,7 +64,6 @@ export const SurveyAnimalsPage = () => {
           <AnimalList
             onAddButton={() => setOpenAddCritter(true)}
             refreshCritter={refreshCritter}
-            //onSelectCritter={setDetailedCritter}
             surveyCritters={surveyCritters}
             isLoading={crittersLoading}
             selectedSection={selectedSection}

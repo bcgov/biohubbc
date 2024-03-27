@@ -54,7 +54,10 @@ export const FamilyAnimalForm = (props: AnimalFormProps<IFamilyParentResponse | 
     setLoading(true);
     try {
       if (props.formMode === ANIMAL_FORM_MODE.ADD) {
-        createNewFamily ? delete values.family_id : delete values.family_label;
+        if (values.family_label) {
+          const family = await cbApi.family.createFamily(values.family_label);
+          values.family_id = family.family_id;
+        }
         await cbApi.family.createFamilyRelationship(values);
 
         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created family relationship.` });
@@ -63,13 +66,21 @@ export const FamilyAnimalForm = (props: AnimalFormProps<IFamilyParentResponse | 
         if (!values.family_id || !initialValues.family_id) {
           throw new Error(`family_id should be defined`);
         }
-        await cbApi.family.editFamilyRelationship({
-          newRelationship: values.relationship,
-          oldRelationship: initialValues.relationship,
-          family_label: createNewFamily ? values.family_label : undefined,
-          old_family_id: initialValues.family_id,
-          new_family_id: values.family_id,
-          critter_id: values.critter_id
+
+        if (values.family_label) {
+          await cbApi.family.editFamily(initialValues.family_id, values.family_label);
+        }
+
+        await cbApi.family.deleteRelationship({
+          family_id: initialValues.family_id,
+          critter_id: initialValues.critter_id,
+          relationship: initialValues.relationship
+        });
+
+        await cbApi.family.createFamilyRelationship({
+          family_id: values.family_id,
+          critter_id: values.critter_id,
+          relationship: values.relationship
         });
 
         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully edited family relationship.` });
