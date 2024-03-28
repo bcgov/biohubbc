@@ -265,7 +265,7 @@ export type IObservationsTableContext = {
 
 export const ObservationsTableContext = createContext<IObservationsTableContext | undefined>(undefined);
 
-export const ObservationsTableContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
+export const ObservationsTableContextProvider = (props: PropsWithChildren) => {
   const { projectId, surveyId } = useContext(SurveyContext);
 
   const _muiDataGridApiRef = useGridApiRef();

@@ -22,7 +22,7 @@ import { TelemetryTableI18N } from 'constants/i18n';
 import { getSurveySessionStorageKey, SIMS_TELEMETRY_HIDDEN_COLUMNS } from 'constants/session-storage';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import { TelemetryTableContext } from 'contexts/telemetryTableContext';
+import { useTelemetryTableContext } from 'hooks/useContext';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { pluralize as p } from 'utils/Utils';
@@ -35,10 +35,12 @@ const ManualTelemetryTableContainer = () => {
   const [contextMenuAnchorEl, setContextMenuAnchorEl] = useState<Element | null>(null);
   const [columnVisibilityMenuAnchorEl, setColumnVisibilityMenuAnchorEl] = useState<Element | null>(null);
   const [hiddenFields, setHiddenFields] = useState<string[]>([]);
+
   const dialogContext = useContext(DialogContext);
-  const telemetryTableContext = useContext(TelemetryTableContext);
+  const telemetryTableContext = useTelemetryTableContext();
   const surveyContext = useContext(SurveyContext);
   const telemetryApi = useTelemetryApi();
+
   const { hasUnsavedChanges, validationModel, _muiDataGridApiRef } = telemetryTableContext;
 
   const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
