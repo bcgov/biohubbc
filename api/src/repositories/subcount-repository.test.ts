@@ -16,7 +16,7 @@ import {
 
 chai.use(sinonChai);
 
-describe('SubcountRepository', () => {
+describe('SubCountRepository', () => {
   afterEach(() => {
     sinon.restore();
   });
