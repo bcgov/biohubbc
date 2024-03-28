@@ -1,0 +1,302 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: ${NAME}-build-template
+parameters:
+  - name: NAME
+    displayName: Name
+    description: The name assigned to all of the objects defined in this template.
+    required: true
+    value: postgres-postgis
+  - name: SUFFIX
+    displayName: Suffix
+    description: A name suffix used for all objects
+    required: false
+    value:
+  - name: APP_NAME
+    displayName: App Name
+    description: Used to group components together in the OpenShift console.
+    required: true
+    value: biohubbc
+  - name: APP_GROUP
+    displayName: App Group
+    description: The name assigned to all of the deployments in this project.
+    required: true
+    value: biohubbc
+  - name: GIT_REPO_URL
+    displayName: Git Repo URL
+    description: The URL to your GIT repo.
+    required: true
+    value: https://github.com/bcgov/biohubbc.git
+  - name: GIT_REF
+    displayName: Git Reference
+    description: The git reference or branch.
+    required: true
+    value: SIMSBIOHUB-566
+  - name: SOURCE_CONTEXT_DIR
+    displayName: Source Context Directory
+    description: The source context directory.
+    required: false
+    value: containers/postgres15
+  - name: OUTPUT_IMAGE_TAG
+    displayName: Output Image Tag
+    description: The tag given to the built image.
+    required: true
+    value: "15"
+  - name: DOCKER_FILE_PATH
+    displayName: Docker File Path
+    description: The path to the docker file.
+    required: true
+    value: Dockerfile
+  - name: SOURCE_IMAGE_KIND
+    displayName: Source Image Kind
+    description: The 'kind' (type) of the source image; typically ImageStreamTag, or DockerImage.
+    required: false
+    value: DockerImage
+  - name: SOURCE_IMAGE_NAME
+    displayName: Source Image Name
+    description: The name of the source image. If specified, this overrides the 'FROM' spec in the Docker file.
+    required: false
+    value:
+  - name: SOURCE_IMAGE_TAG
+    displayName: Source Image Tag
+    description: The tag of the source image. If specified, this overrides the 'FROM' spec in the Docker file.
+    required: false
+    value:
+  - name: CPU_LIMIT
+    displayName: Resources CPU Limit
+    description: The resources CPU limit (in cores) for this build; 0 = use default.
+    required: true
+    value: "0"
+  - name: MEMORY_LIMIT
+    displayName: Resources Memory Limit
+    description: The resources Memory limit (in Mi, Gi, etc) for this build; 0Mi = use default.
+    required: true
+    value: 0Mi
+  - name: CPU_REQUEST
+    displayName: Resources CPU Request
+    description: The resources CPU request (in cores) for this build; 0 = use default.
+    required: true
+    value: "0"
+  - name: MEMORY_REQUEST
+    displayName: Resources Memory Request
+    description: The resources Memory request (in Mi, Gi, etc) for this build; 0Mi = use default.
+    required: true
+    value: 0Mi
+objects:
+  - kind: ImageStream
+    apiVersion: image.openshift.io/v1
+    metadata:
+      name: ${NAME}
+      labels:
+        name: ${NAME}
+        app: ${APP_NAME}${SUFFIX}
+        app-group: ${APP_GROUP}
+
+  - kind: BuildConfig
+    apiVersion: build.openshift.io/v1
+    metadata:
+      name: ${NAME}
+      labels:
+        name: ${NAME}
+        app: ${APP_NAME}${SUFFIX}
+        app-group: ${APP_GROUP}
+    spec:
+      runPolicy: Serial
+      source:
+        type: Git
+        git:
+          ref: ${GIT_REF}
+          uri: ${GIT_REPO_URL}
+        # contextDir: ${SOURCE_CONTEXT_DIR}
+        dockerfile: |
+          FROM debian:bullseye
+
+          # Add the fix-permissions script
+          RUN echo "\
+          #!/bin/sh\n\
+          # Fix permissions on the given directory to allow group read/write of\n\
+          # regular files and execute of directories.\n\
+          \n\
+          user=postgres\n\
+          uid=999\n\
+          \n\
+          find \"\$1\" -exec chown -R \$user {} \\;\n\
+          # find \"\$1\" -exec 999:0 {} \\;\n\
+          find \"\$1\" -exec chgrp 0 {} \\;\n\
+          find \"\$1\" -exec chmod g+rwx {} \\;\n\
+          find \"\$1\" -type d -exec chmod g+x {} +\n\
+          " > /usr/local/bin/fix-permissions
+
+          # Make the script executable
+          RUN chmod +x /usr/local/bin/fix-permissions
+
+          # explicitly set user/group IDs
+          RUN set -eux; \
+              groupadd -r postgres --gid=999; \
+              # https://salsa.debian.org/postgresql/postgresql-common/blob/997d842ee744687d99a2b2d95c1083a2615c79e8/debian/postgresql-common.postinst#L32-35
+              useradd -r -g postgres --uid=999 --home-dir=/var/lib/pgsql --shell=/bin/bash postgres; \
+              # also create the postgres user's home directory with appropriate permissions
+              # see https://github.com/docker-library/postgres/issues/274
+              mkdir -p /var/lib/pgsql; \
+              chown -R postgres:postgres /var/lib/pgsql
+
+          RUN usermod -a -G root postgres
+
+          RUN ID_POSTGRES=$(id postgres) ; \
+            echo $ID_POSTGRES ;
+
+          RUN mkdir -p /var/lib/postgresql
+          RUN bash /usr/local/bin/fix-permissions /var/lib/postgresql
+
+          RUN mkdir -p /var/lib/pgsql/data
+          RUN bash /usr/local/bin/fix-permissions /var/lib/pgsql
+
+          RUN mkdir -p /var/run/postgresql
+          RUN bash /usr/local/bin/fix-permissions /var/run/postgresql
+
+          FROM postgres:15-bullseye
+
+          # ENV POSTGRES_VERSION=15
+          ENV POSTGIS_MAJOR 3
+          ENV POSTGIS_VERSION 3.4.2+dfsg-1.pgdg110+1
+          ENV PGDATA /var/lib/pgsql/data
+
+          ENV TZ=America/Vancouver
+
+          ENV PORT=5432
+
+          ENV HOME=/var/lib/pgsql
+          ENV PGUSER=postgres
+
+          # Add the fix-permissions script
+          RUN echo "\
+          #!/bin/sh\n\
+          # Fix permissions on the given directory to allow group read/write of\n\
+          # regular files and execute of directories.\n\
+          \n\
+          user=postgres\n\
+          uid=999\n\
+          \n\
+          find \"\$1\" -exec chown -R \$user {} \\;\n\
+          find \"\$1\" -exec 999:0 {} \\;\n\
+          find \"\$1\" -exec chgrp 0 {} \\;\n\
+          find \"\$1\" -exec chmod g+rwx {} \\;\n\
+          find \"\$1\" -type d -exec chmod g+x {} +\n\
+          " > /usr/local/bin/fix-permissions
+
+          # Make the script executable
+          RUN chmod +x /usr/local/bin/fix-permissions
+
+          # COPY ./libexec/fix-permissions /usr/local/bin/fix-permissions
+
+          VOLUME ["/var/lib/pgsql/data", "/var/run/postgresql"]
+
+          RUN apt-get update \
+              && apt-cache showpkg postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR \
+              && apt-get install -y --no-install-recommends \
+              # ca-certificates: for accessing remote raster files;
+              #   fix: https://github.com/postgis/docker-postgis/issues/307
+              ca-certificates \
+              \
+              postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR=$POSTGIS_VERSION \
+              postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR-scripts \
+              postgresql-$PG_MAJOR-pgrouting \
+              postgresql-$PG_MAJOR-pgrouting-scripts \
+              && rm -rf /var/lib/apt/lists/*
+
+          RUN usermod -a -G root postgres
+
+          RUN ID_POSTGRES=$(id postgres) ; \
+            echo $ID_POSTGRES ;
+
+          RUN mkdir -p /var/lib/postgresql
+          RUN bash /usr/local/bin/fix-permissions /var/lib/postgresql
+
+          RUN mkdir -p /var/lib/pgsql/data
+          RUN bash /usr/local/bin/fix-permissions /var/lib/pgsql
+
+          RUN mkdir -p /var/run/postgresql
+          RUN bash /usr/local/bin/fix-permissions /var/run/postgresql
+
+          # set time zone
+          RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+          # copy postgis init script to docker init directory
+          RUN mkdir -p /docker-entrypoint-initdb.d
+          # COPY ./create_postgis.sql /docker-entrypoint-initdb.d/postgis.sql
+
+          # Add the SQL commands
+          RUN echo "\
+          -- Enable PostGIS (includes raster)\n\
+          CREATE EXTENSION IF NOT EXISTS postgis CASCADE;\n\
+          CREATE EXTENSION IF NOT EXISTS postgis_raster CASCADE;\n\
+          \n\
+          -- Enable Topology and Routing\n\
+          CREATE EXTENSION IF NOT EXISTS postgis_topology CASCADE;\n\
+          CREATE EXTENSION IF NOT EXISTS postgis_sfcgal CASCADE;\n\
+          CREATE EXTENSION IF NOT EXISTS pgRouting CASCADE;\n\
+          \n\
+          -- Enable Helper functions\n\
+          CREATE EXTENSION IF NOT EXISTS fuzzystrmatch CASCADE;\n\
+          CREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE;\n\
+          " > /docker-entrypoint-initdb.d/postgis.sql
+
+          RUN usermod -a -G root postgres 
+          RUN bash /usr/local/bin/fix-permissions /var/lib/pgsql
+          RUN bash /usr/local/bin/fix-permissions /var/run/postgresql
+          # RUN bash /usr/local/bin/fix-permissions "$APP_DATA"
+
+          RUN ID_POSTGRES=$(id postgres) ; \
+            echo $ID_POSTGRES ;
+
+          RUN ls -ld myfolder | xargs echo
+
+          USER postgres
+
+          EXPOSE $PORT
+
+          CMD ["postgres"]
+        # secrets:
+        #   - secret:
+        #       name: platform-services-controlled-etc-pki-entitlement
+        #     destinationDir: etc-pki-entitlement
+        # configMaps:
+        #   - configMap:
+        #       name: platform-services-controlled-rhsm-conf
+        #     destinationDir: rhsm-conf
+        #   - configMap:
+        #       name: platform-services-controlled-rhsm-ca
+        #     destinationDir: rhsm-ca
+      strategy:
+        type: Docker
+        dockerStrategy:
+          noCache: true
+          imageOptimizationPolicy: SkipLayers
+
+          # dockerfilePath: ${DOCKER_FILE_PATH}
+          # from:
+          #   kind: ${SOURCE_IMAGE_KIND}
+          #   name: ${SOURCE_IMAGE_NAME}:${SOURCE_IMAGE_TAG}
+          # volumes:
+          #   - name: etc-pki-entitlement
+          #     mounts:
+          #       - destinationPath: /etc/pki/entitlement
+          #     source:
+          #       type: Secret
+          #       secret:
+          #         secretName: platform-services-controlled-etc-pki-entitlement
+      output:
+        to:
+          kind: ImageStreamTag
+          name: ${NAME}:${OUTPUT_IMAGE_TAG}
+      resources:
+        requests:
+          cpu: ${CPU_REQUEST}
+          memory: ${MEMORY_REQUEST}
+        limits:
+          cpu: ${CPU_LIMIT}
+          memory: ${MEMORY_LIMIT}
+      triggers:
+        - type: ImageChange
+        - type: ConfigChange
