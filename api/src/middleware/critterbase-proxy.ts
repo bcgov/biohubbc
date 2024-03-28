@@ -22,7 +22,7 @@ const allowedDeleteRoutesRegex: RegExp[] = [
   /^\/api\/critterbase\/family\/[^/]+$/,
   /^\/api\/critterbase\/measurements\/qualitative\/[^/]+$/,
   /^\/api\/critterbase\/measurements\/quantitative\/[^/]+$/,
-  /^\/api\/critterbase\/collectionUnits\/[^/]+$/,
+  /^\/api\/critterbase\/collection-units\/[^/]+$/,
   /^\/api\/critterbase\/mortality\/[^/]+$/
 ];
 
