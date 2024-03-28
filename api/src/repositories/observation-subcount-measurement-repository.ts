@@ -68,7 +68,7 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
     return response.rows;
   }
 
-  async deleteObservationMeasurements(surveyObservationId: number[], surveyId: number) {
+  async deleteObservationMeasurements(surveyId: number, surveyObservationId: number[]) {
     await this.deleteObservationQualitativeMeasurementRecordsForSurveyObservationIds(surveyObservationId, surveyId);
     await this.deleteObservationQuantitativeMeasurementRecordsForSurveyObservationIds(surveyObservationId, surveyId);
   }

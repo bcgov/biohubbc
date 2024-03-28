@@ -2,6 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { ObservationSubCountMeasurementRepository } from '../repositories/observation-subcount-measurement-repository';
 import {
   InsertObservationSubCount,
   InsertSubCountEvent,
@@ -20,7 +21,7 @@ describe.only('SubCountService', () => {
   });
 
   describe('insertObservationSubCount', () => {
-    it('shoud insert observation subcount', async () => {
+    it('should insert observation subcount', async () => {
       const mockDbConnection = getMockDBConnection();
       const subCountService = new SubCountService(mockDbConnection);
 
@@ -38,7 +39,7 @@ describe.only('SubCountService', () => {
   });
 
   describe('insertSubCountEvent', () => {
-    it('shoud insert subcount event', async () => {
+    it('should insert subcount event', async () => {
       const mockDbConnection = getMockDBConnection();
       const subCountService = new SubCountService(mockDbConnection);
 
@@ -50,6 +51,37 @@ describe.only('SubCountService', () => {
 
       expect(insertSubCountEventStub).to.be.calledOnceWith({ observation_subcount_id: 1 });
       expect(response).to.eql({ observation_subcount_id: 1 });
+    });
+  });
+
+  describe('deleteObservationSubCountRecords', () => {
+    it('should delete observation_subcount records and related child records', async () => {
+      const mockDbConnection = getMockDBConnection();
+      const subCountService = new SubCountService(mockDbConnection);
+
+      const mockSurveyId = 1;
+      const mockSurveyObservationIds = [1, 2, 3, 4];
+
+      const deleteSubCountCritterRecordsForObservationIdStub = sinon
+        .stub(SubCountRepository.prototype, 'deleteSubCountCritterRecordsForObservationId')
+        .resolves();
+
+      const deleteObservationMeasurementsStub = sinon
+        .stub(ObservationSubCountMeasurementRepository.prototype, 'deleteObservationMeasurements')
+        .resolves();
+
+      const deleteObservationSubCountRecordsStub = sinon
+        .stub(SubCountRepository.prototype, 'deleteObservationSubCountRecords')
+        .resolves();
+
+      await subCountService.deleteObservationSubCountRecords(mockSurveyId, mockSurveyObservationIds);
+
+      expect(deleteSubCountCritterRecordsForObservationIdStub).to.be.calledOnceWith(
+        mockSurveyId,
+        mockSurveyObservationIds
+      );
+      expect(deleteObservationMeasurementsStub).to.be.calledOnceWith(mockSurveyId, mockSurveyObservationIds);
+      expect(deleteObservationSubCountRecordsStub).to.be.calledOnceWith(mockSurveyId, mockSurveyObservationIds);
     });
   });
 });
