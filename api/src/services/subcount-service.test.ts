@@ -15,7 +15,7 @@ import { SubCountService } from './subcount-service';
 
 chai.use(sinonChai);
 
-describe.only('SubCountService', () => {
+describe('SubCountService', () => {
   afterEach(() => {
     sinon.restore();
   });
