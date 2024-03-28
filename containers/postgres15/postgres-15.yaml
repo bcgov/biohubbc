@@ -108,7 +108,155 @@ objects:
         git:
           ref: ${GIT_REF}
           uri: ${GIT_REPO_URL}
-        contextDir: ${SOURCE_CONTEXT_DIR}
+        # contextDir: ${SOURCE_CONTEXT_DIR}
+        dockerfile: |
+          FROM debian:bullseye
+
+          # Add the fix-permissions script
+          RUN echo "\
+          #!/bin/sh\n\
+          # Fix permissions on the given directory to allow group read/write of\n\
+          # regular files and execute of directories.\n\
+          \n\
+          user=postgres\n\
+          uid=999\n\
+          \n\
+          find \"\$1\" -exec chown -R \$user {} \\;\n\
+          # find \"\$1\" -exec 999:0 {} \\;\n\
+          find \"\$1\" -exec chgrp 0 {} \\;\n\
+          find \"\$1\" -exec chmod g+rwx {} \\;\n\
+          find \"\$1\" -type d -exec chmod g+x {} +\n\
+          " > /usr/local/bin/fix-permissions
+
+          # Make the script executable
+          RUN chmod +x /usr/local/bin/fix-permissions
+
+          # explicitly set user/group IDs
+          RUN set -eux; \
+              groupadd -r postgres --gid=999; \
+              # https://salsa.debian.org/postgresql/postgresql-common/blob/997d842ee744687d99a2b2d95c1083a2615c79e8/debian/postgresql-common.postinst#L32-35
+              useradd -r -g postgres --uid=999 --home-dir=/var/lib/pgsql --shell=/bin/bash postgres; \
+              # also create the postgres user's home directory with appropriate permissions
+              # see https://github.com/docker-library/postgres/issues/274
+              mkdir -p /var/lib/pgsql; \
+              chown -R postgres:postgres /var/lib/pgsql
+
+          RUN usermod -a -G root postgres
+
+          RUN ID_POSTGRES=$(id postgres) ; \
+            echo $ID_POSTGRES ;
+
+          RUN mkdir -p /var/lib/postgresql
+          RUN bash /usr/local/bin/fix-permissions /var/lib/postgresql
+
+          RUN mkdir -p /var/lib/pgsql/data
+          RUN bash /usr/local/bin/fix-permissions /var/lib/pgsql
+
+          RUN mkdir -p /var/run/postgresql
+          RUN bash /usr/local/bin/fix-permissions /var/run/postgresql
+
+          FROM postgres:15-bullseye
+
+          # ENV POSTGRES_VERSION=15
+          ENV POSTGIS_MAJOR 3
+          ENV POSTGIS_VERSION 3.4.2+dfsg-1.pgdg110+1
+          ENV PGDATA /var/lib/pgsql/data
+
+          ENV TZ=America/Vancouver
+
+          ENV PORT=5432
+
+          ENV HOME=/var/lib/pgsql
+          ENV PGUSER=postgres
+
+          # Add the fix-permissions script
+          RUN echo "\
+          #!/bin/sh\n\
+          # Fix permissions on the given directory to allow group read/write of\n\
+          # regular files and execute of directories.\n\
+          \n\
+          user=postgres\n\
+          uid=999\n\
+          \n\
+          find \"\$1\" -exec chown -R \$user {} \\;\n\
+          find \"\$1\" -exec 999:0 {} \\;\n\
+          find \"\$1\" -exec chgrp 0 {} \\;\n\
+          find \"\$1\" -exec chmod g+rwx {} \\;\n\
+          find \"\$1\" -type d -exec chmod g+x {} +\n\
+          " > /usr/local/bin/fix-permissions
+
+          # Make the script executable
+          RUN chmod +x /usr/local/bin/fix-permissions
+
+          # COPY ./libexec/fix-permissions /usr/local/bin/fix-permissions
+
+          VOLUME ["/var/lib/pgsql/data", "/var/run/postgresql"]
+
+          RUN apt-get update \
+              && apt-cache showpkg postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR \
+              && apt-get install -y --no-install-recommends \
+              # ca-certificates: for accessing remote raster files;
+              #   fix: https://github.com/postgis/docker-postgis/issues/307
+              ca-certificates \
+              \
+              postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR=$POSTGIS_VERSION \
+              postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR-scripts \
+              postgresql-$PG_MAJOR-pgrouting \
+              postgresql-$PG_MAJOR-pgrouting-scripts \
+              && rm -rf /var/lib/apt/lists/*
+
+          RUN usermod -a -G root postgres
+
+          RUN ID_POSTGRES=$(id postgres) ; \
+            echo $ID_POSTGRES ;
+
+          RUN mkdir -p /var/lib/postgresql
+          RUN bash /usr/local/bin/fix-permissions /var/lib/postgresql
+
+          RUN mkdir -p /var/lib/pgsql/data
+          RUN bash /usr/local/bin/fix-permissions /var/lib/pgsql
+
+          RUN mkdir -p /var/run/postgresql
+          RUN bash /usr/local/bin/fix-permissions /var/run/postgresql
+
+          # set time zone
+          RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+          # copy postgis init script to docker init directory
+          RUN mkdir -p /docker-entrypoint-initdb.d
+          # COPY ./create_postgis.sql /docker-entrypoint-initdb.d/postgis.sql
+
+          # Add the SQL commands
+          RUN echo "\
+          -- Enable PostGIS (includes raster)\n\
+          CREATE EXTENSION IF NOT EXISTS postgis CASCADE;\n\
+          CREATE EXTENSION IF NOT EXISTS postgis_raster CASCADE;\n\
+          \n\
+          -- Enable Topology and Routing\n\
+          CREATE EXTENSION IF NOT EXISTS postgis_topology CASCADE;\n\
+          CREATE EXTENSION IF NOT EXISTS postgis_sfcgal CASCADE;\n\
+          CREATE EXTENSION IF NOT EXISTS pgRouting CASCADE;\n\
+          \n\
+          -- Enable Helper functions\n\
+          CREATE EXTENSION IF NOT EXISTS fuzzystrmatch CASCADE;\n\
+          CREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE;\n\
+          " > /docker-entrypoint-initdb.d/postgis.sql
+
+          RUN usermod -a -G root postgres 
+          RUN bash /usr/local/bin/fix-permissions /var/lib/pgsql
+          RUN bash /usr/local/bin/fix-permissions /var/run/postgresql
+          # RUN bash /usr/local/bin/fix-permissions "$APP_DATA"
+
+          RUN ID_POSTGRES=$(id postgres) ; \
+            echo $ID_POSTGRES ;
+
+          RUN ls -ld myfolder | xargs echo
+
+          USER postgres
+
+          EXPOSE $PORT
+
+          CMD ["postgres"]
         # secrets:
         #   - secret:
         #       name: platform-services-controlled-etc-pki-entitlement
@@ -125,7 +273,8 @@ objects:
         dockerStrategy:
           noCache: true
           imageOptimizationPolicy: SkipLayers
-          dockerfilePath: ${DOCKER_FILE_PATH}
+
+          # dockerfilePath: ${DOCKER_FILE_PATH}
           # from:
           #   kind: ${SOURCE_IMAGE_KIND}
           #   name: ${SOURCE_IMAGE_NAME}:${SOURCE_IMAGE_TAG}

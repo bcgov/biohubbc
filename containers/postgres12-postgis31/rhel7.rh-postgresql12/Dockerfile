@@ -19,29 +19,29 @@ ENV POSTGIS_EXTENSION=N \
     PGUSER=postgres \
     LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 \
     APP_DATA=/opt/app-root
-    
+
 ENV POSTGISV 3
 ENV TZ America/Vancouver
 ENV PORT 5432 
 
 ENV SUMMARY="PostgreSQL is an advanced Object-Relational database management system" \
     DESCRIPTION="PostgreSQL is an advanced Object-Relational database management system (DBMS). \
-The image contains the client and server programs that you'll need to \
-create, run, maintain and access a PostgreSQL DBMS server."
+    The image contains the client and server programs that you'll need to \
+    create, run, maintain and access a PostgreSQL DBMS server."
 
 LABEL summary=$SUMMARY \
-      description="$DESCRIPTION" \
-      io.k8s.description="$DESCRIPTION" \
-      io.k8s.display-name="PostgreSQL $POSTGRESQL_VERSION" \
-      io.openshift.expose-services="5432:postgresql" \
-      io.openshift.tags="database,postgresql,postgresql$POSTGRESQL_VERSION,rh-postgresql$POSTGRESQL_VERSION,postgis,postgis$POSTGISV" \
-      name="rhscl/postgresql-$POSTGRESQL_VERSION-rhel7" \
-      com.redhat.component="rh-postgresql$POSTGRESQL_VERSION-container" \
-      version="1" \
-      release="1" \
-      com.redhat.license_terms="https://www.redhat.com/en/about/red-hat-end-user-license-agreements#rhel" \
-      usage="podman run -d --name postgresql_database -e POSTGRESQL_USER=user -e POSTGRESQL_PASSWORD=pass -e POSTGRESQL_DATABASE=db -p 5432:5432 rhscl/postgresql-$POSTGRESQL_VERSION-rhel7" \
-      maintainer="SoftwareCollections.org <sclorg@redhat.com>"
+    description="$DESCRIPTION" \
+    io.k8s.description="$DESCRIPTION" \
+    io.k8s.display-name="PostgreSQL $POSTGRESQL_VERSION" \
+    io.openshift.expose-services="5432:postgresql" \
+    io.openshift.tags="database,postgresql,postgresql$POSTGRESQL_VERSION,rh-postgresql$POSTGRESQL_VERSION,postgis,postgis$POSTGISV" \
+    name="rhscl/postgresql-$POSTGRESQL_VERSION-rhel7" \
+    com.redhat.component="rh-postgresql$POSTGRESQL_VERSION-container" \
+    version="1" \
+    release="1" \
+    com.redhat.license_terms="https://www.redhat.com/en/about/red-hat-end-user-license-agreements#rhel" \
+    usage="podman run -d --name postgresql_database -e POSTGRESQL_USER=user -e POSTGRESQL_PASSWORD=pass -e POSTGRESQL_DATABASE=db -p 5432:5432 rhscl/postgresql-$POSTGRESQL_VERSION-rhel7" \
+    maintainer="SoftwareCollections.org <sclorg@redhat.com>"
 
 USER 0
 
@@ -125,7 +125,7 @@ RUN /usr/bin/install -c -m 755  /usr/pgsql-12/lib/postgis* '/opt/rh/rh-postgresq
     /usr/bin/install -c -m 644 /usr/pgsql-12/share/extension/pgcrypto* '/opt/rh/rh-postgresql12/root/usr/share/pgsql/extension/' && \
     /usr/bin/install -c -m 644 /usr/pgsql-12/share/extension/fuzzystrmatch* '/opt/rh/rh-postgresql12/root/usr/share/pgsql/extension/' && \
     mv /usr/pgsql-12/share/contrib/postgis-3.1/ /opt/rh/rh-postgresql12/root/usr/share/pgsql/contrib/ 
-   
+
 RUN rm -rf /tmp/pgdg-redhat-repo-latest.noarch.rpm /var/cache/yum
 
 # Remove entitlements and Subscription Manager configs

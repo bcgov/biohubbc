@@ -10,10 +10,9 @@ ENV PORT=5432
 
 ENV HOME=/var/lib/pgsql
 ENV PGUSER=postgres
-ENV APP_DATA=/opt/app-root
 ENV PGDATA=/var/lib/pgsql/data
 
-USER 0
+USER postgres
 
 COPY ./libexec/fix-permissions /usr/libexec/fix-permissions
 
@@ -32,14 +31,18 @@ RUN apt-get update \
 
 RUN usermod -a -G root postgres
 RUN usermod -a -G 0 postgres
+
+RUN usermod -G "" postgres
+RUN test "$(id postgres)" = "uid=26(postgres) gid=26(postgres) groups=26(postgres)"
+
 RUN mkdir -p /var/lib/pgsql/data
-RUN mkdir -p /var/run/postgresql
+# RUN mkdir -p /var/run/postgresql
 RUN bash /usr/libexec/fix-permissions /var/lib/pgsql
 RUN bash /usr/libexec/fix-permissions /var/run/postgresql
 
 # Grant permissions to the directories
-RUN chgrp -R 0 /var/lib/pgsql/data && chmod -R g=u /var/lib/pgsql/data
-RUN chgrp -R 0 /var/run/postgresql && chmod -R g=u /var/run/postgresql
+# RUN chgrp -R 0 /var/lib/pgsql/data && chmod -R g=u /var/lib/pgsql/data
+# RUN chgrp -R 0 /var/run/postgresql && chmod -R g=u /var/run/postgresql
 
 # set time zone
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -48,7 +51,10 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN mkdir -p /docker-entrypoint-initdb.d
 COPY ./create_postgis.sql /docker-entrypoint-initdb.d/postgis.sql
 
-USER 26
+RUN usermod -a -G root postgres 
+RUN bash /usr/libexec/fix-permissions "$APP_DATA"
+
+# USER 26
 
 EXPOSE $PORT
 
