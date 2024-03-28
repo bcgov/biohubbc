@@ -28,21 +28,16 @@ export const SpeciesAutoCompleteFormikField = (props: SpeciesAutoCompleteFormikF
 
   const tsn = get(values, props.formikFieldName);
 
-  const clearField = () => {
-    clearData();
-    setFieldValue(props.formikFieldName, '');
-  };
-
   if (tsn) {
     loadTaxon([tsn]);
   }
 
   useEffect(() => {
-    if (props.disabled) {
-      clearField();
+    if (!tsn) {
+      clearData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.disabled]);
+  }, [tsn]);
 
   return (
     <SpeciesAutocompleteField
@@ -52,13 +47,14 @@ export const SpeciesAutoCompleteFormikField = (props: SpeciesAutoCompleteFormikF
       label={'Taxon'}
       required={props.required}
       error={Boolean(get(touched, props.formikFieldName)) && get(errors, props.formikFieldName)}
-      defaultSpecies={taxon ? taxon[0] : undefined}
+      defaultSpecies={taxon?.[0]}
       handleSpecies={(taxon) => {
         if (taxon) {
           setFieldValue(props.formikFieldName, taxon.tsn);
           setFieldError(props.formikFieldName, undefined);
         } else {
-          clearField();
+          clearData();
+          setFieldValue(props.formikFieldName, '');
         }
       }}
     />

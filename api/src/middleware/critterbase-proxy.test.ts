@@ -81,14 +81,14 @@ describe('CritterbaseProxy', () => {
 
     it('should allow DELETE requests to collection units endpoint', () => {
       expect(
-        proxyFilter('/api/critterbase/collectionUnits/id', {
+        proxyFilter('/api/critterbase/collection-units/id', {
           method: 'DELETE',
           headers: { origin: 'SIMS' }
         } as Request)
       ).to.be.true;
 
       expect(
-        proxyFilter('/api/critterbase/collectionUnits/id/test', {
+        proxyFilter('/api/critterbase/collection-units/id/test', {
           method: 'DELETE',
           headers: { origin: 'SIMS' }
         } as Request)
