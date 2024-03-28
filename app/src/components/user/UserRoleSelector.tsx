@@ -30,10 +30,6 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
         sx={{
           background: grey[100],
           '&.userRoleItemError': {
-            borderColor: 'error.main',
-            '& .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'error.main'
-            },
             '& + p': {
               pt: 0.75,
               pb: 0.75,
@@ -51,6 +47,7 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
               inputProps={{
                 'aria-label': 'Select a role'
               }}
+              error={Boolean(props.error)}
               data-testid={`select-user-role-button-${index}`}
               sx={{ width: '200px', backgroundColor: '#fff' }}
               displayEmpty

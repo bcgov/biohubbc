@@ -3,7 +3,7 @@ import Icon from '@mdi/react';
 import { cyan, grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import { DataGrid, GridCellParams, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridCellParams, GridColDef, GridRowModesModel } from '@mui/x-data-grid';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
@@ -11,16 +11,19 @@ import TimePickerDataGrid from 'components/data-grid/TimePickerDataGrid';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SurveyContext } from 'contexts/surveyContext';
-import { IManualTelemetryTableRow, TelemetryTableContext } from 'contexts/telemetryTableContext';
+import { IManualTelemetryTableRow } from 'contexts/telemetryTableContext';
 import { default as dayjs } from 'dayjs';
+import { useTelemetryTableContext } from 'hooks/useContext';
 import { useCallback, useContext, useEffect, useMemo } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import { ICritterDeployment } from '../ManualTelemetryList';
+
 interface IManualTelemetryTableProps {
   isLoading: boolean;
 }
+
 const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
-  const telemetryTableContext = useContext(TelemetryTableContext);
+  const telemetryTableContext = useTelemetryTableContext();
   const surveyContext = useContext(SurveyContext);
 
   useEffect(() => {
@@ -309,6 +312,21 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
     }
   ];
 
+  /**
+   * Callback fired when the row modes model changes.
+   * The row modes model stores the `view` vs `edit` state of the rows.
+   *
+   * Note: Any row not included in the model will default to `view` mode.
+   *
+   * @param {GridRowModesModel} model
+   */
+  const onRowModesModelChange = useCallback(
+    (model: GridRowModesModel) => {
+      telemetryTableContext.setRowModesModel(() => model);
+    },
+    [telemetryTableContext]
+  );
+
   return (
     <DataGrid
       checkboxSelection
@@ -319,6 +337,8 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
       editMode="row"
       columns={tableColumns}
       rows={telemetryTableContext.rows}
+      rowModesModel={telemetryTableContext.rowModesModel}
+      onRowModesModelChange={onRowModesModelChange}
       onRowEditStart={(params) => telemetryTableContext.onRowEditStart(params.id)}
       onRowEditStop={(_params, event) => {
         event.defaultMuiPrevented = true;
