@@ -1,22 +1,23 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
-import { Critter } from 'features/surveys/view/survey-animals/animal';
+import { ICreateCritter } from 'features/surveys/view/survey-animals/animal';
 import {
   IAnimalDeployment,
   IAnimalTelemetryDevice,
   IDeploymentTimespan,
   ITelemetryPointCollection
 } from 'features/surveys/view/survey-animals/telemetry-device/device';
+import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { IGetReportDetails, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
-  IDetailedCritterWithInternalId,
   IGetSurveyAttachmentsResponse,
   IGetSurveyForUpdateResponse,
   IGetSurveyForViewResponse,
   IGetSurveyListResponse,
+  ISimpleCritterWithInternalId,
   SurveyUpdateObject
 } from 'interfaces/useSurveyApi.interface';
 import qs from 'qs';
@@ -369,51 +370,11 @@ const useSurveyApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @returns {ICritterDetailedResponse[]}
+   * @returns {ISimpleCritterWithInternalId[]}
    */
-  const getSurveyCritters = async (projectId: number, surveyId: number): Promise<IDetailedCritterWithInternalId[]> => {
+  const getSurveyCritters = async (projectId: number, surveyId: number): Promise<ISimpleCritterWithInternalId[]> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/critters`);
     return data;
-  };
-
-  type CritterBulkCreationResponse = {
-    create: {
-      critters: number;
-      collections: number;
-      markings: number;
-      locations: number;
-      captures: number;
-      mortalities: number;
-      qualitative_measurements: number;
-      quantitative_measurements: number;
-      families: number;
-      family_children: number;
-      family_parents: number;
-    };
-  };
-
-  const critterToPayloadTransform = (critter: Critter, ignoreTopLevel = false) => {
-    return {
-      critters: ignoreTopLevel
-        ? []
-        : [
-            {
-              critter_id: critter.critter_id,
-              animal_id: critter.animal_id,
-              sex: critter.sex,
-              itis_tsn: critter.itis_tsn,
-              wlh_id: critter.wlh_id
-            }
-          ],
-      captures: critter.captures,
-      collections: critter.collections,
-      mortalities: critter.mortalities,
-      markings: critter.markings,
-      locations: critter.locations,
-      families: critter.families,
-      qualitative_measurements: critter.measurements.qualitative,
-      quantitative_measurements: critter.measurements.quantitative
-    };
   };
 
   /**
@@ -427,35 +388,9 @@ const useSurveyApi = (axios: AxiosInstance) => {
   const createCritterAndAddToSurvey = async (
     projectId: number,
     surveyId: number,
-    critter: Critter
-  ): Promise<CritterBulkCreationResponse> => {
-    const payload = critterToPayloadTransform(critter);
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters`, payload);
-    return data;
-  };
-
-  /**
-   * Update a survey critter. Allows you to create, update, and delete associated rows like captures, mortalities etc in one request.
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {number} critterId
-   * @param {Critter} updateSection
-   * @param {Critter | undefined} createSection
-   * @returns {*}
-   */
-  const updateSurveyCritter = async (
-    projectId: number,
-    surveyId: number,
-    critterId: number,
-    updateSection: Critter,
-    createSection: Critter | undefined
-  ) => {
-    const payload = {
-      update: critterToPayloadTransform(updateSection),
-      create: createSection ? critterToPayloadTransform(createSection, true) : undefined
-    };
-    const { data } = await axios.patch(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}`, payload);
+    critter: ICreateCritter
+  ): Promise<ICritterSimpleResponse> => {
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters`, critter);
     return data;
   };
 
@@ -494,6 +429,13 @@ const useSurveyApi = (axios: AxiosInstance) => {
       throw Error('Calling this with any amount other than 1 deployments currently unsupported.');
     }
     const flattened = { ...body, ...body.deployments[0] };
+
+    delete flattened.deployment_id;
+    delete flattened.deployments;
+    if (!flattened.device_model) {
+      delete flattened.device_model;
+    }
+
     const { data } = await axios.post(
       `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`,
       flattened
@@ -600,8 +542,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getDeploymentsInSurvey,
     updateDeployment,
     getCritterTelemetry,
-    removeDeployment,
-    updateSurveyCritter
+    removeDeployment
   };
 };
 

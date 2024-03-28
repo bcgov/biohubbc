@@ -1,6 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-const critterSchema: OpenAPIV3.SchemaObject = {
+export const critterSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
   properties: {
@@ -9,16 +9,30 @@ const critterSchema: OpenAPIV3.SchemaObject = {
       format: 'uuid'
     },
     animal_id: {
-      type: 'string'
+      type: 'string',
+      nullable: true
     },
     wlh_id: {
-      type: 'string'
+      type: 'string',
+      nullable: true
     },
     itis_tsn: {
+      type: 'integer'
+    },
+    itis_scientific_name: {
       type: 'string'
     },
     sex: {
       type: 'string'
+    },
+    responsible_region_nr_id: {
+      type: 'string',
+      format: 'uuid',
+      nullable: true
+    },
+    critter_comment: {
+      type: 'string',
+      nullable: true
     }
   }
 };
@@ -149,10 +163,10 @@ const mortalitySchema: OpenAPIV3.SchemaObject = {
     mortality_comment: { type: 'string' },
     proximate_cause_of_death_id: { type: 'string', format: 'uuid' },
     proximate_cause_of_death_confidence: { type: 'string' },
-    proximate_predated_by_taxon_id: { type: 'string', format: 'uuid' },
+    proximate_predated_by_itis_tsn: { type: 'integer' },
     ultimate_cause_of_death_id: { type: 'string', format: 'uuid' },
     ultimate_cause_of_death_confidence: { type: 'string' },
-    ultimate_predated_by_taxon_id: { type: 'string', format: 'uuid' },
+    ultimate_predated_by_itis_tsn: { type: 'integer' },
     projection_mode: { type: 'string', enum: ['wgs', 'utm'] },
     location: locationSchema
   }
@@ -190,6 +204,30 @@ const quantitativeMeasurmentSchema: OpenAPIV3.SchemaObject = {
   }
 };
 
+export const critterCreateRequestObject: OpenAPIV3.SchemaObject = {
+  title: 'Create critter request object',
+  type: 'object',
+  properties: {
+    critter_id: {
+      type: 'string',
+      format: 'uuid'
+    },
+    animal_id: {
+      type: 'string'
+    },
+    wlh_id: {
+      type: 'string'
+    },
+    itis_tsn: {
+      type: 'integer'
+    },
+    sex: {
+      type: 'string'
+    }
+  },
+  additionalProperties: false
+};
+
 export const critterBulkRequestObject: OpenAPIV3.SchemaObject = {
   title: 'Bulk post request object',
   type: 'object',
@@ -202,6 +240,64 @@ export const critterBulkRequestObject: OpenAPIV3.SchemaObject = {
         title: 'critter',
         ...critterSchema
       }
+    },
+    families: {
+      title: 'families',
+      type: 'object',
+      properties: {
+        children: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              family_id: {
+                type: 'string'
+              },
+              child_critter_id: {
+                type: 'string'
+              },
+              _delete: {
+                type: 'boolean'
+              }
+            },
+            additionalProperties: false
+          }
+        },
+        families: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              family_id: {
+                type: 'string'
+              },
+              family_label: {
+                type: 'string'
+              }
+            },
+            additionalProperties: false
+          }
+        },
+        parents: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              family_id: {
+                type: 'string'
+              },
+              parent_critter_id: {
+                type: 'string'
+              },
+              _delete: {
+                type: 'boolean'
+              }
+            },
+            additionalProperties: false
+          }
+        }
+      },
+      additionalProperties: false
     },
     captures: {
       title: 'captures',
@@ -243,64 +339,6 @@ export const critterBulkRequestObject: OpenAPIV3.SchemaObject = {
         ...mortalitySchema
       }
     },
-    families: {
-      title: 'family',
-      type: 'object',
-      additionalProperties: false,
-      required: ['families', 'parents', 'children'],
-      properties: {
-        families: {
-          type: 'array',
-          items: {
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-              family_id: {
-                type: 'string',
-                format: 'uuid'
-              },
-              family_label: {
-                type: 'string'
-              }
-            }
-          }
-        },
-        parents: {
-          type: 'array',
-          items: {
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-              family_id: {
-                type: 'string',
-                format: 'uuid'
-              },
-              parent_critter_id: {
-                type: 'string',
-                format: 'uuid'
-              }
-            }
-          }
-        },
-        children: {
-          type: 'array',
-          items: {
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-              family_id: {
-                type: 'string',
-                format: 'uuid'
-              },
-              child_critter_id: {
-                type: 'string',
-                format: 'uuid'
-              }
-            }
-          }
-        }
-      }
-    },
     qualitative_measurements: {
       title: 'qualitative measurements',
       type: 'array',
@@ -320,6 +358,127 @@ export const critterBulkRequestObject: OpenAPIV3.SchemaObject = {
   }
 };
 
+export const critterBulkRequestPatchObject: OpenAPIV3.SchemaObject = {
+  title: 'Bulk post request object',
+  type: 'object',
+  properties: {
+    critters: {
+      title: 'critters',
+      type: 'array',
+      items: {
+        title: 'critter',
+        ...critterSchema
+      }
+    },
+    captures: {
+      title: 'captures',
+      type: 'array',
+      items: {
+        title: 'capture',
+        type: 'object',
+        properties: {
+          ...captureSchema.properties,
+          _delete: {
+            type: 'boolean'
+          }
+        },
+        additionalProperties: false
+      }
+    },
+    collections: {
+      title: 'collection units',
+      type: 'array',
+      items: {
+        title: 'collection unit',
+        type: 'object',
+        properties: {
+          ...collectionUnits.properties,
+          _delete: {
+            type: 'boolean'
+          }
+        },
+        additionalProperties: false
+      }
+    },
+    markings: {
+      title: 'markings',
+      type: 'array',
+      items: {
+        title: 'marking',
+        type: 'object',
+        properties: {
+          ...markingSchema.properties,
+          _delete: {
+            type: 'boolean'
+          }
+        },
+        additionalProperties: false
+      }
+    },
+    locations: {
+      title: 'locations',
+      type: 'array',
+      items: {
+        title: 'location',
+        type: 'object',
+        properties: {
+          ...locationSchema.properties,
+          _delete: {
+            type: 'boolean'
+          }
+        },
+        additionalProperties: false
+      }
+    },
+    mortalities: {
+      title: 'locations',
+      type: 'array',
+      items: {
+        title: 'location',
+        type: 'object',
+        properties: {
+          ...mortalitySchema.properties,
+          _delete: {
+            type: 'boolean'
+          }
+        },
+        additionalProperties: false
+      }
+    },
+    qualitative_measurements: {
+      title: 'qualitative measurements',
+      type: 'array',
+      items: {
+        title: 'qualitative measurement',
+        type: 'object',
+        properties: {
+          ...qualitativeMeasurementSchema.properties,
+          _delete: {
+            type: 'boolean'
+          }
+        },
+        additionalProperties: false
+      }
+    },
+    quantitative_measurements: {
+      title: 'quantitative measurements',
+      type: 'array',
+      items: {
+        title: 'quantitative measurement',
+        type: 'object',
+        properties: {
+          ...quantitativeMeasurmentSchema.properties,
+          _delete: {
+            type: 'boolean'
+          }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  additionalProperties: false
+};
+
 const bulkResponseCounts: OpenAPIV3.SchemaObject = {
   title: 'Bulk operation counts',
   type: 'object',
@@ -329,7 +488,7 @@ const bulkResponseCounts: OpenAPIV3.SchemaObject = {
     captures: { type: 'integer' },
     markings: { type: 'integer' },
     locations: { type: 'integer' },
-    moralities: { type: 'integer' },
+    mortalities: { type: 'integer' },
     collections: { type: 'integer' },
     quantitative_measurements: { type: 'integer' },
     qualitative_measurements: { type: 'integer' },

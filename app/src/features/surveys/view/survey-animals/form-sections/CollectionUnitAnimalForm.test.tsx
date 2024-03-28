@@ -1,12 +1,14 @@
-import { Formik } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
 import { render, waitFor } from 'test-helpers/test-utils';
-import { ANIMAL_SECTIONS_FORM_MAP } from '../animal-sections';
-import CollectionUnitAnimalFormContent from './CollectionUnitAnimalForm';
+import { ANIMAL_FORM_MODE } from '../animal';
+import CollectionUnitAnimalForm from './CollectionUnitAnimalForm';
 
 jest.mock('hooks/useCritterbaseApi');
 
 const mockUseCritterbaseApi = useCritterbaseApi as jest.Mock;
+
+const mockHandleClose = jest.fn();
 
 const mockUseCritterbase = {
   lookup: {
@@ -14,9 +16,7 @@ const mockUseCritterbase = {
   }
 };
 
-const defaultCollectionUnit = ANIMAL_SECTIONS_FORM_MAP['Ecological Units'].defaultFormValue;
-
-describe('CollectionUnitAnimalForm', () => {
+describe('CollectionUnitForm', () => {
   beforeEach(() => {
     mockUseCritterbaseApi.mockImplementation(() => mockUseCritterbase);
     mockUseCritterbase.lookup.getSelectOptions.mockClear();
@@ -27,11 +27,12 @@ describe('CollectionUnitAnimalForm', () => {
     ]);
 
     const { getByText } = render(
-      <Formik
-        initialValues={{ general: { taxon_id: 'a' }, collectionUnits: [defaultCollectionUnit] }}
-        onSubmit={() => {}}>
-        {() => <CollectionUnitAnimalFormContent index={0} />}
-      </Formik>
+      <CollectionUnitAnimalForm
+        formMode={ANIMAL_FORM_MODE.ADD}
+        handleClose={mockHandleClose}
+        open={true}
+        critter={{ critter_id: 'critter', collection_units: [] } as unknown as ICritterDetailedResponse}
+      />
     );
 
     await waitFor(() => {

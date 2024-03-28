@@ -11,7 +11,7 @@ const FocalSpeciesComponent = () => {
 
   const selectedSpecies: ITaxonomy[] = get(values, 'species.focal_species') || [];
 
-  const handleAddSpecies = (species: ITaxonomy) => {
+  const handleAddSpecies = (species?: ITaxonomy) => {
     setFieldValue(`species.focal_species[${selectedSpecies.length}]`, species);
     setFieldError(`species.focal_species`, undefined);
   };
@@ -38,7 +38,7 @@ const FocalSpeciesComponent = () => {
         formikFieldName={'species.focal_species'}
         label={'Focal Species'}
         required={true}
-        handleAddSpecies={handleAddSpecies}
+        handleSpecies={handleAddSpecies}
         clearOnSelect={true}
       />
       <SelectedSpecies selectedSpecies={selectedSpecies} handleRemoveSpecies={handleRemoveSpecies} />

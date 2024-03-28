@@ -605,7 +605,7 @@ const insertSurveySamplePeriodData = (surveyId: number) =>
 `;
 
 const insertObservationSubCount = (surveyObservationId: number) => `
-  INSERT INTO observation_subcount 
+  INSERT INTO observation_subcount
   (
     survey_observation_id,
     subcount
@@ -659,7 +659,7 @@ const insertSurveyObservationData = (surveyId: number, count: number) => {
       .toISOString()}$$::time,
 
     (SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1),
-    
+
     (SELECT survey_sample_method_id FROM survey_sample_method WHERE survey_sample_site_id = (
       SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1
     ) LIMIT 1),

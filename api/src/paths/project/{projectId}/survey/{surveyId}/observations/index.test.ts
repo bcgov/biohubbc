@@ -152,7 +152,7 @@ describe('insertUpdateSurveyObservationsWithMeasurements', () => {
       expect(dbConnectionObj.release).to.have.been.called;
 
       expect((actualError as HTTPError).message).to.equal(
-        'Error connecting to the Critterbase API: Unknown Error: API request failed with status code undefined'
+        'Error connecting to the Critterbase API: Error: API request failed with status code undefined'
       );
     }
   });
