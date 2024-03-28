@@ -1,12 +1,19 @@
 import Typography from '@mui/material/Typography';
-import { GridRowId, GridRowSelectionModel, GridValidRowModel, useGridApiRef } from '@mui/x-data-grid';
+import {
+  GridRowId,
+  GridRowModes,
+  GridRowModesModel,
+  GridRowSelectionModel,
+  GridValidRowModel,
+  useGridApiRef
+} from '@mui/x-data-grid';
 import { GridApiCommunity, GridStateColDef } from '@mui/x-data-grid/internals';
 import { TelemetryTableI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { default as dayjs } from 'dayjs';
 import { APIError } from 'hooks/api/useAxios';
 import { ICreateManualTelemetry, IUpdateManualTelemetry, useTelemetryApi } from 'hooks/useTelemetryApi';
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
 import { TelemetryDataContext } from './telemetryDataContext';
@@ -89,6 +96,14 @@ export type ITelemetryTableContext = {
    */
   onRowSelectionModelChange: (rowSelectionModel: GridRowSelectionModel) => void;
   /**
+   * The row modes model, which defines which rows are in edit mode.
+   */
+  rowModesModel: GridRowModesModel;
+  /**
+   * Sets the row modes model.
+   */
+  setRowModesModel: React.Dispatch<React.SetStateAction<GridRowModesModel>>;
+  /**
    * Indicates if the data is in the process of being persisted to the server.
    */
   isSaving: boolean;
@@ -110,35 +125,13 @@ export type ITelemetryTableContext = {
   setRecordCount: (count: number) => void;
 };
 
-export const TelemetryTableContext = createContext<ITelemetryTableContext>({
-  _muiDataGridApiRef: null as unknown as React.MutableRefObject<GridApiCommunity>,
-  rows: [],
-  setRows: () => {},
-  getColumns: () => [],
-  addRecord: () => {},
-  saveRecords: () => {},
-  deleteRecords: () => undefined,
-  deleteSelectedRecords: () => undefined,
-  revertRecords: () => undefined,
-  refreshRecords: () => Promise.resolve(),
-  getSelectedRecords: () => [],
-  hasUnsavedChanges: false,
-  onRowEditStart: () => {},
-  rowSelectionModel: [],
-  onRowSelectionModelChange: () => {},
-  isSaving: false,
-  isLoading: false,
-  validationModel: {},
-  recordCount: 0,
-  setRecordCount: () => undefined
-});
+export const TelemetryTableContext = createContext<ITelemetryTableContext | undefined>(undefined);
 
-interface ITelemetryTableContextProviderProps {
+type ITelemetryTableContextProviderProps = PropsWithChildren<{
   deployment_ids: string[];
-  children?: React.ReactNode;
-}
+}>;
 
-export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProviderProps> = (props) => {
+export const TelemetryTableContextProvider = (props: ITelemetryTableContextProviderProps) => {
   const { children, deployment_ids } = props;
 
   const _muiDataGridApiRef = useGridApiRef();
@@ -150,18 +143,28 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
 
   // The data grid rows
   const [rows, setRows] = useState<IManualTelemetryTableRow[]>([]);
+
   // Stores the currently selected row ids
   const [rowSelectionModel, setRowSelectionModel] = useState<GridRowSelectionModel>([]);
+
+  // The row modes model, which defines which rows are in edit mode
+  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
+
   // Existing rows that are in edit mode
   const [modifiedRowIds, setModifiedRowIds] = useState<string[]>([]);
+
   // New rows (regardless of mode)
   const [addedRowIds, setAddedRowIds] = useState<string[]>([]);
+
   // True if the rows are in the process of transitioning from edit to view mode
   const [isStoppingEdit, setIsStoppingEdit] = useState(false);
+
   // True if the records are in the process of being saved to the server
   const [isCurrentlySaving, setIsCurrentlySaving] = useState(false);
+
   // Stores the current count of telemetry records for this survey
   const [recordCount, setRecordCount] = useState<number>(0);
+
   // Stores the current validation state of the table
   const [validationModel, setValidationModel] = useState<TelemetryTableValidationModel>({});
 
@@ -396,7 +399,10 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
     setAddedRowIds((current) => [...current, id]);
 
     // Set edit mode for the new row
-    _muiDataGridApiRef.current.startRowEditMode({ id, fieldToFocus: 'itis_tsn' });
+    setRowModesModel((current) => ({
+      ...current,
+      [id]: { mode: GridRowModes.Edit }
+    }));
   }, [_muiDataGridApiRef, rows]);
 
   /**
@@ -649,6 +655,8 @@ export const TelemetryTableContextProvider: React.FC<ITelemetryTableContextProvi
       onRowEditStart,
       rowSelectionModel,
       onRowSelectionModelChange: setRowSelectionModel,
+      rowModesModel,
+      setRowModesModel,
       isLoading,
       isSaving,
       validationModel,

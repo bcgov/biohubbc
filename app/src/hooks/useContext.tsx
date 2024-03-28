@@ -6,6 +6,7 @@ import { IObservationsTableContext, ObservationsTableContext } from 'contexts/ob
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import { ITaxonomyContext, TaxonomyContext } from 'contexts/taxonomyContext';
+import { ITelemetryTableContext, TelemetryTableContext } from 'contexts/telemetryTableContext';
 import { useContext } from 'react';
 
 /**
@@ -94,7 +95,7 @@ export const useSurveyContext = (): ISurveyContext => {
 };
 
 /**
- * Returns an instance of `IObservationsContext` from `SurveyContext`.
+ * Returns an instance of `IObservationsContext` from `ObservationsContext`.
  *
  * @return {*}  {IObservationsContext}
  */
@@ -111,7 +112,7 @@ export const useObservationsContext = (): IObservationsContext => {
 };
 
 /**
- * Returns an instance of `IObservationsTableContext` from `SurveyContext`.
+ * Returns an instance of `IObservationsTableContext` from `ObservationsTableContext`.
  *
  * @return {*}  {IObservationsTableContext}
  */
@@ -121,6 +122,23 @@ export const useObservationsTableContext = (): IObservationsTableContext => {
   if (!context) {
     throw Error(
       'ObservationsTableContext is undefined, please verify you are calling useObservationsTableContext() as child of an <ObservationsTableContextProvider> component.'
+    );
+  }
+
+  return context;
+};
+
+/**
+ * Returns an instance of `IObservationsTableContext` from `ObservationsTableContext`.
+ *
+ * @return {*}  {IObservationsTableContext}
+ */
+export const useTelemetryTableContext = (): ITelemetryTableContext => {
+  const context = useContext(TelemetryTableContext);
+
+  if (!context) {
+    throw Error(
+      'TelemetryTableContext is undefined, please verify you are calling useTelemetryTableContext() as child of an <TelemetryTableContextProvider> component.'
     );
   }
 
