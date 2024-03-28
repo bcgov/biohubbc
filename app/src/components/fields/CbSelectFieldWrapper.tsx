@@ -31,8 +31,7 @@ export const CbSelectWrapper = ({ children, name, label, controlProps, onChange,
         value={value ?? val}
         onChange={onChange ?? handleChange}
         label={label}
-        onBlur={handleBlur}
-        displayEmpty>
+        onBlur={handleBlur}>
         {children}
       </Select>
       <FormHelperText>{err}</FormHelperText>

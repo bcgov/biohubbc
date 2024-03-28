@@ -1,4 +1,4 @@
-import { RequestHandler } from 'express';
+import { Request, RequestHandler } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { KeycloakService } from '../services/keycloak-service';
 import { HTTP403 } from './../errors/http-error';
@@ -7,29 +7,66 @@ import { authorizeRequest } from './../request-handlers/security/authorization';
 import { getLogger } from './../utils/logger';
 
 const defaultLog = getLogger('middleware/critterbase-proxy');
+/**
+ * Currently supported Critterbase delete endpoints.
+ *
+ */
+const allowedDeleteRoutesRegex: RegExp[] = [
+  /**
+   * example: allows requests to /api/critterbase/captures/:id
+   * but rejects requests to /api/critterbase/captures/:id/other-path
+   *
+   */
+  /^\/api\/critterbase\/captures\/[^/]+$/,
+  /^\/api\/critterbase\/markings\/[^/]+$/,
+  /^\/api\/critterbase\/family\/[^/]+$/,
+  /^\/api\/critterbase\/measurements\/qualitative\/[^/]+$/,
+  /^\/api\/critterbase\/measurements\/quantitative\/[^/]+$/,
+  /^\/api\/critterbase\/collection-units\/[^/]+$/,
+  /^\/api\/critterbase\/mortality\/[^/]+$/
+];
 
 /**
- * Restrict the proxy to these Critterbase routes.
+ * Filters requests coming into the CritterbaseProxy.
+ * Handles different request methods differently. With extra
+ * scrutiny around delete requests.
+ *
+ * @param {string} pathname - Critterbase pathname.
+ * @param {Request} req - Express request.
+ * @returns {boolean} If request can be passed to CritterbaeProxy.
  */
-const proxyRoutes = [
-  '/api/critterbase/signup',
-  '/api/critterbase/family',
-  '/api/critterbase/family/:familyId',
-  '/api/critterbase/lookups/:key',
-  '/api/critterbase/xref/taxon-marking-body-locations',
-  '/api/critterbase/xref/taxon-measurements',
-  '/api/critterbase/xref/taxon-quantitative-measurements',
-  '/api/critterbase/xref/taxon-qualitative-measurements',
-  '/api/critterbase/xref/taxon-qualitative-measurement-options',
-  '/api/critterbase/xref/taxon-measurements/search'
-];
+export const proxyFilter = (pathname: string, req: Request) => {
+  // Reject requests NOT coming directly from SIMS APP / frontend.
+  if (req.headers.origin !== getSimsAppHostUrl()) {
+    return false;
+  }
+  // Only supporting specific delete requests.
+  if (req.method === 'DELETE') {
+    return allowedDeleteRoutesRegex.some((regex) => regex.test(pathname));
+  }
+  // Support all POST / PATCH / GET requests.
+  if (req.method === 'POST' || req.method === 'PATCH' || req.method === 'GET') {
+    return true;
+  }
+  // Block all other requests.
+  return false;
+};
+
+/**
+ * Get the SIMS APP host URL.
+ *
+ * @return {*}
+ */
+export const getSimsAppHostUrl = () => {
+  return process.env.APP_HOST;
+};
 
 /**
  * Get the Critterbase API host URL.
  *
  * @return {*}
  */
-const getCritterbaseApiHostUrl = () => {
+export const getCritterbaseApiHostUrl = () => {
   return process.env.CB_API_HOST;
 };
 
@@ -86,17 +123,18 @@ export const replaceAuthorizationHeaderMiddleware: RequestHandler = async (req, 
  * needing to re-define every Critterbase endpoint.
  */
 export const getCritterbaseProxyMiddleware = () =>
-  createProxyMiddleware(proxyRoutes, {
+  createProxyMiddleware(proxyFilter, {
     target: getCritterbaseApiHostUrl(),
+    logLevel: 'warn',
     changeOrigin: true,
     pathRewrite: async (path) => {
-      defaultLog.debug({ label: 'pathRewrite', message: 'path', req: path });
+      defaultLog.debug({ label: 'onCritterbaseProxyPathRewrite', message: 'path', req: path });
 
       const matchRoutePrefix = /\/api\/critterbase(\/?)(.*)/;
       return path.replace(matchRoutePrefix, '/$2');
     },
     onProxyReq: (client, req) => {
-      defaultLog.debug({ label: 'onProxyReq', message: 'path', req: req.path });
+      defaultLog.debug({ label: 'onCritterbaseProxyRequest', message: 'path', req: req.path });
 
       // Set user header as required by Critterbase
       client.setHeader(
