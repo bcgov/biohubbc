@@ -62,7 +62,7 @@ export const MarkingAnimalForm = (props: AnimalFormProps<IMarkingResponse>) => {
           taxon_marking_body_location_id: props?.formObject?.taxon_marking_body_location_id ?? '',
           primary_colour_id: props?.formObject?.primary_colour_id,
           secondary_colour_id: props?.formObject?.secondary_colour_id,
-          marking_comment: props?.formObject?.marking_comment
+          comment: props?.formObject?.comment
         },
         validationSchema: CreateCritterMarkingSchema,
         element: (
@@ -119,12 +119,12 @@ export const MarkingAnimalForm = (props: AnimalFormProps<IMarkingResponse>) => {
             <Grid item xs={12}>
               <CustomTextField
                 label="Comments"
-                name={'marking_comment'}
+                name={'comment'}
                 other={{
                   size: 'medium',
                   multiline: true,
                   minRows: 3,
-                  required: isRequiredInSchema(CreateCritterMarkingSchema, 'marking_comment')
+                  required: isRequiredInSchema(CreateCritterMarkingSchema, 'comment')
                 }}
               />
             </Grid>

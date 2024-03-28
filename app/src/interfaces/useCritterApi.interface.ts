@@ -42,7 +42,6 @@ export type IMarkingResponse = {
   frequency: string | null;
   frequency_unit: string | null;
   order: string | null;
-  comment: string | null;
   attached_timestamp: string;
   removed_timestamp: string | null;
   body_location: string;
@@ -51,7 +50,7 @@ export type IMarkingResponse = {
   primary_colour: string | null;
   secondary_colour: string | null;
   text_colour: string | null;
-  marking_comment: string | null;
+  comment: string | null;
 };
 
 export type IQualitativeMeasurementResponse = {

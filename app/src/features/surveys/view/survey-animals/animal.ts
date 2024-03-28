@@ -169,7 +169,7 @@ export const CreateCritterMarkingSchema = yup.object({
   taxon_marking_body_location_id: yup.string().required('Body location required'),
   primary_colour_id: yup.string().optional().nullable(),
   secondary_colour_id: yup.string().optional().nullable(),
-  marking_comment: yup.string().optional().nullable()
+  comment: yup.string().optional().nullable()
 });
 
 export const CreateCritterMeasurementSchema = yup.object({
