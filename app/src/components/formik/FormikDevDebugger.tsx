@@ -22,7 +22,7 @@ const FormikDevDebugger = ({ custom_payload }: FormikDevDebuggerProps) => {
     <>
       {/* Only render the button in Development */}
       {process.env.NODE_ENV === 'development' ? (
-        <Button onClick={() => setShowDebugger((d) => !d)}>Display Form Content (Only Dev)</Button>
+        <Button onClick={() => setShowDebugger((d) => !d)}>Formik Debugger (Only Dev)</Button>
       ) : null}
       {showFormDebugger ? (
         <pre>

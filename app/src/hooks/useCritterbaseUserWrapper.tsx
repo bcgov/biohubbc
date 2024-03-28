@@ -14,9 +14,14 @@ export interface ICritterbaseUserWrapper {
 }
 
 function useCritterbaseUserWrapper(simsUserWrapper: ISimsUserWrapper): ICritterbaseUserWrapper {
-  const cbApi = useCritterbaseApi();
+  const critterbaseApi = useCritterbaseApi();
 
-  const critterbaseSignupLoader = useDataLoader(async () => cbApi.authentication.signUp());
+  const critterbaseSignupLoader = useDataLoader(async () =>
+    critterbaseApi.authentication.signUp().catch(() => {
+      // Squash the error
+      return undefined;
+    })
+  );
 
   if (!simsUserWrapper.isLoading && simsUserWrapper.systemUserId) {
     critterbaseSignupLoader.load();

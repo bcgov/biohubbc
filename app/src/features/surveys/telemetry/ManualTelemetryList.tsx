@@ -24,7 +24,7 @@ import { default as dayjs } from 'dayjs';
 import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
-import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual as _deepEquals } from 'lodash';
 import { get } from 'lodash-es';
 import { useContext, useEffect, useMemo, useState } from 'react';
@@ -32,12 +32,7 @@ import { datesSameNullable } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import { InferType } from 'yup';
 import { ANIMAL_FORM_MODE } from '../view/survey-animals/animal';
-import {
-  AnimalTelemetryDeviceSchema,
-  Device,
-  IAnimalDeployment,
-  IAnimalTelemetryDevice
-} from '../view/survey-animals/telemetry-device/device';
+import { AnimalTelemetryDeviceSchema, Device, IAnimalDeployment } from '../view/survey-animals/telemetry-device/device';
 import TelemetryDeviceForm from '../view/survey-animals/telemetry-device/TelemetryDeviceForm';
 import ManualTelemetryCard from './ManualTelemetryCard';
 
@@ -50,7 +45,7 @@ export const AnimalDeploymentSchema = AnimalTelemetryDeviceSchema.shape({
 export type AnimalDeployment = InferType<typeof AnimalDeploymentSchema>;
 
 export interface ICritterDeployment {
-  critter: IDetailedCritterWithInternalId;
+  critter: ISimpleCritterWithInternalId;
   deployment: IAnimalDeployment;
 }
 
@@ -237,19 +232,27 @@ const ManualTelemetryList = () => {
   };
 
   const handleAddDeployment = async (data: AnimalDeployment) => {
-    const payload = data as IAnimalTelemetryDevice & { critter_id: string };
     try {
       const critter = critters?.find((a) => a.survey_critter_id === data.survey_critter_id);
 
       if (!critter) {
         throw new Error('Invalid critter data');
       }
-      data.critter_id = critter?.critter_id;
+
       await biohubApi.survey.addDeployment(
         surveyContext.projectId,
         surveyContext.surveyId,
         Number(data.survey_critter_id),
-        payload
+        //Being explicit here for simplicity.
+        {
+          critter_id: critter.critter_id,
+          device_id: data.device_id,
+          device_make: data.device_make ?? undefined,
+          frequency: data.frequency,
+          frequency_unit: data.frequency_unit,
+          device_model: data.device_model,
+          deployments: data.deployments
+        }
       );
       surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
       // success snack bar

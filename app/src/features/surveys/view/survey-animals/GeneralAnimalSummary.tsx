@@ -7,15 +7,14 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/system/Box';
 import { DialogContext } from 'contexts/dialogContext';
-import { useFormikContext } from 'formik';
+import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
 import { useContext } from 'react';
 import { setMessageSnackbar } from 'utils/Utils';
 import { DetailsWrapper } from '../SurveyDetails';
-import { IAnimal } from './animal';
 
 interface IGeneralDetail {
   title: string;
-  value?: string;
+  value?: string | null;
   valueEndIcon?: JSX.Element;
 }
 
@@ -24,29 +23,26 @@ interface GeneralAnimalSummaryProps {
    * Callback to be fired when edit action selected
    */
   handleEdit: () => void;
+  critter: ICritterDetailedResponse;
 }
 
 const GeneralAnimalSummary = (props: GeneralAnimalSummaryProps) => {
   const dialogContext = useContext(DialogContext);
 
-  const {
-    initialValues: { general }
-  } = useFormikContext<IAnimal>();
-
   const animalGeneralDetails: Array<IGeneralDetail> = [
-    { title: 'Alias', value: general.animal_id },
-    { title: 'Taxon', value: general.itis_scientific_name },
-    { title: 'Sex', value: general.sex },
-    { title: 'Wildlife Health ID', value: general.wlh_id },
+    { title: 'Alias', value: props.critter?.animal_id },
+    { title: 'Taxon', value: props.critter.itis_scientific_name },
+    { title: 'Sex', value: props.critter.sex },
+    { title: 'Wildlife Health ID', value: props.critter?.wlh_id },
     {
       title: 'Critterbase ID',
-      value: general.critter_id,
+      value: props?.critter?.critter_id,
       valueEndIcon: (
         <IconButton
           sx={{ ml: 0.5 }}
           aria-label={`Copy Critter ID`}
           onClick={() => {
-            navigator.clipboard.writeText(general.critter_id ?? '');
+            navigator.clipboard.writeText(props?.critter?.critter_id ?? '');
             setMessageSnackbar('Copied Critter ID', dialogContext);
           }}>
           <Icon path={mdiContentCopy} size={0.8} />
