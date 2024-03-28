@@ -23,6 +23,9 @@ const mockUseBiohub = {
   survey: {
     getSurveyCritters: jest.fn(),
     getDeploymentsInSurvey: jest.fn()
+  },
+  taxonomy: {
+    getSpeciesFromIds: jest.fn()
   }
 };
 

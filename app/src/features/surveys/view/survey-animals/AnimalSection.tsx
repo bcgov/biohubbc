@@ -96,15 +96,18 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
       dialogTitle: `Delete ${name[0].toUpperCase() + name.slice(1)}`,
       dialogText: 'Are you sure you want to delete this record?',
       open: true,
-      onYes: async () => {
-        closeConfirmDialog();
-        try {
-          await deleteService(...args);
-          await refreshDetailedCritter();
-          dialog.setSnackbar({ open: true, snackbarMessage: `Successfully deleted ${name}` });
-        } catch (err) {
-          dialog.setSnackbar({ open: true, snackbarMessage: `Failed to delete ${name}` });
-        }
+      onYes: () => {
+        const handleConfirmDelete = async () => {
+          closeConfirmDialog();
+          try {
+            await deleteService(...args);
+            await refreshDetailedCritter();
+            dialog.setSnackbar({ open: true, snackbarMessage: `Successfully deleted ${name}` });
+          } catch (err) {
+            dialog.setSnackbar({ open: true, snackbarMessage: `Failed to delete ${name}` });
+          }
+        };
+        handleConfirmDelete();
       },
       onNo: () => closeConfirmDialog(),
       onClose: () => closeConfirmDialog()
