@@ -339,7 +339,6 @@ export function validateMeasurements(
 ): boolean {
   return data.every((item) => {
     const measurements = tsnMeasurementMap[item.tsn];
-
     if (!measurements) {
       defaultLog.debug({ label: 'validateMeasurements', message: 'Invalid: No measurements' });
       return false;
@@ -419,18 +418,18 @@ export function isQuantitativeValueValid(value: number, measurement: CBQuantitat
     if (min_value <= value && value <= max_value) {
       return true;
     }
-  }
+  } else {
+    if (min_value !== null && min_value <= value) {
+      return true;
+    }
 
-  if (min_value !== null && min_value <= value) {
-    return true;
-  }
+    if (max_value !== null && value <= max_value) {
+      return true;
+    }
 
-  if (max_value !== null && value <= max_value) {
-    return true;
-  }
-
-  if (min_value === null && max_value === null) {
-    return true;
+    if (min_value === null && max_value === null) {
+      return true;
+    }
   }
 
   defaultLog.debug({ label: 'isQuantitativeValueValid', message: 'Invalid', value, measurement });
@@ -571,7 +570,7 @@ export function findMeasurementFromTsnMeasurements(
     );
 
     if (qualitativeMeasurement) {
-      // Found qualitative measurement  for tsn
+      // Found qualitative measurement by column/ measurement name
       return qualitativeMeasurement;
     }
   }
@@ -582,7 +581,7 @@ export function findMeasurementFromTsnMeasurements(
     );
 
     if (quantitativeMeasurement) {
-      // Found quantitative measurement for tsn
+      // Found quantitative measurement by column/ measurement name
       return quantitativeMeasurement;
     }
   }
