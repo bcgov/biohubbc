@@ -42,7 +42,7 @@ const Footer: React.FC = () => {
   return (
     <footer>
       <Box sx={classes.appFooter}>
-        <Toolbar sx={classes.appFooterToolbar} role="navigation" aria-label="Footer">
+        <Toolbar component={'nav'} sx={classes.appFooterToolbar} role="navigation" aria-label="Footer">
           <ul>
             <li>
               <a href="https://www.gov.bc.ca/gov/content/home/disclaimer">Disclaimer</a>
