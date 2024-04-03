@@ -26,16 +26,17 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
     <Box mt={1} className="userRoleItemContainer">
       <Paper
         variant="outlined"
-        className={error ? 'userRoleItemError' : 'userRoleItem'}
         sx={{
           background: grey[100],
-          '&.userRoleItemError': {
-            '& + p': {
-              pt: 0.75,
-              pb: 0.75,
-              pl: 2
-            }
-          }
+          ...(error
+            ? {
+                '& + p': {
+                  pt: 0.75,
+                  pb: 0.75,
+                  pl: 2
+                }
+              }
+            : undefined)
         }}>
         <Box display="flex" alignItems="center" px={2} py={1.5}>
           <Box flex="1 1 auto">

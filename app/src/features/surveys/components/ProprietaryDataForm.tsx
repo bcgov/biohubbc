@@ -8,7 +8,6 @@ import Grid from '@mui/material/Grid';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
@@ -18,22 +17,24 @@ import React, { useState } from 'react';
 import { StringBoolean } from 'types/misc';
 import yup from 'utils/YupSchema';
 
-const useStyles = makeStyles(() => ({
-  alignCenter: {
-    display: 'flex',
-    alignItems: 'center'
-  },
-  learnMoreBtn: {
-    textDecoration: 'underline',
-    lineHeight: 'auto',
-    '&:hover': {
-      textDecoration: 'underline'
+const useStyles = () => {
+  return {
+    alignCenter: {
+      display: 'flex',
+      alignItems: 'center'
+    },
+    learnMoreBtn: {
+      textDecoration: 'underline',
+      lineHeight: 'auto',
+      '&:hover': {
+        textDecoration: 'underline'
+      }
+    },
+    dialogText: {
+      maxWidth: '72ch'
     }
-  },
-  dialogText: {
-    maxWidth: '72ch'
-  }
-}));
+  };
+};
 
 export interface IProprietaryDataForm {
   proprietor: {
@@ -121,11 +122,11 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
               error={
                 touched.proprietor?.survey_data_proprietary && Boolean(errors.proprietor?.survey_data_proprietary)
               }>
-              <Typography variant="body1" className={classes.alignCenter}>
+              <Typography variant="body1" sx={classes.alignCenter}>
                 <span>Is the data captured in this survey proprietary?</span>
                 <Button
                   color="primary"
-                  className={classes.learnMoreBtn}
+                  sx={classes.learnMoreBtn}
                   data-testid="prop-dialog-btn"
                   onClick={() => setOpenDialog(true)}>
                   <Typography component="span">Learn more</Typography>

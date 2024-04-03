@@ -1,5 +1,4 @@
-import { act, cleanup } from '@testing-library/react';
-import { renderHook } from '@testing-library/react-hooks';
+import { act, cleanup, renderHook } from '@testing-library/react';
 import axios, { AxiosError } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { User } from 'oidc-client-ts';

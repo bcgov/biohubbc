@@ -1,9 +1,9 @@
 import { LoadingButton } from '@mui/lab';
 import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import { Container } from '@mui/system';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { SurveyContext } from 'contexts/surveyContext';
 import { ISurveySampleMethodData, SamplingSiteMethodYupSchema } from 'features/surveys/components/MethodForm';

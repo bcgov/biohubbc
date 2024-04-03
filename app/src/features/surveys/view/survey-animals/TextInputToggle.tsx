@@ -1,7 +1,7 @@
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Button } from '@mui/material';
-import React, { ReactNode, useState } from 'react';
+import { ReactNode, useState } from 'react';
 
 interface TextInputToggleProps {
   label: string;

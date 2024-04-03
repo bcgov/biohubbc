@@ -1,58 +1,64 @@
-import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import useTheme from '@mui/material/styles/useTheme';
 import Toolbar from '@mui/material/Toolbar';
-import { makeStyles } from '@mui/styles';
 import React from 'react';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  appFooter: {
-    backgroundColor: theme.palette.primary.main
-  },
-  appFooterToolbar: {
-    minHeight: '46px',
-    '& ul': {
-      display: 'flex',
-      flexWrap: 'wrap',
-      alignItems: 'center',
-      margin: 0,
-      padding: 0,
-      listStyleType: 'none'
+const useStyles = () => {
+  const theme = useTheme();
+
+  return {
+    appFooter: {
+      backgroundColor: theme.palette.primary.main
     },
-    '& li + li ': {
-      marginLeft: theme.spacing(2),
-      paddingLeft: theme.spacing(2),
-      borderLeft: '1px solid #4b5e7e'
-    },
-    '& a': {
-      color: '#ffffff',
-      textDecoration: 'none'
-    },
-    '& a:hover': {
-      textDecoration: 'underline'
+    appFooterToolbar: {
+      minHeight: '46px',
+      '& ul': {
+        display: 'flex',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        margin: 0,
+        padding: 0,
+        listStyleType: 'none'
+      },
+      '& li + li ': {
+        marginLeft: theme.spacing(2),
+        paddingLeft: theme.spacing(2),
+        borderLeft: '1px solid #4b5e7e'
+      },
+      '& a': {
+        color: '#ffffff',
+        textDecoration: 'none'
+      },
+      '& a:hover': {
+        textDecoration: 'underline'
+      }
     }
-  }
-}));
+  };
+};
 
 const Footer: React.FC = () => {
   const classes = useStyles();
 
   return (
-    <footer className={classes.appFooter}>
-      <Toolbar className={classes.appFooterToolbar} role="navigation" aria-label="Footer">
-        <ul>
-          <li>
-            <a href="https://www.gov.bc.ca/gov/content/home/disclaimer">Disclaimer</a>
-          </li>
-          <li>
-            <a href="https://www.gov.bc.ca/gov/content/home/privacy">Privacy</a>
-          </li>
-          <li>
-            <a href="https://www.gov.bc.ca/gov/content/home/accessible-government">Accessibility</a>
-          </li>
-          <li>
-            <a href="https://www.gov.bc.ca/gov/content/home/copyright">Copyright</a>
-          </li>
-        </ul>
-      </Toolbar>
+    <footer>
+      <Box sx={classes.appFooter}>
+        <Toolbar sx={classes.appFooterToolbar} role="navigation" aria-label="Footer">
+          <ul>
+            <li>
+              <a href="https://www.gov.bc.ca/gov/content/home/disclaimer">Disclaimer</a>
+            </li>
+            <li>
+              <a href="https://www.gov.bc.ca/gov/content/home/privacy">Privacy</a>
+            </li>
+            <li>
+              <a href="https://www.gov.bc.ca/gov/content/home/accessible-government">Accessibility</a>
+            </li>
+            <li>
+              <a href="https://www.gov.bc.ca/gov/content/home/copyright">Copyright</a>
+            </li>
+          </ul>
+        </Toolbar>
+      </Box>
     </footer>
   );
 };

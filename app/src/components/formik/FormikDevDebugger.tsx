@@ -1,6 +1,6 @@
 import { Button } from '@mui/material';
 import { useFormikContext } from 'formik';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 /**
  * Renders formik form values. Used for manual testing purposes

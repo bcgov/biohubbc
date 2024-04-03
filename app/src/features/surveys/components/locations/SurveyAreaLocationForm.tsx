@@ -1,4 +1,4 @@
-import { Box } from '@mui/system';
+import Box from '@mui/material/Box';
 import CustomTextField from 'components/fields/CustomTextField';
 
 export interface ISurveyAreaLocationForm {

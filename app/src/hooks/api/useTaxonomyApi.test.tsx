@@ -1,5 +1,4 @@
-import { act } from '@testing-library/react';
-import { renderHook } from '@testing-library/react-hooks';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { ConfigContext, IConfig } from 'contexts/configContext';
@@ -58,7 +57,7 @@ describe('useTaxonomyApi', () => {
 
       mock.onGet('/api/taxonomy/species/list').reply(200, mockResponse);
 
-      const { result, waitFor } = renderHook(() => useTaxonomyApi(), { wrapper });
+      const { result } = renderHook(() => useTaxonomyApi(), { wrapper });
 
       await act(async () => {
         await waitFor(
@@ -92,7 +91,7 @@ describe('useTaxonomyApi', () => {
 
       mock.onGet('/api/taxonomy/species').reply(200, mockSearchTermResponse);
 
-      const { result, waitFor } = renderHook(() => useTaxonomyApi(), { wrapper });
+      const { result } = renderHook(() => useTaxonomyApi(), { wrapper });
 
       await act(async () => {
         await waitFor(

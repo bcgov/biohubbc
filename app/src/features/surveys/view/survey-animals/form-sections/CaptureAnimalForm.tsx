@@ -8,7 +8,7 @@ import { Field, useFormikContext } from 'formik';
 import { useDialogContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { ICaptureResponse } from 'interfaces/useCritterApi.interface';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { getLatLngAsUtm, getUtmAsLatLng, PROJECTION_MODE } from 'utils/mapProjectionHelpers';
 import {
   AnimalFormProps,

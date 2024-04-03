@@ -96,7 +96,7 @@ const MarkerWithResizableRadius = (props: IClickMarkerProps): JSX.Element => {
             }
           }}
           color={markerColor ? iconMap[markerColor].hex : iconMap.blue.hex}
-          radius={radius}
+          radius={radius || 0}
           center={position}
         />
       ) : null}
