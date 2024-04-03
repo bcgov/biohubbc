@@ -1,9 +1,9 @@
 import { mdiClose, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Collapse } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
+import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';

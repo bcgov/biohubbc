@@ -1,6 +1,8 @@
 import { mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Card, CardHeader, IconButton } from '@mui/material';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import IconButton from '@mui/material/IconButton';
 
 interface IEditDeleteStubCardProps {
   /*

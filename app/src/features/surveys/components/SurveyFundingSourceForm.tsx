@@ -1,12 +1,13 @@
 import { mdiClose, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import AutocompleteField from 'components/fields/AutocompleteField';
 import DollarAmountField from 'components/fields/DollarAmountField';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';

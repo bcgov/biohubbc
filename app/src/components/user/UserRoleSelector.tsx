@@ -1,7 +1,11 @@
 import { mdiClose } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, IconButton, MenuItem, Paper, Select } from '@mui/material';
+import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
+import IconButton from '@mui/material/IconButton';
+import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
+import Select from '@mui/material/Select';
 import { ICode } from 'interfaces/useCodesApi.interface';
 import { IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyParticipant } from 'interfaces/useSurveyApi.interface';

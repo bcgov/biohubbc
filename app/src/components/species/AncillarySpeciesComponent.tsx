@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import Box from '@mui/material/Box';
 import AlertBar from 'components/alert/AlertBar';
 import { useFormikContext } from 'formik';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';

@@ -1,11 +1,11 @@
 import CheckBox from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlank from '@mui/icons-material/CheckBoxOutlineBlank';
-import { FilterOptionsState } from '@mui/material';
 import Autocomplete, { AutocompleteInputChangeReason, createFilterOptions } from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import ListSubheader from '@mui/material/ListSubheader';
 import TextField from '@mui/material/TextField';
+import { FilterOptionsState } from '@mui/material/useAutocomplete';
 import { useFormikContext } from 'formik';
 import { DebouncedFunc } from 'lodash-es';
 import get from 'lodash-es/get';
