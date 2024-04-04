@@ -5,7 +5,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetFundingSourceResponse, IGetFundingSourcesResponse } from 'interfaces/useFundingSourceApi.interface';
 import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
-import { act, cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import CreateFundingSource from './CreateFundingSource';
 
 jest.mock('../../../hooks/useBioHubApi');
@@ -68,7 +68,7 @@ describe('CreateFundingSource', () => {
       </Router>
     );
 
-    await act(async () => {
+    await waitFor(async () => {
       // submit empty form
       const saveChangesButton = await findByTestId('edit-dialog-save');
       fireEvent.click(saveChangesButton);
@@ -106,7 +106,7 @@ describe('CreateFundingSource', () => {
       </Router>
     );
 
-    await act(async () => {
+    await waitFor(async () => {
       // Fill form
       const nameInput = getByTestId('name');
       fireEvent.change(nameInput, { target: { value: 'Used Name' } });
@@ -139,7 +139,7 @@ describe('CreateFundingSource', () => {
       </Router>
     );
 
-    await act(async () => {
+    await waitFor(async () => {
       // Fill form
       const nameInput = getByTestId('name');
       fireEvent.change(nameInput, { target: { value: 'Used Name' } });

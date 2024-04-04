@@ -1,3 +1,5 @@
+# This dockerfile is used for both local development and Openshift deployments.
+
 ARG POSTGRES_VERSION=12.5
 
 FROM postgres:$POSTGRES_VERSION

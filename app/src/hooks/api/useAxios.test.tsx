@@ -1,4 +1,4 @@
-import { act, cleanup, renderHook } from '@testing-library/react';
+import { cleanup, renderHook, waitFor } from '@testing-library/react';
 import axios, { AxiosError } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { User } from 'oidc-client-ts';
@@ -78,7 +78,7 @@ describe('useAxios', () => {
       wrapper: ({ children }: PropsWithChildren) => <AuthProvider {...authConfig}>{children}</AuthProvider>
     });
 
-    await act(async () => {
+    await waitFor(async () => {
       const response = await result.current.get('/some/url');
 
       expect(response.status).toEqual(200);
@@ -100,7 +100,7 @@ describe('useAxios', () => {
       wrapper: ({ children }: PropsWithChildren) => <AuthProvider {...authConfig}>{children}</AuthProvider>
     });
 
-    await act(async () => {
+    await waitFor(async () => {
       const response = await result.current.get('/some/url');
 
       expect(mockSigninSilent).toHaveBeenCalledTimes(1);
@@ -126,7 +126,7 @@ describe('useAxios', () => {
       wrapper: ({ children }: PropsWithChildren) => <AuthProvider {...authConfig}>{children}</AuthProvider>
     });
 
-    await act(async () => {
+    await waitFor(async () => {
       try {
         await result.current.get('/some/url');
       } catch (actualError) {
@@ -153,7 +153,7 @@ describe('useAxios', () => {
       wrapper: ({ children }: PropsWithChildren) => <AuthProvider {...authConfig}>{children}</AuthProvider>
     });
 
-    await act(async () => {
+    await waitFor(async () => {
       try {
         await result.current.get('/some/url');
       } catch (actualError) {
