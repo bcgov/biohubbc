@@ -329,7 +329,7 @@ export class AttachmentService extends DBService {
 
     let attachmentResult: { project_attachment_id: number; revision_count: number };
 
-    if (getResponse && getResponse.rowCount && getResponse.rowCount > 0) {
+    if (getResponse && getResponse.rowCount) {
       // Existing attachment with matching name found, update it
       attachmentResult = await this.updateProjectAttachment(file.originalname, projectId, attachmentType);
     } else {
@@ -428,7 +428,7 @@ export class AttachmentService extends DBService {
     let metadata: any;
     let attachmentResult: { project_report_attachment_id: number; revision_count: number };
 
-    if (getResponse && getResponse.rowCount && getResponse.rowCount > 0) {
+    if (getResponse && getResponse.rowCount) {
       // Existing attachment with matching name found, update it
       metadata = new PutReportAttachmentMetadata(attachmentMeta);
       attachmentResult = await this.updateProjectReportAttachment(file.originalname, projectId, metadata);
@@ -627,7 +627,7 @@ export class AttachmentService extends DBService {
     let metadata;
     let attachmentResult: { survey_report_attachment_id: number; revision_count: number };
 
-    if (getResponse && getResponse.rowCount && getResponse.rowCount > 0) {
+    if (getResponse && getResponse.rowCount) {
       // Existing attachment with matching name found, update it
       metadata = new PutReportAttachmentMetadata(attachmentMeta);
       attachmentResult = await this.updateSurveyReportAttachment(file.originalname, surveyId, metadata);
@@ -799,7 +799,7 @@ export class AttachmentService extends DBService {
 
     let attachmentResult: { survey_attachment_id: number; revision_count: number };
 
-    if (getResponse && getResponse.rowCount && getResponse.rowCount > 0) {
+    if (getResponse && getResponse.rowCount) {
       // Existing attachment with matching name found, update it
       attachmentResult = await this.updateSurveyAttachment(surveyId, file.originalname, attachmentType);
     } else {
