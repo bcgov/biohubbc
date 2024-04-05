@@ -63,7 +63,7 @@
     "winston": "^3.3.3",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.19.3/xlsx-0.19.3.tgz",
     "xml2js": "^0.4.23",
-    "zod": "^3.21.4",
+    "zod": "^3.22.4",
     "logform": "^2.3.2"
   },
   "devDependencies": {
