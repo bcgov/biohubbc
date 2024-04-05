@@ -84,7 +84,7 @@ const MarkerWithResizableRadius = (props: IClickMarkerProps): JSX.Element => {
 
   return (
     <>
-      {props?.radius ? (
+      {radius ? (
         <Circle
           bubblingMouseEvents={false}
           eventHandlers={{
