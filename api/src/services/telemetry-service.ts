@@ -4,6 +4,7 @@ import { ApiGeneralError } from '../errors/api-error';
 import { TelemetryRepository, TelemetrySubmissionRecord } from '../repositories/telemetry-repository';
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { parseS3File } from '../utils/media/media-utils';
+import { DEFAULT_XLSX_SHEET_NAME } from '../utils/media/xlsx/xlsx-file';
 import {
   constructWorksheets,
   constructXLSXWorkbook,
@@ -84,7 +85,7 @@ export class TelemetryService extends DBService {
       throw new ApiGeneralError('Failed to process file for importing telemetry. Invalid CSV file.');
     }
 
-    const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheets['Sheet1']);
+    const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheets[DEFAULT_XLSX_SHEET_NAME]);
 
     // step 7 fetch survey deployments
     const bctwService = new BctwService(user);

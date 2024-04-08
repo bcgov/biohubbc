@@ -25,7 +25,7 @@ describe('useFamily', () => {
   };
 
   it('should return a list of families', async () => {
-    mock.onGet('/api/critter-data/family').reply(200, [family]);
+    mock.onGet('/api/critterbase/family').reply(200, [family]);
     const result = await useFamilyApi(axios).getAllFamilies();
     expect(Array.isArray(result)).toBe(true);
     expect(result.length).toBe(1);
@@ -34,7 +34,7 @@ describe('useFamily', () => {
 
   it('should return an immediate family by id', async () => {
     const familyId = v4();
-    mock.onGet('/api/critter-data/family/' + familyId).reply(200, immediateFamily);
+    mock.onGet('/api/critterbase/family/' + familyId).reply(200, immediateFamily);
     const result = await useFamilyApi(axios).getImmediateFamily(familyId);
     expect(Array.isArray(result.parents)).toBe(true);
     expect(Array.isArray(result.children)).toBe(true);

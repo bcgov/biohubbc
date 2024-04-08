@@ -88,7 +88,7 @@ export const getZodQueryResult = <T extends z.Schema>(zodQueryResultRow: T) =>
   z.object({
     rows: z.array(zodQueryResultRow),
     command: z.string(),
-    rowCount: z.number(),
+    rowCount: z.number().nullable(),
     // Using `coerce` as a workaround for an issue with the QueryResult type definition: it specifies oid is always a
     // number, but in reality it can return `null`.
     oid: z.coerce.number(),

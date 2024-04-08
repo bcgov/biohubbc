@@ -15,7 +15,7 @@ The objectives for the SIMS project are:
 
 ## Install Node/NPM
 
-- Requires Node version 12+
+- Requires Node version 18+
 - https://nodejs.org/en/download/
 
 ## Install Git
@@ -288,7 +288,7 @@ In this case, make sure your timezone is correct and matches that of docker and 
 
 ## Database Container Wont Start
 
-If you already had PSQL installed, it is likely that the default port `5432` is already in use and the instance running in Docker fails because it can't acquire that port.
+If you already had PostgreSQL (PSQL) installed, it is likely that the default port `5432` is already in use and the instance running in Docker fails because it can't acquire that port.
 
 - You can either stop the existing PSQL service, freeing up the port for Dockers use.
 - Or alter the `DB_PORT` environment variable in `.env` to something not in use (ex: `5433`).

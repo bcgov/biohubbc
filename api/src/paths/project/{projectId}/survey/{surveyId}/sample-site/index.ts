@@ -370,8 +370,8 @@ POST.apiDoc = {
               minItems: 1,
               items: {
                 type: 'object',
-                required: ['method_lookup_id', 'description', 'periods', 'method_response_metric_id'],
                 additionalProperties: false,
+                required: ['method_lookup_id', 'description', 'periods', 'method_response_metric_id'],
                 properties: {
                   survey_sample_site_id: {
                     type: 'integer',
@@ -426,7 +426,7 @@ POST.apiDoc = {
                     }
                   },
                   method_response_metric_id: {
-                    type: 'number',
+                    type: 'integer',
                     minimum: 1
                   }
                 }

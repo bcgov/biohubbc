@@ -1,8 +1,7 @@
 import { PROJECT_ROLE } from 'constants/roles';
 import { ICode } from 'interfaces/useCodesApi.interface';
-import { act, fireEvent, render, waitFor, within } from 'test-helpers/test-utils';
+import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import UserRoleSelector from './UserRoleSelector';
-
 const roles: ICode[] = [
   {
     id: 1,
@@ -79,19 +78,19 @@ describe('UserRoleSelector', () => {
       />
     );
 
-    await act(async () => {
+    await waitFor(async () => {
       const button = getByTestId('remove-user-role-button-0');
       fireEvent.click(button);
 
-      expect(onDelete).toBeCalled();
+      expect(onDelete).toHaveBeenCalled();
     });
   });
 
-  it.skip('Add role to user', async () => {
+  it('Add role to user', async () => {
     const onDelete = jest.fn();
     const onAdd = jest.fn();
 
-    const { getAllByRole, getByRole } = render(
+    const { getByTestId, getByText } = render(
       <UserRoleSelector
         index={0}
         user={{
@@ -117,12 +116,21 @@ describe('UserRoleSelector', () => {
       />
     );
 
-    fireEvent.mouseDown(getAllByRole('button')[0]);
-    const listbox = within(getByRole('listbox'));
-    fireEvent.click(listbox.getByText('Coordinator', { exact: false }));
+    await waitFor(async () => {
+      const button = getByTestId('select-user-role-button-0');
+      fireEvent.click(button);
 
-    await waitFor(() => {
-      expect(onAdd).toBeCalled();
+      if (button.firstChild) {
+        fireEvent.keyDown(button.firstChild, { key: 'ArrowDown' });
+      }
+    });
+
+    await waitFor(async () => {
+      expect(getByText('Collaborator', { exact: false })).toBeVisible();
+
+      fireEvent.click(getByText('Collaborator', { exact: false }));
+
+      expect(onAdd).toHaveBeenCalled();
     });
   });
 });

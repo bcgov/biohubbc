@@ -1,19 +1,22 @@
 import { mdiCheck, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
-import { makeStyles } from '@mui/styles';
+import useTheme from '@mui/material/styles/useTheme';
 import { IActionButtonProps, UploadFileStatus } from './FileUploadItem';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  completeColor: {
-    color: theme.palette.success.main
-  },
-  errorColor: {
-    color: theme.palette.error.main
-  }
-}));
+const useStyles = () => {
+  const theme = useTheme();
+
+  return {
+    completeColor: {
+      color: theme.palette.success.main
+    },
+    errorColor: {
+      color: theme.palette.error.main
+    }
+  };
+};
 
 /**
  * Upload action button.
@@ -45,18 +48,14 @@ const FileUploadItemActionButton = (props: IActionButtonProps) => {
   if (props.status === UploadFileStatus.COMPLETE) {
     return (
       <Box display="flex" alignItems="center" p={'12px'}>
-        <Icon path={mdiCheck} size={1} className={classes.completeColor} />
+        <Icon path={mdiCheck} size={1} style={classes.completeColor} />
       </Box>
     );
   }
 
   if (props.status === UploadFileStatus.FAILED) {
     return (
-      <IconButton
-        title="Remove File"
-        aria-label="remove file"
-        onClick={() => props.onCancel()}
-        className={classes.errorColor}>
+      <IconButton title="Remove File" aria-label="remove file" onClick={() => props.onCancel()} sx={classes.errorColor}>
         <Icon path={mdiTrashCanOutline} size={1} />
       </IconButton>
     );

@@ -14,7 +14,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { GridColDef } from '@mui/x-data-grid';
-import { IObservationTableRow, MeasurementColumn } from 'contexts/observationsTableContext';
+import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { MeasurementsButton } from 'features/surveys/observations/observations-table/configure-table/measurements/dialog/MeasurementsButton';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 
@@ -25,7 +25,7 @@ export interface IConfigureColumnsPopoverContentProps {
   onToggledShowHideAll: () => void;
   disabledAddMeasurements: boolean;
   disabledRemoveMeasurements: boolean;
-  measurementColumns: MeasurementColumn[];
+  measurementColumns: CBMeasurementType[];
   onRemoveMeasurements: (measurementFields: string[]) => void;
   onAddMeasurements: (measurements: CBMeasurementType[]) => void;
 }
@@ -55,11 +55,13 @@ export const ConfigureColumnsPopoverContent = (props: IConfigureColumnsPopoverCo
         <Typography component="div" variant="body2" fontWeight={700} textTransform={'uppercase'}>
           Configure Observations
         </Typography>
-        <MeasurementsButton
-          disabled={disabledAddMeasurements}
-          selectedMeasurements={measurementColumns.map((item) => item.measurement)}
-          onAddMeasurements={onAddMeasurements}
-        />
+        <Stack direction="row" alignItems="center" gap={2}>
+          <MeasurementsButton
+            disabled={disabledAddMeasurements}
+            selectedMeasurements={measurementColumns}
+            onAddMeasurements={onAddMeasurements}
+          />
+        </Stack>
       </Stack>
 
       <Divider flexItem />
@@ -104,7 +106,7 @@ export const ConfigureColumnsPopoverContent = (props: IConfigureColumnsPopoverCo
             <ListItem
               key={column.field}
               secondaryAction={
-                measurementColumns.some((item) => item.colDef.field === column.field) && (
+                measurementColumns.some((item) => item.taxon_measurement_id === column.field) && (
                   <IconButton
                     disabled={disabledRemoveMeasurements}
                     edge="end"

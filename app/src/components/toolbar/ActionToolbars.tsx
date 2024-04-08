@@ -1,4 +1,3 @@
-import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button, { ButtonProps } from '@mui/material/Button';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
@@ -7,75 +6,14 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Toolbar, { ToolbarProps } from '@mui/material/Toolbar';
 import Typography, { TypographyProps } from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
-import clsx from 'clsx';
 import React, { ReactNode, useState } from 'react';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  actionBarButton: {
-    letterSpacing: '0.02rem'
-  }
-}));
-
-export interface ICustomButtonProps {
-  buttonLabel: string;
-  buttonTitle: string;
-  buttonOnClick: () => void;
-  buttonStartIcon: ReactNode;
-  buttonEndIcon?: ReactNode;
-  buttonProps?: Partial<ButtonProps> & { 'data-testid'?: string };
-  renderButton?: (buttonProps: Partial<ButtonProps>) => React.ReactNode;
-}
-
-const defaultButtonProps = (props: ICustomButtonProps): Partial<ButtonProps> => ({
-  color: 'primary',
-  title: props.buttonTitle,
-  'aria-label': props.buttonTitle,
-  startIcon: props.buttonStartIcon,
-  endIcon: props.buttonEndIcon,
-  onClick: () => props.buttonOnClick(),
-  children: props.buttonLabel
-});
-
-export interface IButtonToolbarProps extends ICustomButtonProps, IActionToolbarProps {}
-
-export const H3ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
-  const classes = useStyles();
-  const id = `h3-button-toolbar-${props.buttonLabel.replace(/\s/g, '')}`;
-
-  const buttonProps: Partial<ButtonProps> & { 'data-testid'?: string } = {
-    id,
-    'data-testid': id,
-    variant: 'text',
-    ...defaultButtonProps(props),
-    ...props.buttonProps,
-    className: clsx(classes.actionBarButton, props.buttonProps?.className)
+const useStyles = () => {
+  return {
+    actionBarButton: {
+      letterSpacing: '0.02rem'
+    }
   };
-
-  return (
-    <ActionToolbar label={props.label} labelProps={{ variant: 'h3' }} toolbarProps={props.toolbarProps}>
-      {props.renderButton ? props.renderButton(buttonProps) : <Button {...buttonProps} />}
-    </ActionToolbar>
-  );
-};
-
-export const H2ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
-  const classes = useStyles();
-  const id = `h2-button-toolbar-${props.buttonLabel.replace(/\s/g, '')}`;
-
-  const buttonProps: Partial<ButtonProps> & { 'data-testid'?: string } = {
-    id,
-    'data-testid': id,
-    ...defaultButtonProps(props),
-    ...props.buttonProps,
-    className: clsx(classes.actionBarButton, props.buttonProps?.className)
-  };
-
-  return (
-    <ActionToolbar label={props.label} labelProps={{ variant: 'h2' }} toolbarProps={props.toolbarProps}>
-      {props.renderButton ? props.renderButton(buttonProps) : <Button {...buttonProps} />}
-    </ActionToolbar>
-  );
 };
 
 export interface IMenuToolbarItem {
@@ -140,8 +78,8 @@ export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
     endIcon: props.buttonEndIcon,
     onClick: handleClick,
     children: props.buttonLabel,
-    ...props.buttonProps,
-    className: clsx(classes.actionBarButton, props.buttonProps?.className)
+    sx: classes.actionBarButton,
+    ...props.buttonProps
   };
 
   return (

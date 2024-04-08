@@ -7,7 +7,6 @@ import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import FileUpload from 'components/file-upload/FileUpload';
 import FileUploadItem from 'components/file-upload/FileUploadItem';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
@@ -31,19 +30,21 @@ import { useParams } from 'react-router';
 import { boundaryUploadHelper, calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { pluralize } from 'utils/Utils';
 
-const useStyles = makeStyles(() => ({
-  zoomToBoundaryExtentBtn: {
-    padding: '3px',
-    borderRadius: '4px',
-    background: '#ffffff',
-    color: '#000000',
-    border: '2px solid rgba(0,0,0,0.2)',
-    backgroundClip: 'padding-box',
-    '&:hover': {
-      backgroundColor: '#eeeeee'
+const useStyles = () => {
+  return {
+    zoomToBoundaryExtentBtn: {
+      padding: '3px',
+      borderRadius: '4px',
+      background: '#ffffff',
+      color: '#000000',
+      border: '2px solid rgba(0,0,0,0.2)',
+      backgroundClip: 'padding-box',
+      '&:hover': {
+        backgroundColor: '#eeeeee'
+      }
     }
-  }
-}));
+  };
+};
 
 export interface ISamplingSiteEditMapControlProps {
   name: string;
@@ -102,13 +103,17 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
   const [editedGeometry, setEditedGeometry] = useState<Feature[] | undefined>(undefined);
 
   useEffect(() => {
-    if (editedGeometry) {
-      updateStaticLayers(editedGeometry);
+    if (!editedGeometry) {
+      return;
     }
-  }, [editedGeometry]);
+
+    updateStaticLayers(editedGeometry);
+  }, [editedGeometry, updateStaticLayers]);
 
   useEffect(() => {
     updateStaticLayers(samplingSiteGeoJsonFeatures);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [samplingSiteGeoJsonFeatures]);
 
   return (
@@ -217,7 +222,7 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
                 <IconButton
                   aria-label="zoom to initial extent"
                   title="Zoom to initial extent"
-                  className={classes.zoomToBoundaryExtentBtn}
+                  sx={classes.zoomToBoundaryExtentBtn}
                   onClick={() => {
                     setUpdatedBounds(calculateUpdatedMapBounds(samplingSiteGeoJsonFeatures));
                   }}>

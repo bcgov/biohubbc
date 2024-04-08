@@ -305,16 +305,8 @@ const FileUploadItem = (props: IFileUploadItemProps) => {
           borderBottomColor: grey[300]
         }
       }}>
-      <ListItemIcon
-        sx={{
-          '&.fileIconColor': {
-            color: 'text.secondary'
-          },
-          '&.error': {
-            color: 'error.main'
-          }
-        }}>
-        <Icon path={mdiFileOutline} size={1.25} className={error ? 'errorColor' : 'fileIconColor'} />
+      <ListItemIcon>
+        <Icon path={mdiFileOutline} size={1.25} style={error ? { color: 'error.main' } : { color: 'text.secondary' }} />
       </ListItemIcon>
       <ListItemText
         primary={file.name}

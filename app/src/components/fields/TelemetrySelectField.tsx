@@ -1,4 +1,8 @@
-import { FormControl, FormControlProps, FormHelperText, InputLabel, MenuItem, Select } from '@mui/material';
+import FormControl, { FormControlProps } from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import { FormikContextType, useFormikContext } from 'formik';
 import useDataLoader from 'hooks/useDataLoader';
 import get from 'lodash-es/get';

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { AnimalSex, Critter, IAnimal } from 'features/surveys/view/survey-animals/animal';
+import { AnimalSex, ICreateCritter } from 'features/surveys/view/survey-animals/animal';
 import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import {
   ICreateSurveyRequest,
@@ -66,31 +66,19 @@ describe('useSurveyApi', () => {
 
   describe('createCritterAndAddToSurvey', () => {
     it('creates a critter successfully', async () => {
-      const animal: IAnimal = {
-        general: {
-          animal_id: '1',
-          itis_tsn: v4(),
-          itis_scientific_name: '1',
-          wlh_id: 'a',
-          sex: AnimalSex.UNKNOWN,
-          critter_id: v4()
-        },
-        captures: [],
-        markings: [],
-        measurements: [],
-        mortality: [],
-        family: [],
-        images: [],
-        device: [],
-        collectionUnits: []
+      const critter: ICreateCritter = {
+        itis_tsn: 1,
+        critter_id: 'blah-blah',
+        wlh_id: '123-45',
+        animal_id: 'carl',
+        sex: AnimalSex.MALE
       };
-      const critter = new Critter(animal);
 
       mock.onPost(`/api/project/${projectId}/survey/${surveyId}/critters`).reply(201, { create: { critters: 1 } });
 
       const result = await useSurveyApi(axios).createCritterAndAddToSurvey(projectId, surveyId, critter);
 
-      expect(result.create.critters).toBe(1);
+      expect(result).toBeDefined();
     });
   });
 

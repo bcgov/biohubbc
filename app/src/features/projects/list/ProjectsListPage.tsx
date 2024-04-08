@@ -1,8 +1,8 @@
 import { mdiFilterOutline, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Collapse } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Collapse from '@mui/material/Collapse';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
@@ -15,10 +15,13 @@ import PageHeader from 'components/layout/PageHeader';
 import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import { ListProjectsI18N } from 'constants/i18n';
 import { SYSTEM_ROLE } from 'constants/roles';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
+import useDataLoaderError from 'hooks/useDataLoaderError';
 import { IProjectsListItemData } from 'interfaces/useProjectApi.interface';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -61,6 +64,15 @@ const ProjectsListPage = () => {
     }
   );
 
+  useDataLoaderError(projectsDataLoader, (dataLoader) => {
+    return {
+      dialogTitle: ListProjectsI18N.listProjectsErrorDialogTitle,
+      dialogText: ListProjectsI18N.listProjectsErrorDialogText,
+      dialogError: (dataLoader.error as APIError).message,
+      dialogErrorDetails: (dataLoader.error as APIError).errors
+    };
+  });
+
   const getProjectPrograms = (project: IProjectsListItemData) => {
     return (
       codesContext.codesDataLoader.data?.program
@@ -68,20 +80,6 @@ const ProjectsListPage = () => {
         .map((code) => code.name)
         .join(', ') || ''
     );
-  };
-
-  const refreshProjectsList = () => {
-    const sort = firstOrNull(sortModel);
-    const pagination = {
-      limit: paginationModel.pageSize,
-      sort: sort?.field || undefined,
-      order: sort?.sort || undefined,
-
-      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
-      page: paginationModel.page + 1
-    };
-
-    return projectsDataLoader.refresh(pagination, advancedFiltersModel);
   };
 
   const projectRows =
@@ -138,7 +136,20 @@ const ProjectsListPage = () => {
 
   // Refresh projects when pagination or sort changes
   useEffect(() => {
-    refreshProjectsList();
+    const sort = firstOrNull(sortModel);
+    const pagination = {
+      limit: paginationModel.pageSize,
+      sort: sort?.field || undefined,
+      order: sort?.sort || undefined,
+
+      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+      page: paginationModel.page + 1
+    };
+
+    projectsDataLoader.refresh(pagination, advancedFiltersModel);
+
+    // Adding a DataLoader as a dependency causes an infinite rerender loop if a useEffect calls `.refresh`
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortModel, paginationModel, advancedFiltersModel]);
 
   /**

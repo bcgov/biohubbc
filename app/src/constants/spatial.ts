@@ -1,8 +1,6 @@
 import { Feature } from 'geojson';
 
 export const MAP_DEFAULT_ZOOM = 6;
-export const MAP_MIN_ZOOM = 6;
-export const MAP_MAX_ZOOM = 15;
 export const MAP_DEFAULT_CENTER: L.LatLngExpression = [55, -128];
 
 export const ALL_OF_BC_BOUNDARY: Feature = {
@@ -21,15 +19,3 @@ export const ALL_OF_BC_BOUNDARY: Feature = {
     ]
   }
 };
-
-export enum SPATIAL_COMPONENT_TYPE {
-  OCCURRENCE = 'Occurrence',
-  BOUNDARY = 'Boundary',
-  BOUNDARY_CENTROID = 'Boundary Centroid'
-}
-
-export enum LAYER_NAME {
-  OCCURRENCES = 'Occurrences',
-  BOUNDARIES = 'Boundaries',
-  DATASETS = 'Datasets'
-}

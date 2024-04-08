@@ -23,6 +23,9 @@ const mockUseBiohub = {
   survey: {
     getSurveyCritters: jest.fn(),
     getDeploymentsInSurvey: jest.fn()
+  },
+  taxonomy: {
+    getSpeciesFromIds: jest.fn()
   }
 };
 
@@ -33,6 +36,9 @@ const mockUseTelemetry = {
 };
 
 const mockUseCritterbase = {
+  critters: {
+    getDetailedCritter: jest.fn()
+  },
   family: {
     getAllFamilies: jest.fn()
   },
@@ -108,18 +114,23 @@ describe('SurveyAnimalsPage', () => {
 
   it('should render the add critter dialog', async () => {
     const screen = render(page);
+
     await waitFor(() => {
       const addAnimalBtn = screen.getByRole('button', { name: 'Add' });
       expect(addAnimalBtn).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText('Add'));
-
     await waitFor(() => {
-      expect(screen.getByText('Create Animal')).toBeInTheDocument();
+      fireEvent.click(screen.getByText('Add'));
     });
 
-    fireEvent.click(screen.getByText('Cancel'));
+    await waitFor(() => {
+      expect(screen.getByText('Add Critter')).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      fireEvent.click(screen.getByText('Cancel'));
+    });
   });
 
   it('should be able to select critter from navbar', async () => {
@@ -143,7 +154,9 @@ describe('SurveyAnimalsPage', () => {
       expect(screen.getByText('test-critter-alias')).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText('test-critter-alias'));
+    await waitFor(() => {
+      fireEvent.click(screen.getByText('test-critter-alias'));
+    });
 
     await waitFor(() => {
       expect(screen.getByText('General')).toBeInTheDocument();

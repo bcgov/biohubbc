@@ -124,7 +124,7 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
 
     const response = await this.connection.sql(deleteStatement);
 
-    return response.rowCount;
+    return response.rowCount ?? 0;
   }
 
   /**
@@ -202,7 +202,7 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
 
     const response = await this.connection.knex(deleteQuery, SurveyStratumRecord);
 
-    return response.rowCount;
+    return response.rowCount ?? 0;
   }
 
   /**
@@ -267,7 +267,7 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
       stratums.map((stratum) => this.connection.knex(makeUpdateQuery(stratum), SurveyStratumRecord))
     );
 
-    const totalRowCount = responses.reduce((sum, response) => sum + response.rowCount, 0);
+    const totalRowCount = responses.reduce((sum, response) => sum + (response.rowCount ?? 0), 0);
 
     if (totalRowCount !== stratums.length) {
       throw new ApiExecuteSQLError('Failed to update survey stratums', [

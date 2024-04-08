@@ -11,7 +11,6 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridColDef } from '@mui/x-data-grid';
 import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
-import { CodesContext } from 'contexts/codesContext';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { BulkActionsButton } from 'features/surveys/observations/observations-table/bulk-actions/BulkActionsButton';
@@ -34,7 +33,7 @@ import {
 } from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitions';
 import { ImportObservationsButton } from 'features/surveys/observations/observations-table/import-observations/ImportObservationsButton';
 import ObservationsTable from 'features/surveys/observations/observations-table/ObservationsTable';
-import { useObservationsTableContext } from 'hooks/useContext';
+import { useCodesContext, useObservationsTableContext } from 'hooks/useContext';
 import {
   IGetSampleLocationDetails,
   IGetSampleMethodRecord,
@@ -42,9 +41,11 @@ import {
 } from 'interfaces/useSurveyApi.interface';
 import { useContext } from 'react';
 import { getCodesName } from 'utils/Utils';
+import ExportHeadersButton from './export-button/ExportHeadersButton';
+import { getMeasurementColumnDefinitions } from './grid-column-definitions/GridColumnDefinitionsUtils';
 
 const ObservationComponent = () => {
-  const codesContext = useContext(CodesContext);
+  const codesContext = useCodesContext();
 
   const surveyContext = useContext(SurveyContext);
 
@@ -69,7 +70,7 @@ const ObservationComponent = () => {
     sample_method_name:
       getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_lookup_id) ?? '',
     response_metric:
-      getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_response_metric_id) ?? ''
+      getCodesName(codesContext.codesDataLoader.data, 'method_response_metrics', method.method_response_metric_id) ?? ''
   }));
 
   // Collect sample periods
@@ -97,7 +98,7 @@ const ObservationComponent = () => {
     ObservationLatitudeColDef({ hasError: observationsTableContext.hasError }),
     ObservationLongitudeColDef({ hasError: observationsTableContext.hasError }),
     // Add measurement columns to the table
-    ...observationsTableContext.measurementColumns.map((item) => item.colDef),
+    ...getMeasurementColumnDefinitions(observationsTableContext.measurementColumns, observationsTableContext.hasError),
     ObservationActionsColDef({
       disabled: observationsTableContext.isSaving,
       onDelete: observationsTableContext.deleteObservationRecords
@@ -155,6 +156,7 @@ const ObservationComponent = () => {
               />
             </Box>
           </Collapse>
+          <ExportHeadersButton />
           <ConfigureColumnsContainer disabled={observationsTableContext.isSaving} columns={columns} />
           <BulkActionsButton disabled={observationsTableContext.isSaving} />
         </Stack>

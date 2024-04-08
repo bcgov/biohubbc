@@ -80,11 +80,11 @@ const phases = {
     appHost: (isStaticDeployment && staticUrls.dev) || `${appName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     backboneInternalApiHost: 'https://api-dev-biohub-platform.apps.silver.devops.gov.bc.ca',
     backbonePublicApiHost: 'https://api-dev-biohub-platform.apps.silver.devops.gov.bc.ca',
-    backboneIntakePath: '/api/dwc/submission/queue',
+    backboneIntakePath: '/api/submission/intake',
     backboneArtifactIntakePath: '/api/artifact/intake',
     biohubTaxonPath: '/api/taxonomy/taxon',
     biohubTaxonTsnPath: '/api/taxonomy/taxon/tsn',
-    backboneIntakeEnabled: false,
+    backboneIntakeEnabled: true,
     bctwApiHost: 'https://moe-bctw-api-dev.apps.silver.devops.gov.bc.ca',
     critterbaseApiHost: 'https://moe-critterbase-api-dev.apps.silver.devops.gov.bc.ca/api',
     nodeEnv: 'development',
@@ -94,12 +94,12 @@ const phases = {
     logLevel: 'info',
     apiResponseValidationEnabled: true,
     databaseResponseValidationEnabled: true,
-    nodeOptions: '--max_old_space_size=2250', // 75% of memoryLimit (bytes)
+    nodeOptions: '--max_old_space_size=3000', // 75% of memoryLimit (bytes)
     cpuRequest: '50m',
     cpuLimit: '600m',
     memoryRequest: '100Mi',
-    memoryLimit: '3Gi',
-    replicas: (isStaticDeployment && '1') || '1',
+    memoryLimit: '4Gi',
+    replicas: '1',
     replicasMax: (isStaticDeployment && '2') || '1'
   },
   test: {
@@ -116,11 +116,11 @@ const phases = {
     appHost: staticUrls.test,
     backboneInternalApiHost: 'https://api-test-biohub-platform.apps.silver.devops.gov.bc.ca',
     backbonePublicApiHost: 'https://api-test-biohub-platform.apps.silver.devops.gov.bc.ca',
-    backboneIntakePath: '/api/dwc/submission/queue',
+    backboneIntakePath: '/api/submission/intake',
     backboneArtifactIntakePath: '/api/artifact/intake',
     biohubTaxonPath: '/api/taxonomy/taxon',
     biohubTaxonTsnPath: '/api/taxonomy/taxon/tsn',
-    backboneIntakeEnabled: false,
+    backboneIntakeEnabled: true,
     bctwApiHost: 'https://moe-bctw-api-test.apps.silver.devops.gov.bc.ca',
     critterbaseApiHost: 'https://moe-critterbase-api-test.apps.silver.devops.gov.bc.ca/api',
     nodeEnv: 'production',
@@ -130,13 +130,13 @@ const phases = {
     logLevel: 'info',
     apiResponseValidationEnabled: true,
     databaseResponseValidationEnabled: true,
-    nodeOptions: '--max_old_space_size=2250', // 75% of memoryLimit (bytes)
+    nodeOptions: '--max_old_space_size=3000', // 75% of memoryLimit (bytes)
     cpuRequest: '50m',
     cpuLimit: '1000m',
     memoryRequest: '100Mi',
-    memoryLimit: '3Gi',
+    memoryLimit: '4Gi',
     replicas: '2',
-    replicasMax: '4'
+    replicasMax: '2'
   },
   prod: {
     namespace: 'af2668-prod',
@@ -152,7 +152,7 @@ const phases = {
     appHost: staticUrls.prodVanityUrl,
     backboneInternalApiHost: 'https://api-biohub-platform.apps.silver.devops.gov.bc.ca',
     backbonePublicApiHost: 'https://api-biohub-platform.apps.silver.devops.gov.bc.ca',
-    backboneIntakePath: '/api/dwc/submission/queue',
+    backboneIntakePath: '/api/submission/intake',
     backboneArtifactIntakePath: '/api/artifact/intake',
     biohubTaxonPath: '/api/taxonomy/taxon',
     biohubTaxonTsnPath: '/api/taxonomy/taxon/tsn',
@@ -166,13 +166,13 @@ const phases = {
     logLevel: 'warn',
     apiResponseValidationEnabled: false,
     databaseResponseValidationEnabled: false,
-    nodeOptions: '--max_old_space_size=2250', // 75% of memoryLimit (bytes)
+    nodeOptions: '--max_old_space_size=6000', // 75% of memoryLimit (bytes)
     cpuRequest: '50m',
-    cpuLimit: '1000m',
+    cpuLimit: '2000m',
     memoryRequest: '100Mi',
-    memoryLimit: '3Gi',
+    memoryLimit: '8Gi',
     replicas: '2',
-    replicasMax: '4'
+    replicasMax: '2'
   }
 };
 

@@ -8,8 +8,6 @@ import {
   Metadata
 } from 'aws-sdk/clients/s3';
 import clamd from 'clamdjs';
-import { SUBMISSION_MESSAGE_TYPE } from '../constants/status';
-import { SubmissionErrorFromMessageType } from './submission-error';
 
 /**
  * Local getter for retrieving the ClamAV client.
@@ -145,10 +143,7 @@ export async function uploadBufferToS3(
       Key: key,
       Metadata: metadata
     })
-    .promise()
-    .catch(() => {
-      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPLOAD_FILE_TO_S3);
-    });
+    .promise();
 }
 
 /**
@@ -168,10 +163,7 @@ export async function getFileFromS3(key: string, versionId?: string): Promise<Ge
       Key: key,
       VersionId: versionId
     })
-    .promise()
-    .catch(() => {
-      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_GET_FILE_FROM_S3);
-    });
+    .promise();
 }
 
 /**
@@ -225,7 +217,6 @@ export interface IS3FileKey {
   projectId: number;
   surveyId?: number;
   submissionId?: number;
-  summaryId?: number;
   folder?: string;
   fileName: string;
 }
@@ -246,11 +237,6 @@ export function generateS3FileKey(options: IS3FileKey): string {
   if (options.submissionId) {
     keyParts.push('submissions');
     keyParts.push(options.submissionId);
-  }
-
-  if (options.summaryId) {
-    keyParts.push('summaryresults');
-    keyParts.push(options.summaryId);
   }
 
   if (options.folder) {

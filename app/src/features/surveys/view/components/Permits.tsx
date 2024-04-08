@@ -25,12 +25,12 @@ const Permits = () => {
 
   return (
     <>
-      {permit.permits?.map((item, index) => {
+      {permit.permits?.map((permit, index) => {
         return (
-          <Box component="dl" key={item.permit_id}>
-            <Box className="row">
-              <Typography component="dt">{`#${item.permit_number}`}</Typography>
-              <Typography component="dd">{item.permit_type}</Typography>
+          <Box component="dl" key={`${permit.permit_id}-${index}`}>
+            <Box className="row" key={permit.permit_id}>
+              <Typography component="dt">{`#${permit.permit_number}`}</Typography>
+              <Typography component="dd">{permit.permit_type}</Typography>
             </Box>
           </Box>
         );

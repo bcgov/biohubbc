@@ -29,6 +29,19 @@ export const SubCountEventRecord = z.object({
 export type SubCountEventRecord = z.infer<typeof SubCountEventRecord>;
 export type InsertSubCountEvent = Pick<SubCountEventRecord, 'observation_subcount_id' | 'critterbase_event_id'>;
 
+export const SubCountCritterRecord = z.object({
+  subcount_critter_id: z.number(),
+  observation_subcount_id: z.number(),
+  critter_id: z.number(),
+  create_date: z.string(),
+  create_user: z.number(),
+  update_date: z.string().nullable(),
+  update_user: z.number().nullable(),
+  revision_count: z.number()
+});
+
+export type SubCountCritterRecord = z.infer<typeof SubCountCritterRecord>;
+
 export class SubCountRepository extends BaseRepository {
   /**
    * Inserts a new observation_subcount record
@@ -77,16 +90,14 @@ export class SubCountRepository extends BaseRepository {
   /**
    * Inserts a new subcount_critter record.
    *
-   * TODO: Implement this function fully. The incoming `record` parameter and the return value are of type `unknown`.
-   *
-   * @param {unknown} record
-   * @return {*}  {Promise<unknown>}
+   * @param {SubCountCritterRecord} subcountCritter
+   * @return {*}  {Promise<SubCountCritterRecord>}
    * @memberof SubCountRepository
    */
-  async insertSubCountCritter(record: unknown): Promise<unknown> {
-    const queryBuilder = getKnex().insert(record).into('subcount_critter').returning('*');
+  async insertSubCountCritter(subcountCritter: SubCountCritterRecord): Promise<SubCountCritterRecord> {
+    const queryBuilder = getKnex().insert(subcountCritter).into('subcount_critter').returning('*');
 
-    const response = await this.connection.knex(queryBuilder);
+    const response = await this.connection.knex(queryBuilder, SubCountCritterRecord);
 
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to insert subcount critter', [

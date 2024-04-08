@@ -177,7 +177,7 @@ export class ObservationRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    return response.rowCount;
+    return response.rowCount ?? 0;
   }
 
   /**
@@ -629,7 +629,7 @@ export class ObservationRepository extends BaseRepository {
       ]);
     }
 
-    return response.rowCount;
+    return response.rowCount ?? 0;
   }
 
   /**

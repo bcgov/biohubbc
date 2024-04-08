@@ -18,7 +18,6 @@ import Typography from '@mui/material/Typography';
 import assert from 'assert';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
-import PublishProjectDialog from 'components/publish/PublishProjectDialog';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteProjectI18N } from 'constants/i18n';
@@ -27,7 +26,7 @@ import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import { useHistory } from 'react-router';
 import { getFormattedDateRangeString } from 'utils/Utils';
 
@@ -41,8 +40,6 @@ const ProjectHeader = () => {
   const biohubApi = useBiohubApi();
 
   const projectContext = useContext(ProjectContext);
-
-  const [publishProjectDialogOpen, setPublishProjectDialogOpen] = useState<boolean>(false);
 
   // Project data must be loaded by a parent before this component is rendered
   assert(projectContext.projectDataLoader.data);
@@ -191,8 +188,6 @@ const ProjectHeader = () => {
           </ProjectRoleGuard>
         }
       />
-
-      <PublishProjectDialog open={publishProjectDialogOpen} onClose={() => setPublishProjectDialogOpen(false)} />
     </>
   );
 };

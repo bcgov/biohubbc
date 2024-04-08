@@ -1,12 +1,13 @@
 import { mdiClose, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import AutocompleteField from 'components/fields/AutocompleteField';
 import DollarAmountField from 'components/fields/DollarAmountField';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
@@ -40,22 +41,38 @@ const SurveyFundingSourceInitialValues: ISurveyFundingSource = {
   survey_id: 0
 };
 
-export const SurveyFundingSourceYupSchema = yup.object().shape({
-  funding_source_id: yup.number().required('Must select a funding source').min(1, 'Must select a funding source'), // TODO confirm that this is not triggered when the autocomplete is empty.
-  amount: yup
-    .number()
-    .min(0, 'Must be a positive number')
-    .max(9999999999, 'Cannot exceed $9,999,999,999')
-    .nullable(true)
-    .transform((value) => (isNaN(value) ? null : Number(value)))
-});
-
 export const SurveyFundingSourceFormInitialValues: ISurveyFundingSourceForm = {
   funding_sources: []
 };
 
 export const SurveyFundingSourceFormYupSchema = yup.object().shape({
-  funding_sources: yup.array(SurveyFundingSourceYupSchema).isUniqueFundingSource('Funding sources must be unique')
+  funding_sources: yup.array(
+    yup.object().shape({
+      funding_source_id: yup
+        .number()
+        .required('Must select a funding source')
+        .min(1, 'Must select a funding source')
+        .test('is-unique-funding-source', 'Funding sources must be unique', function (fundingSourceId) {
+          const formValues = this.options.context;
+
+          if (!formValues?.funding_sources?.length) {
+            return true;
+          }
+
+          return (
+            formValues.funding_sources.filter(
+              (fundingSource: ISurveyFundingSource) => fundingSource.funding_source_id === fundingSourceId
+            ).length <= 1
+          );
+        }),
+      amount: yup
+        .number()
+        .min(0, 'Must be a positive number')
+        .max(9999999999, 'Cannot exceed $9,999,999,999')
+        .nullable(true)
+        .transform((value) => (isNaN(value) ? null : Number(value)))
+    })
+  )
 });
 
 /**
