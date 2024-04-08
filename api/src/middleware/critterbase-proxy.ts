@@ -37,7 +37,7 @@ const allowedDeleteRoutesRegex: RegExp[] = [
  */
 export const proxyFilter = (pathname: string, req: Request) => {
   // Reject requests NOT coming directly from SIMS APP / frontend.
-  if (req.headers.origin !== getSimsAppHostUrl()) {
+  if (req.headers.host !== getSimsAppHost()) {
     defaultLog.debug({
       label: 'proxyFilter',
       message: `${req.method} ${pathname} -> Invalid origin: ${req.headers.origin}`
@@ -73,12 +73,13 @@ export const proxyFilter = (pathname: string, req: Request) => {
 };
 
 /**
- * Get the SIMS APP host URL.
+ * Get the SIMS APP host without `https://`.
+ *
  *
  * @return {*}
  */
-export const getSimsAppHostUrl = () => {
-  return process.env.APP_HOST;
+export const getSimsAppHost = () => {
+  return (process.env.APP_HOST as string).replace('https://', '');
 };
 
 /**

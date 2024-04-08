@@ -18,15 +18,15 @@
     "app": "biohubbc-app"
   },
   "staticUrls": {
-    "dev": "https://dev-biohubbc.apps.silver.devops.gov.bc.ca",
-    "test": "https://test-biohubbc.apps.silver.devops.gov.bc.ca",
-    "prod": "https://biohubbc.apps.silver.devops.gov.bc.ca",
-    "prodVanityUrl": "https://sims.nrs.gov.bc.ca"
+    "dev": "dev-biohubbc.apps.silver.devops.gov.bc.ca",
+    "test": "test-biohubbc.apps.silver.devops.gov.bc.ca",
+    "prod": "biohubbc.apps.silver.devops.gov.bc.ca",
+    "prodVanityUrl": "sims.nrs.gov.bc.ca"
   },
   "staticUrlsAPI": {
-    "dev": "https://api-dev-biohubbc.apps.silver.devops.gov.bc.ca",
-    "test": "https://api-test-biohubbc.apps.silver.devops.gov.bc.ca",
-    "prod": "https://api-biohubbc.apps.silver.devops.gov.bc.ca"
+    "dev": "api-dev-biohubbc.apps.silver.devops.gov.bc.ca",
+    "test": "api-test-biohubbc.apps.silver.devops.gov.bc.ca",
+    "prod": "api-biohubbc.apps.silver.devops.gov.bc.ca"
   },
   "siteminderLogoutURL": {
     "dev": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",

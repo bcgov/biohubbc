@@ -75,11 +75,9 @@ const phases = {
     instance: `${name}-dev-${deployChangeId}`,
     version: `${deployChangeId}-${changeId}`,
     tag: `dev-${version}-${deployChangeId}`,
-    host:
-      (isStaticDeployment && staticUrls.dev) || `https://${name}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
+    host: (isStaticDeployment && staticUrls.dev) || `${name}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     apiHost:
-      (isStaticDeployment && staticUrlsAPI.dev) ||
-      `https://${apiName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
+      (isStaticDeployment && staticUrlsAPI.dev) || `${apiName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     siteminderLogoutURL: config.siteminderLogoutURL.dev,
     maxUploadNumFiles,
     maxUploadFileSize,
