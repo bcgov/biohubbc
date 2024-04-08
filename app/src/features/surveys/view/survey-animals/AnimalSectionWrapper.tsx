@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 import { ANIMAL_SECTION } from './animal';
 
 interface IAnimalSectionWrapperProps extends PropsWithChildren {

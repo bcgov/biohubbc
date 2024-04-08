@@ -1,6 +1,5 @@
 import CheckBox from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlank from '@mui/icons-material/CheckBoxOutlineBlank';
-import { ListItemText } from '@mui/material';
 import Autocomplete, {
   AutocompleteChangeReason,
   AutocompleteInputChangeReason,
@@ -9,6 +8,7 @@ import Autocomplete, {
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import Chip from '@mui/material/Chip';
+import ListItemText from '@mui/material/ListItemText';
 import TextField from '@mui/material/TextField';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';

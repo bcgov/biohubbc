@@ -1,11 +1,13 @@
 import { LoadingButton } from '@mui/lab';
-import { CircularProgress, DialogContentText, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import useTheme from '@mui/material/styles/useTheme';
+import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';

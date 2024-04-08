@@ -1,4 +1,4 @@
-import { Chip, ChipProps } from '@mui/material';
+import Chip, { ChipProps } from '@mui/material/Chip';
 import { grey } from '@mui/material/colors';
 import { CodesContext } from 'contexts/codesContext';
 import { useContext } from 'react';

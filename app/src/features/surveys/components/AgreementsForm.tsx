@@ -5,24 +5,25 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import { useFormikContext } from 'formik';
 import { StringBoolean } from 'types/misc';
 import yup from 'utils/YupSchema';
 
-const useStyles = makeStyles({
-  agreementInput: {
-    alignItems: 'flex-start',
-    maxWidth: '92ch',
-    '& label': {
-      alignItems: 'flex-start'
-    },
-    '& .MuiButtonBase-root': {
-      marginTop: '-6px',
-      marginRight: '0.5rem'
+const useStyles = () => {
+  return {
+    agreementInput: {
+      alignItems: 'flex-start',
+      maxWidth: '92ch',
+      '& label': {
+        alignItems: 'flex-start'
+      },
+      '& .MuiButtonBase-root': {
+        marginTop: '-6px',
+        marginRight: '0.5rem'
+      }
     }
-  }
-});
+  };
+};
 
 export interface IAgreementsForm {
   agreements: {
@@ -65,7 +66,7 @@ const AgreementsForm = () => {
         </Grid>
         <Grid item xs={12}>
           <FormControl
-            className={classes.agreementInput}
+            sx={classes.agreementInput}
             required={true}
             component="fieldset"
             error={
@@ -99,7 +100,7 @@ const AgreementsForm = () => {
         </Grid>
         <Grid item xs={12}>
           <FormControl
-            className={classes.agreementInput}
+            sx={classes.agreementInput}
             required={true}
             component="fieldset"
             error={

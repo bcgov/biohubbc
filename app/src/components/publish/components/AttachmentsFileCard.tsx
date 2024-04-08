@@ -1,59 +1,61 @@
 import { mdiFileOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
-import { makeStyles } from '@mui/styles';
-import clsx from 'clsx';
+import useTheme from '@mui/material/styles/useTheme';
 import { PublishStatus } from 'constants/attachments';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  importFile: {
-    display: 'flex',
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
-    paddingRight: theme.spacing(2),
-    paddingLeft: '20px',
-    overflow: 'hidden',
-    '& .importFile-icon': {
-      color: '#1a5a96'
-    },
-    '&.error': {
-      borderColor: '#ebccd1',
+const useStyles = () => {
+  const theme = useTheme();
+
+  return {
+    importFile: {
+      display: 'flex',
+      paddingTop: theme.spacing(2),
+      paddingBottom: theme.spacing(2),
+      paddingRight: theme.spacing(2),
+      paddingLeft: '20px',
+      overflow: 'hidden',
       '& .importFile-icon': {
-        color: theme.palette.error.main
+        color: '#1a5a96'
       },
-      '& .MuiLink-root': {
-        color: theme.palette.error.main
-      },
-      '& .MuiChip-root': {
-        display: 'none'
+      '&.error': {
+        borderColor: '#ebccd1',
+        '& .importFile-icon': {
+          color: theme.palette.error.main
+        },
+        '& .MuiLink-root': {
+          color: theme.palette.error.main
+        },
+        '& .MuiChip-root': {
+          display: 'none'
+        }
       }
+    },
+    observationFileName: {
+      marginTop: '2px',
+      marginBottom: '4px',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      textDecoration: 'underline',
+      cursor: 'pointer'
+    },
+    chip: {
+      minWidth: '7rem',
+      fontSize: '11px',
+      textTransform: 'uppercase'
+    },
+    chipUnSubmitted: {
+      borderColor: '#afd3ee',
+      backgroundColor: 'rgb(232, 244, 253)'
+    },
+    chipSubmitted: {
+      color: '#2D4821',
+      backgroundColor: '#DFF0D8'
     }
-  },
-  observationFileName: {
-    marginTop: '2px',
-    marginBottom: '4px',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    textDecoration: 'underline',
-    cursor: 'pointer'
-  },
-  chip: {
-    minWidth: '7rem',
-    fontSize: '11px',
-    textTransform: 'uppercase'
-  },
-  chipUnSubmitted: {
-    borderColor: '#afd3ee',
-    backgroundColor: 'rgb(232, 244, 253)'
-  },
-  chipSubmitted: {
-    color: '#2D4821',
-    backgroundColor: '#DFF0D8'
-  }
-}));
+  };
+};
 
 export interface IAttachmentsFileCardProps {
   fileName: string;
@@ -69,7 +71,7 @@ const AttachmentsFileCard = (props: IAttachmentsFileCardProps) => {
     : 'YYYY-MM-DD';
 
   return (
-    <Paper variant="outlined" className={classes.importFile}>
+    <Paper variant="outlined" sx={classes.importFile}>
       <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
         <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
           <Box display="flex" alignItems="center" flex="0 0 auto" mr={2} className="importFile-icon">
@@ -84,10 +86,10 @@ const AttachmentsFileCard = (props: IAttachmentsFileCardProps) => {
           <Chip
             title={props.status === PublishStatus.SUBMITTED ? 'SUBMITTED' : 'UNSUBMITTED'}
             variant="outlined"
-            className={clsx(
-              classes.chip,
-              props.status === PublishStatus.SUBMITTED ? classes.chipSubmitted : classes.chipUnSubmitted
-            )}
+            sx={{
+              ...classes.chip,
+              ...(props.status === PublishStatus.SUBMITTED ? classes.chipSubmitted : classes.chipUnSubmitted)
+            }}
             label={props.status === PublishStatus.SUBMITTED ? `SUBMITTED: ${submittedDate}` : 'UNSUBMITTED'}
           />
         </Box>

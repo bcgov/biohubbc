@@ -1,4 +1,7 @@
-import { FormControl, FormHelperText, InputLabel, Select, SelectProps } from '@mui/material';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import InputLabel from '@mui/material/InputLabel';
+import Select, { SelectProps } from '@mui/material/Select';
 import { useFormikContext } from 'formik';
 import { get } from 'lodash-es';
 import { ReactNode } from 'react';

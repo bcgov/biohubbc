@@ -1,6 +1,9 @@
 import { mdiHelpCircleOutline } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import { Box, IconButton, Tooltip, Zoom } from '@mui/material';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import Zoom from '@mui/material/Zoom';
 import { ReactNode } from 'react';
 
 interface HelpButtonTooltipProps {

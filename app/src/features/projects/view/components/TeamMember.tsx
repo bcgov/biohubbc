@@ -1,6 +1,8 @@
 import { mdiAccountEdit, mdiCrown } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, Stack, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import assert from 'assert';
 import { ProjectContext } from 'contexts/projectContext';
 import { useContext, useMemo } from 'react';

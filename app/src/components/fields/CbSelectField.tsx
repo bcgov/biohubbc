@@ -1,4 +1,6 @@
-import { FormControlProps, MenuItem, SelectChangeEvent } from '@mui/material';
+import { FormControlProps } from '@mui/material/FormControl';
+import MenuItem from '@mui/material/MenuItem';
+import { SelectChangeEvent } from '@mui/material/Select';
 import { useFormikContext } from 'formik';
 import { ICbSelectRows, SelectOptionsProps } from 'hooks/cb_api/useLookupApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
