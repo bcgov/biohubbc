@@ -76,8 +76,12 @@ const phases = {
     instance: `${name}-dev-${deployChangeId}`,
     version: `${deployChangeId}-${changeId}`,
     tag: `dev-${version}-${deployChangeId}`,
-    host: (isStaticDeployment && staticUrlsAPI.dev) || `${name}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
-    appHost: (isStaticDeployment && staticUrls.dev) || `${appName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
+    host:
+      (isStaticDeployment && staticUrlsAPI.dev) ||
+      `https://${name}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
+    appHost:
+      (isStaticDeployment && staticUrls.dev) ||
+      `https://${appName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     backboneInternalApiHost: 'https://api-dev-biohub-platform.apps.silver.devops.gov.bc.ca',
     backbonePublicApiHost: 'https://api-dev-biohub-platform.apps.silver.devops.gov.bc.ca',
     backboneIntakePath: '/api/submission/intake',
