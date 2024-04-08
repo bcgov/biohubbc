@@ -1,9 +1,8 @@
 import { mdiArrowRightThin, mdiCalendarRange } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineSeparator } from '@mui/lab';
-import { Theme, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import { makeStyles } from '@mui/styles';
 import { Box } from '@mui/system';
 import dayjs from 'dayjs';
 import { ISurveySampleMethodPeriodData } from 'features/surveys/components/MethodForm';
@@ -13,20 +12,18 @@ interface ISamplingPeriodsTimelineProps {
   samplePeriods: (IGetSamplePeriodRecord | ISurveySampleMethodPeriodData)[];
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
-  typographyDate: {
-    fontSize: '0.85rem',
-    color: theme.palette.text.secondary
-  },
-  typographyTime: {
-    fontSize: '0.85rem',
-    color: theme.palette.text.secondary
-  }
-}));
-
 const SamplingPeriodsTimeline = (props: ISamplingPeriodsTimelineProps) => {
   const formatDate = (dt: Date, time: boolean) => dayjs(dt).format(time ? 'MMM D, YYYY h:mm A' : 'MMM D, YYYY');
-  const classes = useStyles();
+
+  const dateSx = {
+    fontSize: '0.85rem',
+    color: 'textSecondary'
+  };
+
+  const timeSx = {
+    fontSize: '0.8rem',
+    color: 'text.secondary'
+  };
 
   return (
     <Timeline sx={{ alignItems: 'start', justifyContent: 'start', p: 0, my: 1, ml: 2, mr: 0 }}>
@@ -74,10 +71,10 @@ const SamplingPeriodsTimeline = (props: ISamplingPeriodsTimelineProps) => {
               }}>
               <Box width="100%" display="flex" justifyContent="space-between">
                 <Box>
-                  <Typography component="dt" variant="subtitle2" className={classes.typographyDate}>
+                  <Typography component="dt" variant="subtitle2" sx={dateSx}>
                     {formatDate(samplePeriod.start_date as unknown as Date, false)}
                   </Typography>
-                  <Typography component="dt" variant="subtitle2" className={classes.typographyTime}>
+                  <Typography component="dt" variant="subtitle2" sx={timeSx}>
                     {samplePeriod.start_time}
                   </Typography>
                 </Box>
@@ -85,10 +82,10 @@ const SamplingPeriodsTimeline = (props: ISamplingPeriodsTimelineProps) => {
                   <Icon path={mdiArrowRightThin} size={0.9} color={grey[500]} />
                 </Box>
                 <Box flex="1 1 auto">
-                  <Typography component="dt" variant="subtitle2" className={classes.typographyDate}>
+                  <Typography component="dt" variant="subtitle2" sx={dateSx}>
                     {formatDate(samplePeriod.end_date as unknown as Date, false)}
                   </Typography>
-                  <Typography component="dt" variant="subtitle2" className={classes.typographyTime}>
+                  <Typography component="dt" variant="subtitle2" sx={timeSx}>
                     {samplePeriod.end_time}
                   </Typography>
                 </Box>

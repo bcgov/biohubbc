@@ -1,7 +1,5 @@
 import { mdiBroadcast, mdiEye } from '@mdi/js';
 import { Box, Paper } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import { Theme } from '@mui/system';
 import { IStaticLayer, IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { CodesContext } from 'contexts/codesContext';
@@ -24,25 +22,6 @@ import SurveySpatialObservationDataTable from './SurveySpatialObservationDataTab
 import SurveySpatialTelemetryDataTable from './SurveySpatialTelemetryDataTable';
 import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './SurveySpatialToolbar';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  popup: {
-    '& a': {
-      color: theme.palette.primary.contrastText
-    },
-    '& p': {
-      margin: 0
-    }
-  },
-  tooltip: {
-    '& a': {
-      color: theme.palette.primary.contrastText
-    },
-    '& p': {
-      margin: 0
-    }
-  }
-}));
-
 const SurveySpatialData = () => {
   const [activeView, setActiveView] = useState<SurveySpatialDatasetViewEnum>(SurveySpatialDatasetViewEnum.OBSERVATIONS);
 
@@ -54,7 +33,6 @@ const SurveySpatialData = () => {
   const { projectId, surveyId } = useContext(SurveyContext);
 
   const biohubApi = useBiohubApi();
-  const classes = useStyles();
 
   const OBSERVATIONS_COLOUR = '#db4f4f'; //'#ff5454';
   const STUDY_AREA_COLOUR = '#e3a82b';
@@ -273,8 +251,8 @@ const SurveySpatialData = () => {
                 isLoading={false}
               />
             ),
-            tooltip: <SurveyMapTooltip label="Study Area" />,
-            TooltipProps: { className: classes.popup }
+            tooltip: <SurveyMapTooltip label="Study Area" />
+            // TooltipProps: { className: classes.popup }
           };
         });
       })
@@ -304,8 +282,8 @@ const SurveySpatialData = () => {
               ]}
             />
           ),
-          tooltip: <SurveyMapTooltip label={'Sampling Site'} />,
-          TooltipProps: { className: classes.popup }
+          tooltip: <SurveyMapTooltip label={'Sampling Site'} />
+          // TooltipProps: { className: classes.popup }
         };
       })
     },
@@ -336,7 +314,7 @@ const SurveySpatialData = () => {
                 });
               }
             },
-            PopupProps: { className: classes.popup },
+            // PopupProps: { className: classes.popup },
             popup: (
               <SurveyMapPopup
                 isLoading={isLoading}
@@ -344,8 +322,8 @@ const SurveySpatialData = () => {
                 metadata={mapPointMetadata[mapPoint.key]}
               />
             ),
-            tooltip: <SurveyMapTooltip label="Observation" />,
-            TooltipProps: { className: classes.popup }
+            tooltip: <SurveyMapTooltip label="Observation" />
+            // TooltipProps: { className: classes.tooltip }
           };
         })
       };

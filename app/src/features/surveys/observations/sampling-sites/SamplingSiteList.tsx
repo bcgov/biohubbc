@@ -37,7 +37,6 @@ import { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import SamplingSiteMap from './components/SamplingSiteMap';
 import SamplingSiteMethodsPeriodsList from './components/SamplingSiteMethodsPeriodsList';
-import SamplingSiteMethodPeriodsListSection from './edit/components/SamplingSiteMethodsPeriodsListSection';
 import SamplingStratumChips from './edit/components/SamplingStratumChips';
 
 const SamplingSiteList = () => {
@@ -474,19 +473,10 @@ const SamplingSiteList = () => {
                           {sampleSite.sample_stratums && sampleSite.sample_stratums?.length > 0 && (
                             <SamplingStratumChips sampleSite={sampleSite} />
                           )}
-
-                          <SamplingSiteMethodPeriodsListSection
-                            title="Methods"
-                            body={<SamplingSiteMethodsPeriodsList sampleSite={sampleSite} />}
-                          />
-                          <SamplingSiteMethodPeriodsListSection
-                            title="Location"
-                            body={
-                              <Box height="150px" width="100%">
-                                <SamplingSiteMap sampleSites={[sampleSite]} colour="#3897eb" isLoading={false} />
-                              </Box>
-                            }
-                          />
+                          <SamplingSiteMethodsPeriodsList sampleSite={sampleSite} />
+                          <Box height="200px" width="100%">
+                            <SamplingSiteMap sampleSites={[sampleSite]} colour="#3897eb" isLoading={false} />
+                          </Box>
                         </AccordionDetails>
                       </Accordion>
                     );
