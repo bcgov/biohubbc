@@ -36,11 +36,15 @@ const allowedDeleteRoutesRegex: RegExp[] = [
  * @returns {boolean} If request can be passed to CritterbaeProxy.
  */
 export const proxyFilter = (pathname: string, req: Request) => {
+  const host = (req.headers.host ?? '').replace('https://', '');
+
   // Reject requests NOT coming directly from SIMS APP / frontend.
-  if (req.headers.host !== getSimsAppHost()) {
+  if (host !== getSimsAppHost()) {
     defaultLog.debug({
       label: 'proxyFilter',
-      message: `${req.method} ${pathname} -> Invalid origin: ${req.headers.origin}`
+      message: `${req.method} ${pathname} -> Invalid host`,
+      requestOrigin: req.headers.host,
+      allowedOrigin: getSimsAppHost()
     });
 
     return false;
