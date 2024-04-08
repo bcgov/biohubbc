@@ -108,7 +108,7 @@ const ProjectHeader = () => {
           <>
             {projectData.projectData.project.end_date ? (
               <Stack flexDirection="row" alignItems="center" gap={0.75} color="text.secondary">
-              <Icon path={mdiCalendarRange} size={0.8} color={grey[600]} style={{ marginTop: 1.5 }} />
+                <Icon path={mdiCalendarRange} size={0.8} color={grey[600]} style={{ marginTop: 1.5 }} />
 
                 {getFormattedDateRangeString(
                   DATE_FORMAT.MediumDateFormat,
