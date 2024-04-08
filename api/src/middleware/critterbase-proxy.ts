@@ -38,16 +38,36 @@ const allowedDeleteRoutesRegex: RegExp[] = [
 export const proxyFilter = (pathname: string, req: Request) => {
   // Reject requests NOT coming directly from SIMS APP / frontend.
   if (req.headers.origin !== getSimsAppHostUrl()) {
+    defaultLog.debug({
+      label: 'proxyFilter',
+      message: `${req.method} ${pathname} -> Invalid origin: ${req.headers.origin}`
+    });
+
     return false;
   }
   // Only supporting specific delete requests.
   if (req.method === 'DELETE') {
-    return allowedDeleteRoutesRegex.some((regex) => regex.test(pathname));
+    const allowed = allowedDeleteRoutesRegex.some((regex) => regex.test(pathname));
+
+    if (!allowed) {
+      defaultLog.debug({
+        label: 'proxyFilter',
+        message: `${req.method} ${pathname} -> Failed delete path regex`
+      });
+    }
+
+    return allowed;
   }
   // Support all POST / PATCH / GET requests.
   if (req.method === 'POST' || req.method === 'PATCH' || req.method === 'GET') {
     return true;
   }
+
+  defaultLog.debug({
+    label: 'proxyFilter',
+    message: `${req.method} ${pathname} -> Unable to proxy request`
+  });
+
   // Block all other requests.
   return false;
 };
