@@ -42,7 +42,6 @@ export const proxyFilter = (pathname: string, req: Request) => {
       label: 'proxyFilter',
       message: `${req.method} ${pathname} -> Invalid origin: ${req.headers.origin}`
     });
-    console.log(getSimsAppHost());
 
     return false;
   }
