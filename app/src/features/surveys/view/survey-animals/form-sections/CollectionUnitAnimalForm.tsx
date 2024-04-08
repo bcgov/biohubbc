@@ -1,4 +1,4 @@
-import { Grid } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import EditDialog from 'components/dialog/EditDialog';
 import CbSelectField from 'components/fields/CbSelectField';
 import { Field, FieldProps } from 'formik';
@@ -6,7 +6,7 @@ import { useDialogContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { ICollectionUnitResponse } from 'interfaces/useCritterApi.interface';
 import { get } from 'lodash-es';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   AnimalFormProps,
   ANIMAL_FORM_MODE,

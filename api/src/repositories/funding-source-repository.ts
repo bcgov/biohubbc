@@ -86,7 +86,7 @@ export class FundingSourceRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement, FundingSource);
-    return response.rowCount > 0;
+    return Boolean(response.rowCount);
   }
 
   /**

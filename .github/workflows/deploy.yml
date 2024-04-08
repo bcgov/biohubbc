@@ -128,7 +128,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 14
+          node-version: 18
 
   # Build the web frontend app image
   buildAPP:
@@ -151,7 +151,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 14
+          node-version: 18
 
       # Load repo from cache
       - name: Cache repo
@@ -213,7 +213,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 14
+          node-version: 18
 
       # Load repo from cache
       - name: Cache repo
@@ -274,7 +274,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 14
+          node-version: 18
 
       # Load repo from cache
       - name: Cache repo
@@ -330,7 +330,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 14
+          node-version: 18
 
       # Load repo from cache
       - name: Cache repo
@@ -390,7 +390,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 14
+          node-version: 18
 
       # Load repo from cache
       - name: Cache repo
@@ -444,7 +444,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 14
+          node-version: 18
 
       # Load repo from cache
       - name: Cache repo
@@ -499,7 +499,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 14
+          node-version: 18
 
       # Load repo from cache
       - name: Cache repo
@@ -556,7 +556,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 14
+          node-version: 18
 
       # Load repo from cache
       - name: Cache repo

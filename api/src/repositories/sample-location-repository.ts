@@ -254,7 +254,7 @@ export class SampleLocationRepository extends BaseRepository {
       z.object({ sample_site_count: z.string().transform(Number) })
     );
 
-    if (response?.rowCount < 1) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get sample site count', [
         'SampleLocationRepository->getSampleLocationsCountBySurveyId',
         'rows was null or undefined, expected rows != null'
@@ -286,7 +286,7 @@ export class SampleLocationRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement, SampleSiteRecord);
 
-    if (response?.rowCount < 1) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get sample site by ID', [
         'SampleLocationRepository->getSurveySampleSiteById',
         'rowCount was < 1, expected rowCount > 0'

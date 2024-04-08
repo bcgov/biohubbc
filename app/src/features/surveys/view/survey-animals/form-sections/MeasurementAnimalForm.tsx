@@ -1,4 +1,5 @@
-import { Grid, MenuItem } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import MenuItem from '@mui/material/MenuItem';
 import EditDialog from 'components/dialog/EditDialog';
 import { CbSelectWrapper } from 'components/fields/CbSelectFieldWrapper';
 import CustomTextField from 'components/fields/CustomTextField';

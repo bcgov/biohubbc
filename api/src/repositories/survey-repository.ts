@@ -491,7 +491,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement, z.object({ survey_count: z.string().transform(Number) }));
 
-    if (response?.rowCount < 1) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get survey count', [
         'SurveyRepository->getSurveyCountByProjectId',
         'rows was null or undefined, expected rows != null'
@@ -1117,7 +1117,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.knex(queryBuilder);
 
-    return response.rowCount;
+    return response.rowCount ?? 0;
   }
 
   /**
@@ -1133,6 +1133,6 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.knex(queryBuilder);
 
-    return response.rowCount;
+    return response.rowCount ?? 0;
   }
 }

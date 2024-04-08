@@ -1,15 +1,18 @@
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import IconButton from '@mui/material/IconButton';
-import { Theme } from '@mui/material/styles';
-import { makeStyles } from '@mui/styles';
+import useTheme from '@mui/material/styles/useTheme';
 import { IActionButtonProps, UploadFileStatus } from 'components/file-upload/FileUploadItem';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  errorColor: {
-    color: theme.palette.error.main
-  }
-}));
+const useStyles = () => {
+  const theme = useTheme();
+
+  return {
+    errorColor: {
+      color: theme.palette.error.main
+    }
+  };
+};
 
 /**
  * Upload action button.
@@ -48,11 +51,7 @@ const SampleSiteFileUploadItemActionButton = (props: IActionButtonProps) => {
 
   if (props.status === UploadFileStatus.FAILED) {
     return (
-      <IconButton
-        title="Remove File"
-        aria-label="remove file"
-        onClick={() => props.onCancel()}
-        className={classes.errorColor}>
+      <IconButton title="Remove File" aria-label="remove file" onClick={() => props.onCancel()} sx={classes.errorColor}>
         <Icon path={mdiTrashCanOutline} size={1} />
       </IconButton>
     );

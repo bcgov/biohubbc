@@ -1,22 +1,25 @@
 import LinearProgress from '@mui/material/LinearProgress';
-import { Theme } from '@mui/material/styles';
-import { makeStyles } from '@mui/styles';
+import useTheme from '@mui/material/styles/useTheme';
 import { IProgressBarProps, UploadFileStatus } from 'components/file-upload/FileUploadItem';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  uploadProgress: {
-    marginTop: theme.spacing(0.5)
-  },
-  uploadingColor: {
-    color: theme.palette.primary.main
-  },
-  completeBgColor: {
-    background: theme.palette.success.main
-  },
-  errorBgColor: {
-    background: theme.palette.error.main + '44'
-  }
-}));
+const useStyles = () => {
+  const theme = useTheme();
+
+  return {
+    uploadProgress: {
+      marginTop: theme.spacing(0.5)
+    },
+    uploadingColor: {
+      color: theme.palette.primary.main
+    },
+    completeBgColor: {
+      background: theme.palette.success.main
+    },
+    errorBgColor: {
+      background: theme.palette.error.main + '44'
+    }
+  };
+};
 
 /**
  * Upload progress bar.
@@ -36,8 +39,11 @@ const SampleSiteFileUploadItemProgressBar = (props: IProgressBarProps) => {
     return (
       <LinearProgress
         variant="indeterminate"
-        className={classes.uploadProgress}
-        classes={{ colorPrimary: classes.uploadingColor, barColorPrimary: classes.uploadingColor }}
+        sx={{
+          ...classes.uploadProgress,
+          colorPrimary: classes.uploadingColor,
+          barColorPrimary: classes.uploadingColor
+        }}
       />
     );
   }
@@ -51,8 +57,7 @@ const SampleSiteFileUploadItemProgressBar = (props: IProgressBarProps) => {
       <LinearProgress
         variant="determinate"
         value={0}
-        className={classes.uploadProgress}
-        classes={{ colorPrimary: classes.errorBgColor, barColorPrimary: classes.errorBgColor }}
+        sx={{ ...classes.uploadProgress, colorPrimary: classes.errorBgColor, barColorPrimary: classes.errorBgColor }}
       />
     );
   }
@@ -62,8 +67,7 @@ const SampleSiteFileUploadItemProgressBar = (props: IProgressBarProps) => {
     <LinearProgress
       variant="determinate"
       value={props.progress}
-      className={classes.uploadProgress}
-      classes={{ colorPrimary: classes.uploadingColor, barColorPrimary: classes.uploadingColor }}
+      sx={{ ...classes.uploadProgress, colorPrimary: classes.uploadingColor, barColorPrimary: classes.uploadingColor }}
     />
   );
 };

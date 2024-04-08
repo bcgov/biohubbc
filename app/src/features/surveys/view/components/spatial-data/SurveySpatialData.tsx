@@ -1,5 +1,6 @@
 import { mdiBroadcast, mdiEye } from '@mdi/js';
-import { Box, Paper } from '@mui/material';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TelemetryDataContext } from 'contexts/telemetryDataContext';

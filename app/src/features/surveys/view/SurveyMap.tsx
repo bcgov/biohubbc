@@ -1,6 +1,8 @@
-import { Skeleton, Typography } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import { Box, Stack, Theme } from '@mui/system';
+import Box from '@mui/material/Box';
+import Skeleton from '@mui/material/Skeleton';
+import Stack from '@mui/material/Stack';
+import useTheme from '@mui/material/styles/useTheme';
+import Typography from '@mui/material/Typography';
 import { SkeletonMap } from 'components/loading/SkeletonLoaders';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
@@ -64,17 +66,6 @@ interface ISurveyMapProps {
   isLoading: boolean;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
-  popup: {
-    '& a': {
-      color: theme.palette.primary.contrastText
-    },
-    '& p': {
-      margin: 0
-    }
-  }
-}));
-
 interface ISurveyMapPopupProps {
   isLoading: boolean;
   title: string;
@@ -82,8 +73,18 @@ interface ISurveyMapPopupProps {
 }
 
 const SurveyMapPopup = (props: ISurveyMapPopupProps) => {
+  const theme = useTheme();
+
   return (
-    <Box>
+    <Box
+      sx={{
+        '& a': {
+          color: theme.palette.primary.contrastText
+        },
+        '& p': {
+          margin: 0
+        }
+      }}>
       {props.isLoading ? (
         <Box position="absolute" top="0" left="0" right="0" sx={{ opacity: 1 }}>
           <Typography
@@ -148,7 +149,6 @@ const SurveyMapPopup = (props: ISurveyMapPopupProps) => {
 };
 
 const SurveyMap = (props: ISurveyMapProps) => {
-  const classes = useStyles();
   const [mapPointMetadata, setMapPointMetadata] = useState<Record<string, ISurveyMapPointMetadata[]>>({});
 
   const surveyContext = useContext(SurveyContext);
@@ -231,7 +231,7 @@ const SurveyMap = (props: ISurveyMapProps) => {
       return {
         layerName: supplementaryLayer.layerName,
         layerColors: { fillColor: '#1f7dff', color: '#FFFFFF' },
-        features: supplementaryLayer.mapPoints.map((mapPoint: ISurveyMapPoint, index: number): IStaticLayerFeature => {
+        features: supplementaryLayer.mapPoints.map((mapPoint: ISurveyMapPoint): IStaticLayerFeature => {
           const isLoading = !mapPointMetadata[mapPoint.key];
 
           return {
@@ -252,7 +252,6 @@ const SurveyMap = (props: ISurveyMapProps) => {
                 });
               }
             },
-            PopupProps: { className: classes.popup },
             popup: (
               <SurveyMapPopup
                 isLoading={isLoading}

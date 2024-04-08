@@ -1,6 +1,6 @@
 import { mdiTrayArrowDown } from '@mdi/js';
 import Icon from '@mdi/react';
-import { IconButton } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
 import dayjs from 'dayjs';
 import { useObservationsTableContext } from 'hooks/useContext';
 import { makeCsvObjectUrl } from 'utils/Utils';

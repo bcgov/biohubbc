@@ -1,5 +1,5 @@
-import { CircularProgress } from '@mui/material';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
+import CircularProgress from '@mui/material/CircularProgress';
 import TextField, { TextFieldProps } from '@mui/material/TextField';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';

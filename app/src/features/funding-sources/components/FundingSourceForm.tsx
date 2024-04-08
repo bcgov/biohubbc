@@ -1,5 +1,5 @@
+import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { Box } from '@mui/system';
 import CustomTextField from 'components/fields/CustomTextField';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
 import { useFormikContext } from 'formik';

@@ -168,7 +168,7 @@ export class ProjectRepository extends BaseRepository {
 
     const response = await this.connection.knex(query, z.object({ project_count: z.string().transform(Number) }));
 
-    if (response?.rowCount < 1) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get project count', [
         'ProjectRepository->getProjectCount',
         'rows was null or undefined, expected rows != null'
@@ -209,7 +209,7 @@ export class ProjectRepository extends BaseRepository {
 
     const response = await this.connection.sql(getProjectSqlStatement, ProjectData);
 
-    if (response?.rowCount < 1) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get project data', [
         'ProjectRepository->getProjectData',
         'rows was null or undefined, expected rows != null'
