@@ -5,6 +5,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { ImportObservationsButton } from 'features/surveys/observations/components/import-observations/ImportObservationsButton';
+import { useObservationsPageContext } from 'hooks/useContext';
 import { IGetSamplePeriodRecord } from 'interfaces/useSurveyApi.interface';
 
 export interface ISamplingSiteListPeriodProps {
@@ -13,6 +14,8 @@ export interface ISamplingSiteListPeriodProps {
 
 export const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
   const { samplePeriod } = props;
+
+  const observationsPageContext = useObservationsPageContext();
 
   return (
     <ListItem
@@ -36,7 +39,15 @@ export const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
         </Typography>
       </ListItemText>
       <ImportObservationsButton
-        disabled={false}
+        disabled={observationsPageContext.isDisabled}
+        onStart={() => {
+          observationsPageContext.setIsDisabled(true);
+          observationsPageContext.setIsLoading(true);
+        }}
+        onFinish={() => {
+          observationsPageContext.setIsDisabled(false);
+          observationsPageContext.setIsLoading(false);
+        }}
         processOptions={{ surveySamplePeriodId: samplePeriod.survey_sample_period_id }}
       />
     </ListItem>

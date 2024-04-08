@@ -11,12 +11,33 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useState } from 'react';
 
 export interface IImportObservationsButtonProps {
+  /**
+   * If true, the button will be disabled.
+   *
+   * @type {boolean}
+   * @memberof IImportObservationsButtonProps
+   */
   disabled?: boolean;
+  /**
+   * Callback fired when the import process is started.
+   *
+   * @memberof IImportObservationsButtonProps
+   */
   onStart?: () => void;
+  /**
+   * Callback fired when the import process is successful.
+   *
+   * @memberof IImportObservationsButtonProps
+   */
   onSuccess?: () => void;
+  /**
+   * Callback fired when the import process encounters an error.
+   *
+   * @memberof IImportObservationsButtonProps
+   */
   onError?: () => void;
   /**
-   * Callback fired
+   * Callback fired when the import process is complete (success or error).
    *
    * @memberof IImportObservationsButtonProps
    */

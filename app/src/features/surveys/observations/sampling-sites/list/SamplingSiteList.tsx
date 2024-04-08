@@ -17,18 +17,17 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
-import { CodesContext } from 'contexts/codesContext';
-import { DialogContext } from 'contexts/dialogContext';
-import { SurveyContext } from 'contexts/surveyContext';
 import { SamplingSiteListSite } from 'features/surveys/observations/sampling-sites/list/SamplingSiteListSite';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useContext, useEffect, useState } from 'react';
+import { useCodesContext, useDialogContext, useObservationsPageContext, useSurveyContext } from 'hooks/useContext';
+import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 const SamplingSiteList = () => {
-  const surveyContext = useContext(SurveyContext);
-  const codesContext = useContext(CodesContext);
-  const dialogContext = useContext(DialogContext);
+  const surveyContext = useSurveyContext();
+  const codesContext = useCodesContext();
+  const dialogContext = useDialogContext();
+  const observationsPageContext = useObservationsPageContext();
   const biohubApi = useBiohubApi();
 
   useEffect(() => {
@@ -239,7 +238,7 @@ const SamplingSiteList = () => {
           vertical: 'top',
           horizontal: 'right'
         }}>
-        <MenuItem onClick={handlePromptConfirmBulkDelete}>
+        <MenuItem onClick={handlePromptConfirmBulkDelete} disabled={observationsPageContext.isDisabled}>
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />
           </ListItemIcon>
@@ -272,7 +271,8 @@ const SamplingSiteList = () => {
             color="primary"
             component={RouterLink}
             to={'sampling'}
-            startIcon={<Icon path={mdiPlus} size={1} />}>
+            startIcon={<Icon path={mdiPlus} size={1} />}
+            disabled={observationsPageContext.isDisabled}>
             Add
           </Button>
           <IconButton
