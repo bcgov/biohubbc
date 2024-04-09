@@ -68,7 +68,7 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
     return response.rows;
   }
 
-  async deleteObservationMeasurements(surveyObservationId: number[], surveyId: number) {
+  async deleteObservationMeasurements(surveyId: number, surveyObservationId: number[]) {
     await this.deleteObservationQualitativeMeasurementRecordsForSurveyObservationIds(surveyObservationId, surveyId);
     await this.deleteObservationQuantitativeMeasurementRecordsForSurveyObservationIds(surveyObservationId, surveyId);
   }
@@ -162,7 +162,7 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
       .whereIn('survey_observation.survey_observation_id', surveyObservationId);
     const response = await this.connection.knex(qb);
 
-    return response.rowCount;
+    return response.rowCount ?? 0;
   }
 
   async deleteObservationQuantitativeMeasurementRecordsForSurveyObservationIds(
@@ -183,7 +183,7 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
 
     const response = await this.connection.knex(qb);
 
-    return response.rowCount;
+    return response.rowCount ?? 0;
   }
 
   /**
@@ -226,7 +226,7 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
 
     const response = await this.connection.knex(qb);
 
-    return response.rowCount;
+    return response.rowCount ?? 0;
   }
 
   /**
@@ -256,6 +256,6 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
 
     const response = await this.connection.knex(qb);
 
-    return response.rowCount;
+    return response.rowCount ?? 0;
   }
 }

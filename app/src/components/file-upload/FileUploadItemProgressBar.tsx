@@ -1,22 +1,25 @@
-import { Theme } from '@mui/material';
 import LinearProgress from '@mui/material/LinearProgress';
-import { makeStyles } from '@mui/styles';
+import useTheme from '@mui/material/styles/useTheme';
 import { IProgressBarProps, UploadFileStatus } from './FileUploadItem';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  uploadProgress: {
-    marginTop: theme.spacing(0.5)
-  },
-  uploadingColor: {
-    color: theme.palette.primary.main
-  },
-  completeBgColor: {
-    background: theme.palette.success.main
-  },
-  errorBgColor: {
-    background: theme.palette.error.main + '44'
-  }
-}));
+const useStyles = () => {
+  const theme = useTheme();
+
+  return {
+    uploadProgress: {
+      marginTop: theme.spacing(0.5)
+    },
+    uploadingColor: {
+      color: theme.palette.primary.main
+    },
+    completeBgColor: {
+      color: theme.palette.success.main
+    },
+    errorBgColor: {
+      color: theme.palette.error.main + '44'
+    }
+  };
+};
 
 /**
  * Upload progress bar.
@@ -36,8 +39,15 @@ const FileUploadItemProgressBar = (props: IProgressBarProps) => {
     return (
       <LinearProgress
         variant="indeterminate"
-        className={classes.uploadProgress}
-        classes={{ colorPrimary: classes.uploadingColor, barColorPrimary: classes.uploadingColor }}
+        sx={{
+          ...classes.uploadProgress,
+          '&.MuiLinearProgress-colorPrimary': {
+            backgroundColor: classes.uploadingColor.color
+          },
+          '& .MuiLinearProgress-barColorPrimary': {
+            backgroundColor: classes.uploadingColor.color
+          }
+        }}
       />
     );
   }
@@ -47,8 +57,15 @@ const FileUploadItemProgressBar = (props: IProgressBarProps) => {
       <LinearProgress
         variant="determinate"
         value={100}
-        className={classes.uploadProgress}
-        classes={{ colorPrimary: classes.completeBgColor, barColorPrimary: classes.completeBgColor }}
+        sx={{
+          ...classes.uploadProgress,
+          '&.MuiLinearProgress-colorPrimary': {
+            backgroundColor: classes.completeBgColor.color
+          },
+          '& .MuiLinearProgress-barColorPrimary': {
+            backgroundColor: classes.completeBgColor.color
+          }
+        }}
       />
     );
   }
@@ -58,8 +75,15 @@ const FileUploadItemProgressBar = (props: IProgressBarProps) => {
       <LinearProgress
         variant="determinate"
         value={0}
-        className={classes.uploadProgress}
-        classes={{ colorPrimary: classes.errorBgColor, barColorPrimary: classes.errorBgColor }}
+        sx={{
+          ...classes.uploadProgress,
+          '&.MuiLinearProgress-colorPrimary': {
+            backgroundColor: classes.errorBgColor.color
+          },
+          '& .MuiLinearProgress-barColorPrimary': {
+            backgroundColor: classes.errorBgColor.color
+          }
+        }}
       />
     );
   }
@@ -69,8 +93,15 @@ const FileUploadItemProgressBar = (props: IProgressBarProps) => {
     <LinearProgress
       variant="determinate"
       value={props.progress}
-      className={classes.uploadProgress}
-      classes={{ colorPrimary: classes.uploadingColor, barColorPrimary: classes.uploadingColor }}
+      sx={{
+        ...classes.uploadProgress,
+        '&.MuiLinearProgress-colorPrimary': {
+          backgroundColor: classes.uploadingColor.color
+        },
+        '& .MuiLinearProgress-barColorPrimary': {
+          backgroundColor: classes.uploadingColor.color
+        }
+      }}
     />
   );
 };

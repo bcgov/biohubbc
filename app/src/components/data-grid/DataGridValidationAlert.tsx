@@ -1,10 +1,10 @@
 import { mdiChevronLeft, mdiChevronRight, mdiClose } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Collapse } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { GridRowId } from '@mui/x-data-grid';

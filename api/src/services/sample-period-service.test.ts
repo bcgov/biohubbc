@@ -215,8 +215,10 @@ describe('SamplePeriodService', () => {
         { survey_sample_period_id: 2 } as SamplePeriodRecord
       ]);
 
-      expect(getSamplePeriodsForSurveyMethodIdStub).to.be.calledOnceWith(1001, surveySampleMethodId);
-      expect(deleteSamplePeriodRecordsStub).to.be.calledOnceWith([mockSamplePeriodRecords[0].survey_sample_period_id]);
+      expect(getSamplePeriodsForSurveyMethodIdStub).to.be.calledOnceWith(mockSurveyId, surveySampleMethodId);
+      expect(deleteSamplePeriodRecordsStub).to.be.calledOnceWith(mockSurveyId, [
+        mockSamplePeriodRecords[0].survey_sample_period_id
+      ]);
       expect(response).to.eql(undefined);
       expect(getObservationsCountBySamplePeriodIdStub).to.be.calledOnceWith([
         mockSamplePeriodRecords[0].survey_sample_period_id

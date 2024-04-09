@@ -1,11 +1,10 @@
-import { cleanup } from '@testing-library/react-hooks';
 import StudyAreaForm, {
   ISurveyLocationForm,
   SurveyLocationInitialValues,
   SurveyLocationYupSchema
 } from 'features/surveys/components/StudyAreaForm';
 import { Formik } from 'formik';
-import { render, waitFor } from 'test-helpers/test-utils';
+import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { SurveyAreaMapControl } from './locations/SurveyAreaMapControl';
 
 // Mock Map Controller component

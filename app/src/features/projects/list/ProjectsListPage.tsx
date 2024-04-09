@@ -1,8 +1,8 @@
 import { mdiFilterOutline, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Collapse } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Collapse from '@mui/material/Collapse';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
@@ -82,20 +82,6 @@ const ProjectsListPage = () => {
     );
   };
 
-  const refreshProjectsList = () => {
-    const sort = firstOrNull(sortModel);
-    const pagination = {
-      limit: paginationModel.pageSize,
-      sort: sort?.field || undefined,
-      order: sort?.sort || undefined,
-
-      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
-      page: paginationModel.page + 1
-    };
-
-    return projectsDataLoader.refresh(pagination, advancedFiltersModel);
-  };
-
   const projectRows =
     projectsDataLoader.data?.projects.map((project) => {
       return {
@@ -150,7 +136,20 @@ const ProjectsListPage = () => {
 
   // Refresh projects when pagination or sort changes
   useEffect(() => {
-    refreshProjectsList();
+    const sort = firstOrNull(sortModel);
+    const pagination = {
+      limit: paginationModel.pageSize,
+      sort: sort?.field || undefined,
+      order: sort?.sort || undefined,
+
+      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+      page: paginationModel.page + 1
+    };
+
+    projectsDataLoader.refresh(pagination, advancedFiltersModel);
+
+    // Adding a DataLoader as a dependency causes an infinite rerender loop if a useEffect calls `.refresh`
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortModel, paginationModel, advancedFiltersModel]);
 
   /**

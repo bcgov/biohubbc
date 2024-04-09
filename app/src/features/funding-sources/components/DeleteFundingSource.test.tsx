@@ -57,7 +57,7 @@ describe('DeleteFundingSource', () => {
     );
 
     await waitFor(async () => {
-      expect(mockUseApi.funding.getFundingSource).toBeCalled();
+      expect(mockUseApi.funding.getFundingSource).toHaveBeenCalled();
       expect(await findByText('Delete Funding Source?')).toBeVisible();
     });
   });
@@ -102,7 +102,7 @@ describe('DeleteFundingSource', () => {
     );
 
     await waitFor(async () => {
-      expect(mockUseApi.funding.getFundingSource).toBeCalled();
+      expect(mockUseApi.funding.getFundingSource).toHaveBeenCalled();
       expect(await findByText("You can't delete this funding source")).toBeVisible();
     });
   });

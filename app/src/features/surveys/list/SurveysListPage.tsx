@@ -1,9 +1,11 @@
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Link, Toolbar, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
+import Link from '@mui/material/Link';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { ProjectRoleGuard } from 'components/security/Guards';
@@ -31,7 +33,8 @@ const SurveysListPage = () => {
   });
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
-  const refreshSurveyList = () => {
+  // Refresh survey list when pagination or sort changes
+  useEffect(() => {
     const sort = firstOrNull(sortModel);
     const pagination: ApiPaginationRequestOptions = {
       limit: paginationModel.pageSize,
@@ -42,12 +45,10 @@ const SurveysListPage = () => {
       page: paginationModel.page + 1
     };
 
-    return projectContext.surveysListDataLoader.refresh(pagination);
-  };
+    projectContext.surveysListDataLoader.refresh(pagination);
 
-  // Refresh survey list when pagination or sort changes
-  useEffect(() => {
-    refreshSurveyList();
+    // Adding a DataLoader as a dependency causes an infinite rerender loop if a useEffect calls `.refresh`
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortModel, paginationModel]);
 
   const columns: GridColDef<SurveyBasicFieldsObject>[] = [

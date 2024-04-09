@@ -20,7 +20,9 @@ describe('getCrittersFromSurvey', () => {
     const mockGetCrittersInSurvey = sinon
       .stub(SurveyCritterService.prototype, 'getCrittersInSurvey')
       .resolves([mockSurveyCritter]);
-    const mockFilterCritters = sinon.stub(CritterbaseService.prototype, 'filterCritters').resolves([mockCBCritter]);
+    const mockGetMultipleCrittersByIds = sinon
+      .stub(CritterbaseService.prototype, 'getMultipleCrittersByIds')
+      .resolves([mockCBCritter]);
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     const requestHandler = getCrittersFromSurvey();
@@ -28,7 +30,7 @@ describe('getCrittersFromSurvey', () => {
 
     expect(mockGetDBConnection.calledOnce).to.be.true;
     expect(mockGetCrittersInSurvey.calledOnce).to.be.true;
-    expect(mockFilterCritters.calledOnce).to.be.true;
+    expect(mockGetMultipleCrittersByIds).to.be.calledOnceWith([mockSurveyCritter.critterbase_critter_id]);
     expect(mockRes.json).to.have.been.calledWith([
       { ...mockCBCritter, survey_critter_id: mockSurveyCritter.critter_id }
     ]);
@@ -37,7 +39,7 @@ describe('getCrittersFromSurvey', () => {
   it('returns empty array if no critters in survey', async () => {
     const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
     const mockGetCrittersInSurvey = sinon.stub(SurveyCritterService.prototype, 'getCrittersInSurvey').resolves([]);
-    const mockFilterCritters = sinon.stub(CritterbaseService.prototype, 'filterCritters').resolves([]);
+
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     const requestHandler = getCrittersFromSurvey();
@@ -45,7 +47,6 @@ describe('getCrittersFromSurvey', () => {
 
     expect(mockGetDBConnection.calledOnce).to.be.true;
     expect(mockGetCrittersInSurvey.calledOnce).to.be.true;
-    expect(mockFilterCritters.calledOnce).to.be.false;
     expect(mockRes.json).to.have.been.calledWith([]);
   });
 

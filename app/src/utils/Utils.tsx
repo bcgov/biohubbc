@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';

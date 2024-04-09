@@ -1,7 +1,7 @@
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { IconButton } from '@mui/material';
 import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import SingleDateField from 'components/fields/SingleDateField';
 import { DialogContext } from 'contexts/dialogContext';

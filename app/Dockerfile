@@ -1,12 +1,15 @@
-# ################################# W A R N I N G ####################################################################
-# This DockerFile is used for deployments only, please do not change for other purposes. It will break our deployment.
-# ####################################################################################################################
+# This DockerFile is used for Openshift deployments.
 
-FROM node:14
+FROM node:18
+
+USER 0
 
 ENV HOME=/opt/app-root/src
 
 RUN mkdir -p $HOME
+
+RUN chgrp -R 0 $HOME && \
+    chmod -R g+rwX $HOME
 
 WORKDIR $HOME
 
@@ -18,7 +21,7 @@ COPY ./package*.json ./
 # RUN npm install --only=production
 RUN npm install
 
-ENV PATH /opt/rh/rh-nodejs8/root/usr/bin:${HOME}/node_modules/.bin/:${HOME}/app.npm-global/bin/:${HOME}/bin:${HOME}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV PATH ${HOME}/node_modules/.bin/:${HOME}/.npm-global/bin/:${HOME}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 # Copy the rest of the files
 COPY . ./
@@ -27,6 +30,8 @@ COPY . ./
 RUN npm run build
 
 EXPOSE 7100
+
+USER 1001
 
 # RUN APP
 CMD ["npm", "run", "deploy_start"]

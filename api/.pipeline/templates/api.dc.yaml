@@ -45,10 +45,10 @@ parameters:
     description: API host for BioHub Platform Backbone. Example "https://platform.com".
   - name: BACKBONE_INTAKE_PATH
     required: true
-    description: API path for BioHub Platform Backbone DwCA submission intake endpoint. Example "/api/path/to/intake".
+    description: The publishing intake endpoint path for BioHub Platform submissions. Example "/api/path/to/intake".
   - name: BACKBONE_ARTIFACT_INTAKE_PATH
     required: true
-    description: API path for BioHub Platform Backbone artifact submission intake endpoint. Example "/api/path/to/artifact/intake".
+    description: The publishing intake endpoint path for BioHub Platform artifact submissions. Example "/api/path/to/artifact/intake".
   - name: BIOHUB_TAXON_TSN_PATH
     required: true
     description: API path for BioHub Platform Backbone taxon TSN endpoint. Example "/api/path/to/taxon/tsn".

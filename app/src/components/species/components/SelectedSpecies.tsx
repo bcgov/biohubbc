@@ -1,5 +1,5 @@
-import { Collapse } from '@mui/material';
 import Box from '@mui/material/Box';
+import Collapse from '@mui/material/Collapse';
 import SpeciesSelectedCard from 'components/species/components/SpeciesSelectedCard';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { TransitionGroup } from 'react-transition-group';

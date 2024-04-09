@@ -1,6 +1,6 @@
-import { mdiTable } from '@mdi/js';
+import { mdiTrayArrowDown } from '@mdi/js';
 import Icon from '@mdi/react';
-import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
 import dayjs from 'dayjs';
 import { useObservationsTableContext } from 'hooks/useContext';
 import { makeCsvObjectUrl } from 'utils/Utils';
@@ -37,9 +37,9 @@ const ExportHeadersButton = () => {
   };
 
   return (
-    <Button startIcon={<Icon path={mdiTable} size={0.75} />} variant="outlined" onClick={handleDownload}>
-      Export Headers
-    </Button>
+    <IconButton title="Download template CSV" onClick={handleDownload} aria-label="Download template CSV">
+      <Icon path={mdiTrayArrowDown} size={1} />
+    </IconButton>
   );
 };
 

@@ -1,7 +1,15 @@
 import { AxiosInstance } from 'axios';
 
-const useAuthentication = (axios: AxiosInstance) => {
-  const signUp = async (): Promise<{ user_id: string } | null> => {
+type CritterbaseUser = { user_id: string };
+
+export const useAuthentication = (axios: AxiosInstance) => {
+  /**
+   * Signs up / registers a SIMS user for CritterbaseAPI.
+   *
+   * @async
+   * @returns {Promise<CritterbaseUser | null>} Critterbase user ID or NULL if unable to sign up.
+   */
+  const signUp = async (): Promise<CritterbaseUser | null> => {
     try {
       const { data } = await axios.post('/api/critterbase/signup');
       return data;
@@ -17,5 +25,3 @@ const useAuthentication = (axios: AxiosInstance) => {
     signUp
   };
 };
-
-export { useAuthentication };

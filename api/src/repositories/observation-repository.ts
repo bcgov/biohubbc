@@ -78,9 +78,17 @@ export const ObservationRecordWithSamplingAndSubcountData = ObservationRecord.ex
 
 export type ObservationRecordWithSamplingAndSubcountData = z.infer<typeof ObservationRecordWithSamplingAndSubcountData>;
 
+const GeoJSONPointSchema = z.object({
+  type: z
+    .string()
+    .optional()
+    .refine((val) => val === 'Point', { message: 'Type must be "Point"' }),
+  coordinates: z.array(z.number()).min(2).max(2) // Assuming GeoJSON Point has 2 coordinates (longitude and latitude)
+});
+
 export const ObservationGeometryRecord = z.object({
   survey_observation_id: z.number(),
-  geometry: z.string().transform((jsonString) => JSON.parse(jsonString))
+  geometry: GeoJSONPointSchema
 });
 
 export type ObservationGeometryRecord = z.infer<typeof ObservationGeometryRecord>;
@@ -169,7 +177,7 @@ export class ObservationRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    return response.rowCount;
+    return response.rowCount ?? 0;
   }
 
   /**
@@ -447,7 +455,10 @@ export class ObservationRepository extends BaseRepository {
     const knex = getKnex();
 
     const query = knex
-      .select('survey_observation_id', knex.raw('ST_AsGeoJSON(ST_MakePoint(longitude, latitude)) as geometry'))
+      .select(
+        'survey_observation_id',
+        knex.raw("JSON_BUILD_OBJECT('type', 'Point', 'coordinates', JSON_BUILD_ARRAY(longitude, latitude)) as geometry")
+      )
       .from('survey_observation')
       .where('survey_id', surveyId);
 
@@ -618,7 +629,7 @@ export class ObservationRepository extends BaseRepository {
       ]);
     }
 
-    return response.rowCount;
+    return response.rowCount ?? 0;
   }
 
   /**

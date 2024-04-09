@@ -1,6 +1,6 @@
 import { PROJECT_ROLE } from 'constants/roles';
 import { ICode } from 'interfaces/useCodesApi.interface';
-import { act, fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import UserRoleSelector from './UserRoleSelector';
 const roles: ICode[] = [
   {
@@ -78,11 +78,11 @@ describe('UserRoleSelector', () => {
       />
     );
 
-    await act(async () => {
+    await waitFor(async () => {
       const button = getByTestId('remove-user-role-button-0');
       fireEvent.click(button);
 
-      expect(onDelete).toBeCalled();
+      expect(onDelete).toHaveBeenCalled();
     });
   });
 
@@ -116,7 +116,7 @@ describe('UserRoleSelector', () => {
       />
     );
 
-    await act(async () => {
+    await waitFor(async () => {
       const button = getByTestId('select-user-role-button-0');
       fireEvent.click(button);
 
@@ -130,7 +130,7 @@ describe('UserRoleSelector', () => {
 
       fireEvent.click(getByText('Collaborator', { exact: false }));
 
-      expect(onAdd).toBeCalled();
+      expect(onAdd).toHaveBeenCalled();
     });
   });
 });

@@ -5,6 +5,7 @@ import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
 import { ObservationRecordWithSamplingAndSubcountData } from '../../../../../../repositories/observation-repository';
+import { CBMeasurementUnit, CritterbaseService } from '../../../../../../services/critterbase-service';
 import { ObservationService } from '../../../../../../services/observation-service';
 import { PlatformService } from '../../../../../../services/platform-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
@@ -26,6 +27,28 @@ describe('insertUpdateSurveyObservationsWithMeasurements', () => {
       .stub(ObservationService.prototype, 'insertUpdateSurveyObservationsWithMeasurements')
       .resolves();
 
+    sinon.stub(CritterbaseService.prototype, 'getTaxonMeasurements').resolves({
+      qualitative: [
+        {
+          itis_tsn: 1,
+          taxon_measurement_id: '',
+          measurement_name: '',
+          measurement_desc: '',
+          options: []
+        }
+      ],
+      quantitative: [
+        {
+          itis_tsn: 1,
+          taxon_measurement_id: '',
+          measurement_name: '',
+          measurement_desc: '',
+          min_value: 0,
+          max_value: 100,
+          unit: CBMeasurementUnit.Values.centimeter
+        }
+      ]
+    });
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
@@ -48,8 +71,7 @@ describe('insertUpdateSurveyObservationsWithMeasurements', () => {
           survey_sample_method_id: 1,
           survey_sample_period_id: 1
         },
-        qualitative_measurements: [],
-        quantitative_measurements: []
+        subcounts: []
       },
       {
         standardColumns: {
@@ -64,8 +86,7 @@ describe('insertUpdateSurveyObservationsWithMeasurements', () => {
           survey_sample_method_id: 1,
           survey_sample_period_id: 1
         },
-        qualitative_measurements: [],
-        quantitative_measurements: []
+        subcounts: []
       }
     ];
 
@@ -117,8 +138,7 @@ describe('insertUpdateSurveyObservationsWithMeasurements', () => {
             survey_sample_method_id: 1,
             survey_sample_site_id: 1
           },
-          qualitative_measurements: [],
-          quantitative_measurements: []
+          subcounts: []
         }
       ]
     };
@@ -131,7 +151,9 @@ describe('insertUpdateSurveyObservationsWithMeasurements', () => {
     } catch (actualError) {
       expect(dbConnectionObj.release).to.have.been.called;
 
-      expect((actualError as HTTPError).message).to.equal('a test error');
+      expect((actualError as HTTPError).message).to.equal(
+        'Error connecting to the Critterbase API: Error: API request failed with status code undefined'
+      );
     }
   });
 });

@@ -1,7 +1,11 @@
 import { mdiClose } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, IconButton, MenuItem, Paper, Select } from '@mui/material';
+import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
+import IconButton from '@mui/material/IconButton';
+import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
+import Select from '@mui/material/Select';
 import { ICode } from 'interfaces/useCodesApi.interface';
 import { IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyParticipant } from 'interfaces/useSurveyApi.interface';
@@ -26,20 +30,17 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
     <Box mt={1} className="userRoleItemContainer">
       <Paper
         variant="outlined"
-        className={error ? 'userRoleItemError' : 'userRoleItem'}
         sx={{
           background: grey[100],
-          '&.userRoleItemError': {
-            borderColor: 'error.main',
-            '& .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'error.main'
-            },
-            '& + p': {
-              pt: 0.75,
-              pb: 0.75,
-              pl: 2
-            }
-          }
+          ...(error
+            ? {
+                '& + p': {
+                  pt: 0.75,
+                  pb: 0.75,
+                  pl: 2
+                }
+              }
+            : undefined)
         }}>
         <Box display="flex" alignItems="center" px={2} py={1.5}>
           <Box flex="1 1 auto">
@@ -51,6 +52,7 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
               inputProps={{
                 'aria-label': 'Select a role'
               }}
+              error={Boolean(props.error)}
               data-testid={`select-user-role-button-${index}`}
               sx={{ width: '200px', backgroundColor: '#fff' }}
               displayEmpty

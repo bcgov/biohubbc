@@ -1,37 +1,34 @@
-import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
+import useTheme from '@mui/material/styles/useTheme';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IGetReportDetails } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 import { getFormattedDateRangeString } from 'utils/Utils';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  docTitle: {
-    display: '-webkit-box',
-    '-webkit-line-clamp': 2,
-    '-webkit-box-orient': 'vertical',
-    overflow: 'hidden'
-  },
-  docDL: {
-    margin: 0,
-    '& dt': {
-      flex: '0 0 200px',
-      margin: '0',
-      color: theme.palette.text.secondary
+const useStyles = () => {
+  const theme = useTheme();
+
+  return {
+    docDL: {
+      margin: 0,
+      '& dt': {
+        flex: '0 0 200px',
+        margin: '0',
+        color: theme.palette.text.secondary
+      },
+      '& dd': {
+        flex: '1 1 auto'
+      }
     },
-    '& dd': {
-      flex: '1 1 auto'
+    docMetaRow: {
+      display: 'flex'
     }
-  },
-  docMetaRow: {
-    display: 'flex'
-  }
-}));
+  };
+};
 
 export interface IViewReportDetailsProps {
   onEdit?: () => void;
@@ -55,26 +52,26 @@ const ReportMeta: React.FC<IViewReportDetailsProps> = (props) => {
         </Toolbar>
         <Divider></Divider>
         <Box p={3}>
-          <Box component="dl" className={classes.docDL}>
-            <Box className={classes.docMetaRow}>
+          <Box component="dl" sx={classes.docDL}>
+            <Box sx={classes.docMetaRow}>
               <Typography component="dt" variant="body1" color="textSecondary">
                 Report Title
               </Typography>
               <Typography variant="body1">{reportDetails?.metadata?.title}</Typography>
             </Box>
-            <Box mt={1} className={classes.docMetaRow}>
+            <Box mt={1} sx={classes.docMetaRow}>
               <Typography component="dt" variant="body1" color="textSecondary">
                 Description
               </Typography>
               <Typography variant="body1">{reportDetails?.metadata?.description}</Typography>
             </Box>
-            <Box mt={1} className={classes.docMetaRow}>
+            <Box mt={1} sx={classes.docMetaRow}>
               <Typography component="dt" variant="body1" color="textSecondary">
                 Year Published
               </Typography>
               <Typography component="dd">{reportDetails?.metadata?.year_published}</Typography>
             </Box>
-            <Box mt={1} className={classes.docMetaRow}>
+            <Box mt={1} sx={classes.docMetaRow}>
               <Typography component="dt" variant="body1" color="textSecondary">
                 Last Modified
               </Typography>
@@ -85,7 +82,7 @@ const ReportMeta: React.FC<IViewReportDetailsProps> = (props) => {
                 )}
               </Typography>
             </Box>
-            <Box mt={1} className={classes.docMetaRow}>
+            <Box mt={1} sx={classes.docMetaRow}>
               <Typography component="dt" variant="body1" color="textSecondary">
                 Authors
               </Typography>

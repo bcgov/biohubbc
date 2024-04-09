@@ -110,7 +110,7 @@ const phases = {
     maxUploadFileSize,
     nodeEnv: 'production',
     sso: config.sso.test,
-    featureFlags: 'APP_FF_SUBMIT_BIOHUB',
+    featureFlags: '',
     cpuRequest: '50m',
     cpuLimit: '500m',
     memoryRequest: '100Mi',
