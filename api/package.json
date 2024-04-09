@@ -28,7 +28,6 @@
     "npm": ">= 10.0.0"
   },
   "dependencies": {
-    "@swc/core": "^1.3.76",
     "@turf/bbox": "^6.5.0",
     "@turf/circle": "^6.5.0",
     "@turf/helpers": "^6.5.0",
