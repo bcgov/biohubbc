@@ -1,6 +1,6 @@
 import { mdiImport } from '@mdi/js';
 import Icon from '@mdi/react';
-import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import FileUploadDialog from 'components/dialog/FileUploadDialog';
 import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
@@ -124,15 +124,13 @@ export const ImportObservationsButton = (props: IImportObservationsButtonProps) 
 
   return (
     <>
-      <Button
-        variant="contained"
-        color="primary"
+      <IconButton
         title="Import Observations"
-        startIcon={<Icon path={mdiImport} size={1} />}
         onClick={() => setOpen(true)}
-        disabled={disabled || false}>
-        Import
-      </Button>
+        disabled={disabled || false}
+        aria-label="Import Observations">
+        <Icon path={mdiImport} size={1} />
+      </IconButton>
       <FileUploadDialog
         open={open}
         dialogTitle="Import Observation CSV"

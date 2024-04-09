@@ -4,8 +4,8 @@ import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
-import { ImportObservationsButton } from 'features/surveys/observations/components/import-observations/ImportObservationsButton';
-import { useObservationsPageContext } from 'hooks/useContext';
+import { ImportObservationsButton } from 'features/surveys/observations/sampling-sites/list/import-observations/ImportObservationsButton';
+import { useObservationsContext, useObservationsPageContext } from 'hooks/useContext';
 import { IGetSamplePeriodRecord } from 'interfaces/useSurveyApi.interface';
 
 export interface ISamplingSiteListPeriodProps {
@@ -15,6 +15,7 @@ export interface ISamplingSiteListPeriodProps {
 export const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
   const { samplePeriod } = props;
 
+  const observationsContext = useObservationsContext();
   const observationsPageContext = useObservationsPageContext();
 
   return (
@@ -43,6 +44,9 @@ export const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
         onStart={() => {
           observationsPageContext.setIsDisabled(true);
           observationsPageContext.setIsLoading(true);
+        }}
+        onSuccess={() => {
+          observationsContext.observationsDataLoader.refresh();
         }}
         onFinish={() => {
           observationsPageContext.setIsDisabled(false);

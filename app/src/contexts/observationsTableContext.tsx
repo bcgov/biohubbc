@@ -256,16 +256,21 @@ export type IObservationsTableContext = {
   /**
    * Used to disable the entire table.
    */
-  disabled: boolean;
+  isDisabled: boolean;
   /**
    * Sets the disabled state of the table.
    */
-  setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 };
+
+export type IObservationsTableContextProviderProps = {
+  isLoading: boolean;
+  isDisabled: boolean;
+} & PropsWithChildren;
 
 export const ObservationsTableContext = createContext<IObservationsTableContext | undefined>(undefined);
 
-export const ObservationsTableContextProvider = (props: PropsWithChildren) => {
+export const ObservationsTableContextProvider = (props: IObservationsTableContextProviderProps) => {
   const { projectId, surveyId } = useContext(SurveyContext);
 
   const _muiDataGridApiRef = useGridApiRef();
@@ -278,6 +283,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren) => {
       refresh: refreshObservationsData
     }
   } = useObservationsContext();
+
   const critterbaseApi = useCritterbaseApi();
 
   const { cacheSpeciesTaxonomyByIds } = useTaxonomyContext();
@@ -320,8 +326,13 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren) => {
   const [measurementColumns, setMeasurementColumns] = useState<CBMeasurementType[]>([]);
   const _hasLoadedMeasurementColumns = useRef<boolean>(false);
 
+  // Internal disabled state for the observations table, should not be used outside of this context
+  const [_isDisabled, setIsDisabled] = useState(false);
+
   // Global disabled state for the observations table
-  const [disabled, setDisabled] = useState(false);
+  const isDisabled = useMemo(() => {
+    return _isDisabled || props.isDisabled;
+  }, [_isDisabled, props.isDisabled]);
 
   // Column visibility model
   const [columnVisibilityModel, setColumnVisibilityModel] = useState<GridColumnVisibilityModel>({});
@@ -403,7 +414,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren) => {
     }
 
     return response;
-  }, [hasError, paginationModel.page, paginationModel.pageSize, refreshObservationsData, sortModel, surveyId]);
+  }, [paginationModel.page, paginationModel.pageSize, refreshObservationsData, sortModel, surveyId]);
 
   /**
    * Gets all rows from the table, including values that have been edited in the table.
@@ -427,16 +438,19 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren) => {
   /**
    * Fetches measurement definitions from Critterbase for a given itis_tsn number
    */
-  const tsnMeasurements = useCallback(async (tsn: number): Promise<TSNMeasurement | null | undefined> => {
-    const currentMap = tsnMeasurementMapRef.current;
-    if (!currentMap[tsn]) {
-      const response = await critterbaseApi.xref.getTaxonMeasurements(tsn);
+  const tsnMeasurements = useCallback(
+    async (tsn: number): Promise<TSNMeasurement | null | undefined> => {
+      const currentMap = tsnMeasurementMapRef.current;
+      if (!currentMap[tsn]) {
+        const response = await critterbaseApi.xref.getTaxonMeasurements(tsn);
 
-      currentMap[String(tsn)] = response;
-      tsnMeasurementMapRef.current = currentMap;
-    }
-    return currentMap[tsn];
-  }, []);
+        currentMap[String(tsn)] = response;
+        tsnMeasurementMapRef.current = currentMap;
+      }
+      return currentMap[tsn];
+    },
+    [critterbaseApi.xref]
+  );
 
   /**
    * Validates all rows belonging to the table. Returns null if validation passes, otherwise
@@ -492,7 +506,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren) => {
     setValidationModel(validation);
 
     return Object.keys(validation).length > 0 ? validation : null;
-  }, [_getRowsWithEditedValues, _muiDataGridApiRef]);
+  }, [_getRowsWithEditedValues, _muiDataGridApiRef, tsnMeasurements]);
 
   /**
    * Deletes the given records from the server and removes them from the table.
@@ -830,7 +844,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren) => {
 
     // Store ids of rows that were in edit mode
     setModifiedRowIds(editingIdsToSave);
-  }, [_validateRows, _muiDataGridApiRef, savedRows, stagedRows]);
+  }, [_muiDataGridApiRef, _validateRows, setErrorDialog, savedRows, stagedRows]);
 
   /**
    * Transition all rows tracked by `modifiedRowIds` to edit mode.
@@ -864,8 +878,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren) => {
 
   // True if the taxonomy cache is still initializing or the observations data is still loading
   const isLoading: boolean = useMemo(() => {
-    return !taxonomyCacheStatus.isInitialized || isLoadingObservationsData;
-  }, [isLoadingObservationsData, taxonomyCacheStatus.isInitialized]);
+    return !taxonomyCacheStatus.isInitialized || isLoadingObservationsData || props.isLoading;
+  }, [isLoadingObservationsData, props.isLoading, taxonomyCacheStatus.isInitialized]);
 
   // True if the save process has started
   const isSaving: boolean = _isSavingData.current || _isStoppingEdit.current;
@@ -1251,8 +1265,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren) => {
       sortModel,
       measurementColumns,
       setMeasurementColumns,
-      disabled,
-      setDisabled
+      isDisabled,
+      setIsDisabled
     }),
     [
       _muiDataGridApiRef,
@@ -1277,7 +1291,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren) => {
       hasError,
       sortModel,
       measurementColumns,
-      disabled
+      isDisabled
     ]
   );
 

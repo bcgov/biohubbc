@@ -282,7 +282,8 @@ const SamplingSiteList = () => {
             }}
             aria-label="header-settings"
             disabled={!checkboxSelectedIds.length}
-            onClick={handleHeaderMenuClick}>
+            onClick={handleHeaderMenuClick}
+            title="Bulk Actions">
             <Icon path={mdiDotsVertical} size={1} />
           </IconButton>
         </Toolbar>
@@ -361,7 +362,7 @@ const SamplingSiteList = () => {
                     return (
                       <SamplingSiteListSite
                         sampleSite={sampleSite}
-                        checkboxSelectedIds={checkboxSelectedIds}
+                        isChecked={checkboxSelectedIds.includes(sampleSite.survey_sample_site_id)}
                         handleSampleSiteMenuClick={handleSampleSiteMenuClick}
                         handleCheckboxChange={handleCheckboxChange}
                       />

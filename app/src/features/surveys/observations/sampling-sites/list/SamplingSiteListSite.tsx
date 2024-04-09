@@ -15,13 +15,13 @@ import { IGetSampleLocationDetails } from 'interfaces/useSurveyApi.interface';
 
 export interface ISamplingSiteListSiteProps {
   sampleSite: IGetSampleLocationDetails;
-  checkboxSelectedIds: number[];
+  isChecked: boolean;
   handleSampleSiteMenuClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, sample_site_id: number) => void;
   handleCheckboxChange: (sampleSiteId: number) => void;
 }
 
 export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
-  const { sampleSite, checkboxSelectedIds, handleSampleSiteMenuClick, handleCheckboxChange } = props;
+  const { sampleSite, isChecked, handleSampleSiteMenuClick, handleCheckboxChange } = props;
 
   return (
     <Accordion
@@ -65,7 +65,7 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
             }}>
             <Checkbox
               edge="start"
-              checked={checkboxSelectedIds.includes(sampleSite.survey_sample_site_id)}
+              checked={isChecked}
               onClick={(event) => {
                 event.stopPropagation();
                 handleCheckboxChange(sampleSite.survey_sample_site_id);
