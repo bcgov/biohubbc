@@ -1,6 +1,0 @@
-{
-  "entry": ["src/app.ts"],
-  "project": ["**/*.{js,ts}"],
-  "ignore": [".pipeline"],
-  "ignoreDependencies": ["ts-node"]
-}

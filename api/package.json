@@ -20,8 +20,7 @@
     "lint-fix": "eslint . --fix --ignore-pattern 'node_modules' --ext .ts",
     "format": "prettier --check \"./src/**/*.{js,jsx,ts,tsx,css,scss}\"",
     "format-fix": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss}\"",
-    "fix": "npm-run-all -l -s lint-fix format-fix",
-    "knip": "knip"
+    "fix": "npm-run-all -l -s lint-fix format-fix"
   },
   "engines": {
     "node": ">= 18.0.0",
@@ -97,7 +96,6 @@
     "eslint-plugin-prettier": "^3.3.1",
     "gulp": "^4.0.2",
     "gulp-typescript": "^5.0.1",
-    "knip": "^2.41.6",
     "mocha": "^10.4.0",
     "nodemon": "^3.1.0",
     "npm-run-all": "^4.1.5",

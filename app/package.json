@@ -19,8 +19,7 @@
     "lint-fix": "npm run lint -- --fix",
     "format": "prettier --check \"./src/**/*.{js,jsx,ts,tsx,css,scss}\"",
     "format-fix": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss}\"",
-    "fix": "npm-run-all -l -s lint-fix format-fix",
-    "knip": "knip"
+    "fix": "npm-run-all -l -s lint-fix format-fix"
   },
   "engines": {
     "node": ">= 18.0.0",
@@ -113,7 +112,6 @@
     "fs-extra": "^11.1.1",
     "jest": "^29.7.0",
     "jest-sonar-reporter": "^2.0.0",
-    "knip": "^2.41.6",
     "path-browserify": "^1.0.1",
     "prettier": "^2.8.8",
     "prettier-plugin-organize-imports": "^3.2.2",

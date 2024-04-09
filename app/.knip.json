@@ -1,6 +1,0 @@
-{
-  "entry": ["src/app.tsx", "server/index.js"],
-  "project": ["**/*.{js,ts,jsx,tsx}"],
-  "ignore": [".pipeline"],
-  "ignoreDependencies": ["@swc/core", "ts-node", "@types/jest"]
-}
