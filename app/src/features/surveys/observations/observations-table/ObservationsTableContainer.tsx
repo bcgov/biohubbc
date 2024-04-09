@@ -106,9 +106,6 @@ const ObservationComponent = () => {
     })
   ];
 
-  console.log('observationsTableContext.isSaving', observationsTableContext.isSaving);
-  console.log('observationsTableContext.isDisabled', observationsTableContext.isDisabled);
-
   return (
     <Paper component={Stack} flexDirection="column" flex="1 1 auto" height="100%">
       <Toolbar
