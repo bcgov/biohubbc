@@ -19,7 +19,8 @@
     "lint-fix": "npm run lint -- --fix",
     "format": "prettier --check \"./src/**/*.{js,jsx,ts,tsx,css,scss}\"",
     "format-fix": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss}\"",
-    "fix": "npm-run-all -l -s lint-fix format-fix"
+    "fix": "npm-run-all -l -s lint-fix format-fix",
+    "knip": "knip"
   },
   "engines": {
     "node": ">= 18.0.0",
@@ -40,6 +41,7 @@
     "@mui/x-data-grid-pro": "^6.19.4",
     "@mui/x-date-pickers": "^6.19.4",
     "@react-leaflet/core": "^2.1.0",
+    "@swc/core": "^1.3.76",
     "@tmcw/togeojson": "^4.2.0",
     "@turf/bbox": "^6.5.0",
     "@turf/boolean-equal": "^6.5.0",
@@ -111,6 +113,7 @@
     "fs-extra": "^11.1.1",
     "jest": "^29.7.0",
     "jest-sonar-reporter": "^2.0.0",
+    "knip": "^2.41.6",
     "path-browserify": "^1.0.1",
     "prettier": "^2.8.8",
     "prettier-plugin-organize-imports": "^3.2.2",

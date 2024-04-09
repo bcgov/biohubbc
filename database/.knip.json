@@ -1,0 +1,6 @@
+{
+  "entry": ["src/knexfile.ts"],
+  "project": ["**/*.{js,ts}"],
+  "ignore": [".pipeline"],
+  "ignoreDependencies": ["@swc/core", "ts-node"]
+}
