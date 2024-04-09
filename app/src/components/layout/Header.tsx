@@ -349,6 +349,11 @@ const Header: React.FC = () => {
                     Funding Sources
                   </RouterLink>
                 </SystemRoleGuard>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <RouterLink to="/standards" id="menu_standards">
+                    Standards
+                  </RouterLink>
+                </SystemRoleGuard>
                 <Button
                   color="inherit"
                   variant="text"
