@@ -172,7 +172,7 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {{
    *       surveySamplePeriodId?: number;
    *     }} [options]
-   * @return {*}
+   * @return {*}  {Promise<void>}
    */
   const processCsvSubmission = async (
     projectId: number,
@@ -181,8 +181,8 @@ const useObservationApi = (axios: AxiosInstance) => {
     options?: {
       surveySamplePeriodId?: number;
     }
-  ) => {
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/observations/process`, {
+  ): Promise<void> => {
+    const { data } = await axios.post<void>(`/api/project/${projectId}/survey/${surveyId}/observations/process`, {
       observation_submission_id: submissionId,
       options
     });
