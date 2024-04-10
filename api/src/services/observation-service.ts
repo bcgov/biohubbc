@@ -450,7 +450,7 @@ export class ObservationService extends DBService {
     let samplePeriodHierarchyIds: SamplePeriodHierarchyIds;
     if (options?.surveySamplePeriodId) {
       const samplePeriodService = new SamplePeriodService(this.connection);
-      samplePeriodHierarchyIds = await samplePeriodService.getSamplePeriodHierarachyIds(
+      samplePeriodHierarchyIds = await samplePeriodService.getSamplePeriodHierarchyIds(
         surveyId,
         options.surveySamplePeriodId
       );

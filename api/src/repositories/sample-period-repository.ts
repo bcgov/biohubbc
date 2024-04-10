@@ -99,10 +99,7 @@ export class SamplePeriodRepository extends BaseRepository {
    * @return {*}  {Promise<SamplePeriodHierarchyIds>}
    * @memberof SamplePeriodRepository
    */
-  async getSamplePeriodHierarachyIds(
-    surveyId: number,
-    surveySamplePeriodId: number
-  ): Promise<SamplePeriodHierarchyIds> {
+  async getSamplePeriodHierarchyIds(surveyId: number, surveySamplePeriodId: number): Promise<SamplePeriodHierarchyIds> {
     const sqlStatement = SQL`
       SELECT
         survey_sample_period.survey_sample_period_id,
@@ -128,7 +125,7 @@ export class SamplePeriodRepository extends BaseRepository {
 
     if (!response.rowCount || response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to get sample period hierarchy ids', [
-        'SamplePeriodRepository->getSamplePeriodHierarachyIds',
+        'SamplePeriodRepository->getSamplePeriodHierarchyIds',
         'rowCount was != 1, expected rowCount = 1'
       ]);
     }

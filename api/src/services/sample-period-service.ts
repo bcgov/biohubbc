@@ -48,11 +48,8 @@ export class SamplePeriodService extends DBService {
    * @return {*}  {Promise<SamplePeriodHierarchyIds>}
    * @memberof SamplePeriodService
    */
-  async getSamplePeriodHierarachyIds(
-    surveyId: number,
-    surveySamplePeriodId: number
-  ): Promise<SamplePeriodHierarchyIds> {
-    return this.samplePeriodRepository.getSamplePeriodHierarachyIds(surveyId, surveySamplePeriodId);
+  async getSamplePeriodHierarchyIds(surveyId: number, surveySamplePeriodId: number): Promise<SamplePeriodHierarchyIds> {
+    return this.samplePeriodRepository.getSamplePeriodHierarchyIds(surveyId, surveySamplePeriodId);
   }
 
   /**
