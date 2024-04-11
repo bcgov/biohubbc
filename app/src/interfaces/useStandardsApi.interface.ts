@@ -1,7 +1,7 @@
 import {
-  ICollectionUnitResponse,
-  IQualitativeMeasurementResponse,
-  IQuantitativeMeasurementResponse
+  CBQualitativeMeasurementTypeDefinition,
+  CBQuantitativeMeasurementTypeDefinition,
+  ICollectionUnitResponse
 } from './useCritterApi.interface';
 
 /**
@@ -14,8 +14,8 @@ export interface IGetSpeciesStandardsResponse {
   tsn: number;
   scientificName: string;
   measurements: {
-    qualitative: IQualitativeMeasurementResponse[];
-    quantitative: IQuantitativeMeasurementResponse[];
+    qualitative: CBQualitativeMeasurementTypeDefinition[];
+    quantitative: CBQuantitativeMeasurementTypeDefinition[];
   };
   marking_body_locations: {
     id: string;

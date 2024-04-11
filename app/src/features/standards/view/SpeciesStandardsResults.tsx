@@ -1,5 +1,5 @@
 import { mdiRuler, mdiTag } from '@mdi/js';
-import { Box, CircularProgress, Stack, Typography } from '@mui/material';
+import { Box, CircularProgress, Divider, Stack, Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
@@ -44,7 +44,8 @@ const SpeciesStandardsResults = () => {
           )}
         </Typography>
       </Box>
-      <Box my={3}>
+      <Divider sx={{ my: 2 }} />
+      <Box my={2}>
         <SpeciesStandardsToolbar
           views={[
             {
@@ -70,7 +71,13 @@ const SpeciesStandardsResults = () => {
           {resourcesDataLoader.data?.measurements?.qualitative.map((measurement) => (
             <MeasurementStandardCard
               label={measurement.measurement_name}
-              description={measurement.measurement_comment ?? ''}
+              description={measurement.measurement_desc ?? ''}
+            />
+          ))}
+          {resourcesDataLoader.data?.measurements?.quantitative.map((measurement) => (
+            <MeasurementStandardCard
+              label={measurement.measurement_name}
+              description={measurement.measurement_desc ?? ''}
             />
           ))}
         </Stack>

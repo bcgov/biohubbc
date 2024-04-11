@@ -13,7 +13,7 @@ export interface ISpeciesStandardsResponse {
     quantitative: CBQuantitativeMeasurementTypeDefinition[];
     qualitative: CBQualitativeMeasurementTypeDefinition[];
   };
-  marking_body_locations: string[];
+  marking_body_locations: {id: string; key: string; value: string}[]
 }
 
 /**

@@ -30,7 +30,7 @@ const SpeciesStandardsForm = () => {
       enableReinitialize={true}
       onSubmit={() => {}}>
       <Box>
-        <SpeciesStandardsAutocomplete/>
+        <SpeciesStandardsAutocomplete />
         <Box my={2}>
           <SpeciesStandardsResults />
         </Box>
