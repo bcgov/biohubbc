@@ -36,29 +36,54 @@ const allowedDeleteRoutesRegex: RegExp[] = [
  * @returns {boolean} If request can be passed to CritterbaeProxy.
  */
 export const proxyFilter = (pathname: string, req: Request) => {
+  const origin = (req.headers.origin ?? '').replace('https://', '');
+
   // Reject requests NOT coming directly from SIMS APP / frontend.
-  if (req.headers.origin !== getSimsAppHostUrl()) {
+  if (origin !== getSimsAppHost()) {
+    defaultLog.debug({
+      label: 'proxyFilter',
+      message: `${req.method} ${pathname} -> Invalid origin`,
+      requestOrigin: req.headers.origin,
+      allowedOrigin: getSimsAppHost()
+    });
+
     return false;
   }
   // Only supporting specific delete requests.
   if (req.method === 'DELETE') {
-    return allowedDeleteRoutesRegex.some((regex) => regex.test(pathname));
+    const allowed = allowedDeleteRoutesRegex.some((regex) => regex.test(pathname));
+
+    if (!allowed) {
+      defaultLog.debug({
+        label: 'proxyFilter',
+        message: `${req.method} ${pathname} -> Failed delete path regex`
+      });
+    }
+
+    return allowed;
   }
   // Support all POST / PATCH / GET requests.
   if (req.method === 'POST' || req.method === 'PATCH' || req.method === 'GET') {
     return true;
   }
+
+  defaultLog.debug({
+    label: 'proxyFilter',
+    message: `${req.method} ${pathname} -> Unable to proxy request`
+  });
+
   // Block all other requests.
   return false;
 };
 
 /**
- * Get the SIMS APP host URL.
+ * Get the SIMS APP host without `https://`.
+ *
  *
  * @return {*}
  */
-export const getSimsAppHostUrl = () => {
-  return process.env.APP_HOST;
+export const getSimsAppHost = () => {
+  return (process.env.APP_HOST as string).replace('https://', '');
 };
 
 /**
