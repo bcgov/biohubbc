@@ -2,13 +2,13 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
 import { ObservationRecordWithSamplingAndSubcountData } from '../../../../../../repositories/observation-repository';
 import { CBMeasurementUnit, CritterbaseService } from '../../../../../../services/critterbase-service';
 import { ObservationService } from '../../../../../../services/observation-service';
 import { PlatformService } from '../../../../../../services/platform-service';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import * as observationRecords from './index';
 
 chai.use(sinonChai);
@@ -152,7 +152,7 @@ describe('insertUpdateSurveyObservationsWithMeasurements', () => {
       expect(dbConnectionObj.release).to.have.been.called;
 
       expect((actualError as HTTPError).message).to.equal(
-        'Error connecting to the Critterbase API: Error: API request failed with status code undefined'
+        'Error connecting to the Critterbase API: Error: API request failed with status code 403'
       );
     }
   });

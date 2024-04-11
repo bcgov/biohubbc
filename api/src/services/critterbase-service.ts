@@ -343,9 +343,9 @@ export class CritterbaseService {
     return response;
   }
 
-  async getTaxonBodyLocations(taxon_id: string) {
+  async getTaxonBodyLocations(tsn: string) {
     return this._makeGetRequest(CbRoutes['taxon-marking-body-locations'], [
-      { key: 'tsn', value: taxon_id },
+      { key: 'tsn', value: tsn },
       { key: 'format', value: 'asSelect' }
     ]);
   }

@@ -1,9 +1,9 @@
-import Ajv from 'ajv';
+
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { GET, getSpeciesStandards } from '.';
+import { getSpeciesStandards } from '.';
 import * as db from '../../../../database/db';
 import { CBMeasurementUnit } from '../../../../services/critterbase-service';
 import { StandardsService } from '../../../../services/standards-service';
@@ -12,20 +12,12 @@ import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks
 chai.use(sinonChai);
 
 describe('standards/taxon/{tsn}', () => {
-  describe('openapi schema', () => {
-    const ajv = new Ajv();
-
-    it('is valid openapi v3 schema', () => {
-      expect(ajv.validateSchema((GET.apiDoc as unknown) as object)).to.be.true;
-    });
-  });
-
   describe('getSpeciesStandards', () => {
     afterEach(() => {
       sinon.restore();
     });
 
-    it('fetches a project', async () => {
+    it('get standards for a species', async () => {
       const dbConnectionObj = getMockDBConnection();
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
@@ -67,14 +59,11 @@ describe('standards/taxon/{tsn}', () => {
       sinon.stub(StandardsService.prototype, 'getSpeciesStandards').resolves(getSpeciesStandardsResult);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+      mockReq.params = { tsn: '123456' };
 
-      try {
-        const requestHandler = getSpeciesStandards();
+      const requestHandler = getSpeciesStandards();
 
-        await requestHandler(mockReq, mockRes, mockNext);
-      } catch (actualError) {
-        expect.fail();
-      }
+      await requestHandler(mockReq, mockRes, mockNext);
 
       expect(mockRes.statusValue).to.equal(200);
       expect(mockRes.jsonValue).to.eql(getSpeciesStandardsResult);

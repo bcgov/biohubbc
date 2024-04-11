@@ -1,3 +1,4 @@
+import { IDBConnection } from '../database/db';
 import {
   CBQualitativeMeasurementTypeDefinition,
   CBQuantitativeMeasurementTypeDefinition,
@@ -9,11 +10,11 @@ import { PlatformService } from './platform-service';
 export interface ISpeciesStandardsResponse {
   tsn: number;
   scientificName: string;
-  measurements?: {
+  measurements: {
     quantitative: CBQuantitativeMeasurementTypeDefinition[];
     qualitative: CBQualitativeMeasurementTypeDefinition[];
   };
-  marking_body_locations: {id: string; key: string; value: string}[]
+  marking_body_locations: { id: string; key: string; value: string }[];
 }
 
 /**
@@ -24,6 +25,18 @@ export interface ISpeciesStandardsResponse {
  * @extends {DBService}
  */
 export class StandardsService extends DBService {
+  platformService: PlatformService;
+  critterbaseService: CritterbaseService;
+
+  constructor(connection: IDBConnection) {
+    super(connection);
+    this.platformService = new PlatformService(connection);
+    this.critterbaseService = new CritterbaseService({
+      keycloak_guid: this.connection.systemUserGUID(),
+      username: this.connection.systemUserIdentifier()
+    });
+  }
+
   /**
    * Gets all survey Sample Stratums.
    *
@@ -32,17 +45,11 @@ export class StandardsService extends DBService {
    * @memberof standardsService
    */
   async getSpeciesStandards(tsn: number): Promise<ISpeciesStandardsResponse> {
-    const critterbaseService = new CritterbaseService({
-      keycloak_guid: this.connection.systemUserGUID(),
-      username: this.connection.systemUserIdentifier()
-    });
-    const platformService = new PlatformService(this.connection);
-
     // Fetch all measurement type definitions from Critterbase for the unique taxon_measurement_ids
     const response = await Promise.all([
-      platformService.getTaxonomyByTsns([tsn]),
-      critterbaseService.getTaxonBodyLocations(String(tsn)),
-      critterbaseService.getTaxonMeasurements(String(tsn))
+      this.platformService.getTaxonomyByTsns([tsn]),
+      this.critterbaseService.getTaxonBodyLocations(String(tsn)),
+      this.critterbaseService.getTaxonMeasurements(String(tsn))
     ]);
 
     return {
