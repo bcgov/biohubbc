@@ -1,12 +1,14 @@
 import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, Collapse, Paper, Typography } from '@mui/material';
+import { Box, Card, Collapse, Paper, Stack, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
+import { CBQualitativeOption } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 
 interface IMeasurementStandardCard {
   label: string;
   description?: string;
+  options?: CBQualitativeOption[];
   unit?: string;
 }
 
@@ -36,6 +38,26 @@ const MeasurementStandardCard = (props: IMeasurementStandardCard) => {
             {props.description ? props.description : 'No description'}
           </Typography>
         </Box>
+        <Stack gap={2}>
+          {props.options?.map((option) => (
+            <Card
+              sx={{
+                p: 2,
+                bgcolor: grey[300],
+                '&::first-letter': {
+                  textTransform: 'capitalize'
+                }
+              }}
+              elevation={0}>
+              <Typography variant="body1" fontWeight={700}>
+                {option.option_label}
+              </Typography>
+              <Typography variant="body2" fontWeight={700}>
+                {option?.option_desc}
+              </Typography>
+            </Card>
+          ))}
+        </Stack>
       </Collapse>
     </Paper>
   );

@@ -1,30 +1,34 @@
 import { mdiRuler, mdiTag } from '@mdi/js';
 import { Box, CircularProgress, Divider, Stack, Typography } from '@mui/material';
-import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { useEffect, useState } from 'react';
-import { ISpeciesStandardsFormikProps } from '../form/SpeciesStandardsForm';
 import MarkingBodyLocationStandardCard from './components/MarkingBodyLocationStandardCard';
 import MeasurementStandardCard from './components/MeasurementStandardCard';
 import SpeciesStandardsToolbar, { SpeciesStandardsViewEnum } from './components/SpeciesStandardsToolbar';
 
-const SpeciesStandardsResults = () => {
-  const { values } = useFormikContext<ISpeciesStandardsFormikProps>();
+interface ISpeciesStandardsResultsProps {
+  selectedSpecies?: ITaxonomy;
+}
+
+const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
   const biohubApi = useBiohubApi();
   const [activeView, setActiveView] = useState<SpeciesStandardsViewEnum>(SpeciesStandardsViewEnum.MEASUREMENTS);
 
-  const resourcesDataLoader = useDataLoader(() => biohubApi.standards.getSpeciesStandards(values.tsn));
+  const resourcesDataLoader = useDataLoader((tsn: number) => biohubApi.standards.getSpeciesStandards(tsn));
 
   useEffect(() => {
-    if (values.tsn) {
-      resourcesDataLoader.refresh();
+    if (props.selectedSpecies) {
+      resourcesDataLoader.refresh(props.selectedSpecies.tsn);
     }
-  }, [values]);
+  }, [props.selectedSpecies?.tsn]);
 
   if (!resourcesDataLoader.data) {
     return <></>;
-  } else if (resourcesDataLoader.isLoading) {
+  }
+
+  if (resourcesDataLoader.isLoading) {
     return (
       <Box display="flex" alignItems="center" justifyContent="center">
         <CircularProgress size={40} />
@@ -72,6 +76,7 @@ const SpeciesStandardsResults = () => {
             <MeasurementStandardCard
               label={measurement.measurement_name}
               description={measurement.measurement_desc ?? ''}
+              options={measurement.options}
             />
           ))}
           {resourcesDataLoader.data?.measurements?.quantitative.map((measurement) => (

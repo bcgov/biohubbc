@@ -43,10 +43,10 @@ describe('AdministrativeActivityRepository', () => {
 
       const mockDBConnection = getMockDBConnection({
         sql: async () =>
-          Promise.resolve(({
+          Promise.resolve({
             rowCount: 1,
             rows: mockResponse
-          } as unknown) as Promise<QueryResult<any>>)
+          } as unknown as Promise<QueryResult<any>>)
       });
 
       const aaRepo = new AdministrativeActivityRepository(mockDBConnection);
@@ -87,10 +87,10 @@ describe('AdministrativeActivityRepository', () => {
         create_date: new Date()
       };
 
-      const mockResponse = ({
+      const mockResponse = {
         rowCount: 1,
         rows: [mockRecord]
-      } as any) as Promise<QueryResult<any>>;
+      } as any as Promise<QueryResult<any>>;
 
       const dbConnectionObj = getMockDBConnection({ sql: () => mockResponse });
 
@@ -105,10 +105,10 @@ describe('AdministrativeActivityRepository', () => {
     });
 
     it('should throw an error if the repo fails to insert the administrative activity record', async () => {
-      const mockResponse = ({
+      const mockResponse = {
         rowCount: 1,
         rows: []
-      } as any) as Promise<QueryResult<any>>;
+      } as any as Promise<QueryResult<any>>;
 
       const dbConnectionObj = getMockDBConnection({ sql: () => mockResponse });
 
@@ -141,10 +141,10 @@ describe('AdministrativeActivityRepository', () => {
         create_date: new Date()
       };
 
-      const mockResponse = ({
+      const mockResponse = {
         rowCount: 1,
         rows: [mockRecord]
-      } as any) as Promise<QueryResult<any>>;
+      } as any as Promise<QueryResult<any>>;
 
       const dbConnectionObj = getMockDBConnection({ sql: () => mockResponse });
 
@@ -158,10 +158,10 @@ describe('AdministrativeActivityRepository', () => {
     });
 
     it('returns null if no matching administrative record is found', async () => {
-      const mockResponse = ({
+      const mockResponse = {
         rowCount: 0,
         rows: []
-      } as any) as Promise<QueryResult<any>>;
+      } as any as Promise<QueryResult<any>>;
 
       const dbConnectionObj = getMockDBConnection({ sql: () => mockResponse });
 
@@ -185,10 +185,10 @@ describe('AdministrativeActivityRepository', () => {
         administrative_activity_id: 1
       };
 
-      const mockResponse = ({
+      const mockResponse = {
         rowCount: 1,
         rows: [mockRecord]
-      } as any) as Promise<QueryResult<any>>;
+      } as any as Promise<QueryResult<any>>;
 
       const dbConnectionObj = getMockDBConnection({ sql: sinon.fake(() => mockResponse) });
 
@@ -206,10 +206,10 @@ describe('AdministrativeActivityRepository', () => {
     });
 
     it('should throw an error if no matching administrative record is found', async () => {
-      const mockResponse = ({
+      const mockResponse = {
         rowCount: 0,
         rows: []
-      } as any) as Promise<QueryResult<any>>;
+      } as any as Promise<QueryResult<any>>;
 
       const dbConnectionObj = getMockDBConnection({ sql: () => mockResponse });
 

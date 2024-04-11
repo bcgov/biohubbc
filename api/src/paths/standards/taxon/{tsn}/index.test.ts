@@ -1,4 +1,3 @@
-
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';

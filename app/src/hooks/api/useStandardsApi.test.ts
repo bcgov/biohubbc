@@ -15,7 +15,7 @@ describe('useStandardsApi', () => {
 
   describe('getSpeciesStandards', () => {
     it('works as expected', async () => {
-      const mockTsn = 202422
+      const mockTsn = 202422;
       const res = {
         scientificName: 'caribou',
         marking_body_locations: [

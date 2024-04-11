@@ -84,7 +84,7 @@ describe('HistoryPublishService', () => {
       const dbConnection = getMockDBConnection();
       const service = new HistoryPublishService(dbConnection);
 
-      const mockResponse = ({ survey_metadata_publish_id: 1 } as unknown) as SurveyMetadataPublish;
+      const mockResponse = { survey_metadata_publish_id: 1 } as unknown as SurveyMetadataPublish;
       const repositoryStub = sinon
         .stub(HistoryPublishRepository.prototype, 'getSurveyMetadataPublishRecord')
         .resolves(mockResponse);
@@ -102,7 +102,7 @@ describe('HistoryPublishService', () => {
       const dbConnection = getMockDBConnection();
       const service = new HistoryPublishService(dbConnection);
 
-      const mockResponse = ({ survey_attachment_publish_id: 1 } as unknown) as SurveyAttachmentPublish;
+      const mockResponse = { survey_attachment_publish_id: 1 } as unknown as SurveyAttachmentPublish;
       const repositoryStub = sinon
         .stub(HistoryPublishRepository.prototype, 'getSurveyAttachmentPublishRecord')
         .resolves(mockResponse);
@@ -120,7 +120,7 @@ describe('HistoryPublishService', () => {
       const dbConnection = getMockDBConnection();
       const service = new HistoryPublishService(dbConnection);
 
-      const mockResponse = ({ survey_report_publish_id: 1 } as unknown) as SurveyReportPublish;
+      const mockResponse = { survey_report_publish_id: 1 } as unknown as SurveyReportPublish;
       const repositoryStub = sinon
         .stub(HistoryPublishRepository.prototype, 'getSurveyReportPublishRecord')
         .resolves(mockResponse);

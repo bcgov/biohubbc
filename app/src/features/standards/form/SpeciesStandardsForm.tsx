@@ -1,41 +1,39 @@
 import { Box } from '@mui/material';
-import { Formik, FormikProps } from 'formik';
-import { useRef } from 'react';
-import yup from 'utils/YupSchema';
+import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
+import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
+import { useState } from 'react';
 import SpeciesStandardsResults from '../view/SpeciesStandardsResults';
-import SpeciesStandardsAutocomplete from './components/SpeciesStandardsAutocomplete';
 
 export interface ISpeciesStandardsFormikProps {
   tsn: number;
 }
 
 const SpeciesStandardsForm = () => {
-  const formikRef = useRef<FormikProps<ISpeciesStandardsFormikProps>>(null);
+  const [selectedSpecies, setSelectedSpecies] = useState<ITaxonomy>();
+  // const formikRef = useRef<FormikProps<ISpeciesStandardsFormikProps>>(null);
 
-  const speciesStandardsYupSchema = yup.object({
-    taxon: yup.string()
-  });
+  // const speciesStandardsYupSchema = yup.object({
+  //   taxon: yup.string()
+  // });
 
-  const speciesStandardsInitialValues = {
-    tsn: 0
-  };
+  // const speciesStandardsInitialValues = {
+  //   tsn: 0
+  // };
 
   return (
-    <Formik
-      innerRef={formikRef}
-      initialValues={speciesStandardsInitialValues}
-      validationSchema={speciesStandardsYupSchema}
-      validateOnBlur={false}
-      validateOnChange={false}
-      enableReinitialize={true}
-      onSubmit={() => {}}>
-      <Box>
-        <SpeciesStandardsAutocomplete />
-        <Box my={2}>
-          <SpeciesStandardsResults />
-        </Box>
+    <>
+      <SpeciesAutocompleteField
+        formikFieldName="tsn"
+        label={''}
+        handleSpecies={(value) => {
+          setSelectedSpecies(value);
+        }}
+      />
+
+      <Box my={2}>
+        <SpeciesStandardsResults selectedSpecies={selectedSpecies} />
       </Box>
-    </Formik>
+    </>
   );
 };
 

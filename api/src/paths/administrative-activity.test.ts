@@ -20,13 +20,13 @@ describe('openapi schema', () => {
 
   describe('POST', () => {
     it('is valid openapi v3 schema', () => {
-      expect(ajv.validateSchema((POST.apiDoc as unknown) as object)).to.be.true;
+      expect(ajv.validateSchema(POST.apiDoc as unknown as object)).to.be.true;
     });
   });
 
   describe('GET', () => {
     it('is valid openapi v3 schema', () => {
-      expect(ajv.validateSchema((GET.apiDoc as unknown) as object)).to.be.true;
+      expect(ajv.validateSchema(GET.apiDoc as unknown as object)).to.be.true;
     });
   });
 });
