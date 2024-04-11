@@ -1,27 +1,22 @@
-import { Container, Paper } from '@mui/material';
+import { Box, Container, Paper, Toolbar, Typography } from '@mui/material';
 import PageHeader from 'components/layout/PageHeader';
 import SpeciesStandardsForm from './form/SpeciesStandardsForm';
-import SpeciesStandardsResults from './view/SpeciesStandardsResults';
 
 const SpeciesStandardsPage = () => {
-
-  const handleSubmit = () => {
-    try {
-      // const response = await biohubApi.standards.getTaxonStandards(taxonId);
-      console.log('');
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   return (
     <>
       <PageHeader title="Standards" />
 
       <Container maxWidth="xl" sx={{ py: 3 }}>
-        <Paper sx={{ p: 3 }}>
-          <SpeciesStandardsForm handleSubmit={handleSubmit} />
-          <SpeciesStandardsResults />
+        <Paper>
+          <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Typography variant="h4" component="h2">
+              Discover data standards for species
+            </Typography>
+          </Toolbar>
+          <Box py={2} px={3}>
+            <SpeciesStandardsForm />
+          </Box>
         </Paper>
       </Container>
     </>

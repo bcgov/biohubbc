@@ -1,14 +1,25 @@
-import { Operation } from 'express-openapi';
-import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
-import { getLogger } from '../../../../utils/logger';
-import { HTTP400 } from '../../../../errors/http-error';
-import { getAPIUserDBConnection } from '../../../../database/db';
 import { RequestHandler } from 'express';
-import { ProjectParticipationService } from '../../../../services/project-participation-service';
+import { Operation } from 'express-openapi';
+import { SYSTEM_ROLE } from '../../../../constants/roles';
+import { getDBConnection } from '../../../../database/db';
+import { HTTP400 } from '../../../../errors/http-error';
+import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
+import { StandardsService } from '../../../../services/standards-service';
+import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('paths/projects');
 
 export const GET: Operation = [
+  authorizeRequestHandler(() => {
+    return {
+      and: [
+        {
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
+        }
+      ]
+    };
+  }),
   getSpeciesStandards()
 ];
 
@@ -25,7 +36,7 @@ GET.apiDoc = {
       required: true
     }
   ],
-
+  security: [{ Bearer: [] }],
   responses: {
     200: {
       description: 'Species data standards response object.',
@@ -41,15 +52,7 @@ GET.apiDoc = {
                 items: {
                   type: 'object',
                   additionalProperties: false,
-                  required: [
-                    'project_id',
-                    'name',
-                    'project_programs',
-                    'completion_status',
-                    'start_date',
-                    'end_date',
-                    'regions'
-                  ],
+                  required: [],
                   properties: {
                     measurements: {
                       type: 'object',
@@ -193,35 +196,35 @@ GET.apiDoc = {
  * @returns {RequestHandler}
  */
 export function getSpeciesStandards(): RequestHandler {
-    return async (req, res) => {
-      if (!req.params) {
-        throw new HTTP400('Missing required params');
-      }
-  
-      if (!req.params.tsn) {
-        throw new HTTP400('Missing required param: tsn');
-      }
-  
-      const connection = getAPIUserDBConnection()
-  
-      try {
-        const tsn = Number(req.params.tsn);
-  
-        await connection.open();
-  
-        const standardsService = new StandardsService(connection);
-  
-        const getSpeciesStandardsResponse = await standardsService.getProjectsBySystemtsn(tsn);
-  
-        await connection.commit();
-  
-        return res.status(200).json(getSpeciesStandardsResponse);
-      } catch (error) {
-        defaultLog.error({ label: 'getAllUserProjects', message: 'error', error });
-        throw error;
-      } finally {
-        connection.release();
-      }
-    };
-  }
-  
+  return async (req, res) => {
+    if (!req.params) {
+      throw new HTTP400('Missing required params');
+    }
+
+    if (!req.params.tsn) {
+      throw new HTTP400('Missing required param: tsn');
+    }
+
+    // const connection = getAPIUserDBConnection();
+    const connection = getDBConnection(req['keycloak_token']);
+
+    try {
+      const tsn = Number(req.params.tsn);
+
+      await connection.open();
+
+      const standardsService = new StandardsService(connection);
+
+      const getSpeciesStandardsResponse = await standardsService.getSpeciesStandards(tsn);
+
+      await connection.commit();
+
+      return res.status(200).json(getSpeciesStandardsResponse);
+    } catch (error) {
+      defaultLog.error({ label: 'getSpeciesStandards', message: 'error', error });
+      throw error;
+    } finally {
+      connection.release();
+    }
+  };
+}

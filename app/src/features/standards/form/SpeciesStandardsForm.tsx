@@ -1,17 +1,15 @@
+import { Box } from '@mui/material';
 import { Formik, FormikProps } from 'formik';
 import { useRef } from 'react';
 import yup from 'utils/YupSchema';
+import SpeciesStandardsResults from '../view/SpeciesStandardsResults';
 import SpeciesStandardsAutocomplete from './components/SpeciesStandardsAutocomplete';
 
-interface ISpeciesStandardsFormProps {
-  handleSubmit: any;
+export interface ISpeciesStandardsFormikProps {
+  tsn: number;
 }
 
-interface ISpeciesStandardsFormikProps {
-  tsn: string;
-}
-
-const SpeciesStandardsForm = (props: ISpeciesStandardsFormProps) => {
+const SpeciesStandardsForm = () => {
   const formikRef = useRef<FormikProps<ISpeciesStandardsFormikProps>>(null);
 
   const speciesStandardsYupSchema = yup.object({
@@ -19,22 +17,25 @@ const SpeciesStandardsForm = (props: ISpeciesStandardsFormProps) => {
   });
 
   const speciesStandardsInitialValues = {
-    tsn: ''
+    tsn: 0
   };
 
   return (
-    <>
-      <Formik
-        innerRef={formikRef}
-        initialValues={speciesStandardsInitialValues}
-        validationSchema={speciesStandardsYupSchema}
-        validateOnBlur={false}
-        validateOnChange={false}
-        enableReinitialize={true}
-        onSubmit={props.handleSubmit}>
-        <SpeciesStandardsAutocomplete />
-      </Formik>
-    </>
+    <Formik
+      innerRef={formikRef}
+      initialValues={speciesStandardsInitialValues}
+      validationSchema={speciesStandardsYupSchema}
+      validateOnBlur={false}
+      validateOnChange={false}
+      enableReinitialize={true}
+      onSubmit={() => {}}>
+      <Box>
+        <SpeciesStandardsAutocomplete/>
+        <Box my={2}>
+          <SpeciesStandardsResults />
+        </Box>
+      </Box>
+    </Formik>
   );
 };
 

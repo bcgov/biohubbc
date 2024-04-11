@@ -2,7 +2,7 @@ import { AxiosInstance } from 'axios';
 import { IGetSpeciesStandardsResponse } from 'interfaces/useStandardsApi.interface';
 
 /**
- * Returns information about what data can be uploaded for a given species, 
+ * Returns information about what data can be uploaded for a given species,
  * consolidating lookup values into a single endpoint
  *
  * @param {AxiosInstance} axios

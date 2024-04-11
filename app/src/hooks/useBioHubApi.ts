@@ -13,10 +13,10 @@ import usePublishApi from './api/usePublishApi';
 import useResourcesApi from './api/useResourcesApi';
 import useSamplingSiteApi from './api/useSamplingSiteApi';
 import useSpatialApi from './api/useSpatialApi';
+import useStandardsApi from './api/useStandardsApi';
 import useSurveyApi from './api/useSurveyApi';
 import useTaxonomyApi from './api/useTaxonomyApi';
 import useUserApi from './api/useUserApi';
-import useStandardsApi from './api/useStandardsApi';
 
 /**
  * Returns a set of supported api methods.
