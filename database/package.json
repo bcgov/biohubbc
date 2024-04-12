@@ -18,8 +18,9 @@
     "seed": "knex seed:run --knexfile ./src/knexfile.ts",
     "lint": "eslint src/ --ext .js,.ts",
     "lint-fix": "npm run lint -- --fix",
-    "format": "prettier --check \"./src/**/*.{js,jsx,ts,tsx,css,scss}\"",
-    "format-fix": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss}\""
+    "format": "prettier --loglevel=warn --check \"./src/**/*.{js,jsx,ts,tsx,css,scss}\"",
+    "format-fix": "prettier --loglevel=warn --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss}\"",
+    "fix": "npm-run-all -l -s lint-fix format-fix"
   },
   "dependencies": {
     "knex": "^2.4.2",

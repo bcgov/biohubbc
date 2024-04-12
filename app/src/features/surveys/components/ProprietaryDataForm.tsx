@@ -168,7 +168,7 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                       name="proprietor.proprietary_data_category"
                       label="Proprietary Data Category"
                       options={props.proprietary_data_category}
-                      onChange={(event, option) => {
+                      onChange={(_, option) => {
                         // Reset proprietor_name and first_nations_id if user changes proprietary_data_category from
                         // `First Nations Land` to any other option. This is because the `First Nations Land` category is
                         // based on a dropdown, where as the other options are free-text and only one of `proprietor_name` or
@@ -204,7 +204,7 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                         name="proprietor.first_nations_id"
                         label="Proprietor Name"
                         options={props.first_nations}
-                        onChange={(event, option) => {
+                        onChange={(_, option) => {
                           // Set the first nations id field for sending to the API
                           setFieldValue('proprietor.first_nations_id', option?.value);
                           setFieldValue('proprietor.proprietor_name', option?.label);

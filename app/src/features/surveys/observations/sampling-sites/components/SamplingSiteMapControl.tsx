@@ -202,7 +202,7 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
                         ]);
                       });
                     }}
-                    onLayerDelete={(event: DrawEvents.Deleted) => {
+                    onLayerDelete={() => {
                       setFieldValue(name, []);
                     }}
                   />

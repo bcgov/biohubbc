@@ -33,6 +33,14 @@
         "ts-check": false
       }
     ],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "args": "all",
+        "argsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }
+    ],
     "no-var": "error"
   }
 }
