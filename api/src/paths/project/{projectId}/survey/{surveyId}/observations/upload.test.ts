@@ -42,7 +42,7 @@ describe('uploadMedia', () => {
     try {
       const result = upload.uploadMedia();
 
-      await result({ ...mockReq, files: [] }, (null as unknown) as any, (null as unknown) as any);
+      await result({ ...mockReq, files: [] }, null as unknown as any, null as unknown as any);
       expect.fail();
     } catch (actualError) {
       expect((actualError as HTTPError).status).to.equal(400);
@@ -63,8 +63,8 @@ describe('uploadMedia', () => {
 
       await result(
         { ...mockReq, files: [{ originalname: 'file.txt' }] },
-        (null as unknown) as any,
-        (null as unknown) as any
+        null as unknown as any,
+        null as unknown as any
       );
       expect.fail();
     } catch (actualError) {
@@ -86,7 +86,7 @@ describe('uploadMedia', () => {
     try {
       const result = upload.uploadMedia();
 
-      await result(mockReq, (null as unknown) as any, (null as unknown) as any);
+      await result(mockReq, null as unknown as any, null as unknown as any);
       expect.fail();
     } catch (actualError) {
       expect((actualError as HTTPError).status).to.equal(400);
@@ -110,7 +110,7 @@ describe('uploadMedia', () => {
     try {
       const result = upload.uploadMedia();
 
-      await result(mockReq, (null as unknown) as any, (null as unknown) as any);
+      await result(mockReq, null as unknown as any, null as unknown as any);
       expect.fail();
     } catch (actualError) {
       expect((actualError as HTTPError).message).to.equal(expectedError.message);
@@ -147,7 +147,7 @@ describe('uploadMedia', () => {
 
     const result = upload.uploadMedia();
 
-    await result(mockReq, (sampleRes as unknown) as any, (null as unknown) as any);
+    await result(mockReq, sampleRes as unknown as any, null as unknown as any);
     expect(actualResult).to.eql(expectedResponse);
     expect(upsertSurveyAttachmentStub).to.be.calledOnce;
   });

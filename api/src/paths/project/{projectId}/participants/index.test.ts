@@ -143,8 +143,8 @@ describe('postProjectParticipants', () => {
       const result = create_project_participants.postProjectParticipants();
       await result(
         { ...sampleReq, params: { ...sampleReq.params, projectId: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
+        null as unknown as any,
+        null as unknown as any
       );
       expect.fail();
     } catch (actualError) {
@@ -160,8 +160,8 @@ describe('postProjectParticipants', () => {
       const result = create_project_participants.postProjectParticipants();
       await result(
         { ...sampleReq, body: { ...sampleReq.body, participants: [] } },
-        (null as unknown) as any,
-        (null as unknown) as any
+        null as unknown as any,
+        null as unknown as any
       );
       expect.fail();
     } catch (actualError) {
@@ -182,7 +182,7 @@ describe('postProjectParticipants', () => {
 
     try {
       const result = create_project_participants.postProjectParticipants();
-      await result({ ...sampleReq }, (null as unknown) as any, (null as unknown) as any);
+      await result({ ...sampleReq }, null as unknown as any, null as unknown as any);
       expect.fail();
     } catch (actualError) {
       expect((actualError as HTTPError).message).to.equal('an error');

@@ -1,13 +1,13 @@
 {
   "extends": [
-    "react-app",
     "eslint:recommended",
     "plugin:prettier/recommended",
+    "plugin:react-hooks/recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended"
   ],
   "parser": "@typescript-eslint/parser",
-  "plugins": ["prettier", "@typescript-eslint"],
+  "plugins": ["prettier", "@typescript-eslint", "react-hooks"],
   "rules": {
     "prettier/prettier": ["warn"],
     "@typescript-eslint/no-explicit-any": "off",
