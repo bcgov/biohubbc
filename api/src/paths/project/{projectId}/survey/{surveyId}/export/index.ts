@@ -6,7 +6,7 @@ import { authorizeRequestHandler } from '../../../../../../request-handlers/secu
 import { ExportConfig, ExportService } from '../../../../../../services/export-service';
 import { getLogger } from '../../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/publish/survey');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/export/index.ts');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -101,7 +101,17 @@ POST.apiDoc = {
       content: {
         'text/plain': {
           schema: {
-            type: 'string'
+            type: 'object',
+            additionalProperties: false,
+            required: ['presignedS3Urls'],
+            properties: {
+              presignedS3Urls: {
+                type: 'array',
+                items: {
+                  type: 'string'
+                }
+              }
+            }
           }
         }
       }
@@ -144,7 +154,7 @@ export function exportData(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).json(response);
+      return res.status(200).json({ presignedS3Urls: response });
     } catch (error) {
       defaultLog.error({ label: 'publishSurvey', message: 'error', error });
       await connection.rollback();

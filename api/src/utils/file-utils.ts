@@ -197,7 +197,7 @@ export async function getObjectMeta(key: string): Promise<HeadObjectOutput> {
  * Get an s3 signed url.
  *
  * @param {string} key S3 object key
- * @returns {Promise<string>} the response from S3 or null if required parameters are null
+ * @return {*}  {(Promise<string | null>)} the response from S3 or null if required parameters are null
  */
 export async function getS3SignedURL(key: string): Promise<string | null> {
   const s3Client = _getS3Client();
