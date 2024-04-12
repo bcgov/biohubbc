@@ -44,117 +44,58 @@ GET.apiDoc = {
           schema: {
             type: 'object',
             additionalProperties: false,
-            // required: [''],
+            required: ['scientificName', 'measurements', 'markingBodyPositions'],
             properties: {
-              projects: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  additionalProperties: false,
-                  required: [],
-                  properties: {
-                    measurements: {
+              scientificName: {
+                type: 'string',
+              },
+              measurements: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['qualitative', 'quantitative'],
+                properties: {
+                  qualitative: {
+                    description: 'All qualitative measurement type definitions for the survey.',
+                    type: 'array',
+                    items: {
+                      description: 'A qualitative measurement type definition, with array of valid/accepted options',
                       type: 'object',
+                      additionalProperties: false,
+                      required: ['itis_tsn', 'taxon_measurement_id', 'measurement_name', 'measurement_desc', 'options'],
                       properties: {
-                        qualitative: {
-                          description: 'All qualitative measurement type definitions for the survey.',
-                          type: 'array',
-                          items: {
-                            description:
-                              'A qualitative measurement type definition, with array of valid/accepted options',
-                            type: 'object',
-                            additionalProperties: false,
-                            required: [
-                              'itis_tsn',
-                              'taxon_measurement_id',
-                              'measurement_name',
-                              'measurement_desc',
-                              'options'
-                            ],
-                            properties: {
-                              itis_tsn: {
-                                type: 'integer',
-                                nullable: true
-                              },
-                              taxon_measurement_id: {
-                                type: 'string'
-                              },
-                              measurement_name: {
-                                type: 'string'
-                              },
-                              measurement_desc: {
-                                type: 'string',
-                                nullable: true
-                              },
-                              options: {
-                                description: 'Valid options for the measurement.',
-                                type: 'array',
-                                items: {
-                                  type: 'object',
-                                  additionalProperties: false,
-                                  required: ['qualitative_option_id', 'option_label', 'option_value', 'option_desc'],
-                                  properties: {
-                                    qualitative_option_id: {
-                                      type: 'string'
-                                    },
-                                    option_label: {
-                                      type: 'string',
-                                      nullable: true
-                                    },
-                                    option_value: {
-                                      type: 'number'
-                                    },
-                                    option_desc: {
-                                      type: 'string',
-                                      nullable: true
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
+                        itis_tsn: {
+                          type: 'integer',
+                          nullable: true
                         },
-                        quantitative: {
-                          description: 'All quantitative measurement type definitions for the survey.',
+                        taxon_measurement_id: {
+                          type: 'string'
+                        },
+                        measurement_name: {
+                          type: 'string'
+                        },
+                        measurement_desc: {
+                          type: 'string',
+                          nullable: true
+                        },
+                        options: {
+                          description: 'Valid options for the measurement.',
                           type: 'array',
                           items: {
-                            description:
-                              'A quantitative measurement type definition, with possible min/max constraint.',
                             type: 'object',
                             additionalProperties: false,
-                            required: [
-                              'itis_tsn',
-                              'taxon_measurement_id',
-                              'measurement_name',
-                              'measurement_desc',
-                              'min_value',
-                              'max_value',
-                              'unit'
-                            ],
+                            required: ['qualitative_option_id', 'option_label', 'option_value', 'option_desc'],
                             properties: {
-                              itis_tsn: {
-                                type: 'integer',
-                                nullable: true
-                              },
-                              taxon_measurement_id: {
+                              qualitative_option_id: {
                                 type: 'string'
                               },
-                              measurement_name: {
-                                type: 'string'
-                              },
-                              measurement_desc: {
+                              option_label: {
                                 type: 'string',
                                 nullable: true
                               },
-                              min_value: {
-                                type: 'number',
-                                nullable: true
+                              option_value: {
+                                type: 'number'
                               },
-                              max_value: {
-                                type: 'number',
-                                nullable: true
-                              },
-                              unit: {
+                              option_desc: {
                                 type: 'string',
                                 nullable: true
                               }
@@ -163,6 +104,66 @@ GET.apiDoc = {
                         }
                       }
                     }
+                  },
+                  quantitative: {
+                    description: 'All quantitative measurement type definitions for the survey.',
+                    type: 'array',
+                    items: {
+                      description: 'A quantitative measurement type definition, with possible min/max constraint.',
+                      type: 'object',
+                      additionalProperties: false,
+                      required: [
+                        'itis_tsn',
+                        'taxon_measurement_id',
+                        'measurement_name',
+                        'measurement_desc',
+                        'min_value',
+                        'max_value',
+                        'unit'
+                      ],
+                      properties: {
+                        itis_tsn: {
+                          type: 'integer',
+                          nullable: true
+                        },
+                        taxon_measurement_id: {
+                          type: 'string'
+                        },
+                        measurement_name: {
+                          type: 'string'
+                        },
+                        measurement_desc: {
+                          type: 'string',
+                          nullable: true
+                        },
+                        min_value: {
+                          type: 'number',
+                          nullable: true
+                        },
+                        max_value: {
+                          type: 'number',
+                          nullable: true
+                        },
+                        unit: {
+                          type: 'string',
+                          nullable: true
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              markingBodyPositions: {
+                type: 'array',
+                additionalProperties: false,
+                items: {
+                  required: ['value', 'key', 'index'],
+                  additionalProperties: false,
+                  type: 'object',
+                  properties: {
+                    value: { type: 'string', nullable: false },
+                    key: { type: 'string', nullable: false },
+                    index: { type: 'string', nullable: false }
                   }
                 }
               }

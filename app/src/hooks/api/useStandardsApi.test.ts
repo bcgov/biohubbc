@@ -18,7 +18,7 @@ describe('useStandardsApi', () => {
       const mockTsn = 202422;
       const res = {
         scientificName: 'caribou',
-        marking_body_locations: [
+        markingBodyLocations: [
           {
             value: 'left ear'
           }
@@ -34,7 +34,7 @@ describe('useStandardsApi', () => {
       const result = await useStandardsApi(axios).getSpeciesStandards(mockTsn);
 
       expect(result.scientificName).toEqual('caribou');
-      expect(result.marking_body_locations[0].value).toEqual('left ear');
+      expect(result.markingBodyLocations[0].value).toEqual('left ear');
       expect(result.measurements.qualitative[0].measurement_name).toEqual('life stage');
       expect(result.measurements.quantitative[0].measurement_desc).toEqual('weight of the body');
     });
