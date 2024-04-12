@@ -1,6 +1,6 @@
 [![img](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bcgov_biohubbc&metric=alert_status)](https://sonarcloud.io/dashboard?id=bcgov_biohubbc) [![codecov](https://codecov.io/gh/bcgov/biohubbc/branch/dev/graph/badge.svg?token=CF2ZR3T3U2)](https://codecov.io/gh/bcgov/biohubbc) [![BioHubBC](https://img.shields.io/endpoint?url=https://dashboard.cypress.io/badge/simple/w8oxci/dev&style=flat&logo=cypress)](https://dashboard.cypress.io/projects/w8oxci/runs)
 
-# BioDiversityHub BC - updated
+# Species Inventory Management System (SIMS)
 
 Sub-project under the SEISM Capital project, the source of BC’s species inventory data.
 
@@ -104,9 +104,9 @@ _Note: Run all commands in a terminal that supports make. On Mac you can use the
 
 ## Initialize the `./env` file.
 
-This will copy `./env_config/env.docker` to `./.env`.  
-This should only need to be run once.  
-This file may need additional editing to provide secrets for external services (like S3).
+This will copy `./env_config/env.docker` to `./.env`. .  
+The `.env` file may need additional editing to provide secrets for external services (like S3).  
+The `.env` file should never be committed!
 
 ```
 make env
@@ -114,6 +114,28 @@ make env
 
 Result of running `make env` for the first time:  
 ![make env screenshot](README/images/make/running_make_env.png "Running `make env`")
+
+### Modifying Environment Variables
+
+There are several places where environment variables need to be defined, depending on whether you are running the apps
+locally or in Openshift.
+
+Below are all of the relevant files that need to be updated when modifying environment variables.
+
+#### Local Development
+
+- `env.docker`
+- `docker-compose.yml`
+- `app/src/contexts/configContext.tsx`
+
+#### Deployed to OpenShift
+
+- `[api/app/database]/.pipeline/**`
+- `.pipeline/configMaps/sims.configmap.yaml`
+  - Changes to the configmap also need to be reflected in OpenShift. See [.pipeline/configMaps/README.md](.pipeline/configMaps/README.md)
+- `server/index.js`
+- `app/src/contexts/configContext.tsx`
+- OpenShift Secrets (tools, dev, test, prod)
 
 ## Start all Applications
 
@@ -166,7 +188,7 @@ After you've run `make clean`, running `make web` will launch new containers, wi
 make clean
 ```
 
-## View the logs for a container
+## Viewing the logs for a container
 
 ### API
 
@@ -192,24 +214,30 @@ make log-db
 make log-db-setup
 ```
 
-## Run Linter and Fix Issues
+## Linting and Formatting
+
+### Run Linter and Fix Issues
 
 Will run the projects code linter and attempt to fix all issues found.
-
-_Note: Not all formatting issues can be auto-fixed._
 
 ```
 make lint-fix
 ```
 
-## Run Formatter and Fix Issues
+### Run Formatter and Fix Issues
 
 Will run the projects code formatter and attempt to fix all issues found.
 
-_Note: Not all formatting issues can be auto-fixed._
-
 ```
 make format-fix
+```
+
+### Run Both Linter and Formatter and Fix Issues
+
+Will run both the projects code linter and code formatter and attempt to fix all issues found.
+
+```
+make fix
 ```
 
 ## Shell Into a Docker Container (database, api, app, etc)
@@ -296,20 +324,7 @@ If you already had PostgreSQL (PSQL) installed, it is likely that the default po
 
 ## The App Works Locally But Not In OpenShift
 
-Ensure that any new environment variables have been included in all of the necessary files.
-
-Local Development
-
-- `env.docker`
-- `docker-compose.yml`
-- `app/src/contexts/configContext.tsx`
-
-Deployed to OpenShift
-
-- `[api/app/database]/.pipeline/**`
-- `server/index.js`
-- `app/src/contexts/configContext.tsx`
-- OpenShift Secrets [dev,test,prod]
+See the section on [Modifying Environment Variables](#modifying-environment-variables)
 
 # Helpful Tools
 
