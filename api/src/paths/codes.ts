@@ -395,7 +395,7 @@ GET.apiDoc = {
  * @returns {RequestHandler}
  */
 export function getAllCodes(): RequestHandler {
-  return async (req, res) => {
+  return async (_, res) => {
     const connection = getAPIUserDBConnection();
 
     try {

@@ -150,7 +150,7 @@ const EditSurveyPage = () => {
    * @param {History.Location} location
    * @return {*}
    */
-  const handleLocationChange = (location: History.Location, action: History.Action) => {
+  const handleLocationChange = (location: History.Location) => {
     if (!dialogContext.yesNoDialogProps.open) {
       // If the cancel dialog is not open: open it
       dialogContext.setYesNoDialog({
