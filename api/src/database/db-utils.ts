@@ -29,16 +29,16 @@ type GenericizedKeycloakUserInformation = {
  * @param fn the function to be wrapped
  * @returns Promise<WrapperReturn> A Promise with the wrapped functions return value
  */
-export const asyncErrorWrapper =
-  <WrapperArgs extends any[], WrapperReturn>(fn: (...args: WrapperArgs) => Promise<WrapperReturn>) =>
-  async (...args: WrapperArgs): Promise<WrapperReturn> => {
-    try {
-      // asyncErrorWrapper must return the awaited promise, and cannot simply `return fn(...args)`.
-      return await fn(...args);
-    } catch (err) {
-      throw parseError(err);
-    }
-  };
+export const asyncErrorWrapper = <WrapperArgs extends any[], WrapperReturn>(
+  fn: (...args: WrapperArgs) => Promise<WrapperReturn>
+) => async (...args: WrapperArgs): Promise<WrapperReturn> => {
+  try {
+    // asyncErrorWrapper must return the awaited promise, and cannot simply `return fn(...args)`.
+    return await fn(...args);
+  } catch (err) {
+    throw parseError(err);
+  }
+};
 
 /**
  * A synchronous wrapper function that will catch any exceptions thrown by the wrapped function
@@ -46,15 +46,15 @@ export const asyncErrorWrapper =
  * @param fn the function to be wrapped
  * @returns WrapperReturn The wrapped functions return value
  */
-export const syncErrorWrapper =
-  <WrapperArgs extends any[], WrapperReturn>(fn: (...args: WrapperArgs) => WrapperReturn) =>
-  (...args: WrapperArgs): WrapperReturn => {
-    try {
-      return fn(...args);
-    } catch (err) {
-      throw parseError(err);
-    }
-  };
+export const syncErrorWrapper = <WrapperArgs extends any[], WrapperReturn>(
+  fn: (...args: WrapperArgs) => WrapperReturn
+) => (...args: WrapperArgs): WrapperReturn => {
+  try {
+    return fn(...args);
+  } catch (err) {
+    throw parseError(err);
+  }
+};
 
 /**
  * This function parses the passed in error and translates them into a human readable error

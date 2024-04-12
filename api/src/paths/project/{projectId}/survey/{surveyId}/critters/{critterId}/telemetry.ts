@@ -12,9 +12,8 @@ import { SurveyCritterService } from '../../../../../../../services/survey-critt
 import { getLogger } from '../../../../../../../utils/logger';
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/critters/{critterId}/telemetry');
 
-const GeoJSONFeatureCollectionFeaturesItems = (
-  GeoJSONFeatureCollection.properties?.features as OpenAPIV3.ArraySchemaObject
-)?.items as OpenAPIV3.SchemaObject;
+const GeoJSONFeatureCollectionFeaturesItems = (GeoJSONFeatureCollection.properties
+  ?.features as OpenAPIV3.ArraySchemaObject)?.items as OpenAPIV3.SchemaObject;
 
 const GeoJSONTelemetryPointsAPISchema: OpenAPIV3.SchemaObject = {
   ...GeoJSONFeatureCollection,

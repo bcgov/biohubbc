@@ -36,7 +36,9 @@ export class HistoryPublishService extends DBService {
    * @returns {*} {Promise<number>}
    * @memberof HistoryPublishRepository
    */
-  async insertSurveyAttachmentPublishRecord(data: ISurveyAttachmentPublish): Promise<{
+  async insertSurveyAttachmentPublishRecord(
+    data: ISurveyAttachmentPublish
+  ): Promise<{
     survey_attachment_publish_id: number;
   }> {
     return this.historyRepository.insertSurveyAttachmentPublishRecord(data);

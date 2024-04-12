@@ -42,7 +42,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = [{ id: 1 } as unknown as IProjectAttachment];
+          const data = [({ id: 1 } as unknown) as IProjectAttachment];
 
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'getProjectAttachments').resolves(data);
 
@@ -59,9 +59,11 @@ describe('AttachmentService', () => {
 
           const attachmentService = new AttachmentService(dbConnection);
 
-          const attachmentData = [{ survey_attachment_id: 1, file_type: 'Attachment' } as unknown as ISurveyAttachment];
+          const attachmentData = [
+            ({ survey_attachment_id: 1, file_type: 'Attachment' } as unknown) as ISurveyAttachment
+          ];
 
-          const supplementaryData = { survey_attachment_publish_id: 1 } as unknown as SurveyAttachmentPublish;
+          const supplementaryData = ({ survey_attachment_publish_id: 1 } as unknown) as SurveyAttachmentPublish;
 
           const attachmentRepoStub = sinon
             .stub(AttachmentRepository.prototype, 'getSurveyAttachments')
@@ -86,9 +88,9 @@ describe('AttachmentService', () => {
 
           const attachmentService = new AttachmentService(dbConnection);
 
-          const attachmentData = [{ survey_report_attachment_id: 1 } as unknown as ISurveyReportAttachment];
+          const attachmentData = [({ survey_report_attachment_id: 1 } as unknown) as ISurveyReportAttachment];
 
-          const supplementaryData = { survey_report_publish_id: 1 } as unknown as SurveyReportPublish;
+          const supplementaryData = ({ survey_report_publish_id: 1 } as unknown) as SurveyReportPublish;
 
           const attachmentRepoStub = sinon
             .stub(AttachmentRepository.prototype, 'getSurveyReportAttachments')
@@ -112,7 +114,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = { id: 1 } as unknown as IProjectAttachment;
+          const data = ({ id: 1 } as unknown) as IProjectAttachment;
 
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'getProjectAttachmentById').resolves(data);
 
@@ -128,7 +130,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = [{ id: 1 }, { id: 2 }] as unknown as IProjectAttachment[];
+          const data = ([{ id: 1 }, { id: 2 }] as unknown) as IProjectAttachment[];
 
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'getProjectAttachmentsByIds').resolves(data);
 
@@ -149,7 +151,7 @@ describe('AttachmentService', () => {
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'insertProjectAttachment').resolves(data);
 
           const response = await service.insertProjectAttachment(
-            {} as unknown as Express.Multer.File,
+            ({} as unknown) as Express.Multer.File,
             1,
             'string',
             'string'
@@ -181,7 +183,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = { id: 1 } as unknown as QueryResult;
+          const data = ({ id: 1 } as unknown) as QueryResult;
 
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'getProjectAttachmentByFileName').resolves(data);
 
@@ -199,14 +201,14 @@ describe('AttachmentService', () => {
 
           const serviceStub1 = sinon
             .stub(AttachmentService.prototype, 'getProjectAttachmentByFileName')
-            .resolves({ rowCount: 1 } as unknown as QueryResult);
+            .resolves(({ rowCount: 1 } as unknown) as QueryResult);
 
           const serviceStub2 = sinon
             .stub(AttachmentService.prototype, 'updateProjectAttachment')
             .resolves({ project_attachment_id: 1, revision_count: 1 });
 
           const response = await service.upsertProjectAttachment(
-            { originalname: 'file.test' } as unknown as Express.Multer.File,
+            ({ originalname: 'file.test' } as unknown) as Express.Multer.File,
             1,
             'string'
           );
@@ -226,14 +228,14 @@ describe('AttachmentService', () => {
 
           const serviceStub1 = sinon
             .stub(AttachmentService.prototype, 'getProjectAttachmentByFileName')
-            .resolves({ rowCount: 0 } as unknown as QueryResult);
+            .resolves(({ rowCount: 0 } as unknown) as QueryResult);
 
           const serviceStub2 = sinon
             .stub(AttachmentService.prototype, 'insertProjectAttachment')
             .resolves({ project_attachment_id: 1, revision_count: 1 });
 
           const response = await service.upsertProjectAttachment(
-            { originalname: 'file.test' } as unknown as Express.Multer.File,
+            ({ originalname: 'file.test' } as unknown) as Express.Multer.File,
             1,
             'string'
           );
@@ -288,11 +290,11 @@ describe('AttachmentService', () => {
 
             const getProjectReportStub = sinon
               .stub(AttachmentService.prototype, 'getProjectReportAttachmentById')
-              .resolves({
+              .resolves(({
                 key: 'key',
                 uuid: 'uuid',
                 project_report_attachment_id: 1
-              } as unknown as IProjectReportAttachment);
+              } as unknown) as IProjectReportAttachment);
             const deleteProjectReportAuthorsStub = sinon
               .stub(AttachmentService.prototype, 'deleteProjectReportAttachmentAuthors')
               .resolves();
@@ -334,11 +336,11 @@ describe('AttachmentService', () => {
 
             const getProjectReportStub = sinon
               .stub(AttachmentService.prototype, 'getProjectReportAttachmentById')
-              .resolves({
+              .resolves(({
                 key: 'key',
                 uuid: 'uuid',
                 project_report_attachment_id: 1
-              } as unknown as IProjectReportAttachment);
+              } as unknown) as IProjectReportAttachment);
             const deleteProjectReportAuthorsStub = sinon
               .stub(AttachmentService.prototype, 'deleteProjectReportAttachmentAuthors')
               .resolves();
@@ -347,11 +349,11 @@ describe('AttachmentService', () => {
               .resolves();
             const getProjectAttachmentStub = sinon
               .stub(AttachmentService.prototype, 'getProjectAttachmentById')
-              .resolves({
+              .resolves(({
                 key: 'key',
                 uuid: 'uuid',
                 project_attachment_id: 1
-              } as unknown as IProjectAttachment);
+              } as unknown) as IProjectAttachment);
             const deleteProjectAttachmentStub = sinon
               .stub(AttachmentService.prototype, '_deleteProjectAttachmentRecord')
               .resolves();
@@ -385,7 +387,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = [{ id: 1 } as unknown as IProjectReportAttachment];
+          const data = [({ id: 1 } as unknown) as IProjectReportAttachment];
 
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'getProjectReportAttachments').resolves(data);
 
@@ -401,7 +403,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = { id: 1 } as unknown as IProjectReportAttachment;
+          const data = ({ id: 1 } as unknown) as IProjectReportAttachment;
 
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'getProjectReportAttachmentById').resolves(data);
 
@@ -417,7 +419,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = [{ id: 1 }, { id: 2 }] as unknown as IProjectReportAttachment[];
+          const data = ([{ id: 1 }, { id: 2 }] as unknown) as IProjectReportAttachment[];
 
           const repoStub = sinon
             .stub(AttachmentRepository.prototype, 'getProjectReportAttachmentsByIds')
@@ -435,7 +437,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = [{ id: 1 } as unknown as IProjectReportAttachmentAuthor];
+          const data = [({ id: 1 } as unknown) as IProjectReportAttachmentAuthor];
 
           const repoStub = sinon
             .stub(AttachmentRepository.prototype, 'getProjectReportAttachmentAuthors')
@@ -461,7 +463,7 @@ describe('AttachmentService', () => {
             'string',
             1,
             1,
-            { title: 'string' } as unknown as PostReportAttachmentMetadata,
+            ({ title: 'string' } as unknown) as PostReportAttachmentMetadata,
             'string'
           );
 
@@ -479,9 +481,9 @@ describe('AttachmentService', () => {
 
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'updateProjectReportAttachment').resolves(data);
 
-          const response = await service.updateProjectReportAttachment('string', 1, {
+          const response = await service.updateProjectReportAttachment('string', 1, ({
             title: 'string'
-          } as unknown as PutReportAttachmentMetadata);
+          } as unknown) as PutReportAttachmentMetadata);
 
           expect(repoStub).to.be.calledOnce;
           expect(response).to.eql(data);
@@ -493,7 +495,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = { id: 1 } as unknown as QueryResult;
+          const data = ({ id: 1 } as unknown) as QueryResult;
 
           const repoStub = sinon
             .stub(AttachmentRepository.prototype, 'deleteProjectReportAttachmentAuthors')
@@ -528,7 +530,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = { id: 1 } as unknown as QueryResult;
+          const data = ({ id: 1 } as unknown) as QueryResult;
 
           const repoStub = sinon
             .stub(AttachmentRepository.prototype, 'getProjectReportAttachmentByFileName')
@@ -548,7 +550,7 @@ describe('AttachmentService', () => {
 
           const serviceStub1 = sinon
             .stub(AttachmentService.prototype, 'getProjectReportAttachmentByFileName')
-            .resolves({ rowCount: 1 } as unknown as QueryResult);
+            .resolves(({ rowCount: 1 } as unknown) as QueryResult);
 
           const serviceStub2 = sinon
             .stub(AttachmentService.prototype, 'updateProjectReportAttachment')
@@ -563,7 +565,7 @@ describe('AttachmentService', () => {
             .resolves();
 
           const response = await service.upsertProjectReportAttachment(
-            { originalname: 'file.test' } as unknown as Express.Multer.File,
+            ({ originalname: 'file.test' } as unknown) as Express.Multer.File,
             1,
             {
               title: 'string',
@@ -588,7 +590,7 @@ describe('AttachmentService', () => {
 
           const serviceStub1 = sinon
             .stub(AttachmentService.prototype, 'getProjectReportAttachmentByFileName')
-            .resolves({ rowCount: 0 } as unknown as QueryResult);
+            .resolves(({ rowCount: 0 } as unknown) as QueryResult);
 
           const serviceStub2 = sinon
             .stub(AttachmentService.prototype, 'insertProjectReportAttachment')
@@ -603,7 +605,7 @@ describe('AttachmentService', () => {
             .resolves();
 
           const response = await service.upsertProjectReportAttachment(
-            { originalname: 'file.test' } as unknown as Express.Multer.File,
+            ({ originalname: 'file.test' } as unknown) as Express.Multer.File,
             1,
             {
               title: 'string',
@@ -648,9 +650,9 @@ describe('AttachmentService', () => {
             .stub(AttachmentRepository.prototype, 'updateProjectReportAttachmentMetadata')
             .resolves();
 
-          const response = await service.updateProjectReportAttachmentMetadata(1, 1, {
+          const response = await service.updateProjectReportAttachmentMetadata(1, 1, ({
             title: 'string'
-          } as unknown as PutReportAttachmentMetadata);
+          } as unknown) as PutReportAttachmentMetadata);
 
           expect(repoStub).to.be.calledOnce;
           expect(response).to.eql(undefined);
@@ -684,7 +686,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = [{ id: 1 } as unknown as ISurveyAttachment];
+          const data = [({ id: 1 } as unknown) as ISurveyAttachment];
 
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'getSurveyAttachments').resolves(data);
 
@@ -700,7 +702,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = [{ id: 1 }, { id: 2 }] as unknown as ISurveyAttachment[];
+          const data = ([{ id: 1 }, { id: 2 }] as unknown) as ISurveyAttachment[];
 
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'getSurveyAttachmentsByIds').resolves(data);
 
@@ -735,12 +737,12 @@ describe('AttachmentService', () => {
 
             const getSurveyAttachmentStub = sinon
               .stub(AttachmentService.prototype, 'getSurveyAttachmentById')
-              .resolves({
+              .resolves(({
                 survey_report_attachment_id: 1,
                 survey_attachment_id: 1,
                 uuid: 'uuid',
                 key: 's3/key'
-              } as unknown as ISurveyAttachment);
+              } as unknown) as ISurveyAttachment);
             const deleteSurveyReportPublishStub = sinon
               .stub(HistoryPublishService.prototype, 'deleteSurveyReportAttachmentPublishRecord')
               .resolves();
@@ -760,12 +762,12 @@ describe('AttachmentService', () => {
 
             const getSurveyReportStub = sinon
               .stub(AttachmentService.prototype, 'getSurveyReportAttachmentById')
-              .resolves({
+              .resolves(({
                 survey_report_attachment_id: 1,
                 survey_attachment_id: 1,
                 uuid: 'uuid',
                 key: 's3/key'
-              } as unknown as ISurveyReportAttachment);
+              } as unknown) as ISurveyReportAttachment);
 
             const mockS3Client = new AWS.S3();
             sinon.stub(AWS, 'S3').returns(mockS3Client);
@@ -797,17 +799,17 @@ describe('AttachmentService', () => {
 
             const getSurveyAttachmentStub = sinon
               .stub(AttachmentService.prototype, 'getSurveyAttachmentById')
-              .resolves({
+              .resolves(({
                 survey_report_attachment_id: 1,
                 survey_attachment_id: 1,
                 uuid: 'uuid',
                 key: 's3/key'
-              } as unknown as ISurveyAttachment);
+              } as unknown) as ISurveyAttachment);
             const attachmentPublishStatusStub = sinon
               .stub(HistoryPublishService.prototype, 'getSurveyAttachmentPublishRecord')
-              .resolves({
+              .resolves(({
                 survey_attachment_publish_id: 1
-              } as unknown as SurveyAttachmentPublish);
+              } as unknown) as SurveyAttachmentPublish);
             const deleteSurveyReportPublishStub = sinon
               .stub(HistoryPublishService.prototype, 'deleteSurveyReportAttachmentPublishRecord')
               .resolves();
@@ -823,12 +825,12 @@ describe('AttachmentService', () => {
 
             const getSurveyReportStub = sinon
               .stub(AttachmentService.prototype, 'getSurveyReportAttachmentById')
-              .resolves({
+              .resolves(({
                 survey_report_attachment_id: 1,
                 survey_attachment_id: 1,
                 uuid: 'uuid',
                 key: 's3/key'
-              } as unknown as ISurveyReportAttachment);
+              } as unknown) as ISurveyReportAttachment);
 
             const mockS3Client = new AWS.S3();
             sinon.stub(AWS, 'S3').returns(mockS3Client);
@@ -907,7 +909,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = { id: 1 } as unknown as QueryResult;
+          const data = ({ id: 1 } as unknown) as QueryResult;
 
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'getSurveyAttachmentByFileName').resolves(data);
 
@@ -925,14 +927,14 @@ describe('AttachmentService', () => {
 
           const serviceStub1 = sinon
             .stub(AttachmentService.prototype, 'getSurveyReportAttachmentByFileName')
-            .resolves({ rowCount: 1 } as unknown as QueryResult);
+            .resolves(({ rowCount: 1 } as unknown) as QueryResult);
 
           const serviceStub2 = sinon
             .stub(AttachmentService.prototype, 'updateSurveyAttachment')
             .resolves({ survey_attachment_id: 1, revision_count: 1 });
 
           const response = await service.upsertSurveyAttachment(
-            { originalname: 'file.test' } as unknown as Express.Multer.File,
+            ({ originalname: 'file.test' } as unknown) as Express.Multer.File,
             1,
             1,
             'string'
@@ -953,14 +955,14 @@ describe('AttachmentService', () => {
 
           const serviceStub1 = sinon
             .stub(AttachmentService.prototype, 'getSurveyReportAttachmentByFileName')
-            .resolves({ rowCount: 0 } as unknown as QueryResult);
+            .resolves(({ rowCount: 0 } as unknown) as QueryResult);
 
           const serviceStub2 = sinon
             .stub(AttachmentService.prototype, 'insertSurveyAttachment')
             .resolves({ survey_attachment_id: 1, revision_count: 1 });
 
           const response = await service.upsertSurveyAttachment(
-            { originalname: 'file.test' } as unknown as Express.Multer.File,
+            ({ originalname: 'file.test' } as unknown) as Express.Multer.File,
             1,
             1,
             'string'
@@ -983,7 +985,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = [{ id: 1 } as unknown as ISurveyReportAttachment];
+          const data = [({ id: 1 } as unknown) as ISurveyReportAttachment];
 
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'getSurveyReportAttachments').resolves(data);
 
@@ -999,7 +1001,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = { id: 1 } as unknown as ISurveyReportAttachment;
+          const data = ({ id: 1 } as unknown) as ISurveyReportAttachment;
 
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'getSurveyReportAttachmentById').resolves(data);
 
@@ -1015,7 +1017,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = [{ id: 1 }, { id: 2 }] as unknown as ISurveyReportAttachment[];
+          const data = ([{ id: 1 }, { id: 2 }] as unknown) as ISurveyReportAttachment[];
 
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'getSurveyReportAttachmentsByIds').resolves(data);
 
@@ -1031,7 +1033,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = [{ id: 1 } as unknown as ISurveyReportAttachmentAuthor];
+          const data = [({ id: 1 } as unknown) as ISurveyReportAttachmentAuthor];
 
           const repoStub = sinon
             .stub(AttachmentRepository.prototype, 'getSurveyReportAttachmentAuthors')
@@ -1057,7 +1059,7 @@ describe('AttachmentService', () => {
             'string',
             1,
             1,
-            { title: 'string' } as unknown as PostReportAttachmentMetadata,
+            ({ title: 'string' } as unknown) as PostReportAttachmentMetadata,
             'string'
           );
 
@@ -1075,9 +1077,9 @@ describe('AttachmentService', () => {
 
           const repoStub = sinon.stub(AttachmentRepository.prototype, 'updateSurveyReportAttachment').resolves(data);
 
-          const response = await service.updateSurveyReportAttachment('string', 1, {
+          const response = await service.updateSurveyReportAttachment('string', 1, ({
             title: 'string'
-          } as unknown as PutReportAttachmentMetadata);
+          } as unknown) as PutReportAttachmentMetadata);
 
           expect(repoStub).to.be.calledOnce;
           expect(response).to.eql(data);
@@ -1120,7 +1122,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const data = { id: 1 } as unknown as QueryResult;
+          const data = ({ id: 1 } as unknown) as QueryResult;
 
           const repoStub = sinon
             .stub(AttachmentRepository.prototype, 'getSurveyReportAttachmentByFileName')
@@ -1140,7 +1142,7 @@ describe('AttachmentService', () => {
 
           const serviceStub1 = sinon
             .stub(AttachmentService.prototype, 'getSurveyReportAttachmentByFileName')
-            .resolves({ rowCount: 1 } as unknown as QueryResult);
+            .resolves(({ rowCount: 1 } as unknown) as QueryResult);
 
           const serviceStub2 = sinon
             .stub(AttachmentService.prototype, 'updateSurveyReportAttachment')
@@ -1153,7 +1155,7 @@ describe('AttachmentService', () => {
           const serviceStub4 = sinon.stub(AttachmentService.prototype, 'insertSurveyReportAttachmentAuthor').resolves();
 
           const response = await service.upsertSurveyReportAttachment(
-            { originalname: 'file.test' } as unknown as Express.Multer.File,
+            ({ originalname: 'file.test' } as unknown) as Express.Multer.File,
             1,
             1,
             {
@@ -1179,7 +1181,7 @@ describe('AttachmentService', () => {
 
           const serviceStub1 = sinon
             .stub(AttachmentService.prototype, 'getSurveyReportAttachmentByFileName')
-            .resolves({ rowCount: 0 } as unknown as QueryResult);
+            .resolves(({ rowCount: 0 } as unknown) as QueryResult);
 
           const serviceStub2 = sinon
             .stub(AttachmentService.prototype, 'insertSurveyReportAttachment')
@@ -1192,7 +1194,7 @@ describe('AttachmentService', () => {
           const serviceStub4 = sinon.stub(AttachmentService.prototype, 'insertSurveyReportAttachmentAuthor').resolves();
 
           const response = await service.upsertSurveyReportAttachment(
-            { originalname: 'file.test' } as unknown as Express.Multer.File,
+            ({ originalname: 'file.test' } as unknown) as Express.Multer.File,
             1,
             1,
             {
@@ -1256,9 +1258,9 @@ describe('AttachmentService', () => {
             .stub(AttachmentRepository.prototype, 'updateSurveyReportAttachmentMetadata')
             .resolves();
 
-          const response = await service.updateSurveyReportAttachmentMetadata(1, 1, {
+          const response = await service.updateSurveyReportAttachmentMetadata(1, 1, ({
             title: 'string'
-          } as unknown as PutReportAttachmentMetadata);
+          } as unknown) as PutReportAttachmentMetadata);
 
           expect(repoStub).to.be.calledOnce;
           expect(response).to.eql(undefined);

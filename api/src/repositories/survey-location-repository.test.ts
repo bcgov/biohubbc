@@ -15,7 +15,7 @@ describe('SurveyLocationRepository', () => {
 
   describe('insertSurveyLocation', () => {
     it('should insert a survey location', async () => {
-      const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const repository = new SurveyLocationRepository(dbConnection);
@@ -46,7 +46,7 @@ describe('SurveyLocationRepository', () => {
 
   describe('updateSurveyLocation', () => {
     it('should update a survey location', async () => {
-      const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const repository = new SurveyLocationRepository(dbConnection);
@@ -78,7 +78,7 @@ describe('SurveyLocationRepository', () => {
   describe('getSurveyLocationsData', () => {
     it('should return a list of survey locations', async () => {
       const mockSurveyLocation = { survey_location_id: 1, name: 'Test Location', description: 'Test Description' };
-      const mockResponse = { rows: [mockSurveyLocation], rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [mockSurveyLocation], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const repository = new SurveyLocationRepository(dbConnection);
@@ -93,7 +93,7 @@ describe('SurveyLocationRepository', () => {
   describe('deleteSurveyLocation', () => {
     it('should delete a survey location', async () => {
       const mockSurveyLocation = { survey_location_id: 1, name: 'Test Location', description: 'Test Description' };
-      const mockResponse = { rows: [mockSurveyLocation], rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [mockSurveyLocation], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const repository = new SurveyLocationRepository(dbConnection);
@@ -104,7 +104,7 @@ describe('SurveyLocationRepository', () => {
     });
 
     it('should throw an error when unable to delete the survey location', async () => {
-      const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const repository = new SurveyLocationRepository(dbConnection);

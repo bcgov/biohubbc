@@ -243,7 +243,7 @@ describe('worksheet utils', () => {
     it('throws when no measurements are fetched', async () => {
       const fetch = sinon
         .stub(CritterbaseService.prototype, 'getTaxonMeasurements')
-        .resolves(null as unknown as { qualitative: []; quantitative: [] });
+        .resolves((null as unknown) as { qualitative: []; quantitative: [] });
 
       const service = new CritterbaseService({ keycloak_guid: '', username: '' });
 
@@ -561,7 +561,7 @@ describe('worksheet utils', () => {
         }
       };
 
-      const mockWorksheet = {} as unknown as xlsx.WorkSheet;
+      const mockWorksheet = ({} as unknown) as xlsx.WorkSheet;
 
       const getWorksheetHeaderssStub = sinon
         .stub(worksheet_utils, 'getWorksheetHeaders')
@@ -583,7 +583,7 @@ describe('worksheet utils', () => {
         }
       };
 
-      const mockWorksheet = {} as unknown as xlsx.WorkSheet;
+      const mockWorksheet = ({} as unknown) as xlsx.WorkSheet;
 
       const getWorksheetHeaderssStub = sinon
         .stub(worksheet_utils, 'getWorksheetHeaders')

@@ -36,8 +36,8 @@ describe('deleteSurveySampleSiteRecords', () => {
       const result = delete_survey_sample_sites.deleteSurveySampleSiteRecords();
       await result(
         { ...sampleReq, params: sampleReq.params, body: { surveySampleSiteIds: null } },
-        null as unknown as any,
-        null as unknown as any
+        (null as unknown) as any,
+        (null as unknown) as any
       );
       expect.fail();
     } catch (actualError) {

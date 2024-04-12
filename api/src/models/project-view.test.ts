@@ -133,7 +133,7 @@ describe('GetIUCNClassificationData', () => {
     let iucnClassificationData: GetIUCNClassificationData;
 
     before(() => {
-      iucnClassificationData = new GetIUCNClassificationData(null as unknown as any[]);
+      iucnClassificationData = new GetIUCNClassificationData((null as unknown) as any[]);
     });
 
     it('sets classification details', function () {
@@ -185,7 +185,7 @@ describe('GetAttachmentsData', () => {
     let data: GetAttachmentsData;
 
     before(() => {
-      data = new GetAttachmentsData(null as unknown as any[]);
+      data = new GetAttachmentsData((null as unknown) as any[]);
     });
 
     it('sets attachmentDetails', function () {
@@ -288,7 +288,7 @@ describe('GetAttachmentsData', () => {
 describe('GetReportAttachmentsData', () => {
   describe('No values provided', () => {
     it('sets attachmentDetails', function () {
-      const data: GetReportAttachmentsData = new GetReportAttachmentsData(null as unknown as any[]);
+      const data: GetReportAttachmentsData = new GetReportAttachmentsData((null as unknown) as any[]);
 
       expect(data.attachmentDetails).to.eql([]);
     });

@@ -630,11 +630,10 @@ export function getSurveyObservations(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      const observationData =
-        await observationService.getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData(
-          surveyId,
-          ensureCompletePaginationOptions(paginationOptions)
-        );
+      const observationData = await observationService.getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData(
+        surveyId,
+        ensureCompletePaginationOptions(paginationOptions)
+      );
 
       const observationCount = observationData.supplementaryObservationData.observationCount;
 

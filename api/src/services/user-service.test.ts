@@ -21,7 +21,7 @@ describe('UserService', () => {
 
       const mockResponseRow = { system_user_id: 123 };
       const mockUserRepository = sinon.stub(UserRepository.prototype, 'getUserById');
-      mockUserRepository.resolves(mockResponseRow as unknown as SystemUser);
+      mockUserRepository.resolves((mockResponseRow as unknown) as SystemUser);
 
       const userService = new UserService(mockDBConnection);
 
@@ -55,7 +55,7 @@ describe('UserService', () => {
 
       const mockResponseRow = [{ system_user_id: 123 }];
       const mockUserRepository = sinon.stub(UserRepository.prototype, 'getUserByGuid');
-      mockUserRepository.resolves(mockResponseRow as unknown as SystemUser[]);
+      mockUserRepository.resolves((mockResponseRow as unknown) as SystemUser[]);
 
       const userService = new UserService(mockDBConnection);
 
@@ -89,7 +89,7 @@ describe('UserService', () => {
 
       const mockResponseRow = [{ system_user_id: 123 }];
       const mockUserRepository = sinon.stub(UserRepository.prototype, 'getUserByIdentifier');
-      mockUserRepository.resolves(mockResponseRow as unknown as SystemUser[]);
+      mockUserRepository.resolves((mockResponseRow as unknown) as SystemUser[]);
 
       const userService = new UserService(mockDBConnection);
 
@@ -110,7 +110,7 @@ describe('UserService', () => {
 
       const mockRowObj = { system_user_id: 123 };
       const mockUserRepository = sinon.stub(UserRepository.prototype, 'addSystemUser');
-      mockUserRepository.resolves(mockRowObj as unknown as SystemUser);
+      mockUserRepository.resolves((mockRowObj as unknown) as SystemUser);
 
       const userService = new UserService(mockDBConnection);
 
@@ -165,7 +165,7 @@ describe('UserService', () => {
     });
 
     it('throws an error if it fails to get the current system user id', async () => {
-      const mockDBConnection = getMockDBConnection({ systemUserId: () => null as unknown as number });
+      const mockDBConnection = getMockDBConnection({ systemUserId: () => (null as unknown) as number });
 
       const existingSystemUser = null;
       const getUserByGuidStub = sinon.stub(UserService.prototype, 'getUserByGuid').resolves(existingSystemUser);
@@ -199,7 +199,7 @@ describe('UserService', () => {
       const existingSystemUser = null;
       const getUserByGuidStub = sinon.stub(UserService.prototype, 'getUserByGuid').resolves(existingSystemUser);
 
-      const addedSystemUser = { system_user_id: 2, record_end_date: null } as unknown as SystemUser;
+      const addedSystemUser = ({ system_user_id: 2, record_end_date: null } as unknown) as SystemUser;
       const addSystemUserStub = sinon.stub(UserService.prototype, 'addSystemUser').resolves(addedSystemUser);
 
       const activateSystemUserStub = sinon.stub(UserService.prototype, 'activateSystemUser');

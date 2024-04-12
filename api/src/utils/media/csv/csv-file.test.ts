@@ -45,7 +45,7 @@ describe('CSVWorksheet', () => {
 
   describe('getHeaders', () => {
     it('returns empty array if the worksheet is null', () => {
-      const xlsxWorkSheet = null as unknown as xlsx.WorkSheet;
+      const xlsxWorkSheet = (null as unknown) as xlsx.WorkSheet;
 
       const csvWorksheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
 
@@ -68,7 +68,7 @@ describe('CSVWorksheet', () => {
 
   describe('getRows', () => {
     it('returns empty array if the worksheet is null', () => {
-      const xlsxWorkSheet = null as unknown as xlsx.WorkSheet;
+      const xlsxWorkSheet = (null as unknown) as xlsx.WorkSheet;
 
       const csvWorksheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
 

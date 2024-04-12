@@ -47,7 +47,7 @@ GET.apiDoc = {
             required: ['scientificName', 'measurements', 'markingBodyPositions'],
             properties: {
               scientificName: {
-                type: 'string',
+                type: 'string'
               },
               measurements: {
                 type: 'object',

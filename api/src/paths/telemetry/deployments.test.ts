@@ -4,14 +4,14 @@ import { BctwService, IManualTelemetry } from '../../services/bctw-service';
 import { getRequestHandlerMocks } from '../../__mocks__/db';
 import { getAllTelemetryByDeploymentIds } from './deployments';
 
-const mockTelemetry = [
+const mockTelemetry = ([
   {
     telemetry_manual_id: 1
   },
   {
     telemetry_manual_id: 2
   }
-] as unknown[] as IManualTelemetry[];
+] as unknown[]) as IManualTelemetry[];
 
 describe('getAllTelemetryByDeploymentIds', () => {
   afterEach(() => {

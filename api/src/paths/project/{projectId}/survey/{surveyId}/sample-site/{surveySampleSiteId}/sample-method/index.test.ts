@@ -117,8 +117,8 @@ describe('createSurveySampleSiteRecord', () => {
       const result = create_survey_sample_method_record.createSurveySampleSiteRecord();
       await result(
         { ...sampleReq, params: { ...sampleReq.params, surveySampleSiteId: null } },
-        null as unknown as any,
-        null as unknown as any
+        (null as unknown) as any,
+        (null as unknown) as any
       );
       expect.fail();
     } catch (actualError) {

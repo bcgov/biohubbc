@@ -18,7 +18,7 @@ describe('RegionRepository', () => {
     it('should return early when no regions passed in', async () => {
       const mockDBConnection = getMockDBConnection();
       const repo = new RegionRepository(mockDBConnection);
-      const insertSQL = sinon.stub(mockDBConnection, 'sql').returns({} as unknown as any);
+      const insertSQL = sinon.stub(mockDBConnection, 'sql').returns(({} as unknown) as any);
 
       await repo.addRegionsToProject(1, []);
       expect(insertSQL).to.not.be.called;
@@ -40,7 +40,7 @@ describe('RegionRepository', () => {
     it('should run without issue', async () => {
       const mockDBConnection = getMockDBConnection();
       const repo = new RegionRepository(mockDBConnection);
-      const insertSQL = sinon.stub(mockDBConnection, 'sql').returns({} as unknown as any);
+      const insertSQL = sinon.stub(mockDBConnection, 'sql').returns(({} as unknown) as any);
 
       await repo.addRegionsToProject(1, [1]);
       expect(insertSQL).to.be.called;
@@ -51,7 +51,7 @@ describe('RegionRepository', () => {
     it('should return early when no regions passed in', async () => {
       const mockDBConnection = getMockDBConnection();
       const repo = new RegionRepository(mockDBConnection);
-      const insertSQL = sinon.stub(mockDBConnection, 'sql').returns({} as unknown as any);
+      const insertSQL = sinon.stub(mockDBConnection, 'sql').returns(({} as unknown) as any);
 
       await repo.addRegionsToSurvey(1, []);
       expect(insertSQL).to.not.be.called;
@@ -73,7 +73,7 @@ describe('RegionRepository', () => {
     it('should run without issue', async () => {
       const mockDBConnection = getMockDBConnection();
       const repo = new RegionRepository(mockDBConnection);
-      const insertSQL = sinon.stub(mockDBConnection, 'sql').returns({} as unknown as any);
+      const insertSQL = sinon.stub(mockDBConnection, 'sql').returns(({} as unknown) as any);
 
       await repo.addRegionsToSurvey(1, [1]);
       expect(insertSQL).to.be.called;
@@ -84,7 +84,7 @@ describe('RegionRepository', () => {
     it('should run without issue', async () => {
       const mockDBConnection = getMockDBConnection();
       const repo = new RegionRepository(mockDBConnection);
-      const sqlStub = sinon.stub(mockDBConnection, 'sql').returns({} as unknown as any);
+      const sqlStub = sinon.stub(mockDBConnection, 'sql').returns(({} as unknown) as any);
 
       await repo.deleteRegionsForProject(1);
       expect(sqlStub).to.be.called;
@@ -108,7 +108,7 @@ describe('RegionRepository', () => {
     it('should run without issue', async () => {
       const mockDBConnection = getMockDBConnection();
       const repo = new RegionRepository(mockDBConnection);
-      const sqlStub = sinon.stub(mockDBConnection, 'sql').returns({} as unknown as any);
+      const sqlStub = sinon.stub(mockDBConnection, 'sql').returns(({} as unknown) as any);
 
       await repo.deleteRegionsForSurvey(1);
       expect(sqlStub).to.be.called;
@@ -132,7 +132,7 @@ describe('RegionRepository', () => {
     it('should return list of regions', async () => {
       const mockDBConnection = getMockDBConnection({
         knex: async () =>
-          ({
+          (({
             rowCount: 1,
             rows: [
               {
@@ -147,7 +147,7 @@ describe('RegionRepository', () => {
                 geography: '{}'
               }
             ]
-          } as any as Promise<QueryResult<any>>)
+          } as any) as Promise<QueryResult<any>>)
       });
       const repo = new RegionRepository(mockDBConnection);
 

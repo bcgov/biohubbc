@@ -22,7 +22,7 @@ describe('survey/{surveyId}/view', () => {
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      sinon.stub(SurveyService.prototype, 'getSurveyById').resolves({ id: 2 } as unknown as SurveyObject);
+      sinon.stub(SurveyService.prototype, 'getSurveyById').resolves(({ id: 2 } as unknown) as SurveyObject);
 
       sinon.stub(SurveyService.prototype, 'getSurveySupplementaryDataById').resolves({
         survey_metadata_publish: {

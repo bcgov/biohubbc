@@ -5,14 +5,14 @@ import { createManualTelemetry, GET, getManualTelemetry, PATCH, POST, updateManu
 import { BctwService, IManualTelemetry } from '../../../services/bctw-service';
 import { getRequestHandlerMocks } from '../../../__mocks__/db';
 
-const mockTelemetry = [
+const mockTelemetry = ([
   {
     telemetry_manual_id: 1
   },
   {
     telemetry_manual_id: 2
   }
-] as unknown[] as IManualTelemetry[];
+] as unknown[]) as IManualTelemetry[];
 
 describe('manual telemetry endpoints', () => {
   afterEach(() => {
@@ -23,7 +23,7 @@ describe('manual telemetry endpoints', () => {
     describe('openapi schema', () => {
       it('is valid openapi v3 schema', () => {
         const ajv = new Ajv();
-        expect(ajv.validateSchema(GET.apiDoc as unknown as object)).to.be.true;
+        expect(ajv.validateSchema((GET.apiDoc as unknown) as object)).to.be.true;
       });
     });
     it('should retrieve all manual telemetry', async () => {
@@ -59,7 +59,7 @@ describe('manual telemetry endpoints', () => {
     describe('openapi schema', () => {
       it('is valid openapi v3 schema', () => {
         const ajv = new Ajv();
-        expect(ajv.validateSchema(POST.apiDoc as unknown as object)).to.be.true;
+        expect(ajv.validateSchema((POST.apiDoc as unknown) as object)).to.be.true;
       });
     });
     it('should bulk create manual telemetry', async () => {
@@ -94,7 +94,7 @@ describe('manual telemetry endpoints', () => {
     describe('openapi schema', () => {
       it('is valid openapi v3 schema', () => {
         const ajv = new Ajv();
-        expect(ajv.validateSchema(PATCH.apiDoc as unknown as object)).to.be.true;
+        expect(ajv.validateSchema((PATCH.apiDoc as unknown) as object)).to.be.true;
       });
     });
     it('should bulk update manual telemetry', async () => {
