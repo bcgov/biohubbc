@@ -40,9 +40,10 @@ function zodImplements<Model = never>() {
 
   return {
     with: <
-      Schema extends ZodImplements<Model> & {
-        [unknownKey in Exclude<keyof Schema, keyof Model>]: never;
-      }
+      Schema extends ZodImplements<Model> &
+        {
+          [unknownKey in Exclude<keyof Schema, keyof Model>]: never;
+        }
     >(
       schema: Schema
     ) => z.object(schema)

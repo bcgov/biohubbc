@@ -89,7 +89,7 @@ const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
       )}
       {activeView === 'MARKING BODY LOCATIONS' && (
         <Stack gap={2}>
-          {resourcesDataLoader.data?.marking_body_locations?.map((location) => (
+          {resourcesDataLoader.data?.markingBodyLocations?.map((location) => (
             <MarkingBodyLocationStandardCard label={location.value} />
           ))}
         </Stack>

@@ -78,7 +78,9 @@ export class SubCountService extends DBService {
    *   }>}
    * @memberof SubCountService
    */
-  async getMeasurementTypeDefinitionsForSurvey(surveyId: number): Promise<{
+  async getMeasurementTypeDefinitionsForSurvey(
+    surveyId: number
+  ): Promise<{
     qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
     quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
   }> {

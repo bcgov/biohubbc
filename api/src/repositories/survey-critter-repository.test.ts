@@ -15,7 +15,7 @@ describe('SurveyRepository', () => {
   describe('getCrittersInSurvey', () => {
     it('should return result', async () => {
       const mockSurveyCritter = { critter_id: 1, survey_id: 1, critterbase_critter_id: 1 };
-      const mockResponse = { rows: [mockSurveyCritter], rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [mockSurveyCritter], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
       const repository = new SurveyCritterRepository(dbConnection);
@@ -28,7 +28,7 @@ describe('SurveyRepository', () => {
 
   describe('addCritterToSurvey', () => {
     it('should return result', async () => {
-      const mockResponse = { rows: [{ submissionId: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [{ submissionId: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
       const repository = new SurveyCritterRepository(dbConnection);
@@ -41,7 +41,7 @@ describe('SurveyRepository', () => {
 
   describe('removeCritterFromSurvey', () => {
     it('should return result', async () => {
-      const mockResponse = { rows: [{ submissionId: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [{ submissionId: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
       const repository = new SurveyCritterRepository(dbConnection);
@@ -54,7 +54,7 @@ describe('SurveyRepository', () => {
 
   describe('upsertDeployment', () => {
     it('should update existing row', async () => {
-      const mockResponse = { rows: [{ submissionId: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [{ submissionId: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
       const repository = new SurveyCritterRepository(dbConnection);
@@ -67,7 +67,7 @@ describe('SurveyRepository', () => {
 
   describe('updateCritter', () => {
     it('should update existing row', async () => {
-      const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
       const repository = new SurveyCritterRepository(dbConnection);
       const response = await repository.updateCritter(1, 'asdf');
@@ -77,7 +77,7 @@ describe('SurveyRepository', () => {
 
   describe('deleteDeployment', () => {
     it('should delete existing row', async () => {
-      const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
       const repository = new SurveyCritterRepository(dbConnection);

@@ -12,11 +12,11 @@ describe('critterId openapi schema', () => {
   const ajv = new Ajv();
 
   it('PATCH is valid openapi v3 schema', () => {
-    expect(ajv.validateSchema(PATCH.apiDoc as unknown as object)).to.be.true;
+    expect(ajv.validateSchema((PATCH.apiDoc as unknown) as object)).to.be.true;
   });
 
   it('DELETE is valid openapi v3 schema', () => {
-    expect(ajv.validateSchema(DELETE.apiDoc as unknown as object)).to.be.true;
+    expect(ajv.validateSchema((DELETE.apiDoc as unknown) as object)).to.be.true;
   });
 });
 

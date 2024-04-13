@@ -17,7 +17,7 @@ export interface IGetSpeciesStandardsResponse {
     qualitative: CBQualitativeMeasurementTypeDefinition[];
     quantitative: CBQuantitativeMeasurementTypeDefinition[];
   };
-  marking_body_locations: {
+  markingBodyLocations: {
     id: string;
     key: string;
     value: string;

@@ -34,10 +34,10 @@ describe('SubCountRepository', () => {
         revision_count: 1
       };
 
-      const mockResponse = {
+      const mockResponse = ({
         rows: [mockSubcount],
         rowCount: 1
-      } as any as Promise<QueryResult<any>>;
+      } as any) as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({
         knex: () => mockResponse
@@ -50,20 +50,20 @@ describe('SubCountRepository', () => {
     });
 
     it('should catch query errors and throw an ApiExecuteSQLError', async () => {
-      const mockResponse = {
+      const mockResponse = ({
         rows: [],
         rowCount: 0
-      } as any as Promise<QueryResult<any>>;
+      } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         knex: () => mockResponse
       });
 
       const repo = new SubCountRepository(dbConnection);
       try {
-        await repo.insertObservationSubCount(null as unknown as InsertObservationSubCount);
+        await repo.insertObservationSubCount((null as unknown) as InsertObservationSubCount);
         expect.fail();
       } catch (error) {
-        expect((error as any as ApiExecuteSQLError).message).to.be.eq('Failed to insert observation subcount');
+        expect(((error as any) as ApiExecuteSQLError).message).to.be.eq('Failed to insert observation subcount');
       }
     });
   });
@@ -86,10 +86,10 @@ describe('SubCountRepository', () => {
         critterbase_event_id: 'aaaa'
       };
 
-      const mockResponse = {
+      const mockResponse = ({
         rows: [mockSubcountEvent],
         rowCount: 1
-      } as any as Promise<QueryResult<any>>;
+      } as any) as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({
         knex: () => mockResponse
@@ -102,20 +102,20 @@ describe('SubCountRepository', () => {
     });
 
     it('should catch query errors and throw an ApiExecuteSQLError', async () => {
-      const mockResponse = {
+      const mockResponse = ({
         rows: [],
         rowCount: 0
-      } as any as Promise<QueryResult<any>>;
+      } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         knex: () => mockResponse
       });
 
       const repo = new SubCountRepository(dbConnection);
       try {
-        await repo.insertSubCountEvent(null as unknown as InsertSubCountEvent);
+        await repo.insertSubCountEvent((null as unknown) as InsertSubCountEvent);
         expect.fail();
       } catch (error) {
-        expect((error as any as ApiExecuteSQLError).message).to.be.eq('Failed to insert subcount event');
+        expect(((error as any) as ApiExecuteSQLError).message).to.be.eq('Failed to insert subcount event');
       }
     });
   });
@@ -133,10 +133,10 @@ describe('SubCountRepository', () => {
         revision_count: 1
       };
 
-      const mockResponse = {
+      const mockResponse = ({
         rows: [mockSubcountCritterRecord],
         rowCount: 1
-      } as any as Promise<QueryResult<any>>;
+      } as any) as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({
         knex: () => mockResponse
@@ -149,20 +149,20 @@ describe('SubCountRepository', () => {
     });
 
     it('should catch query errors and throw an ApiExecuteSQLError', async () => {
-      const mockResponse = {
+      const mockResponse = ({
         rows: [],
         rowCount: 0
-      } as any as Promise<QueryResult<any>>;
+      } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         knex: () => mockResponse
       });
 
       const repo = new SubCountRepository(dbConnection);
       try {
-        await repo.insertSubCountCritter(null as unknown as SubCountCritterRecord);
+        await repo.insertSubCountCritter((null as unknown) as SubCountCritterRecord);
         expect.fail();
       } catch (error) {
-        expect((error as any as ApiExecuteSQLError).message).to.be.eq('Failed to insert subcount critter');
+        expect(((error as any) as ApiExecuteSQLError).message).to.be.eq('Failed to insert subcount critter');
       }
     });
   });

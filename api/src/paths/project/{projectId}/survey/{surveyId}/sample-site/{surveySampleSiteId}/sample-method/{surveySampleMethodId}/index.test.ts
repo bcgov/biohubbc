@@ -167,8 +167,8 @@ describe('deleteSurveySampleMethodRecord', () => {
       const result = delete_survey_sample_method_record.deleteSurveySampleMethodRecord();
       await result(
         { ...sampleReq, params: { ...sampleReq.params, surveySampleMethodId: null } },
-        null as unknown as any,
-        null as unknown as any
+        (null as unknown) as any,
+        (null as unknown) as any
       );
       expect.fail();
     } catch (actualError) {

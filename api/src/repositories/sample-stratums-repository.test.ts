@@ -17,7 +17,7 @@ describe('SampleStratumRepository', () => {
   describe('getSampleStratumsForSurveySampleSiteId', () => {
     it('should return non-empty rows', async () => {
       const mockRows: any[] = [{}, {}];
-      const mockResponse = { rows: mockRows, rowCount: 2 } as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: mockRows, rowCount: 2 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const surveySampleSiteId = 1;
@@ -30,7 +30,7 @@ describe('SampleStratumRepository', () => {
 
     it('should return empty rows', async () => {
       const mockRows: any[] = [];
-      const mockResponse = { rows: mockRows, rowCount: 0 } as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: mockRows, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const surveySampleSiteId = 1;
@@ -45,7 +45,7 @@ describe('SampleStratumRepository', () => {
   describe('getSampleStratumsForSurveyStratumId', () => {
     it('should return non-empty rows', async () => {
       const mockRows: any[] = [{}, {}];
-      const mockResponse = { rows: mockRows, rowCount: 2 } as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: mockRows, rowCount: 2 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const surveyStratumId = 1;
@@ -58,7 +58,7 @@ describe('SampleStratumRepository', () => {
 
     it('should return empty rows', async () => {
       const mockRows: any[] = [];
-      const mockResponse = { rows: mockRows, rowCount: 0 } as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: mockRows, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const surveyStratumId = 1;
@@ -73,7 +73,7 @@ describe('SampleStratumRepository', () => {
   describe('getSampleStratumsCountForSurveyStratumId', () => {
     it('should return a count of 2 records', async () => {
       const mockRows: any[] = [{}, {}];
-      const mockResponse = { rows: mockRows, rowCount: 2 } as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: mockRows, rowCount: 2 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const surveyStratumId = 1;
@@ -86,7 +86,7 @@ describe('SampleStratumRepository', () => {
 
     it('should return a count of 0 records', async () => {
       const mockRows: any[] = [];
-      const mockResponse = { rows: mockRows, rowCount: 0 } as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: mockRows, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const surveyStratumId = 1;
@@ -101,7 +101,7 @@ describe('SampleStratumRepository', () => {
   describe('insertSampleStratum', () => {
     it('should insert a record and return a single row', async () => {
       const mockRow = {};
-      const mockResponse = { rows: [mockRow], rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const sampleStratum: UpdateSampleStratumRecord = {
@@ -117,7 +117,7 @@ describe('SampleStratumRepository', () => {
     });
 
     it('throws an error if rowCount is falsy', async () => {
-      const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const sampleStratum: UpdateSampleStratumRecord = {
@@ -139,7 +139,7 @@ describe('SampleStratumRepository', () => {
   describe('deleteSampleStratumRecords', () => {
     it('should delete one or more records and return multiple rows', async () => {
       const mockRow = {};
-      const mockResponse = { rows: [mockRow], rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ knex: sinon.stub().resolves(mockResponse) });
 
       const surveySampleStratumIds = [1];
@@ -151,7 +151,7 @@ describe('SampleStratumRepository', () => {
     });
 
     it('throws an error if rowCount is falsy', async () => {
-      const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ knex: sinon.stub().resolves(mockResponse) });
 
       const surveySampleStratumId = 1;
@@ -169,7 +169,7 @@ describe('SampleStratumRepository', () => {
   describe('deleteSampleStratumRecordsByStratumIds', () => {
     it('should delete one or more record and return a single row', async () => {
       const mockRow = {};
-      const mockResponse = { rows: [mockRow], rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ knex: sinon.stub().resolves(mockResponse) });
 
       const surveyStratumIds = [1, 2];
@@ -181,7 +181,7 @@ describe('SampleStratumRepository', () => {
     });
 
     it('throws an error if rowCount is falsy', async () => {
-      const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ knex: sinon.stub().resolves(mockResponse) });
 
       const surveyStratumIds = 1;

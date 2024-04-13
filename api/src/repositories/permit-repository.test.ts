@@ -16,10 +16,10 @@ describe('PermitRepository', () => {
     });
 
     it('should return an array of survey permits by survey id', async () => {
-      const mockQueryResponse = {
+      const mockQueryResponse = ({
         rowCount: 1,
         rows: [{ permit_id: 2 }]
-      } as unknown as QueryResult<IPermitModel>;
+      } as unknown) as QueryResult<IPermitModel>;
 
       const mockDBConnection = getMockDBConnection({
         sql: sinon.stub().resolves(mockQueryResponse)
@@ -33,7 +33,7 @@ describe('PermitRepository', () => {
     });
 
     it('should return empty rows', async () => {
-      const mockResponse = { rows: [], rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new PermitRepository(dbConnection);
@@ -50,10 +50,10 @@ describe('PermitRepository', () => {
     });
 
     it('should return an array of survey permits by user', async () => {
-      const mockQueryResponse = {
+      const mockQueryResponse = ({
         rowCount: 1,
         rows: [{ permit_id: 2 }]
-      } as unknown as QueryResult<IPermitModel>;
+      } as unknown) as QueryResult<IPermitModel>;
 
       const mockDBConnection = getMockDBConnection({
         sql: sinon.stub().resolves(mockQueryResponse)
@@ -67,7 +67,7 @@ describe('PermitRepository', () => {
     });
 
     it('should throw an error if no permits were found', async () => {
-      const mockQueryResponse = {} as unknown as QueryResult<IPermitModel>;
+      const mockQueryResponse = ({} as unknown) as QueryResult<IPermitModel>;
 
       const mockDBConnection = getMockDBConnection({
         sql: sinon.stub().resolves(mockQueryResponse)
@@ -90,10 +90,10 @@ describe('PermitRepository', () => {
     });
 
     it('should return an array containing all survey permits', async () => {
-      const mockQueryResponse = {
+      const mockQueryResponse = ({
         rowCount: 1,
         rows: [{ permit_id: 2 }]
-      } as unknown as QueryResult<IPermitModel>;
+      } as unknown) as QueryResult<IPermitModel>;
 
       const mockDBConnection = getMockDBConnection({
         sql: sinon.stub().resolves(mockQueryResponse)
@@ -107,7 +107,7 @@ describe('PermitRepository', () => {
     });
 
     it('should return empty rows', async () => {
-      const mockResponse = { rows: [], rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new PermitRepository(dbConnection);
@@ -124,10 +124,10 @@ describe('PermitRepository', () => {
     });
 
     it('should return an array of survey permits by user', async () => {
-      const mockQueryResponse = {
+      const mockQueryResponse = ({
         rowCount: 1,
         rows: [{ permit_id: 2 }]
-      } as unknown as QueryResult<IPermitModel>;
+      } as unknown) as QueryResult<IPermitModel>;
 
       const mockDBConnection = getMockDBConnection({
         sql: sinon.stub().resolves(mockQueryResponse)
@@ -141,10 +141,10 @@ describe('PermitRepository', () => {
     });
 
     it('should throw an error if update failed', async () => {
-      const mockQueryResponse = {
+      const mockQueryResponse = ({
         rowCount: 0,
         rows: []
-      } as unknown as QueryResult<IPermitModel>;
+      } as unknown) as QueryResult<IPermitModel>;
 
       const mockDBConnection = getMockDBConnection({
         sql: sinon.stub().resolves(mockQueryResponse)
@@ -167,10 +167,10 @@ describe('PermitRepository', () => {
     });
 
     it('should return an array of survey permits by user', async () => {
-      const mockQueryResponse = {
+      const mockQueryResponse = ({
         rowCount: 1,
         rows: [{ permit_id: 2 }]
-      } as unknown as QueryResult<IPermitModel>;
+      } as unknown) as QueryResult<IPermitModel>;
 
       const mockDBConnection = getMockDBConnection({
         sql: sinon.stub().resolves(mockQueryResponse)
@@ -184,10 +184,10 @@ describe('PermitRepository', () => {
     });
 
     it('should throw an error if create failed', async () => {
-      const mockQueryResponse = {
+      const mockQueryResponse = ({
         rowCount: 0,
         rows: []
-      } as unknown as QueryResult<IPermitModel>;
+      } as unknown) as QueryResult<IPermitModel>;
 
       const mockDBConnection = getMockDBConnection({
         sql: sinon.stub().resolves(mockQueryResponse)
@@ -210,10 +210,10 @@ describe('PermitRepository', () => {
     });
 
     it('should return an array of survey permits by user', async () => {
-      const mockQueryResponse = {
+      const mockQueryResponse = ({
         rowCount: 1,
         rows: [{ permit_id: 2 }]
-      } as unknown as QueryResult<IPermitModel>;
+      } as unknown) as QueryResult<IPermitModel>;
 
       const mockDBConnection = getMockDBConnection({
         sql: sinon.stub().resolves(mockQueryResponse)
@@ -227,10 +227,10 @@ describe('PermitRepository', () => {
     });
 
     it('should throw an error if delete failed', async () => {
-      const mockQueryResponse = {
+      const mockQueryResponse = ({
         rowCount: 0,
         rows: []
-      } as unknown as QueryResult<IPermitModel>;
+      } as unknown) as QueryResult<IPermitModel>;
 
       const mockDBConnection = getMockDBConnection({
         sql: sinon.stub().resolves(mockQueryResponse)

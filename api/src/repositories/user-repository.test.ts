@@ -17,7 +17,7 @@ describe('UserRepository', () => {
 
     it('should get all roles', async () => {
       const mockResponse = [{ system_role_id: 1, name: 'admin' }];
-      const mockQueryResponse = { rowCount: 1, rows: mockResponse } as any as Promise<QueryResult<any>>;
+      const mockQueryResponse = ({ rowCount: 1, rows: mockResponse } as any) as Promise<QueryResult<any>>;
 
       const mockDBConnection = getMockDBConnection({
         sql: async () => {
@@ -38,7 +38,7 @@ describe('UserRepository', () => {
       sinon.restore();
     });
     it('should throw an error when no user is found', async () => {
-      const mockQueryResponse = { rowCount: 0, rows: [] } as any as Promise<QueryResult<any>>;
+      const mockQueryResponse = ({ rowCount: 0, rows: [] } as any) as Promise<QueryResult<any>>;
 
       const mockDBConnection = getMockDBConnection({
         sql: async () => {
@@ -60,7 +60,7 @@ describe('UserRepository', () => {
       const mockResponse = [
         { system_user_id: 1, user_identifier: 1, record_end_date: 'data', role_ids: [1], role_names: ['admin'] }
       ];
-      const mockQueryResponse = { rowCount: 1, rows: mockResponse } as any as Promise<QueryResult<any>>;
+      const mockQueryResponse = ({ rowCount: 1, rows: mockResponse } as any) as Promise<QueryResult<any>>;
 
       const mockDBConnection = getMockDBConnection({
         sql: async () => {
@@ -81,7 +81,7 @@ describe('UserRepository', () => {
       sinon.restore();
     });
     it('should return empty array when no user found', async () => {
-      const mockQueryResponse = { rowCount: 1, rows: [] } as any as Promise<QueryResult<any>>;
+      const mockQueryResponse = ({ rowCount: 1, rows: [] } as any) as Promise<QueryResult<any>>;
 
       const mockDBConnection = getMockDBConnection({
         sql: async () => {
@@ -111,7 +111,7 @@ describe('UserRepository', () => {
           agency: null
         }
       ];
-      const mockQueryResponse = { rowCount: 1, rows: mockResponse } as any as Promise<QueryResult<any>>;
+      const mockQueryResponse = ({ rowCount: 1, rows: mockResponse } as any) as Promise<QueryResult<any>>;
 
       const mockDBConnection = getMockDBConnection({
         sql: async () => {
@@ -132,7 +132,7 @@ describe('UserRepository', () => {
       sinon.restore();
     });
     it('should return empty array when no user found', async () => {
-      const mockQueryResponse = { rowCount: 1, rows: [] } as any as Promise<QueryResult<any>>;
+      const mockQueryResponse = ({ rowCount: 1, rows: [] } as any) as Promise<QueryResult<any>>;
 
       const mockDBConnection = getMockDBConnection({
         sql: async () => {
@@ -162,7 +162,7 @@ describe('UserRepository', () => {
           agency: null
         }
       ];
-      const mockQueryResponse = { rowCount: 1, rows: mockResponse } as any as Promise<QueryResult<any>>;
+      const mockQueryResponse = ({ rowCount: 1, rows: mockResponse } as any) as Promise<QueryResult<any>>;
 
       const mockDBConnection = getMockDBConnection({
         sql: async () => {
@@ -183,7 +183,7 @@ describe('UserRepository', () => {
       sinon.restore();
     });
     it('should throw an error when insert fails', async () => {
-      const mockQueryResponse = { rowCount: 0, rows: [] } as any as Promise<QueryResult<any>>;
+      const mockQueryResponse = ({ rowCount: 0, rows: [] } as any) as Promise<QueryResult<any>>;
 
       const mockDBConnection = getMockDBConnection({
         sql: async () => {
@@ -212,7 +212,7 @@ describe('UserRepository', () => {
           record_effective_date: 'date'
         }
       ];
-      const mockQueryResponse = { rowCount: 1, rows: mockResponse } as any as Promise<QueryResult<any>>;
+      const mockQueryResponse = ({ rowCount: 1, rows: mockResponse } as any) as Promise<QueryResult<any>>;
 
       const mockDBConnection = getMockDBConnection({
         sql: async () => {
@@ -233,7 +233,7 @@ describe('UserRepository', () => {
       sinon.restore();
     });
     it('should return empty array when no users found', async () => {
-      const mockQueryResponse = { rowCount: 1, rows: [] } as any as Promise<QueryResult<any>>;
+      const mockQueryResponse = ({ rowCount: 1, rows: [] } as any) as Promise<QueryResult<any>>;
 
       const mockDBConnection = getMockDBConnection({
         sql: async () => {
@@ -261,7 +261,7 @@ describe('UserRepository', () => {
           agency: null
         }
       ];
-      const mockQueryResponse = { rowCount: 1, rows: mockResponse } as any as Promise<QueryResult<any>>;
+      const mockQueryResponse = ({ rowCount: 1, rows: mockResponse } as any) as Promise<QueryResult<any>>;
 
       const mockDBConnection = getMockDBConnection({
         sql: async () => {
@@ -282,7 +282,7 @@ describe('UserRepository', () => {
       sinon.restore();
     });
     it('should throw an error when activate fails', async () => {
-      const mockQueryResponse = { rowCount: 0, rows: [] } as any as Promise<QueryResult<any>>;
+      const mockQueryResponse = ({ rowCount: 0, rows: [] } as any) as Promise<QueryResult<any>>;
 
       const mockDBConnection = getMockDBConnection({
         sql: async () => {
@@ -310,7 +310,7 @@ describe('UserRepository', () => {
           record_effective_date: 'date'
         }
       ];
-      const mockQueryResponse = { rowCount: 1, rows: mockResponse } as any as Promise<QueryResult<any>>;
+      const mockQueryResponse = ({ rowCount: 1, rows: mockResponse } as any) as Promise<QueryResult<any>>;
 
       const mockDBConnection = getMockDBConnection({
         sql: async () => {
@@ -331,7 +331,7 @@ describe('UserRepository', () => {
       sinon.restore();
     });
     it('should throw an error when deactivate fails', async () => {
-      const mockQueryResponse = { rowCount: 0, rows: [] } as any as Promise<QueryResult<any>>;
+      const mockQueryResponse = ({ rowCount: 0, rows: [] } as any) as Promise<QueryResult<any>>;
 
       const mockDBConnection = getMockDBConnection({
         sql: async () => {
@@ -359,7 +359,7 @@ describe('UserRepository', () => {
           record_effective_date: 'date'
         }
       ];
-      const mockQueryResponse = { rowCount: 1, rows: mockResponse } as any as Promise<QueryResult<any>>;
+      const mockQueryResponse = ({ rowCount: 1, rows: mockResponse } as any) as Promise<QueryResult<any>>;
 
       const mockDBConnection = getMockDBConnection({
         sql: async () => {
@@ -390,7 +390,7 @@ describe('UserRepository', () => {
           record_effective_date: 'date'
         }
       ];
-      const mockQueryResponse = { rowCount: 1, rows: mockResponse } as any as Promise<QueryResult<any>>;
+      const mockQueryResponse = ({ rowCount: 1, rows: mockResponse } as any) as Promise<QueryResult<any>>;
 
       const mockDBConnection = getMockDBConnection({
         sql: async () => {
@@ -411,7 +411,7 @@ describe('UserRepository', () => {
       sinon.restore();
     });
     it('should throw an error when adding role fails', async () => {
-      const mockQueryResponse = { rowCount: 0, rows: [] } as any as Promise<QueryResult<any>>;
+      const mockQueryResponse = ({ rowCount: 0, rows: [] } as any) as Promise<QueryResult<any>>;
 
       const mockDBConnection = getMockDBConnection({
         sql: async () => {
@@ -439,7 +439,7 @@ describe('UserRepository', () => {
           record_effective_date: 'date'
         }
       ];
-      const mockQueryResponse = { rowCount: 1, rows: mockResponse } as any as Promise<QueryResult<any>>;
+      const mockQueryResponse = ({ rowCount: 1, rows: mockResponse } as any) as Promise<QueryResult<any>>;
 
       const mockDBConnection = getMockDBConnection({
         sql: async () => {
