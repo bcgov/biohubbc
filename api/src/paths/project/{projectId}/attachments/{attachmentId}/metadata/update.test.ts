@@ -48,7 +48,7 @@ describe('updates metadata for a project report', () => {
     try {
       const result = update_project_metadata.updateProjectAttachmentMetadata();
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      await result(sampleReq, null as unknown as any, null as unknown as any);
       expect.fail();
     } catch (actualError) {
       expect((actualError as HTTPError).message).to.equal(expectedError.message);
@@ -104,7 +104,7 @@ describe('updates metadata for a project report', () => {
     };
 
     const requestHandler = update_project_metadata.updateProjectAttachmentMetadata();
-    await requestHandler(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
+    await requestHandler(sampleReq, sampleRes as unknown as any, null as unknown as any);
 
     expect(actualResult).to.equal(undefined);
     expect(updateProjectReportAttachmentMetadataStub).to.be.calledOnce;

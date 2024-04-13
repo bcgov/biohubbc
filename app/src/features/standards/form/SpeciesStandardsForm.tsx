@@ -4,21 +4,13 @@ import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { useState } from 'react';
 import SpeciesStandardsResults from '../view/SpeciesStandardsResults';
 
-export interface ISpeciesStandardsFormikProps {
-  tsn: number;
-}
-
+/**
+ * Form component for looking up data standards for a species
+ *
+ * @return {*}
+ */
 const SpeciesStandardsForm = () => {
   const [selectedSpecies, setSelectedSpecies] = useState<ITaxonomy>();
-  // const formikRef = useRef<FormikProps<ISpeciesStandardsFormikProps>>(null);
-
-  // const speciesStandardsYupSchema = yup.object({
-  //   taxon: yup.string()
-  // });
-
-  // const speciesStandardsInitialValues = {
-  //   tsn: 0
-  // };
 
   return (
     <>
@@ -29,7 +21,6 @@ const SpeciesStandardsForm = () => {
           setSelectedSpecies(value);
         }}
       />
-
       <Box my={2}>
         <SpeciesStandardsResults selectedSpecies={selectedSpecies} />
       </Box>

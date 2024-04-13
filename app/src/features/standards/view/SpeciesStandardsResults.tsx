@@ -12,6 +12,11 @@ interface ISpeciesStandardsResultsProps {
   selectedSpecies?: ITaxonomy;
 }
 
+/**
+ * Component to display species standards results
+ *
+ * @return {*}
+ */
 const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
   const biohubApi = useBiohubApi();
   const [activeView, setActiveView] = useState<SpeciesStandardsViewEnum>(SpeciesStandardsViewEnum.MEASUREMENTS);

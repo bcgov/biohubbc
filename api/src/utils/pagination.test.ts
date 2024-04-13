@@ -25,14 +25,14 @@ describe('pagination', () => {
     });
 
     it('should cast request params to number successfully', () => {
-      const mockRequst = ({
+      const mockRequst = {
         query: {
           limit: '100',
           page: '2',
           sort: 'name',
           order: 'desc'
         }
-      } as unknown) as Request;
+      } as unknown as Request;
 
       const result = makePaginationOptionsFromRequest(mockRequst);
       expect(result).to.eql({

@@ -12,6 +12,11 @@ interface IMeasurementStandardCard {
   unit?: string;
 }
 
+/**
+ * Card to display measurements information for species standards
+ *
+ * @return {*}
+ */
 const MeasurementStandardCard = (props: IMeasurementStandardCard) => {
   const [isCollapsed, setIsCollapsed] = useState(true);
 

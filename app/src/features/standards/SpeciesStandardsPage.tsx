@@ -2,6 +2,11 @@ import { Box, Container, Paper, Toolbar, Typography } from '@mui/material';
 import PageHeader from 'components/layout/PageHeader';
 import SpeciesStandardsForm from './form/SpeciesStandardsForm';
 
+/**
+ * Page to display species standards
+ *
+ * @return {*}
+ */
 const SpeciesStandardsPage = () => {
   return (
     <>

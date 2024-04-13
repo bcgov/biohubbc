@@ -5,6 +5,11 @@ interface IMarkingBodyLocationStandardCard {
   label: string;
 }
 
+/**
+ * Card to display marking body location for species standards
+ *
+ * @return {*}
+ */
 const MarkingBodyLocationStandardCard = (props: IMarkingBodyLocationStandardCard) => {
   return (
     <Paper sx={{ bgcolor: grey[100], px: 3, py: 2 }} elevation={0}>

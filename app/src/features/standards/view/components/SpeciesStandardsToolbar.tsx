@@ -19,6 +19,11 @@ interface ISpeciesStandardsToolbarProps {
   activeView: SpeciesStandardsViewEnum;
 }
 
+/**
+ * Toolbar for handling what species standards information is displayed
+ *
+ * @return {*}
+ */
 const SpeciesStandardsToolbar = (props: ISpeciesStandardsToolbarProps) => {
   const updateDatasetView = (_event: React.MouseEvent<HTMLElement>, view: SpeciesStandardsViewEnum) => {
     if (!view) {

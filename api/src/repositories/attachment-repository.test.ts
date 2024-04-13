@@ -18,7 +18,7 @@ describe('AttachmentRepository', () => {
     describe('Attachment', () => {
       describe('getProjectAttachments', () => {
         it('should return rows', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -29,7 +29,7 @@ describe('AttachmentRepository', () => {
         });
 
         it('should return empty rows', async () => {
-          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -42,7 +42,7 @@ describe('AttachmentRepository', () => {
 
       describe('getProjectAttachmentById', () => {
         it('should return row', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -55,7 +55,7 @@ describe('AttachmentRepository', () => {
 
       describe('getProjectAttachmentsByIds', () => {
         it('should return rows', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }, { id: 2 }], rowCount: 2 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }, { id: 2 }], rowCount: 2 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -66,7 +66,7 @@ describe('AttachmentRepository', () => {
         });
 
         it('should return empty rows', async () => {
-          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -79,13 +79,13 @@ describe('AttachmentRepository', () => {
 
       describe('insertProjectAttachment', () => {
         it('should return row', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
 
           const response = await repository.insertProjectAttachment(
-            ({ file: 'name' } as unknown) as Express.Multer.File,
+            { file: 'name' } as unknown as Express.Multer.File,
             1,
             'string',
             'string'
@@ -95,14 +95,14 @@ describe('AttachmentRepository', () => {
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
 
           try {
             await repository.insertProjectAttachment(
-              ({ file: 'name' } as unknown) as Express.Multer.File,
+              { file: 'name' } as unknown as Express.Multer.File,
               1,
               'string',
               'string'
@@ -116,7 +116,7 @@ describe('AttachmentRepository', () => {
 
       describe('updateProjectAttachment', () => {
         it('should return row', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -127,7 +127,7 @@ describe('AttachmentRepository', () => {
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -143,7 +143,7 @@ describe('AttachmentRepository', () => {
 
       describe('getProjectAttachmentByFileName', () => {
         it('should return result', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -154,7 +154,7 @@ describe('AttachmentRepository', () => {
         });
 
         it('should return empty rows', async () => {
-          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -167,7 +167,7 @@ describe('AttachmentRepository', () => {
 
       describe('getProjectAttachmentS3Key', () => {
         it('should return result', async () => {
-          const mockResponse = ({ rows: [{ key: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ key: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -178,7 +178,7 @@ describe('AttachmentRepository', () => {
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -194,7 +194,7 @@ describe('AttachmentRepository', () => {
 
       describe('deleteProjectAttachmentRecord', () => {
         it('should return result', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -205,7 +205,7 @@ describe('AttachmentRepository', () => {
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -223,7 +223,7 @@ describe('AttachmentRepository', () => {
     describe('Report Attachment', () => {
       describe('getProjectReportAttachments', () => {
         it('should return rows', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -234,7 +234,7 @@ describe('AttachmentRepository', () => {
         });
 
         it('should return empty rows', async () => {
-          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -247,7 +247,7 @@ describe('AttachmentRepository', () => {
 
       describe('getProjectReportAttachmentById', () => {
         it('should return row', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -260,7 +260,7 @@ describe('AttachmentRepository', () => {
 
       describe('getProjectReportAttachmentsByIds', () => {
         it('should return rows', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }, { id: 2 }], rowCount: 2 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }, { id: 2 }], rowCount: 2 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -273,7 +273,7 @@ describe('AttachmentRepository', () => {
 
       describe('getProjectReportAttachmentAuthors', () => {
         it('should return rows', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -284,7 +284,7 @@ describe('AttachmentRepository', () => {
         });
 
         it('should return empty rows', async () => {
-          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -297,7 +297,7 @@ describe('AttachmentRepository', () => {
 
       describe('insertProjectReportAttachment', () => {
         it('should return row', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -306,7 +306,7 @@ describe('AttachmentRepository', () => {
             'string',
             1,
             1,
-            ({ title: 'string' } as unknown) as PostReportAttachmentMetadata,
+            { title: 'string' } as unknown as PostReportAttachmentMetadata,
             'string'
           );
 
@@ -314,7 +314,7 @@ describe('AttachmentRepository', () => {
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -324,7 +324,7 @@ describe('AttachmentRepository', () => {
               'string',
               1,
               1,
-              ({ title: 'string' } as unknown) as PostReportAttachmentMetadata,
+              { title: 'string' } as unknown as PostReportAttachmentMetadata,
               'string'
             );
             expect.fail();
@@ -336,28 +336,28 @@ describe('AttachmentRepository', () => {
 
       describe('updateProjectReportAttachment', () => {
         it('should return row', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
 
-          const response = await repository.updateProjectReportAttachment('string', 1, ({
+          const response = await repository.updateProjectReportAttachment('string', 1, {
             title: 'string'
-          } as unknown) as PutReportAttachmentMetadata);
+          } as unknown as PutReportAttachmentMetadata);
 
           expect(response).to.eql({ id: 1 });
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
 
           try {
-            await repository.updateProjectReportAttachment('string', 1, ({
+            await repository.updateProjectReportAttachment('string', 1, {
               title: 'string'
-            } as unknown) as PutReportAttachmentMetadata);
+            } as unknown as PutReportAttachmentMetadata);
             expect.fail();
           } catch (error) {
             expect((error as Error).message).to.equal('Failed to update project attachment data');
@@ -367,7 +367,7 @@ describe('AttachmentRepository', () => {
 
       describe('getProjectReportAttachmentByFileName', () => {
         it('should return result', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -380,7 +380,7 @@ describe('AttachmentRepository', () => {
 
       describe('deleteProjectReportAttachmentAuthors', () => {
         it('should return result', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -393,7 +393,7 @@ describe('AttachmentRepository', () => {
 
       describe('insertProjectReportAttachmentAuthor', () => {
         it('should return result', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -407,7 +407,7 @@ describe('AttachmentRepository', () => {
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -426,28 +426,28 @@ describe('AttachmentRepository', () => {
 
       describe('updateProjectReportAttachmentMetadata', () => {
         it('should return row', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
 
-          const response = await repository.updateProjectReportAttachmentMetadata(1, 1, ({
+          const response = await repository.updateProjectReportAttachmentMetadata(1, 1, {
             title: 'string'
-          } as unknown) as PutReportAttachmentMetadata);
+          } as unknown as PutReportAttachmentMetadata);
 
           expect(response).to.eql(undefined);
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
 
           try {
-            await repository.updateProjectReportAttachmentMetadata(1, 1, ({
+            await repository.updateProjectReportAttachmentMetadata(1, 1, {
               title: 'string'
-            } as unknown) as PutReportAttachmentMetadata);
+            } as unknown as PutReportAttachmentMetadata);
             expect.fail();
           } catch (error) {
             expect((error as Error).message).to.equal('Failed to update Project Report Attachment Metadata');
@@ -457,7 +457,7 @@ describe('AttachmentRepository', () => {
 
       describe('getProjectReportAttachmentS3Key', () => {
         it('should return result', async () => {
-          const mockResponse = ({ rows: [{ key: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ key: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -468,7 +468,7 @@ describe('AttachmentRepository', () => {
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -484,7 +484,7 @@ describe('AttachmentRepository', () => {
 
       describe('deleteProjectReportAttachmentRecord', () => {
         it('should return result', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -495,7 +495,7 @@ describe('AttachmentRepository', () => {
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -515,7 +515,7 @@ describe('AttachmentRepository', () => {
     describe('Attachment', () => {
       describe('getSurveyAttachments', () => {
         it('should return rows', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -526,7 +526,7 @@ describe('AttachmentRepository', () => {
         });
 
         it('should return empty rows', async () => {
-          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -539,7 +539,7 @@ describe('AttachmentRepository', () => {
 
       describe('getSurveyAttachmentsByIds', () => {
         it('should return rows', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }, { id: 2 }], rowCount: 2 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }, { id: 2 }], rowCount: 2 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -552,7 +552,7 @@ describe('AttachmentRepository', () => {
 
       describe('deleteSurveyAttachmentRecord', () => {
         it('should return result', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -563,7 +563,7 @@ describe('AttachmentRepository', () => {
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -579,7 +579,7 @@ describe('AttachmentRepository', () => {
 
       describe('getSurveyAttachmentS3Key', () => {
         it('should return result', async () => {
-          const mockResponse = ({ rows: [{ key: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ key: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -590,7 +590,7 @@ describe('AttachmentRepository', () => {
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -606,7 +606,7 @@ describe('AttachmentRepository', () => {
 
       describe('updateSurveyAttachment', () => {
         it('should return row', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -617,7 +617,7 @@ describe('AttachmentRepository', () => {
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -633,7 +633,7 @@ describe('AttachmentRepository', () => {
 
       describe('insertSurveyAttachment', () => {
         it('should return row', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -644,7 +644,7 @@ describe('AttachmentRepository', () => {
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -660,7 +660,7 @@ describe('AttachmentRepository', () => {
 
       describe('getSurveyAttachmentByFileName', () => {
         it('should return result', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -675,7 +675,7 @@ describe('AttachmentRepository', () => {
     describe('Report Attachment', () => {
       describe('getSurveyReportAttachments', () => {
         it('should return rows', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -686,7 +686,7 @@ describe('AttachmentRepository', () => {
         });
 
         it('should return empty rows', async () => {
-          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -699,7 +699,7 @@ describe('AttachmentRepository', () => {
 
       describe('getSurveyReportAttachmentById', () => {
         it('should return row', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -712,7 +712,7 @@ describe('AttachmentRepository', () => {
 
       describe('getSurveyReportAttachmentsByIds', () => {
         it('should return rows', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }, { id: 2 }], rowCount: 2 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }, { id: 2 }], rowCount: 2 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -725,7 +725,7 @@ describe('AttachmentRepository', () => {
 
       describe('getSurveyReportAttachmentAuthors', () => {
         it('should return rows', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -738,7 +738,7 @@ describe('AttachmentRepository', () => {
 
       describe('insertSurveyReportAttachment', () => {
         it('should return row', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -747,7 +747,7 @@ describe('AttachmentRepository', () => {
             'string',
             1,
             1,
-            ({ title: 'string' } as unknown) as PostReportAttachmentMetadata,
+            { title: 'string' } as unknown as PostReportAttachmentMetadata,
             'string'
           );
 
@@ -755,7 +755,7 @@ describe('AttachmentRepository', () => {
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -765,7 +765,7 @@ describe('AttachmentRepository', () => {
               'string',
               1,
               1,
-              ({ title: 'string' } as unknown) as PostReportAttachmentMetadata,
+              { title: 'string' } as unknown as PostReportAttachmentMetadata,
               'string'
             );
             expect.fail();
@@ -777,28 +777,28 @@ describe('AttachmentRepository', () => {
 
       describe('updateSurveyReportAttachment', () => {
         it('should return row', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
 
-          const response = await repository.updateSurveyReportAttachment('string', 1, ({
+          const response = await repository.updateSurveyReportAttachment('string', 1, {
             title: 'string'
-          } as unknown) as PutReportAttachmentMetadata);
+          } as unknown as PutReportAttachmentMetadata);
 
           expect(response).to.eql({ id: 1 });
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
 
           try {
-            await repository.updateSurveyReportAttachment('string', 1, ({
+            await repository.updateSurveyReportAttachment('string', 1, {
               title: 'string'
-            } as unknown) as PutReportAttachmentMetadata);
+            } as unknown as PutReportAttachmentMetadata);
             expect.fail();
           } catch (error) {
             expect((error as Error).message).to.equal('Failed to update survey report attachment');
@@ -808,7 +808,7 @@ describe('AttachmentRepository', () => {
 
       describe('getSurveyReportAttachmentByFileName', () => {
         it('should return result', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -821,7 +821,7 @@ describe('AttachmentRepository', () => {
 
       describe('deleteSurveyReportAttachmentAuthors', () => {
         it('should return result', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -834,7 +834,7 @@ describe('AttachmentRepository', () => {
 
       describe('insertSurveyReportAttachmentAuthor', () => {
         it('should return result', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -848,7 +848,7 @@ describe('AttachmentRepository', () => {
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -867,7 +867,7 @@ describe('AttachmentRepository', () => {
 
       describe('deleteSurveyReportAttachmentRecord', () => {
         it('should return result', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -878,7 +878,7 @@ describe('AttachmentRepository', () => {
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -894,7 +894,7 @@ describe('AttachmentRepository', () => {
 
       describe('getSurveyReportAttachmentS3Key', () => {
         it('should return result', async () => {
-          const mockResponse = ({ rows: [{ key: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ key: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -905,7 +905,7 @@ describe('AttachmentRepository', () => {
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -921,28 +921,28 @@ describe('AttachmentRepository', () => {
 
       describe('updateSurveyReportAttachmentMetadata', () => {
         it('should return row', async () => {
-          const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
 
-          const response = await repository.updateSurveyReportAttachmentMetadata(1, 1, ({
+          const response = await repository.updateSurveyReportAttachmentMetadata(1, 1, {
             title: 'string'
-          } as unknown) as PutReportAttachmentMetadata);
+          } as unknown as PutReportAttachmentMetadata);
 
           expect(response).to.eql(undefined);
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
 
           try {
-            await repository.updateSurveyReportAttachmentMetadata(1, 1, ({
+            await repository.updateSurveyReportAttachmentMetadata(1, 1, {
               title: 'string'
-            } as unknown) as PutReportAttachmentMetadata);
+            } as unknown as PutReportAttachmentMetadata);
             expect.fail();
           } catch (error) {
             expect((error as Error).message).to.equal('Failed to update Survey Report Attachment metadata');

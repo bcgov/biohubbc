@@ -44,7 +44,7 @@ GET.apiDoc = {
           schema: {
             type: 'object',
             additionalProperties: false,
-            required: ['scientificName', 'measurements', 'markingBodyPositions'],
+            required: ['scientificName', 'measurements', 'markingBodyLocations'],
             properties: {
               scientificName: {
                 type: 'string'
@@ -153,7 +153,7 @@ GET.apiDoc = {
                   }
                 }
               },
-              markingBodyPositions: {
+              markingBodyLocations: {
                 type: 'array',
                 additionalProperties: false,
                 items: {
