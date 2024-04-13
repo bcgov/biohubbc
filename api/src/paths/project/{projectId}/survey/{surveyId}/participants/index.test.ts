@@ -143,8 +143,8 @@ describe('createSurveyParticipants', () => {
       const result = create_survey_participants.createSurveyParticipants();
       await result(
         { ...sampleReq, params: { ...sampleReq.params, surveyId: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
+        null as unknown as any,
+        null as unknown as any
       );
       expect.fail();
     } catch (actualError) {
@@ -160,8 +160,8 @@ describe('createSurveyParticipants', () => {
       const result = create_survey_participants.createSurveyParticipants();
       await result(
         { ...sampleReq, body: { ...sampleReq.body, participants: [] } },
-        (null as unknown) as any,
-        (null as unknown) as any
+        null as unknown as any,
+        null as unknown as any
       );
       expect.fail();
     } catch (actualError) {

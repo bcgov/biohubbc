@@ -204,7 +204,7 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
                       setEditedGeometry([feature]);
                     });
                   }}
-                  onLayerDelete={(event: DrawEvents.Deleted) => {
+                  onLayerDelete={() => {
                     setFieldValue(name, sampleSiteData?.geojson ? [sampleSiteData?.geojson] : []);
                   }}
                 />

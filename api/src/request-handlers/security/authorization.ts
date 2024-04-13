@@ -19,7 +19,7 @@ export type AuthorizationSchemeCallback = (req: Request) => AuthorizationScheme;
  * @return {*}  {RequestHandler}
  */
 export function authorizeRequestHandler(authorizationSchemeCallback: AuthorizationSchemeCallback): RequestHandler {
-  return async (req, res, next) => {
+  return async (req, _, next) => {
     req['authorization_scheme'] = authorizationSchemeCallback(req);
     const isAuthorized = await authorizeRequest(req);
 

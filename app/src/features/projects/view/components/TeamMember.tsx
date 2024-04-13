@@ -54,7 +54,7 @@ const TeamMembers = () => {
 
   return (
     <Stack spacing={1}>
-      {projectTeamMembers.map((member, index) => {
+      {projectTeamMembers.map((member) => {
         const isCoordinator = member.roles.includes('Coordinator');
         const isCollaborator = member.roles.includes('Collaborator');
         return (

@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useFormikContext } from 'formik';
 import { IGetSurveyBlock } from 'interfaces/useSurveyApi.interface';
-import { default as React, useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import BlockStratumCard from '../edit/components/BlockStratumCard';
 import { ICreateSamplingSiteRequest } from '../SamplingSitePage';
@@ -80,7 +80,7 @@ export const SamplingBlockForm = () => {
             setSearchText('');
           }
         }}
-        onClose={(value, reason) => {
+        onClose={() => {
           setSearchText('');
         }}
         renderInput={(params) => (
@@ -131,9 +131,7 @@ export const SamplingBlockForm = () => {
                 }}>
                 <CardHeader
                   action={
-                    <IconButton
-                      onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => handleRemoveItem(item)}
-                      aria-label="settings">
+                    <IconButton onClick={() => handleRemoveItem(item)} aria-label="settings">
                       <Icon path={mdiClose} size={1} />
                     </IconButton>
                   }
