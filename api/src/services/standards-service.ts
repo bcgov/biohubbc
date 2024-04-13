@@ -14,7 +14,7 @@ export interface ISpeciesStandardsResponse {
     quantitative: CBQuantitativeMeasurementTypeDefinition[];
     qualitative: CBQualitativeMeasurementTypeDefinition[];
   };
-  marking_body_locations: { id: string; key: string; value: string }[];
+  markingBodyLocations: { id: string; key: string; value: string }[];
 }
 
 /**
@@ -55,7 +55,7 @@ export class StandardsService extends DBService {
     return {
       tsn: tsn,
       scientificName: response[0][0].scientificName,
-      marking_body_locations: response[1],
+      markingBodyLocations: response[1],
       measurements: response[2]
     };
   }

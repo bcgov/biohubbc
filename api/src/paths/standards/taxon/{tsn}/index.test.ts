@@ -3,10 +3,10 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { getSpeciesStandards } from '.';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
 import * as db from '../../../../database/db';
 import { CBMeasurementUnit } from '../../../../services/critterbase-service';
 import { StandardsService } from '../../../../services/standards-service';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
 
 chai.use(sinonChai);
 
@@ -24,7 +24,7 @@ describe('standards/taxon/{tsn}', () => {
       const getSpeciesStandardsResult = {
         tsn: 420183,
         scientificName: 'caribou',
-        marking_body_locations: [
+        markingBodyLocations: [
           {
             id: '',
             key: '',
