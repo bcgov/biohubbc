@@ -238,7 +238,7 @@ const SurveyMap = (props: ISurveyMapProps) => {
             key: mapPoint.key,
             geoJSON: mapPoint.feature,
             GeoJSONProps: {
-              onEachFeature: (feature, layer) => {
+              onEachFeature: (_, layer) => {
                 layer.on({
                   popupopen: () => {
                     if (mapPointMetadata[mapPoint.key]) {

@@ -16,7 +16,7 @@ describe('resubmit', () => {
     const ajv = new Ajv();
 
     it('is valid openapi v3 schema', () => {
-      expect(ajv.validateSchema((POST.apiDoc as unknown) as object)).to.be.true;
+      expect(ajv.validateSchema(POST.apiDoc as unknown as object)).to.be.true;
     });
   });
 
@@ -64,7 +64,7 @@ describe('resubmit', () => {
 
       const requestHandler = resubmitAttachment();
 
-      await requestHandler(sampleReq, (sampleRes as unknown) as any, mockNext);
+      await requestHandler(sampleReq, sampleRes as unknown as any, mockNext);
 
       expect(actualResult).to.eql(true);
     });

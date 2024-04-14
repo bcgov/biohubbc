@@ -39,7 +39,7 @@ describe('getSurveyAttachmentSignedURL', () => {
       try {
         const result = get_signed_url.getSurveyAttachmentSignedURL();
 
-        await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+        await result(sampleReq, null as unknown as any, null as unknown as any);
         expect.fail();
       } catch (actualError) {
         expect((actualError as HTTPError).message).to.equal(expectedError.message);
@@ -82,7 +82,7 @@ describe('getSurveyAttachmentSignedURL', () => {
 
       const result = get_signed_url.getSurveyAttachmentSignedURL();
 
-      await result(sampleReq, sampleRes as any, (null as unknown) as any);
+      await result(sampleReq, sampleRes as any, null as unknown as any);
 
       expect(actualResult).to.eql('myurlsigned.com');
       expect(getSurveyReportAttachmentS3KeyStub).to.be.calledOnce;
@@ -127,7 +127,7 @@ describe('getSurveyAttachmentSignedURL', () => {
 
       const result = get_signed_url.getSurveyAttachmentSignedURL();
 
-      await result(sampleReq, sampleRes as any, (null as unknown) as any);
+      await result(sampleReq, sampleRes as any, null as unknown as any);
 
       expect(actualResult).to.eql(null);
       expect(getSurveyAttachmentS3KeyStub).to.be.calledOnce;

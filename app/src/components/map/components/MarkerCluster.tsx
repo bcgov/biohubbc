@@ -99,7 +99,7 @@ const MarkerCluster: React.FC<React.PropsWithChildren<IMarkerLayersProps>> = (pr
 
   const layerControls: ReactElement[] = [];
 
-  props.layers.forEach((layer, index) => {
+  props.layers.forEach((layer) => {
     if (!layer.markers?.length) {
       return;
     }
