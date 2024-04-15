@@ -11,7 +11,6 @@ const SpeciesStandardsPage = () => {
   return (
     <>
       <PageHeader title="Standards" />
-
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper>
           <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
