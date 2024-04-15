@@ -1,4 +1,6 @@
-# This dockerfile is used for both local development and Openshift deployments.
+# ########################################################################################################
+# This DockerFile is used for local development (via docker-compose) only.
+# ########################################################################################################
 
 ARG POSTGRES_VERSION=12.5
 
