@@ -3,7 +3,7 @@ import PageHeader from 'components/layout/PageHeader';
 import SpeciesStandardsForm from './form/SpeciesStandardsForm';
 
 /**
- * Page to display species standards
+ * Page to display species standards, which describes what data can be entered and in what structure
  *
  * @return {*}
  */
