@@ -1,6 +1,10 @@
 import { Box, Container, Paper, Toolbar, Typography } from '@mui/material';
 import PageHeader from 'components/layout/PageHeader';
-import SpeciesStandardsForm from './form/SpeciesStandardsForm';
+import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
+import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
+import SpeciesStandardsResults from './view/SpeciesStandardsResults';
 
 /**
  * Page to display species standards, which describes what data can be entered and in what structure
@@ -8,6 +12,11 @@ import SpeciesStandardsForm from './form/SpeciesStandardsForm';
  * @return {*}
  */
 const SpeciesStandardsPage = () => {
+  const biohubApi = useBiohubApi();
+  const standardsDataLoader = useDataLoader((species: ITaxonomy) =>
+    biohubApi.standards.getSpeciesStandards(species.tsn)
+  );
+
   return (
     <>
       <PageHeader title="Standards" />
@@ -19,7 +28,18 @@ const SpeciesStandardsPage = () => {
             </Typography>
           </Toolbar>
           <Box py={2} px={3}>
-            <SpeciesStandardsForm />
+            <SpeciesAutocompleteField
+              formikFieldName="tsn"
+              label={''}
+              handleSpecies={(value) => {
+                if (value) {
+                  standardsDataLoader.refresh(value);
+                }
+              }}
+            />
+            <Box my={2}>
+              <SpeciesStandardsResults data={standardsDataLoader.data} isLoading={standardsDataLoader.isLoading} />
+            </Box>
           </Box>
         </Paper>
       </Container>

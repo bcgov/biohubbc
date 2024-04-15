@@ -1,15 +1,14 @@
 import { mdiRuler, mdiTag } from '@mdi/js';
 import { Box, CircularProgress, Divider, Stack, Typography } from '@mui/material';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import useDataLoader from 'hooks/useDataLoader';
-import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
-import { useEffect, useState } from 'react';
+import { IGetSpeciesStandardsResponse } from 'interfaces/useStandardsApi.interface';
+import { useState } from 'react';
 import MarkingBodyLocationStandardCard from './components/MarkingBodyLocationStandardCard';
 import MeasurementStandardCard from './components/MeasurementStandardCard';
 import SpeciesStandardsToolbar, { SpeciesStandardsViewEnum } from './components/SpeciesStandardsToolbar';
 
 interface ISpeciesStandardsResultsProps {
-  selectedSpecies?: ITaxonomy;
+  data?: IGetSpeciesStandardsResponse;
+  isLoading: boolean;
 }
 
 /**
@@ -18,22 +17,9 @@ interface ISpeciesStandardsResultsProps {
  * @return {*}
  */
 const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
-  const biohubApi = useBiohubApi();
   const [activeView, setActiveView] = useState<SpeciesStandardsViewEnum>(SpeciesStandardsViewEnum.MEASUREMENTS);
 
-  const resourcesDataLoader = useDataLoader((tsn: number) => biohubApi.standards.getSpeciesStandards(tsn));
-
-  useEffect(() => {
-    if (props.selectedSpecies) {
-      resourcesDataLoader.refresh(props.selectedSpecies.tsn);
-    }
-  }, [props.selectedSpecies?.tsn]);
-
-  if (!resourcesDataLoader.data) {
-    return <></>;
-  }
-
-  if (resourcesDataLoader.isLoading) {
+  if (props.isLoading) {
     return (
       <Box display="flex" alignItems="center" justifyContent="center">
         <CircularProgress size={40} />
@@ -41,15 +27,19 @@ const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
     );
   }
 
+  if (!props.data) {
+    return <></>;
+  }
+
   return (
     <>
       <Box justifyContent="space-between" display="flex">
         <Typography color="textSecondary">
           Showing results for{' '}
-          {resourcesDataLoader.data.scientificName.split(' ').length >= 2 ? (
-            <i>{resourcesDataLoader.data?.scientificName}</i>
+          {props.data.scientificName.split(' ').length >= 2 ? (
+            <i>{props.data.scientificName}</i>
           ) : (
-            resourcesDataLoader.data?.scientificName
+            props.data.scientificName
           )}
         </Typography>
       </Box>
@@ -77,14 +67,14 @@ const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
 
       {activeView === 'MEASUREMENTS' && (
         <Stack gap={2}>
-          {resourcesDataLoader.data?.measurements?.qualitative.map((measurement) => (
+          {props.data.measurements.qualitative.map((measurement) => (
             <MeasurementStandardCard
               label={measurement.measurement_name}
               description={measurement.measurement_desc ?? ''}
               options={measurement.options}
             />
           ))}
-          {resourcesDataLoader.data?.measurements?.quantitative.map((measurement) => (
+          {props.data.measurements.quantitative.map((measurement) => (
             <MeasurementStandardCard
               label={measurement.measurement_name}
               description={measurement.measurement_desc ?? ''}
@@ -94,7 +84,7 @@ const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
       )}
       {activeView === 'MARKING BODY LOCATIONS' && (
         <Stack gap={2}>
-          {resourcesDataLoader.data?.markingBodyLocations?.map((location) => (
+          {props.data.markingBodyLocations.map((location) => (
             <MarkingBodyLocationStandardCard label={location.value} />
           ))}
         </Stack>
