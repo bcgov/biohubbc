@@ -19,7 +19,7 @@ describe('FundingSourceRepository', () => {
     it('returns an empty array of funding source items', async () => {
       const expectedResult: FundingSource[] = [];
 
-      const mockResponse = ({ rowCount: 1, rows: expectedResult } as unknown) as Promise<QueryResult<any>>;
+      const mockResponse = { rowCount: 1, rows: expectedResult } as unknown as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({ knex: async () => mockResponse });
 
@@ -41,7 +41,7 @@ describe('FundingSourceRepository', () => {
         }
       ];
 
-      const mockResponse = ({ rowCount: 1, rows: expectedResult } as unknown) as Promise<QueryResult<any>>;
+      const mockResponse = { rowCount: 1, rows: expectedResult } as unknown as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({ knex: async () => mockResponse });
 
@@ -55,7 +55,7 @@ describe('FundingSourceRepository', () => {
 
   describe('hasFundingSourceNameBeenUsed', () => {
     it('returns true if name exists', async () => {
-      const mockResponse = ({ rowCount: 1, rows: [] } as unknown) as Promise<QueryResult<any>>;
+      const mockResponse = { rowCount: 1, rows: [] } as unknown as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
 
@@ -67,7 +67,7 @@ describe('FundingSourceRepository', () => {
     });
 
     it('returns false if name doesnt exists', async () => {
-      const mockResponse = ({ rowCount: 0, rows: [] } as unknown) as Promise<QueryResult<any>>;
+      const mockResponse = { rowCount: 0, rows: [] } as unknown as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
 
@@ -88,7 +88,7 @@ describe('FundingSourceRepository', () => {
         description: 'description'
       };
 
-      const mockResponse = ({ rowCount: 1, rows: [{ funding_source_id: 1 }] } as unknown) as Promise<QueryResult<any>>;
+      const mockResponse = { rowCount: 1, rows: [{ funding_source_id: 1 }] } as unknown as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
 
@@ -107,7 +107,7 @@ describe('FundingSourceRepository', () => {
         description: 'description'
       };
 
-      const mockResponse = ({ rowCount: 0, rows: [] } as unknown) as Promise<QueryResult<any>>;
+      const mockResponse = { rowCount: 0, rows: [] } as unknown as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
 
@@ -133,7 +133,7 @@ describe('FundingSourceRepository', () => {
         description: 'description'
       };
 
-      const mockResponse = ({ rowCount: 1, rows: [expectedResult] } as unknown) as Promise<QueryResult<any>>;
+      const mockResponse = { rowCount: 1, rows: [expectedResult] } as unknown as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
 
@@ -147,7 +147,7 @@ describe('FundingSourceRepository', () => {
     });
 
     it('throws an error if rowCount is 0', async () => {
-      const mockResponse = ({ rowCount: 0, rows: [] } as unknown) as Promise<QueryResult<any>>;
+      const mockResponse = { rowCount: 0, rows: [] } as unknown as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
 
@@ -165,7 +165,7 @@ describe('FundingSourceRepository', () => {
     });
 
     it('throws an error if rowCount is greater than 1', async () => {
-      const mockResponse = ({ rowCount: 2, rows: [] } as unknown) as Promise<QueryResult<any>>;
+      const mockResponse = { rowCount: 2, rows: [] } as unknown as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
 
@@ -185,15 +185,15 @@ describe('FundingSourceRepository', () => {
 
   describe('getFundingSourceSurveyReferences', () => {
     it('returns an array of funding sources with reference', async () => {
-      const expectedResult: SurveyFundingSource = ({
+      const expectedResult: SurveyFundingSource = {
         funding_source_id: 1,
         funding_source_name: 'name',
         start_date: '2020-01-01',
         end_date: '2020-01-01',
         description: 'description'
-      } as unknown) as SurveyFundingSource;
+      } as unknown as SurveyFundingSource;
 
-      const mockResponse = ({ rowCount: 1, rows: [expectedResult] } as unknown) as Promise<QueryResult<any>>;
+      const mockResponse = { rowCount: 1, rows: [expectedResult] } as unknown as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
 
@@ -212,7 +212,7 @@ describe('FundingSourceRepository', () => {
       const fundingSourceId = 1;
       const expectedResult = { funding_source_id: fundingSourceId };
 
-      const mockResponse = ({ rowCount: 1, rows: [expectedResult] } as unknown) as Promise<QueryResult<any>>;
+      const mockResponse = { rowCount: 1, rows: [expectedResult] } as unknown as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
 
@@ -233,7 +233,7 @@ describe('FundingSourceRepository', () => {
     });
 
     it('throws an error if rowCount is 0', async () => {
-      const mockResponse = ({ rowCount: 0, rows: [] } as unknown) as Promise<QueryResult<any>>;
+      const mockResponse = { rowCount: 0, rows: [] } as unknown as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
 
@@ -259,7 +259,7 @@ describe('FundingSourceRepository', () => {
     });
 
     it('throws an error if rowCount is greater than 1', async () => {
-      const mockResponse = ({ rowCount: 2, rows: [] } as unknown) as Promise<QueryResult<any>>;
+      const mockResponse = { rowCount: 2, rows: [] } as unknown as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
 
@@ -289,7 +289,7 @@ describe('FundingSourceRepository', () => {
     it('deletes a single funding source', async () => {
       const expectedResult = { funding_source_id: 1 };
 
-      const mockResponse = ({ rowCount: 1, rows: [expectedResult] } as unknown) as Promise<QueryResult<any>>;
+      const mockResponse = { rowCount: 1, rows: [expectedResult] } as unknown as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
 
@@ -303,7 +303,7 @@ describe('FundingSourceRepository', () => {
     });
 
     it('throws an error if rowCount is 0', async () => {
-      const mockResponse = ({ rowCount: 0, rows: [] } as unknown) as Promise<QueryResult<any>>;
+      const mockResponse = { rowCount: 0, rows: [] } as unknown as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
 
@@ -321,7 +321,7 @@ describe('FundingSourceRepository', () => {
     });
 
     it('throws an error if rowCount is greater than 1', async () => {
-      const mockResponse = ({ rowCount: 2, rows: [] } as unknown) as Promise<QueryResult<any>>;
+      const mockResponse = { rowCount: 2, rows: [] } as unknown as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
 
@@ -343,7 +343,7 @@ describe('FundingSourceRepository', () => {
     it('returns a single funding source basic supplementary data', async () => {
       const expectedResult = { survey_reference_count: 1, survey_reference_amount_total: 1 };
 
-      const mockResponse = ({ rowCount: 1, rows: [expectedResult] } as unknown) as Promise<QueryResult<any>>;
+      const mockResponse = { rowCount: 1, rows: [expectedResult] } as unknown as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
 
@@ -357,7 +357,7 @@ describe('FundingSourceRepository', () => {
     });
 
     it('throws an error if rowCount is 0', async () => {
-      const mockResponse = ({ rowCount: 0, rows: [] } as unknown) as Promise<QueryResult<any>>;
+      const mockResponse = { rowCount: 0, rows: [] } as unknown as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
 
@@ -385,7 +385,7 @@ describe('FundingSourceRepository', () => {
         revision_count: 1
       };
 
-      const mockResponse = ({ rowCount: 1, rows: [expectedResult] } as unknown) as Promise<QueryResult<any>>;
+      const mockResponse = { rowCount: 1, rows: [expectedResult] } as unknown as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
 
@@ -397,7 +397,7 @@ describe('FundingSourceRepository', () => {
     });
 
     it('throws an error if rowCount is 0', async () => {
-      const mockResponse = ({ rowCount: 0, rows: [] } as unknown) as Promise<QueryResult<any>>;
+      const mockResponse = { rowCount: 0, rows: [] } as unknown as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
 
@@ -425,7 +425,7 @@ describe('FundingSourceRepository', () => {
         }
       ];
 
-      const mockResponse = ({ rowCount: 1, rows: expectedResult } as unknown) as Promise<QueryResult<any>>;
+      const mockResponse = { rowCount: 1, rows: expectedResult } as unknown as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
 
@@ -439,7 +439,7 @@ describe('FundingSourceRepository', () => {
 
   describe('postSurveyFundingSource', () => {
     it('inserts new survey fundng source', async () => {
-      const mockResponse = ({ rowCount: 1, rows: [] } as unknown) as Promise<QueryResult<any>>;
+      const mockResponse = { rowCount: 1, rows: [] } as unknown as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
 
@@ -451,7 +451,7 @@ describe('FundingSourceRepository', () => {
     });
 
     it('throws an error if rowCount is 0', async () => {
-      const mockResponse = ({ rowCount: 0, rows: [] } as unknown) as Promise<QueryResult<any>>;
+      const mockResponse = { rowCount: 0, rows: [] } as unknown as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
 
@@ -469,7 +469,7 @@ describe('FundingSourceRepository', () => {
 
   describe('putSurveyFundingSource', () => {
     it('updates survey funding source', async () => {
-      const mockResponse = ({ rowCount: 1, rows: [] } as unknown) as Promise<QueryResult<any>>;
+      const mockResponse = { rowCount: 1, rows: [] } as unknown as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
 
@@ -481,7 +481,7 @@ describe('FundingSourceRepository', () => {
     });
 
     it('throws an error if rowCount is 0', async () => {
-      const mockResponse = ({ rowCount: 0, rows: [] } as unknown) as Promise<QueryResult<any>>;
+      const mockResponse = { rowCount: 0, rows: [] } as unknown as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
 
@@ -499,7 +499,7 @@ describe('FundingSourceRepository', () => {
 
   describe('deleteSurveyFundingSource', () => {
     it('deletes survey funding source', async () => {
-      const mockResponse = ({ rowCount: 1, rows: [] } as unknown) as Promise<QueryResult<any>>;
+      const mockResponse = { rowCount: 1, rows: [] } as unknown as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
 
@@ -511,7 +511,7 @@ describe('FundingSourceRepository', () => {
     });
 
     it('throws an error if rowCount is 0', async () => {
-      const mockResponse = ({ rowCount: 0, rows: [] } as unknown) as Promise<QueryResult<any>>;
+      const mockResponse = { rowCount: 0, rows: [] } as unknown as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
 

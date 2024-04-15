@@ -12,7 +12,7 @@ import { isString } from 'lodash';
  */
 export function safeToLowerCase<T>(value: T): T {
   if (isString(value)) {
-    return (value.toLowerCase() as unknown) as T;
+    return value.toLowerCase() as unknown as T;
   }
 
   return value;
@@ -30,7 +30,7 @@ export function safeToLowerCase<T>(value: T): T {
  */
 export function safeTrim<T>(value: T): T {
   if (isString(value)) {
-    return (value.trim() as unknown) as T;
+    return value.trim() as unknown as T;
   }
 
   return value;

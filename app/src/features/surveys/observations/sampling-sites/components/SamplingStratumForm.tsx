@@ -30,7 +30,7 @@ const SamplingStratumForm: React.FC = () => {
     setFieldValue(`stratums[${values.stratums.length}]`, stratum);
   };
 
-  const handleRemoveItem = (stratum: IGetSurveyStratum, index: number) => {
+  const handleRemoveItem = (stratum: IGetSurveyStratum) => {
     setFieldValue(
       `stratums`,
       values.stratums.filter((existing) => existing.survey_stratum_id !== stratum.survey_stratum_id)
@@ -125,11 +125,7 @@ const SamplingStratumForm: React.FC = () => {
                 }}>
                 <CardHeader
                   action={
-                    <IconButton
-                      onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                        handleRemoveItem(item, index)
-                      }
-                      aria-label="settings">
+                    <IconButton onClick={() => handleRemoveItem(item)} aria-label="settings">
                       <Icon path={mdiClose} size={1} />
                     </IconButton>
                   }

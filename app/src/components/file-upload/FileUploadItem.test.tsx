@@ -10,7 +10,7 @@ describe('FileUploadItem', () => {
   it('calls props.onCancel when the `X` button is clicked', async () => {
     let rejectRef: (value: unknown) => void;
 
-    const mockUploadPromise = new Promise(function (resolve: any, reject: any) {
+    const mockUploadPromise = new Promise(function (_, reject: any) {
       rejectRef = reject;
     });
 
@@ -56,7 +56,7 @@ describe('FileUploadItem', () => {
   it('handles file upload success', async () => {
     let resolveRef: (value: unknown) => void;
 
-    const mockUploadPromise = new Promise(function (resolve: any, reject: any) {
+    const mockUploadPromise = new Promise(function (resolve: any, _) {
       resolveRef = resolve;
     });
 
@@ -98,7 +98,7 @@ describe('FileUploadItem', () => {
   it('handles file upload rejection', async () => {
     let rejectRef: (reason: unknown) => void;
 
-    const mockUploadPromise = new Promise(function (resolve: any, reject: any) {
+    const mockUploadPromise = new Promise(function (_, reject: any) {
       rejectRef = reject;
     });
 

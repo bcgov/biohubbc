@@ -18,7 +18,7 @@ describe('list', () => {
     const ajv = new Ajv();
 
     it('is valid openapi v3 schema', () => {
-      expect(ajv.validateSchema((list.GET.apiDoc as unknown) as object)).to.be.true;
+      expect(ajv.validateSchema(list.GET.apiDoc as unknown as object)).to.be.true;
     });
   });
 
@@ -66,7 +66,7 @@ describe('list', () => {
 
       const result = list.getProjectList();
 
-      await result(sampleReq, sampleRes as any, (null as unknown) as any);
+      await result(sampleReq, sampleRes as any, null as unknown as any);
 
       expect(actualResult).to.eql({
         pagination: {
@@ -105,7 +105,7 @@ describe('list', () => {
 
       const result = list.getProjectList();
 
-      await result(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
+      await result(sampleReq, sampleRes as unknown as any, null as unknown as any);
 
       expect(actualResult).to.eql({
         pagination: {
@@ -141,7 +141,7 @@ describe('list', () => {
       try {
         const requestHandler = list.getProjectList();
 
-        await requestHandler(sampleReq, sampleRes as any, (null as unknown) as any);
+        await requestHandler(sampleReq, sampleRes as any, null as unknown as any);
         expect.fail();
       } catch (actualError) {
         expect(dbConnectionObj.release).to.have.been.called;
