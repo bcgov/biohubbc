@@ -102,7 +102,7 @@ describe('CritterbaseService', () => {
         const mockGetRequest = sinon.stub(cb, '_makeGetRequest');
         await cb.getTaxonBodyLocations('asdf');
         expect(mockGetRequest).to.have.been.calledOnceWith('/xref/taxon-marking-body-locations', [
-          { key: 'taxon_id', value: 'asdf' },
+          { key: 'tsn', value: 'asdf' },
           { key: 'format', value: 'asSelect' }
         ]);
       });

@@ -14,7 +14,6 @@ import DataGridValidationAlert from 'components/data-grid/DataGridValidationAler
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { BulkActionsButton } from 'features/surveys/observations/observations-table/bulk-actions/BulkActionsButton';
-import { ConfigureColumnsContainer } from 'features/surveys/observations/observations-table/configure-table/ConfigureColumnsContainer';
 import { DiscardChangesButton } from 'features/surveys/observations/observations-table/discard-changes/DiscardChangesButton';
 import {
   ISampleMethodOption,
@@ -41,6 +40,7 @@ import {
 } from 'interfaces/useSurveyApi.interface';
 import { useContext } from 'react';
 import { getCodesName } from 'utils/Utils';
+import ConfigureColumnsButton from './configure-columns/ConfigureColumnsButton';
 import ExportHeadersButton from './export-button/ExportHeadersButton';
 import { getMeasurementColumnDefinitions } from './grid-column-definitions/GridColumnDefinitionsUtils';
 
@@ -157,11 +157,8 @@ const ObservationComponent = () => {
               />
             </Box>
           </Collapse>
+          <ConfigureColumnsButton />
           <ExportHeadersButton />
-          <ConfigureColumnsContainer
-            disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}
-            columns={columns}
-          />
           <BulkActionsButton disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled} />
         </Stack>
       </Toolbar>
