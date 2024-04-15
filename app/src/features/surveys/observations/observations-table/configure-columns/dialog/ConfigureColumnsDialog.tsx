@@ -1,10 +1,10 @@
 import { mdiCog, mdiLeaf, mdiRuler } from '@mdi/js';
 import { LoadingButton } from '@mui/lab';
-import { Dialog, DialogActions, DialogContent, DialogTitle, Grid } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid } from '@mui/material';
 import { useState } from 'react';
-import { ConfigureColumnsViewEnum } from './ConfigureColumnsButton';
-import ConfigureColumnsContentContainer from './ConfigureColumnsContentContainer';
-import ConfigureColumnsToolbar from './ConfigureColumnsToolbar';
+import { ConfigureColumnsViewEnum } from '../ConfigureColumnsContainer';
+import ConfigureColumnsContentContainer from './components/ConfigureColumnsContent';
+import ConfigureColumnsToolbar from './components/ConfigureColumnsToolbar';
 
 interface IConfigureColumnsDialogProps {
   open: boolean;
@@ -19,7 +19,7 @@ const ConfigureColumnsDialog = (props: IConfigureColumnsDialogProps) => {
   return (
     <>
       <Dialog
-        sx={{ '& .MuiPaper-root': { maxWidth: 1000 } }}
+        sx={{ '& .MuiPaper-root': { maxWidth: 1000, minHeight: '80vh' } }}
         fullWidth
         open={props.open}
         onClose={props.onClose}
@@ -28,7 +28,7 @@ const ConfigureColumnsDialog = (props: IConfigureColumnsDialogProps) => {
         aria-describedby="alert-dialog-description">
         <DialogTitle id="alert-dialog-title">Configure columns</DialogTitle>
         <DialogContent>
-          <Grid container xs={12}>
+          <Grid container xs={12} justifyContent="space-between" minHeight={400}>
             <Grid item xs={3}>
               <ConfigureColumnsToolbar
                 activeView={activeView}
@@ -55,7 +55,8 @@ const ConfigureColumnsDialog = (props: IConfigureColumnsDialogProps) => {
                 ]}
               />
             </Grid>
-            <Grid item xs={9}>
+            <Divider orientation="vertical" flexItem />
+            <Grid item xs={8}>
               <ConfigureColumnsContentContainer activeView={activeView} />
             </Grid>
           </Grid>

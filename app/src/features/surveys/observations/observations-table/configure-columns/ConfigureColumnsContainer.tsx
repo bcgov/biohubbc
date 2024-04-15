@@ -1,8 +1,8 @@
 import { mdiTableEdit } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, Button } from '@mui/material';
+import { Button } from '@mui/material';
 import { useState } from 'react';
-import ConfigureColumnsDialog from './ConfigureColumnsDialog';
+import ConfigureColumnsDialog from './dialog/ConfigureColumnsDialog';
 
 export enum ConfigureColumnsViewEnum {
   MEASUREMENTS = 'MEASUREMENTS',
@@ -10,7 +10,7 @@ export enum ConfigureColumnsViewEnum {
   ENVIRONMENT = 'ENVIRONMENT'
 }
 
-const ConfigureColumnsButton = () => {
+const ConfigureColumnsContainer = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -24,17 +24,15 @@ const ConfigureColumnsButton = () => {
         aria-label="Add Measurements">
         Configure
       </Button>
-      <Box maxWidth="xl">
-        <ConfigureColumnsDialog
-          onClose={() => {
-            setIsOpen(false);
-          }}
-          open={isOpen}
-          onSave={() => {}}
-        />
-      </Box>
+      <ConfigureColumnsDialog
+        onClose={() => {
+          setIsOpen(false);
+        }}
+        open={isOpen}
+        onSave={() => {}}
+      />
     </>
   );
 };
 
-export default ConfigureColumnsButton;
+export default ConfigureColumnsContainer;

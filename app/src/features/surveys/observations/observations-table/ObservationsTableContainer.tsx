@@ -40,7 +40,7 @@ import {
 } from 'interfaces/useSurveyApi.interface';
 import { useContext } from 'react';
 import { getCodesName } from 'utils/Utils';
-import ConfigureColumnsButton from './configure-columns/ConfigureColumnsButton';
+import ConfigureColumnsContainer from './configure-columns/ConfigureColumnsContainer';
 import ExportHeadersButton from './export-button/ExportHeadersButton';
 import { getMeasurementColumnDefinitions } from './grid-column-definitions/GridColumnDefinitionsUtils';
 
@@ -157,7 +157,7 @@ const ObservationComponent = () => {
               />
             </Box>
           </Collapse>
-          <ConfigureColumnsButton />
+          <ConfigureColumnsContainer />
           <ExportHeadersButton />
           <BulkActionsButton disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled} />
         </Stack>

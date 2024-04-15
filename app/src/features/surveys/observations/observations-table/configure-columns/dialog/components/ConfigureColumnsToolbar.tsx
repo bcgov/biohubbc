@@ -1,6 +1,6 @@
 import Icon from '@mdi/react';
 import { Button, ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { ConfigureColumnsViewEnum } from './ConfigureColumnsButton';
+import { ConfigureColumnsViewEnum } from '../../ConfigureColumnsContainer';
 
 interface IConfigureColumnsView {
   label: string;
@@ -35,7 +35,9 @@ const ConfigureColumnsToolbar = (props: IConfigureColumnsToolbarProps) => {
           width: '100%',
           gap: 1,
           '& Button': {
-             textAlign: 'left',
+            textAlign: 'left',
+            display: 'flex',
+            justifyContent: 'flex-start',
             py: 1,
             px: 2,
             border: 'none',

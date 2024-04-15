@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import MeasurementsSearchAutocomplete from 'features/surveys/observations/observations-table/configure-table/measurements/search/MeasurementsSearchAutocomplete';
+import MeasurementsSearchAutocomplete from 'features/surveys/observations/observations-table/configure-columns/dialog/measurements/search/MeasurementsSearchAutocomplete';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
@@ -36,8 +36,8 @@ export const MeasurementsSearch = (props: IMeasurementsSearchProps) => {
 
   return (
     <Box>
-      <Typography variant="body1" color="textSecondary" sx={{ mt: -1, mb: 3 }}>
-        Add additional measurements to your observations data.
+      <Typography variant="h5" sx={{ mb: 2 }}>
+        Add Measurements
       </Typography>
       <MeasurementsSearchAutocomplete
         selectedOptions={selectedMeasurements}
