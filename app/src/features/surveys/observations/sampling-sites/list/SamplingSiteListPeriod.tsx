@@ -4,7 +4,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
-import { ImportObservationsButton } from 'features/surveys/observations/sampling-sites/list/import-observations/ImportObservationsButton';
+import { ImportObservationsButton } from 'features/surveys/observations/components/import-observations/ImportObservationsButton';
 import { useObservationsContext, useObservationsPageContext } from 'hooks/useContext';
 import { IGetSamplePeriodRecord } from 'interfaces/useSurveyApi.interface';
 
@@ -12,6 +12,12 @@ export interface ISamplingSiteListPeriodProps {
   samplePeriod: IGetSamplePeriodRecord;
 }
 
+/**
+ * Renders a list item for a single sampling period.
+ *
+ * @param {ISamplingSiteListPeriodProps} props
+ * @return {*}
+ */
 export const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
   const { samplePeriod } = props;
 
@@ -27,8 +33,7 @@ export const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
         px: 1.5,
         color: 'text.secondary'
       }}
-      title="Sampling Period"
-      key={`${samplePeriod.survey_sample_method_id}-${samplePeriod.survey_sample_period_id}`}>
+      title="Sampling Period">
       <ListItemIcon sx={{ minWidth: '32px' }} color="inherit">
         <Icon path={mdiCalendarRange} size={0.75}></Icon>
       </ListItemIcon>
