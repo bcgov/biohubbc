@@ -48,7 +48,7 @@ describe('updates metadata for a survey report', () => {
     try {
       const result = update_survey_metadata.updateSurveyReportMetadata();
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      await result(sampleReq, null as unknown as any, null as unknown as any);
       expect.fail();
     } catch (actualError) {
       expect((actualError as HTTPError).message).to.equal(expectedError.message);
@@ -104,7 +104,7 @@ describe('updates metadata for a survey report', () => {
     };
 
     const requestHandler = update_survey_metadata.updateSurveyReportMetadata();
-    await requestHandler(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
+    await requestHandler(sampleReq, sampleRes as unknown as any, null as unknown as any);
 
     expect(actualResult).to.equal(undefined);
     expect(updateSurveyReportAttachmentMetadataStub).to.be.calledOnce;

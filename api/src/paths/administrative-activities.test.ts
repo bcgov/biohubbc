@@ -15,7 +15,7 @@ describe('openapi schema', () => {
 
   describe('GET', () => {
     it('is valid openapi v3 schema', () => {
-      expect(ajv.validateSchema((GET.apiDoc as unknown) as object)).to.be.true;
+      expect(ajv.validateSchema(GET.apiDoc as unknown as object)).to.be.true;
     });
   });
 });
@@ -28,7 +28,7 @@ describe('getAdministrativeActivities', () => {
   it('should return the rows on success (empty)', async () => {
     const mockDBConnection = getMockDBConnection({
       sql: async () => {
-        return ({ rowCount: 0, rows: [] } as any) as Promise<QueryResult<any>>;
+        return { rowCount: 0, rows: [] } as any as Promise<QueryResult<any>>;
       }
     });
 
@@ -63,7 +63,7 @@ describe('getAdministrativeActivities', () => {
 
     const mockDBConnection = getMockDBConnection({
       sql: async () => {
-        return ({ rowCount: 1, rows: [data] } as any) as Promise<QueryResult<any>>;
+        return { rowCount: 1, rows: [data] } as any as Promise<QueryResult<any>>;
       }
     });
 

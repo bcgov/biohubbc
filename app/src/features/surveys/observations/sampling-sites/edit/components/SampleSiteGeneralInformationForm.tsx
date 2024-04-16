@@ -7,7 +7,7 @@ import React from 'react';
  *
  * @return {*}
  */
-const SampleSiteGeneralInformationForm: React.FC = (props) => {
+const SampleSiteGeneralInformationForm: React.FC = () => {
   return (
     <>
       <Grid container spacing={3}>

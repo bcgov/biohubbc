@@ -16,7 +16,7 @@ describe('SurveyBlockRepository', () => {
 
   describe('getSurveyBlocksForSurveyId', () => {
     it('should succeed with valid data', async () => {
-      const mockResponse = ({
+      const mockResponse = {
         rows: [
           {
             survey_block_id: 1,
@@ -31,7 +31,7 @@ describe('SurveyBlockRepository', () => {
           }
         ],
         rowCount: 1
-      } as any) as Promise<QueryResult<any>>;
+      } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         sql: () => mockResponse
       });
@@ -45,10 +45,10 @@ describe('SurveyBlockRepository', () => {
     });
 
     it('should succeed with empty data', async () => {
-      const mockResponse = ({
+      const mockResponse = {
         rows: [],
         rowCount: 0
-      } as any) as Promise<QueryResult<any>>;
+      } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         sql: () => mockResponse
       });
@@ -61,7 +61,7 @@ describe('SurveyBlockRepository', () => {
 
   describe('updateSurveyBlock', () => {
     it('should succeed with valid data', async () => {
-      const mockResponse = ({
+      const mockResponse = {
         rows: [
           {
             survey_block_id: 1,
@@ -76,7 +76,7 @@ describe('SurveyBlockRepository', () => {
           }
         ],
         rowCount: 1
-      } as any) as Promise<QueryResult<any>>;
+      } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         sql: () => mockResponse
       });
@@ -89,10 +89,10 @@ describe('SurveyBlockRepository', () => {
     });
 
     it('should failed with erroneous data', async () => {
-      const mockResponse = ({
+      const mockResponse = {
         rows: [],
         rowCount: 0
-      } as any) as Promise<QueryResult<any>>;
+      } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         sql: () => mockResponse
       });
@@ -103,14 +103,14 @@ describe('SurveyBlockRepository', () => {
         await repo.updateSurveyBlock(block);
         expect.fail();
       } catch (error) {
-        expect(((error as any) as ApiExecuteSQLError).message).to.be.eq('Failed to update survey block');
+        expect((error as any as ApiExecuteSQLError).message).to.be.eq('Failed to update survey block');
       }
     });
   });
 
   describe('insertSurveyBlock', () => {
     it('should succeed with valid data', async () => {
-      const mockResponse = ({
+      const mockResponse = {
         rows: [
           {
             survey_block_id: 1,
@@ -125,7 +125,7 @@ describe('SurveyBlockRepository', () => {
           }
         ],
         rowCount: 1
-      } as any) as Promise<QueryResult<any>>;
+      } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         sql: () => mockResponse
       });
@@ -139,32 +139,32 @@ describe('SurveyBlockRepository', () => {
     });
 
     it('should fail with erroneous data', async () => {
-      const mockResponse = ({
+      const mockResponse = {
         rows: [],
         rowCount: 0
-      } as any) as Promise<QueryResult<any>>;
+      } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         sql: () => mockResponse
       });
       const repo = new SurveyBlockRepository(dbConnection);
       try {
-        const block = ({
+        const block = {
           survey_block_id: null,
           survey_id: 1,
           name: null,
           description: null
-        } as any) as PostSurveyBlock;
+        } as any as PostSurveyBlock;
         await repo.insertSurveyBlock(block);
         expect.fail();
       } catch (error) {
-        expect(((error as any) as ApiExecuteSQLError).message).to.be.eq('Failed to insert survey block');
+        expect((error as any as ApiExecuteSQLError).message).to.be.eq('Failed to insert survey block');
       }
     });
   });
 
   describe('deleteSurveyBlockRecord', () => {
     it('should succeed with valid data', async () => {
-      const mockResponse = ({
+      const mockResponse = {
         rows: [
           {
             survey_block_id: 1,
@@ -179,7 +179,7 @@ describe('SurveyBlockRepository', () => {
           }
         ],
         rowCount: 1
-      } as any) as Promise<QueryResult<any>>;
+      } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         sql: () => mockResponse
       });
@@ -190,10 +190,10 @@ describe('SurveyBlockRepository', () => {
     });
 
     it('should failed with erroneous data', async () => {
-      const mockResponse = ({
+      const mockResponse = {
         rows: [],
         rowCount: 0
-      } as any) as Promise<QueryResult<any>>;
+      } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         sql: () => mockResponse
       });
@@ -203,7 +203,7 @@ describe('SurveyBlockRepository', () => {
         await repo.deleteSurveyBlockRecord(1);
         expect.fail();
       } catch (error) {
-        expect(((error as any) as ApiExecuteSQLError).message).to.be.eq('Failed to delete survey block record');
+        expect((error as any as ApiExecuteSQLError).message).to.be.eq('Failed to delete survey block record');
       }
     });
   });

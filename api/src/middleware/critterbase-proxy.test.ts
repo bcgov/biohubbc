@@ -7,7 +7,7 @@ import { proxyFilter } from './critterbase-proxy';
 describe('CritterbaseProxy', () => {
   describe('proxyFilter', () => {
     beforeEach(() => {
-      sinon.stub(CritterbaseProxy, 'getSimsAppHostUrl').returns('SIMS');
+      sinon.stub(CritterbaseProxy, 'getSimsAppHost').returns('SIMS');
     });
 
     afterEach(() => {
@@ -17,6 +17,7 @@ describe('CritterbaseProxy', () => {
     it('should reject all requests not coming from SIMS APP', () => {
       expect(proxyFilter('test', { headers: { origin: 'NOT-SIMS' } } as Request)).to.be.false;
     });
+
     it('should allow requests coming from SIMS APP', () => {
       expect(proxyFilter('test', { headers: { origin: 'SIMS' } } as Request)).to.be.false;
     });

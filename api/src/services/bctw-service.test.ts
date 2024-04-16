@@ -221,7 +221,7 @@ describe('BctwService', () => {
     describe('uploadKeyX', () => {
       it('should send a post request', async () => {
         const mockAxios = sinon.stub(bctwService.axiosInstance, 'post').resolves({ data: { results: [], errors: [] } });
-        const mockMulterFile = ({ buffer: 'buffer', originalname: 'originalname' } as unknown) as Express.Multer.File;
+        const mockMulterFile = { buffer: 'buffer', originalname: 'originalname' } as unknown as Express.Multer.File;
         sinon.stub(FormData.prototype, 'append');
         const mockGetFormDataHeaders = sinon
           .stub(FormData.prototype, 'getHeaders')
@@ -236,7 +236,7 @@ describe('BctwService', () => {
 
       it('should throw an error if the response body has errors', async () => {
         sinon.stub(bctwService.axiosInstance, 'post').resolves({ data: { results: [], errors: [{ error: 'error' }] } });
-        const mockMulterFile = ({ buffer: 'buffer', originalname: 'originalname' } as unknown) as Express.Multer.File;
+        const mockMulterFile = { buffer: 'buffer', originalname: 'originalname' } as unknown as Express.Multer.File;
         sinon.stub(FormData.prototype, 'append');
         sinon.stub(FormData.prototype, 'getHeaders').resolves({ 'content-type': 'multipart/form-data' });
 
