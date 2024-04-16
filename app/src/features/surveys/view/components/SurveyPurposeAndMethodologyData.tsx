@@ -63,7 +63,7 @@ const SurveyPurposeAndMethodologyData = () => {
 
       <Box className="row">
         <Typography component="dt">Vantage Code(s)</Typography>
-        {surveyData.purpose_and_methodology.vantage_code_ids?.map((vc_id: number, index: number) => {
+        {surveyData.purpose_and_methodology.vantage_code_ids?.map((vc_id: number) => {
           return (
             <Typography
               component="dd"

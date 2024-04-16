@@ -16,7 +16,7 @@ describe('survey', () => {
     const ajv = new Ajv();
 
     it('is valid openapi v3 schema', () => {
-      expect(ajv.validateSchema((POST.apiDoc as unknown) as object)).to.be.true;
+      expect(ajv.validateSchema(POST.apiDoc as unknown as object)).to.be.true;
     });
   });
 
@@ -58,7 +58,7 @@ describe('survey', () => {
 
       const requestHandler = publishSurvey();
 
-      await requestHandler(sampleReq, (sampleRes as unknown) as any, mockNext);
+      await requestHandler(sampleReq, sampleRes as unknown as any, mockNext);
 
       expect(actualResult).to.eql({ submission_uuid: '123-456-789' });
     });

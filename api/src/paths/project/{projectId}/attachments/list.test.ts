@@ -75,7 +75,7 @@ describe('getAttachments', () => {
 
     const result = list.getAttachments();
 
-    await result((mockReq as unknown) as any, (sampleRes as unknown) as any, (null as unknown) as any);
+    await result(mockReq as unknown as any, sampleRes as unknown as any, null as unknown as any);
     expect(actualResult).to.eql(expectedResponse);
     expect(getProjectAttachmentsStub).to.be.calledOnce;
   });

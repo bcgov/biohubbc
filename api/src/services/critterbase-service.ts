@@ -333,9 +333,7 @@ export class CritterbaseService {
     return this._makeGetRequest(CbRoutes[route], params);
   }
 
-  async getTaxonMeasurements(
-    tsn: string
-  ): Promise<{
+  async getTaxonMeasurements(tsn: string): Promise<{
     qualitative: CBQualitativeMeasurementTypeDefinition[];
     quantitative: CBQuantitativeMeasurementTypeDefinition[];
   }> {
@@ -343,9 +341,9 @@ export class CritterbaseService {
     return response;
   }
 
-  async getTaxonBodyLocations(taxon_id: string) {
+  async getTaxonBodyLocations(tsn: string) {
     return this._makeGetRequest(CbRoutes['taxon-marking-body-locations'], [
-      { key: 'taxon_id', value: taxon_id },
+      { key: 'tsn', value: tsn },
       { key: 'format', value: 'asSelect' }
     ]);
   }

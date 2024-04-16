@@ -67,10 +67,10 @@ describe('authorizeRequest', function () {
   it('returns false if systemUserObject is null', async function () {
     registerMockDBConnection();
 
-    const mockSystemUserObject = (undefined as unknown) as SystemUser;
+    const mockSystemUserObject = undefined as unknown as SystemUser;
     sinon.stub(AuthorizationService.prototype, 'getSystemUserObject').resolves(mockSystemUserObject);
 
-    const mockReq = ({ authorization_scheme: {} } as unknown) as Request;
+    const mockReq = { authorization_scheme: {} } as unknown as Request;
     const isAuthorized = await authorization.authorizeRequest(mockReq);
 
     expect(isAuthorized).to.equal(false);
@@ -79,12 +79,12 @@ describe('authorizeRequest', function () {
   it('returns true if the user is a system administrator', async function () {
     registerMockDBConnection();
 
-    const mockSystemUserObject = ({ role_names: [] } as unknown) as SystemUser;
+    const mockSystemUserObject = { role_names: [] } as unknown as SystemUser;
     sinon.stub(AuthorizationService.prototype, 'getSystemUserObject').resolves(mockSystemUserObject);
 
     sinon.stub(AuthorizationService.prototype, 'authorizeSystemAdministrator').resolves(true);
 
-    const mockReq = ({ authorization_scheme: {} } as unknown) as Request;
+    const mockReq = { authorization_scheme: {} } as unknown as Request;
     const isAuthorized = await authorization.authorizeRequest(mockReq);
 
     expect(isAuthorized).to.equal(true);
@@ -93,12 +93,12 @@ describe('authorizeRequest', function () {
   it('returns true if the authorization_scheme is undefined', async function () {
     registerMockDBConnection();
 
-    const mockSystemUserObject = ({ role_names: [] } as unknown) as SystemUser;
+    const mockSystemUserObject = { role_names: [] } as unknown as SystemUser;
     sinon.stub(AuthorizationService.prototype, 'getSystemUserObject').resolves(mockSystemUserObject);
 
     sinon.stub(AuthorizationService.prototype, 'authorizeSystemAdministrator').resolves(false);
 
-    const mockReq = ({ authorization_scheme: undefined } as unknown) as Request;
+    const mockReq = { authorization_scheme: undefined } as unknown as Request;
     const isAuthorized = await authorization.authorizeRequest(mockReq);
 
     expect(isAuthorized).to.equal(true);
@@ -107,14 +107,14 @@ describe('authorizeRequest', function () {
   it('returns true if the user is authorized against the authorization_scheme', async function () {
     registerMockDBConnection();
 
-    const mockSystemUserObject = ({ role_names: [] } as unknown) as SystemUser;
+    const mockSystemUserObject = { role_names: [] } as unknown as SystemUser;
     sinon.stub(AuthorizationService.prototype, 'getSystemUserObject').resolves(mockSystemUserObject);
 
     sinon.stub(AuthorizationService.prototype, 'authorizeSystemAdministrator').resolves(false);
 
     sinon.stub(AuthorizationService.prototype, 'executeAuthorizationScheme').resolves(true);
 
-    const mockReq = ({ authorization_scheme: {} } as unknown) as Request;
+    const mockReq = { authorization_scheme: {} } as unknown as Request;
     const isAuthorized = await authorization.authorizeRequest(mockReq);
 
     expect(isAuthorized).to.equal(true);
@@ -123,14 +123,14 @@ describe('authorizeRequest', function () {
   it('returns false if the user is not authorized against the authorization_scheme', async function () {
     registerMockDBConnection();
 
-    const mockSystemUserObject = ({ role_names: [] } as unknown) as SystemUser;
+    const mockSystemUserObject = { role_names: [] } as unknown as SystemUser;
     sinon.stub(AuthorizationService.prototype, 'getSystemUserObject').resolves(mockSystemUserObject);
 
     sinon.stub(AuthorizationService.prototype, 'authorizeSystemAdministrator').resolves(false);
 
     sinon.stub(AuthorizationService.prototype, 'executeAuthorizationScheme').resolves(false);
 
-    const mockReq = ({ authorization_scheme: {} } as unknown) as Request;
+    const mockReq = { authorization_scheme: {} } as unknown as Request;
     const isAuthorized = await authorization.authorizeRequest(mockReq);
 
     expect(isAuthorized).to.equal(false);
@@ -143,7 +143,7 @@ describe('authorizeRequest', function () {
       })
     });
 
-    const mockReq = ({ authorization_scheme: {} } as unknown) as Request;
+    const mockReq = { authorization_scheme: {} } as unknown as Request;
     const isAuthorized = await authorization.authorizeRequest(mockReq);
 
     expect(isAuthorized).to.equal(false);

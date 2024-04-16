@@ -104,7 +104,7 @@ const openAPIFramework = initialize({
       return authenticateRequestOptional(req);
     }
   },
-  errorTransformer: function (openapiError: object, ajvError: object): object {
+  errorTransformer: function (_, ajvError: object): object {
     // Transform openapi-request-validator and openapi-response-validator errors
     defaultLog.error({ label: 'errorTransformer', message: 'ajvError', ajvError });
     return ajvError;
