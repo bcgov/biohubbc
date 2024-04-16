@@ -8,7 +8,7 @@
 
 
 # endpoint for Caribou herd boundaries
-BCGW_CARIBOU_FEATURES_ENDPOINT="https://openmaps.gov.bc.ca/geo/pub/wfs?request=GetFeature&service=WFS&version=2.0.0&typeNames=WHSE_WILDLIFE_INVENTORY.GCPB_CARIBOU_POPULATION_SP&outputFormat=json"
+BCGW_CARIBOU_FEATURES_ENDPOINT="https://openmaps.gov.bc.ca/geo/pub/wfs?request=GetFeature&service=WFS&version=2.0.0&typeNames=WHSE_WILDLIFE_INVENTORY.GCPB_CARIBOU_POPULATION_SP&outputFormat=json&srsName=EPSG:4326"
 
 # retrieve caribou feature geometries
 if test -f features.json; then
@@ -104,7 +104,7 @@ WITH p as(
 ), l as (
   INSERT INTO survey_location (survey_id, name, description, geojson, geography)
   SELECT survey_id, $$\(.unit_name)$$, $$\(.survey_location_description)$$, $$[\(.feature)]$$,
-    public.geography(public.ST_Force2D(public.ST_SetSRID(public.ST_Force2D(public.ST_GeomFromGeoJSON($$\(.feature.geometry)$$)), 4326)))
+    public.geography(public.ST_GeomFromGeoJSON($$\(.feature.geometry)$$))
   FROM s
 )
 INSERT INTO deployment (critter_id, bctw_deployment_id)
@@ -112,6 +112,7 @@ VALUES
 \(.deployments | map("((select critter_id from c), $$\(.deployment_id)$$)") | join(",\n"));
 
 "'
+#public.geography(public.ST_Force2D(public.ST_SetSRID(public.ST_Force2D(public.ST_GeomFromGeoJSON($$\(.feature.geometry)$$)), 4326)))
 # merge caribou geometry features with formatted JSON by unit_name
 JQ_MERGE_FEATURES_WITH_DEPLOYMENTS='map(. as $item | . + {feature: ($features | (.[] | select(.properties.HERD_NAME == $item.unit_name))) })'
 

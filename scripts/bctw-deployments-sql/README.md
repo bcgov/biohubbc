@@ -20,9 +20,11 @@ SELECT critter_id FROM critter WHERE itis_tsn = 180701;
 [
   {
     "critter_id": "A",
+    "unit_name": "Atlin"
   },
   {
     "critter_id": "B",
+    "unit_name": "Atlin"
   },
   {
     "deployment_id": "C",
