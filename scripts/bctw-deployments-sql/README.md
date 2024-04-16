@@ -4,13 +4,48 @@
 SIMS needs to be updated to include existing BCTW deployments. This script combines BCTW deployments with
 matching critters and injects Caribou region herd geometries.
 
+## Pre requisites
+1. BCTW SQL - Export valid telemetry collar deployments as JSON.
+```sql
+SELECT deployment_id, critter_id, attachment_start FROM collar_animal_assignment WHERE bctw.is_valid(valid_to);
+```
+2. Critterbase SQL - Export all caribou as JSON.
+```sql
+SELECT critter_id FROM critter WHERE itis_tsn = 180701;
+```
+3. Create JSON file from previous outputs as single array.
+
+- critter_deployments.json
+```json
+[
+  {
+    "critter_id": "A",
+  },
+  {
+    "critter_id": "B",
+  },
+  {
+    "deployment_id": "C",
+    "critter_id": "A",
+    "attachment_start": "2024-01-01",
+  },
+  {
+    "deployment_id": "D",
+    "critter_id": "B",
+    "attachment_start": "2024-01-01",
+  },
+  ...
+]
+
+```
+
 ## How to run
 1. Create input file
-2. Pipe file into script and output sql to text file.
+2. Pipe file into script and output to sql file.
 3. Import sql file into SIMS and execute.
 
 ```bash
-main.sh < {input-filename}.json > sql.txt
+./main.sh < {input-filename}.json > deployments.sql
 ```
 
 ## Requirements
