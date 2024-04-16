@@ -90,14 +90,14 @@ export const ImportObservationsButton = (props: IImportObservationsButtonProps) 
 
       const uploadResponse = await biohubApi.observation.uploadCsvForImport(projectId, surveyId, file);
 
-      setOpen(false);
-
       await biohubApi.observation.processCsvSubmission(
         projectId,
         surveyId,
         uploadResponse.submissionId,
         processOptions
       );
+
+      setOpen(false);
 
       dialogContext.setSnackbar({
         snackbarMessage: (
@@ -143,6 +143,7 @@ export const ImportObservationsButton = (props: IImportObservationsButtonProps) 
         dialogTitle="Import Observation CSV"
         onClose={() => setOpen(false)}
         onUpload={handleImportObservations}
+        uploadButtonLabel="Import"
         FileUploadProps={{
           dropZoneProps: { maxNumFiles: 1, acceptedFileExtensions: '.csv' },
           status: UploadFileStatus.STAGED

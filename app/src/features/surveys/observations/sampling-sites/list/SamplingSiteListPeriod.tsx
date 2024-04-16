@@ -4,7 +4,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
-import { ImportObservationsButton } from 'features/surveys/observations/components/import-observations/ImportObservationsButton';
+import { ImportObservationsButton } from 'features/surveys/observations/sampling-sites/list/import-observations/ImportObservationsButton';
 import { useObservationsContext, useObservationsPageContext } from 'hooks/useContext';
 import { IGetSamplePeriodRecord } from 'interfaces/useSurveyApi.interface';
 
