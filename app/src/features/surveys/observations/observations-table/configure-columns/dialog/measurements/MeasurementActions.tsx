@@ -17,6 +17,7 @@ const MeasurementActions = (props: IMeasurementActionsProps) => {
     props.setSelectedMeasurements((selectedMeasurements) =>
       selectedMeasurements.filter((existing) => existing.taxon_measurement_id !== taxon_measurement_id)
     );
+    setAnchorEl(null)
   };
 
   const handleClick = (event: any) => {

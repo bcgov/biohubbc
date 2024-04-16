@@ -36,9 +36,7 @@ export const MeasurementsSearch = (props: IMeasurementsSearchProps) => {
 
   return (
     <Box>
-      <Typography variant="h5" sx={{ mb: 2 }}>
-        Add Measurements
-      </Typography>
+      <Typography variant="h5" mb={2}>Add Measurements</Typography>
       <MeasurementsSearchAutocomplete
         selectedOptions={selectedMeasurements}
         getOptions={async (inputValue: string) => {

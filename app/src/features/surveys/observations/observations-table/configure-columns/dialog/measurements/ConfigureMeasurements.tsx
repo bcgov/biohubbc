@@ -54,17 +54,16 @@ const ConfigureMeasurements = () => {
   };
 
   return (
-    <Box>
+    <> 
       <MeasurementsSearch selectedMeasurements={selectedMeasurements} onSelectOptions={onSelectOptions} />
 
       <Box mt={3}>
-        {' '}
         {selectedMeasurements.length ? (
           <>
             <Typography variant="h5" sx={{ fontWeight: 500 }} color="textSecondary" mb={2}>
               Selected measurements
             </Typography>
-            <Stack gap={2}>
+            <Stack gap={2} sx={{overflowY: 'scroll'}} maxHeight={400}>
               {selectedMeasurements.map((measurement) => (
                 <Box display="flex" alignItems="flex-start">
                   <MeasurementStandardCard
@@ -84,7 +83,7 @@ const ConfigureMeasurements = () => {
           </Box>
         )}
       </Box>
-    </Box>
+    </>
   );
 };
 

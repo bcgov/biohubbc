@@ -1,6 +1,6 @@
 import { mdiCog, mdiLeaf, mdiRuler } from '@mdi/js';
 import { LoadingButton } from '@mui/lab';
-import { Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid, Typography } from '@mui/material';
 import { useState } from 'react';
 import { ConfigureColumnsViewEnum } from '../ConfigureColumnsContainer';
 import ConfigureColumnsContentContainer from './components/ConfigureColumnsContent';
@@ -19,16 +19,21 @@ const ConfigureColumnsDialog = (props: IConfigureColumnsDialogProps) => {
   return (
     <>
       <Dialog
-        sx={{ '& .MuiPaper-root': { maxWidth: 1000} }}
+        sx={{ '& .MuiDialog-paper': { maxWidth: 1200, height: '75vh' } }}
         fullWidth
         open={props.open}
         onClose={props.onClose}
         data-testid="yes-no-dialog"
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description">
-        <DialogTitle id="alert-dialog-title">Configure columns</DialogTitle>
-        <DialogContent>
-          <Grid container xs={12} justifyContent="space-between" minHeight={400} pr={2}>
+        <DialogTitle id="alert-dialog-title">
+          Configure Columns
+          <Typography color="textSecondary" sx={{ mt: 1 }}>
+            Customize the columns in your table to upload additional data, such as environmental variables.
+          </Typography>
+        </DialogTitle>
+        <DialogContent id='configure-dialog-content'>
+          <Grid container xs={12} justifyContent="space-between" pr={2}>
             <Grid item xs={3}>
               <ConfigureColumnsToolbar
                 activeView={activeView}
