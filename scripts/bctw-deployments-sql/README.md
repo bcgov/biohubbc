@@ -57,24 +57,26 @@ When deciding what Survey to put a deployment ID in, group by deployment year an
 
 For example,
 
-Telkwa herd 2021 would be a Survey
-Telkwa herd 2022 would be a Survey
-Porcupine herd 2022 would be a Survey
-For every Survey, make a new Project with the following values:
+- Telkwa herd 2021 would be a Survey
+- Telkwa herd 2022 would be a Survey
+- Porcupine herd 2022 would be a Survey
 
-Name: Caribou herd name - telemetry
-Program: Wildlife
-Dates: Jan. 1 - Dec. 31 of {year}
-Objectives: Telemetry deployments for Caribou herd name in year.
-For each Survey, include these values:
+#### For every Survey, make a new Project with the following values:
 
-Name: Caribou herd name - Year - telemetry
-Type: Monitoring
-Start date: Date of the earliest telemetry deployment in the Survey
-End date: Date of the last telemetry deployment in the Survey
-Species: Caribou
-Ecological Variables: Mortality, Distribution
-Site selection strategy: "Oportunistic" (have to add this as an option)
-Study area: Relevant herd's boundary
+- Name: Caribou herd name - telemetry
+- Program: Wildlife
+- Dates: Jan. 1 - Dec. 31 of {year}
+- Objectives: Telemetry deployments for Caribou herd name in year.
+
+#### For each Survey, include these values:
+
+- Name: Caribou herd name - Year - telemetry
+- Type: Monitoring
+- Start date: Date of the earliest telemetry deployment in the Survey
+- End date: Date of the last telemetry deployment in the Survey
+- Species: Caribou
+- Ecological Variables: Mortality, Distribution
+- Site selection strategy: "Oportunistic" (have to add this as an option)
+- Study area: Relevant herd's boundary
 
 
