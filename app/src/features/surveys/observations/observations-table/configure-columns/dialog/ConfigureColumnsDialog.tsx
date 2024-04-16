@@ -19,7 +19,7 @@ const ConfigureColumnsDialog = (props: IConfigureColumnsDialogProps) => {
   return (
     <>
       <Dialog
-        sx={{ '& .MuiPaper-root': { maxWidth: 1000, minHeight: '80vh' } }}
+        sx={{ '& .MuiPaper-root': { maxWidth: 1000} }}
         fullWidth
         open={props.open}
         onClose={props.onClose}
@@ -28,7 +28,7 @@ const ConfigureColumnsDialog = (props: IConfigureColumnsDialogProps) => {
         aria-describedby="alert-dialog-description">
         <DialogTitle id="alert-dialog-title">Configure columns</DialogTitle>
         <DialogContent>
-          <Grid container xs={12} justifyContent="space-between" minHeight={400}>
+          <Grid container xs={12} justifyContent="space-between" minHeight={400} pr={2}>
             <Grid item xs={3}>
               <ConfigureColumnsToolbar
                 activeView={activeView}
