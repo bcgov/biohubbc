@@ -1,6 +1,6 @@
 import { mdiImport } from '@mdi/js';
 import Icon from '@mdi/react';
-import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import FileUploadDialog from 'components/dialog/FileUploadDialog';
 import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
@@ -50,10 +50,18 @@ export interface IImportObservationsButtonProps {
    *   }}
    * @memberof IImportObservationsButtonProps
    */
+  processOptions?: {
+    /**
+     * The optional survey sample period id to associate to all parsed observation records.
+     *
+     * @type {number}
+     */
+    surveySamplePeriodId?: number;
+  };
 }
 
 export const ImportObservationsButton = (props: IImportObservationsButtonProps) => {
-  const { disabled, onStart, onSuccess, onError, onFinish } = props;
+  const { disabled, onStart, onSuccess, onError, onFinish, processOptions } = props;
 
   const biohubApi = useBiohubApi();
 
@@ -78,18 +86,20 @@ export const ImportObservationsButton = (props: IImportObservationsButtonProps) 
       .then((response) => {
         setOpen(false);
 
-        return biohubApi.observation.processCsvSubmission(projectId, surveyId, response.submissionId).then(() => {
-          dialogContext.setSnackbar({
-            snackbarMessage: (
-              <Typography variant="body2" component="div">
-                {ObservationsTableI18N.importRecordsSuccessSnackbarMessage}
-              </Typography>
-            ),
-            open: true
-          });
+        return biohubApi.observation
+          .processCsvSubmission(projectId, surveyId, response.submissionId, processOptions)
+          .then(() => {
+            dialogContext.setSnackbar({
+              snackbarMessage: (
+                <Typography variant="body2" component="div">
+                  {ObservationsTableI18N.importRecordsSuccessSnackbarMessage}
+                </Typography>
+              ),
+              open: true
+            });
 
-          onSuccess?.();
-        });
+            onSuccess?.();
+          });
       })
       .catch((apiError: any) => {
         dialogContext.setErrorDialog({
@@ -114,14 +124,13 @@ export const ImportObservationsButton = (props: IImportObservationsButtonProps) 
 
   return (
     <>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<Icon path={mdiImport} size={1} />}
+      <IconButton
+        title="Import Observations"
         onClick={() => setOpen(true)}
-        disabled={disabled || false}>
-        Import
-      </Button>
+        disabled={disabled || false}
+        aria-label="Import Observations">
+        <Icon path={mdiImport} size={1} />
+      </IconButton>
       <FileUploadDialog
         open={open}
         dialogTitle="Import Observation CSV"

@@ -39,6 +39,16 @@ export const SamplePeriodRecord = z.object({
 export type SamplePeriodRecord = z.infer<typeof SamplePeriodRecord>;
 
 /**
+ * The full hierarchy of sample_* ids for a sample period.
+ */
+export const SamplePeriodHierarchyIds = z.object({
+  survey_sample_period_id: z.number(),
+  survey_sample_method_id: z.number(),
+  survey_sample_site_id: z.number()
+});
+export type SamplePeriodHierarchyIds = z.infer<typeof SamplePeriodHierarchyIds>;
+
+/**
  * Sample Period Repository
  *
  * @export
@@ -63,11 +73,11 @@ export class SamplePeriodRepository extends BaseRepository {
         ssp.*
       FROM
         survey_sample_period ssp
-      JOIN
+      INNER JOIN
         survey_sample_method ssm
       ON
         ssp.survey_sample_method_id = ssm.survey_sample_method_id
-      JOIN
+      INNER JOIN
         survey_sample_site sss
       ON
         ssm.survey_sample_site_id = sss.survey_sample_site_id
@@ -77,7 +87,50 @@ export class SamplePeriodRepository extends BaseRepository {
         sss.survey_id = ${surveyId};`;
 
     const response = await this.connection.sql(sql, SamplePeriodRecord);
+
     return response.rows;
+  }
+
+  /**
+   * Gets the full hierarchy of sample_site, sample_method, and sample_period for a given sample period id.
+   *
+   * @param {number} surveyId
+   * @param {number} surveySamplePeriodId
+   * @return {*}  {Promise<SamplePeriodHierarchyIds>}
+   * @memberof SamplePeriodRepository
+   */
+  async getSamplePeriodHierarchyIds(surveyId: number, surveySamplePeriodId: number): Promise<SamplePeriodHierarchyIds> {
+    const sqlStatement = SQL`
+      SELECT
+        survey_sample_period.survey_sample_period_id,
+        survey_sample_method.survey_sample_method_id,
+        survey_sample_site.survey_sample_site_id
+      FROM
+        survey_sample_period
+      INNER JOIN
+        survey_sample_method
+      ON
+        survey_sample_period.survey_sample_method_id = survey_sample_method.survey_sample_method_id
+      INNER JOIN
+        survey_sample_site
+      ON
+        survey_sample_method.survey_sample_site_id = survey_sample_site.survey_sample_site_id
+      WHERE
+        survey_sample_period.survey_sample_period_id = ${surveySamplePeriodId}
+      AND
+        survey_sample_site.survey_id = ${surveyId};
+    `;
+
+    const response = await this.connection.sql(sqlStatement, SamplePeriodHierarchyIds);
+
+    if (!response.rowCount || response.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to get sample period hierarchy ids', [
+        'SamplePeriodRepository->getSamplePeriodHierarchyIds',
+        'rowCount was != 1, expected rowCount = 1'
+      ]);
+    }
+
+    return response.rows[0];
   }
 
   /**

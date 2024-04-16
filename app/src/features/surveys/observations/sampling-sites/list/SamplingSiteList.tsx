@@ -1,17 +1,5 @@
-import {
-  mdiChevronDown,
-  mdiDotsVertical,
-  mdiMapMarker,
-  mdiPencilOutline,
-  mdiPlus,
-  mdiTrashCanOutline,
-  mdiVectorLine,
-  mdiVectorSquare
-} from '@mdi/js';
+import { mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import Accordion from '@mui/material/Accordion';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -29,20 +17,17 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
-import { CodesContext } from 'contexts/codesContext';
-import { DialogContext } from 'contexts/dialogContext';
-import { SurveyContext } from 'contexts/surveyContext';
+import { SamplingSiteListSite } from 'features/surveys/observations/sampling-sites/list/SamplingSiteListSite';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useContext, useEffect, useState } from 'react';
+import { useCodesContext, useDialogContext, useObservationsPageContext, useSurveyContext } from 'hooks/useContext';
+import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import SamplingSiteMap from './components/SamplingSiteMap';
-import SamplingSiteMethodsPeriodsList from './components/SamplingSiteMethodsPeriodsList';
-import SamplingStratumChips from './edit/components/SamplingStratumChips';
 
 const SamplingSiteList = () => {
-  const surveyContext = useContext(SurveyContext);
-  const codesContext = useContext(CodesContext);
-  const dialogContext = useContext(DialogContext);
+  const surveyContext = useSurveyContext();
+  const codesContext = useCodesContext();
+  const dialogContext = useDialogContext();
+  const observationsPageContext = useObservationsPageContext();
   const biohubApi = useBiohubApi();
 
   useEffect(() => {
@@ -253,7 +238,7 @@ const SamplingSiteList = () => {
           vertical: 'top',
           horizontal: 'right'
         }}>
-        <MenuItem onClick={handlePromptConfirmBulkDelete}>
+        <MenuItem onClick={handlePromptConfirmBulkDelete} disabled={observationsPageContext.isDisabled}>
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />
           </ListItemIcon>
@@ -286,7 +271,8 @@ const SamplingSiteList = () => {
             color="primary"
             component={RouterLink}
             to={'sampling'}
-            startIcon={<Icon path={mdiPlus} size={1} />}>
+            startIcon={<Icon path={mdiPlus} size={1} />}
+            disabled={observationsPageContext.isDisabled}>
             Add
           </Button>
           <IconButton
@@ -296,7 +282,8 @@ const SamplingSiteList = () => {
             }}
             aria-label="header-settings"
             disabled={!checkboxSelectedIds.length}
-            onClick={handleHeaderMenuClick}>
+            onClick={handleHeaderMenuClick}
+            title="Bulk Actions">
             <Icon path={mdiDotsVertical} size={1} />
           </IconButton>
         </Toolbar>
@@ -373,112 +360,12 @@ const SamplingSiteList = () => {
 
                   {surveyContext.sampleSiteDataLoader.data?.sampleSites.map((sampleSite) => {
                     return (
-                      <Accordion
-                        disableGutters
-                        square
-                        key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}
-                        sx={{
-                          boxShadow: 'none',
-                          borderBottom: '1px solid' + grey[300],
-                          '&:before': {
-                            display: 'none'
-                          },
-                          mb: 0
-                        }}>
-                        <Box display="flex" alignItems="center" overflow="hidden">
-                          <AccordionSummary
-                            expandIcon={<Icon path={mdiChevronDown} size={1} />}
-                            aria-controls="panel1bh-content"
-                            sx={{
-                              flex: '1 1 auto',
-                              py: 0,
-                              pr: 8.5,
-                              pl: 0,
-                              height: 55,
-                              overflow: 'hidden',
-                              '& .MuiAccordionSummary-content': {
-                                flex: '1 1 auto',
-                                py: 0,
-                                pl: 0,
-                                overflow: 'hidden',
-                                whiteSpace: 'nowrap'
-                              }
-                            }}>
-                            <Stack
-                              flexDirection="row"
-                              alignItems="center"
-                              sx={{
-                                gap: 0.75,
-                                pl: 2,
-                                pr: 2,
-                                overflow: 'hidden'
-                              }}>
-                              <Checkbox
-                                edge="start"
-                                checked={checkboxSelectedIds.includes(sampleSite.survey_sample_site_id)}
-                                onClick={(event) => {
-                                  event.stopPropagation();
-                                  handleCheckboxChange(sampleSite.survey_sample_site_id);
-                                }}
-                                inputProps={{ 'aria-label': 'controlled' }}
-                              />
-                              <Typography
-                                variant="body2"
-                                component="div"
-                                title="Sampling Site"
-                                sx={{
-                                  fontWeight: 700,
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis'
-                                }}>
-                                {sampleSite.name}
-                              </Typography>
-                              <Box sx={{ minWidth: '20px', display: 'flex', alignItems: 'center' }}>
-                                <Icon
-                                  size={0.8}
-                                  color={grey[400]}
-                                  title={
-                                    sampleSite.geojson.geometry.type === 'Point'
-                                      ? 'Point sampling site'
-                                      : sampleSite.geojson.geometry.type === 'LineString'
-                                      ? 'Transect sampling site'
-                                      : 'Polygon sampling site'
-                                  }
-                                  path={
-                                    sampleSite.geojson.geometry.type === 'Point'
-                                      ? mdiMapMarker
-                                      : sampleSite.geojson.geometry.type === 'LineString'
-                                      ? mdiVectorLine
-                                      : mdiVectorSquare
-                                  }
-                                />
-                              </Box>
-                            </Stack>
-                          </AccordionSummary>
-                          <IconButton
-                            sx={{ position: 'absolute', right: '24px' }}
-                            edge="end"
-                            onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                              handleSampleSiteMenuClick(event, sampleSite.survey_sample_site_id)
-                            }
-                            aria-label="sample-site-settings">
-                            <Icon path={mdiDotsVertical} size={1}></Icon>
-                          </IconButton>
-                        </Box>
-                        <AccordionDetails
-                          sx={{
-                            pt: 0,
-                            px: 2
-                          }}>
-                          {sampleSite.sample_stratums && sampleSite.sample_stratums?.length > 0 && (
-                            <SamplingStratumChips sampleSite={sampleSite} />
-                          )}
-                          <SamplingSiteMethodsPeriodsList sampleSite={sampleSite} />
-                          <Box height="200px" width="100%">
-                            <SamplingSiteMap sampleSites={[sampleSite]} colour="#3897eb" isLoading={false} />
-                          </Box>
-                        </AccordionDetails>
-                      </Accordion>
+                      <SamplingSiteListSite
+                        sampleSite={sampleSite}
+                        isChecked={checkboxSelectedIds.includes(sampleSite.survey_sample_site_id)}
+                        handleSampleSiteMenuClick={handleSampleSiteMenuClick}
+                        handleCheckboxChange={handleCheckboxChange}
+                      />
                     );
                   })}
                 </Box>

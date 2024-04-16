@@ -33,7 +33,7 @@ import {
 } from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitions';
 import { ImportObservationsButton } from 'features/surveys/observations/observations-table/import-observations/ImportObservationsButton';
 import ObservationsTable from 'features/surveys/observations/observations-table/ObservationsTable';
-import { useCodesContext, useObservationsTableContext } from 'hooks/useContext';
+import { useCodesContext, useObservationsPageContext, useObservationsTableContext } from 'hooks/useContext';
 import {
   IGetSampleLocationDetails,
   IGetSampleMethodRecord,
@@ -49,6 +49,7 @@ const ObservationComponent = () => {
 
   const surveyContext = useContext(SurveyContext);
 
+  const observationsPageContext = useObservationsPageContext();
   const observationsTableContext = useObservationsTableContext();
 
   // Collect sample sites
@@ -127,38 +128,41 @@ const ObservationComponent = () => {
 
         <Stack flexDirection="row" alignItems="center" gap={1} whiteSpace="nowrap">
           <ImportObservationsButton
-            disabled={observationsTableContext.isSaving}
-            onStart={() => observationsTableContext.setDisabled(true)}
+            disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}
+            onStart={() => observationsPageContext.setIsDisabled(true)}
             onSuccess={() => observationsTableContext.refreshObservationRecords()}
-            onFinish={() => observationsTableContext.setDisabled(false)}
+            onFinish={() => observationsPageContext.setIsDisabled(false)}
           />
           <Button
             variant="contained"
             color="primary"
             startIcon={<Icon path={mdiPlus} size={1} />}
             onClick={() => observationsTableContext.addObservationRecord()}
-            disabled={observationsTableContext.isSaving}>
+            disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}>
             Add Record
           </Button>
           <Collapse in={observationsTableContext.hasUnsavedChanges} orientation="horizontal" sx={{ mr: -1 }}>
             <Box whiteSpace="nowrap" display="flex" sx={{ gap: 1, pr: 1 }}>
               <LoadingButton
-                loading={observationsTableContext.isSaving}
+                loading={observationsTableContext.isSaving || observationsTableContext.isDisabled}
                 variant="contained"
                 color="primary"
                 onClick={() => observationsTableContext.saveObservationRecords()}
-                disabled={observationsTableContext.isSaving}>
+                disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}>
                 Save
               </LoadingButton>
               <DiscardChangesButton
-                disabled={observationsTableContext.isSaving}
+                disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}
                 onDiscard={() => observationsTableContext.discardChanges()}
               />
             </Box>
           </Collapse>
           <ExportHeadersButton />
-          <ConfigureColumnsContainer disabled={observationsTableContext.isSaving} columns={columns} />
-          <BulkActionsButton disabled={observationsTableContext.isSaving} />
+          <ConfigureColumnsContainer
+            disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}
+            columns={columns}
+          />
+          <BulkActionsButton disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled} />
         </Stack>
       </Toolbar>
 
@@ -175,7 +179,7 @@ const ObservationComponent = () => {
             isLoading={
               observationsTableContext.isLoading ||
               observationsTableContext.isSaving ||
-              observationsTableContext.disabled
+              observationsTableContext.isDisabled
             }
             columns={columns}
           />

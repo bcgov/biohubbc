@@ -44,6 +44,61 @@ describe('SamplePeriodRepository', () => {
     });
   });
 
+  describe('getSamplePeriodHierarchyIds', () => {
+    it('should update the record and return a single row', async () => {
+      const mockRow = {
+        survey_sample_site_id: 1,
+        survey_sample_method_id: 2,
+        survey_sample_period_id: 3
+      };
+      const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
+
+      const surveyId = 1;
+      const surveySamplePeriodId = 3;
+
+      const repo = new SamplePeriodRepository(dbConnectionObj);
+      const response = await repo.getSamplePeriodHierarchyIds(surveyId, surveySamplePeriodId);
+
+      expect(dbConnectionObj.sql).to.have.been.calledOnce;
+      expect(response).to.eql(mockRow);
+    });
+
+    it('throws an error if rowCount is 0', async () => {
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
+
+      const surveyId = 1;
+      const surveySamplePeriodId = 3;
+
+      const repo = new SamplePeriodRepository(dbConnectionObj);
+
+      try {
+        await repo.getSamplePeriodHierarchyIds(surveyId, surveySamplePeriodId);
+      } catch (error) {
+        expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to get sample period hierarchy ids');
+        expect(dbConnectionObj.sql).to.have.been.calledOnce;
+      }
+    });
+
+    it('throws an error if rowCount is > 1', async () => {
+      const mockResponse = ({ rows: [], rowCount: 2 } as any) as Promise<QueryResult<any>>;
+      const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
+
+      const surveyId = 1;
+      const surveySamplePeriodId = 3;
+
+      const repo = new SamplePeriodRepository(dbConnectionObj);
+
+      try {
+        await repo.getSamplePeriodHierarchyIds(surveyId, surveySamplePeriodId);
+      } catch (error) {
+        expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to get sample period hierarchy ids');
+        expect(dbConnectionObj.sql).to.have.been.calledOnce;
+      }
+    });
+  });
+
   describe('updateSamplePeriod', () => {
     it('should update the record and return a single row', async () => {
       const mockRow = {};
