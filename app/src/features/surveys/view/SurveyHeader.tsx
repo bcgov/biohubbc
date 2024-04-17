@@ -1,4 +1,4 @@
-import { mdiChevronDown, mdiCogOutline, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiChevronDown, mdiCogOutline, mdiPencilOutline, mdiTrashCanOutline, mdiTrayArrowDown } from '@mdi/js';
 import Icon from '@mdi/react';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
@@ -20,6 +20,7 @@ import { ConfigContext } from 'contexts/configContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import { SurveyExportDialog } from 'features/surveys/view/survey-export/SurveyExportDialog';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React, { useContext, useState } from 'react';
@@ -46,6 +47,8 @@ const SurveyHeader = () => {
   const biohubApi = useBiohubApi();
 
   const dialogContext = useContext(DialogContext);
+
+  const [openSurveyExportDialog, setOpenSurveyExportDialog] = useState(false);
 
   const defaultYesNoDialogProps = {
     dialogTitle: DeleteSurveyI18N.deleteTitle,
@@ -209,6 +212,14 @@ const SurveyHeader = () => {
               Settings
             </Button>
 
+            <SurveyExportDialog
+              open={openSurveyExportDialog}
+              onCancel={() => {
+                setOpenSurveyExportDialog(false);
+                setMenuAnchorEl(null);
+              }}
+            />
+
             <Menu
               id="surveySettingsMenu"
               aria-labelledby="survey_settings_button"
@@ -239,6 +250,16 @@ const SurveyHeader = () => {
                     <Icon path={mdiTrashCanOutline} size={1} />
                   </ListItemIcon>
                   <Typography variant="inherit">Delete Survey</Typography>
+                </MenuItem>
+              </ProjectRoleGuard>
+              <ProjectRoleGuard
+                validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                <MenuItem data-testid="export-survey-button" onClick={() => setOpenSurveyExportDialog(true)}>
+                  <ListItemIcon>
+                    <Icon path={mdiTrayArrowDown} size={1} />
+                  </ListItemIcon>
+                  <Typography variant="inherit">Export Survey</Typography>
                 </MenuItem>
               </ProjectRoleGuard>
             </Menu>

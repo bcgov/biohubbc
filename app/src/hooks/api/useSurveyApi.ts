@@ -8,6 +8,7 @@ import {
   IDeploymentTimespan,
   ITelemetryPointCollection
 } from 'features/surveys/view/survey-animals/telemetry-device/device';
+import { SurveyExportConfig } from 'features/surveys/view/survey-export/SurveyExportForm';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { IGetReportDetails, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import {
@@ -520,6 +521,24 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Initiates a data export for a survey.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {SurveyExportConfig} exportConfig
+   * @return {*}  {Promise<{ presignedS3Urls: string[] }>}
+   */
+  const exportData = async (
+    projectId: number,
+    surveyId: number,
+    exportConfig: SurveyExportConfig
+  ): Promise<{ presignedS3Urls: string[] }> => {
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/export`, { config: exportConfig });
+
+    return data;
+  };
+
   return {
     createSurvey,
     getSurveyForView,
@@ -542,7 +561,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getDeploymentsInSurvey,
     updateDeployment,
     getCritterTelemetry,
-    removeDeployment
+    removeDeployment,
+    exportData
   };
 };
 

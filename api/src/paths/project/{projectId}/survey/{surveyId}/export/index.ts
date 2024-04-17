@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { ExportConfig, ExportService } from '../../../../../../services/export-service';
+import { ExportService, SurveyExportConfig } from '../../../../../../services/export-service';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/export/index.ts');
@@ -144,7 +144,7 @@ export function exportData(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     const surveyId = Number(req.params.surveyId);
-    const config = req.body.config as ExportConfig;
+    const config = req.body.config as SurveyExportConfig;
 
     try {
       await connection.open();

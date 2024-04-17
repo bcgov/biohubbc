@@ -343,3 +343,9 @@ export const TelemetryTableI18N = {
   deleteMultipleRecordSuccessSnackbarMessage: (count: number) =>
     `Deleted ${count} telemetry ${p(count, 'record')} successfully.`
 };
+
+export const SurveyExportI18N = {
+  exportErrorTitle: 'Error Exporting Survey Data',
+  exportErrorText:
+    'An error has occurred while attempting to export survey data. Please try again. If the error persists, please contact your system administrator.'
+};

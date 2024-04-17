@@ -221,6 +221,13 @@ export interface IS3FileKey {
   fileName: string;
 }
 
+/**
+ * Generate an S3 key for a project or survey attachment file.
+ *
+ * @export
+ * @param {IS3FileKey} options
+ * @return {*}  {string}
+ */
 export function generateS3FileKey(options: IS3FileKey): string {
   const keyParts: (string | number)[] = [_getS3KeyPrefix()];
 
@@ -250,6 +257,32 @@ export function generateS3FileKey(options: IS3FileKey): string {
   return keyParts.filter(Boolean).join('/');
 }
 
+/**
+ * Generate an S3 key for a survey export file.
+ *
+ * @export
+ * @param {{ surveyId: number }} options
+ * @return {*}  {string}
+ */
+export function generateS3SurveyExportKey(options: { surveyId: number; fileName: string; extension: string }): string {
+  const keyParts: (string | number)[] = [_getS3KeyPrefix()];
+
+  keyParts.push('exports');
+  keyParts.push(`sims_survey_${options.surveyId}_export_${new Date().toISOString()}`);
+  keyParts.push(`${options.fileName}.${options.extension}`);
+
+  return keyParts.join('/');
+}
+
+/**
+ * Execute a clamav virus scan against the given file.
+ *
+ * Note: This depends on the external clamav service being available and configured correctly.
+ *
+ * @export
+ * @param {Express.Multer.File} file
+ * @return {*}  {Promise<boolean>}
+ */
 export async function scanFileForVirus(file: Express.Multer.File): Promise<boolean> {
   const ClamAVScanner = _getClamAvScanner();
 
