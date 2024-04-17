@@ -13,7 +13,7 @@ export enum ConfigureColumnsViewEnum {
 }
 
 interface IConfigureColumnsContainerProps {
-  isSaving: boolean
+  disabled: boolean
 }
 
 const ConfigureColumnsContainer = (props: IConfigureColumnsContainerProps) => {
@@ -48,6 +48,7 @@ const ConfigureColumnsContainer = (props: IConfigureColumnsContainerProps) => {
     <>
       <Button
         color="primary"
+        disabled={props.disabled}
         variant="outlined"
         data-testid="observation-measurements-button"
         onClick={handleOpen}

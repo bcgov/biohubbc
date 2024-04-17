@@ -159,7 +159,6 @@ const ObservationComponent = () => {
           </Collapse>
           <ConfigureColumnsContainer
             disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}
-            columns={columns}
           />
           <ExportHeadersButton />
           <BulkActionsButton disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled} />
