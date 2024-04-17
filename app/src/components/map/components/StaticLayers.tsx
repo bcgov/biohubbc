@@ -52,7 +52,7 @@ const StaticLayers = (props: PropsWithChildren<IStaticLayersProps>) => {
                     <GeoJSON
                       key={`static-feature-${id}`}
                       style={{ ...layerColors }}
-                      pointToLayer={(feature, latlng) =>
+                      pointToLayer={(_, latlng) =>
                         layer.layerName === 'Observations'
                           ? coloredCustomPointMarker({ latlng, fillColor: layer.layerColors?.fillColor })
                           : coloredPoint({ latlng, fillColor: layer.layerColors?.fillColor })

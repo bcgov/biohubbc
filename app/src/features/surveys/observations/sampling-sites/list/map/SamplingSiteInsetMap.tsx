@@ -62,13 +62,18 @@ export interface ISurveyMapPoint {
   link?: string;
 }
 
-interface ISamplingSiteMapProps {
+interface ISamplingSiteInsetMapProps {
   sampleSites: IGetSampleLocationDetails[];
-  colour: string;
   isLoading: boolean;
+  colour?: string;
 }
 
-const SamplingSiteMap = (props: ISamplingSiteMapProps) => {
+const SamplingSiteInsetMap = (props: ISamplingSiteInsetMapProps) => {
+  let { colour } = props;
+
+  if (!colour) {
+    colour = '#3897eb';
+  }
   const bounds: LatLngBoundsExpression | undefined = useMemo(() => {
     const sampleSiteFeatures: Feature[] = props.sampleSites.map((site) => site.geojson);
 
@@ -82,7 +87,7 @@ const SamplingSiteMap = (props: ISamplingSiteMapProps) => {
   const staticLayers: IStaticLayer[] = [
     {
       layerName: 'Sample Sites',
-      layerColors: { color: props.colour, fillColor: props.colour },
+      layerColors: { color: colour, fillColor: colour },
       features: props.sampleSites.map((sampleSite, index) => {
         return {
           key: `${sampleSite.survey_sample_site_id}-${index}`,
@@ -102,12 +107,11 @@ const SamplingSiteMap = (props: ISamplingSiteMapProps) => {
           id="survey-map"
           center={MAP_DEFAULT_CENTER}
           scrollWheelZoom={false}
-          fullscreenControl={true}
           style={{ height: '100%' }}>
           <MapBaseCss />
           <FullScreenScrollingEventHandler bounds={bounds} scrollWheelZoom={false} />
           <SetMapBounds bounds={bounds} />
-          <LayersControl position="topright">
+          <LayersControl>
             <BaseLayerControls />
             <StaticLayers layers={staticLayers} />
           </LayersControl>
@@ -117,4 +121,4 @@ const SamplingSiteMap = (props: ISamplingSiteMapProps) => {
   );
 };
 
-export default SamplingSiteMap;
+export default SamplingSiteInsetMap;

@@ -1,17 +1,18 @@
-import { mdiChevronDown, mdiDotsVertical } from '@mdi/js';
+import { mdiChevronDown, mdiDotsVertical, mdiMapMarker, mdiVectorLine, mdiVectorSquare } from '@mdi/js';
 import Icon from '@mdi/react';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
-import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import grey from '@mui/material/colors/grey';
 import { SamplingSiteListMethod } from 'features/surveys/observations/sampling-sites/list/SamplingSiteListMethod';
 import { IGetSampleLocationDetails } from 'interfaces/useSurveyApi.interface';
+import SamplingStratumChips from '../edit/components/SamplingStratumChips';
 
 export interface ISamplingSiteListSiteProps {
   sampleSite: IGetSampleLocationDetails;
@@ -89,6 +90,26 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
               }}>
               {sampleSite.name}
             </Typography>
+            <Box sx={{ minWidth: '20px', display: 'flex', alignItems: 'center' }}>
+              <Icon
+                size={0.8}
+                color={grey[400]}
+                title={
+                  sampleSite.geojson.geometry.type === 'Point'
+                    ? 'Point sampling site'
+                    : sampleSite.geojson.geometry.type === 'LineString'
+                    ? 'Transect sampling site'
+                    : 'Polygon sampling site'
+                }
+                path={
+                  sampleSite.geojson.geometry.type === 'Point'
+                    ? mdiMapMarker
+                    : sampleSite.geojson.geometry.type === 'LineString'
+                    ? mdiVectorLine
+                    : mdiVectorSquare
+                }
+              />
+            </Box>
           </Stack>
         </AccordionSummary>
         <IconButton
@@ -106,6 +127,9 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
           pt: 0,
           px: 2
         }}>
+        {sampleSite.sample_stratums && sampleSite.sample_stratums?.length > 0 && (
+          <SamplingStratumChips sampleSite={sampleSite} />
+        )}
         <List
           disablePadding
           sx={{
@@ -122,6 +146,9 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
             );
           })}
         </List>
+        {/* <Box height="180px" width="100%">
+          <SamplingSiteInsetMap sampleSites={[sampleSite]} isLoading={false} />
+        </Box> */}
       </AccordionDetails>
     </Accordion>
   );

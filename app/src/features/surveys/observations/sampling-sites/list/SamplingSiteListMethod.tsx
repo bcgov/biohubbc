@@ -1,12 +1,12 @@
-import grey from '@mui/material/colors/grey';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import { SamplingSiteListPeriod } from 'features/surveys/observations/sampling-sites/list/SamplingSiteListPeriod';
-import { useCodesContext } from 'hooks/useContext';
+import grey from '@mui/material/colors/grey';
+import { useCodesContext, useObservationsContext, useObservationsPageContext } from 'hooks/useContext';
 import { IGetSampleMethodRecord } from 'interfaces/useSurveyApi.interface';
 import { useEffect } from 'react';
 import { getCodesName } from 'utils/Utils';
+import SamplingSiteListPeriod from './SamplingSiteListPeriod';
 
 export interface ISamplingSiteListMethodProps {
   sampleMethod: IGetSampleMethodRecord;
@@ -22,6 +22,8 @@ export const SamplingSiteListMethod = (props: ISamplingSiteListMethodProps) => {
   const { sampleMethod } = props;
 
   const codesContext = useCodesContext();
+  const observationsPageContext = useObservationsPageContext();
+  const observationsContext = useObservationsContext();
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
@@ -34,28 +36,28 @@ export const SamplingSiteListMethod = (props: ISamplingSiteListMethodProps) => {
         display: 'block',
         p: 0,
         '& + li': {
-          mt: 1.5
+          mt: 1.5,
         }
       }}>
       <ListItemText
         sx={{
           px: 2,
           py: 1,
-          background: grey[100]
+          background: grey[200],
+          borderRadius: '5px'
         }}
         title="Sampling Method"
         primary={getCodesName(codesContext.codesDataLoader.data, 'sample_methods', sampleMethod.method_lookup_id)}
       />
-      <List disablePadding>
-        {sampleMethod.sample_periods?.map((samplePeriod) => {
-          return (
-            <SamplingSiteListPeriod
-              samplePeriod={samplePeriod}
-              key={`${samplePeriod.survey_sample_method_id}-${samplePeriod.survey_sample_period_id}`}
-            />
-          );
-        })}
-      </List>
+      {sampleMethod.sample_periods?.length && (
+        <List disablePadding>
+          <SamplingSiteListPeriod
+            samplePeriods={sampleMethod.sample_periods}
+            observationsContext={observationsContext}
+            observationsPageContext={observationsPageContext}
+          />
+        </List>
+      )}
     </ListItem>
   );
 };

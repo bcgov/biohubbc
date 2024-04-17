@@ -503,7 +503,7 @@ POST.apiDoc = {
                     nullable: true
                   },
                   create_user: {
-                    type: 'string',
+                    type: 'number',
                     nullable: true
                   },
                   update_date: {

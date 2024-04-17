@@ -7,7 +7,9 @@ export interface IColouredRectangleChipProps extends ChipProps {
   strong?: boolean;
   inverse?: boolean;
 }
-
+/**
+ * Styled chip for highlighting important information
+ */
 const ColouredRectangleChip = (props: IColouredRectangleChipProps) => {
   return (
     <Chip

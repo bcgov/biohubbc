@@ -5,7 +5,7 @@ import { CodesContext } from 'contexts/codesContext';
 import { IGetSampleLocationDetails } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect } from 'react';
 import { getCodesName } from 'utils/Utils';
-import SamplingPeriodsTimeline from './SamplingPeriodsTimeline';
+import SamplingPeriodsTimeline from '../list/SamplingSiteListPeriod';
 import SamplingSiteMethodResponseMetricChip from './SamplingSiteMethodResponseMetricChip';
 
 interface ISamplingSiteMethodsPeriodsListProps {

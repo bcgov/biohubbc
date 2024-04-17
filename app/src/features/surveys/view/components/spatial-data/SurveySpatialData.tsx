@@ -14,10 +14,10 @@ import { ITelemetry } from 'hooks/useTelemetryApi';
 import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { getCodesName, getFormattedDate } from 'utils/Utils';
-import { IAnimalDeployment } from '../../survey-animals/telemetry-device/device';
 import SurveyMap, { ISurveyMapPoint, ISurveyMapPointMetadata, ISurveyMapSupplementaryLayer } from '../../SurveyMap';
 import SurveyMapPopup from '../../SurveyMapPopup';
 import SurveyMapTooltip from '../../SurveyMapTooltip';
+import { IAnimalDeployment } from '../../survey-animals/telemetry-device/device';
 import SurveySpatialObservationDataTable from './SurveySpatialObservationDataTable';
 import SurveySpatialTelemetryDataTable from './SurveySpatialTelemetryDataTable';
 import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './SurveySpatialToolbar';
@@ -294,14 +294,14 @@ const SurveySpatialData = () => {
           fillColor: supplementaryLayer.layerColors?.fillColor || DEFAULT_COLOUR,
           color: supplementaryLayer.layerColors?.color || DEFAULT_COLOUR
         },
-        features: supplementaryLayer.mapPoints.map((mapPoint: ISurveyMapPoint, index: number): IStaticLayerFeature => {
+        features: supplementaryLayer.mapPoints.map((mapPoint: ISurveyMapPoint): IStaticLayerFeature => {
           const isLoading = !mapPointMetadata[mapPoint.key];
 
           return {
             key: mapPoint.key,
             geoJSON: mapPoint.feature,
             GeoJSONProps: {
-              onEachFeature: (feature, layer) => {
+              onEachFeature: (_, layer) => {
                 layer.on({
                   popupopen: () => {
                     if (mapPointMetadata[mapPoint.key]) {

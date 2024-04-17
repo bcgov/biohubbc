@@ -9,7 +9,6 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import Collapse from '@mui/material/Collapse';
-import { grey } from '@mui/material/colors';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -17,6 +16,7 @@ import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { grey } from '@mui/material/colors';
 import { CodesContext } from 'contexts/codesContext';
 import CreateSamplingMethod from 'features/surveys/components/CreateSamplingMethod';
 import EditSamplingMethod from 'features/surveys/components/EditSamplingMethod';
@@ -25,8 +25,8 @@ import { useFormikContext } from 'formik';
 import { useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { getCodesName } from 'utils/Utils';
-import SamplingPeriodsTimeline from '../../components/SamplingPeriodsTimeline';
 import SamplingSiteMethodResponseMetricChip from '../../components/SamplingSiteMethodResponseMetricChip';
+import SamplingPeriodsTimeline from '../../list/SamplingSiteListPeriod';
 import { IEditSamplingSiteRequest } from './SampleSiteEditForm';
 
 export interface SampleMethodEditFormProps {

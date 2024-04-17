@@ -9,7 +9,6 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import Collapse from '@mui/material/Collapse';
-import { grey } from '@mui/material/colors';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -17,14 +16,15 @@ import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { grey } from '@mui/material/colors';
 import { CodesContext } from 'contexts/codesContext';
 import { useFormikContext } from 'formik';
 import { useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { getCodesName } from 'utils/Utils';
-import SamplingPeriodsTimeline from '../observations/sampling-sites/components/SamplingPeriodsTimeline';
-import SamplingSiteMethodResponseMetricChip from '../observations/sampling-sites/components/SamplingSiteMethodResponseMetricChip';
 import { ICreateSamplingSiteRequest } from '../observations/sampling-sites/SamplingSitePage';
+import SamplingSiteMethodResponseMetricChip from '../observations/sampling-sites/components/SamplingSiteMethodResponseMetricChip';
+import SamplingSiteListPeriod from '../observations/sampling-sites/list/SamplingSiteListPeriod';
 import CreateSamplingMethod from './CreateSamplingMethod';
 import EditSamplingMethod from './EditSamplingMethod';
 import { IEditSurveySampleMethodData } from './MethodForm';
@@ -211,7 +211,7 @@ const SamplingMethodForm = () => {
                         </Typography>
                         <Divider component="div" sx={{ mt: 1 }}></Divider>
                         <Box sx={{ maxWidth: { xs: '100%', sm: '400px', xl: '300px' } }}>
-                          <SamplingPeriodsTimeline samplePeriods={item.periods} />
+                          <SamplingSiteListPeriod samplePeriods={item.periods} />
                         </Box>
                       </Box>
                     </Stack>
