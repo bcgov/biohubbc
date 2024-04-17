@@ -14,12 +14,11 @@ interface IConfigureColumnsDialogProps {
 
 const ConfigureColumnsDialog = (props: IConfigureColumnsDialogProps) => {
   const [activeView, setActiveView] = useState(ConfigureColumnsViewEnum.MEASUREMENTS);
-  console.log(props);
 
   return (
     <>
       <Dialog
-        sx={{ '& .MuiDialog-paper': { maxWidth: 1200, height: '75vh' } }}
+        sx={{ '& .MuiDialog-paper': { maxWidth: 1200, minHeight: '75vh' } }}
         fullWidth
         open={props.open}
         onClose={props.onClose}
@@ -29,10 +28,11 @@ const ConfigureColumnsDialog = (props: IConfigureColumnsDialogProps) => {
         <DialogTitle id="alert-dialog-title">
           Configure Columns
           <Typography color="textSecondary" sx={{ mt: 1 }}>
-            Customize the columns in your table to upload additional data, such as environmental variables.
+            Customize the columns in your table to upload additional data, such as environmental variables and species
+            measurements.
           </Typography>
         </DialogTitle>
-        <DialogContent id='configure-dialog-content'>
+        <DialogContent id="configure-dialog-content">
           <Grid container xs={12} justifyContent="space-between" pr={2}>
             <Grid item xs={3}>
               <ConfigureColumnsToolbar
@@ -60,7 +60,7 @@ const ConfigureColumnsDialog = (props: IConfigureColumnsDialogProps) => {
                 ]}
               />
             </Grid>
-            <Divider orientation="vertical" flexItem />
+            <Divider orientation="vertical" flexItem/>
             <Grid item xs={8}>
               <ConfigureColumnsContentContainer activeView={activeView} />
             </Grid>

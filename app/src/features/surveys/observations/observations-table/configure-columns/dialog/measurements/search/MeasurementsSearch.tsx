@@ -18,7 +18,7 @@ export interface IMeasurementsSearchProps {
    *
    * @memberof IMeasurementsSearchProps
    */
-  onSelectOptions: (measurements: CBMeasurementType[]) => void;
+  onSelect: (measurement: CBMeasurementType) => void;
 }
 
 /**
@@ -28,7 +28,7 @@ export interface IMeasurementsSearchProps {
  * @return {*}
  */
 export const MeasurementsSearch = (props: IMeasurementsSearchProps) => {
-  const { selectedMeasurements, onSelectOptions } = props;
+  const { selectedMeasurements, onSelect} = props;
 
   const critterbaseApi = useCritterbaseApi();
 
@@ -43,7 +43,7 @@ export const MeasurementsSearch = (props: IMeasurementsSearchProps) => {
           const response = await measurementsDataLoader.refresh(inputValue);
           return (response && [...response.qualitative, ...response.quantitative]) || [];
         }}
-        onSelectOptions={onSelectOptions}
+        onSelect={onSelect}
       />
     </Box>
   );

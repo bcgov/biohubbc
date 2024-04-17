@@ -1,11 +1,11 @@
 import { mdiDotsVertical, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, IconButton, ListItemIcon, Menu, MenuItem } from '@mui/material';
+import { useObservationsTableContext } from 'hooks/useContext';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { useState } from 'react';
 
 interface IMeasurementActionsProps {
-  setSelectedMeasurements: Dispatch<SetStateAction<CBMeasurementType[]>>;
   measurement: CBMeasurementType;
 }
 
@@ -13,11 +13,14 @@ const MeasurementActions = (props: IMeasurementActionsProps) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
+  const { setStagedMeasurementColumns } = useObservationsTableContext();
+
   const handleDelete = (taxon_measurement_id: string) => {
-    props.setSelectedMeasurements((selectedMeasurements) =>
+    setStagedMeasurementColumns((selectedMeasurements) =>
       selectedMeasurements.filter((existing) => existing.taxon_measurement_id !== taxon_measurement_id)
     );
-    setAnchorEl(null)
+    setAnchorEl(null);
+    console.log(taxon_measurement_id);
   };
 
   const handleClick = (event: any) => {
