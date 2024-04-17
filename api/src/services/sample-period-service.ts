@@ -2,6 +2,7 @@ import { IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/http-error';
 import {
   InsertSamplePeriodRecord,
+  SamplePeriodHierarchyIds,
   SamplePeriodRecord,
   SamplePeriodRepository,
   UpdateSamplePeriodRecord
@@ -37,6 +38,18 @@ export class SamplePeriodService extends DBService {
     surveySampleMethodId: number
   ): Promise<SamplePeriodRecord[]> {
     return this.samplePeriodRepository.getSamplePeriodsForSurveyMethodId(surveyId, surveySampleMethodId);
+  }
+
+  /**
+   * Gets the full hierarchy of sample_site_id, sample_method_id, and sample_period_id for a given sample period id.
+   *
+   * @param {number} surveyId
+   * @param {number} surveySamplePeriodId
+   * @return {*}  {Promise<SamplePeriodHierarchyIds>}
+   * @memberof SamplePeriodService
+   */
+  async getSamplePeriodHierarchyIds(surveyId: number, surveySamplePeriodId: number): Promise<SamplePeriodHierarchyIds> {
+    return this.samplePeriodRepository.getSamplePeriodHierarchyIds(surveyId, surveySamplePeriodId);
   }
 
   /**

@@ -14,6 +14,7 @@ import {
   InsertObservationSubCountQualitativeMeasurementRecord,
   InsertObservationSubCountQuantitativeMeasurementRecord
 } from '../repositories/observation-subcount-measurement-repository';
+import { SamplePeriodHierarchyIds } from '../repositories/sample-period-repository';
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { parseS3File } from '../utils/media/media-utils';
@@ -45,6 +46,7 @@ import {
 import { DBService } from './db-service';
 import { ObservationSubCountMeasurementService } from './observation-subcount-measurement-service';
 import { PlatformService } from './platform-service';
+import { SamplePeriodService } from './sample-period-service';
 import { SubCountService } from './subcount-service';
 
 const defaultLog = getLogger('services/observation-service');
@@ -388,10 +390,15 @@ export class ObservationService extends DBService {
    *
    * @param {number} surveyId
    * @param {number} submissionId
+   * @param {{ surveySamplePeriodId?: number }} [options]
    * @return {*}  {Promise<void>}
    * @memberof ObservationService
    */
-  async processObservationCsvSubmission(surveyId: number, submissionId: number): Promise<void> {
+  async processObservationCsvSubmission(
+    surveyId: number,
+    submissionId: number,
+    options?: { surveySamplePeriodId?: number }
+  ): Promise<void> {
     defaultLog.debug({ label: 'processObservationCsvSubmission', submissionId });
 
     // Step 1. Retrieve the observation submission record
@@ -437,6 +444,15 @@ export class ObservationService extends DBService {
       throw new Error('Failed to process file for importing observations. Measurement column validator failed.');
     }
 
+    let samplePeriodHierarchyIds: SamplePeriodHierarchyIds;
+    if (options?.surveySamplePeriodId) {
+      const samplePeriodService = new SamplePeriodService(this.connection);
+      samplePeriodHierarchyIds = await samplePeriodService.getSamplePeriodHierarchyIds(
+        surveyId,
+        options.surveySamplePeriodId
+      );
+    }
+
     // Step 6. Merge all the table rows into an array of InsertUpdateObservationsWithMeasurements[]
     const newRowData: InsertUpdateObservationsWithMeasurements[] = worksheetRowObjects.map((row) => {
       const newSubcount: InsertSubCount = {
@@ -455,9 +471,9 @@ export class ObservationService extends DBService {
           survey_id: surveyId,
           itis_tsn: row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES'],
           itis_scientific_name: null,
-          survey_sample_site_id: null,
-          survey_sample_method_id: null,
-          survey_sample_period_id: null,
+          survey_sample_site_id: samplePeriodHierarchyIds?.survey_sample_site_id ?? null,
+          survey_sample_method_id: samplePeriodHierarchyIds?.survey_sample_method_id ?? null,
+          survey_sample_period_id: samplePeriodHierarchyIds?.survey_sample_period_id ?? null,
           latitude: row['LATITUDE'] ?? row['LAT'],
           longitude: row['LONGITUDE'] ?? row['LON'] ?? row['LONG'] ?? row['LNG'],
           count: row['COUNT'],

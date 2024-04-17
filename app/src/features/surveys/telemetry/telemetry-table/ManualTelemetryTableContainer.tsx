@@ -169,6 +169,7 @@ const ManualTelemetryTableContainer = () => {
         dialogTitle="Import Telemetry CSV"
         onClose={() => setShowImportDialog(false)}
         onUpload={handleFileImport}
+        uploadButtonLabel="Import"
         FileUploadProps={{
           dropZoneProps: { maxNumFiles: 1, acceptedFileExtensions: '.csv' },
           status: UploadFileStatus.STAGED
