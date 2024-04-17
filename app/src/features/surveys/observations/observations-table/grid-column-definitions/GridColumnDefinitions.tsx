@@ -46,7 +46,7 @@ export const TaxonomyColDef = (props: {
     editable: true,
     hideable: true,
     flex: 1,
-    minWidth: 250,
+    minWidth: 200,
     disableColumnMenu: true,
     headerAlign: 'left',
     align: 'left',
@@ -70,11 +70,11 @@ export const SampleSiteColDef = (props: {
 
   return {
     field: 'survey_sample_site_id',
-    headerName: 'Sampling Site',
+    headerName: 'Site',
     editable: true,
     hideable: true,
     flex: 1,
-    minWidth: 250,
+    minWidth: 180,
     disableColumnMenu: true,
     headerAlign: 'left',
     align: 'left',
@@ -113,11 +113,11 @@ export const SampleMethodColDef = (props: {
 
   return {
     field: 'survey_sample_method_id',
-    headerName: 'Sampling Method',
+    headerName: 'Method',
     editable: true,
     hideable: true,
     flex: 1,
-    minWidth: 250,
+    minWidth: 180,
     disableColumnMenu: true,
     headerAlign: 'left',
     align: 'left',
@@ -160,11 +160,11 @@ export const SamplePeriodColDef = (props: {
 
   return {
     field: 'survey_sample_period_id',
-    headerName: 'Sampling Period',
+    headerName: 'Period',
     editable: true,
     hideable: true,
     flex: 0,
-    width: 250,
+    minWidth: 180,
     disableColumnMenu: true,
     headerAlign: 'left',
     align: 'left',

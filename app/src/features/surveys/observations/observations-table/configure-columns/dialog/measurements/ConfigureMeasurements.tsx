@@ -30,8 +30,10 @@ const ConfigureMeasurements = () => {
               {stagedMeasurementColumns.map((measurement) => (
                 <Box display="flex" alignItems="flex-start">
                   <MeasurementStandardCard
+                    small
                     label={measurement.measurement_name}
                     description={measurement.measurement_desc ?? ''}
+                    options={'options' in measurement ? measurement['options'] : []}
                   />
                   <Box mt={1}>
                     <MeasurementActions measurement={measurement} />
