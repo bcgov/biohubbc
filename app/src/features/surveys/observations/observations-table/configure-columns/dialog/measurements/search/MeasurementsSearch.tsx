@@ -28,7 +28,7 @@ export interface IMeasurementsSearchProps {
  * @return {*}
  */
 export const MeasurementsSearch = (props: IMeasurementsSearchProps) => {
-  const { selectedMeasurements, onSelect} = props;
+  const { selectedMeasurements, onSelect } = props;
 
   const critterbaseApi = useCritterbaseApi();
 
@@ -36,7 +36,9 @@ export const MeasurementsSearch = (props: IMeasurementsSearchProps) => {
 
   return (
     <Box>
-      <Typography variant="h5" mb={2}>Add Measurements</Typography>
+      <Typography variant="h5" mb={2}>
+        Add Measurements
+      </Typography>
       <MeasurementsSearchAutocomplete
         selectedOptions={selectedMeasurements}
         getOptions={async (inputValue: string) => {

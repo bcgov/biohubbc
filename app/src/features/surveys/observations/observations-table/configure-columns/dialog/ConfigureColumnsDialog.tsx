@@ -60,7 +60,7 @@ const ConfigureColumnsDialog = (props: IConfigureColumnsDialogProps) => {
                 ]}
               />
             </Grid>
-            <Divider orientation="vertical" flexItem/>
+            <Divider orientation="vertical" flexItem />
             <Grid item xs={8}>
               <ConfigureColumnsContentContainer activeView={activeView} />
             </Grid>
