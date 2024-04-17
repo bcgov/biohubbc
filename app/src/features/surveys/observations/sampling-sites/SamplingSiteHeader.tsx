@@ -20,6 +20,13 @@ export interface ISamplingSiteHeaderProps {
   title: string;
   breadcrumb: string;
 }
+
+/**
+ * Renders the header of the Sampling Site page.
+ *
+ * @param {*} props
+ * @return {*}
+ */
 export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) => {
   const history = useHistory();
   const formikProps = useFormikContext<ICreateSamplingSiteRequest>();

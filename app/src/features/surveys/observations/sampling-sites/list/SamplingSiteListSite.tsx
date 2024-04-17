@@ -5,14 +5,13 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
+import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import grey from '@mui/material/colors/grey';
 import { SamplingSiteListMethod } from 'features/surveys/observations/sampling-sites/list/SamplingSiteListMethod';
 import { IGetSampleLocationDetails } from 'interfaces/useSurveyApi.interface';
-import SamplingSiteMap from '../components/SamplingSiteMap';
 
 export interface ISamplingSiteListSiteProps {
   sampleSite: IGetSampleLocationDetails;
@@ -21,6 +20,12 @@ export interface ISamplingSiteListSiteProps {
   handleCheckboxChange: (sampleSiteId: number) => void;
 }
 
+/**
+ * Renders a list item for a single sampling site.
+ *
+ * @param {ISamplingSiteListSiteProps} props
+ * @return {*}
+ */
 export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
   const { sampleSite, isChecked, handleSampleSiteMenuClick, handleCheckboxChange } = props;
 
@@ -28,7 +33,6 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
     <Accordion
       disableGutters
       square
-      key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}
       sx={{
         boxShadow: 'none',
         borderBottom: '1px solid' + grey[300],
@@ -111,12 +115,10 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
           }}>
           {sampleSite.sample_methods?.map((sampleMethod) => {
             return (
-              <>
-                <SamplingSiteListMethod sampleMethod={sampleMethod} />
-                <Box height="200px" width="100%">
-                  <SamplingSiteMap sampleSites={[sampleSite]} colour="#3897eb" isLoading={false} />
-                </Box>
-              </>
+              <SamplingSiteListMethod
+                sampleMethod={sampleMethod}
+                key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}`}
+              />
             );
           })}
         </List>

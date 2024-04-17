@@ -25,8 +25,11 @@ const SubtextComponent = (props: ISubtextProps) => (
 const FileUploadDialog = (props: IFileUploadDialogProps) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
   const [currentFile, setCurrentFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState<boolean>(false);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+
+  const isDisabled = !currentFile;
 
   const fileHandler: IFileHandler = (file: File | null) => {
     setCurrentFile(file);
@@ -37,8 +40,8 @@ const FileUploadDialog = (props: IFileUploadDialogProps) => {
       return;
     }
 
-    setUploading(true);
-    props.onUpload(currentFile).finally(() => setUploading(false));
+    setIsUploading(true);
+    props.onUpload(currentFile).finally(() => setIsUploading(false));
   };
 
   return (
@@ -62,15 +65,15 @@ const FileUploadDialog = (props: IFileUploadDialogProps) => {
       </DialogContent>
       <DialogActions>
         <LoadingButton
-          loading={uploading}
-          disabled={!currentFile}
+          loading={isUploading}
+          disabled={isDisabled}
           onClick={() => handleUpload()}
           color="primary"
           variant="contained"
           autoFocus>
           {props.uploadButtonLabel ? props.uploadButtonLabel : 'Import'}
         </LoadingButton>
-        <Button onClick={props.onClose} color="primary" variant="outlined">
+        <Button onClick={props.onClose} color="primary" variant="outlined" disabled={isUploading}>
           {props.closeButtonLabel ? props.closeButtonLabel : 'Cancel'}
         </Button>
       </DialogActions>

@@ -31,7 +31,7 @@ import {
   SampleSiteColDef,
   TaxonomyColDef
 } from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitions';
-import { ImportObservationsButton } from 'features/surveys/observations/observations-table/import-observations/ImportObservationsButton';
+import { ImportObservationsButton } from 'features/surveys/observations/observations-table/import-obsevations/ImportObservationsButton';
 import ObservationsTable from 'features/surveys/observations/observations-table/ObservationsTable';
 import { useCodesContext, useObservationsPageContext, useObservationsTableContext } from 'hooks/useContext';
 import {

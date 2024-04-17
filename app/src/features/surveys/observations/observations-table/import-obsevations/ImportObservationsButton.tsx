@@ -71,45 +71,43 @@ export const ImportObservationsButton = (props: IImportObservationsButtonProps) 
    * @return {*}
    */
   const handleImportObservations = async (file: File) => {
-    onStart?.();
+    try {
+      onStart?.();
 
-    return biohubApi.observation
-      .uploadCsvForImport(projectId, surveyId, file)
-      .then((response) => {
-        setOpen(false);
+      const uploadResponse = await biohubApi.observation.uploadCsvForImport(projectId, surveyId, file);
 
-        return biohubApi.observation.processCsvSubmission(projectId, surveyId, response.submissionId).then(() => {
-          dialogContext.setSnackbar({
-            snackbarMessage: (
-              <Typography variant="body2" component="div">
-                {ObservationsTableI18N.importRecordsSuccessSnackbarMessage}
-              </Typography>
-            ),
-            open: true
-          });
+      await biohubApi.observation.processCsvSubmission(projectId, surveyId, uploadResponse.submissionId);
 
-          onSuccess?.();
-        });
-      })
-      .catch((apiError: any) => {
-        dialogContext.setErrorDialog({
-          dialogTitle: ObservationsTableI18N.importRecordsErrorDialogTitle,
-          dialogText: ObservationsTableI18N.importRecordsErrorDialogText,
-          dialogErrorDetails: [apiError.message],
-          open: true,
-          onClose: () => {
-            dialogContext.setErrorDialog({ open: false });
-          },
-          onOk: () => {
-            dialogContext.setErrorDialog({ open: false });
-          }
-        });
+      setOpen(false);
 
-        onError?.();
-      })
-      .finally(() => {
-        onFinish?.();
+      dialogContext.setSnackbar({
+        snackbarMessage: (
+          <Typography variant="body2" component="div">
+            {ObservationsTableI18N.importRecordsSuccessSnackbarMessage}
+          </Typography>
+        ),
+        open: true
       });
+
+      onSuccess?.();
+    } catch (apiError: any) {
+      dialogContext.setErrorDialog({
+        dialogTitle: ObservationsTableI18N.importRecordsErrorDialogTitle,
+        dialogText: ObservationsTableI18N.importRecordsErrorDialogText,
+        dialogErrorDetails: [apiError.message],
+        open: true,
+        onClose: () => {
+          dialogContext.setErrorDialog({ open: false });
+        },
+        onOk: () => {
+          dialogContext.setErrorDialog({ open: false });
+        }
+      });
+
+      onError?.();
+    } finally {
+      onFinish?.();
+    }
   };
 
   return (
@@ -127,6 +125,7 @@ export const ImportObservationsButton = (props: IImportObservationsButtonProps) 
         dialogTitle="Import Observation CSV"
         onClose={() => setOpen(false)}
         onUpload={handleImportObservations}
+        uploadButtonLabel="Import"
         FileUploadProps={{
           dropZoneProps: { maxNumFiles: 1, acceptedFileExtensions: '.csv' },
           status: UploadFileStatus.STAGED
