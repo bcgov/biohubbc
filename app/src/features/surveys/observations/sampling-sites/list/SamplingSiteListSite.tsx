@@ -125,7 +125,7 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
       <AccordionDetails
         sx={{
           pt: 0,
-          px: 2
+          px: 2,
         }}>
         {sampleSite.sample_stratums && sampleSite.sample_stratums?.length > 0 && (
           <SamplingStratumChips sampleSite={sampleSite} />

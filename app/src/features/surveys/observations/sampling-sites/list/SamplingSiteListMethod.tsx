@@ -43,7 +43,7 @@ export const SamplingSiteListMethod = (props: ISamplingSiteListMethodProps) => {
         sx={{
           px: 2,
           py: 1,
-          background: grey[200],
+          background: grey[100],
           borderRadius: '5px'
         }}
         title="Sampling Method"

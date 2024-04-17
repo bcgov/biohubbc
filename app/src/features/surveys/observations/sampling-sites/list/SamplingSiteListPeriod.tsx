@@ -33,7 +33,7 @@ const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
   };
 
   return (
-    <Timeline sx={{ alignItems: 'start', justifyContent: 'start', p: 0, my: 1, ml: 2, mr: 0 }}>
+    <Timeline title="Sampling Period" sx={{ alignItems: 'start', justifyContent: 'start', p: 0, my: 1, ml: 2, mr: 0 }}>
       {props.samplePeriods.map((samplePeriod, index) => (
         <TimelineItem
           sx={{
@@ -46,7 +46,7 @@ const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
             p: 0
           }}
           key={`${samplePeriod.survey_sample_period_id}-${index}`}>
-          <TimelineSeparator sx={{ minWidth: '11px' }}>
+          <TimelineSeparator>
             {props.samplePeriods.length > 1 ? (
               <>
                 <TimelineDot sx={{ bgcolor: grey[400] }} />
@@ -63,7 +63,7 @@ const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
                 )}
               </>
             ) : (
-              <Box mt={1}>
+              <Box mt={0.8}>
                 <Icon path={mdiCalendarRange} size={0.8} color={grey[500]} />
               </Box>
             )}
@@ -85,7 +85,7 @@ const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'center', mx: 1 }}>
-                <Icon path={mdiArrowRightThin} size={0.9} color={grey[500]} />
+                <Icon path={mdiArrowRightThin} size={1} color={grey[500]} />
               </Box>
               <Box flex="1 1 auto">
                 <Typography component="dt" variant="subtitle2" sx={dateSx}>
@@ -96,24 +96,24 @@ const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
                 </Typography>
               </Box>
               {observationsPageContext && observationsContext && samplePeriod?.survey_sample_period_id && (
-                <Box ml={2}>
-                <ImportObservationsButton
-                
-                  disabled={observationsPageContext.isDisabled}
-                  onStart={() => {
-                    observationsPageContext.setIsDisabled(true);
-                    observationsPageContext.setIsLoading(true);
-                  }}
-                  onSuccess={() => {
-                    observationsContext.observationsDataLoader.refresh();
-                  }}
-                  onFinish={() => {
-                    observationsPageContext.setIsDisabled(false);
-                    observationsPageContext.setIsLoading(false);
-                  }}
-                  processOptions={{ surveySamplePeriodId: samplePeriod.survey_sample_period_id }}
-                />
-              </Box>)}
+                <Box>
+                  <ImportObservationsButton
+                    disabled={observationsPageContext.isDisabled}
+                    onStart={() => {
+                      observationsPageContext.setIsDisabled(true);
+                      observationsPageContext.setIsLoading(true);
+                    }}
+                    onSuccess={() => {
+                      observationsContext.observationsDataLoader.refresh();
+                    }}
+                    onFinish={() => {
+                      observationsPageContext.setIsDisabled(false);
+                      observationsPageContext.setIsLoading(false);
+                    }}
+                    processOptions={{ surveySamplePeriodId: samplePeriod.survey_sample_period_id }}
+                  />
+                </Box>
+              )}
             </Box>
           </TimelineContent>
         </TimelineItem>
