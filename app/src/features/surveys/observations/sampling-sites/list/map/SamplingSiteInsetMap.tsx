@@ -107,6 +107,7 @@ const SamplingSiteInsetMap = (props: ISamplingSiteInsetMapProps) => {
           id="survey-map"
           center={MAP_DEFAULT_CENTER}
           scrollWheelZoom={false}
+          fullscreenControl={true}
           style={{ height: '100%' }}>
           <MapBaseCss />
           <FullScreenScrollingEventHandler bounds={bounds} scrollWheelZoom={false} />

@@ -366,7 +366,6 @@ const SamplingSiteList = () => {
                   {surveyContext.sampleSiteDataLoader.data?.sampleSites.map((sampleSite) => {
                     return (
                       <SamplingSiteListSite
-                      
                         sampleSite={sampleSite}
                         isChecked={checkboxSelectedIds.includes(sampleSite.survey_sample_site_id)}
                         handleSampleSiteMenuClick={handleSampleSiteMenuClick}
