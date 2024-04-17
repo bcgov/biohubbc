@@ -12,6 +12,12 @@ export interface ISamplingSiteListMethodProps {
   sampleMethod: IGetSampleMethodRecord;
 }
 
+/**
+ * Renders a list item for a single sampling method.
+ *
+ * @param {ISamplingSiteListMethodProps} props
+ * @return {*}
+ */
 export const SamplingSiteListMethod = (props: ISamplingSiteListMethodProps) => {
   const { sampleMethod } = props;
 
@@ -24,7 +30,6 @@ export const SamplingSiteListMethod = (props: ISamplingSiteListMethodProps) => {
   return (
     <ListItem
       disableGutters
-      key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}`}
       sx={{
         display: 'block',
         p: 0,
@@ -43,7 +48,12 @@ export const SamplingSiteListMethod = (props: ISamplingSiteListMethodProps) => {
       />
       <List disablePadding>
         {sampleMethod.sample_periods?.map((samplePeriod) => {
-          return <SamplingSiteListPeriod samplePeriod={samplePeriod} />;
+          return (
+            <SamplingSiteListPeriod
+              samplePeriod={samplePeriod}
+              key={`${samplePeriod.survey_sample_method_id}-${samplePeriod.survey_sample_period_id}`}
+            />
+          );
         })}
       </List>
     </ListItem>

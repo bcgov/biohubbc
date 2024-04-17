@@ -13,6 +13,7 @@ import { GridColDef } from '@mui/x-data-grid';
 import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import ObservationsTable from 'features/surveys/observations/observations-table/ObservationsTable';
 import { BulkActionsButton } from 'features/surveys/observations/observations-table/bulk-actions/BulkActionsButton';
 import { DiscardChangesButton } from 'features/surveys/observations/observations-table/discard-changes/DiscardChangesButton';
 import {
@@ -30,8 +31,7 @@ import {
   SampleSiteColDef,
   TaxonomyColDef
 } from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitions';
-import { ImportObservationsButton } from 'features/surveys/observations/observations-table/import-observations/ImportObservationsButton';
-import ObservationsTable from 'features/surveys/observations/observations-table/ObservationsTable';
+import { ImportObservationsButton } from 'features/surveys/observations/observations-table/import-obsevations/ImportObservationsButton';
 import { useCodesContext, useObservationsPageContext, useObservationsTableContext } from 'hooks/useContext';
 import {
   IGetSampleLocationDetails,
@@ -157,7 +157,10 @@ const ObservationComponent = () => {
               />
             </Box>
           </Collapse>
-          <ConfigureColumnsContainer />
+          <ConfigureColumnsContainer
+            disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}
+            columns={columns}
+          />
           <ExportHeadersButton />
           <BulkActionsButton disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled} />
         </Stack>

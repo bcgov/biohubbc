@@ -23,6 +23,11 @@ import { useCodesContext, useDialogContext, useObservationsPageContext, useSurve
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
+/**
+ * Renders a list of sampling sites.
+ *
+ * @return {*}
+ */
 const SamplingSiteList = () => {
   const surveyContext = useSurveyContext();
   const codesContext = useCodesContext();
@@ -365,6 +370,7 @@ const SamplingSiteList = () => {
                         isChecked={checkboxSelectedIds.includes(sampleSite.survey_sample_site_id)}
                         handleSampleSiteMenuClick={handleSampleSiteMenuClick}
                         handleCheckboxChange={handleCheckboxChange}
+                        key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}
                       />
                     );
                   })}

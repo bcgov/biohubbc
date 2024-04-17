@@ -12,7 +12,11 @@ export enum ConfigureColumnsViewEnum {
   ENVIRONMENT = 'ENVIRONMENT'
 }
 
-const ConfigureColumnsContainer = () => {
+interface IConfigureColumnsContainerProps {
+  isSaving: boolean
+}
+
+const ConfigureColumnsContainer = (props: IConfigureColumnsContainerProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const surveyId = useSurveyContext().surveyId;

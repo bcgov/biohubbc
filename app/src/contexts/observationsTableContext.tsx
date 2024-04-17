@@ -12,7 +12,7 @@ import {
 } from '@mui/x-data-grid';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import { ObservationsTableI18N } from 'constants/i18n';
-import { getSurveySessionStorageKey, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS } from 'constants/session-storage';
+import { SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS, getSurveySessionStorageKey } from 'constants/session-storage';
 import { DialogContext } from 'contexts/dialogContext';
 import {
   isQualitativeMeasurementTypeDefinition,
@@ -25,7 +25,7 @@ import {
 import { APIError } from 'hooks/api/useAxios';
 import { IObservationTableRowToSave, SubcountToSave } from 'hooks/api/useObservationApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useObservationsContext, useTaxonomyContext } from 'hooks/useContext';
+import { useObservationsContext, useObservationsPageContext, useTaxonomyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import {
   CBMeasurementType,
@@ -34,7 +34,7 @@ import {
   CBQuantitativeMeasurementTypeDefinition
 } from 'interfaces/useCritterApi.interface';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
-import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { PropsWithChildren, createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { firstOrNull } from 'utils/Utils';
 import { v4 as uuidv4 } from 'uuid';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
@@ -271,10 +271,7 @@ export type IObservationsTableContext = {
   setIsDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export type IObservationsTableContextProviderProps = {
-  isLoading: boolean;
-  isDisabled: boolean;
-} & PropsWithChildren;
+export type IObservationsTableContextProviderProps = PropsWithChildren;
 
 export const ObservationsTableContext = createContext<IObservationsTableContext | undefined>(undefined);
 
@@ -282,6 +279,8 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
   const { projectId, surveyId } = useContext(SurveyContext);
 
   const _muiDataGridApiRef = useGridApiRef();
+
+  const observationsPageContext = useObservationsPageContext();
 
   const {
     observationsDataLoader: {
@@ -333,15 +332,14 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
   // Stores any measurement columns that are not part of the default observation table columns
   const [measurementColumns, setMeasurementColumns] = useState<CBMeasurementType[]>([]);
   const [stagedMeasurementColumns, setStagedMeasurementColumns] = useState<CBMeasurementType[]>([]);
-  const _hasLoadedMeasurementColumns = useRef<boolean>(false);
 
   // Internal disabled state for the observations table, should not be used outside of this context
   const [_isDisabled, setIsDisabled] = useState(false);
 
   // Global disabled state for the observations table
   const isDisabled = useMemo(() => {
-    return _isDisabled || props.isDisabled;
-  }, [_isDisabled, props.isDisabled]);
+    return _isDisabled || observationsPageContext.isDisabled;
+  }, [_isDisabled, observationsPageContext.isDisabled]);
 
   // Column visibility model
   const [columnVisibilityModel, setColumnVisibilityModel] = useState<GridColumnVisibilityModel>({});
@@ -383,7 +381,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
   const refreshObservationRecords = useCallback(async () => {
     const sort = firstOrNull(sortModel);
 
-    const response = await refreshObservationsData({
+    return refreshObservationsData({
       limit: paginationModel.pageSize,
       sort: sort?.field || undefined,
       order: sort?.sort || undefined,
@@ -391,39 +389,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
       page: paginationModel.page + 1
     });
-
-    if (response) {
-      setMeasurementColumns(() => {
-        // Existing measurement definitions from the observations data
-        const existingMeasurementDefinitions = [
-          ...response.supplementaryObservationData.qualitative_measurements,
-          ...response.supplementaryObservationData.quantitative_measurements
-        ];
-
-        // Get all measurement definitions from local storage, if any
-        const measurementDefinitionsStringified = sessionStorage.getItem(
-          getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS)
-        );
-
-        let localStorageMeasurementDefinitions: CBMeasurementType[] = [];
-        if (measurementDefinitionsStringified) {
-          localStorageMeasurementDefinitions = JSON.parse(measurementDefinitionsStringified) as CBMeasurementType[];
-        }
-
-        // Remove any duplicate measurement definitions that already exist in the observations data
-        localStorageMeasurementDefinitions = localStorageMeasurementDefinitions.filter((item1) => {
-          return !existingMeasurementDefinitions.some(
-            (item2) => item2.taxon_measurement_id === item1.taxon_measurement_id
-          );
-        });
-
-        // Set measurement columns, including both existing and local storage measurement definitions
-        return [...existingMeasurementDefinitions, ...localStorageMeasurementDefinitions];
-      });
-    }
-
-    return response;
-  }, [paginationModel.page, paginationModel.pageSize, refreshObservationsData, sortModel, surveyId]);
+  }, [paginationModel.page, paginationModel.pageSize, refreshObservationsData, sortModel]);
 
   /**
    * Gets all rows from the table, including values that have been edited in the table.
@@ -887,8 +853,8 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
 
   // True if the taxonomy cache is still initializing or the observations data is still loading
   const isLoading: boolean = useMemo(() => {
-    return !taxonomyCacheStatus.isInitialized || isLoadingObservationsData || props.isLoading;
-  }, [isLoadingObservationsData, props.isLoading, taxonomyCacheStatus.isInitialized]);
+    return !taxonomyCacheStatus.isInitialized || isLoadingObservationsData || observationsPageContext.isLoading;
+  }, [isLoadingObservationsData, observationsPageContext.isLoading, taxonomyCacheStatus.isInitialized]);
 
   // True if the save process has started
   const isSaving: boolean = _isSavingData.current || _isStoppingEdit.current;
@@ -1102,24 +1068,6 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
   }, []);
 
   /**
-   * Load and set the initial measurement columns, if any.
-   * Should only run once on initial page load.
-   */
-  useEffect(() => {
-    if (isLoadingObservationsData || !observationsData) {
-      // Observations data is still loading
-      return;
-    }
-
-    if (_hasLoadedMeasurementColumns.current) {
-      // Already loaded measurement definitions
-      return;
-    }
-
-    _hasLoadedMeasurementColumns.current = true;
-  }, [isLoadingObservationsData, observationsData, hasError, surveyId, measurementColumns.length]);
-
-  /**
    * Fetch new rows based on sort/ pagination model changes
    */
   useEffect(() => {
@@ -1127,6 +1075,44 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
     // Should not re-run this effect on `refreshObservationRecords` changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paginationModel, sortModel]);
+
+  /**
+   * Runs when the observations data is loaded or refreshed.
+   * Set the measurement columns.
+   */
+  useEffect(() => {
+    if (!observationsData) {
+      return;
+    }
+
+    setMeasurementColumns(() => {
+      // Existing measurement definitions from the observations data
+      const existingMeasurementDefinitions = [
+        ...observationsData.supplementaryObservationData.qualitative_measurements,
+        ...observationsData.supplementaryObservationData.quantitative_measurements
+      ];
+
+      // Get all measurement definitions from local storage, if any
+      const measurementDefinitionsStringified = sessionStorage.getItem(
+        getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS)
+      );
+
+      let localStorageMeasurementDefinitions: CBMeasurementType[] = [];
+      if (measurementDefinitionsStringified) {
+        localStorageMeasurementDefinitions = JSON.parse(measurementDefinitionsStringified) as CBMeasurementType[];
+      }
+
+      // Remove any duplicate measurement definitions that already exist in the observations data
+      localStorageMeasurementDefinitions = localStorageMeasurementDefinitions.filter((item1) => {
+        return !existingMeasurementDefinitions.some(
+          (item2) => item2.taxon_measurement_id === item1.taxon_measurement_id
+        );
+      });
+
+      // Set measurement columns, including both existing and local storage measurement definitions
+      return [...existingMeasurementDefinitions, ...localStorageMeasurementDefinitions];
+    });
+  }, [observationsData, surveyId]);
 
   /**
    * Runs when observation context data has changed. This does not occur when records are

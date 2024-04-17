@@ -52,7 +52,7 @@ export interface IImportObservationsButtonProps {
    */
   processOptions?: {
     /**
-     * The optional survey sample period id to associate to all parsed observation records.
+     * An optional survey sample period id. All imported observation records will be associated to this sample period.
      *
      * @type {number}
      */
@@ -60,6 +60,12 @@ export interface IImportObservationsButtonProps {
   };
 }
 
+/**
+ * Renders a button that allows the user to import observation records from a CSV file.
+ *
+ * @param {IImportObservationsButtonProps} props
+ * @return {*}
+ */
 export const ImportObservationsButton = (props: IImportObservationsButtonProps) => {
   const { disabled, onStart, onSuccess, onError, onFinish, processOptions } = props;
 
@@ -79,47 +85,48 @@ export const ImportObservationsButton = (props: IImportObservationsButtonProps) 
    * @return {*}
    */
   const handleImportObservations = async (file: File) => {
-    onStart?.();
+    try {
+      onStart?.();
 
-    return biohubApi.observation
-      .uploadCsvForImport(projectId, surveyId, file)
-      .then((response) => {
-        setOpen(false);
+      const uploadResponse = await biohubApi.observation.uploadCsvForImport(projectId, surveyId, file);
 
-        return biohubApi.observation
-          .processCsvSubmission(projectId, surveyId, response.submissionId, processOptions)
-          .then(() => {
-            dialogContext.setSnackbar({
-              snackbarMessage: (
-                <Typography variant="body2" component="div">
-                  {ObservationsTableI18N.importRecordsSuccessSnackbarMessage}
-                </Typography>
-              ),
-              open: true
-            });
+      await biohubApi.observation.processCsvSubmission(
+        projectId,
+        surveyId,
+        uploadResponse.submissionId,
+        processOptions
+      );
 
-            onSuccess?.();
-          });
-      })
-      .catch((apiError: any) => {
-        dialogContext.setErrorDialog({
-          dialogTitle: ObservationsTableI18N.importRecordsErrorDialogTitle,
-          dialogText: ObservationsTableI18N.importRecordsErrorDialogText,
-          dialogErrorDetails: [apiError.message],
-          open: true,
-          onClose: () => {
-            dialogContext.setErrorDialog({ open: false });
-          },
-          onOk: () => {
-            dialogContext.setErrorDialog({ open: false });
-          }
-        });
+      setOpen(false);
 
-        onError?.();
-      })
-      .finally(() => {
-        onFinish?.();
+      dialogContext.setSnackbar({
+        snackbarMessage: (
+          <Typography variant="body2" component="div">
+            {ObservationsTableI18N.importRecordsSuccessSnackbarMessage}
+          </Typography>
+        ),
+        open: true
       });
+
+      onSuccess?.();
+    } catch (apiError: any) {
+      dialogContext.setErrorDialog({
+        dialogTitle: ObservationsTableI18N.importRecordsErrorDialogTitle,
+        dialogText: ObservationsTableI18N.importRecordsErrorDialogText,
+        dialogErrorDetails: [apiError.message],
+        open: true,
+        onClose: () => {
+          dialogContext.setErrorDialog({ open: false });
+        },
+        onOk: () => {
+          dialogContext.setErrorDialog({ open: false });
+        }
+      });
+
+      onError?.();
+    } finally {
+      onFinish?.();
+    }
   };
 
   return (
@@ -136,6 +143,7 @@ export const ImportObservationsButton = (props: IImportObservationsButtonProps) 
         dialogTitle="Import Observation CSV"
         onClose={() => setOpen(false)}
         onUpload={handleImportObservations}
+        uploadButtonLabel="Import"
         FileUploadProps={{
           dropZoneProps: { maxNumFiles: 1, acceptedFileExtensions: '.csv' },
           status: UploadFileStatus.STAGED
