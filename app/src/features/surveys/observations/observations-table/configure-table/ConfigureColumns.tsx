@@ -104,6 +104,7 @@ export const ConfigureColumns = (props: IConfigureColumnsProps) => {
       <IconButton
         color="default"
         onClick={(event) => setColumnVisibilityMenuAnchorEl(event.currentTarget)}
+        title="Configure Columns"
         disabled={disabled}>
         <Icon path={mdiCogOutline} size={1} />
       </IconButton>

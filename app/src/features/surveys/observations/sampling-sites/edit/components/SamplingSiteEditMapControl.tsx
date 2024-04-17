@@ -24,7 +24,7 @@ import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
 import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
 import get from 'lodash-es/get';
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { useParams } from 'react-router';
 import { boundaryUploadHelper, calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
@@ -87,18 +87,21 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
   // Array of sampling site features
   const samplingSiteGeoJsonFeatures: Feature[] = useMemo(() => get(values, name), [values, name]);
 
-  const updateStaticLayers = (geoJsonFeatures: Feature[]) => {
-    setUpdatedBounds(calculateUpdatedMapBounds(geoJsonFeatures));
+  const updateStaticLayers = useCallback(
+    (geoJsonFeatures: Feature[]) => {
+      setUpdatedBounds(calculateUpdatedMapBounds(geoJsonFeatures));
 
-    const staticLayers: IStaticLayer[] = [
-      {
-        layerName: 'Sampling Sites',
-        features: samplingSiteGeoJsonFeatures.map((feature: Feature, index) => ({ geoJSON: feature, key: index }))
-      }
-    ];
+      const staticLayers: IStaticLayer[] = [
+        {
+          layerName: 'Sampling Sites',
+          features: samplingSiteGeoJsonFeatures.map((feature: Feature, index) => ({ geoJSON: feature, key: index }))
+        }
+      ];
 
-    setStaticLayers(staticLayers);
-  };
+      setStaticLayers(staticLayers);
+    },
+    [samplingSiteGeoJsonFeatures]
+  );
 
   const [editedGeometry, setEditedGeometry] = useState<Feature[] | undefined>(undefined);
 
@@ -218,7 +221,7 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
               </LayersControl>
             </LeafletMapContainer>
             {samplingSiteGeoJsonFeatures.length > 0 && (
-              <Box position="absolute" top="126px" left="10px" zIndex="999">
+              <Box position="absolute" top="128px" left="16px" zIndex="999">
                 <IconButton
                   aria-label="zoom to initial extent"
                   title="Zoom to initial extent"
