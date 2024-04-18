@@ -1,4 +1,3 @@
-import { Card } from '@mui/material';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -38,30 +37,25 @@ export const SamplingSiteListMethod = (props: ISamplingSiteListMethodProps) => {
           mt: 1.5
         }
       }}>
-      <Card elevation={0}>
-        <ListItemText
-          sx={{
-            px: 2,
-            pt: 1,
-            borderRadius: '5px',
-            '& .MuiTypography-root': {
-              fontWeight: 700,
-              fontSize: '0.85rem'
-            }
-          }}
-          title="Sampling Method"
-          primary={getCodesName(codesContext.codesDataLoader.data, 'sample_methods', sampleMethod.method_lookup_id)}
-        />
-        {sampleMethod.sample_periods?.length && (
-          <List disablePadding>
-            <SamplingSiteListPeriod
-              samplePeriods={sampleMethod.sample_periods}
-              observationsContext={observationsContext}
-              observationsPageContext={observationsPageContext}
-            />
-          </List>
-        )}
-      </Card>
+      <ListItemText
+        sx={{
+          mt: 0,
+          '& .MuiTypography-root': {
+            fontWeight: 700
+          }
+        }}
+        title="Sampling Method"
+        primary={getCodesName(codesContext.codesDataLoader.data, 'sample_methods', sampleMethod.method_lookup_id)}
+      />
+      {sampleMethod.sample_periods?.length && (
+        <List disablePadding sx={{ ml: 0.5, mr: 1 }}>
+          <SamplingSiteListPeriod
+            samplePeriods={sampleMethod.sample_periods}
+            observationsContext={observationsContext}
+            observationsPageContext={observationsPageContext}
+          />
+        </List>
+      )}
     </ListItem>
   );
 };

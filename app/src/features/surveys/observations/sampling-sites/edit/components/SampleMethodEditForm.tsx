@@ -26,7 +26,7 @@ import { useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { getCodesName } from 'utils/Utils';
 import SamplingSiteMethodResponseMetricChip from '../../components/SamplingSiteMethodResponseMetricChip';
-import SamplingPeriodsTimeline from '../../list/SamplingSiteListPeriod';
+import SamplingSiteListPeriod from '../../list/SamplingSiteListPeriod';
 import { IEditSamplingSiteRequest } from './SampleSiteEditForm';
 
 export interface SampleMethodEditFormProps {
@@ -225,8 +225,8 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                             Periods
                           </Typography>
                           <Divider component="div" sx={{ mt: 1 }}></Divider>
-                          <Box sx={{ maxWidth: { xs: '100%', sm: '400px', xl: '300px' } }}>
-                            <SamplingPeriodsTimeline samplePeriods={item.periods} />
+                          <Box sx={{ maxWidth: { xs: '100%', sm: '400px', xl: '300px' }, m: 1 }}>
+                            <SamplingSiteListPeriod samplePeriods={item.periods} />
                           </Box>
                         </Box>
                       </Stack>

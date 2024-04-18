@@ -125,19 +125,23 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
       </Box>
       <AccordionDetails
         sx={{
-          background: grey[100]
+          pt: 0,
+          pb: 1,
+          background: grey[100],
+          px: 1
         }}>
-        <Box mb={1}>
-          {sampleSite.sample_stratums && sampleSite.sample_stratums?.length > 0 && (
+        {sampleSite.sample_stratums && sampleSite.sample_stratums?.length > 0 && (
+          <Box display="flex" alignItems="center" color="textSecondary" pt={2} px={1}>
             <SamplingStratumChips sampleSite={sampleSite} />
-          )}
-        </Box>
-
+          </Box>
+        )}
         <List
           disablePadding
           sx={{
+            pt: 2,
+            mx: 1.5,
             '& .MuiListItemText-primary': {
-              typography: 'body2'
+              typography: 'body2',
             }
           }}>
           {sampleSite.sample_methods?.map((sampleMethod) => {
@@ -149,7 +153,7 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
             );
           })}
         </List>
-        <Box height="300px" width="100%" mt={2}>
+        <Box height="300px" width="100%" mt={2} mb={1}>
           <SamplingSiteInsetMap sampleSites={[sampleSite]} isLoading={false} />
         </Box>
       </AccordionDetails>

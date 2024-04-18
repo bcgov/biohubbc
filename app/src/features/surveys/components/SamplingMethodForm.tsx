@@ -215,7 +215,7 @@ const SamplingMethodForm = () => {
                           Periods
                         </Typography>
                         <Divider component="div" sx={{ mt: 1 }}></Divider>
-                        <Box sx={{ maxWidth: { xs: '100%', sm: '400px', xl: '300px' } }}>
+                        <Box sx={{ maxWidth: { xs: '100%', sm: '400px', xl: '300px' }, m: 1 }}>
                           <SamplingSiteListPeriod samplePeriods={item.periods} />
                         </Box>
                       </Box>

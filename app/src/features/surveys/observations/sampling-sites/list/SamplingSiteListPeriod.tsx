@@ -37,7 +37,7 @@ const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
   };
 
   return (
-    <Timeline title="Sampling Period" sx={{ alignItems: 'start', justifyContent: 'start', p: 0, my: 1, ml: 2, mr: 1 }}>
+    <Timeline title="Sampling Period" sx={{ alignItems: 'start', justifyContent: 'start', p: 0, m: 0 }}>
       {props.samplePeriods.map((samplePeriod, index) => (
         <TimelineItem
           sx={{
@@ -50,24 +50,24 @@ const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
             p: 0
           }}
           key={`${samplePeriod.survey_sample_period_id}-${index}`}>
-          <TimelineSeparator sx={{ mr: 1 }}>
+          <TimelineSeparator sx={{ width: '15px', my: -0.25 }}>
             {props.samplePeriods.length > 1 ? (
               <>
-                <TimelineDot sx={{ bgcolor: grey[400] }} />
+                <TimelineDot sx={{ bgcolor: grey[300], ml: 0.5, boxShadow: 'none' }} />
                 {index < props.samplePeriods.length - 1 && (
                   <TimelineConnector
                     sx={{
-                      bgcolor: grey[400],
+                      bgcolor: grey[300],
                       position: 'absolute',
                       height: '85%',
-                      top: 22,
-                      opacity: 0.75
+                      top: 20,
+                      ml: 0.5
                     }}
                   />
                 )}
               </>
             ) : (
-              <Box mt={0.8}>
+              <Box mt={1.25}>
                 <Icon path={mdiCalendarRange} size={0.8} color={grey[400]} />
               </Box>
             )}
@@ -100,7 +100,7 @@ const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
                 </Typography>
               </Box>
               {observationsPageContext && observationsContext && samplePeriod?.survey_sample_period_id && (
-                <Box mt={-0.25}>
+                <Box mt={-0.25} sx={{ display: 'none' }}>
                   <ImportObservationsButton
                     disabled={observationsPageContext.isDisabled}
                     onStart={() => {
