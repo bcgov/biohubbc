@@ -20,7 +20,7 @@ import { grey } from '@mui/material/colors';
 import { CodesContext } from 'contexts/codesContext';
 import CreateSamplingMethod from 'features/surveys/components/CreateSamplingMethod';
 import EditSamplingMethod from 'features/surveys/components/EditSamplingMethod';
-import { IEditSurveySampleMethodData } from 'features/surveys/components/MethodForm';
+import { ISurveySampleMethodData } from 'features/surveys/components/MethodForm';
 import { useFormikContext } from 'formik';
 import { useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
@@ -40,7 +40,7 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
-  const [editData, setEditData] = useState<IEditSurveySampleMethodData | undefined>(undefined);
+  const [editData, setEditData] = useState<{ data: ISurveySampleMethodData; index: number } | undefined>(undefined);
 
   const codesContext = useContext(CodesContext);
   useEffect(() => {
@@ -49,7 +49,7 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
     setAnchorEl(event.currentTarget);
-    setEditData({ ...values.sampleSite.methods[index], index });
+    setEditData({ data: values.sampleSite.methods[index], index });
   };
 
   const handleDelete = () => {
@@ -80,10 +80,10 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
 
       {/* EDIT SAMPLE METHOD DIALOG */}
       <EditSamplingMethod
-        initialData={editData}
+        initialData={editData?.data}
         open={isEditModalOpen}
-        onSubmit={(data, index) => {
-          setFieldValue(`${name}[${index}]`, data);
+        onSubmit={(data) => {
+          setFieldValue(`${name}[${editData?.index}]`, data);
           setAnchorEl(null);
           setIsEditModalOpen(false);
         }}
