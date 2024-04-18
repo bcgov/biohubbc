@@ -370,7 +370,7 @@ POST.apiDoc = {
               minItems: 1,
               items: {
                 type: 'object',
-                // additionalProperties: false,
+                additionalProperties: false,
                 required: ['method_lookup_id', 'description', 'periods', 'method_response_metric_id'],
                 properties: {
                   survey_sample_site_id: {
@@ -393,7 +393,7 @@ POST.apiDoc = {
                     minItems: 1,
                     items: {
                       type: 'object',
-                      // additionalProperties: false,
+                      additionalProperties: false,
                       required: ['start_date', 'end_date'],
                       properties: {
                         survey_sample_period_id: {
@@ -480,7 +480,7 @@ POST.apiDoc = {
               type: 'array',
               items: {
                 type: 'object',
-                // additionalProperties: false,
+                additionalProperties: false,
                 required: ['survey_stratum_id'],
                 properties: {
                   survey_id: {
