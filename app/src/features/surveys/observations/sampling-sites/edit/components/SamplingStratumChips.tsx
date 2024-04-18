@@ -1,5 +1,5 @@
 import { Color, colors } from '@mui/material';
-import { Box, Stack } from '@mui/system';
+import { Stack } from '@mui/system';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { SurveyContext } from 'contexts/surveyContext';
 import { IGetSampleLocationDetails } from 'interfaces/useSurveyApi.interface';
@@ -27,17 +27,15 @@ const SamplingStratumChips = (props: ISamplingStratumChips) => {
     })) ?? [];
 
   return (
-    <Box mb={2}>
-      <Stack direction="row" spacing={1}>
-        {props.sampleSite.sample_stratums?.map((stratum) => (
-          <ColouredRectangleChip
-            colour={stratumChipColours.find((colour) => colour.stratum === stratum.name)?.colour ?? colors.grey}
-            label={stratum.name}
-            title="Stratum"
-          />
-        ))}
-      </Stack>
-    </Box>
+    <Stack direction="row" spacing={1}>
+      {props.sampleSite.sample_stratums?.map((stratum) => (
+        <ColouredRectangleChip
+          colour={stratumChipColours.find((colour) => colour.stratum === stratum.name)?.colour ?? colors.grey}
+          label={stratum.name}
+          title="Stratum"
+        />
+      ))}
+    </Stack>
   );
 };
 

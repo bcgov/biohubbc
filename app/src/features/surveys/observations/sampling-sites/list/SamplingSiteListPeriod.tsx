@@ -19,7 +19,7 @@ interface ISamplingSiteListPeriodProps {
 /**
  * Renders sampling periods for a sampling method
  * @param props {ISamplingSiteListPeriodProps}
- * @returns 
+ * @returns
  */
 const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
   const formatDate = (dt: Date, time: boolean) => dayjs(dt).format(time ? 'MMM D, YYYY h:mm A' : 'MMM D, YYYY');
@@ -37,7 +37,7 @@ const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
   };
 
   return (
-    <Timeline title="Sampling Period" sx={{ alignItems: 'start', justifyContent: 'start', p: 0, my: 1, ml: 2, mr: 0 }}>
+    <Timeline title="Sampling Period" sx={{ alignItems: 'start', justifyContent: 'start', p: 0, my: 1, ml: 2, mr: 1 }}>
       {props.samplePeriods.map((samplePeriod, index) => (
         <TimelineItem
           sx={{
@@ -50,7 +50,7 @@ const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
             p: 0
           }}
           key={`${samplePeriod.survey_sample_period_id}-${index}`}>
-          <TimelineSeparator>
+          <TimelineSeparator sx={{ mr: 1 }}>
             {props.samplePeriods.length > 1 ? (
               <>
                 <TimelineDot sx={{ bgcolor: grey[400] }} />
@@ -68,7 +68,7 @@ const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
               </>
             ) : (
               <Box mt={0.8}>
-                <Icon path={mdiCalendarRange} size={0.8} color={grey[500]} />
+                <Icon path={mdiCalendarRange} size={0.8} color={grey[400]} />
               </Box>
             )}
           </TimelineSeparator>
@@ -89,7 +89,7 @@ const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'center', mx: 1, mt: -0.25 }}>
-                <Icon path={mdiArrowRightThin} size={1} color={grey[500]} />
+                <Icon path={mdiArrowRightThin} size={1} color={grey[400]} />
               </Box>
               <Box flex="1 1 auto">
                 <Typography component="dt" variant="subtitle2" sx={dateSx}>

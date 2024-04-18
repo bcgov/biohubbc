@@ -38,18 +38,11 @@ export const SamplingSiteListMethod = (props: ISamplingSiteListMethodProps) => {
           mt: 1.5
         }
       }}>
-      <Card
-        sx={{
-          borderRadius: '5px',
-          boxShadow: '1px',
-          background: '#fff'
-        }}
-        elevation={0}>
+      <Card elevation={0}>
         <ListItemText
           sx={{
             px: 2,
             pt: 1,
-            // background: grey[50],
             borderRadius: '5px',
             '& .MuiTypography-root': {
               fontWeight: 700,

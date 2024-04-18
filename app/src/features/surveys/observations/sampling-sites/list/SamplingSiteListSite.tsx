@@ -125,13 +125,13 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
       </Box>
       <AccordionDetails
         sx={{
-          py: 2,
-          px: 2,
           background: grey[100]
         }}>
-        {sampleSite.sample_stratums && sampleSite.sample_stratums?.length > 0 && (
-          <SamplingStratumChips sampleSite={sampleSite} />
-        )}
+        <Box mb={1}>
+          {sampleSite.sample_stratums && sampleSite.sample_stratums?.length > 0 && (
+            <SamplingStratumChips sampleSite={sampleSite} />
+          )}
+        </Box>
 
         <List
           disablePadding
@@ -149,7 +149,7 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
             );
           })}
         </List>
-        <Box height="300px" width="100%" mt={2} borderRadius="5px">
+        <Box height="300px" width="100%" mt={2}>
           <SamplingSiteInsetMap sampleSites={[sampleSite]} isLoading={false} />
         </Box>
       </AccordionDetails>
