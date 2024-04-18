@@ -22,8 +22,8 @@ import { IGetSurveyBlock, IGetSurveyStratum } from 'interfaces/useSurveyApi.inte
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
-import SamplingSiteHeader from './SamplingSiteHeader';
 import SamplingSiteGroupingsForm from './components/SamplingSiteGroupingsForm';
+import SamplingSiteHeader from './SamplingSiteHeader';
 
 export interface ISurveySampleSite {
   name: string;
@@ -48,8 +48,8 @@ const SamplingSitePage = () => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
 
-  const surveyContext = useSurveyContext()
-  const dialogContext = useDialogContext()
+  const surveyContext = useSurveyContext();
+  const dialogContext = useDialogContext();
 
   const formikRef = useRef<FormikProps<any>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);

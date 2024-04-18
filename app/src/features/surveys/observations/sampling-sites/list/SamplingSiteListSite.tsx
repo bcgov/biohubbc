@@ -1,16 +1,15 @@
 import { mdiChevronDown, mdiDotsVertical, mdiMapMarker, mdiVectorLine, mdiVectorSquare } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Divider } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
+import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import grey from '@mui/material/colors/grey';
 import { SamplingSiteListMethod } from 'features/surveys/observations/sampling-sites/list/SamplingSiteListMethod';
 import { IGetSampleLocationDetails } from 'interfaces/useSurveyApi.interface';
 import SamplingStratumChips from '../edit/components/SamplingStratumChips';
@@ -126,12 +125,14 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
       </Box>
       <AccordionDetails
         sx={{
-          pt: 0,
-          px: 2
+          py: 2,
+          px: 2,
+          background: grey[100]
         }}>
         {sampleSite.sample_stratums && sampleSite.sample_stratums?.length > 0 && (
           <SamplingStratumChips sampleSite={sampleSite} />
         )}
+
         <List
           disablePadding
           sx={{
@@ -148,8 +149,7 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
             );
           })}
         </List>
-        <Divider />
-        <Box height="300px" width="100%" mt={3}>
+        <Box height="300px" width="100%" mt={2} borderRadius="5px">
           <SamplingSiteInsetMap sampleSites={[sampleSite]} isLoading={false} />
         </Box>
       </AccordionDetails>

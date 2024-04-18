@@ -8,7 +8,11 @@ export interface IColouredRectangleChipProps extends ChipProps {
   inverse?: boolean;
 }
 /**
- * Styled chip for highlighting important information
+ * 
+ * Returns a stylized MUI chip components
+ * 
+ * @param props {IColouredRectangleChipProps} 
+ * @returns 
  */
 const ColouredRectangleChip = (props: IColouredRectangleChipProps) => {
   return (

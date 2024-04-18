@@ -1,7 +1,7 @@
+import { Card } from '@mui/material';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import grey from '@mui/material/colors/grey';
 import { useCodesContext, useObservationsContext, useObservationsPageContext } from 'hooks/useContext';
 import { IGetSampleMethodRecord } from 'interfaces/useSurveyApi.interface';
 import { useEffect } from 'react';
@@ -31,33 +31,44 @@ export const SamplingSiteListMethod = (props: ISamplingSiteListMethodProps) => {
 
   return (
     <ListItem
-      disableGutters
       sx={{
-        display: 'block',
         p: 0,
+        display: 'block',
         '& + li': {
-          mt: 1.5,
+          mt: 1.5
         }
       }}>
-      <ListItemText
+      <Card
         sx={{
-          px: 2,
-          py: 1,
-          background: grey[100],
-          borderRadius: '5px'
+          borderRadius: '5px',
+          boxShadow: '1px',
+          background: '#fff'
         }}
-        title="Sampling Method"
-        primary={getCodesName(codesContext.codesDataLoader.data, 'sample_methods', sampleMethod.method_lookup_id)}
-      />
-      {sampleMethod.sample_periods?.length && (
-        <List disablePadding>
-          <SamplingSiteListPeriod
-            samplePeriods={sampleMethod.sample_periods}
-            observationsContext={observationsContext}
-            observationsPageContext={observationsPageContext}
-          />
-        </List>
-      )}
+        elevation={0}>
+        <ListItemText
+          sx={{
+            px: 2,
+            pt: 1,
+            // background: grey[50],
+            borderRadius: '5px',
+            '& .MuiTypography-root': {
+              fontWeight: 700,
+              fontSize: '0.85rem'
+            }
+          }}
+          title="Sampling Method"
+          primary={getCodesName(codesContext.codesDataLoader.data, 'sample_methods', sampleMethod.method_lookup_id)}
+        />
+        {sampleMethod.sample_periods?.length && (
+          <List disablePadding>
+            <SamplingSiteListPeriod
+              samplePeriods={sampleMethod.sample_periods}
+              observationsContext={observationsContext}
+              observationsPageContext={observationsPageContext}
+            />
+          </List>
+        )}
+      </Card>
     </ListItem>
   );
 };

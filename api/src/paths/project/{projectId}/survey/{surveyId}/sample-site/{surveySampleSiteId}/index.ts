@@ -179,7 +179,7 @@ PUT.apiDoc = {
                   type: 'array',
                   items: {
                     type: 'object',
-                    additionalProperties: false,
+                    // additionalProperties: false,
                     required: ['survey_stratum_id'],
                     properties: {
                       survey_stratum_id: {

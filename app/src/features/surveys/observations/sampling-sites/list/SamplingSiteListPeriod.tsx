@@ -16,7 +16,11 @@ interface ISamplingSiteListPeriodProps {
   observationsPageContext?: IObservationsPageContext;
   observationsContext?: IObservationsContext;
 }
-
+/**
+ * Renders sampling periods for a sampling method
+ * @param props {ISamplingSiteListPeriodProps}
+ * @returns 
+ */
 const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
   const formatDate = (dt: Date, time: boolean) => dayjs(dt).format(time ? 'MMM D, YYYY h:mm A' : 'MMM D, YYYY');
 
@@ -84,7 +88,7 @@ const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
                   {samplePeriod.start_time}
                 </Typography>
               </Box>
-              <Box sx={{ display: 'flex', justifyContent: 'center', mx: 1 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'center', mx: 1, mt: -0.25 }}>
                 <Icon path={mdiArrowRightThin} size={1} color={grey[500]} />
               </Box>
               <Box flex="1 1 auto">
@@ -96,7 +100,7 @@ const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
                 </Typography>
               </Box>
               {observationsPageContext && observationsContext && samplePeriod?.survey_sample_period_id && (
-                <Box>
+                <Box mt={-0.25}>
                   <ImportObservationsButton
                     disabled={observationsPageContext.isDisabled}
                     onStart={() => {

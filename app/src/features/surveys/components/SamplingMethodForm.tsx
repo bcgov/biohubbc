@@ -9,6 +9,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import Collapse from '@mui/material/Collapse';
+import { grey } from '@mui/material/colors';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -16,19 +17,23 @@ import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { grey } from '@mui/material/colors';
 import { CodesContext } from 'contexts/codesContext';
 import { useFormikContext } from 'formik';
 import { useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { getCodesName } from 'utils/Utils';
-import { ICreateSamplingSiteRequest } from '../observations/sampling-sites/SamplingSitePage';
 import SamplingSiteMethodResponseMetricChip from '../observations/sampling-sites/components/SamplingSiteMethodResponseMetricChip';
 import SamplingSiteListPeriod from '../observations/sampling-sites/list/SamplingSiteListPeriod';
+import { ICreateSamplingSiteRequest } from '../observations/sampling-sites/SamplingSitePage';
 import CreateSamplingMethod from './CreateSamplingMethod';
 import EditSamplingMethod from './EditSamplingMethod';
 import { IEditSurveySampleMethodData } from './MethodForm';
 
+/**
+ * Renders a form for creating sampling methods
+ *
+ * @returns
+ */
 const SamplingMethodForm = () => {
   const { values, errors, setFieldValue, validateField } = useFormikContext<ICreateSamplingSiteRequest>();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -202,7 +207,7 @@ const SamplingMethodForm = () => {
                             overflow: 'hidden',
                             textOverflow: 'ellipsis'
                           }}>
-                          <em>No description</em>
+                          No description
                         </Typography>
                       )}
                       <Box>
