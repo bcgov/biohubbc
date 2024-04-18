@@ -9,7 +9,7 @@ import { ISurveySiteSelectionForm } from 'features/surveys/components/SurveySite
 import { Feature } from 'geojson';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { ApiPaginationResponseParams, StringBoolean } from 'types/misc';
-import { ICritterDetailedResponse } from './useCritterApi.interface';
+import { ICritterDetailedResponse, ICritterSimpleResponse } from './useCritterApi.interface';
 
 /**
  * Create survey post object.
@@ -200,36 +200,7 @@ export interface SurveyUpdateObject extends ISurveyLocationForm {
   participants?: IGetSurveyParticipant[];
 }
 
-// TODO remove in subsequent PR
 export interface SurveySupplementaryData {
-  occurrence_submission: {
-    occurrence_submission_id: number | null;
-  };
-  occurrence_submission_publish: {
-    occurrence_submission_publish_id: number;
-    occurrence_submission_id: number;
-    event_timestamp: string;
-    submission_uuid: string;
-    create_date: string;
-    create_user: number;
-    update_date: string | null;
-    update_user: number | null;
-    revision_count: number;
-  } | null;
-  survey_summary_submission: {
-    survey_summary_submission_id: number | null;
-  };
-  survey_summary_submission_publish: {
-    survey_summary_submission_publish_id: number;
-    survey_summary_submission_id: number;
-    event_timestamp: string;
-    artifact_revision_id: number;
-    create_date: string;
-    create_user: number;
-    update_date: string | null;
-    update_user: number | null;
-    revision_count: number;
-  } | null;
   survey_metadata_publish: {
     survey_metadata_publish_id: number;
     survey_id: number;
@@ -354,6 +325,10 @@ export interface IGetSurveyForUpdateResponse {
   surveyData: SurveyUpdateObject;
 }
 
+export interface ISimpleCritterWithInternalId extends ICritterSimpleResponse {
+  survey_critter_id: number;
+}
+
 export interface IDetailedCritterWithInternalId extends ICritterDetailedResponse {
   survey_critter_id: number; //The internal critter_id in the SIMS DB. Called this to distinguish against the critterbase UUID of the same name.
 }
@@ -432,6 +407,7 @@ export interface IGetSampleMethodRecord {
   survey_sample_method_id: number;
   survey_sample_site_id: number;
   method_lookup_id: number;
+  method_response_metric_id: number;
   description: string;
   create_date: string;
   create_user: number;

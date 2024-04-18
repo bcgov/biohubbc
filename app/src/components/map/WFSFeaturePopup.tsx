@@ -1,18 +1,19 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import { makeStyles } from '@mui/styles';
 import { Feature } from 'geojson';
 import React, { useRef } from 'react';
 import { Popup, Tooltip } from 'react-leaflet';
 
-const useStyles = makeStyles(() => ({
-  actionButton: {
-    minWidth: '6rem',
-    '& + button': {
-      marginLeft: '0.5rem'
+const useStyles = () => {
+  return {
+    actionButton: {
+      minWidth: '6rem',
+      '& + button': {
+        marginLeft: '0.5rem'
+      }
     }
-  }
-}));
+  };
+};
 
 export type WFSFeatureKeyHandler = (feature: Feature) => string;
 
@@ -68,7 +69,7 @@ const WFSFeaturePopup: React.FC<IWFSFeaturePopupProps> = (props) => {
               <Button
                 color="primary"
                 variant="contained"
-                className={classes.actionButton}
+                sx={classes.actionButton}
                 onClick={() => {
                   if (
                     existingGeometry &&
@@ -82,7 +83,7 @@ const WFSFeaturePopup: React.FC<IWFSFeaturePopupProps> = (props) => {
                 data-testid="add_boundary">
                 Add Boundary
               </Button>
-              <Button color="primary" variant="outlined" className={classes.actionButton} onClick={closePopupDialog}>
+              <Button color="primary" variant="outlined" sx={classes.actionButton} onClick={closePopupDialog}>
                 Cancel
               </Button>
             </Box>

@@ -33,7 +33,6 @@ const PublishSurveyContent = () => {
         }}>
         <Typography variant="body1" color="textSecondary">
           Published data submitted as part of this survey may be secured according to the{' '}
-          {/* eslint-disable-next-line react/jsx-no-target-blank */}
           <a
             href="https://www2.gov.bc.ca/gov/content/environment/natural-resource-stewardship/laws-policies-standards-guidance/data-information-security"
             target="_blank">
@@ -94,7 +93,6 @@ const PublishSurveyContent = () => {
               label={
                 <Typography variant="body1">
                   All published data for this survey meets or exceed the{' '}
-                  {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                   <a href="#" target="_blank">
                     Freedom of Information and Protection of Privacy Act (FOIPPA)
                   </a>{' '}

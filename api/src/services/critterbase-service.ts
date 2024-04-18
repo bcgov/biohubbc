@@ -2,6 +2,7 @@ import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { URLSearchParams } from 'url';
 import { z } from 'zod';
 import { ApiError, ApiErrorType } from '../errors/api-error';
+import { getLogger } from '../utils/logger';
 import { KeycloakService } from './keycloak-service';
 
 export interface ICritterbaseUser {
@@ -19,6 +20,8 @@ export interface ICritter {
   wlh_id: string;
   animal_id: string;
   sex: string;
+  itis_tsn: number;
+  itis_scientific_name: string;
   critter_comment: string;
 }
 
@@ -40,10 +43,10 @@ export interface IMortality {
   mortality_timestamp: string;
   proximate_cause_of_death_id: string;
   proximate_cause_of_death_confidence: string;
-  proximate_predated_by_taxon_id: string;
+  proximate_predated_by_itis_tsn: string;
   ultimate_cause_of_death_id: string;
   ultimate_cause_of_death_confidence: string;
-  ultimate_predated_by_taxon_id: string;
+  ultimate_predated_by_itis_tsn: string;
   mortality_comment: string;
 }
 
@@ -116,25 +119,6 @@ export interface IBulkCreate {
   quantitative_measurements: IQuantMeasurement[];
   qualitative_measurements: IQualMeasurement[];
   families: IFamilyPayload[];
-}
-
-interface IFilterObj {
-  body: string[];
-  negate: boolean;
-}
-
-export interface IFilterCritters {
-  critter_ids?: IFilterObj;
-  animal_ids?: IFilterObj;
-  wlh_ids?: IFilterObj;
-  collection_units?: IFilterObj;
-  taxon_name_commons?: IFilterObj;
-}
-
-export interface ICbSelectRows {
-  key: string;
-  id: string;
-  value: string;
 }
 
 /**
@@ -271,10 +255,11 @@ export type CbRouteKey = keyof typeof CbRoutes;
 
 export const CRITTERBASE_API_HOST = process.env.CB_API_HOST || ``;
 const CRITTER_ENDPOINT = '/critters';
-const FILTER_ENDPOINT = `${CRITTER_ENDPOINT}/filter`;
 const BULK_ENDPOINT = '/bulk';
 const SIGNUP_ENDPOINT = '/signup';
 const FAMILY_ENDPOINT = '/family';
+
+const defaultLog = getLogger('CritterbaseServiceLogger');
 
 export class CritterbaseService {
   user: ICritterbaseUser;
@@ -297,8 +282,9 @@ export class CritterbaseService {
         return response;
       },
       (error: AxiosError) => {
+        defaultLog.error({ label: 'CritterbaseService', message: error.message, error });
         return Promise.reject(
-          new ApiError(ApiErrorType.UNKNOWN, `API request failed with status code ${error?.response?.status}`)
+          new ApiError(ApiErrorType.GENERAL, `API request failed with status code ${error?.response?.status}`)
         );
       }
     );
@@ -347,9 +333,7 @@ export class CritterbaseService {
     return this._makeGetRequest(CbRoutes[route], params);
   }
 
-  async getTaxonMeasurements(
-    tsn: string
-  ): Promise<{
+  async getTaxonMeasurements(tsn: string): Promise<{
     qualitative: CBQualitativeMeasurementTypeDefinition[];
     quantitative: CBQuantitativeMeasurementTypeDefinition[];
   }> {
@@ -357,9 +341,9 @@ export class CritterbaseService {
     return response;
   }
 
-  async getTaxonBodyLocations(taxon_id: string) {
+  async getTaxonBodyLocations(tsn: string) {
     return this._makeGetRequest(CbRoutes['taxon-marking-body-locations'], [
-      { key: 'taxon_id', value: taxon_id },
+      { key: 'tsn', value: tsn },
       { key: 'format', value: 'asSelect' }
     ]);
   }
@@ -383,8 +367,8 @@ export class CritterbaseService {
     return this._makeGetRequest(`${CRITTER_ENDPOINT}/${critter_id}`, [{ key: 'format', value: 'detail' }]);
   }
 
-  async createCritter(data: IBulkCreate) {
-    const response = await this.axiosInstance.post(BULK_ENDPOINT, data);
+  async createCritter(data: ICritter) {
+    const response = await this.axiosInstance.post(`${CRITTER_ENDPOINT}/create`, data);
     return response.data;
   }
 
@@ -393,8 +377,8 @@ export class CritterbaseService {
     return response.data;
   }
 
-  async filterCritters(data: IFilterCritters, format: 'default' | 'detailed' = 'default') {
-    const response = await this.axiosInstance.post(`${FILTER_ENDPOINT}?format=${format}`, data);
+  async getMultipleCrittersByIds(critter_ids: string[]) {
+    const response = await this.axiosInstance.post(CRITTER_ENDPOINT, { critter_ids });
     return response.data;
   }
 

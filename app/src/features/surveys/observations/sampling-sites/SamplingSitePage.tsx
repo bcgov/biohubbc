@@ -1,10 +1,11 @@
 import { LoadingButton } from '@mui/lab';
-import { Container, Stack } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
+import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { CreateSamplingSiteI18N } from 'constants/i18n';
@@ -39,6 +40,11 @@ export interface ICreateSamplingSiteRequest {
   stratums: IGetSurveyStratum[];
 }
 
+/**
+ * Renders the body content of the Sampling Site page.
+ *
+ * @return {*}
+ */
 const SamplingSitePage = () => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
@@ -114,7 +120,7 @@ const SamplingSitePage = () => {
    * @param {History.Location} location
    * @return {*}
    */
-  const handleLocationChange = (location: History.Location, action: History.Action) => {
+  const handleLocationChange = (location: History.Location) => {
     if (!dialogContext.yesNoDialogProps.open) {
       // If the cancel dialog is not open: open it
       dialogContext.setYesNoDialog({

@@ -70,6 +70,7 @@ describe('getSurveySampleMethodRecords', () => {
     const sampleMethod = {
       survey_sample_method_id: 1,
       survey_sample_site_id: 1,
+      method_response_metric_id: 1,
       method_lookup_id: 1,
       description: 'desc',
       create_date: 'date',
@@ -116,8 +117,8 @@ describe('createSurveySampleSiteRecord', () => {
       const result = create_survey_sample_method_record.createSurveySampleSiteRecord();
       await result(
         { ...sampleReq, params: { ...sampleReq.params, surveySampleSiteId: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
+        null as unknown as any,
+        null as unknown as any
       );
       expect.fail();
     } catch (actualError) {

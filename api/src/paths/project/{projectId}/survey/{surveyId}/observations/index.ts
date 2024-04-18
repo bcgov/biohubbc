@@ -7,7 +7,11 @@ import {
   paginationResponseSchema
 } from '../../../../../../openapi/schemas/pagination';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { ObservationService } from '../../../../../../services/observation-service';
+import { CritterbaseService } from '../../../../../../services/critterbase-service';
+import {
+  InsertUpdateObservationsWithMeasurements,
+  ObservationService
+} from '../../../../../../services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
 import { ensureCompletePaginationOptions, makePaginationResponse } from '../../../../../../utils/pagination';
 import { ApiPaginationOptions } from '../../../../../../zod-schema/pagination';
@@ -626,10 +630,11 @@ export function getSurveyObservations(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      const observationData = await observationService.getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData(
-        surveyId,
-        ensureCompletePaginationOptions(paginationOptions)
-      );
+      const observationData =
+        await observationService.getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData(
+          surveyId,
+          ensureCompletePaginationOptions(paginationOptions)
+        );
 
       const observationCount = observationData.supplementaryObservationData.observationCount;
 
@@ -668,7 +673,18 @@ export function insertUpdateSurveyObservationsWithMeasurements(): RequestHandler
 
       const observationService = new ObservationService(connection);
 
-      const observationRows = req.body.surveyObservations;
+      const observationRows: InsertUpdateObservationsWithMeasurements[] = req.body.surveyObservations;
+
+      const critterBaseService = new CritterbaseService({
+        keycloak_guid: req['system_user']?.user_guid,
+        username: req['system_user']?.user_identifier
+      });
+
+      // Validate measurement data against fetched measurement definition
+      const isValid = await observationService.validateSurveyObservations(observationRows, critterBaseService);
+      if (!isValid) {
+        throw new Error('Failed to save observation data, measurement values failed validation.');
+      }
 
       await observationService.insertUpdateSurveyObservationsWithMeasurements(surveyId, observationRows);
 

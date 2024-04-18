@@ -1,38 +1,41 @@
 import { mdiPencilOutline, mdiTrayArrowDown } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import useTheme from '@mui/material/styles/useTheme';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import ReportMeta from 'components/attachments/ReportMeta';
 import { IGetReportDetails } from 'interfaces/useProjectApi.interface';
 import { default as React, useState } from 'react';
 import EditFileWithMetaDialog from './EditFileWithMetaDialog';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  docTitle: {
-    display: '-webkit-box',
-    '-webkit-line-clamp': 2,
-    '-webkit-box-orient': 'vertical',
-    overflow: 'hidden'
-  },
-  docDL: {
-    margin: 0,
-    '& dt': {
-      flex: '0 0 200px',
-      margin: '0',
-      color: theme.palette.text.secondary
+const useStyles = () => {
+  const theme = useTheme();
+
+  return {
+    docTitle: {
+      display: '-webkit-box',
+      WebkitLineClamp: '2',
+      WebkitBoxOrient: 'vertical',
+      overflow: 'hidden'
     },
-    '& dd': {
-      flex: '1 1 auto'
+    docDL: {
+      margin: 0,
+      '& dt': {
+        flex: '0 0 200px',
+        margin: '0',
+        color: theme.palette.text.secondary
+      },
+      '& dd': {
+        flex: '1 1 auto'
+      }
+    },
+    docMetaRow: {
+      display: 'flex'
     }
-  },
-  docMetaRow: {
-    display: 'flex'
-  }
-}));
+  };
+};
 
 export interface IReportAttachmentDetailsProps {
   title: string;
@@ -68,7 +71,7 @@ const ReportAttachmentDetails: React.FC<IReportAttachmentDetailsProps> = (props)
 
       <Box display="flex" justifyContent="space-between">
         <Box style={{ maxWidth: '120ch' }}>
-          <Typography variant="h2" component="h1" className={classes.docTitle}>
+          <Typography variant="h2" component="h1" sx={classes.docTitle}>
             {props.title}
           </Typography>
         </Box>

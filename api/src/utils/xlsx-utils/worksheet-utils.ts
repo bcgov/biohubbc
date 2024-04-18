@@ -8,6 +8,7 @@ import {
 } from '../../services/critterbase-service';
 import { getLogger } from '../logger';
 import { MediaFile } from '../media/media-file';
+import { DEFAULT_XLSX_SHEET_NAME } from '../media/xlsx/xlsx-file';
 import { safeToLowerCase } from '../string-utils';
 import { replaceCellDates, trimCellWhitespace } from './cell-utils';
 
@@ -302,15 +303,17 @@ export const prepareWorksheetCells = (worksheet: xlsx.WorkSheet) => {
 export function validateCsvFile(
   xlsxWorksheets: xlsx.WorkSheet,
   columnValidator: IXLSXCSVValidator,
-  sheet = 'Sheet1'
+  sheet = DEFAULT_XLSX_SHEET_NAME
 ): boolean {
   // Validate the worksheet headers
   if (!validateWorksheetHeaders(xlsxWorksheets[sheet], columnValidator)) {
+    defaultLog.debug({ label: 'validateCsvFile', message: 'Invalid: Headers' });
     return false;
   }
 
   // Validate the worksheet column types
   if (!validateWorksheetColumnTypes(xlsxWorksheets[sheet], columnValidator)) {
+    defaultLog.debug({ label: 'validateCsvFile', message: 'Invalid: Column types' });
     return false;
   }
 
@@ -319,32 +322,39 @@ export function validateCsvFile(
 
 export interface IMeasurementDataToValidate {
   tsn: string;
-  measurement_name: string;
+  measurement_key: string; // Column name, Grid table field or measurement_taxon_id to validate
   measurement_value: string | number;
 }
 
+/**
+ * Checks if all passed in measurement data is valid or returns false at first invalid measurement.
+ *
+ * @param {IMeasurementDataToValidate[]} data The measurement data to validate
+ * @param {TsnMeasurementMap} tsnMeasurementMap An object map of measurement definitions from Critterbase organized by TSN numbers
+ * @returns {*} boolean Results of validation
+ */
 export function validateMeasurements(
   data: IMeasurementDataToValidate[],
   tsnMeasurementMap: TsnMeasurementMap
 ): boolean {
   return data.every((item) => {
-    defaultLog.debug({ label: 'validateMeasurements', message: 'validating item', item });
     const measurements = tsnMeasurementMap[item.tsn];
-
     if (!measurements) {
-      defaultLog.debug({ label: 'validateMeasurements', message: 'no measurements found for tsn', tsn: item.tsn });
+      defaultLog.debug({ label: 'validateMeasurements', message: 'Invalid: No measurements' });
       return false;
     }
 
+    // only validate if the column has data
     if (!item.measurement_value) {
-      // only validate if the column has data
       return true;
     }
 
     // find the correct measurement
     if (measurements.qualitative.length > 0) {
       const measurement = measurements.qualitative.find(
-        (measurement) => measurement.measurement_name.toLowerCase() === item.measurement_name.toLowerCase()
+        (measurement) =>
+          measurement.measurement_name.toLowerCase() === item.measurement_key.toLowerCase() ||
+          measurement.taxon_measurement_id === item.measurement_key
       );
       if (measurement) {
         return isQualitativeValueValid(item.measurement_value, measurement);
@@ -353,7 +363,9 @@ export function validateMeasurements(
 
     if (measurements.quantitative.length > 0) {
       const measurement = measurements.quantitative.find(
-        (measurement) => measurement.measurement_name.toLowerCase() === item.measurement_name.toLowerCase()
+        (measurement) =>
+          measurement.measurement_name.toLowerCase() === item.measurement_key.toLowerCase() ||
+          measurement.taxon_measurement_id === item.measurement_key
       );
       if (measurement) {
         return isQuantitativeValueValid(Number(item.measurement_value), measurement);
@@ -362,11 +374,7 @@ export function validateMeasurements(
 
     // Has measurements for tsn
     // Has data but no matches found, entry is invalid
-    defaultLog.debug({
-      label: 'validateMeasurements',
-      message: 'no matching measurement found for tsn',
-      tsn: item.tsn
-    });
+    defaultLog.debug({ label: 'validateMeasurements', message: 'Invalid', item });
     return false;
   });
 }
@@ -387,7 +395,7 @@ export function validateCsvMeasurementColumns(
   const mappedData: IMeasurementDataToValidate[] = rows.flatMap((row) => {
     return measurementColumns.map((mColumn) => ({
       tsn: String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']),
-      measurement_name: mColumn,
+      measurement_key: mColumn,
       measurement_value: row[mColumn]
     }));
   });
@@ -410,26 +418,21 @@ export function isQuantitativeValueValid(value: number, measurement: CBQuantitat
     if (min_value <= value && value <= max_value) {
       return true;
     }
+  } else {
+    if (min_value !== null && min_value <= value) {
+      return true;
+    }
+
+    if (max_value !== null && value <= max_value) {
+      return true;
+    }
+
+    if (min_value === null && max_value === null) {
+      return true;
+    }
   }
 
-  if (min_value !== null && min_value <= value) {
-    return true;
-  }
-
-  if (max_value !== null && value <= max_value) {
-    return true;
-  }
-
-  if (min_value === null && max_value === null) {
-    return true;
-  }
-
-  defaultLog.debug({
-    label: 'isQuantitativeValueValid',
-    message: 'quantitative measurement error',
-    value,
-    measurement
-  });
+  defaultLog.debug({ label: 'isQuantitativeValueValid', message: 'Invalid', value, measurement });
   return false;
 }
 
@@ -446,13 +449,20 @@ export function isQualitativeValueValid(
   value: string | number,
   measurement: CBQualitativeMeasurementTypeDefinition
 ): boolean {
-  // check if data is in the options for the
+  // Check for option value, label OR option uuid
   const foundOption = measurement.options.find(
-    (option) => option.option_value === value || option.option_label.toLowerCase() === String(value).toLowerCase()
+    (option) =>
+      option.option_value === Number(value) ||
+      option.option_label.toLowerCase() === String(value).toLowerCase() ||
+      option.qualitative_option_id.toLowerCase() === String(value)
   );
 
-  defaultLog.debug({ label: 'isQualitativeValueValid', message: 'qualitative measurement error', value, measurement });
-  return Boolean(foundOption);
+  if (foundOption) {
+    return true;
+  }
+
+  defaultLog.debug({ label: 'isQualitativeValueValid', message: 'Invalid', value, measurement });
+  return false;
 }
 
 /**
@@ -466,7 +476,7 @@ export function isQualitativeValueValid(
 export function getMeasurementColumnNameFromWorksheet(
   xlsxWorksheets: xlsx.WorkSheet,
   columnValidator: IXLSXCSVValidator,
-  sheet = 'Sheet1'
+  sheet = DEFAULT_XLSX_SHEET_NAME
 ): string[] {
   const columns = getWorksheetHeaders(xlsxWorksheets[sheet]);
   let aliasColumns: string[] = [];
@@ -496,19 +506,32 @@ export function getMeasurementColumnNameFromWorksheet(
 export async function getCBMeasurementsFromWorksheet(
   xlsxWorksheets: xlsx.WorkSheet,
   critterBaseService: CritterbaseService,
-  sheet = 'Sheet1'
+  sheet = DEFAULT_XLSX_SHEET_NAME
+): Promise<TsnMeasurementMap> {
+  const rows = getWorksheetRowObjects(xlsxWorksheets[sheet]);
+  const tsns = rows.map((row) => String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']));
+  return getCBMeasurementsFromTSN(tsns, critterBaseService);
+}
+
+/**
+ * Fetches measurement definitions from critterbase for a given list of TSNs and creates and returns a map with all data fetched
+ * Throws if a TSN does not return measurements.
+ *
+ * @param {string[]} tsns List of TSNs
+ * @param {CritterbaseService} critterBaseService Critterbase service
+ * @returns {*} Promise<TsnMeasurementMap>
+ */
+export async function getCBMeasurementsFromTSN(
+  tsns: string[],
+  critterBaseService: CritterbaseService
 ): Promise<TsnMeasurementMap> {
   const tsnMeasurements: TsnMeasurementMap = {};
-  const rows = getWorksheetRowObjects(xlsxWorksheets[sheet]);
-
   try {
-    for (const row of rows) {
-      const tsn = String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']);
+    for (const tsn of tsns) {
       if (!tsnMeasurements[tsn]) {
-        // TODO: modify Critter Base to accept multiple TSN at once
         const measurements = await critterBaseService.getTaxonMeasurements(tsn);
         if (!measurements) {
-          // TODO: Any data for a TSN that has no measurements is invalid and should reject the uploaded CSV
+          throw new Error(`No measurements found for tsn: ${tsn}`);
         }
 
         tsnMeasurements[tsn] = measurements;
@@ -516,9 +539,8 @@ export async function getCBMeasurementsFromWorksheet(
     }
   } catch (error) {
     getLogger('utils/xlsx-utils').error({ label: 'getCBMeasurementsFromWorksheet', message: 'error', error });
-    throw new ApiGeneralError('Error connecting to the Critterbase API');
+    throw new ApiGeneralError(`Error connecting to the Critterbase API: ${error}`);
   }
-
   return tsnMeasurements;
 }
 
@@ -535,29 +557,37 @@ export function findMeasurementFromTsnMeasurements(
   measurementColumnName: string,
   tsnMeasurements: TsnMeasurementMap
 ): CBQuantitativeMeasurementTypeDefinition | CBQualitativeMeasurementTypeDefinition | null | undefined {
-  let foundMeasurement:
-    | CBQuantitativeMeasurementTypeDefinition
-    | CBQualitativeMeasurementTypeDefinition
-    | null
-    | undefined = null;
   const measurements = tsnMeasurements[tsn];
-  if (measurements) {
-    // find the correct measurement
-    if (measurements.qualitative.length > 0) {
-      foundMeasurement = measurements.qualitative.find(
-        (measurement) => measurement.measurement_name.toLowerCase() === measurementColumnName.toLowerCase()
-      );
-    }
 
-    // don't bother searching if we already found a measurement
-    if (measurements.quantitative.length > 0 && !foundMeasurement) {
-      foundMeasurement = measurements.quantitative.find(
-        (measurement) => measurement.measurement_name.toLowerCase() === measurementColumnName.toLowerCase()
-      );
+  if (!measurements) {
+    // No measurements for tsn
+    return null;
+  }
+
+  if (measurements.qualitative.length > 0) {
+    const qualitativeMeasurement = measurements.qualitative.find(
+      (measurement) => measurement.measurement_name.toLowerCase() === measurementColumnName.toLowerCase()
+    );
+
+    if (qualitativeMeasurement) {
+      // Found qualitative measurement by column/ measurement name
+      return qualitativeMeasurement;
     }
   }
 
-  return foundMeasurement;
+  if (measurements.quantitative.length > 0) {
+    const quantitativeMeasurement = measurements.quantitative.find(
+      (measurement) => measurement.measurement_name.toLowerCase() === measurementColumnName.toLowerCase()
+    );
+
+    if (quantitativeMeasurement) {
+      // Found quantitative measurement by column/ measurement name
+      return quantitativeMeasurement;
+    }
+  }
+
+  // No measurements found for tsn
+  return null;
 }
 
 /**

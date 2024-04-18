@@ -63,7 +63,7 @@ const SurveyGeneralInformation = () => {
       <Box className="row">
         <Typography component="dt">Species of Interest</Typography>
         <Typography component="dd">
-          {species.focal_species?.map((focalSpecies: ITaxonomy, index: number) => {
+          {species.focal_species?.map((focalSpecies: ITaxonomy) => {
             return (
               <Typography
                 component="span"
@@ -91,7 +91,7 @@ const SurveyGeneralInformation = () => {
       <Box className="row">
         <Typography component="dt">Secondary Species</Typography>
         <Typography component="dd">
-          {species.ancillary_species?.map((ancillarySpecies: ITaxonomy, index: number) => {
+          {species.ancillary_species?.map((ancillarySpecies: ITaxonomy) => {
             return (
               <Typography
                 component="span"

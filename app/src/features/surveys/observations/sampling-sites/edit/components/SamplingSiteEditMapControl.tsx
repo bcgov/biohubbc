@@ -7,7 +7,6 @@ import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import FileUpload from 'components/file-upload/FileUpload';
 import FileUploadItem from 'components/file-upload/FileUploadItem';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
@@ -25,25 +24,27 @@ import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
 import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
 import get from 'lodash-es/get';
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { useParams } from 'react-router';
 import { boundaryUploadHelper, calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { pluralize } from 'utils/Utils';
 
-const useStyles = makeStyles(() => ({
-  zoomToBoundaryExtentBtn: {
-    padding: '3px',
-    borderRadius: '4px',
-    background: '#ffffff',
-    color: '#000000',
-    border: '2px solid rgba(0,0,0,0.2)',
-    backgroundClip: 'padding-box',
-    '&:hover': {
-      backgroundColor: '#eeeeee'
+const useStyles = () => {
+  return {
+    zoomToBoundaryExtentBtn: {
+      padding: '3px',
+      borderRadius: '4px',
+      background: '#ffffff',
+      color: '#000000',
+      border: '2px solid rgba(0,0,0,0.2)',
+      backgroundClip: 'padding-box',
+      '&:hover': {
+        backgroundColor: '#eeeeee'
+      }
     }
-  }
-}));
+  };
+};
 
 export interface ISamplingSiteEditMapControlProps {
   name: string;
@@ -86,29 +87,36 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
   // Array of sampling site features
   const samplingSiteGeoJsonFeatures: Feature[] = useMemo(() => get(values, name), [values, name]);
 
-  const updateStaticLayers = (geoJsonFeatures: Feature[]) => {
-    setUpdatedBounds(calculateUpdatedMapBounds(geoJsonFeatures));
+  const updateStaticLayers = useCallback(
+    (geoJsonFeatures: Feature[]) => {
+      setUpdatedBounds(calculateUpdatedMapBounds(geoJsonFeatures));
 
-    const staticLayers: IStaticLayer[] = [
-      {
-        layerName: 'Sampling Sites',
-        features: samplingSiteGeoJsonFeatures.map((feature: Feature, index) => ({ geoJSON: feature, key: index }))
-      }
-    ];
+      const staticLayers: IStaticLayer[] = [
+        {
+          layerName: 'Sampling Sites',
+          features: samplingSiteGeoJsonFeatures.map((feature: Feature, index) => ({ geoJSON: feature, key: index }))
+        }
+      ];
 
-    setStaticLayers(staticLayers);
-  };
+      setStaticLayers(staticLayers);
+    },
+    [samplingSiteGeoJsonFeatures]
+  );
 
   const [editedGeometry, setEditedGeometry] = useState<Feature[] | undefined>(undefined);
 
   useEffect(() => {
-    if (editedGeometry) {
-      updateStaticLayers(editedGeometry);
+    if (!editedGeometry) {
+      return;
     }
-  }, [editedGeometry]);
+
+    updateStaticLayers(editedGeometry);
+  }, [editedGeometry, updateStaticLayers]);
 
   useEffect(() => {
     updateStaticLayers(samplingSiteGeoJsonFeatures);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [samplingSiteGeoJsonFeatures]);
 
   return (
@@ -199,7 +207,7 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
                       setEditedGeometry([feature]);
                     });
                   }}
-                  onLayerDelete={(event: DrawEvents.Deleted) => {
+                  onLayerDelete={() => {
                     setFieldValue(name, sampleSiteData?.geojson ? [sampleSiteData?.geojson] : []);
                   }}
                 />
@@ -213,11 +221,11 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
               </LayersControl>
             </LeafletMapContainer>
             {samplingSiteGeoJsonFeatures.length > 0 && (
-              <Box position="absolute" top="126px" left="10px" zIndex="999">
+              <Box position="absolute" top="128px" left="16px" zIndex="999">
                 <IconButton
                   aria-label="zoom to initial extent"
                   title="Zoom to initial extent"
-                  className={classes.zoomToBoundaryExtentBtn}
+                  sx={classes.zoomToBoundaryExtentBtn}
                   onClick={() => {
                     setUpdatedBounds(calculateUpdatedMapBounds(samplingSiteGeoJsonFeatures));
                   }}>

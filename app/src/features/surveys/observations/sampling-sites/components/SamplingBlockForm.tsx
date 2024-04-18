@@ -1,14 +1,18 @@
 import { mdiClose, mdiMagnify } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Card, CardHeader, Collapse, IconButton, Typography } from '@mui/material';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import Collapse from '@mui/material/Collapse';
 import { grey } from '@mui/material/colors';
+import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useFormikContext } from 'formik';
 import { IGetSurveyBlock } from 'interfaces/useSurveyApi.interface';
-import { default as React, useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import BlockStratumCard from '../edit/components/BlockStratumCard';
 import { ICreateSamplingSiteRequest } from '../SamplingSitePage';
@@ -76,7 +80,7 @@ export const SamplingBlockForm = () => {
             setSearchText('');
           }
         }}
-        onClose={(value, reason) => {
+        onClose={() => {
           setSearchText('');
         }}
         renderInput={(params) => (
@@ -127,9 +131,7 @@ export const SamplingBlockForm = () => {
                 }}>
                 <CardHeader
                   action={
-                    <IconButton
-                      onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => handleRemoveItem(item)}
-                      aria-label="settings">
+                    <IconButton onClick={() => handleRemoveItem(item)} aria-label="settings">
                       <Icon path={mdiClose} size={1} />
                     </IconButton>
                   }

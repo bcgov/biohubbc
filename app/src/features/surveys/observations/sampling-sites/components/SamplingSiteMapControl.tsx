@@ -7,7 +7,6 @@ import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import FileUpload from 'components/file-upload/FileUpload';
 import FileUploadItem from 'components/file-upload/FileUploadItem';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
@@ -34,19 +33,21 @@ import { boundaryUploadHelper, calculateUpdatedMapBounds } from 'utils/mapBounda
 import { pluralize, shapeFileFeatureDesc, shapeFileFeatureName } from 'utils/Utils';
 import { ISurveySampleSite } from '../SamplingSitePage';
 
-const useStyles = makeStyles(() => ({
-  zoomToBoundaryExtentBtn: {
-    padding: '3px',
-    borderRadius: '4px',
-    background: '#ffffff',
-    color: '#000000',
-    border: '2px solid rgba(0,0,0,0.2)',
-    backgroundClip: 'padding-box',
-    '&:hover': {
-      backgroundColor: '#eeeeee'
+const useStyles = () => {
+  return {
+    zoomToBoundaryExtentBtn: {
+      padding: '3px',
+      borderRadius: '4px',
+      background: '#ffffff',
+      color: '#000000',
+      border: '2px solid rgba(0,0,0,0.2)',
+      backgroundClip: 'padding-box',
+      '&:hover': {
+        backgroundColor: '#eeeeee'
+      }
     }
-  }
-}));
+  };
+};
 
 export interface ISamplingSiteMapControlProps {
   name: string;
@@ -201,7 +202,7 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
                         ]);
                       });
                     }}
-                    onLayerDelete={(event: DrawEvents.Deleted) => {
+                    onLayerDelete={() => {
                       setFieldValue(name, []);
                     }}
                   />
@@ -222,11 +223,11 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
                 </LayersControl>
               </LeafletMapContainer>
               {samplingSiteGeoJsonFeatures.length > 0 && (
-                <Box position="absolute" top="126px" left="10px" zIndex="999">
+                <Box position="absolute" top="128px" left="16px" zIndex="999">
                   <IconButton
                     aria-label="zoom to initial extent"
                     title="Zoom to initial extent"
-                    className={classes.zoomToBoundaryExtentBtn}
+                    sx={classes.zoomToBoundaryExtentBtn}
                     onClick={() => {
                       setUpdatedBounds(calculateUpdatedMapBounds(samplingSiteGeoJsonFeatures));
                     }}>

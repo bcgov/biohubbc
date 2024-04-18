@@ -1,13 +1,14 @@
 import { mdiCogOutline, mdiDotsVertical, mdiImport, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
-import { Checkbox, ListItemText } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
 import Collapse from '@mui/material/Collapse';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
@@ -22,7 +23,7 @@ import { TelemetryTableI18N } from 'constants/i18n';
 import { getSurveySessionStorageKey, SIMS_TELEMETRY_HIDDEN_COLUMNS } from 'constants/session-storage';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import { TelemetryTableContext } from 'contexts/telemetryTableContext';
+import { useTelemetryTableContext } from 'hooks/useContext';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { pluralize as p } from 'utils/Utils';
@@ -35,10 +36,12 @@ const ManualTelemetryTableContainer = () => {
   const [contextMenuAnchorEl, setContextMenuAnchorEl] = useState<Element | null>(null);
   const [columnVisibilityMenuAnchorEl, setColumnVisibilityMenuAnchorEl] = useState<Element | null>(null);
   const [hiddenFields, setHiddenFields] = useState<string[]>([]);
+
   const dialogContext = useContext(DialogContext);
-  const telemetryTableContext = useContext(TelemetryTableContext);
+  const telemetryTableContext = useTelemetryTableContext();
   const surveyContext = useContext(SurveyContext);
   const telemetryApi = useTelemetryApi();
+
   const { hasUnsavedChanges, validationModel, _muiDataGridApiRef } = telemetryTableContext;
 
   const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
@@ -166,6 +169,7 @@ const ManualTelemetryTableContainer = () => {
         dialogTitle="Import Telemetry CSV"
         onClose={() => setShowImportDialog(false)}
         onUpload={handleFileImport}
+        uploadButtonLabel="Import"
         FileUploadProps={{
           dropZoneProps: { maxNumFiles: 1, acceptedFileExtensions: '.csv' },
           status: UploadFileStatus.STAGED

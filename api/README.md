@@ -4,24 +4,24 @@
 
 | Technology | Version | Website                | Description          |
 | ---------- | ------- | ---------------------- | -------------------- |
-| node       | 14.x.x  | https://nodejs.org/en/ | JavaScript Runtime   |
-| npm        | 6.x.x   | https://www.npmjs.com/ | Node Package Manager |
+| node       | 18.x.x  | https://nodejs.org/en/ | JavaScript Runtime   |
+| npm        | 10.x.x  | https://www.npmjs.com/ | Node Package Manager |
 
 <br />
 
 # API Specification
 
-The root API schema is defined in `./src/openapi/api.ts`.
+The root API schema is defined in `./src/openapi/root-api-doc.ts`.
 
 If this project is running in docker you can view the beautified api docs at: `http://localhost:6100/api-docs/`.
 
 - The raw api-docs are available at: `http://localhost:6100/raw-api-docs/`.
 
-This project uses npm package `express-openapi` via `./app.ts` to automatically generate the express server and its routes, based on the contents of the `./src/openapi/api.ts` and the `./src/path/` content.
+This project uses npm package `express-openapi` via `./app.ts` to automatically generate the express server and its routes, based on the contents of the `./src/openapi/root-api-doc.ts` and the `./src/path/*` content.
 
 - The endpoint paths are defined based on the folder structure of the `./src/paths/` folder.
   - Example: `<host>/api/activity` is handled by `./src/paths/activity.ts`
-  - Example: `<host>/api/activity/{activityId} ` is handled by `./src/paths/activity/{activityId}.ts`
+  - Example: `<host>/api/activity/23 ` is handled by `./src/paths/activity/{activityId}.ts`
 
 Recommend reviewing the [Open API Specification](https://swagger.io/docs/specification/about/) before making any changes to any of the API schemas.
 
@@ -70,6 +70,12 @@ npm run lint-fix
 npm run format-fix
 ```
 
+For convenience, you can also both lint-fix and format-fix in one command.
+
+```
+npm run fix
+```
+
 <br />
 
 # Logging
@@ -80,7 +86,7 @@ A centralized logger has been created (see `api/utils/logger.ts`).
 
 The loggers log level can be configured via an environment variable: `LOG_LEVEL`
 
-Set this variable to one of: `error`, `warn`, `info`, `debug`
+Set this variable to one of: `silent`, `error`, `warn`, `info`, `debug`, `silly`
 
 Default value: `info`
 
@@ -100,18 +106,8 @@ log.warn({ label: 'functionName', message: 'Used when logging soft errors. For e
 log.info({ label: 'functionName', message: 'General log messages about the state of the application' });
 
 log.debug({ label: 'functionName', message: 'Useful for logging objects and other developer data', aJSONObjectToPrint, anotherObject);
-or
+
 log.debug({ label: 'functionName', message: 'Useful for logging objects and other developer data', someLabel: aJSONObjectToPrint, anotherObject });
-```
-
-Supported log properties:
-
-```
-- timestamp: overwrite the default time of `now` with your own timestamp.
-- level: overwrite the default level (via log.<level>()) with your own level string.
-- label: adds an additional label to the log message.
-- message: a log message.
-- <anyObject>: any additional object properties will be JSON.stringify'd and appended to the log message.
 ```
 
 <br />
@@ -129,12 +125,6 @@ Supported log properties:
 
   ```
   npm test
-  ```
-
-- Run the unit tests in watch mode (will re-run the tests on code changes).
-
-  ```
-  npm run test-watch
   ```
 
 - Run the unit test coverage report
@@ -157,10 +147,3 @@ See [Mocha](https://mochajs.org) for documentation on writing tests.
 This project uses [Keycloak](https://www.keycloak.org/) to handle authentication.
 
 # Troubleshooting and Known Issues
-
-### Observations validation
-
-There is a known issue with `JSONPath from 'jsonpath-plus'` upgraded from 'jsonpath'. The issue is due to the difference between qoutation marks ["", ''] during the validation schema parser. The issue may be resolved and is updated to using "" in all locations.
-
-- `api\src\utils\media\validation\validation-schema-parser.ts`
-- https://github.com/JSONPath-Plus/JSONPath/issues/160

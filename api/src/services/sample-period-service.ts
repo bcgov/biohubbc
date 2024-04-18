@@ -2,6 +2,7 @@ import { IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/http-error';
 import {
   InsertSamplePeriodRecord,
+  SamplePeriodHierarchyIds,
   SamplePeriodRecord,
   SamplePeriodRepository,
   UpdateSamplePeriodRecord
@@ -40,6 +41,18 @@ export class SamplePeriodService extends DBService {
   }
 
   /**
+   * Gets the full hierarchy of sample_site_id, sample_method_id, and sample_period_id for a given sample period id.
+   *
+   * @param {number} surveyId
+   * @param {number} surveySamplePeriodId
+   * @return {*}  {Promise<SamplePeriodHierarchyIds>}
+   * @memberof SamplePeriodService
+   */
+  async getSamplePeriodHierarchyIds(surveyId: number, surveySamplePeriodId: number): Promise<SamplePeriodHierarchyIds> {
+    return this.samplePeriodRepository.getSamplePeriodHierarchyIds(surveyId, surveySamplePeriodId);
+  }
+
+  /**
    * Deletes a survey Sample Period.
    *
    * @param {number} surveyId
@@ -58,8 +71,8 @@ export class SamplePeriodService extends DBService {
    * @returns {*} {Promise<SamplePeriodRecord[]>} an array of promises for the deleted periods
    * @memberof SamplePeriodService
    */
-  async deleteSamplePeriodRecords(periodsToDelete: number[]): Promise<SamplePeriodRecord[]> {
-    return this.samplePeriodRepository.deleteSamplePeriods(periodsToDelete);
+  async deleteSamplePeriodRecords(surveyId: number, periodsToDelete: number[]): Promise<SamplePeriodRecord[]> {
+    return this.samplePeriodRepository.deleteSamplePeriods(surveyId, periodsToDelete);
   }
 
   /**
@@ -121,7 +134,7 @@ export class SamplePeriodService extends DBService {
         throw new HTTP400('Cannot delete a sample period that is associated with an observation');
       }
 
-      await this.deleteSamplePeriodRecords(existingSamplePeriodIds);
+      await this.deleteSamplePeriodRecords(surveyId, existingSamplePeriodIds);
     }
   }
 }

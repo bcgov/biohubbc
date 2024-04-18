@@ -133,6 +133,9 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {File} file
+   * @param {{
+   *       samplingPeriodId: number;
+   *     }} [options]
    * @param {CancelTokenSource} [cancelTokenSource]
    * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<{ submissionId: number }>}
@@ -153,7 +156,6 @@ const useObservationApi = (axios: AxiosInstance) => {
       formData,
       {
         cancelToken: cancelTokenSource?.token,
-
         onUploadProgress: onProgress
       }
     );
@@ -167,11 +169,22 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number} submissionId
-   * @return {*}
+   * @param {{
+   *       surveySamplePeriodId?: number;
+   *     }} [options]
+   * @return {*}  {Promise<void>}
    */
-  const processCsvSubmission = async (projectId: number, surveyId: number, submissionId: number) => {
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/observations/process`, {
-      observation_submission_id: submissionId
+  const processCsvSubmission = async (
+    projectId: number,
+    surveyId: number,
+    submissionId: number,
+    options?: {
+      surveySamplePeriodId?: number;
+    }
+  ): Promise<void> => {
+    const { data } = await axios.post<void>(`/api/project/${projectId}/survey/${surveyId}/observations/process`, {
+      observation_submission_id: submissionId,
+      options
     });
 
     return data;

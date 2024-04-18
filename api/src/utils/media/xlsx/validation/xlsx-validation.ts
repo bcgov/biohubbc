@@ -27,11 +27,8 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
     if (!config) {
       return csvWorkbook;
     }
-    const {
-      child_worksheet_name,
-      parent_worksheet_name,
-      column_names
-    } = config.workbook_parent_child_key_match_validator;
+    const { child_worksheet_name, parent_worksheet_name, column_names } =
+      config.workbook_parent_child_key_match_validator;
 
     const parentWorksheet = csvWorkbook.worksheets[parent_worksheet_name];
     const childWorksheet = csvWorkbook.worksheets[child_worksheet_name];
@@ -65,7 +62,7 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
           // Remove empty column values
           .filter(Boolean)
 
-          // Escape possible column deliminator occurrences from column value string
+          // Escape possible column deliminator instances from column value string
           // Trim whitespace
           .map(safeTrim)
 

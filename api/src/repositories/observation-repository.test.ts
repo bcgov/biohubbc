@@ -16,7 +16,7 @@ describe('ObservationRepository', () => {
 
   describe('deleteObservationsNotInArray', () => {
     it('should delete all records except for the ids in the provided array', async () => {
-      const mockQueryResponse = ({ rows: [], rowCount: 3 } as unknown) as QueryResult<any>;
+      const mockQueryResponse = { rows: [], rowCount: 3 } as unknown as QueryResult<any>;
 
       const mockDBConnection = getMockDBConnection({
         sql: sinon.stub().resolves(mockQueryResponse)
@@ -38,7 +38,7 @@ describe('ObservationRepository', () => {
     });
 
     it('should delete all records when provided array of ids is empty', async () => {
-      const mockQueryResponse = ({ rows: [], rowCount: 3 } as unknown) as QueryResult<any>;
+      const mockQueryResponse = { rows: [], rowCount: 3 } as unknown as QueryResult<any>;
 
       const mockDBConnection = getMockDBConnection({
         sql: sinon.stub().resolves(mockQueryResponse)
@@ -64,7 +64,7 @@ describe('ObservationRepository', () => {
   describe('insertUpdateSurveyObservations', () => {
     it('should upsert records and return the affected rows', async () => {
       const mockRows = [{}, {}];
-      const mockQueryResponse = ({ rows: mockRows, rowCount: 2 } as unknown) as QueryResult<any>;
+      const mockQueryResponse = { rows: mockRows, rowCount: 2 } as unknown as QueryResult<any>;
 
       const mockDBConnection = getMockDBConnection({
         sql: sinon.stub().resolves(mockQueryResponse)
@@ -105,7 +105,7 @@ describe('ObservationRepository', () => {
   describe('getSurveyObservationsWithSamplingDataWithAttributesData', () => {
     it('get all observations for a survey when some observation records exist', async () => {
       const mockRows = [{}, {}];
-      const mockQueryResponse = ({ rows: mockRows, rowCount: 2 } as unknown) as QueryResult<any>;
+      const mockQueryResponse = { rows: mockRows, rowCount: 2 } as unknown as QueryResult<any>;
 
       const mockDBConnection = getMockDBConnection({
         knex: sinon.stub().resolves(mockQueryResponse)
@@ -122,7 +122,7 @@ describe('ObservationRepository', () => {
 
     it('get all observations for a survey when no observation records exist', async () => {
       const mockRows: any[] = [];
-      const mockQueryResponse = ({ rows: mockRows, rowCount: 2 } as unknown) as QueryResult<any>;
+      const mockQueryResponse = { rows: mockRows, rowCount: 2 } as unknown as QueryResult<any>;
 
       const mockDBConnection = getMockDBConnection({
         knex: sinon.stub().resolves(mockQueryResponse)
@@ -140,7 +140,7 @@ describe('ObservationRepository', () => {
 
   describe('getSurveyObservationCount', () => {
     it('gets the count of survey observations for the given survey', async () => {
-      const mockQueryResponse = ({ rows: [{ rowCount: 1 }] } as unknown) as QueryResult<any>;
+      const mockQueryResponse = { rows: [{ rowCount: 1 }] } as unknown as QueryResult<any>;
 
       const mockDBConnection = getMockDBConnection({
         knex: sinon.stub().resolves(mockQueryResponse)
@@ -156,7 +156,7 @@ describe('ObservationRepository', () => {
 
   describe('insertSurveyObservationSubmission', () => {
     it('inserts a survey observation submission record', async () => {
-      const mockQueryResponse = ({ rows: [1] } as unknown) as QueryResult<any>;
+      const mockQueryResponse = { rows: [1] } as unknown as QueryResult<any>;
 
       const mockDBConnection = getMockDBConnection({
         sql: sinon.stub().resolves(mockQueryResponse)
@@ -177,7 +177,7 @@ describe('ObservationRepository', () => {
 
   describe('getNextSubmissionId', () => {
     it('gets the next submission id', async () => {
-      const mockQueryResponse = ({ rows: [{ submission_id: 1 }], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockQueryResponse = { rows: [{ submission_id: 1 }], rowCount: 1 } as unknown as QueryResult<any>;
 
       const mockDBConnection = getMockDBConnection({
         sql: sinon.stub().resolves(mockQueryResponse)
@@ -193,7 +193,7 @@ describe('ObservationRepository', () => {
 
   describe('getObservationSubmissionById', () => {
     it('gets a submission by ID', async () => {
-      const mockQueryResponse = ({ rows: [{ submission_id: 5 }], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockQueryResponse = { rows: [{ submission_id: 5 }], rowCount: 1 } as unknown as QueryResult<any>;
 
       const mockDBConnection = getMockDBConnection({
         knex: sinon.stub().resolves(mockQueryResponse)
@@ -207,7 +207,7 @@ describe('ObservationRepository', () => {
     });
 
     it('throws an error when no submission is found', async () => {
-      const mockQueryResponse = ({ rows: [], rowCount: 0 } as unknown) as QueryResult<any>;
+      const mockQueryResponse = { rows: [], rowCount: 0 } as unknown as QueryResult<any>;
 
       const mockDBConnection = getMockDBConnection({
         knex: sinon.stub().resolves(mockQueryResponse)
@@ -226,7 +226,7 @@ describe('ObservationRepository', () => {
 
   describe('getObservationsCountBySampleSiteIds', () => {
     it('gets the observation count by sample site ids', async () => {
-      const mockQueryResponse = ({ rows: [{ observation_count: 50 }], rowCount: 1 } as unknown) as QueryResult<any>;
+      const mockQueryResponse = { rows: [{ observation_count: 50 }], rowCount: 1 } as unknown as QueryResult<any>;
 
       const mockDBConnection = getMockDBConnection({
         knex: sinon.stub().resolves(mockQueryResponse)

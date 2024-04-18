@@ -4,11 +4,10 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { SYSTEM_ROLE } from '../../constants/roles';
-import { COMPLETION_STATUS } from '../../constants/status';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
 import * as authorization from '../../request-handlers/security/authorization';
-import { ProjectService } from '../../services/project-service';
+import { COMPLETION_STATUS, ProjectService } from '../../services/project-service';
 import { getMockDBConnection } from '../../__mocks__/db';
 import * as list from './list';
 
@@ -19,7 +18,7 @@ describe('list', () => {
     const ajv = new Ajv();
 
     it('is valid openapi v3 schema', () => {
-      expect(ajv.validateSchema((list.GET.apiDoc as unknown) as object)).to.be.true;
+      expect(ajv.validateSchema(list.GET.apiDoc as unknown as object)).to.be.true;
     });
   });
 
@@ -67,7 +66,7 @@ describe('list', () => {
 
       const result = list.getProjectList();
 
-      await result(sampleReq, sampleRes as any, (null as unknown) as any);
+      await result(sampleReq, sampleRes as any, null as unknown as any);
 
       expect(actualResult).to.eql({
         pagination: {
@@ -106,7 +105,7 @@ describe('list', () => {
 
       const result = list.getProjectList();
 
-      await result(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
+      await result(sampleReq, sampleRes as unknown as any, null as unknown as any);
 
       expect(actualResult).to.eql({
         pagination: {
@@ -142,7 +141,7 @@ describe('list', () => {
       try {
         const requestHandler = list.getProjectList();
 
-        await requestHandler(sampleReq, sampleRes as any, (null as unknown) as any);
+        await requestHandler(sampleReq, sampleRes as any, null as unknown as any);
         expect.fail();
       } catch (actualError) {
         expect(dbConnectionObj.release).to.have.been.called;

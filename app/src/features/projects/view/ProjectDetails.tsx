@@ -1,9 +1,8 @@
-import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
+import useTheme from '@mui/material/styles/useTheme';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import assert from 'assert';
 import { ProjectContext } from 'contexts/projectContext';
 import { useContext } from 'react';
@@ -11,39 +10,43 @@ import GeneralInformation from './components/GeneralInformation';
 import ProjectObjectives from './components/ProjectObjectives';
 import TeamMembers from './components/TeamMember';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  projectMetadata: {
-    '& section + section': {
-      marginTop: theme.spacing(4)
+const useStyles = () => {
+  const theme = useTheme();
+
+  return {
+    projectMetadata: {
+      '& section + section': {
+        marginTop: theme.spacing(4)
+      },
+      '& dt': {
+        flex: '0 0 40%'
+      },
+      '& dd': {
+        flex: '1 1 auto'
+      },
+      '& .MuiListItem-root': {
+        paddingTop: theme.spacing(1.5),
+        paddingBottom: theme.spacing(1.5)
+      },
+      '& .MuiListItem-root:first-of-type': {
+        paddingTop: 0
+      },
+      '& .MuiListItem-root:last-of-type': {
+        paddingBottom: 0
+      }
     },
-    '& dt': {
-      flex: '0 0 40%'
-    },
-    '& dd': {
-      flex: '1 1 auto'
-    },
-    '& .MuiListItem-root': {
-      paddingTop: theme.spacing(1.5),
-      paddingBottom: theme.spacing(1.5)
-    },
-    '& .MuiListItem-root:first-of-type': {
-      paddingTop: 0
-    },
-    '& .MuiListItem-root:last-of-type': {
-      paddingBottom: 0
+    projectMetaSectionHeader: {
+      fontSize: '14px',
+      fontWeight: 700,
+      letterSpacing: '0.02rem',
+      textTransform: 'uppercase',
+      '& + hr': {
+        marginTop: theme.spacing(1.5),
+        marginBottom: theme.spacing(1.5)
+      }
     }
-  },
-  projectMetaSectionHeader: {
-    fontSize: '14px',
-    fontWeight: 700,
-    letterSpacing: '0.02rem',
-    textTransform: 'uppercase',
-    '& + hr': {
-      marginTop: theme.spacing(1.5),
-      marginBottom: theme.spacing(1.5)
-    }
-  }
-}));
+  };
+};
 
 /**
  * Project details content for a project.
@@ -65,9 +68,9 @@ const ProjectDetails = () => {
         </Typography>
       </Toolbar>
       <Divider></Divider>
-      <Box p={3} className={classes.projectMetadata}>
+      <Box p={3} sx={classes.projectMetadata}>
         <Box component="section">
-          <Typography component="h3" className={classes.projectMetaSectionHeader}>
+          <Typography component="h3" sx={classes.projectMetaSectionHeader}>
             Project Objectives
           </Typography>
           <Divider></Divider>
@@ -75,7 +78,7 @@ const ProjectDetails = () => {
         </Box>
 
         <Box component="section">
-          <Typography component="h3" className={classes.projectMetaSectionHeader}>
+          <Typography component="h3" sx={classes.projectMetaSectionHeader}>
             General Information
           </Typography>
           <Divider></Divider>
@@ -83,7 +86,7 @@ const ProjectDetails = () => {
         </Box>
 
         <Box component="section">
-          <Typography component="h4" className={classes.projectMetaSectionHeader}>
+          <Typography component="h4" sx={classes.projectMetaSectionHeader}>
             Team Members
           </Typography>
           <Divider></Divider>
@@ -92,7 +95,7 @@ const ProjectDetails = () => {
 
         {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-162) Commenting out IUCN form (view) temporarily, while its decided if IUCN information is desired */}
         {/* <Box component="section" mb={0}>
-          <Typography component="h4" className={classes.projectMetaSectionHeader}>
+          <Typography component="h4" sx={classes.projectMetaSectionHeader}>
             IUCN Classification
           </Typography>
           <Divider></Divider>

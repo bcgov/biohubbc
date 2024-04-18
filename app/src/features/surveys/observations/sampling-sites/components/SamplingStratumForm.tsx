@@ -1,10 +1,14 @@
 import { mdiClose, mdiMagnify } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Card, CardHeader, Collapse, IconButton, Typography } from '@mui/material';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import Collapse from '@mui/material/Collapse';
 import { grey } from '@mui/material/colors';
+import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useFormikContext } from 'formik';
 import { IGetSurveyStratum } from 'interfaces/useSurveyApi.interface';
@@ -26,7 +30,7 @@ const SamplingStratumForm: React.FC = () => {
     setFieldValue(`stratums[${values.stratums.length}]`, stratum);
   };
 
-  const handleRemoveItem = (stratum: IGetSurveyStratum, index: number) => {
+  const handleRemoveItem = (stratum: IGetSurveyStratum) => {
     setFieldValue(
       `stratums`,
       values.stratums.filter((existing) => existing.survey_stratum_id !== stratum.survey_stratum_id)
@@ -121,11 +125,7 @@ const SamplingStratumForm: React.FC = () => {
                 }}>
                 <CardHeader
                   action={
-                    <IconButton
-                      onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                        handleRemoveItem(item, index)
-                      }
-                      aria-label="settings">
+                    <IconButton onClick={() => handleRemoveItem(item)} aria-label="settings">
                       <Icon path={mdiClose} size={1} />
                     </IconButton>
                   }

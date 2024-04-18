@@ -1,5 +1,6 @@
 import { mdiBroadcast, mdiEye } from '@mdi/js';
-import { Box, Paper } from '@mui/material';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TelemetryDataContext } from 'contexts/telemetryDataContext';
@@ -9,7 +10,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useObservationsContext, useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { ITelemetry } from 'hooks/useTelemetryApi';
-import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { IAnimalDeployment } from '../../survey-animals/telemetry-device/device';
 import SurveyMap, { ISurveyMapPoint, ISurveyMapPointMetadata, ISurveyMapSupplementaryLayer } from '../../SurveyMap';
@@ -67,7 +68,7 @@ const SurveySpatialData = () => {
    */
   const telemetryPoints: ISurveyMapPoint[] = useMemo(() => {
     const deployments: IAnimalDeployment[] = surveyContext.deploymentDataLoader.data ?? [];
-    const critters: IDetailedCritterWithInternalId[] = surveyContext.critterDataLoader.data ?? [];
+    const critters: ISimpleCritterWithInternalId[] = surveyContext.critterDataLoader.data ?? [];
     const telemetry: ITelemetry[] = telemetryContext.telemetryDataLoader.data ?? [];
 
     return (
@@ -77,7 +78,7 @@ const SurveySpatialData = () => {
         // Combine all critter and deployments data into a flat list
         .reduce(
           (
-            acc: { deployment: IAnimalDeployment; critter: IDetailedCritterWithInternalId; telemetry: ITelemetry }[],
+            acc: { deployment: IAnimalDeployment; critter: ISimpleCritterWithInternalId; telemetry: ITelemetry }[],
             telemetry: ITelemetry
           ) => {
             const deployment = deployments.find(

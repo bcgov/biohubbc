@@ -91,6 +91,7 @@ describe('updateSurveySampleMethod', () => {
     mockReq.body = {
       sampleMethod: {
         method_lookup_id: 1,
+        method_response_metric_id: 1,
         description: 'description'
       }
     };
@@ -166,8 +167,8 @@ describe('deleteSurveySampleMethodRecord', () => {
       const result = delete_survey_sample_method_record.deleteSurveySampleMethodRecord();
       await result(
         { ...sampleReq, params: { ...sampleReq.params, surveySampleMethodId: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
+        null as unknown as any,
+        null as unknown as any
       );
       expect.fail();
     } catch (actualError) {

@@ -3,7 +3,7 @@ import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { default as dayjs } from 'dayjs';
-import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import SurveyAnimalsTableActions from './SurveyAnimalsTableActions';
 import { IAnimalDeployment } from './telemetry-device/device';
 
@@ -16,7 +16,7 @@ interface ISurveyAnimalsTableEntry {
 }
 
 interface ISurveyAnimalsTableProps {
-  animalData: IDetailedCritterWithInternalId[];
+  animalData: ISimpleCritterWithInternalId[];
   deviceData?: IAnimalDeployment[];
   onMenuOpen: (critter_id: number) => void;
   onRemoveCritter: (critter_id: number) => void;
@@ -34,7 +34,6 @@ export const SurveyAnimalsTable = ({
 }: ISurveyAnimalsTableProps): JSX.Element => {
   const animalDeviceData: ISurveyAnimalsTableEntry[] = deviceData
     ? [...animalData] // spreading this prevents this error "TypeError: Cannot assign to read only property '0' of object '[object Array]' in typescript"
-        .sort((a, b) => new Date(a.create_timestamp).getTime() - new Date(b.create_timestamp).getTime()) //This sort needed to avoid arbitrary reordering of the table when it refreshes after adding or editing
         .map((animal) => {
           const deployments = deviceData.filter((device) => device.critter_id === animal.critter_id);
           return {

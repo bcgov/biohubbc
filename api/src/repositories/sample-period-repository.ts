@@ -39,6 +39,16 @@ export const SamplePeriodRecord = z.object({
 export type SamplePeriodRecord = z.infer<typeof SamplePeriodRecord>;
 
 /**
+ * The full hierarchy of sample_* ids for a sample period.
+ */
+export const SamplePeriodHierarchyIds = z.object({
+  survey_sample_period_id: z.number(),
+  survey_sample_method_id: z.number(),
+  survey_sample_site_id: z.number()
+});
+export type SamplePeriodHierarchyIds = z.infer<typeof SamplePeriodHierarchyIds>;
+
+/**
  * Sample Period Repository
  *
  * @export
@@ -63,11 +73,11 @@ export class SamplePeriodRepository extends BaseRepository {
         ssp.*
       FROM
         survey_sample_period ssp
-      JOIN
+      INNER JOIN
         survey_sample_method ssm
       ON
         ssp.survey_sample_method_id = ssm.survey_sample_method_id
-      JOIN
+      INNER JOIN
         survey_sample_site sss
       ON
         ssm.survey_sample_site_id = sss.survey_sample_site_id
@@ -77,7 +87,50 @@ export class SamplePeriodRepository extends BaseRepository {
         sss.survey_id = ${surveyId};`;
 
     const response = await this.connection.sql(sql, SamplePeriodRecord);
+
     return response.rows;
+  }
+
+  /**
+   * Gets the full hierarchy of sample_site, sample_method, and sample_period for a given sample period id.
+   *
+   * @param {number} surveyId
+   * @param {number} surveySamplePeriodId
+   * @return {*}  {Promise<SamplePeriodHierarchyIds>}
+   * @memberof SamplePeriodRepository
+   */
+  async getSamplePeriodHierarchyIds(surveyId: number, surveySamplePeriodId: number): Promise<SamplePeriodHierarchyIds> {
+    const sqlStatement = SQL`
+      SELECT
+        survey_sample_period.survey_sample_period_id,
+        survey_sample_method.survey_sample_method_id,
+        survey_sample_site.survey_sample_site_id
+      FROM
+        survey_sample_period
+      INNER JOIN
+        survey_sample_method
+      ON
+        survey_sample_period.survey_sample_method_id = survey_sample_method.survey_sample_method_id
+      INNER JOIN
+        survey_sample_site
+      ON
+        survey_sample_method.survey_sample_site_id = survey_sample_site.survey_sample_site_id
+      WHERE
+        survey_sample_period.survey_sample_period_id = ${surveySamplePeriodId}
+      AND
+        survey_sample_site.survey_id = ${surveyId};
+    `;
+
+    const response = await this.connection.sql(sqlStatement, SamplePeriodHierarchyIds);
+
+    if (!response.rowCount || response.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to get sample period hierarchy ids', [
+        'SamplePeriodRepository->getSamplePeriodHierarchyIds',
+        'rowCount was != 1, expected rowCount = 1'
+      ]);
+    }
+
+    return response.rows[0];
   }
 
   /**
@@ -90,25 +143,26 @@ export class SamplePeriodRepository extends BaseRepository {
    */
   async updateSamplePeriod(surveyId: number, samplePeriod: UpdateSamplePeriodRecord): Promise<SamplePeriodRecord> {
     const sql = SQL`
-      UPDATE survey_sample_period ssp
-      SET
-        survey_sample_method_id=${samplePeriod.survey_sample_method_id},
-        start_date=${samplePeriod.start_date},
-        end_date=${samplePeriod.end_date},
-        start_time=${samplePeriod.start_time || null},
-        end_time=${samplePeriod.end_time || null}
-      FROM
-          survey_sample_method ssm
-      JOIN
-          survey_sample_site sss ON ssm.survey_sample_site_id = sss.survey_sample_site_id
-      WHERE
-          ssp.survey_sample_method_id = ssm.survey_sample_method_id
-      AND
-          sss.survey_id = ${surveyId}
-      AND
-          ssp.survey_sample_period_id = ${samplePeriod.survey_sample_period_id}
-      RETURNING
-        ssp.*;
+      UPDATE survey_sample_period AS ssp
+    SET
+      survey_sample_method_id = ${samplePeriod.survey_sample_method_id},
+      start_date = ${samplePeriod.start_date},
+      end_date = ${samplePeriod.end_date},
+      start_time = ${samplePeriod.start_time || null},
+      end_time = ${samplePeriod.end_time || null}
+    FROM
+        survey_sample_method AS ssm
+    JOIN
+        survey_sample_site AS sss ON ssm.survey_sample_site_id = sss.survey_sample_site_id
+    WHERE
+        ssp.survey_sample_method_id = ssm.survey_sample_method_id
+    AND
+        ssp.survey_sample_period_id = ${samplePeriod.survey_sample_period_id}
+    AND
+        sss.survey_id = ${surveyId}
+    RETURNING
+      ssp.*;
+
     `;
 
     const response = await this.connection.sql(sql, SamplePeriodRecord);
@@ -186,6 +240,7 @@ export class SamplePeriodRepository extends BaseRepository {
         ssp.survey_sample_period_id = ${surveySamplePeriodId}
       AND
         sss.survey_id = ${surveyId}
+      ;
       `;
 
     const response = await this.connection.sql(sqlStatement, SamplePeriodRecord);
@@ -207,15 +262,18 @@ export class SamplePeriodRepository extends BaseRepository {
    * @returns {*} {Promise<SamplePeriodRecord[]>} an array of promises for the deleted periods
    * @memberof SamplePeriodRepository
    */
-  async deleteSamplePeriods(periodsToDelete: number[]): Promise<SamplePeriodRecord[]> {
+  async deleteSamplePeriods(surveyId: number, periodsToDelete: number[]): Promise<SamplePeriodRecord[]> {
     const knex = getKnex();
 
     const sqlStatement = knex
       .queryBuilder()
       .delete()
-      .from('survey_sample_period')
+      .from('survey_sample_period as ssp')
+      .leftJoin('survey_sample_method as ssm', 'ssm.survey_sample_method_id', 'ssp.survey_sample_method_id')
+      .leftJoin('survey_sample_site as sss', 'sss.survey_sample_site_id', 'ssm.survey_sample_site_id')
       .whereIn('survey_sample_period_id', periodsToDelete)
-      .returning('*');
+      .andWhere('survey_id', surveyId)
+      .returning('ssp.*');
 
     const response = await this.connection.knex(sqlStatement, SamplePeriodRecord);
 
