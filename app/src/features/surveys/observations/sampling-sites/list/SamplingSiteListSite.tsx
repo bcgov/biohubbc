@@ -141,7 +141,7 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
             pt: 2,
             mx: 1.5,
             '& .MuiListItemText-primary': {
-              typography: 'body2',
+              typography: 'body2'
             }
           }}>
           {sampleSite.sample_methods?.map((sampleMethod) => {
