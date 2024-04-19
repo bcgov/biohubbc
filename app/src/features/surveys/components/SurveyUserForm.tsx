@@ -2,7 +2,6 @@ import { mdiMagnify } from '@mdi/js';
 import Icon from '@mdi/react';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
 import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
 import TextField from '@mui/material/TextField';
@@ -16,7 +15,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { ICode } from 'interfaces/useCodesApi.interface';
 import { ICreateSurveyRequest, IGetSurveyParticipant } from 'interfaces/useSurveyApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { alphabetizeObjects } from 'utils/Utils';
 import yup from 'utils/YupSchema';
@@ -42,10 +41,17 @@ const SurveyUserForm = (props: ISurveyUserFormProps) => {
   const { handleSubmit, values, setFieldValue, errors, setErrors } = useFormikContext<ICreateSurveyRequest>();
   const biohubApi = useBiohubApi();
 
-  const searchUserDataLoader = useDataLoader(() => biohubApi.user.searchSystemUser(''));
-  searchUserDataLoader.load();
+  const searchUserDataLoader = useDataLoader((keyword: string) => biohubApi.user.searchSystemUser(keyword));
 
   const [searchText, setSearchText] = useState('');
+
+  const [sortedUsers, setSortedUsers] = useState<ISystemUser[]>([]);
+
+  useEffect(() => {
+    if (searchUserDataLoader.data) {
+      setSortedUsers(alphabetizeObjects(searchUserDataLoader.data, 'display_name'));
+    }
+  }, [searchUserDataLoader.data]);
 
   const handleAddUser = (user: ISystemUser | IGetSurveyParticipant) => {
     setFieldValue(`participants[${values.participants.length}]`, {
@@ -106,11 +112,6 @@ const SurveyUserForm = (props: ISurveyUserFormProps) => {
     return values.participants?.[index]?.survey_job_name || '';
   };
 
-  if (!searchUserDataLoader.data || !searchUserDataLoader.hasLoaded) {
-    // should probably replace this with a skeleton
-    return <CircularProgress className="pageProgress" size={40} />;
-  }
-
   return (
     <form onSubmit={handleSubmit}>
       <Box component="fieldset">
@@ -135,7 +136,7 @@ const SurveyUserForm = (props: ISurveyUserFormProps) => {
           data-testid={'autocomplete-user-role-search'}
           filterSelectedOptions
           noOptionsText="No records found"
-          options={searchText.length > 2 ? alphabetizeObjects(searchUserDataLoader.data, 'display_name') : []}
+          options={sortedUsers}
           filterOptions={(options, state) => {
             const searchFilter = createFilterOptions<ISystemUser>({ ignoreCase: true });
             const unselectedOptions = options.filter(
@@ -150,6 +151,11 @@ const SurveyUserForm = (props: ISurveyUserFormProps) => {
               setSearchText('');
             } else {
               setSearchText(value);
+
+              if (value.length >= 3) {
+                // Only search if the search text is at least 3 characters long
+                searchUserDataLoader.refresh(value);
+              }
             }
           }}
           onChange={(_, option) => {
