@@ -67,8 +67,8 @@ const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
                 )}
               </>
             ) : (
-              <Box mt={1.25}>
-                <Icon path={mdiCalendarRange} size={0.8} color={grey[400]} />
+              <Box mt={0.8}>
+                <Icon path={mdiCalendarRange} size={0.8} color={grey[500]} />
               </Box>
             )}
           </TimelineSeparator>

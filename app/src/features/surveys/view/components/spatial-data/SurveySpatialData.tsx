@@ -256,7 +256,6 @@ const SurveySpatialData = () => {
               />
             ),
             tooltip: <SurveyMapTooltip label="Study Area" />
-            // TooltipProps: { className: classes.popup }
           };
         });
       })
@@ -290,7 +289,6 @@ const SurveySpatialData = () => {
             />
           ),
           tooltip: <SurveyMapTooltip label={'Sampling Site'} />
-          // TooltipProps: { className: classes.popup }
         };
       })
     },

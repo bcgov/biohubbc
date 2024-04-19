@@ -99,6 +99,11 @@ export const SamplingSiteMethodYupSchema = yup.object({
     .min(1, 'At least one time period is required')
 });
 
+/**
+ * Returns a form for editing a sampling method
+ *
+ * @returns
+ */
 const MethodForm = () => {
   const formikProps = useFormikContext<ISurveySampleMethodData>();
   const { values, errors } = formikProps;
