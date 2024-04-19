@@ -53,11 +53,11 @@ const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
           <TimelineSeparator sx={{ width: '15px', my: -0.25 }}>
             {props.samplePeriods.length > 1 ? (
               <>
-                <TimelineDot sx={{ bgcolor: grey[300], ml: 0.5, boxShadow: 'none' }} />
+                <TimelineDot sx={{ bgcolor: grey[400], ml: 0.5, boxShadow: 'none' }} />
                 {index < props.samplePeriods.length - 1 && (
                   <TimelineConnector
                     sx={{
-                      bgcolor: grey[300],
+                      bgcolor: grey[400],
                       position: 'absolute',
                       height: '85%',
                       top: 20,
@@ -89,7 +89,7 @@ const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'center', mx: 1, mt: -0.25 }}>
-                <Icon path={mdiArrowRightThin} size={1} color={grey[400]} />
+                <Icon path={mdiArrowRightThin} size={1} color={grey[500]} />
               </Box>
               <Box flex="1 1 auto">
                 <Typography component="dt" variant="subtitle2" sx={dateSx}>

@@ -4,15 +4,13 @@ export interface IColouredRectangleChipProps extends ChipProps {
   colour: Color;
   label: string | JSX.Element;
   sx?: SxProps;
-  strong?: boolean;
-  inverse?: boolean;
 }
 /**
- * 
- * Returns a stylized MUI chip components
- * 
- * @param props {IColouredRectangleChipProps} 
- * @returns 
+ *
+ * Returns a stylized MUI chip
+ *
+ * @param props {IColouredRectangleChipProps}
+ * @returns
  */
 const ColouredRectangleChip = (props: IColouredRectangleChipProps) => {
   return (
@@ -20,11 +18,11 @@ const ColouredRectangleChip = (props: IColouredRectangleChipProps) => {
       size="small"
       {...props}
       sx={{
-        bgcolor: props.inverse ? props.colour[500] : props.strong ? props.colour[100] : props.colour[50],
+        bgcolor: props.colour[50],
         borderRadius: '5px',
         minWidth: 0,
         '& .MuiChip-label': {
-          color: props.inverse ? props.colour[100] : props.strong ? props.colour[800] : props.colour[600],
+          color: props.colour[700],
           fontWeight: 700,
           fontSize: '0.75rem',
           p: 1

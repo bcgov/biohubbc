@@ -1,11 +1,11 @@
 import { Knex } from 'knex';
 
 /**
- * Create new tables with initial seed data:
+ * Create new tables with initial data:
  * - sign
  *
  * Update existing tables:
- * - Add 'progress' column to Survey table
+ * - Add 'sign' column to subcount table
  *
  * @export
  * @param {Knex} knex
@@ -31,11 +31,11 @@ export async function up(knex: Knex): Promise<void> {
       CONSTRAINT observation_subcount_sign_id_pk PRIMARY KEY (observation_subcount_sign_id)
     );
 
-    COMMENT ON TABLE observation_subcount_sign IS 'This table is intended to store options that users can select for the response metric of a sampling method.';
+    COMMENT ON TABLE observation_subcount_sign IS 'This table is intended to store options that users can select for the sign of a subcount.';
     COMMENT ON COLUMN observation_subcount_sign.observation_subcount_sign_id IS 'Primary key for observation_subcount_sign.';
-    COMMENT ON COLUMN observation_subcount_sign.name IS 'Name of the response metric option.';
-    COMMENT ON COLUMN observation_subcount_sign.description IS 'Description of the response metric option.';
-    COMMENT ON COLUMN observation_subcount_sign.record_end_date IS 'End date of the response metric option.';
+    COMMENT ON COLUMN observation_subcount_sign.name IS 'Name of the sign option.';
+    COMMENT ON COLUMN observation_subcount_sign.description IS 'Description of the sign option.';
+    COMMENT ON COLUMN observation_subcount_sign.record_end_date IS 'End date of the sign option.';
     COMMENT ON COLUMN observation_subcount_sign.create_date IS 'The datetime the record was created.';
     COMMENT ON COLUMN observation_subcount_sign.create_user IS 'The id of the user who created the record as identified in the system user table.';
     COMMENT ON COLUMN observation_subcount_sign.update_date IS 'The datetime the record was updated.';
@@ -51,8 +51,8 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
     -- Modify observation_subcount table to include sign
     ----------------------------------------------------------------------------------------
-    ALTER TABLE observation_subcount ADD COLUMN sign_id INTEGER NOT NULL;
-    COMMENT ON COLUMN observation_subcount.sign_id IS 'Foreign key referencing the response metric id.';
+    ALTER TABLE observation_subcount ADD COLUMN sign_id INTEGER;
+    COMMENT ON COLUMN observation_subcount.sign_id IS 'Foreign key referencing the sign id.';
     ALTER TABLE observation_subcount ADD CONSTRAINT observation_subcount_sign_fk FOREIGN KEY (sign_id) REFERENCES observation_subcount_sign(observation_subcount_sign_id);
     
     ----------------------------------------------------------------------------------------
@@ -62,7 +62,7 @@ export async function up(knex: Knex): Promise<void> {
     VALUES
     (
       'Direct sighting',
-      'Observing the species visually, whether in person or an image.'
+      'Observing the species visually, in person or an image.'
     ),
     (
       'Sound',
@@ -78,7 +78,7 @@ export async function up(knex: Knex): Promise<void> {
     ),
     (
       'Hair',
-      'Detecting the species by finding and visually analyzing hair or fur.'
+      'Detecting the species by visually analyzing hair or fur left by the species.'
     ),
     (
       'DNA',

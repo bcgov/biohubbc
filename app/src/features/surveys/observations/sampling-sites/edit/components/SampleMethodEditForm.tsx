@@ -190,7 +190,7 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                         pb: '12px !important'
                       }}>
                       <Stack gap={2}>
-                        {item.description.length ? (
+                        {item.description ? (
                           <Typography
                             variant="body2"
                             color="textSecondary"

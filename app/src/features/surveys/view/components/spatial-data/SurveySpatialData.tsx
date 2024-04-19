@@ -2,6 +2,7 @@ import { mdiBroadcast, mdiEye } from '@mdi/js';
 import { Box, Paper } from '@mui/material';
 import { IStaticLayer, IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import { SURVEY_MAP_LAYER_COLOURS } from 'constants/spatial';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TelemetryDataContext } from 'contexts/telemetryDataContext';
@@ -33,12 +34,6 @@ const SurveySpatialData = () => {
   const { projectId, surveyId } = useContext(SurveyContext);
 
   const biohubApi = useBiohubApi();
-
-  const OBSERVATIONS_COLOUR = '#db4f4f'; //'#ff5454';
-  const STUDY_AREA_COLOUR = '#e3a82b';
-  const SAMPLING_SITE_COLOUR = '#1f6fb5'; //'#3897eb';
-  const TELEMETRY_COLOUR = '#ff5454';
-  const DEFAULT_COLOUR = '#a7bfd1';
 
   const observationsGeometryDataLoader = useDataLoader(() =>
     biohubApi.observation.getObservationsGeometry(projectId, surveyId)
@@ -215,7 +210,10 @@ const SurveySpatialData = () => {
         return [
           {
             layerName: 'Observations',
-            layerColors: { fillColor: OBSERVATIONS_COLOUR, color: OBSERVATIONS_COLOUR },
+            layerColors: {
+              fillColor: SURVEY_MAP_LAYER_COLOURS.OBSERVATIONS_COLOUR,
+              color: SURVEY_MAP_LAYER_COLOURS.OBSERVATIONS_COLOUR
+            },
             popupRecordTitle: 'Observation Record',
             mapPoints: observationPoints
           }
@@ -224,7 +222,10 @@ const SurveySpatialData = () => {
         return [
           {
             layerName: 'Telemetry',
-            layerColors: { fillColor: TELEMETRY_COLOUR, color: TELEMETRY_COLOUR },
+            layerColors: {
+              fillColor: SURVEY_MAP_LAYER_COLOURS.TELEMETRY_COLOUR,
+              color: SURVEY_MAP_LAYER_COLOURS.TELEMETRY_COLOUR
+            },
             popupRecordTitle: 'Telemetry Record',
             mapPoints: telemetryPoints
           }
@@ -238,7 +239,10 @@ const SurveySpatialData = () => {
   const staticLayers: IStaticLayer[] = [
     {
       layerName: 'Study Areas',
-      layerColors: { color: STUDY_AREA_COLOUR, fillColor: STUDY_AREA_COLOUR },
+      layerColors: {
+        color: SURVEY_MAP_LAYER_COLOURS.STUDY_AREA_COLOUR,
+        fillColor: SURVEY_MAP_LAYER_COLOURS.STUDY_AREA_COLOUR
+      },
       features: studyAreaLocations.flatMap((location) => {
         return location.geojson.map((feature, index) => {
           return {
@@ -259,7 +263,10 @@ const SurveySpatialData = () => {
     },
     {
       layerName: 'Sample Sites',
-      layerColors: { color: SAMPLING_SITE_COLOUR, fillColor: SAMPLING_SITE_COLOUR },
+      layerColors: {
+        color: SURVEY_MAP_LAYER_COLOURS.SAMPLING_SITE_COLOUR,
+        fillColor: SURVEY_MAP_LAYER_COLOURS.SAMPLING_SITE_COLOUR
+      },
       features: sampleSites.map((sampleSite, index) => {
         return {
           key: `${sampleSite.survey_sample_site_id}-${index}`,
@@ -291,8 +298,8 @@ const SurveySpatialData = () => {
       return {
         layerName: supplementaryLayer.layerName,
         layerColors: {
-          fillColor: supplementaryLayer.layerColors?.fillColor || DEFAULT_COLOUR,
-          color: supplementaryLayer.layerColors?.color || DEFAULT_COLOUR
+          fillColor: supplementaryLayer.layerColors?.fillColor || SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
+          color: supplementaryLayer.layerColors?.color || SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR
         },
         features: supplementaryLayer.mapPoints.map((mapPoint: ISurveyMapPoint): IStaticLayerFeature => {
           const isLoading = !mapPointMetadata[mapPoint.key];

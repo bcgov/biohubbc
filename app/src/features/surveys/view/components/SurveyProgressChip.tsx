@@ -1,7 +1,6 @@
 import { Chip, ChipProps, Color } from '@mui/material';
 import { blue, green, grey, purple } from '@mui/material/colors';
-import { CodesContext } from 'contexts/codesContext';
-import { useContext } from 'react';
+import { useCodesContext } from 'hooks/useContext';
 import { getCodesName } from 'utils/Utils';
 
 interface ISurveyProgressChipProps extends ChipProps {
@@ -9,7 +8,7 @@ interface ISurveyProgressChipProps extends ChipProps {
 }
 
 const SurveyProgressChip = (props: ISurveyProgressChipProps) => {
-  const codesContext = useContext(CodesContext);
+  const codesContext = useCodesContext();
 
   const codeName = getCodesName(codesContext.codesDataLoader.data, 'survey_progress', props.progress_id || 0);
 
