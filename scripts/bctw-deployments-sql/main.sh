@@ -6,121 +6,75 @@
 # Author: Mac Deluca
 # Date: April 15, 2024
 
-
-# endpoint for Caribou herd boundaries
+# endpoint for caribou herd boundaries
 BCGW_CARIBOU_FEATURES_ENDPOINT="https://openmaps.gov.bc.ca/geo/pub/wfs?request=GetFeature&service=WFS&version=2.0.0&typeNames=WHSE_WILDLIFE_INVENTORY.GCPB_CARIBOU_POPULATION_SP&outputFormat=json&srsName=EPSG:4326"
 
 # retrieve caribou feature geometries
 if test -f features.json; then
-  # read features from file
+  # if features.json exists read from file
   CARIBOU_FEATURES=$(jq '.' features.json)
 else
-  # retrieve caribou feature geometries and output to file
+  # else retrieve caribou feature geometries and output to file
   CARIBOU_FEATURES=$(curl -s "$BCGW_CARIBOU_FEATURES_ENDPOINT" | jq '.features' > features.json)
 fi
 
-# merge deployments and critters together by critter_id
-JQ_CRITTER_MERGE='[group_by(.critter_id)[]|add]'
-
-# group merged deployments by heard name and year of deployment
-# ie: `Population unit` + `2024-01-01` will be grouped with `Population unit` + `2024-09-09`
-JQ_YEAR_HERD_GROUP_BY='group_by(.unit_name + "|" + (.attachment_start | .[:4]))'
-
-# structure JSON for easier sql formatting
-JQ_FORMAT_JSON='.[] |=
+# 1. merge deployments and critters together by critter_id
+# 2. group merged deployments by caribou herd (unit_name)
+# 3. generate new json object
+STEP_1=$(jq '[group_by(.critter_id)[]|add] | group_by(.unit_name) | .[] |=
   {
-    first_name: "Macgregor",
-    last_name: "Aubertin-Young",
-    email: "Macgregor.Aubertin-Young@gov.bc.ca",
-    user_identifier: "mauberti",
+    herd: .[].unit_name,
+    start_date: min_by(.attachment_start) | .attachment_start,
+    end_date: max_by(.attachment_start) | .attachment_start,
+    surveys: (group_by(.attachment_start | .[:4]) | .[] |=
+      {
+        year: (.[].attachment_start | .[:4]),
+        deployments: (.[] |= {deployment_id, critter_id, attachment_start})
+      })
+  }
+')
+# inject matching caribou boundary (feature) by herd name
+# using file because the features are too large for --argjson
+STEP_2=$(echo $STEP_1 | jq --argfile features features.json 'map(. as $item | . + {feature: ($features | (.[] | select(.properties.HERD_NAME == $item.herd))) })')
 
-    unit_name: .[].unit_name,
-    critter_id: .[].critter_id,
-    caribou_tsn: 180701,
-    deployments: .,
+# structure sql insert statements
+STEP_3=$(echo $STEP_2 | jq '.[] | "
+-- project meta
+WITH p AS (INSERT INTO project (name, objectives, coordinator_first_name, coordinator_last_name, coordinator_email_address, start_date, end_date) VALUES ( $$Caribou - \(.herd) - BCTW Telemetry$$, $$BCTW telemetry deployments for \(.herd) Caribou$$, $$Macgregor$$, $$Aubertin-Young$$, $$Macgregor.Aubertin-Young@gov.bc.ca$$, $$\(.start_date)$$, $$\(.end_date)$$) RETURNING project_id
+), ppp AS (INSERT INTO project_participation (project_id, system_user_id, project_role_id) SELECT project_id, (select system_user_id from system_user where user_identifier = $$mauberti$$), (select project_role_id from project_role where name = $$Coordinator$$) FROM p
+), pp AS (INSERT INTO project_program (project_id, program_id) SELECT project_id, (select program_id from program where name = $$Wildlife$$) FROM p
 
-    project_name: (.[].unit_name + " - Telemetry"),
-    project_role: "Coordinator",
-    project_objectives: ("Telemetry deployments for " + .[].unit_name + " in " + (.[].attachment_start | .[:4])),
-    project_program: "Wildlife",
-    project_start: ((.[].attachment_start | .[:4]) + "-01-01"),
-    project_end: ((.[].attachment_start | .[:4]) + "-12-31"),
+-- survey meta
+)\(. as $project | .surveys | map(", s\(.year) AS (INSERT INTO survey (project_id, name, lead_first_name, lead_last_name, start_date, end_date, progress_id) SELECT project_id, $$Caribou - \(.year) -\($project.herd) - BCTW Telemetry$$, $$Macgregor$$, $$Aubertin-Young$$, $$\($project.start_date)$$, $$\($project.end_date)$$, (select survey_progress_id from survey_progress where name = $$Completed$$) FROM p RETURNING survey_id
+), st\(.year) AS (INSERT INTO survey_type (survey_id, type_id) SELECT survey_id, (select type_id from type where name = $$Monitoring$$) FROM s\(.year)
+), ss\(.year) AS (INSERT INTO study_species (survey_id, is_focal, itis_tsn) SELECT survey_id, true, 180701 FROM s\(.year)
+), sio1\(.year) AS (INSERT INTO survey_intended_outcome (survey_id, intended_outcome_id) SELECT survey_id, (select intended_outcome_id from intended_outcome where name = $$Mortality$$) FROM s\(.year)
+), sio2\(.year) AS (INSERT INTO survey_intended_outcome (survey_id, intended_outcome_id) SELECT survey_id, (select intended_outcome_id from intended_outcome where name = $$Distribution or Range Map$$) FROM s\(.year)
+), sl\(.year) AS (INSERT INTO survey_location (survey_id, name, description, geojson, geography) SELECT survey_id, $$\(.unit_name)$$, $$\(.survey_location_description)$$, $$[\($project.feature)]$$, public.geography(public.ST_GeomFromGeoJSON($$\($project.feature.geometry)$$)) FROM s\(.year)
+
+-- critter + deployment meta
+\(.deployments | map(", critter-\(.critter_id) AS (INSERT INTO critter (survey_id, critterbase_critter_id) SELECT survey_id, $$\(.critter_id
+), deployment-\(.deployment_id) AS (INSERT INTO deployment (critter_id) SELECT critter_id FROM c\(.year)
+") | join("\n"))
+
+)") | join("\n")) SELECT project_id FROM p;"')
 
 
-    survey_name: (.[].unit_name + " " + (.[].attachment_start | .[:4]) + " - telemetry"),
-    survey_type: "Monitoring",
-    survey_start: min_by(.attachment_start) | .attachment_start,
-    survey_end: max_by(.attachment_start) | .attachment_start,
-    survey_progress: "Completed",
-    survey_ecological_var_1: "Mortality",
-    survey_ecological_var_2: "Distribution or Range Map",
-    survey_site_strategy: "Opportunistic",
-    survey_study_area: .[].unit_name,
-    survey_location_description: (.[].unit_name + " herd boundary")
-  }'
+# ), c\(.year) AS (INSERT INTO critter (survey_id, critterbase_critter_id) SELECT survey_id, $$\(.critter_id)$$ FROM s\(.year) RETURNING critter_id
+# ), d\(.year) AS (INSERT INTO deployment (critter_id) SELECT critter_id FROM c\(.year)
 
-# format SIMS sql
-JQ_FORMAT_SQL='.[] | "
-WITH p as(
-  INSERT INTO project (name, objectives, coordinator_first_name, coordinator_last_name, coordinator_email_address, start_date, end_date)
-  VALUES ($$\(.project_name)$$, $$\(.project_objectives)$$, $$\(.first_name)$$, $$\(.last_name)$$, $$\(.email)$$, $$\(.project_start)$$, $$\(.project_end)$$)
-  RETURNING project_id
-), ppp as(
-  INSERT INTO project_participation (project_id, system_user_id, project_role_id)
-  SELECT project_id,
-    (select system_user_id from system_user where user_identifier = $$\(.user_identifier)$$),
-    (select project_role_id from project_role where name = $$\(.project_role)$$)
-  FROM p
-), s as (
-  INSERT INTO survey (project_id, name, lead_first_name, lead_last_name, start_date, end_date, progress_id)
-  SELECT project_id, $$\(.survey_name)$$, $$\(.first_name)$$, $$\(.last_name)$$, $$\(.survey_start)$$, $$\(.survey_end)$$,
-  (select survey_progress_id from survey_progress where name = $$\(.survey_progress)$$)
-  FROM p
-  RETURNING survey_id
-), st as (
-  INSERT INTO survey_type (survey_id, type_id)
-  SELECT survey_id, (select type_id from type where name = $$\(.survey_type)$$)
-  FROM s
-), ss as (
-  INSERT INTO study_species (survey_id, is_focal, itis_tsn)
-  SELECT survey_id, true, $$\(.caribou_tsn)$$
-  FROM s
-), sio1 as (
-  INSERT INTO survey_intended_outcome (survey_id, intended_outcome_id)
-  SELECT survey_id, (select intended_outcome_id from intended_outcome where name = $$\(.survey_ecological_var_1)$$)
-  FROM s
-), sio2 as (
-  INSERT INTO survey_intended_outcome (survey_id, intended_outcome_id)
-  SELECT survey_id, (select intended_outcome_id from intended_outcome where name = $$\(.survey_ecological_var_2)$$)
-  FROM s
-), c as (
-  INSERT INTO critter (survey_id, critterbase_critter_id)
-  SELECT survey_id, $$\(.critter_id)$$ FROM s
-  RETURNING critter_id
-), pp as (
-  INSERT INTO project_program (project_id, program_id)
-  SELECT project_id, (select program_id from program where name = $$\(.project_program)$$)
-  FROM p
-), l as (
-  INSERT INTO survey_location (survey_id, name, description, geojson, geography)
-  SELECT survey_id, $$\(.unit_name)$$, $$\(.survey_location_description)$$, $$[\(.feature)]$$,
-    public.geography(public.ST_GeomFromGeoJSON($$\(.feature.geometry)$$))
-  FROM s
-)
-INSERT INTO deployment (critter_id, bctw_deployment_id)
-VALUES
-\(.deployments | map("((select critter_id from c), $$\(.deployment_id)$$)") | join(",\n"));
+#echo $STEP_1 | jq
+#echo $STEP_2 | jq
+echo $STEP_3 | jq -r
 
-"'
-#public.geography(public.ST_Force2D(public.ST_SetSRID(public.ST_Force2D(public.ST_GeomFromGeoJSON($$\(.feature.geometry)$$)), 4326)))
-# merge caribou geometry features with formatted JSON by unit_name
-JQ_MERGE_FEATURES_WITH_DEPLOYMENTS='map(. as $item | . + {feature: ($features | (.[] | select(.properties.HERD_NAME == $item.unit_name))) })'
-
-# condense all filters into single var
-JQ_FILTERS="$JQ_CRITTER_MERGE | $JQ_YEAR_HERD_GROUP_BY | $JQ_FORMAT_JSON | $JQ_MERGE_FEATURES_WITH_DEPLOYMENTS"
-
-# generate JSON from filters and inject features.json file
-JSON=$(jq "$JQ_FILTERS" --argfile features features.json)
-
-# output SQL to stdout
-echo $JSON | jq -r "$JQ_FORMAT_SQL"
+# # merge caribou geometry features with formatted JSON by unit_name
+# JQ_MERGE_FEATURES_WITH_DEPLOYMENTS='map(. as $item | . + {feature: ($features | (.[] | select(.properties.HERD_NAME == $item.unit_name))) })'
+#
+# # condense all filters into single var
+# JQ_FILTERS="$JQ_CRITTER_MERGE | $JQ_YEAR_HERD_GROUP_BY | $JQ_FORMAT_JSON | $JQ_MERGE_FEATURES_WITH_DEPLOYMENTS"
+#
+# # generate JSON from filters and inject features.json file
+# JSON=$(jq "$JQ_FILTERS" --argfile features features.json)
+#
+# # output SQL to stdout
+# echo $JSON | jq -r "$JQ_FORMAT_SQL"

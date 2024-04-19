@@ -2,22 +2,26 @@
 	{
 		"deployment_id" : "9f0e9eb5-bd6b-417e-a81d-58ac53198e79",
 		"critter_id" : "78052eee-2156-4d23-843b-a821c86cccdd",
-    "attachment_start": "2025-01-01"
+    "attachment_start": "2025-01-01",
+    "attachment_end": "2026-01-01"
 	},
 	{
 		"deployment_id" : "0f0e9eb5-bd6b-417e-a81d-58ac53198e79",
 		"critter_id" : "78052eee-2156-4d23-843b-a821c86cccdd",
-    "attachment_start": "2025-09-01"
+    "attachment_start": "2025-09-01",
+    "attachment_end": "2027-01-01"
 	},
 	{
 		"deployment_id" : "10bff477-396d-4f25-b5a9-6cb2c7df0f40",
 		"critter_id" : "3c054312-19f8-4e60-b8f1-878c26b72687",
-    "attachment_start": "2025-03-01"
+    "attachment_start": "2025-03-01",
+    "attachment_end": "2028-01-01"
 	},
 	{
 		"deployment_id" : "d9a0aa17-51a5-4143-9329-5c7c5669f0fa",
 		"critter_id" : "23e8e62f-a3ab-46a8-8ec7-3c4a04a74130",
-    "attachment_start": "2022-03-01"
+    "attachment_start": "2024-09-01",
+    "attachment_end": "2029-01-01"
 	},
 	{
 		"name" : "barry",
