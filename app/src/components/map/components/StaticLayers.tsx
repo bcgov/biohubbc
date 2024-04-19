@@ -35,6 +35,12 @@ export interface IStaticLayersProps {
   layers: IStaticLayer[];
 }
 
+/**
+ * Returns static map layers to be displayed in leaflet
+ *
+ * @param props {PropsWithChildren<IStaticLayersProps>}
+ * @returns
+ */
 const StaticLayers = (props: PropsWithChildren<IStaticLayersProps>) => {
   const layerControls: ReactElement[] = useMemo(
     () =>

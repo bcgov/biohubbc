@@ -1,9 +1,8 @@
-import { Chip, ChipProps, Color, SxProps } from '@mui/material';
+import { Chip, ChipProps, Color } from '@mui/material';
 
 export interface IColouredRectangleChipProps extends ChipProps {
   colour: Color;
   label: string | JSX.Element;
-  sx?: SxProps;
 }
 /**
  *
@@ -26,8 +25,7 @@ const ColouredRectangleChip = (props: IColouredRectangleChipProps) => {
           fontWeight: 700,
           fontSize: '0.75rem',
           p: 1
-        },
-        ...props.sx
+        }
       }}
     />
   );

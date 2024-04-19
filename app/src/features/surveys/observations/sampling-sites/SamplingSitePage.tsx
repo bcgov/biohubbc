@@ -147,7 +147,6 @@ const SamplingSitePage = () => {
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
-
       <Formik
         innerRef={formikRef}
         initialValues={{

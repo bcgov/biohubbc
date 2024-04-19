@@ -7,11 +7,15 @@ import { getCodesName } from 'utils/Utils';
 
 interface ISamplingSiteMethodResponseMetricChipProps {
   method_response_metric_id: number;
-  strong?: boolean;
-  inverse?: boolean;
   sx?: SxProps;
 }
 
+/**
+ * Returns a stylized version of ColouredRectangleCHip for displaying Sampling Site Response Metrics
+ *
+ * @param props {ISamplingSiteMethodResponseMetricChipProps}
+ * @returns
+ */
 const SamplingSiteMethodResponseMetricChip = (props: ISamplingSiteMethodResponseMetricChipProps) => {
   const codesContext = useContext(CodesContext);
 

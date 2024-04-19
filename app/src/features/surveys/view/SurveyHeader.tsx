@@ -1,5 +1,6 @@
 import { mdiCalendarRange, mdiChevronDown, mdiCogOutline, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Box } from '@mui/material';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -27,7 +28,7 @@ import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
-import SurveyProgressChip from './components/SurveyProgressChip';
+import SurveyProgressChip from '../components/SurveyProgressChip';
 
 /**
  * Survey header for a single-survey view.
@@ -152,8 +153,9 @@ const SurveyHeader = () => {
                 surveyWithDetails.surveyData.survey_details.end_date
               )}
             </Typography>
-
-            <SurveyProgressChip sx={{ mx: 1 }} progress_id={surveyWithDetails.surveyData.survey_details.progress_id} />
+            <Box ml={1}>
+              <SurveyProgressChip progress_id={surveyWithDetails.surveyData.survey_details.progress_id} />
+            </Box>
           </Stack>
         }
         buttonJSX={

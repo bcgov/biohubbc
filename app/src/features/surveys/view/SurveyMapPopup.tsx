@@ -8,6 +8,12 @@ interface ISurveyMapPopupProps {
   metadata: ISurveyMapPointMetadata[];
 }
 
+/**
+ * Returns a popup component for displaying information about a leaflet map layer upon being clicked
+ *
+ * @param props {ISurveyMapPopupProps}
+ * @returns
+ */
 const SurveyMapPopup = (props: ISurveyMapPopupProps) => {
   return (
     <Box>

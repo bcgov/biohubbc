@@ -158,7 +158,6 @@ const SamplingMethodForm = () => {
                         {item.method_response_metric_id && (
                           <SamplingSiteMethodResponseMetricChip
                             sx={{ mt: -0.5 }}
-                            inverse
                             method_response_metric_id={item.method_response_metric_id}
                           />
                         )}

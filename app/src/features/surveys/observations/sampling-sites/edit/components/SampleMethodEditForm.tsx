@@ -33,6 +33,12 @@ export interface SampleMethodEditFormProps {
   name: string;
 }
 
+/**
+ * Returns a form for editing a sampling method
+ *
+ * @param props {SampleMethodEditFormProps}
+ * @returns
+ */
 const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
   const { name } = props;
 
@@ -168,7 +174,6 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                           {item.method_response_metric_id && (
                             <SamplingSiteMethodResponseMetricChip
                               sx={{ mt: -0.5 }}
-                              inverse
                               method_response_metric_id={item.method_response_metric_id}
                             />
                           )}
