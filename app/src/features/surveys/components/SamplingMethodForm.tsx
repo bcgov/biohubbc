@@ -23,7 +23,6 @@ import { useFormikContext } from 'formik';
 import { useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { getCodesName } from 'utils/Utils';
-import SamplingSiteMethodResponseMetricChip from '../observations/sampling-sites/components/SamplingSiteMethodResponseMetricChip';
 import SamplingSiteListPeriod from '../observations/sampling-sites/list/SamplingSiteListPeriod';
 import { ICreateSamplingSiteRequest } from '../observations/sampling-sites/SamplingSitePage';
 import CreateSamplingMethod from './CreateSamplingMethod';
@@ -148,19 +147,20 @@ const SamplingMethodForm = () => {
                   sx={{
                     background: grey[100],
                     '& .MuiCardHeader-root': {
-                      pb: 0.5
+                      pb: 1
                     }
                   }}>
                   <CardHeader
                     title={
                       <>
                         {getCodesName(codesContext.codesDataLoader.data, 'sample_methods', item.method_lookup_id || 0)}
-                        {item.method_response_metric_id && (
-                          <SamplingSiteMethodResponseMetricChip
-                            sx={{ mt: -0.5 }}
-                            method_response_metric_id={item.method_response_metric_id}
-                          />
-                        )}
+                        <Typography component="span" variant="body2" color="textSecondary" ml={1}>
+                          {getCodesName(
+                            codesContext.codesDataLoader.data,
+                            'method_response_metrics',
+                            item.method_response_metric_id || 0
+                          )}
+                        </Typography>
                       </>
                     }
                     action={
@@ -179,7 +179,7 @@ const SamplingMethodForm = () => {
                       pb: '6px !important'
                     }}>
                     <Stack gap={2}>
-                      {item.description.length ? (
+                      {item.description && (
                         <Typography
                           variant="body2"
                           color="textSecondary"
@@ -192,21 +192,6 @@ const SamplingMethodForm = () => {
                             textOverflow: 'ellipsis'
                           }}>
                           {item.description}
-                        </Typography>
-                      ) : (
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color: grey[400],
-                            display: '-webkit-box',
-                            WebkitLineClamp: '2',
-                            WebkitBoxOrient: 'vertical',
-                            maxWidth: '92ch',
-
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis'
-                          }}>
-                          No description
                         </Typography>
                       )}
                       <Box>

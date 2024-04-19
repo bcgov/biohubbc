@@ -459,7 +459,7 @@ POST.apiDoc = {
                     nullable: true
                   },
                   create_user: {
-                    type: 'number',
+                    type: 'integer',
                     nullable: true
                   },
                   update_date: {
@@ -467,7 +467,7 @@ POST.apiDoc = {
                     nullable: true
                   },
                   update_user: {
-                    type: 'number',
+                    type: 'integer',
                     nullable: true
                   },
                   revision_count: {
@@ -503,7 +503,7 @@ POST.apiDoc = {
                     nullable: true
                   },
                   create_user: {
-                    type: 'number',
+                    type: 'integer',
                     nullable: true
                   },
                   update_date: {
@@ -511,7 +511,7 @@ POST.apiDoc = {
                     nullable: true
                   },
                   update_user: {
-                    type: 'number',
+                    type: 'integer',
                     nullable: true
                   },
                   revision_count: {

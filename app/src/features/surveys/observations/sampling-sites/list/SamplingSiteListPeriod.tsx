@@ -50,7 +50,7 @@ const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
             p: 0
           }}
           key={`${samplePeriod.survey_sample_period_id}-${index}`}>
-          <TimelineSeparator sx={{ width: '15px', my: -0.25 }}>
+          <TimelineSeparator sx={{ width: '20px', my: -0.25 }}>
             {props.samplePeriods.length > 1 ? (
               <>
                 <TimelineDot sx={{ bgcolor: grey[400], ml: 0.5, boxShadow: 'none' }} />

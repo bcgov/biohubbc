@@ -5,15 +5,17 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
+import { blue } from '@mui/material/colors';
 import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { IStaticLayer } from 'components/map/components/StaticLayers';
 import { SamplingSiteListMethod } from 'features/surveys/observations/sampling-sites/list/SamplingSiteListMethod';
+import SurveyMap from 'features/surveys/view/SurveyMap';
 import { IGetSampleLocationDetails } from 'interfaces/useSurveyApi.interface';
 import SamplingStratumChips from '../edit/components/SamplingStratumChips';
-import SamplingSiteInsetMap from './map/SamplingSiteInsetMap';
 
 export interface ISamplingSiteListSiteProps {
   sampleSite: IGetSampleLocationDetails;
@@ -30,6 +32,19 @@ export interface ISamplingSiteListSiteProps {
  */
 export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
   const { sampleSite, isChecked, handleSampleSiteMenuClick, handleCheckboxChange } = props;
+
+  const staticLayers: IStaticLayer[] = [
+    {
+      layerName: 'Sample Sites',
+      layerColors: { color: blue[500], fillColor: blue[500] },
+      features: [
+        {
+          key: sampleSite.survey_sample_site_id,
+          geoJSON: sampleSite.geojson
+        }
+      ]
+    }
+  ];
 
   return (
     <Accordion
@@ -154,7 +169,7 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
           })}
         </List>
         <Box height="300px" width="100%" mt={2} mb={1}>
-          <SamplingSiteInsetMap sampleSites={[sampleSite]} isLoading={false} />
+          <SurveyMap staticLayers={staticLayers} supplementaryLayers={[]} isLoading={false} />
         </Box>
       </AccordionDetails>
     </Accordion>

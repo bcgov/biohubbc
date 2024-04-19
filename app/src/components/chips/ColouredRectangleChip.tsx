@@ -4,6 +4,7 @@ export interface IColouredRectangleChipProps extends ChipProps {
   colour: Color;
   label: string | JSX.Element;
 }
+
 /**
  *
  * Returns a stylized MUI chip

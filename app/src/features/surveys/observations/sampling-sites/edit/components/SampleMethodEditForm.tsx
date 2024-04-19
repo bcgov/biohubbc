@@ -25,7 +25,6 @@ import { useFormikContext } from 'formik';
 import { useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { getCodesName } from 'utils/Utils';
-import SamplingSiteMethodResponseMetricChip from '../../components/SamplingSiteMethodResponseMetricChip';
 import SamplingSiteListPeriod from '../../list/SamplingSiteListPeriod';
 import { IEditSamplingSiteRequest } from './SampleSiteEditForm';
 
@@ -160,7 +159,7 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                     sx={{
                       background: grey[100],
                       '& .MuiCardHeader-root': {
-                        pb: 0.5
+                        pb: 1
                       }
                     }}>
                     <CardHeader
@@ -171,12 +170,13 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                             'sample_methods',
                             item.method_lookup_id || 0
                           )}
-                          {item.method_response_metric_id && (
-                            <SamplingSiteMethodResponseMetricChip
-                              sx={{ mt: -0.5 }}
-                              method_response_metric_id={item.method_response_metric_id}
-                            />
-                          )}
+                          <Typography component="span" variant="body2" color="textSecondary" ml={1}>
+                            {getCodesName(
+                              codesContext.codesDataLoader.data,
+                              'method_response_metrics',
+                              item.method_response_metric_id || 0
+                            )}
+                          </Typography>
                         </>
                       }
                       action={
@@ -195,7 +195,7 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                         pb: '12px !important'
                       }}>
                       <Stack gap={2}>
-                        {item.description ? (
+                        {item.description && (
                           <Typography
                             variant="body2"
                             color="textSecondary"
@@ -209,22 +209,7 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                             }}>
                             {item.description}
                           </Typography>
-                        ) : (
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              color: grey[400],
-                              display: '-webkit-box',
-                              WebkitLineClamp: '2',
-                              WebkitBoxOrient: 'vertical',
-                              maxWidth: '92ch',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis'
-                            }}>
-                            <em>No description</em>
-                          </Typography>
                         )}
-
                         <Box>
                           <Typography variant="body2" fontWeight={700}>
                             Periods
