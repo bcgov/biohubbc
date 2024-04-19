@@ -23,7 +23,6 @@ export interface ISurveyMapSupplementaryLayer {
    */
   layerName: string;
   /**
-   * /**
    * The colour of the layer
    */
   layerColors?: {
