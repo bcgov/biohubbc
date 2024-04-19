@@ -14,6 +14,11 @@ interface ISamplingStratumChips {
   sampleSite: IGetSampleLocationDetails;
 }
 
+/**
+ * Returns horizontal stack of ColouredRectangleChip for displaying sample stratums
+ * @param props 
+ * @returns 
+ */
 const SamplingStratumChips = (props: ISamplingStratumChips) => {
   const surveyContext = useContext(SurveyContext);
 

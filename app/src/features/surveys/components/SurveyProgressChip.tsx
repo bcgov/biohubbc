@@ -11,6 +11,7 @@ interface ISurveyProgressChipProps extends ChipProps {
 
 /**
  * Returns stylized ColouredRectangleChip for displaying Survey progress
+ * 
  * @param props
  * @returns
  */
