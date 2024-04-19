@@ -16,8 +16,8 @@ interface ISamplingStratumChips {
 
 /**
  * Returns horizontal stack of ColouredRectangleChip for displaying sample stratums
- * @param props 
- * @returns 
+ * @param props
+ * @returns
  */
 const SamplingStratumChips = (props: ISamplingStratumChips) => {
   const surveyContext = useContext(SurveyContext);

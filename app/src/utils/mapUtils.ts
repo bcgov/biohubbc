@@ -35,9 +35,9 @@ export const coloredPoint = (point: MapPointProps): L.CircleMarker<any> => {
 
 /**
  * Returns custom map marker for symbolizing observations
- * 
- * @param fillColor 
- * @returns 
+ *
+ * @param fillColor
+ * @returns
  */
 export const generateCustomPointMarkerUrl = (fillColor?: string) =>
   'data:image/svg+xml;base64,' +

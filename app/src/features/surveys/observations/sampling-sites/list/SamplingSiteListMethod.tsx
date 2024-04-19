@@ -48,7 +48,7 @@ export const SamplingSiteListMethod = (props: ISamplingSiteListMethodProps) => {
         primary={getCodesName(codesContext.codesDataLoader.data, 'sample_methods', sampleMethod.method_lookup_id)}
       />
       {sampleMethod.sample_periods?.length && (
-        <List disablePadding sx={{ ml: 0.5, mr: 1 }}>
+        <List disablePadding sx={{ ml: 0.5 }}>
           <SamplingSiteListPeriod
             samplePeriods={sampleMethod.sample_periods}
             observationsContext={observationsContext}

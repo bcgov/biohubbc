@@ -6,7 +6,6 @@ export interface IColouredRectangleChipProps extends ChipProps {
 }
 
 /**
- *
  * Returns a stylized MUI chip
  *
  * @param props {IColouredRectangleChipProps}
