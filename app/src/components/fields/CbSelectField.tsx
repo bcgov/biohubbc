@@ -1,10 +1,13 @@
-import { FormControlProps, MenuItem, SelectChangeEvent } from '@mui/material';
+import { FormControlProps } from '@mui/material/FormControl';
+import MenuItem from '@mui/material/MenuItem';
+import { SelectChangeEvent } from '@mui/material/Select';
 import { useFormikContext } from 'formik';
-import { ICbSelectRows } from 'hooks/cb_api/useLookupApi';
+import { ICbSelectRows, SelectOptionsProps } from 'hooks/cb_api/useLookupApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { startCase } from 'lodash-es';
 import get from 'lodash-es/get';
-import React, { useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { CbSelectWrapper } from './CbSelectFieldWrapper';
 
 export interface ICbSelectSharedProps {
@@ -13,14 +16,12 @@ export interface ICbSelectSharedProps {
   controlProps?: FormControlProps;
 }
 
-export interface ICbSelectField extends ICbSelectSharedProps {
-  id: string;
-  route: string;
-  param?: string;
-  query?: string;
-  disabledValues?: Record<string, boolean>;
-  handleChangeSideEffect?: (value: string, label: string) => void;
-}
+export type ICbSelectField = ICbSelectSharedProps &
+  SelectOptionsProps & {
+    id: string;
+    disabledValues?: Record<string, boolean>;
+    handleChangeSideEffect?: (value: string, label: string) => void;
+  };
 
 interface ICbSelectOption {
   value: string | number;
@@ -29,25 +30,31 @@ interface ICbSelectOption {
 /**
  * Critterbase Select Field. Handles data retrieval, formatting and error handling.
  *
- * @param {ICbSelectField}
+ * @param {ICbSelectField} props
  * @return {*}
  *
- **/
+ */
+const CbSelectField = (props: ICbSelectField) => {
+  const { name, orderBy, label, route, query, handleChangeSideEffect, controlProps, disabledValues } = props;
 
-const CbSelectField: React.FC<ICbSelectField> = (props) => {
-  const { name, label, route, param, query, handleChangeSideEffect, controlProps, disabledValues } = props;
+  const critterbaseApi = useCritterbaseApi();
 
-  const api = useCritterbaseApi();
-  const { data, refresh } = useDataLoader(api.lookup.getSelectOptions);
+  const { data, refresh } = useDataLoader(critterbaseApi.lookup.getSelectOptions);
   const { values, handleChange } = useFormikContext<ICbSelectOption>();
 
   const val = get(values, name) ?? '';
 
+  const selectParams = { route, query, orderBy };
+
   useEffect(() => {
-    // Only refresh when the query or param changes
-    refresh({ route, param, query });
+    // Skip fetching if route ends with an undefined id
+    // example: /xref/collection-units/{undefined}
+    if (route.endsWith('/')) {
+      return;
+    }
+    refresh(selectParams);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query, param]);
+  }, [JSON.stringify(selectParams)]);
 
   const isValueInRange = useMemo(() => {
     if (val === '') {
@@ -82,7 +89,7 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
         const item = typeof a === 'string' ? { label: a, value: a } : { label: a.value, value: a.id };
         return (
           <MenuItem disabled={disabledValues?.[item.value]} key={item.value} value={item.value}>
-            {item.label}
+            {startCase(item.label)}
           </MenuItem>
         );
       })}

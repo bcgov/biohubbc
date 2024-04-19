@@ -1,13 +1,12 @@
-import { mdiMagnify } from '@mdi/js';
-import Icon from '@mdi/react';
-import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
+import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
-import { GridRenderCellParams, GridValidRowModel, useGridApiContext } from '@mui/x-data-grid';
+import useEnhancedEffect from '@mui/material/utils/useEnhancedEffect';
+import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import { IAutocompleteDataGridOption } from 'components/data-grid/autocomplete/AutocompleteDataGrid.interface';
 import { DebouncedFunc } from 'lodash-es';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export interface IAsyncAutocompleteDataGridEditCell<
   DataGridType extends GridValidRowModel,
@@ -37,6 +36,16 @@ export interface IAsyncAutocompleteDataGridEditCell<
       onSearchResults: (searchResults: IAutocompleteDataGridOption<ValueType>[]) => void
     ) => Promise<void>
   >;
+  /**
+   * Indicates if there is an error with the control
+   *
+   * @memberof IAsyncAutocompleteDataGridEditCell
+   */
+  error?: boolean;
+  /**
+   * Optional function to render the autocomplete option.
+   */
+  renderOption?: (option: IAutocompleteDataGridOption<ValueType>) => JSX.Element;
 }
 
 /**
@@ -52,7 +61,13 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
 ) => {
   const { dataGridProps, getCurrentOption, getOptions } = props;
 
-  const apiRef = useGridApiContext();
+  const ref = useRef<HTMLInputElement>();
+
+  useEnhancedEffect(() => {
+    if (dataGridProps.hasFocus) {
+      ref.current?.focus();
+    }
+  }, [dataGridProps]);
 
   // The current data grid value
   const dataGridValue = dataGridProps.value;
@@ -125,25 +140,16 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
     };
   }, [inputValue, getOptions, currentOption]);
 
-  function getCurrentValue() {
-    if (!dataGridValue) {
-      // No current value
-      return null;
-    }
-
-    return currentOption || options.find((option) => dataGridValue === option.value) || null;
-  }
-
   return (
     <Autocomplete
-      id={String(dataGridProps.id)}
+      id={`${dataGridProps.id}[${dataGridProps.field}]`}
       noOptionsText="No matching options"
       autoHighlight
       fullWidth
       blurOnSelect
       handleHomeEndKeys
       loading={isLoading}
-      value={getCurrentValue()}
+      value={currentOption}
       options={options}
       getOptionLabel={(option) => option.label}
       isOptionEqualToValue={(option, value) => {
@@ -152,13 +158,13 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
         }
         return option.value === value.value;
       }}
-      filterOptions={createFilterOptions({ limit: 50 })}
+      filterOptions={(item) => item}
       onChange={(_, selectedOption) => {
         setOptions(selectedOption ? [selectedOption, ...options] : options);
         setCurrentOption(selectedOption);
 
         // Set the data grid cell value with selected options value
-        apiRef.current.setEditCellValue({
+        dataGridProps.api.setEditCellValue({
           id: dataGridProps.id,
           field: dataGridProps.field,
           value: selectedOption?.value
@@ -170,16 +176,14 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
       renderInput={(params) => (
         <TextField
           {...params}
+          inputRef={ref}
+          size="small"
           variant="outlined"
-          placeholder={'Type to search...'}
           fullWidth
+          error={props.error}
           InputProps={{
+            color: props.error ? 'error' : undefined,
             ...params.InputProps,
-            startAdornment: (
-              <Box mt="6px">
-                <Icon path={mdiMagnify} size={1}></Icon>
-              </Box>
-            ),
             endAdornment: (
               <>
                 {isLoading ? <CircularProgress color="inherit" size={20} /> : null}
@@ -192,7 +196,7 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
       renderOption={(renderProps, renderOption) => {
         return (
           <Box component="li" {...renderProps}>
-            {renderOption.label}
+            {props.renderOption ? props.renderOption(renderOption) : <span>{renderOption.label}</span>}
           </Box>
         );
       }}

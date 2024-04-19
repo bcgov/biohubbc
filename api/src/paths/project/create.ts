@@ -8,7 +8,7 @@ import { authorizeRequestHandler } from '../../request-handlers/security/authori
 import { ProjectService } from '../../services/project-service';
 import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('paths/project');
+const defaultLog = getLogger('paths/project/create');
 
 export const POST: Operation = [
   authorizeRequestHandler(() => {
@@ -50,6 +50,7 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: ['id'],
             properties: {
               id: {
@@ -68,7 +69,7 @@ POST.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -95,7 +96,7 @@ export function createProject(): RequestHandler {
 
       const projectService = new ProjectService(connection);
 
-      const projectId = await projectService.createProjectAndUploadMetadataToBioHub(sanitizedProjectPostData);
+      const projectId = await projectService.createProject(sanitizedProjectPostData);
 
       await connection.commit();
 

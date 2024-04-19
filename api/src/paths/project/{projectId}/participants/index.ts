@@ -4,6 +4,7 @@ import { SYSTEM_IDENTITY_SOURCE } from '../../../../constants/database';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/http-error';
+import { projectAndSystemUserSchema } from '../../../../openapi/schemas/user';
 import { IParticipant } from '../../../../repositories/project-participation-repository';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { ProjectParticipationService } from '../../../../services/project-participation-service';
@@ -57,41 +58,7 @@ GET.apiDoc = {
           schema: {
             type: 'array',
             items: {
-              type: 'object',
-              properties: {
-                project_participation_id: {
-                  type: 'number'
-                },
-                project_id: {
-                  type: 'number'
-                },
-                system_user_id: {
-                  type: 'number'
-                },
-                project_role_ids: {
-                  type: 'array',
-                  items: {
-                    type: 'number'
-                  }
-                },
-                project_role_names: {
-                  type: 'array',
-                  items: {
-                    type: 'string'
-                  }
-                },
-                user_guid: {
-                  type: 'string',
-                  description: 'The GUID for the user.',
-                  nullable: true
-                },
-                user_identifier: {
-                  type: 'string'
-                },
-                identity_source: {
-                  type: 'string'
-                }
-              }
+              ...projectAndSystemUserSchema
             }
           }
         }
@@ -104,7 +71,7 @@ GET.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -192,12 +159,14 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['participants'],
           properties: {
             participants: {
               type: 'array',
               items: {
                 type: 'object',
+                additionalProperties: false,
                 required: ['userIdentifier', 'identitySource', 'displayName', 'email', 'roleId'],
                 properties: {
                   userIdentifier: {
@@ -243,7 +212,7 @@ POST.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'

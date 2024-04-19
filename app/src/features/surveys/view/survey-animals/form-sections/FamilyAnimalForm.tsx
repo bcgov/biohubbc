@@ -1,215 +1,268 @@
-import { Box, Button, Grid, MenuItem, Paper, Theme, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
 import { grey } from '@mui/material/colors';
-import { makeStyles } from '@mui/styles';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Grid from '@mui/material/Grid';
+import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
 import ComponentDialog from 'components/dialog/ComponentDialog';
+import EditDialog from 'components/dialog/EditDialog';
 import { CbSelectWrapper } from 'components/fields/CbSelectFieldWrapper';
-import { SurveyAnimalsI18N } from 'constants/i18n';
-import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
+import CustomTextField from 'components/fields/CustomTextField';
+import { useDialogContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import React, { Fragment, useState } from 'react';
-import { v4 } from 'uuid';
+import { IFamilyChildResponse, IFamilyParentResponse } from 'interfaces/useCritterApi.interface';
+import { useState } from 'react';
 import {
-  AnimalRelationshipSchema,
-  getAnimalFieldName,
-  IAnimal,
-  IAnimalRelationship,
-  isRequiredInSchema,
-  lastAnimalValueValid,
-  newFamilyIdPlaceholder
+  AnimalFormProps,
+  AnimalRelationship,
+  ANIMAL_FORM_MODE,
+  CreateCritterFamilySchema,
+  ICreateCritterFamily,
+  isRequiredInSchema
 } from '../animal';
-import FormSectionWrapper from './FormSectionWrapper';
-const useStyles = makeStyles((theme: Theme) => ({
-  surveyMetadataContainer: {
-    '& dt': {
-      flex: '0 0 40%'
-    },
-    '& dd': {
-      flex: '1 1 auto'
-    },
-    '& h4': {
-      fontSize: '14px',
-      fontWeight: 700,
-      letterSpacing: '0.02rem',
-      textTransform: 'uppercase',
-      color: grey[600],
-      '& + hr': {
-        marginTop: theme.spacing(1.5),
-        marginBottom: theme.spacing(1.5)
-      }
-    }
-  }
-}));
 
 /**
- * Renders the Family section for the Individual Animal form
+ * This component renders a 'critter family relationship' create / edit dialog.
  *
- * This form needs to validate against the Critterbase critter table, as only critters that have already been
- * added to Critterbase are permissible as family members.
- *
- * @return {*}
- **/
-const FamilyAnimalForm = () => {
-  const { values, handleChange } = useFormikContext<IAnimal>();
-  const critterbase = useCritterbaseApi();
-  const { data: allFamilies, load } = useDataLoader(critterbase.family.getAllFamilies);
-  const { data: familyHierarchy, load: loadHierarchy } = useDataLoader(critterbase.family.getImmediateFamily);
+ * @param {AnimalFormProps<IFamilyParentResponse>} props - Generic AnimalFormProps.
+ * @returns {*}
+ */
+export const FamilyAnimalForm = (props: AnimalFormProps<IFamilyParentResponse | IFamilyChildResponse>) => {
+  const cbApi = useCritterbaseApi();
+  const dialog = useDialogContext();
+
   const [showFamilyStructure, setShowFamilyStructure] = useState(false);
-  if (!allFamilies) {
-    load();
-  }
+  const [createNewFamily, setCreateNewFamily] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const classes = useStyles();
+  const { data: familyHierarchy, load: loadHierarchy } = useDataLoader(cbApi.family.getImmediateFamily);
+  const {
+    data: allFamilies,
+    load: loadFamilies,
+    refresh: refreshFamilies
+  } = useDataLoader(cbApi.family.getAllFamilies);
 
-  const name: keyof IAnimal = 'family';
-  const newRelationship: IAnimalRelationship = {
-    _id: v4(),
+  loadFamilies();
 
-    family_id: '',
-    relationship: undefined
+  const initialValues = {
+    critter_id: props.critter.critter_id,
+    family_id: props?.formObject?.family_id,
+    family_label: props?.formObject?.family_label ?? '',
+    relationship: (props?.formObject as IFamilyParentResponse)?.parent_critter_id
+      ? AnimalRelationship.PARENT
+      : AnimalRelationship.CHILD
   };
 
-  const disabledFamilyIds = values.family.reduce((acc: Record<string, boolean>, curr) => {
-    if (curr.family_id) {
-      acc[curr.family_id] = true;
+  const handleSave = async (values: ICreateCritterFamily) => {
+    setLoading(true);
+    try {
+      if (props.formMode === ANIMAL_FORM_MODE.ADD) {
+        if (values.family_label) {
+          const family = await cbApi.family.createFamily(values.family_label);
+          values.family_id = family.family_id;
+        }
+        await cbApi.family.createFamilyRelationship(values);
+
+        dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created family relationship.` });
+      }
+      if (props.formMode === ANIMAL_FORM_MODE.EDIT) {
+        if (!values.family_id || !initialValues.family_id) {
+          throw new Error(`family_id should be defined`);
+        }
+
+        if (values.family_label) {
+          await cbApi.family.editFamily(initialValues.family_id, values.family_label);
+        }
+
+        await cbApi.family.deleteRelationship({
+          family_id: initialValues.family_id,
+          critter_id: initialValues.critter_id,
+          relationship: initialValues.relationship
+        });
+
+        await cbApi.family.createFamilyRelationship({
+          family_id: values.family_id,
+          critter_id: values.critter_id,
+          relationship: values.relationship
+        });
+
+        dialog.setSnackbar({ open: true, snackbarMessage: `Successfully edited family relationship.` });
+      }
+    } catch (err) {
+      dialog.setSnackbar({ open: true, snackbarMessage: `Critter family relationship request failed.` });
+    } finally {
+      refreshFamilies();
+      props.handleClose();
+      setLoading(false);
     }
-    return acc;
-  }, {});
+  };
 
   return (
-    <FieldArray validateOnChange={true} name={name}>
-      {({ remove, push }: FieldArrayRenderProps) => (
-        <>
-          <FormSectionWrapper
-            title={SurveyAnimalsI18N.animalFamilyTitle}
-            addedSectionTitle={SurveyAnimalsI18N.animalFamilyTitle2}
-            titleHelp={SurveyAnimalsI18N.animalFamilyHelp}
-            btnLabel={SurveyAnimalsI18N.animalFamilyAddBtn}
-            disableAddBtn={!lastAnimalValueValid('family', values)}
-            handleAddSection={() => push(newRelationship)}
-            handleRemoveSection={remove}>
-            {values.family.map((fam, index) => (
-              <Fragment key={fam._id}>
-                <Grid item xs={6}>
-                  <CbSelectWrapper
-                    label={'Family ID'}
-                    name={getAnimalFieldName<IAnimalRelationship>(name, 'family_id', index)}
-                    onChange={handleChange}
-                    controlProps={{
-                      size: 'small',
-                      required: isRequiredInSchema(AnimalRelationshipSchema, 'family_id')
-                    }}>
-                    {[
-                      ...(allFamilies ?? []),
-                      { family_id: newFamilyIdPlaceholder, family_label: newFamilyIdPlaceholder }
-                    ]?.map((a) => (
-                      <MenuItem disabled={!!disabledFamilyIds[a.family_id]} key={a.family_id} value={a.family_id}>
-                        {a.family_label ? a.family_label : a.family_id}
-                      </MenuItem>
-                    ))}
-                  </CbSelectWrapper>
-                </Grid>
-                <Grid item xs={6}>
-                  <Grid item xs={6}>
-                    <CbSelectWrapper
-                      label={'Relationship'}
-                      name={getAnimalFieldName<IAnimalRelationship>(name, 'relationship', index)}
-                      onChange={handleChange}
-                      controlProps={{
-                        size: 'small',
-                        required: isRequiredInSchema(AnimalRelationshipSchema, 'relationship')
-                      }}>
-                      <MenuItem key={'parent'} value={'parent'}>
-                        Parent in
-                      </MenuItem>
-                      <MenuItem key={'child'} value={'child'}>
-                        Child in
-                      </MenuItem>
-                    </CbSelectWrapper>
-                  </Grid>
-                </Grid>
-                <Grid item xs={6}>
-                  <Button
-                    onClick={async () => {
-                      loadHierarchy(values.family[index]?.family_id);
-                      setShowFamilyStructure(true);
-                    }}
-                    disabled={
-                      values.family[index]?.family_id === newFamilyIdPlaceholder || !values.family[index]?.family_id
+    <EditDialog
+      dialogTitle={props.formMode === ANIMAL_FORM_MODE.ADD ? 'Add Family Relationship' : 'Edit Family Relationship'}
+      open={props.open}
+      onCancel={props.handleClose}
+      onSave={handleSave}
+      size="md"
+      dialogLoading={loading}
+      component={{
+        initialValues,
+        validationSchema: CreateCritterFamilySchema,
+        element: (
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={createNewFamily}
+                    color="primary"
+                    onChange={() => setCreateNewFamily((create) => !create)}
+                  />
+                }
+                label={
+                  props.formMode === ANIMAL_FORM_MODE.ADD
+                    ? 'Would you like to create a new critter family?'
+                    : 'Would you like to modify the family label?'
+                }
+              />
+            </Grid>
+            {createNewFamily ? (
+              <Grid item xs={12}>
+                <CustomTextField label="Family" name="family_label" />
+              </Grid>
+            ) : (
+              <Grid item xs={12}>
+                <CbSelectWrapper
+                  label={'Family'}
+                  name={'family_id'}
+                  controlProps={{
+                    size: 'medium',
+                    required: isRequiredInSchema(CreateCritterFamilySchema, 'family_id')
+                  }}>
+                  {allFamilies?.map((family) => (
+                    <MenuItem key={family.family_id} value={family.family_id}>
+                      {family.family_label ? family.family_label : family.family_id}
+                    </MenuItem>
+                  ))}
+                </CbSelectWrapper>
+              </Grid>
+            )}
+            <Grid item xs={12}>
+              <Grid item xs={6}>
+                <CbSelectWrapper
+                  label={'Relationship'}
+                  name={'relationship'}
+                  controlProps={{
+                    size: 'medium',
+                    required: isRequiredInSchema(CreateCritterFamilySchema, 'relationship')
+                  }}>
+                  <MenuItem key={'parent'} value={AnimalRelationship.PARENT}>
+                    Parent in
+                  </MenuItem>
+                  <MenuItem key={'child'} value={AnimalRelationship.CHILD}>
+                    Child in
+                  </MenuItem>
+                </CbSelectWrapper>
+              </Grid>
+            </Grid>
+            <Grid item xs={6}>
+              {props?.formObject?.family_id ? (
+                <Button
+                  onClick={async () => {
+                    loadHierarchy(props?.formObject?.family_id);
+                    setShowFamilyStructure(true);
+                  }}
+                  variant="outlined">
+                  View Family Structure
+                </Button>
+              ) : null}
+            </Grid>
+            <ComponentDialog
+              dialogTitle={'Family Structure'}
+              open={showFamilyStructure}
+              onClose={() => setShowFamilyStructure(false)}>
+              <Box
+                sx={{
+                  '& dt': {
+                    flex: '0 0 40%'
+                  },
+                  '& dd': {
+                    flex: '1 1 auto'
+                  },
+                  '& h4': {
+                    fontSize: '14px',
+                    fontWeight: 700,
+                    letterSpacing: '0.02rem',
+                    textTransform: 'uppercase',
+                    color: grey[600],
+                    '& + hr': {
+                      mt: 1.5,
+                      mb: 1.5
                     }
-                    variant="outlined">
-                    View Family Structure
-                  </Button>
-                </Grid>
-                <ComponentDialog
-                  dialogTitle={'Family Structure'}
-                  open={showFamilyStructure}
-                  onClose={() => setShowFamilyStructure(false)}>
-                  <Box className={classes.surveyMetadataContainer}>
-                    <Typography component="dt" variant="subtitle2" color="textSecondary">
-                      Family ID
-                    </Typography>
-                    <Typography marginBottom={2} component="dd">
-                      {values.family[index]?.family_id}
-                    </Typography>
-                    <Paper variant="outlined" sx={{ p: 1, mb: 2 }}>
-                      <Typography component="h4">Parents:</Typography>
-                      <ul>
-                        {familyHierarchy?.parents.map((a) => (
-                          <li key={a.critter_id}>
-                            <Grid container>
-                              <Grid item xs={6}>
-                                <Typography component="dt" variant="subtitle2" color="textSecondary">
-                                  Critter ID
-                                </Typography>
-                                <Typography>{a.critter_id}</Typography>
-                              </Grid>
-                              <Grid item xs={6}>
-                                <Typography component="dt" variant="subtitle2" color="textSecondary">
-                                  Animal ID
-                                </Typography>
-                                <Typography>{a.animal_id}</Typography>
-                              </Grid>
-                            </Grid>
-                          </li>
-                        ))}
-                      </ul>
-                    </Paper>
-                    <Paper variant="outlined" sx={{ p: 1, mb: 2 }}>
-                      <Typography component="h4">Children:</Typography>
-                      <ul>
-                        {familyHierarchy?.children.map(
-                          (
-                            a: { critter_id: string; animal_id: string } //I will type this better I promise
-                          ) => (
-                            <li key={a.critter_id}>
-                              <Grid container>
-                                <Grid item xs={6}>
-                                  <Typography component="dt" variant="subtitle2" color="textSecondary">
-                                    Critter ID
-                                  </Typography>
-                                  <Typography>{a.critter_id}</Typography>
-                                </Grid>
-                                <Grid item xs={6}>
-                                  <Typography component="dt" variant="subtitle2" color="textSecondary">
-                                    Animal ID
-                                  </Typography>
-                                  <Typography>{a.animal_id}</Typography>
-                                </Grid>
-                              </Grid>
-                            </li>
-                          )
-                        )}
-                      </ul>
-                    </Paper>
-                  </Box>
-                </ComponentDialog>
-              </Fragment>
-            ))}
-          </FormSectionWrapper>
-        </>
-      )}
-    </FieldArray>
+                  }
+                }}>
+                <Typography component="dt" variant="subtitle2" color="textSecondary">
+                  Family ID
+                </Typography>
+                <Typography marginBottom={2} component="dd">
+                  {props?.formObject?.family_id}
+                </Typography>
+                <Paper variant="outlined" sx={{ p: 1, mb: 2 }}>
+                  <Typography component="h4">Parents:</Typography>
+                  <ul>
+                    {familyHierarchy?.parents.map((a) => (
+                      <li key={a.critter_id}>
+                        <Grid container>
+                          <Grid item xs={6}>
+                            <Typography component="dt" variant="subtitle2" color="textSecondary">
+                              Critter ID
+                            </Typography>
+                            <Typography>{a.critter_id}</Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography component="dt" variant="subtitle2" color="textSecondary">
+                              Animal ID
+                            </Typography>
+                            <Typography>{a.animal_id}</Typography>
+                          </Grid>
+                        </Grid>
+                      </li>
+                    ))}
+                  </ul>
+                </Paper>
+                <Paper variant="outlined" sx={{ p: 1, mb: 2 }}>
+                  <Typography component="h4">Children:</Typography>
+                  <ul>
+                    {familyHierarchy?.children.map((critter) => (
+                      <li key={critter.critter_id}>
+                        <Grid container>
+                          <Grid item xs={6}>
+                            <Typography component="dt" variant="subtitle2" color="textSecondary">
+                              Critter ID
+                            </Typography>
+                            <Typography>{critter.critter_id}</Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography component="dt" variant="subtitle2" color="textSecondary">
+                              Animal ID
+                            </Typography>
+                            <Typography>{critter.animal_id}</Typography>
+                          </Grid>
+                        </Grid>
+                      </li>
+                    ))}
+                  </ul>
+                </Paper>
+              </Box>
+            </ComponentDialog>
+          </Grid>
+        )
+      }}
+    />
   );
 };
 

@@ -13,8 +13,8 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import { ProjectParticipantsI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
@@ -23,25 +23,13 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import useDataLoaderError from 'hooks/useDataLoaderError';
-import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import { IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useContext, useEffect } from 'react';
 import { alphabetizeObjects, getFormattedIdentitySource } from 'utils/Utils';
 import ProjectParticipantsHeader from './ProjectParticipantsHeader';
 import ProjectParticipantsRoleMenu from './ProjectParticipantsRoleMenu';
 
-const useStyles = makeStyles(() => ({
-  teamMembersTable: {
-    tableLayout: 'fixed',
-    '& td': {
-      verticalAlign: 'middle'
-    }
-  }
-}));
-
 const ProjectParticipantsPage: React.FC = () => {
-  const classes = useStyles();
-
   const codesContext = useContext(CodesContext);
   const projectContext = useContext(ProjectContext);
 
@@ -146,73 +134,69 @@ const ProjectParticipantsPage: React.FC = () => {
     <>
       <ProjectParticipantsHeader refresh={projectParticipantsDataLoader.refresh} />
 
-      <Container maxWidth="xl">
-        <Box my={3}>
-          <Paper elevation={0}>
-            <Toolbar>
-              <Typography component="h2" variant="h4" color="inherit">
-                Team Members
-              </Typography>
-            </Toolbar>
+      <Container maxWidth="xl" sx={{ py: 3 }}>
+        <Paper>
+          <Toolbar>
+            <Typography component="h2" variant="h3" color="inherit">
+              Team Members
+            </Typography>
+          </Toolbar>
 
-            <Divider></Divider>
+          <Divider></Divider>
 
-            <Box px={1}>
-              <Table className={classes.teamMembersTable}>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Username</TableCell>
-                    <TableCell>Type</TableCell>
-                    <TableCell>Project Role</TableCell>
-                    <TableCell width="80px" align="right"></TableCell>
+          <Box p={2}>
+            <Table sx={{ tableLayout: 'fixed' }}>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Username</TableCell>
+                  <TableCell>Type</TableCell>
+                  <TableCell>Project Role</TableCell>
+                  <TableCell width={80} align="right"></TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {alphabetizeObjects(projectParticipantsDataLoader?.data ?? [], 'user_identifier').map((participant) => (
+                  <TableRow key={participant.project_participation_id}>
+                    <TableCell scope="row">{participant.user_identifier}</TableCell>
+                    <TableCell scope="row">
+                      {getFormattedIdentitySource(participant.identity_source as SYSTEM_IDENTITY_SOURCE)}
+                    </TableCell>
+                    <TableCell>
+                      <Box my={-1}>
+                        <ProjectParticipantsRoleMenu
+                          participant={participant}
+                          projectRoleCodes={codes.project_roles}
+                          refresh={projectParticipantsDataLoader.refresh}
+                        />
+                      </Box>
+                    </TableCell>
+
+                    <TableCell align="right">
+                      <Box my={-1}>
+                        <IconButton
+                          title="Remove Team Member"
+                          data-testid={'remove-project-participant-button'}
+                          onClick={() => handleDialogRemoveParticipantOpen(participant)}>
+                          <Icon path={mdiTrashCanOutline} size={1} />
+                        </IconButton>
+                      </Box>
+                    </TableCell>
                   </TableRow>
-                </TableHead>
-                <TableBody>
-                  {alphabetizeObjects(projectParticipantsDataLoader?.data ?? [], 'user_identifier').map(
-                    (participant) => (
-                      <TableRow key={participant.project_participation_id}>
-                        <TableCell scope="row">{participant.user_identifier}</TableCell>
-                        <TableCell scope="row">
-                          {getFormattedIdentitySource(participant.identity_source as SYSTEM_IDENTITY_SOURCE)}
-                        </TableCell>
-                        <TableCell>
-                          <Box my={-1}>
-                            <ProjectParticipantsRoleMenu
-                              participant={participant}
-                              projectRoleCodes={codes.project_roles}
-                              refresh={projectParticipantsDataLoader.refresh}
-                            />
-                          </Box>
-                        </TableCell>
+                ))}
 
-                        <TableCell align="right">
-                          <Box my={-1}>
-                            <IconButton
-                              title="Remove Team Member"
-                              data-testid={'remove-project-participant-button'}
-                              onClick={() => handleDialogRemoveParticipantOpen(participant)}>
-                              <Icon path={mdiTrashCanOutline} size={1} />
-                            </IconButton>
-                          </Box>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  )}
-
-                  {!projectParticipantsDataLoader.data && (
-                    <TableRow>
-                      <TableCell colSpan={3}>
-                        <Box display="flex" justifyContent="center">
-                          No Team Members
-                        </Box>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </Box>
-          </Paper>
-        </Box>
+                {!projectParticipantsDataLoader.data && (
+                  <TableRow>
+                    <TableCell colSpan={3}>
+                      <Box display="flex" justifyContent="center">
+                        No Team Members
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </Box>
+        </Paper>
       </Container>
     </>
   );

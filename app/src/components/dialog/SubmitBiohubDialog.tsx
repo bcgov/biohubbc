@@ -89,7 +89,7 @@ const SubmitBiohubDialog = <Values extends FormikValues>(
     }
   };
 
-  const [formikRef] = useState(useRef<FormikProps<any>>(null));
+  const formikRef = useRef<FormikProps<any>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [showNoInformationDialog, setShowNoInformationDialog] = useState(false);
@@ -167,7 +167,7 @@ const SubmitBiohubDialog = <Values extends FormikValues>(
                   variant="contained"
                   disabled={formikProps.values === initialValues || isSubmitting}
                   loading={isSubmitting}>
-                  <strong>Submit</strong>
+                  Publish Survey
                 </LoadingButton>
                 <Button onClick={props.onClose} color="primary" variant="outlined" disabled={isSubmitting}>
                   Cancel

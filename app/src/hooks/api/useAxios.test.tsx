@@ -1,9 +1,9 @@
-import { ReactKeycloakProvider } from '@react-keycloak/web';
-import { PropsWithChildren } from '@react-leaflet/core/types/component';
-import { renderHook } from '@testing-library/react-hooks';
+import { cleanup, renderHook, waitFor } from '@testing-library/react';
 import axios, { AxiosError } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import Keycloak, { KeycloakPromise } from 'keycloak-js';
+import { User } from 'oidc-client-ts';
+import { PropsWithChildren } from 'react';
+import { AuthContextProps, AuthProvider, AuthProviderProps, useAuth } from 'react-oidc-context';
 import useAxios, { APIError } from './useAxios';
 
 describe('APIError', () => {
@@ -30,36 +30,42 @@ describe('APIError', () => {
   });
 });
 
+jest.mock('react-oidc-context');
+
 describe('useAxios', () => {
   /// Mock `axios` instance
   let axiosMock: MockAdapter;
 
-  // Stub `Keycloak.updateToken` function to return `true`
-  const updateTokenStub = jest.fn();
+  const authConfig: AuthProviderProps = {
+    authority: 'authority',
+    client_id: 'client',
+    redirect_uri: 'redirect'
+  };
 
-  // Mock `Keycloak` instance
-  const keycloakMock: Keycloak = {
-    authenticated: true,
-    token: 'a token',
-    init: () => Promise.resolve(true) as KeycloakPromise<any, any>,
-    createLoginUrl: () => '',
-    createLogoutUrl: () => 'string',
-    createRegisterUrl: () => 'string',
-    createAccountUrl: () => 'string',
-    isTokenExpired: () => false,
-    updateToken: updateTokenStub,
-    clearToken: () => null,
-    hasRealmRole: () => true,
-    hasResourceRole: () => true,
-    loadUserInfo: () => {}
-  } as unknown as Keycloak;
+  const mockAuthProvider = AuthProvider as jest.Mock;
+  const mockUseAuth = useAuth as jest.Mock<Partial<AuthContextProps>>;
+
+  const mockSigninSilent = jest.fn<
+    ReturnType<AuthContextProps['signinSilent']>,
+    Parameters<AuthContextProps['signinSilent']>
+  >();
 
   beforeEach(() => {
     axiosMock = new MockAdapter(axios);
+
+    // Assign the real implementation of `AuthProvider`
+    const { AuthProvider } = jest.requireActual('react-oidc-context');
+    mockAuthProvider.mockImplementation(AuthProvider);
+
+    // Assign a mock implementation of `useAuth`
+    mockUseAuth.mockImplementation(() => ({
+      signinSilent: mockSigninSilent
+    }));
   });
 
   afterEach(() => {
     axiosMock.restore();
+    cleanup();
   });
 
   it('should make an http get request and return the response', async () => {
@@ -69,46 +75,20 @@ describe('useAxios', () => {
 
     // Render the `useAxios` hook with necessary keycloak parent components
     const { result } = renderHook(() => useAxios(baseUrl), {
-      wrapper: ({ children }: PropsWithChildren) => (
-        <ReactKeycloakProvider authClient={keycloakMock}>{children}</ReactKeycloakProvider>
-      )
+      wrapper: ({ children }: PropsWithChildren) => <AuthProvider {...authConfig}>{children}</AuthProvider>
     });
 
-    const response = await result.current.get('/some/url');
+    await waitFor(async () => {
+      const response = await result.current.get('/some/url');
 
-    expect(response.status).toEqual(200);
-    expect(response.data).toEqual({ value: 'test value' });
-  });
-
-  it('should retry once if the call fails with a 403', async () => {
-    // Simulate `updateToken` call success
-    updateTokenStub.mockResolvedValue(true);
-
-    axiosMock.onAny().replyOnce(403).onAny().replyOnce(200, { value: 'test value' });
-
-    const baseUrl = 'http://baseurl.com';
-
-    // Render the `useAxios` hook with necessary keycloak parent components
-    const { result } = renderHook(() => useAxios(baseUrl), {
-      wrapper: ({ children }: PropsWithChildren) => (
-        <ReactKeycloakProvider authClient={keycloakMock}>{children}</ReactKeycloakProvider>
-      )
+      expect(response.status).toEqual(200);
+      expect(response.data).toEqual({ value: 'test value' });
     });
-
-    const response = await result.current.get('/some/url');
-
-    expect(updateTokenStub).toHaveBeenCalledTimes(1);
-    expect(updateTokenStub).toHaveBeenCalledWith(86400);
-
-    expect(axiosMock.history['get'].length).toEqual(2);
-
-    expect(response.status).toEqual(200);
-    expect(response.data).toEqual({ value: 'test value' });
   });
 
   it('should retry once if the call fails with a 401', async () => {
-    // Simulate `updateToken` call success
-    updateTokenStub.mockResolvedValue(true);
+    // Simulate `signinSilent` call success
+    mockSigninSilent.mockResolvedValue({} as unknown as User);
 
     // Return 401 once
     axiosMock.onAny().replyOnce(401).onAny().replyOnce(200, { value: 'test value' });
@@ -117,53 +97,24 @@ describe('useAxios', () => {
 
     // Render the `useAxios` hook with necessary keycloak parent components
     const { result } = renderHook(() => useAxios(baseUrl), {
-      wrapper: ({ children }: PropsWithChildren) => (
-        <ReactKeycloakProvider authClient={keycloakMock}>{children}</ReactKeycloakProvider>
-      )
+      wrapper: ({ children }: PropsWithChildren) => <AuthProvider {...authConfig}>{children}</AuthProvider>
     });
 
-    const response = await result.current.get('/some/url');
+    await waitFor(async () => {
+      const response = await result.current.get('/some/url');
 
-    expect(updateTokenStub).toHaveBeenCalledTimes(1);
-    expect(updateTokenStub).toHaveBeenCalledWith(86400);
-
-    expect(axiosMock.history['get'].length).toEqual(2);
-
-    expect(response.status).toEqual(200);
-    expect(response.data).toEqual({ value: 'test value' });
-  });
-
-  it('should retry once and fail if the call continues to return 403', async () => {
-    // Simulate `updateToken` call success
-    updateTokenStub.mockResolvedValue(true);
-
-    // Return 401 always
-    axiosMock.onAny().reply(403);
-
-    const baseUrl = 'http://baseurl.com';
-
-    // Render the `useAxios` hook with necessary keycloak parent components
-    const { result } = renderHook(() => useAxios(baseUrl), {
-      wrapper: ({ children }: PropsWithChildren) => (
-        <ReactKeycloakProvider authClient={keycloakMock}>{children}</ReactKeycloakProvider>
-      )
-    });
-
-    try {
-      await result.current.get('/some/url');
-    } catch (actualError) {
-      expect((actualError as APIError).status).toEqual(403);
+      expect(mockSigninSilent).toHaveBeenCalledTimes(1);
 
       expect(axiosMock.history['get'].length).toEqual(2);
 
-      expect(updateTokenStub).toHaveBeenCalledTimes(1);
-      expect(updateTokenStub).toHaveBeenCalledWith(86400);
-    }
+      expect(response.status).toEqual(200);
+      expect(response.data).toEqual({ value: 'test value' });
+    });
   });
 
   it('should retry once and fail if the call continues to return 401', async () => {
-    // Simulate `updateToken` call success
-    updateTokenStub.mockResolvedValue(true);
+    // Simulate `signinSilent` call success
+    mockSigninSilent.mockResolvedValue({} as unknown as User);
 
     // Return 401 always
     axiosMock.onAny().reply(401);
@@ -172,48 +123,46 @@ describe('useAxios', () => {
 
     // Render the `useAxios` hook with necessary keycloak parent components
     const { result } = renderHook(() => useAxios(baseUrl), {
-      wrapper: ({ children }: PropsWithChildren) => (
-        <ReactKeycloakProvider authClient={keycloakMock}>{children}</ReactKeycloakProvider>
-      )
+      wrapper: ({ children }: PropsWithChildren) => <AuthProvider {...authConfig}>{children}</AuthProvider>
     });
 
-    try {
-      await result.current.get('/some/url');
-    } catch (actualError) {
-      expect((actualError as APIError).status).toEqual(401);
+    await waitFor(async () => {
+      try {
+        await result.current.get('/some/url');
+      } catch (actualError) {
+        expect((actualError as APIError).status).toEqual(401);
 
-      expect(axiosMock.history['get'].length).toEqual(2);
+        expect(axiosMock.history['get'].length).toEqual(2);
 
-      expect(updateTokenStub).toHaveBeenCalledTimes(1);
-      expect(updateTokenStub).toHaveBeenCalledWith(86400);
-    }
+        expect(mockSigninSilent).toHaveBeenCalledTimes(1);
+      }
+    });
   });
 
   it('should retry once and fail if the update token call fails', async () => {
-    // Simulate `updateToken` call failure
-    updateTokenStub.mockResolvedValue(false);
+    // Simulate `signinSilent` call failure
+    mockSigninSilent.mockResolvedValue(null);
 
     // Return 403 once
-    axiosMock.onAny().replyOnce(403).onAny().replyOnce(200, { value: 'test value' });
+    axiosMock.onAny().replyOnce(401).onAny().replyOnce(200, { value: 'test value' });
 
     const baseUrl = 'http://baseurl.com';
 
     // Render the `useAxios` hook with necessary keycloak parent components
     const { result } = renderHook(() => useAxios(baseUrl), {
-      wrapper: ({ children }: PropsWithChildren) => (
-        <ReactKeycloakProvider authClient={keycloakMock}>{children}</ReactKeycloakProvider>
-      )
+      wrapper: ({ children }: PropsWithChildren) => <AuthProvider {...authConfig}>{children}</AuthProvider>
     });
 
-    try {
-      await result.current.get('/some/url');
-    } catch (actualError) {
-      expect((actualError as APIError).status).toEqual(403);
+    await waitFor(async () => {
+      try {
+        await result.current.get('/some/url');
+      } catch (actualError) {
+        expect((actualError as APIError).status).toEqual(401);
 
-      expect(axiosMock.history['get'].length).toEqual(1);
+        expect(axiosMock.history['get'].length).toEqual(1);
 
-      expect(updateTokenStub).toHaveBeenCalledTimes(1);
-      expect(updateTokenStub).toHaveBeenCalledWith(86400);
-    }
+        expect(mockSigninSilent).toHaveBeenCalledTimes(1);
+      }
+    });
   });
 });

@@ -8,7 +8,6 @@ import Grid from '@mui/material/Grid';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
@@ -18,22 +17,24 @@ import React, { useState } from 'react';
 import { StringBoolean } from 'types/misc';
 import yup from 'utils/YupSchema';
 
-const useStyles = makeStyles(() => ({
-  alignCenter: {
-    display: 'flex',
-    alignItems: 'center'
-  },
-  learnMoreBtn: {
-    textDecoration: 'underline',
-    lineHeight: 'auto',
-    '&:hover': {
-      textDecoration: 'underline'
+const useStyles = () => {
+  return {
+    alignCenter: {
+      display: 'flex',
+      alignItems: 'center'
+    },
+    learnMoreBtn: {
+      textDecoration: 'underline',
+      lineHeight: 'auto',
+      '&:hover': {
+        textDecoration: 'underline'
+      }
+    },
+    dialogText: {
+      maxWidth: '72ch'
     }
-  },
-  dialogText: {
-    maxWidth: '72ch'
-  }
-}));
+  };
+};
 
 export interface IProprietaryDataForm {
   proprietor: {
@@ -121,11 +122,11 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
               error={
                 touched.proprietor?.survey_data_proprietary && Boolean(errors.proprietor?.survey_data_proprietary)
               }>
-              <Typography variant="body1" className={classes.alignCenter}>
+              <Typography variant="body1" sx={classes.alignCenter}>
                 <span>Is the data captured in this survey proprietary?</span>
                 <Button
                   color="primary"
-                  className={classes.learnMoreBtn}
+                  sx={classes.learnMoreBtn}
                   data-testid="prop-dialog-btn"
                   onClick={() => setOpenDialog(true)}>
                   <Typography component="span">Learn more</Typography>
@@ -167,7 +168,7 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                       name="proprietor.proprietary_data_category"
                       label="Proprietary Data Category"
                       options={props.proprietary_data_category}
-                      onChange={(event, option) => {
+                      onChange={(_, option) => {
                         // Reset proprietor_name and first_nations_id if user changes proprietary_data_category from
                         // `First Nations Land` to any other option. This is because the `First Nations Land` category is
                         // based on a dropdown, where as the other options are free-text and only one of `proprietor_name` or
@@ -203,7 +204,7 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                         name="proprietor.first_nations_id"
                         label="Proprietor Name"
                         options={props.first_nations}
-                        onChange={(event, option) => {
+                        onChange={(_, option) => {
                           // Set the first nations id field for sending to the API
                           setFieldValue('proprietor.first_nations_id', option?.value);
                           setFieldValue('proprietor.proprietor_name', option?.label);

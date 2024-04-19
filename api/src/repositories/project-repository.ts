@@ -1,20 +1,24 @@
-import { isArray } from 'lodash';
+import { Knex } from 'knex';
 import SQL, { SQLStatement } from 'sql-template-strings';
+import { z } from 'zod';
+import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostProjectObject } from '../models/project-create';
-import { PutLocationData, PutObjectivesData, PutProjectData } from '../models/project-update';
+import { PutObjectivesData, PutProjectData } from '../models/project-update';
 import {
   GetAttachmentsData,
   GetIUCNClassificationData,
-  GetLocationData,
   GetObjectivesData,
   GetReportAttachmentsData,
   IProjectAdvancedFilters,
   ProjectData,
   ProjectListData
 } from '../models/project-view';
-import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
+import { getLogger } from '../utils/logger';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
+
+const defaultLog = getLogger('repositories/project-repository');
 
 /**
  * A repository class for accessing project data.
@@ -24,126 +28,154 @@ import { BaseRepository } from './base-repository';
  * @extends {BaseRepository}
  */
 export class ProjectRepository extends BaseRepository {
-  async getProjectList(
+  /**
+   * Constructs a non-paginated query used to get a project list for users.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IProjectAdvancedFilters} filterFields
+   * @return {*}  Promise<Knex.QueryBuilder>
+   * @memberof ProjectRepository
+   */
+  _makeProjectListQuery(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: IProjectAdvancedFilters
-  ): Promise<ProjectListData[]> {
-    const sqlStatement = SQL`
-      SELECT
-        p.project_id,
-        p.name as project_name,
-        p.uuid,
-        p.start_date,
-        p.end_date,
-        p.revision_count,
-        array_remove(array_agg(DISTINCT rl.region_name), null) as regions,
-        array_agg(distinct p2.program_id) as project_programs
-      FROM
-        project as p
-      LEFT JOIN project_program pp
-        ON p.project_id = pp.project_id
-      LEFT JOIN program p2
-        ON p2.program_id = pp.program_id
-      LEFT OUTER JOIN survey as s
-        ON s.project_id = p.project_id
-      LEFT OUTER JOIN study_species as sp
-        ON sp.survey_id = s.survey_id
-      LEFT JOIN survey_funding_source as sfs
-        ON s.survey_id = sfs.survey_id
-      LEFT JOIN funding_source as fs
-        ON sfs.funding_source_id = fs.funding_source_id
-      LEFT JOIN project_region pr
-        ON p.project_id = pr.project_id
-      LEFT JOIN region_lookup rl
-        ON pr.region_id = rl.region_id
-      WHERE 1 = 1
-    `;
+  ): Knex.QueryBuilder {
+    const knex = getKnex();
 
-    if (!isUserAdmin) {
-      sqlStatement.append(SQL`
-        AND p.project_id IN (
-          SELECT
-            project_id
-          FROM
-            project_participation
-          where
-            system_user_id = ${systemUserId}
-        )
-      `);
-    }
+    const query = knex
+      .select([
+        'p.project_id',
+        'p.name',
+        'p.objectives',
+        'p.start_date',
+        'p.end_date',
+        knex.raw(`COALESCE(array_remove(array_agg(DISTINCT rl.region_name), null), '{}') as regions`),
+        knex.raw('array_agg(distinct prog.program_id) as project_programs')
+      ])
+      .from('project as p')
 
-    if (filterFields && Object.keys(filterFields).length !== 0 && filterFields.constructor === Object) {
-      if (filterFields.start_date && !filterFields.end_date) {
-        sqlStatement.append(SQL` AND p.start_date >= ${filterFields.start_date}`);
-      }
+      .leftJoin('project_program as pp', 'p.project_id', 'pp.project_id')
+      .leftJoin('survey as s', 's.project_id', 'p.project_id')
+      .leftJoin('study_species as sp', 'sp.survey_id', 's.survey_id')
+      .leftJoin('program as prog', 'prog.program_id', 'pp.program_id')
+      .leftJoin('project_region as pr', 'p.project_id', 'pr.project_id')
+      .leftJoin('region_lookup as rl', 'pr.region_id', 'rl.region_id')
 
-      if (!filterFields.start_date && filterFields.end_date) {
-        sqlStatement.append(SQL` AND p.end_date <= ${filterFields.end_date}`);
-      }
-
-      if (filterFields.start_date && filterFields.end_date) {
-        sqlStatement.append(
-          SQL` AND p.start_date >= ${filterFields.start_date} AND p.end_date <= ${filterFields.end_date}`
-        );
-      }
-
-      if (filterFields.project_name) {
-        sqlStatement.append(SQL` AND p.name = ${filterFields.project_name}`);
-      }
-
-      if (filterFields?.species && filterFields?.species?.length > 0) {
-        sqlStatement.append(SQL` AND sp.wldtaxonomic_units_id =${filterFields.species[0]}`);
-      }
-
-      if (filterFields.keyword) {
-        const keyword_string = '%'.concat(filterFields.keyword).concat('%');
-        sqlStatement.append(SQL` AND p.name ilike ${keyword_string}`);
-        sqlStatement.append(SQL` AND fs.name ilike ${keyword_string}`);
-        sqlStatement.append(SQL` OR s.name ilike ${keyword_string}`);
-      }
-    }
-
-    sqlStatement.append(SQL`
-      group by
-        p.project_id,
-        p.name,
-        p.start_date,
-        p.end_date,
-        p.uuid,
-        p.revision_count
-    `);
+      .groupBy(['p.project_id', 'p.name', 'p.objectives', 'p.start_date', 'p.end_date']);
 
     /*
-      this is placed after the `group by` to take advantage of the `HAVING` clause
-      by placing the filter in the HAVING clause we are able to properly search
-      on program ids while still returning the full list that is associated to the project
-    */
-    if (filterFields.project_programs) {
-      let programs = filterFields.project_programs;
-      if (!isArray(filterFields.project_programs)) {
-        programs = [filterFields.project_programs];
-      }
-
-      // postgres arrays literals start and end with {}
-      sqlStatement.append(SQL` HAVING array_agg(distinct p2.program_id) && '{`);
-      programs.forEach((id, index) => {
-        // add the element
-        sqlStatement.append(id);
-
-        if (index !== programs.length - 1) {
-          // add a comma unless it is the last element in the array
-          sqlStatement.append(',');
-        }
+     * Ensure that users can only see project that they are participating in, unless
+     * they are an administrator.
+     */
+    if (!isUserAdmin) {
+      query.whereIn('p.project_id', (subQueryBuilder) => {
+        subQueryBuilder.select('project_id').from('project_participation').where('system_user_id', systemUserId);
       });
-      sqlStatement.append(SQL`}'`);
     }
 
-    sqlStatement.append(';');
+    // Start Date filter
+    if (filterFields.start_date) {
+      query.andWhere('p.start_date', '>=', filterFields.start_date);
+    }
 
-    const response = await this.connection.sql(sqlStatement, ProjectListData);
+    // End Date filter
+    if (filterFields.end_date) {
+      query.andWhere('p.end_date', '<=', filterFields.end_date);
+    }
+
+    // Project Name filter (exact match)
+    if (filterFields.project_name) {
+      query.andWhere('p.name', filterFields.project_name);
+    }
+
+    // Focal Species filter
+    if (filterFields.itis_tsns?.length) {
+      query.whereIn('sp.itis_tsn', filterFields.itis_tsns);
+    }
+
+    // Keyword Search filter
+    if (filterFields.keyword) {
+      const keywordMatch = `%${filterFields.keyword}%`;
+      query.where((subQueryBuilder) => {
+        subQueryBuilder
+          .where('p.name', 'ilike', keywordMatch)
+          .orWhere('p.objectives', 'ilike', keywordMatch)
+          .orWhere('s.name', 'ilike', keywordMatch);
+      });
+    }
+
+    // Programs filter
+    if (filterFields.project_programs?.length) {
+      query.where('prog.program_id', 'IN', filterFields.project_programs);
+    }
+
+    return query;
+  }
+
+  /**
+   * Retrieves the paginated list of all projects that are available to the user.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IProjectAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {Promise<ProjectListData[]>}
+   * @memberof ProjectRepository
+   */
+  async getProjectList(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IProjectAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<ProjectListData[]> {
+    defaultLog.debug({ label: 'getProjectList', pagination });
+
+    const query = this._makeProjectListQuery(isUserAdmin, systemUserId, filterFields);
+
+    // Pagination
+    if (pagination) {
+      query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        query.orderBy(pagination.sort, pagination.order);
+      }
+    }
+
+    const response = await this.connection.knex(query, ProjectListData);
 
     return response.rows;
+  }
+
+  /**
+   * Returns the total count of projects that are visible to the given user.
+   *
+   * @param {IProjectAdvancedFilters} filterFields
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @return {*}  {Promise<number>}
+   * @memberof ProjectRepository
+   */
+  async getProjectCount(
+    filterFields: IProjectAdvancedFilters,
+    isUserAdmin: boolean,
+    systemUserId: number | null
+  ): Promise<number> {
+    const projectsListQuery = this._makeProjectListQuery(isUserAdmin, systemUserId, filterFields);
+
+    const query = getKnex().from(projectsListQuery.as('temp')).count('* as project_count');
+
+    const response = await this.connection.knex(query, z.object({ project_count: z.string().transform(Number) }));
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to get project count', [
+        'ProjectRepository->getProjectCount',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0].project_count;
   }
 
   async getProjectData(projectId: number): Promise<ProjectData> {
@@ -153,7 +185,6 @@ export class ProjectRepository extends BaseRepository {
         p.uuid,
         p.name as project_name,
         p.objectives,
-        p.location_description,
         p.start_date,
         p.end_date,
         p.comments,
@@ -178,7 +209,7 @@ export class ProjectRepository extends BaseRepository {
 
     const response = await this.connection.sql(getProjectSqlStatement, ProjectData);
 
-    if (response?.rowCount < 1) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get project data', [
         'ProjectRepository->getProjectData',
         'rows was null or undefined, expected rows != null'
@@ -211,27 +242,6 @@ export class ProjectRepository extends BaseRepository {
     }
 
     return new GetObjectivesData(result);
-  }
-
-  async getLocationData(projectId: number): Promise<GetLocationData> {
-    const sqlStatement = SQL`
-      SELECT
-        p.location_description,
-        p.geojson as geometry,
-        p.revision_count
-      FROM
-        project p
-      WHERE
-        p.project_id = ${projectId}
-      GROUP BY
-        p.location_description,
-        p.geojson,
-        p.revision_count;
-    `;
-
-    const response = await this.connection.sql(sqlStatement);
-
-    return new GetLocationData(response.rows);
   }
 
   async getIUCNClassificationData(projectId: number): Promise<GetIUCNClassificationData> {
@@ -321,48 +331,17 @@ export class ProjectRepository extends BaseRepository {
       INSERT INTO project (
         name,
         objectives,
-        location_description,
         start_date,
         end_date,
-        comments,
-        geojson,
-        geography
+        comments
       ) VALUES (
         ${postProjectData.project.name},
         ${postProjectData.objectives.objectives},
-        ${postProjectData.location.location_description},
         ${postProjectData.project.start_date},
         ${postProjectData.project.end_date},
-        ${postProjectData.project.comments},
-        ${JSON.stringify(postProjectData.location.geometry)}
-    `;
-
-    if (postProjectData?.location?.geometry?.length) {
-      const geometryCollectionSQL = generateGeometryCollectionSQL(postProjectData.location.geometry);
-
-      sqlStatement.append(SQL`
-        ,public.geography(
-          public.ST_Force2D(
-            public.ST_SetSRID(
-      `);
-
-      sqlStatement.append(geometryCollectionSQL);
-
-      sqlStatement.append(SQL`
-        , 4326)))
-      `);
-    } else {
-      sqlStatement.append(SQL`
-        ,null
-      `);
-    }
-
-    sqlStatement.append(SQL`
+        ${postProjectData.project.comments}
       )
-      RETURNING
-        project_id as id;
-    `);
-
+      RETURNING project_id as id;`;
     const response = await this.connection.sql(sqlStatement);
 
     const result = response?.rows?.[0];
@@ -473,11 +452,10 @@ export class ProjectRepository extends BaseRepository {
   async updateProjectData(
     projectId: number,
     project: PutProjectData | null,
-    location: PutLocationData | null,
     objectives: PutObjectivesData | null,
     revision_count: number
   ): Promise<void> {
-    if (!project && !location && !objectives) {
+    if (!project && !objectives) {
       // Nothing to update
       throw new ApiExecuteSQLError('Nothing to update for Project Data', [
         'ProjectRepository->updateProjectData',
@@ -493,33 +471,6 @@ export class ProjectRepository extends BaseRepository {
       sqlSetStatements.push(SQL`name = ${project.name}`);
       sqlSetStatements.push(SQL`start_date = ${project.start_date}`);
       sqlSetStatements.push(SQL`end_date = ${project.end_date}`);
-    }
-
-    if (location) {
-      sqlSetStatements.push(SQL`location_description = ${location.location_description}`);
-      sqlSetStatements.push(SQL`geojson = ${JSON.stringify(location.geometry)}`);
-
-      const geometrySQLStatement = SQL`geography = `;
-
-      if (location?.geometry?.length) {
-        const geometryCollectionSQL = generateGeometryCollectionSQL(location.geometry);
-
-        geometrySQLStatement.append(SQL`
-        public.geography(
-          public.ST_Force2D(
-            public.ST_SetSRID(
-      `);
-
-        geometrySQLStatement.append(geometryCollectionSQL);
-
-        geometrySQLStatement.append(SQL`
-        , 4326)))
-      `);
-      } else {
-        geometrySQLStatement.append(SQL`null`);
-      }
-
-      sqlSetStatements.push(geometrySQLStatement);
     }
 
     if (objectives) {

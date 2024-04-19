@@ -12,7 +12,7 @@ const path = require('path');
 const apiDeploy = async (settings) => {
   const phases = settings.phases;
   const options = settings.options;
-  const phase = options.env;
+  const phase = settings.options.env;
 
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
 
@@ -31,18 +31,19 @@ const apiDeploy = async (settings) => {
         HOST: phases[phase].host,
         APP_HOST: phases[phase].appHost,
         CHANGE_ID: phases.build.changeId || changeId,
-        NODE_ENV: phases[phase].env,
+        // Node
+        NODE_ENV: phases[phase].nodeEnv,
+        NODE_OPTIONS: phases[phase].nodeOptions,
         // BioHub Platform (aka: Backbone)
-        BACKBONE_API_HOST: phases[phase].backboneApiHost,
+        BACKBONE_INTERNAL_API_HOST: phases[phase].backboneInternalApiHost,
         BACKBONE_INTAKE_PATH: phases[phase].backboneIntakePath,
         BACKBONE_ARTIFACT_INTAKE_PATH: phases[phase].backboneArtifactIntakePath,
         BACKBONE_INTAKE_ENABLED: phases[phase].backboneIntakeEnabled,
+        BIOHUB_TAXON_PATH: phases[phase].biohubTaxonPath,
+        BIOHUB_TAXON_TSN_PATH: phases[phase].biohubTaxonTsnPath,
         // BCTW / Critterbase
         BCTW_API_HOST: phases[phase].bctwApiHost,
         CB_API_HOST: phases[phase].critterbaseApiHost,
-        // Elastic Search
-        ELASTICSEARCH_URL: phases[phase].elasticsearchURL,
-        ELASTICSEARCH_TAXONOMY_INDEX: phases[phase].elasticsearchTaxonomyIndex,
         // S3
         S3_KEY_PREFIX: phases[phase].s3KeyPrefix,
         // Database
@@ -64,7 +65,9 @@ const apiDeploy = async (settings) => {
         KEYCLOAK_API_HOST: phases[phase].sso.cssApi.cssApiHost,
         KEYCLOAK_API_ENVIRONMENT: phases[phase].sso.cssApi.cssApiEnvironment,
         // Log Level
-        LOG_LEVEL: phases[phase].logLevel || 'info',
+        LOG_LEVEL: phases[phase].logLevel,
+        API_RESPONSE_VALIDATION_ENABLED: phases[phase].apiResponseValidationEnabled,
+        DATABASE_RESPONSE_VALIDATION_ENABLED: phases[phase].databaseResponseValidationEnabled,
         // Openshift Resources
         CPU_REQUEST: phases[phase].cpuRequest,
         CPU_LIMIT: phases[phase].cpuLimit,

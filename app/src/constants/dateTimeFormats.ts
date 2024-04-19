@@ -13,7 +13,6 @@ export enum DATE_FORMAT {
   MediumDateFormat = 'MMMM D, YYYY', //January 5, 2020
   MediumDateFormat2 = 'MMMM-DD-YYYY', //January-5-2020
   MediumDateTimeFormat = 'MMMM D, YYYY, h:mm a', //January 5, 2020, 3:30 pm
-  LongDateFormat = 'dddd, MMMM D, YYYY, h:mm a', //Monday, January 5, 2020, 3:30 pm
   LongDateTimeFormat = 'dddd, MMMM D, YYYY, h:mm a' //Monday, January 5, 2020, 3:30 pm
 }
 
@@ -30,5 +29,6 @@ export enum DATE_LIMIT {
  *
  */
 export enum TIME_FORMAT {
-  ShortTimeFormatAmPm = 'hh:mm A' //11:00 AM
+  ShortTimeFormatAmPm = 'hh:mm A', //11:00 AM
+  LongTimeFormat24Hour = 'HH:mm:ss' //23:00:00
 }

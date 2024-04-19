@@ -1,0 +1,41 @@
+/*
+  CSS rule to remove focus outline from items/ features selected on a leaflet map
+  Chrome has a built in css rule for adding focus borders around items that have been clicked
+  This was displaying a large black outline on map elements that had been clicked
+  More details on the issue at this link: https://gis.stackexchange.com/questions/447502/prevent-leaflet-map-from-showing-rectangle-around-layer-on-click
+*/
+
+.leaflet-container {
+  font-family: 'BCSans', Verdana, Arial, sans-serif;
+}
+
+path.leaflet-interactive:focus {
+  outline: none;
+}
+
+.leaflet-top .leaflet-control {
+  margin-top: 16px;
+}
+
+.leaflet-left .leaflet-control {
+  margin-left: 16px;
+}
+
+.leaflet-right .leaflet-control {
+  margin-right: 16px;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 4px;
+}
+
+.leaflet-popup-content {
+  margin: 0;
+  padding: 12px;
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+  top: 11px;
+  right: 8px;
+  margin: 0;
+}

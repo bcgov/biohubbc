@@ -1,9 +1,13 @@
+import { ViewProjectI18N } from 'constants/i18n';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
+import useDataLoaderError from 'hooks/useDataLoaderError';
 import { IGetProjectAttachmentsResponse, IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyForListResponse } from 'interfaces/useSurveyApi.interface';
+import { IGetSurveyListResponse } from 'interfaces/useSurveyApi.interface';
 import { createContext, PropsWithChildren, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router';
+import { ApiPaginationRequestOptions } from 'types/misc';
 
 /**
  * Context object that stores information about a project
@@ -23,10 +27,10 @@ export interface IProjectContext {
   /**
    * The Data Loader used to load project data
    *
-   * @type {DataLoader<[project_id: number], IGetSurveyForListResponse[], unknown>}
+   * @type {DataLoader<[pagination?: ApiPaginationRequestOptions], IGetSurveyListResponse, unknown>}
    * @memberof IProjectContext
    */
-  surveysListDataLoader: DataLoader<[project_id: number], IGetSurveyForListResponse[], unknown>;
+  surveysListDataLoader: DataLoader<[pagination?: ApiPaginationRequestOptions], IGetSurveyListResponse, unknown>;
 
   /**
    * The Data Loader used to load project data
@@ -47,17 +51,32 @@ export interface IProjectContext {
 
 export const ProjectContext = createContext<IProjectContext>({
   projectDataLoader: {} as DataLoader<[project_id: number], IGetProjectForViewResponse, unknown>,
-  surveysListDataLoader: {} as DataLoader<[project_id: number], IGetSurveyForListResponse[], unknown>,
+  surveysListDataLoader: {} as DataLoader<[pagination?: ApiPaginationRequestOptions], IGetSurveyListResponse, unknown>,
   artifactDataLoader: {} as DataLoader<[project_id: number], IGetProjectAttachmentsResponse, unknown>,
   projectId: -1
 });
 
 export const ProjectContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
-  const biohubApi = useBiohubApi();
-  const projectDataLoader = useDataLoader(biohubApi.project.getProjectForView);
-  const surveysListDataLoader = useDataLoader(biohubApi.survey.getSurveysList);
-  const artifactDataLoader = useDataLoader(biohubApi.project.getProjectAttachments);
   const urlParams: Record<string, string | number | undefined> = useParams();
+  const projectId = Number(urlParams['id']);
+
+  const biohubApi = useBiohubApi();
+
+  const projectDataLoader = useDataLoader(biohubApi.project.getProjectForView);
+
+  useDataLoaderError(projectDataLoader, (dataLoader) => {
+    return {
+      dialogTitle: ViewProjectI18N.viewProjectErrorDialogTitle,
+      dialogText: ViewProjectI18N.viewProjectErrorDialogText,
+      dialogError: (dataLoader.error as APIError).message,
+      dialogErrorDetails: (dataLoader.error as APIError).errors
+    };
+  });
+
+  const surveysListDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions) =>
+    biohubApi.survey.getSurveysBasicFieldsByProjectId(projectId, pagination)
+  );
+  const artifactDataLoader = useDataLoader(biohubApi.project.getProjectAttachments);
 
   if (!urlParams['id']) {
     throw new Error(
@@ -65,15 +84,12 @@ export const ProjectContextProvider = (props: PropsWithChildren<Record<never, an
     );
   }
 
-  const projectId = Number(urlParams['id']);
-
   /**
    * Refreshes the current project object whenever the current project ID changes
    */
   useEffect(() => {
     if (projectId) {
       projectDataLoader.refresh(projectId);
-      surveysListDataLoader.refresh(projectId);
       artifactDataLoader.refresh(projectId);
     }
 

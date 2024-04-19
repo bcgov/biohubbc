@@ -163,7 +163,7 @@ objects:
             role: db
         spec:
           containers:
-            - capabilities: {}
+            - name: postgresql
               env:
                 - name: POSTGRESQL_USER
                   valueFrom:
@@ -200,7 +200,6 @@ objects:
                 tcpSocket:
                   port: 5432
                 timeoutSeconds: 1
-              name: postgresql
               ports:
                 - containerPort: 5432
                   protocol: TCP

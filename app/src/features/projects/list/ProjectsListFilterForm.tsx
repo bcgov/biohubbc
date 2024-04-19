@@ -1,23 +1,13 @@
-import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
-import { makeStyles } from '@mui/styles';
-import assert from 'assert';
+import Stack from '@mui/material/Stack';
 import ProjectAdvancedFilters, {
   IProjectAdvancedFilters,
   ProjectAdvancedFiltersInitialValues
 } from 'components/search-filter/ProjectAdvancedFilters';
-import { CodesContext } from 'contexts/codesContext';
 import { Formik, FormikProps } from 'formik';
-import React, { useContext, useRef, useState } from 'react';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  actionButton: {
-    marginLeft: theme.spacing(1),
-    minWidth: '6rem'
-  }
-}));
+import React, { useRef } from 'react';
 
 export interface IProjectsListFilterFormProps {
   handleSubmit: (filterValues: IProjectAdvancedFilters) => void;
@@ -25,24 +15,16 @@ export interface IProjectsListFilterFormProps {
 }
 
 const ProjectsListFilterForm: React.FC<IProjectsListFilterFormProps> = (props) => {
-  const { handleSubmit, handleReset } = props;
-  const classes = useStyles();
-
-  const codesContext = useContext(CodesContext);
-  // Codes data must be loaded by a parent before this component is rendered
-  assert(codesContext.codesDataLoader.data);
-
-  const [formikRef] = useState(useRef<FormikProps<IProjectAdvancedFilters>>(null));
+  const formikRef = useRef<FormikProps<IProjectAdvancedFilters>>(null);
 
   return (
-    <Box>
+    <>
       <Box p={3}>
-        <Formik innerRef={formikRef} initialValues={ProjectAdvancedFiltersInitialValues} onSubmit={handleSubmit}>
-          <>
+        <Formik innerRef={formikRef} initialValues={ProjectAdvancedFiltersInitialValues} onSubmit={props.handleSubmit}>
+          <Stack gap={3}>
             <ProjectAdvancedFilters />
-            <Box mt={3} display="flex" alignItems="center" justifyContent="flex-end">
+            <Stack flexDirection="row" alignItems="center" justifyContent="flex-end" gap={1}>
               <Button
-                className={classes.actionButton}
                 type="submit"
                 variant="contained"
                 color="primary"
@@ -50,21 +32,20 @@ const ProjectsListFilterForm: React.FC<IProjectsListFilterFormProps> = (props) =
                 Apply Filters
               </Button>
               <Button
-                className={classes.actionButton}
                 variant="outlined"
                 color="primary"
                 onClick={() => {
-                  handleReset();
+                  props.handleReset();
                   formikRef.current?.resetForm();
                 }}>
                 Clear
               </Button>
-            </Box>
-          </>
+            </Stack>
+          </Stack>
         </Formik>
       </Box>
       <Divider></Divider>
-    </Box>
+    </>
   );
 };
 

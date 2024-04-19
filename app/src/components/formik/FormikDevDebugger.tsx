@@ -1,6 +1,6 @@
-import { Button } from '@mui/material';
+import Button from '@mui/material/Button';
 import { useFormikContext } from 'formik';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 /**
  * Renders formik form values. Used for manual testing purposes
@@ -22,7 +22,7 @@ const FormikDevDebugger = ({ custom_payload }: FormikDevDebuggerProps) => {
     <>
       {/* Only render the button in Development */}
       {process.env.NODE_ENV === 'development' ? (
-        <Button onClick={() => setShowDebugger((d) => !d)}>Display Form Content (Only Dev)</Button>
+        <Button onClick={() => setShowDebugger((d) => !d)}>Formik Debugger (Only Dev)</Button>
       ) : null}
       {showFormDebugger ? (
         <pre>

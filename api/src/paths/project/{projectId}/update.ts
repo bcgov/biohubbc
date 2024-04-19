@@ -1,12 +1,11 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { Feature } from 'geojson';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/http-error';
 import { PostParticipantData } from '../../../models/project-create';
-import { GeoJSONFeature } from '../../../openapi/schemas/geoJson';
 import { projectUpdatePutRequestObject } from '../../../openapi/schemas/project';
+import { projectAndSystemUserSchema } from '../../../openapi/schemas/user';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { ProjectService } from '../../../services/project-service';
 import { getLogger } from '../../../utils/logger';
@@ -35,7 +34,6 @@ export const GET: Operation = [
 export enum GET_ENTITIES {
   project = 'project',
   objectives = 'objectives',
-  location = 'location',
   iucn = 'iucn',
   participants = 'participants'
 }
@@ -79,13 +77,26 @@ GET.apiDoc = {
           schema: {
             title: 'Project get response object, for update purposes',
             type: 'object',
+            additionalProperties: false,
             properties: {
               project: {
                 description: 'Basic project metadata',
                 type: 'object',
+                additionalProperties: false,
                 required: ['project_name', 'project_programs', 'start_date', 'end_date', 'revision_count'],
                 nullable: true,
                 properties: {
+                  project_id: {
+                    type: 'integer',
+                    minimum: 1
+                  },
+                  uuid: {
+                    type: 'string'
+                  },
+                  comments: {
+                    type: 'string',
+                    nullable: true
+                  },
                   project_name: {
                     type: 'string'
                   },
@@ -114,34 +125,22 @@ GET.apiDoc = {
               objectives: {
                 description: 'The project objectives',
                 type: 'object',
+                additionalProperties: false,
                 required: ['objectives'],
                 nullable: true,
                 properties: {
                   objectives: {
                     type: 'string'
-                  }
-                }
-              },
-              location: {
-                description: 'The project location object',
-                type: 'object',
-                required: ['location_description', 'geometry'],
-                nullable: true,
-                properties: {
-                  location_description: {
-                    type: 'string'
                   },
-                  geometry: {
-                    type: 'array',
-                    items: {
-                      ...(GeoJSONFeature as object)
-                    }
+                  revision_count: {
+                    type: 'number'
                   }
                 }
               },
               iucn: {
                 description: 'The International Union for Conservation of Nature number',
                 type: 'object',
+                additionalProperties: false,
                 required: ['classificationDetails'],
                 nullable: true,
                 properties: {
@@ -149,6 +148,7 @@ GET.apiDoc = {
                     type: 'array',
                     items: {
                       type: 'object',
+                      additionalProperties: false,
                       properties: {
                         classification: {
                           type: 'number'
@@ -168,61 +168,7 @@ GET.apiDoc = {
                 title: 'Project participants',
                 type: 'array',
                 items: {
-                  type: 'object',
-                  required: [
-                    'project_participation_id',
-                    'project_id',
-                    'system_user_id',
-                    'project_role_ids',
-                    'project_role_names',
-                    'project_role_permissions',
-                    'display_name',
-                    'email',
-                    'agency',
-                    'identity_source'
-                  ],
-                  properties: {
-                    project_participation_id: {
-                      type: 'number'
-                    },
-                    project_id: {
-                      type: 'number'
-                    },
-                    system_user_id: {
-                      type: 'number'
-                    },
-                    project_role_ids: {
-                      type: 'array',
-                      items: {
-                        type: 'number'
-                      }
-                    },
-                    project_role_names: {
-                      type: 'array',
-                      items: {
-                        type: 'string'
-                      }
-                    },
-                    project_role_permissions: {
-                      type: 'array',
-                      items: {
-                        type: 'string'
-                      }
-                    },
-                    display_name: {
-                      type: 'string'
-                    },
-                    email: {
-                      type: 'string'
-                    },
-                    agency: {
-                      type: 'string',
-                      nullable: true
-                    },
-                    identity_source: {
-                      type: 'string'
-                    }
-                  }
+                  ...projectAndSystemUserSchema
                 }
               }
             }
@@ -237,7 +183,7 @@ GET.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -250,6 +196,7 @@ GET.apiDoc = {
 
 /**
  * Get a project, for update purposes.
+ * @TODO remove, per https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-522
  *
  * @returns {RequestHandler}
  */
@@ -315,7 +262,6 @@ PUT.apiDoc = {
     content: {
       'application/json': {
         schema: {
-          // TODO this is currently empty, and needs updating
           ...(projectUpdatePutRequestObject as object)
         }
       }
@@ -328,6 +274,7 @@ PUT.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: ['id'],
             properties: {
               id: {
@@ -346,7 +293,7 @@ PUT.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -360,7 +307,6 @@ PUT.apiDoc = {
 export interface IUpdateProject {
   project: any | null;
   objectives: any | null;
-  location: { geometry: Feature[]; location_description: string } | null;
   iucn: any | null;
   participants: PostParticipantData[] | null;
 }
@@ -390,7 +336,7 @@ export function updateProject(): RequestHandler {
       await connection.open();
 
       const projectService = new ProjectService(connection);
-      await projectService.updateProjectAndUploadMetadataToBioHub(projectId, entities);
+      await projectService.updateProject(projectId, entities);
 
       await connection.commit();
 

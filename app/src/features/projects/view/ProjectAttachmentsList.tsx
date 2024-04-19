@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import AttachmentsList from 'components/attachments/list/AttachmentsList';
 import ProjectReportAttachmentDialog from 'components/dialog/attachments/project/ProjectReportAttachmentDialog';
 import RemoveOrResubmitDialog from 'components/publish/components/RemoveOrResubmitDialog';
@@ -146,6 +146,7 @@ const ProjectAttachmentsList = () => {
         handleDelete={handleDelete}
         handleViewDetails={handleViewDetailsOpen}
         handleRemoveOrResubmit={handleRemoveOrResubmit}
+        emptyStateText="No shared files found"
       />
     </>
   );

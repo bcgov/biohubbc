@@ -3,20 +3,14 @@ import YesNoDialog from 'components/dialog/YesNoDialog';
 import MultiAutocompleteField from 'components/fields/MultiAutocompleteField';
 import { CodesContext } from 'contexts/codesContext';
 import { useFormikContext } from 'formik';
-import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
+import { IEditSurveyRequest, IGetSurveyStratum } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useState } from 'react';
 import yup from 'utils/YupSchema';
-
-export interface IStratum {
-  survey_stratum_id?: number;
-  name: string;
-  description: string | null;
-}
 
 export interface ISurveySiteSelectionForm {
   site_selection: {
     strategies: string[];
-    stratums: IStratum[];
+    stratums: IGetSurveyStratum[];
   };
 }
 
@@ -31,7 +25,9 @@ export const SurveySiteSelectionYupSchema = yup.object().shape({
   site_selection: yup.object().shape({
     strategies: yup
       .array()
-      .of(yup.string() /* .required('Must select a valid site selection strategy') */)
+      .required('Site Selection Strategy is required')
+      .min(1, 'Site Selection Strategy is required')
+      .of(yup.string())
       .when('stratums', (stratums: string[], schema: any) => {
         return stratums.length > 0
           ? schema.test(
@@ -130,8 +126,8 @@ const SurveySiteSelectionForm = (props: ISurveySiteSelectionFormProps) => {
         label="Site Selection Strategies"
         options={siteStrategies}
         selectedOptions={selectedSiteStrategies}
-        required={false}
-        onChange={(event, selectedOptions, reason) => {
+        required={true}
+        onChange={(_, selectedOptions, reason) => {
           // If the user clicks to remove the 'Stratified' option and there are Stratums already defined, then show
           // a warning dialogue asking the user if they are sure they want to remove the option and delete the Stratums
           if (

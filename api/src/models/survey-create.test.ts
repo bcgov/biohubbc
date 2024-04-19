@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
   PostAgreementsData,
-  PostLocationData,
   PostPartnershipsData,
   PostPermitData,
   PostProprietorData,
@@ -362,54 +361,6 @@ describe('PostProprietorData', () => {
   });
 });
 
-describe('PostLocationData', () => {
-  describe('No values provided', () => {
-    let data: PostLocationData;
-
-    before(() => {
-      data = new PostLocationData(null);
-    });
-
-    it('sets name', () => {
-      expect(data.name).to.equal(null);
-    });
-
-    it('sets description', () => {
-      expect(data.description).to.equal(null);
-    });
-
-    it('sets geojson', () => {
-      expect(data.geojson).to.eql([]);
-    });
-  });
-
-  describe('All values provided with first nations id', () => {
-    let data: PostLocationData;
-
-    const obj = {
-      name: 'area name',
-      description: 'area description',
-      geojson: [{}]
-    };
-
-    before(() => {
-      data = new PostLocationData(obj);
-    });
-
-    it('sets name', () => {
-      expect(data.name).to.equal(obj.name);
-    });
-
-    it('sets description', () => {
-      expect(data.description).to.equal(obj.description);
-    });
-
-    it('sets geojson', () => {
-      expect(data.geojson).to.eql(obj.geojson);
-    });
-  });
-});
-
 describe('PostPurposeAndMethodologyData', () => {
   describe('No values provided', () => {
     let data: PostPurposeAndMethodologyData;
@@ -419,19 +370,11 @@ describe('PostPurposeAndMethodologyData', () => {
     });
 
     it('sets intended_outcome_id', () => {
-      expect(data.intended_outcome_id).to.equal(null);
+      expect(data.intended_outcome_ids).to.eql([]);
     });
 
     it('sets additional_details', () => {
       expect(data.additional_details).to.equal(null);
-    });
-
-    it('sets field_method_id', () => {
-      expect(data.field_method_id).to.equal(null);
-    });
-
-    it('sets ecological_season_id', () => {
-      expect(data.ecological_season_id).to.equal(null);
     });
 
     it('sets vantage_code_ids', () => {
@@ -447,10 +390,8 @@ describe('PostPurposeAndMethodologyData', () => {
     let data: PostPurposeAndMethodologyData;
 
     const obj = {
-      intended_outcome_id: 1,
+      intended_outcome_ids: [1],
       additional_details: 'additional_detail',
-      field_method_id: 2,
-      ecological_season_id: 3,
       vantage_code_ids: [4, 5],
       surveyed_all_areas: true
     };
@@ -460,19 +401,11 @@ describe('PostPurposeAndMethodologyData', () => {
     });
 
     it('sets intended_outcome_id', () => {
-      expect(data.intended_outcome_id).to.equal(obj.intended_outcome_id);
+      expect(data.intended_outcome_ids).to.equal(obj.intended_outcome_ids);
     });
 
     it('sets additional_details', () => {
       expect(data.additional_details).to.eql(obj.additional_details);
-    });
-
-    it('sets field_method_id', () => {
-      expect(data.field_method_id).to.eql(obj.field_method_id);
-    });
-
-    it('sets ecological_season_id', () => {
-      expect(data.ecological_season_id).to.eql(obj.ecological_season_id);
     });
 
     it('sets vantage_code_ids', () => {

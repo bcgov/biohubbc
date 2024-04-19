@@ -3,7 +3,6 @@ import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
-import Paper from '@mui/material/Paper';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import FileUploadWithMetaDialog from 'components/dialog/attachments/FileUploadWithMetaDialog';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
@@ -92,8 +91,8 @@ const SurveyAttachments: React.FC = () => {
           label="Documents"
           buttonLabel="Upload"
           buttonTitle="Upload Documents"
-          buttonProps={{ variant: 'contained', disableElevation: true }}
-          buttonStartIcon={<Icon path={mdiTrayArrowUp} size={1} />}
+          buttonProps={{ variant: 'contained' }}
+          buttonStartIcon={<Icon path={mdiTrayArrowUp} size={0.75} />}
           menuItems={[
             {
               menuLabel: 'Upload a Report',
@@ -120,10 +119,8 @@ const SurveyAttachments: React.FC = () => {
           )}
         />
         <Divider></Divider>
-        <Box p={3}>
-          <Paper variant="outlined">
-            <SurveyAttachmentsList />
-          </Paper>
+        <Box p={2}>
+          <SurveyAttachmentsList />
         </Box>
       </Box>
     </>

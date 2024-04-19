@@ -1,3 +1,4 @@
+import { SYSTEM_ROLE } from '../constants/roles';
 import { IDBConnection } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { SystemUser, UserRepository, UserSearchCriteria } from '../repositories/user-repository';
@@ -13,6 +14,19 @@ export class UserService extends DBService {
     super(connection);
 
     this.userRepository = new UserRepository(connection);
+  }
+
+  /**
+   * Checks if the given system user is an admin (has an admin level system role).
+   *
+   * @param {SystemUser} systemUser
+   * @return {*}  {boolean} `true` if the user is an admin, `false` otherwise.
+   */
+  static isAdmin(systemUser: SystemUser): boolean {
+    return (
+      systemUser.role_names.includes(SYSTEM_ROLE.SYSTEM_ADMIN) ||
+      systemUser.role_names.includes(SYSTEM_ROLE.DATA_ADMINISTRATOR)
+    );
   }
 
   /**

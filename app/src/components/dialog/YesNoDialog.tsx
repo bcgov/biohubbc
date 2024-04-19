@@ -1,4 +1,4 @@
-import Button, { ButtonProps } from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton/LoadingButton';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -73,18 +73,22 @@ export interface IYesNoDialogProps {
   /**
    * Optional yes-button props
    *
-   * @type {Partial<ButtonProps>}
-   * @memberof IYesNoDialogProps
+   * @type {any}
+   * Needed fix: Add correct hardcoded type.
+   * Note: LoadingButtonProps causes build compile issue
+   * https://github.com/mui/material-ui/issues/30038
    */
-  yesButtonProps?: Partial<ButtonProps>;
+  yesButtonProps?: any;
 
   /**
    * Optional no-button props
    *
-   * @type {Partial<ButtonProps>}
-   * @memberof IYesNoDialogProps
+   * @type {any}
+   * Needed fix: Add correct hardcoded type.
+   * Note: LoadingButtonProps causes build compile issue
+   * https://github.com/mui/material-ui/issues/30038
    */
-  noButtonProps?: Partial<ButtonProps>;
+  noButtonProps?: any;
 
   /**
    * Optional Boolean to state if button should be loading
@@ -121,26 +125,24 @@ const YesNoDialog: React.FC<IYesNoDialogProps> = (props) => {
         {props.dialogContent}
       </DialogContent>
       <DialogActions>
-        <Button
+        <LoadingButton
           data-testid="yes-button"
           onClick={props.onYes}
           color="primary"
           variant="contained"
-          sx={{
-            fontWeight: 700
-          }}
+          fontWeight={700}
           {...props.yesButtonProps}>
           {props.yesButtonLabel ? props.yesButtonLabel : 'Yes'}
-        </Button>
+        </LoadingButton>
 
-        <Button
+        <LoadingButton
           data-testid="no-button"
           onClick={props.onNo}
           color="primary"
           variant="outlined"
           {...props.noButtonProps}>
           {props.noButtonLabel ? props.noButtonLabel : 'No'}
-        </Button>
+        </LoadingButton>
       </DialogActions>
     </Dialog>
   );

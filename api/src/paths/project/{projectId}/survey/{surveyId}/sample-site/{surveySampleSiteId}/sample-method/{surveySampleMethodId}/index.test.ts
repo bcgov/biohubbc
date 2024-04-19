@@ -91,6 +91,7 @@ describe('updateSurveySampleMethod', () => {
     mockReq.body = {
       sampleMethod: {
         method_lookup_id: 1,
+        method_response_metric_id: 1,
         description: 'description'
       }
     };
@@ -115,13 +116,16 @@ describe('updateSurveySampleMethod', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      surveySampleMethodId: '1',
-      surveySampleSiteId: '2'
+      surveyId: '1001',
+      surveySampleMethodId: '6',
+      surveySampleSiteId: '9'
     };
 
     const sampleMethod = {
       method_lookup_id: 1,
-      description: 'description'
+      description: 'description',
+      survey_sample_method_id: 6,
+      survey_sample_site_id: 9
     };
 
     mockReq.body = {
@@ -134,7 +138,7 @@ describe('updateSurveySampleMethod', () => {
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(updateSampleMethodStub).to.have.been.calledOnceWithExactly(sampleMethod);
+    expect(updateSampleMethodStub).to.have.been.calledOnceWithExactly(1001, sampleMethod);
     expect(mockRes.status).to.have.been.calledWith(204);
   });
 });
@@ -163,8 +167,8 @@ describe('deleteSurveySampleMethodRecord', () => {
       const result = delete_survey_sample_method_record.deleteSurveySampleMethodRecord();
       await result(
         { ...sampleReq, params: { ...sampleReq.params, surveySampleMethodId: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
+        null as unknown as any,
+        null as unknown as any
       );
       expect.fail();
     } catch (actualError) {

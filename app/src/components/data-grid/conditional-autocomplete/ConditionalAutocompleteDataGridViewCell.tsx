@@ -1,3 +1,4 @@
+import Typography from '@mui/material/Typography';
 import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import { IAutocompleteDataGridOption } from 'components/data-grid/autocomplete/AutocompleteDataGrid.interface';
 import { useMemo } from 'react';
@@ -27,6 +28,13 @@ export interface IConditionalAutocompleteDataGridViewCellProps<
    * @memberof IConditionalAutocompleteDataGridViewCellProps
    */
   optionsGetter: (row: DataGridType, allOptions: OptionsType[]) => IAutocompleteDataGridOption<ValueType>[];
+  /**
+   * Indicates if the control contains an error
+   *
+   * @type {boolean}
+   * @memberof IConditionalAutocompleteDataGridViewCellProps
+   */
+  error?: boolean;
 }
 
 /**
@@ -55,7 +63,11 @@ const ConditionalAutocompleteDataGridViewCell = <
     [allOptions, dataGridProps.row, optionsGetter]
   );
 
-  return <>{options.find((item) => item.value === dataGridProps.value)?.label || ''}</>;
+  return (
+    <Typography color={props.error ? 'error' : undefined} sx={{ fontSize: 'inherit' }}>
+      {options.find((item) => item.value === dataGridProps.value)?.label || ''}
+    </Typography>
+  );
 };
 
 export default ConditionalAutocompleteDataGridViewCell;

@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
 import Dialog from '@mui/material/Dialog';
@@ -7,8 +6,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import React from 'react';
-
-const DEFAULT_ERROR_DIALOG_TITLE = 'Error!';
 
 export interface IErrorDialogProps {
   /**
@@ -67,7 +64,7 @@ export interface IErrorDialogProps {
  * @param {*} props
  * @return {*}
  */
-export const ErrorDialog: React.FC<IErrorDialogProps> = (props) => {
+export const ErrorDialog = (props: IErrorDialogProps) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   const ErrorDetailsList = (errorProps: { errors: (string | object)[] }) => {
@@ -87,40 +84,37 @@ export const ErrorDialog: React.FC<IErrorDialogProps> = (props) => {
   }
 
   return (
-    <Box>
-      <Dialog
-        open={props.open}
-        onClose={props.onClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        keepMounted={false}>
-        <DialogTitle id="alert-dialog-title">{props.dialogTitle || DEFAULT_ERROR_DIALOG_TITLE}</DialogTitle>
+    <Dialog
+      open={props.open}
+      onClose={props.onClose}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+      keepMounted={false}>
+      <DialogTitle id="alert-dialog-title">{props.dialogTitle}</DialogTitle>
 
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">{props.dialogText}</DialogContentText>
-        </DialogContent>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">{props.dialogText}</DialogContentText>
+        {props.dialogError && <DialogContentText id="alert-dialog-description">{props.dialogError}</DialogContentText>}
 
-        {props.dialogError && (
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">{props.dialogError}</DialogContentText>
-            {!!props?.dialogErrorDetails?.length && (
-              <>
-                <Button color="primary" onClick={() => setIsExpanded(!isExpanded)}>
-                  {(isExpanded && 'Hide detailed error message') || 'Show detailed error message'}
-                </Button>
-                <Collapse in={isExpanded}>
-                  <ErrorDetailsList errors={props.dialogErrorDetails} />
-                </Collapse>
-              </>
-            )}
-          </DialogContent>
+        {props?.dialogErrorDetails?.length ? (
+          <>
+            <Button color="primary" onClick={() => setIsExpanded(!isExpanded)}>
+              {isExpanded ? 'Hide detailed error message' : 'Show detailed error message'}
+            </Button>
+            <Collapse in={isExpanded}>
+              <ErrorDetailsList errors={props.dialogErrorDetails} />
+            </Collapse>
+          </>
+        ) : (
+          <></>
         )}
-        <DialogActions>
-          <Button onClick={props.onOk} color="primary" variant="contained" autoFocus>
-            Ok
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+      </DialogContent>
+
+      <DialogActions>
+        <Button onClick={props.onOk} color="primary" variant="contained" autoFocus>
+          Ok
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };

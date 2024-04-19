@@ -5,10 +5,10 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ICode } from 'interfaces/useCodesApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
-import { fireEvent, render, waitFor, within } from 'test-helpers/test-utils';
-import ProjectUserForm, { ProjectUserRoleFormInitialValues, ProjectUserRoleYupSchema } from './ProjectUserForm';
+import { render, waitFor } from 'test-helpers/test-utils';
+import ProjectUserForm, { ProjectUserRoleYupSchema } from './ProjectUserForm';
 
-const roles: ICode[] = [
+const mockRoles: ICode[] = [
   {
     id: 1,
     name: PROJECT_ROLE.COLLABORATOR
@@ -67,32 +67,34 @@ describe('ProjectUserForm', () => {
 
   it('renders correctly with default values', async () => {
     const authState = getMockAuthState({ base: SystemAdminAuthState });
+
+    const formikInitialValues = {
+      participants: [
+        {
+          system_user_id: 1,
+          user_identifier: 'identifier',
+          user_guid: '',
+          identity_source: 'IDIR',
+          record_end_date: '',
+          role_ids: [],
+          role_names: [],
+          email: 'user@email.com',
+          display_name: 'Test User',
+          agency: 'Business',
+          project_role_names: [PROJECT_ROLE.COORDINATOR]
+        }
+      ]
+    };
+
     const { getByTestId, getByText } = render(
       <AuthStateContext.Provider value={authState}>
         <Formik
-          initialValues={ProjectUserRoleFormInitialValues}
+          initialValues={formikInitialValues}
           validationSchema={ProjectUserRoleYupSchema}
           validateOnBlur={true}
           validateOnChange={false}
           onSubmit={async () => {}}>
-          <ProjectUserForm
-            users={[
-              {
-                system_user_id: 1,
-                user_identifier: 'identifier',
-                user_guid: '',
-                identity_source: 'IDIR',
-                record_end_date: '',
-                role_ids: [],
-                role_names: [],
-                email: 'user@email.com',
-                display_name: 'Test User',
-                agency: 'Business',
-                project_role_names: [PROJECT_ROLE.COORDINATOR]
-              }
-            ]}
-            roles={roles}
-          />
+          <ProjectUserForm roles={mockRoles} />
         </Formik>
       </AuthStateContext.Provider>
     );
@@ -103,65 +105,36 @@ describe('ProjectUserForm', () => {
     });
   });
 
-  it('renders newly added users properly', async () => {
-    const authState = getMockAuthState({ base: SystemAdminAuthState });
-    const { getByTestId, getByText } = render(
-      <AuthStateContext.Provider value={authState}>
-        <Formik
-          initialValues={ProjectUserRoleFormInitialValues}
-          validationSchema={ProjectUserRoleYupSchema}
-          validateOnBlur={true}
-          validateOnChange={false}
-          onSubmit={async () => {}}>
-          <ProjectUserForm users={[]} roles={roles} />
-        </Formik>
-      </AuthStateContext.Provider>
-    );
-
-    await waitFor(async () => {
-      const autocomplete = getByTestId('autocomplete-user-role-search');
-      const input = within(autocomplete).getByPlaceholderText('Find team members');
-
-      // Search for a user
-      fireEvent.change(input, { target: { value: 'Test User' } });
-      // Arrow down to user in field
-      fireEvent.keyDown(autocomplete, { key: 'ArrowDown' });
-      // select the first item
-      fireEvent.keyDown(autocomplete, { key: 'Enter' });
-
-      expect(getByTestId('autocomplete-user-role-search')).toBeVisible();
-      expect(getByText('Test User')).toBeVisible();
-    });
-  });
-
   it('renders removing a user', async () => {
     const authState = getMockAuthState({ base: SystemAdminAuthState });
+
+    const formikInitialValues = {
+      participants: [
+        {
+          system_user_id: 1,
+          user_identifier: 'identifier',
+          user_guid: '',
+          identity_source: 'IDIR',
+          record_end_date: '',
+          role_ids: [],
+          role_names: [],
+          email: 'user@email.com',
+          display_name: 'Test User',
+          agency: 'Business',
+          project_role_names: [PROJECT_ROLE.COORDINATOR]
+        }
+      ]
+    };
+
     const { getByTestId } = render(
       <AuthStateContext.Provider value={authState}>
         <Formik
-          initialValues={ProjectUserRoleFormInitialValues}
+          initialValues={formikInitialValues}
           validationSchema={ProjectUserRoleYupSchema}
           validateOnBlur={true}
           validateOnChange={false}
           onSubmit={async () => {}}>
-          <ProjectUserForm
-            users={[
-              {
-                system_user_id: 1,
-                user_identifier: 'identifier',
-                user_guid: '',
-                identity_source: 'IDIR',
-                record_end_date: '',
-                role_ids: [],
-                role_names: [],
-                email: 'user@email.com',
-                display_name: 'Test User',
-                agency: 'Business',
-                project_role_names: [PROJECT_ROLE.COORDINATOR]
-              }
-            ]}
-            roles={roles}
-          />
+          <ProjectUserForm roles={mockRoles} />
         </Formik>
       </AuthStateContext.Provider>
     );

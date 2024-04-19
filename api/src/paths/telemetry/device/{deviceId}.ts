@@ -64,9 +64,11 @@ export function getDeviceDetails(): RequestHandler {
     };
     const bctwService = new BctwService(user);
     const deviceId = Number(req.params.deviceId);
+    const deviceMake = String(req.query.make);
+
     try {
-      const results = await bctwService.getDeviceDetails(deviceId);
-      const deployments = await bctwService.getDeviceDeployments(deviceId);
+      const results = await bctwService.getDeviceDetails(deviceId, deviceMake);
+      const deployments = await bctwService.getDeviceDeployments(deviceId, deviceMake);
       const keyXResult = await bctwService.getKeyXDetails([deviceId]);
       const keyXStatus = keyXResult?.[0]?.keyx?.idcollar === deviceId;
       const retObj = {

@@ -1,3 +1,5 @@
+import { pluralize as p } from 'utils/Utils';
+
 export const CreateProjectI18N = {
   cancelTitle: 'Discard changes and exit?',
   cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
@@ -12,6 +14,18 @@ export const EditProjectI18N = {
   createErrorTitle: 'Error Editing Project',
   createErrorText:
     'An error has occurred while attempting to edit your project, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const ListProjectsI18N = {
+  listProjectsErrorDialogTitle: 'Failed to load projects list data',
+  listProjectsErrorDialogText:
+    'An error occurred while retrieving your list of projects. Please try again. If the error persists, please contact your system administrator.'
+};
+
+export const ViewProjectI18N = {
+  viewProjectErrorDialogTitle: 'Failed to load project data',
+  viewProjectErrorDialogText:
+    'The data for this project could not be retrieved. Please try again. If the error persists, please contact your system administrator.'
 };
 
 export const CreateSurveyI18N = {
@@ -30,14 +44,6 @@ export const EditSurveyI18N = {
     'An error has occurred while attempting to create your survey, please try again. If the error persists, please contact your system administrator.'
 };
 
-export const CreatePermitsI18N = {
-  cancelTitle: 'Cancel Create Permits',
-  cancelText: 'Are you sure you want to cancel?',
-  createErrorTitle: 'Error Creating Permits',
-  createErrorText:
-    'An error has occurred while attempting to create your permits, please try again. If the error persists, please contact your system administrator.'
-};
-
 export const AttachmentsI18N = {
   cancelTitle: 'Cancel Upload',
   cancelText: 'Are you sure you want to cancel?',
@@ -50,132 +56,6 @@ export const AttachmentsI18N = {
   downloadErrorTitle: 'Error Downloading Attachment',
   downloadErrorText:
     'An error has occurred while attempting to download an attachment, please try again. If the error persists, please contact your system administrator.'
-};
-
-export const CreateProjectDraftI18N = {
-  draftErrorTitle: 'Error Saving Draft',
-  draftErrorText:
-    'An error has occurred while attempting to save your draft, please try again. If the error persists, please contact your system administrator.'
-};
-
-export const DeleteProjectDraftI18N = {
-  draftErrorTitle: 'Error Deleting Draft',
-  draftErrorText:
-    'An error has occurred while attempting to delete your draft, please try again. If the error persists, please contact your system administrator.'
-};
-
-export const EditPartnershipsI18N = {
-  editTitle: 'Edit Partnerships',
-  editErrorTitle: 'Error Editing Partnerships',
-  editErrorText:
-    'An error has occurred while attempting to edit your partnerships, please try again. If the error persists, please contact your system administrator.'
-};
-
-export const EditObjectivesI18N = {
-  editTitle: 'Edit Project Objectives',
-  editErrorTitle: 'Error Editing Project Objectives',
-  editErrorText:
-    'An error has occurred while attempting to edit your project objectives, please try again. If the error persists, please contact your system administrator.'
-};
-
-export const EditCoordinatorI18N = {
-  editTitle: 'Edit Project Contact',
-  editErrorTitle: 'Error Editing Project Contact',
-  editErrorText:
-    'An error has occurred while attempting to edit your project contact details, please try again. If the error persists, please contact your system administrator.'
-};
-
-export const EditGeneralInformationI18N = {
-  editTitle: 'Edit General Information',
-  editErrorTitle: 'Error Editing General Information',
-  editErrorText:
-    'An error has occurred while attempting to edit your general information, please try again. If the error persists, please contact your system administrator.'
-};
-
-export const EditSurveyGeneralInformationI18N = {
-  editTitle: 'Edit Survey General Information',
-  editErrorTitle: 'Error Editing Survey General Information',
-  editErrorText:
-    'An error has occurred while attempting to edit your survey general information, please try again. If the error persists, please contact your system administrator.'
-};
-
-export const EditSurveyStudyAreaI18N = {
-  editTitle: 'Edit Survey Study Area',
-  editErrorTitle: 'Error Editing Survey Study Area',
-  editErrorText:
-    'An error has occurred while attempting to edit your survey study area, please try again. If the error persists, please contact your system administrator.'
-};
-
-export const EditSurveyProprietorI18N = {
-  editTitle: 'Edit Survey Proprietor',
-  editErrorTitle: 'Error Editing Survey Proprietor',
-  editErrorText:
-    'An error has occurred while attempting to edit your survey proprietor information, please try again. If the error persists, please contact your system administrator.'
-};
-
-export const EditSurveyPurposeAndMethodologyI18N = {
-  editTitle: 'Edit Survey Purpose and Methodology',
-  editErrorTitle: 'Error Editing Survey Purpose and Methodology',
-  editErrorText:
-    'An error has occurred while attempting to edit your survey purpose and methodology information, please try again. If the error persists, please contact your system administrator.'
-};
-
-export const EditLocationBoundaryI18N = {
-  editTitle: 'Edit Project Location',
-  editErrorTitle: 'Error Editing Project Location',
-  editErrorText:
-    'An error has occurred while attempting to edit your location, please try again. If the error persists, please contact your system administrator.'
-};
-
-export const EditIUCNI18N = {
-  editTitle: 'Edit IUCN Classifications',
-  editErrorTitle: 'Error Editing IUCN Classifications',
-  editErrorText:
-    'An error has occurred while attempting to edit your IUCN classification, please try again. If the error persists, please contact your system administrator.'
-};
-
-export const EditSpeciesI18N = {
-  editTitle: 'Edit Species',
-  editErrorTitle: 'Error Editing Species',
-  editErrorText:
-    'An error has occurred while attempting to edit your species, please try again. If the error persists, please contact your system administrator.'
-};
-
-export const EditObservationI18N = {
-  editTitle: 'Edit Observation',
-  editErrorTitle: 'Error Editing Observation',
-  editErrorText:
-    'An error has occurred while attempting to edit your observation, please try again. If the error persists, please contact your system administrator.'
-};
-
-export const AddFundingI18N = {
-  addTitle: 'Create Funding Source',
-  addErrorTitle: 'Error Creating Funding Source',
-  addErrorText:
-    'An error has occurred while attempting to add your funding source details, please try again. If the error persists, please contact your system administrator.'
-};
-
-export const EditFundingI18N = {
-  editTitle: 'Edit Funding Source',
-  editErrorTitle: 'Error Editing Funding Source',
-  editErrorText:
-    'An error has occurred while attempting to edit your funding source details, please try again. If the error persists, please contact your system administrator.'
-};
-
-export const DeleteProjectFundingI18N = {
-  deleteTitle: 'Remove Funding Source',
-  deleteText:
-    'Are you sure you want to remove this project funding source? It will also remove the associated survey funding source.',
-  deleteErrorTitle: 'Error Removing Funding Source',
-  deleteErrorText:
-    'An error has occurred while attempting to delete your funding source details, please try again. If the error persists, please contact your system administrator.'
-};
-
-export const EditPermitI18N = {
-  editTitle: 'Edit Permits',
-  editErrorTitle: 'Error Editing Permits',
-  editErrorText:
-    'An error has occurred while attempting to edit your permit details, please try again. If the error persists, please contact your system administrator.'
 };
 
 export const AccessRequestI18N = {
@@ -213,17 +93,11 @@ export const DeleteProjectI18N = {
 
 export const DeleteSurveyI18N = {
   deleteTitle: 'Delete Survey?',
-  deleteText: 'Deleting this survey will remove all attachments and related data. This action cannot be undone.',
-  deleteErrorTitle: 'Error Deleting Project',
+  deleteText:
+    'Are you sure you want to delete this survey? This will remove all attachments, observations, and other related data. This action cannot be undone.',
+  deleteErrorTitle: 'Error Deleting Survey',
   deleteErrorText:
     'An error has occurred while attempting to delete this survey. If the error persists, please contact your system administrator.'
-};
-
-export const EditReportMetaDataI18N = {
-  editTitle: 'Edit Report Meta Data',
-  editErrorTitle: 'Error Editing Report Meta Data',
-  editErrorText:
-    'An error has occurred while attempting to edit your report meta data, please try again. If the error persists, please contact your system administrator.'
 };
 
 export const AddSystemUserI18N = {
@@ -290,9 +164,9 @@ export const SubmitProjectBiohubI18N = {
 };
 
 export const SubmitSurveyBiohubI18N = {
-  submitSurveyBiohubDialogTitle: 'Submit Survey Information',
-  submitSurveyBiohubSuccessDialogTitle: 'Survey data submitted',
-  submitSurveyBiohubSuccessDialogText: 'Thank you for submitting your survey data to Biohub.',
+  submitSurveyBiohubDialogTitle: 'Publish Survey to BioHub BC',
+  submitSurveyBiohubSuccessDialogTitle: 'Survey published',
+  submitSurveyBiohubSuccessDialogText: 'Your survey has successfully been published to BioHub BC.',
   submitSurveyBiohubNoSubmissionDataDialogTitle: 'No survey data to submit',
   submitSurveyBiohubNoSubmissionDataDialogText: 'No new data or information has been added to this survey to submit.'
 };
@@ -305,28 +179,28 @@ export const SurveyAnimalsI18N = {
   animalSectionComment: (section: string) => `Add comment about this ${section}`,
   animalGeneralTitle: 'General',
   animalGeneralHelp: 'General information about this animal.',
-  animalCaptureTitle: 'Capture Information',
+  animalCaptureTitle: 'Capture Events',
   animalCaptureTitle2: 'Capture Event',
   animalCaptureHelp:
     'Capture Events are when animals have been deliberately handled or immobilized. All capture events should be reported by adding a Capture Event to a new or existing individual.',
   animalCaptureAddBtn: 'Add Capture Event',
-  animalCaptureReleaseRadio: 'This individual was released at a different location than where it was captured',
+  animalCaptureReleaseRadio: 'This individual was released at a different location',
   animalMarkingTitle: 'Markings',
   animalMarkingTitle2: 'Animal Marking',
   animalMarkingHelp:
-    'Markings are physical, chemical, or electronic tags or characteristics that uniquely identify individuals.',
+    'Physical or chemical characteristics of an animal, or electronic tags that uniquely identify an individual.',
   animalMarkingAddBtn: 'Add Marking',
   animalMeasurementTitle: 'Measurements',
   animalMeasurementTitle2: 'Animal Measurement',
   animalMeasurementHelp:
-    'Measurements are quantitative or categorical attributes, such as body mass or body condition, that describe an individual.',
+    'Quantitative or categorical attributes, such as body mass or body condition, that describe an individual.',
   animalMeasurementAddBtn: 'Add Measurement',
   animalFamilyTitle: 'Family',
   animalFamilyTitle2: 'Animal Relationship',
   animalFamilyHelp:
     'Family Relationships describe how multiple individuals are related to one another. You must add an individual before it can be referenced as a parent or child of another individual.',
   animalFamilyAddBtn: 'Add Relationship',
-  animalMortalityTitle: 'Mortality',
+  animalMortalityTitle: 'Mortality Events',
   animalMortalityTitle2: 'Mortality Event',
   animalMortalityHelp:
     "Mortality Events describe an individual's death, including the suspected location, date, and cause of death. An individual can only have one Mortality Event.",
@@ -334,15 +208,17 @@ export const SurveyAnimalsI18N = {
   animalCollectionUnitTitle: 'Ecological Units',
   animalCollectionUnitTitle2: 'Ecological Unit',
   animalCollectionUnitHelp:
-    'Ecological units are groups such as population units, herds, and packs. Different species may different units and unit names.',
+    'Ecological units are groups such as population units, herds, and packs. Different species may have different units and unit names.',
   animalCollectionUnitAddBtn: 'Add Unit',
   // Input help strings
   taxonHelp:
     'The species or taxon of the animal. If the species is unknown, select the lowest-ranking known taxon, such as the genus or family.',
   taxonLabelHelp: 'A unique name for you to recognize this individual.',
   wlhIdHelp: 'An ID used to identify animals in the BC Wildlife Health Program',
-  sexHelp: 'The sex of this critter. Leave as Unknown if unsure.'
-};
+  sexHelp: 'The sex of this critter. Leave as Unknown if unsure.',
+  telemetryDeviceHelp:
+    'Devices transmit telemetry data while they are attached to an animal during a deployment. Animals may have multiple devices and deployments, however a single device may not have overlapping deployments.'
+} as const;
 
 export const FundingSourceI18N = {
   cancelTitle: 'Discard changes and exit?',
@@ -392,9 +268,78 @@ export const CreateSamplingSiteI18N = {
 export const ObservationsTableI18N = {
   removeAllDialogTitle: 'Discard changes?',
   removeAllDialogText: 'Are you sure you want to discard all your changes? This action cannot be undone.',
-  removeRecordDialogTitle: 'Delete record?',
-  removeRecordDialogText: 'Are you sure you want to delete this record? This action cannot be undone.',
+
+  // Delete observation records (rows)
+  removeSingleRecordDialogTitle: 'Delete record?',
+  removeSingleRecordDialogText: 'Are you sure you want to delete this record? This action cannot be undone.',
+  removeSingleRecordButtonText: 'Delete Record',
+  removeMultipleRecordsDialogTitle: (count: number) => `Delete ${count} ${p(count, 'record')}?`,
+  removeMultipleRecordsDialogText: 'Are you sure you want to delete these records? This action cannot be undone.',
+  removeMultipleRecordsButtonText: 'Delete Records',
+
+  // Delete measurement columns
+  removeSingleMeasurementColumnDialogTitle: 'Delete measurement column?',
+  removeSingleMeasurementColumnDialogText:
+    'Are you sure you want to delete this measurement column? This action cannot be undone.',
+  removeSingleMeasurementColumnButtonText: 'Delete Columns',
+  removeMultipleMeasurementColumnsDialogTitle: (count: number) => `Delete ${count} ${p(count, 'column')}?`,
+  removeMultipleMeasurementColumnsDialogText:
+    'Are you sure you want to delete these columns? This action cannot be undone.',
+  removeMultipleMeasurementColumnsButtonText: 'Delete Columns',
+
+  // Save observation records success
+  saveRecordsSuccessSnackbarMessage: 'Observations updated successfully.',
+  // Save observation records error
   submitRecordsErrorDialogTitle: 'Error Updating Observation Records',
   submitRecordsErrorDialogText:
-    'An error has occurred while attempting to update the observation records for this survey. Please try again. If the error persists, please contact your system administrator.'
+    'An error has occurred while attempting to update the observation records for this survey. Please try again. If the error persists, please contact your system administrator.',
+
+  // Delete observation records success
+  deleteSingleRecordSuccessSnackbarMessage: 'Deleted observation record successfully.',
+  // Delete observation records error
+  removeRecordsErrorDialogTitle: 'Error Deleting Observation Records',
+  removeRecordsErrorDialogText:
+    'An error has occurred while attempting to delete observation records for this survey. Please try again. If the error persists, please contact your system administrator.',
+  deleteMultipleRecordSuccessSnackbarMessage: (count: number) =>
+    `Deleted ${count} observation ${p(count, 'record')} successfully.`,
+
+  // Delete measurement columns success
+  deleteSingleMeasurementColumnSuccessSnackbarMessage: 'Deleted measurement column successfully.',
+  // Delete measurement columns error
+  removeMeasurementColumnsErrorDialogTitle: 'Error Deleting Measurement Columns',
+  removeMeasurementColumnsErrorDialogText:
+    'An error has occurred while attempting to delete measurement columns for this survey. Please try again. If the error persists, please contact your system administrator.',
+  deleteMultipleMeasurementColumnSuccessSnackbarMessage: (count: number) =>
+    `Deleted ${count} measurement ${p(count, 'column')} successfully.`,
+
+  // Import observation records
+  importRecordsSuccessSnackbarMessage: 'Observations imported successfully.',
+  importRecordsErrorDialogTitle: 'Error Importing Observation Records',
+  importRecordsErrorDialogText: 'An error occurred while importing observation records.',
+
+  // Fetching TSN Measurements from CritterBase error
+  fetchingTSNMeasurementErrorDialogTitle: 'Error fetching measurement validation',
+  fetchingTSNMeasurementErrorDialogText:
+    'An error occurred while fetching measurement data from Critterbase. The selected taxon may not be supported. Please try again. If the error persists, please contact your system administrator.'
+};
+
+export const TelemetryTableI18N = {
+  removeAllDialogTitle: 'Discard changes?',
+  removeAllDialogText: 'Are you sure you want to discard all your changes? This action cannot be undone.',
+  removeSingleRecordDialogTitle: 'Delete record?',
+  removeSingleRecordDialogText: 'Are you sure you want to delete this record? This action cannot be undone.',
+  removeSingleRecordButtonText: 'Delete Record',
+  removeMultipleRecordsDialogTitle: (count: number) => `Delete ${count} ${p(count, 'record')}?`,
+  removeMultipleRecordsDialogText: 'Are you sure you want to delete these records? This action cannot be undone.',
+  removeMultipleRecordsButtonText: 'Delete Records',
+  submitRecordsErrorDialogTitle: 'Error Updating Telemetry Records',
+  submitRecordsErrorDialogText:
+    'An error has occurred while attempting to update the telemetry records for this survey. Please try again. If the error persists, please contact your system administrator.',
+  removeRecordsErrorDialogTitle: 'Error Deleting Telemetry Records',
+  removeRecordsErrorDialogText:
+    'An error has occurred while attempting to delete telemetry records for this survey. Please try again. If the error persists, please contact your system administrator.',
+  saveRecordsSuccessSnackbarMessage: 'Telemetry updated successfully.',
+  deleteSingleRecordSuccessSnackbarMessage: 'Deleted telemetry record successfully.',
+  deleteMultipleRecordSuccessSnackbarMessage: (count: number) =>
+    `Deleted ${count} telemetry ${p(count, 'record')} successfully.`
 };

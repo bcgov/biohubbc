@@ -1,101 +1,110 @@
-import { Grid } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import EditDialog from 'components/dialog/EditDialog';
 import CbSelectField from 'components/fields/CbSelectField';
-import { SurveyAnimalsI18N } from 'constants/i18n';
-import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
+import { Field, FieldProps } from 'formik';
+import { useDialogContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-import useDataLoader from 'hooks/useDataLoader';
-import { Fragment, useEffect } from 'react';
-import { v4 } from 'uuid';
+import { ICollectionUnitResponse } from 'interfaces/useCritterApi.interface';
+import { get } from 'lodash-es';
+import { useState } from 'react';
 import {
-  AnimalCollectionUnitSchema,
-  getAnimalFieldName,
-  IAnimal,
-  IAnimalCollectionUnit,
-  isRequiredInSchema,
-  lastAnimalValueValid
+  AnimalFormProps,
+  ANIMAL_FORM_MODE,
+  CreateCritterCollectionUnitSchema,
+  ICreateCritterCollectionUnit,
+  isRequiredInSchema
 } from '../animal';
-import FormSectionWrapper from './FormSectionWrapper';
 
-const CollectionUnitAnimalForm = () => {
-  const api = useCritterbaseApi();
-  const { values } = useFormikContext<IAnimal>();
-  const { data: categoriesData, refresh } = useDataLoader(api.lookup.getSelectOptions);
-
-  useEffect(() => {
-    if (values.general.taxon_id) {
-      refresh({ route: 'lookups/taxon-collection-categories', query: `taxon_id=${values.general.taxon_id}` });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [values.general.taxon_id]);
-
-  const name: keyof IAnimal = 'collectionUnits';
-  const newCollectionUnit = (): IAnimalCollectionUnit => ({
-    _id: v4(),
-    collection_unit_id: '',
-    collection_category_id: '',
-    critter_collection_unit_id: undefined
-  });
-
+/**
+ * This component renders a 'critter collection unit' create / edit dialog.
+ *
+ * @param {AnimalFormProps<ICollectionUnitResponse>} props - Generic AnimalFormProps.
+ * @returns {*}
+ */
+export const CollectionUnitAnimalForm = (props: AnimalFormProps<ICollectionUnitResponse>) => {
+  const cbApi = useCritterbaseApi();
+  const dialog = useDialogContext();
   //Animals may have multiple collection units, but only one instance of each category.
   //We use this and pass to the select component to ensure categories already used in the form can't be selected again.
-  const disabledCategories = values.collectionUnits.reduce((acc: Record<string, boolean>, curr) => {
+  const disabledCategories = props.critter.collection_units.reduce((acc: Record<string, boolean>, curr) => {
     if (curr.collection_category_id) {
       acc[curr.collection_category_id] = true;
     }
     return acc;
   }, {});
 
+  const [loading, setLoading] = useState(false);
+
+  const handleSave = async (values: ICreateCritterCollectionUnit) => {
+    setLoading(true);
+    try {
+      if (props.formMode === ANIMAL_FORM_MODE.ADD) {
+        await cbApi.collectionUnit.createCollectionUnit(values);
+        dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created ecological unit.` });
+      }
+      if (props.formMode === ANIMAL_FORM_MODE.EDIT) {
+        await cbApi.collectionUnit.updateCollectionUnit(values);
+        dialog.setSnackbar({ open: true, snackbarMessage: `Successfully edited ecological unit.` });
+      }
+    } catch (err) {
+      dialog.setSnackbar({ open: true, snackbarMessage: `Critter ecological unit request failed.` });
+    } finally {
+      props.handleClose();
+      setLoading(false);
+    }
+  };
+
   return (
-    <FieldArray name={name}>
-      {({ remove, push }: FieldArrayRenderProps) => (
-        <>
-          <FormSectionWrapper
-            title={SurveyAnimalsI18N.animalCollectionUnitTitle}
-            titleHelp={SurveyAnimalsI18N.animalCollectionUnitHelp}
-            addedSectionTitle={SurveyAnimalsI18N.animalCollectionUnitTitle2}
-            btnLabel={SurveyAnimalsI18N.animalCollectionUnitAddBtn}
-            disableAddBtn={
-              !categoriesData?.length ||
-              Object.keys(disabledCategories).length === categoriesData.length ||
-              !lastAnimalValueValid('collectionUnits', values)
-            }
-            handleAddSection={() => push(newCollectionUnit())}
-            handleRemoveSection={remove}>
-            {values.collectionUnits.map((unit, index) => (
-              <Fragment key={unit._id}>
-                <Grid item xs={6}>
+    <EditDialog
+      dialogTitle={props.formMode === ANIMAL_FORM_MODE.ADD ? 'Add Ecological Unit' : 'Edit Ecological Unit'}
+      open={props.open}
+      onCancel={props.handleClose}
+      onSave={handleSave}
+      dialogLoading={loading}
+      component={{
+        initialValues: {
+          critter_collection_unit_id: props.formObject?.critter_collection_unit_id,
+          critter_id: props.critter.critter_id,
+          collection_unit_id: props.formObject?.collection_unit_id ?? '',
+          collection_category_id: props.formObject?.collection_category_id ?? ''
+        },
+        validationSchema: CreateCritterCollectionUnitSchema,
+        element: (
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <CbSelectField
+                label="Category"
+                name={'collection_category_id'}
+                id={'collection_category_id'}
+                disabledValues={disabledCategories}
+                query={{ tsn: props.critter.itis_tsn }}
+                route={'xref/taxon-collection-categories'}
+                controlProps={{
+                  size: 'medium',
+                  required: isRequiredInSchema(CreateCritterCollectionUnitSchema, 'collection_category_id')
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Field name="collection_unit_id">
+                {({ form }: FieldProps) => (
                   <CbSelectField
-                    label="Unit Category"
-                    name={getAnimalFieldName<IAnimalCollectionUnit>(name, 'collection_category_id', index)}
-                    id={'collection_category_id'}
-                    disabledValues={disabledCategories}
-                    query={`taxon_id=${values.general.taxon_id}`}
-                    route={'lookups/taxon-collection-categories'}
-                    controlProps={{
-                      size: 'small',
-                      required: isRequiredInSchema(AnimalCollectionUnitSchema, 'collection_category_id')
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <CbSelectField
-                    label="Unit Name"
+                    label="Name"
                     id={'collection_unit_id'}
-                    route={'lookups/collection-units'}
-                    query={`category_id=${unit.collection_category_id}`}
-                    name={getAnimalFieldName<IAnimalCollectionUnit>(name, 'collection_unit_id', index)}
+                    route={`xref/collection-units/${get(form.values, 'collection_category_id')}`}
+                    name={'collection_unit_id'}
                     controlProps={{
-                      size: 'small',
-                      required: isRequiredInSchema(AnimalCollectionUnitSchema, 'collection_unit_id')
+                      size: 'medium',
+                      required: isRequiredInSchema(CreateCritterCollectionUnitSchema, 'collection_unit_id')
                     }}
                   />
-                </Grid>
-              </Fragment>
-            ))}
-          </FormSectionWrapper>
-        </>
-      )}
-    </FieldArray>
+                )}
+              </Field>
+            </Grid>
+          </Grid>
+        )
+      }}
+    />
   );
 };
 

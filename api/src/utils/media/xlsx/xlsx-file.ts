@@ -1,8 +1,9 @@
 import xlsx from 'xlsx';
 import { CSVWorkBook, CSVWorksheet, ICsvState } from '../csv/csv-file';
-import { DEFAULT_XLSX_SHEET } from '../dwc/dwc-archive-file';
 import { IMediaState, MediaFile, MediaValidation } from '../media-file';
 import { ValidationSchemaParser } from '../validation/validation-schema-parser';
+
+export const DEFAULT_XLSX_SHEET_NAME = 'Sheet1' as const;
 
 /**
  * Supports XLSX CSV files.
@@ -11,21 +12,51 @@ import { ValidationSchemaParser } from '../validation/validation-schema-parser';
  * @class XLSXCSV
  */
 export class XLSXCSV {
-  rawFile: MediaFile;
+  _rawFile: MediaFile;
 
-  mediaValidation: MediaValidation;
+  _mediaValidation: MediaValidation;
 
-  workbook: CSVWorkBook;
+  _workbook: CSVWorkBook;
 
   constructor(file: MediaFile, options?: xlsx.ParsingOptions) {
-    this.rawFile = file;
+    this._rawFile = file;
 
-    this.mediaValidation = new MediaValidation(this.rawFile.fileName);
+    this._mediaValidation = new MediaValidation(this._rawFile.fileName);
 
-    this.workbook = new CSVWorkBook(
+    this._workbook = new CSVWorkBook(
       // See https://docs.sheetjs.com/docs/api/parse-options for details on parsing options
-      xlsx.read(this.rawFile.buffer, { cellDates: true, cellNF: true, cellHTML: false, ...options })
+      xlsx.read(this._rawFile.buffer, { cellDates: true, cellNF: true, cellHTML: false, ...options })
     );
+  }
+
+  /**
+   * Getter for the raw file.
+   *
+   * @readonly
+   * @memberof XLSXCSV
+   */
+  get rawFile() {
+    return this._rawFile;
+  }
+
+  /**
+   * Getter for the media validation.
+   *
+   * @readonly
+   * @memberof XLSXCSV
+   */
+  get mediaValidation() {
+    return this._mediaValidation;
+  }
+
+  /**
+   * Getter for the workbook.
+   *
+   * @readonly
+   * @memberof XLSXCSV
+   */
+  get workbook() {
+    return this._workbook;
   }
 
   /**
@@ -37,7 +68,7 @@ export class XLSXCSV {
   validateMedia(validationSchemaParser: ValidationSchemaParser): void {
     const validators = validationSchemaParser.getSubmissionValidations();
 
-    this.validate(validators as XLSXCSVValidator[]);
+    this.validate(validators);
   }
 
   /**
@@ -51,10 +82,10 @@ export class XLSXCSV {
   validateContent(validationSchemaParser: ValidationSchemaParser): void {
     // Run workbook validators.
     const workbookValidators = validationSchemaParser.getWorkbookValidations();
-    this.workbook.validate(workbookValidators);
+    this._workbook.validate(workbookValidators);
 
     // Run content validators.
-    Object.entries(this.workbook.worksheets).forEach(([fileName, worksheet]) => {
+    Object.entries(this._workbook.worksheets).forEach(([fileName, worksheet]) => {
       const fileValidators = validationSchemaParser.getFileValidations(fileName);
       const columnValidators = validationSchemaParser.getAllColumnValidations(fileName);
 
@@ -72,7 +103,7 @@ export class XLSXCSV {
    * @memberof XLSXCSV
    */
   getMediaState(): IMediaState {
-    return this.mediaValidation.getState();
+    return this._mediaValidation.getState();
   }
 
   /**
@@ -81,7 +112,7 @@ export class XLSXCSV {
    * @memberof XLSXCSV
    */
   getContentState(): ICsvState[] {
-    return Object.values(this.workbook.worksheets)
+    return Object.values(this._workbook.worksheets)
       .map((worksheet: CSVWorksheet) => worksheet.csvValidation.getState())
       .filter(Boolean);
   }
@@ -89,14 +120,14 @@ export class XLSXCSV {
   worksheetToBuffer(worksheet: xlsx.WorkSheet): Buffer {
     const newWorkbook = xlsx.utils.book_new();
 
-    xlsx.utils.book_append_sheet(newWorkbook, worksheet, DEFAULT_XLSX_SHEET);
+    xlsx.utils.book_append_sheet(newWorkbook, worksheet, DEFAULT_XLSX_SHEET_NAME);
 
     return xlsx.write(newWorkbook, { type: 'buffer', bookType: 'csv' });
   }
 
   /**
    * Executes each validator function in the provided `validators` against this instance, returning
-   * `this.mediaValidation`
+   * `this._mediaValidation`
    *
    * @param {XLSXCSVValidator[]} validators
    * @return {*}  {MediaValidation}
@@ -105,7 +136,7 @@ export class XLSXCSV {
   validate(validators: XLSXCSVValidator[]): MediaValidation {
     validators.forEach((validator) => validator(this));
 
-    return this.mediaValidation;
+    return this._mediaValidation;
   }
 }
 

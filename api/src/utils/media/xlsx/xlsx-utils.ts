@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import { default as dayjs } from 'dayjs';
 import xlsx, { CellObject } from 'xlsx';
 import { safeTrim } from '../../string-utils';
 

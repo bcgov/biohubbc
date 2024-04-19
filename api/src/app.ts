@@ -5,6 +5,11 @@ import { OpenAPIV3 } from 'openapi-types';
 import swaggerUIExperss from 'swagger-ui-express';
 import { defaultPoolConfig, initDBPool } from './database/db';
 import { ensureHTTPError, HTTPErrorType } from './errors/http-error';
+import {
+  authorizeAndAuthenticateMiddleware,
+  getCritterbaseProxyMiddleware,
+  replaceAuthorizationHeaderMiddleware
+} from './middleware/critterbase-proxy';
 import { rootAPIDoc } from './openapi/root-api-doc';
 import { authenticateRequest, authenticateRequestOptional } from './request-handlers/security/authentication';
 import { getLogger } from './utils/logger';
@@ -26,21 +31,36 @@ const app: express.Express = express();
 
 // Enable CORS
 app.use(function (req: Request, res: Response, next: NextFunction) {
-  defaultLog.info(`${req.method} ${req.url}`);
+  defaultLog.debug(`${req.method} ${req.url}`);
 
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization, responseType');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE, HEAD');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Cache-Control', 'no-store');
 
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
   next();
 });
+
+// Enable Critterbase API proxy
+// Note: This must be added to express directly as it is not part of the openapi spec, and therefore can't be handled
+// by the express-openapi framework.
+app.use(
+  '/api/critterbase',
+  authorizeAndAuthenticateMiddleware,
+  replaceAuthorizationHeaderMiddleware,
+  getCritterbaseProxyMiddleware()
+);
 
 // Initialize express-openapi framework
 const openAPIFramework = initialize({
   apiDoc: {
     ...(rootAPIDoc as OpenAPIV3.Document), // base open api spec
-    'x-express-openapi-additional-middleware': [validateAllResponses],
+    'x-express-openapi-additional-middleware': getAdditionalMiddleware(),
     'x-express-openapi-validation-strict': true
   },
   app: app, // express app to initialize
@@ -84,7 +104,7 @@ const openAPIFramework = initialize({
       return authenticateRequestOptional(req);
     }
   },
-  errorTransformer: function (openapiError: object, ajvError: object): object {
+  errorTransformer: function (_, ajvError: object): object {
     // Transform openapi-request-validator and openapi-response-validator errors
     defaultLog.error({ label: 'errorTransformer', message: 'ajvError', ajvError });
     return ajvError;
@@ -119,6 +139,22 @@ try {
 } catch (error) {
   defaultLog.error({ label: 'start api', message: 'error', error });
   process.exit(1);
+}
+
+/**
+ * Get additional middleware to apply to all routes.
+ *
+ * @return {*}  {express.RequestHandler[]}
+ */
+function getAdditionalMiddleware(): express.RequestHandler[] {
+  const additionalMiddleware = [];
+
+  if (process.env.API_RESPONSE_VALIDATION_ENABLED === 'true') {
+    // Validate endpoint responses against openapi spec
+    additionalMiddleware.push(validateAllResponses);
+  }
+
+  return additionalMiddleware;
 }
 
 /**

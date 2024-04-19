@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import { grey } from '@mui/material/colors';
+import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CreateSamplingSiteI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
@@ -39,7 +39,9 @@ const SamplingSiteEditPage = () => {
       name: '',
       description: '',
       survey_sample_sites: [],
-      methods: []
+      methods: [],
+      blocks: [],
+      stratums: []
     }
   });
 
@@ -47,7 +49,7 @@ const SamplingSiteEditPage = () => {
   useEffect(() => {
     if (surveyContext.sampleSiteDataLoader.data) {
       const data = surveyContext.sampleSiteDataLoader.data.sampleSites.find(
-        (x) => x.survey_sample_site_id === surveySampleSiteId
+        (sampleSite) => sampleSite.survey_sample_site_id === surveySampleSiteId
       );
 
       if (data !== undefined) {
@@ -60,10 +62,16 @@ const SamplingSiteEditPage = () => {
             methods:
               data.sample_methods?.map((item) => {
                 return {
-                  ...item,
+                  survey_sample_method_id: item.survey_sample_method_id,
+                  survey_sample_site_id: item.survey_sample_site_id,
+                  method_lookup_id: item.method_lookup_id,
+                  method_response_metric_id: item.method_response_metric_id,
+                  description: item.description,
                   periods: item.sample_periods || []
                 };
-              }) || []
+              }) || [],
+            blocks: data.sample_blocks || [],
+            stratums: data.sample_stratums || []
           }
         };
         setInitialFormData(formInitialValues);
@@ -90,9 +98,9 @@ const SamplingSiteEditPage = () => {
   };
 
   const handleSubmit = async (values: IEditSamplingSiteRequest) => {
-    setIsSubmitting(true);
-
     try {
+      setIsSubmitting(true);
+
       // create edit request
       const editSampleSite: IEditSamplingSiteRequest = {
         sampleSite: {
@@ -101,22 +109,46 @@ const SamplingSiteEditPage = () => {
           survey_id: values.sampleSite.survey_id,
           survey_sample_sites: values.sampleSite.survey_sample_sites as unknown as Feature[],
           geojson: values.sampleSite.survey_sample_sites[0],
-          methods: values.sampleSite.methods
+          methods: values.sampleSite.methods,
+          blocks: values.sampleSite.blocks,
+          stratums: values.sampleSite.stratums
         }
       };
 
       // send edit request
-      await biohubApi.samplingSite.editSampleSite(
-        surveyContext.projectId,
-        surveyContext.surveyId,
-        surveySampleSiteId,
-        editSampleSite
-      );
+      await biohubApi.samplingSite
+        .editSampleSite(surveyContext.projectId, surveyContext.surveyId, surveySampleSiteId, editSampleSite)
+        .then(() => {
+          // Disable cancel prompt so we can navigate away from the page after saving
+          setEnableCancelCheck(false);
+          setIsSubmitting(false);
 
-      // Disable cancel prompt so we can navigate away from the page after saving
-      setEnableCancelCheck(false);
-      // create complete, navigate back to observations page
-      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`);
+          // Refresh the context, so the next page loads with the latest data
+          surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+
+          // create complete, navigate back to observations page
+          history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`);
+          surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+        })
+        .catch((error: any) => {
+          dialogContext.setYesNoDialog({ open: false });
+          dialogContext.setSnackbar({
+            snackbarMessage: (
+              <>
+                <Typography variant="body2" component="div">
+                  <strong>Error Submitting Sampling Site</strong>
+                </Typography>
+                <Typography variant="body2" component="div">
+                  {String(error)}
+                </Typography>
+              </>
+            ),
+            open: true
+          });
+          setIsSubmitting(false);
+
+          return;
+        });
     } catch (error) {
       showCreateErrorDialog({
         dialogTitle: CreateSamplingSiteI18N.createErrorTitle,
@@ -124,8 +156,6 @@ const SamplingSiteEditPage = () => {
         dialogError: (error as APIError).message,
         dialogErrorDetails: (error as APIError)?.errors
       });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -137,7 +167,7 @@ const SamplingSiteEditPage = () => {
    * @param {History.Location} location
    * @return {*}
    */
-  const handleLocationChange = (location: History.Location, action: History.Action) => {
+  const handleLocationChange = (location: History.Location) => {
     if (!dialogContext.yesNoDialogProps.open) {
       // If the cancel dialog is not open: open it
       dialogContext.setYesNoDialog({
@@ -179,27 +209,16 @@ const SamplingSiteEditPage = () => {
         enableReinitialize
         onSubmit={handleSubmit}>
         <Box display="flex" flexDirection="column" height="100%">
-          <Box
-            position="sticky"
-            top="0"
-            zIndex={1001}
-            sx={{
-              borderBottomStyle: 'solid',
-              borderBottomWidth: '1px',
-              borderBottomColor: grey[300]
-            }}>
-            <SamplingSiteHeader
-              project_id={surveyContext.projectId}
-              survey_id={surveyContext.surveyId}
-              survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
-              is_submitting={isSubmitting}
-              title={`Edit Sampling Site > ${initialFormData.sampleSite.name}`}
-              breadcrumb="Edit Sampling Sites"
-            />
-          </Box>
-          <Box display="flex" flex="1 1 auto">
-            <SampleSiteEditForm formikRef={formikRef} handleSubmit={handleSubmit} isSubmitting={isSubmitting} />
-          </Box>
+          <SamplingSiteHeader
+            project_id={surveyContext.projectId}
+            survey_id={surveyContext.surveyId}
+            survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
+            is_submitting={isSubmitting}
+            title="Edit Sampling Site"
+            breadcrumb="Edit Sampling Site"
+          />
+
+          <SampleSiteEditForm isSubmitting={isSubmitting} />
         </Box>
       </Formik>
     </>

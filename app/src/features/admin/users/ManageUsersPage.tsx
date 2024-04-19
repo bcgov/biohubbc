@@ -1,10 +1,7 @@
-import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
+import PageHeader from 'components/layout/PageHeader';
 import { AdministrativeActivityStatusType, AdministrativeActivityType } from 'constants/misc';
 import AccessRequestList from 'features/admin/users/AccessRequestList';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -14,33 +11,12 @@ import { ISystemUser } from 'interfaces/useUserApi.interface';
 import React, { useEffect, useState } from 'react';
 import ActiveUsersList from './ActiveUsersList';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  pageTitleContainer: {
-    maxWidth: '170ch',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis'
-  },
-  pageTitle: {
-    display: '-webkit-box',
-    '-webkit-line-clamp': 2,
-    '-webkit-box-orient': 'vertical',
-    paddingTop: theme.spacing(0.5),
-    paddingBottom: theme.spacing(0.5),
-    overflow: 'hidden'
-  },
-  pageTitleActions: {
-    paddingTop: theme.spacing(0.75),
-    paddingBottom: theme.spacing(0.75)
-  }
-}));
-
 /**
  * Page to display user management data/functionality.
  *
  * @return {*}
  */
 const ManageUsersPage: React.FC = () => {
-  const classes = useStyles();
   const biohubApi = useBiohubApi();
 
   const [accessRequests, setAccessRequests] = useState<IGetAccessRequestsListResponse[]>([]);
@@ -142,32 +118,18 @@ const ManageUsersPage: React.FC = () => {
 
   return (
     <>
-      <Paper square={true} elevation={0}>
-        <Container maxWidth="xl">
-          <Box py={4}>
-            <Box display="flex" justifyContent="space-between">
-              <Box className={classes.pageTitleContainer}>
-                <Typography variant="h1" className={classes.pageTitle}>
-                  Manage Users
-                </Typography>
-              </Box>
-            </Box>
-          </Box>
-        </Container>
-      </Paper>
-      <Container maxWidth="xl">
-        <Box py={3}>
-          <AccessRequestList
-            accessRequests={accessRequests}
-            codes={codes}
-            refresh={() => {
-              refreshAccessRequests();
-              refreshActiveUsers();
-            }}
-          />
-          <Box mt={3}>
-            <ActiveUsersList activeUsers={activeUsers} codes={codes} refresh={refreshActiveUsers} />
-          </Box>
+      <PageHeader title="Manage Users" />
+      <Container maxWidth="xl" sx={{ py: 3 }}>
+        <AccessRequestList
+          accessRequests={accessRequests}
+          codes={codes}
+          refresh={() => {
+            refreshAccessRequests();
+            refreshActiveUsers();
+          }}
+        />
+        <Box mt={3}>
+          <ActiveUsersList activeUsers={activeUsers} codes={codes} refresh={refreshActiveUsers} />
         </Box>
       </Container>
     </>

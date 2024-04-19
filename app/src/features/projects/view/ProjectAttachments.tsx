@@ -3,7 +3,6 @@ import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
-import Paper from '@mui/material/Paper';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import FileUploadWithMetaDialog from 'components/dialog/attachments/FileUploadWithMetaDialog';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
@@ -82,9 +81,9 @@ const ProjectAttachments = () => {
       />
 
       <H2MenuToolbar
-        label="Documents"
+        label="Shared Files"
         buttonLabel="Upload"
-        buttonTitle="Upload Documents"
+        buttonTitle="Upload Shared Files"
         buttonProps={{ variant: 'contained', disableElevation: true }}
         buttonStartIcon={<Icon path={mdiTrayArrowUp} size={1} />}
         menuItems={[
@@ -108,10 +107,8 @@ const ProjectAttachments = () => {
         )}
       />
       <Divider></Divider>
-      <Box p={3}>
-        <Paper variant="outlined">
-          <ProjectAttachmentsList />
-        </Paper>
+      <Box p={2}>
+        <ProjectAttachmentsList />
       </Box>
     </>
   );

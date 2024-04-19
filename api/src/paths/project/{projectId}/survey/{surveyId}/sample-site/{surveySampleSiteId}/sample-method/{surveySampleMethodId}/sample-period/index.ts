@@ -17,8 +17,12 @@ export const GET: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
-          projectId: Number(req.params.projectId),
+          validProjectPermissions: [
+            PROJECT_PERMISSION.COORDINATOR,
+            PROJECT_PERMISSION.COLLABORATOR,
+            PROJECT_PERMISSION.OBSERVER
+          ],
+          surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
         {
@@ -84,11 +88,13 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             properties: {
               samplePeriods: {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     survey_sample_period_id: {
                       type: 'integer'
@@ -156,16 +162,17 @@ export function getSurveySamplePeriodRecords(): RequestHandler {
       throw new HTTP400('Missing required path param `surveySampleMethodId`');
     }
 
+    const surveyId = Number(req.params.surveyId);
+    const surveySampleMethodId = Number(req.params.surveySampleMethodId);
+
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const surveySampleMethodId = Number(req.params.surveySampleMethodId);
-
       await connection.open();
 
       const samplePeriodService = new SamplePeriodService(connection);
 
-      const result = await samplePeriodService.getSamplePeriodsForSurveyMethodId(surveySampleMethodId);
+      const result = await samplePeriodService.getSamplePeriodsForSurveyMethodId(surveyId, surveySampleMethodId);
 
       await connection.commit();
 
@@ -186,7 +193,7 @@ export const POST: Operation = [
       or: [
         {
           validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
-          projectId: Number(req.params.projectId),
+          surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
         {
@@ -250,9 +257,11 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           properties: {
             samplePeriod: {
               type: 'object',
+              additionalProperties: false,
               properties: {
                 start_date: {
                   type: 'string'
@@ -298,8 +307,10 @@ export function createSurveySamplePeriodRecord(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const samplePeriod: InsertSamplePeriodRecord = req.body.samplePeriod;
-      samplePeriod.survey_sample_method_id = Number(req.params.surveySampleMethodId);
+      const samplePeriod: InsertSamplePeriodRecord = {
+        ...req.body.samplePeriod,
+        survey_sample_method_id: Number(req.params.surveySampleMethodId)
+      };
 
       await connection.open();
 

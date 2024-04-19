@@ -1,18 +1,16 @@
 # Clean out all deployment artifacts when a PR is closed, but not merged.
-# Will attempt to remove all artifacts from any PR that was opened against any branch (and then closed (not merged)), except for test and prod.
+# Will attempt to remove all artifacts from any PR that was opened against any branch (and then closed (not merged)).
 name: Clean Closed PR Artifacts
 
 on:
   pull_request:
     types: [closed]
-    branches-ignore:
-      - test
-      - prod
 
 jobs:
   clean:
     name: Clean Deployment Artifacts for API and App in Dev and Tools environment
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     # Don't run if the PR was merged
     if: ${{ github.event.pull_request.merged != true }}
     env:
@@ -21,13 +19,13 @@ jobs:
       # Install Node - for `node` and `npm` commands
       # Note: This already uses actions/cache internally, so repeat calls in subsequent jobs are not a performance hit
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 14
+          node-version: 18
 
       # Load repo from cache
       - name: Cache repo
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: cache-repo
         env:
           cache-name: cache-repo
@@ -38,7 +36,7 @@ jobs:
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
 

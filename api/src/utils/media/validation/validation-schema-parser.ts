@@ -14,7 +14,6 @@ import {
   getValidFormatFieldsValidator,
   getValidRangeFieldsValidator
 } from '../csv/validation/csv-row-validator';
-import { DWCArchiveValidator } from '../dwc/dwc-archive-file';
 import { getParentChildKeyMatchValidator } from '../xlsx/validation/xlsx-validation';
 import { XLSXCSVValidator } from '../xlsx/xlsx-file';
 import {
@@ -98,10 +97,10 @@ export class ValidationSchemaParser {
     }
   }
 
-  getSubmissionValidations(): (DWCArchiveValidator | XLSXCSVValidator)[] {
+  getSubmissionValidations(): XLSXCSVValidator[] {
     const validationSchemas = this.getSubmissionValidationSchemas();
 
-    const rules: (DWCArchiveValidator | XLSXCSVValidator)[] = [];
+    const rules: XLSXCSVValidator[] = [];
 
     validationSchemas.forEach((validationSchema) => {
       const keys = Object.keys(validationSchema);
@@ -155,7 +154,7 @@ export class ValidationSchemaParser {
   }
 
   /**
-   * Retreives all validation rules for workbooks. Workbook validations differ from submission
+   * Retrieves all validation rules for workbooks. Workbook validations differ from submission
    * validations in that they alter the validation state of each worksheet within the workbook.
    * @returns {*} {WorkBookValidator[]} All workbook validation rules for the given submission.
    */

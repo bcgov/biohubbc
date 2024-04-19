@@ -19,6 +19,7 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: [
               'management_action_type',
               'first_nations',
@@ -28,22 +29,23 @@ GET.apiDoc = {
               'iucn_conservation_action_level_1_classification',
               'iucn_conservation_action_level_2_subclassification',
               'iucn_conservation_action_level_3_subclassification',
-              'program',
               'proprietor_type',
+              'program',
               'system_roles',
               'project_roles',
               'administrative_activity_status_type',
-              'field_methods',
-              'ecological_seasons',
               'intended_outcomes',
               'vantage_codes',
-              'site_selection_strategies'
+              'site_selection_strategies',
+              'survey_progress',
+              'method_response_metrics'
             ],
             properties: {
               management_action_type: {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -58,6 +60,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -72,6 +75,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -86,6 +90,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -104,57 +109,13 @@ GET.apiDoc = {
                 description: 'Types of surveys',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
                     },
                     name: {
                       type: 'string'
-                    }
-                  }
-                }
-              },
-              project_program: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    id: {
-                      type: 'number'
-                    },
-                    name: {
-                      type: 'string'
-                    }
-                  }
-                }
-              },
-              species: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    id: {
-                      type: 'number'
-                    },
-                    name: {
-                      type: 'string'
-                    }
-                  }
-                }
-              },
-              proprietor_type: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    id: {
-                      type: 'number'
-                    },
-                    name: {
-                      type: 'string'
-                    },
-                    is_first_nation: {
-                      type: 'boolean'
                     }
                   }
                 }
@@ -163,6 +124,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -177,6 +139,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -194,6 +157,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -207,10 +171,29 @@ GET.apiDoc = {
                   }
                 }
               },
-              system_role: {
+              proprietor_type: {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    },
+                    is_first_nation: {
+                      type: 'boolean'
+                    }
+                  }
+                }
+              },
+              program: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -221,10 +204,11 @@ GET.apiDoc = {
                   }
                 }
               },
-              project_role: {
+              system_roles: {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -235,10 +219,11 @@ GET.apiDoc = {
                   }
                 }
               },
-              survey_jobs: {
+              project_roles: {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -253,34 +238,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
-                  properties: {
-                    id: {
-                      type: 'number'
-                    },
-                    name: {
-                      type: 'string'
-                    }
-                  }
-                }
-              },
-              field_methods: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    id: {
-                      type: 'number'
-                    },
-                    name: {
-                      type: 'string'
-                    }
-                  }
-                }
-              },
-              ecological_seasons: {
-                type: 'array',
-                items: {
-                  type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -295,6 +253,25 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    },
+                    description: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              vantage_codes: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -305,10 +282,11 @@ GET.apiDoc = {
                   }
                 }
               },
-              vantage_codes: {
+              survey_jobs: {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -323,6 +301,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
@@ -337,11 +316,51 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   properties: {
                     id: {
                       type: 'number'
                     },
                     name: {
+                      type: 'string'
+                    },
+                    description: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              survey_progress: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'integer'
+                    },
+                    name: {
+                      type: 'string'
+                    },
+                    description: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              method_response_metrics: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['id', 'name', 'description'],
+                  properties: {
+                    id: {
+                      type: 'integer'
+                    },
+                    name: {
+                      type: 'string'
+                    },
+                    description: {
                       type: 'string'
                     }
                   }
@@ -359,7 +378,7 @@ GET.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -376,7 +395,7 @@ GET.apiDoc = {
  * @returns {RequestHandler}
  */
 export function getAllCodes(): RequestHandler {
-  return async (req, res) => {
+  return async (_, res) => {
     const connection = getAPIUserDBConnection();
 
     try {

@@ -26,7 +26,7 @@ describe('deleteAttachment', () => {
 
     const expectedError = new Error('cannot process request');
     const handleDeleteProjectAttachmentStub = sinon
-      .stub(AttachmentService.prototype, 'handleDeleteProjectAttachment')
+      .stub(AttachmentService.prototype, 'deleteProjectAttachment')
       .rejects(expectedError);
 
     const sampleReq = {
@@ -44,7 +44,7 @@ describe('deleteAttachment', () => {
     try {
       const result = deleteAttachment.deleteAttachment();
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      await result(sampleReq, null as unknown as any, null as unknown as any);
       expect.fail();
     } catch (actualError) {
       expect(handleDeleteProjectAttachmentStub).to.be.calledOnce;
@@ -62,7 +62,7 @@ describe('deleteAttachment', () => {
     });
 
     const handleDeleteProjectAttachmentStub = sinon
-      .stub(AttachmentService.prototype, 'handleDeleteProjectAttachment')
+      .stub(AttachmentService.prototype, 'deleteProjectAttachment')
       .resolves();
 
     const sampleReq = {
@@ -89,8 +89,8 @@ describe('deleteAttachment', () => {
 
     const result = deleteAttachment.deleteAttachment();
 
-    await result(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
+    await result(sampleReq, sampleRes as unknown as any, null as unknown as any);
 
-    expect(handleDeleteProjectAttachmentStub).to.be.calledOnceWith(1, 2, 'Report', false);
+    expect(handleDeleteProjectAttachmentStub).to.be.calledOnceWith(1, 2, 'Report');
   });
 });

@@ -10,6 +10,7 @@ import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import Collapse from '@mui/material/Collapse';
 import { grey } from '@mui/material/colors';
+import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -17,8 +18,10 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { CodesContext } from 'contexts/codesContext';
+import { ISurveySampleMethodData } from 'features/surveys/components/MethodForm';
 import { useFormikContext } from 'formik';
 import { useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
@@ -26,14 +29,13 @@ import { getCodesName } from 'utils/Utils';
 import { ICreateSamplingSiteRequest } from '../observations/sampling-sites/SamplingSitePage';
 import CreateSamplingMethod from './CreateSamplingMethod';
 import EditSamplingMethod from './EditSamplingMethod';
-import { IEditSurveySampleMethodData } from './MethodForm';
 
 const SamplingMethodForm = () => {
   const { values, errors, setFieldValue, validateField } = useFormikContext<ICreateSamplingSiteRequest>();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
-  const [editData, setEditData] = useState<IEditSurveySampleMethodData | undefined>(undefined);
+  const [editData, setEditData] = useState<{ data: ISurveySampleMethodData; index: number } | undefined>(undefined);
 
   const codesContext = useContext(CodesContext);
   useEffect(() => {
@@ -42,7 +44,7 @@ const SamplingMethodForm = () => {
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
     setAnchorEl(event.currentTarget);
-    setEditData({ ...values.methods[index], index });
+    setEditData({ data: values.methods[index], index });
   };
 
   const handleDelete = () => {
@@ -62,22 +64,26 @@ const SamplingMethodForm = () => {
         onSubmit={(data) => {
           setFieldValue(`methods[${values.methods.length}]`, data);
           validateField('methods');
+          setAnchorEl(null);
           setIsCreateModalOpen(false);
         }}
         onClose={() => {
+          setAnchorEl(null);
           setIsCreateModalOpen(false);
         }}
       />
 
       {/* EDIT SAMPLE METHOD DIALOG */}
       <EditSamplingMethod
-        initialData={editData}
+        initialData={editData?.data}
         open={isEditModalOpen}
-        onSubmit={(data, index) => {
-          setFieldValue(`methods[${index}]`, data);
+        onSubmit={(data) => {
+          setFieldValue(`methods[${editData?.index}]`, data);
+          setAnchorEl(null);
           setIsEditModalOpen(false);
         }}
         onClose={() => {
+          setAnchorEl(null);
           setIsEditModalOpen(false);
         }}
       />
@@ -115,7 +121,7 @@ const SamplingMethodForm = () => {
             variant="body1"
             color="textSecondary"
             sx={{
-              mb: 2,
+              mb: 3,
               maxWidth: '92ch'
             }}>
             Methods added here will be applied to ALL sampling locations. These can be modified later if required.
@@ -130,26 +136,13 @@ const SamplingMethodForm = () => {
               {errors.methods}
             </Alert>
           )}
-          <TransitionGroup>
+          <Stack component={TransitionGroup} gap={1.5}>
             {values.methods.map((item, index) => (
-              <Collapse key={`sample_method_${item.method_lookup_id}_${item.periods.length}`}>
+              <Collapse key={`sample_method_${item.method_lookup_id || Math.random()}`}>
                 <Card
                   variant="outlined"
                   sx={{
-                    mt: 1,
-                    background: grey[100],
-                    '& .MuiCardHeader-subheader': {
-                      display: '-webkit-box',
-                      WebkitLineClamp: '2',
-                      WebkitBoxOrient: 'vertical',
-                      maxWidth: '92ch',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      fontSize: '14px'
-                    },
-                    '& .MuiCardHeader-title': {
-                      mb: 0.5
-                    }
+                    background: grey[100]
                   }}>
                   <CardHeader
                     title={`${getCodesName(
@@ -157,7 +150,6 @@ const SamplingMethodForm = () => {
                       'sample_methods',
                       item.method_lookup_id || 0
                     )}`}
-                    subheader={item.description}
                     action={
                       <IconButton
                         onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
@@ -171,41 +163,69 @@ const SamplingMethodForm = () => {
                   <CardContent
                     sx={{
                       pt: 0,
-                      pb: '0 !important'
+                      pb: '12px !important'
                     }}>
-                    <Typography variant="body1" gutterBottom>
-                      Time Periods
-                    </Typography>
-                    <List>
-                      {item.periods.map((period) => (
-                        <ListItem key={`sample_period_${period.start_date}-${period.end_date}`} divider>
-                          <ListItemIcon>
-                            <Icon path={mdiCalendarRangeOutline} size={1} />
-                          </ListItemIcon>
-                          <ListItemText primary={`${period.start_date} to ${period.end_date}`} />
-                        </ListItem>
-                      ))}
-                    </List>
+                    <Stack gap={3}>
+                      {item.description && (
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          sx={{
+                            display: '-webkit-box',
+                            WebkitLineClamp: '2',
+                            WebkitBoxOrient: 'vertical',
+                            maxWidth: '92ch',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis'
+                          }}>
+                          {item.description}
+                        </Typography>
+                      )}
+                      <Box>
+                        <Typography variant="body1" fontWeight={700}>
+                          Time Periods
+                        </Typography>
+                        <Divider component="div" sx={{ mt: 1 }}></Divider>
+                        <List dense disablePadding>
+                          {item.periods.map((period) => (
+                            <ListItem
+                              key={`sample_period_${period.survey_sample_period_id || Math.random()}`}
+                              divider
+                              disableGutters
+                              sx={{ pl: 1.25 }}>
+                              <ListItemIcon sx={{ minWidth: '32px' }}>
+                                <Icon path={mdiCalendarRangeOutline} size={0.75} />
+                              </ListItemIcon>
+                              <ListItemText
+                                primary={`${period.start_date} ${period.start_time || ''} - ${period.end_date} ${
+                                  period.end_time || ''
+                                }`}
+                              />
+                            </ListItem>
+                          ))}
+                        </List>
+                      </Box>
+                    </Stack>
                   </CardContent>
                 </Card>
               </Collapse>
             ))}
-          </TransitionGroup>
-          <Button
-            sx={{
-              mt: 1
-            }}
-            data-testid="sample-method-add-button"
-            variant="outlined"
-            color="primary"
-            title="Add Sample Method"
-            aria-label="Add Sample Method"
-            startIcon={<Icon path={mdiPlus} size={1} />}
-            onClick={() => {
-              setIsCreateModalOpen(true);
-            }}>
-            Add Method
-          </Button>
+            <Button
+              sx={{
+                alignSelf: 'flex-start'
+              }}
+              data-testid="create-sample-method-add-button"
+              variant="outlined"
+              color="primary"
+              title="Add Sample Method"
+              aria-label="Add Sample Method"
+              startIcon={<Icon path={mdiPlus} size={1} />}
+              onClick={() => {
+                setIsCreateModalOpen(true);
+              }}>
+              Add Method
+            </Button>
+          </Stack>
         </form>
       </Box>
     </>

@@ -1,5 +1,5 @@
 import { GridColDef } from '@mui/x-data-grid';
-import { CustomDataGrid } from 'components/tables/CustomDataGrid';
+import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { IGetFundingSourcesResponse } from 'interfaces/useFundingSourceApi.interface';
 import { getFormattedAmount } from 'utils/Utils';
 import TableActionsMenu from './FundingSourcesTableActionsMenu';
@@ -62,7 +62,8 @@ const FundingSourcesTable = (props: IFundingSourcesTableTableProps) => {
   ];
 
   return (
-    <CustomDataGrid
+    <StyledDataGrid
+      noRowsMessage={'No funding sources found'}
       autoHeight
       rows={props.fundingSources}
       getRowId={(row) => `funding-source-${row.funding_source_id}`}

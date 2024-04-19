@@ -36,11 +36,11 @@ export type DataLoader<AFArgs extends any[], AFResponse = unknown, AFError = unk
   /**
    * Executes the `fetchData` function once, only if it has never been called before. Does nothing if called again.
    */
-  load: (...args: AFArgs) => Promise<void>;
+  load: (...args: AFArgs) => Promise<AFResponse | undefined>;
   /**
    * Executes the `fetchData` function again.
    */
-  refresh: (...args: AFArgs) => Promise<void>;
+  refresh: (...args: AFArgs) => Promise<AFResponse | undefined>;
   /**
    * Clears any errors caught from a failed `fetchData` call.
    */
@@ -85,7 +85,7 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
 
   const getData = useAsync(fetchData);
 
-  const loadData = async (...args: AFArgs) => {
+  const loadData = async (...args: AFArgs): Promise<AFResponse | undefined> => {
     try {
       setIsLoading(true);
 
@@ -96,6 +96,8 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
       }
 
       setData(response);
+
+      return response;
     } catch (error) {
       if (!isMounted()) {
         return;
@@ -108,14 +110,14 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
       if (isMounted()) {
         setIsLoading(false);
         setIsReady(true);
-        !hasLoaded && setHasLoaded(true);
+        setHasLoaded(true);
       }
     }
   };
 
   const load = async (...args: AFArgs) => {
     if (oneTimeLoad) {
-      return;
+      return data;
     }
 
     setOneTimeLoad(true);
@@ -123,10 +125,9 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
   };
 
   const refresh = async (...args: AFArgs) => {
-    error && setError(undefined);
-    isLoading && setIsLoading(false);
-    isReady && setIsReady(false);
-    !hasLoaded && setHasLoaded(true);
+    setError(undefined);
+    setIsLoading(false);
+    setIsReady(false);
     return loadData(...args);
   };
 
@@ -136,11 +137,11 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
 
   const clearData = () => {
     setData(undefined);
-    error && setError(undefined);
-    isLoading && setIsLoading(false);
-    isReady && setIsReady(false);
-    hasLoaded && setHasLoaded(false);
-    oneTimeLoad && setOneTimeLoad(false);
+    setError(undefined);
+    setIsLoading(false);
+    setIsReady(false);
+    setHasLoaded(false);
+    setOneTimeLoad(false);
   };
 
   return { data, error, isLoading, isReady, hasLoaded, load, refresh, clearError, clearData };

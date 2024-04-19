@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import assert from 'assert';
@@ -32,37 +31,35 @@ const GeneralInformation = () => {
       .join(', ') || '';
 
   return (
-    <Box component="dl" my={0}>
-      <Grid container spacing={1}>
-        <Grid item sm={6}>
-          <Typography component="dt" color="textSecondary" variant="subtitle2">
-            Program
-          </Typography>
-          <Typography component="dd">{projectPrograms ? <>{projectPrograms}</> : 'No Programs'}</Typography>
-        </Grid>
-        <Grid item sm={6}>
-          <Typography component="dt" color="textSecondary" variant="subtitle2">
-            Timeline
-          </Typography>
-          <Typography component="dd">
-            {projectData.project.end_date ? (
-              <>
-                {getFormattedDateRangeString(
-                  DATE_FORMAT.ShortMediumDateFormat,
-                  projectData.project.start_date,
-                  projectData.project.end_date
-                )}
-              </>
-            ) : (
-              <>
-                <span>Start Date:</span>{' '}
-                {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat, projectData.project.start_date)}
-              </>
-            )}
-          </Typography>
-        </Grid>
+    <Grid component="dl" container spacing={0}>
+      <Grid item sm={6}>
+        <Typography component="dt" color="textSecondary" variant="subtitle2">
+          Program
+        </Typography>
+        <Typography component="dd">{projectPrograms ? <>{projectPrograms}</> : 'No Programs'}</Typography>
       </Grid>
-    </Box>
+      <Grid item sm={6}>
+        <Typography component="dt" color="textSecondary" variant="subtitle2">
+          Timeline
+        </Typography>
+        <Typography component="dd">
+          {projectData.project.end_date ? (
+            <>
+              {getFormattedDateRangeString(
+                DATE_FORMAT.ShortMediumDateFormat,
+                projectData.project.start_date,
+                projectData.project.end_date
+              )}
+            </>
+          ) : (
+            <>
+              <span>Start Date: </span>
+              {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat, projectData.project.start_date)}
+            </>
+          )}
+        </Typography>
+      </Grid>
+    </Grid>
   );
 };
 

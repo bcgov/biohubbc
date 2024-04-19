@@ -95,7 +95,7 @@ describe.skip('CreateSurveyPage', () => {
     mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
     mockUseApi.survey.getSurveyPermits.mockResolvedValue({
-      permits: [{ id: 1, permit_number: 'abcd1', permit_type: 'Wildlife permit' }]
+      permits: [{ permit_id: 1, permit_number: 'abcd1', permit_type: 'Wildlife permit' }]
     });
 
     const { getByText, getAllByText } = renderContainer();
@@ -115,63 +115,14 @@ describe.skip('CreateSurveyPage', () => {
     });
   });
 
-  it('shows circular spinner when codes and project data not yet loaded', async () => {
-    const { asFragment } = render(
-      <MemoryRouter initialEntries={['?id=1']}>
-        <CreateSurveyPage />
-      </MemoryRouter>
-    );
-
-    await waitFor(() => {
-      expect(asFragment()).toMatchSnapshot();
-    });
-  });
-
-  it.skip('renders correctly when codes and project data are loaded', async () => {
-    mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-
-    mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
-
-    mockUseApi.survey.getSurveyPermits.mockResolvedValue({
-      permits: [
-        { id: 1, permit_number: '123', permit_type: 'Scientific' },
-        { id: 2, permit_number: '456', permit_type: 'Wildlife' }
-      ]
-    });
-
-    mockUseApi.taxonomy.getSpeciesFromIds.mockResolvedValue({
-      searchResponse: [
-        { id: '1', label: 'species 1' },
-        { id: '2', label: 'species 2' }
-      ]
-    });
-    mockUseApi.taxonomy.searchSpecies({
-      searchResponse: [
-        { id: '1', label: 'species 1' },
-        { id: '2', label: 'species 2' }
-      ]
-    });
-
-    const { asFragment, getAllByText } = render(
-      <MemoryRouter initialEntries={['?id=1']}>
-        <CreateSurveyPage />
-      </MemoryRouter>
-    );
-
-    await waitFor(() => {
-      expect(getAllByText('Create Survey').length).toEqual(2);
-      expect(asFragment()).toMatchSnapshot();
-    });
-  });
-
   describe('Are you sure? Dialog', () => {
     it('calls history.push() if the user clicks `Yes`', async () => {
       mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
       mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
       mockUseApi.survey.getSurveyPermits.mockResolvedValue({
         permits: [
-          { id: 1, permit_number: '123', permit_type: 'Scientific' },
-          { id: 2, permit_number: '456', permit_type: 'Wildlife' }
+          { permit_id: 1, permit_number: '123', permit_type: 'Scientific' },
+          { permit_id: 2, permit_number: '456', permit_type: 'Wildlife' }
         ]
       });
       mockUseApi.taxonomy.getSpeciesFromIds.mockResolvedValue({
@@ -217,8 +168,8 @@ describe.skip('CreateSurveyPage', () => {
       mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
       mockUseApi.survey.getSurveyPermits.mockResolvedValue({
         permits: [
-          { id: 1, permit_number: '123', permit_type: 'Scientific' },
-          { id: 2, permit_number: '456', permit_type: 'Wildlife' }
+          { permit_id: 1, permit_number: '123', permit_type: 'Scientific' },
+          { permit_id: 2, permit_number: '456', permit_type: 'Wildlife' }
         ]
       });
       mockUseApi.taxonomy.getSpeciesFromIds.mockResolvedValue({

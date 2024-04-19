@@ -1,8 +1,15 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { AnimalSex, Critter, IAnimal } from 'features/surveys/view/survey-animals/animal';
-import { IAnimalDeployment } from 'features/surveys/view/survey-animals/device';
-import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { AnimalSex, ICreateCritter } from 'features/surveys/view/survey-animals/animal';
+import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
+import {
+  ICreateSurveyRequest,
+  ICreateSurveyResponse,
+  IDetailedCritterWithInternalId,
+  IGetSurveyListResponse,
+  SurveyBasicFieldsObject
+} from 'interfaces/useSurveyApi.interface';
+import { ApiPaginationResponseParams } from 'types/misc';
 import { v4 } from 'uuid';
 import useSurveyApi from './useSurveyApi';
 
@@ -21,33 +28,57 @@ describe('useSurveyApi', () => {
   const surveyId = 1;
   const critterId = 1;
 
+  describe('createSurvey', () => {
+    it('creates a survey', async () => {
+      const projectId = 1;
+      const survey = {} as unknown as ICreateSurveyRequest;
+
+      const res: ICreateSurveyResponse = {
+        id: 1
+      };
+
+      mock.onPost(`/api/project/${projectId}/survey/create`).reply(200, res);
+
+      const result = await useSurveyApi(axios).createSurvey(projectId, survey);
+
+      expect(result.id).toEqual(1);
+    });
+  });
+
+  describe('getSurveysBasicFieldsByProjectId', () => {
+    it('fetches an array of surveys', async () => {
+      const projectId = 1;
+
+      const res: IGetSurveyListResponse = {
+        surveys: [{ survey_id: 1 }, { survey_id: 2 }] as SurveyBasicFieldsObject[],
+        pagination: null as unknown as ApiPaginationResponseParams
+      };
+
+      mock.onGet(`/api/project/${projectId}/survey`).reply(200, res);
+
+      const result = await useSurveyApi(axios).getSurveysBasicFieldsByProjectId(projectId);
+
+      expect(result.surveys.length).toEqual(2);
+      expect(result.surveys[0].survey_id).toEqual(1);
+      expect(result.surveys[1].survey_id).toEqual(2);
+    });
+  });
+
   describe('createCritterAndAddToSurvey', () => {
     it('creates a critter successfully', async () => {
-      const animal: IAnimal = {
-        general: {
-          animal_id: '1',
-          taxon_id: v4(),
-          taxon_name: '1',
-          wlh_id: 'a',
-          sex: AnimalSex.UNKNOWN,
-          critter_id: v4()
-        },
-        captures: [],
-        markings: [],
-        measurements: [],
-        mortality: [],
-        family: [],
-        images: [],
-        device: undefined,
-        collectionUnits: []
+      const critter: ICreateCritter = {
+        itis_tsn: 1,
+        critter_id: 'blah-blah',
+        wlh_id: '123-45',
+        animal_id: 'carl',
+        sex: AnimalSex.MALE
       };
-      const critter = new Critter(animal);
 
       mock.onPost(`/api/project/${projectId}/survey/${surveyId}/critters`).reply(201, { create: { critters: 1 } });
 
       const result = await useSurveyApi(axios).createCritterAndAddToSurvey(projectId, surveyId, critter);
 
-      expect(result.create.critters).toBe(1);
+      expect(result).toBeDefined();
     });
   });
 

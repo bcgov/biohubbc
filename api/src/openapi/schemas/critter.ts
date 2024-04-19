@@ -1,29 +1,45 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-const critterSchema: OpenAPIV3.SchemaObject = {
+export const critterSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     critter_id: {
       type: 'string',
       format: 'uuid'
     },
     animal_id: {
-      type: 'string'
+      type: 'string',
+      nullable: true
     },
     wlh_id: {
-      type: 'string'
+      type: 'string',
+      nullable: true
     },
-    taxon_id: {
+    itis_tsn: {
+      type: 'integer'
+    },
+    itis_scientific_name: {
       type: 'string'
     },
     sex: {
       type: 'string'
+    },
+    responsible_region_nr_id: {
+      type: 'string',
+      format: 'uuid',
+      nullable: true
+    },
+    critter_comment: {
+      type: 'string',
+      nullable: true
     }
   }
 };
 
 const locationSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     location_id: {
       type: 'string',
@@ -46,6 +62,7 @@ const locationSchema: OpenAPIV3.SchemaObject = {
 
 const captureSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     critter_id: {
       type: 'string',
@@ -85,6 +102,7 @@ const captureSchema: OpenAPIV3.SchemaObject = {
 
 const collectionUnits: OpenAPIV3.SchemaObject = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     critter_id: {
       type: 'string',
@@ -103,6 +121,7 @@ const collectionUnits: OpenAPIV3.SchemaObject = {
 
 const markingSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     critter_id: {
       type: 'string',
@@ -136,6 +155,7 @@ const markingSchema: OpenAPIV3.SchemaObject = {
 
 const mortalitySchema: OpenAPIV3.SchemaObject = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     mortality_id: { type: 'string', format: 'uuid' },
     critter_id: { type: 'string', format: 'uuid' },
@@ -143,10 +163,10 @@ const mortalitySchema: OpenAPIV3.SchemaObject = {
     mortality_comment: { type: 'string' },
     proximate_cause_of_death_id: { type: 'string', format: 'uuid' },
     proximate_cause_of_death_confidence: { type: 'string' },
-    proximate_predated_by_taxon_id: { type: 'string', format: 'uuid' },
+    proximate_predated_by_itis_tsn: { type: 'integer' },
     ultimate_cause_of_death_id: { type: 'string', format: 'uuid' },
     ultimate_cause_of_death_confidence: { type: 'string' },
-    ultimate_predated_by_taxon_id: { type: 'string', format: 'uuid' },
+    ultimate_predated_by_itis_tsn: { type: 'integer' },
     projection_mode: { type: 'string', enum: ['wgs', 'utm'] },
     location: locationSchema
   }
@@ -154,6 +174,7 @@ const mortalitySchema: OpenAPIV3.SchemaObject = {
 
 const qualitativeMeasurementSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     measurement_qualitative_id: { type: 'string', format: 'uuid' },
     taxon_measurement_id: { type: 'string' },
@@ -167,6 +188,7 @@ const qualitativeMeasurementSchema: OpenAPIV3.SchemaObject = {
 
 const quantitativeMeasurmentSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     measurement_qualitative_id: { type: 'string', format: 'uuid' },
     taxon_measurement_id: { type: 'string' },
@@ -182,9 +204,34 @@ const quantitativeMeasurmentSchema: OpenAPIV3.SchemaObject = {
   }
 };
 
+export const critterCreateRequestObject: OpenAPIV3.SchemaObject = {
+  title: 'Create critter request object',
+  type: 'object',
+  properties: {
+    critter_id: {
+      type: 'string',
+      format: 'uuid'
+    },
+    animal_id: {
+      type: 'string'
+    },
+    wlh_id: {
+      type: 'string'
+    },
+    itis_tsn: {
+      type: 'integer'
+    },
+    sex: {
+      type: 'string'
+    }
+  },
+  additionalProperties: false
+};
+
 export const critterBulkRequestObject: OpenAPIV3.SchemaObject = {
   title: 'Bulk post request object',
   type: 'object',
+  additionalProperties: false,
   properties: {
     critters: {
       title: 'critters',
@@ -193,6 +240,64 @@ export const critterBulkRequestObject: OpenAPIV3.SchemaObject = {
         title: 'critter',
         ...critterSchema
       }
+    },
+    families: {
+      title: 'families',
+      type: 'object',
+      properties: {
+        children: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              family_id: {
+                type: 'string'
+              },
+              child_critter_id: {
+                type: 'string'
+              },
+              _delete: {
+                type: 'boolean'
+              }
+            },
+            additionalProperties: false
+          }
+        },
+        families: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              family_id: {
+                type: 'string'
+              },
+              family_label: {
+                type: 'string'
+              }
+            },
+            additionalProperties: false
+          }
+        },
+        parents: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              family_id: {
+                type: 'string'
+              },
+              parent_critter_id: {
+                type: 'string'
+              },
+              _delete: {
+                type: 'boolean'
+              }
+            },
+            additionalProperties: false
+          }
+        }
+      },
+      additionalProperties: false
     },
     captures: {
       title: 'captures',
@@ -276,7 +381,8 @@ export const critterBulkRequestPatchObject: OpenAPIV3.SchemaObject = {
           _delete: {
             type: 'boolean'
           }
-        }
+        },
+        additionalProperties: false
       }
     },
     collections: {
@@ -290,7 +396,8 @@ export const critterBulkRequestPatchObject: OpenAPIV3.SchemaObject = {
           _delete: {
             type: 'boolean'
           }
-        }
+        },
+        additionalProperties: false
       }
     },
     markings: {
@@ -304,7 +411,8 @@ export const critterBulkRequestPatchObject: OpenAPIV3.SchemaObject = {
           _delete: {
             type: 'boolean'
           }
-        }
+        },
+        additionalProperties: false
       }
     },
     locations: {
@@ -318,7 +426,8 @@ export const critterBulkRequestPatchObject: OpenAPIV3.SchemaObject = {
           _delete: {
             type: 'boolean'
           }
-        }
+        },
+        additionalProperties: false
       }
     },
     mortalities: {
@@ -332,7 +441,8 @@ export const critterBulkRequestPatchObject: OpenAPIV3.SchemaObject = {
           _delete: {
             type: 'boolean'
           }
-        }
+        },
+        additionalProperties: false
       }
     },
     qualitative_measurements: {
@@ -346,7 +456,8 @@ export const critterBulkRequestPatchObject: OpenAPIV3.SchemaObject = {
           _delete: {
             type: 'boolean'
           }
-        }
+        },
+        additionalProperties: false
       }
     },
     quantitative_measurements: {
@@ -360,21 +471,24 @@ export const critterBulkRequestPatchObject: OpenAPIV3.SchemaObject = {
           _delete: {
             type: 'boolean'
           }
-        }
+        },
+        additionalProperties: false
       }
     }
-  }
+  },
+  additionalProperties: false
 };
 
 const bulkResponseCounts: OpenAPIV3.SchemaObject = {
   title: 'Bulk operation counts',
   type: 'object',
+  additionalProperties: false,
   properties: {
     critters: { type: 'integer' },
     captures: { type: 'integer' },
     markings: { type: 'integer' },
     locations: { type: 'integer' },
-    moralities: { type: 'integer' },
+    mortalities: { type: 'integer' },
     collections: { type: 'integer' },
     quantitative_measurements: { type: 'integer' },
     qualitative_measurements: { type: 'integer' },
@@ -387,6 +501,7 @@ const bulkResponseCounts: OpenAPIV3.SchemaObject = {
 export const bulkCreateResponse: OpenAPIV3.SchemaObject = {
   title: 'Critterbase bulk creation response object',
   type: 'object',
+  additionalProperties: false,
   properties: {
     created: bulkResponseCounts
   }
@@ -395,6 +510,7 @@ export const bulkCreateResponse: OpenAPIV3.SchemaObject = {
 export const bulkUpdateResponse: OpenAPIV3.SchemaObject = {
   title: 'Critterbase bulk update response object',
   type: 'object',
+  additionalProperties: false,
   properties: {
     created: bulkCreateResponse,
     updated: bulkResponseCounts,

@@ -6,7 +6,7 @@ import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
 import {
   IProjectReportAttachment,
-  IReportAttachmentAuthor
+  IProjectReportAttachmentAuthor
 } from '../../../../../../repositories/attachment-repository';
 import { AttachmentService } from '../../../../../../services/attachment-service';
 import { getMockDBConnection } from '../../../../../../__mocks__/db';
@@ -38,7 +38,7 @@ describe('getProjectReportDetails', () => {
     try {
       const result = get.getProjectReportDetails();
 
-      await result(mockReq, (null as unknown) as any, (null as unknown) as any);
+      await result(mockReq, null as unknown as any, null as unknown as any);
       expect.fail();
     } catch (actualError) {
       expect((actualError as HTTPError).message).to.equal(expectedError.message);
@@ -60,11 +60,11 @@ describe('getProjectReportDetails', () => {
 
     const getProjectReportAttachmentByIdStub = sinon
       .stub(AttachmentService.prototype, 'getProjectReportAttachmentById')
-      .resolves(({ project_report_attachment_id: 1 } as unknown) as IProjectReportAttachment);
+      .resolves({ project_report_attachment_id: 1 } as unknown as IProjectReportAttachment);
 
     const getProjectReportAttachmentAuthorsStub = sinon
       .stub(AttachmentService.prototype, 'getProjectReportAttachmentAuthors')
-      .resolves([({ author: 2 } as unknown) as IReportAttachmentAuthor]);
+      .resolves([{ author: 2 } as unknown as IProjectReportAttachmentAuthor]);
 
     const expectedResponse = {
       metadata: { project_report_attachment_id: 1 },
@@ -83,7 +83,7 @@ describe('getProjectReportDetails', () => {
     };
 
     const result = get.getProjectReportDetails();
-    await result(mockReq, (sampleRes as unknown) as any, (null as unknown) as any);
+    await result(mockReq, sampleRes as unknown as any, null as unknown as any);
 
     expect(actualResult).to.eql(expectedResponse);
     expect(getProjectReportAttachmentByIdStub).to.be.calledOnce;

@@ -24,7 +24,7 @@ export const PUT: Operation = [
 ];
 
 PUT.apiDoc = {
-  description: "Update a user's system access request and add any specified system roles to the user.",
+  description: 'Update a users system access request and add any specified system roles to the user.',
   tags: ['user'],
   security: [
     {
@@ -53,7 +53,7 @@ PUT.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'

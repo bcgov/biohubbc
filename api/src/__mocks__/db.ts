@@ -27,7 +27,13 @@ export const registerMockDBConnection = (config?: Partial<IDBConnection>): IDBCo
 export const getMockDBConnection = (config?: Partial<IDBConnection>): IDBConnection => {
   return {
     systemUserId: () => {
-      return (null as unknown) as number;
+      return null as unknown as number;
+    },
+    systemUserGUID: () => {
+      return null as unknown as string;
+    },
+    systemUserIdentifier: () => {
+      return null as unknown as string;
     },
     open: async () => {
       // do nothing
@@ -42,13 +48,13 @@ export const getMockDBConnection = (config?: Partial<IDBConnection>): IDBConnect
       // do nothing
     },
     query: async () => {
-      return (undefined as unknown) as QueryResult<any>;
+      return undefined as unknown as QueryResult<any>;
     },
     sql: async () => {
-      return (undefined as unknown) as QueryResult<any>;
+      return undefined as unknown as QueryResult<any>;
     },
     knex: async () => {
-      return (undefined as unknown) as QueryResult<any>;
+      return undefined as unknown as QueryResult<any>;
     },
     ...config
   };
@@ -81,6 +87,13 @@ export class MockRes {
   sendValue: any;
   send = sinon.fake((value: any) => {
     this.sendValue = value;
+
+    return this;
+  });
+
+  headerValue: any;
+  setHeader = sinon.fake((header: any) => {
+    this.headerValue = header;
 
     return this;
   });

@@ -41,11 +41,9 @@ services:
       - ${API_PORT}:${API_PORT}
     environment:
       - NODE_ENV=${NODE_ENV}
+      - NODE_OPTIONS=${API_NODE_OPTIONS}
       - API_HOST=${API_HOST}
       - API_PORT=${API_PORT}
-      # Elastic Search
-      - ELASTICSEARCH_URL=${ELASTICSEARCH_URL}
-      - ELASTICSEARCH_TAXONOMY_INDEX=${ELASTICSEARCH_TAXONOMY_INDEX}
       # Database
       - TZ=${API_TZ}
       - DB_HOST=${DB_HOST}
@@ -56,6 +54,10 @@ services:
       - DB_SCHEMA=${DB_SCHEMA}
       # Seed
       - PROJECT_SEEDER_USER_IDENTIFIER=${PROJECT_SEEDER_USER_IDENTIFIER}
+      - NUM_SEED_PROJECTS=${NUM_SEED_PROJECTS}
+      - NUM_SEED_SURVEYS_PER_PROJECT=${NUM_SEED_SURVEYS_PER_PROJECT}
+      - NUM_SEED_OBSERVATIONS_PER_SURVEY=${NUM_SEED_OBSERVATIONS_PER_SURVEY}
+      - NUM_SEED_SUBCOUNTS_PER_OBSERVATION=${NUM_SEED_SUBCOUNTS_PER_OBSERVATION}
       # Keycloak
       - KEYCLOAK_HOST=${KEYCLOAK_HOST}
       - KEYCLOAK_REALM=${KEYCLOAK_REALM}
@@ -78,8 +80,10 @@ services:
       - MAX_REQ_BODY_SIZE=${MAX_REQ_BODY_SIZE}
       - MAX_UPLOAD_NUM_FILES=${MAX_UPLOAD_NUM_FILES}
       - MAX_UPLOAD_FILE_SIZE=${MAX_UPLOAD_FILE_SIZE}
-      # Log level
+      # Logging and Validation
       - LOG_LEVEL=${LOG_LEVEL}
+      - API_RESPONSE_VALIDATION_ENABLED=${API_RESPONSE_VALIDATION_ENABLED}
+      - DATABASE_RESPONSE_VALIDATION_ENABLED=${DATABASE_RESPONSE_VALIDATION_ENABLED}
       # Clamav
       - CLAMAV_PORT=${CLAMAV_PORT}
       - CLAMAV_HOST=${CLAMAV_HOST}
@@ -94,10 +98,13 @@ services:
       - GCNOTIFY_SMS_URL=${GCNOTIFY_SMS_URL}
       - APP_HOST=${APP_HOST}
       # BioHub Platform (aka: Backbone)
-      - BACKBONE_API_HOST=${BACKBONE_API_HOST}
+      - BACKBONE_INTERNAL_API_HOST=${BACKBONE_INTERNAL_API_HOST}
+      - BACKBONE_PUBLIC_API_HOST=${BACKBONE_PUBLIC_API_HOST}
       - BACKBONE_INTAKE_PATH=${BACKBONE_INTAKE_PATH}
       - BACKBONE_ARTIFACT_INTAKE_PATH=${BACKBONE_ARTIFACT_INTAKE_PATH}
       - BACKBONE_INTAKE_ENABLED=${BACKBONE_INTAKE_ENABLED}
+      - BIOHUB_TAXON_PATH=${BIOHUB_TAXON_PATH}
+      - BIOHUB_TAXON_TSN_PATH=${BIOHUB_TAXON_TSN_PATH}
       # BCTW / Critterbase
       - BCTW_API_HOST=${BCTW_API_HOST}
       - CB_API_HOST=${CB_API_HOST}
@@ -131,18 +138,23 @@ services:
       - ${APP_PORT}:${APP_PORT}
     environment:
       - NODE_ENV=${NODE_ENV}
+      - NODE_OPTIONS=${APP_NODE_OPTIONS}
       - REACT_APP_NODE_ENV=${NODE_ENV}
       - PORT=${APP_PORT}
       - REACT_APP_API_HOST=${API_HOST}
       - REACT_APP_API_PORT=${API_PORT}
-      - REACT_APP_CRITTERBASE_API_HOST=${CB_API_HOST}
-      - REACT_APP_CRITTERBASE_API_PORT=${CB_API_PORT}
       - REACT_APP_MAX_UPLOAD_NUM_FILES=${MAX_UPLOAD_NUM_FILES}
       - REACT_APP_MAX_UPLOAD_FILE_SIZE=${MAX_UPLOAD_FILE_SIZE}
       - REACT_APP_SITEMINDER_LOGOUT_URL=${SITEMINDER_LOGOUT_URL}
       - REACT_APP_KEYCLOAK_HOST=${KEYCLOAK_HOST}
       - REACT_APP_KEYCLOAK_REALM=${KEYCLOAK_REALM}
       - REACT_APP_KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID}
+      # BioHub Platform (aka: Backbone)
+      - REACT_APP_BIOHUB_FEATURE_FLAG=${REACT_APP_BIOHUB_FEATURE_FLAG}
+      - REACT_APP_BACKBONE_PUBLIC_API_HOST=${BACKBONE_PUBLIC_API_HOST}
+      - REACT_APP_BIOHUB_TAXON_PATH=${BIOHUB_TAXON_PATH}
+      - REACT_APP_BIOHUB_TAXON_TSN_PATH=${BIOHUB_TAXON_TSN_PATH}
+      # Object Store (S3)
       - OBJECT_STORE_URL=${OBJECT_STORE_URL}
       - OBJECT_STORE_BUCKET_NAME=${OBJECT_STORE_BUCKET_NAME}
     volumes:
@@ -170,6 +182,10 @@ services:
       - DB_USER_API_PASS=${DB_USER_API_PASS}
       - DB_SCHEMA_DAPI_V1=${DB_SCHEMA_DAPI_V1}
       - PROJECT_SEEDER_USER_IDENTIFIER=${PROJECT_SEEDER_USER_IDENTIFIER}
+      - NUM_SEED_PROJECTS=${NUM_SEED_PROJECTS}
+      - NUM_SEED_SURVEYS_PER_PROJECT=${NUM_SEED_SURVEYS_PER_PROJECT}
+      - NUM_SEED_OBSERVATIONS_PER_SURVEY=${NUM_SEED_OBSERVATIONS_PER_SURVEY}
+      - NUM_SEED_SUBCOUNTS_PER_OBSERVATION=${NUM_SEED_SUBCOUNTS_PER_OBSERVATION}
     volumes:
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
     networks:
@@ -178,62 +194,6 @@ services:
       db:
         condition: service_healthy
     command: ["npm", "run", "setup"]
-
-  ## Run the database migrations
-  db_migrate:
-    image: ${DOCKER_PROJECT_NAME}-db-migrate-${DOCKER_NAMESPACE}-img
-    container_name: ${DOCKER_PROJECT_NAME}-db-migrate-${DOCKER_NAMESPACE}-container
-    build:
-      context: ./database
-      dockerfile: ./.docker/db/Dockerfile.migrate
-    environment:
-      - NODE_ENV=${NODE_ENV}
-      - DB_HOST=${DB_HOST}
-      - DB_ADMIN=${DB_ADMIN}
-      - DB_ADMIN_PASS=${DB_ADMIN_PASS}
-      - DB_PORT=5432
-      - DB_DATABASE=${DB_DATABASE}
-      - DB_SCHEMA=${DB_SCHEMA}
-      - DB_USER_API=${DB_USER_API}
-      - DB_USER_API_PASS=${DB_USER_API_PASS}
-      - DB_SCHEMA_DAPI_V1=${DB_SCHEMA_DAPI_V1}
-      - PROJECT_SEEDER_USER_IDENTIFIER=${PROJECT_SEEDER_USER_IDENTIFIER}
-    volumes:
-      - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
-    networks:
-      - sims-network
-    depends_on:
-      db:
-        condition: service_healthy
-    command: ["npm", "run", "migrate-latest"]
-
-  ## Rollback the latest database migrations
-  db_rollback:
-    image: ${DOCKER_PROJECT_NAME}-db-rollback-${DOCKER_NAMESPACE}-img
-    container_name: ${DOCKER_PROJECT_NAME}-db-rollback-${DOCKER_NAMESPACE}-container
-    build:
-      context: ./database
-      dockerfile: ./.docker/db/Dockerfile.rollback
-    environment:
-      - NODE_ENV=${NODE_ENV}
-      - DB_HOST=${DB_HOST}
-      - DB_ADMIN=${DB_ADMIN}
-      - DB_ADMIN_PASS=${DB_ADMIN_PASS}
-      - DB_PORT=5432
-      - DB_DATABASE=${DB_DATABASE}
-      - DB_SCHEMA=${DB_SCHEMA}
-      - DB_USER_API=${DB_USER_API}
-      - DB_USER_API_PASS=${DB_USER_API_PASS}
-      - DB_SCHEMA_DAPI_V1=${DB_SCHEMA_DAPI_V1}
-      - PROJECT_SEEDER_USER_IDENTIFIER=${PROJECT_SEEDER_USER_IDENTIFIER}
-    volumes:
-      - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
-    networks:
-      - sims-network
-    depends_on:
-      db:
-        condition: service_healthy
-    command: ["npm", "run", "migrate-rollback"]
 
 networks:
   sims-network:

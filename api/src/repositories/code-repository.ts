@@ -2,9 +2,17 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { BaseRepository } from './base-repository';
 
-export const ICode = z.object({
+export const ICodeWithDescription = z.object({
   id: z.number(),
-  name: z.string()
+  name: z.string(),
+  description: z.string()
+});
+
+export type ICodeWithDescription = z.infer<typeof ICodeWithDescription>;
+
+export const ICode = ICodeWithDescription.pick({
+  id: true,
+  name: true
 });
 
 export type ICode = z.infer<typeof ICode>;
@@ -31,13 +39,13 @@ export const IAllCodeSets = z.object({
   system_roles: CodeSet(),
   project_roles: CodeSet(),
   administrative_activity_status_type: CodeSet(),
-  field_methods: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape),
-  ecological_seasons: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape),
   intended_outcomes: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape),
   vantage_codes: CodeSet(),
   survey_jobs: CodeSet(),
   site_selection_strategies: CodeSet(),
-  sample_methods: CodeSet()
+  survey_progress: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape),
+  sample_methods: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape),
+  method_response_metrics: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape)
 });
 
 export type IAllCodeSets = z.infer<typeof IAllCodeSets>;
@@ -45,7 +53,7 @@ export type IAllCodeSets = z.infer<typeof IAllCodeSets>;
 export class CodeRepository extends BaseRepository {
   async getSampleMethods() {
     const sql = SQL`
-    SELECT method_lookup_id as id, name FROM method_lookup;
+    SELECT method_lookup_id as id, name, description FROM method_lookup;
     `;
     const response = await this.connection.sql(sql);
     return response.rows;
@@ -54,7 +62,7 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch management action type codes.
    *
-   * @return {*}
+   * @return {ICode}
    * @memberof CodeRepository
    */
   async getManagementActionType() {
@@ -68,7 +76,7 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -76,7 +84,7 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch first nation codes.
    *
-   * @return {*}
+   * @return {ICode}
    * @memberof CodeRepository
    */
   async getFirstNations() {
@@ -90,7 +98,7 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null ORDER BY name ASC;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -98,7 +106,7 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch agency codes.
    *
-   * @return {*}
+   * @return {ICode}
    * @memberof CodeRepository
    */
   async getAgency() {
@@ -112,7 +120,7 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null ORDER BY name ASC;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -127,14 +135,15 @@ export class CodeRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         proprietor_type_id as id,
-        name, is_first_nation
+        name, 
+        is_first_nation
       FROM
         proprietor_type
       WHERE
         record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -142,7 +151,7 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch activity codes.
    *
-   * @return {*}
+   * @return {ICode}
    * @memberof CodeRepository
    */
   async getType() {
@@ -156,51 +165,7 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
-
-    return response.rows;
-  }
-
-  /**
-   * Fetch field method codes.
-   *
-   * @return {*}
-   * @memberof CodeRepository
-   */
-  async getFieldMethods() {
-    const sqlStatement = SQL`
-      SELECT
-        field_method_id as id,
-        name, description
-      FROM
-        field_method
-      WHERE
-        record_end_date is null;
-    `;
-
-    const response = await this.connection.sql(sqlStatement);
-
-    return response.rows;
-  }
-
-  /**
-   * Fetch ecological season codes.
-   *
-   * @return {*}
-   * @memberof CodeRepository
-   */
-  async getEcologicalSeasons() {
-    const sqlStatement = SQL`
-      SELECT
-        ecological_season_id as id,
-        name, description
-      FROM
-        ecological_season
-      WHERE
-        record_end_date is null;
-    `;
-
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -208,7 +173,7 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch vantage codes.
    *
-   * @return {*}
+   * @return {ICode}
    * @memberof CodeRepository
    */
   async getVantageCodes() {
@@ -221,26 +186,28 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
 
   /**
    * Fetch intended outcomes codes.
+   * @return {ICodeWithDescription}
    *
    */
   async getIntendedOutcomes() {
     const sqlStatement = SQL`
       SELECT
         intended_outcome_id as id,
-        name, description
+        name, 
+        description
       FROM
         intended_outcome
       WHERE record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICodeWithDescription);
 
     return response.rows;
   }
@@ -248,7 +215,7 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch project type codes.
    *
-   * @return {*}
+   * @return {ICode}
    * @memberof CodeRepository
    */
   async getProgram() {
@@ -262,7 +229,7 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -284,7 +251,7 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date is null ORDER BY name ASC;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -292,7 +259,7 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch IUCN conservation action level 1 classification codes.
    *
-   * @return {*}
+   * @return {ICode}
    * @memberof CodeRepository
    */
   async getIUCNConservationActionLevel1Classification() {
@@ -306,7 +273,7 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -329,7 +296,7 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -352,7 +319,7 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -360,7 +327,7 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch system role codes.
    *
-   * @return {*}
+   * @return {ICode}
    * @memberof CodeRepository
    */
   async getSystemRoles() {
@@ -374,7 +341,7 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -382,7 +349,7 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch project role codes.
    *
-   * @return {*}
+   * @return {ICode}
    * @memberof CodeRepository
    */
   async getProjectRoles() {
@@ -396,7 +363,7 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -404,7 +371,7 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch survey job codes.
    *
-   * @return {*}
+   * @return {ICode}
    * @memberof CodeRepository
    */
   async getSurveyJobs() {
@@ -418,11 +385,17 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
 
+  /**
+   * Fetch site selection strategy codes
+   *
+   * @return {ICode}
+   * @memberof CodeRepository
+   */
   async getSiteSelectionStrategies() {
     const sqlStatement = SQL`
       SELECT
@@ -434,7 +407,7 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
 
     return response.rows;
   }
@@ -442,7 +415,7 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch administrative activity status type codes.
    *
-   * @return {*}
+   * @return {ICode}
    * @memberof CodeRepository
    */
   async getAdministrativeActivityStatusType() {
@@ -456,7 +429,53 @@ export class CodeRepository extends BaseRepository {
         record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ICode);
+
+    return response.rows;
+  }
+
+  /**
+   * Fetch survey progress codes.
+   *
+   * @return {ICodeWithDescription}
+   * @memberof CodeRepository
+   */
+  async getSurveyProgress() {
+    const sqlStatement = SQL`
+      SELECT
+        survey_progress_id as id,
+        name,
+        description
+      FROM
+        survey_progress
+      WHERE
+        record_end_date is null;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, ICodeWithDescription);
+
+    return response.rows;
+  }
+
+  /**
+   * Fetch method response metrics
+   *
+   * @return {Promise<ICodeWithDescription[]>}
+   * @memberof CodeRepository
+   */
+  async getMethodResponseMetrics(): Promise<ICodeWithDescription[]> {
+    const sqlStatement = SQL`
+      SELECT
+        method_response_metric_id AS id,
+        name,
+        description
+      FROM
+        method_response_metric
+      WHERE
+        record_end_date IS null;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, ICodeWithDescription);
 
     return response.rows;
   }

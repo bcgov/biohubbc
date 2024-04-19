@@ -15,16 +15,14 @@ import Typography from '@mui/material/Typography';
 import headerImageLarge from 'assets/images/gov-bc-logo-horiz.png';
 import headerImageSmall from 'assets/images/gov-bc-logo-vert.png';
 import { AuthGuard, SystemRoleGuard, UnAuthGuard } from 'components/security/Guards';
+import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import { SYSTEM_ROLE } from 'constants/roles';
-import { AuthStateContext } from 'contexts/authStateContext';
-import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
-import React, { useContext, useMemo } from 'react';
+import { useAuthStateContext } from 'hooks/useAuthStateContext';
+import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedIdentitySource } from 'utils/Utils';
 
 const Header: React.FC = () => {
-  const { keycloakWrapper } = useContext(AuthStateContext);
-  const loginUrl = useMemo(() => keycloakWrapper?.getLoginUrl(), [keycloakWrapper]);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const [open, setOpen] = React.useState(false);
@@ -54,8 +52,10 @@ const Header: React.FC = () => {
 
   // Authenticated view
   const LoggedInUser = () => {
-    const identitySource = keycloakWrapper?.getIdentitySource() || '';
-    const userIdentifier = keycloakWrapper?.getUserIdentifier() || '';
+    const authStateContext = useAuthStateContext();
+
+    const identitySource = authStateContext.simsUserWrapper.identitySource ?? '';
+    const userIdentifier = authStateContext.simsUserWrapper.userIdentifier ?? '';
     const formattedUsername = [getFormattedIdentitySource(identitySource as SYSTEM_IDENTITY_SOURCE), userIdentifier]
       .filter(Boolean)
       .join('/');
@@ -90,7 +90,7 @@ const Header: React.FC = () => {
           <Button
             component="a"
             variant="text"
-            href="/logout"
+            onClick={() => authStateContext.auth.signoutRedirect()}
             data-testid="menu_log_out"
             sx={{
               color: 'inherit',
@@ -104,7 +104,8 @@ const Header: React.FC = () => {
         <MenuItem
           component="a"
           color="#1a5a96"
-          href="/logout"
+          onClick={() => authStateContext.auth.signoutRedirect()}
+          data-testid="collapsed_menu_log_out"
           sx={{
             display: { xs: 'block', lg: 'none' }
           }}>
@@ -116,16 +117,18 @@ const Header: React.FC = () => {
 
   // Unauthenticated public view
   const PublicViewUser = () => {
+    const authStateContext = useAuthStateContext();
+
     return (
       <>
         <Button
           component="a"
           color="inherit"
           variant="text"
-          href={loginUrl}
+          onClick={() => authStateContext.auth.signinRedirect()}
           disableElevation
           startIcon={<Icon path={mdiLoginVariant} size={1} />}
-          data-testid="login"
+          data-testid="menu_log_in"
           sx={{
             p: 1,
             fontSize: '16px',
@@ -193,7 +196,7 @@ const Header: React.FC = () => {
         }}>
         <Toolbar
           sx={{
-            height: { xs: '60px', lg: '80px' }
+            height: 70
           }}>
           {/* Responsive Menu */}
           <Box display={{ sm: 'flex', lg: 'none' }} justifyContent="space-between" alignItems="center" flex="1 1 auto">
@@ -262,9 +265,6 @@ const Header: React.FC = () => {
                     Projects
                   </MenuItem>
                 </AuthGuard>
-                <MenuItem component="button" onClick={showSupportDialog} sx={{ width: '100%' }}>
-                  Support
-                </MenuItem>
                 <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <MenuItem id="menu_admin_users" component={RouterLink} to="/admin/users" onClick={hideMobileMenu}>
                     Manage Users
@@ -277,6 +277,14 @@ const Header: React.FC = () => {
                     Funding Sources
                   </MenuItem>
                 </SystemRoleGuard>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <MenuItem component={RouterLink} to="/standards" id="menu_standards" onClick={hideMobileMenu}>
+                    Standards
+                  </MenuItem>
+                </SystemRoleGuard>
+                <MenuItem component="button" onClick={showSupportDialog} sx={{ width: '100%' }}>
+                  Support
+                </MenuItem>
                 <AuthGuard>
                   <LoggedInUser />
                 </AuthGuard>
@@ -336,6 +344,21 @@ const Header: React.FC = () => {
                     Projects
                   </RouterLink>
                 </AuthGuard>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <RouterLink to="/admin/users" id="menu_admin_users">
+                    Manage Users
+                  </RouterLink>
+                </SystemRoleGuard>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <RouterLink to="/admin/funding-sources" id="menu_admin_funding_sources">
+                    Funding Sources
+                  </RouterLink>
+                </SystemRoleGuard>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <RouterLink to="/standards" id="menu_standards">
+                    Standards
+                  </RouterLink>
+                </SystemRoleGuard>
                 <Button
                   color="inherit"
                   variant="text"
@@ -347,16 +370,6 @@ const Header: React.FC = () => {
                   }}>
                   Support
                 </Button>
-                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <RouterLink to="/admin/users" id="menu_admin_users">
-                    Manage Users
-                  </RouterLink>
-                </SystemRoleGuard>
-                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <RouterLink to="/admin/funding-sources" id="menu_admin_funding_sources">
-                    Funding Sources
-                  </RouterLink>
-                </SystemRoleGuard>
               </Box>
             </Box>
             <Box flex="0 0 auto">

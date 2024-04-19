@@ -32,10 +32,6 @@ describe('GetSurveyData', () => {
     it('sets start_date', () => {
       expect(data.start_date).to.equal(null);
     });
-
-    it('sets geojson', () => {
-      expect(data.geometry).to.eql([]);
-    });
   });
 
   describe('All values provided', () => {
@@ -65,10 +61,6 @@ describe('GetSurveyData', () => {
       expect(data.start_date).to.equal(obj.start_date);
     });
 
-    it('sets geojson', () => {
-      expect(data.geometry).to.equal(obj.geojson);
-    });
-
     it('sets revision_count', function () {
       expect(data.revision_count).to.equal('count');
     });
@@ -86,18 +78,14 @@ describe('GetFocalSpeciesData', () => {
     it('sets focal_species', () => {
       expect(data.focal_species).to.eql([]);
     });
-
-    it('sets focal_species_names', () => {
-      expect(data.focal_species_names).to.eql([]);
-    });
   });
 
   describe('All values provided', () => {
     let data: GetFocalSpeciesData;
 
     const obj = [
-      { id: 1, label: 'species1' },
-      { id: 2, label: 'species2' }
+      { tsn: 1, commonName: 'species1' },
+      { tsn: 2, commonName: 'species2' }
     ];
 
     before(() => {
@@ -105,11 +93,10 @@ describe('GetFocalSpeciesData', () => {
     });
 
     it('sets focal_species', () => {
-      expect(data.focal_species).to.eql([1, 2]);
-    });
-
-    it('sets focal_species_names', () => {
-      expect(data.focal_species_names).to.eql(['species1', 'species2']);
+      expect(data.focal_species).to.eql([
+        { tsn: 1, commonName: 'species1' },
+        { tsn: 2, commonName: 'species2' }
+      ]);
     });
   });
 });
@@ -125,18 +112,14 @@ describe('GetAncillarySpeciesData', () => {
     it('sets ancillary_species', () => {
       expect(data.ancillary_species).to.eql([]);
     });
-
-    it('sets ancillary_species_names', () => {
-      expect(data.ancillary_species_names).to.eql([]);
-    });
   });
 
   describe('All values provided', () => {
     let data: GetAncillarySpeciesData;
 
     const obj = [
-      { id: 1, label: 'species1' },
-      { id: 2, label: 'species2' }
+      { tsn: 1, commonName: 'species1' },
+      { tsn: 2, commonName: 'species2' }
     ];
 
     before(() => {
@@ -144,11 +127,10 @@ describe('GetAncillarySpeciesData', () => {
     });
 
     it('sets ancillary_species', () => {
-      expect(data.ancillary_species).to.eql([1, 2]);
-    });
-
-    it('sets ancillary_species_names', () => {
-      expect(data.ancillary_species_names).to.eql(['species1', 'species2']);
+      expect(data.ancillary_species).to.eql([
+        { tsn: 1, commonName: 'species1' },
+        { tsn: 2, commonName: 'species2' }
+      ]);
     });
   });
 });
@@ -337,19 +319,11 @@ describe('GetSurveyPurposeAndMethodologyData', () => {
     });
 
     it('sets intended_outcome_id', () => {
-      expect(data.intended_outcome_id).to.equal(null);
+      expect(data.intended_outcome_ids).to.eql([]);
     });
 
     it('sets additional_details', () => {
       expect(data.additional_details).to.equal('');
-    });
-
-    it('sets field_method_id', () => {
-      expect(data.field_method_id).to.equal(null);
-    });
-
-    it('sets ecological_season_id', () => {
-      expect(data.ecological_season_id).to.equal(null);
     });
 
     it('sets vantage_code_ids', () => {
@@ -361,10 +335,8 @@ describe('GetSurveyPurposeAndMethodologyData', () => {
     let data: GetSurveyPurposeAndMethodologyData;
 
     const obj = {
-      intended_outcome_id: 1,
+      intended_outcome_ids: [1],
       additional_details: 'additional_detail',
-      field_method_id: 2,
-      ecological_season_id: 3,
       vantage_ids: [4, 5],
       revision_count: 'count'
     };
@@ -374,19 +346,11 @@ describe('GetSurveyPurposeAndMethodologyData', () => {
     });
 
     it('sets intended_outcome_id', () => {
-      expect(data.intended_outcome_id).to.equal(obj.intended_outcome_id);
+      expect(data.intended_outcome_ids).to.equal(obj.intended_outcome_ids);
     });
 
     it('sets additional_details', () => {
       expect(data.additional_details).to.eql(obj.additional_details);
-    });
-
-    it('sets field_method_id', () => {
-      expect(data.field_method_id).to.eql(obj.field_method_id);
-    });
-
-    it('sets ecological_season_id', () => {
-      expect(data.ecological_season_id).to.eql(obj.ecological_season_id);
     });
 
     it('sets vantage_code_ids', () => {
@@ -404,7 +368,7 @@ describe('GetAttachmentsData', () => {
     let data: GetAttachmentsData;
 
     before(() => {
-      data = new GetAttachmentsData((null as unknown) as any[]);
+      data = new GetAttachmentsData(null as unknown as any[]);
     });
 
     it('sets attachmentDetails', function () {
@@ -507,7 +471,7 @@ describe('GetAttachmentsData', () => {
 describe('GetReportAttachmentsData', () => {
   describe('No values provided', () => {
     it('sets attachmentDetails', function () {
-      const data: GetReportAttachmentsData = new GetReportAttachmentsData((null as unknown) as any[]);
+      const data: GetReportAttachmentsData = new GetReportAttachmentsData(null as unknown as any[]);
 
       expect(data.attachmentDetails).to.eql([]);
     });

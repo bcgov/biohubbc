@@ -1,12 +1,14 @@
-import { Theme } from '@mui/material';
-import Box from '@mui/material/Box';
+import { LoadingButton } from '@mui/lab';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
+import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import PageHeader from 'components/layout/PageHeader';
 import { EditSurveyI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
@@ -20,41 +22,8 @@ import useDataLoader from 'hooks/useDataLoader';
 import { IEditSurveyRequest, SurveyUpdateObject } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
+import { Link as RouterLink } from 'react-router-dom';
 import EditSurveyForm from './EditSurveyForm';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  actionButton: {
-    minWidth: '6rem',
-    '& + button': {
-      marginLeft: '0.5rem'
-    }
-  },
-  sectionDivider: {
-    height: '1px',
-    marginTop: theme.spacing(5),
-    marginBottom: theme.spacing(5)
-  },
-  pageTitleContainer: {
-    maxWidth: '170ch',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis'
-  },
-  pageTitle: {
-    display: '-webkit-box',
-    '-webkit-line-clamp': 2,
-    '-webkit-box-orient': 'vertical',
-    paddingTop: theme.spacing(0.5),
-    paddingBottom: theme.spacing(0.5),
-    overflow: 'hidden'
-  },
-  pageTitleActions: {
-    paddingTop: theme.spacing(0.75),
-    paddingBottom: theme.spacing(0.75),
-    '& button': {
-      marginLeft: theme.spacing(1)
-    }
-  }
-}));
 
 /**
  * Page to create a survey.
@@ -62,53 +31,42 @@ const useStyles = makeStyles((theme: Theme) => ({
  * @return {*}
  */
 const EditSurveyPage = () => {
-  const classes = useStyles();
   const biohubApi = useBiohubApi();
   const history = useHistory();
   const urlParams: Record<string, string | number | undefined> = useParams();
 
   const surveyId = Number(urlParams['survey_id']);
 
-  const [formikRef] = useState(useRef<FormikProps<IEditSurveyRequest>>(null));
+  const formikRef = useRef<FormikProps<IEditSurveyRequest>>(null);
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
   const dialogContext = useContext(DialogContext);
-
   const codesContext = useContext(CodesContext);
+
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
-  const codes = codesContext.codesDataLoader.data;
 
   const projectContext = useContext(ProjectContext);
+
   useEffect(() => {
     projectContext.projectDataLoader.load(projectContext.projectId);
   }, [projectContext.projectDataLoader, projectContext.projectId]);
-  const projectData = projectContext.projectDataLoader.data?.projectData;
 
   const surveyContext = useContext(SurveyContext);
 
-  const editSurveyDL = useDataLoader((projectId: number, surveyId: number) =>
+  const editSurveyDataLoader = useDataLoader((projectId: number, surveyId: number) =>
     biohubApi.survey.getSurveyForUpdate(projectId, surveyId)
   );
 
-  if (!editSurveyDL.data && surveyId) {
-    editSurveyDL.load(projectContext.projectId, surveyId);
+  if (surveyId) {
+    editSurveyDataLoader.load(projectContext.projectId, surveyId);
   }
-  const surveyData = editSurveyDL.data?.surveyData;
 
-  useEffect(() => {
-    const setFormikValues = (data: IEditSurveyRequest) => {
-      formikRef.current?.setValues(data);
-    };
-
-    if (editSurveyDL.data) {
-      setFormikValues(editSurveyDL.data.surveyData as unknown as IEditSurveyRequest);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editSurveyDL]);
+  const surveyData = editSurveyDataLoader.data?.surveyData;
 
   const defaultCancelDialogProps = {
     dialogTitle: EditSurveyI18N.cancelTitle,
@@ -152,6 +110,7 @@ const EditSurveyPage = () => {
    * @return {*}
    */
   const handleSubmit = async (values: IEditSurveyRequest) => {
+    setIsSaving(true);
     try {
       const response = await biohubApi.survey.updateSurvey(
         projectContext.projectId,
@@ -170,7 +129,7 @@ const EditSurveyPage = () => {
 
       surveyContext.surveyDataLoader.refresh(projectContext.projectId, surveyContext.surveyId);
 
-      history.push(`/admin/projects/${projectData?.project.project_id}/surveys/${response.id}/details`);
+      history.push(`/admin/projects/${projectContext.projectId}/surveys/${response.id}/details`);
     } catch (error) {
       const apiError = error as APIError;
       showEditErrorDialog({
@@ -178,6 +137,8 @@ const EditSurveyPage = () => {
         dialogError: apiError?.message,
         dialogErrorDetails: apiError?.errors
       });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -189,7 +150,7 @@ const EditSurveyPage = () => {
    * @param {History.Location} location
    * @return {*}
    */
-  const handleLocationChange = (location: History.Location, action: History.Action) => {
+  const handleLocationChange = (location: History.Location) => {
     if (!dialogContext.yesNoDialogProps.open) {
       // If the cancel dialog is not open: open it
       dialogContext.setYesNoDialog({
@@ -207,46 +168,67 @@ const EditSurveyPage = () => {
     return true;
   };
 
-  if (!codes || !projectData || !surveyData) {
+  if (!codesContext.codesDataLoader.data || !projectContext.projectDataLoader.data || !surveyData) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
-      <Paper square={true} elevation={0}>
-        <Container maxWidth="xl">
-          <Box py={4}>
-            <Box display="flex" justifyContent="space-between">
-              <Box className={classes.pageTitleContainer}>
-                <Typography variant="h1" className={classes.pageTitle}>
-                  Edit Survey Details
-                </Typography>
-              </Box>
-              <Box flex="0 0 auto" className={classes.pageTitleActions}>
-                <Button color="primary" variant="contained" onClick={() => formikRef.current?.submitForm()}>
-                  Save and Exit
-                </Button>
-                <Button color="primary" variant="outlined" onClick={handleCancel}>
-                  Cancel
-                </Button>
-              </Box>
-            </Box>
-          </Box>
-        </Container>
-      </Paper>
-      <Box my={3}>
-        <Container maxWidth="xl">
-          <EditSurveyForm
-            codes={codes}
-            projectData={projectData}
-            surveyData={surveyData}
-            handleSubmit={handleSubmit}
-            handleCancel={handleCancel}
-            formikRef={formikRef}
-          />
-        </Container>
-      </Box>
+      <PageHeader
+        title="Edit Survey Details"
+        breadCrumbJSX={
+          <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
+            <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectContext.projectId}/`}>
+              {projectContext.projectDataLoader.data.projectData.project.project_name}
+            </Link>
+            <Link
+              component={RouterLink}
+              underline="hover"
+              to={`/admin/projects/${projectContext.projectId}/surveys/${surveyId}/details`}>
+              {surveyData && surveyData.survey_details && surveyData.survey_details.survey_name}
+            </Link>
+            <Typography component="a" color="textSecondary" aria-current="page">
+              Edit Survey Details
+            </Typography>
+          </Breadcrumbs>
+        }
+        buttonJSX={
+          <>
+            <LoadingButton
+              loading={isSaving}
+              color="primary"
+              variant="contained"
+              onClick={() => formikRef.current?.submitForm()}>
+              Save and Exit
+            </LoadingButton>
+            <Button disabled={isSaving} color="primary" variant="outlined" onClick={handleCancel}>
+              Cancel
+            </Button>
+          </>
+        }
+      />
+
+      <Container maxWidth="xl" sx={{ py: 3 }}>
+        <Paper sx={{ p: 5 }}>
+          <EditSurveyForm initialSurveyData={surveyData} handleSubmit={handleSubmit} formikRef={formikRef} />
+          <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
+            <LoadingButton
+              loading={isSaving}
+              type="submit"
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                formikRef.current?.submitForm();
+              }}>
+              Save and Exit
+            </LoadingButton>
+            <Button disabled={isSaving} variant="outlined" color="primary" onClick={handleCancel}>
+              Cancel
+            </Button>
+          </Stack>
+        </Paper>
+      </Container>
     </>
   );
 };

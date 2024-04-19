@@ -16,6 +16,7 @@ import {
   AuthorizeRule
 } from '../services/authorization-service';
 import { UserService } from '../services/user-service';
+import { KeycloakUserInformation, ServiceClientUserInformation } from '../utils/keycloak-utils';
 import { getMockDBConnection } from '../__mocks__/db';
 import { ProjectParticipationService } from './project-participation-service';
 
@@ -28,7 +29,7 @@ describe('AuthorizationService', () => {
     });
 
     it('returns false if any AND authorizationScheme rules return false', async function () {
-      const mockAuthorizationScheme = ({ and: [] } as unknown) as AuthorizationScheme;
+      const mockAuthorizationScheme = { and: [] } as unknown as AuthorizationScheme;
       const mockDBConnection = getMockDBConnection();
 
       sinon.stub(AuthorizationService.prototype, 'executeAuthorizeConfig').resolves([true, false, true]);
@@ -41,7 +42,7 @@ describe('AuthorizationService', () => {
     });
 
     it('returns true if all AND authorizationScheme rules return true', async function () {
-      const mockAuthorizationScheme = ({ and: [] } as unknown) as AuthorizationScheme;
+      const mockAuthorizationScheme = { and: [] } as unknown as AuthorizationScheme;
       const mockDBConnection = getMockDBConnection();
 
       sinon.stub(AuthorizationService.prototype, 'executeAuthorizeConfig').resolves([true, true, true]);
@@ -54,7 +55,7 @@ describe('AuthorizationService', () => {
     });
 
     it('returns false if all OR authorizationScheme rules return false', async function () {
-      const mockAuthorizationScheme = ({ or: [] } as unknown) as AuthorizationScheme;
+      const mockAuthorizationScheme = { or: [] } as unknown as AuthorizationScheme;
       const mockDBConnection = getMockDBConnection();
 
       sinon.stub(AuthorizationService.prototype, 'executeAuthorizeConfig').resolves([false, false, false]);
@@ -67,7 +68,7 @@ describe('AuthorizationService', () => {
     });
 
     it('returns true if any OR authorizationScheme rules return true', async function () {
-      const mockAuthorizationScheme = ({ or: [] } as unknown) as AuthorizationScheme;
+      const mockAuthorizationScheme = { or: [] } as unknown as AuthorizationScheme;
       const mockDBConnection = getMockDBConnection();
 
       sinon.stub(AuthorizationService.prototype, 'executeAuthorizeConfig').resolves([false, true, false]);
@@ -139,9 +140,9 @@ describe('AuthorizationService', () => {
     it('returns true if `systemUserObject` is not null and includes admin role', async function () {
       const mockDBConnection = getMockDBConnection();
 
-      const mockGetSystemUsersObjectResponse = ({
+      const mockGetSystemUsersObjectResponse = {
         role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
-      } as unknown) as SystemUser;
+      } as unknown as SystemUser;
 
       sinon.stub(AuthorizationService.prototype, 'getSystemUserObject').resolves(mockGetSystemUsersObjectResponse);
 
@@ -159,7 +160,7 @@ describe('AuthorizationService', () => {
     });
 
     it('returns false if `authorizeSystemRoles` is null', async function () {
-      const mockAuthorizeSystemRoles = (null as unknown) as AuthorizeBySystemRoles;
+      const mockAuthorizeSystemRoles = null as unknown as AuthorizeBySystemRoles;
       const mockDBConnection = getMockDBConnection();
 
       const authorizationService = new AuthorizationService(mockDBConnection);
@@ -176,7 +177,7 @@ describe('AuthorizationService', () => {
       };
       const mockDBConnection = getMockDBConnection();
 
-      const mockGetSystemUsersObjectResponse = (null as unknown) as SystemUser;
+      const mockGetSystemUsersObjectResponse = null as unknown as SystemUser;
       sinon.stub(AuthorizationService.prototype, 'getSystemUserObject').resolves(mockGetSystemUsersObjectResponse);
 
       const authorizationService = new AuthorizationService(mockDBConnection);
@@ -193,7 +194,7 @@ describe('AuthorizationService', () => {
       };
       const mockDBConnection = getMockDBConnection();
 
-      const mockGetSystemUsersObjectResponse = ({ record_end_date: 'datetime' } as unknown) as SystemUser;
+      const mockGetSystemUsersObjectResponse = { record_end_date: 'datetime' } as unknown as SystemUser;
       sinon.stub(AuthorizationService.prototype, 'getSystemUserObject').resolves(mockGetSystemUsersObjectResponse);
 
       const authorizationService = new AuthorizationService(mockDBConnection);
@@ -211,7 +212,7 @@ describe('AuthorizationService', () => {
       const mockDBConnection = getMockDBConnection();
 
       const authorizationService = new AuthorizationService(mockDBConnection, {
-        systemUser: ({} as unknown) as SystemUser
+        systemUser: {} as unknown as SystemUser
       });
 
       const isAuthorizedBySystemRole = await authorizationService.authorizeBySystemRole(mockAuthorizeSystemRoles);
@@ -227,7 +228,7 @@ describe('AuthorizationService', () => {
       const mockDBConnection = getMockDBConnection();
 
       const authorizationService = new AuthorizationService(mockDBConnection, {
-        systemUser: ({ role_names: [] } as unknown) as SystemUser
+        systemUser: { role_names: [] } as unknown as SystemUser
       });
 
       const isAuthorizedBySystemRole = await authorizationService.authorizeBySystemRole(mockAuthorizeSystemRoles);
@@ -243,7 +244,7 @@ describe('AuthorizationService', () => {
       const mockDBConnection = getMockDBConnection();
 
       const authorizationService = new AuthorizationService(mockDBConnection, {
-        systemUser: ({ role_names: [SYSTEM_ROLE.SYSTEM_ADMIN] } as unknown) as SystemUser
+        systemUser: { role_names: [SYSTEM_ROLE.SYSTEM_ADMIN] } as unknown as SystemUser
       });
 
       const isAuthorizedBySystemRole = await authorizationService.authorizeBySystemRole(mockAuthorizeSystemRoles);
@@ -260,7 +261,7 @@ describe('AuthorizationService', () => {
     it('returns false if `systemUserObject` is null', async function () {
       const mockDBConnection = getMockDBConnection();
 
-      const mockGetSystemUsersObjectResponse = (null as unknown) as SystemUser;
+      const mockGetSystemUsersObjectResponse = null as unknown as SystemUser;
       sinon.stub(AuthorizationService.prototype, 'getSystemUserObject').resolves(mockGetSystemUsersObjectResponse);
 
       const authorizationService = new AuthorizationService(mockDBConnection);
@@ -273,11 +274,11 @@ describe('AuthorizationService', () => {
     it('returns true if `systemUserObject` is not null', async function () {
       const mockDBConnection = getMockDBConnection();
 
-      const mockGetSystemUsersObjectResponse = (null as unknown) as SystemUser;
+      const mockGetSystemUsersObjectResponse = null as unknown as SystemUser;
       sinon.stub(AuthorizationService.prototype, 'getSystemUserObject').resolves(mockGetSystemUsersObjectResponse);
 
       const authorizationService = new AuthorizationService(mockDBConnection, {
-        systemUser: ({} as unknown) as SystemUser
+        systemUser: {} as unknown as SystemUser
       });
 
       const isAuthorizedBySystemRole = await authorizationService.authorizeBySystemUser();
@@ -297,10 +298,10 @@ describe('AuthorizationService', () => {
 
       const authorizationService = new AuthorizationService(mockDBConnection);
 
-      const authorizeByServiceClientData = ({
+      const authorizeByServiceClientData = {
         validServiceClientIDs: SOURCE_SYSTEM['SIMS-SVC-4464'],
         discriminator: 'ServiceClient'
-      } as unknown) as AuthorizeByServiceClient;
+      } as unknown as AuthorizeByServiceClient;
 
       const result = await authorizationService.authorizeByServiceClient(authorizeByServiceClientData);
 
@@ -312,13 +313,13 @@ describe('AuthorizationService', () => {
       sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
       const authorizationService = new AuthorizationService(mockDBConnection, {
-        keycloakToken: { preferred_username: '' }
+        keycloakToken: { preferred_username: '' } as KeycloakUserInformation
       });
 
-      const authorizeByServiceClientData = ({
+      const authorizeByServiceClientData = {
         validServiceClientIDs: SOURCE_SYSTEM['SIMS-SVC-4464'],
         discriminator: 'ServiceClient'
-      } as unknown) as AuthorizeByServiceClient;
+      } as unknown as AuthorizeByServiceClient;
 
       const result = await authorizationService.authorizeByServiceClient(authorizeByServiceClientData);
 
@@ -330,10 +331,10 @@ describe('AuthorizationService', () => {
 
       const authorizationService = new AuthorizationService(mockDBConnection);
 
-      const authorizeByServiceClientData = ({
+      const authorizeByServiceClientData = {
         validServiceClientIDs: SOURCE_SYSTEM['SIMS-SVC-4464'],
         discriminator: 'ServiceClient'
-      } as unknown) as AuthorizeByServiceClient;
+      } as unknown as AuthorizeByServiceClient;
 
       const isAuthorizedBySystemRole = await authorizationService.authorizeByServiceClient(
         authorizeByServiceClientData
@@ -345,17 +346,17 @@ describe('AuthorizationService', () => {
     it('returns true if `systemUserObject` hasAtLeastOneValidValue', async function () {
       const mockDBConnection = getMockDBConnection();
 
-      const mockGetSystemUsersObjectResponse = (null as unknown) as SystemUser;
+      const mockGetSystemUsersObjectResponse = null as unknown as SystemUser;
       sinon.stub(AuthorizationService.prototype, 'getSystemUserObject').resolves(mockGetSystemUsersObjectResponse);
 
       const authorizationService = new AuthorizationService(mockDBConnection, {
-        keycloakToken: { clientId: SOURCE_SYSTEM['SIMS-SVC-4464'] }
+        keycloakToken: { clientId: SOURCE_SYSTEM['SIMS-SVC-4464'] } as ServiceClientUserInformation
       });
 
-      const authorizeByServiceClientData = ({
+      const authorizeByServiceClientData = {
         validServiceClientIDs: SOURCE_SYSTEM['SIMS-SVC-4464'],
         discriminator: 'ServiceClient'
-      } as unknown) as AuthorizeByServiceClient;
+      } as unknown as AuthorizeByServiceClient;
 
       const isAuthorizedBySystemRole = await authorizationService.authorizeByServiceClient(
         authorizeByServiceClientData
@@ -366,121 +367,250 @@ describe('AuthorizationService', () => {
   });
 
   describe('authorizeByProjectPermission', function () {
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('returns false if `authorizeProjectPermission` is null', async function () {
-      const mockAuthorizeProjectPermission = (null as unknown) as AuthorizeByProjectPermission;
-      const mockDBConnection = getMockDBConnection();
-
-      const authorizationService = new AuthorizationService(mockDBConnection);
-
-      const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
-        mockAuthorizeProjectPermission
-      );
-
-      expect(isAuthorizedByProjectPermission).to.equal(false);
-    });
-
-    it('returns false if `projectUserObject` is null', async function () {
-      const mockAuthorizeProjectPermission: AuthorizeByProjectPermission = {
-        validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
-        projectId: 1,
-        discriminator: 'ProjectPermission'
-      };
-      const mockDBConnection = getMockDBConnection();
-
-      const mockGetSystemUsersObjectResponse = (null as unknown) as ProjectUser & SystemUser;
-      sinon.stub(AuthorizationService.prototype, 'getProjectUserObject').resolves(mockGetSystemUsersObjectResponse);
-
-      const authorizationService = new AuthorizationService(mockDBConnection);
-
-      const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
-        mockAuthorizeProjectPermission
-      );
-
-      expect(isAuthorizedByProjectPermission).to.equal(false);
-    });
-
-    it('returns false if `record_end_date` is null', async function () {
-      const mockAuthorizeProjectPermission: AuthorizeByProjectPermission = {
-        validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
-        projectId: 1,
-        discriminator: 'ProjectPermission'
-      };
-      const mockDBConnection = getMockDBConnection();
-
-      const mockGetSystemUsersObjectResponse = ({ record_end_date: 'datetime' } as unknown) as ProjectUser & SystemUser;
-      sinon.stub(AuthorizationService.prototype, 'getProjectUserObject').resolves(mockGetSystemUsersObjectResponse);
-
-      const authorizationService = new AuthorizationService(mockDBConnection);
-
-      const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
-        mockAuthorizeProjectPermission
-      );
-
-      expect(isAuthorizedByProjectPermission).to.equal(false);
-    });
-
-    it('returns true if `authorizeProjectPermission` specifies no valid permissions', async function () {
-      const mockAuthorizeProjectPermission: AuthorizeByProjectPermission = {
-        validProjectPermissions: [],
-        projectId: 1,
-        discriminator: 'ProjectPermission'
-      };
-      const mockDBConnection = getMockDBConnection();
-
-      const authorizationService = new AuthorizationService(mockDBConnection, {
-        projectUser: ({ project_id: 1 } as unknown) as ProjectUser & SystemUser
+    describe('by project id', function () {
+      afterEach(() => {
+        sinon.restore();
       });
 
-      const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
-        mockAuthorizeProjectPermission
-      );
+      it('returns false if `authorizeProjectPermission` is null', async function () {
+        const mockAuthorizeProjectPermission = null as unknown as AuthorizeByProjectPermission;
+        const mockDBConnection = getMockDBConnection();
 
-      expect(isAuthorizedByProjectPermission).to.equal(true);
-    });
+        const authorizationService = new AuthorizationService(mockDBConnection);
 
-    it('returns false if the user does not have any valid permissions', async function () {
-      const mockAuthorizeProjectPermission: AuthorizeByProjectPermission = {
-        validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
-        projectId: 1,
-        discriminator: 'ProjectPermission'
-      };
-      const mockDBConnection = getMockDBConnection();
+        const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
+          mockAuthorizeProjectPermission
+        );
 
-      const authorizationService = new AuthorizationService(mockDBConnection, {
-        projectUser: ({ project_id: 1, project_role_permissions: [] } as unknown) as ProjectUser & SystemUser
+        expect(isAuthorizedByProjectPermission).to.equal(false);
       });
 
-      const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
-        mockAuthorizeProjectPermission
-      );
+      it('returns false if `projectUserObject` is null', async function () {
+        const mockAuthorizeProjectPermission: AuthorizeByProjectPermission = {
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          projectId: 1,
+          discriminator: 'ProjectPermission'
+        };
+        const mockDBConnection = getMockDBConnection();
 
-      expect(isAuthorizedByProjectPermission).to.equal(false);
-    });
+        const mockGetSystemUsersObjectResponse = null as unknown as ProjectUser & SystemUser;
+        sinon
+          .stub(AuthorizationService.prototype, 'getProjectUserObjectByProjectId')
+          .resolves(mockGetSystemUsersObjectResponse);
 
-    it('returns true if the user has at least one of the valid permissions', async function () {
-      const mockAuthorizeProjectPermission: AuthorizeByProjectPermission = {
-        validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
-        projectId: 1,
-        discriminator: 'ProjectPermission'
-      };
-      const mockDBConnection = getMockDBConnection();
+        const authorizationService = new AuthorizationService(mockDBConnection);
 
-      const authorizationService = new AuthorizationService(mockDBConnection, {
-        projectUser: ({
-          project_id: 1,
-          project_role_permissions: [PROJECT_PERMISSION.COORDINATOR]
-        } as unknown) as ProjectUser & SystemUser
+        const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
+          mockAuthorizeProjectPermission
+        );
+
+        expect(isAuthorizedByProjectPermission).to.equal(false);
       });
 
-      const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
-        mockAuthorizeProjectPermission
-      );
+      it('returns false if `record_end_date` is null', async function () {
+        const mockAuthorizeProjectPermission: AuthorizeByProjectPermission = {
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          projectId: 1,
+          discriminator: 'ProjectPermission'
+        };
+        const mockDBConnection = getMockDBConnection();
 
-      expect(isAuthorizedByProjectPermission).to.equal(true);
+        const mockGetSystemUsersObjectResponse = { record_end_date: 'datetime' } as unknown as ProjectUser & SystemUser;
+        sinon
+          .stub(AuthorizationService.prototype, 'getProjectUserObjectByProjectId')
+          .resolves(mockGetSystemUsersObjectResponse);
+
+        const authorizationService = new AuthorizationService(mockDBConnection);
+
+        const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
+          mockAuthorizeProjectPermission
+        );
+
+        expect(isAuthorizedByProjectPermission).to.equal(false);
+      });
+
+      it('returns true if `authorizeProjectPermission` specifies no valid permissions', async function () {
+        const mockAuthorizeProjectPermission: AuthorizeByProjectPermission = {
+          validProjectPermissions: [],
+          projectId: 1,
+          discriminator: 'ProjectPermission'
+        };
+        const mockDBConnection = getMockDBConnection();
+
+        const authorizationService = new AuthorizationService(mockDBConnection, {
+          projectUser: { project_id: 1 } as unknown as ProjectUser & SystemUser
+        });
+
+        const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
+          mockAuthorizeProjectPermission
+        );
+
+        expect(isAuthorizedByProjectPermission).to.equal(true);
+      });
+
+      it('returns false if the user does not have any valid permissions', async function () {
+        const mockAuthorizeProjectPermission: AuthorizeByProjectPermission = {
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          projectId: 1,
+          discriminator: 'ProjectPermission'
+        };
+        const mockDBConnection = getMockDBConnection();
+
+        const authorizationService = new AuthorizationService(mockDBConnection, {
+          projectUser: { project_id: 1, project_role_permissions: [] } as unknown as ProjectUser & SystemUser
+        });
+
+        const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
+          mockAuthorizeProjectPermission
+        );
+
+        expect(isAuthorizedByProjectPermission).to.equal(false);
+      });
+
+      it('returns true if the user has at least one of the valid permissions', async function () {
+        const mockAuthorizeProjectPermission: AuthorizeByProjectPermission = {
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          projectId: 1,
+          discriminator: 'ProjectPermission'
+        };
+        const mockDBConnection = getMockDBConnection();
+
+        const authorizationService = new AuthorizationService(mockDBConnection, {
+          projectUser: {
+            project_id: 1,
+            project_role_permissions: [PROJECT_PERMISSION.COORDINATOR]
+          } as unknown as ProjectUser & SystemUser
+        });
+
+        const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
+          mockAuthorizeProjectPermission
+        );
+
+        expect(isAuthorizedByProjectPermission).to.equal(true);
+      });
+    });
+
+    describe('by survey id', function () {
+      afterEach(() => {
+        sinon.restore();
+      });
+
+      it('returns false if `authorizeProjectPermission` is null', async function () {
+        const mockAuthorizeProjectPermission = null as unknown as AuthorizeByProjectPermission;
+        const mockDBConnection = getMockDBConnection();
+
+        const authorizationService = new AuthorizationService(mockDBConnection);
+
+        const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
+          mockAuthorizeProjectPermission
+        );
+
+        expect(isAuthorizedByProjectPermission).to.equal(false);
+      });
+
+      it('returns false if `projectUserObject` is null', async function () {
+        const mockAuthorizeProjectPermission: AuthorizeByProjectPermission = {
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          surveyId: 1,
+          discriminator: 'ProjectPermission'
+        };
+        const mockDBConnection = getMockDBConnection();
+
+        const mockGetSystemUsersObjectResponse = null as unknown as ProjectUser & SystemUser;
+        sinon
+          .stub(AuthorizationService.prototype, 'getProjectUserObjectByProjectId')
+          .resolves(mockGetSystemUsersObjectResponse);
+
+        const authorizationService = new AuthorizationService(mockDBConnection);
+
+        const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
+          mockAuthorizeProjectPermission
+        );
+
+        expect(isAuthorizedByProjectPermission).to.equal(false);
+      });
+
+      it('returns false if `record_end_date` is null', async function () {
+        const mockAuthorizeProjectPermission: AuthorizeByProjectPermission = {
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          surveyId: 1,
+          discriminator: 'ProjectPermission'
+        };
+        const mockDBConnection = getMockDBConnection();
+
+        const mockGetSystemUsersObjectResponse = { record_end_date: 'datetime' } as unknown as ProjectUser & SystemUser;
+        sinon
+          .stub(AuthorizationService.prototype, 'getProjectUserObjectByProjectId')
+          .resolves(mockGetSystemUsersObjectResponse);
+
+        const authorizationService = new AuthorizationService(mockDBConnection);
+
+        const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
+          mockAuthorizeProjectPermission
+        );
+
+        expect(isAuthorizedByProjectPermission).to.equal(false);
+      });
+
+      it('returns true if `authorizeProjectPermission` specifies no valid permissions', async function () {
+        const mockAuthorizeProjectPermission: AuthorizeByProjectPermission = {
+          validProjectPermissions: [],
+          surveyId: 1,
+          discriminator: 'ProjectPermission'
+        };
+        const mockDBConnection = getMockDBConnection();
+
+        const authorizationService = new AuthorizationService(mockDBConnection, {
+          projectUser: { project_id: 1 } as unknown as ProjectUser & SystemUser
+        });
+
+        const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
+          mockAuthorizeProjectPermission
+        );
+
+        expect(isAuthorizedByProjectPermission).to.equal(true);
+      });
+
+      it('returns false if the user does not have any valid permissions', async function () {
+        const mockAuthorizeProjectPermission: AuthorizeByProjectPermission = {
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          surveyId: 1,
+          discriminator: 'ProjectPermission'
+        };
+        const mockDBConnection = getMockDBConnection();
+
+        const authorizationService = new AuthorizationService(mockDBConnection, {
+          projectUser: { project_id: 1, project_role_permissions: [] } as unknown as ProjectUser & SystemUser
+        });
+
+        const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
+          mockAuthorizeProjectPermission
+        );
+
+        expect(isAuthorizedByProjectPermission).to.equal(false);
+      });
+
+      it('returns true if the user has at least one of the valid permissions', async function () {
+        const mockAuthorizeProjectPermission: AuthorizeByProjectPermission = {
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          surveyId: 1,
+          discriminator: 'ProjectPermission'
+        };
+        const mockDBConnection = getMockDBConnection();
+
+        const authorizationService = new AuthorizationService(mockDBConnection, {
+          projectUser: {
+            project_id: 1,
+            project_role_permissions: [PROJECT_PERMISSION.COORDINATOR]
+          } as unknown as ProjectUser & SystemUser
+        });
+
+        const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
+          mockAuthorizeProjectPermission
+        );
+
+        expect(isAuthorizedByProjectPermission).to.equal(true);
+      });
     });
   });
 
@@ -671,19 +801,6 @@ describe('AuthorizationService', () => {
       expect(result).to.be.null;
     });
 
-    it('returns null if the keycloak token is not a valid format (fails the parser)', async function () {
-      const mockDBConnection = getMockDBConnection();
-      sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-
-      const authorizationService = new AuthorizationService(mockDBConnection, {
-        keycloakToken: { not: '', valid: '' }
-      });
-
-      const result = await authorizationService.getSystemUserWithRoles();
-
-      expect(result).to.be.null;
-    });
-
     it('returns a UserObject', async function () {
       const mockDBConnection = getMockDBConnection();
       sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
@@ -703,7 +820,7 @@ describe('AuthorizationService', () => {
         agency: null
       };
 
-      sinon.stub(UserService.prototype, 'getUserByGuid').resolves((userObjectMock as unknown) as any);
+      sinon.stub(UserService.prototype, 'getUserByGuid').resolves(userObjectMock as unknown as any);
 
       const authorizationService = new AuthorizationService(mockDBConnection, {
         keycloakToken: {
@@ -726,7 +843,7 @@ describe('AuthorizationService', () => {
     });
   });
 
-  describe('getProjectUserObject', function () {
+  describe('getProjectUserObjectByProjectId', function () {
     afterEach(() => {
       sinon.restore();
     });
@@ -742,7 +859,7 @@ describe('AuthorizationService', () => {
 
       const projectId = 1;
 
-      const projectUser = await authorizationService.getProjectUserObject(projectId);
+      const projectUser = await authorizationService.getProjectUserObjectByProjectId(projectId);
 
       expect(projectUser).to.equal(null);
     });
@@ -751,13 +868,13 @@ describe('AuthorizationService', () => {
       const mockDBConnection = getMockDBConnection();
 
       const projectUserMock = null;
-      sinon.stub(AuthorizationService.prototype, 'getProjectUserWithRoles').resolves(projectUserMock);
+      sinon.stub(AuthorizationService.prototype, 'getProjectUserWithRolesByProjectId').resolves(projectUserMock);
 
       const authorizationService = new AuthorizationService(mockDBConnection);
 
       const projectId = 1;
 
-      const projectUser = await authorizationService.getProjectUserObject(projectId);
+      const projectUser = await authorizationService.getProjectUserObjectByProjectId(projectId);
 
       expect(projectUser).to.equal(null);
     });
@@ -785,7 +902,7 @@ describe('AuthorizationService', () => {
         project_role_permissions: [PROJECT_ROLE.COLLABORATOR]
       };
 
-      sinon.stub(AuthorizationService.prototype, 'getProjectUserWithRoles').resolves(projectUserMock);
+      sinon.stub(AuthorizationService.prototype, 'getProjectUserWithRolesByProjectId').resolves(projectUserMock);
 
       const authorizationService = new AuthorizationService(mockDBConnection, {
         keycloakToken: {
@@ -804,13 +921,13 @@ describe('AuthorizationService', () => {
 
       const projectId = 1;
 
-      const projectUser = await authorizationService.getProjectUserObject(projectId);
+      const projectUser = await authorizationService.getProjectUserObjectByProjectId(projectId);
 
       expect(projectUser).to.equal(projectUserMock);
     });
   });
 
-  describe('getProjectUserWithRoles', function () {
+  describe('getProjectUserWithRolesByProjectId', function () {
     afterEach(() => {
       sinon.restore();
     });
@@ -825,22 +942,7 @@ describe('AuthorizationService', () => {
 
       const projectId = 1;
 
-      const result = await authorizationService.getProjectUserWithRoles(projectId);
-
-      expect(result).to.be.null;
-    });
-
-    it('returns null if the keycloak token is not a valid format (fails the parser)', async function () {
-      const mockDBConnection = getMockDBConnection();
-      sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-
-      const authorizationService = new AuthorizationService(mockDBConnection, {
-        keycloakToken: { not: '', valid: '' }
-      });
-
-      const projectId = 1;
-
-      const result = await authorizationService.getProjectUserWithRoles(projectId);
+      const result = await authorizationService.getProjectUserWithRolesByProjectId(projectId);
 
       expect(result).to.be.null;
     });
@@ -869,8 +971,8 @@ describe('AuthorizationService', () => {
         project_role_permissions: [PROJECT_ROLE.COLLABORATOR]
       };
       sinon
-        .stub(ProjectParticipationService.prototype, 'getProjectParticipantByUserGuid')
-        .resolves((projectUserMock as unknown) as any);
+        .stub(ProjectParticipationService.prototype, 'getProjectParticipantByProjectIdAndUserGuid')
+        .resolves(projectUserMock as unknown as any);
 
       const authorizationService = new AuthorizationService(mockDBConnection, {
         keycloakToken: {
@@ -889,7 +991,161 @@ describe('AuthorizationService', () => {
 
       const projectId = 1;
 
-      const result = await authorizationService.getProjectUserWithRoles(projectId);
+      const result = await authorizationService.getProjectUserWithRolesByProjectId(projectId);
+
+      expect(result).to.equal(projectUserMock);
+    });
+  });
+
+  describe('getProjectUserObjectBySurveyId', function () {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns null if fetching the project user throws an error', async function () {
+      const mockDBConnection = getMockDBConnection();
+
+      sinon.stub(AuthorizationService.prototype, 'getSystemUserWithRoles').callsFake(() => {
+        throw new Error('Test Error');
+      });
+
+      const authorizationService = new AuthorizationService(mockDBConnection);
+
+      const projectId = 1;
+
+      const projectUser = await authorizationService.getProjectUserObjectBySurveyId(projectId);
+
+      expect(projectUser).to.equal(null);
+    });
+
+    it('returns null if the project user is null or undefined', async function () {
+      const mockDBConnection = getMockDBConnection();
+
+      const projectUserMock = null;
+      sinon.stub(AuthorizationService.prototype, 'getProjectUserWithRolesByProjectId').resolves(projectUserMock);
+
+      const authorizationService = new AuthorizationService(mockDBConnection);
+
+      const projectId = 1;
+
+      const projectUser = await authorizationService.getProjectUserObjectBySurveyId(projectId);
+
+      expect(projectUser).to.equal(null);
+    });
+
+    it('returns a project user when keycloak token is valid', async function () {
+      const mockDBConnection = getMockDBConnection();
+
+      const projectUserMock: ProjectUser & SystemUser = {
+        system_user_id: 2,
+        user_identifier: 'username',
+        identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+        user_guid: '123-456-789',
+        record_end_date: null,
+        role_ids: [1],
+        role_names: ['Collaborator'],
+        email: 'email@email.com',
+        family_name: 'lname',
+        given_name: 'fname',
+        display_name: 'test user',
+        agency: null,
+        project_participation_id: 3,
+        project_id: 1,
+        project_role_ids: [1],
+        project_role_names: [PROJECT_ROLE.COLLABORATOR],
+        project_role_permissions: [PROJECT_ROLE.COLLABORATOR]
+      };
+
+      sinon.stub(AuthorizationService.prototype, 'getProjectUserWithRolesBySurveyId').resolves(projectUserMock);
+
+      const authorizationService = new AuthorizationService(mockDBConnection, {
+        keycloakToken: {
+          idir_user_guid: '123-456-789',
+          identity_provider: 'idir',
+          idir_username: 'username',
+          email_verified: false,
+          name: 'test user',
+          preferred_username: '123-456-789@idir',
+          display_name: 'test user',
+          given_name: 'test',
+          family_name: 'user',
+          email: 'email@email.com'
+        }
+      });
+
+      const projectId = 1;
+
+      const projectUser = await authorizationService.getProjectUserObjectBySurveyId(projectId);
+
+      expect(projectUser).to.equal(projectUserMock);
+    });
+  });
+
+  describe('getProjectUserWithRolesBySurveyId', function () {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns null if the keycloak token is null', async function () {
+      const mockDBConnection = getMockDBConnection();
+      sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
+
+      const authorizationService = new AuthorizationService(mockDBConnection, {
+        keycloakToken: undefined
+      });
+
+      const projectId = 1;
+
+      const result = await authorizationService.getProjectUserWithRolesBySurveyId(projectId);
+
+      expect(result).to.be.null;
+    });
+
+    it('returns a project user when keycloak token is valid', async function () {
+      const mockDBConnection = getMockDBConnection();
+      sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
+
+      const projectUserMock: ProjectUser & SystemUser = {
+        system_user_id: 2,
+        user_identifier: 'username',
+        identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+        user_guid: '123-456-789',
+        record_end_date: null,
+        role_ids: [1],
+        role_names: ['Collaborator'],
+        email: 'email@email.com',
+        family_name: 'lname',
+        given_name: 'fname',
+        display_name: 'test user',
+        agency: null,
+        project_participation_id: 3,
+        project_id: 1,
+        project_role_ids: [1],
+        project_role_names: [PROJECT_ROLE.COLLABORATOR],
+        project_role_permissions: [PROJECT_ROLE.COLLABORATOR]
+      };
+      sinon
+        .stub(ProjectParticipationService.prototype, 'getProjectParticipantBySurveyIdAndUserGuid')
+        .resolves(projectUserMock as unknown as any);
+
+      const authorizationService = new AuthorizationService(mockDBConnection, {
+        keycloakToken: {
+          idir_user_guid: '123-456-789',
+          identity_provider: 'idir',
+          idir_username: 'username',
+          name: 'test user',
+          preferred_username: '123-456-789@idir',
+          display_name: 'test user',
+          email: 'email@email.com',
+          email_verified: false,
+          given_name: 'fname',
+          family_name: 'lname'
+        }
+      });
+
+      const projectId = 1;
+
+      const result = await authorizationService.getProjectUserWithRolesBySurveyId(projectId);
 
       expect(result).to.equal(projectUserMock);
     });

@@ -92,16 +92,20 @@ export class ProjectParticipationService extends DBService {
   /**
    * Deletes a project participation record.
    *
+   * @param {number} projectId
    * @param {number} projectParticipationId
    * @return {*}  {Promise<ProjectParticipationRecord>}
    * @memberof ProjectParticipationService
    */
-  async deleteProjectParticipationRecord(projectParticipationId: number): Promise<ProjectParticipationRecord> {
-    return this.projectParticipationRepository.deleteProjectParticipationRecord(projectParticipationId);
+  async deleteProjectParticipationRecord(
+    projectId: number,
+    projectParticipationId: number
+  ): Promise<ProjectParticipationRecord> {
+    return this.projectParticipationRepository.deleteProjectParticipationRecord(projectId, projectParticipationId);
   }
 
   /**
-   * Get the project participant for the given project and system user.
+   * Get the project participant for the given project id and system user.
    *
    * @param {number} projectId
    * @param {number} systemUserId
@@ -120,11 +124,26 @@ export class ProjectParticipationService extends DBService {
    * @return {*}  {(Promise<(ProjectUser & SystemUser) | null>)}
    * @memberof ProjectParticipationService
    */
-  async getProjectParticipantByUserGuid(
+  async getProjectParticipantByProjectIdAndUserGuid(
     projectId: number,
     userGuid: string
   ): Promise<(ProjectUser & SystemUser) | null> {
-    return this.projectParticipationRepository.getProjectParticipantByUserGuid(projectId, userGuid);
+    return this.projectParticipationRepository.getProjectParticipantByProjectIdAndUserGuid(projectId, userGuid);
+  }
+
+  /**
+   * Get the project participant for the given survey id and user guid.
+   *
+   * @param {number} surveyId
+   * @param {number} userGuid
+   * @return {*}  {(Promise<(ProjectUser & SystemUser) | null>)}
+   * @memberof ProjectParticipationService
+   */
+  async getProjectParticipantBySurveyIdAndUserGuid(
+    surveyId: number,
+    userGuid: string
+  ): Promise<(ProjectUser & SystemUser) | null> {
+    return this.projectParticipationRepository.getProjectParticipantBySurveyIdAndUserGuid(surveyId, userGuid);
   }
 
   /**
@@ -320,7 +339,7 @@ export class ProjectParticipationService extends DBService {
     // delete
     participantsToDelete.forEach((item) => {
       promises.push(
-        this.projectParticipationRepository.deleteProjectParticipationRecord(item.project_participation_id)
+        this.projectParticipationRepository.deleteProjectParticipationRecord(projectId, item.project_participation_id)
       );
     });
 

@@ -1,12 +1,32 @@
-import { AxiosInstance, CancelTokenSource } from 'axios';
-import { IObservationTableRow } from 'contexts/observationsContext';
-import { GeoJsonProperties } from 'geojson';
+import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import {
-  IGetObservationSubmissionResponse,
-  IGetSurveyObservationsResponse,
-  ISpatialData,
-  IUploadObservationSubmissionResponse
+  ObservationRecord,
+  StandardObservationColumns,
+  SupplementaryObservationCountData
+} from 'contexts/observationsTableContext';
+import {
+  IGetSurveyObservationsGeometryResponse,
+  IGetSurveyObservationsResponse
 } from 'interfaces/useObservationApi.interface';
+import { ApiPaginationRequestOptions } from 'types/misc';
+
+export interface SubcountToSave {
+  observation_subcount_id: number | null;
+  subcount: number | null;
+  qualitative: {
+    measurement_id: string;
+    measurement_option_id: string;
+  }[];
+  quantitative: {
+    measurement_id: string;
+    measurement_value: number;
+  }[];
+}
+
+export interface IObservationTableRowToSave {
+  standardColumns: StandardObservationColumns;
+  subcounts: SubcountToSave[];
+}
 
 /**
  * Returns a set of supported api methods for working with observations.
@@ -16,29 +36,124 @@ import {
  */
 const useObservationApi = (axios: AxiosInstance) => {
   /**
-   * Upload survey observation submission.
+   * Insert/updates all survey observation records for the given survey
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {IObservationTableRowToSave[]} surveyObservations
+   * @return {*}  {Promise<void>}
+   */
+  const insertUpdateObservationRecords = async (
+    projectId: number,
+    surveyId: number,
+    surveyObservations: IObservationTableRowToSave[]
+  ): Promise<void> => {
+    await axios.put(`/api/project/${projectId}/survey/${surveyId}/observations`, {
+      surveyObservations
+    });
+  };
+
+  /**
+   * Retrieves all survey observation records for the given survey
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {ApiPaginationRequestOptions} [pagination]
+   * @return {*}  {Promise<IObservationTableRow[]>}
+   */
+  const getObservationRecords = async (
+    projectId: number,
+    surveyId: number,
+    pagination?: ApiPaginationRequestOptions
+  ): Promise<IGetSurveyObservationsResponse> => {
+    let urlParamsString = '';
+
+    if (pagination) {
+      const params = new URLSearchParams();
+      params.append('page', pagination.page.toString());
+      params.append('limit', pagination.limit.toString());
+      if (pagination.sort) {
+        params.append('sort', pagination.sort);
+      }
+      if (pagination.order) {
+        params.append('order', pagination.order);
+      }
+      urlParamsString = `?${params.toString()}`;
+    }
+
+    const { data } = await axios.get<IGetSurveyObservationsResponse>(
+      `/api/project/${projectId}/survey/${surveyId}/observations${urlParamsString}`
+    );
+
+    return data;
+  };
+
+  /**
+   * Retrieves all survey observation records for the given survey
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {ApiPaginationRequestOptions} [pagination]
+   * @return {*}  {Promise<IObservationTableRow[]>}
+   */
+  const getObservationRecord = async (
+    projectId: number,
+    surveyId: number,
+    surveyObservationId: number
+  ): Promise<ObservationRecord> => {
+    const { data } = await axios.get<ObservationRecord>(
+      `/api/project/${projectId}/survey/${surveyId}/observations/${surveyObservationId}`
+    );
+
+    return data;
+  };
+
+  /**
+   * Fetches all geojson geometry points for all observation records belonging to
+   * the given survey.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}  {Promise<IGetSurveyObservationsGeometryResponse>}
+   */
+  const getObservationsGeometry = async (
+    projectId: number,
+    surveyId: number
+  ): Promise<IGetSurveyObservationsGeometryResponse> => {
+    const { data } = await axios.get<IGetSurveyObservationsGeometryResponse>(
+      `/api/project/${projectId}/survey/${surveyId}/observations/spatial`
+    );
+
+    return data;
+  };
+
+  /**
+   * Uploads an observation CSV for import.
    *
    * @param {number} projectId
    * @param {number} surveyId
    * @param {File} file
+   * @param {{
+   *       samplingPeriodId: number;
+   *     }} [options]
    * @param {CancelTokenSource} [cancelTokenSource]
-   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
-   * @return {*}  {Promise<string[]>}
+   * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
+   * @return {*}  {Promise<{ submissionId: number }>}
    */
-  const uploadObservationSubmission = async (
+  const uploadCsvForImport = async (
     projectId: number,
     surveyId: number,
     file: File,
     cancelTokenSource?: CancelTokenSource,
-    onProgress?: (progressEvent: ProgressEvent) => void
-  ): Promise<IUploadObservationSubmissionResponse> => {
-    const req_message = new FormData();
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
+  ): Promise<{ submissionId: number }> => {
+    const formData = new FormData();
 
-    req_message.append('media', file);
+    formData.append('media', file);
 
-    const { data } = await axios.post(
-      `/api/project/${projectId}/survey/${surveyId}/observation/submission/upload`,
-      req_message,
+    const { data } = await axios.post<{ submissionId: number }>(
+      `/api/project/${projectId}/survey/${surveyId}/observations/upload`,
+      formData,
       {
         cancelToken: cancelTokenSource?.token,
         onUploadProgress: onProgress
@@ -49,182 +164,85 @@ const useObservationApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get observation submission based on survey ID
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @returns {*} {Promise<IGetObservationSubmissionResponse>}
-   */
-  const getObservationSubmission = async (
-    projectId: number,
-    surveyId: number
-  ): Promise<IGetObservationSubmissionResponse> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/observation/submission/get`);
-
-    return data;
-  };
-
-  /**
-   * Get occurrence information for view-only purposes based on occurrence submission id
-   *
-   * @param {number} occurrenceSubmissionId
-   * @returns {*} {Promise<ISpatialData[]>}
-   */
-  const getOccurrencesForView = async (projectId: number, occurrenceSubmissionId: number): Promise<ISpatialData[]> => {
-    const { data } = await axios.post(`/api/dwc/view-occurrences`, {
-      occurrence_submission_id: occurrenceSubmissionId,
-      project_id: projectId
-    });
-
-    return data;
-  };
-
-  const getSpatialMetadata = async <T = GeoJsonProperties>(submissionSpatialComponentIds: number[]): Promise<T[]> => {
-    const { data } = await axios.get<T[]>(`/api/dwc/metadata`, {
-      params: { submissionSpatialComponentIds: submissionSpatialComponentIds }
-    });
-
-    return data;
-  };
-
-  /**
-   * Delete observation submission based on submission ID
+   * Begins processing an uploaded observation CSV for import
    *
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number} submissionId
-   * @returns {*} {Promise<number>}
+   * @param {{
+   *       surveySamplePeriodId?: number;
+   *     }} [options]
+   * @return {*}  {Promise<void>}
    */
-  const deleteObservationSubmission = async (
+  const processCsvSubmission = async (
     projectId: number,
     surveyId: number,
-    submissionId: number
-  ): Promise<number> => {
-    const { data } = await axios.delete(
-      `/api/project/${projectId}/survey/${surveyId}/observation/submission/${submissionId}/delete`
+    submissionId: number,
+    options?: {
+      surveySamplePeriodId?: number;
+    }
+  ): Promise<void> => {
+    const { data } = await axios.post<void>(`/api/project/${projectId}/survey/${surveyId}/observations/process`, {
+      observation_submission_id: submissionId,
+      options
+    });
+
+    return data;
+  };
+
+  /**
+   * Deletes all of the observation records having the given observation id.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {((string | number)[])} surveyObservationIds
+   * @return {*}  {Promise<{ supplementaryObservationData: SupplementaryObservationCountData }>}
+   */
+  const deleteObservationRecords = async (
+    projectId: number,
+    surveyId: number,
+    surveyObservationIds: (string | number)[]
+  ): Promise<{ supplementaryObservationData: SupplementaryObservationCountData }> => {
+    const { data } = await axios.post<{ supplementaryObservationData: SupplementaryObservationCountData }>(
+      `/api/project/${projectId}/survey/${surveyId}/observations/delete`,
+      { surveyObservationIds }
     );
 
     return data;
   };
 
   /**
-   * Get observation submission S3 url based on survey and submission ID
-   *
-   * @param {AxiosInstance} axios
-   * @returns {*} {Promise<string>}
-   */
-  const getObservationSubmissionSignedURL = async (
-    projectId: number,
-    surveyId: number,
-    submissionId: number
-  ): Promise<string> => {
-    const { data } = await axios.get(
-      `/api/project/${projectId}/survey/${surveyId}/observation/submission/${submissionId}/getSignedUrl`
-    );
-
-    return data;
-  };
-
-  /**
-   * Initiate the transformation process for the submitted observation template.
-   *
-   * @param {number} projectId
-   * @param {number} submissionId
-   */
-  const initiateXLSXSubmissionTransform = async (projectId: number, submissionId: number, surveyId: number) => {
-    const { data } = await axios.post(`/api/xlsx/transform`, {
-      project_id: projectId,
-      occurrence_submission_id: submissionId,
-      survey_id: surveyId
-    });
-
-    return data;
-  };
-
-  /**
-   * Processes an xlsx submission : validates, transforms and scrapes occurrences
-   *
-   * @param {number} projectId
-   * @param {number} submissionId
-   * @return {*}
-   */
-  const processOccurrences = async (projectId: number, submissionId: number, surveyId: number) => {
-    const { data } = await axios.post(`/api/xlsx/process`, {
-      project_id: projectId,
-      occurrence_submission_id: submissionId,
-      survey_id: surveyId
-    });
-
-    return data;
-  };
-
-  /**
-   * Validates and processes a submitted Darwin Core File
-   *
-   * @param {number} projectId
-   * @param {number} submissionId
-   * @return {*}
-   */
-  const processDWCFile = async (projectId: number, submissionId: number) => {
-    const { data } = await axios.post(`api/dwc/process`, {
-      project_id: projectId,
-      occurrence_submission_id: submissionId
-    });
-
-    return data;
-  };
-
-  /**
-   * Insert/updates all survey observation records for the given survey
+   * Deletes all of the observation measurements, from all observation records, having the given taxon measurement id.
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {IObservationTableRow[]} surveyObservations
-   * @return {*}
+   * @param {string[]} measurementIds The critterbase taxon measurement ids to delete.
+   * @return {*}  {Promise<void>}
    */
-  const insertUpdateObservationRecords = async (
+  const deleteObservationMeasurements = async (
     projectId: number,
     surveyId: number,
-    surveyObservations: IObservationTableRow[]
-  ): Promise<IObservationTableRow[]> => {
-    const { data } = await axios.put<IGetSurveyObservationsResponse>(
-      `/api/project/${projectId}/survey/${surveyId}/observation`,
-      { surveyObservations }
-    );
-
-    return data.surveyObservations;
-  };
-
-  /**
-   * Retrieves all survey observation records for the given survey
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @return {*}  {Promise<IObservationTableRow[]>}
-   */
-  const getObservationRecords = async (
-    projectId: number,
-    surveyId: number
-  ): Promise<IGetSurveyObservationsResponse> => {
-    const { data } = await axios.get<IGetSurveyObservationsResponse>(
-      `/api/project/${projectId}/survey/${surveyId}/observation`
+    measurementIds: string[]
+  ): Promise<void> => {
+    const { data } = await axios.post<void>(
+      `/api/project/${projectId}/survey/${surveyId}/observations/measurements/delete`,
+      {
+        measurement_ids: measurementIds
+      }
     );
 
     return data;
   };
 
   return {
-    uploadObservationSubmission,
-    getObservationSubmission,
-    deleteObservationSubmission,
-    getObservationSubmissionSignedURL,
-    initiateXLSXSubmissionTransform,
-    getOccurrencesForView,
-    processOccurrences,
-    processDWCFile,
-    getSpatialMetadata,
     insertUpdateObservationRecords,
-    getObservationRecords
+    getObservationRecords,
+    getObservationRecord,
+    getObservationsGeometry,
+    deleteObservationRecords,
+    deleteObservationMeasurements,
+    uploadCsvForImport,
+    processCsvSubmission
   };
 };
 

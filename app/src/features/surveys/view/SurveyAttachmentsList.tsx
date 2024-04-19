@@ -135,6 +135,7 @@ const SurveyAttachmentsList: React.FC = () => {
         handleDelete={handleDelete}
         handleViewDetails={handleViewDetails}
         handleRemoveOrResubmit={handleRemoveOrResubmit}
+        emptyStateText="No documents found"
       />
     </>
   );

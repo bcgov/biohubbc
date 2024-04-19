@@ -14,8 +14,12 @@ export const GET: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
-          projectId: Number(req.params.projectId),
+          validProjectPermissions: [
+            PROJECT_PERMISSION.COORDINATOR,
+            PROJECT_PERMISSION.COLLABORATOR,
+            PROJECT_PERMISSION.OBSERVER
+          ],
+          surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
         {
@@ -69,7 +73,7 @@ GET.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -86,20 +90,26 @@ export function getDeploymentsInSurvey(): RequestHandler {
       keycloak_guid: req['system_user']?.user_guid,
       username: req['system_user']?.user_identifier
     };
+
     const surveyId = Number(req.params.surveyId);
     const connection = getDBConnection(req['keycloak_token']);
+
     const surveyCritterService = new SurveyCritterService(connection);
-    const bctw = new BctwService(user);
+    const bctwService = new BctwService(user);
+
     try {
       await connection.open();
+
       const critter_ids = (await surveyCritterService.getCrittersInSurvey(surveyId)).map(
-        (a) => a.critterbase_critter_id
+        (critter) => critter.critterbase_critter_id
       );
-      const results = critter_ids.length ? await bctw.getDeploymentsByCritterId(critter_ids) : [];
+
+      const results = critter_ids.length ? await bctwService.getDeploymentsByCritterId(critter_ids) : [];
       return res.status(200).json(results);
     } catch (error) {
       defaultLog.error({ label: 'getDeploymentsInSurvey', message: 'error', error });
       await connection.rollback();
+
       throw error;
     } finally {
       connection.release();

@@ -5,8 +5,8 @@ import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../../errors/http-error';
 import {
-  IReportAttachmentAuthor,
-  ISurveyReportAttachment
+  ISurveyReportAttachment,
+  ISurveyReportAttachmentAuthor
 } from '../../../../../../../../repositories/attachment-repository';
 import { AttachmentService } from '../../../../../../../../services/attachment-service';
 import { getMockDBConnection } from '../../../../../../../../__mocks__/db';
@@ -38,7 +38,7 @@ describe('getSurveyReportDetails', () => {
     try {
       const result = get.getSurveyReportDetails();
 
-      await result(mockReq, (null as unknown) as any, (null as unknown) as any);
+      await result(mockReq, null as unknown as any, null as unknown as any);
       expect.fail();
     } catch (actualError) {
       expect((actualError as HTTPError).message).to.equal(expectedError.message);
@@ -60,11 +60,11 @@ describe('getSurveyReportDetails', () => {
 
     const getSurveyReportAttachmentByIdStub = sinon
       .stub(AttachmentService.prototype, 'getSurveyReportAttachmentById')
-      .resolves(({ survey_report_attachment_id: 1 } as unknown) as ISurveyReportAttachment);
+      .resolves({ survey_report_attachment_id: 1 } as unknown as ISurveyReportAttachment);
 
     const getSurveyAttachmentAuthorsStub = sinon
       .stub(AttachmentService.prototype, 'getSurveyAttachmentAuthors')
-      .resolves([({ author: 2 } as unknown) as IReportAttachmentAuthor]);
+      .resolves([{ author: 2 } as unknown as ISurveyReportAttachmentAuthor]);
 
     const expectedResponse = {
       metadata: { survey_report_attachment_id: 1 },
@@ -83,7 +83,7 @@ describe('getSurveyReportDetails', () => {
     };
 
     const result = get.getSurveyReportDetails();
-    await result(mockReq, (sampleRes as unknown) as any, (null as unknown) as any);
+    await result(mockReq, sampleRes as unknown as any, null as unknown as any);
 
     expect(actualResult).to.eql(expectedResponse);
     expect(getSurveyReportAttachmentByIdStub).to.be.calledOnce;

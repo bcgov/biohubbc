@@ -2,15 +2,11 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import { GridColDef } from '@mui/x-data-grid';
 import { AccessStatusChip } from 'components/chips/AccessStatusChip';
+import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import RequestDialog from 'components/dialog/RequestDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { AccessApprovalDispatchI18N, AccessDenialDispatchI18N, ReviewAccessRequestI18N } from 'constants/i18n';
@@ -18,9 +14,13 @@ import { AdministrativeActivityStatusType } from 'constants/misc';
 import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
+import {
+  IAccessRequestDataObject,
+  IGetAccessRequestsListResponse,
+  IIDIRAccessRequestDataObject
+} from 'interfaces/useAdminApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import ReviewAccessRequestForm, {
   IReviewAccessRequestForm,
@@ -34,24 +34,19 @@ export interface IAccessRequestListProps {
   refresh: () => void;
 }
 
+const pageSizeOptions = [10, 25, 50];
+
 /**
  * Page to display a list of user access.
  *
- * @param {*} props
- * @return {*}
  */
-const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
+const AccessRequestList = (props: IAccessRequestListProps) => {
   const { accessRequests, codes, refresh } = props;
 
   const biohubApi = useBiohubApi();
 
-  const [activeReviewDialog, setActiveReviewDialog] = useState<{
-    open: boolean;
-    request: IGetAccessRequestsListResponse | any;
-  }>({
-    open: false,
-    request: null
-  });
+  const [showReviewDialog, setShowReviewDialog] = useState<boolean>(false);
+  const [activeReview, setActiveReview] = useState<IGetAccessRequestsListResponse | null>(null);
 
   const dialogContext = useContext(DialogContext);
 
@@ -91,27 +86,86 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
     }
   };
 
-  const handleReviewDialogApprove = async (values: IReviewAccessRequestForm) => {
-    const updatedRequest = activeReviewDialog.request as IGetAccessRequestsListResponse;
+  const accessRequestsColumnDefs: GridColDef<IGetAccessRequestsListResponse>[] = [
+    {
+      field: 'username',
+      headerName: 'Username',
+      flex: 1,
+      disableColumnMenu: true,
+      valueGetter: (params) => {
+        return params.row.data?.username;
+      }
+    },
+    {
+      field: 'create_date',
+      flex: 1,
+      headerName: 'Date of Request',
+      disableColumnMenu: true,
+      valueFormatter: (params) => {
+        return getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, params.value);
+      }
+    },
+    {
+      field: 'status_name',
+      width: 170,
+      headerName: 'Status',
+      disableColumnMenu: true,
+      renderCell: (params) => {
+        return <AccessStatusChip status={params.row.status_name} />;
+      }
+    },
+    {
+      field: 'actions',
+      headerName: '',
+      type: 'actions',
+      flex: 1,
+      sortable: false,
+      disableColumnMenu: true,
+      resizable: false,
+      align: 'right',
+      renderCell: (params) => {
+        if (params.row.status_name !== AdministrativeActivityStatusType.PENDING) {
+          return <></>;
+        }
 
-    setActiveReviewDialog({ open: false, request: null });
+        return (
+          <Button
+            color="primary"
+            variant="contained"
+            onClick={() => {
+              setActiveReview(params.row);
+              setShowReviewDialog(true);
+            }}>
+            Review Request
+          </Button>
+        );
+      }
+    }
+  ];
+
+  const handleReviewDialogApprove = async (values: IReviewAccessRequestForm) => {
+    if (!activeReview) {
+      return;
+    }
+
+    setShowReviewDialog(false);
 
     try {
-      await biohubApi.admin.approveAccessRequest(updatedRequest.id, {
-        userGuid: updatedRequest.data.userGuid,
-        userIdentifier: updatedRequest.data.username,
-        identitySource: updatedRequest.data.identitySource,
-        email: updatedRequest.data.email,
-        displayName: updatedRequest.data.displayName,
+      await biohubApi.admin.approveAccessRequest(activeReview.id, {
+        userGuid: activeReview.data.userGuid,
+        userIdentifier: activeReview.data.username,
+        identitySource: activeReview.data.identitySource,
+        email: activeReview.data.email,
+        displayName: activeReview.data.displayName,
         roleIds: (values.system_role && [values.system_role]) || []
       });
 
       try {
         await biohubApi.admin.sendGCNotification(
           {
-            emailAddress: updatedRequest.data.email,
+            emailAddress: activeReview.data.email,
             phoneNumber: '',
-            userId: updatedRequest.id
+            userId: activeReview.id
           },
           {
             subject: 'SIMS: Your request for access has been approved.',
@@ -140,19 +194,21 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
   };
 
   const handleReviewDialogDeny = async () => {
-    const updatedRequest = activeReviewDialog.request as IGetAccessRequestsListResponse;
+    if (!activeReview) {
+      return;
+    }
 
-    setActiveReviewDialog({ open: false, request: null });
+    setShowReviewDialog(false);
 
     try {
-      await biohubApi.admin.denyAccessRequest(updatedRequest.id);
+      await biohubApi.admin.denyAccessRequest(activeReview.id);
 
       try {
         await biohubApi.admin.sendGCNotification(
           {
-            emailAddress: updatedRequest.data.email,
+            emailAddress: activeReview.data.email,
             phoneNumber: '',
-            userId: updatedRequest.id
+            userId: activeReview.id
           },
           {
             subject: 'SIMS: Your request for access has been denied.',
@@ -184,29 +240,32 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
     <>
       <RequestDialog
         dialogTitle={'Review Access Request'}
-        open={activeReviewDialog.open}
-        onClose={() => setActiveReviewDialog({ open: false, request: null })}
+        open={showReviewDialog}
+        onClose={() => setShowReviewDialog(false)}
         onDeny={handleReviewDialogDeny}
         onApprove={handleReviewDialogApprove}
         component={{
           initialValues: {
             ...ReviewAccessRequestFormInitialValues,
-            system_role: activeReviewDialog.request?.data?.role
+            system_role:
+              (activeReview?.data as (IAccessRequestDataObject & IIDIRAccessRequestDataObject) | undefined)?.role ?? ''
           },
           validationSchema: ReviewAccessRequestFormYupSchema,
-          element: (
+          element: activeReview ? (
             <ReviewAccessRequestForm
-              request={activeReviewDialog.request}
+              request={activeReview}
               system_roles={
                 codes?.system_roles?.map((item) => {
                   return { value: item.id, label: item.name };
                 }) || []
               }
             />
+          ) : (
+            <></>
           )
         }}
       />
-      <Paper elevation={0}>
+      <Paper>
         <Toolbar>
           <Typography variant="h4" component="h2">
             Access Requests{' '}
@@ -217,58 +276,25 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
               sx={{
                 fontWeight: 400
               }}>
-              ({accessRequests?.length || 0})
+              ({Number(accessRequests?.length ?? 0).toLocaleString()})
             </Typography>
           </Typography>
         </Toolbar>
         <Divider></Divider>
-        <Box p={1}>
-          <TableContainer>
-            <Table
-              sx={{
-                tableLayout: 'fixed'
-              }}>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Username</TableCell>
-                  <TableCell>Date of Request</TableCell>
-                  <TableCell width={170}>Status</TableCell>
-                  <TableCell align="right"></TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody data-testid="access-request-table">
-                {!accessRequests?.length && (
-                  <TableRow data-testid={'access-request-row-0'}>
-                    <TableCell colSpan={4} align="center">
-                      No Access Requests
-                    </TableCell>
-                  </TableRow>
-                )}
-                {accessRequests?.map((row, index) => {
-                  return (
-                    <TableRow data-testid={`access-request-row-${index}`} key={index}>
-                      <TableCell>{row.data?.username || ''}</TableCell>
-                      <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.create_date)}</TableCell>
-                      <TableCell>
-                        <AccessStatusChip status={row.status_name} />
-                      </TableCell>
-
-                      <TableCell align="right">
-                        {row.status_name === AdministrativeActivityStatusType.PENDING && (
-                          <Button
-                            color="primary"
-                            variant="contained"
-                            onClick={() => setActiveReviewDialog({ open: true, request: row })}>
-                            Review Request
-                          </Button>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
+        <Box p={2}>
+          <StyledDataGrid
+            columns={accessRequestsColumnDefs}
+            rows={accessRequests}
+            noRowsMessage="No Access Requests"
+            pageSizeOptions={pageSizeOptions}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 10
+                }
+              }
+            }}
+          />
         </Box>
       </Paper>
     </>

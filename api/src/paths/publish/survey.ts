@@ -29,7 +29,7 @@ export const POST: Operation = [
 
 POST.apiDoc = {
   description: 'Publish Survey data to Biohub.',
-  tags: ['survey', 'dwca', 'biohub'],
+  tags: ['survey', 'biohub'],
   security: [
     {
       Bearer: []
@@ -41,46 +41,38 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
-          required: ['projectId', 'surveyId', 'data'],
+          additionalProperties: false,
+          required: ['surveyId', 'data'],
           properties: {
-            projectId: {
-              type: 'number'
-            },
             surveyId: {
-              type: 'number'
+              type: 'integer',
+              minimum: 1
             },
             data: {
-              description: 'All survey data to upload',
+              description: 'Additional data to include in the submission to BioHub',
               type: 'object',
-              required: ['observations', 'summary', 'reports', 'attachments'],
+              additionalProperties: false,
+              required: ['submissionComment', 'agreement1', 'agreement2', 'agreement3'],
               properties: {
-                observations: {
-                  type: 'array',
-                  items: {
-                    type: 'object',
-                    properties: {}
-                  }
+                submissionComment: {
+                  type: 'string',
+                  description:
+                    'Submission comment to include in the submission to BioHub. May include sensitive information.'
                 },
-                summary: {
-                  type: 'array',
-                  items: {
-                    type: 'object',
-                    properties: {}
-                  }
+                agreement1: {
+                  type: 'boolean',
+                  enum: [true],
+                  description: 'Publishing agreement 1. Agreement must be accepted.'
                 },
-                reports: {
-                  type: 'array',
-                  items: {
-                    type: 'object',
-                    properties: {}
-                  }
+                agreement2: {
+                  type: 'boolean',
+                  enum: [true],
+                  description: 'Publishing agreement 2. Agreement must be accepted.'
                 },
-                attachments: {
-                  type: 'array',
-                  items: {
-                    type: 'object',
-                    properties: {}
-                  }
+                agreement3: {
+                  type: 'boolean',
+                  enum: [true],
+                  description: 'Publishing agreement 3. Agreement must be accepted.'
                 }
               }
             }
@@ -96,10 +88,12 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             properties: {
-              uuid: {
+              submission_uuid: {
                 type: 'string',
-                format: 'uuid'
+                format: 'uuid',
+                description: 'The UUID of the submission'
               }
             }
           }
@@ -113,7 +107,7 @@ POST.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -139,7 +133,7 @@ export function publishSurvey(): RequestHandler {
       await connection.open();
 
       const platformService = new PlatformService(connection);
-      const response = await platformService.submitSurveyDataToBioHub(surveyId, data);
+      const response = await platformService.submitSurveyToBioHub(surveyId, data);
 
       await connection.commit();
 

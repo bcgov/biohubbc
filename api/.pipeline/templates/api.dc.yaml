@@ -25,7 +25,8 @@ parameters:
   - name: NODE_ENV
     description: Application Environment type variable
     required: true
-    value: 'dev'
+    value: 'development'
+  - name: NODE_OPTIONS
   - name: API_PORT_DEFAULT
     value: '6100'
   - name: API_PORT_DEFAULT_NAME
@@ -39,18 +40,24 @@ parameters:
   - name: CLAMAV_PORT
     value: '3310'
   # BioHub Platform (aka: Backbone)
-  - name: BACKBONE_API_HOST
+  - name: BACKBONE_INTERNAL_API_HOST
     required: true
     description: API host for BioHub Platform Backbone. Example "https://platform.com".
   - name: BACKBONE_INTAKE_PATH
     required: true
-    description: API path for BioHub Platform Backbone DwCA submission intake endpoint. Example "/api/path/to/intake".
+    description: The publishing intake endpoint path for BioHub Platform submissions. Example "/api/path/to/intake".
   - name: BACKBONE_ARTIFACT_INTAKE_PATH
     required: true
-    description: API path for BioHub Platform Backbone artifact submission intake endpoint. Example "/api/path/to/artifact/intake".
+    description: The publishing intake endpoint path for BioHub Platform artifact submissions. Example "/api/path/to/artifact/intake".
   - name: BACKBONE_INTAKE_ENABLED
     required: true
     description: Controls whether or not SIMS will submit DwCA datasets to the BioHub Platform Backbone. Set to "true" to enable it, will be disabled by default otherwise.
+  - name: BIOHUB_TAXON_TSN_PATH
+    required: true
+    description: API path for BioHub Platform Backbone taxon TSN endpoint. Example "/api/path/to/taxon/tsn".
+  - name: BIOHUB_TAXON_PATH
+    required: true
+    description: API path for BioHub Platform Backbone taxon endpoint. Example "/api/path/to/taxon".
   # BCTW / Critterbase
   - name: CB_API_HOST
     description: API host for the Critterbase service, SIMS API will hit this to retrieve critter metadata. Example "https://critterbase.com".
@@ -58,15 +65,6 @@ parameters:
   - name: BCTW_API_HOST
     description: API host for the BC Telemetry Warehouse service. SIMS API will hit this for device deployments and other telemetry operations.  Example "https://bctw.com".
     required: true
-  # Elastic Search
-  - name: ELASTICSEARCH_URL
-    description: Platform Elasticsearch URL
-    required: true
-    value: 'http://es01:9200'
-  - name: ELASTICSEARCH_TAXONOMY_INDEX
-    description: Platform Elasticsearch Taxonomy Index
-    required: true
-    value: 'taxonomy_3.0.0'
   # Database
   - name: TZ
     description: Application timezone
@@ -120,9 +118,13 @@ parameters:
     description: S3 key optional prefix
     required: false
     value: 'sims'
-  # Log level
+  # Logging and Validation
   - name: LOG_LEVEL
-    value: 'info'
+    value: 'warn'
+  - name: API_RESPONSE_VALIDATION_ENABLED
+    value: 'false'
+  - name: DATABASE_RESPONSE_VALIDATION_ENABLED
+    value: 'false'
   # GCNotify
   - name: GCNOTIFY_API_SECRET
     description: Secret for gcnotify api key
@@ -206,7 +208,8 @@ objects:
             role: api
         spec:
           containers:
-            - env:
+            - name: api
+              env:
                 - name: API_HOST
                   value: ${HOST}
                 - name: API_PORT
@@ -219,15 +222,21 @@ objects:
                   value: ${CHANGE_ID}
                 - name: NODE_ENV
                   value: ${NODE_ENV}
+                - name: NODE_OPTIONS
+                  value: ${NODE_OPTIONS}
                 # BioHub Platform (aka: Backbone)
-                - name: BACKBONE_API_HOST
-                  value: ${BACKBONE_API_HOST}
+                - name: BACKBONE_INTERNAL_API_HOST
+                  value: ${BACKBONE_INTERNAL_API_HOST}
                 - name: BACKBONE_INTAKE_PATH
                   value: ${BACKBONE_INTAKE_PATH}
                 - name: BACKBONE_ARTIFACT_INTAKE_PATH
                   value: ${BACKBONE_ARTIFACT_INTAKE_PATH}
                 - name: BACKBONE_INTAKE_ENABLED
                   value: ${BACKBONE_INTAKE_ENABLED}
+                - name: BIOHUB_TAXON_TSN_PATH
+                  value: ${BIOHUB_TAXON_TSN_PATH}
+                - name: BIOHUB_TAXON_PATH
+                  value: ${BIOHUB_TAXON_PATH}
                 # BCTW / Critterbase
                 - name: CB_API_HOST
                   value: ${CB_API_HOST}
@@ -262,8 +271,6 @@ objects:
                       name: ${DB_SERVICE_NAME}
                 - name: DB_PORT
                   value: '5432'
-                - name: PROJECT_SEEDER_USER_IDENTIFIER
-                  value: ${PROJECT_SEEDER_USER_IDENTIFIER}
                 # Keycloak
                 - name: KEYCLOAK_HOST
                   value: ${KEYCLOAK_HOST}
@@ -293,13 +300,6 @@ objects:
                   value: ${KEYCLOAK_API_HOST}
                 - name: KEYCLOAK_API_ENVIRONMENT
                   value: ${KEYCLOAK_API_ENVIRONMENT}
-                # Elastic Search
-                - name: ELASTICSEARCH_URL
-                  value: ${ELASTICSEARCH_URL}
-                - name: ELASTICSEARCH_TAXONOMY_INDEX
-                  value: ${ELASTICSEARCH_TAXONOMY_INDEX}
-                - name: S3_KEY_PREFIX
-                  value: ${S3_KEY_PREFIX}
                 # Object Store (S3)
                 - name: OBJECT_STORE_URL
                   valueFrom:
@@ -321,9 +321,13 @@ objects:
                     secretKeyRef:
                       key: object_store_bucket_name
                       name: ${OBJECT_STORE_SECRETS}
-                # Log level
+                # Logging and Validation
                 - name: LOG_LEVEL
                   value: ${LOG_LEVEL}
+                - name: API_RESPONSE_VALIDATION_ENABLED
+                  value: ${API_RESPONSE_VALIDATION_ENABLED}
+                - name: DATABASE_RESPONSE_VALIDATION_ENABLED
+                  value: ${DATABASE_RESPONSE_VALIDATION_ENABLED}
                 # GCNotify
                 - name: GCNOTIFY_SECRET_API_KEY
                   valueFrom:
@@ -342,7 +346,6 @@ objects:
                   value: ${GCNOTIFY_SMS_URL}
               image: ' '
               imagePullPolicy: Always
-              name: api
               ports:
                 - containerPort: ${{API_PORT_DEFAULT}}
                   protocol: TCP

@@ -3,9 +3,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import ProjectSubmissionAlertBar from 'components/publish/ProjectSubmissionAlertBar';
-import { SystemRoleGuard } from 'components/security/Guards';
-import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
 import ProjectAttachments from 'features/projects/view/ProjectAttachments';
@@ -33,48 +30,33 @@ const ProjectPage = () => {
     projectContext.projectDataLoader.load(projectContext.projectId);
   }, [projectContext.projectDataLoader, projectContext.projectId]);
 
-  if (
-    !codesContext.codesDataLoader.data ||
-    !projectContext.projectDataLoader.data ||
-    !projectContext.surveysListDataLoader.data
-  ) {
+  if (!codesContext.codesDataLoader.data || !projectContext.projectDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
     <>
       <ProjectHeader />
-      <Container maxWidth="xl">
-        <Box py={3}>
-          <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-            <ProjectSubmissionAlertBar />
-          </SystemRoleGuard>
-          <Grid container spacing={3}>
-            <Grid item md={12} lg={4}>
-              <Paper elevation={0}>
-                <ProjectDetails />
-              </Paper>
-            </Grid>
-            <Grid item md={12} lg={8}>
-              <Box mb={3}>
-                <Paper elevation={0}>
-                  <SurveysListPage />
-                </Paper>
-              </Box>
-              <Box mb={3}>
-                <Paper elevation={0}>
-                  <ProjectAttachments />
-                </Paper>
-              </Box>
-              {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form (map) temporarily, while its decided where exactly project/survey locations should be defined */}
-              {/* <Box>
-                <Paper elevation={0}>
-                  <LocationBoundary />
-                </Paper>
-              </Box> */}
-            </Grid>
+      <Container maxWidth="xl" sx={{ py: 3 }}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} lg={4}>
+            <Paper>
+              <ProjectDetails />
+            </Paper>
           </Grid>
-        </Box>
+          <Grid item xs={12} lg={8}>
+            <Box mb={3}>
+              <Paper>
+                <SurveysListPage />
+              </Paper>
+            </Box>
+            <Box mb={3}>
+              <Paper>
+                <ProjectAttachments />
+              </Paper>
+            </Box>
+          </Grid>
+        </Grid>
       </Container>
     </>
   );

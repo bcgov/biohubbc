@@ -34,11 +34,11 @@ export interface IGetAllCodeSetsResponse {
   system_roles: CodeSet;
   project_roles: CodeSet;
   administrative_activity_status_type: CodeSet;
-  field_methods: CodeSet<{ id: number; name: string; description: string }>;
   intended_outcomes: CodeSet<{ id: number; name: string; description: string }>;
-  ecological_seasons: CodeSet<{ id: number; name: string; description: string }>;
   vantage_codes: CodeSet;
   survey_jobs: CodeSet;
   site_selection_strategies: CodeSet;
-  sample_methods: CodeSet;
+  survey_progress: CodeSet<{ id: number; name: string; description: string }>;
+  sample_methods: CodeSet<{ id: number; name: string; description: string }>;
+  method_response_metrics: CodeSet<{ id: number; name: string; description: string }>;
 }

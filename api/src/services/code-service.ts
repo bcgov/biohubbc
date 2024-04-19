@@ -36,13 +36,13 @@ export class CodeService extends DBService {
       system_roles,
       project_roles,
       administrative_activity_status_type,
-      field_methods,
-      ecological_seasons,
       intended_outcomes,
       vantage_codes,
       survey_jobs,
       site_selection_strategies,
-      sample_methods
+      sample_methods,
+      survey_progress,
+      method_response_metrics
     ] = await Promise.all([
       await this.codeRepository.getManagementActionType(),
       await this.codeRepository.getFirstNations(),
@@ -57,13 +57,13 @@ export class CodeService extends DBService {
       await this.codeRepository.getSystemRoles(),
       await this.codeRepository.getProjectRoles(),
       await this.codeRepository.getAdministrativeActivityStatusType(),
-      await this.codeRepository.getFieldMethods(),
-      await this.codeRepository.getEcologicalSeasons(),
       await this.codeRepository.getIntendedOutcomes(),
       await this.codeRepository.getVantageCodes(),
       await this.codeRepository.getSurveyJobs(),
       await this.codeRepository.getSiteSelectionStrategies(),
-      await this.codeRepository.getSampleMethods()
+      await this.codeRepository.getSampleMethods(),
+      await this.codeRepository.getSurveyProgress(),
+      await this.codeRepository.getMethodResponseMetrics()
     ]);
 
     return {
@@ -80,13 +80,13 @@ export class CodeService extends DBService {
       system_roles,
       project_roles,
       administrative_activity_status_type,
-      field_methods,
-      ecological_seasons,
       intended_outcomes,
       vantage_codes,
       survey_jobs,
       site_selection_strategies,
-      sample_methods
+      sample_methods,
+      survey_progress,
+      method_response_metrics
     };
   }
 }

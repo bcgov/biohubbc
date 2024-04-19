@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
+import { Request } from 'express';
 import FormData from 'form-data';
 import { URLSearchParams } from 'url';
 import { z } from 'zod';
@@ -85,6 +86,16 @@ export const IKeyXDetails = z.object({
 
 export type IKeyXDetails = z.infer<typeof IKeyXDetails>;
 
+export const IManualTelemetry = z.object({
+  telemetry_manual_id: z.string().uuid(),
+  deployment_id: z.string().uuid(),
+  latitude: z.number(),
+  longitude: z.number(),
+  date: z.string()
+});
+
+export type IManualTelemetry = z.infer<typeof IManualTelemetry>;
+
 export const IBctwUser = z.object({
   keycloak_guid: z.string(),
   username: z.string()
@@ -103,6 +114,13 @@ export type CritterTelemetryResponse = z.infer<typeof GeoJSONFeatureCollectionZo
 
 export type IBctwUser = z.infer<typeof IBctwUser>;
 
+export interface ICreateManualTelemetry {
+  deployment_id: string;
+  latitude: number;
+  longitude: number;
+  acquisition_date: string;
+}
+
 export const BCTW_API_HOST = process.env.BCTW_API_HOST || '';
 export const DEPLOY_DEVICE_ENDPOINT = '/deploy-device';
 export const UPSERT_DEVICE_ENDPOINT = '/upsert-collar';
@@ -119,6 +137,15 @@ export const UPLOAD_KEYX_ENDPOINT = '/import-xml';
 export const GET_KEYX_STATUS_ENDPOINT = '/get-collars-keyx';
 export const GET_TELEMETRY_POINTS_ENDPOINT = '/get-critters';
 export const GET_TELEMETRY_TRACKS_ENDPOINT = '/get-critter-tracks';
+export const MANUAL_TELEMETRY = '/manual-telemetry';
+export const VENDOR_TELEMETRY = '/vendor-telemetry';
+export const DELETE_MANUAL_TELEMETRY = '/manual-telemetry/delete';
+export const MANUAL_AND_VENDOR_TELEMETRY = '/all-telemetry';
+
+export const getBctwUser = (req: Request): IBctwUser => ({
+  keycloak_guid: req['system_user']?.user_guid,
+  username: req['system_user']?.user_identifier
+});
 
 export class BctwService {
   user: IBctwUser;
@@ -151,12 +178,14 @@ export class BctwService {
             new HTTP500('Connection to the BCTW API server was refused. Please try again later.', [error?.message])
           );
         }
+        const data: any = error.response?.data;
+        const errMsg = data?.error ?? data?.errors ?? data ?? 'Unknown error';
 
         return Promise.reject(
           new ApiError(
             ApiErrorType.UNKNOWN,
-            `API request failed with status code ${error?.response?.status}, ${error.response?.data}`,
-            error?.request?.data
+            `API request failed with status code ${error?.response?.status}, ${errMsg}`,
+            Array.isArray(errMsg) ? errMsg : [errMsg]
           )
         );
       }
@@ -223,7 +252,7 @@ export class BctwService {
    * @memberof BctwService
    */
   async deployDevice(device: IDeployDevice): Promise<IDeploymentRecord> {
-    return await this.axiosInstance.post(DEPLOY_DEVICE_ENDPOINT, device);
+    return this.axiosInstance.post(DEPLOY_DEVICE_ENDPOINT, device);
   }
 
   /**
@@ -242,25 +271,30 @@ export class BctwService {
   }
 
   /**
-   * Get device hardware details by device id.
+   * Get device hardware details by device id and device make.
    *
-   * @param deviceId
+   * @param {number} deviceId
+   * @param {deviceMake} deviceMake
    * @returns {*} {Promise<IDevice[]>}
    * @memberof BctwService
    */
-  async getDeviceDetails(deviceId: number): Promise<IDevice[]> {
-    return this._makeGetRequest(`${GET_DEVICE_DETAILS}${deviceId}`);
+  async getDeviceDetails(deviceId: number, deviceMake: string): Promise<IDevice[]> {
+    return this._makeGetRequest(`${GET_DEVICE_DETAILS}${deviceId}`, { make: deviceMake });
   }
 
   /**
-   * Get deployments by device id, may return results for multiple critters.
+   * Get deployments by device id and device make, may return results for multiple critters.
    *
    * @param {number} deviceId
+   * @param {string} deviceMake
    * @returns {*} {Promise<IDeploymentRecord[]>}
    * @memberof BctwService
    */
-  async getDeviceDeployments(deviceId: number): Promise<IDeploymentRecord[]> {
-    return await this._makeGetRequest(GET_DEPLOYMENTS_BY_DEVICE_ENDPOINT, { device_id: String(deviceId) });
+  async getDeviceDeployments(deviceId: number, deviceMake: string): Promise<IDeploymentRecord[]> {
+    return this._makeGetRequest(GET_DEPLOYMENTS_BY_DEVICE_ENDPOINT, {
+      device_id: String(deviceId),
+      make: deviceMake
+    });
   }
 
   /**
@@ -418,5 +452,85 @@ export class BctwService {
       start: startDate.toISOString(),
       end: endDate.toISOString()
     });
+  }
+
+  /**
+   * Get all manual telemetry records
+   * This set of telemetry is mostly useful for testing purposes.
+   *
+   * @returns {*} IManualTelemetry[]
+   **/
+  async getManualTelemetry(): Promise<IManualTelemetry[]> {
+    return this._makeGetRequest(MANUAL_TELEMETRY);
+  }
+
+  /**
+   * retrieves manual telemetry from list of deployment ids
+   *
+   * @async
+   * @param {string[]} deployment_ids - bctw deployments
+   * @returns {*} IManualTelemetry[]
+   */
+  async getManualTelemetryByDeploymentIds(deployment_ids: string[]): Promise<IManualTelemetry[]> {
+    const res = await this.axiosInstance.post(`${MANUAL_TELEMETRY}/deployments`, deployment_ids);
+    return res.data;
+  }
+
+  /**
+   * retrieves manual telemetry from list of deployment ids
+   *
+   * @async
+   * @param {string[]} deployment_ids - bctw deployments
+   * @returns {*} IManualTelemetry[]
+   */
+  async getVendorTelemetryByDeploymentIds(deployment_ids: string[]): Promise<IManualTelemetry[]> {
+    const res = await this.axiosInstance.post(`${VENDOR_TELEMETRY}/deployments`, deployment_ids);
+    return res.data;
+  }
+
+  /**
+   * retrieves manual and vendor telemetry from list of deployment ids
+   *
+   * @async
+   * @param {string[]} deployment_ids - bctw deployments
+   * @returns {*} IManualTelemetry[]
+   */
+  async getAllTelemetryByDeploymentIds(deployment_ids: string[]): Promise<IManualTelemetry[]> {
+    const res = await this.axiosInstance.post(`${MANUAL_AND_VENDOR_TELEMETRY}/deployments`, deployment_ids);
+    return res.data;
+  }
+
+  /**
+   * Delete manual telemetry records by telemetry_manual_id
+   * Note: This is a post request that accepts an array of ids
+   * @param {uuid[]} telemetry_manaual_ids
+   *
+   * @returns {*} IManualTelemetry[]
+   **/
+  async deleteManualTelemetry(telemetry_manual_ids: string[]): Promise<IManualTelemetry[]> {
+    const res = await this.axiosInstance.post(DELETE_MANUAL_TELEMETRY, telemetry_manual_ids);
+    return res.data;
+  }
+
+  /**
+   * Bulk create manual telemetry records
+   * @param {ICreateManualTelemetry[]} payload
+   *
+   * @returns {*} IManualTelemetry[]
+   **/
+  async createManualTelemetry(payload: ICreateManualTelemetry[]): Promise<IManualTelemetry[]> {
+    const res = await this.axiosInstance.post(MANUAL_TELEMETRY, payload);
+    return res.data;
+  }
+
+  /**
+   * Bulk update manual telemetry records
+   * @param {IManualTelemetry} payload
+   *
+   * @returns {*} IManualTelemetry[]
+   **/
+  async updateManualTelemetry(payload: IManualTelemetry[]): Promise<IManualTelemetry[]> {
+    const res = await this.axiosInstance.patch(MANUAL_TELEMETRY, payload);
+    return res.data;
   }
 }

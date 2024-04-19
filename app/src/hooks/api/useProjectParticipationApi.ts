@@ -73,12 +73,25 @@ const useProjectParticipationApi = (axios: AxiosInstance) => {
     return status === 200;
   };
 
+  /**
+   * Get the current user's project participation.
+   *
+   * @param {number} projectId
+   * @return {*}  {Promise<IGetUserProjectParticipantResponse>}
+   */
   const getUserProjectParticipant = async (projectId: number): Promise<IGetUserProjectParticipantResponse> => {
     const { data } = await axios.get<IGetUserProjectParticipantResponse>(`/api/project/${projectId}/participants/self`);
 
     return data;
   };
 
+  /**
+   * Add or update user roles for a project.
+   *
+   * @param {number} projectId
+   * @param {{ user_id: number; role_id: number }[]} userRoles
+   * @return {*}  {Promise<any>}
+   */
   const postUserProjectRoles = async (
     projectId: number,
     userRoles: { user_id: number; role_id: number }[]

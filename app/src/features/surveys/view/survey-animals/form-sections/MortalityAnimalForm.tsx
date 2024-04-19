@@ -1,219 +1,268 @@
-import { Grid } from '@mui/material';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import EditDialog from 'components/dialog/EditDialog';
 import CbSelectField from 'components/fields/CbSelectField';
 import CustomTextField from 'components/fields/CustomTextField';
 import SingleDateField from 'components/fields/SingleDateField';
-import { SurveyAnimalsI18N } from 'constants/i18n';
-import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
-import React, { Fragment, useState } from 'react';
-import { v4 } from 'uuid';
-import { AnimalMortalitySchema, getAnimalFieldName, IAnimal, IAnimalMortality, isRequiredInSchema } from '../animal';
-import TextInputToggle from '../TextInputToggle';
-import FormSectionWrapper from './FormSectionWrapper';
-import LocationEntryForm from './LocationEntryForm';
+import { SpeciesAutoCompleteFormikField } from 'components/species/components/SpeciesAutoCompleteFormikField';
+import { Field, useFormikContext } from 'formik';
+import { useDialogContext } from 'hooks/useContext';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import { IMortalityResponse } from 'interfaces/useCritterApi.interface';
+import { mapValues } from 'lodash-es';
+import { useState } from 'react';
+import {
+  AnimalFormProps,
+  ANIMAL_FORM_MODE,
+  CreateCritterMortalitySchema,
+  ICreateCritterMortality,
+  isRequiredInSchema
+} from '../animal';
+import FormLocationPreview from './LocationEntryForm';
 
 /**
- * Renders the Mortality section for the Individual Animal form
+ * This component renders a 'critter mortality' create / edit dialog.
  *
- * Note A: Using <FieldArray/> the name properties must stay in sync with
- * values object and nested arrays.
- * ie: values = { mortality: [{id: 'test'}] };  name = 'mortality.[0].id';
- *
- * Note B: FormSectionWrapper uses a Grid container to render children elements.
- * Children of FormSectionWrapper can use Grid items to organize inputs.
- *
- * Note C: Mortality gets set like an array here, though it should only ever contain one value.
- * This might seem odd, but this is in line with how critterbase stores these values.
- * To encourage the max of one rule, we use the maxSections prop here to prevent additional copies of the form
- * from rendering.
- *
- * @return {*}
+ * @param {AnimalFormProps<IMarkingResponse>} props - Generic AnimalFormProps.
+ * @returns {*}
  */
+const MortalityAnimalForm = (props: AnimalFormProps<IMortalityResponse>) => {
+  const cbApi = useCritterbaseApi();
+  const dialog = useDialogContext();
 
-type ProjectionMode = 'wgs' | 'utm';
-const MortalityAnimalForm = () => {
-  const { values } = useFormikContext<IAnimal>();
+  const [loading, setLoading] = useState(false);
 
-  const name: keyof IAnimal = 'mortality';
-  const newMortality: IAnimalMortality = {
-    _id: v4(),
+  const handleSave = async (values: ICreateCritterMortality) => {
+    setLoading(true);
+    // Replaces empty strings with null values.
+    const patchedValues = mapValues(values, (value) => (value === '' ? null : value));
 
-    mortality_longitude: '' as unknown as number,
-    mortality_latitude: '' as unknown as number,
-    mortality_utm_northing: '' as unknown as number,
-    mortality_utm_easting: '' as unknown as number,
-    mortality_timestamp: '' as unknown as Date,
-    mortality_coordinate_uncertainty: 10,
-    mortality_comment: '',
-    proximate_cause_of_death_id: '',
-    proximate_cause_of_death_confidence: '',
-    proximate_predated_by_taxon_id: '',
-    ultimate_cause_of_death_id: '',
-    ultimate_cause_of_death_confidence: '',
-    ultimate_predated_by_taxon_id: '',
-    projection_mode: 'wgs' as ProjectionMode,
-    mortality_id: undefined,
-    location_id: undefined
+    try {
+      if (props.formMode === ANIMAL_FORM_MODE.ADD) {
+        await cbApi.mortality.createMortality(patchedValues);
+        dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created mortality.` });
+      }
+      if (props.formMode === ANIMAL_FORM_MODE.EDIT) {
+        await cbApi.mortality.updateMortality(patchedValues);
+        dialog.setSnackbar({ open: true, snackbarMessage: `Successfully edited mortality.` });
+      }
+    } catch (err) {
+      dialog.setSnackbar({ open: true, snackbarMessage: `Critter mortality request failed.` });
+    } finally {
+      props.handleClose();
+      setLoading(false);
+    }
   };
 
   return (
-    <FieldArray name={name}>
-      {({ remove, push }: FieldArrayRenderProps) => (
-        <>
-          <FormSectionWrapper
-            title={SurveyAnimalsI18N.animalMortalityTitle}
-            addedSectionTitle={SurveyAnimalsI18N.animalMortalityTitle2}
-            titleHelp={SurveyAnimalsI18N.animalMortalityHelp}
-            btnLabel={SurveyAnimalsI18N.animalMortalityAddBtn}
-            maxSections={1}
-            handleAddSection={() => push(newMortality)}
-            handleRemoveSection={remove}>
-            {values.mortality.map((mort, index) => (
-              <MortalityAnimalFormContent key={mort._id} name={name} index={index} value={mort} />
-            ))}
-          </FormSectionWrapper>
-        </>
-      )}
-    </FieldArray>
+    <EditDialog
+      dialogTitle={props.formMode === ANIMAL_FORM_MODE.ADD ? 'Add Mortality' : 'Edit Mortality'}
+      open={props.open}
+      onCancel={props.handleClose}
+      onSave={handleSave}
+      dialogLoading={loading}
+      debug
+      component={{
+        initialValues: {
+          critter_id: props.critter.critter_id,
+          mortality_id: props.formObject?.mortality_id,
+          location: {
+            location_id: props?.formObject?.location.location_id,
+            latitude: props?.formObject?.location?.latitude ?? ('' as unknown as number),
+            longitude: props?.formObject?.location?.longitude ?? ('' as unknown as number),
+            coordinate_uncertainty: props?.formObject?.location?.coordinate_uncertainty ?? ('' as unknown as number),
+            coordinate_uncertainty_unit: props?.formObject?.location?.coordinate_uncertainty_unit ?? 'm'
+          },
+          mortality_timestamp: (props.formObject?.mortality_timestamp ?? '') as unknown as Date,
+          mortality_comment: props.formObject?.mortality_comment ?? undefined,
+          proximate_cause_of_death_id: props.formObject?.proximate_cause_of_death_id ?? '',
+          proximate_cause_of_death_confidence: props.formObject?.proximate_cause_of_death_confidence,
+          proximate_predated_by_itis_tsn: props.formObject?.proximate_predated_by_itis_tsn ?? undefined,
+          ultimate_cause_of_death_id: props.formObject?.ultimate_cause_of_death_id ?? undefined,
+          ultimate_cause_of_death_confidence: props.formObject?.ultimate_cause_of_death_confidence,
+          ultimate_predated_by_itis_tsn: props.formObject?.ultimate_predated_by_itis_tsn ?? undefined
+        },
+        validationSchema: CreateCritterMortalitySchema,
+        element: <MortalityForm formObject={props.formObject} />
+      }}
+    />
   );
 };
 
-interface MortalityAnimalFormContentProps {
-  name: keyof IAnimal;
-  index: number;
-  value: IAnimalMortality;
-}
+/**
+ * This component renders the 'critter mortality' form fields.
+ * Nested inside MortalityAnimalForm to use the formikContext hook.
+ *
+ * @param {Pick<AnimalFormProps<IMarkingResponse>, 'formObject'>} props - IMortalityResponse.
+ * @returns {*}
+ */
+const MortalityForm = (props: Pick<AnimalFormProps<IMortalityResponse>, 'formObject'>) => {
+  const { setFieldValue } = useFormikContext<ICreateCritterMortality>();
 
-const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormContentProps) => {
-  const { handleBlur } = useFormikContext<IAnimal>();
+  const proximateTsn = props.formObject?.proximate_predated_by_itis_tsn;
+  const ultimateTsn = props.formObject?.ultimate_predated_by_itis_tsn;
 
-  const [pcodTaxonDisabled, setPcodTaxonDisabled] = useState(true); //Controls whether you can select taxons from the PCOD Taxon dropdown.
-  const [ucodTaxonDisabled, setUcodTaxonDisabled] = useState(true); //Controls whether you can select taxons from the UCOD Taxon dropdown.
-  const [showMortalityComment, setShowMortalityComment] = useState(false);
+  const [pcodTaxonDisabled, setPcodTaxonDisabled] = useState(!proximateTsn); //Controls whether you can select taxons from the PCOD Taxon dropdown.
+  const [ucodTaxonDisabled, setUcodTaxonDisabled] = useState(!ultimateTsn); //Controls whether you can select taxons from the UCOD Taxon dropdown.
 
-  const renderFields = (): JSX.Element => {
-    return (
-      <Fragment key={'mortality-fields'}>
-        <Grid item xs={6}>
-          <SingleDateField
-            name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_timestamp', index)}
-            required={isRequiredInSchema(AnimalMortalitySchema, 'mortality_timestamp')}
-            label={'Mortality Date'}
-            other={{ size: 'small' }}
-          />
+  const handleCauseOfDeathReasonChange = (label: string, isProximateCOD: boolean) => {
+    const isDisabled = !label.includes('Predation');
+    if (isProximateCOD) {
+      setPcodTaxonDisabled(isDisabled);
+    } else {
+      setUcodTaxonDisabled(isDisabled);
+    }
+
+    if (isDisabled) {
+      setFieldValue('proximate_predated_by_itis_tsn', '', true);
+    } else {
+      setFieldValue('ultimate_predated_by_itis_tsn', '', true);
+    }
+  };
+  return (
+    <Stack gap={4}>
+      <Box component="fieldset">
+        <Typography component="legend">Date of Event</Typography>
+        <SingleDateField
+          name={'mortality_timestamp'}
+          required={isRequiredInSchema(CreateCritterMortalitySchema, 'mortality_timestamp')}
+          label={'Mortality Date'}
+          aria-label="Mortality Date"
+        />
+      </Box>
+
+      <Box component="fieldset">
+        <Typography component="legend">Proximate Cause of Death</Typography>
+        <Grid container spacing={1}>
+          <Grid item xs={12} sm={4}>
+            <CbSelectField
+              name={'proximate_cause_of_death_id'}
+              handleChangeSideEffect={(_value, label) => handleCauseOfDeathReasonChange(label, true)}
+              orderBy={'asc'}
+              label={'Reason'}
+              controlProps={{
+                required: isRequiredInSchema(CreateCritterMortalitySchema, 'proximate_cause_of_death_id')
+              }}
+              id={`pcod-reason`}
+              route={'lookups/cods'}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <CbSelectField
+              name={'proximate_cause_of_death_confidence'}
+              label={'Confidence'}
+              controlProps={{
+                required: isRequiredInSchema(CreateCritterMortalitySchema, 'proximate_cause_of_death_confidence')
+              }}
+              id={`pcod-confidence`}
+              route={'lookups/enum/cod-confidence'}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <SpeciesAutoCompleteFormikField
+              formikFieldName={'proximate_predated_by_itis_tsn'}
+              disabled={pcodTaxonDisabled}
+              required={isRequiredInSchema(CreateCritterMortalitySchema, 'proximate_predated_by_itis_tsn')}
+            />
+          </Grid>
         </Grid>
-        <Grid item xs={5}>
-          <CbSelectField
-            name={getAnimalFieldName<IAnimalMortality>(name, 'proximate_cause_of_death_id', index)}
-            handleChangeSideEffect={(_value, label) => setPcodTaxonDisabled(!label.includes('Predation'))}
-            label={'PCOD Reason'}
-            controlProps={{
-              size: 'small',
-              required: isRequiredInSchema(AnimalMortalitySchema, 'proximate_cause_of_death_id')
-            }}
-            id={`${index}-pcod-reason`}
-            route={'lookups/cods'}
-          />
+      </Box>
+
+      <Box component="fieldset">
+        <Typography component="legend">Ultimate Cause of Death</Typography>
+        <Grid container spacing={1}>
+          <Grid item xs={12} sm={4}>
+            <CbSelectField
+              name={'ultimate_cause_of_death_id'}
+              orderBy={'asc'}
+              handleChangeSideEffect={(_value, label) => {
+                handleCauseOfDeathReasonChange(label, false);
+              }}
+              label={'Reason'}
+              controlProps={{
+                required: isRequiredInSchema(CreateCritterMortalitySchema, 'ultimate_cause_of_death_id')
+              }}
+              id={`ucod-reason`}
+              route={'lookups/cods'}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <CbSelectField
+              name={'ultimate_cause_of_death_confidence'}
+              label={'Confidence'}
+              controlProps={{
+                required: isRequiredInSchema(CreateCritterMortalitySchema, 'ultimate_cause_of_death_confidence')
+              }}
+              id={`ucod-confidence`}
+              route={'lookups/enum/cod-confidence'}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <SpeciesAutoCompleteFormikField
+              formikFieldName={'ultimate_predated_by_itis_tsn'}
+              disabled={ucodTaxonDisabled}
+              required={isRequiredInSchema(CreateCritterMortalitySchema, 'ultimate_predated_by_itis_tsn')}
+            />
+          </Grid>
         </Grid>
-        <Grid item xs={4}>
-          <CbSelectField
-            name={getAnimalFieldName<IAnimalMortality>(name, 'proximate_cause_of_death_confidence', index)}
-            label={'PCOD Confidence'}
-            controlProps={{
-              size: 'small',
-              required: isRequiredInSchema(AnimalMortalitySchema, 'proximate_cause_of_death_confidence')
-            }}
-            id={`${index}-pcod-confidence`}
-            route={'lookups/cause-of-death-confidence'}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <CbSelectField
-            name={getAnimalFieldName<IAnimalMortality>(name, 'proximate_predated_by_taxon_id', index)}
-            label={'PCOD Taxon'}
-            controlProps={{
-              size: 'small',
-              disabled: pcodTaxonDisabled,
-              required: isRequiredInSchema(AnimalMortalitySchema, 'proximate_predated_by_taxon_id')
-            }}
-            id={`${index}-pcod-taxon`}
-            route={'lookups/taxons'}
-          />
-        </Grid>
-        <Grid item xs={5}>
-          <CbSelectField
-            name={getAnimalFieldName<IAnimalMortality>(name, 'ultimate_cause_of_death_id', index)}
-            handleChangeSideEffect={(_value, label) => {
-              setUcodTaxonDisabled(!label.includes('Predation'));
-            }}
-            label={'UCOD Reason'}
-            controlProps={{
-              size: 'small',
-              required: isRequiredInSchema(AnimalMortalitySchema, 'ultimate_cause_of_death_id')
-            }}
-            id={`${index}-ucod-reason`}
-            route={'lookups/cods'}
-          />
-        </Grid>
-        <Grid item xs={4}>
-          <CbSelectField
-            name={getAnimalFieldName<IAnimalMortality>(name, 'ultimate_cause_of_death_confidence', index)}
-            label={'UCOD Confidence'}
-            controlProps={{
-              size: 'small',
-              required: isRequiredInSchema(AnimalMortalitySchema, 'ultimate_cause_of_death_confidence')
-            }}
-            id={`${index}-ucod-confidence`}
-            route={'lookups/cause-of-death-confidence'}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <CbSelectField
-            name={getAnimalFieldName<IAnimalMortality>(name, 'ultimate_predated_by_taxon_id', index)}
-            label={'UCOD Taxon'}
-            controlProps={{
-              size: 'small',
-              disabled: ucodTaxonDisabled,
-              required: isRequiredInSchema(AnimalMortalitySchema, 'ultimate_predated_by_taxon_id')
-            }}
-            id={`${index}-ucod-taxon`}
-            route={'lookups/taxons'}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextInputToggle
-            label="Add comment about this Mortality"
-            toggleProps={{ handleToggle: () => setShowMortalityComment((c) => !c), toggleState: showMortalityComment }}>
+      </Box>
+
+      <Box key="release-location" component="fieldset" mb={0}>
+        <Typography component="legend">Mortality Location</Typography>
+        <Grid container spacing={2}>
+          <Grid item sm={4}>
+            <Field
+              as={CustomTextField}
+              other={{ required: true, type: 'number' }}
+              label={'Latitude'}
+              name={'location.latitude'}
+            />
+          </Grid>
+          <Grid item sm={4}>
+            <CustomTextField
+              other={{ required: true, type: 'number' }}
+              label={'Longitude'}
+              name={'location.longitude'}
+            />
+          </Grid>
+          <Grid item sm={4}>
             <CustomTextField
               other={{
-                required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_comment'),
-                size: 'small'
+                required: true,
+                type: 'number'
               }}
-              label="Mortality Comment"
-              name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_comment', index)}
-              handleBlur={handleBlur}
+              label="Uncertainty (Meters)"
+              name={'location.coordinate_uncertainty'}
             />
-          </TextInputToggle>
+          </Grid>
         </Grid>
-      </Fragment>
-    );
-  };
+      </Box>
 
-  return (
-    <>
-      <LocationEntryForm
-        name={name}
-        index={index}
-        value={value}
-        primaryLocationFields={{
-          latitude: 'mortality_latitude',
-          longitude: 'mortality_longitude',
-          coordinate_uncertainty: 'mortality_coordinate_uncertainty',
-          utm_northing: 'mortality_utm_northing',
-          utm_easting: 'mortality_utm_easting'
-        }}
-        otherPrimaryFields={[renderFields()]}
+      <FormLocationPreview
+        locations={[
+          {
+            title: 'Mortality',
+            pingColour: 'blue',
+            fields: { latitude: 'location.latitude', longitude: 'location.longitude' }
+          }
+        ]}
       />
-    </>
+
+      <Box component="fieldset">
+        <Typography component="legend">Additional Details</Typography>
+        <CustomTextField
+          other={{
+            required: isRequiredInSchema(CreateCritterMortalitySchema, 'mortality_comment'),
+            multiline: true,
+            minRows: 2
+          }}
+          label="Comments"
+          name={'mortality_comment'}
+        />
+      </Box>
+    </Stack>
   );
 };
 

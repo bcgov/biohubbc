@@ -15,7 +15,7 @@ import {
 
 describe('deleteFileFromS3', () => {
   it('returns null when no key specified', async () => {
-    const result = await deleteFileFromS3((null as unknown) as string);
+    const result = await deleteFileFromS3(null as unknown as string);
 
     expect(result).to.be.null;
   });
@@ -23,7 +23,7 @@ describe('deleteFileFromS3', () => {
 
 describe('getS3SignedURL', () => {
   it('returns null when no key specified', async () => {
-    const result = await getS3SignedURL((null as unknown) as string);
+    const result = await getS3SignedURL(null as unknown as string);
 
     expect(result).to.be.null;
   });
@@ -68,7 +68,7 @@ describe('generateS3FileKey', () => {
     expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/folder/testFileName');
   });
 
-  it('returns survey occurrence folder file path', async () => {
+  it('returns survey submission folder file path when a submission ID is passed', async () => {
     process.env.S3_KEY_PREFIX = 'some/s3/prefix';
 
     const result = generateS3FileKey({
@@ -79,19 +79,6 @@ describe('generateS3FileKey', () => {
     });
 
     expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/submissions/3/testFileName');
-  });
-
-  it('returns survey summaryresults folder file path', async () => {
-    process.env.S3_KEY_PREFIX = 'some/s3/prefix';
-
-    const result = generateS3FileKey({
-      projectId: 1,
-      surveyId: 2,
-      summaryId: 3,
-      fileName: 'testFileName'
-    });
-
-    expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/summaryresults/3/testFileName');
   });
 });
 

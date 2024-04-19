@@ -1,7 +1,6 @@
-import { CircularProgress } from '@mui/material';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
-import TextField from '@mui/material/TextField';
-import { SxProps } from '@mui/system';
+import CircularProgress from '@mui/material/CircularProgress';
+import TextField, { TextFieldProps } from '@mui/material/TextField';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 import { SyntheticEvent } from 'react';
@@ -17,7 +16,7 @@ export interface IAutocompleteField<T extends string | number> {
   name: string;
   options: IAutocompleteFieldOption<T>[];
   loading?: boolean;
-  sx?: SxProps;
+  sx?: TextFieldProps['sx']; //https://github.com/TypeStrong/fork-ts-checker-webpack-plugin/issues/271#issuecomment-1561891271
   required?: boolean;
   filterLimit?: number;
   optionFilter?: 'value' | 'label'; // used to filter existing/ set data for the AutocompleteField, defaults to value in getExistingValue function

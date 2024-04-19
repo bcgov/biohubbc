@@ -1,30 +1,26 @@
-import { Feature } from 'geojson';
 import { z } from 'zod';
-import { ProjectMetadataPublish } from '../repositories/history-publish-repository';
 import { ProjectUser } from '../repositories/project-participation-repository';
 import { SystemUser } from '../repositories/user-repository';
 
 export interface IProjectAdvancedFilters {
-  permit_number?: string;
   project_programs?: number[];
   start_date?: string;
   end_date?: string;
   keyword?: string;
   project_name?: string;
-  species?: number[];
+  itis_tsns?: number[];
 }
 
 export interface IGetProject {
   project: ProjectData;
   objectives: GetObjectivesData;
   participants: (ProjectUser & SystemUser)[];
-  location: GetLocationData;
   iucn: GetIUCNClassificationData;
 }
 
 export const ProjectData = z.object({
   project_id: z.number(),
-  uuid: z.string(),
+  uuid: z.string().uuid(),
   project_name: z.string(),
   project_programs: z.array(z.number()),
   start_date: z.string(),
@@ -37,10 +33,9 @@ export type ProjectData = z.infer<typeof ProjectData>;
 
 export const ProjectListData = z.object({
   project_id: z.number(),
-  uuid: z.string(),
-  project_name: z.string(),
-  project_programs: z.array(z.number()).default([]),
-  regions: z.array(z.string()).default([]),
+  name: z.string(),
+  project_programs: z.array(z.number()),
+  regions: z.array(z.string()),
   start_date: z.string(),
   end_date: z.string().nullable().optional()
 });
@@ -60,26 +55,6 @@ export class GetObjectivesData {
   constructor(objectivesData?: any) {
     this.objectives = objectivesData?.objectives || '';
     this.revision_count = objectivesData?.revision_count ?? null;
-  }
-}
-
-/**
- * Pre-processes GET /projects/{id} location data
- *
- * @export
- * @class GetLocationData
- */
-export class GetLocationData {
-  location_description: string;
-  geometry?: Feature[];
-  revision_count: number;
-
-  constructor(locationData?: any) {
-    const locationDataItem = locationData?.length && locationData[0];
-
-    this.location_description = locationDataItem?.location_description || '';
-    this.geometry = (locationDataItem?.geometry?.length && locationDataItem.geometry) || [];
-    this.revision_count = locationDataItem?.revision_count ?? null;
   }
 }
 
@@ -109,10 +84,6 @@ export class GetIUCNClassificationData {
       }) ?? [];
   }
 }
-
-export type ProjectSupplementaryData = {
-  project_metadata_publish: ProjectMetadataPublish | null;
-};
 
 interface IGetAttachmentsSource {
   file_name: string;

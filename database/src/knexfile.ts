@@ -1,5 +1,5 @@
 export default {
-  local: {
+  development: {
     client: 'pg',
     connection: {
       host: process.env.DB_HOST,
@@ -18,10 +18,10 @@ export default {
       directory: './migrations'
     },
     seeds: {
-      directory: './seeds'
+      directory: ['./seeds', './procedures']
     }
   },
-  dev: {
+  production: {
     client: 'pg',
     connection: {
       host: process.env.DB_HOST,
@@ -40,51 +40,8 @@ export default {
       directory: './migrations'
     },
     seeds: {
-      directory: './seeds'
-    }
-  },
-  test: {
-    client: 'pg',
-    connection: {
-      host: process.env.DB_HOST,
-      port: process.env.DB_PORT,
-      database: process.env.DB_DATABASE,
-      user: process.env.DB_ADMIN,
-      password: process.env.DB_ADMIN_PASS
-    },
-    pool: {
-      min: 2,
-      max: 10
-    },
-    migrations: {
-      tableName: 'migration',
-      schemaName: 'public',
-      directory: './migrations'
-    },
-    seeds: {
-      directory: './seeds'
-    }
-  },
-  prod: {
-    client: 'pg',
-    connection: {
-      host: process.env.DB_HOST,
-      port: process.env.DB_PORT,
-      database: process.env.DB_DATABASE,
-      user: process.env.DB_ADMIN,
-      password: process.env.DB_ADMIN_PASS
-    },
-    pool: {
-      min: 2,
-      max: 10
-    },
-    migrations: {
-      tableName: 'migration',
-      schemaName: 'public',
-      directory: './migrations'
-    },
-    seeds: {
-      directory: './seeds'
+      // In production, only scripts in the `procedures` directory should run.
+      directory: ['./procedures']
     }
   }
 };

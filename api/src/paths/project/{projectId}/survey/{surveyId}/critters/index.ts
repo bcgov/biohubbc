@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { bulkCreateResponse, critterBulkRequestObject } from '../../../../../../openapi/schemas/critter';
+import { critterCreateRequestObject, critterSchema } from '../../../../../../openapi/schemas/critter';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { CritterbaseService, ICritterbaseUser } from '../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
@@ -15,7 +15,7 @@ export const POST: Operation = [
       or: [
         {
           validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
-          projectId: Number(req.params.projectId),
+          surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
         {
@@ -33,8 +33,12 @@ export const GET: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
-          projectId: Number(req.params.projectId),
+          validProjectPermissions: [
+            PROJECT_PERMISSION.COORDINATOR,
+            PROJECT_PERMISSION.COLLABORATOR,
+            PROJECT_PERMISSION.OBSERVER
+          ],
+          surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
         {
@@ -95,7 +99,7 @@ GET.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -126,19 +130,19 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Critterbase bulk creation request object',
+    description: 'Critterbase create critter request object',
     content: {
       'application/json': {
-        schema: critterBulkRequestObject
+        schema: critterCreateRequestObject
       }
     }
   },
   responses: {
     201: {
-      description: 'Responds with counts of objects created in critterbase.',
+      description: 'Responds with created critter.',
       content: {
         'application/json': {
-          schema: bulkCreateResponse
+          schema: critterSchema
         }
       }
     },
@@ -149,7 +153,7 @@ POST.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -181,10 +185,7 @@ export function getCrittersFromSurvey(): RequestHandler {
       }
 
       const critterIds = surveyCritters.map((critter) => String(critter.critterbase_critter_id));
-      const result = await critterbaseService.filterCritters(
-        { critter_ids: { body: critterIds, negate: false } },
-        'detailed'
-      );
+      const result = await critterbaseService.getMultipleCrittersByIds(critterIds);
 
       const critterMap = new Map();
       for (const item of result) {
@@ -214,17 +215,18 @@ export function addCritterToSurvey(): RequestHandler {
       username: req['system_user']?.user_identifier
     };
     const surveyId = Number(req.params.surveyId);
+    const critterId = req.body.critter_id;
     const connection = getDBConnection(req['keycloak_token']);
     const surveyService = new SurveyCritterService(connection);
     const cb = new CritterbaseService(user);
     try {
       await connection.open();
-      await surveyService.addCritterToSurvey(surveyId, req.body.critter_id);
+      await surveyService.addCritterToSurvey(surveyId, critterId);
       const result = await cb.createCritter(req.body);
       await connection.commit();
       return res.status(201).json(result);
     } catch (error) {
-      defaultLog.error({ label: 'createCritter', message: 'error', error });
+      defaultLog.error({ label: 'addCritterToSurvey', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

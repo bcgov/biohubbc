@@ -1,6 +1,6 @@
-import { useKeycloak } from '@react-keycloak/web';
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { useMemo, useRef } from 'react';
+import { useAuth } from 'react-oidc-context';
 import { ensureProtocol } from 'utils/Utils';
 
 export class APIError extends Error {
@@ -8,11 +8,11 @@ export class APIError extends Error {
   errors?: (string | object)[];
   requestURL?: string;
 
-  constructor(error: AxiosError) {
+  constructor(error: AxiosError<any, any>) {
     super(error.response?.data?.message || error.message);
 
     this.name = error.response?.data?.name || error.name;
-    this.status = error.response?.data?.status || error.response?.status;
+    this.status = error.response?.data?.status || error.response?.status || 500;
     this.errors = error.response?.data?.errors || [];
 
     this.requestURL = `${error?.config?.baseURL}${error?.config?.url}`;
@@ -28,7 +28,7 @@ const AXIOS_AUTH_REFRESH_ATTEMPTS_MAX = Number(process.env.REACT_APP_AXIOS_AUTH_
  * @return {*} {AxiosInstance} an instance of axios
  */
 const useAxios = (baseUrl?: string): AxiosInstance => {
-  const { keycloak } = useKeycloak();
+  const auth = useAuth();
 
   // Track how many times its been attempted to refresh the token and re-send the failed request in order to prevent
   // the possibility of an infinite loop (in the case where the token is unable to ever successfully refresh).
@@ -37,7 +37,7 @@ const useAxios = (baseUrl?: string): AxiosInstance => {
   return useMemo(() => {
     const instance = axios.create({
       headers: {
-        Authorization: `Bearer ${keycloak.token}`
+        Authorization: `Bearer ${auth?.user?.access_token}`
       },
       // Note: axios requires that the baseURL include a protocol (http:// or https://)
       baseURL: baseUrl && ensureProtocol(baseUrl)
@@ -50,7 +50,7 @@ const useAxios = (baseUrl?: string): AxiosInstance => {
         return response;
       },
       async (error: AxiosError) => {
-        if (error.response?.status !== 401 && error.response?.status !== 403) {
+        if (error.response?.status !== 401) {
           // Error is unrelated to an expiring token, throw original error
           throw new APIError(error);
         }
@@ -64,9 +64,9 @@ const useAxios = (baseUrl?: string): AxiosInstance => {
 
         // Attempt to refresh the keycloak token
         // Note: updateToken called with an arbitrarily large number of seconds to guarantee the update is executed
-        const isTokenRefreshed = await keycloak.updateToken(86400);
+        const user = await auth.signinSilent();
 
-        if (!isTokenRefreshed) {
+        if (!user) {
           // Token was not refreshed successfully, throw original error
           throw new APIError(error);
         }
@@ -75,16 +75,15 @@ const useAxios = (baseUrl?: string): AxiosInstance => {
         return instance.request({
           ...error.config,
           headers: {
-            ...error.config.headers,
-            Authorization: `Bearer ${keycloak.token}`
+            ...error.config?.headers,
+            Authorization: `Bearer ${user?.access_token}`
           }
         });
       }
     );
 
     return instance;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [keycloak, keycloak.token]);
+  }, [auth, baseUrl]);
 };
 
 export default useAxios;

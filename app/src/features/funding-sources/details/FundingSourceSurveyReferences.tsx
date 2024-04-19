@@ -1,6 +1,5 @@
 import { mdiMagnify } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -8,7 +7,6 @@ import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import { DataGrid, GridColDef, GridOverlay } from '@mui/x-data-grid';
 import { IGetFundingSourceResponse } from 'interfaces/useFundingSourceApi.interface';
 import { debounce } from 'lodash';
@@ -16,29 +14,31 @@ import { useCallback, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedAmount } from 'utils/Utils';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  filtersBox: {},
-  noDataText: {
-    fontFamily: 'inherit !important'
-  },
-  dataGrid: {
-    border: 'none !important',
-    fontFamily: 'inherit !important',
-    '& .MuiDataGrid-columnHeaderTitle': {
-      textTransform: 'uppercase',
-      fontSize: '0.875rem',
-      fontWeight: 700,
-      color: grey[600]
+const useStyles = () => {
+  return {
+    filtersBox: {},
+    noDataText: {
+      fontFamily: 'inherit !important'
     },
-    '& .MuiDataGrid-cell:focus-within, & .MuiDataGrid-cellCheckbox:focus-within, & .MuiDataGrid-columnHeader:focus-within':
-      {
-        outline: 'none !important'
+    dataGrid: {
+      border: 'none !important',
+      fontFamily: 'inherit !important',
+      '& .MuiDataGrid-columnHeaderTitle': {
+        textTransform: 'uppercase',
+        fontSize: '0.875rem',
+        fontWeight: 700,
+        color: grey[600]
       },
-    '& .MuiDataGrid-row:hover': {
-      backgroundColor: 'transparent !important'
+      '& .MuiDataGrid-cell:focus-within, & .MuiDataGrid-cellCheckbox:focus-within, & .MuiDataGrid-columnHeader:focus-within':
+        {
+          outline: 'none !important'
+        },
+      '& .MuiDataGrid-row:hover': {
+        backgroundColor: 'transparent !important'
+      }
     }
-  }
-}));
+  };
+};
 
 export interface IFundingSourceSurveyReferencesProps {
   fundingSourceSurveyReferences: IGetFundingSourceResponse['funding_source_survey_references'];
@@ -51,9 +51,9 @@ interface IFundingSourceSurveyReferencesTableEntry {
   amount: number;
 }
 
-const NoRowsOverlay = (props: { className: string }) => (
+const NoRowsOverlay = (props: { sx: Record<string, any> }) => (
   <GridOverlay>
-    <Typography className={props.className} color="textSecondary">
+    <Typography sx={props.sx} color="textSecondary">
       No surveys have referenced this funding source
     </Typography>
   </GridOverlay>
@@ -94,7 +94,7 @@ const FundingSourceSurveyReferences = (props: IFundingSourceSurveyReferencesProp
     }
   ];
 
-  const NoRowsOverlayStyled = useCallback(() => <NoRowsOverlay className={classes.noDataText} />, [classes.noDataText]);
+  const NoRowsOverlayStyled = useCallback(() => <NoRowsOverlay sx={classes.noDataText} />, [classes.noDataText]);
 
   const onSearch = useMemo(
     () =>
@@ -119,7 +119,7 @@ const FundingSourceSurveyReferences = (props: IFundingSourceSurveyReferencesProp
           }}>
           Surveys &zwnj;
           <Typography component="span" variant="inherit" color="textSecondary">
-            ({fundingSourceSurveyReferences.length || 0})
+            ({Number(fundingSourceSurveyReferences.length ?? 0).toLocaleString()})
           </Typography>
         </Typography>
       </Box>
@@ -141,7 +141,7 @@ const FundingSourceSurveyReferences = (props: IFundingSourceSurveyReferencesProp
             inputProps={{
               'data-testid': 'funding-source-survey-references-search'
             }}
-            className={classes.filtersBox}
+            sx={classes.filtersBox}
             onChange={(event) => {
               onSearch(event.target.value);
             }}
@@ -168,7 +168,7 @@ const FundingSourceSurveyReferences = (props: IFundingSourceSurveyReferencesProp
           <Paper elevation={0} variant="outlined">
             <Box>
               <DataGrid
-                className={classes.dataGrid}
+                sx={classes.dataGrid}
                 autoHeight
                 rows={fundingSourceSurveyReferences}
                 getRowId={(row) => `funding-source-survey-reference-${row.survey_id}`}

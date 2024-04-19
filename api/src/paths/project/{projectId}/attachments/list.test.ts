@@ -27,7 +27,7 @@ describe('getAttachments', () => {
 
     const expectedError = new Error('cannot process request');
 
-    sinon.stub(AttachmentService.prototype, 'getProjectAttachmentsWithSupplementaryData').rejects(expectedError);
+    sinon.stub(AttachmentService.prototype, 'getProjectAttachments').rejects(expectedError);
 
     try {
       const result = list.getAttachments();
@@ -48,10 +48,8 @@ describe('getAttachments', () => {
       }
     });
 
-    const getProjectAttachmentsStub = sinon
-      .stub(AttachmentService.prototype, 'getProjectAttachmentsWithSupplementaryData')
-      .resolves([]);
-    sinon.stub(AttachmentService.prototype, 'getProjectReportAttachmentsWithSupplementaryData').resolves([]);
+    const getProjectAttachmentsStub = sinon.stub(AttachmentService.prototype, 'getProjectAttachments').resolves([]);
+    sinon.stub(AttachmentService.prototype, 'getProjectReportAttachments').resolves([]);
 
     const expectedResponse = { attachmentsList: [], reportAttachmentsList: [] };
 
@@ -77,7 +75,7 @@ describe('getAttachments', () => {
 
     const result = list.getAttachments();
 
-    await result((mockReq as unknown) as any, (sampleRes as unknown) as any, (null as unknown) as any);
+    await result(mockReq as unknown as any, sampleRes as unknown as any, null as unknown as any);
     expect(actualResult).to.eql(expectedResponse);
     expect(getProjectAttachmentsStub).to.be.calledOnce;
   });

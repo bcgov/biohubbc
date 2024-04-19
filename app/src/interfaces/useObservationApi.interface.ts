@@ -1,92 +1,79 @@
-import { IObservationTableRow } from 'contexts/observationsContext';
-import { Feature, FeatureCollection } from 'geojson';
-
-export interface IGetSubmissionCSVForViewItem {
-  name: string;
-  headers: string[];
-  rows: string[][];
+import { StandardObservationColumns, SupplementaryObservationData } from 'contexts/observationsTableContext';
+import { ApiPaginationResponseParams } from 'types/misc';
+export interface IGetSurveyObservationsResponse {
+  surveyObservations: ObservationRecordWithSamplingAndSubcountData[];
+  supplementaryObservationData: SupplementaryObservationData;
+  pagination: ApiPaginationResponseParams;
 }
 
-export interface IGetSubmissionCSVForViewResponse {
-  data: IGetSubmissionCSVForViewItem[];
+export interface IGetSurveyObservationsGeometryResponse {
+  surveyObservationsGeometry: {
+    survey_observation_id: number;
+    geometry: GeoJSON.Point;
+  }[];
+  supplementaryObservationData: SupplementaryObservationData;
 }
 
-export type ObservationSubmissionMessageSeverityLabel = 'Notice' | 'Error' | 'Warning';
+type ObservationSamplingData = {
+  survey_sample_site_name: string | null;
+  survey_sample_method_name: string | null;
+  survey_sample_period_start_datetime: string | null;
+};
 
-export interface IGetObservationSubmissionResponseMessages {
-  severityLabel: ObservationSubmissionMessageSeverityLabel;
-  messageTypeLabel: string;
-  messageStatus: string;
-  messages: { id: number; message: string }[];
-}
-
-/**
- * Get observation submission response object.
- *
- * @export
- * @interface IGetObservationSubmissionResponse
- */
-export interface IGetObservationSubmissionResponse {
-  surveyObservationData: ISurveyObservationData;
-  surveyObservationSupplementaryData: ISurveySupplementaryData | null;
-}
-
-export interface ISurveySupplementaryData {
-  occurrence_submission_publish_id: number;
-  occurrence_submission_id: number;
-  event_timestamp: string;
-  queue_id: number;
+type ObservationSubCountQualitativeMeasurementRecord = {
+  observation_subcount_id: number;
+  critterbase_taxon_measurement_id: string;
+  critterbase_measurement_qualitative_option_id: string;
   create_date: string;
   create_user: number;
   update_date: string | null;
   update_user: number | null;
   revision_count: number;
-}
+};
 
-export interface ISurveyObservationData {
-  occurrence_submission_id: number;
-  inputFileName: string;
-  status?: string;
-  isValidating: boolean;
-  messageTypes: IGetObservationSubmissionResponseMessages[];
-}
+type ObservationSubCountQuantitativeMeasurementRecord = {
+  observation_subcount_id: number;
+  critterbase_taxon_measurement_id: string;
+  value: number;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
+};
 
-export interface IGetObservationSubmissionErrorListResponse {
-  id: number;
-  type: string;
-  status: string;
-  message: string;
-}
+type ObservationSubcountQualitativeMeasurementObject = Pick<
+  ObservationSubCountQualitativeMeasurementRecord,
+  'critterbase_taxon_measurement_id' | 'critterbase_measurement_qualitative_option_id'
+>;
 
-export interface IUploadObservationSubmissionResponse {
-  submissionId: number;
-}
+type ObservationSubcountQuantitativeMeasurementObject = Pick<
+  ObservationSubCountQuantitativeMeasurementRecord,
+  'critterbase_taxon_measurement_id' | 'value'
+>;
 
-export interface IGetOccurrencesForViewResponseDetails {
-  geometry: Feature | null;
-  taxonId: string;
-  lifeStage: string;
-  vernacularName: string;
-  individualCount: number;
-  organismQuantity: number;
-  organismQuantityType: string;
-  occurrenceId: number;
-  eventDate: string;
-}
+type ObservationSubcountRecord = {
+  observation_subcount_id: number;
+  survey_observation_id: number;
+  subcount: number | null;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
+};
 
-export type EmptyObject = Record<string, never>;
+type ObservationSubcountObject = {
+  observation_subcount_id: ObservationSubcountRecord['observation_subcount_id'];
+  subcount: ObservationSubcountRecord['subcount'];
+  qualitative_measurements: ObservationSubcountQualitativeMeasurementObject[];
+  quantitative_measurements: ObservationSubcountQuantitativeMeasurementObject[];
+};
 
-export interface ITaxaData {
-  associated_taxa?: string;
-  vernacular_name?: string;
-  submission_spatial_component_id: number;
-}
+type ObservationSubcountsObject = {
+  subcounts: ObservationSubcountObject[];
+};
 
-export interface ISpatialData {
-  taxa_data: ITaxaData[];
-  spatial_data: FeatureCollection | EmptyObject;
-}
-
-export interface IGetSurveyObservationsResponse {
-  surveyObservations: IObservationTableRow[];
-}
+type ObservationRecordWithSamplingAndSubcountData = StandardObservationColumns &
+  ObservationSamplingData &
+  ObservationSubcountsObject;

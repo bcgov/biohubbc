@@ -6,7 +6,6 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import {
   BctwService,
-  BCTW_API_HOST,
   DELETE_DEPLOYMENT_ENDPOINT,
   DEPLOY_DEVICE_ENDPOINT,
   GET_CODE_ENDPOINT,
@@ -21,8 +20,11 @@ import {
   HEALTH_ENDPOINT,
   IDeployDevice,
   IDeploymentUpdate,
+  MANUAL_AND_VENDOR_TELEMETRY,
+  MANUAL_TELEMETRY,
   UPDATE_DEPLOYMENT_ENDPOINT,
-  UPSERT_DEVICE_ENDPOINT
+  UPSERT_DEVICE_ENDPOINT,
+  VENDOR_TELEMETRY
 } from './bctw-service';
 import { KeycloakService } from './keycloak-service';
 
@@ -81,7 +83,7 @@ describe('BctwService', () => {
       const result = await bctwService._makeGetRequest(endpoint);
 
       expect(result).to.equal(mockResponse.data);
-      expect(mockAxios).to.have.been.calledOnceWith(`${BCTW_API_HOST}${endpoint}`);
+      expect(mockAxios).to.have.been.calledOnceWith(`${endpoint}`);
     });
 
     it('should make an axios get request with params', async () => {
@@ -95,7 +97,7 @@ describe('BctwService', () => {
       const result = await bctwService._makeGetRequest(endpoint, queryParams);
 
       expect(result).to.equal(mockResponse.data);
-      expect(mockAxios).to.have.been.calledOnceWith(`${BCTW_API_HOST}${endpoint}?param=${queryParams['param']}`);
+      expect(mockAxios).to.have.been.calledOnceWith(`${endpoint}?param=${queryParams['param']}`);
     });
   });
 
@@ -196,7 +198,7 @@ describe('BctwService', () => {
       it('should send a get request', async () => {
         const mockGetRequest = sinon.stub(bctwService, '_makeGetRequest');
 
-        await bctwService.getDeviceDetails(123);
+        await bctwService.getDeviceDetails(123, 'Lotek');
 
         expect(mockGetRequest).to.have.been.calledOnceWith(`${GET_DEVICE_DETAILS}${123}`);
       });
@@ -206,10 +208,11 @@ describe('BctwService', () => {
       it('should send a get request', async () => {
         const mockGetRequest = sinon.stub(bctwService, '_makeGetRequest');
 
-        await bctwService.getDeviceDeployments(123);
+        await bctwService.getDeviceDeployments(123, 'Lotek');
 
         expect(mockGetRequest).to.have.been.calledOnceWith(GET_DEPLOYMENTS_BY_DEVICE_ENDPOINT, {
-          device_id: '123'
+          device_id: '123',
+          make: 'Lotek'
         });
       });
     });
@@ -217,7 +220,7 @@ describe('BctwService', () => {
     describe('uploadKeyX', () => {
       it('should send a post request', async () => {
         const mockAxios = sinon.stub(bctwService.axiosInstance, 'post').resolves({ data: { results: [], errors: [] } });
-        const mockMulterFile = ({ buffer: 'buffer', originalname: 'originalname' } as unknown) as Express.Multer.File;
+        const mockMulterFile = { buffer: 'buffer', originalname: 'originalname' } as unknown as Express.Multer.File;
         sinon.stub(FormData.prototype, 'append');
         const mockGetFormDataHeaders = sinon
           .stub(FormData.prototype, 'getHeaders')
@@ -232,7 +235,7 @@ describe('BctwService', () => {
 
       it('should throw an error if the response body has errors', async () => {
         sinon.stub(bctwService.axiosInstance, 'post').resolves({ data: { results: [], errors: [{ error: 'error' }] } });
-        const mockMulterFile = ({ buffer: 'buffer', originalname: 'originalname' } as unknown) as Express.Multer.File;
+        const mockMulterFile = { buffer: 'buffer', originalname: 'originalname' } as unknown as Express.Multer.File;
         sinon.stub(FormData.prototype, 'append');
         sinon.stub(FormData.prototype, 'getHeaders').resolves({ 'content-type': 'multipart/form-data' });
 
@@ -318,6 +321,89 @@ describe('BctwService', () => {
         await bctwService.deleteDeployment('asdf');
 
         expect(mockAxios).to.have.been.calledOnceWith(`${DELETE_DEPLOYMENT_ENDPOINT}/asdf`);
+      });
+    });
+
+    describe('getManualTelemetry', () => {
+      it('should sent a post request', async () => {
+        const mockAxios = sinon.stub(bctwService.axiosInstance, 'get').resolves({ data: true });
+
+        const ret = await bctwService.getManualTelemetry();
+
+        expect(mockAxios).to.have.been.calledOnceWith(MANUAL_TELEMETRY);
+        expect(ret).to.be.true;
+      });
+    });
+
+    describe('deleteManualTelemetry', () => {
+      it('should sent a post request', async () => {
+        const mockAxios = sinon.stub(bctwService.axiosInstance, 'post').resolves({ data: true });
+
+        const ids = ['a', 'b'];
+        const ret = await bctwService.deleteManualTelemetry(ids);
+
+        expect(mockAxios).to.have.been.calledOnceWith(`${MANUAL_TELEMETRY}/delete`, ids);
+        expect(ret).to.be.true;
+      });
+    });
+
+    describe('createManualTelemetry', () => {
+      it('should sent a post request', async () => {
+        const mockAxios = sinon.stub(bctwService.axiosInstance, 'post').resolves({ data: true });
+
+        const payload: any = { key: 'value' };
+        const ret = await bctwService.createManualTelemetry(payload);
+
+        expect(mockAxios).to.have.been.calledOnceWith(MANUAL_TELEMETRY, payload);
+        expect(ret).to.be.true;
+      });
+    });
+
+    describe('updateManualTelemetry', () => {
+      it('should sent a patch request', async () => {
+        const mockAxios = sinon.stub(bctwService.axiosInstance, 'patch').resolves({ data: true });
+
+        const payload: any = { key: 'value' };
+        const ret = await bctwService.updateManualTelemetry(payload);
+
+        expect(mockAxios).to.have.been.calledOnceWith(MANUAL_TELEMETRY, payload);
+        expect(ret).to.be.true;
+      });
+    });
+
+    describe('getManualTelemetryByDeploymentIds', () => {
+      it('should sent a post request', async () => {
+        const mockAxios = sinon.stub(bctwService.axiosInstance, 'post').resolves({ data: true });
+
+        const payload: any = { key: 'value' };
+        const ret = await bctwService.getManualTelemetryByDeploymentIds(payload);
+
+        expect(mockAxios).to.have.been.calledOnceWith(`${MANUAL_TELEMETRY}/deployments`, payload);
+        expect(ret).to.be.true;
+      });
+    });
+
+    describe('getVendorTelemetryByDeploymentIds', () => {
+      it('should sent a post request', async () => {
+        const mockAxios = sinon.stub(bctwService.axiosInstance, 'post').resolves({ data: true });
+
+        const payload: any = { key: 'value' };
+        const ret = await bctwService.getVendorTelemetryByDeploymentIds(payload);
+
+        expect(mockAxios).to.have.been.calledOnceWith(`${VENDOR_TELEMETRY}/deployments`, payload);
+        expect(ret).to.be.true;
+      });
+    });
+
+    describe('getAllTelemetryByDeploymentIds', () => {
+      it('should sent a post request', async () => {
+        const mockAxios = sinon.stub(bctwService.axiosInstance, 'post').resolves({ data: true });
+
+        const payload: any = { key: 'value' };
+        const ret = await bctwService.getAllTelemetryByDeploymentIds(payload);
+
+        expect(mockAxios).to.have.been.calledOnceWith(`${MANUAL_AND_VENDOR_TELEMETRY}/deployments`, payload);
+        expect(ret).to.be.true;
       });
     });
   });

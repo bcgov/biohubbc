@@ -13,7 +13,7 @@ export const PUT: Operation = [
       or: [
         {
           validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
-          projectId: Number(req.params.projectId),
+          surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
         {
@@ -68,6 +68,7 @@ PUT.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['surveyJobName'],
           properties: {
             surveyJobName: {
@@ -89,7 +90,7 @@ PUT.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -102,6 +103,7 @@ PUT.apiDoc = {
 
 export function updateSurveyParticipantRole(): RequestHandler {
   return async (req, res) => {
+    const surveyId = Number(req.params.surveyId);
     const surveyParticipationId = Number(req.params.surveyParticipationId);
     const { surveyJobName } = req.body;
 
@@ -112,7 +114,7 @@ export function updateSurveyParticipantRole(): RequestHandler {
 
       const surveyParticipationService = new SurveyParticipationService(connection);
 
-      await surveyParticipationService.updateSurveyParticipant(surveyParticipationId, surveyJobName);
+      await surveyParticipationService.updateSurveyParticipantJob(surveyId, surveyParticipationId, surveyJobName);
 
       await connection.commit();
 
@@ -133,7 +135,7 @@ export const DELETE: Operation = [
       or: [
         {
           validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
-          projectId: Number(req.params.projectId),
+          surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
         {
@@ -194,7 +196,7 @@ DELETE.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -207,6 +209,7 @@ DELETE.apiDoc = {
 
 export function deleteSurveyParticipant(): RequestHandler {
   return async (req, res) => {
+    const surveyId = Number(req.params.surveyId);
     const surveyParticipationId = Number(req.params.surveyParticipationId);
 
     const connection = getDBConnection(req['keycloak_token']);
@@ -216,7 +219,7 @@ export function deleteSurveyParticipant(): RequestHandler {
 
       const surveyParticipationService = new SurveyParticipationService(connection);
 
-      await surveyParticipationService.deleteSurveyParticipationRecord(surveyParticipationId);
+      await surveyParticipationService.deleteSurveyParticipationRecord(surveyId, surveyParticipationId);
 
       await connection.commit();
 

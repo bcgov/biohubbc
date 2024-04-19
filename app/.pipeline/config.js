@@ -60,12 +60,11 @@ const phases = {
     instance: `${name}-build-${changeId}`,
     version: `${version}-${changeId}`,
     tag: tag,
-    env: 'build',
     branch: branch,
     cpuRequest: '50m',
-    cpuLimit: '1000m',
+    cpuLimit: '2000m',
     memoryRequest: '100Mi',
-    memoryLimit: '5Gi'
+    memoryLimit: '6Gi'
   },
   dev: {
     namespace: 'af2668-dev',
@@ -82,14 +81,18 @@ const phases = {
     siteminderLogoutURL: config.siteminderLogoutURL.dev,
     maxUploadNumFiles,
     maxUploadFileSize,
-    env: 'dev',
+    nodeEnv: 'development',
     sso: config.sso.dev,
     cpuRequest: '50m',
-    cpuLimit: '200m',
+    cpuLimit: '300m',
     memoryRequest: '100Mi',
-    memoryLimit: '333Mi',
+    memoryLimit: '500Mi',
     replicas: (isStaticDeployment && '1') || '1',
-    replicasMax: (isStaticDeployment && '2') || '1'
+    replicasMax: (isStaticDeployment && '2') || '1',
+    biohubFeatureFlag: 'true',
+    backbonePublicApiHost: 'https://api-dev-biohub-platform.apps.silver.devops.gov.bc.ca',
+    biohubTaxonPath: '/api/taxonomy/taxon',
+    biohubTaxonTsnPath: '/api/taxonomy/taxon/tsn'
   },
   test: {
     namespace: 'af2668-test',
@@ -105,14 +108,18 @@ const phases = {
     siteminderLogoutURL: config.siteminderLogoutURL.test,
     maxUploadNumFiles,
     maxUploadFileSize,
-    env: 'test',
+    nodeEnv: 'production',
     sso: config.sso.test,
     cpuRequest: '50m',
     cpuLimit: '500m',
     memoryRequest: '100Mi',
     memoryLimit: '500Mi',
     replicas: '2',
-    replicasMax: '3'
+    replicasMax: '2',
+    biohubFeatureFlag: 'true',
+    backbonePublicApiHost: 'https://api-test-biohub-platform.apps.silver.devops.gov.bc.ca',
+    biohubTaxonPath: '/api/taxonomy/taxon',
+    biohubTaxonTsnPath: '/api/taxonomy/taxon/tsn'
   },
   prod: {
     namespace: 'af2668-prod',
@@ -128,14 +135,18 @@ const phases = {
     siteminderLogoutURL: config.siteminderLogoutURL.prod,
     maxUploadNumFiles,
     maxUploadFileSize,
-    env: 'prod',
+    nodeEnv: 'production',
     sso: config.sso.prod,
     cpuRequest: '50m',
-    cpuLimit: '500m',
+    cpuLimit: '1000m',
     memoryRequest: '100Mi',
-    memoryLimit: '500Mi',
+    memoryLimit: '1Gi',
     replicas: '2',
-    replicasMax: '3'
+    replicasMax: '2',
+    biohubFeatureFlag: 'false',
+    backbonePublicApiHost: 'https://api-biohub-platform.apps.silver.devops.gov.bc.ca',
+    biohubTaxonPath: '/api/taxonomy/taxon',
+    biohubTaxonTsnPath: '/api/taxonomy/taxon/tsn'
   }
 };
 

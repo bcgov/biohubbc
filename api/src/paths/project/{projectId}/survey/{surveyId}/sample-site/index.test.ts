@@ -80,9 +80,12 @@ describe('getSurveySampleLocationRecords', () => {
       update_date: 'update_date',
       update_user: 2,
       revision_count: 1,
-      sample_methods: []
+      sample_methods: [],
+      sample_blocks: [],
+      sample_stratums: []
     };
 
+    sinon.stub(SampleLocationService.prototype, 'getSampleLocationsCountBySurveyId').resolves(1);
     sinon.stub(SampleLocationService.prototype, 'getSampleLocationsForSurveyId').resolves([sampleLocation]);
 
     const requestHandler = get_survey_sample_site_record.getSurveySampleLocationRecords();
@@ -90,7 +93,15 @@ describe('getSurveySampleLocationRecords', () => {
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(mockRes.jsonValue).to.eql({
-      sampleSites: [sampleLocation]
+      sampleSites: [sampleLocation],
+      pagination: {
+        current_page: 1,
+        last_page: 1,
+        per_page: 1,
+        sort: undefined,
+        order: undefined,
+        total: 1
+      }
     });
   });
 });
@@ -119,8 +130,8 @@ describe('createSurveySampleSiteRecord', () => {
       const result = create_survey_sample_site_record.createSurveySampleSiteRecord();
       await result(
         { ...sampleReq, params: { ...sampleReq.params, surveyId: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
+        null as unknown as any,
+        null as unknown as any
       );
       expect.fail();
     } catch (actualError) {

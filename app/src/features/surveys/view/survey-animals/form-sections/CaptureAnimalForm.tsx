@@ -1,193 +1,326 @@
-import { Checkbox, FormControlLabel, Grid } from '@mui/material';
+import Box from '@mui/material/Box';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
+import Switch from '@mui/material/Switch';
+import Typography from '@mui/material/Typography';
+import EditDialog from 'components/dialog/EditDialog';
 import CustomTextField from 'components/fields/CustomTextField';
 import SingleDateField from 'components/fields/SingleDateField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
-import { Field, FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
-import React, { Fragment, useState } from 'react';
-import { v4 } from 'uuid';
-import { AnimalCaptureSchema, getAnimalFieldName, IAnimal, IAnimalCapture, isRequiredInSchema } from '../animal';
-import TextInputToggle from '../TextInputToggle';
-import FormSectionWrapper from './FormSectionWrapper';
-import LocationEntryForm from './LocationEntryForm';
+import { Field, useFormikContext } from 'formik';
+import { useDialogContext } from 'hooks/useContext';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import { ICaptureResponse } from 'interfaces/useCritterApi.interface';
+import { useState } from 'react';
+import { getLatLngAsUtm, getUtmAsLatLng, PROJECTION_MODE } from 'utils/mapProjectionHelpers';
+import {
+  AnimalFormProps,
+  ANIMAL_FORM_MODE,
+  CreateCritterCaptureSchema,
+  ICreateCritterCapture,
+  isRequiredInSchema
+} from '../animal';
+import FormLocationPreview from './LocationEntryForm';
+
 /**
- * Renders the Capture section for the Individual Animal form
+ * This component renders a 'critter capture' create / edit dialog.
  *
- * Note A: Using <FieldArray/> the name properties must stay in sync with
- * values object and nested arrays.
- * ie: values = { capture: [{id: 'test'}] };  name = 'capture.[0].id';
+ * Ties into the LocationEntryForm to display capture / release details on map.
+ * Handles additional conversion of UTM <--> WGS coordinates during edit and submission.
  *
- * Note B: FormSectionWrapper uses a Grid container to render children elements.
- * Children of FormSectionWrapper can use Grid items to organize inputs.
- *
- * @return {*}
+ * @param {AnimalFormProps<ICaptureResponse>} props - Generic AnimalFormProps.
+ * @returns {*}
  */
+export const CaptureAnimalForm = (props: AnimalFormProps<ICaptureResponse>) => {
+  const cbApi = useCritterbaseApi();
+  const dialog = useDialogContext();
 
-type ProjectionMode = 'wgs' | 'utm';
-const CaptureAnimalForm = () => {
-  const { values } = useFormikContext<IAnimal>();
+  const [loading, setLoading] = useState(false);
+  const [projectionMode, setProjectionMode] = useState(PROJECTION_MODE.WGS);
 
-  const name: keyof IAnimal = 'captures';
-  const newCapture: IAnimalCapture = {
-    _id: v4(),
-
-    capture_latitude: '' as unknown as number,
-    capture_longitude: '' as unknown as number,
-    capture_utm_northing: '' as unknown as number,
-    capture_utm_easting: '' as unknown as number,
-    capture_comment: '',
-    capture_coordinate_uncertainty: 10,
-    capture_timestamp: '' as unknown as Date,
-    projection_mode: 'wgs' as ProjectionMode,
-    show_release: false,
-    release_latitude: '' as unknown as number,
-    release_longitude: '' as unknown as number,
-    release_utm_northing: '' as unknown as number,
-    release_utm_easting: '' as unknown as number,
-    release_comment: '',
-    release_timestamp: '' as unknown as Date,
-    release_coordinate_uncertainty: 10,
-    capture_id: undefined,
-    capture_location_id: undefined,
-    release_location_id: undefined
-  };
-
-  const canAddNewCapture = () => {
-    const lastCapture = values.captures[values.captures.length - 1];
-    if (!lastCapture) {
-      return true;
+  const handleSave = async (values: ICreateCritterCapture) => {
+    setLoading(true);
+    try {
+      if (projectionMode === PROJECTION_MODE.UTM) {
+        if (values.release_location) {
+          const [latitude, longitude] = getUtmAsLatLng(
+            values.release_location.latitude,
+            values.release_location.longitude
+          );
+          values = { ...values, release_location: { ...values.release_location, latitude, longitude } };
+        }
+        const [latitude, longitude] = getUtmAsLatLng(
+          values.capture_location.latitude,
+          values.capture_location.longitude
+        );
+        values = { ...values, capture_location: { ...values.capture_location, latitude, longitude } };
+      }
+      if (props.formMode === ANIMAL_FORM_MODE.ADD) {
+        await cbApi.capture.createCapture(values);
+        dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created capture.` });
+      }
+      if (props.formMode === ANIMAL_FORM_MODE.EDIT) {
+        await cbApi.capture.updateCapture(values);
+        dialog.setSnackbar({ open: true, snackbarMessage: `Successfully edited capture.` });
+      }
+    } catch (err) {
+      dialog.setSnackbar({ open: true, snackbarMessage: `Critter capture request failed.` });
+    } finally {
+      props.handleClose();
+      setLoading(false);
     }
-    const { capture_latitude, capture_longitude, capture_timestamp, capture_coordinate_uncertainty } = lastCapture;
-    return capture_latitude && capture_longitude && capture_timestamp && capture_coordinate_uncertainty;
   };
 
   return (
-    <FieldArray name={name}>
-      {({ remove, push }: FieldArrayRenderProps) => (
-        <>
-          <FormSectionWrapper
-            title={SurveyAnimalsI18N.animalCaptureTitle}
-            addedSectionTitle={SurveyAnimalsI18N.animalCaptureTitle2}
-            titleHelp={SurveyAnimalsI18N.animalCaptureHelp}
-            btnLabel={SurveyAnimalsI18N.animalCaptureAddBtn}
-            disableAddBtn={!canAddNewCapture()}
-            handleAddSection={() => push(newCapture)}
-            handleRemoveSection={remove}>
-            {values.captures.map((cap, index) => (
-              <CaptureAnimalFormContent key={cap._id} name={name} index={index} value={cap} />
-            ))}
-          </FormSectionWrapper>
-        </>
-      )}
-    </FieldArray>
+    <EditDialog
+      dialogTitle={props.formMode === ANIMAL_FORM_MODE.ADD ? 'Add Capture' : 'Edit Capture'}
+      open={props.open}
+      onCancel={props.handleClose}
+      onSave={handleSave}
+      size="md"
+      debug
+      dialogLoading={loading}
+      component={{
+        initialValues: {
+          capture_id: props?.formObject?.capture_id,
+          critter_id: props.critter.critter_id,
+          capture_location: {
+            location_id: props?.formObject?.capture_location.location_id,
+            latitude: props?.formObject?.capture_location?.latitude ?? ('' as unknown as number),
+            longitude: props?.formObject?.capture_location?.longitude ?? ('' as unknown as number),
+            coordinate_uncertainty:
+              props?.formObject?.capture_location?.coordinate_uncertainty ?? ('' as unknown as number),
+            coordinate_uncertainty_unit: props?.formObject?.capture_location?.coordinate_uncertainty_unit ?? 'm'
+          },
+          release_location: props?.formObject?.release_location
+            ? {
+                location_id: props?.formObject?.release_location?.location_id,
+                latitude: props?.formObject?.release_location?.latitude ?? undefined,
+                longitude: props?.formObject?.release_location?.longitude ?? undefined,
+                coordinate_uncertainty: props?.formObject?.release_location?.coordinate_uncertainty,
+                coordinate_uncertainty_unit: props?.formObject?.release_location?.coordinate_uncertainty_unit ?? 'm'
+              }
+            : undefined,
+          capture_timestamp: props?.formObject?.capture_timestamp as unknown as Date,
+          release_timestamp: (props?.formObject?.release_timestamp as unknown as Date) ?? undefined,
+          capture_comment: props?.formObject?.capture_comment ?? undefined,
+          release_comment: props?.formObject?.release_comment ?? undefined
+        },
+        validationSchema: CreateCritterCaptureSchema,
+        element: (
+          <CaptureFormFields
+            formMode={props.formMode}
+            projectionMode={projectionMode}
+            handleProjection={setProjectionMode}
+          />
+        )
+      }}
+    />
   );
 };
 
-interface CaptureAnimalFormContentProps {
-  name: keyof IAnimal;
-  index: number;
-  value: IAnimalCapture;
-}
+type CaptureFormProps = Pick<AnimalFormProps<ICaptureResponse>, 'formMode'> & {
+  projectionMode: PROJECTION_MODE;
+  handleProjection: (projection: PROJECTION_MODE) => void;
+};
 
-const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormContentProps) => {
-  const { handleBlur, values, handleChange } = useFormikContext<IAnimal>();
-  const [showCaptureComment, setShowCaptureComment] = useState(false);
-  const [showReleaseComment, setShowReleaseComment] = useState(false);
+const CaptureFormFields = (props: CaptureFormProps) => {
+  const { values, setValues, setFieldValue } = useFormikContext<ICreateCritterCapture>();
 
-  const showReleaseSection = values.captures[index].show_release;
+  const [showRelease, setShowRelease] = useState(values.release_location);
 
-  const renderCaptureFields = (): JSX.Element => {
-    return (
-      <Fragment key={'capture-fields'}>
-        <Grid item xs={6}>
-          <SingleDateField
-            name={getAnimalFieldName<IAnimalCapture>(name, 'capture_timestamp', index)}
-            required={true}
-            label={'Capture Date'}
-            other={{ size: 'small' }}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextInputToggle
-            toggleProps={{ handleToggle: () => setShowCaptureComment((c) => !c), toggleState: showCaptureComment }}
-            label="Add comment about this Capture">
-            <CustomTextField
-              other={{ size: 'small', required: isRequiredInSchema(AnimalCaptureSchema, 'capture_comment') }}
-              label="Capture Comment"
-              name={getAnimalFieldName<IAnimalCapture>(name, 'capture_comment', index)}
-              handleBlur={handleBlur}
-            />
-          </TextInputToggle>
-        </Grid>
-        <Grid item xs={12}>
-          <FormControlLabel
-            control={
-              <Field
-                as={Checkbox}
-                onChange={handleChange}
-                checked={values.captures[index].show_release}
-                disabled={!!values.captures[index].release_location_id}
-                name={getAnimalFieldName<IAnimalCapture>(name, 'show_release', index)}
-              />
-            }
-            label={SurveyAnimalsI18N.animalCaptureReleaseRadio}
-          />
-        </Grid>
-      </Fragment>
-    );
+  const isUtmProjection = props.projectionMode === PROJECTION_MODE.UTM;
+
+  const disableUtmToggle =
+    !values.capture_location.latitude ||
+    !values.capture_location.longitude ||
+    (showRelease && !values?.release_location?.latitude) ||
+    !values?.release_location?.longitude;
+
+  const handleShowRelease = () => {
+    /**
+     * If release is currently showing wipe existing values in release_location.
+     *
+     */
+    if (showRelease) {
+      setFieldValue('release_location', undefined);
+      setShowRelease(false);
+      return;
+    }
+    setValues({
+      ...values,
+      release_location: { latitude: '', longitude: '', coordinate_uncertainty: '', coordinate_uncertainty_unit: 'm' }
+    });
+    setShowRelease(true);
   };
 
-  const renderReleaseFields = (): JSX.Element => {
-    return (
-      <Fragment key={`capture-release-fields`}>
-        <Grid item xs={6}>
-          <SingleDateField
-            name={getAnimalFieldName<IAnimalCapture>(name, 'release_timestamp', index)}
-            label={'Release Date'}
-            other={{ size: 'small' }}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextInputToggle
-            label="Add comment about this Release"
-            toggleProps={{ handleToggle: () => setShowReleaseComment((c) => !c), toggleState: showReleaseComment }}>
-            <CustomTextField
-              other={{ size: 'small', required: isRequiredInSchema(AnimalCaptureSchema, 'release_comment') }}
-              label="Release Comment"
-              name={getAnimalFieldName<IAnimalCapture>(name, 'release_comment', index)}
-              handleBlur={handleBlur}
-            />
-          </TextInputToggle>
-        </Grid>
-      </Fragment>
-    );
+  const handleProjectionChange = () => {
+    const switchProjection = isUtmProjection ? PROJECTION_MODE.WGS : PROJECTION_MODE.UTM;
+
+    /**
+     * These projection conversions are expecting non null values for lat/lng.
+     * UI currently hides the UTM toggle when these values are not defined in the form.
+     *
+     */
+    const [captureLat, captureLon] = !isUtmProjection
+      ? getLatLngAsUtm(values.capture_location.latitude, values.capture_location.longitude)
+      : getUtmAsLatLng(values.capture_location.latitude, values.capture_location.longitude);
+
+    const [releaseLat, releaseLon] = !isUtmProjection
+      ? getLatLngAsUtm(values.release_location.latitude, values.release_location.longitude)
+      : getUtmAsLatLng(values.release_location.latitude, values.release_location.longitude);
+
+    setValues({
+      ...values,
+      capture_location: {
+        ...values.capture_location,
+        projection_mode: switchProjection,
+        latitude: captureLat,
+        longitude: captureLon
+      },
+      release_location: {
+        ...values.release_location,
+        projection_mode: switchProjection,
+        latitude: releaseLat,
+        longitude: releaseLon
+      }
+    });
+
+    props.handleProjection(switchProjection);
   };
 
   return (
-    <LocationEntryForm
-      name={name}
-      index={index}
-      value={value}
-      primaryLocationFields={{
-        latitude: 'capture_latitude',
-        longitude: 'capture_longitude',
-        coordinate_uncertainty: 'capture_coordinate_uncertainty',
-        utm_northing: 'capture_utm_northing',
-        utm_easting: 'capture_utm_easting'
-      }}
-      secondaryLocationFields={
-        showReleaseSection
-          ? {
-              latitude: 'release_latitude',
-              longitude: 'release_longitude',
-              coordinate_uncertainty: 'release_coordinate_uncertainty',
-              utm_northing: 'release_utm_northing',
-              utm_easting: 'release_utm_easting'
-            }
-          : undefined
-      }
-      otherPrimaryFields={[renderCaptureFields()]}
-      otherSecondaryFields={[renderReleaseFields()]}
-    />
+    <Stack gap={4}>
+      <Box component="fieldset">
+        <Box display="flex" justifyContent="space-between">
+          <Typography component="legend">Event Dates</Typography>
+          <FormControlLabel
+            control={<Switch onChange={handleProjectionChange} disabled={disableUtmToggle} />}
+            label="UTM"
+          />
+        </Box>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <SingleDateField name={'capture_timestamp'} required={true} label={'Capture Date'} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <SingleDateField name={'release_timestamp'} label={'Release Date'} />
+          </Grid>
+        </Grid>
+      </Box>
+
+      <Box component="fieldset">
+        <Typography component="legend">Capture Location</Typography>
+        <Grid container spacing={2}>
+          <Grid item sm={4}>
+            <Field
+              as={CustomTextField}
+              other={{ required: true, type: 'number' }}
+              label={isUtmProjection ? 'Northing' : 'Latitude'}
+              name={'capture_location.latitude'}
+            />
+          </Grid>
+          <Grid item sm={4}>
+            <CustomTextField
+              other={{ required: true, type: 'number' }}
+              label={isUtmProjection ? 'Easting' : 'Longitude'}
+              name={'capture_location.longitude'}
+            />
+          </Grid>
+          <Grid item sm={4}>
+            <CustomTextField
+              other={{
+                required: true,
+                type: 'number'
+              }}
+              label="Uncertainty (Meters)"
+              name={'capture_location.coordinate_uncertainty'}
+            />
+          </Grid>
+          {props.formMode === ANIMAL_FORM_MODE.ADD ? (
+            <Grid item>
+              <FormControlLabel
+                control={<Checkbox size="small" onChange={handleShowRelease} checked={showRelease} />}
+                label={SurveyAnimalsI18N.animalCaptureReleaseRadio}
+              />
+            </Grid>
+          ) : null}
+        </Grid>
+      </Box>
+
+      {showRelease ? (
+        <Box key="release-location" component="fieldset" mb={0}>
+          <Typography component="legend">Release Location</Typography>
+          <Grid container spacing={2}>
+            <Grid item sm={4}>
+              <Field
+                as={CustomTextField}
+                other={{ required: true, type: 'number' }}
+                label={isUtmProjection ? 'Northing' : 'Latitude'}
+                name={'release_location.latitude'}
+              />
+            </Grid>
+            <Grid item sm={4}>
+              <CustomTextField
+                other={{ required: true, type: 'number' }}
+                label={isUtmProjection ? 'Easting' : 'Longitude'}
+                name={'release_location.longitude'}
+              />
+            </Grid>
+            <Grid item sm={4}>
+              <CustomTextField
+                other={{
+                  required: true,
+                  type: 'number'
+                }}
+                label="Uncertainty (Meters)"
+                name={'release_location.coordinate_uncertainty'}
+              />
+            </Grid>
+          </Grid>
+        </Box>
+      ) : null}
+
+      <FormLocationPreview
+        projection={props.projectionMode}
+        locations={
+          showRelease
+            ? [
+                {
+                  title: 'Capture',
+                  pingColour: 'blue',
+                  fields: { latitude: 'capture_location.latitude', longitude: 'capture_location.longitude' }
+                },
+                {
+                  title: 'Release',
+                  pingColour: 'red',
+                  fields: { latitude: 'release_location.latitude', longitude: 'release_location.longitude' }
+                }
+              ]
+            : [
+                {
+                  title: 'Capture',
+                  pingColour: 'blue',
+                  fields: { latitude: 'capture_location.latitude', longitude: 'capture_location.longitude' }
+                }
+              ]
+        }
+      />
+      <Box component="fieldset">
+        <Typography component="legend">Additional Information</Typography>
+        <CustomTextField
+          other={{
+            multiline: true,
+            minRows: 2,
+            required: isRequiredInSchema(CreateCritterCaptureSchema, 'capture_comment')
+          }}
+          label="Comments"
+          name={'capture_comment'}
+        />
+      </Box>
+    </Stack>
   );
 };
 

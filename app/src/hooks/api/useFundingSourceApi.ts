@@ -21,21 +21,11 @@ const useFundingSourceApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Checks if a name for a new funding source has already been used.
-   * This will return true if the name has been used, otherwise it returns false
+   * Get all funding sources that match the given name.
    *
-   * @return {*}  {Promise<Boolean>}
+   * @param {string} name
+   * @return {*}  {Promise<IGetFundingSourcesResponse[]>}
    */
-  const hasFundingSourceNameBeenUsed = async (name: string): Promise<boolean> => {
-    const { data } = await axios.get('/api/funding-sources', {
-      params: {
-        name
-      }
-    });
-
-    return data.length > 0;
-  };
-
   const getFundingSources = async (name: string): Promise<IGetFundingSourcesResponse[]> => {
     const { data } = await axios.get('/api/funding-sources', {
       params: {
@@ -102,7 +92,6 @@ const useFundingSourceApi = (axios: AxiosInstance) => {
 
   return {
     getAllFundingSources,
-    hasFundingSourceNameBeenUsed,
     getFundingSource,
     deleteFundingSourceById,
     putFundingSource,

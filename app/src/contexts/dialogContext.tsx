@@ -1,5 +1,4 @@
 import CloseIcon from '@mui/icons-material/Close';
-import { Color } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import Snackbar from '@mui/material/Snackbar';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
@@ -57,9 +56,8 @@ export interface IDialogContext {
 export interface ISnackbarProps {
   open: boolean;
   onClose: () => void;
-  severity?: Color;
-  color?: Color;
   snackbarMessage: ReactNode;
+  snackbarAutoCloseMs?: number; //ms
 }
 
 export const defaultYesNoDialogProps: IYesNoDialogProps = {
@@ -156,7 +154,7 @@ export const DialogContextProvider: React.FC<React.PropsWithChildren> = (props) 
           horizontal: 'center'
         }}
         open={snackbarProps.open}
-        autoHideDuration={6000}
+        autoHideDuration={snackbarProps?.snackbarAutoCloseMs ?? 6000}
         onClose={() => setSnackbar({ open: false })}
         message={snackbarProps.snackbarMessage}
         action={

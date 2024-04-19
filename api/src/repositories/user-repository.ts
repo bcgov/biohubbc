@@ -11,8 +11,8 @@ export const SystemUser = z.object({
   user_guid: z.string().nullable(),
   identity_source: z.string(),
   record_end_date: z.string().nullable(),
-  role_ids: z.array(z.number()).default([]),
-  role_names: z.array(z.string()).default([]),
+  role_ids: z.array(z.number()),
+  role_names: z.array(z.string()),
   email: z.string(),
   display_name: z.string(),
   given_name: z.string().nullable(),
@@ -75,8 +75,8 @@ export class UserRepository extends BaseRepository {
       su.user_guid,
       su.record_end_date,
       uis.name AS identity_source,
-      array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
-      array_remove(array_agg(sr.name), NULL) AS role_names,
+      COALESCE(array_remove(array_agg(sr.system_role_id), NULL), '{}') AS role_ids,
+      COALESCE(array_remove(array_agg(sr.name), NULL), '{}') AS role_names,
       su.email,
       su.display_name,
       su.given_name,
@@ -161,7 +161,7 @@ export class UserRepository extends BaseRepository {
     ON
       uis.user_identity_source_id = su.user_identity_source_id
     WHERE
-      su.user_guid = ${userGuid}
+      LOWER(su.user_guid) = LOWER(${userGuid})
     GROUP BY
       su.system_user_id,
       su.record_end_date,
@@ -219,7 +219,7 @@ export class UserRepository extends BaseRepository {
       ON
         uis.user_identity_source_id = su.user_identity_source_id
       WHERE
-        su.user_identifier = ${userIdentifier.toLowerCase()}
+        LOWER(su.user_identifier) = ${userIdentifier.toLowerCase()}
       AND
         uis.name = ${identitySource.toUpperCase()}
       GROUP BY
@@ -285,7 +285,7 @@ export class UserRepository extends BaseRepository {
         WHERE
           name = ${identitySource.toUpperCase()}
       ),
-      ${userIdentifier.toLowerCase()},
+      ${userIdentifier},
       ${displayName},
       ${givenName || null},
       ${familyName || null},

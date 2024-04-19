@@ -8,6 +8,7 @@ import Autocomplete, {
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import Chip from '@mui/material/Chip';
+import ListItemText from '@mui/material/ListItemText';
 import TextField from '@mui/material/TextField';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
@@ -16,6 +17,7 @@ import { useEffect, useState } from 'react';
 export interface IMultiAutocompleteFieldOption {
   value: string | number;
   label: string;
+  subText?: string;
 }
 
 export interface IMultiAutocompleteField {
@@ -138,7 +140,7 @@ const MultiAutocompleteField: React.FC<IMultiAutocompleteField> = (props) => {
               value={renderOption.value}
               color="default"
             />
-            {renderOption.label}
+            <ListItemText primary={renderOption.label} secondary={renderOption.subText} />
           </Box>
         );
       }}

@@ -7,42 +7,44 @@ import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import FileUpload from 'components/file-upload/FileUpload';
-import FileUploadItem, { IUploadHandler } from 'components/file-upload/FileUploadItem';
-import { IStaticLayer } from 'components/map/components/StaticLayers';
-import MapContainer from 'components/map/MapContainer';
+import FileUploadItem from 'components/file-upload/FileUploadItem';
+import BaseLayerControls from 'components/map/components/BaseLayerControls';
+import { SetMapBounds } from 'components/map/components/Bounds';
+import DrawControls, { IDrawControlsRef } from 'components/map/components/DrawControls';
+import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
+import StaticLayers, { IStaticLayer } from 'components/map/components/StaticLayers';
+import { MapBaseCss } from 'components/map/styles/MapBaseCss';
+import { MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
 import { SurveyContext } from 'contexts/surveyContext';
 import SampleSiteFileUploadItemActionButton from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemActionButton';
 import SampleSiteFileUploadItemProgressBar from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemProgressBar';
 import SampleSiteFileUploadItemSubtext from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemSubtext';
 import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
-import { LatLngBoundsExpression } from 'leaflet';
+import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
 import get from 'lodash-es/get';
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { useParams } from 'react-router';
-import {
-  calculateUpdatedMapBounds,
-  handleGPXUpload,
-  handleKMLUpload,
-  handleShapeFileUpload
-} from 'utils/mapBoundaryUploadHelpers';
+import { boundaryUploadHelper, calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { pluralize } from 'utils/Utils';
 
-const useStyles = makeStyles(() => ({
-  zoomToBoundaryExtentBtn: {
-    padding: '3px',
-    borderRadius: '4px',
-    background: '#ffffff',
-    color: '#000000',
-    border: '2px solid rgba(0,0,0,0.2)',
-    backgroundClip: 'padding-box',
-    '&:hover': {
-      backgroundColor: '#eeeeee'
+const useStyles = () => {
+  return {
+    zoomToBoundaryExtentBtn: {
+      padding: '3px',
+      borderRadius: '4px',
+      background: '#ffffff',
+      color: '#000000',
+      border: '2px solid rgba(0,0,0,0.2)',
+      backgroundClip: 'padding-box',
+      '&:hover': {
+        backgroundColor: '#eeeeee'
+      }
     }
-  }
-}));
+  };
+};
 
 export interface ISamplingSiteEditMapControlProps {
   name: string;
@@ -66,6 +68,10 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
     ? surveyContext.sampleSiteDataLoader.data.sampleSites.find((x) => x.survey_sample_site_id === surveySampleSiteId)
     : undefined;
 
+  const drawControlsRef = useRef<IDrawControlsRef>();
+
+  const [lastDrawn, setLastDrawn] = useState<null | number>(null);
+
   const { name, mapId, formikProps } = props;
 
   const { values, errors, setFieldValue, setFieldError } = formikProps;
@@ -73,44 +79,58 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
   const [staticLayers, setStaticLayers] = useState<IStaticLayer[]>([]);
 
-  const boundaryUploadHandler = (): IUploadHandler => {
-    return async (file) => {
-      if (file?.type.includes('zip') || file?.name.includes('.zip')) {
-        await handleShapeFileUpload(file, name, formikProps);
-      } else if (file?.type.includes('gpx') || file?.name.includes('.gpx')) {
-        await handleGPXUpload(file, name, formikProps);
-      } else if (file?.type.includes('kml') || file?.name.includes('.kml')) {
-        await handleKMLUpload(file, name, formikProps);
-      }
-    };
-  };
-
   const removeFile = () => {
     setFieldValue(name, sampleSiteData?.geojson ? [sampleSiteData?.geojson] : []);
     setFieldError(name, undefined);
   };
 
   // Array of sampling site features
-  const samplingSiteGeoJsonFeatures: Feature[] = get(values, name);
+  const samplingSiteGeoJsonFeatures: Feature[] = useMemo(() => get(values, name), [values, name]);
+
+  const updateStaticLayers = useCallback(
+    (geoJsonFeatures: Feature[]) => {
+      setUpdatedBounds(calculateUpdatedMapBounds(geoJsonFeatures));
+
+      const staticLayers: IStaticLayer[] = [
+        {
+          layerName: 'Sampling Sites',
+          features: samplingSiteGeoJsonFeatures.map((feature: Feature, index) => ({ geoJSON: feature, key: index }))
+        }
+      ];
+
+      setStaticLayers(staticLayers);
+    },
+    [samplingSiteGeoJsonFeatures]
+  );
+
+  const [editedGeometry, setEditedGeometry] = useState<Feature[] | undefined>(undefined);
 
   useEffect(() => {
-    setUpdatedBounds(calculateUpdatedMapBounds(samplingSiteGeoJsonFeatures));
+    if (!editedGeometry) {
+      return;
+    }
 
-    const staticLayers: IStaticLayer[] = [
-      {
-        layerName: 'Sampling Sites',
-        features: samplingSiteGeoJsonFeatures.map((feature: Feature) => ({ geoJSON: feature }))
-      }
-    ];
+    updateStaticLayers(editedGeometry);
+  }, [editedGeometry, updateStaticLayers]);
 
-    setStaticLayers(staticLayers);
+  useEffect(() => {
+    updateStaticLayers(samplingSiteGeoJsonFeatures);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [samplingSiteGeoJsonFeatures]);
 
   return (
     <Grid item xs={12}>
       <Box my={3}>
         <FileUpload
-          uploadHandler={boundaryUploadHandler()}
+          uploadHandler={boundaryUploadHelper({
+            onSuccess: (features: Feature[]) => {
+              setFieldValue(name, [...features]);
+            },
+            onFailure: (message: string) => {
+              setFieldError(name, message);
+            }
+          })}
           onRemove={removeFile}
           dropZoneProps={{
             maxNumFiles: 1,
@@ -150,18 +170,62 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
         )}
         <Paper variant="outlined">
           <Box position="relative" height={500}>
-            <MapContainer
-              mapId={mapId}
-              staticLayers={staticLayers}
-              onDrawChange={(newGeo: Feature[]) => setFieldValue(name, newGeo)}
-              bounds={updatedBounds}
-            />
+            <LeafletMapContainer
+              id={mapId}
+              data-testid={`leaflet-${mapId}`}
+              style={{ height: 500 }}
+              center={MAP_DEFAULT_CENTER}
+              zoom={MAP_DEFAULT_ZOOM}
+              maxZoom={17}
+              fullscreenControl={true}
+              scrollWheelZoom={false}>
+              <MapBaseCss />
+
+              <FeatureGroup data-id="draw-control-feature-group" key="draw-control-feature-group">
+                <DrawControls
+                  ref={drawControlsRef}
+                  options={{
+                    // Always disable circle, circlemarker and line
+                    draw: { circle: false, circlemarker: false }
+                  }}
+                  onLayerAdd={(event: DrawEvents.Created, id: number) => {
+                    if (lastDrawn) {
+                      drawControlsRef?.current?.deleteLayer(lastDrawn);
+                    }
+
+                    const feature = event.layer.toGeoJSON();
+
+                    setFieldValue(name, [feature]);
+                    setEditedGeometry([feature]);
+
+                    setLastDrawn(id);
+                  }}
+                  onLayerEdit={(event: DrawEvents.Edited) => {
+                    event.layers.getLayers().forEach((layer: any) => {
+                      const feature = layer.toGeoJSON() as Feature;
+                      setFieldValue(name, [feature]);
+                      setEditedGeometry([feature]);
+                    });
+                  }}
+                  onLayerDelete={() => {
+                    setFieldValue(name, sampleSiteData?.geojson ? [sampleSiteData?.geojson] : []);
+                  }}
+                />
+              </FeatureGroup>
+
+              <LayersControl position="bottomright">
+                <FullScreenScrollingEventHandler bounds={updatedBounds} scrollWheelZoom={false} />
+                <SetMapBounds bounds={updatedBounds} />
+                {!lastDrawn && <StaticLayers layers={staticLayers} />}
+                <BaseLayerControls />
+              </LayersControl>
+            </LeafletMapContainer>
             {samplingSiteGeoJsonFeatures.length > 0 && (
-              <Box position="absolute" top="126px" left="10px" zIndex="999">
+              <Box position="absolute" top="128px" left="16px" zIndex="999">
                 <IconButton
                   aria-label="zoom to initial extent"
                   title="Zoom to initial extent"
-                  className={classes.zoomToBoundaryExtentBtn}
+                  sx={classes.zoomToBoundaryExtentBtn}
                   onClick={() => {
                     setUpdatedBounds(calculateUpdatedMapBounds(samplingSiteGeoJsonFeatures));
                   }}>

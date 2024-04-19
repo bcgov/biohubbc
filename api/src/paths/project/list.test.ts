@@ -6,9 +6,8 @@ import sinonChai from 'sinon-chai';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
-import { PublishStatus } from '../../repositories/history-publish-repository';
 import * as authorization from '../../request-handlers/security/authorization';
-import { ProjectService } from '../../services/project-service';
+import { COMPLETION_STATUS, ProjectService } from '../../services/project-service';
 import { getMockDBConnection } from '../../__mocks__/db';
 import * as list from './list';
 
@@ -19,7 +18,7 @@ describe('list', () => {
     const ajv = new Ajv();
 
     it('is valid openapi v3 schema', () => {
-      expect(ajv.validateSchema((list.GET.apiDoc as unknown) as object)).to.be.true;
+      expect(ajv.validateSchema(list.GET.apiDoc as unknown as object)).to.be.true;
     });
   });
 
@@ -32,6 +31,11 @@ describe('list', () => {
         role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
       }
     } as any;
+
+    sampleReq.query = {
+      page: '1',
+      limit: '10'
+    };
 
     let actualResult: any = null;
 
@@ -58,12 +62,23 @@ describe('list', () => {
       });
       sinon.stub(authorization, 'userHasValidRole').returns(true);
       sinon.stub(ProjectService.prototype, 'getProjectList').resolves([]);
+      sinon.stub(ProjectService.prototype, 'getProjectCount').resolves(0);
 
       const result = list.getProjectList();
 
-      await result(sampleReq, sampleRes as any, (null as unknown) as any);
+      await result(sampleReq, sampleRes as any, null as unknown as any);
 
-      expect(actualResult).to.eql([]);
+      expect(actualResult).to.eql({
+        pagination: {
+          current_page: 1,
+          last_page: 1,
+          total: 0,
+          sort: undefined,
+          order: undefined,
+          per_page: 10
+        },
+        projects: []
+      });
     });
 
     it('returns an array of projects', async () => {
@@ -75,34 +90,45 @@ describe('list', () => {
       });
       sinon.stub(authorization, 'userHasValidRole').returns(true);
 
-      const expectedResponse1 = [
+      const getProjectListStub = sinon.stub(ProjectService.prototype, 'getProjectList').resolves([
         {
-          projectData: {
-            id: 1,
+          project_id: 1,
+          name: 'myproject',
+          project_programs: [1],
+          start_date: '2022-02-02',
+          end_date: null,
+          regions: [],
+          completion_status: COMPLETION_STATUS.COMPLETED
+        }
+      ]);
+      sinon.stub(ProjectService.prototype, 'getProjectCount').resolves(1);
+
+      const result = list.getProjectList();
+
+      await result(sampleReq, sampleRes as unknown as any, null as unknown as any);
+
+      expect(actualResult).to.eql({
+        pagination: {
+          current_page: 1,
+          last_page: 1,
+          total: 1,
+          sort: undefined,
+          order: undefined,
+          per_page: 10
+        },
+        projects: [
+          {
+            project_id: 1,
             name: 'myproject',
             project_programs: [1],
             start_date: '2022-02-02',
             end_date: null,
-            completion_status: 'done'
-          },
-          projectSupplementaryData: { publishStatus: 'SUBMITTED' }
-        }
-      ];
-
-      const getProjectListStub = sinon
-        .stub(ProjectService.prototype, 'getProjectList')
-        .resolves([expectedResponse1[0].projectData]);
-      const getSurveyHasUnpublishedContentStub = sinon
-        .stub(ProjectService.prototype, 'projectPublishStatus')
-        .resolves(PublishStatus.SUBMITTED);
-
-      const result = list.getProjectList();
-
-      await result(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
-
-      expect(actualResult).to.eql(expectedResponse1);
+            regions: [],
+            completion_status: COMPLETION_STATUS.COMPLETED
+          }
+        ]
+      });
       expect(getProjectListStub).to.be.calledOnce;
-      expect(getSurveyHasUnpublishedContentStub).to.be.calledOnce;
     });
 
     it('catches error, calls rollback, and re-throws error', async () => {
@@ -115,7 +141,7 @@ describe('list', () => {
       try {
         const requestHandler = list.getProjectList();
 
-        await requestHandler(sampleReq, sampleRes as any, (null as unknown) as any);
+        await requestHandler(sampleReq, sampleRes as any, null as unknown as any);
         expect.fail();
       } catch (actualError) {
         expect(dbConnectionObj.release).to.have.been.called;

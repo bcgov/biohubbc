@@ -2,7 +2,6 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
-import { SystemUser } from '../../../../../repositories/user-repository';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../services/attachment-service';
 import { getLogger } from '../../../../../utils/logger';
@@ -60,6 +59,7 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['attachmentType'],
           properties: {
             attachmentType: {
@@ -103,16 +103,10 @@ export function deleteAttachment(): RequestHandler {
 
       const attachmentService = new AttachmentService(connection);
 
-      const systemUserObject: SystemUser = req['system_user'];
-      const isAdmin =
-        systemUserObject.role_names.includes(SYSTEM_ROLE.SYSTEM_ADMIN) ||
-        systemUserObject.role_names.includes(SYSTEM_ROLE.DATA_ADMINISTRATOR);
-
-      await attachmentService.handleDeleteProjectAttachment(
+      await attachmentService.deleteProjectAttachment(
         Number(req.params.projectId),
         Number(req.params.attachmentId),
-        req.body.attachmentType,
-        isAdmin
+        req.body.attachmentType
       );
 
       await connection.commit();

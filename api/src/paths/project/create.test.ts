@@ -16,7 +16,7 @@ describe('create', () => {
     const ajv = new Ajv();
 
     it('is valid openapi v3 schema', () => {
-      expect(ajv.validateSchema((POST.apiDoc as unknown) as object)).to.be.true;
+      expect(ajv.validateSchema(POST.apiDoc as unknown as object)).to.be.true;
     });
   });
 
@@ -30,7 +30,7 @@ describe('create', () => {
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      sinon.stub(ProjectService.prototype, 'createProjectAndUploadMetadataToBioHub').resolves(1);
+      sinon.stub(ProjectService.prototype, 'createProject').resolves(1);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -51,7 +51,7 @@ describe('create', () => {
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      sinon.stub(ProjectService.prototype, 'createProjectAndUploadMetadataToBioHub').rejects(new Error('a test error'));
+      sinon.stub(ProjectService.prototype, 'createProject').rejects(new Error('a test error'));
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 

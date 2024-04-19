@@ -1,50 +1,38 @@
 import Breadcrumbs from '@mui/material/Breadcrumbs';
-import Paper from '@mui/material/Paper';
+import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
-import { Link } from 'react-router-dom';
+import PageHeader from 'components/layout/PageHeader';
+import { Link as RouterLink } from 'react-router-dom';
 
 export interface SurveyObservationHeaderProps {
   project_id: number;
+  project_name: string;
   survey_id: number;
   survey_name: string;
 }
 
 const SurveyObservationHeader: React.FC<SurveyObservationHeaderProps> = (props) => {
-  const { project_id, survey_id, survey_name } = props;
+  const { project_id, project_name, survey_id, survey_name } = props;
   return (
-    <>
-      <Paper
-        square
-        elevation={0}
-        sx={{
-          pt: 3,
-          pb: 3.5,
-          px: 3
-        }}>
-        <Breadcrumbs
-          aria-label="breadcrumb"
-          sx={{
-            mb: 1
-          }}>
-          <Link to={`/admin/projects/${project_id}/surveys/${survey_id}/details`} style={{ textDecoration: 'none' }}>
-            <Typography component="span" variant="body2">
-              {survey_name}
-            </Typography>
+    <PageHeader
+      title="Manage Observations"
+      breadCrumbJSX={
+        <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
+          <Link component={RouterLink} underline="hover" to={`/admin/projects/${project_id}`}>
+            {project_name}
           </Link>
-          <Typography component="span" variant="body2" color="text.secondary">
-            Manage Survey Observations
+          <Link
+            component={RouterLink}
+            underline="hover"
+            to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
+            {survey_name}
+          </Link>
+          <Typography component="span" variant="inherit" color="textSecondary">
+            Manage Observations
           </Typography>
         </Breadcrumbs>
-        <Typography
-          variant="h3"
-          component="h1"
-          sx={{
-            ml: '-2px'
-          }}>
-          Manage Survey Observations
-        </Typography>
-      </Paper>
-    </>
+      }
+    />
   );
 };
 

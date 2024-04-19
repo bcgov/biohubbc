@@ -39,13 +39,13 @@ describe('CodeService', () => {
         'system_roles',
         'project_roles',
         'administrative_activity_status_type',
-        'ecological_seasons',
-        'field_methods',
         'intended_outcomes',
         'vantage_codes',
         'site_selection_strategies',
         'survey_jobs',
-        'sample_methods'
+        'sample_methods',
+        'survey_progress',
+        'method_response_metrics'
       );
     });
   });

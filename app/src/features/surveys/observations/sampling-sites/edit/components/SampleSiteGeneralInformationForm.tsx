@@ -7,7 +7,7 @@ import React from 'react';
  *
  * @return {*}
  */
-const SampleSiteGeneralInformationForm: React.FC = (props) => {
+const SampleSiteGeneralInformationForm: React.FC = () => {
   return (
     <>
       <Grid container spacing={3}>
@@ -15,9 +15,7 @@ const SampleSiteGeneralInformationForm: React.FC = (props) => {
           <CustomTextField
             name="sampleSite.name"
             label="Name"
-            other={{
-              required: true
-            }}
+            other={{ placeholder: 'Maximum 50 characters', required: true }}
           />
         </Grid>
         <Grid item xs={12}>

@@ -1,4 +1,7 @@
 import { AxiosInstance } from 'axios';
+import qs from 'qs';
+
+export type OrderBy = 'asc' | 'desc';
 
 export interface ICbSelectRows {
   key: string;
@@ -6,56 +9,69 @@ export interface ICbSelectRows {
   value: string;
 }
 
-//export type ICbRouteKey = keyof typeof CbRoutes;
-
-interface SelectOptionsProps {
+export interface SelectOptionsProps {
+  /**
+   * The Critterbase API path to call.
+   *
+   * Note: The route must be supported by the critterbase-proxy middleware in the api.
+   *
+   * @example
+   * 'lookups/taxon-collection-categories'
+   *
+   * @type {string}
+   * @memberof SelectOptionsProps
+   */
   route: string;
-  param?: string;
-  query?: string;
-  asSelect?: boolean;
+  /**
+   * Query params to be added to the request.
+   *
+   * @example
+   * {
+   *   taxon_id='1234',
+   *   category_id='5678'
+   * }
+   * @type {(Record<string, string | number>)}
+   * @memberof SelectOptionsProps
+   */
+  query?: Record<string, string | number>;
+  /**
+   * Order the results by the given value.
+   *
+   * @type {OrderBy}
+   * @memberof SelectOptionsProps
+   */
+  orderBy?: OrderBy;
 }
 
-export interface IMeasurementStub {
-  taxon_measurement_id: string;
-  measurement_name: string;
-  min_value?: number;
-  max_value?: number;
-  unit?: string;
-}
-const useLookupApi = (axios: AxiosInstance) => {
-  const getSelectOptions = async ({
-    route,
-    param,
-    query
-  }: SelectOptionsProps): Promise<Array<ICbSelectRows | string>> => {
-    const _param = param ? `/${param}` : ``;
-    const _query = query ? `&${query}` : ``;
-    const { data } = await axios.get(`/api/critter-data/${route}${_param}?format=asSelect${_query}`);
+export const useLookupApi = (axios: AxiosInstance) => {
+  /**
+   * Queries the Critterbase API with `format=asSelect` and returns the results.
+   *
+   * @param {SelectOptionsProps} options
+   * @return {Promise<Array<ICbSelectRows | string>>}
+   */
+  const getSelectOptions = async (options: SelectOptionsProps): Promise<Array<ICbSelectRows | string>> => {
+    const { data } = await axios.get<Array<ICbSelectRows | string>>(`/api/critterbase/${options.route}`, {
+      params: { format: 'asSelect', ...options.query },
+      paramsSerializer: (params: any) => {
+        return qs.stringify(params);
+      }
+    });
 
-    return data;
-  };
-
-  const getTaxonMeasurements = async (taxon_id?: string): Promise<Array<IMeasurementStub> | undefined> => {
-    if (!taxon_id) {
-      return;
+    if (!options.orderBy) {
+      return data;
     }
-    const { data } = await axios.get(`/api/critter-data/xref/taxon-measurements?taxon_id=${taxon_id}`);
-    return data;
-  };
 
-  const getTaxonMarkingBodyLocations = async (taxon_id?: string): Promise<Array<ICbSelectRows>> => {
-    if (!taxon_id) {
-      return [];
-    }
-    const { data } = await axios.get(`/api/critter-data/xref/taxon-marking-body-locations?taxon_id=${taxon_id}`);
-    return data;
+    const getSortValue = (val: string | ICbSelectRows) => (typeof val === 'string' ? val : val.value);
+
+    const sorter = (aValue: string | ICbSelectRows, bValue: string | ICbSelectRows) => {
+      return getSortValue(aValue) > getSortValue(bValue) ? -1 : 1;
+    };
+
+    return options.orderBy === 'desc' ? data.sort(sorter) : data.sort(sorter).reverse();
   };
 
   return {
-    getSelectOptions,
-    getTaxonMeasurements,
-    getTaxonMarkingBodyLocations
+    getSelectOptions
   };
 };
-
-export { useLookupApi };

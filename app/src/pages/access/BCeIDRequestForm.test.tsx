@@ -1,5 +1,5 @@
+import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import { Formik } from 'formik';
-import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import { render } from 'test-helpers/test-utils';
 import BCeIDRequestForm, {
   BCeIDBasicRequestFormInitialValues,
@@ -7,7 +7,7 @@ import BCeIDRequestForm, {
 } from './BCeIDRequestForm';
 
 describe('BCeIDRequestForm', () => {
-  it('matches the snapshot', () => {
+  it('renders correctly', () => {
     const { getByTestId } = render(
       <Formik
         initialValues={BCeIDBasicRequestFormInitialValues}

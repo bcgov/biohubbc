@@ -6,8 +6,8 @@ import { distanceInMetresBetweenCoordinates } from 'utils/mapProjectionHelpers';
 export type MarkerIconColor = 'green' | 'blue' | 'red';
 
 interface IClickMarkerProps {
-  position: LatLng;
-  radius: number;
+  position?: LatLng;
+  radius?: number;
   markerColor?: MarkerIconColor;
   listenForMouseEvents: boolean; //Have this here so you can NOOP the mouse events in the case of multiple instances of this component on same mapf
   handlePlace?: (p: LatLng) => void;
@@ -63,7 +63,7 @@ const MarkerWithResizableRadius = (props: IClickMarkerProps): JSX.Element => {
     },
     mousemove: (e) => {
       if (!listenForMouseEvents) return;
-      if (holdingMouse) {
+      if (holdingMouse && position) {
         //If we move mouse between mouse down and mouse up, then change radius of circle
         handleResize?.(distanceInMetresBetweenCoordinates(position, e.latlng));
       }
@@ -78,22 +78,28 @@ const MarkerWithResizableRadius = (props: IClickMarkerProps): JSX.Element => {
     }
   });
 
+  if (!position) {
+    return <></>;
+  }
+
   return (
     <>
-      <Circle
-        bubblingMouseEvents={false}
-        eventHandlers={{
-          mousedown: (e) => {
-            if (!listenForMouseEvents) return;
-            map.dragging.disable(); //Need to disable map drag or else resizing circle will result in map moving
-            setHoldingMouse(true);
-            setLastMouseDown(e.latlng);
-          }
-        }}
-        color={markerColor ? iconMap[markerColor].hex : iconMap.blue.hex}
-        radius={radius}
-        center={position}
-      />
+      {radius ? (
+        <Circle
+          bubblingMouseEvents={false}
+          eventHandlers={{
+            mousedown: (e) => {
+              if (!listenForMouseEvents) return;
+              map.dragging.disable(); //Need to disable map drag or else resizing circle will result in map moving
+              setHoldingMouse(true);
+              setLastMouseDown(e.latlng);
+            }
+          }}
+          color={markerColor ? iconMap[markerColor].hex : iconMap.blue.hex}
+          radius={radius ?? 0}
+          center={position}
+        />
+      ) : null}
       <Marker icon={markerColor ? iconMap[markerColor].icon : iconMap.blue.icon} position={position}></Marker>
     </>
   );

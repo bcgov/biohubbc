@@ -5,7 +5,7 @@ import { grey } from '@mui/material/colors';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import axios, { CancelTokenSource } from 'axios';
+import axios, { AxiosProgressEvent, CancelTokenSource } from 'axios';
 import FileUploadItemErrorDetails from 'components/file-upload/FileUploadItemErrorDetails';
 import FileUploadItemSubtext from 'components/file-upload/FileUploadItemSubtext';
 import { APIError } from 'hooks/api/useAxios';
@@ -35,7 +35,7 @@ export interface IUploadFile {
 export type IUploadHandler<T = any> = (
   file: File,
   cancelToken: CancelTokenSource,
-  handleFileUploadProgress: (progressEvent: ProgressEvent) => void
+  handleFileUploadProgress: (progressEvent: AxiosProgressEvent) => void
 ) => Promise<T>;
 
 export type IFileHandler = (file: File | null) => void;
@@ -146,17 +146,15 @@ export interface IProgressBarProps {
 const FileUploadItem = (props: IFileUploadItemProps) => {
   const isMounted = useIsMounted();
 
-  const { uploadHandler, fileHandler, onSuccess, SubtextComponent, ActionButtonComponent, ProgressBarComponent } =
+  const { file, uploadHandler, fileHandler, onSuccess, SubtextComponent, ActionButtonComponent, ProgressBarComponent } =
     props;
-
-  const [file] = useState<File>(props.file);
 
   const [error, setError] = useState<string | undefined>(props.error);
   const [errorDetails, setErrorDetails] = useState<{ _id: string; message: string }[] | undefined>();
 
   const [status, setStatus] = useState<UploadFileStatus>(props.status ?? UploadFileStatus.PENDING);
   const [progress, setProgress] = useState<number>(0);
-  const [cancelToken] = useState<CancelTokenSource>(axios.CancelToken.source());
+  const cancelToken: CancelTokenSource = axios.CancelToken.source();
 
   // indicates that the active requests should cancel
   const [initiateCancel, setInitiateCancel] = useState<boolean>(false);
@@ -195,13 +193,13 @@ const FileUploadItem = (props: IFileUploadItemProps) => {
       return;
     }
 
-    const handleFileUploadProgress = (progressEvent: ProgressEvent) => {
+    const handleFileUploadProgress = (progressEvent: AxiosProgressEvent) => {
       if (!isMounted()) {
         // component is unmounted, don't perform any state changes when the upload request emits progress
         return;
       }
 
-      setProgress(Math.round((progressEvent.loaded / progressEvent.total) * 100));
+      setProgress(Math.round((progressEvent.loaded / (progressEvent.total || file.size)) * 100));
 
       if (progressEvent.loaded === progressEvent.total) {
         setStatus(UploadFileStatus.FINISHING_UPLOAD);
@@ -307,16 +305,8 @@ const FileUploadItem = (props: IFileUploadItemProps) => {
           borderBottomColor: grey[300]
         }
       }}>
-      <ListItemIcon
-        sx={{
-          '&.fileIconColor': {
-            color: 'text.secondary'
-          },
-          '&.error': {
-            color: 'error.main'
-          }
-        }}>
-        <Icon path={mdiFileOutline} size={1.25} className={error ? 'errorColor' : 'fileIconColor'} />
+      <ListItemIcon>
+        <Icon path={mdiFileOutline} size={1.25} style={error ? { color: 'error.main' } : { color: 'text.secondary' }} />
       </ListItemIcon>
       <ListItemText
         primary={file.name}

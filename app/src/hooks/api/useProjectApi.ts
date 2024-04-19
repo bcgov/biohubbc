@@ -1,6 +1,7 @@
-import { AxiosInstance, CancelTokenSource } from 'axios';
+import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
+import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
 import {
   ICreateProjectRequest,
   ICreateProjectResponse,
@@ -11,12 +12,12 @@ import {
   IGetProjectsListResponse,
   IGetReportDetails,
   IGetUserProjectsListResponse,
-  IProjectAdvancedFilterRequest,
   IUpdateProjectRequest,
   IUploadAttachmentResponse,
   UPDATE_GET_ENTITIES
 } from 'interfaces/useProjectApi.interface';
 import qs from 'qs';
+import { ApiPaginationRequestOptions } from 'types/misc';
 
 /**
  * Returns a set of supported api methods for working with projects.
@@ -106,21 +107,36 @@ const useProjectApi = (axios: AxiosInstance) => {
   /**
    * Get projects list (potentially based on filter criteria).
    *
-   * @param {IProjectAdvancedFilterRequest} filterFieldData
+   * @param {ApiPaginationRequestOptions} [pagination]
+   * @param {IProjectAdvancedFilters} filterFieldData
    * @return {*}  {Promise<IGetProjectsListResponse[]>}
    */
   const getProjectsList = async (
-    filterFieldData?: IProjectAdvancedFilterRequest
-  ): Promise<IGetProjectsListResponse[]> => {
-    const { data } = await axios.get(`/api/project/list`, {
-      params: filterFieldData,
-      paramsSerializer: (params: any) => {
-        return qs.stringify(params, {
-          arrayFormat: 'repeat',
-          filter: (_prefix: any, value: any) => value || undefined
-        });
+    pagination?: ApiPaginationRequestOptions,
+    filterFieldData?: IProjectAdvancedFilters
+  ): Promise<IGetProjectsListResponse> => {
+    const params = new URLSearchParams();
+
+    if (pagination) {
+      params.append('page', pagination.page.toString());
+      params.append('limit', pagination.limit.toString());
+      if (pagination.sort) {
+        params.append('sort', pagination.sort);
       }
-    });
+      if (pagination.order) {
+        params.append('order', pagination.order);
+      }
+    }
+
+    if (filterFieldData) {
+      Object.entries(filterFieldData).forEach(([key, value]) => {
+        params.append(key, value);
+      });
+    }
+
+    const urlParamsString = `?${params.toString()}`;
+
+    const { data } = await axios.get(`/api/project/list${urlParamsString}`);
 
     return data;
   };
@@ -189,14 +205,14 @@ const useProjectApi = (axios: AxiosInstance) => {
    * @param {File} file
    * @param {string} attachmentType
    * @param {CancelTokenSource} [cancelTokenSource]
-   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<string[]>}
    */
   const uploadProjectAttachments = async (
     projectId: number,
     file: File,
     cancelTokenSource?: CancelTokenSource,
-    onProgress?: (progressEvent: ProgressEvent) => void
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
   ): Promise<IUploadAttachmentResponse> => {
     const req_message = new FormData();
 
@@ -217,7 +233,7 @@ const useProjectApi = (axios: AxiosInstance) => {
    * @param {File} file
    * @param {IReportMetaForm} attachmentMeta
    * @param {CancelTokenSource} [cancelTokenSource]
-   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<IUploadAttachmentResponse>}
    */
   const uploadProjectReports = async (
@@ -225,7 +241,7 @@ const useProjectApi = (axios: AxiosInstance) => {
     file: File,
     attachmentMeta: IReportMetaForm,
     cancelTokenSource?: CancelTokenSource,
-    onProgress?: (progressEvent: ProgressEvent) => void
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
   ): Promise<IUploadAttachmentResponse> => {
     const req_message = new FormData();
 
@@ -299,6 +315,13 @@ const useProjectApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get project attachment details based on project ID and attachment ID
+   *
+   * @param {number} projectId
+   * @param {number} attachmentId
+   * @return {*}  {Promise<IGetAttachmentDetails>}
+   */
   const getProjectAttachmentDetails = async (
     projectId: number,
     attachmentId: number

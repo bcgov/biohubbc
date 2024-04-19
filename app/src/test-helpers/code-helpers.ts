@@ -36,14 +36,6 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 2, name: 'Actioned' },
     { id: 3, name: 'Rejected' }
   ],
-  field_methods: [
-    { id: 1, name: 'Recruitment', description: 'Description' },
-    { id: 2, name: 'SRB', description: 'Description' }
-  ],
-  ecological_seasons: [
-    { id: 1, name: 'Season 1', description: 'Description' },
-    { id: 2, name: 'Season 2', description: 'Description' }
-  ],
   vantage_codes: [
     { id: 1, name: 'Vantage Code 1' },
     { id: 2, name: 'Vantage Code 2' }
@@ -61,7 +53,15 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 2, name: 'Strategy 2' }
   ],
   sample_methods: [
-    { id: 1, name: 'Camera Trap' },
-    { id: 2, name: 'Dip Net' }
+    { id: 1, name: 'Camera Trap', description: 'Description 1' },
+    { id: 2, name: 'Aerial Transect', description: 'Description 2' }
+  ],
+  survey_progress: [
+    { id: 1, name: 'Planning', description: 'Description 1' },
+    { id: 1, name: 'In progress', description: 'Description 1' }
+  ],
+  method_response_metrics: [
+    { id: 1, name: 'Count', description: 'Description 1' },
+    { id: 2, name: 'Presence-absence', description: 'Description 2' }
   ]
 };
