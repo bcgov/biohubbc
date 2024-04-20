@@ -16,6 +16,7 @@ import Typography from '@mui/material/Typography';
 import { GridColDef } from '@mui/x-data-grid';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
+import { MeasurementsButton } from './measurements/dialog/MeasurementsButton';
 
 export interface IConfigureColumnsPopoverContentProps {
   hideableColumns: GridColDef<IObservationTableRow>[];
