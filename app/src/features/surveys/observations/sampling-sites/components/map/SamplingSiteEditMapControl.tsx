@@ -17,9 +17,9 @@ import StaticLayers, { IStaticLayer } from 'components/map/components/StaticLaye
 import { MapBaseCss } from 'components/map/styles/MapBaseCss';
 import { MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
 import { SurveyContext } from 'contexts/surveyContext';
-import SampleSiteFileUploadItemActionButton from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemActionButton';
-import SampleSiteFileUploadItemProgressBar from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemProgressBar';
-import SampleSiteFileUploadItemSubtext from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemSubtext';
+import SampleSiteFileUploadItemActionButton from 'features/surveys/observations/sampling-sites/components/map/file-upload/SampleSiteFileUploadItemActionButton';
+import SampleSiteFileUploadItemProgressBar from 'features/surveys/observations/sampling-sites/components/map/file-upload/SampleSiteFileUploadItemProgressBar';
+import SampleSiteFileUploadItemSubtext from 'features/surveys/observations/sampling-sites/components/map/file-upload/SampleSiteFileUploadItemSubtext';
 import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
 import { DrawEvents, LatLngBoundsExpression } from 'leaflet';

@@ -15,7 +15,7 @@ describe('upsertDevice', () => {
     const ajv = new Ajv();
 
     it('is valid openapi v3 schema', () => {
-      expect(ajv.validateSchema(POST.apiDoc as unknown as object)).to.be.true;
+      expect(ajv.validateSchema((POST.apiDoc as unknown) as object)).to.be.true;
     });
   });
 

@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import { useFormikContext } from 'formik';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
-import { ICreateSamplingSiteRequest } from './SamplingSitePage';
+import { ICreateSamplingSiteRequest } from '../create/SamplingSitePage';
 
 export interface ISamplingSiteHeaderProps {
   project_id: number;

@@ -25,10 +25,10 @@ import CreateSamplingMethod from 'features/surveys/components/CreateSamplingMeth
 import EditSamplingMethod from 'features/surveys/components/EditSamplingMethod';
 import { IEditSurveySampleMethodData } from 'features/surveys/components/MethodForm';
 import { useFormikContext } from 'formik';
+import { IEditSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
 import { useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { getCodesName } from 'utils/Utils';
-import { IEditSamplingSiteRequest } from './SampleSiteEditForm';
 
 export interface SampleMethodEditFormProps {
   name: string;

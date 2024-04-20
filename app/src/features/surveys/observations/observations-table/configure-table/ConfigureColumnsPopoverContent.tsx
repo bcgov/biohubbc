@@ -15,7 +15,6 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { GridColDef } from '@mui/x-data-grid';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
-import { MeasurementsButton } from 'features/surveys/observations/observations-table/configure-columns/measurements/dialog/MeasurementsButton';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 
 export interface IConfigureColumnsPopoverContentProps {

@@ -17,9 +17,9 @@ import StaticLayers from 'components/map/components/StaticLayers';
 import { MapBaseCss } from 'components/map/styles/MapBaseCss';
 import { MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
 import { SurveyContext } from 'contexts/surveyContext';
-import SampleSiteFileUploadItemActionButton from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemActionButton';
-import SampleSiteFileUploadItemProgressBar from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemProgressBar';
-import SampleSiteFileUploadItemSubtext from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemSubtext';
+import SampleSiteFileUploadItemActionButton from 'features/surveys/observations/sampling-sites/components/map/file-upload/SampleSiteFileUploadItemActionButton';
+import SampleSiteFileUploadItemProgressBar from 'features/surveys/observations/sampling-sites/components/map/file-upload/SampleSiteFileUploadItemProgressBar';
+import SampleSiteFileUploadItemSubtext from 'features/surveys/observations/sampling-sites/components/map/file-upload/SampleSiteFileUploadItemSubtext';
 import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
 import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
@@ -31,7 +31,7 @@ import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { boundaryUploadHelper, calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { pluralize, shapeFileFeatureDesc, shapeFileFeatureName } from 'utils/Utils';
-import { ISurveySampleSite } from '../SamplingSitePage';
+import { ISurveySampleSite } from '../../create/SamplingSitePage';
 
 const useStyles = () => {
   return {

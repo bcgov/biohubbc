@@ -36,7 +36,7 @@ describe('getSurveyAttachments', () => {
     try {
       const result = list.getSurveyAttachments();
 
-      await result(sampleReq, null as unknown as any, null as unknown as any);
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect(getSurveyAttachmentsStub).to.be.calledOnce;
@@ -80,7 +80,7 @@ describe('getSurveyAttachments', () => {
 
     const result = list.getSurveyAttachments();
 
-    await result(sampleReq, sampleRes as unknown as any, null as unknown as any);
+    await result(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
     expect(actualResult).to.eql(expectedResult);
     expect(getSurveyAttachmentsStub).to.be.calledOnce;
     expect(getSurveyReportAttachmentsStub).to.be.calledOnce;

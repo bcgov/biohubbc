@@ -38,7 +38,7 @@ describe('deleteSurvey', () => {
     try {
       const result = del.deleteSurvey();
 
-      await result(sampleReq, null as unknown as any, null as unknown as any);
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect((actualError as HTTPError).message).to.equal(expectedError.message);
@@ -60,13 +60,13 @@ describe('deleteSurvey', () => {
 
     const getSurveyAttachmentsStub = sinon
       .stub(AttachmentService.prototype, 'getSurveyAttachments')
-      .resolves([{ key: 'key' } as unknown as ISurveyAttachment]);
+      .resolves([({ key: 'key' } as unknown) as ISurveyAttachment]);
 
     const deleteSurveyStub = sinon.stub(SurveyService.prototype, 'deleteSurvey').resolves();
 
     const fileUtilsStub = sinon
       .stub(file_utils, 'deleteFileFromS3')
-      .resolves(false as unknown as S3.DeleteObjectOutput);
+      .resolves((false as unknown) as S3.DeleteObjectOutput);
 
     let actualResult: any = null;
     const sampleRes = {
@@ -81,7 +81,7 @@ describe('deleteSurvey', () => {
 
     const result = del.deleteSurvey();
 
-    await result(sampleReq, sampleRes as unknown as any, null as unknown as any);
+    await result(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
     expect(actualResult).to.eql(null);
     expect(getSurveyAttachmentsStub).to.be.calledOnce;
     expect(deleteSurveyStub).to.be.calledOnce;
@@ -103,11 +103,13 @@ describe('deleteSurvey', () => {
 
     const getSurveyAttachmentsStub = sinon
       .stub(AttachmentService.prototype, 'getSurveyAttachments')
-      .resolves([{ key: 'key' } as unknown as ISurveyAttachment]);
+      .resolves([({ key: 'key' } as unknown) as ISurveyAttachment]);
 
     const deleteSurveyStub = sinon.stub(SurveyService.prototype, 'deleteSurvey').resolves();
 
-    const fileUtilsStub = sinon.stub(file_utils, 'deleteFileFromS3').resolves(true as unknown as S3.DeleteObjectOutput);
+    const fileUtilsStub = sinon
+      .stub(file_utils, 'deleteFileFromS3')
+      .resolves((true as unknown) as S3.DeleteObjectOutput);
 
     let actualResult: any = null;
     const sampleRes = {
@@ -122,7 +124,7 @@ describe('deleteSurvey', () => {
 
     const result = del.deleteSurvey();
 
-    await result(sampleReq, sampleRes as unknown as any, null as unknown as any);
+    await result(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
     expect(actualResult).to.eql(true);
     expect(getSurveyAttachmentsStub).to.be.calledOnce;
     expect(deleteSurveyStub).to.be.calledOnce;

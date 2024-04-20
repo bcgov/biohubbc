@@ -1,19 +1,10 @@
-import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import Container from '@mui/material/Container';
-import Divider from '@mui/material/Divider';
-import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { CreateSamplingSiteI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { ISurveySampleMethodData, SamplingSiteMethodYupSchema } from 'features/surveys/components/MethodForm';
-import SamplingMethodForm from 'features/surveys/components/SamplingMethodForm';
-import SurveySamplingSiteImportForm from 'features/surveys/components/SurveySamplingSiteImportForm';
 import { Formik, FormikProps } from 'formik';
 import { Feature } from 'geojson';
 import History from 'history';
@@ -23,8 +14,8 @@ import { IGetSurveyBlock, IGetSurveyStratum } from 'interfaces/useSurveyApi.inte
 import { useContext, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
-import SamplingSiteGroupingsForm from './components/SamplingSiteGroupingsForm';
-import SamplingSiteHeader from './SamplingSiteHeader';
+import SamplingSiteHeader from '../components/SamplingSiteHeader';
+import SampleSiteCreateForm from './form/SampleSiteCreateForm';
 
 export interface ISurveySampleSite {
   name: string;
@@ -49,6 +40,8 @@ const SamplingSitePage = () => {
 
   const formikRef = useRef<FormikProps<any>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // const sampleSite = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
 
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
 
@@ -143,7 +136,6 @@ const SamplingSitePage = () => {
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
-
       <Formik
         innerRef={formikRef}
         initialValues={{
@@ -169,56 +161,7 @@ const SamplingSitePage = () => {
             breadcrumb="Add Sampling Sites"
           />
           <Box display="flex" flex="1 1 auto">
-            <Container maxWidth="xl" sx={{ py: 3 }}>
-              <Paper sx={{ p: 5 }}>
-                <Stack gap={5}>
-                  <HorizontalSplitFormComponent
-                    title="Site Location"
-                    summary="Import or draw sampling site locations used for this survey."
-                    component={<SurveySamplingSiteImportForm />}></HorizontalSplitFormComponent>
-
-                  <Divider />
-
-                  <HorizontalSplitFormComponent
-                    title="Sampling Methods"
-                    summary="Specify sampling methods that were used to collect data."
-                    component={<SamplingMethodForm />}></HorizontalSplitFormComponent>
-
-                  <Divider />
-
-                  <HorizontalSplitFormComponent
-                    title="Sampling Site Groupings"
-                    summary="Group similar sites by assigning them to groups or strata, 
-                    which you can add when creating or editing your Survey."
-                    component={<SamplingSiteGroupingsForm />}></HorizontalSplitFormComponent>
-
-                  <Divider />
-
-                  <Stack flexDirection="row" alignItems="center" justifyContent="flex-end" gap={1}>
-                    <LoadingButton
-                      type="submit"
-                      variant="contained"
-                      color="primary"
-                      loading={isSubmitting}
-                      onClick={() => {
-                        formikRef.current?.submitForm();
-                      }}>
-                      Save and Exit
-                    </LoadingButton>
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      onClick={() => {
-                        history.push(
-                          `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`
-                        );
-                      }}>
-                      Cancel
-                    </Button>
-                  </Stack>
-                </Stack>
-              </Paper>
-            </Container>
+            <SampleSiteCreateForm isSubmitting={isSubmitting} />
           </Box>
         </Box>
       </Formik>

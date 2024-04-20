@@ -333,7 +333,9 @@ export class CritterbaseService {
     return this._makeGetRequest(CbRoutes[route], params);
   }
 
-  async getTaxonMeasurements(tsn: string): Promise<{
+  async getTaxonMeasurements(
+    tsn: string
+  ): Promise<{
     qualitative: CBQualitativeMeasurementTypeDefinition[];
     quantitative: CBQuantitativeMeasurementTypeDefinition[];
   }> {

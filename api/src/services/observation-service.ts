@@ -195,12 +195,13 @@ export class ObservationService extends DBService {
           }
 
           if (subcount.quantitative.length) {
-            const quantitativeData: InsertObservationSubCountQuantitativeMeasurementRecord[] =
-              subcount.quantitative.map((item) => ({
+            const quantitativeData: InsertObservationSubCountQuantitativeMeasurementRecord[] = subcount.quantitative.map(
+              (item) => ({
                 observation_subcount_id: observationSubCountRecord.observation_subcount_id,
                 critterbase_taxon_measurement_id: item.measurement_id,
                 value: item.measurement_value
-              }));
+              })
+            );
             await measurementService.insertObservationSubCountQuantitativeMeasurement(quantitativeData);
           }
         }
@@ -280,7 +281,9 @@ export class ObservationService extends DBService {
    *   }>}
    * @memberof ObservationService
    */
-  async getSurveyObservationsGeometryWithSupplementaryData(surveyId: number): Promise<{
+  async getSurveyObservationsGeometryWithSupplementaryData(
+    surveyId: number
+  ): Promise<{
     surveyObservationsGeometry: ObservationGeometryRecord[];
     supplementaryObservationData: ObservationCountSupplementaryData;
   }> {

@@ -242,7 +242,7 @@ describe('keycloakUtils', () => {
       expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.DATABASE);
     });
     it('should coerce null string user identity to DATABASE', () => {
-      const response = coerceUserIdentitySource(null as unknown as string);
+      const response = coerceUserIdentitySource((null as unknown) as string);
       expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.DATABASE);
     });
     it('should coerce bceid basic user identity to BCEIDBASIC', () => {

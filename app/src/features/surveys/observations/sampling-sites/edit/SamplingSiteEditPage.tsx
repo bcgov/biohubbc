@@ -10,10 +10,11 @@ import { Feature } from 'geojson';
 import History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { IEditSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
+import { useContext, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
-import SamplingSiteHeader from '../SamplingSiteHeader';
-import SampleSiteEditForm, { IEditSamplingSiteRequest, samplingSiteYupSchema } from './components/SampleSiteEditForm';
+import SamplingSiteHeader from '../components/SamplingSiteHeader';
+import SampleSiteEditForm, { samplingSiteYupSchema } from './form/SampleSiteEditForm';
 
 /**
  * Page to edit a sampling site.
@@ -33,54 +34,18 @@ const SamplingSiteEditPage = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
-  const [initialFormData, setInitialFormData] = useState<IEditSamplingSiteRequest>({
+
+  const initialFormData = {
     sampleSite: {
-      survey_id: surveyContext.surveyId,
       name: '',
       description: '',
+      survey_id: 0,
       survey_sample_sites: [],
       methods: [],
       blocks: [],
       stratums: []
     }
-  });
-
-  // Initial load of the sampling site data
-  useEffect(() => {
-    if (surveyContext.sampleSiteDataLoader.data) {
-      const data = surveyContext.sampleSiteDataLoader.data.sampleSites.find(
-        (sampleSite) => sampleSite.survey_sample_site_id === surveySampleSiteId
-      );
-
-      if (data !== undefined) {
-        const formInitialValues: IEditSamplingSiteRequest = {
-          sampleSite: {
-            name: data.name,
-            description: data.description,
-            survey_id: data.survey_id,
-            survey_sample_sites: [data.geojson as unknown as Feature],
-            methods:
-              data.sample_methods?.map((item) => {
-                return {
-                  survey_sample_method_id: item.survey_sample_method_id,
-                  survey_sample_site_id: item.survey_sample_site_id,
-                  method_lookup_id: item.method_lookup_id,
-                  method_response_metric_id: item.method_response_metric_id,
-                  description: item.description,
-                  periods: item.sample_periods || []
-                };
-              }) || [],
-            blocks: data.sample_blocks || [],
-            stratums: data.sample_stratums || []
-          }
-        };
-        setInitialFormData(formInitialValues);
-        formikRef.current?.setValues(formInitialValues);
-      }
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [surveyContext.sampleSiteDataLoader]);
+  };
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({

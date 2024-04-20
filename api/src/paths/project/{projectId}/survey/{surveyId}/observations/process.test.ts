@@ -40,7 +40,7 @@ describe('processFile', () => {
     try {
       const result = process.processFile();
 
-      await result(mockReq, null as unknown as any, null as unknown as any);
+      await result(mockReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect((actualError as HTTPError).message).to.equal(expectedError.message);

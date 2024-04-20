@@ -31,7 +31,7 @@ describe('deleteProject', () => {
     try {
       const result = delete_project.deleteProject();
 
-      await result(sampleReq, null as unknown as any, null as unknown as any);
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect((actualError as HTTPError).status).to.equal(400);
@@ -57,7 +57,7 @@ describe('deleteProject', () => {
     try {
       const result = delete_project.deleteProject();
 
-      await result(sampleReq, null as unknown as any, null as unknown as any);
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect((actualError as HTTPError).message).to.equal(expectedError.message);
@@ -93,7 +93,7 @@ describe('deleteProject', () => {
 
     const result = delete_project.deleteProject();
 
-    await result(sampleReq, sampleRes as unknown as any, null as unknown as any);
+    await result(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
 
     expect(actualResult).to.eql(expectedResponse);
     expect(deleteProjectStub).to.be.calledOnce;

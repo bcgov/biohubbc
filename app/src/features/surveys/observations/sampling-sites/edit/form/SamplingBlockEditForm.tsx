@@ -14,7 +14,7 @@ import { useFormikContext } from 'formik';
 import { IGetSampleBlockDetails, IGetSurveyBlock } from 'interfaces/useSurveyApi.interface';
 import { useContext, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
-import BlockStratumCard from './BlockStratumCard';
+import BlockStratumCard from '../../components/BlockStratumCard';
 import { IEditSamplingSiteRequest } from './SampleSiteEditForm';
 
 const SamplingBlockEditForm = () => {

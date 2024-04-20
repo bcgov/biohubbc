@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box';
 import { useParams } from 'react-router';
-import SamplingBlockEditForm from '../edit/components/SamplingBlockEditForm';
-import SamplingStratumEditForm from '../edit/components/SamplingStratumEditForm';
-import SamplingBlockForm from './SamplingBlockForm';
-import SamplingStratumForm from './SamplingStratumForm';
+import SamplingBlockForm from '../create/form/SamplingBlockForm';
+import SamplingStratumForm from '../create/form/SamplingStratumForm';
+import SamplingBlockEditForm from '../edit/form/SamplingBlockEditForm';
+import SamplingStratumEditForm from '../edit/form/SamplingStratumEditForm';
 
 const SamplingSiteGroupingsForm = () => {
   const urlParams: Record<string, string | number | undefined> = useParams();

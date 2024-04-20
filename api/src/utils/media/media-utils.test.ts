@@ -17,7 +17,7 @@ describe('parseUnknownMedia', () => {
   it('calls parseUnknownMulterFile', () => {
     const parseUnknownMulterFileStub = sinon.stub(media_utils, 'parseUnknownMulterFile');
 
-    media_utils.parseUnknownMedia({ originalname: 'name' } as unknown as Express.Multer.File);
+    media_utils.parseUnknownMedia(({ originalname: 'name' } as unknown) as Express.Multer.File);
 
     expect(parseUnknownMulterFileStub).to.have.been.calledOnce;
   });
@@ -25,7 +25,7 @@ describe('parseUnknownMedia', () => {
   it('calls parseUnknownS3File', () => {
     const parseUnknownS3FileStub = sinon.stub(media_utils, 'parseUnknownS3File');
 
-    media_utils.parseUnknownMedia({} as unknown as GetObjectOutput);
+    media_utils.parseUnknownMedia(({} as unknown) as GetObjectOutput);
 
     expect(parseUnknownS3FileStub).to.have.been.calledOnce;
   });
@@ -33,10 +33,10 @@ describe('parseUnknownMedia', () => {
 
 describe('parseUnknownMulterFile', () => {
   it('returns a MediaFile', () => {
-    const multerFile = {
+    const multerFile = ({
       originalname: 'file1.txt',
       buffer: Buffer.from('file1data')
-    } as unknown as Express.Multer.File;
+    } as unknown) as Express.Multer.File;
 
     const response = media_utils.parseUnknownMulterFile(multerFile);
 
@@ -50,7 +50,7 @@ describe('parseUnknownMulterFile', () => {
     zipFile.addFile('folder2/', Buffer.from('')); // add folder
     zipFile.addFile('folder2/file2.csv', Buffer.from('file2data'));
 
-    const multerFile = { originalname: 'zipFile.zip', buffer: zipFile.toBuffer() } as unknown as Express.Multer.File;
+    const multerFile = ({ originalname: 'zipFile.zip', buffer: zipFile.toBuffer() } as unknown) as Express.Multer.File;
 
     const response = media_utils.parseUnknownMulterFile(multerFile);
 
@@ -65,10 +65,10 @@ describe('parseUnknownMulterFile', () => {
 
 describe('parseUnknownS3File', () => {
   it('returns a MediaFile', () => {
-    const s3File = {
+    const s3File = ({
       Metadata: { filename: 'file1.txt' },
       Body: Buffer.from('file1data')
-    } as unknown as GetObjectOutput;
+    } as unknown) as GetObjectOutput;
 
     const response = media_utils.parseUnknownS3File(s3File);
 
@@ -82,11 +82,11 @@ describe('parseUnknownS3File', () => {
     zipFile.addFile('folder2/', Buffer.from('')); // add folder
     zipFile.addFile('folder2/file2.csv', Buffer.from('file2data'));
 
-    const s3File = {
+    const s3File = ({
       Metadata: { filename: 'zipFile.zip' },
       ContentType: 'application/zip',
       Body: zipFile.toBuffer()
-    } as unknown as GetObjectOutput;
+    } as unknown) as GetObjectOutput;
 
     const response = media_utils.parseUnknownS3File(s3File);
 
@@ -107,7 +107,7 @@ describe('parseUnknownZipFile', () => {
     zipFile.addFile('folder2/', Buffer.from('')); // add folder
     zipFile.addFile('folder2/file2.csv', Buffer.from('file2data'));
 
-    const multerFile = { originalname: 'zipFile.zip', buffer: zipFile.toBuffer() } as unknown as Express.Multer.File;
+    const multerFile = ({ originalname: 'zipFile.zip', buffer: zipFile.toBuffer() } as unknown) as Express.Multer.File;
 
     const response = media_utils.parseUnknownZipFile(multerFile.buffer);
 
@@ -121,7 +121,7 @@ describe('parseUnknownZipFile', () => {
 
     zipFile.addFile('folder2/', Buffer.from('')); // add folder
 
-    const multerFile = { originalname: 'zipFile.zip', buffer: zipFile.toBuffer() } as unknown as Express.Multer.File;
+    const multerFile = ({ originalname: 'zipFile.zip', buffer: zipFile.toBuffer() } as unknown) as Express.Multer.File;
 
     const response = media_utils.parseUnknownZipFile(multerFile.buffer);
 
@@ -131,10 +131,10 @@ describe('parseUnknownZipFile', () => {
 
 describe('parseMulterFile', () => {
   it('returns a MediaFile item', () => {
-    const multerFile = {
+    const multerFile = ({
       originalname: 'file1.csv',
       buffer: Buffer.from('file1data')
-    } as unknown as Express.Multer.File;
+    } as unknown) as Express.Multer.File;
 
     const response = media_utils.parseMulterFile(multerFile);
 
@@ -142,10 +142,10 @@ describe('parseMulterFile', () => {
   });
 
   it('returns a MediaFile item when the file mime type is unknown', () => {
-    const multerFile = {
+    const multerFile = ({
       originalname: 'file1.notAKnownMimeTypecsv',
       buffer: Buffer.from('file1data')
-    } as unknown as Express.Multer.File;
+    } as unknown) as Express.Multer.File;
 
     const response = media_utils.parseMulterFile(multerFile);
 
@@ -153,24 +153,24 @@ describe('parseMulterFile', () => {
   });
 
   it('returns a MediaFile item when the file buffer is null', () => {
-    const multerFile = {
+    const multerFile = ({
       originalname: 'file1.csv',
       buffer: null
-    } as unknown as Express.Multer.File;
+    } as unknown) as Express.Multer.File;
 
     const response = media_utils.parseMulterFile(multerFile);
 
-    expect(response).to.eql(new MediaFile('file1.csv', 'text/csv', null as unknown as Buffer));
+    expect(response).to.eql(new MediaFile('file1.csv', 'text/csv', (null as unknown) as Buffer));
   });
 });
 
 describe('parseS3File', () => {
   it('returns a MediaFile item', () => {
-    const s3File = {
+    const s3File = ({
       Metadata: { filename: 'file1.csv' },
       ContentType: 'text/csv',
       Body: Buffer.from('file1data')
-    } as unknown as GetObjectOutput;
+    } as unknown) as GetObjectOutput;
 
     const response = media_utils.parseS3File(s3File);
 
@@ -178,11 +178,11 @@ describe('parseS3File', () => {
   });
 
   it('returns a MediaFile item when the file mime type is unknown', () => {
-    const s3File = {
+    const s3File = ({
       Metadata: { filename: 'file1.notAKnownMimeTypecsv' },
       ContentType: 'notAKnownMimeTypecsv',
       Body: Buffer.from('file1data')
-    } as unknown as GetObjectOutput;
+    } as unknown) as GetObjectOutput;
 
     const response = media_utils.parseS3File(s3File);
 
@@ -190,36 +190,36 @@ describe('parseS3File', () => {
   });
 
   it('returns a MediaFile item when the file buffer is null', () => {
-    const s3File = {
+    const s3File = ({
       Metadata: { filename: 'file1.csv' },
       ContentType: 'text/csv',
       Body: null
-    } as unknown as GetObjectOutput;
+    } as unknown) as GetObjectOutput;
 
     const response = media_utils.parseS3File(s3File);
 
-    expect(response).to.eql(new MediaFile('file1.csv', 'text/csv', null as unknown as Buffer));
+    expect(response).to.eql(new MediaFile('file1.csv', 'text/csv', (null as unknown) as Buffer));
   });
 });
 
 describe('checkFileForKeyx', () => {
-  const validKeyxFile = {
+  const validKeyxFile = ({
     originalname: 'test.keyx',
     mimetype: 'application/octet-stream',
     buffer: Buffer.alloc(0)
-  } as unknown as Express.Multer.File;
+  } as unknown) as Express.Multer.File;
 
-  const invalidFile = {
+  const invalidFile = ({
     originalname: 'test.txt',
     mimetype: 'text/plain',
     buffer: Buffer.alloc(0)
-  } as unknown as Express.Multer.File;
+  } as unknown) as Express.Multer.File;
 
-  const zipFile = {
+  const zipFile = ({
     originalname: 'test.zip',
     mimetype: 'application/zip',
     buffer: Buffer.alloc(0)
-  } as unknown as Express.Multer.File;
+  } as unknown) as Express.Multer.File;
 
   it('should return true if the file extension is .keyx', () => {
     expect(media_utils.checkFileForKeyx(validKeyxFile)).to.equal(true);

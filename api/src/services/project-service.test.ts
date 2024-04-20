@@ -72,7 +72,7 @@ describe('ProjectService', () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectService(dbConnection);
 
-      const data = { project_id: 1 } as unknown as ProjectData;
+      const data = ({ project_id: 1 } as unknown) as ProjectData;
 
       const repoStub = sinon.stub(ProjectRepository.prototype, 'getProjectData').resolves(data);
 

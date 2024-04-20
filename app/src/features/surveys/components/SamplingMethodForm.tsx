@@ -25,7 +25,7 @@ import { useFormikContext } from 'formik';
 import { useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { getCodesName } from 'utils/Utils';
-import { ICreateSamplingSiteRequest } from '../observations/sampling-sites/SamplingSitePage';
+import { ICreateSamplingSiteRequest } from '../observations/sampling-sites/create/SamplingSitePage';
 import CreateSamplingMethod from './CreateSamplingMethod';
 import EditSamplingMethod from './EditSamplingMethod';
 import { IEditSurveySampleMethodData } from './MethodForm';

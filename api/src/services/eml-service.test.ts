@@ -210,7 +210,7 @@ describe('EmlPackage', () => {
         }
       ];
 
-      const emlPackage = new EmlPackage({ packageId: null as unknown as string });
+      const emlPackage = new EmlPackage({ packageId: (null as unknown) as string });
 
       const response = emlPackage.withAdditionalMetadata(additionalMeta1).withAdditionalMetadata(additionalMeta2);
 
@@ -226,7 +226,7 @@ describe('EmlPackage', () => {
         title: 'Project Name 1'
       };
 
-      const emlPackage = new EmlPackage({ packageId: null as unknown as string });
+      const emlPackage = new EmlPackage({ packageId: (null as unknown) as string });
 
       const response = emlPackage.withRelatedProjects([project]);
 
@@ -250,7 +250,7 @@ describe('EmlPackage', () => {
         title: 'Project Name 2'
       };
 
-      const emlPackage = new EmlPackage({ packageId: null as unknown as string });
+      const emlPackage = new EmlPackage({ packageId: (null as unknown) as string });
 
       const response = emlPackage.withRelatedProjects([project1]).withRelatedProjects([project2]);
 

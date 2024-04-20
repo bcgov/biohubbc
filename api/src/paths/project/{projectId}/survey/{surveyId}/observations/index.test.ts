@@ -171,10 +171,10 @@ describe('getSurveyObservations', () => {
     const getSurveyObservationsStub = sinon
       .stub(ObservationService.prototype, 'getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData')
       .resolves({
-        surveyObservations: [
+        surveyObservations: ([
           { survey_observation_id: 11 },
           { survey_observation_id: 12 }
-        ] as unknown as ObservationRecordWithSamplingAndSubcountData[],
+        ] as unknown) as ObservationRecordWithSamplingAndSubcountData[],
         supplementaryObservationData: {
           observationCount: 59,
           qualitative_measurements: [],
@@ -227,10 +227,10 @@ describe('getSurveyObservations', () => {
     const getSurveyObservationsStub = sinon
       .stub(ObservationService.prototype, 'getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData')
       .resolves({
-        surveyObservations: [
+        surveyObservations: ([
           { survey_observation_id: 16 },
           { survey_observation_id: 17 }
-        ] as unknown as ObservationRecordWithSamplingAndSubcountData[],
+        ] as unknown) as ObservationRecordWithSamplingAndSubcountData[],
         supplementaryObservationData: {
           observationCount: 50,
           qualitative_measurements: [],
@@ -281,10 +281,10 @@ describe('getSurveyObservations', () => {
     const getSurveyObservationsStub = sinon
       .stub(ObservationService.prototype, 'getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData')
       .resolves({
-        surveyObservations: [
+        surveyObservations: ([
           { survey_observation_id: 16 },
           { survey_observation_id: 17 }
-        ] as unknown as ObservationRecordWithSamplingAndSubcountData[],
+        ] as unknown) as ObservationRecordWithSamplingAndSubcountData[],
         supplementaryObservationData: {
           observationCount: 2,
           qualitative_measurements: [],

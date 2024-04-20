@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import SamplingSiteMapControl from 'features/surveys/observations/sampling-sites/components/SamplingSiteMapControl';
+import SamplingSiteMapControl from 'features/surveys/observations/sampling-sites/components/map/SamplingSiteMapControl';
 import { useFormikContext } from 'formik';
-import { ICreateSamplingSiteRequest } from '../observations/sampling-sites/SamplingSitePage';
+import { ICreateSamplingSiteRequest } from '../observations/sampling-sites/create/SamplingSitePage';
 
 const SurveySamplingSiteImportForm = () => {
   const formikProps = useFormikContext<ICreateSamplingSiteRequest>();

@@ -16,7 +16,7 @@ const ConfigureMeasurements = (props: IConfigureMeasurementsProps) => {
 
   //   const observationsTableContext = useObservationsTableContext();
   console.log(selectedMeasurements);
-  console.log(props)
+  console.log(props);
 
   const onSelectOptions = (measurementsToAdd: CBMeasurementType[]) => {
     setSelectedMeasurements((currentMeasurements) => {
