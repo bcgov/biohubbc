@@ -46,12 +46,14 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
     }
   ];
 
-  const icon =
-    sampleSite.geojson.geometry.type === 'Point'
-      ? { path: mdiMapMarker, title: 'Point sampling site' }
-      : sampleSite.geojson.geometry.type === 'LineString'
-      ? { path: mdiVectorLine, title: 'Transect sampling site' }
-      : { path: mdiVectorSquare, title: 'Polygon sampling site' };
+  let icon;
+  if (sampleSite.geojson.geometry.type === 'Point') {
+    icon = { path: mdiMapMarker, title: 'Point sampling site' };
+  } else if (sampleSite.geojson.geometry.type === 'LineString') {
+    icon = { path: mdiVectorLine, title: 'Transect sampling site' };
+  } else {
+    icon = { path: mdiVectorSquare, title: 'Polygon sampling site' };
+  }
 
   return (
     <Accordion
