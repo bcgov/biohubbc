@@ -50,25 +50,24 @@ const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
             p: 0
           }}
           key={`${samplePeriod.survey_sample_period_id}-${index}`}>
-          <TimelineSeparator sx={{ width: '20px' }}>
+          <TimelineSeparator sx={{ minWidth: 0, ml: 1, mr: 0.5 }}>
             {props.samplePeriods.length > 1 ? (
-              <>
-                <TimelineDot sx={{ bgcolor: grey[400], ml: 0.5, boxShadow: 'none' }} />
+              <Box display="flex" justifyContent="center">
+                <TimelineDot sx={{ bgcolor: grey[400], boxShadow: 'none' }} />
                 {index < props.samplePeriods.length - 1 && (
                   <TimelineConnector
                     sx={{
                       bgcolor: grey[400],
                       position: 'absolute',
                       height: '85%',
-                      top: 20,
-                      ml: 0.5
+                      top: 20
                     }}
                   />
                 )}
-              </>
+              </Box>
             ) : (
-              <Box mt={0.8}>
-                <Icon path={mdiCalendarRange} size={0.8} color={grey[500]} />
+              <Box mt={1}>
+                <Icon path={mdiCalendarRange} size={0.75} color={grey[500]} />
               </Box>
             )}
           </TimelineSeparator>
@@ -77,9 +76,12 @@ const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
               '& .MuiTimelineItem-root': {
                 width: '100%',
                 flex: '1 1 auto'
+              },
+              '& .MuiTypography-root': {
+                m: 0
               }
             }}>
-            <Box width="100%" display="flex" justifyContent="space-between">
+            <Box width="100%" display="flex" justifyContent="space-between" p={0}>
               <Box>
                 <Typography component="dt" variant="subtitle2" sx={dateSx}>
                   {formatDate(samplePeriod.start_date as unknown as Date, false)}

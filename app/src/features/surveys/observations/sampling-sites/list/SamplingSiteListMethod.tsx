@@ -34,11 +34,12 @@ export const SamplingSiteListMethod = (props: ISamplingSiteListMethodProps) => {
         p: 0,
         display: 'block',
         '& + li': {
-          mt: 1.5
+          mt: 0.5
         }
       }}>
       <ListItemText
         sx={{
+          p: 0,
           mt: 0,
           '& .MuiTypography-root': {
             fontWeight: 700

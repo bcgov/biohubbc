@@ -134,21 +134,21 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
         sx={{
           pt: 0,
           pb: 1,
-          background: grey[100],
-          px: 1
+          pl: 1,
+          pr: 0
         }}>
         {sampleSite.sample_stratums && sampleSite.sample_stratums?.length > 0 && (
-          <Box display="flex" alignItems="center" color="textSecondary" pt={2} px={1}>
+          <Box display="flex" alignItems="center" color="textSecondary" py={1} px={1}>
             <SamplingStratumChips sampleSite={sampleSite} />
           </Box>
         )}
         <List
           disablePadding
           sx={{
-            pt: 2,
             mx: 1.5,
             '& .MuiListItemText-primary': {
-              typography: 'body2'
+              typography: 'body2',
+              pt: 1
             }
           }}>
           {sampleSite.sample_methods?.map((sampleMethod, index) => {
@@ -160,7 +160,7 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
             );
           })}
         </List>
-        <Box height="300px" width="100%" mt={2} mb={1}>
+        <Box height="300px" flex="1 1 auto" mx={1} my={2}>
           <SurveyMap staticLayers={staticLayers} supplementaryLayers={[]} isLoading={false} />
         </Box>
       </AccordionDetails>
