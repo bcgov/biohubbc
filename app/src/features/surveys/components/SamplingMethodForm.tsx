@@ -21,6 +21,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { CodesContext } from 'contexts/codesContext';
+import { ISurveySampleMethodData } from 'features/surveys/components/MethodForm';
 import { useFormikContext } from 'formik';
 import { useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
@@ -28,14 +29,13 @@ import { getCodesName } from 'utils/Utils';
 import { ICreateSamplingSiteRequest } from '../observations/sampling-sites/create/SamplingSitePage';
 import CreateSamplingMethod from './CreateSamplingMethod';
 import EditSamplingMethod from './EditSamplingMethod';
-import { IEditSurveySampleMethodData } from './MethodForm';
 
 const SamplingMethodForm = () => {
   const { values, errors, setFieldValue, validateField } = useFormikContext<ICreateSamplingSiteRequest>();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
-  const [editData, setEditData] = useState<IEditSurveySampleMethodData | undefined>(undefined);
+  const [editData, setEditData] = useState<{ data: ISurveySampleMethodData; index: number } | undefined>(undefined);
 
   const codesContext = useContext(CodesContext);
   useEffect(() => {
@@ -44,7 +44,7 @@ const SamplingMethodForm = () => {
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
     setAnchorEl(event.currentTarget);
-    setEditData({ ...values.methods[index], index });
+    setEditData({ data: values.methods[index], index });
   };
 
   const handleDelete = () => {
@@ -75,10 +75,10 @@ const SamplingMethodForm = () => {
 
       {/* EDIT SAMPLE METHOD DIALOG */}
       <EditSamplingMethod
-        initialData={editData}
+        initialData={editData?.data}
         open={isEditModalOpen}
-        onSubmit={(data, index) => {
-          setFieldValue(`methods[${index}]`, data);
+        onSubmit={(data) => {
+          setFieldValue(`methods[${editData?.index}]`, data);
           setAnchorEl(null);
           setIsEditModalOpen(false);
         }}

@@ -36,10 +36,6 @@ export interface ISurveySampleMethodData {
   method_response_metric_id: number | null;
 }
 
-export interface IEditSurveySampleMethodData extends ISurveySampleMethodData {
-  index: number;
-}
-
 export const SurveySampleMethodPeriodArrayItemInitialValues = {
   method_lookup_id: null,
   survey_sample_period_id: null,

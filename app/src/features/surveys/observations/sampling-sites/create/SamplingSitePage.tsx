@@ -31,6 +31,11 @@ export interface ICreateSamplingSiteRequest {
   stratums: IGetSurveyStratum[];
 }
 
+/**
+ * Renders the body content of the Sampling Site page.
+ *
+ * @return {*}
+ */
 const SamplingSitePage = () => {
   const history = useHistory();
   const biohubApi = useBiohubApi();

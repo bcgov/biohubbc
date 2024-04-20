@@ -31,8 +31,8 @@ const useStyles = () => {
     },
     pageTitle: {
       display: '-webkit-box',
-      '-webkit-line-clamp': 2,
-      '-webkit-box-orient': 'vertical',
+      WebkitLineClamp: '2',
+      WebkitBoxOrient: 'vertical',
       paddingTop: theme.spacing(0.5),
       paddingBottom: theme.spacing(0.5),
       overflow: 'hidden'

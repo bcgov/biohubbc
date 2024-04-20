@@ -223,7 +223,7 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
                 </LayersControl>
               </LeafletMapContainer>
               {samplingSiteGeoJsonFeatures.length > 0 && (
-                <Box position="absolute" top="126px" left="10px" zIndex="999">
+                <Box position="absolute" top="128px" left="16px" zIndex="999">
                   <IconButton
                     aria-label="zoom to initial extent"
                     title="Zoom to initial extent"

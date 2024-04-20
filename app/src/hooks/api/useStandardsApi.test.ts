@@ -29,7 +29,7 @@ describe('useStandardsApi', () => {
         }
       };
 
-      mock.onPost(`/api/standards/taxon/${mockTsn}`).reply(200, res);
+      mock.onGet(`/api/standards/taxon/${mockTsn}`).reply(200, res);
 
       const result = await useStandardsApi(axios).getSpeciesStandards(mockTsn);
 

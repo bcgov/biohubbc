@@ -6,7 +6,6 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import {
   BctwService,
-  BCTW_API_HOST,
   DELETE_DEPLOYMENT_ENDPOINT,
   DEPLOY_DEVICE_ENDPOINT,
   GET_CODE_ENDPOINT,
@@ -84,7 +83,7 @@ describe('BctwService', () => {
       const result = await bctwService._makeGetRequest(endpoint);
 
       expect(result).to.equal(mockResponse.data);
-      expect(mockAxios).to.have.been.calledOnceWith(`${BCTW_API_HOST}${endpoint}`);
+      expect(mockAxios).to.have.been.calledOnceWith(`${endpoint}`);
     });
 
     it('should make an axios get request with params', async () => {
@@ -98,7 +97,7 @@ describe('BctwService', () => {
       const result = await bctwService._makeGetRequest(endpoint, queryParams);
 
       expect(result).to.equal(mockResponse.data);
-      expect(mockAxios).to.have.been.calledOnceWith(`${BCTW_API_HOST}${endpoint}?param=${queryParams['param']}`);
+      expect(mockAxios).to.have.been.calledOnceWith(`${endpoint}?param=${queryParams['param']}`);
     });
   });
 

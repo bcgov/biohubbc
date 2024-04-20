@@ -20,6 +20,12 @@ export interface ISamplingSiteListSiteProps {
   handleCheckboxChange: (sampleSiteId: number) => void;
 }
 
+/**
+ * Renders a list item for a single sampling site.
+ *
+ * @param {ISamplingSiteListSiteProps} props
+ * @return {*}
+ */
 export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
   const { sampleSite, isChecked, handleSampleSiteMenuClick, handleCheckboxChange } = props;
 
@@ -27,7 +33,6 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
     <Accordion
       disableGutters
       square
-      key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}
       sx={{
         boxShadow: 'none',
         borderBottom: '1px solid' + grey[300],
@@ -109,7 +114,12 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
             }
           }}>
           {sampleSite.sample_methods?.map((sampleMethod) => {
-            return <SamplingSiteListMethod sampleMethod={sampleMethod} />;
+            return (
+              <SamplingSiteListMethod
+                sampleMethod={sampleMethod}
+                key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}`}
+              />
+            );
           })}
         </List>
       </AccordionDetails>
