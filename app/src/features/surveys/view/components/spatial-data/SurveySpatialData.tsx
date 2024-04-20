@@ -192,15 +192,15 @@ const SurveySpatialData = () => {
   let isLoading = false;
   if (activeView === SurveySpatialDatasetViewEnum.OBSERVATIONS) {
     isLoading =
-      codesContext.codesDataLoader.isLoading ||
-      surveyContext.sampleSiteDataLoader.isLoading ||
+      codesContext.codesDataLoader.isLoading ??
+      surveyContext.sampleSiteDataLoader.isLoading ??
       observationsContext.observationsDataLoader.isLoading;
   }
 
   if (activeView === SurveySpatialDatasetViewEnum.TELEMETRY) {
     isLoading =
-      codesContext.codesDataLoader.isLoading ||
-      surveyContext.deploymentDataLoader.isLoading ||
+      codesContext.codesDataLoader.isLoading ??
+      surveyContext.deploymentDataLoader.isLoading ??
       surveyContext.critterDataLoader.isLoading;
   }
 
@@ -296,8 +296,8 @@ const SurveySpatialData = () => {
       return {
         layerName: supplementaryLayer.layerName,
         layerColors: {
-          fillColor: supplementaryLayer.layerColors?.fillColor || SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
-          color: supplementaryLayer.layerColors?.color || SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR
+          fillColor: supplementaryLayer.layerColors?.fillColor ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
+          color: supplementaryLayer.layerColors?.color ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR
         },
         features: supplementaryLayer.mapPoints.map((mapPoint: ISurveyMapPoint): IStaticLayerFeature => {
           const isLoading = !mapPointMetadata[mapPoint.key];
@@ -319,7 +319,6 @@ const SurveySpatialData = () => {
                 });
               }
             },
-            // PopupProps: { className: classes.popup },
             popup: (
               <SurveyMapPopup
                 isLoading={isLoading}
@@ -328,7 +327,6 @@ const SurveySpatialData = () => {
               />
             ),
             tooltip: <SurveyMapTooltip label="Observation" />
-            // TooltipProps: { className: classes.tooltip }
           };
         })
       };
@@ -356,7 +354,6 @@ const SurveySpatialData = () => {
           }
         ]}
         updateDatasetView={setActiveView}
-        layers={staticLayers}
       />
 
       <Box height={{ sm: 300, md: 500 }} position="relative">

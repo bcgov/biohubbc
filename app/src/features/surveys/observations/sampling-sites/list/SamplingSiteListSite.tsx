@@ -46,6 +46,13 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
     }
   ];
 
+  const icon =
+    sampleSite.geojson.geometry.type === 'Point'
+      ? { path: mdiMapMarker, title: 'Point sampling site' }
+      : sampleSite.geojson.geometry.type === 'LineString'
+      ? { path: mdiVectorLine, title: 'Transect sampling site' }
+      : { path: mdiVectorSquare, title: 'Polygon sampling site' };
+
   return (
     <Accordion
       disableGutters
@@ -107,24 +114,7 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
               {sampleSite.name}
             </Typography>
             <Box sx={{ minWidth: '20px', display: 'flex', alignItems: 'center' }}>
-              <Icon
-                size={0.8}
-                color={grey[400]}
-                title={
-                  sampleSite.geojson.geometry.type === 'Point'
-                    ? 'Point sampling site'
-                    : sampleSite.geojson.geometry.type === 'LineString'
-                    ? 'Transect sampling site'
-                    : 'Polygon sampling site'
-                }
-                path={
-                  sampleSite.geojson.geometry.type === 'Point'
-                    ? mdiMapMarker
-                    : sampleSite.geojson.geometry.type === 'LineString'
-                    ? mdiVectorLine
-                    : mdiVectorSquare
-                }
-              />
+              <Icon size={0.8} color={grey[400]} title={icon.title} path={icon.path} />
             </Box>
           </Stack>
         </AccordionSummary>
@@ -159,11 +149,11 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
               typography: 'body2'
             }
           }}>
-          {sampleSite.sample_methods?.map((sampleMethod) => {
+          {sampleSite.sample_methods?.map((sampleMethod, index) => {
             return (
               <SamplingSiteListMethod
                 sampleMethod={sampleMethod}
-                key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}`}
+                key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}-${index}`}
               />
             );
           })}

@@ -11,7 +11,6 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { IStaticLayer } from 'components/map/components/StaticLayers';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { useState } from 'react';
@@ -34,7 +33,6 @@ interface ISurveySptialToolbarProps {
   updateDatasetView: (view: SurveySpatialDatasetViewEnum) => void;
   views: ISurveySpatialDatasetView[];
   activeView: SurveySpatialDatasetViewEnum;
-  layers: IStaticLayer[];
 }
 
 const SurveySpatialToolbar = (props: ISurveySptialToolbarProps) => {
