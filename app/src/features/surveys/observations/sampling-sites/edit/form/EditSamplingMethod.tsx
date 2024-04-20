@@ -1,19 +1,18 @@
 import EditDialog from 'components/dialog/EditDialog';
-import MethodForm, {
-  ISurveySampleMethodData,
-  SamplingSiteMethodYupSchema,
-  SurveySampleMethodDataInitialValues
-} from './MethodForm';
+import { IGetSampleMethodRecord } from 'interfaces/useSamplingSiteApi.interface';
+import { ISurveySampleMethodData, SamplingSiteMethodYupSchema } from '../../create/form/MethodCreateForm';
+import MethodEditForm from './MethodEditForm';
 
 interface IEditSamplingMethodProps {
   open: boolean;
-  initialData?: ISurveySampleMethodData;
-  onSubmit: (data: ISurveySampleMethodData, index?: number) => void;
+  initialData: IGetSampleMethodRecord | ISurveySampleMethodData;
+  onSubmit: (data: IGetSampleMethodRecord | ISurveySampleMethodData, index?: number) => void;
   onClose: () => void;
 }
 
 const EditSamplingMethod: React.FC<IEditSamplingMethodProps> = (props) => {
   const { open, initialData, onSubmit, onClose } = props;
+
   return (
     <>
       <EditDialog
@@ -21,8 +20,8 @@ const EditSamplingMethod: React.FC<IEditSamplingMethodProps> = (props) => {
         open={open}
         dialogLoading={false}
         component={{
-          element: <MethodForm />,
-          initialValues: initialData || SurveySampleMethodDataInitialValues,
+          element: <MethodEditForm />,
+          initialValues: initialData,
           validationSchema: SamplingSiteMethodYupSchema
         }}
         dialogSaveButtonLabel="Update"

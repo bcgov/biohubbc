@@ -5,7 +5,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DATE_FORMAT, DATE_LIMIT, TIME_FORMAT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
-import { ISurveySampleMethodData } from 'features/surveys/components/MethodForm';
+import { ISurveySampleMethodData } from 'features/surveys/observations/sampling-sites/create/form/MethodCreateForm';
 import { FormikContextType } from 'formik';
 import get from 'lodash-es/get';
 import React from 'react';

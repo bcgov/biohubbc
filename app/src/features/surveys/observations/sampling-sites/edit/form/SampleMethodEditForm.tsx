@@ -21,14 +21,14 @@ import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { CodesContext } from 'contexts/codesContext';
-import CreateSamplingMethod from 'features/surveys/components/CreateSamplingMethod';
-import EditSamplingMethod from 'features/surveys/components/EditSamplingMethod';
-import { ISurveySampleMethodData } from 'features/surveys/components/MethodForm';
+import CreateSamplingMethod from 'features/surveys/observations/sampling-sites/create/form/CreateSamplingMethod';
+import EditSamplingMethod from 'features/surveys/observations/sampling-sites/edit/form/EditSamplingMethod';
 import { useFormikContext } from 'formik';
-import { IEditSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
+import { IGetSampleLocationDetailsForUpdate } from 'interfaces/useSamplingSiteApi.interface';
 import { useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { getCodesName } from 'utils/Utils';
+import { ISurveySampleMethodData } from './MethodEditForm';
 
 export interface SampleMethodEditFormProps {
   name: string;
@@ -37,11 +37,14 @@ export interface SampleMethodEditFormProps {
 const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
   const { name } = props;
 
-  const { values, errors, setFieldValue, validateField } = useFormikContext<IEditSamplingSiteRequest>();
+  const { values, errors, setFieldValue, validateField } = useFormikContext<IGetSampleLocationDetailsForUpdate>();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [editData, setEditData] = useState<{ data: ISurveySampleMethodData; index: number } | undefined>(undefined);
+
+  console.log(values);
+  console.log(editData);
 
   const codesContext = useContext(CodesContext);
   useEffect(() => {
@@ -50,14 +53,18 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
     setAnchorEl(event.currentTarget);
-    setEditData({ data: values.sampleSite.methods[index], index });
+
+    setEditData({
+      data: values.sample_methods[index],
+      index
+    });
   };
 
   const handleDelete = () => {
     if (editData) {
-      const methods = values.sampleSite.methods;
+      const methods = values.sample_methods;
       methods.splice(editData.index, 1);
-      setFieldValue('methods', methods);
+      setFieldValue(name, methods);
     }
     setAnchorEl(null);
   };
@@ -68,7 +75,7 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
       <CreateSamplingMethod
         open={isCreateModalOpen}
         onSubmit={(data) => {
-          setFieldValue(`${name}[${values.sampleSite.methods.length}]`, data);
+          setFieldValue(`${name}[${values.sample_methods.length}]`, data);
           validateField(`${name}`);
           setAnchorEl(null);
           setIsCreateModalOpen(false);
@@ -80,19 +87,21 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
       />
 
       {/* EDIT SAMPLE METHOD DIALOG */}
-      <EditSamplingMethod
-        initialData={editData?.data}
-        open={isEditModalOpen}
-        onSubmit={(data) => {
-          setFieldValue(`${name}[${editData?.index}]`, data);
-          setAnchorEl(null);
-          setIsEditModalOpen(false);
-        }}
-        onClose={() => {
-          setAnchorEl(null);
-          setIsEditModalOpen(false);
-        }}
-      />
+      {editData?.data && (
+        <EditSamplingMethod
+          initialData={editData?.data}
+          open={isEditModalOpen}
+          onSubmit={(data) => {
+            setFieldValue(`${name}[${editData?.index}]`, data);
+            setAnchorEl(null);
+            setIsEditModalOpen(false);
+          }}
+          onClose={() => {
+            setAnchorEl(null);
+            setIsEditModalOpen(false);
+          }}
+        />
+      )}
 
       <Menu
         open={Boolean(anchorEl)}
@@ -136,19 +145,19 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
             }}>
             Methods added here will be applied to ALL sampling locations. These can be modified later if required.
           </Typography>
-          {errors?.sampleSite && errors.sampleSite.methods && !Array.isArray(errors.sampleSite.methods) && (
+          {errors.sample_methods && !Array.isArray(errors.sample_methods) && (
             <Alert
               sx={{
                 my: 1
               }}
               severity="error">
               <AlertTitle>Missing sampling method</AlertTitle>
-              {errors.sampleSite.methods}
+              {errors.sample_methods}
             </Alert>
           )}
           <Stack gap={1.5}>
             <Stack component={TransitionGroup} gap={1.5}>
-              {values.sampleSite.methods.map((item, index) => (
+              {values.sample_methods.map((item, index) => (
                 <Collapse key={`${item.survey_sample_method_id}`}>
                   <Card
                     variant="outlined"
@@ -199,7 +208,7 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                           </Typography>
                           <Divider component="div" sx={{ mt: 1 }}></Divider>
                           <List dense disablePadding>
-                            {item.periods.map((period) => (
+                            {item.sample_periods?.map((period) => (
                               <ListItem
                                 key={`sample_period_${period.survey_sample_period_id}`}
                                 divider

@@ -2,13 +2,13 @@ import { LoadingButton } from '@mui/lab';
 import { Button, Divider, Paper } from '@mui/material';
 import { Container, Stack } from '@mui/system';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
-import SamplingMethodForm from 'features/surveys/components/SamplingMethodForm';
+import SamplingMethodForm from 'features/surveys/observations/sampling-sites/create/form/SamplingMethodForm';
 import SurveySamplingSiteImportForm from 'features/surveys/components/SurveySamplingSiteImportForm';
 import { useFormikContext } from 'formik';
 import { useSurveyContext } from 'hooks/useContext';
 import { useHistory } from 'react-router';
 import SamplingSiteGroupingsForm from '../../components/SamplingSiteGroupingsForm';
-import { ICreateSamplingSiteRequest } from '../SamplingSitePage';
+import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
 
 interface ISampleSiteCreateFormProps {
   isSubmitting: boolean;

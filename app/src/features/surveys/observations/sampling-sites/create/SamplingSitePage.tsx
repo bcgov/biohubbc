@@ -4,13 +4,13 @@ import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CreateSamplingSiteI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import { ISurveySampleMethodData, SamplingSiteMethodYupSchema } from 'features/surveys/components/MethodForm';
+import { SamplingSiteMethodYupSchema } from 'features/surveys/observations/sampling-sites/create/form/MethodCreateForm';
 import { Formik, FormikProps } from 'formik';
 import { Feature } from 'geojson';
 import History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetSurveyBlock, IGetSurveyStratum } from 'interfaces/useSurveyApi.interface';
+import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
 import { useContext, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
@@ -21,14 +21,6 @@ export interface ISurveySampleSite {
   name: string;
   description: string;
   geojson: Feature;
-}
-
-export interface ICreateSamplingSiteRequest {
-  survey_id: number;
-  survey_sample_sites: ISurveySampleSite[]; // extracted list from shape files
-  methods: ISurveySampleMethodData[];
-  blocks: IGetSurveyBlock[];
-  stratums: IGetSurveyStratum[];
 }
 
 /**
@@ -45,8 +37,6 @@ const SamplingSitePage = () => {
 
   const formikRef = useRef<FormikProps<any>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // const sampleSite = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
 
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
 

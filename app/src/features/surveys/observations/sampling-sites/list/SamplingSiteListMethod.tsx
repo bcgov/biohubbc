@@ -4,7 +4,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import { SamplingSiteListPeriod } from 'features/surveys/observations/sampling-sites/list/SamplingSiteListPeriod';
 import { useCodesContext } from 'hooks/useContext';
-import { IGetSampleMethodRecord } from 'interfaces/useSurveyApi.interface';
+import { IGetSampleMethodRecord } from 'interfaces/useSamplingSiteApi.interface';
 import { useEffect } from 'react';
 import { getCodesName } from 'utils/Utils';
 

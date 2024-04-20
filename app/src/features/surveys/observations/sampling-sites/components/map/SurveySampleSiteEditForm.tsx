@@ -2,13 +2,13 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import { useFormikContext } from 'formik';
-import { IEditSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
+import { IGetSampleLocationDetails } from 'interfaces/useSamplingSiteApi.interface';
 import SamplingSiteEditMapControl from './SamplingSiteEditMapControl';
 
 const SurveySamplingSiteEditForm = () => {
-  const formikProps = useFormikContext<IEditSamplingSiteRequest>();
+  const formikProps = useFormikContext<IGetSampleLocationDetails>();
 
-  if (!formikProps.values.sampleSite.survey_sample_sites.length) {
+  if (!formikProps.values) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -24,7 +24,7 @@ const SurveySamplingSiteEditForm = () => {
         Shapefiles must be compressed into a single zip file. They can include one or more sampling site locations.
       </Typography>
       <SamplingSiteEditMapControl
-        name="sampleSite.survey_sample_sites"
+        name="geojson"
         mapId="study_area_form_map"
         formikProps={formikProps}
       />

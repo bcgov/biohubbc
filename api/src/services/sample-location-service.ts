@@ -81,6 +81,18 @@ export class SampleLocationService extends DBService {
   }
 
   /**
+   * Gets a sample location by sample site ID.
+   *
+   * @param {number} surveyId
+   * @param {number} surveySampleSiteId
+   * @return {*}  {Promise<SampleLocationRecord>}
+   * @memberof SampleLocationService
+   */
+  async getSurveySampleLocationBySiteId(surveyId: number, surveySampleSiteId: number): Promise<SampleLocationRecord> {
+    return this.sampleLocationRepository.getSurveySampleLocationBySiteId(surveyId, surveySampleSiteId);
+  }
+
+  /**
    * Deletes a survey Sample Location.
    *
    * @param {number} surveyId
@@ -157,7 +169,7 @@ export class SampleLocationService extends DBService {
           survey_sample_site_id: sampleSiteRecord.survey_sample_site_id,
           method_lookup_id: item.method_lookup_id,
           description: item.description,
-          periods: item.periods,
+          sample_periods: item.sample_periods,
           method_response_metric_id: item.method_response_metric_id
         };
         return methodService.insertSampleMethod(sampleMethod);
@@ -267,7 +279,7 @@ export class SampleLocationService extends DBService {
           method_lookup_id: item.method_lookup_id,
           method_response_metric_id: item.method_response_metric_id,
           description: item.description,
-          periods: item.periods
+          sample_periods: item.sample_periods
         };
         await methodService.updateSampleMethod(surveyId, sampleMethod);
       } else {
@@ -276,7 +288,7 @@ export class SampleLocationService extends DBService {
           method_lookup_id: item.method_lookup_id,
           method_response_metric_id: item.method_response_metric_id,
           description: item.description,
-          periods: item.periods
+          sample_periods: item.sample_periods
         };
         await methodService.insertSampleMethod(sampleMethod);
       }

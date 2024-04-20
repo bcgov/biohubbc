@@ -297,6 +297,118 @@ export class SampleLocationRepository extends BaseRepository {
   }
 
   /**
+   * Gets a sample location by sample site ID, including methods and periods
+   *
+   * @param {number} surveyId
+   * @param {number} surveySampleSiteId
+   * @return {*}  {Promise<SampleLocationRecord>}
+   * @memberof SampleLocationService
+   */
+  async getSurveySampleLocationBySiteId(surveyId: number, surveySampleSiteId: number): Promise<SampleLocationRecord> {
+    const knex = getKnex();
+    const queryBuilder = knex
+      .queryBuilder()
+      .with('w_survey_sample_period', (qb) => {
+        // Aggregate sample periods into an array of objects
+        qb.select(
+          'ssp.survey_sample_method_id',
+          knex.raw(`
+          json_agg(json_build_object(
+            'survey_sample_period_id', ssp.survey_sample_period_id,
+            'survey_sample_method_id', ssp.survey_sample_method_id,
+            'start_date', ssp.start_date,
+            'start_time', ssp.start_time,
+            'end_date', ssp.end_date,
+            'end_time', ssp.end_time
+          )) as sample_periods
+        `)
+        )
+          .from({ ssp: 'survey_sample_period' })
+          .groupBy('ssp.survey_sample_method_id');
+      })
+      .with('w_survey_sample_method', (qb) => {
+        // Aggregate sample methods into an array of objects and include the corresponding sample periods
+        qb.select(
+          'ssm.survey_sample_site_id',
+          knex.raw(`
+          json_agg(json_build_object(
+            'survey_sample_method_id', ssm.survey_sample_method_id,
+            'survey_sample_site_id', ssm.survey_sample_site_id,
+            'method_lookup_id', ssm.method_lookup_id,
+            'description', ssm.description,
+            'sample_periods', COALESCE(wssp.sample_periods, '[]'::json),
+            'method_response_metric_id', ssm.method_response_metric_id
+          )) as sample_methods`)
+        )
+          .from({ ssm: 'survey_sample_method' })
+          .leftJoin('w_survey_sample_period as wssp', 'wssp.survey_sample_method_id', 'ssm.survey_sample_method_id')
+          .groupBy('ssm.survey_sample_site_id');
+      })
+      .with('w_survey_sample_block', (qb) => {
+        // Aggregate sample blocks into an array of objects
+        qb.select(
+          'ssb.survey_sample_site_id',
+          knex.raw(`
+          json_agg(json_build_object(
+            'survey_sample_block_id', ssb.survey_sample_block_id,
+            'survey_sample_site_id', ssb.survey_sample_site_id,
+            'survey_block_id', ssb.survey_block_id,
+            'name', sb.name,
+            'description', sb.description
+          )) as sample_blocks`)
+        )
+          .from({ ssb: 'survey_sample_block' })
+          .leftJoin('survey_block as sb', 'sb.survey_block_id', 'ssb.survey_block_id')
+          .groupBy('ssb.survey_sample_site_id');
+      })
+      .with('w_survey_sample_stratum', (qb) => {
+        // Aggregate sample stratums into an array of objects
+        qb.select(
+          'ssst.survey_sample_site_id',
+          knex.raw(`
+          json_agg(json_build_object(
+            'survey_sample_stratum_id', ssst.survey_sample_stratum_id,
+            'survey_sample_site_id', ssst.survey_sample_site_id,
+            'survey_stratum_id', ssst.survey_stratum_id,
+            'name', ss.name,
+            'description', ss.description
+          )) as sample_stratums`)
+        )
+          .from({ ssst: 'survey_sample_stratum' })
+          .leftJoin('survey_stratum as ss', 'ss.survey_stratum_id', 'ssst.survey_stratum_id')
+          .groupBy('ssst.survey_sample_site_id');
+      })
+      // Fetch sample sites and include the corresponding sample methods, blocks, and stratums
+      .select(
+        'sss.survey_sample_site_id',
+        'sss.survey_id',
+        'sss.name',
+        'sss.description',
+        'sss.geojson',
+        knex.raw(`COALESCE(wssm.sample_methods, '[]'::json) as sample_methods,
+      COALESCE(wssb.sample_blocks, '[]'::json) as sample_blocks,
+      COALESCE(wssst.sample_stratums, '[]'::json) as sample_stratums`)
+      )
+      .from({ sss: 'survey_sample_site' })
+      .leftJoin('w_survey_sample_method as wssm', 'wssm.survey_sample_site_id', 'sss.survey_sample_site_id')
+      .leftJoin('w_survey_sample_block as wssb', 'wssb.survey_sample_site_id', 'sss.survey_sample_site_id')
+      .leftJoin('w_survey_sample_stratum as wssst', 'wssst.survey_sample_site_id', 'sss.survey_sample_site_id')
+      .where('sss.survey_id', surveyId)
+      .where('sss.survey_sample_site_id', surveySampleSiteId);
+
+    const response = await this.connection.knex(queryBuilder, SampleLocationRecord);
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to get sample site by ID', [
+        'SampleLocationRepository->getSurveySampleSiteById',
+        'rowCount was < 1, expected rowCount > 0'
+      ]);
+    }
+
+    return response.rows[0];
+  }
+
+  /**
    * Updates a survey sample site record.
    *
    * @param {UpdateSampleSiteRecord} sample
@@ -304,6 +416,9 @@ export class SampleLocationRepository extends BaseRepository {
    * @memberof SampleLocationRepository
    */
   async updateSampleSite(sample: UpdateSampleSiteRecord): Promise<SampleSiteRecord> {
+
+    console.log(sample)
+    
     const sql = SQL`
       UPDATE
         survey_sample_site

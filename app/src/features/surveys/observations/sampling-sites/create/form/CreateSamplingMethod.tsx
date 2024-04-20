@@ -3,7 +3,7 @@ import MethodForm, {
   ISurveySampleMethodData,
   SamplingSiteMethodYupSchema,
   SurveySampleMethodDataInitialValues
-} from './MethodForm';
+} from './MethodCreateForm';
 
 interface ISamplingMethodProps {
   open: boolean;

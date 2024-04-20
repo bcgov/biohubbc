@@ -16,15 +16,17 @@ import FullScreenScrollingEventHandler from 'components/map/components/FullScree
 import StaticLayers, { IStaticLayer } from 'components/map/components/StaticLayers';
 import { MapBaseCss } from 'components/map/styles/MapBaseCss';
 import { MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
-import { SurveyContext } from 'contexts/surveyContext';
 import SampleSiteFileUploadItemActionButton from 'features/surveys/observations/sampling-sites/components/map/file-upload/SampleSiteFileUploadItemActionButton';
 import SampleSiteFileUploadItemProgressBar from 'features/surveys/observations/sampling-sites/components/map/file-upload/SampleSiteFileUploadItemProgressBar';
 import SampleSiteFileUploadItemSubtext from 'features/surveys/observations/sampling-sites/components/map/file-upload/SampleSiteFileUploadItemSubtext';
 import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useSurveyContext } from 'hooks/useContext';
+import useDataLoader from 'hooks/useDataLoader';
 import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
 import get from 'lodash-es/get';
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { useParams } from 'react-router';
 import { boundaryUploadHelper, calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
@@ -60,13 +62,22 @@ export interface ISamplingSiteEditMapControlProps {
  */
 const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => {
   const classes = useStyles();
-  const surveyContext = useContext(SurveyContext);
+  const surveyContext = useSurveyContext();
   const urlParams: Record<string, string | number | undefined> = useParams();
-  const surveySampleSiteId: number | null = Number(urlParams['survey_sample_site_id']) || null;
+  const surveySampleSiteId: number = Number(urlParams['survey_sample_site_id']);
 
-  const sampleSiteData = surveyContext.sampleSiteDataLoader.data
-    ? surveyContext.sampleSiteDataLoader.data.sampleSites.find((x) => x.survey_sample_site_id === surveySampleSiteId)
-    : undefined;
+  const biohubApi = useBiohubApi();
+
+  const projectId = surveyContext.projectId;
+  const surveyId = surveyContext.surveyId;
+
+  const samplingSiteDataLoader = useDataLoader(() => {
+    return biohubApi.samplingSite.getSampleSiteById(projectId, surveyId, surveySampleSiteId);
+  });
+
+  if (!samplingSiteDataLoader.data) {
+    samplingSiteDataLoader.load();
+  }
 
   const drawControlsRef = useRef<IDrawControlsRef>();
 
@@ -80,12 +91,12 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
   const [staticLayers, setStaticLayers] = useState<IStaticLayer[]>([]);
 
   const removeFile = () => {
-    setFieldValue(name, sampleSiteData?.geojson ? [sampleSiteData?.geojson] : []);
+    setFieldValue(name, samplingSiteDataLoader.data?.geojson ? [samplingSiteDataLoader.data?.geojson] : []);
     setFieldError(name, undefined);
   };
 
   // Array of sampling site features
-  const samplingSiteGeoJsonFeatures: Feature[] = useMemo(() => get(values, name), [values, name]);
+  const samplingSiteGeoJsonFeatures: Feature[] = useMemo(() => [values.geojson], [values]);
 
   const updateStaticLayers = useCallback(
     (geoJsonFeatures: Feature[]) => {
@@ -149,7 +160,7 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
       <Box component="fieldset">
         <Typography component="legend" data-testid="funding-source-list-found">
           Site Location Preview &zwnj;
-          {samplingSiteGeoJsonFeatures.length > 0 && (
+          {samplingSiteGeoJsonFeatures && (
             <Typography component="span" color="textSecondary" fontWeight="400">
               {`(${samplingSiteGeoJsonFeatures.length} ${pluralize(
                 samplingSiteGeoJsonFeatures.length,
@@ -193,9 +204,9 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
                       drawControlsRef?.current?.deleteLayer(lastDrawn);
                     }
 
-                    const feature = event.layer.toGeoJSON();
+                    const feature = event.layer.toGeoJSON() as Feature;
 
-                    setFieldValue(name, [feature]);
+                    setFieldValue(name, feature);
                     setEditedGeometry([feature]);
 
                     setLastDrawn(id);
@@ -203,12 +214,12 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
                   onLayerEdit={(event: DrawEvents.Edited) => {
                     event.layers.getLayers().forEach((layer: any) => {
                       const feature = layer.toGeoJSON() as Feature;
-                      setFieldValue(name, [feature]);
+                      setFieldValue(name, feature);
                       setEditedGeometry([feature]);
                     });
                   }}
                   onLayerDelete={() => {
-                    setFieldValue(name, sampleSiteData?.geojson ? [sampleSiteData?.geojson] : []);
+                    setFieldValue(name, samplingSiteDataLoader.data?.geojson);
                   }}
                 />
               </FeatureGroup>
@@ -220,7 +231,7 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
                 <BaseLayerControls />
               </LayersControl>
             </LeafletMapContainer>
-            {samplingSiteGeoJsonFeatures.length > 0 && (
+            {samplingSiteGeoJsonFeatures && (
               <Box position="absolute" top="128px" left="16px" zIndex="999">
                 <IconButton
                   aria-label="zoom to initial extent"

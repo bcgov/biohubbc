@@ -11,7 +11,7 @@ import List from '@mui/material/List';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { SamplingSiteListMethod } from 'features/surveys/observations/sampling-sites/list/SamplingSiteListMethod';
-import { IGetSampleLocationDetails } from 'interfaces/useSurveyApi.interface';
+import { IGetSampleLocationDetails } from 'interfaces/useSamplingSiteApi.interface';
 
 export interface ISamplingSiteListSiteProps {
   sampleSite: IGetSampleLocationDetails;

@@ -11,14 +11,14 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useFormikContext } from 'formik';
-import { IGetSampleStratumDetails, IGetSurveyStratum } from 'interfaces/useSurveyApi.interface';
+import { IGetSampleLocationDetails, IGetSampleStratumDetails } from 'interfaces/useSamplingSiteApi.interface';
+import { IGetSurveyStratum } from 'interfaces/useSurveyApi.interface';
 import { useContext, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import BlockStratumCard from '../../components/BlockStratumCard';
-import { IEditSamplingSiteRequest } from './SampleSiteEditForm';
 
 const SamplingStratumEditForm = () => {
-  const { values, setFieldValue } = useFormikContext<IEditSamplingSiteRequest>();
+  const { values, setFieldValue } = useFormikContext<IGetSampleLocationDetails>();
   const surveyContext = useContext(SurveyContext);
 
   const options = surveyContext.surveyDataLoader?.data?.surveyData?.site_selection?.stratums || [];
@@ -26,12 +26,12 @@ const SamplingStratumEditForm = () => {
   const [searchText, setSearchText] = useState('');
 
   const handleAddStratum = (stratum: IGetSurveyStratum) => {
-    setFieldValue(`sampleSite.stratums[${values.sampleSite.stratums.length}]`, stratum);
+    setFieldValue(`sampleSite.stratums[${values.sample_stratums.length}]`, stratum);
   };
   const handleRemoveItem = (stratum: IGetSurveyStratum | IGetSampleStratumDetails) => {
     setFieldValue(
       `sampleSite.stratums`,
-      values.sampleSite.stratums.filter((existing) => existing.survey_stratum_id !== stratum.survey_stratum_id)
+      values.sample_stratums.filter((existing) => existing.survey_sample_stratum_id !== stratum.survey_stratum_id)
     );
   };
 
@@ -55,8 +55,8 @@ const SamplingStratumEditForm = () => {
         options={options}
         filterOptions={(options, state) => {
           const searchFilter = createFilterOptions<IGetSurveyStratum>({ ignoreCase: true });
-          const unselectedOptions = options.filter((item) =>
-            values.sampleSite.stratums.every((existing) => existing.survey_stratum_id !== item.survey_stratum_id)
+          const unselectedOptions = options.filter((option) =>
+            values.sample_stratums.every((existing) => existing.survey_sample_stratum_id !== option.survey_stratum_id)
           );
           return searchFilter(unselectedOptions, state);
         }}
@@ -107,9 +107,9 @@ const SamplingStratumEditForm = () => {
         }}
       />
       <TransitionGroup>
-        {values.sampleSite.stratums.map((item, index) => {
+        {values.sample_stratums?.map((item, index) => {
           return (
-            <Collapse key={`${item.name}-${item.description}-${index}`}>
+            <Collapse key={`${item}-${index}`}>
               <Card
                 variant="outlined"
                 sx={{

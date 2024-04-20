@@ -15,7 +15,7 @@ import { IGetSurveyStratum } from 'interfaces/useSurveyApi.interface';
 import { default as React, useContext, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import BlockStratumCard from '../../components/BlockStratumCard';
-import { ICreateSamplingSiteRequest } from '../SamplingSitePage';
+import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
 
 const SamplingStratumForm: React.FC = () => {
   const { values, setFieldValue } = useFormikContext<ICreateSamplingSiteRequest>();

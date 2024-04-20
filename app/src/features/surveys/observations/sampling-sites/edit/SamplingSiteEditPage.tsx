@@ -10,8 +10,9 @@ import { Feature } from 'geojson';
 import History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IEditSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
-import { useContext, useRef, useState } from 'react';
+import useDataLoader from 'hooks/useDataLoader';
+import { IEditSamplingSiteRequest, IGetSampleLocationDetailsForUpdate } from 'interfaces/useSamplingSiteApi.interface';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import SamplingSiteHeader from '../components/SamplingSiteHeader';
 import SampleSiteEditForm, { samplingSiteYupSchema } from './form/SampleSiteEditForm';
@@ -27,25 +28,33 @@ const SamplingSiteEditPage = () => {
   const urlParams: Record<string, string | number | undefined> = useParams();
   const surveySampleSiteId = Number(urlParams['survey_sample_site_id']);
 
+  const [initialFormValues, setInitialFormValues] = useState<IGetSampleLocationDetailsForUpdate>();
+
   const surveyContext = useContext(SurveyContext);
   const dialogContext = useContext(DialogContext);
 
-  const formikRef = useRef<FormikProps<IEditSamplingSiteRequest>>(null);
+  const formikRef = useRef<FormikProps<IGetSampleLocationDetailsForUpdate>>(null);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
 
-  const initialFormData = {
-    sampleSite: {
-      name: '',
-      description: '',
-      survey_id: 0,
-      survey_sample_sites: [],
-      methods: [],
-      blocks: [],
-      stratums: []
+  const projectId = surveyContext.projectId;
+  const surveyId = surveyContext.surveyId;
+
+  const samplingSiteDataLoader = useDataLoader(() =>
+    biohubApi.samplingSite.getSampleSiteById(projectId, surveyId, surveySampleSiteId)
+  );
+
+  if (!samplingSiteDataLoader.data) {
+    samplingSiteDataLoader.load();
+  }
+
+  useEffect(() => {
+    if (samplingSiteDataLoader.data) {
+      setInitialFormValues(samplingSiteDataLoader.data);
+      formikRef.current?.setValues(samplingSiteDataLoader.data);
     }
-  };
+  }, [samplingSiteDataLoader.data]);
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
@@ -62,21 +71,61 @@ const SamplingSiteEditPage = () => {
     });
   };
 
-  const handleSubmit = async (values: IEditSamplingSiteRequest) => {
+  const handleSubmit = async (values: IGetSampleLocationDetailsForUpdate) => {
     try {
       setIsSubmitting(true);
+
+      // const newMethods = values.sample_methods.map((method) => ({
+      //   survey_sample_method_id: method.survey_sample_method_id,
+      //   survey_sample_site_id: method.survey_sample_site_id,
+      //   method_lookup_id: method.method_lookup_id,
+      //   description: method.description,
+      //   method_response_metric_id: method.method_response_metric_id,
+      //   periods: method.sample_periods.map((period) => {
+      //           return {
+      //             survey_sample_period_id: period.survey_sample_period_id,
+      //             survey_sample_method_id: period.survey_sample_method_id,
+      //             start_date: period.start_date,
+      //             end_date: period.end_date,
+      //             start_time: period.start_time,
+      //             end_time: period.end_time
+      //           };
+      //         })
+      //       : []
+      // }));
+
+      // const updatedMethods = values.sample_methods.map((method) => ({
+      //   survey_sample_method_id: method.survey_sample_method_id,
+      //   survey_sample_site_id: method.survey_sample_site_id,
+      //   method_lookup_id: method.method_lookup_id,
+      //   description: method.description,
+      //   method_response_metric_id: method.method_response_metric_id,
+      //   periods:
+      //     'periods' in method
+      //       ? method.periods.map((period) => {
+      //           return {
+      //             survey_sample_period_id: period.survey_sample_period_id,
+      //             survey_sample_method_id: period.survey_sample_method_id,
+      //             start_date: period.start_date,
+      //             end_date: period.end_date,
+      //             start_time: period.start_time,
+      //             end_time: period.end_time
+      //           };
+      //         })
+      //       : []
+      // }));
 
       // create edit request
       const editSampleSite: IEditSamplingSiteRequest = {
         sampleSite: {
-          name: values.sampleSite.name,
-          description: values.sampleSite.description,
-          survey_id: values.sampleSite.survey_id,
-          survey_sample_sites: values.sampleSite.survey_sample_sites as unknown as Feature[],
-          geojson: values.sampleSite.survey_sample_sites[0],
-          methods: values.sampleSite.methods,
-          blocks: values.sampleSite.blocks,
-          stratums: values.sampleSite.stratums
+          name: values.name,
+          description: values.description,
+          survey_id: values.survey_id,
+          survey_sample_sites: [values.geojson as unknown as Feature],
+          geojson: values.geojson,
+          methods: values.sample_methods,
+          blocks: values.sample_blocks.map((block) => block.survey_sample_block_id),
+          stratums: values.sample_stratums.map((stratum) => stratum.survey_sample_stratum_id)
         }
       };
 
@@ -157,17 +206,16 @@ const SamplingSiteEditPage = () => {
     return true;
   };
 
-  if (!surveyContext.surveyDataLoader.data || !surveyContext.sampleSiteDataLoader.data) {
+  if (!surveyContext.surveyDataLoader.data || !initialFormValues) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
-
       <Formik
         innerRef={formikRef}
-        initialValues={initialFormData}
+        initialValues={initialFormValues}
         validationSchema={samplingSiteYupSchema}
         validateOnBlur={true}
         validateOnChange={false}

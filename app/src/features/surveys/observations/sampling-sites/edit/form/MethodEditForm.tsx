@@ -32,7 +32,7 @@ export interface ISurveySampleMethodData {
   survey_sample_site_id: number | null;
   method_lookup_id: number | null;
   description: string;
-  periods: ISurveySampleMethodPeriodData[];
+  sample_periods: ISurveySampleMethodPeriodData[];
   method_response_metric_id: number | null;
 }
 
@@ -62,7 +62,7 @@ export const SamplingSiteMethodYupSchema = yup.object({
     .typeError('Response Metric is required')
     .required('Response Metric is required'),
   description: yup.string().max(250, 'Maximum 250 characters'),
-  periods: yup
+  sample_periods: yup
     .array(
       yup
         .object({
@@ -165,12 +165,12 @@ const MethodForm = () => {
           </Typography>
           <Box>
             <FieldArray
-              name="periods"
+              name="sample_periods"
               render={(arrayHelpers: FieldArrayRenderProps) => (
                 <Box>
-                  {errors.periods && typeof errors.periods === 'string' && (
+                  {errors.sample_periods && typeof errors.sample_periods === 'string' && (
                     <Alert severity="error" sx={{ mb: 2.5 }}>
-                      {String(errors.periods)}
+                      {String(errors.sample_periods)}
                     </Alert>
                   )}
 
@@ -181,7 +181,7 @@ const MethodForm = () => {
                       mt: -1,
                       p: 0
                     }}>
-                    {values.periods.map((period, index) => {
+                    {values.sample_periods?.map((period, index) => {
                       return (
                         <ListItem
                           disableGutters
@@ -204,25 +204,25 @@ const MethodForm = () => {
                                 <DateTimeFields
                                   date={{
                                     dateLabel: 'Start Date',
-                                    dateName: `periods[${index}].start_date`,
-                                    dateId: `periods_${index}_.start_date`,
+                                    dateName: `sample_periods[${index}].start_date`,
+                                    dateId: `sample_periods_${index}_.start_date`,
                                     dateRequired: true,
                                     dateIcon: mdiCalendarMonthOutline
                                   }}
                                   time={{
                                     timeLabel: '',
-                                    timeName: `periods[${index}].start_time`,
-                                    timeId: `periods_${index}_.start_time`,
+                                    timeName: `sample_periods[${index}].start_time`,
+                                    timeId: `sample_periods_${index}_.start_time`,
                                     timeRequired: false,
                                     timeIcon: mdiClockOutline
                                   }}
-                                  parentName={`periods[${index}]`}
+                                  parentName={`sample_periods[${index}]`}
                                   formikProps={formikProps}
                                 />
-                                {errors.periods &&
-                                  typeof errors.periods !== 'string' &&
-                                  errors.periods[index] &&
-                                  typeof errors.periods[index] === 'string' && (
+                                {errors.sample_periods &&
+                                  typeof errors.sample_periods !== 'string' &&
+                                  errors.sample_periods[index] &&
+                                  typeof errors.sample_periods[index] === 'string' && (
                                     <Typography
                                       variant="caption"
                                       color="error"
@@ -230,7 +230,7 @@ const MethodForm = () => {
                                         mt: '3px',
                                         ml: '14px'
                                       }}>
-                                      {String(errors.periods[index])}
+                                      {String(errors.sample_periods[index])}
                                     </Typography>
                                   )}
                               </Stack>
@@ -243,25 +243,25 @@ const MethodForm = () => {
                                 <DateTimeFields
                                   date={{
                                     dateLabel: 'End Date',
-                                    dateName: `periods[${index}].end_date`,
-                                    dateId: `periods_${index}_.end_date`,
+                                    dateName: `sample_periods[${index}].end_date`,
+                                    dateId: `sample_periods_${index}_.end_date`,
                                     dateRequired: true,
                                     dateIcon: mdiCalendarMonthOutline
                                   }}
                                   time={{
                                     timeLabel: '',
-                                    timeName: `periods[${index}].end_time`,
-                                    timeId: `periods_${index}_.end_time`,
+                                    timeName: `sample_periods[${index}].end_time`,
+                                    timeId: `sample_periods_${index}_.end_time`,
                                     timeRequired: false,
                                     timeIcon: mdiClockOutline
                                   }}
-                                  parentName={`periods[${index}]`}
+                                  parentName={`sample_periods[${index}]`}
                                   formikProps={formikProps}
                                 />
-                                {errors.periods &&
-                                  typeof errors.periods !== 'string' &&
-                                  errors.periods[index] &&
-                                  typeof errors.periods[index] === 'string' && (
+                                {errors.sample_periods &&
+                                  typeof errors.sample_periods !== 'string' &&
+                                  errors.sample_periods[index] &&
+                                  typeof errors.sample_periods[index] === 'string' && (
                                     <Typography
                                       variant="caption"
                                       color="error"
@@ -269,7 +269,7 @@ const MethodForm = () => {
                                         mt: '3px',
                                         ml: '14px'
                                       }}>
-                                      {String(errors.periods[index])}
+                                      {String(errors.sample_periods[index])}
                                     </Typography>
                                   )}
                               </Stack>

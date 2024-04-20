@@ -6,7 +6,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { ImportObservationsButton } from 'features/surveys/observations/sampling-sites/list/import-observations/ImportObservationsButton';
 import { useObservationsContext, useObservationsPageContext } from 'hooks/useContext';
-import { IGetSamplePeriodRecord } from 'interfaces/useSurveyApi.interface';
+import { IGetSamplePeriodRecord } from 'interfaces/useSamplingSiteApi.interface';
 
 export interface ISamplingSiteListPeriodProps {
   samplePeriod: IGetSamplePeriodRecord;

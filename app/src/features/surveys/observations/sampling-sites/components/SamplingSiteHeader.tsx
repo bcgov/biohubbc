@@ -8,9 +8,9 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useFormikContext } from 'formik';
+import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
-import { ICreateSamplingSiteRequest } from '../create/SamplingSitePage';
 
 export interface ISamplingSiteHeaderProps {
   project_id: number;

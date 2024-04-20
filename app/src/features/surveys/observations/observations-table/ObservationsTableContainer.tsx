@@ -33,16 +33,13 @@ import {
 import { ImportObservationsButton } from 'features/surveys/observations/observations-table/import-obsevations/ImportObservationsButton';
 import ObservationsTable from 'features/surveys/observations/observations-table/ObservationsTable';
 import { useCodesContext, useObservationsPageContext, useObservationsTableContext } from 'hooks/useContext';
-import {
-  IGetSampleLocationDetails,
-  IGetSampleMethodRecord,
-  IGetSamplePeriodRecord
-} from 'interfaces/useSurveyApi.interface';
+
 import { useContext } from 'react';
 import { getCodesName } from 'utils/Utils';
-import ConfigureColumnsContainer from './configure-columns/ConfigureColumnsContainer';
+import { ConfigureColumnsContainer } from './configure-table/ConfigureColumnsContainer';
 import ExportHeadersButton from './export-button/ExportHeadersButton';
 import { getMeasurementColumnDefinitions } from './grid-column-definitions/GridColumnDefinitionsUtils';
+import { IGetSampleLocationDetails, IGetSampleMethodRecord, IGetSamplePeriodRecord } from 'interfaces/useSamplingSiteApi.interface';
 
 const ObservationComponent = () => {
   const codesContext = useCodesContext();
@@ -157,7 +154,6 @@ const ObservationComponent = () => {
               />
             </Box>
           </Collapse>
-          <ConfigureColumnsContainer />
           <ExportHeadersButton />
           <ConfigureColumnsContainer
             disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}
