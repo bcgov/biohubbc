@@ -23,11 +23,7 @@ const SurveySamplingSiteEditForm = () => {
         }}>
         Shapefiles must be compressed into a single zip file. They can include one or more sampling site locations.
       </Typography>
-      <SamplingSiteEditMapControl
-        name="geojson"
-        mapId="study_area_form_map"
-        formikProps={formikProps}
-      />
+      <SamplingSiteEditMapControl name="geojson" mapId="study_area_form_map" formikProps={formikProps} />
     </Box>
   );
 };

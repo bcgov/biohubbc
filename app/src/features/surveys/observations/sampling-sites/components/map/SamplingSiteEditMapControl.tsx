@@ -64,7 +64,7 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
   const classes = useStyles();
   const surveyContext = useSurveyContext();
   const urlParams: Record<string, string | number | undefined> = useParams();
-  const surveySampleSiteId: number = Number(urlParams['survey_sample_site_id']);
+  const surveySampleSiteId = Number(urlParams['survey_sample_site_id']);
 
   const biohubApi = useBiohubApi();
 

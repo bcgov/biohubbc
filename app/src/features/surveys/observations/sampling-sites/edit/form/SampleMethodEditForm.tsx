@@ -43,9 +43,6 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [editData, setEditData] = useState<{ data: ISurveySampleMethodData; index: number } | undefined>(undefined);
 
-  console.log(values);
-  console.log(editData);
-
   const codesContext = useContext(CodesContext);
   useEffect(() => {
     codesContext.codesDataLoader.load();
