@@ -351,7 +351,7 @@ POST.apiDoc = {
         schema: {
           type: 'object',
           additionalProperties: false,
-          required: ['methods', 'survey_sample_sites'],
+          required: ['sample_methods', 'survey_sample_sites'],
           properties: {
             survey_id: {
               type: 'integer'
@@ -362,7 +362,7 @@ POST.apiDoc = {
             description: {
               type: 'string'
             },
-            methods: {
+            sample_methods: {
               type: 'array',
               minItems: 1,
               items: {

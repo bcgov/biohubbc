@@ -18,7 +18,7 @@ describe('critter deployments', () => {
     const ajv = new Ajv();
 
     it('is valid openapi v3 schema', () => {
-      expect(ajv.validateSchema((DELETE.apiDoc as unknown) as object)).to.be.true;
+      expect(ajv.validateSchema(DELETE.apiDoc as unknown as object)).to.be.true;
     });
   });
 

@@ -1,7 +1,7 @@
 import EditDialog from 'components/dialog/EditDialog';
 import { IGetSampleMethodRecord } from 'interfaces/useSamplingSiteApi.interface';
 import { ISurveySampleMethodData, SamplingSiteMethodYupSchema } from '../../create/form/MethodCreateForm';
-import MethodEditForm from './MethodEditForm';
+import MethodForm from './MethodEditForm';
 
 interface IEditSamplingMethodProps {
   open: boolean;
@@ -20,7 +20,7 @@ const EditSamplingMethod: React.FC<IEditSamplingMethodProps> = (props) => {
         open={open}
         dialogLoading={false}
         component={{
-          element: <MethodEditForm />,
+          element: <MethodForm />,
           initialValues: initialData,
           validationSchema: SamplingSiteMethodYupSchema
         }}

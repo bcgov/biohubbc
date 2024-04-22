@@ -75,46 +75,6 @@ const SamplingSiteEditPage = () => {
     try {
       setIsSubmitting(true);
 
-      // const newMethods = values.sample_methods.map((method) => ({
-      //   survey_sample_method_id: method.survey_sample_method_id,
-      //   survey_sample_site_id: method.survey_sample_site_id,
-      //   method_lookup_id: method.method_lookup_id,
-      //   description: method.description,
-      //   method_response_metric_id: method.method_response_metric_id,
-      //   periods: method.sample_periods.map((period) => {
-      //           return {
-      //             survey_sample_period_id: period.survey_sample_period_id,
-      //             survey_sample_method_id: period.survey_sample_method_id,
-      //             start_date: period.start_date,
-      //             end_date: period.end_date,
-      //             start_time: period.start_time,
-      //             end_time: period.end_time
-      //           };
-      //         })
-      //       : []
-      // }));
-
-      // const updatedMethods = values.sample_methods.map((method) => ({
-      //   survey_sample_method_id: method.survey_sample_method_id,
-      //   survey_sample_site_id: method.survey_sample_site_id,
-      //   method_lookup_id: method.method_lookup_id,
-      //   description: method.description,
-      //   method_response_metric_id: method.method_response_metric_id,
-      //   periods:
-      //     'periods' in method
-      //       ? method.periods.map((period) => {
-      //           return {
-      //             survey_sample_period_id: period.survey_sample_period_id,
-      //             survey_sample_method_id: period.survey_sample_method_id,
-      //             start_date: period.start_date,
-      //             end_date: period.end_date,
-      //             start_time: period.start_time,
-      //             end_time: period.end_time
-      //           };
-      //         })
-      //       : []
-      // }));
-
       // create edit request
       const editSampleSite: IEditSamplingSiteRequest = {
         sampleSite: {

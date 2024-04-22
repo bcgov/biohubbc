@@ -84,7 +84,7 @@ export const SamplingSiteMethodYupSchema = yup.object({
           }),
           end_time: yup.string().nullable()
         })
-        .test('checkDatesAreSameAndEndTimeIsAfterStart', 'Start and End dates must be different', function (value) {
+        .test('checkDatesAreSameAndEndTimeIsAfterStart', 'End date must be after start date', function (value) {
           const { start_date, end_date, start_time, end_time } = value;
 
           if (start_date === end_date && start_time && end_time) {

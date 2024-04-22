@@ -19,7 +19,7 @@ export interface IEditSamplingSiteRequest {
 export interface ICreateSamplingSiteRequest {
   survey_id: number;
   survey_sample_sites: ISurveySampleSite[]; // extracted list from shape files
-  methods: ISurveySampleMethodData[];
+  sample_methods: ISurveySampleMethodData[];
   blocks: IGetSurveyBlock[];
   stratums: IGetSurveyStratum[];
 }

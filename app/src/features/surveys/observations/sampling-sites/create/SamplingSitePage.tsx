@@ -50,7 +50,7 @@ const SamplingSitePage = () => {
         yup.object({ name: yup.string().default(''), description: yup.string().default(''), geojson: yup.object({}) })
       )
       .min(1, 'At least one sampling site location is required'),
-    methods: yup
+    sample_methods: yup
       .array(yup.object().concat(SamplingSiteMethodYupSchema))
       .min(1, 'At least one sampling method is required')
   });
@@ -138,7 +138,7 @@ const SamplingSitePage = () => {
           name: '',
           description: '',
           survey_sample_sites: [],
-          methods: [],
+          sample_methods: [],
           blocks: [],
           stratums: []
         }}

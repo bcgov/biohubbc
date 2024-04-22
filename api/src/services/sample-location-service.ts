@@ -20,7 +20,7 @@ export interface PostSampleLocations {
   survey_sample_site_id: number | null;
   survey_id: number;
   survey_sample_sites: InsertSampleSiteRecord[];
-  methods: InsertSampleMethodRecord[];
+  sample_methods: InsertSampleMethodRecord[];
   blocks: InsertSampleBlockRecord[];
   stratums: InsertSampleStratumRecord[];
 }
@@ -164,7 +164,7 @@ export class SampleLocationService extends DBService {
     // Loop through all newly created sample sites
     // For reach sample site, create associated sample methods
     const methodPromises = sampleSiteRecords.map((sampleSiteRecord) =>
-      sampleLocations.methods.map((item) => {
+      sampleLocations.sample_methods.map((item) => {
         const sampleMethod = {
           survey_sample_site_id: sampleSiteRecord.survey_sample_site_id,
           method_lookup_id: item.method_lookup_id,

@@ -44,14 +44,14 @@ const SamplingMethodForm = () => {
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
     setAnchorEl(event.currentTarget);
-    setEditData({ data: values.methods[index], index });
+    setEditData({ data: values.sample_methods[index], index });
   };
 
   const handleDelete = () => {
     if (editData) {
-      const data = values.methods;
+      const data = values.sample_methods;
       data.splice(editData.index, 1);
-      setFieldValue('methods', data);
+      setFieldValue('sample_methods', data);
     }
     setAnchorEl(null);
   };
@@ -62,8 +62,8 @@ const SamplingMethodForm = () => {
       <CreateSamplingMethod
         open={isCreateModalOpen}
         onSubmit={(data) => {
-          setFieldValue(`methods[${values.methods.length}]`, data);
-          validateField('methods');
+          setFieldValue(`sample_methods[${values.sample_methods.length}]`, data);
+          validateField('sample_methods');
           setAnchorEl(null);
           setIsCreateModalOpen(false);
         }}
@@ -79,7 +79,7 @@ const SamplingMethodForm = () => {
           initialData={editData?.data}
           open={isEditModalOpen}
           onSubmit={(data) => {
-            setFieldValue(`methods[${editData?.index}]`, data);
+            setFieldValue(`sample_methods[${editData?.index}]`, data);
             setAnchorEl(null);
             setIsEditModalOpen(false);
           }}
@@ -128,18 +128,18 @@ const SamplingMethodForm = () => {
             }}>
             Methods added here will be applied to ALL sampling locations. These can be modified later if required.
           </Typography>
-          {errors.methods && !Array.isArray(errors.methods) && (
+          {errors.sample_methods && !Array.isArray(errors.sample_methods) && (
             <Alert
               sx={{
                 my: 1
               }}
               severity="error">
               <AlertTitle>Missing sampling method</AlertTitle>
-              {errors.methods}
+              {errors.sample_methods}
             </Alert>
           )}
           <Stack component={TransitionGroup} gap={1.5}>
-            {values.methods.map((item, index) => {
+            {values.sample_methods.map((item, index) => {
               console.log(item);
               return (
                 <Collapse key={`sample_method_${item.method_lookup_id || Math.random()}`}>

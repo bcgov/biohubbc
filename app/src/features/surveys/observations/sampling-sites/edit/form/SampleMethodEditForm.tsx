@@ -37,7 +37,7 @@ export interface SampleMethodEditFormProps {
 const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
   const { name } = props;
 
-  const { values, errors, setFieldValue, validateField } = useFormikContext<IGetSampleLocationDetailsForUpdate>();
+  const { values, errors, setFieldValue } = useFormikContext<IGetSampleLocationDetailsForUpdate>();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
@@ -73,7 +73,6 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
         open={isCreateModalOpen}
         onSubmit={(data) => {
           setFieldValue(`${name}[${values.sample_methods.length}]`, data);
-          validateField(`${name}`);
           setAnchorEl(null);
           setIsCreateModalOpen(false);
         }}

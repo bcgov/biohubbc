@@ -17,7 +17,7 @@ describe('SamplePeriodRepository', () => {
   describe('getSamplePeriodsForSurveyMethodId', () => {
     it('should return non-empty rows', async () => {
       const mockRows: any[] = [{}, {}];
-      const mockResponse = ({ rows: mockRows, rowCount: 2 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: mockRows, rowCount: 2 } as any as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const mockSurveyId = 1;
@@ -31,7 +31,7 @@ describe('SamplePeriodRepository', () => {
 
     it('should return empty rows', async () => {
       const mockRows: any[] = [];
-      const mockResponse = ({ rows: mockRows, rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: mockRows, rowCount: 0 } as any as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const mockSurveyId = 1;
@@ -51,7 +51,7 @@ describe('SamplePeriodRepository', () => {
         survey_sample_method_id: 2,
         survey_sample_period_id: 3
       };
-      const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: [mockRow], rowCount: 1 } as any as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const surveyId = 1;
@@ -65,7 +65,7 @@ describe('SamplePeriodRepository', () => {
     });
 
     it('throws an error if rowCount is 0', async () => {
-      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const surveyId = 1;
@@ -82,7 +82,7 @@ describe('SamplePeriodRepository', () => {
     });
 
     it('throws an error if rowCount is > 1', async () => {
-      const mockResponse = ({ rows: [], rowCount: 2 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: [], rowCount: 2 } as any as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const surveyId = 1;
@@ -102,7 +102,7 @@ describe('SamplePeriodRepository', () => {
   describe('updateSamplePeriod', () => {
     it('should update the record and return a single row', async () => {
       const mockRow = {};
-      const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: [mockRow], rowCount: 1 } as any as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const mockSurveyId = 1;
@@ -122,7 +122,7 @@ describe('SamplePeriodRepository', () => {
     });
 
     it('throws an error if rowCount is falsy', async () => {
-      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const mockSurveyId = 1;
@@ -148,7 +148,7 @@ describe('SamplePeriodRepository', () => {
   describe('insertSamplePeriod', () => {
     it('should insert a record and return a single row', async () => {
       const mockRow = {};
-      const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: [mockRow], rowCount: 1 } as any as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const samplePeriod: InsertSamplePeriodRecord = {
@@ -166,7 +166,7 @@ describe('SamplePeriodRepository', () => {
     });
 
     it('throws an error if rowCount is falsy', async () => {
-      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const samplePeriod: InsertSamplePeriodRecord = {
@@ -190,7 +190,7 @@ describe('SamplePeriodRepository', () => {
   describe('deleteSamplePeriodRecord', () => {
     it('should delete a record and return a single row', async () => {
       const mockRow = {};
-      const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: [mockRow], rowCount: 1 } as any as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const mockSurveyId = 1;
@@ -203,7 +203,7 @@ describe('SamplePeriodRepository', () => {
     });
 
     it('throws an error if rowCount is falsy', async () => {
-      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const mockSurveyId = 1;
