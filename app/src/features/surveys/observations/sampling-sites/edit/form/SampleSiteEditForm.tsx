@@ -22,17 +22,15 @@ export interface ISampleSiteEditFormProps {
 }
 
 export const samplingSiteYupSchema = yup.object({
-  sampleSite: yup.object({
-    name: yup.string().default('').max(50, 'Maximum 50 characters.'),
-    description: yup.string().default('').nullable(),
-    survey_sample_sites: yup
-      .array(yup.object())
-      .min(1, 'At least one sampling site location is required')
-      .max(1, 'Only one location is permitted per sampling site'),
-    sample_methods: yup
-      .array(yup.object().concat(SamplingSiteMethodYupSchema))
-      .min(1, 'At least one sampling method is required')
-  })
+  name: yup.string().default('').min(1, 'Minimum 1 character.').max(50, 'Maximum 50 characters.'),
+  description: yup.string().default('').nullable(),
+  survey_sample_sites: yup
+    .array(yup.object())
+    .min(1, 'At least one sampling site location is required')
+    .max(1, 'Only one location is permitted per sampling site'),
+  sample_methods: yup
+    .array(yup.object().concat(SamplingSiteMethodYupSchema))
+    .min(1, 'At least one sampling method is required')
 });
 
 const SampleSiteEditForm = (props: ISampleSiteEditFormProps) => {
@@ -77,7 +75,9 @@ const SampleSiteEditForm = (props: ISampleSiteEditFormProps) => {
               variant="contained"
               color="primary"
               loading={props.isSubmitting}
-              onClick={() => submitForm()}>
+              onClick={() => {
+                submitForm();
+              }}>
               Save and Exit
             </LoadingButton>
             <Button

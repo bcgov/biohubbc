@@ -80,6 +80,7 @@ const SamplingMethodForm = () => {
           open={isEditModalOpen}
           onSubmit={(data) => {
             setFieldValue(`sample_methods[${editData?.index}]`, data);
+            validateField('sample_methods');
             setAnchorEl(null);
             setIsEditModalOpen(false);
           }}

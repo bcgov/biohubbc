@@ -74,6 +74,7 @@ const SamplingSiteEditPage = () => {
   const handleSubmit = async (values: IGetSampleLocationDetailsForUpdate) => {
     try {
       setIsSubmitting(true);
+      console.log(values);
 
       // create edit request
       const editSampleSite: IEditSamplingSiteRequest = {
@@ -188,9 +189,8 @@ const SamplingSiteEditPage = () => {
             survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
             is_submitting={isSubmitting}
             title="Edit Sampling Site"
-            breadcrumb="Edit Sampling Site"
+            breadcrumb="Edit Sampling Siteee"
           />
-
           <SampleSiteEditForm isSubmitting={isSubmitting} />
         </Box>
       </Formik>
