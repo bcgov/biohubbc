@@ -29,7 +29,7 @@ const BCGW_CARIBOU_ENDPOINT =
 const CARIBOU_FEATURES_FILE = "files/features.json";
 
 /**
- * Wrapper for exec util, grants ability to call bin commands from a js script.
+ * Wrapper for exec util, grants ability to call bin commands from js script.
  *
  * @async
  * @param {string} command - Command to execute. ie: `jq < ${fileName}`
@@ -99,7 +99,7 @@ const writeCaribouHerdFeaturesToFile = async () => {
 };
 
 /**
- * Get specific herd GeoJson object from features.json file.
+ * Get specific herd GeoJson from features.json file.
  *
  * @async
  * @param {string} herd - Caribou herd region. ie: `Atlin`.
@@ -113,6 +113,21 @@ const getCaribouHerdGeoJson = async (herd) => {
   return data;
 };
 
+/**
+ * Generate SIMS SQL for existing Caribou deployments in BCTW.
+ *
+ * Steps:
+ *  1. Validate file name is passed as arugment to script.
+ *  2. If features.json file does not exist, fetch geometries and write to file.
+ *  3. Pre-parse input file with jq.
+ *  4. Loop through each item in JSON array and generate project meta SQL.
+ *  5. For each project generate surveys meta SQL and inject Caribou herd geometries.
+ *  6. For each survey generate critter and deployment SQL.
+ *  7. Wrap SQL in transaction block.
+ *
+ * @async
+ * @returns {Promise<string>} SIMS SQL.
+ */
 async function main() {
   const file_name_argument = process.argv[2];
 
@@ -128,7 +143,7 @@ async function main() {
 
     const data = await jqPreParseInputFile(file_name_argument);
 
-    let sql = "";
+    let sql;
 
     for (const project of data) {
       sql += `WITH p AS (INSERT INTO project (name, objectives, coordinator_first_name, coordinator_last_name, coordinator_email_address, start_date, end_date) VALUES ($$Caribou - ${project.herd} - BCTW Telemetry$$, $$BCTW telemetry deployments for ${project.herd} Caribou$$, $$${CONFIG.first_name}$$, $$${CONFIG.last_name}$$, $$${CONFIG.email}$$, $$${project.start_date}$$, $$${project.end_date}$$) RETURNING project_id
@@ -137,6 +152,7 @@ async function main() {
     `;
       for (let sIndex = 0; sIndex < project.surveys.length; sIndex++) {
         const survey = project.surveys[sIndex];
+
         const feature = await getCaribouHerdGeoJson(project.herd);
         const geometry = JSON.stringify(JSON.parse(feature).geometry);
 
