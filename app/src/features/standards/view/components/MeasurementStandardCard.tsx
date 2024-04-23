@@ -10,6 +10,7 @@ interface IMeasurementStandardCard {
   description?: string;
   options?: CBQualitativeOption[];
   unit?: string;
+  small?: boolean;
 }
 
 /**
@@ -19,10 +20,11 @@ interface IMeasurementStandardCard {
  */
 const MeasurementStandardCard = (props: IMeasurementStandardCard) => {
   const [isCollapsed, setIsCollapsed] = useState(true);
+  const { small } = props;
 
   return (
     <Paper
-      sx={{ bgcolor: grey[100], px: 3, py: 2, cursor: 'pointer' }}
+      sx={{ bgcolor: grey[100], px: 3, py: 2, cursor: 'pointer', flex: '1 1 auto' }}
       elevation={0}
       onClick={() => setIsCollapsed(!isCollapsed)}>
       <Box display="flex" justifyContent="space-between" flex="1 1 auto" alignItems="center">
@@ -43,11 +45,12 @@ const MeasurementStandardCard = (props: IMeasurementStandardCard) => {
             {props.description ? props.description : 'No description'}
           </Typography>
         </Box>
-        <Stack gap={2}>
+        <Stack gap={small ? 1 : 2}>
           {props.options?.map((option) => (
             <Card
               sx={{
-                p: 2,
+                p: small ? 1 : 2,
+                px: 2,
                 bgcolor: grey[300],
                 '&::first-letter': {
                   textTransform: 'capitalize'
