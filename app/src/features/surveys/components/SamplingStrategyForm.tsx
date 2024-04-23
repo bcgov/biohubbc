@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
-import SurveyBlockSection from './SurveyBlockForm';
+import SurveyBlockSection from './blocks/SurveyBlockForm';
 import SurveySiteSelectionForm from './SurveySiteSelectionForm';
 import SurveyStratumForm from './SurveyStratumForm';
 

@@ -15,6 +15,7 @@ export interface IPurposeAndMethodologyForm {
     intended_outcome_ids: number[];
     additional_details: string;
     vantage_code_ids: number[];
+    revision_count: number;
   };
 }
 
@@ -22,7 +23,8 @@ export const PurposeAndMethodologyInitialValues: IPurposeAndMethodologyForm = {
   purpose_and_methodology: {
     intended_outcome_ids: [],
     additional_details: '',
-    vantage_code_ids: []
+    vantage_code_ids: [],
+    revision_count: 0
   }
 };
 

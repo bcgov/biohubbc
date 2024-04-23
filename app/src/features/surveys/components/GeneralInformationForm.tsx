@@ -39,6 +39,7 @@ export interface IGeneralInformationForm {
     end_date: string;
     progress_id: number | null;
     survey_types: number[];
+    revision_count: number
   };
   species: {
     focal_species: ITaxonomy[];
@@ -59,7 +60,8 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
     start_date: '',
     end_date: '',
     progress_id: null,
-    survey_types: []
+    survey_types: [],
+    revision_count: 0
   },
   species: {
     focal_species: [],

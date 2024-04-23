@@ -1,5 +1,6 @@
 import { PublishStatus } from 'constants/attachments';
 import { IAgreementsForm } from 'features/surveys/components/AgreementsForm';
+import { IBlockData } from 'features/surveys/components/blocks/BlockForm';
 import { IGeneralInformationForm } from 'features/surveys/components/GeneralInformationForm';
 import { IProprietaryDataForm } from 'features/surveys/components/ProprietaryDataForm';
 import { IPurposeAndMethodologyForm } from 'features/surveys/components/PurposeAndMethodologyForm';
@@ -64,7 +65,6 @@ export interface IGetSurveyForViewResponsePurposeAndMethodology {
   intended_outcome_ids: number[];
   additional_details: string;
   vantage_code_ids: number[];
-  surveyed_all_areas: StringBoolean;
 }
 
 export interface IGetSurveyForViewResponseProprietor {
@@ -155,7 +155,9 @@ export interface SurveyBasicFieldsObject {
   focal_species_names: string[];
 }
 
-export interface SurveyUpdateObject extends ISurveyLocationForm {
+export type SurveyUpdateObject = ISurveyUpdateObject & ISurveySiteSelectionForm;
+
+interface ISurveyUpdateObject extends ISurveyLocationForm {
   survey_details?: {
     survey_name: string;
     start_date: string;
@@ -174,19 +176,16 @@ export interface SurveyUpdateObject extends ISurveyLocationForm {
       permit_type: string;
     }[];
   };
-  funding_sources?: [
-    {
-      funding_source_id?: number;
-      amount: number;
-      revision_count: number;
-    }
-  ];
+  funding_sources?: {
+    funding_source_id: number;
+    amount: number;
+    revision_count: number;
+  }[];
   partnerships?: IGetSurveyForUpdateResponsePartnerships;
   purpose_and_methodology?: {
     intended_outcome_ids: number[];
     additional_details: string;
     vantage_code_ids: number[];
-    surveyed_all_areas: StringBoolean;
     revision_count: number;
   };
   proprietor?: {
@@ -198,6 +197,7 @@ export interface SurveyUpdateObject extends ISurveyLocationForm {
     disa_required: StringBoolean;
   };
   participants?: IGetSurveyParticipant[];
+  blocks: IBlockData[];
 }
 
 export interface SurveySupplementaryData {

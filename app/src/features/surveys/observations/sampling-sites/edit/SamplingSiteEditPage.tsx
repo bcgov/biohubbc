@@ -74,7 +74,6 @@ const SamplingSiteEditPage = () => {
   const handleSubmit = async (values: IGetSampleLocationDetailsForUpdate) => {
     try {
       setIsSubmitting(true);
-      console.log(values);
 
       // create edit request
       const editSampleSite: IEditSamplingSiteRequest = {

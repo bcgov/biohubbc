@@ -1,6 +1,6 @@
 import EditDialog from 'components/dialog/EditDialog';
 import BlockForm from './BlockForm';
-import { BlockYupSchema } from './SurveyBlockForm';
+import { BlockCreateYupSchema } from './SurveyBlockForm';
 interface ICreateBlockProps {
   open: boolean;
   onSave: (data: any) => void;
@@ -23,7 +23,7 @@ const CreateSurveyBlockDialog: React.FC<ICreateBlockProps> = (props) => {
             description: '',
             sample_block_count: 0
           },
-          validationSchema: BlockYupSchema
+          validationSchema: BlockCreateYupSchema
         }}
         dialogSaveButtonLabel="Add Block"
         onCancel={() => onClose()}

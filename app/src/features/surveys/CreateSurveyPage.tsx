@@ -27,7 +27,7 @@ import { GeneralInformationInitialValues } from './components/GeneralInformation
 import { ProprietaryDataInitialValues } from './components/ProprietaryDataForm';
 import { PurposeAndMethodologyInitialValues } from './components/PurposeAndMethodologyForm';
 import { SurveyLocationInitialValues } from './components/StudyAreaForm';
-import { SurveyBlockInitialValues } from './components/SurveyBlockForm';
+import { SurveyBlockInitialValues } from './components/blocks/SurveyBlockForm';
 import { SurveyFundingSourceFormInitialValues } from './components/SurveyFundingSourceForm';
 import { SurveySiteSelectionInitialValues } from './components/SurveySiteSelectionForm';
 import { SurveyUserJobFormInitialValues } from './components/SurveyUserForm';

@@ -25,13 +25,15 @@ export const SurveyBlockInitialValues = {
 };
 
 // Form validation for Block Item
-export const BlockYupSchema = yup.object({
+export const BlockCreateYupSchema = yup.object({
   name: yup.string().required('Name is required').max(50, 'Maximum 50 characters'),
-  description: yup.string().required('Description is required').max(250, 'Maximum 250 characters'),
-  sample_block_count: yup.number().required('Sample block count is required').min(0)
+  description: yup.string().required('Description is required').max(250, 'Maximum 250 characters')
 });
 
-export const SurveyBlockYupSchema = yup.array(BlockYupSchema);
+// Form validation for Block Item
+export const BlockEditYupSchema = BlockCreateYupSchema.shape({
+  sample_block_count: yup.number().required('Sample block count is required.')
+});
 
 export interface ISurveyBlock {
   index: number;
@@ -43,7 +45,7 @@ export interface ISurveyBlock {
   };
 }
 
-const SurveyBlockSection: React.FC = () => {
+const SurveyBlockForm: React.FC = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isYesNoDialogOpen, setIsYesNoDialogOpen] = useState(false);
@@ -206,4 +208,4 @@ const SurveyBlockSection: React.FC = () => {
   );
 };
 
-export default SurveyBlockSection;
+export default SurveyBlockForm;

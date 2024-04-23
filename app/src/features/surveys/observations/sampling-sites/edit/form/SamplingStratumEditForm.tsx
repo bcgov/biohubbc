@@ -26,11 +26,11 @@ const SamplingStratumEditForm = () => {
   const [searchText, setSearchText] = useState('');
 
   const handleAddStratum = (stratum: IGetSurveyStratum) => {
-    setFieldValue(`sampleSite.stratums[${values.sample_stratums.length}]`, stratum);
+    setFieldValue(`stratums[${values.sample_stratums.length}]`, stratum);
   };
   const handleRemoveItem = (stratum: IGetSurveyStratum | IGetSampleStratumDetails) => {
     setFieldValue(
-      `sampleSite.stratums`,
+      `stratums`,
       values.sample_stratums.filter((existing) => existing.survey_sample_stratum_id !== stratum.survey_stratum_id)
     );
   };

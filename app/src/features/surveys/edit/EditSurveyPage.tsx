@@ -19,7 +19,7 @@ import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { IEditSurveyRequest, SurveyUpdateObject } from 'interfaces/useSurveyApi.interface';
+import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
@@ -68,6 +68,8 @@ const EditSurveyPage = () => {
 
   const surveyData = editSurveyDataLoader.data?.surveyData;
 
+  console.log(surveyData);
+
   const defaultCancelDialogProps = {
     dialogTitle: EditSurveyI18N.cancelTitle,
     dialogText: EditSurveyI18N.cancelText,
@@ -112,11 +114,21 @@ const EditSurveyPage = () => {
   const handleSubmit = async (values: IEditSurveyRequest) => {
     setIsSaving(true);
     try {
-      const response = await biohubApi.survey.updateSurvey(
-        projectContext.projectId,
-        surveyId,
-        values as unknown as SurveyUpdateObject
-      );
+      const response = await biohubApi.survey.updateSurvey(projectContext.projectId, surveyId, {
+        blocks: values.blocks,
+        funding_sources: values.funding_sources,
+        locations: values.locations.map((location) => ({survey_location_id: location.survey_location_id,
+          geojson: location.geojson, name: location.name, description: location.description, revision_count: location.revision_count
+        })),
+        participants: values.participants,
+        partnerships: values.partnerships,
+        permit: values.permit,
+        proprietor: values.proprietor,
+        purpose_and_methodology: values.purpose_and_methodology,
+        site_selection: values.site_selection,
+        species: values.species,
+        survey_details: values.survey_details
+      });
 
       if (!response?.id) {
         showEditErrorDialog({
