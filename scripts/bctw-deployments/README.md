@@ -60,12 +60,14 @@ WHERE
 ```
 
 ## How to run
-1. Create input file
-2. Pipe file into script and output to sql file.
-3. Import sql file into SIMS and execute.
+1. Create input file.
+2. Call run.sh with input file as argument.
 
 ```bash
-./main.sh < {input-filename}.json > deployments.sql
+./run.sh < {input-filename}.json
+
+# Dev example
+./run.sh < input.dev.json
 ```
 
 ## Requirements
