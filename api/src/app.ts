@@ -115,7 +115,9 @@ const openAPIFramework = initialize({
       label: 'errorMiddleware',
       message: 'error',
       error,
-      req_urL: `${req.method} ${req.url}`
+      req_url: `${req.method} ${req.url}`,
+      req_params: req.params,
+      req_body: req.body
     });
 
     // Ensure all errors (intentionally thrown or not) are in the same format as specified by the schema
@@ -211,9 +213,9 @@ function validateAllResponses(req: Request, res: Response, next: NextFunction) {
         defaultLog.debug({
           label: 'validateAllResponses',
           message: validationMessage,
-          responseBody: body,
-          errors: errorList,
-          req_urL: `${req.method} ${req.url}`
+          error: errorList,
+          req_url: `${req.method} ${req.url}`,
+          res_body: body
         });
 
         throw new HTTP500(validationMessage, errorList);
