@@ -161,15 +161,6 @@ async function main() {
     for (let pIndex = 0; pIndex < data.length; pIndex++) {
       const project = data[pIndex];
 
-      if (!project.herd) {
-        /**
-         * Some invesitgating here is required to find out why project.herd is null.
-         * Assuming it's cause some critter_ids in BCTW dont match with critters in Critterbase.
-         * Debug: console.log(JSON.stringify(project))
-         */
-        continue;
-      }
-
       sql += `WITH p AS (INSERT INTO project (name, objectives, coordinator_first_name, coordinator_last_name, coordinator_email_address, start_date, end_date) VALUES ($$Caribou - ${project.herd} - BCTW Telemetry$$, $$BCTW telemetry deployments for ${project.herd} Caribou$$, $$${CONFIG.first_name}$$, $$${CONFIG.last_name}$$, $$${CONFIG.email}$$, $$${project.start_date}$$, $$${project.end_date}$$) RETURNING project_id
       ), ppp AS (INSERT INTO project_participation (project_id, system_user_id, project_role_id) SELECT project_id, (select system_user_id from system_user where user_identifier = $$mauberti$$), (select project_role_id from project_role where name = $$${CONFIG.project_role}$$) FROM p
       ), pp AS (INSERT INTO project_program (project_id, program_id) SELECT project_id, (select program_id from program where name = $$${CONFIG.project_program}$$) FROM p
@@ -179,18 +170,17 @@ async function main() {
 
         const { feature, geometry } = await getCaribouHerdGeoJson(project.herd);
 
-        if (!feature) {
-          // Safeguard incase a Caribou has a herd that does not match the BCGW herds.
-          throw `Error: Missing BCGW feature for: ${project.herd}`;
-        }
-
         sql += `), s${sIndex} AS (INSERT INTO survey (project_id, name, lead_first_name, lead_last_name, start_date, end_date, progress_id) SELECT project_id, $$Caribou - ${survey.year} - ${project.herd} - BCTW Telemetry$$, $$${CONFIG.first_name}$$, $$${CONFIG.last_name}$$, $$${project.start_date}$$, $$${project.end_date}$$, (select survey_progress_id from survey_progress where name = $$${CONFIG.survey_status}$$) FROM p RETURNING survey_id
           ), st${sIndex} AS (INSERT INTO survey_type (survey_id, type_id) SELECT survey_id, (select type_id from type where name = $$${CONFIG.survey_type}$$) FROM s${sIndex}
           ), ss${sIndex} AS (INSERT INTO study_species (survey_id, is_focal, itis_tsn) SELECT survey_id, true, ${CONFIG.caribou_tsn} FROM s${sIndex}
           ), sio1${sIndex} AS (INSERT INTO survey_intended_outcome (survey_id, intended_outcome_id) SELECT survey_id, (select intended_outcome_id from intended_outcome where name = $$${CONFIG.survey_intended_outcome_1}$$) FROM s${sIndex}
           ), sio2${sIndex} AS (INSERT INTO survey_intended_outcome (survey_id, intended_outcome_id) SELECT survey_id, (select intended_outcome_id from intended_outcome where name = $$${CONFIG.survey_intended_outcome_2}$$) FROM s${sIndex}
-          ), sl${sIndex} AS (INSERT INTO survey_location (survey_id, name, description, geojson, geography) SELECT survey_id, $$${project.herd}$$, $$${project.herd} herd region boundary$$, $$[${feature}]$$, public.geography(public.ST_GeomFromGeoJSON($$${geometry}$$)) FROM s${sIndex}
       `;
+
+        if (feature) {
+          sql += `), sl${sIndex} AS (INSERT INTO survey_location (survey_id, name, description, geojson, geography) SELECT survey_id, $$${project.herd}$$, $$${project.herd} herd region boundary$$, $$[${feature}]$$, public.geography(public.ST_GeomFromGeoJSON($$${geometry}$$)) FROM s${sIndex}`;
+        }
+
         for (let dIndex = 0; dIndex < survey.deployments.length; dIndex++) {
           const deployment = survey.deployments[dIndex];
           const isLastDeployment =

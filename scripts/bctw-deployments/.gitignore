@@ -1,5 +1,5 @@
 # Ignore all files in this directory
 files/*
 
-!files/test-data.json
+!files/input.dev.json
 
