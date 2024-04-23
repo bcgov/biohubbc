@@ -7,11 +7,29 @@ matching critters and injects Caribou region herd geometries.
 ## Pre requisites
 1. BCTW SQL - Export valid telemetry collar deployments as JSON.
 ```sql
-SELECT deployment_id, critter_id, attachment_start FROM collar_animal_assignment WHERE bctw.is_valid(valid_to);
+SELECT
+  deployment_id,
+  critter_id,
+  attachment_start
+FROM collar_animal_assignment
+WHERE bctw.is_valid(valid_to)
+AND attachment_start IS NOT NULL;
 ```
 2. Critterbase SQL - Export all caribou as JSON.
 ```sql
-SELECT critter_id FROM critter WHERE itis_tsn = 180701;
+SELECT
+	c.critter_id,
+	u.unit_name
+FROM
+	critter c
+JOIN critter_collection_unit cc
+ON
+	c.critter_id = cc.critter_id
+JOIN xref_collection_unit u
+ON
+	cc.collection_unit_id = u.collection_unit_id
+WHERE
+	c.itis_tsn = 180701;
 ```
 3. Create JSON file from previous outputs as single array.
 

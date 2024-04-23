@@ -7,7 +7,8 @@ const exec = util.promisify(require("child_process").exec);
 
 /**
  * Static config for SQL formatting.
- * Potentially could move this into an .env file, but maybe overkill for this script.
+ * Potentially could move this into an .env file / cli arguments,
+ * but maybe overkill for this script.
  *
  */
 const CONFIG = {
@@ -37,7 +38,9 @@ const CARIBOU_FEATURES_FILE = "files/features.json";
  * @returns {Promise<string>} Standard output as string.
  */
 const execute = async (command) => {
-  const { stdout, stderr } = await exec(`${command}`);
+  const { stdout, stderr } = await exec(`${command}`, {
+    maxBuffer: 2048 * 2048,
+  });
   if (stderr) {
     // This is the error message from the external command.
     throw stderr;
@@ -62,7 +65,13 @@ const execute = async (command) => {
 const jqPreParseInputFile = async (fileName) => {
   const data = await execute(
     `
-    jq '[group_by(.critter_id)[]|add] | group_by(.unit_name) | .[] |=
+    jq '[group_by(.critter_id)[]|add]
+      | map(select(
+        .unit_name != null and
+        .deployment_id != null and
+        .attachment_start != null and
+        .critter_id != null))
+      | group_by(.unit_name) | .[] |=
       {
         herd: .[].unit_name,
         start_date: min_by(.attachment_start) | .attachment_start,
@@ -99,18 +108,22 @@ const writeCaribouHerdFeaturesToFile = async () => {
 };
 
 /**
- * Get specific herd GeoJson from features.json file.
+ * Get specific herd GeoJson feature and geometry from features.json file.
  *
  * @async
  * @param {string} herd - Caribou herd region. ie: `Atlin`.
- * @returns {Promise<string>} GeoJson feature as string.
+ * @returns {Promise<{feature: string, geometry: string}>} Object containing string GeoJsons.
  */
 const getCaribouHerdGeoJson = async (herd) => {
-  const data = await execute(
-    `jq -c '.features[] | select(.properties.HERD_NAME == "${herd}")' < ${CARIBOU_FEATURES_FILE}`,
-  );
+  const featureJq = `jq -c '.features[] | select(.properties.HERD_NAME == "${herd}")' < ${CARIBOU_FEATURES_FILE}`;
+  const geometryJq = `jq -c '.features[] | select(.properties.HERD_NAME == "${herd}") |.geometry' < ${CARIBOU_FEATURES_FILE}`;
 
-  return data;
+  const [feature, geometry] = await Promise.all([
+    execute(featureJq),
+    execute(geometryJq),
+  ]);
+
+  return { feature, geometry };
 };
 
 /**
@@ -145,7 +158,18 @@ async function main() {
 
     let sql = "";
 
-    for (const project of data) {
+    for (let pIndex = 0; pIndex < data.length; pIndex++) {
+      const project = data[pIndex];
+
+      if (!project.herd) {
+        /**
+         * Some invesitgating here is required to find out why project.herd is null.
+         * Assuming it's cause some critter_ids in BCTW dont match with critters in Critterbase.
+         * Debug: console.log(JSON.stringify(project))
+         */
+        continue;
+      }
+
       sql += `WITH p AS (INSERT INTO project (name, objectives, coordinator_first_name, coordinator_last_name, coordinator_email_address, start_date, end_date) VALUES ($$Caribou - ${project.herd} - BCTW Telemetry$$, $$BCTW telemetry deployments for ${project.herd} Caribou$$, $$${CONFIG.first_name}$$, $$${CONFIG.last_name}$$, $$${CONFIG.email}$$, $$${project.start_date}$$, $$${project.end_date}$$) RETURNING project_id
       ), ppp AS (INSERT INTO project_participation (project_id, system_user_id, project_role_id) SELECT project_id, (select system_user_id from system_user where user_identifier = $$mauberti$$), (select project_role_id from project_role where name = $$${CONFIG.project_role}$$) FROM p
       ), pp AS (INSERT INTO project_program (project_id, program_id) SELECT project_id, (select program_id from program where name = $$${CONFIG.project_program}$$) FROM p
@@ -153,12 +177,11 @@ async function main() {
       for (let sIndex = 0; sIndex < project.surveys.length; sIndex++) {
         const survey = project.surveys[sIndex];
 
-        const feature = await getCaribouHerdGeoJson(project.herd);
-        const geometry = JSON.stringify(JSON.parse(feature).geometry);
+        const { feature, geometry } = await getCaribouHerdGeoJson(project.herd);
 
         if (!feature) {
           // Safeguard incase a Caribou has a herd that does not match the BCGW herds.
-          throw `Error: Missing herd geometry for: ${project.herd}`;
+          throw `Error: Missing BCGW feature for: ${project.herd}`;
         }
 
         sql += `), s${sIndex} AS (INSERT INTO survey (project_id, name, lead_first_name, lead_last_name, start_date, end_date, progress_id) SELECT project_id, $$Caribou - ${survey.year} - ${project.herd} - BCTW Telemetry$$, $$${CONFIG.first_name}$$, $$${CONFIG.last_name}$$, $$${project.start_date}$$, $$${project.end_date}$$, (select survey_progress_id from survey_progress where name = $$${CONFIG.survey_status}$$) FROM p RETURNING survey_id
@@ -170,20 +193,24 @@ async function main() {
       `;
         for (let dIndex = 0; dIndex < survey.deployments.length; dIndex++) {
           const deployment = survey.deployments[dIndex];
-          if (sIndex == project.surveys.length - 1) {
-            sql += `), survey${sIndex}critter${dIndex} AS (INSERT INTO critter (survey_id, critterbase_critter_id) SELECT survey_id, $$${deployment.critter_id}$$ FROM s${sIndex} RETURNING critter_id
-          ) INSERT INTO deployment (critter_id, bctw_deployment_id) SELECT critter_id, $$${deployment.deployment_id}$$ FROM survey${sIndex}critter${dIndex};\n\n`;
-          } else {
-            sql += `), survey${sIndex}critter${dIndex} AS (INSERT INTO critter (survey_id, critterbase_critter_id) SELECT survey_id, $$${deployment.critter_id}$$ FROM s${sIndex} RETURNING critter_id
-          ), survey${sIndex}deployment${dIndex} AS (INSERT INTO deployment (critter_id, bctw_deployment_id) SELECT critter_id, $$${deployment.deployment_id}$$ FROM survey${sIndex}critter${dIndex}`;
-          }
+          const isLastDeployment =
+            sIndex === project.surveys.length - 1 &&
+            dIndex === survey.deployments.length - 1;
+
+          const sqlPrepend = isLastDeployment
+            ? " "
+            : `, survey${sIndex}deployment${dIndex} AS (`;
+
+          sql += `), survey${sIndex}critter${dIndex} AS (INSERT INTO critter (survey_id, critterbase_critter_id) SELECT survey_id, $$${deployment.critter_id}$$ FROM s${sIndex} RETURNING critter_id
+          )${sqlPrepend}INSERT INTO deployment (critter_id, bctw_deployment_id) SELECT critter_id, $$${deployment.deployment_id}$$ FROM survey${sIndex}critter${dIndex}`;
         }
       }
+      sql += ";";
     }
 
-    console.log(`${sql}`);
+    console.log(`SET search_path=public,biohub; BEGIN; ${sql} COMMIT;`);
   } catch (err) {
-    console.error(err);
+    console.error(`main.js -> ${err}`);
   }
 }
 
