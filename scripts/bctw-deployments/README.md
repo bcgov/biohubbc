@@ -64,10 +64,10 @@ WHERE
 2. Call run.sh with input file as argument.
 
 ```bash
-./run.sh < {input-filename}.json
+./run.sh {input-filename}.json
 
 # Dev example
-./run.sh < input.dev.json
+./run.sh input.dev.json
 ```
 
 ## Requirements
