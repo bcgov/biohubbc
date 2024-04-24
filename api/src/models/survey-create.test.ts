@@ -380,10 +380,6 @@ describe('PostPurposeAndMethodologyData', () => {
     it('sets vantage_code_ids', () => {
       expect(data.vantage_code_ids).to.eql([]);
     });
-
-    it('sets surveyed_all_areas', () => {
-      expect(data.surveyed_all_areas).to.equal(null);
-    });
   });
 
   describe('All values provided with first nations id', () => {
@@ -410,10 +406,6 @@ describe('PostPurposeAndMethodologyData', () => {
 
     it('sets vantage_code_ids', () => {
       expect(data.vantage_code_ids).to.eql(obj.vantage_code_ids);
-    });
-
-    it('sets surveyed_all_areas', () => {
-      expect(data.surveyed_all_areas).to.eql(obj.surveyed_all_areas);
     });
   });
 });
