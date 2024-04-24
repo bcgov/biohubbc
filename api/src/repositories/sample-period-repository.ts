@@ -120,7 +120,7 @@ export class SamplePeriodRepository extends BaseRepository {
         survey_sample_period.survey_sample_period_id = ${surveySamplePeriodId}
       AND
         survey_sample_site.survey_id = ${surveyId}
-      ORDER BYsurvey_sample_period.start_date, survey_sample_period.start_time;
+      ORDER BY survey_sample_period.start_date, survey_sample_period.start_time;
     `;
 
     const response = await this.connection.sql(sqlStatement, SamplePeriodHierarchyIds);
