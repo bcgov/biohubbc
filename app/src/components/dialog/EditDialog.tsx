@@ -130,7 +130,6 @@ export const EditDialog = <T extends FormikValues>(props: PropsWithChildren<IEdi
         props.onSave(values);
       }}>
       {(formikProps) => {
-        console.log(formikProps.errors);
         return (
           <Dialog
             data-testid="edit-dialog"

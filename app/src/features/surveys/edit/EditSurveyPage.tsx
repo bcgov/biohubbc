@@ -68,8 +68,6 @@ const EditSurveyPage = () => {
 
   const surveyData = editSurveyDataLoader.data?.surveyData;
 
-  console.log(surveyData);
-
   const defaultCancelDialogProps = {
     dialogTitle: EditSurveyI18N.cancelTitle,
     dialogText: EditSurveyI18N.cancelText,
@@ -117,8 +115,12 @@ const EditSurveyPage = () => {
       const response = await biohubApi.survey.updateSurvey(projectContext.projectId, surveyId, {
         blocks: values.blocks,
         funding_sources: values.funding_sources,
-        locations: values.locations.map((location) => ({survey_location_id: location.survey_location_id,
-          geojson: location.geojson, name: location.name, description: location.description, revision_count: location.revision_count
+        locations: values.locations.map((location) => ({
+          survey_location_id: location.survey_location_id,
+          geojson: location.geojson,
+          name: location.name,
+          description: location.description,
+          revision_count: location.revision_count
         })),
         participants: values.participants,
         partnerships: values.partnerships,

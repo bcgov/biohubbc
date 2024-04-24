@@ -39,7 +39,7 @@ export interface IGeneralInformationForm {
     end_date: string;
     progress_id: number | null;
     survey_types: number[];
-    revision_count: number
+    revision_count: number;
   };
   species: {
     focal_species: ITaxonomy[];
