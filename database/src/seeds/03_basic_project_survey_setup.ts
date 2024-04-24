@@ -618,7 +618,7 @@ const insertObservationSubCount = (surveyObservationId: number) => `
   (
     survey_observation_id,
     subcount,
-    sign_id
+    observation_subcount_sign_id
   )
   VALUES
   (

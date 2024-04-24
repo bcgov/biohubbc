@@ -16,6 +16,7 @@ interface ISamplingStratumChips {
 
 /**
  * Returns horizontal stack of ColouredRectangleChip for displaying sample stratums
+ *
  * @param props
  * @returns
  */

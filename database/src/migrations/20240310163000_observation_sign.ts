@@ -2,10 +2,10 @@ import { Knex } from 'knex';
 
 /**
  * Create new tables with initial data:
- * - sign
+ * - observation_subcount_sign
  *
  * Update existing tables:
- * - Add 'sign' column to subcount table
+ * - Add 'observation_subcount_sign_id' column to subcount table, referencing observation_subcount_sign table
  *
  * @export
  * @param {Knex} knex
@@ -19,7 +19,7 @@ export async function up(knex: Knex): Promise<void> {
     SET search_path = biohub;
 
     CREATE TABLE observation_subcount_sign (
-      observation_subcount_sign_id                  integer          GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+      observation_subcount_sign_id                  integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       name                                          varchar(32)        NOT NULL,
       description                                   varchar(256),
       record_end_date                               timestamptz(6),
@@ -52,8 +52,8 @@ export async function up(knex: Knex): Promise<void> {
     -- Modify observation_subcount table to include sign
     ----------------------------------------------------------------------------------------
     ALTER TABLE observation_subcount ADD COLUMN observation_subcount_sign_id INTEGER;
-    COMMENT ON COLUMN observation_subcount.observation_subcount_sign_id IS 'Foreign key referencing the observation subcount sign id.';
-    ALTER TABLE observation_subcount ADD CONSTRAINT observation_subcount_sign_fk1 FOREIGN KEY (sign_id) REFERENCES observation_subcount_sign(observation_subcount_sign_id);
+    COMMENT ON COLUMN observation_subcount.observation_subcount_sign_id IS 'Foreign key referencing a record in the observation_subcount_sign table.';
+    ALTER TABLE observation_subcount ADD CONSTRAINT observation_subcount_sign_fk1 FOREIGN KEY (observation_subcount_sign_id) REFERENCES observation_subcount_sign(observation_subcount_sign_id);
     
     ----------------------------------------------------------------------------------------
     -- Indexes on foreign keys
@@ -99,7 +99,7 @@ export async function up(knex: Knex): Promise<void> {
     CREATE VIEW observation_subcount_sign AS SELECT * FROM biohub.observation_subcount_sign;
 
     ----------------------------------------------------------------------------------------
-    -- Replace observation_subcount view to include sign_id
+    -- Replace observation_subcount view to include observation_subcount_sign_id
     ----------------------------------------------------------------------------------------
     CREATE OR REPLACE VIEW observation_subcount AS SELECT * FROM biohub.observation_subcount;
     `);

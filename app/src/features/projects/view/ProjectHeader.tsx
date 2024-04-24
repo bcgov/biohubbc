@@ -9,7 +9,7 @@ import {
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import Button from '@mui/material/Button';
-import { grey } from '@mui/material/colors';
+import grey from '@mui/material/colors/grey';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
