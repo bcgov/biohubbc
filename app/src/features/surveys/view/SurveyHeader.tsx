@@ -1,6 +1,6 @@
 import { mdiCalendarRange, mdiChevronDown, mdiCogOutline, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box } from '@mui/material';
+import Box from '@mui/material/Box';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';

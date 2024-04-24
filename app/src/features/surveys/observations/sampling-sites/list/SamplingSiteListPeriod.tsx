@@ -1,9 +1,9 @@
 import { mdiArrowRightThin, mdiCalendarRange } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineSeparator } from '@mui/lab';
-import { Typography } from '@mui/material';
-import { grey } from '@mui/material/colors';
-import { Box } from '@mui/system';
+import Box from '@mui/material/Box';
+import grey from '@mui/material/colors/grey';
+import Typography from '@mui/material/Typography';
 import { IObservationsContext } from 'contexts/observationsContext';
 import { IObservationsPageContext } from 'contexts/observationsPageContext';
 import dayjs from 'dayjs';

@@ -5,7 +5,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
-import { blue } from '@mui/material/colors';
+import blue from '@mui/material/colors/blue';
 import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';

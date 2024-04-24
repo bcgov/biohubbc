@@ -1,5 +1,6 @@
 import { mdiBroadcast, mdiEye } from '@mdi/js';
-import { Box, Paper } from '@mui/material';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 import { IStaticLayer, IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/spatial';

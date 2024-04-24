@@ -1,4 +1,5 @@
-import { Chip, ChipProps, Color } from '@mui/material';
+import { Color } from '@mui/material';
+import Chip, { ChipProps } from '@mui/material/Chip';
 
 export interface IColouredRectangleChipProps extends ChipProps {
   colour: Color;

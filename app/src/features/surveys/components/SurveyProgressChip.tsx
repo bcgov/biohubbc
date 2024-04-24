@@ -1,5 +1,5 @@
 import { ChipProps } from '@mui/material';
-import { blueGrey } from '@mui/material/colors';
+import blueGrey from '@mui/material/colors/blueGrey';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { SurveyProgressChipColours } from 'constants/misc';
 import { useCodesContext } from 'hooks/useContext';

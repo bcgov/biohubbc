@@ -1,4 +1,4 @@
-import { Button } from '@mui/material';
+import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import FileUploadDialog from 'components/dialog/FileUploadDialog';
 import { UploadFileStatus } from 'components/file-upload/FileUploadItem';

@@ -1,5 +1,5 @@
 import { Color, colors } from '@mui/material';
-import { Stack } from '@mui/system';
+import Stack from '@mui/system/Stack';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { SurveyContext } from 'contexts/surveyContext';
 import { IGetSampleLocationDetails } from 'interfaces/useSurveyApi.interface';

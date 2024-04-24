@@ -28,7 +28,7 @@ export async function up(knex: Knex): Promise<void> {
       update_date                                   timestamptz(6),
       update_user                                   integer,
       revision_count                                integer            DEFAULT 0 NOT NULL,
-      CONSTRAINT observation_subcount_sign_id_pk PRIMARY KEY (observation_subcount_sign_id)
+      CONSTRAINT observation_subcount_sign_pk PRIMARY KEY (observation_subcount_sign_id)
     );
 
     COMMENT ON TABLE observation_subcount_sign IS 'This table is intended to store options that users can select for the sign of a subcount.';
@@ -51,10 +51,16 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
     -- Modify observation_subcount table to include sign
     ----------------------------------------------------------------------------------------
-    ALTER TABLE observation_subcount ADD COLUMN sign_id INTEGER;
-    COMMENT ON COLUMN observation_subcount.sign_id IS 'Foreign key referencing the sign id.';
-    ALTER TABLE observation_subcount ADD CONSTRAINT observation_subcount_sign_fk FOREIGN KEY (sign_id) REFERENCES observation_subcount_sign(observation_subcount_sign_id);
+    ALTER TABLE observation_subcount ADD COLUMN observation_subcount_sign_id INTEGER;
+    COMMENT ON COLUMN observation_subcount.observation_subcount_sign_id IS 'Foreign key referencing the observation subcount sign id.';
+    ALTER TABLE observation_subcount ADD CONSTRAINT observation_subcount_sign_fk1 FOREIGN KEY (sign_id) REFERENCES observation_subcount_sign(observation_subcount_sign_id);
     
+    ----------------------------------------------------------------------------------------
+    -- Indexes on foreign keys
+    ----------------------------------------------------------------------------------------
+    CREATE UNIQUE INDEX observation_subcount_sign_nuk1 ON observation_subcount_sign(name, (record_end_date is NULL)) where record_end_date is null;
+    CREATE INDEX observation_subcount_idx2 ON observation_subcount(observation_subcount_sign_id);
+
     ----------------------------------------------------------------------------------------
     -- Add initial values
     ----------------------------------------------------------------------------------------

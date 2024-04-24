@@ -9,7 +9,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import Collapse from '@mui/material/Collapse';
-import { grey } from '@mui/material/colors';
+import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';

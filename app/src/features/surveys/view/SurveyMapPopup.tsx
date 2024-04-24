@@ -1,5 +1,7 @@
-import { Skeleton, Typography } from '@mui/material';
-import { Box, Stack } from '@mui/system';
+import Skeleton from '@mui/material/Skeleton';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/system/Box';
+import Stack from '@mui/system/Stack';
 import { ISurveyMapPointMetadata } from './SurveyMap';
 
 interface ISurveyMapPopupProps {
@@ -29,7 +31,7 @@ const SurveyMapPopup = (props: ISurveyMapPopupProps) => {
               overflow: 'hidden',
               textOverflow: 'ellipsis'
             }}>
-            <Skeleton></Skeleton>
+            <Skeleton />
           </Typography>
           <Box mt={1} mb={0}>
             <Stack flexDirection="row" alignItems="flex-start" gap={1} sx={{ typography: 'body2' }}>
