@@ -1,87 +1,101 @@
-import { mdiCog, mdiLeaf, mdiRuler } from '@mdi/js';
 import { LoadingButton } from '@mui/lab';
-import { Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid, Typography } from '@mui/material';
-import { useState } from 'react';
-import { ConfigureColumnsViewEnum } from '../ConfigureColumnsContainer';
-import ConfigureColumnsContentContainer from './components/ConfigureColumnsContent';
-import ConfigureColumnsToolbar from './components/ConfigureColumnsToolbar';
+import { Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
+import { GridColDef } from '@mui/x-data-grid';
+import { IObservationTableRow } from 'contexts/observationsTableContext';
+import { ConfigureColumnsPage } from 'features/surveys/observations/observations-table/configure-columns/components/ConfigureColumnsPage';
+import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
+import { EnvironmentType } from 'interfaces/useObservationApi.interface';
 
 interface IConfigureColumnsDialogProps {
   open: boolean;
-  onSave: (data: any) => void;
   onClose: () => void;
+  /**
+   * Controls the disabled state of the component controls.
+   *
+   * @type {boolean}
+   * @memberof IConfigureColumnsProps
+   */
+  disabled: boolean;
+  /**
+   * The column field names of the hidden columns.
+   *
+   * @type {GridColDef<IObservationTableRow>[]}
+   * @memberof IConfigureColumnsProps
+   */
+  hiddenFields: string[];
+  /**
+   * The column definitions of the columns that may be toggled to hidden or visible.
+   *
+   * @type {GridColDef<IObservationTableRow>[]}
+   * @memberof IConfigureColumnsProps
+   */
+  hideableColumns: GridColDef<IObservationTableRow>[];
+  onToggleShowHideAll: () => void;
+  onToggleColumnVisibility: (field: string) => void;
+  onRemoveMeasurements: (measurementColumnsToRemove: string[]) => void;
+  measurementColumns: CBMeasurementType[];
+  onAddMeasurementColumns: (measurementColumns: CBMeasurementType[]) => void;
+  onRemoveMeasurementColumns: (fields: string[]) => void;
+  environmentColumns: EnvironmentType[];
+  onAddEnvironmentColumns: (environmentColumns: EnvironmentType[]) => void;
+  onRemoveEnvironmentColumns: (fields: number[]) => void;
 }
 
-const ConfigureColumnsDialog = (props: IConfigureColumnsDialogProps) => {
-  const [activeView, setActiveView] = useState(ConfigureColumnsViewEnum.MEASUREMENTS);
+export const ConfigureColumnsDialog = (props: IConfigureColumnsDialogProps) => {
+  const {
+    open,
+    onClose,
+    disabled,
+    hiddenFields,
+    hideableColumns,
+    onRemoveMeasurements,
+    onToggleColumnVisibility,
+    onToggleShowHideAll,
+    measurementColumns,
+    onAddMeasurementColumns,
+    onRemoveMeasurementColumns,
+    environmentColumns,
+    onAddEnvironmentColumns,
+    onRemoveEnvironmentColumns
+  } = props;
 
   return (
-    <>
-      <Dialog
-        sx={{ '& .MuiDialog-paper': { maxWidth: 1200, minHeight: '75vh' } }}
-        fullWidth
-        open={props.open}
-        onClose={props.onClose}
-        data-testid="yes-no-dialog"
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description">
-        <DialogTitle id="alert-dialog-title">
-          Configure Columns
-          <Typography color="textSecondary" sx={{ mt: 1 }}>
-            Customize the columns in your table to upload additional data, such as environmental variables and species
-            measurements.
-          </Typography>
-        </DialogTitle>
-        <DialogContent id="configure-dialog-content">
-          <Grid container xs={12} justifyContent="space-between" pr={2}>
-            <Grid item xs={3}>
-              <ConfigureColumnsToolbar
-                activeView={activeView}
-                updateActiveView={setActiveView}
-                views={[
-                  {
-                    label: `General`,
-                    value: ConfigureColumnsViewEnum.GENERAL,
-                    icon: mdiCog,
-                    isLoading: false
-                  },
-                  {
-                    label: `Measurements`,
-                    value: ConfigureColumnsViewEnum.MEASUREMENTS,
-                    icon: mdiRuler,
-                    isLoading: false
-                  },
-                  {
-                    label: `Environment`,
-                    value: ConfigureColumnsViewEnum.ENVIRONMENT,
-                    icon: mdiLeaf,
-                    isLoading: false
-                  }
-                ]}
-              />
-            </Grid>
-            <Divider orientation="vertical" flexItem />
-            <Grid item xs={8}>
-              <ConfigureColumnsContentContainer activeView={activeView} />
-            </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <LoadingButton
-            onClick={props.onSave}
-            color="primary"
-            variant="contained"
-            autoFocus
-            data-testid="edit-dialog-save">
-            Save
-          </LoadingButton>
-          <LoadingButton data-testid="no-button" onClick={props.onClose} color="primary" variant="outlined">
-            Close
-          </LoadingButton>
-        </DialogActions>
-      </Dialog>
-    </>
+    <Dialog
+      sx={{ '& .MuiDialog-paper': { maxWidth: 1200, minHeight: '75vh' } }}
+      fullWidth
+      open={open}
+      onClose={onClose}
+      data-testid="yes-no-dialog"
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description">
+      <DialogTitle id="alert-dialog-title">
+        Configure Columns
+        <Typography color="textSecondary" sx={{ mt: 1 }}>
+          Customize the columns in your table to upload additional data, such as environmental variables and species
+          measurements.
+        </Typography>
+      </DialogTitle>
+      <DialogContent id="configure-dialog-content">
+        <ConfigureColumnsPage
+          disabled={disabled}
+          hiddenFields={hiddenFields}
+          hideableColumns={hideableColumns}
+          onToggleShowHideAll={onToggleShowHideAll}
+          onToggleColumnVisibility={onToggleColumnVisibility}
+          onRemoveMeasurements={onRemoveMeasurements}
+          measurementColumns={measurementColumns}
+          onAddMeasurementColumns={onAddMeasurementColumns}
+          onRemoveMeasurementColumns={onRemoveMeasurementColumns}
+          environmentColumns={environmentColumns}
+          onAddEnvironmentColumns={onAddEnvironmentColumns}
+          onRemoveEnvironmentColumns={onRemoveEnvironmentColumns}
+        />
+      </DialogContent>
+      <DialogActions>
+        <LoadingButton data-testid="no-button" onClick={props.onClose} color="primary" variant="outlined">
+          Close
+        </LoadingButton>
+      </DialogActions>
+    </Dialog>
   );
 };
-
-export default ConfigureColumnsDialog;

@@ -6,49 +6,49 @@ import ListItem from '@mui/material/ListItem';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
+import { EnvironmentType } from 'interfaces/useObservationApi.interface';
 import { debounce } from 'lodash-es';
 import { useMemo, useState } from 'react';
 
-export interface IMeasurementsSearchAutocompleteProps {
+export interface IEnvironmentsSearchAutocompleteProps {
   /**
-   * The selected measurements.
+   * The selected Environments.
    *
-   * @type {CBMeasurementType[]}
-   * @memberof IMeasurementsSearchAutocompleteProps
+   * @type {EnvironmentType[]}
+   * @memberof IEnvironmentsSearchAutocompleteProps
    */
-  selectedOptions: CBMeasurementType[];
+  selectedOptions: EnvironmentType[];
   /**
    * An async function that returns an array of options, based on the provided input value.
    *
-   * @memberof IMeasurementsSearchAutocompleteProps
+   * @memberof IEnvironmentsSearchAutocompleteProps
    */
-  getOptions: (inputValue: string) => Promise<CBMeasurementType[]>;
+  getOptions: (inputValue: string) => Promise<EnvironmentType[]>;
   /**
    * Callback fired on selecting options.
    *
    * Note: this is not fired until the user un-focuses the component.
    *
-   * @memberof IMeasurementsSearchAutocompleteProps
+   * @memberof IEnvironmentsSearchAutocompleteProps
    */
-  onSelect: (measurements: CBMeasurementType) => void;
+  onAddEnvironmentColumn: (EnvironmentColumn: EnvironmentType) => void;
 }
 
 /**
- * Renders a search input to find and add measurements.
+ * Renders a search input to find and add Environments.
  *
- * @param {IMeasurementsSearchAutocompleteProps} props
+ * @param {IEnvironmentsSearchAutocompleteProps} props
  * @return {*}
  */
-const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompleteProps) => {
-  const { selectedOptions, getOptions, onSelect } = props;
+export const EnvironmentsSearchAutocomplete = (props: IEnvironmentsSearchAutocompleteProps) => {
+  const { selectedOptions, getOptions, onAddEnvironmentColumn } = props;
 
   const [inputValue, setInputValue] = useState('');
-  const [options, setOptions] = useState<CBMeasurementType[]>([]);
+  const [options, setOptions] = useState<EnvironmentType[]>([]);
 
   const handleSearch = useMemo(
     () =>
-      debounce(async (inputValue: string, callback: (searchedValues: CBMeasurementType[]) => void) => {
+      debounce(async (inputValue: string, callback: (searchedValues: EnvironmentType[]) => void) => {
         const response = await getOptions(inputValue);
         callback(response);
       }, 500),
@@ -57,17 +57,17 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
 
   return (
     <Autocomplete
-      id="measurements-autocomplete"
-      data-testid="measurements-autocomplete"
+      id="environments-autocomplete"
+      data-testid="environments-autocomplete"
       noOptionsText="No matching options"
       autoHighlight={true}
       options={options}
       disableCloseOnSelect={true}
       blurOnSelect={true}
       clearOnBlur={true}
-      getOptionLabel={(option) => option.measurement_name}
+      getOptionLabel={(option) => option.name}
       isOptionEqualToValue={(option, value) => {
-        return option.taxon_measurement_id === value.taxon_measurement_id;
+        return option.environment_id === value.environment_id;
       }}
       filterOptions={(options) => {
         if (!selectedOptions?.length) {
@@ -75,9 +75,7 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
         }
 
         const unselectedOptions = options.filter((option) => {
-          return !selectedOptions.some(
-            (selectedOption) => selectedOption.taxon_measurement_id === option.taxon_measurement_id
-          );
+          return !selectedOptions.some((selectedOption) => selectedOption.environment_id === option.environment_id);
         });
 
         return unselectedOptions;
@@ -103,7 +101,7 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
       value={null} // The selected value is not displayed in the input field or tracked by this component
       onChange={(_, value) => {
         if (value) {
-          onSelect(value);
+          onAddEnvironmentColumn(value);
           setInputValue('');
           setOptions([]);
           return;
@@ -119,17 +117,17 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
               px: 2
             }}
             {...renderProps}
-            key={renderOption.taxon_measurement_id}
-            data-testid="measurements-autocomplete-option">
+            key={renderOption.environment_id}
+            data-testid="environments-autocomplete-option">
             <Stack gap={0.75} mt={-0.25}>
               <Box>
                 <Typography variant="body2">
-                  <em>{renderOption.itis_tsn}</em>
+                  <em>{renderOption.name}</em>
                 </Typography>
               </Box>
               <Box>
                 <Typography component="div" variant="body1" fontWeight={700}>
-                  {renderOption.measurement_name}
+                  {renderOption.name}
                 </Typography>
                 <Typography
                   component="div"
@@ -142,7 +140,7 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
                     overflow: 'hidden',
                     textOverflow: 'ellipsis'
                   }}>
-                  {renderOption.measurement_desc}
+                  {renderOption.description}
                 </Typography>
               </Box>
             </Stack>
@@ -152,10 +150,10 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
       renderInput={(params) => (
         <TextField
           {...params}
-          name="measurements-autocomplete-input"
+          name="environments-autocomplete-input"
           variant="outlined"
           fullWidth
-          placeholder="Enter measurement name"
+          placeholder="Enter Environment name"
           InputProps={{
             ...params.InputProps,
             startAdornment: (
@@ -164,12 +162,10 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
               </Box>
             )
           }}
-          data-testid="measurements-autocomplete-input"
-          aria-label="Find observation measurements"
+          data-testid="environments-autocomplete-input"
+          aria-label="Find observation Environments"
         />
       )}
     />
   );
 };
-
-export default MeasurementsSearchAutocomplete;

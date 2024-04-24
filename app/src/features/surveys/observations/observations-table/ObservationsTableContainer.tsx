@@ -13,7 +13,6 @@ import { GridColDef } from '@mui/x-data-grid';
 import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import ObservationsTable from 'features/surveys/observations/observations-table/ObservationsTable';
 import { BulkActionsButton } from 'features/surveys/observations/observations-table/bulk-actions/BulkActionsButton';
 import { DiscardChangesButton } from 'features/surveys/observations/observations-table/discard-changes/DiscardChangesButton';
 import {
@@ -32,6 +31,7 @@ import {
   TaxonomyColDef
 } from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitions';
 import { ImportObservationsButton } from 'features/surveys/observations/observations-table/import-obsevations/ImportObservationsButton';
+import ObservationsTable from 'features/surveys/observations/observations-table/ObservationsTable';
 import { useCodesContext, useObservationsPageContext, useObservationsTableContext } from 'hooks/useContext';
 import {
   IGetSampleLocationDetails,
@@ -40,7 +40,7 @@ import {
 } from 'interfaces/useSurveyApi.interface';
 import { useContext } from 'react';
 import { getCodesName } from 'utils/Utils';
-import ConfigureColumnsContainer from './configure-columns/ConfigureColumnsContainer';
+import { ConfigureColumnsButton } from './configure-columns/dialog/ConfigureColumnsButton';
 import ExportHeadersButton from './export-button/ExportHeadersButton';
 import { getMeasurementColumnDefinitions } from './grid-column-definitions/GridColumnDefinitionsUtils';
 
@@ -157,8 +157,9 @@ const ObservationComponent = () => {
               />
             </Box>
           </Collapse>
-          <ConfigureColumnsContainer
+          <ConfigureColumnsButton
             disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}
+            columns={columns}
           />
           <ExportHeadersButton />
           <BulkActionsButton disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled} />

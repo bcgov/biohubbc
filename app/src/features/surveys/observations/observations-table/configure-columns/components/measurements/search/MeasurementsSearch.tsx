@@ -1,6 +1,4 @@
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import MeasurementsSearchAutocomplete from 'features/surveys/observations/observations-table/configure-columns/dialog/measurements/search/MeasurementsSearchAutocomplete';
+import { MeasurementsSearchAutocomplete } from 'features/surveys/observations/observations-table/configure-columns/components/measurements/search/MeasurementsSearchAutocomplete';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
@@ -18,7 +16,7 @@ export interface IMeasurementsSearchProps {
    *
    * @memberof IMeasurementsSearchProps
    */
-  onSelect: (measurement: CBMeasurementType) => void;
+  onAddMeasurementColumn: (measurementColumn: CBMeasurementType) => void;
 }
 
 /**
@@ -28,25 +26,20 @@ export interface IMeasurementsSearchProps {
  * @return {*}
  */
 export const MeasurementsSearch = (props: IMeasurementsSearchProps) => {
-  const { selectedMeasurements, onSelect } = props;
+  const { selectedMeasurements, onAddMeasurementColumn } = props;
 
   const critterbaseApi = useCritterbaseApi();
 
   const measurementsDataLoader = useDataLoader(critterbaseApi.xref.getMeasurementTypeDefinitionsBySearchTerm);
 
   return (
-    <Box>
-      <Typography variant="h5" mb={2}>
-        Add Measurements
-      </Typography>
-      <MeasurementsSearchAutocomplete
-        selectedOptions={selectedMeasurements}
-        getOptions={async (inputValue: string) => {
-          const response = await measurementsDataLoader.refresh(inputValue);
-          return (response && [...response.qualitative, ...response.quantitative]) || [];
-        }}
-        onSelect={onSelect}
-      />
-    </Box>
+    <MeasurementsSearchAutocomplete
+      selectedOptions={selectedMeasurements}
+      getOptions={async (inputValue: string) => {
+        const response = await measurementsDataLoader.refresh(inputValue);
+        return (response && [...response.qualitative, ...response.quantitative]) || [];
+      }}
+      onAddMeasurementColumn={onAddMeasurementColumn}
+    />
   );
 };

@@ -27,6 +27,7 @@ export async function up(knex: Knex): Promise<void> {
       description                    varchar(250),
       min                            numeric,
       max                            numeric,
+      unit                           varchar(50), -- TODO: Add unit table or enum?
       record_effective_date          date               NOT NULL,
       record_end_date                date,
       create_date                    timestamptz(6)     DEFAULT now() NOT NULL,
