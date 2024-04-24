@@ -1,7 +1,7 @@
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
-import Box from '@mui/system/Box';
-import Stack from '@mui/system/Stack';
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
 import { ISurveyMapPointMetadata } from './SurveyMap';
 
 interface ISurveyMapPopupProps {
