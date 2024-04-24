@@ -172,7 +172,7 @@ export const getWorksheetRowObjects = (worksheet: xlsx.WorkSheet): Record<string
   const headers = getWorksheetHeaders(worksheet);
 
   rows.forEach((row: string[]) => {
-    const rowObject = {};
+    const rowObject: Record<string, any> = {};
 
     headers.forEach((header: string, index: number) => {
       rowObject[header] = row[index];
@@ -473,26 +473,57 @@ export function isQualitativeValueValid(
  * @param {string} sheet The sheet to work on
  * @returns {*} string[] The list of measurement columns found in the CSV
  */
-export function getMeasurementColumnNameFromWorksheet(
+export function getNonStandardColumnNamesFromWorksheet(
   xlsxWorksheets: xlsx.WorkSheet,
   columnValidator: IXLSXCSVValidator,
   sheet = DEFAULT_XLSX_SHEET_NAME
 ): string[] {
   const columns = getWorksheetHeaders(xlsxWorksheets[sheet]);
+
   let aliasColumns: string[] = [];
   // Create a list of all column names and aliases
   if (columnValidator.columnAliases) {
     aliasColumns = Object.values(columnValidator.columnAliases).flat();
   }
+
   const requiredColumns = [...columnValidator.columnNames, ...aliasColumns];
+
   return columns
     .map((column) => {
-      // only return column names not in the validation CSV Column validator (extra/measurement columns)
+      // only return column names not in the validation CSV Column validator (ie: non standard columns)
       if (!requiredColumns.includes(column)) {
         return column;
       }
     })
     .filter((c): c is string => Boolean(c)); // remove undefined/ nulls from the array
+}
+
+/**
+ * Given an array of column headers, returns an array of column headers that have a corresponding measurement type
+ * definition in the provided TsnMeasurementMap.
+ *
+ * @export
+ * @param {string[]} nonStandardColumns
+ * @param {TsnMeasurementMap} tsnMeasurements
+ * @return {*}  {string[]}
+ */
+export function getMeasurementColumnNamesFromArrra(columns: string[], tsnMeasurements: TsnMeasurementMap): string[] {
+  const allQualitativeMeasurementTypeDefinitions = Object.values(tsnMeasurements).flatMap((tsn) => tsn.qualitative);
+  const allQuantitativeMeasurementTypeDefinitions = Object.values(tsnMeasurements).flatMap((tsn) => tsn.quantitative);
+
+  // Filter out columns that have no corresponding measurement type definition
+  return columns.filter((column) => {
+    const columnLowerCase = column.toLowerCase();
+
+    return (
+      allQualitativeMeasurementTypeDefinitions.some(
+        (measurement) => measurement.measurement_name.toLowerCase() === columnLowerCase
+      ) ||
+      allQuantitativeMeasurementTypeDefinitions.some(
+        (measurement) => measurement.measurement_name.toLowerCase() === columnLowerCase
+      )
+    );
+  });
 }
 
 /**
@@ -503,7 +534,7 @@ export function getMeasurementColumnNameFromWorksheet(
  * @param {string} sheet The sheet to work on
  * @returns {*} Promise<TsnMeasurementMap>
  */
-export async function getCBMeasurementsFromWorksheet(
+export async function getCBMeasurementTypeDefinitionsFromWorksheet(
   xlsxWorksheets: xlsx.WorkSheet,
   critterBaseService: CritterbaseService,
   sheet = DEFAULT_XLSX_SHEET_NAME
@@ -538,7 +569,11 @@ export async function getCBMeasurementsFromTSN(
       }
     }
   } catch (error) {
-    getLogger('utils/xlsx-utils').error({ label: 'getCBMeasurementsFromWorksheet', message: 'error', error });
+    getLogger('utils/xlsx-utils').error({
+      label: 'getCBMeasurementTypeDefinitionsFromWorksheet',
+      message: 'error',
+      error
+    });
     throw new ApiGeneralError(`Error connecting to the Critterbase API: ${error}`);
   }
   return tsnMeasurements;

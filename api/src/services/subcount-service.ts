@@ -1,4 +1,8 @@
 import { IDBConnection } from '../database/db';
+import {
+  QualitativeEnvironmentTypeDefinition,
+  QuantitativeEnvironmentTypeDefinition
+} from '../repositories/observation-subcount-environment-repository';
 import { ObservationSubCountMeasurementRepository } from '../repositories/observation-subcount-measurement-repository';
 import {
   InsertObservationSubCount,
@@ -13,6 +17,8 @@ import {
   CritterbaseService
 } from './critterbase-service';
 import { DBService } from './db-service';
+import { ObservationSubCountEnvironmentService } from './observation-subcount-environment-service';
+import { ObservationSubCountMeasurementService } from './observation-subcount-measurement-service';
 
 export class SubCountService extends DBService {
   subCountRepository: SubCountRepository;
@@ -82,7 +88,7 @@ export class SubCountService extends DBService {
     qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
     quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
   }> {
-    const observationSubCountMeasurementService = new ObservationSubCountMeasurementRepository(this.connection);
+    const observationSubCountMeasurementService = new ObservationSubCountMeasurementService(this.connection);
 
     // Fetch all unique taxon_measurement_ids for qualitative and quantitative measurements
     const [qualitativeTaxonMeasurementIds, quantitativeTaxonMeasurementIds] = await Promise.all([
@@ -102,5 +108,33 @@ export class SubCountService extends DBService {
     ]);
 
     return { qualitative_measurements: response[0], quantitative_measurements: response[1] };
+  }
+
+  /**
+   * Returns a unique set of all environment type definitions for all environments of all observations in the given
+   * survey.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<{
+   *     qualitative_environments: QualitativeEnvironmentTypeDefinition[];
+   *     quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
+   *   }>}
+   * @memberof SubCountService
+   */
+  async getEnvironmentTypeDefinitionsForSurvey(surveyId: number): Promise<{
+    qualitative_environments: QualitativeEnvironmentTypeDefinition[];
+    quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
+  }> {
+    const observationSubCountEnvironmentService = new ObservationSubCountEnvironmentService(this.connection);
+
+    const [qualitativeEnvironmentTypeDefinitions, quantitativeEnvironmentTypeDefinitions] = await Promise.all([
+      observationSubCountEnvironmentService.getQualitativeEnvironmentTypeDefinitions(surveyId),
+      observationSubCountEnvironmentService.getQuantitativeEnvironmentTypeDefinitions(surveyId)
+    ]);
+
+    return {
+      qualitative_environments: qualitativeEnvironmentTypeDefinitions,
+      quantitative_environments: quantitativeEnvironmentTypeDefinitions
+    };
   }
 }

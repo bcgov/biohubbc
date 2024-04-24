@@ -216,7 +216,9 @@ GET.apiDoc = {
                           'observation_subcount_id',
                           'subcount',
                           'qualitative_measurements',
-                          'quantitative_measurements'
+                          'quantitative_measurements',
+                          'qualitative_environments',
+                          'quantitative_environments'
                         ],
                         properties: {
                           observation_subcount_id: {
@@ -262,6 +264,41 @@ GET.apiDoc = {
                                 }
                               }
                             }
+                          },
+                          qualitative_environments: {
+                            type: 'array',
+                            items: {
+                              type: 'object',
+                              additionalProperties: false,
+                              required: ['critterbase_measurement_qualitative_option_id'],
+                              properties: {
+                                environment_qualitative_id: {
+                                  type: 'number'
+                                },
+                                environment_qualitative_option_id: {
+                                  type: 'number'
+                                },
+                                environment_qualitative_environment_qualitative_option_id: {
+                                  type: 'number'
+                                }
+                              }
+                            }
+                          },
+                          quantitative_environments: {
+                            type: 'array',
+                            items: {
+                              type: 'object',
+                              additionalProperties: false,
+                              required: ['critterbase_taxon_measurement_id', 'value'],
+                              properties: {
+                                environment_quantitative_id: {
+                                  type: 'number'
+                                },
+                                value: {
+                                  type: 'number'
+                                }
+                              }
+                            }
                           }
                         }
                       }
@@ -272,7 +309,13 @@ GET.apiDoc = {
               supplementaryObservationData: {
                 type: 'object',
                 additionalProperties: false,
-                required: ['observationCount', 'qualitative_measurements', 'quantitative_measurements'],
+                required: [
+                  'observationCount',
+                  'qualitative_measurements',
+                  'quantitative_measurements',
+                  'qualitative_environments',
+                  'quantitative_environments'
+                ],
                 properties: {
                   observationCount: {
                     type: 'integer',
@@ -365,6 +408,85 @@ GET.apiDoc = {
                           nullable: true
                         },
                         max_value: {
+                          type: 'number',
+                          nullable: true
+                        },
+                        unit: {
+                          type: 'string',
+                          nullable: true
+                        }
+                      }
+                    }
+                  },
+                  qualitative_environments: {
+                    description: 'All qualitative environment type definitions for the survey.',
+                    type: 'array',
+                    items: {
+                      description: 'A qualitative environment type definition, with array of valid/accepted options',
+                      type: 'object',
+                      additionalProperties: false,
+                      required: ['environment_qualitative_id', 'name', 'description', 'options'],
+                      properties: {
+                        environment_qualitative_id: {
+                          type: 'number'
+                        },
+                        name: {
+                          type: 'string'
+                        },
+                        description: {
+                          type: 'string',
+                          nullable: true
+                        },
+                        options: {
+                          description: 'Valid options for the environment.',
+                          type: 'array',
+                          items: {
+                            type: 'object',
+                            additionalProperties: false,
+                            required: ['environment_qualitative_option_id', 'name', 'description', 'value'],
+                            properties: {
+                              environment_qualitative_option_id: {
+                                type: 'number'
+                              },
+                              name: {
+                                type: 'string'
+                              },
+                              description: {
+                                type: 'string'
+                              },
+                              value: {
+                                type: 'string'
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  quantitative_environments: {
+                    description: 'All quantitative environment type definitions for the survey.',
+                    type: 'array',
+                    items: {
+                      description: 'A quantitative environment type definition, with possible min/max constraint.',
+                      type: 'object',
+                      additionalProperties: false,
+                      required: ['environment_quantitative_id', 'name', 'description', 'min', 'max', 'unit'],
+                      properties: {
+                        environment_quantitative_id: {
+                          type: 'number'
+                        },
+                        name: {
+                          type: 'string'
+                        },
+                        description: {
+                          type: 'string',
+                          nullable: true
+                        },
+                        min: {
+                          type: 'number',
+                          nullable: true
+                        },
+                        max: {
                           type: 'number',
                           nullable: true
                         },
@@ -523,7 +645,7 @@ PUT.apiDoc = {
                         subcount: {
                           type: 'number'
                         },
-                        qualitative: {
+                        measurements_qualitative: {
                           type: 'array',
                           items: {
                             type: 'object',
@@ -538,7 +660,7 @@ PUT.apiDoc = {
                             }
                           }
                         },
-                        quantitative: {
+                        measurements_quantitative: {
                           type: 'array',
                           items: {
                             type: 'object',
@@ -548,6 +670,36 @@ PUT.apiDoc = {
                                 type: 'string'
                               },
                               measurement_value: {
+                                type: 'number'
+                              }
+                            }
+                          }
+                        },
+                        environments_qualitative: {
+                          type: 'array',
+                          items: {
+                            type: 'object',
+                            additionalProperties: false,
+                            properties: {
+                              environment_id: {
+                                type: 'number'
+                              },
+                              environment_option_id: {
+                                type: 'number'
+                              }
+                            }
+                          }
+                        },
+                        environments_quantitative: {
+                          type: 'array',
+                          items: {
+                            type: 'object',
+                            additionalProperties: false,
+                            properties: {
+                              environment_id: {
+                                type: 'number'
+                              },
+                              environment_value: {
                                 type: 'number'
                               }
                             }

@@ -12,7 +12,7 @@ import {
 } from '@mui/x-data-grid';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import { ObservationsTableI18N } from 'constants/i18n';
-import { SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS, getSurveySessionStorageKey } from 'constants/session-storage';
+import { getSurveySessionStorageKey, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS } from 'constants/session-storage';
 import { DialogContext } from 'contexts/dialogContext';
 import {
   isQualitativeMeasurementTypeDefinition,
@@ -34,7 +34,7 @@ import {
   CBQuantitativeMeasurementTypeDefinition
 } from 'interfaces/useCritterApi.interface';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
-import { PropsWithChildren, createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { firstOrNull } from 'utils/Utils';
 import { v4 as uuidv4 } from 'uuid';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';

@@ -14,12 +14,23 @@ import { Knex } from 'knex';
  * @return {*}  {Promise<void>}
  */
 export async function up(knex: Knex): Promise<void> {
-  await knex.raw(`--sql
+  await knex.raw(`
     ----------------------------------------------------------------------------------------
     -- Create environment lookup tables
     ----------------------------------------------------------------------------------------
 
     SET SEARCH_PATH=biohub, public;
+
+    CREATE TYPE environment_unit AS ENUM (
+      'millimeter',
+      'centimeter',
+      'meter',
+      'milligram',
+      'gram',
+      'kilogram'
+    );
+
+    ----------------------------------------------------------------------------------------
 
     CREATE TABLE environment_quantitative (
       environment_quantitative_id    integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
@@ -27,8 +38,7 @@ export async function up(knex: Knex): Promise<void> {
       description                    varchar(250),
       min                            numeric,
       max                            numeric,
-      unit                           varchar(50), -- TODO: Add unit table or enum?
-      record_effective_date          date               NOT NULL,
+      unit                           environment_unit,
       record_end_date                date,
       create_date                    timestamptz(6)     DEFAULT now() NOT NULL,
       create_user                    integer            NOT NULL,
@@ -44,7 +54,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN environment_quantitative.description                    IS 'The description of the environment attribute.';
     COMMENT ON COLUMN environment_quantitative.min                            IS 'The minimum allowed value (inclusive).';
     COMMENT ON COLUMN environment_quantitative.max                            IS 'The maximum allowed value (inclusive).';
-    COMMENT ON COLUMN environment_quantitative.record_effective_date          IS 'Record level effective date.';
+    COMMENT ON COLUMN environment_quantitative.unit                           IS 'The unit of measure for the value.';
     COMMENT ON COLUMN environment_quantitative.record_end_date                IS 'Record level end date.';
     COMMENT ON COLUMN environment_quantitative.create_date                    IS 'The datetime the record was created.';
     COMMENT ON COLUMN environment_quantitative.create_user                    IS 'The id of the user who created the record as identified in the system user table.';
@@ -61,7 +71,6 @@ export async function up(knex: Knex): Promise<void> {
       environment_qualitative_id           integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       name                                 varchar(100)       NOT NULL,
       description                          varchar(250),
-      record_effective_date                date               NOT NULL,
       record_end_date                      date,
       create_date                          timestamptz(6)     DEFAULT now() NOT NULL,
       create_user                          integer            NOT NULL,
@@ -75,7 +84,6 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN environment_qualitative.environment_qualitative_id    IS 'System generated surrogate primary key identifier.';
     COMMENT ON COLUMN environment_qualitative.name                          IS 'The name of the environment attribute.';
     COMMENT ON COLUMN environment_qualitative.description                   IS 'The description of the environment attribute.';
-    COMMENT ON COLUMN environment_qualitative.record_effective_date         IS 'Record level effective date.';
     COMMENT ON COLUMN environment_qualitative.record_end_date               IS 'Record level end date.';
     COMMENT ON COLUMN environment_qualitative.create_date                   IS 'The datetime the record was created.';
     COMMENT ON COLUMN environment_qualitative.create_user                   IS 'The id of the user who created the record as identified in the system user table.';
@@ -92,7 +100,7 @@ export async function up(knex: Knex): Promise<void> {
       environment_qualitative_option_id    integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       name                                 varchar(100)       NOT NULL,
       description                          varchar(250),
-      record_effective_date                date               NOT NULL,
+      value                                varchar(100)       NOT NULL,
       record_end_date                      date,
       create_date                          timestamptz(6)     DEFAULT now() NOT NULL,
       create_user                          integer            NOT NULL,
@@ -106,7 +114,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN environment_qualitative_option.environment_qualitative_option_id    IS 'System generated surrogate primary key identifier.';
     COMMENT ON COLUMN environment_qualitative_option.name                                 IS 'The name of the option.';
     COMMENT ON COLUMN environment_qualitative_option.description                          IS 'The description of the option.';
-    COMMENT ON COLUMN environment_qualitative_option.record_effective_date                IS 'Record level effective date.';
+    COMMENT ON COLUMN environment_qualitative_option.value                                IS 'The value of the option.';
     COMMENT ON COLUMN environment_qualitative_option.record_end_date                      IS 'Record level end date.';
     COMMENT ON COLUMN environment_qualitative_option.create_date                          IS 'The datetime the record was created.';
     COMMENT ON COLUMN environment_qualitative_option.create_user                          IS 'The id of the user who created the record as identified in the system user table.';
@@ -123,7 +131,6 @@ export async function up(knex: Knex): Promise<void> {
       environment_qualitative_environment_qualitative_option_id    integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       environment_qualitative_id                                   integer            NOT NULL,
       environment_qualitative_option_id                            integer            NOT NULL,
-      record_effective_date                                        date               NOT NULL,
       record_end_date                                              date,
       create_date                                                  timestamptz(6)     DEFAULT now() NOT NULL,
       create_user                                                  integer            NOT NULL,
@@ -137,7 +144,6 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN environment_qualitative_environment_qualitative_option.environment_qualitative_environment_qualitative_option_id    IS 'System generated surrogate primary key identifier.';
     COMMENT ON COLUMN environment_qualitative_environment_qualitative_option.environment_qualitative_id                                   IS 'Foreign key to the environment_qualitative table.';
     COMMENT ON COLUMN environment_qualitative_environment_qualitative_option.environment_qualitative_option_id                            IS 'Foreign key to the environment_qualitative_option table.';
-    COMMENT ON COLUMN environment_qualitative_environment_qualitative_option.record_effective_date                                        IS 'Record level effective date.';
     COMMENT ON COLUMN environment_qualitative_environment_qualitative_option.record_end_date                                              IS 'Record level end date.';
     COMMENT ON COLUMN environment_qualitative_environment_qualitative_option.create_date                                                  IS 'The datetime the record was created.';
     COMMENT ON COLUMN environment_qualitative_environment_qualitative_option.create_user                                                  IS 'The id of the user who created the record as identified in the system user table.';

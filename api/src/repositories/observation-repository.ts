@@ -6,6 +6,10 @@ import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
 import {
+  ObservationSubCountQualitativeEnvironmentRecord,
+  ObservationSubCountQuantitativeEnvironmentRecord
+} from './observation-subcount-environment-repository';
+import {
   ObservationSubCountQualitativeMeasurementRecord,
   ObservationSubCountQuantitativeMeasurementRecord
 } from './observation-subcount-measurement-repository';
@@ -54,11 +58,24 @@ const ObservationSubcountQuantitativeMeasurementObject = ObservationSubCountQuan
   value: true
 });
 
+const ObservationSubcountQualitativeEnvironmentObject = ObservationSubCountQualitativeEnvironmentRecord.pick({
+  observation_subcount_qualitative_environment_id: true,
+  environment_qualitative_environment_qualitative_option_id: true
+});
+
+const ObservationSubcountQuantitativeEnvironmentObject = ObservationSubCountQuantitativeEnvironmentRecord.pick({
+  observation_subcount_quantitative_environment_id: true,
+  environment_quantitative_id: true,
+  value: true
+});
+
 const ObservationSubcountObject = z.object({
   observation_subcount_id: ObservationSubCountRecord.shape.observation_subcount_id,
   subcount: ObservationSubCountRecord.shape.subcount,
   qualitative_measurements: z.array(ObservationSubcountQualitativeMeasurementObject),
-  quantitative_measurements: z.array(ObservationSubcountQuantitativeMeasurementObject)
+  quantitative_measurements: z.array(ObservationSubcountQuantitativeMeasurementObject),
+  qualitative_environments: z.array(ObservationSubcountQualitativeEnvironmentObject),
+  quantitative_environments: z.array(ObservationSubcountQuantitativeEnvironmentObject)
 });
 
 const ObservationSubcountsObject = z.object({

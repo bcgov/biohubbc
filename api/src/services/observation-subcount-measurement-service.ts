@@ -35,7 +35,7 @@ export class ObservationSubCountMeasurementService extends DBService {
    * @return {*}  {Promise<string[]>}
    * @memberof ObservationSubCountMeasurementService
    */
-  async getObservationSubCountQualitativeTaxonMeasurements(surveyId: number): Promise<string[]> {
+  async getObservationSubCountQualitativeTaxonMeasurementIds(surveyId: number): Promise<string[]> {
     return this.observationSubCountMeasurementRepository.getObservationSubCountQualitativeTaxonMeasurementIds(surveyId);
   }
 
@@ -46,7 +46,7 @@ export class ObservationSubCountMeasurementService extends DBService {
    * @return {*}  {Promise<string[]>}
    * @memberof ObservationSubCountMeasurementService
    */
-  async getObservationSubCountQuantitativeTaxonMeasurements(surveyId: number): Promise<string[]> {
+  async getObservationSubCountQuantitativeTaxonMeasurementIds(surveyId: number): Promise<string[]> {
     return this.observationSubCountMeasurementRepository.getObservationSubCountQuantitativeTaxonMeasurementIds(
       surveyId
     );
