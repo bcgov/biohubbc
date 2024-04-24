@@ -4,7 +4,15 @@
 SIMS needs to be updated to include existing BCTW deployments. This script combines BCTW deployments with
 matching critters and injects Caribou region herd geometries.
 
+## Evironment Notes
+This script has been developed with a Linux environment and will only work with WSL2 or native Linux distro.
+
 ## Pre requisites
+Packages:
+  - jq
+  - docker
+  - node
+
 1. BCTW SQL - Export valid telemetry collar deployments as JSON.
 ```sql
 SELECT
@@ -66,7 +74,7 @@ WHERE
 ```bash
 ./run.sh {input-filename}.json
 
-# Dev example
+# Dev dataset example
 ./run.sh input.dev.json
 ```
 
@@ -78,21 +86,21 @@ As a biologist who had uploaded telemetry deployments to BCTW through the BCTW U
 When deciding what Survey to put a deployment ID in, group by deployment year and caribou herd.
 
 For example,
-
+- Telkwa herd would be a Project
 - Telkwa herd 2021 would be a Survey
 - Telkwa herd 2022 would be a Survey
 - Porcupine herd 2022 would be a Survey
 
 #### For every Survey, make a new Project with the following values:
 
-- Name: Caribou herd name - telemetry
+- Name: Caribou herd name - BCTW Telemetry
 - Program: Wildlife
 - Dates: Jan. 1 - Dec. 31 of {year}
 - Objectives: Telemetry deployments for Caribou herd name in year.
 
 #### For each Survey, include these values:
 
-- Name: Caribou herd name - Year - telemetry
+- Name: Caribou herd name - Year - BCTW Telemetry
 - Type: Monitoring
 - Start date: Date of the earliest telemetry deployment in the Survey
 - End date: Date of the last telemetry deployment in the Survey

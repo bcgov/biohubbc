@@ -176,7 +176,14 @@ async function main() {
           ), sio1${sIndex} AS (INSERT INTO survey_intended_outcome (survey_id, intended_outcome_id) SELECT survey_id, (select intended_outcome_id from intended_outcome where name = $$${CONFIG.survey_intended_outcome_1}$$) FROM s${sIndex}
           ), sio2${sIndex} AS (INSERT INTO survey_intended_outcome (survey_id, intended_outcome_id) SELECT survey_id, (select intended_outcome_id from intended_outcome where name = $$${CONFIG.survey_intended_outcome_2}$$) FROM s${sIndex}
       `;
-
+        /**
+         * This will skip inserting a survey_location if no matching value for herd in BCGW.
+         * In Production all values should match, but in development environments some herds
+         * might have been added that don't exist in BCGW.
+         *
+         * Potentially this could throw if the herd does not exist in BCGW.
+         *
+         */
         if (feature) {
           sql += `), sl${sIndex} AS (INSERT INTO survey_location (survey_id, name, description, geojson, geography) SELECT survey_id, $$${project.herd}$$, $$${project.herd} herd region boundary$$, $$[${feature}]$$, public.geography(public.ST_GeomFromGeoJSON($$${geometry}$$)) FROM s${sIndex}`;
         }
@@ -198,9 +205,11 @@ async function main() {
       sql += ";";
     }
 
-    console.log(`SET search_path=public,biohub; BEGIN; ${sql} COMMIT;`);
+    process.stdout.write(
+      `SET search_path=public,biohub; BEGIN; ${sql} COMMIT;`,
+    );
   } catch (err) {
-    console.error(`main.js -> ${err}`);
+    process.stderr.write(`main.js -> ${err}`);
   }
 }
 
