@@ -160,7 +160,7 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
           <Stack gap={1.5}>
             <Stack component={TransitionGroup} gap={1.5}>
               {values.sample_methods.map((item, index) => (
-                <Collapse key={`${item.survey_sample_method_id}`}>
+                <Collapse key={`${index}-${item.survey_sample_method_id}`}>
                   <Card
                     variant="outlined"
                     sx={{
@@ -210,9 +210,9 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                           </Typography>
                           <Divider component="div" sx={{ mt: 1 }}></Divider>
                           <List dense disablePadding>
-                            {item.sample_periods?.map((period) => (
+                            {item.sample_periods?.map((period, index) => (
                               <ListItem
-                                key={`sample_period_${period.survey_sample_period_id}`}
+                                key={`sample_period_${period.survey_sample_period_id}-${index}`}
                                 divider
                                 disableGutters
                                 sx={{ pl: 1.25 }}>
