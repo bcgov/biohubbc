@@ -3,7 +3,7 @@ import MethodForm, {
   ISurveySampleMethodData,
   SamplingSiteMethodYupSchema,
   SurveySampleMethodDataInitialValues
-} from './MethodCreateForm';
+} from './MethodForm';
 
 interface ISamplingMethodProps {
   open: boolean;
@@ -11,7 +11,12 @@ interface ISamplingMethodProps {
   onClose: () => void;
 }
 
-const CreateSamplingMethod: React.FC<ISamplingMethodProps> = (props) => {
+/**
+ * Returns a form for creating a sampling method
+ *
+ * @returns
+ */
+const CreateSamplingMethod = (props: ISamplingMethodProps) => {
   const handleSubmit = (values: ISurveySampleMethodData) => {
     props.onSubmit(values);
   };

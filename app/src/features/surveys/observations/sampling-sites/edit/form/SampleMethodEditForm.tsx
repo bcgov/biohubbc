@@ -28,12 +28,18 @@ import { IGetSampleLocationDetailsForUpdate } from 'interfaces/useSamplingSiteAp
 import { useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { getCodesName } from 'utils/Utils';
-import { ISurveySampleMethodData } from './MethodEditForm';
+import { ISurveySampleMethodData } from '../../create/form/MethodForm';
 
 export interface SampleMethodEditFormProps {
   name: string;
 }
 
+/**
+ * Returns a form for editing a sampling method
+ *
+ * @param props
+ * @returns
+ */
 const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
   const { name } = props;
 

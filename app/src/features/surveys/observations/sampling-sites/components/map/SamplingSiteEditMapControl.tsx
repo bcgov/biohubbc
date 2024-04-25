@@ -160,7 +160,7 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
       <Box component="fieldset">
         <Typography component="legend" data-testid="funding-source-list-found">
           Site Location Preview &zwnj;
-          {samplingSiteGeoJsonFeatures && (
+          {samplingSiteGeoJsonFeatures.length > 0 && (
             <Typography component="span" color="textSecondary" fontWeight="400">
               {`(${samplingSiteGeoJsonFeatures.length} ${pluralize(
                 samplingSiteGeoJsonFeatures.length,
@@ -231,7 +231,7 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
                 <BaseLayerControls />
               </LayersControl>
             </LeafletMapContainer>
-            {samplingSiteGeoJsonFeatures && (
+            {samplingSiteGeoJsonFeatures.length > 0 && (
               <Box position="absolute" top="128px" left="16px" zIndex="999">
                 <IconButton
                   aria-label="zoom to initial extent"

@@ -1,4 +1,4 @@
-import { ISurveySampleMethodData } from 'features/surveys/observations/sampling-sites/create/form/MethodCreateForm';
+import { ISurveySampleMethodData } from 'features/surveys/observations/sampling-sites/create/form/MethodForm';
 import { ISurveySampleSite } from 'features/surveys/observations/sampling-sites/create/SamplingSitePage';
 import { Feature } from 'geojson';
 import { IGetSurveyBlock, IGetSurveyStratum } from './useSurveyApi.interface';

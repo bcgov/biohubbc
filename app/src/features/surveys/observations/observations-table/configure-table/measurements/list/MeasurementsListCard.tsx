@@ -50,6 +50,18 @@ export const MeasurementsListCard = (props: IMeasurementsListCardProps) => {
           <Typography variant="body2">
             <em>{measurement.itis_tsn}</em>
           </Typography>
+          {/* <Typography variant="body2">
+            {measurement.commonName ? (
+              <>
+                <span>{measurement.commonName}</span>&nbsp;
+                <span>
+                  (<em>{measurement.scientificName}</em>)
+                </span>
+              </>
+            ) : (
+              <em>{measurement.scientificName}</em>
+            )}
+          </Typography> */}
         </Box>
         <Box>
           <Typography component="div" variant="body1" fontWeight={700}>

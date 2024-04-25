@@ -6,7 +6,7 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { SurveyContext } from 'contexts/surveyContext';
-import { SamplingSiteMethodYupSchema } from 'features/surveys/observations/sampling-sites/create/form/MethodCreateForm';
+import { SamplingSiteMethodYupSchema } from 'features/surveys/observations/sampling-sites/create/form/MethodForm';
 import { useFormikContext } from 'formik';
 import { IGetSampleLocationDetailsForUpdate } from 'interfaces/useSamplingSiteApi.interface';
 import { useContext } from 'react';
@@ -33,6 +33,12 @@ export const samplingSiteYupSchema = yup.object({
     .min(1, 'At least one sampling method is required')
 });
 
+/**
+ * Returns a form for editing a sampling site
+ *
+ * @param props
+ * @returns
+ */
 const SampleSiteEditForm = (props: ISampleSiteEditFormProps) => {
   const surveyContext = useContext(SurveyContext);
   const { submitForm } = useFormikContext<IGetSampleLocationDetailsForUpdate>();

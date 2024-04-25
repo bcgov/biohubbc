@@ -81,7 +81,7 @@ const SamplingSiteEditPage = () => {
           name: values.name,
           description: values.description,
           survey_id: values.survey_id,
-          survey_sample_sites: [values.geojson as unknown as Feature],
+          survey_sample_sites: [values.geojson as Feature],
           geojson: values.geojson,
           methods: values.sample_methods,
           blocks: values.sample_blocks.map((block) => block.survey_sample_block_id),
@@ -188,7 +188,7 @@ const SamplingSiteEditPage = () => {
             survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
             is_submitting={isSubmitting}
             title="Edit Sampling Site"
-            breadcrumb="Edit Sampling Siteee"
+            breadcrumb="Edit Sampling Site"
           />
           <SampleSiteEditForm isSubmitting={isSubmitting} />
         </Box>

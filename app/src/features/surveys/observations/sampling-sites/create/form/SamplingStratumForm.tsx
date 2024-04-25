@@ -13,11 +13,16 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { useFormikContext } from 'formik';
 import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
 import { IGetSurveyStratum } from 'interfaces/useSurveyApi.interface';
-import { default as React, useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import BlockStratumCard from '../../components/BlockStratumCard';
 
-const SamplingStratumForm: React.FC = () => {
+/**
+ * Returns a form for adding survey stratums to a sampling site
+ *
+ * @returns
+ */
+const SamplingStratumForm = () => {
   const { values, setFieldValue } = useFormikContext<ICreateSamplingSiteRequest>();
 
   const surveyContext = useContext(SurveyContext);

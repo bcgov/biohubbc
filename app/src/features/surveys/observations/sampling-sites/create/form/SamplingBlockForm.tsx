@@ -17,6 +17,11 @@ import { useContext, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import BlockStratumCard from '../../components/BlockStratumCard';
 
+/**
+ * Returns a form for adding survey blocks to a sampling site
+ *
+ * @returns
+ */
 export const SamplingBlockForm = () => {
   const { setFieldValue, values } = useFormikContext<ICreateSamplingSiteRequest>();
   const surveyContext = useContext(SurveyContext);

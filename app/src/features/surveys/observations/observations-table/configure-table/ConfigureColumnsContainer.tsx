@@ -193,19 +193,17 @@ export const ConfigureColumnsContainer = (props: IConfigureColumnsContainerProps
   );
 
   return (
-    <>
-      <ConfigureColumns
-        disabled={disabled}
-        hiddenFields={hiddenFields}
-        hideableColumns={hideableColumns}
-        onToggleColumnVisibility={onToggleColumnVisibility}
-        onToggleShowHideAll={onToggleShowHideAll}
-        disabledAddMeasurements={isAnyRowInEditMode()}
-        disabledRemoveMeasurements={isAnyRowInEditMode()}
-        measurementColumns={observationsTableContext.measurementColumns}
-        onRemoveMeasurements={onRemoveMeasurements}
-        onAddMeasurements={onAddMeasurements}
-      />
-    </>
+    <ConfigureColumns
+      disabled={disabled}
+      hiddenFields={hiddenFields}
+      hideableColumns={hideableColumns}
+      onToggleColumnVisibility={onToggleColumnVisibility}
+      onToggleShowHideAll={onToggleShowHideAll}
+      disabledAddMeasurements={isAnyRowInEditMode()}
+      disabledRemoveMeasurements={isAnyRowInEditMode()}
+      measurementColumns={observationsTableContext.measurementColumns}
+      onRemoveMeasurements={onRemoveMeasurements}
+      onAddMeasurements={onAddMeasurements}
+    />
   );
 };

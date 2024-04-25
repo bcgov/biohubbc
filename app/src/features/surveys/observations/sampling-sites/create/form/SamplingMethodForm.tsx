@@ -21,7 +21,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { CodesContext } from 'contexts/codesContext';
-import { ISurveySampleMethodData } from 'features/surveys/observations/sampling-sites/create/form/MethodCreateForm';
+import { ISurveySampleMethodData } from 'features/surveys/observations/sampling-sites/create/form/MethodForm';
 import { useFormikContext } from 'formik';
 import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
 import { useContext, useEffect, useState } from 'react';
@@ -30,6 +30,11 @@ import { getCodesName } from 'utils/Utils';
 import EditSamplingMethod from '../../edit/form/EditSamplingMethod';
 import CreateSamplingMethod from './CreateSamplingMethod';
 
+/**
+ * Returns a form for creating and editing a sampling method
+ *
+ * @returns
+ */
 const SamplingMethodForm = () => {
   const { values, errors, setFieldValue, validateField } = useFormikContext<ICreateSamplingSiteRequest>();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);

@@ -5,6 +5,12 @@ import { useFormikContext } from 'formik';
 import { IGetSampleLocationDetails } from 'interfaces/useSamplingSiteApi.interface';
 import SamplingSiteEditMapControl from './SamplingSiteEditMapControl';
 
+/**
+ * Returns a form for editing the location of a sample site
+ *
+ * @param props
+ * @returns
+ */
 const SurveySamplingSiteEditForm = () => {
   const formikProps = useFormikContext<IGetSampleLocationDetails>();
 

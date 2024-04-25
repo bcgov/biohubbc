@@ -1,7 +1,7 @@
 import { mdiCogOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Popover } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
+import Popover from '@mui/material/Popover';
 import { GridColDef } from '@mui/x-data-grid';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';

@@ -1,7 +1,6 @@
 import EditDialog from 'components/dialog/EditDialog';
 import { IGetSampleMethodRecord } from 'interfaces/useSamplingSiteApi.interface';
-import { ISurveySampleMethodData, SamplingSiteMethodYupSchema } from '../../create/form/MethodCreateForm';
-import MethodForm from './MethodEditForm';
+import MethodForm, { ISurveySampleMethodData, SamplingSiteMethodYupSchema } from '../../create/form/MethodForm';
 
 interface IEditSamplingMethodProps {
   open: boolean;
@@ -10,27 +9,31 @@ interface IEditSamplingMethodProps {
   onClose: () => void;
 }
 
-const EditSamplingMethod: React.FC<IEditSamplingMethodProps> = (props) => {
+/**
+ * Returns a form for editing a sampling method
+ *
+ * @param props
+ * @returns
+ */
+const EditSamplingMethod = (props: IEditSamplingMethodProps) => {
   const { open, initialData, onSubmit, onClose } = props;
 
   return (
-    <>
-      <EditDialog
-        dialogTitle={'Edit Sampling Method'}
-        open={open}
-        dialogLoading={false}
-        component={{
-          element: <MethodForm />,
-          initialValues: initialData,
-          validationSchema: SamplingSiteMethodYupSchema
-        }}
-        dialogSaveButtonLabel="Update"
-        onCancel={onClose}
-        onSave={(formValues) => {
-          onSubmit(formValues);
-        }}
-      />
-    </>
+    <EditDialog
+      dialogTitle={'Edit Sampling Method'}
+      open={open}
+      dialogLoading={false}
+      component={{
+        element: <MethodForm />,
+        initialValues: initialData,
+        validationSchema: SamplingSiteMethodYupSchema
+      }}
+      dialogSaveButtonLabel="Update"
+      onCancel={onClose}
+      onSave={(formValues) => {
+        onSubmit(formValues);
+      }}
+    />
   );
 };
 

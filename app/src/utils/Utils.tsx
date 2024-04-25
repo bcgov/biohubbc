@@ -452,29 +452,3 @@ export const getRandomHexColor = (seed: number, min = 100, max = 170): string =>
 
   return `#${randomChannel()}${randomChannel()}${randomChannel()}`;
 };
-
-/**
- * This will remove update_user, update_date, create_user, and create_date recursively
- *
- * @param obj
- * @returns
- */
-export const removeUpdateProperties = (obj: any): any => {
-  if (typeof obj !== 'object' || obj === null) {
-    return obj;
-  }
-
-  if (Array.isArray(obj)) {
-    return obj.map(removeUpdateProperties);
-  }
-
-  const newObj: any = {};
-  for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      if (key !== 'update_user' && key !== 'update_date') {
-        newObj[key] = removeUpdateProperties(obj[key]);
-      }
-    }
-  }
-  return newObj;
-};
