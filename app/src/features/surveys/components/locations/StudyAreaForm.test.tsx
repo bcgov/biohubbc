@@ -8,7 +8,7 @@ import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { SurveyAreaMapControl } from './SurveyAreaMapControl';
 
 // Mock Map Controller component
-jest.mock('./locations/SurveyAreaMapControl');
+jest.mock('./SurveyAreaMapControl');
 const mockMap = SurveyAreaMapControl as jest.Mock;
 
 describe('Study Area Form', () => {

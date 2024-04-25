@@ -18,7 +18,7 @@ const mockJobs: ICode[] = [
   }
 ];
 
-jest.mock('../../../hooks/useBioHubApi');
+jest.mock('../../../../hooks/useBioHubApi');
 const mockBiohubApi = useBiohubApi as jest.Mock;
 
 const mockUseApi = {

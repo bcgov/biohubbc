@@ -4,7 +4,7 @@ import Stack from '@mui/system/Stack';
 import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
-import SurveySectionHeader from '../components/SurveySectionHeader';
+import SurveySectionHeader from './SurveySectionHeader';
 
 interface SurveySectionFullPageLayoutProps {
   sideBarComponent: JSX.Element;
