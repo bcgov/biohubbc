@@ -10,9 +10,9 @@ import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
 import { createRef, useMemo, useState } from 'react';
 import yup from 'utils/YupSchema';
-import { SurveyAreaList } from './locations/SurveyAreaList';
-import SurveyAreaLocationForm from './locations/SurveyAreaLocationForm';
-import { SurveyAreaMapControl } from './locations/SurveyAreaMapControl';
+import { SurveyAreaList } from './SurveyAreaList';
+import SurveyAreaLocationForm from './SurveyAreaLocationForm';
+import { SurveyAreaMapControl } from './SurveyAreaMapControl';
 
 export interface ISurveyLocation {
   survey_location_id?: number;

@@ -3,8 +3,8 @@ import Collapse from '@mui/material/Collapse';
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
 import SurveyBlockSection from './blocks/SurveyBlockForm';
+import SurveyStratumForm from './stratums/SurveyStratumForm';
 import SurveySiteSelectionForm from './SurveySiteSelectionForm';
-import SurveyStratumForm from './SurveyStratumForm';
 
 const SamplingStrategyForm = () => {
   const [showStratumForm, setShowStratumForm] = useState<boolean>(false);

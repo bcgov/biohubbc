@@ -1,7 +1,7 @@
 import ProprietaryDataForm, {
   IProprietaryDataForm,
   ProprietaryDataYupSchema
-} from 'features/surveys/components/ProprietaryDataForm';
+} from 'features/surveys/components/agreements/ProprietaryDataForm';
 import { Formik } from 'formik';
 import { codes } from 'test-helpers/code-helpers';
 import { fireEvent, render, screen, waitFor, within } from 'test-helpers/test-utils';

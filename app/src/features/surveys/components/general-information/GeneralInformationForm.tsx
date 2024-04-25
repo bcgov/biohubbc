@@ -12,7 +12,7 @@ import { useFormikContext } from 'formik';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import React from 'react';
 import yup from 'utils/YupSchema';
-import SurveyPermitForm, { SurveyPermitFormYupSchema } from '../SurveyPermitForm';
+import SurveyPermitForm, { SurveyPermitFormYupSchema } from '../../SurveyPermitForm';
 
 export const AddPermitFormInitialValues = {
   permits: [

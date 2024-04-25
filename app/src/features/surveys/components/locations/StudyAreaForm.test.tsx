@@ -2,10 +2,10 @@ import StudyAreaForm, {
   ISurveyLocationForm,
   SurveyLocationInitialValues,
   SurveyLocationYupSchema
-} from 'features/surveys/components/StudyAreaForm';
+} from 'features/surveys/components/locations/StudyAreaForm';
 import { Formik } from 'formik';
 import { cleanup, render, waitFor } from 'test-helpers/test-utils';
-import { SurveyAreaMapControl } from './locations/SurveyAreaMapControl';
+import { SurveyAreaMapControl } from './SurveyAreaMapControl';
 
 // Mock Map Controller component
 jest.mock('./locations/SurveyAreaMapControl');

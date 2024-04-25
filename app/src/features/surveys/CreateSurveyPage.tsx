@@ -22,15 +22,15 @@ import { ICreateSurveyRequest, IEditSurveyRequest } from 'interfaces/useSurveyAp
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
-import { AgreementsInitialValues } from './components/AgreementsForm';
-import { SurveyBlockInitialValues } from './components/blocks/SurveyBlockForm';
-import { GeneralInformationInitialValues } from './components/GeneralInformationForm';
-import { ProprietaryDataInitialValues } from './components/ProprietaryDataForm';
-import { PurposeAndMethodologyInitialValues } from './components/PurposeAndMethodologyForm';
-import { SurveyLocationInitialValues } from './components/StudyAreaForm';
-import { SurveyFundingSourceFormInitialValues } from './components/SurveyFundingSourceForm';
-import { SurveySiteSelectionInitialValues } from './components/SurveySiteSelectionForm';
-import { SurveyUserJobFormInitialValues } from './components/SurveyUserForm';
+import { AgreementsInitialValues } from './components/agreements/AgreementsForm';
+import { SurveyBlockInitialValues } from './components/sampling-strategy/blocks/SurveyBlockForm';
+import { GeneralInformationInitialValues } from './components/general-information/GeneralInformationForm';
+import { ProprietaryDataInitialValues } from './components/agreements/ProprietaryDataForm';
+import { PurposeAndMethodologyInitialValues } from './components/methodology/PurposeAndMethodologyForm';
+import { SurveyLocationInitialValues } from './components/locations/StudyAreaForm';
+import { SurveyFundingSourceFormInitialValues } from './components/funding/SurveyFundingSourceForm';
+import { SurveySiteSelectionInitialValues } from './components/sampling-strategy/SurveySiteSelectionForm';
+import { SurveyUserJobFormInitialValues } from './components/participants/SurveyUserForm';
 import EditSurveyForm from './edit/EditSurveyForm';
 
 export const defaultSurveyDataFormValues: ICreateSurveyRequest = {
