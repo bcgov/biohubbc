@@ -1,7 +1,8 @@
 import { AxiosInstance } from 'axios';
 import {
   CBMeasurementSearchByTermResponse,
-  CBMeasurementSearchByTsnResponse
+  CBMeasurementSearchByTsnResponse,
+  ICollectionUnitResponse
 } from 'interfaces/useCritterApi.interface';
 
 export const useXrefApi = (axios: AxiosInstance) => {
@@ -29,8 +30,21 @@ export const useXrefApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get collection (ie. ecological) units that are available for a given taxon
+   *
+   * @param {string} searchTerm
+   * @return {*}  {Promise<CBMeasurementSearchByTermResponse>}
+   */
+  const getCollectionUnits = async (tsn: number): Promise<ICollectionUnitResponse[]> => {
+    const { data } = await axios.get(`/api/critterbase/xref/taxon-collection-categories?tsn=${tsn}`);
+    console.log(data)
+    return data;
+  };
+
   return {
     getTaxonMeasurements,
-    getMeasurementTypeDefinitionsBySearchTerm
+    getMeasurementTypeDefinitionsBySearchTerm,
+    getCollectionUnits
   };
 };

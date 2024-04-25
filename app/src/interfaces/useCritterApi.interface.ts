@@ -1,3 +1,19 @@
+import { ITaxonomy } from './useTaxonomyApi.interface';
+
+export interface ICreateEditAnimalRequest {
+  nickname: string;
+  description: string;
+  species: ITaxonomy | null;
+  ecological_units: {
+    value: number
+    ecological_unit_id: string;
+  }[];
+}
+
+// export interface IAnimalUpdateObject {
+//   name: string
+// }
+
 export type ICollectionUnitResponse = {
   critter_collection_unit_id: string;
   category_name: string;

@@ -6,13 +6,14 @@ import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
+import CreateAnimalPage from './animals/create/CreateAnimalPage';
+import SurveyAnimalPage from './animals/SurveyAnimalPage';
 import { SurveyLocationPage } from './components/locations/SurveyLocationPage';
 import EditSurveyPage from './edit/EditSurveyPage';
 import SamplingSiteEditPage from './observations/sampling-sites/edit/SamplingSiteEditPage';
 import SamplingSitePage from './observations/sampling-sites/SamplingSitePage';
 import { SurveyObservationPage } from './observations/SurveyObservationPage';
 import ManualTelemetryPage from './telemetry/ManualTelemetryPage';
-import { SurveyAnimalsPage } from './view/survey-animals/SurveyAnimalsPage';
 
 /**
  * Router for all `/admin/projects/:id/surveys/:survey_id/*` pages.
@@ -72,7 +73,20 @@ const SurveyRouter: React.FC = () => {
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
-            <SurveyAnimalsPage />
+            <SurveyAnimalPage />
+          </DialogContextProvider>
+        </ProjectRoleRouteGuard>
+      </RouteWithTitle>
+
+      <RouteWithTitle
+        exact
+        path={'/admin/projects/:id/surveys/:survey_id/animals/create'}
+        title={getTitle('Create Animal')}>
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <DialogContextProvider>
+            <CreateAnimalPage />
           </DialogContextProvider>
         </ProjectRoleRouteGuard>
       </RouteWithTitle>

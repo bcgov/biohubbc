@@ -11,6 +11,6 @@
   "insertPragma": false,
   "proseWrap": "never",
   "endOfLine": "lf",
-  "arrowParens": "always",P
+  "arrowParens": "always",
   "htmlWhitespaceSensitivity": "ignore"
 }
