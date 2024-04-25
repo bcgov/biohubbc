@@ -1,11 +1,14 @@
 import { PublishStatus } from 'constants/attachments';
 import { IAgreementsForm } from 'features/surveys/components/agreements/AgreementsForm';
-import { IBlockData } from 'features/surveys/components/sampling-strategy/blocks/BlockForm';
-import { IGeneralInformationForm } from 'features/surveys/components/general-information/GeneralInformationForm';
 import { IProprietaryDataForm } from 'features/surveys/components/agreements/ProprietaryDataForm';
-import { IPurposeAndMethodologyForm } from 'features/surveys/components/methodology/PurposeAndMethodologyForm';
+import {
+  ISurveyFundingSource,
+  ISurveyFundingSourceForm
+} from 'features/surveys/components/funding/SurveyFundingSourceForm';
+import { IGeneralInformationForm } from 'features/surveys/components/general-information/GeneralInformationForm';
 import { ISurveyLocationForm } from 'features/surveys/components/locations/StudyAreaForm';
-import { ISurveyFundingSource, ISurveyFundingSourceForm } from 'features/surveys/components/funding/SurveyFundingSourceForm';
+import { IPurposeAndMethodologyForm } from 'features/surveys/components/methodology/PurposeAndMethodologyForm';
+import { IBlockData } from 'features/surveys/components/sampling-strategy/blocks/BlockForm';
 import { ISurveySiteSelectionForm } from 'features/surveys/components/sampling-strategy/SurveySiteSelectionForm';
 import { Feature } from 'geojson';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';

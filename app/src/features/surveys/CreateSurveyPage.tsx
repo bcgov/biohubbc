@@ -23,14 +23,14 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { AgreementsInitialValues } from './components/agreements/AgreementsForm';
-import { SurveyBlockInitialValues } from './components/sampling-strategy/blocks/SurveyBlockForm';
-import { GeneralInformationInitialValues } from './components/general-information/GeneralInformationForm';
 import { ProprietaryDataInitialValues } from './components/agreements/ProprietaryDataForm';
-import { PurposeAndMethodologyInitialValues } from './components/methodology/PurposeAndMethodologyForm';
-import { SurveyLocationInitialValues } from './components/locations/StudyAreaForm';
 import { SurveyFundingSourceFormInitialValues } from './components/funding/SurveyFundingSourceForm';
-import { SurveySiteSelectionInitialValues } from './components/sampling-strategy/SurveySiteSelectionForm';
+import { GeneralInformationInitialValues } from './components/general-information/GeneralInformationForm';
+import { SurveyLocationInitialValues } from './components/locations/StudyAreaForm';
+import { PurposeAndMethodologyInitialValues } from './components/methodology/PurposeAndMethodologyForm';
 import { SurveyUserJobFormInitialValues } from './components/participants/SurveyUserForm';
+import { SurveyBlockInitialValues } from './components/sampling-strategy/blocks/SurveyBlockForm';
+import { SurveySiteSelectionInitialValues } from './components/sampling-strategy/SurveySiteSelectionForm';
 import EditSurveyForm from './edit/EditSurveyForm';
 
 export const defaultSurveyDataFormValues: ICreateSurveyRequest = {

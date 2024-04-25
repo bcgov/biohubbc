@@ -14,13 +14,19 @@ import { Formik, FormikProps } from 'formik';
 import { ICreateSurveyRequest, IEditSurveyRequest, SurveyUpdateObject } from 'interfaces/useSurveyApi.interface';
 import React, { useContext } from 'react';
 import AgreementsForm, { AgreementsYupSchema } from '../components/agreements/AgreementsForm';
-import GeneralInformationForm, { GeneralInformationYupSchema } from '../components/general-information/GeneralInformationForm';
 import ProprietaryDataForm, { ProprietaryDataYupSchema } from '../components/agreements/ProprietaryDataForm';
-import PurposeAndMethodologyForm, { PurposeAndMethodologyYupSchema } from '../components/methodology/PurposeAndMethodologyForm';
+import SurveyFundingSourceForm, {
+  SurveyFundingSourceFormYupSchema
+} from '../components/funding/SurveyFundingSourceForm';
+import GeneralInformationForm, {
+  GeneralInformationYupSchema
+} from '../components/general-information/GeneralInformationForm';
 import StudyAreaForm, { SurveyLocationYupSchema } from '../components/locations/StudyAreaForm';
-import SurveyFundingSourceForm, { SurveyFundingSourceFormYupSchema } from '../components/funding/SurveyFundingSourceForm';
-import { SurveySiteSelectionYupSchema } from '../components/sampling-strategy/SurveySiteSelectionForm';
+import PurposeAndMethodologyForm, {
+  PurposeAndMethodologyYupSchema
+} from '../components/methodology/PurposeAndMethodologyForm';
 import SurveyUserForm, { SurveyUserJobYupSchema } from '../components/participants/SurveyUserForm';
+import { SurveySiteSelectionYupSchema } from '../components/sampling-strategy/SurveySiteSelectionForm';
 
 export interface IEditSurveyForm {
   initialSurveyData: SurveyUpdateObject | ICreateSurveyRequest;
