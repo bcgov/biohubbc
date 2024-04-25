@@ -9,8 +9,6 @@ import Stack from '@mui/material/Stack';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { CreateSamplingSiteI18N } from 'constants/i18n';
-import { DialogContext } from 'contexts/dialogContext';
-import { SurveyContext } from 'contexts/surveyContext';
 import { ISurveySampleMethodData, SamplingSiteMethodYupSchema } from 'features/surveys/components/MethodForm';
 import SamplingMethodForm from 'features/surveys/components/SamplingMethodForm';
 import SurveySamplingSiteImportForm from 'features/surveys/components/SurveySamplingSiteImportForm';
@@ -19,8 +17,9 @@ import { Feature } from 'geojson';
 import History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { IGetSurveyBlock, IGetSurveyStratum } from 'interfaces/useSurveyApi.interface';
-import { useContext, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
 import SamplingSiteGroupingsForm from './components/SamplingSiteGroupingsForm';
@@ -49,8 +48,8 @@ const SamplingSitePage = () => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
 
-  const surveyContext = useContext(SurveyContext);
-  const dialogContext = useContext(DialogContext);
+  const surveyContext = useSurveyContext();
+  const dialogContext = useDialogContext();
 
   const formikRef = useRef<FormikProps<any>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -148,7 +147,6 @@ const SamplingSitePage = () => {
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
-
       <Formik
         innerRef={formikRef}
         initialValues={{
