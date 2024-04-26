@@ -2,6 +2,7 @@ import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { ConfigContext, IConfig } from 'contexts/configContext';
 import { DialogContext, IDialogContext } from 'contexts/dialogContext';
 import { IObservationsContext, ObservationsContext } from 'contexts/observationsContext';
+import { IObservationsPageContext, ObservationsPageContext } from 'contexts/observationsPageContext';
 import { IObservationsTableContext, ObservationsTableContext } from 'contexts/observationsTableContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
@@ -105,6 +106,23 @@ export const useObservationsContext = (): IObservationsContext => {
   if (!context) {
     throw Error(
       'ObservationsContext is undefined, please verify you are calling useObservationsContext() as child of an <ObservationsContextProvider> component.'
+    );
+  }
+
+  return context;
+};
+
+/**
+ * Returns an instance of `IObservationsPageContext` from `ObservationsPageContext`.
+ *
+ * @return {*}  {IObservationsPageContext}
+ */
+export const useObservationsPageContext = (): IObservationsPageContext => {
+  const context = useContext(ObservationsPageContext);
+
+  if (!context) {
+    throw Error(
+      'ObservationsPageContext is undefined, please verify you are calling useObservationsPageContext() as child of an <ObservationsPageContextProvider> component.'
     );
   }
 

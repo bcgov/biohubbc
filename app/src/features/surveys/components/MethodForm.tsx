@@ -1,4 +1,4 @@
-import { mdiArrowRight, mdiCalendarMonthOutline, mdiClockOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiArrowRightThin, mdiCalendarMonthOutline, mdiClockOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
@@ -18,7 +18,7 @@ import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useContext, useEffect } from 'react';
 import yup from 'utils/YupSchema';
 
-interface ISurveySampleMethodPeriodData {
+export interface ISurveySampleMethodPeriodData {
   survey_sample_period_id: number | null;
   survey_sample_method_id: number | null;
   start_date: string;
@@ -34,10 +34,6 @@ export interface ISurveySampleMethodData {
   description: string;
   periods: ISurveySampleMethodPeriodData[];
   method_response_metric_id: number | null;
-}
-
-export interface IEditSurveySampleMethodData extends ISurveySampleMethodData {
-  index: number;
 }
 
 export const SurveySampleMethodPeriodArrayItemInitialValues = {
@@ -103,6 +99,11 @@ export const SamplingSiteMethodYupSchema = yup.object({
     .min(1, 'At least one time period is required')
 });
 
+/**
+ * Returns a form for editing a sampling method
+ *
+ * @returns
+ */
 const MethodForm = () => {
   const formikProps = useFormikContext<ISurveySampleMethodData>();
   const { values, errors } = formikProps;
@@ -165,7 +166,7 @@ const MethodForm = () => {
             sx={{
               mb: 1
             }}>
-            Time Periods
+            Periods
           </Typography>
           <Box>
             <FieldArray
@@ -240,7 +241,7 @@ const MethodForm = () => {
                               </Stack>
 
                               <Box flex="0 0 auto" mt={2.25}>
-                                <Icon path={mdiArrowRight} size={0.8} />
+                                <Icon path={mdiArrowRightThin} size={1} />
                               </Box>
 
                               <Stack>

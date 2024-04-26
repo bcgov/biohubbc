@@ -40,6 +40,7 @@
     "@mui/x-data-grid-pro": "^6.19.4",
     "@mui/x-date-pickers": "^6.19.4",
     "@react-leaflet/core": "^2.1.0",
+    "@swc/core": "^1.3.76",
     "@tmcw/togeojson": "^4.2.0",
     "@turf/bbox": "^6.5.0",
     "@turf/boolean-equal": "^6.5.0",

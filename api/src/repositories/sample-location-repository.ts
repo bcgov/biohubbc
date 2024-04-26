@@ -145,7 +145,7 @@ export class SampleLocationRepository extends BaseRepository {
             'start_time', ssp.start_time,
             'end_date', ssp.end_date,
             'end_time', ssp.end_time
-          )) as sample_periods
+          ) ORDER BY ssp.start_date, ssp.start_time) as sample_periods
         `)
         )
           .from({ ssp: 'survey_sample_period' })

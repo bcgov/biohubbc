@@ -1,4 +1,4 @@
-import { mdiCalendarRangeOutline, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Alert from '@mui/material/Alert';
@@ -9,13 +9,10 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import Collapse from '@mui/material/Collapse';
-import { grey } from '@mui/material/colors';
+import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
@@ -23,17 +20,24 @@ import Typography from '@mui/material/Typography';
 import { CodesContext } from 'contexts/codesContext';
 import CreateSamplingMethod from 'features/surveys/components/CreateSamplingMethod';
 import EditSamplingMethod from 'features/surveys/components/EditSamplingMethod';
-import { IEditSurveySampleMethodData } from 'features/surveys/components/MethodForm';
+import { ISurveySampleMethodData } from 'features/surveys/components/MethodForm';
 import { useFormikContext } from 'formik';
 import { useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { getCodesName } from 'utils/Utils';
+import SamplingSiteListPeriod from '../../list/SamplingSiteListPeriod';
 import { IEditSamplingSiteRequest } from './SampleSiteEditForm';
 
 export interface SampleMethodEditFormProps {
   name: string;
 }
 
+/**
+ * Returns a form for editing a sampling method
+ *
+ * @param props {SampleMethodEditFormProps}
+ * @returns
+ */
 const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
   const { name } = props;
 
@@ -41,7 +45,7 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
-  const [editData, setEditData] = useState<IEditSurveySampleMethodData | undefined>(undefined);
+  const [editData, setEditData] = useState<{ data: ISurveySampleMethodData; index: number } | undefined>(undefined);
 
   const codesContext = useContext(CodesContext);
   useEffect(() => {
@@ -50,7 +54,7 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
     setAnchorEl(event.currentTarget);
-    setEditData({ ...values.sampleSite.methods[index], index });
+    setEditData({ data: values.sampleSite.methods[index], index });
   };
 
   const handleDelete = () => {
@@ -81,10 +85,10 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
 
       {/* EDIT SAMPLE METHOD DIALOG */}
       <EditSamplingMethod
-        initialData={editData}
+        initialData={editData?.data}
         open={isEditModalOpen}
-        onSubmit={(data, index) => {
-          setFieldValue(`${name}[${index}]`, data);
+        onSubmit={(data) => {
+          setFieldValue(`${name}[${editData?.index}]`, data);
           setAnchorEl(null);
           setIsEditModalOpen(false);
         }}
@@ -153,14 +157,28 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                   <Card
                     variant="outlined"
                     sx={{
-                      background: grey[100]
+                      background: grey[100],
+                      '& .MuiCardHeader-root': {
+                        pb: 1
+                      }
                     }}>
                     <CardHeader
-                      title={`${getCodesName(
-                        codesContext.codesDataLoader.data,
-                        'sample_methods',
-                        item.method_lookup_id || 0
-                      )}`}
+                      title={
+                        <>
+                          {getCodesName(
+                            codesContext.codesDataLoader.data,
+                            'sample_methods',
+                            item.method_lookup_id || 0
+                          )}
+                          <Typography component="span" variant="body2" color="textSecondary" ml={1}>
+                            {getCodesName(
+                              codesContext.codesDataLoader.data,
+                              'method_response_metrics',
+                              item.method_response_metric_id || 0
+                            )}
+                          </Typography>
+                        </>
+                      }
                       action={
                         <IconButton
                           onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
@@ -176,7 +194,7 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                         pt: 0,
                         pb: '12px !important'
                       }}>
-                      <Stack gap={3}>
+                      <Stack gap={2}>
                         {item.description && (
                           <Typography
                             variant="body2"
@@ -192,30 +210,14 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                             {item.description}
                           </Typography>
                         )}
-
                         <Box>
                           <Typography variant="body2" fontWeight={700}>
-                            Time Periods
+                            Periods
                           </Typography>
                           <Divider component="div" sx={{ mt: 1 }}></Divider>
-                          <List dense disablePadding>
-                            {item.periods.map((period) => (
-                              <ListItem
-                                key={`sample_period_${period.survey_sample_period_id}`}
-                                divider
-                                disableGutters
-                                sx={{ pl: 1.25 }}>
-                                <ListItemIcon sx={{ minWidth: '32px' }}>
-                                  <Icon path={mdiCalendarRangeOutline} size={0.75} />
-                                </ListItemIcon>
-                                <ListItemText
-                                  primary={`${period.start_date} ${period.start_time || ''} - ${period.end_date} ${
-                                    period.end_time || ''
-                                  }`}
-                                />
-                              </ListItem>
-                            ))}
-                          </List>
+                          <Box sx={{ maxWidth: { xs: '100%', sm: '400px', xl: '300px' }, m: 1 }}>
+                            <SamplingSiteListPeriod samplePeriods={item.periods} />
+                          </Box>
                         </Box>
                       </Stack>
                     </CardContent>

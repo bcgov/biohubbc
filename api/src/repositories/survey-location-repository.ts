@@ -84,7 +84,14 @@ export class SurveyLocationRepository extends BaseRepository {
   async getSurveyLocationsData(surveyId: number): Promise<SurveyLocationRecord[]> {
     const sqlStatement = SQL`
       SELECT
-        *
+        survey_location_id,
+        name,
+        description,
+        geography,
+        geojson,
+        geometry,
+        name,
+        revision_count
       FROM
         survey_location
       WHERE

@@ -2,7 +2,7 @@ import { AxiosResponse } from 'axios';
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { CritterbaseService, CRITTERBASE_API_HOST, ICritter } from './critterbase-service';
+import { CritterbaseService, ICritter } from './critterbase-service';
 import { KeycloakService } from './keycloak-service';
 
 chai.use(sinonChai);
@@ -53,7 +53,7 @@ describe('CritterbaseService', () => {
       const result = await cb._makeGetRequest(endpoint, []);
 
       expect(result).to.equal(mockResponse.data);
-      expect(mockAxios).to.have.been.calledOnceWith(`${CRITTERBASE_API_HOST}${endpoint}?`);
+      expect(mockAxios).to.have.been.calledOnceWith(`${endpoint}?`);
     });
 
     it('should make an axios get request with params', async () => {
@@ -67,7 +67,7 @@ describe('CritterbaseService', () => {
       const result = await cb._makeGetRequest(endpoint, queryParams);
 
       expect(result).to.equal(mockResponse.data);
-      expect(mockAxios).to.have.been.calledOnceWith(`${CRITTERBASE_API_HOST}${endpoint}?param=param`);
+      expect(mockAxios).to.have.been.calledOnceWith(`${endpoint}?param=param`);
     });
   });
 

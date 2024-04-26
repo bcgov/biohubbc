@@ -43,8 +43,8 @@ export const IAllCodeSets = z.object({
   vantage_codes: CodeSet(),
   survey_jobs: CodeSet(),
   site_selection_strategies: CodeSet(),
-  survey_progress: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape),
   sample_methods: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape),
+  survey_progress: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape),
   method_response_metrics: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape)
 });
 
@@ -53,7 +53,7 @@ export type IAllCodeSets = z.infer<typeof IAllCodeSets>;
 export class CodeRepository extends BaseRepository {
   async getSampleMethods() {
     const sql = SQL`
-    SELECT method_lookup_id as id, name, description FROM method_lookup;
+    SELECT method_lookup_id as id, name, description FROM method_lookup ORDER BY name ASC;
     `;
     const response = await this.connection.sql(sql);
     return response.rows;

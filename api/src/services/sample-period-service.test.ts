@@ -3,6 +3,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import {
   InsertSamplePeriodRecord,
+  SamplePeriodHierarchyIds,
   SamplePeriodRecord,
   SamplePeriodRepository,
   UpdateSamplePeriodRecord
@@ -56,6 +57,35 @@ describe('SamplePeriodService', () => {
 
       expect(getSamplePeriodsForSurveyMethodIdStub).to.be.calledOnceWith(surveySampleMethodId);
       expect(response).to.eql(mockSamplePeriodRecords);
+    });
+  });
+
+  describe('getSamplePeriodHierarchyIds', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('Gets a sample period by survey method ID', async () => {
+      const mockDBConnection = getMockDBConnection();
+
+      const mockSampleHierarchyIds: SamplePeriodHierarchyIds = {
+        survey_sample_site_id: 1,
+        survey_sample_method_id: 2,
+        survey_sample_period_id: 3
+      };
+
+      const getSamplePeriodHierarchyIdsStub = sinon
+        .stub(SamplePeriodRepository.prototype, 'getSamplePeriodHierarchyIds')
+        .resolves(mockSampleHierarchyIds);
+
+      const surveyId = 1;
+      const surveySamplePeriodId = 3;
+
+      const samplePeriodService = new SamplePeriodService(mockDBConnection);
+      const response = await samplePeriodService.getSamplePeriodHierarchyIds(surveyId, surveySamplePeriodId);
+
+      expect(getSamplePeriodHierarchyIdsStub).to.be.calledOnceWith(surveyId, surveySamplePeriodId);
+      expect(response).to.eql(mockSampleHierarchyIds);
     });
   });
 
