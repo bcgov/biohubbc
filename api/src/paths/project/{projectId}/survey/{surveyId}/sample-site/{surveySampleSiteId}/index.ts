@@ -165,7 +165,6 @@ PUT.apiDoc = {
                   type: 'array',
                   items: {
                     type: 'object',
-                    additionalProperties: false,
                     required: ['survey_block_id'],
                     properties: {
                       survey_block_id: {
@@ -178,7 +177,6 @@ PUT.apiDoc = {
                   type: 'array',
                   items: {
                     type: 'object',
-                    additionalProperties: false,
                     required: ['survey_stratum_id'],
                     properties: {
                       survey_stratum_id: {
