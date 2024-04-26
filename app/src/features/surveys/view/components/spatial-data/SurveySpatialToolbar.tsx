@@ -124,7 +124,7 @@ const SurveySpatialToolbar = (props: ISurveySptialToolbarProps) => {
           </ProjectRoleGuard>
         </Toolbar>
         <Divider flexItem></Divider>
-        <Box p={2}>
+        <Box p={2} display="flex" justifyContent="space-between">
           <ToggleButtonGroup
             value={props.activeView}
             onChange={updateDatasetView}

@@ -109,7 +109,7 @@ export const ImportObservationsButton = (props: IImportObservationsButtonProps) 
         color="primary"
         startIcon={<Icon path={mdiImport} size={1} />}
         onClick={() => setOpen(true)}
-        disabled={disabled}>
+        disabled={disabled || false}>
         Import
       </Button>
       <FileUploadDialog
