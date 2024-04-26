@@ -14,7 +14,7 @@ const AnimalProfileContainer = () => {
   const { selectedAnimal } = useAnimalPageContext();
 
   return (
-    <Paper component={Stack} flexDirection="column" flex="1 1 auto" height="100%">
+    <Paper component={Stack} flexDirection="column" flex="1 1 auto" height='100%'>
       <Toolbar
         disableGutters
         sx={{
@@ -33,50 +33,13 @@ const AnimalProfileContainer = () => {
           </Typography> */}
         </Typography>
 
-        <Stack flexDirection="row" alignItems="center" gap={1} whiteSpace="nowrap" bgcolor={grey[100]}>
-          {/* <ImportObservationsButton
-            disabled={animalPageContext.isSaving || animalPageContext.isDisabled}
-            onStart={() => observationsPageContext.setIsDisabled(true)}
-            onSuccess={() => animalPageContext.refreshObservationRecords()}
-            onFinish={() => observationsPageContext.setIsDisabled(false)}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<Icon path={mdiPlus} size={1} />}
-            onClick={() => animalPageContext.addObservationRecord()}
-            disabled={animalPageContext.isSaving || animalPageContext.isDisabled}>
-            Add Record
-          </Button>
-          <Collapse in={animalPageContext.hasUnsavedChanges} orientation="horizontal" sx={{ mr: -1 }}>
-            <Box whiteSpace="nowrap" display="flex" sx={{ gap: 1, pr: 1 }}>
-              <LoadingButton
-                loading={animalPageContext.isSaving || animalPageContext.isDisabled}
-                variant="contained"
-                color="primary"
-                onClick={() => animalPageContext.saveObservationRecords()}
-                disabled={animalPageContext.isSaving || animalPageContext.isDisabled}>
-                Save
-              </LoadingButton>
-              <DiscardChangesButton
-                disabled={animalPageContext.isSaving || animalPageContext.isDisabled}
-                onDiscard={() => animalPageContext.discardChanges()}
-              />
-            </Box>
-          </Collapse>
-          <ExportHeadersButton />
-          <ConfigureColumnsContainer
-            disabled={animalPageContext.isSaving || animalPageContext.isDisabled}
-            columns={columns}
-          />
-          <BulkActionsButton disabled={animalPageContext.isSaving || animalPageContext.isDisabled} /> */}
-        </Stack>
+        <Stack flexDirection="row" alignItems="center" gap={1} whiteSpace="nowrap" bgcolor={grey[100]}></Stack>
       </Toolbar>
 
       <Divider flexItem></Divider>
 
       {selectedAnimal && (
-        <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
+        <Box display="flex" flexDirection="column" flex="1 1 auto" overflow="auto" height='100%'>
           <AnimalProfile />
         </Box>
       )}

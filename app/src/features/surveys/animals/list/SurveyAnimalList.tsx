@@ -300,7 +300,6 @@ const SurveyAnimalList = () => {
                   flex="1 1 auto"
                   sx={{
                     background: grey[100],
-                    pt: 0.5
                   }}>
                   {/* Display text if the sample site data loader has no items in it */}
                   {!critters.length && (

@@ -2,12 +2,13 @@ import { CircularProgress } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/system/Box';
 import { AnimalPageContextProvider } from 'contexts/animalPageContext';
+import { DialogContextProvider } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useProjectContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import SurveyAnimalHeader from './SurveyAnimalHeader';
 import SurveyAnimalList from './list/SurveyAnimalList';
 import AnimalProfileContainer from './profile/AnimalProfileContainer';
+import SurveyAnimalHeader from './SurveyAnimalHeader';
 
 /**
  * Returns the page for managing marked or known animals
@@ -59,18 +60,20 @@ const SurveyAnimalPage = () => {
         <Stack
           direction="row"
           gap={1}
+          height='100%'
           sx={{
             flex: '1 1 auto',
             p: 1
           }}>
-          {/* Sampling Site List */}
-          <Box flex="0 0 auto" width="400px">
-            {/* <DialogContextProvider> */}
-            <SurveyAnimalList />
-            {/* </DialogContextProvider> */}
+          <Box width="400px" height="100%">
+            <DialogContextProvider>
+              <SurveyAnimalList />
+            </DialogContextProvider>
           </Box>
 
-          <Box flex='1 1 auto'><AnimalProfileContainer/></Box>
+          <Box flex="1 1 auto" height='100%'>
+            <AnimalProfileContainer />
+          </Box>
 
           {/* Observations Table
           <Box flex="1 1 auto">
