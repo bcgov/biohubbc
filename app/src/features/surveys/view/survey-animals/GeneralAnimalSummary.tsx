@@ -1,11 +1,11 @@
 import { mdiContentCopy, mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Box from '@mui/system/Box';
 import { DialogContext } from 'contexts/dialogContext';
 import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
 import { useContext } from 'react';

@@ -1,5 +1,4 @@
 import { Feature } from 'geojson';
-import L from 'leaflet';
 import { PropsWithChildren, ReactElement, useMemo } from 'react';
 import {
   FeatureGroup,
@@ -11,7 +10,7 @@ import {
   Tooltip,
   TooltipProps
 } from 'react-leaflet';
-import { coloredPoint } from 'utils/mapUtils';
+import { coloredCustomPointMarker, coloredPoint } from 'utils/mapUtils';
 
 export interface IStaticLayerFeature {
   geoJSON: Feature;
@@ -36,6 +35,12 @@ export interface IStaticLayersProps {
   layers: IStaticLayer[];
 }
 
+/**
+ * Returns static map layers to be displayed in leaflet
+ *
+ * @param props {PropsWithChildren<IStaticLayersProps>}
+ * @returns
+ */
 const StaticLayers = (props: PropsWithChildren<IStaticLayersProps>) => {
   const layerControls: ReactElement[] = useMemo(
     () =>
@@ -43,7 +48,6 @@ const StaticLayers = (props: PropsWithChildren<IStaticLayersProps>) => {
         .filter((layer) => Boolean(layer.features?.length))
         .map((layer) => {
           const layerColors = layer.layerColors || { color: '#1f7dff', fillColor: '#1f7dff' };
-
           return (
             <LayersControl.Overlay checked={true} name={layer.layerName} key={`static-layer-${layer.layerName}`}>
               <FeatureGroup key={`static-feature-group-${layer.layerName}`}>
@@ -54,13 +58,11 @@ const StaticLayers = (props: PropsWithChildren<IStaticLayersProps>) => {
                     <GeoJSON
                       key={`static-feature-${id}`}
                       style={{ ...layerColors }}
-                      pointToLayer={(feature, latlng) => {
-                        if (feature.properties?.radius) {
-                          return new L.Circle([latlng.lat, latlng.lng], feature.properties.radius);
-                        }
-
-                        return coloredPoint({ latlng });
-                      }}
+                      pointToLayer={(_, latlng) =>
+                        layer.layerName === 'Observations'
+                          ? coloredCustomPointMarker({ latlng, fillColor: layer.layerColors?.fillColor })
+                          : coloredPoint({ latlng, fillColor: layer.layerColors?.fillColor })
+                      }
                       data={item.geoJSON}
                       {...item.GeoJSONProps}>
                       {item.tooltip && (
