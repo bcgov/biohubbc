@@ -4,13 +4,14 @@ import { Button } from '@mui/material';
 import { GridColDef, GridColumnVisibilityModel } from '@mui/x-data-grid';
 import {
   getSurveySessionStorageKey,
+  SIMS_OBSERVATIONS_ENVIRONMENT_COLUMNS,
   SIMS_OBSERVATIONS_HIDDEN_COLUMNS,
   SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS
 } from 'constants/session-storage';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { useObservationsTableContext, useSurveyContext } from 'hooks/useContext';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
-import { EnvironmentType } from 'interfaces/useObservationApi.interface';
+import { EnvironmentType } from 'interfaces/useReferenceApi.interface';
 import { useCallback, useMemo, useState } from 'react';
 import { ConfigureColumnsDialog } from './ConfigureColumnsDialog';
 
@@ -156,13 +157,54 @@ export const ConfigureColumnsButton = (props: IConfigureColumnsButtonProps) => {
 
   const environmentColumns: EnvironmentType[] = [];
 
-  const onAddEnvironmentColumns = useCallback(() => {
-    // Add the environment columns to the table context
-  }, []);
+  const onAddEnvironmentColumns = useCallback(
+    (environmentColumnsToAdd: EnvironmentType[]) => {
+      console.log(environmentColumnsToAdd);
+      if (!environmentColumnsToAdd?.length) {
+        return;
+      }
 
-  const onRemoveEnvironmentColumns = useCallback(() => {
-    // Remove the environment columns from the table context
-  }, []);
+      // Add the environment columns to the table context
+      observationsTableContext.setEnvironmentColumns((currentColumns) => {
+        const newColumns = environmentColumnsToAdd.filter(
+          (columnToAdd) =>
+            !currentColumns.find((currentColumn) => currentColumn.environment_id === columnToAdd.environment_id)
+        );
+
+        // Store all environment definitions in local storage
+        sessionStorage.setItem(
+          getSurveySessionStorageKey(surveyContext.surveyId, SIMS_OBSERVATIONS_ENVIRONMENT_COLUMNS),
+          JSON.stringify([...currentColumns, ...newColumns])
+        );
+
+        return [...currentColumns, ...newColumns];
+      });
+    },
+    [observationsTableContext, surveyContext.surveyId]
+  );
+
+  const onRemoveEnvironmentColumns = useCallback(
+    (environmentColumnsToRemove: string[]) => {
+      // Delete the environment columns from the database
+      observationsTableContext.deleteObservationEnvironmentColumns(environmentColumnsToRemove, () => {
+        // Remove the environment columns from the table context
+        observationsTableContext.setEnvironmentColumns((currentColumns) => {
+          const remainingColumns = currentColumns.filter(
+            (currentColumn) => !environmentColumnsToRemove.includes(String(currentColumn.environment_id))
+          );
+
+          // Store all remaining environment definitions in local storage
+          sessionStorage.setItem(
+            getSurveySessionStorageKey(surveyContext.surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS),
+            JSON.stringify(remainingColumns)
+          );
+
+          return remainingColumns;
+        });
+      });
+    },
+    [observationsTableContext, surveyContext.surveyId]
+  );
 
   /**
    * Handles the removal of measurement columns from the table.

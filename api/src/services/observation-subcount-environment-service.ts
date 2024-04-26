@@ -53,6 +53,30 @@ export class ObservationSubCountEnvironmentService extends DBService {
   }
 
   /**
+   * Find environment qualitative type definitions for a given search term.
+   *
+   * @param {string} searchTerm
+   * @return {*}  {Promise<QualitativeEnvironmentTypeDefinition[]>}
+   * @memberof ObservationSubCountEnvironmentService
+   */
+  async findQualitativeEnvironmentTypeDefinitions(searchTerm: string): Promise<QualitativeEnvironmentTypeDefinition[]> {
+    return this.observationSubCountEnvironmentRepository.findQualitativeEnvironmentTypeDefinitions(searchTerm);
+  }
+
+  /**
+   * Find environment quantitative type definitions for a given search term.
+   *
+   * @param {string} searchTerm
+   * @return {*}  {Promise<QuantitativeEnvironmentTypeDefinition[]>}
+   * @memberof ObservationSubCountEnvironmentService
+   */
+  async findQuantitativeEnvironmentTypeDefinitions(
+    searchTerm: string
+  ): Promise<QuantitativeEnvironmentTypeDefinition[]> {
+    return this.observationSubCountEnvironmentRepository.findQuantitativeEnvironmentTypeDefinitions(searchTerm);
+  }
+
+  /**
    * Delete all environment records, for all observation records, for a given survey and set of environment ids.
    *
    * @param {number} surveyId

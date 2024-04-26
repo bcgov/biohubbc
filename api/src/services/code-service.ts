@@ -1,7 +1,12 @@
 import { IDBConnection } from '../database/db';
 import { CodeRepository, IAllCodeSets } from '../repositories/code-repository';
+import {
+  QualitativeEnvironmentTypeDefinition,
+  QuantitativeEnvironmentTypeDefinition
+} from '../repositories/observation-subcount-environment-repository';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
+import { ObservationSubCountEnvironmentService } from './observation-subcount-environment-service';
 
 const defaultLog = getLogger('services/code-queries');
 
@@ -87,6 +92,34 @@ export class CodeService extends DBService {
       sample_methods,
       survey_progress,
       method_response_metrics
+    };
+  }
+
+  /**
+   * Find qualitative and quantitative environments that match a given search term.
+   *
+   * @param {string} searchTerm
+   * @return {*}  {Promise<{
+   *     qualitative_environments: QualitativeEnvironmentTypeDefinition[];
+   *     quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
+   *   }>}
+   */
+  async findSubcountEnvironments(searchTerm: string): Promise<{
+    qualitative_environments: QualitativeEnvironmentTypeDefinition[];
+    quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
+  }> {
+    defaultLog.debug({ message: 'getEnvironments' });
+
+    const observationSubCountEnvironmentService = new ObservationSubCountEnvironmentService(this.connection);
+
+    const [qualitative_environments, quantitative_environments] = await Promise.all([
+      await observationSubCountEnvironmentService.findQualitativeEnvironmentTypeDefinitions(searchTerm),
+      await observationSubCountEnvironmentService.findQuantitativeEnvironmentTypeDefinitions(searchTerm)
+    ]);
+
+    return {
+      qualitative_environments,
+      quantitative_environments
     };
   }
 }

@@ -27,7 +27,8 @@ export async function up(knex: Knex): Promise<void> {
       'meter',
       'milligram',
       'gram',
-      'kilogram'
+      'kilogram',
+      'percent'
     );
 
     ----------------------------------------------------------------------------------------

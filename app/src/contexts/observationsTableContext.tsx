@@ -33,41 +33,13 @@ import {
   CBQualitativeMeasurementTypeDefinition,
   CBQuantitativeMeasurementTypeDefinition
 } from 'interfaces/useCritterApi.interface';
-import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
+import { IGetSurveyObservationsResponse, ObservationRecord } from 'interfaces/useObservationApi.interface';
+import { EnvironmentType } from 'interfaces/useReferenceApi.interface';
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { firstOrNull } from 'utils/Utils';
 import { v4 as uuidv4 } from 'uuid';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
 import { SurveyContext } from './surveyContext';
-
-export type StandardObservationColumns = {
-  survey_observation_id: number;
-  itis_tsn: number | null;
-  itis_scientific_name: string | null;
-  survey_sample_site_id: number | null;
-  survey_sample_method_id: number | null;
-  survey_sample_period_id: number | null;
-  count: number | null;
-  observation_date: Date;
-  observation_time: string;
-  latitude: number | null;
-  longitude: number | null;
-};
-
-export type SubcountObservationColumns = {
-  observation_subcount_id: number | null;
-  subcount: number | null;
-  qualitative_measurements: {
-    field: string;
-    critterbase_taxon_measurement_id: string;
-    critterbase_measurement_qualitative_option_id: string;
-  }[];
-  quantitative_measurements: {
-    critterbase_taxon_measurement_id: string;
-    value: number;
-  }[];
-  [key: string]: any;
-};
 
 export type TSNMeasurement = {
   qualitative: CBQualitativeMeasurementTypeDefinition[];
@@ -75,19 +47,6 @@ export type TSNMeasurement = {
 };
 
 export type TSNMeasurementMap = Record<string, TSNMeasurement>;
-
-export type ObservationRecord = StandardObservationColumns & SubcountObservationColumns;
-
-export type SupplementaryObservationCountData = {
-  observationCount: number;
-};
-
-export type SupplementaryObservationMeasurementData = {
-  qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
-  quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
-};
-
-export type SupplementaryObservationData = SupplementaryObservationCountData & SupplementaryObservationMeasurementData;
 
 export interface IObservationTableRow extends Partial<ObservationRecord> {
   id: GridRowId;
@@ -162,6 +121,15 @@ export type IObservationsTableContext = {
    * is successful.
    */
   deleteObservationMeasurementColumns: (measurementIds: string[], onSuccess?: () => void) => void;
+  /**
+   * Deletes all of the given environment columns, for all observation records, and removes them from the Observation
+   * table.
+   *
+   * @param {string[]} environmentIds The environment ids to delete.
+   * @param {() => void} [onSuccess] Optional callback that fires after the user confirms the deletion, and the deletion
+   * is successful.
+   */
+  deleteObservationEnvironmentColumns: (environmentIds: string[], onSuccess?: () => void) => void;
   /**
    * discards all changes made to observation records within the Observation Table. Abandons all newly added rows that
    * have not yet been saved, and reverts all edits to existing rows.
@@ -254,13 +222,13 @@ export type IObservationsTableContext = {
    */
   setMeasurementColumns: React.Dispatch<React.SetStateAction<CBMeasurementType[]>>;
   /**
-   * User-added measurement columns that are staged to be added to measurementColumns
+   * User-added measurement columns that are not part of the default observation table columns.
    */
-  stagedMeasurementColumns: CBMeasurementType[];
+  environmentColumns: EnvironmentType[];
   /**
-   * Sets the user-added staged measurement columns.
+   * Sets the user-added environment columns.
    */
-  setStagedMeasurementColumns: React.Dispatch<React.SetStateAction<CBMeasurementType[]>>;
+  setEnvironmentColumns: React.Dispatch<React.SetStateAction<EnvironmentType[]>>;
   /**
    * Used to disable the entire table.
    */
@@ -331,7 +299,9 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
 
   // Stores any measurement columns that are not part of the default observation table columns
   const [measurementColumns, setMeasurementColumns] = useState<CBMeasurementType[]>([]);
-  const [stagedMeasurementColumns, setStagedMeasurementColumns] = useState<CBMeasurementType[]>([]);
+
+  // Stores any environment columns that are not part of the default observation table columns
+  const [environmentColumns, setEnvironmentColumns] = useState<EnvironmentType[]>([]);
 
   // Internal disabled state for the observations table, should not be used outside of this context
   const [_isDisabled, setIsDisabled] = useState(false);
@@ -623,6 +593,53 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
   );
 
   /**
+   * Deletes the given records from the server and removes them from the table.
+   *
+   * @param {string[]} environmentIds The critterbase taxon environment ids to delete.
+   * @return {*}  {Promise<void>}
+   */
+  const _deleteEnvironmentColumns = useCallback(
+    async (environmentIds: string[]): Promise<void> => {
+      if (!environmentIds.length) {
+        return;
+      }
+
+      try {
+        // Delete environment columns from the database
+        await biohubApi.observation.deleteObservationEnvironments(projectId, surveyId, environmentIds);
+
+        // Close yes-no dialog
+        setYesNoDialog({ open: false });
+
+        // Show snackbar for successful deletion
+        setSnackbar({
+          snackbarMessage: (
+            <Typography variant="body2" component="div">
+              {environmentIds.length === 1
+                ? ObservationsTableI18N.deleteSingleEnvironmentColumnSuccessSnackbarMessage
+                : ObservationsTableI18N.deleteMultipleEnvironmentColumnSuccessSnackbarMessage(environmentIds.length)}
+            </Typography>
+          ),
+          open: true
+        });
+      } catch {
+        // Close yes-no dialog
+        setYesNoDialog({ open: false });
+
+        // Show error dialog
+        setErrorDialog({
+          onOk: () => setErrorDialog({ open: false }),
+          onClose: () => setErrorDialog({ open: false }),
+          dialogTitle: ObservationsTableI18N.removeEnvironmentColumnsErrorDialogTitle,
+          dialogText: ObservationsTableI18N.removeEnvironmentColumnsErrorDialogText,
+          open: true
+        });
+      }
+    },
+    [setYesNoDialog, setSnackbar, biohubApi.observation, projectId, surveyId, setErrorDialog]
+  );
+
+  /**
    * Returns all of the rows that have been selected.
    *
    * @return {*}
@@ -723,6 +740,51 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       });
     },
     [_deleteMeasurementColumns, setYesNoDialog]
+  );
+
+  /**
+   * Renders a dialog that prompts the user to delete the given environment columns (from all observation records).
+   *
+   * @param {string[]} environmentIds The critterbase taxon environment ids to delete.
+   * @param {() => void} [onSuccess] Optional callback that fires after the user confirms the deletion, and the deletion
+   * is successful.
+   * @return {*}
+   */
+  const deleteObservationEnvironmentColumns = useCallback(
+    (environmentIds: string[], onSuccess?: () => void) => {
+      if (!environmentIds.length) {
+        return;
+      }
+
+      setYesNoDialog({
+        dialogTitle:
+          environmentIds.length === 1
+            ? ObservationsTableI18N.removeSingleEnvironmentColumnDialogTitle
+            : ObservationsTableI18N.removeMultipleEnvironmentColumnsDialogTitle(environmentIds.length),
+        dialogText:
+          environmentIds.length === 1
+            ? ObservationsTableI18N.removeSingleEnvironmentColumnDialogText
+            : ObservationsTableI18N.removeMultipleEnvironmentColumnsDialogText,
+        yesButtonProps: {
+          color: 'error',
+          loading: false
+        },
+        yesButtonLabel:
+          environmentIds.length === 1
+            ? ObservationsTableI18N.removeSingleEnvironmentColumnButtonText
+            : ObservationsTableI18N.removeMultipleEnvironmentColumnsButtonText,
+        noButtonProps: { color: 'primary', variant: 'outlined', disabled: false },
+        noButtonLabel: 'Cancel',
+        open: true,
+        onYes: async () => {
+          await _deleteEnvironmentColumns(environmentIds);
+          onSuccess?.();
+        },
+        onClose: () => setYesNoDialog({ open: false }),
+        onNo: () => setYesNoDialog({ open: false })
+      });
+    },
+    [_deleteEnvironmentColumns, setYesNoDialog]
   );
 
   /**
@@ -1239,6 +1301,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       saveObservationRecords,
       deleteObservationRecords,
       deleteObservationMeasurementColumns,
+      deleteObservationEnvironmentColumns,
       discardChanges,
       refreshObservationRecords,
       getSelectedObservationRecords,
@@ -1259,9 +1322,9 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       hasError,
       sortModel,
       measurementColumns,
-      stagedMeasurementColumns,
       setMeasurementColumns,
-      setStagedMeasurementColumns,
+      environmentColumns,
+      setEnvironmentColumns,
       isDisabled,
       setIsDisabled
     }),
@@ -1275,6 +1338,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       saveObservationRecords,
       deleteObservationRecords,
       deleteObservationMeasurementColumns,
+      deleteObservationEnvironmentColumns,
       discardChanges,
       refreshObservationRecords,
       getSelectedObservationRecords,
@@ -1288,7 +1352,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       hasError,
       sortModel,
       measurementColumns,
-      stagedMeasurementColumns,
+      environmentColumns,
       isDisabled
     ]
   );

@@ -2,13 +2,13 @@ import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, IconButton, Stack, Typography } from '@mui/material';
 import EnvironmentStandardCard from 'features/standards/view/components/EnvironmentStandardCard';
-import { EnvironmentType } from 'interfaces/useObservationApi.interface';
+import { EnvironmentType } from 'interfaces/useReferenceApi.interface';
 import { EnvironmentsSearch } from './search/EnvironmentsSearch';
 
 export interface IConfigureEnvironmentColumnsProps {
   environmentColumns: EnvironmentType[];
   onAddEnvironmentColumns: (environmentColumns: EnvironmentType[]) => void;
-  onRemoveEnvironmentColumns: (fields: number[]) => void;
+  onRemoveEnvironmentColumns: (fields: string[]) => void;
 }
 
 export const ConfigureEnvironmentColumns = (props: IConfigureEnvironmentColumnsProps) => {
@@ -41,7 +41,7 @@ export const ConfigureEnvironmentColumns = (props: IConfigureEnvironmentColumnsP
                   <Box ml={1} mt={1}>
                     <IconButton
                       aria-label="Remove environment column"
-                      onClick={() => onRemoveEnvironmentColumns([environment.environment_id])}
+                      onClick={() => onRemoveEnvironmentColumns([String(environment.environment_id)])}
                       data-testid="configure-environment-column-remove-button">
                       <Icon path={mdiTrashCanOutline} size={1} />
                     </IconButton>

@@ -3,15 +3,23 @@ import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { BaseRepository } from './base-repository';
 
-export const EnvironmentUnit = z.enum(['millimeter', 'centimeter', 'meter', 'milligram', 'gram', 'kilogram']);
+export const EnvironmentUnit = z.enum([
+  'millimeter',
+  'centimeter',
+  'meter',
+  'milligram',
+  'gram',
+  'kilogram',
+  'percent'
+]);
 export type EnvironmentUnit = z.infer<typeof EnvironmentUnit>;
 
 const QuantitativeEnvironmentTypeDefinition = z.object({
-  environment_quantitative_id: z.string(),
+  environment_quantitative_id: z.number(),
   name: z.string(),
   description: z.string().nullable(),
-  min_value: z.number().nullable(),
-  max_value: z.number().nullable(),
+  min: z.number().nullable(),
+  max: z.number().nullable(),
   unit: EnvironmentUnit.nullable()
 });
 export type QuantitativeEnvironmentTypeDefinition = z.infer<typeof QuantitativeEnvironmentTypeDefinition>;
@@ -177,6 +185,79 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
       WHERE
         survey_observation.survey_id = ${surveyId};
   `;
+
+    const response = await this.connection.sql(sqlStatement, QuantitativeEnvironmentTypeDefinition);
+
+    return response.rows;
+  }
+
+  /**
+   * Find qualitative environment type definitions for a given search term.
+   *
+   * @param {string} searchTerm
+   * @return {*}  {Promise<QualitativeEnvironmentTypeDefinition[]>}
+   * @memberof ObservationSubCountEnvironmentRepository
+   */
+  async findQualitativeEnvironmentTypeDefinitions(searchTerm: string): Promise<QualitativeEnvironmentTypeDefinition[]> {
+    const sqlStatement = SQL`
+      SELECT
+        environment_qualitative.environment_qualitative_id,
+        environment_qualitative.name,
+        environment_qualitative.description,
+        json_agg(
+          json_build_object(
+            'environment_qualitative_option_id', environment_qualitative_option.environment_qualitative_option_id,
+            'name', environment_qualitative_option.name,
+            'description', environment_qualitative_option.description,
+            'value', environment_qualitative_option.value
+          )
+        ) AS options
+      FROM
+        environment_qualitative
+      LEFT JOIN environment_qualitative_environment_qualitative_option
+        ON environment_qualitative.environment_qualitative_id = environment_qualitative_environment_qualitative_option.environment_qualitative_id
+      LEFT JOIN environment_qualitative_option
+        ON environment_qualitative_environment_qualitative_option.environment_qualitative_option_id = environment_qualitative_option.environment_qualitative_option_id
+      WHERE
+        environment_qualitative.name ILIKE '%' || ${searchTerm} || '%'
+      OR 
+        environment_qualitative.description ILIKE '%' || ${searchTerm} || '%'
+      GROUP BY
+        environment_qualitative.environment_qualitative_id,
+        environment_qualitative.name,
+        environment_qualitative.description;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, QualitativeEnvironmentTypeDefinition);
+
+    return response.rows;
+  }
+
+  /**
+   * Find quantitative environment type definitions for a given search term.
+   *
+   * @param {string} searchTerm
+   * @return {*}  {Promise<QuantitativeEnvironmentTypeDefinition[]>}
+   * @memberof ObservationSubCountEnvironmentRepository
+   */
+  async findQuantitativeEnvironmentTypeDefinitions(
+    searchTerm: string
+  ): Promise<QuantitativeEnvironmentTypeDefinition[]> {
+    const sqlStatement = SQL`
+      SELECT
+        environment_quantitative_id,
+        name,
+        description,
+        min,
+        max,
+        unit
+      FROM
+        environment_quantitative
+      WHERE
+        name ILIKE '%' || ${searchTerm} || '%'
+      OR 
+        description ILIKE '%' || ${searchTerm} || '%';
+    `;
 
     const response = await this.connection.sql(sqlStatement, QuantitativeEnvironmentTypeDefinition);
 

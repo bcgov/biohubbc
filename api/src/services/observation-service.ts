@@ -33,6 +33,7 @@ import {
   getNonStandardColumnNamesFromWorksheet,
   getWorksheetRowObjects,
   IMeasurementDataToValidate,
+  isEnvironmentQualitativeTypeDefinition,
   isMeasurementCBQualitativeTypeDefinition,
   IXLSXCSVValidator,
   TsnMeasurementMap,
@@ -78,11 +79,11 @@ export interface InsertSubCount {
     measurement_value: number;
   }[];
   environments_qualitative: {
-    environment_id: string;
-    environment_option_id: string;
+    environment_id: number;
+    environment_option_id: number;
   }[];
   environments_quantitative: {
-    environment_id: string;
+    environment_id: number;
     environment_value: number;
   }[];
 }
@@ -614,7 +615,8 @@ export class ObservationService extends DBService {
         return;
       }
 
-      const environment = findEnvironmentFromEnvironments(mColumn); // TODO
+      //   const environment = findEnvironmentFromEnvironments(mColumn); // TODO
+      const environment = null as unknown as any;
 
       // Ignore empty environments
       if (!environment) {
@@ -622,11 +624,9 @@ export class ObservationService extends DBService {
       }
 
       // if environment is qualitative, find the option id
-      if (isMeasurementCBQualitativeTypeDefinition(environment)) {
+      if (isEnvironmentQualitativeTypeDefinition(environment)) {
         const foundOption = environment.options.find(
-          (option) =>
-            option.option_label.toLowerCase() === String(rowData).toLowerCase() ||
-            option.option_value === Number(rowData)
+          (option) => option.name.toLowerCase() === String(rowData).toLowerCase() || option.value === String(rowData)
         );
         if (foundOption) {
           foundEnvironments.environments_qualitative.push({

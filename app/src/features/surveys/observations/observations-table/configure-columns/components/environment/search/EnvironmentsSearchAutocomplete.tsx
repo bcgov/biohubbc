@@ -6,7 +6,7 @@ import ListItem from '@mui/material/ListItem';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { EnvironmentType } from 'interfaces/useObservationApi.interface';
+import { EnvironmentType } from 'interfaces/useReferenceApi.interface';
 import { debounce } from 'lodash-es';
 import { useMemo, useState } from 'react';
 

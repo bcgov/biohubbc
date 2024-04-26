@@ -287,6 +287,16 @@ export const ObservationsTableI18N = {
     'Are you sure you want to delete these columns? This action cannot be undone.',
   removeMultipleMeasurementColumnsButtonText: 'Delete Columns',
 
+  // Delete environment columns
+  removeSingleEnvironmentColumnDialogTitle: 'Delete environment column?',
+  removeSingleEnvironmentColumnDialogText:
+    'Are you sure you want to delete this environment column? This action cannot be undone.',
+  removeSingleEnvironmentColumnButtonText: 'Delete Columns',
+  removeMultipleEnvironmentColumnsDialogTitle: (count: number) => `Delete ${count} ${p(count, 'column')}?`,
+  removeMultipleEnvironmentColumnsDialogText:
+    'Are you sure you want to delete these columns? This action cannot be undone.',
+  removeMultipleEnvironmentColumnsButtonText: 'Delete Columns',
+
   // Save observation records success
   saveRecordsSuccessSnackbarMessage: 'Observations updated successfully.',
   // Save observation records error
@@ -311,6 +321,15 @@ export const ObservationsTableI18N = {
     'An error has occurred while attempting to delete measurement columns for this survey. Please try again. If the error persists, please contact your system administrator.',
   deleteMultipleMeasurementColumnSuccessSnackbarMessage: (count: number) =>
     `Deleted ${count} measurement ${p(count, 'column')} successfully.`,
+
+  // Delete environment columns success
+  deleteSingleEnvironmentColumnSuccessSnackbarMessage: 'Deleted environment column successfully.',
+  // Delete environment columns error
+  removeEnvironmentColumnsErrorDialogTitle: 'Error Deleting Environment Columns',
+  removeEnvironmentColumnsErrorDialogText:
+    'An error has occurred while attempting to delete environment columns for this survey. Please try again. If the error persists, please contact your system administrator.',
+  deleteMultipleEnvironmentColumnSuccessSnackbarMessage: (count: number) =>
+    `Deleted ${count} environment ${p(count, 'column')} successfully.`,
 
   // Import observation records
   importRecordsSuccessSnackbarMessage: 'Observations imported successfully.',

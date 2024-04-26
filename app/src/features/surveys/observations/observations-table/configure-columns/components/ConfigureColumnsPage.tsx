@@ -11,7 +11,7 @@ import { ConfigureEnvironmentColumns } from 'features/surveys/observations/obser
 import { ConfigureGeneralColumns } from 'features/surveys/observations/observations-table/configure-columns/components/general/ConfigureGeneralColumns';
 import { ConfigureMeasurementColumns } from 'features/surveys/observations/observations-table/configure-columns/components/measurements/ConfigureMeasurementColumns';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
-import { EnvironmentType } from 'interfaces/useObservationApi.interface';
+import { EnvironmentType } from 'interfaces/useReferenceApi.interface';
 import { useState } from 'react';
 
 export enum ConfigureColumnsViewEnum {
@@ -50,7 +50,7 @@ export interface IConfigureColumnsPageProps {
   onRemoveMeasurementColumns: (fields: string[]) => void;
   environmentColumns: EnvironmentType[];
   onAddEnvironmentColumns: (environmentColumns: EnvironmentType[]) => void;
-  onRemoveEnvironmentColumns: (fields: number[]) => void;
+  onRemoveEnvironmentColumns: (fields: string[]) => void;
 }
 
 /**
@@ -79,7 +79,7 @@ export const ConfigureColumnsPage = (props: IConfigureColumnsPageProps) => {
   const [activeView, setActiveView] = useState(ConfigureColumnsViewEnum.GENERAL);
 
   return (
-    <Grid container xs={12} justifyContent="space-between" pr={2}>
+    <Grid container justifyContent="space-between" pr={2}>
       <Grid item xs={3}>
         <ToggleButtonGroup
           value={activeView}

@@ -2,7 +2,7 @@ import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, Card, Collapse, Paper, Stack, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import { EnvironmentQualitativeOption } from 'interfaces/useObservationApi.interface';
+import { EnvironmentQualitativeOption } from 'interfaces/useReferenceApi.interface';
 import { useState } from 'react';
 
 interface IEnvironmentStandardCard {

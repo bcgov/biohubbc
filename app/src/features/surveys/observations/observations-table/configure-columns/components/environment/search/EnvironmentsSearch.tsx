@@ -1,6 +1,7 @@
 import { EnvironmentsSearchAutocomplete } from 'features/surveys/observations/observations-table/configure-columns/components/environment/search/EnvironmentsSearchAutocomplete';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { EnvironmentType } from 'interfaces/useObservationApi.interface';
+import { EnvironmentType } from 'interfaces/useReferenceApi.interface';
 
 export interface IEnvironmentsSearchProps {
   /**
@@ -27,20 +28,18 @@ export interface IEnvironmentsSearchProps {
 export const EnvironmentsSearch = (props: IEnvironmentsSearchProps) => {
   const { selectedEnvironments, onAddEnvironmentColumn } = props;
 
-  const environmentsDataLoader = useDataLoader(async (searchTerm: string) => {
-    console.log(searchTerm);
-    return {
-      qualitative: [],
-      quantitative: []
-    };
-  });
+  const biohubApi = useBiohubApi();
+
+  const environmentsDataLoader = useDataLoader(async (searchTerm: string) =>
+    biohubApi.reference.findSubcountEnvironments(searchTerm)
+  );
 
   return (
     <EnvironmentsSearchAutocomplete
       selectedOptions={selectedEnvironments}
       getOptions={async (inputValue: string) => {
         const response = await environmentsDataLoader.refresh(inputValue);
-        return (response && [...response.qualitative, ...response.quantitative]) || [];
+        return (response && [...response.qualitative_environments, ...response.quantitative_environments]) || [];
       }}
       onAddEnvironmentColumn={onAddEnvironmentColumn}
     />

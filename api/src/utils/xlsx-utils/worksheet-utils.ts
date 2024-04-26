@@ -2,6 +2,10 @@ import { default as dayjs } from 'dayjs';
 import xlsx, { CellObject } from 'xlsx';
 import { ApiGeneralError } from '../../errors/api-error';
 import {
+  QualitativeEnvironmentTypeDefinition,
+  QuantitativeEnvironmentTypeDefinition
+} from '../../repositories/observation-subcount-environment-repository';
+import {
   CBQualitativeMeasurementTypeDefinition,
   CBQuantitativeMeasurementTypeDefinition,
   CritterbaseService
@@ -507,7 +511,7 @@ export function getNonStandardColumnNamesFromWorksheet(
  * @param {TsnMeasurementMap} tsnMeasurements
  * @return {*}  {string[]}
  */
-export function getMeasurementColumnNamesFromArrra(columns: string[], tsnMeasurements: TsnMeasurementMap): string[] {
+export function getMeasurementColumnNames(columns: string[], tsnMeasurements: TsnMeasurementMap): string[] {
   const allQualitativeMeasurementTypeDefinitions = Object.values(tsnMeasurements).flatMap((tsn) => tsn.qualitative);
   const allQuantitativeMeasurementTypeDefinitions = Object.values(tsnMeasurements).flatMap((tsn) => tsn.quantitative);
 
@@ -637,5 +641,20 @@ export function findMeasurementFromTsnMeasurements(
 export function isMeasurementCBQualitativeTypeDefinition(
   item: CBQuantitativeMeasurementTypeDefinition | CBQualitativeMeasurementTypeDefinition
 ): item is CBQualitativeMeasurementTypeDefinition {
+  return 'options' in item;
+}
+
+/**
+ * Type guard to check if a given item is a `QualitativeEnvironmentTypeDefinition`.
+ *
+ * Qualitative environments have an `options` property, while quantitative environments do not.
+ *
+ * @export
+ * @param {(QualitativeEnvironmentTypeDefinition | QuantitativeEnvironmentTypeDefinition)} item
+ * @return {*}  {item is QualitativeEnvironmentTypeDefinition}
+ */
+export function isEnvironmentQualitativeTypeDefinition(
+  item: QualitativeEnvironmentTypeDefinition | QuantitativeEnvironmentTypeDefinition
+): item is QualitativeEnvironmentTypeDefinition {
   return 'options' in item;
 }

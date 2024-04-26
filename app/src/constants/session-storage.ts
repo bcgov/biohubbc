@@ -16,6 +16,13 @@ export const SIMS_OBSERVATIONS_HIDDEN_COLUMNS = 'SIMS_OBSERVATIONS_HIDDEN_COLUMN
 export const SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS = 'SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS';
 
 /**
+ * Key used to cache the additional user-defined environment columns added to the observations table.
+ *
+ * Should store a JSON stringified array of `EnvironmentType` objects.
+ */
+export const SIMS_OBSERVATIONS_ENVIRONMENT_COLUMNS = 'SIMS_OBSERVATIONS_ENVIRONMENT_COLUMNS';
+
+/**
  * Get a session storage key which is unique to the provided survey id.
  *
  * @param {number} surveyId

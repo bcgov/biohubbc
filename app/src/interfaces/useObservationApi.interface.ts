@@ -1,4 +1,7 @@
-import { StandardObservationColumns, SupplementaryObservationData } from 'contexts/observationsTableContext';
+import {
+  CBQualitativeMeasurementTypeDefinition,
+  CBQuantitativeMeasurementTypeDefinition
+} from 'interfaces/useCritterApi.interface';
 import { ApiPaginationResponseParams } from 'types/misc';
 export interface IGetSurveyObservationsResponse {
   surveyObservations: ObservationRecordWithSamplingAndSubcountData[];
@@ -19,6 +22,48 @@ type ObservationSamplingData = {
   survey_sample_method_name: string | null;
   survey_sample_period_start_datetime: string | null;
 };
+
+export type StandardObservationColumns = {
+  survey_observation_id: number;
+  itis_tsn: number | null;
+  itis_scientific_name: string | null;
+  survey_sample_site_id: number | null;
+  survey_sample_method_id: number | null;
+  survey_sample_period_id: number | null;
+  count: number | null;
+  observation_date: Date;
+  observation_time: string;
+  latitude: number | null;
+  longitude: number | null;
+};
+
+export type SubcountObservationColumns = {
+  observation_subcount_id: number | null;
+  subcount: number | null;
+  qualitative_measurements: {
+    field: string;
+    critterbase_taxon_measurement_id: string;
+    critterbase_measurement_qualitative_option_id: string;
+  }[];
+  quantitative_measurements: {
+    critterbase_taxon_measurement_id: string;
+    value: number;
+  }[];
+  [key: string]: any;
+};
+
+export type ObservationRecord = StandardObservationColumns & SubcountObservationColumns;
+
+export type SupplementaryObservationCountData = {
+  observationCount: number;
+};
+
+export type SupplementaryObservationMeasurementData = {
+  qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
+  quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
+};
+
+export type SupplementaryObservationData = SupplementaryObservationCountData & SupplementaryObservationMeasurementData;
 
 type ObservationSubCountQualitativeMeasurementRecord = {
   observation_subcount_id: number;
@@ -52,6 +97,39 @@ type ObservationSubcountQuantitativeMeasurementObject = Pick<
   'critterbase_taxon_measurement_id' | 'value'
 >;
 
+type ObservationSubCountQualitativeEnvironmentRecord = {
+  observation_subcount_qualitative_environment_id: number;
+  observation_subcount_id: number;
+  environment_qualitative_environment_qualitative_option_id: number;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
+};
+
+type ObservationSubCountQuantitativeEnvironmentRecord = {
+  observation_subcount_quantitative_environment_id: number;
+  observation_subcount_id: number;
+  environment_quantitative_id: number;
+  value: number;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
+};
+
+type ObservationSubcountQualitativeEnvironmentObject = Pick<
+  ObservationSubCountQualitativeEnvironmentRecord,
+  'observation_subcount_qualitative_environment_id' | 'environment_qualitative_environment_qualitative_option_id'
+>;
+
+type ObservationSubcountQuantitativeEnvironmentObject = Pick<
+  ObservationSubCountQuantitativeEnvironmentRecord,
+  'observation_subcount_quantitative_environment_id' | 'environment_quantitative_id' | 'value'
+>;
+
 type ObservationSubcountRecord = {
   observation_subcount_id: number;
   survey_observation_id: number;
@@ -68,6 +146,8 @@ type ObservationSubcountObject = {
   subcount: ObservationSubcountRecord['subcount'];
   qualitative_measurements: ObservationSubcountQualitativeMeasurementObject[];
   quantitative_measurements: ObservationSubcountQuantitativeMeasurementObject[];
+  qualitative_environments: ObservationSubcountQualitativeEnvironmentObject[];
+  quantitative_environments: ObservationSubcountQuantitativeEnvironmentObject[];
 };
 
 type ObservationSubcountsObject = {
@@ -77,72 +157,3 @@ type ObservationSubcountsObject = {
 type ObservationRecordWithSamplingAndSubcountData = StandardObservationColumns &
   ObservationSamplingData &
   ObservationSubcountsObject;
-
-/**
- * A quantitative environment.
- */
-export type EnvironmentQuantitative = {
-  environment_id: number;
-  observation_subcount_quantitative_environment_id: number;
-  observation_subcount_id: number;
-  environment_quantitative_id: number;
-  value: number;
-};
-
-/**
- * A qualitative environment value.
- */
-export type EnvironmentQualitative = {
-  environment_id: number;
-  observation_subcount_qualitative_environment_id: number;
-  observation_subcount_id: number;
-  environment_qualitative_environment_qualitative_option_id: number;
-};
-
-/**
- * Any environment value.
- */
-export type EnvironmentValue = EnvironmentQuantitative | EnvironmentQualitative;
-
-/**
- * A qualitative environment unit.
- */
-export type EnvironmentUnit = 'millimeter' | 'centimeter' | 'meter' | 'milligram' | 'gram' | 'kilogram';
-
-/**
- * A quantitative environment type definition.
- */
-export type EnvironmentQuantitativeTypeDefinition = {
-  environment_id: number;
-  environment_quantitative_id: number;
-  name: string;
-  description: string | null;
-  min: number | null;
-  max: number | null;
-  unit: EnvironmentUnit | null;
-};
-
-/**
- * A qualitative environment option definition (ie. drop-down option).
- */
-export type EnvironmentQualitativeOption = {
-  environment_qualitative_option_id: string;
-  name: string;
-  description: string | null;
-};
-
-/**
- * A qualitative environment type definition.
- */
-export type EnvironmentQualitativeTypeDefinition = {
-  environment_id: number;
-  environment_qualitative_id: number | null;
-  name: string;
-  description: string | null;
-  options: EnvironmentQualitativeOption[];
-};
-
-/**
- * Any environment type definition.
- */
-export type EnvironmentType = EnvironmentQuantitativeTypeDefinition | EnvironmentQualitativeTypeDefinition;
