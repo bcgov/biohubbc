@@ -51,7 +51,6 @@ const CaptureMarkingsForm = () => {
   };
 
   const handleClose = () => {
-    setFieldValue(`markings.[${index}]`, []);
     setIsDialogOpen(false);
   };
 
@@ -96,7 +95,7 @@ const CaptureMarkingsForm = () => {
                 options={
                   markingBodyLocationDataLoader.data?.map((item) => ({
                     value: item.taxon_marking_body_location_id,
-                    label: item.name
+                    label: item.body_location
                   })) ?? []
                 }
               />

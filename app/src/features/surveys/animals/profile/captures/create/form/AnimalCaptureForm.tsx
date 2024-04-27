@@ -6,10 +6,10 @@ import { Formik, FormikProps } from 'formik';
 import { ICreateCaptureRequest } from 'interfaces/useCritterApi.interface';
 import yup from 'utils/YupSchema';
 import CaptureGeneralInformationForm from './general-information/CaptureGeneralInformationForm';
-import ReleaseGeneralInformationForm from './general-information/ReleaseGeneralInformationForm';
 import CaptureLocationForm from './location/CaptureLocationForm';
-import CaptureMeasurementsForm from './measurements/CaptureMeasurementsForm';
+import ReleaseLocationForm from './location/ReleaseLocationForm';
 import CaptureMarkingsForm from './markings/CaptureMarkingsForm';
+import CaptureMeasurementsForm from './measurements/CaptureMeasurementsForm';
 
 export interface IAnimalCaptureFormProps {
   initialCaptureData: ICreateCaptureRequest;
@@ -35,25 +35,29 @@ const AnimalCaptureForm = (props: IAnimalCaptureFormProps) => {
           summary="Enter information about the capture"
           component={<CaptureGeneralInformationForm />}
         />
+        <Divider />
         <HorizontalSplitFormComponent
           title="Capture Location"
           summary="Enter where the animal was captured"
           component={<CaptureLocationForm />}
         />
+        <Divider />
+        <HorizontalSplitFormComponent
+          title="Release Information"
+          summary="Enter information about the release location"
+          component={<ReleaseLocationForm />}
+        />
+        <Divider />
         <HorizontalSplitFormComponent
           title="Measurements"
           summary="Enter measurements recorded during the capture"
           component={<CaptureMeasurementsForm />}
         />
-         <HorizontalSplitFormComponent
+        <Divider />
+        <HorizontalSplitFormComponent
           title="Markings"
           summary="Enter markings applied to the animal during the capture"
           component={<CaptureMarkingsForm />}
-        />
-        <HorizontalSplitFormComponent
-          title="Release"
-          summary="If the animal was released at a different location than where it was captured, enter information about the release."
-          component={<ReleaseGeneralInformationForm />}
         />
         <Divider />
       </Stack>

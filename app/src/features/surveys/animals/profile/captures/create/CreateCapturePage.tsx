@@ -34,7 +34,10 @@ export const defaultAnimalCaptureFormValues: ICreateCaptureRequest = {
       latitude: null,
       longitude: null
     },
-    release_location: undefined
+    release_location: {
+      latitude: null,
+      longitude: null
+    }
   },
   markings: [],
   measurements: {
@@ -153,11 +156,11 @@ const CreateCapturePage = () => {
   const handleSubmit = async (values: ICreateCaptureRequest) => {
     setIsSaving(true);
     try {
-      const critterbaseCritterId = animalPageContext.selectedAnimal?.critterbase_critter_id
+      const critterbaseCritterId = animalPageContext.selectedAnimal?.critterbase_critter_id;
       if (!values || !critterbaseCritterId) {
         return;
       }
-      
+
       const response = await critterbaseApi.capture.createCapture({
         capture_id: undefined,
         capture_timestamp: values.capture.capture_timestamp,
@@ -179,7 +182,7 @@ const CreateCapturePage = () => {
       setEnableCancelCheck(false);
 
       // Refresh page
-      animalPageContext.critterDataLoader.refresh(critterbaseCritterId)
+      animalPageContext.critterDataLoader.refresh(critterbaseCritterId);
 
       history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`);
     } catch (error) {

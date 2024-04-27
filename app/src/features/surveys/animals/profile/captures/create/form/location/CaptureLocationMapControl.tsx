@@ -56,7 +56,7 @@ export interface ICaptureLocationMapControlProps {
  * @return {*}
  */
 const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps) => {
-  const { name } = props;
+  const { name, title } = props;
   const [isOpen, setIsOpen] = useState<boolean>(false);
   //   const classes = useStyles();
 
@@ -130,7 +130,7 @@ const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps) => {
                 sx={{
                   flex: '1 1 auto'
                 }}>
-                Capture Location
+                {title}
               </Typography>
               <Box display="flex">
                 <Button

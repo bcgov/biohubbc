@@ -41,8 +41,8 @@ export interface ICapturePostData {
   release_timestamp: Date | undefined;
   capture_comment: string | undefined;
   release_comment: string | undefined;
-  capture_location: { latitude: number | null; longitude: number | null} | Feature;
-  release_location: ILocationResponse | undefined;
+  capture_location: { latitude: number | null; longitude: number | null } | Feature;
+  release_location: { latitude: number | null; longitude: number | null } | Feature;
 }
 
 export interface ICreateCaptureRequest {

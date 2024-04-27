@@ -1,3 +1,6 @@
+import { mdiPlus } from '@mdi/js';
+import Icon from '@mdi/react';
+import Button from '@mui/material/Button';
 import { useAnimalPageContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
@@ -29,6 +32,14 @@ const CaptureMeasurementsForm = () => {
         }}
         onSelectOptions={onSelectOptions}
       /> */}
+      <Button
+        color="primary"
+        variant="outlined"
+        startIcon={<Icon path={mdiPlus} size={1} />}
+        aria-label="add marking"
+        onClick={() => {}}>
+        Add Measurement
+      </Button>
     </>
   );
 };
