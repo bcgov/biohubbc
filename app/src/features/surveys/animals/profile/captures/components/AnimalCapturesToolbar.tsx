@@ -1,43 +1,51 @@
-import { mdiImport } from '@mdi/js';
+import { mdiPlus } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { useAnimalPageContext } from 'hooks/useContext';
+import { useAnimalPageContext, useSurveyContext } from 'hooks/useContext';
+import { Link as RouterLink } from 'react-router-dom';
 
 const AnimalCapturesToolbar = () => {
-  const { critterDataLoader } = useAnimalPageContext();
+  const { critterDataLoader, isDisabled, selectedAnimal } = useAnimalPageContext();
+
+  const { projectId, surveyId } = useSurveyContext();
 
   return (
-    <Toolbar
-      disableGutters
-      sx={{
-        px: 2
-      }}>
-      <Typography
-        data-testid="map-control-title"
-        component="div"
-        fontWeight="700"
-        sx={{
-          flex: '1 1 auto'
-        }}>
-        Captures
-        <Typography component="span" color="textSecondary" sx={{ ml: 0.5, flex: '1 1 auto' }}>
-          ({critterDataLoader.data?.captures.length ?? 0})
-        </Typography>
-      </Typography>
-      <Box display="flex">
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<Icon path={mdiImport} size={1} />}
-          // onClick={() => setOpen(true)}
-        >
-          Import
-        </Button>
-      </Box>
-    </Toolbar>
+    <>
+      {selectedAnimal?.survey_critter_id && (
+        <Toolbar
+          disableGutters
+          sx={{
+            px: 2
+          }}>
+          <Typography
+            data-testid="map-control-title"
+            component="div"
+            fontWeight="700"
+            sx={{
+              flex: '1 1 auto'
+            }}>
+            Captures
+            <Typography component="span" color="textSecondary" sx={{ ml: 0.5, flex: '1 1 auto' }}>
+              ({critterDataLoader.data?.captures.length ?? 0})
+            </Typography>
+          </Typography>
+          <Box display="flex">
+            <Button
+              variant="contained"
+              color="primary"
+              component={RouterLink}
+              to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.survey_critter_id}/capture/create`}
+              startIcon={<Icon path={mdiPlus} size={1} />}
+              disabled={isDisabled}>
+              Add
+            </Button>
+          </Box>
+        </Toolbar>
+      )}
+    </>
   );
 };
 

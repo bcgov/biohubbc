@@ -61,6 +61,14 @@ const SkeletonListStack = (props: IMultipleSkeletonProps) => (
   </>
 );
 
+const SkeletonHorizontalStack = (props: IMultipleSkeletonProps) => (
+  <Stack direction="row" spacing={1}>
+    {Array.from(Array(props.numberOfLines ?? 3).keys()).map((key: number) => (
+      <Skeleton key={key} sx={{ flex: '0.1 0 auto' }} />
+    ))}
+  </Stack>
+);
+
 const SkeletonTable = (props: IMultipleSkeletonProps) => (
   <Box
     sx={{
@@ -142,4 +150,4 @@ const SkeletonMap = () => (
   </Box>
 );
 
-export { SkeletonList, SkeletonListStack, SkeletonRow, SkeletonTable, SkeletonMap };
+export { SkeletonList, SkeletonListStack, SkeletonRow, SkeletonTable, SkeletonMap, SkeletonHorizontalStack };

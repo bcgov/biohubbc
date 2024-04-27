@@ -187,6 +187,22 @@ export const EditAnimalI18N = {
     'An error has occurred while attempting to edit your animal, please try again. If the error persists, please contact your system administrator.'
 };
 
+export const CreateCaptureI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Creating Capture',
+  createErrorText:
+    'An error has occurred while attempting to create your capture, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const EditCaptureI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Editing Capture',
+  createErrorText:
+    'An error has occurred while attempting to edit your capture, please try again. If the error persists, please contact your system administrator.'
+};
+
 export const SurveyAnimalsI18N = {
   animalIndividualsHelp:
     'Animals are animals that have been captured, marked, measured, or have died, generating data that applies to one specific individual.',

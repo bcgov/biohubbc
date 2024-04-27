@@ -4,7 +4,7 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { useAnimalPageContext } from 'hooks/useContext';
+import { useAnimalPageContext, useSurveyContext } from 'hooks/useContext';
 import { Link as RouterLink } from 'react-router-dom';
 
 interface ISurveyAnimalListToolbarProps {
@@ -12,8 +12,10 @@ interface ISurveyAnimalListToolbarProps {
   checkboxSelectedIdsLength: number;
 }
 
-const SurveyAnimaListToolbar = (props: ISurveyAnimalListToolbarProps) => {
+const SurveyAnimalListToolbar = (props: ISurveyAnimalListToolbarProps) => {
   const animalPageContext = useAnimalPageContext();
+
+  const { surveyId, projectId } = useSurveyContext();
 
   return (
     <Toolbar
@@ -33,7 +35,7 @@ const SurveyAnimaListToolbar = (props: ISurveyAnimalListToolbarProps) => {
         variant="contained"
         color="primary"
         component={RouterLink}
-        to={'animals/create'}
+        to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/create`}
         startIcon={<Icon path={mdiPlus} size={1} />}
         disabled={animalPageContext.isDisabled}>
         Add
@@ -53,4 +55,4 @@ const SurveyAnimaListToolbar = (props: ISurveyAnimalListToolbarProps) => {
   );
 };
 
-export default SurveyAnimaListToolbar;
+export default SurveyAnimalListToolbar;

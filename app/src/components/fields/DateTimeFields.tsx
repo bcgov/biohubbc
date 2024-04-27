@@ -5,12 +5,10 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DATE_FORMAT, DATE_LIMIT, TIME_FORMAT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
-import { ISurveySampleMethodData } from 'features/surveys/components/MethodForm';
 import { FormikContextType } from 'formik';
 import get from 'lodash-es/get';
-import React from 'react';
 
-interface IDateTimeFieldsProps {
+interface IDateTimeFieldsProps<T> {
   date: {
     dateLabel: string;
     dateName: string;
@@ -29,10 +27,10 @@ interface IDateTimeFieldsProps {
     timeIcon: string;
   };
   parentName: string;
-  formikProps: FormikContextType<ISurveySampleMethodData>;
+  formikProps: FormikContextType<T>;
 }
 
-export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
+export const DateTimeFields = <T,>(props: IDateTimeFieldsProps<T>) => {
   const {
     formikProps: { values, errors, touched, setFieldValue },
     date: { dateLabel, dateName, dateId, dateRequired, dateHelperText, dateIcon },

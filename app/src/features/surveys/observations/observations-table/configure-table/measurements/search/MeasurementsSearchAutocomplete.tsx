@@ -35,6 +35,13 @@ export interface IMeasurementsSearchAutocompleteProps {
    * @memberof IMeasurementsSearchAutocompleteProps
    */
   onSelectOptions: (measurements: CBMeasurementType[]) => void;
+   /**
+   * The species to filter measurement options for
+   *
+   * @type {number[]}
+   * @memberof IMeasurementsSearchAutocompleteProps
+   */
+  speciesTsn?: number[];
 }
 
 /**

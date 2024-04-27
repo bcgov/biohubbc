@@ -15,12 +15,12 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
+import { ISurveyCritter } from 'contexts/animalPageContext';
 import { useAnimalPageContext, useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import CritterListItem from './components/CritterListItem';
-import SurveyAnimaListToolbar from './components/SurveyAnimalListToolbar';
-import { ISurveyCritter } from 'contexts/animalPageContext';
+import SurveyAnimalListToolbar from './components/SurveyAnimalListToolbar';
 
 /**
  * Returns a list of all animals (critters) in the survey
@@ -59,10 +59,7 @@ const SurveyAnimalList = () => {
     });
   };
 
-  const handleCritterMenuClick = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    critter: ISurveyCritter
-  ) => {
+  const handleCritterMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, critter: ISurveyCritter) => {
     setCritterAnchorEl(event.currentTarget);
     setSelectedAnimal(critter);
   };
@@ -252,7 +249,7 @@ const SurveyAnimalList = () => {
         sx={{
           overflow: 'hidden'
         }}>
-        <SurveyAnimaListToolbar animalCount={critters.length} checkboxSelectedIdsLength={checkboxSelectedIds.length} />
+        <SurveyAnimalListToolbar animalCount={critters.length} checkboxSelectedIdsLength={checkboxSelectedIds.length} />
         <Divider flexItem />
         <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
           <Box position="absolute" top="0" right="0" bottom="0" left="0">
@@ -296,11 +293,7 @@ const SurveyAnimalList = () => {
                   </FormGroup>
                 </Box>
                 <Divider flexItem></Divider>
-                <Box
-                  flex="1 1 auto"
-                  sx={{
-                    background: grey[100],
-                  }}>
+                <Box flex="1 1 auto" pt={1}>
                   {/* Display text if the sample site data loader has no items in it */}
                   {!critters.length && (
                     <Stack

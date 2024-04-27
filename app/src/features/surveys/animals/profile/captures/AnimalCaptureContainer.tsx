@@ -3,14 +3,16 @@ import AnimalCaptureCardContainer from './components/AnimalCaptureCardContainer'
 import AnimalCapturesMap from './components/AnimalCapturesMap';
 import AnimalCapturesToolbar from './components/AnimalCapturesToolbar';
 
-const AnimalCapturesContainer = () => {
+const AnimalCaptureContainer = () => {
   return (
-    <Paper variant="outlined">
-      <AnimalCapturesToolbar />
-      <AnimalCapturesMap />
-      <AnimalCaptureCardContainer />
-    </Paper>
+    <>
+      <Paper variant="outlined">
+        <AnimalCapturesToolbar />
+        <AnimalCapturesMap />
+        <AnimalCaptureCardContainer />
+      </Paper>
+    </>
   );
 };
 
-export default AnimalCapturesContainer;
+export default AnimalCaptureContainer;

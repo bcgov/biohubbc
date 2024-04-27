@@ -1,3 +1,4 @@
+import { Feature } from 'geojson';
 import { ITaxonomy } from './useTaxonomyApi.interface';
 
 export interface ICreateEditAnimalRequest {
@@ -5,9 +6,49 @@ export interface ICreateEditAnimalRequest {
   description: string;
   species: ITaxonomy | null;
   ecological_units: {
-    value: number
+    value: number;
     ecological_unit_id: string;
   }[];
+}
+
+export interface IMarkingPostData {
+  marking_type_id: string;
+  taxon_marking_body_location_id: string;
+  identifier: string | number | null;
+  primary_colour_id: string | null;
+  secondary_colour_id: string | null;
+  comment: string;
+}
+
+export interface IQualitativeMeasurementPostData {
+  measurement_id: string;
+  value: string;
+}
+
+export interface IQuantitativeMeasurementPostData {
+  measurement_id: string;
+  value: number;
+}
+
+export interface IMeasurementPostData {
+  qualitative: IQualitativeMeasurementPostData[];
+  quantitative: IQuantitativeMeasurementPostData[];
+}
+
+export interface ICapturePostData {
+  capture_id: string;
+  capture_timestamp: Date;
+  release_timestamp: Date | undefined;
+  capture_comment: string | undefined;
+  release_comment: string | undefined;
+  capture_location: { latitude: number | null; longitude: number | null} | Feature;
+  release_location: ILocationResponse | undefined;
+}
+
+export interface ICreateCaptureRequest {
+  capture: ICapturePostData;
+  markings: IMarkingPostData[];
+  measurements?: IMeasurementPostData;
 }
 
 // export interface IAnimalUpdateObject {

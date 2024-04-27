@@ -1,11 +1,11 @@
-import { CircularProgress } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
+import Collapse from '@mui/material/Collapse';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/system/Box';
-import { AnimalPageContextProvider } from 'contexts/animalPageContext';
-import { DialogContextProvider } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useAnimalPageContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
+import { TransitionGroup } from 'react-transition-group';
 import SurveyAnimalList from './list/SurveyAnimalList';
 import AnimalProfileContainer from './profile/AnimalProfileContainer';
 import SurveyAnimalHeader from './SurveyAnimalHeader';
@@ -20,6 +20,8 @@ const SurveyAnimalPage = () => {
 
   const surveyContext = useSurveyContext();
   const projectContext = useProjectContext();
+
+  const { selectedAnimal } = useAnimalPageContext();
 
   const crittersDataLoader = useDataLoader(() =>
     biohubApi.survey.getSurveyCritters(surveyContext.projectId, surveyContext.surveyId)
@@ -56,46 +58,28 @@ const SurveyAnimalPage = () => {
         survey_id={surveyContext.surveyId}
         survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
       />
-      <AnimalPageContextProvider>
-        <Stack
-          direction="row"
-          gap={1}
-          height='100%'
-          sx={{
-            flex: '1 1 auto',
-            p: 1
-          }}>
-          <Box width="400px" height="100%">
-            <DialogContextProvider>
-              <SurveyAnimalList />
-            </DialogContextProvider>
-          </Box>
+      <Stack
+        direction="row"
+        gap={1}
+        sx={{
+          flex: '1 1 auto',
+          p: 1
+        }}>
+        {/* Sampling Site List */}
+        <Box flex="1 1 auto">
+          <SurveyAnimalList />
+        </Box>
 
-          <Box flex="1 1 auto" height='100%'>
-            <AnimalProfileContainer />
-          </Box>
-
-          {/* Observations Table
-          <Box flex="1 1 auto">
-            <DialogContextProvider>
-              <TaxonomyContextProvider>
-                <ObservationsTableContextProvider>
-                  <ObservationsTableContext.Consumer>
-                    {(context) => {
-                      if (!context?._muiDataGridApiRef.current) {
-                        // Delay rendering the ObservationsTable until the DataGrid API is available
-                        return <CircularProgress className="pageProgress" size={40} />;
-                      }
-
-                      return <ObservationsTableContainer />;
-                    }}
-                  </ObservationsTableContext.Consumer>
-                </ObservationsTableContextProvider>
-              </TaxonomyContextProvider>
-            </DialogContextProvider>
-          </Box> */}
-        </Stack>
-      </AnimalPageContextProvider>
+        {selectedAnimal && (
+          <TransitionGroup component={Box} sx={{minWidth: '75%'}}>
+            <Collapse in={Boolean(selectedAnimal)}>
+              <Box flex="1 1 auto">
+                <AnimalProfileContainer />
+              </Box>
+            </Collapse>
+          </TransitionGroup>
+        )}
+      </Stack>
     </Stack>
   );
 };

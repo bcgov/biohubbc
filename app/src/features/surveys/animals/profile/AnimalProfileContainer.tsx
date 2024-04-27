@@ -1,5 +1,7 @@
+import { mdiClose } from '@mdi/js';
+import Icon from '@mdi/react';
+import { IconButton } from '@mui/material';
 import Box from '@mui/material/Box';
-import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
@@ -9,12 +11,11 @@ import { useAnimalPageContext } from 'hooks/useContext';
 import AnimalProfile from './AnimalProfile';
 
 const AnimalProfileContainer = () => {
-  //   const animalPageContext = useAnimalPageContext();
 
-  const { selectedAnimal } = useAnimalPageContext();
+  const {setSelectedAnimal } = useAnimalPageContext();
 
   return (
-    <Paper component={Stack} flexDirection="column" flex="1 1 auto" height='100%'>
+    <Paper component={Stack} flexDirection="column" flex="1 1 auto" height="100%">
       <Toolbar
         disableGutters
         sx={{
@@ -33,16 +34,21 @@ const AnimalProfileContainer = () => {
           </Typography> */}
         </Typography>
 
-        <Stack flexDirection="row" alignItems="center" gap={1} whiteSpace="nowrap" bgcolor={grey[100]}></Stack>
+        <Stack flexDirection="row" alignItems="center" gap={1} whiteSpace="nowrap">
+          <IconButton
+            onClick={() => {
+              setSelectedAnimal(null);
+            }}>
+            <Icon path={mdiClose} size={1} />
+          </IconButton>
+        </Stack>
       </Toolbar>
 
       <Divider flexItem></Divider>
 
-      {selectedAnimal && (
-        <Box display="flex" flexDirection="column" flex="1 1 auto" overflow="auto" height='100%'>
-          <AnimalProfile />
-        </Box>
-      )}
+      <Box display="flex" flexDirection="column" flex="1 1 auto" overflow="auto" height="100%">
+        <AnimalProfile />
+      </Box>
     </Paper>
   );
 };

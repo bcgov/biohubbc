@@ -41,13 +41,7 @@ const CritterListItem = (props: ICritterListItemProps) => {
         flex: '1 1 auto',
         display: 'flex',
         px: 1,
-        m: 0,
-        py: 0.5,
-        background: '#fff',
-        borderBottom: '1px solid' + grey[200],
-        '&:before': {
-          display: 'none'
-        }
+        py: 0.25
       }}>
       <IconButton
         onClick={() => {
@@ -58,7 +52,6 @@ const CritterListItem = (props: ICritterListItemProps) => {
         }}
         sx={{
           borderRadius: '5px',
-          py: 0.5,
           flex: '1 1 auto',
           justifyContent: 'flex-start',
           '&:focus': {
@@ -67,7 +60,7 @@ const CritterListItem = (props: ICritterListItemProps) => {
           '& .MuiTypography-root': {
             color: 'text.primary'
           },
-          bgcolor: selectedAnimal?.survey_critter_id === critter.survey_critter_id ? grey[200] : undefined
+          bgcolor: selectedAnimal?.survey_critter_id === critter.survey_critter_id ? grey[100] : undefined
         }}>
         <Stack
           flexDirection="row"

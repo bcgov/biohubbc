@@ -1,8 +1,46 @@
 import { AxiosInstance } from 'axios';
 import { ICreateCritterMarking } from 'features/surveys/view/survey-animals/animal';
 import { IMarkingResponse } from 'interfaces/useCritterApi.interface';
+import { IMarkingBodyLocationResponse, IMarkingTypeResponse } from 'interfaces/useMarkingApi.interface';
+import { ICbSelectRows } from './useLookupApi';
 
 const useMarkingApi = (axios: AxiosInstance) => {
+  /**
+   * Get possible marking types
+   *
+   * @async
+   * @returns {Promise<IMarkingTypeResponse>} - The created marking.
+   */
+  const getMarkingTypeOptions = async (): Promise<IMarkingTypeResponse[]> => {
+    const { data } = await axios.get(`api/critterbase/lookups/marking-types`);
+    return data;
+  };
+
+  /**
+   * Get possible marking body locations for a given species
+   *
+   * @async
+   * @param {number} tsn
+   * @returns {Promise<IMarkingTypeResponse>} - The created marking.
+   */
+  const getMarkingBodyLocationOptions = async (tsn: number): Promise<IMarkingBodyLocationResponse[]> => {
+    const { data } = await axios.get(`api/critterbase/xref/taxon-marking-body-locations?tsn=${tsn}`);
+    return data;
+  };
+
+  /**
+   * Get possible marking colour options
+   *
+   * @async
+   * @returns {Promise<ICbSelectRows[]>} - The created marking.
+   */
+  const getMarkingColourOptions = async (): Promise<ICbSelectRows[]> => {
+    const { data } = await axios.get('api/critterbase/lookups/colours', {
+      params: { format: 'asSelect' }
+    });
+    return data;
+  };
+
   /**
    * Create a Critter Marking.
    *
@@ -40,7 +78,14 @@ const useMarkingApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  return { createMarking, updateMarking, deleteMarking };
+  return {
+    createMarking,
+    updateMarking,
+    deleteMarking,
+    getMarkingTypeOptions,
+    getMarkingBodyLocationOptions,
+    getMarkingColourOptions
+  };
 };
 
 export { useMarkingApi };

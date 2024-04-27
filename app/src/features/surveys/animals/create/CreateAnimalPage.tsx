@@ -29,6 +29,7 @@ export const defaultAnimalDataFormValues: ICreateEditAnimalRequest = {
 };
 
 const CreateAnimalPage = () => {
+  console.log('Here');
   const biohubApi = useBiohubApi();
 
   const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
@@ -160,6 +161,15 @@ const CreateAnimalPage = () => {
           <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
             <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectId}/`}>
               {projectContext.projectDataLoader.data?.projectData.project.project_name}
+            </Link>
+            <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectId}/surveys/${surveyId}`}>
+              {surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name}
+            </Link>
+            <Link
+              component={RouterLink}
+              underline="hover"
+              to={`/admin/projects/${projectId}/surveys/${surveyId}/animals`}>
+              Manage Animals
             </Link>
             <Typography variant="body2" component="span" color="textSecondary" aria-current="page">
               Create New Animal

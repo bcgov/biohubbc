@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { useAnimalPageContext } from 'hooks/useContext';
 import AnimalAttributeItem from './AnimalAttributeItem';
-import AnimalCapturesContainer from './captures/AnimalCapturesContainer';
+import AnimalCaptureContainer from './captures/AnimalCaptureContainer';
 import ScientificNameTypography from './ScientificNameTypography';
 
 const AnimalProfile = () => {
@@ -24,7 +24,7 @@ const AnimalProfile = () => {
   }
 
   return (
-    <Stack p={2} bgcolor={grey[100]} spacing={2} overflow="auto" height='100%'>
+    <Stack p={2} bgcolor={grey[100]} spacing={2} overflow="auto" height="100%">
       <Paper sx={{ p: 3 }} variant="outlined">
         <Typography variant="h2" mb={1}>
           {critter.animal_id}&nbsp;
@@ -49,7 +49,8 @@ const AnimalProfile = () => {
           />
         </Stack>
       </Paper>
-      <AnimalCapturesContainer />
+        <AnimalCaptureContainer />
+   
     </Stack>
   );
 };
