@@ -4,7 +4,7 @@ import { GridColDef } from '@mui/x-data-grid';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { ConfigureColumnsPage } from 'features/surveys/observations/observations-table/configure-columns/components/ConfigureColumnsPage';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
-import { EnvironmentType } from 'interfaces/useReferenceApi.interface';
+import { EnvironmentType, EnvironmentTypeIds } from 'interfaces/useReferenceApi.interface';
 
 interface IConfigureColumnsDialogProps {
   open: boolean;
@@ -36,9 +36,9 @@ interface IConfigureColumnsDialogProps {
   measurementColumns: CBMeasurementType[];
   onAddMeasurementColumns: (measurementColumns: CBMeasurementType[]) => void;
   onRemoveMeasurementColumns: (fields: string[]) => void;
-  environmentColumns: EnvironmentType[];
-  onAddEnvironmentColumns: (environmentColumns: EnvironmentType[]) => void;
-  onRemoveEnvironmentColumns: (fields: string[]) => void;
+  environmentColumns: EnvironmentType;
+  onAddEnvironmentColumns: (environmentColumns: EnvironmentType) => void;
+  onRemoveEnvironmentColumns: (environmentColumnIds: EnvironmentTypeIds) => void;
 }
 
 export const ConfigureColumnsDialog = (props: IConfigureColumnsDialogProps) => {

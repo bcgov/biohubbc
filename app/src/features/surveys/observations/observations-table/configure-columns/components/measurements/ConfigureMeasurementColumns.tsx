@@ -31,7 +31,10 @@ export const ConfigureMeasurementColumns = (props: IConfigureMeasurementColumnsP
             </Typography>
             <Stack gap={2} sx={{ overflowY: 'auto' }} maxHeight={400}>
               {measurementColumns.map((measurement) => (
-                <Box display="flex" alignItems="flex-start">
+                <Box
+                  display="flex"
+                  alignItems="flex-start"
+                  key={`measurement_item_${measurement.taxon_measurement_id}`}>
                   <MeasurementStandardCard
                     small
                     label={measurement.measurement_name}

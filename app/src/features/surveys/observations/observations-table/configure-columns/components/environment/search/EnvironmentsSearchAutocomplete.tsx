@@ -6,7 +6,11 @@ import ListItem from '@mui/material/ListItem';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { EnvironmentType } from 'interfaces/useReferenceApi.interface';
+import {
+  EnvironmentQualitativeTypeDefinition,
+  EnvironmentQuantitativeTypeDefinition,
+  EnvironmentType
+} from 'interfaces/useReferenceApi.interface';
 import { debounce } from 'lodash-es';
 import { useMemo, useState } from 'react';
 
@@ -14,16 +18,16 @@ export interface IEnvironmentsSearchAutocompleteProps {
   /**
    * The selected Environments.
    *
-   * @type {EnvironmentType[]}
+   * @type {EnvironmentType}
    * @memberof IEnvironmentsSearchAutocompleteProps
    */
-  selectedOptions: EnvironmentType[];
+  selectedOptions: EnvironmentType;
   /**
    * An async function that returns an array of options, based on the provided input value.
    *
    * @memberof IEnvironmentsSearchAutocompleteProps
    */
-  getOptions: (inputValue: string) => Promise<EnvironmentType[]>;
+  getOptions: (inputValue: string) => Promise<EnvironmentType>;
   /**
    * Callback fired on selecting options.
    *
@@ -44,14 +48,24 @@ export const EnvironmentsSearchAutocomplete = (props: IEnvironmentsSearchAutocom
   const { selectedOptions, getOptions, onAddEnvironmentColumn } = props;
 
   const [inputValue, setInputValue] = useState('');
-  const [options, setOptions] = useState<EnvironmentType[]>([]);
+  const [options, setOptions] = useState<
+    (EnvironmentQualitativeTypeDefinition | EnvironmentQuantitativeTypeDefinition)[]
+  >([]);
 
   const handleSearch = useMemo(
     () =>
-      debounce(async (inputValue: string, callback: (searchedValues: EnvironmentType[]) => void) => {
-        const response = await getOptions(inputValue);
-        callback(response);
-      }, 500),
+      debounce(
+        async (
+          inputValue: string,
+          callback: (
+            searchedValues: (EnvironmentQualitativeTypeDefinition | EnvironmentQuantitativeTypeDefinition)[]
+          ) => void
+        ) => {
+          const response = await getOptions(inputValue);
+          callback([...response.qualitative_environments, ...response.quantitative_environments]);
+        },
+        500
+      ),
     [getOptions]
   );
 
@@ -67,15 +81,31 @@ export const EnvironmentsSearchAutocomplete = (props: IEnvironmentsSearchAutocom
       clearOnBlur={true}
       getOptionLabel={(option) => option.name}
       isOptionEqualToValue={(option, value) => {
-        return option.environment_id === value.environment_id;
+        if ('environment_qualitative_id' in option && 'environment_qualitative_id' in value) {
+          return option.environment_qualitative_id === value.environment_qualitative_id;
+        } else if ('environment_quantitative_id' in option && 'environment_quantitative_id' in value) {
+          return option.environment_quantitative_id === value.environment_quantitative_id;
+        }
+
+        return false;
       }}
       filterOptions={(options) => {
-        if (!selectedOptions?.length) {
+        if (!selectedOptions?.qualitative_environments.length && !selectedOptions?.quantitative_environments.length) {
           return options;
         }
 
         const unselectedOptions = options.filter((option) => {
-          return !selectedOptions.some((selectedOption) => selectedOption.environment_id === option.environment_id);
+          if ('environment_qualitative_id' in option) {
+            return !selectedOptions.qualitative_environments.some(
+              (item) => item.environment_qualitative_id === option.environment_qualitative_id
+            );
+          } else if ('environment_quantitative_id' in option) {
+            return !selectedOptions.quantitative_environments.some(
+              (item) => item.environment_quantitative_id === option.environment_quantitative_id
+            );
+          }
+
+          return false;
         });
 
         return unselectedOptions;
@@ -100,12 +130,16 @@ export const EnvironmentsSearchAutocomplete = (props: IEnvironmentsSearchAutocom
       }}
       value={null} // The selected value is not displayed in the input field or tracked by this component
       onChange={(_, value) => {
-        if (value) {
-          onAddEnvironmentColumn(value);
-          setInputValue('');
-          setOptions([]);
+        if (!value) {
           return;
         }
+
+        onAddEnvironmentColumn({
+          qualitative_environments: 'environment_qualitative_id' in value ? [value] : [],
+          quantitative_environments: 'environment_quantitative_id' in value ? [value] : []
+        });
+        setInputValue('');
+        setOptions([]);
       }}
       renderOption={(renderProps, renderOption) => {
         return (
@@ -117,7 +151,11 @@ export const EnvironmentsSearchAutocomplete = (props: IEnvironmentsSearchAutocom
               px: 2
             }}
             {...renderProps}
-            key={renderOption.environment_id}
+            key={`environment-item-${
+              'environment_qualitative_id' in renderOption
+                ? renderOption.environment_qualitative_id
+                : renderOption.environment_quantitative_id
+            }`}
             data-testid="environments-autocomplete-option">
             <Stack gap={0.75} mt={-0.25}>
               <Box>

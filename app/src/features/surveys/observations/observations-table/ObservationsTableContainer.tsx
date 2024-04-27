@@ -42,7 +42,10 @@ import { useContext } from 'react';
 import { getCodesName } from 'utils/Utils';
 import { ConfigureColumnsButton } from './configure-columns/dialog/ConfigureColumnsButton';
 import ExportHeadersButton from './export-button/ExportHeadersButton';
-import { getMeasurementColumnDefinitions } from './grid-column-definitions/GridColumnDefinitionsUtils';
+import {
+  getEnvironmentColumnDefinitions,
+  getMeasurementColumnDefinitions
+} from './grid-column-definitions/GridColumnDefinitionsUtils';
 
 const ObservationComponent = () => {
   const codesContext = useCodesContext();
@@ -89,6 +92,7 @@ const ObservationComponent = () => {
 
   // The column definitions of the columns to render in the observations table
   const columns: GridColDef<IObservationTableRow>[] = [
+    // Add standard observation columns to the table
     TaxonomyColDef({ hasError: observationsTableContext.hasError }),
     SampleSiteColDef({ sampleSiteOptions, hasError: observationsTableContext.hasError }),
     SampleMethodColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
@@ -100,6 +104,9 @@ const ObservationComponent = () => {
     ObservationLongitudeColDef({ hasError: observationsTableContext.hasError }),
     // Add measurement columns to the table
     ...getMeasurementColumnDefinitions(observationsTableContext.measurementColumns, observationsTableContext.hasError),
+    // Add environment columns to the table
+    ...getEnvironmentColumnDefinitions(observationsTableContext.environmentColumns, observationsTableContext.hasError),
+    // Add row actions column to the table
     ObservationActionsColDef({
       disabled: observationsTableContext.isSaving,
       onDelete: observationsTableContext.deleteObservationRecords

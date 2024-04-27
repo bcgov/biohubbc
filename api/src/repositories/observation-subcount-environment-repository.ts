@@ -326,7 +326,7 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {{
-   *       environment_qualitative_environment_qualitative_option_id: number[];
+   *       environment_qualitative_id: number[];
    *       environment_quantitative_id: number[];
    *     }} environmentIds
    * @return {*}  {Promise<void>}
@@ -335,43 +335,45 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
   async deleteEnvironmentsForEnvironmentIds(
     surveyId: number,
     environmentIds: {
-      environment_qualitative_environment_qualitative_option_id: number[];
+      environment_qualitative_id: number[];
       environment_quantitative_id: number[];
     }
   ): Promise<void> {
-    await this.deleteQualitativeEnvironmentForEnvironmentIds(
-      surveyId,
-      environmentIds.environment_qualitative_environment_qualitative_option_id
-    );
-    await this.deleteQuantitativeEnvironmentForEnvironmentIds(surveyId, environmentIds.environment_quantitative_id);
+    await Promise.all([
+      this.deleteQualitativeEnvironmentForEnvironmentIds(surveyId, environmentIds.environment_qualitative_id),
+      this.deleteQuantitativeEnvironmentForEnvironmentIds(surveyId, environmentIds.environment_quantitative_id)
+    ]);
   }
 
   /**
    * Delete all qualitative environment records, for all observation records, for a given survey and set of environment
-   * ids.
+   * qualitative ids.
    *
    * @param {number} surveyId
-   * @param {number[]} environment_qualitative_environment_qualitative_option_id
+   * @param {number[]} environment_qualitative_id
    * @return {*}  {Promise<number>}
    * @memberof ObservationSubCountEnvironmentRepository
    */
   async deleteQualitativeEnvironmentForEnvironmentIds(
     surveyId: number,
-    environment_qualitative_environment_qualitative_option_id: number[]
+    environment_qualitative_ids: number[]
   ): Promise<number> {
     const qb = getKnex()
       .queryBuilder()
       .delete()
       .from('observation_subcount_qualitative_environment')
-      .using(['observation_subcount', 'survey_observation'])
+      .using(['environment_qualitative_environment_qualitative_option', 'observation_subcount', 'survey_observation'])
+      .whereRaw(
+        'environment_qualitative_environment_qualitative_option.environment_qualitative_environment_qualitative_option_id = observation_subcount_qualitative_environment.environment_qualitative_environment_qualitative_option_id'
+      )
       .whereRaw(
         'observation_subcount_qualitative_environment.observation_subcount_id = observation_subcount.observation_subcount_id'
       )
       .whereRaw('observation_subcount.survey_observation_id = survey_observation.survey_observation_id')
-      .andWhere(`survey_observation.survey_id`, surveyId)
+      .andWhere('survey_observation.survey_id', surveyId)
       .whereIn(
         'observation_subcount_qualitative_environment.environment_qualitative_environment_qualitative_option_id',
-        environment_qualitative_environment_qualitative_option_id
+        environment_qualitative_ids
       );
 
     const response = await this.connection.knex(qb);
@@ -381,7 +383,7 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
 
   /**
    * Delete all quantitative environment records, for all observation records, for a given survey and set of environment
-   * ids.
+   * quantitative ids.
    *
    * @param {number} surveyId
    * @param {number[]} environment_quantitative_id
@@ -390,7 +392,7 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
    */
   async deleteQuantitativeEnvironmentForEnvironmentIds(
     surveyId: number,
-    environment_quantitative_id: number[]
+    environment_quantitative_ids: number[]
   ): Promise<number> {
     const qb = getKnex()
       .queryBuilder()
@@ -401,10 +403,10 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
         'observation_subcount_quantitative_environment.observation_subcount_id = observation_subcount.observation_subcount_id'
       )
       .whereRaw('observation_subcount.survey_observation_id = survey_observation.survey_observation_id')
-      .andWhere(`survey_observation.survey_id`, surveyId)
+      .andWhere('survey_observation.survey_id', surveyId)
       .whereIn(
         'observation_subcount_quantitative_environment.environment_quantitative_id',
-        environment_quantitative_id
+        environment_quantitative_ids
       );
 
     const response = await this.connection.knex(qb);

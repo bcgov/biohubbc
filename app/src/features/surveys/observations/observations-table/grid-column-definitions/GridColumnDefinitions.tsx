@@ -15,6 +15,10 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { default as dayjs } from 'dayjs';
 import { CBMeasurementType, CBQualitativeOption } from 'interfaces/useCritterApi.interface';
+import {
+  EnvironmentQualitativeTypeDefinition,
+  EnvironmentQuantitativeTypeDefinition
+} from 'interfaces/useReferenceApi.interface';
 import { getFormattedDate } from 'utils/Utils';
 
 export type ISampleSiteOption = {
@@ -582,6 +586,89 @@ export const ObservationQualitativeMeasurementColDef = (props: {
     sortable: false,
     flex: 1,
     minWidth: Math.min(300, Math.max(250, measurement.measurement_name.length * 10 + 20)),
+    disableColumnMenu: true,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: (params) => {
+      return (
+        <AutocompleteDataGridViewCell dataGridProps={params} options={qualitativeOptions} error={hasError(params)} />
+      );
+    },
+    renderEditCell: (params) => {
+      return (
+        <AutocompleteDataGridEditCell dataGridProps={params} options={qualitativeOptions} error={hasError(params)} />
+      );
+    }
+  };
+};
+
+export const ObservationQuantitativeEnvironmentColDef = (props: {
+  environment: EnvironmentQuantitativeTypeDefinition;
+  hasError: (params: GridCellParams) => boolean;
+}): GridColDef<IObservationTableRow> => {
+  const { environment, hasError } = props;
+  return {
+    field: String(environment.environment_quantitative_id),
+    headerName: environment.name,
+    editable: true,
+    hideable: true,
+    sortable: false,
+    type: 'number',
+    minWidth: Math.min(300, Math.max(110, environment.name.length * 10 + 20)),
+    disableColumnMenu: true,
+    headerAlign: 'right',
+    align: 'right',
+    renderCell: (params) => (
+      <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
+        {params.value}
+      </Typography>
+    ),
+    renderEditCell: (params) => {
+      const error = hasError(params);
+
+      return (
+        <TextFieldDataGrid
+          dataGridProps={params}
+          textFieldProps={{
+            name: params.field,
+            onChange: (event) => {
+              if (!/^\d{0,7}$/.test(event.target.value)) {
+                // If the value is not a number, return
+                return;
+              }
+
+              params.api.setEditCellValue({
+                id: params.id,
+                field: params.field,
+                value: event.target.value
+              });
+            },
+            error
+          }}
+        />
+      );
+    }
+  };
+};
+
+export const ObservationQualitativeEnvironmentColDef = (props: {
+  environment: EnvironmentQualitativeTypeDefinition;
+  hasError: (params: GridCellParams) => boolean;
+}): GridColDef<IObservationTableRow> => {
+  const { environment, hasError } = props;
+
+  const qualitativeOptions = environment.options.map((item) => ({
+    label: item.name,
+    value: item.environment_qualitative_option_id
+  }));
+  return {
+    field: String(environment.environment_qualitative_id),
+    headerName: environment.name,
+    editable: true,
+    hideable: true,
+    sortable: false,
+    flex: 1,
+    minWidth: Math.min(300, Math.max(250, environment.name.length * 10 + 20)),
     disableColumnMenu: true,
     headerAlign: 'left',
     align: 'left',

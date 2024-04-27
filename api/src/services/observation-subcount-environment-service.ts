@@ -80,14 +80,17 @@ export class ObservationSubCountEnvironmentService extends DBService {
    * Delete all environment records, for all observation records, for a given survey and set of environment ids.
    *
    * @param {number} surveyId
-   * @param {string[]} environmentIds Critterbase taxon environment ids to delete
+   * @param {{
+   *       environment_qualitative_id: number[];
+   *       environment_quantitative_id: number[];
+   *     }} environmentIds
    * @return {*}  {Promise<void>}
    * @memberof ObservationSubCountEnvironmentService
    */
   async deleteEnvironmentsForEnvironmentIds(
     surveyId: number,
     environmentIds: {
-      environment_qualitative_environment_qualitative_option_id: number[];
+      environment_qualitative_id: number[];
       environment_quantitative_id: number[];
     }
   ): Promise<void> {

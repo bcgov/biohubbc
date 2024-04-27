@@ -18,7 +18,7 @@ export const SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS = 'SIMS_OBSERVATIONS_MEASUREM
 /**
  * Key used to cache the additional user-defined environment columns added to the observations table.
  *
- * Should store a JSON stringified array of `EnvironmentType` objects.
+ * Should store a JSON stringified `EnvironmentType` object.
  */
 export const SIMS_OBSERVATIONS_ENVIRONMENT_COLUMNS = 'SIMS_OBSERVATIONS_ENVIRONMENT_COLUMNS';
 

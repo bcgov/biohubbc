@@ -7,6 +7,7 @@ import {
   StandardObservationColumns,
   SupplementaryObservationCountData
 } from 'interfaces/useObservationApi.interface';
+import { EnvironmentTypeIds } from 'interfaces/useReferenceApi.interface';
 import { ApiPaginationRequestOptions } from 'types/misc';
 
 export interface SubcountToSave {
@@ -244,12 +245,13 @@ const useObservationApi = (axios: AxiosInstance) => {
   const deleteObservationEnvironments = async (
     projectId: number,
     surveyId: number,
-    environmentIds: string[]
+    environmentIds: EnvironmentTypeIds
   ): Promise<void> => {
     const { data } = await axios.post<void>(
       `/api/project/${projectId}/survey/${surveyId}/observations/environments/delete`,
       {
-        environment_ids: environmentIds
+        environment_qualitative_id: environmentIds.qualitative_environments,
+        environment_quantitative_id: environmentIds.quantitative_environments
       }
     );
 

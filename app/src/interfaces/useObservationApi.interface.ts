@@ -2,6 +2,10 @@ import {
   CBQualitativeMeasurementTypeDefinition,
   CBQuantitativeMeasurementTypeDefinition
 } from 'interfaces/useCritterApi.interface';
+import {
+  EnvironmentQualitativeTypeDefinition,
+  EnvironmentQuantitativeTypeDefinition
+} from 'interfaces/useReferenceApi.interface';
 import { ApiPaginationResponseParams } from 'types/misc';
 export interface IGetSurveyObservationsResponse {
   surveyObservations: ObservationRecordWithSamplingAndSubcountData[];
@@ -61,6 +65,8 @@ export type SupplementaryObservationCountData = {
 export type SupplementaryObservationMeasurementData = {
   qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
   quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
+  qualitative_environments: EnvironmentQualitativeTypeDefinition[];
+  quantitative_environments: EnvironmentQuantitativeTypeDefinition[];
 };
 
 export type SupplementaryObservationData = SupplementaryObservationCountData & SupplementaryObservationMeasurementData;

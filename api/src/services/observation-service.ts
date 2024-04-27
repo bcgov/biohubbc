@@ -79,12 +79,11 @@ export interface InsertSubCount {
     measurement_value: number;
   }[];
   environments_qualitative: {
-    environment_id: number;
-    environment_option_id: number;
+    environment_qualitative_option_id: number;
   }[];
   environments_quantitative: {
-    environment_id: number;
-    environment_value: number;
+    environment_quantitative_id: number;
+    value: number;
   }[];
 }
 
@@ -630,14 +629,13 @@ export class ObservationService extends DBService {
         );
         if (foundOption) {
           foundEnvironments.environments_qualitative.push({
-            environment_id: environment.environment_qualitative_id,
-            environment_option_id: foundOption.environment_qualitative_option_id
+            environment_qualitative_option_id: foundOption.environment_qualitative_option_id
           });
         }
       } else {
         foundEnvironments.environments_quantitative.push({
-          environment_id: environment.environment_quantitative_id,
-          environment_value: Number(rowData)
+          environment_quantitative_id: environment.environment_quantitative_id,
+          value: Number(rowData)
         });
       }
     });

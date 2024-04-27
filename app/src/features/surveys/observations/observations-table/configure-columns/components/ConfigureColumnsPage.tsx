@@ -11,7 +11,7 @@ import { ConfigureEnvironmentColumns } from 'features/surveys/observations/obser
 import { ConfigureGeneralColumns } from 'features/surveys/observations/observations-table/configure-columns/components/general/ConfigureGeneralColumns';
 import { ConfigureMeasurementColumns } from 'features/surveys/observations/observations-table/configure-columns/components/measurements/ConfigureMeasurementColumns';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
-import { EnvironmentType } from 'interfaces/useReferenceApi.interface';
+import { EnvironmentType, EnvironmentTypeIds } from 'interfaces/useReferenceApi.interface';
 import { useState } from 'react';
 
 export enum ConfigureColumnsViewEnum {
@@ -48,9 +48,9 @@ export interface IConfigureColumnsPageProps {
   measurementColumns: CBMeasurementType[];
   onAddMeasurementColumns: (measurementColumns: CBMeasurementType[]) => void;
   onRemoveMeasurementColumns: (fields: string[]) => void;
-  environmentColumns: EnvironmentType[];
-  onAddEnvironmentColumns: (environmentColumns: EnvironmentType[]) => void;
-  onRemoveEnvironmentColumns: (fields: string[]) => void;
+  environmentColumns: EnvironmentType;
+  onAddEnvironmentColumns: (environmentColumns: EnvironmentType) => void;
+  onRemoveEnvironmentColumns: (environmentColumnIds: EnvironmentTypeIds) => void;
 }
 
 /**

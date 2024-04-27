@@ -63,13 +63,18 @@ POST.apiDoc = {
           type: 'object',
           additionalProperties: false,
           properties: {
-            environment_ids: {
-              description: 'An array of environment ids (critterbase taxon environment ids) to delete',
+            environment_qualitative_id: {
+              description: 'An array of qualitative environment ids to delete',
               type: 'array',
-              minItems: 1,
               items: {
-                type: 'string',
-                format: 'uuid'
+                type: 'number'
+              }
+            },
+            environment_quantitative_id: {
+              description: 'An array of quantitative environment ids to delete',
+              type: 'array',
+              items: {
+                type: 'number'
               }
             }
           }
@@ -108,17 +113,21 @@ POST.apiDoc = {
  */
 export function deleteObservationEnvironments(): RequestHandler {
   return async (req, res) => {
-    const surveyId = Number(req.params.surveyId);
-
-    defaultLog.debug({ label: 'deleteObservationEnvironments', surveyId });
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
+      const surveyId = Number(req.params.surveyId);
+
+      const environmentIds = {
+        environment_qualitative_id: req.body.environment_qualitative_id,
+        environment_quantitative_id: req.body.environment_quantitative_id
+      };
+
+      defaultLog.debug({ label: 'deleteObservationEnvironments', surveyId });
       await connection.open();
 
       const service = new ObservationSubCountEnvironmentService(connection);
-      await service.deleteEnvironmentsForEnvironmentIds(surveyId, req.body.environment_ids);
+      await service.deleteEnvironmentsForEnvironmentIds(surveyId, environmentIds);
 
       await connection.commit();
 

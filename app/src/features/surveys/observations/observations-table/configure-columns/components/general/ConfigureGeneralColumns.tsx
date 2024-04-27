@@ -109,6 +109,7 @@ export const ConfigureGeneralColumns = (props: IConfigureGeneralColumnsProps) =>
                     disabled={disabled}
                     edge="end"
                     aria-label="Remove measurement"
+                    // TODO Update this click to handle environments as well, etc
                     onClick={() => onRemoveMeasurements([column.field])}>
                     <Icon path={mdiTrashCanOutline} size={1} />
                   </IconButton>

@@ -11,7 +11,7 @@ import {
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { useObservationsTableContext, useSurveyContext } from 'hooks/useContext';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
-import { EnvironmentType } from 'interfaces/useReferenceApi.interface';
+import { EnvironmentType, EnvironmentTypeIds } from 'interfaces/useReferenceApi.interface';
 import { useCallback, useMemo, useState } from 'react';
 import { ConfigureColumnsDialog } from './ConfigureColumnsDialog';
 
@@ -155,47 +155,84 @@ export const ConfigureColumnsButton = (props: IConfigureColumnsButtonProps) => {
     [observationsTableContext, surveyContext.surveyId]
   );
 
-  const environmentColumns: EnvironmentType[] = [];
+  const environmentColumns = observationsTableContext.environmentColumns;
 
   const onAddEnvironmentColumns = useCallback(
-    (environmentColumnsToAdd: EnvironmentType[]) => {
-      console.log(environmentColumnsToAdd);
-      if (!environmentColumnsToAdd?.length) {
+    (environmentColumnsToAdd: EnvironmentType) => {
+      if (
+        !environmentColumnsToAdd.qualitative_environments.length &&
+        !environmentColumnsToAdd.quantitative_environments.length
+      ) {
         return;
       }
 
       // Add the environment columns to the table context
       observationsTableContext.setEnvironmentColumns((currentColumns) => {
-        const newColumns = environmentColumnsToAdd.filter(
+        const qualitativeEnvironmentColumnsToAdd = environmentColumnsToAdd.qualitative_environments.filter(
           (columnToAdd) =>
-            !currentColumns.find((currentColumn) => currentColumn.environment_id === columnToAdd.environment_id)
+            !currentColumns.qualitative_environments.find(
+              (currentColumn) => currentColumn.environment_qualitative_id === columnToAdd.environment_qualitative_id
+            )
         );
+
+        const quantitativeEnvironmentColumnsToAdd = environmentColumnsToAdd.quantitative_environments.filter(
+          (columnToAdd) =>
+            !currentColumns.quantitative_environments.find(
+              (currentColumn) => currentColumn.environment_quantitative_id === columnToAdd.environment_quantitative_id
+            )
+        );
+
+        const newColumns = {
+          qualitative_environments: [...currentColumns.qualitative_environments, ...qualitativeEnvironmentColumnsToAdd],
+          quantitative_environments: [
+            ...currentColumns.quantitative_environments,
+            ...quantitativeEnvironmentColumnsToAdd
+          ]
+        };
 
         // Store all environment definitions in local storage
         sessionStorage.setItem(
           getSurveySessionStorageKey(surveyContext.surveyId, SIMS_OBSERVATIONS_ENVIRONMENT_COLUMNS),
-          JSON.stringify([...currentColumns, ...newColumns])
+          JSON.stringify(newColumns)
         );
 
-        return [...currentColumns, ...newColumns];
+        return newColumns;
       });
     },
     [observationsTableContext, surveyContext.surveyId]
   );
 
   const onRemoveEnvironmentColumns = useCallback(
-    (environmentColumnsToRemove: string[]) => {
+    (environmentColumnsToRemove: EnvironmentTypeIds) => {
+      if (
+        !environmentColumnsToRemove.qualitative_environments.length &&
+        !environmentColumnsToRemove.quantitative_environments.length
+      ) {
+        return;
+      }
+
       // Delete the environment columns from the database
       observationsTableContext.deleteObservationEnvironmentColumns(environmentColumnsToRemove, () => {
         // Remove the environment columns from the table context
         observationsTableContext.setEnvironmentColumns((currentColumns) => {
-          const remainingColumns = currentColumns.filter(
-            (currentColumn) => !environmentColumnsToRemove.includes(String(currentColumn.environment_id))
+          const remainingQualitativeEnvironmentColumns = currentColumns.qualitative_environments.filter(
+            (currentColumn) =>
+              !environmentColumnsToRemove.qualitative_environments.includes(currentColumn.environment_qualitative_id)
           );
+
+          const remainingQuantitativeEnvironmentColumns = currentColumns.quantitative_environments.filter(
+            (currentColumn) =>
+              !environmentColumnsToRemove.quantitative_environments.includes(currentColumn.environment_quantitative_id)
+          );
+
+          const remainingColumns = {
+            qualitative_environments: remainingQualitativeEnvironmentColumns,
+            quantitative_environments: remainingQuantitativeEnvironmentColumns
+          };
 
           // Store all remaining environment definitions in local storage
           sessionStorage.setItem(
-            getSurveySessionStorageKey(surveyContext.surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS),
+            getSurveySessionStorageKey(surveyContext.surveyId, SIMS_OBSERVATIONS_ENVIRONMENT_COLUMNS),
             JSON.stringify(remainingColumns)
           );
 

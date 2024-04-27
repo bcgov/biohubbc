@@ -7,10 +7,10 @@ export interface IEnvironmentsSearchProps {
   /**
    * The selected environments.
    *
-   * @type {EnvironmentType[]}
+   * @type {EnvironmentType}
    * @memberof IEnvironmentsSearchProps
    */
-  selectedEnvironments: EnvironmentType[];
+  selectedEnvironments: EnvironmentType;
   /**
    * Callback fired on select options.
    *
@@ -34,12 +34,16 @@ export const EnvironmentsSearch = (props: IEnvironmentsSearchProps) => {
     biohubApi.reference.findSubcountEnvironments(searchTerm)
   );
 
+  // Need to process them into 1 array? With a common label?
   return (
     <EnvironmentsSearchAutocomplete
       selectedOptions={selectedEnvironments}
       getOptions={async (inputValue: string) => {
         const response = await environmentsDataLoader.refresh(inputValue);
-        return (response && [...response.qualitative_environments, ...response.quantitative_environments]) || [];
+        return {
+          qualitative_environments: response?.qualitative_environments ?? [],
+          quantitative_environments: response?.quantitative_environments ?? []
+        };
       }}
       onAddEnvironmentColumn={onAddEnvironmentColumn}
     />

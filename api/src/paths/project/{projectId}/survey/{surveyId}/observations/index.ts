@@ -682,10 +682,7 @@ PUT.apiDoc = {
                             type: 'object',
                             additionalProperties: false,
                             properties: {
-                              environment_id: {
-                                type: 'number'
-                              },
-                              environment_option_id: {
+                              environment_qualitative_option_id: {
                                 type: 'number'
                               }
                             }
@@ -697,10 +694,10 @@ PUT.apiDoc = {
                             type: 'object',
                             additionalProperties: false,
                             properties: {
-                              environment_id: {
+                              environment_quantitative_id: {
                                 type: 'number'
                               },
-                              environment_value: {
+                              value: {
                                 type: 'number'
                               }
                             }

@@ -56,7 +56,8 @@ const EnvironmentStandardCard = (props: IEnvironmentStandardCard) => {
                   textTransform: 'capitalize'
                 }
               }}
-              elevation={0}>
+              elevation={0}
+              key={`qualitative-option-${option.environment_qualitative_option_id}`}>
               <Typography variant="body1" fontWeight={700}>
                 {option.name}
               </Typography>

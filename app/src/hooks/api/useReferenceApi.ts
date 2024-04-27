@@ -1,8 +1,5 @@
 import { AxiosInstance } from 'axios';
-import {
-  EnvironmentQualitativeTypeDefinition,
-  EnvironmentQuantitativeTypeDefinition
-} from 'interfaces/useReferenceApi.interface';
+import { EnvironmentType } from 'interfaces/useReferenceApi.interface';
 
 /**
  * Returns a set of supported api methods for working with reference data.
@@ -15,17 +12,9 @@ const useReferenceApi = (axios: AxiosInstance) => {
    * Finds subcount environments by search term.
    *
    * @param {string} searchTerm
-   * @return {*}  {Promise<{
-   *     qualitative_environments: EnvironmentQualitativeTypeDefinition[];
-   *     quantitative_environments: EnvironmentQuantitativeTypeDefinition[];
-   *   }>}
+   * @return {*}  {Promise<EnvironmentType>}
    */
-  const findSubcountEnvironments = async (
-    searchTerm: string
-  ): Promise<{
-    qualitative_environments: EnvironmentQualitativeTypeDefinition[];
-    quantitative_environments: EnvironmentQuantitativeTypeDefinition[];
-  }> => {
+  const findSubcountEnvironments = async (searchTerm: string): Promise<EnvironmentType> => {
     const { data } = await axios.get(`/api/reference/search/environment?searchTerm=${searchTerm}`);
 
     return data;
