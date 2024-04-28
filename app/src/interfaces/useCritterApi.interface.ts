@@ -36,13 +36,21 @@ export interface IMeasurementPostData {
 }
 
 export interface ICapturePostData {
-  capture_id: string;
-  capture_timestamp: Date;
-  release_timestamp: Date | undefined;
-  capture_comment: string | undefined;
-  release_comment: string | undefined;
-  capture_location: { latitude: number | null; longitude: number | null } | Feature;
-  release_location: { latitude: number | null; longitude: number | null } | Feature;
+  capture_id?: string;
+  capture_timestamp: string;
+  release_timestamp: string;
+  capture_comment: string;
+  release_comment: string;
+  capture_location: Feature;
+  release_location: Feature;
+}
+
+export interface ILocationPostData {
+  location_id?: number;
+  latitude: number;
+  longitude: number;
+  coordinate_uncertainty: number;
+  coordinate_uncertainty_unit: string;
 }
 
 export interface ICreateCaptureRequest {

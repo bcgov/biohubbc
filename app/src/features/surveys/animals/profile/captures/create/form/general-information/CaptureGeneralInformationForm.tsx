@@ -34,7 +34,7 @@ const CaptureGeneralInformationForm = () => {
                   timeLabel: 'Capture time',
                   timeName: 'capture.capture_time',
                   timeId: 'capture.capture_time',
-                  timeRequired: false,
+                  timeRequired: true,
                   timeHelperText: '',
                   timeIcon: mdiCalendar
                 }}
@@ -44,7 +44,7 @@ const CaptureGeneralInformationForm = () => {
           <Grid item xs={12}>
             <CustomTextField
               name="capture.capture_comment"
-              label="Description or comments about the capture"
+              label="Capture comments"
               maxLength={1000}
               other={{ multiline: true, rows: 4 }}
             />
@@ -79,7 +79,7 @@ const CaptureGeneralInformationForm = () => {
           <Grid item xs={12}>
             <CustomTextField
               name="capture.release_comment"
-              label="Description or comments about the release"
+              label="Release comments"
               maxLength={1000}
               other={{ multiline: true, rows: 4 }}
             />

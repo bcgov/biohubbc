@@ -1,6 +1,7 @@
 import LoadingButton from '@mui/lab/LoadingButton';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
@@ -8,27 +9,20 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
-import { CreateAnimalI18N } from 'constants/i18n';
+import { EditAnimalI18N } from 'constants/i18n';
 import { AnimalSex } from 'features/surveys/view/survey-animals/animal';
 import { FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
-import AnimalForm from './form/AnimalForm';
+import AnimalForm from '../create/form/AnimalForm';
 
-export const defaultAnimalDataFormValues: ICreateEditAnimalRequest = {
-  nickname: '',
-  species: { tsn: 0, commonName: '', scientificName: '' },
-  ecological_units: [],
-  description: ''
-};
-
-const CreateAnimalPage = () => {
+const EditAnimalPage = () => {
   const biohubApi = useBiohubApi();
 
   const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
@@ -40,8 +34,23 @@ const CreateAnimalPage = () => {
   const surveyContext = useSurveyContext();
   const projectContext = useProjectContext();
   const dialogContext = useDialogContext();
+  const animalPageContext = useAnimalPageContext();
 
   const { projectId, surveyId } = surveyContext;
+  const critter = animalPageContext.critterDataLoader.data;
+
+  console.log(critter);
+
+  if (!critter) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
+
+  const initialAnimalData = {
+    nickname: critter.animal_id,
+    species: { tsn: critter.itis_tsn, scientificName: critter.itis_scientific_name, commonName: '' },
+    ecological_units: [],
+    description: ''
+  } as ICreateEditAnimalRequest;
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
@@ -49,8 +58,8 @@ const CreateAnimalPage = () => {
   };
 
   const defaultCancelDialogProps = {
-    dialogTitle: CreateAnimalI18N.cancelTitle,
-    dialogText: CreateAnimalI18N.cancelText,
+    dialogTitle: EditAnimalI18N.cancelTitle,
+    dialogText: EditAnimalI18N.cancelText,
     open: false,
     onClose: () => {
       dialogContext.setYesNoDialog({ open: false });
@@ -66,8 +75,8 @@ const CreateAnimalPage = () => {
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
-      dialogTitle: CreateAnimalI18N.createErrorTitle,
-      dialogText: CreateAnimalI18N.createErrorText,
+      dialogTitle: EditAnimalI18N.createErrorTitle,
+      dialogText: EditAnimalI18N.createErrorText,
       onClose: () => {
         dialogContext.setErrorDialog({ open: false });
       },
@@ -155,7 +164,7 @@ const CreateAnimalPage = () => {
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
       <PageHeader
-        title="Create New Animal"
+        title="Edit Animal"
         breadCrumbJSX={
           <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
             <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectId}/`}>
@@ -170,8 +179,14 @@ const CreateAnimalPage = () => {
               to={`/admin/projects/${projectId}/surveys/${surveyId}/animals`}>
               Manage Animals
             </Link>
+            <Link
+              component={RouterLink}
+              underline="hover"
+              to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`}>
+              {critter.animal_id}
+            </Link>
             <Typography variant="body2" component="span" color="textSecondary" aria-current="page">
-              Create New Animal
+              Edit Animal
             </Typography>
           </Breadcrumbs>
         }
@@ -194,7 +209,7 @@ const CreateAnimalPage = () => {
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper sx={{ p: 5 }}>
           <AnimalForm
-            initialAnimalData={defaultAnimalDataFormValues}
+            initialAnimalData={initialAnimalData}
             handleSubmit={(formikData) => handleSubmit(formikData as ICreateEditAnimalRequest)}
             formikRef={formikRef}
           />
@@ -219,4 +234,4 @@ const CreateAnimalPage = () => {
   );
 };
 
-export default CreateAnimalPage;
+export default EditAnimalPage;

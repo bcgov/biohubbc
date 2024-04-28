@@ -26,17 +26,19 @@ import AnimalCaptureForm from './form/AnimalCaptureForm';
 export const defaultAnimalCaptureFormValues: ICreateCaptureRequest = {
   capture: {
     capture_id: '',
-    capture_timestamp: new Date('2020-01-01'),
-    release_timestamp: new Date('2020-01-05'),
+    capture_timestamp: '',
+    release_timestamp: '',
     capture_comment: '',
     release_comment: '',
     capture_location: {
-      latitude: null,
-      longitude: null
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [0, 0] },
+      properties: { coordinate_uncertainty: 'm' }
     },
     release_location: {
-      latitude: null,
-      longitude: null
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [0, 0] },
+      properties: { coordinate_uncertainty: 'm' }
     }
   },
   markings: [],
@@ -88,7 +90,7 @@ const CreateCapturePage = () => {
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
-    history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/${surveyCritterId}`);
+    history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`);
   };
 
   const defaultCancelDialogProps = {
@@ -157,17 +159,22 @@ const CreateCapturePage = () => {
     setIsSaving(true);
     try {
       const critterbaseCritterId = animalPageContext.selectedAnimal?.critterbase_critter_id;
-      if (!values || !critterbaseCritterId) {
+      if (!values || !critterbaseCritterId || values.capture.capture_location.geometry.type !== 'Point') {
         return;
       }
 
       const response = await critterbaseApi.capture.createCapture({
         capture_id: undefined,
-        capture_timestamp: values.capture.capture_timestamp,
-        release_timestamp: values.capture.release_timestamp,
+        capture_timestamp: new Date(values.capture.capture_timestamp),
+        release_timestamp: new Date(values.capture.release_timestamp),
         capture_comment: values.capture.capture_comment,
         release_comment: values.capture.release_comment,
-        capture_location: values.capture.capture_location,
+        capture_location: {
+          longitude: values.capture.capture_location.geometry.coordinates[0],
+          latitude: values.capture.capture_location.geometry.coordinates[1],
+          coordinate_uncertainty: 0,
+          coordinate_uncertainty_units: 'm'
+        },
         release_location: values.capture.release_location,
         critter_id: critterbaseCritterId
       });

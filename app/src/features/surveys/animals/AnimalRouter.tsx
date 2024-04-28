@@ -6,6 +6,7 @@ import { Redirect, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
 import CreateAnimalPage from './create/CreateAnimalPage';
+import EditAnimalPage from './edit/EditAnimalPage';
 import CreateCapturePage from './profile/captures/create/CreateCapturePage';
 import SurveyAnimalPage from './SurveyAnimalPage';
 
@@ -45,6 +46,17 @@ const AnimalRouter: React.FC = () => (
         <DialogContextProvider>
           <CreateAnimalPage />
         </DialogContextProvider>
+      </ProjectRoleRouteGuard>
+    </RouteWithTitle>
+
+    <RouteWithTitle
+      exact
+      path={'/admin/projects/:id/surveys/:survey_id/animals/:survey_critter_id/edit'}
+      title={getTitle('Edit Animal')}>
+      <ProjectRoleRouteGuard
+        validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+        validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+        <EditAnimalPage />
       </ProjectRoleRouteGuard>
     </RouteWithTitle>
 

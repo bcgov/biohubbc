@@ -25,7 +25,7 @@ const AnimalGeneralInformationForm = () => {
               clearOnSelect={true}
             />
             {values.species && (
-              <Collapse in={Boolean(values.species.tsn)}>
+              <Collapse in={Boolean(values.species)}>
                 <SelectedSpecies
                   selectedSpecies={[values.species]}
                   handleRemoveSpecies={() => {

@@ -1,4 +1,4 @@
-import { mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
@@ -7,6 +7,7 @@ import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
+import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
@@ -32,14 +33,15 @@ const SurveyAnimalList = () => {
   const [checkboxSelectedIds, setCheckboxSelectedIds] = useState<number[]>([]);
   const [critterAnchorEl, setCritterAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [headerAnchorEl, setHeaderAnchorEl] = useState<MenuProps['anchorEl']>(null);
-
-  const { selectedAnimal, setSelectedAnimal } = useAnimalPageContext();
+  const [selectedCritterMenu, setSelectedMenuCritter] = useState<ISurveyCritter | null>(null);
 
   const codesContext = useCodesContext();
   const surveyContext = useSurveyContext();
   const dialogContext = useDialogContext();
 
-  const animalPageContext = useAnimalPageContext();
+  const { projectId, surveyId } = useSurveyContext();
+
+  const { selectedAnimal, isDisabled, setSelectedAnimal } = useAnimalPageContext();
 
   const critters = surveyContext.critterDataLoader.data;
 
@@ -61,7 +63,7 @@ const SurveyAnimalList = () => {
 
   const handleCritterMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, critter: ISurveyCritter) => {
     setCritterAnchorEl(event.currentTarget);
-    setSelectedAnimal(critter);
+    setSelectedMenuCritter(critter);
   };
 
   /**
@@ -180,47 +182,53 @@ const SurveyAnimalList = () => {
 
   return (
     <>
-      <Menu
-        open={Boolean(critterAnchorEl)}
-        onClose={() => setCritterAnchorEl(null)}
-        anchorEl={critterAnchorEl}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right'
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right'
-        }}>
-        <MenuItem
-          sx={{
-            p: 0,
-            '& a': {
-              display: 'flex',
-              px: 2,
-              py: '6px',
-              textDecoration: 'none',
-              color: 'text.primary',
-              borderRadius: 0,
-              '&:focus': {
-                outline: 'none'
-              }
-            }
+      {selectedAnimal && (
+        <Menu
+          open={Boolean(critterAnchorEl)}
+          onClose={() => setCritterAnchorEl(null)}
+          anchorEl={critterAnchorEl}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right'
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right'
           }}>
-          <RouterLink to={`animals/${selectedAnimal}/edit`}>
+          <MenuItem
+            sx={{
+              p: 0,
+              '& a': {
+                display: 'flex',
+                px: 2,
+                py: '6px',
+                textDecoration: 'none',
+                color: 'text.primary',
+                borderRadius: 0,
+                '&:focus': {
+                  outline: 'none'
+                }
+              }
+            }}>
+            <RouterLink
+              to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.survey_critter_id}/edit`}
+              onClick={() => {
+                setSelectedAnimal(selectedCritterMenu);
+              }}>
+              <ListItemIcon>
+                <Icon path={mdiPencilOutline} size={1} />
+              </ListItemIcon>
+              <ListItemText>Edit Details</ListItemText>
+            </RouterLink>
+          </MenuItem>
+          <MenuItem onClick={deleteCritterDialog}>
             <ListItemIcon>
-              <Icon path={mdiPencilOutline} size={1} />
+              <Icon path={mdiTrashCanOutline} size={1} />
             </ListItemIcon>
-            <ListItemText>Edit Details</ListItemText>
-          </RouterLink>
-        </MenuItem>
-        <MenuItem onClick={deleteCritterDialog}>
-          <ListItemIcon>
-            <Icon path={mdiTrashCanOutline} size={1} />
-          </ListItemIcon>
-          <ListItemText>Delete</ListItemText>
-        </MenuItem>
-      </Menu>
+            <ListItemText>Delete</ListItemText>
+          </MenuItem>
+        </Menu>
+      )}
 
       <Menu
         open={Boolean(headerAnchorEl)}
@@ -234,7 +242,7 @@ const SurveyAnimalList = () => {
           vertical: 'top',
           horizontal: 'right'
         }}>
-        <MenuItem onClick={handlePromptConfirmBulkDelete} disabled={animalPageContext.isDisabled}>
+        <MenuItem onClick={handlePromptConfirmBulkDelete} disabled={isDisabled}>
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />
           </ListItemIcon>
@@ -314,13 +322,26 @@ const SurveyAnimalList = () => {
                     </Stack>
                   )}
                   {critters.map((critter) => (
-                    <CritterListItem
-                      key={`${critter.survey_critter_id}-${critter.critter_id}`}
-                      critter={critter}
-                      isChecked={checkboxSelectedIds.includes(critter.survey_critter_id)}
-                      handleCritterMenuClick={handleCritterMenuClick}
-                      handleCheckboxChange={handleCheckboxChange}
-                    />
+                    <Stack direction="row" display="flex" alignItems="center">
+                      <CritterListItem
+                        key={`${critter.survey_critter_id}-${critter.critter_id}`}
+                        critter={critter}
+                        isChecked={checkboxSelectedIds.includes(critter.survey_critter_id)}
+                        handleCheckboxChange={handleCheckboxChange}
+                      />
+                      <IconButton
+                        sx={{ position: 'absolute', right: '24px' }}
+                        edge="end"
+                        onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
+                          handleCritterMenuClick(event, {
+                            critterbase_critter_id: critter.critter_id,
+                            survey_critter_id: critter.survey_critter_id
+                          })
+                        }
+                        aria-label="animal-settings">
+                        <Icon path={mdiDotsVertical} size={1} />
+                      </IconButton>
+                    </Stack>
                   ))}
                 </Box>
                 {/* TODO how should we handle controlling pagination? */}

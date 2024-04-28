@@ -24,8 +24,8 @@ const AnimalProfile = () => {
   }
 
   return (
-    <Stack p={2} bgcolor={grey[100]} spacing={2} overflow="auto" height="100%">
-      <Paper sx={{ p: 3 }} variant="outlined">
+    <Stack bgcolor={grey[100]} spacing={2} height="100%">
+      <Paper sx={{ p: 2 }}>
         <Typography variant="h2" mb={1}>
           {critter.animal_id}&nbsp;
         </Typography>
@@ -49,8 +49,9 @@ const AnimalProfile = () => {
           />
         </Stack>
       </Paper>
+      <Paper>
         <AnimalCaptureContainer />
-   
+      </Paper>
     </Stack>
   );
 };

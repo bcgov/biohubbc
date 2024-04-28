@@ -13,7 +13,7 @@ import FullScreenScrollingEventHandler from 'components/map/components/FullScree
 import ImportBoundaryDialog from 'components/map/components/ImportBoundaryDialog';
 import StaticLayers from 'components/map/components/StaticLayers';
 import { MapBaseCss } from 'components/map/styles/MapBaseCss';
-import { MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
+import { ALL_OF_BC_BOUNDARY, MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
 import { FormikContextType, useFormikContext } from 'formik';
 import { Feature } from 'geojson';
 import { ICreateCaptureRequest } from 'interfaces/useCritterApi.interface';
@@ -58,9 +58,6 @@ export interface ICaptureLocationMapControlProps {
 const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps) => {
   const { name, title } = props;
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  //   const classes = useStyles();
-
-  //   const surveyContext = useContext(SurveyContext);
   const [lastDrawn, setLastDrawn] = useState<null | number>(null);
 
   const drawControlsRef = useRef<IDrawControlsRef>();
@@ -69,31 +66,34 @@ const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps) => {
 
   const { values, setFieldValue } = useFormikContext<ICreateCaptureRequest>();
 
-  //   let numSites = surveyContext.sampleSiteDataLoader.data?.sampleSites.length ?? 0;
-
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
 
-  //   setUpdatedBounds(undefined);
-
-  //   const removeFile = () => {
-  //     setFieldValue(name, []);
-  //   };
-
   //   Array of sampling site features
-  const captureLocationGeoJson: Feature = useMemo(() => {
-    const location: { latitude: number; longitude: number } = get(values, name);
-    return {
-      type: 'Feature',
-      geometry: { type: 'Point', coordinates: [location.longitude, location.latitude] },
-      properties: { captureId: 1 }
-    };
+  const captureLocationGeoJson: Feature | undefined = useMemo(() => {
+    const location: { latitude: number; longitude: number } | Feature = get(values, name);
+    if ('latitude' in location && location.latitude !== 0) {
+      return {
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [location.longitude, location.latitude] },
+        properties: {}
+      };
+    }
+    if ('type' in location) {
+      return location;
+    }
+    return;
   }, [name, values]);
 
-  console.log(captureLocationGeoJson);
-  console.log(values);
-
   useEffect(() => {
-    setUpdatedBounds(calculateUpdatedMapBounds([captureLocationGeoJson]));
+    setUpdatedBounds(calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]));
+    if (captureLocationGeoJson) {
+      if ('type' in captureLocationGeoJson) {
+        if (captureLocationGeoJson.geometry.type === 'Point')
+          if (captureLocationGeoJson?.geometry.coordinates[0] !== 0) {
+            setUpdatedBounds(calculateUpdatedMapBounds([captureLocationGeoJson]));
+          }
+      }
+    }
   }, [captureLocationGeoJson]);
 
   return (
@@ -175,18 +175,18 @@ const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps) => {
                       }
 
                       const feature = event.layer.toGeoJSON();
-                      setFieldValue('location', feature);
+                      setFieldValue(name, feature);
                       // Set last drawn to remove it if a subsequent shape is added. There can only be one shape.
                       setLastDrawn(id);
                     }}
                     onLayerEdit={(event: DrawEvents.Edited) => {
                       event.layers.getLayers().forEach((layer: any) => {
                         const feature = layer.toGeoJSON() as Feature;
-                        setFieldValue('location', feature);
+                        setFieldValue(name, feature);
                       });
                     }}
                     onLayerDelete={() => {
-                      setFieldValue('location', null);
+                      setFieldValue(name, null);
                     }}
                   />
                 </FeatureGroup>

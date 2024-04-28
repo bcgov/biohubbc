@@ -43,12 +43,6 @@ const AnimalCaptureForm = (props: IAnimalCaptureFormProps) => {
         />
         <Divider />
         <HorizontalSplitFormComponent
-          title="Release Information"
-          summary="Enter information about the release location"
-          component={<ReleaseLocationForm />}
-        />
-        <Divider />
-        <HorizontalSplitFormComponent
           title="Measurements"
           summary="Enter measurements recorded during the capture"
           component={<CaptureMeasurementsForm />}
@@ -60,6 +54,11 @@ const AnimalCaptureForm = (props: IAnimalCaptureFormProps) => {
           component={<CaptureMarkingsForm />}
         />
         <Divider />
+        <HorizontalSplitFormComponent
+          title="Release Location"
+          summary="Enter where the animal was released"
+          component={<ReleaseLocationForm />}
+        />
       </Stack>
     </Formik>
   );

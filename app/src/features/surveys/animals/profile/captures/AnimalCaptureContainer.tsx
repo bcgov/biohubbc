@@ -1,4 +1,3 @@
-import Paper from '@mui/material/Paper';
 import AnimalCaptureCardContainer from './components/AnimalCaptureCardContainer';
 import AnimalCapturesMap from './components/AnimalCapturesMap';
 import AnimalCapturesToolbar from './components/AnimalCapturesToolbar';
@@ -6,11 +5,11 @@ import AnimalCapturesToolbar from './components/AnimalCapturesToolbar';
 const AnimalCaptureContainer = () => {
   return (
     <>
-      <Paper variant="outlined">
-        <AnimalCapturesToolbar />
-        <AnimalCapturesMap />
-        <AnimalCaptureCardContainer />
-      </Paper>
+      <AnimalCapturesToolbar />
+      <AnimalCapturesMap />
+      {/* <Paper variant="outlined" sx={{ p: 2 }}> */}
+      <AnimalCaptureCardContainer />
+      {/* </Paper> */}
     </>
   );
 };

@@ -1,7 +1,7 @@
-import Checkbox from '@mui/material/Checkbox';
-import FormControl from '@mui/material/FormControl';
+import { Radio, Typography } from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
+import RadioGroup from '@mui/material/RadioGroup';
 import Box from '@mui/system/Box';
 import { useFormikContext } from 'formik';
 import { ICreateCaptureRequest } from 'interfaces/useCritterApi.interface';
@@ -10,11 +10,11 @@ import CaptureLocationMapControl from './CaptureLocationMapControl';
 
 const ReleaseLocationForm = () => {
   const formikProps = useFormikContext<ICreateCaptureRequest>();
-  const [isChecked, setIsChecked] = useState<boolean>(true);
+  const [isReleaseSameAsCapture, setIsReleaseSameAsCapture] = useState<boolean>(true);
 
   return (
     <>
-      <FormControl required={true} component="fieldset">
+      {/* <FormControl required={true} component="fieldset">
         <FormControlLabel
           sx={{
             '& .MuiTypography-root': {
@@ -30,11 +30,22 @@ const ReleaseLocationForm = () => {
               color="primary"
             />
           }
-          label="The animal was released where it was captured"
+          label="The release location is different than the capture location"
         />
-      </FormControl>
+      </FormControl> */}
+      <Typography component="legend" variant="h5" mb={1}>
+        Was the animal released where it was captured?
+      </Typography>
+      <RadioGroup
+        aria-label="release-location"
+        value={isReleaseSameAsCapture} // assuming you have a state variable for the selected value
+        onChange={() => setIsReleaseSameAsCapture(!isReleaseSameAsCapture)} // assuming you have a function to handle value change
+      >
+        <FormControlLabel value="true" control={<Radio color="primary" />} label="Yes" />
+        <FormControlLabel value="false" control={<Radio color="primary" />} label="No" />
+      </RadioGroup>
 
-      {!isChecked && (
+      {!isReleaseSameAsCapture && (
         <Box component="fieldset" mt={3}>
           <Grid container spacing={3}>
             <Grid item xs={12}>

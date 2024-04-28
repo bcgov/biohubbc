@@ -1,4 +1,4 @@
-import { mdiCalendar, mdiChevronDown } from '@mdi/js';
+import { mdiChevronDown, mdiMapMarkerOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -22,25 +22,19 @@ const AnimalCaptureCardContainer = () => {
 
   const captures = critterDataLoader.data.captures;
 
-  console.log(captures)
   return (
-    <Stack>
+    <>
       {captures.map((capture) => {
         const [captureDate, captureTime] = capture.capture_timestamp.split(' ');
 
         return (
           <Accordion
             disableGutters
-            square
-            elevation={0}
             sx={{
-              borderRadius: '5px',
               border: 'none',
               outline: 'none',
-              '& .MuiAccordion-root::before': {
-                border: 'none',
-                outline: 'none',
-                position: 'none'
+              '&.MuiAccordion-root:before': {
+                display: 'none'
               }
             }}>
             <AccordionSummary
@@ -49,7 +43,8 @@ const AnimalCaptureCardContainer = () => {
               sx={{
                 flex: '1 1 auto',
                 mr: 1,
-                height: 55,
+                py: 2,
+                minHeight: 55,
                 overflow: 'hidden',
                 border: 0,
                 '& .MuiAccordionSummary-content': {
@@ -60,14 +55,20 @@ const AnimalCaptureCardContainer = () => {
                   whiteSpace: 'nowrap'
                 }
               }}>
-              <Stack direction="row" gap={0.5}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.25, mr: 1 }}>
-                  <Icon size={0.8} color={grey[400]} title="Capture date" path={mdiCalendar} />
-                </Box>
+              <Stack direction="row" gap={0.5} display="flex" alignItems="center">
                 <Typography fontWeight={700}>
-                  {getFormattedDate(DATE_FORMAT.MediumDateFormat, captureDate)}&nbsp;
+                  {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, captureDate)}&nbsp;
                 </Typography>
                 <Typography color="textSecondary">{captureTime}</Typography>
+                <Box display="flex" alignItems="flex-end">
+                  <Box sx={{ display: 'flex', alignItems: 'center', mr: 0.5 }}>
+                    <Icon size={0.8} color={grey[400]} title="Capture location" path={mdiMapMarkerOutline} />
+                  </Box>
+                  <Typography color="textSecondary" variant="body2">
+                    {capture.capture_location.longitude},&nbsp;
+                    {capture.capture_location.latitude}
+                  </Typography>
+                </Box>
               </Stack>
             </AccordionSummary>
             <AccordionDetails>
@@ -76,7 +77,7 @@ const AnimalCaptureCardContainer = () => {
           </Accordion>
         );
       })}
-    </Stack>
+    </>
   );
 };
 
