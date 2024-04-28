@@ -20,7 +20,7 @@ interface ICollectionUnitOption {
 }
 interface IEcologicalUnitsSelect {
   arrayHelpers: FieldArrayRenderProps;
-  species: ITaxonomy;
+  species: ITaxonomy | null;
 }
 
 const EcologicalUnitsSelect = (props: IEcologicalUnitsSelect) => {
@@ -53,77 +53,74 @@ const EcologicalUnitsSelect = (props: IEcologicalUnitsSelect) => {
 
   return (
     <>
-      {units && (
-        <Stack spacing={2}>
-          {values.ecological_units.map((_, index) => (
-            <Collapse in={Boolean(values.species)} role="listitem" key={index}>
-              <Card
-                component={Stack}
-                variant="outlined"
-                flexDirection="row"
-                alignItems="flex-start"
-                gap={2}
+      <Stack spacing={2}>
+        {values.ecological_units.map((_, index) => (
+          <Collapse in={Boolean(values.species)} role="listitem" key={index}>
+            <Card
+              component={Stack}
+              variant="outlined"
+              flexDirection="row"
+              alignItems="flex-start"
+              gap={2}
+              sx={{
+                width: '100%',
+                p: 2,
+                backgroundColor: grey[100]
+              }}>
+              <AutocompleteField
+                id={`ecological_units.[${index}].ecological_unit_id`}
+                name={`ecological_units.[${index}].ecological_unit_id`}
+                label="Ecological Unit"
+                options={
+                  units?.map((option) => ({
+                    value: option.collection_category_id,
+                    label: option.category_name
+                  })) ?? []
+                }
+                // loading={ecologicalUnitsDataLoader.isLoading}
+                required
                 sx={{
-                  width: '100%',
-                  p: 2,
-                  backgroundColor: grey[100]
-                }}>
-                <AutocompleteField
-                  id={`ecological_units.[${index}].ecological_unit_id`}
-                  name={`ecological_units.[${index}].ecological_unit_id`}
-                  label="Ecological Unit"
-                  options={units
-                    // .filter((option) => !values.ecological_units.some((unit) => unit.ecological_unit_id === option.id))
-                    .map((option) => ({
-                      value: option.collection_category_id,
-                      label: option.category_name
-                    }))}
-                  // loading={ecologicalUnitsDataLoader.isLoading}
-                  required
-                  sx={{
-                    flex: '1 1 auto'
-                  }}
-                />
-                <AutocompleteField
-                  id={`ecological_units.[${index}].value`}
-                  name={`ecological_units.[${index}].value`}
-                  label={
-                    units.find(
-                      (unit) => unit.collection_category_id === values.ecological_units[index].ecological_unit_id
-                    )?.category_name ?? ''
-                  } // Need to get codes for displaying name
-                  options={
-                    units
-                      .find(
-                        (option) => option.collection_category_id === values.ecological_units[index].ecological_unit_id
-                      )
-                      ?.options.map((option) => ({
-                        value: option.id,
-                        label: option.name
-                      })) ?? []
-                  }
-                  // loading={fundingSourcesDataLoader.isLoading}
-                  disabled={Boolean(!values.ecological_units[index].ecological_unit_id)}
-                  required
-                  // loading={ecologicalUnitsDataLoader.isLoading}
-                  sx={{
-                    flex: '1 1 auto'
-                  }}
-                />
+                  flex: '1 1 auto'
+                }}
+              />
+              <AutocompleteField
+                id={`ecological_units.[${index}].value`}
+                name={`ecological_units.[${index}].value`}
+                label={
+                  units?.find(
+                    (unit) => unit.collection_category_id === values.ecological_units[index].ecological_unit_id
+                  )?.category_name ?? ''
+                } // Need to get codes for displaying name
+                options={
+                  units
+                    .find(
+                      (option) => option.collection_category_id === values.ecological_units[index].ecological_unit_id
+                    )
+                    ?.options.map((option) => ({
+                      value: option.id,
+                      label: option.name
+                    })) ?? []
+                }
+                disabled={Boolean(!values.ecological_units[index].ecological_unit_id)}
+                required
+                loading={ecologicalUnitsDataLoader.isLoading}
+                sx={{
+                  flex: '1 1 auto'
+                }}
+              />
 
-                <IconButton
-                  data-testid={`ecological-unit-delete-button-${index}`}
-                  title="Remove Ecological Unit"
-                  aria-label="Remove Ecological Unit"
-                  onClick={() => props.arrayHelpers.remove(index)}
-                  sx={{ mt: 1.125 }}>
-                  <Icon path={mdiClose} size={1} />
-                </IconButton>
-              </Card>
-            </Collapse>
-          ))}
-        </Stack>
-      )}
+              <IconButton
+                data-testid={`ecological-unit-delete-button-${index}`}
+                title="Remove Ecological Unit"
+                aria-label="Remove Ecological Unit"
+                onClick={() => props.arrayHelpers.remove(index)}
+                sx={{ mt: 1.125 }}>
+                <Icon path={mdiClose} size={1} />
+              </IconButton>
+            </Card>
+          </Collapse>
+        ))}
+      </Stack>
     </>
   );
 };

@@ -18,12 +18,15 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
 import { useRef, useState } from 'react';
-import { Prompt, useHistory } from 'react-router';
+import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import AnimalForm from '../create/form/AnimalForm';
 
 const EditAnimalPage = () => {
   const biohubApi = useBiohubApi();
+
+  const urlParams: Record<string, string | number | undefined> = useParams();
+  const surveyCritterId: number | undefined = Number(urlParams['survey_critter_id']);
 
   const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -39,7 +42,9 @@ const EditAnimalPage = () => {
   const { projectId, surveyId } = surveyContext;
   const critter = animalPageContext.critterDataLoader.data;
 
-  console.log(critter);
+  if (!animalPageContext.selectedAnimal) {
+    animalPageContext.setSelectedAnimalFromSurveyCritterId(surveyCritterId);
+  }
 
   if (!critter) {
     return <CircularProgress className="pageProgress" size={40} />;

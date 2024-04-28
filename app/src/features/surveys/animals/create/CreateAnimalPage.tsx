@@ -23,7 +23,7 @@ import AnimalForm from './form/AnimalForm';
 
 export const defaultAnimalDataFormValues: ICreateEditAnimalRequest = {
   nickname: '',
-  species: { tsn: 0, commonName: '', scientificName: '' },
+  species: null,
   ecological_units: [],
   description: ''
 };

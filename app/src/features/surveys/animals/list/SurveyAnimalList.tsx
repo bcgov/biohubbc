@@ -41,7 +41,7 @@ const SurveyAnimalList = () => {
 
   const { projectId, surveyId } = useSurveyContext();
 
-  const { selectedAnimal, isDisabled, setSelectedAnimal } = useAnimalPageContext();
+  const { isDisabled, setSelectedAnimal } = useAnimalPageContext();
 
   const critters = surveyContext.critterDataLoader.data;
 
@@ -182,7 +182,7 @@ const SurveyAnimalList = () => {
 
   return (
     <>
-      {selectedAnimal && (
+      {selectedCritterMenu && (
         <Menu
           open={Boolean(critterAnchorEl)}
           onClose={() => setCritterAnchorEl(null)}
@@ -211,7 +211,7 @@ const SurveyAnimalList = () => {
               }
             }}>
             <RouterLink
-              to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.survey_critter_id}/edit`}
+              to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedCritterMenu.survey_critter_id}/edit`}
               onClick={() => {
                 setSelectedAnimal(selectedCritterMenu);
               }}>

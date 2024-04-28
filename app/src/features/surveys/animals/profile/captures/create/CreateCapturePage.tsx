@@ -13,12 +13,10 @@ import { CreateCaptureI18N } from 'constants/i18n';
 import { FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-import useDataLoader from 'hooks/useDataLoader';
 import { ICreateCaptureRequest } from 'interfaces/useCritterApi.interface';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import AnimalCaptureForm from './form/AnimalCaptureForm';
@@ -49,7 +47,6 @@ export const defaultAnimalCaptureFormValues: ICreateCaptureRequest = {
 };
 
 const CreateCapturePage = () => {
-  const biohubApi = useBiohubApi();
   const critterbaseApi = useCritterbaseApi();
 
   const urlParams: Record<string, string | number | undefined> = useParams();
@@ -70,23 +67,9 @@ const CreateCapturePage = () => {
 
   // If the user has refreshed the page and cleared the context, or come to this page externally from a link,
   // use the url params to set the select animal in the context. The context then requests critter data from critterbase.
-  const surveyCrittersDataLoader = useDataLoader(() => biohubApi.survey.getSurveyCritters(projectId, surveyId));
-  if (!animalPageContext.critterDataLoader.data) {
-    if (surveyCritterId) {
-      surveyCrittersDataLoader.load();
-    }
+  if (!animalPageContext.selectedAnimal) {
+    animalPageContext.setSelectedAnimalFromSurveyCritterId(surveyCritterId);
   }
-  useEffect(() => {
-    console.log(surveyCrittersDataLoader.data);
-    if (surveyCrittersDataLoader.data) {
-      const critterId = surveyCrittersDataLoader.data.find(
-        (critter) => critter.survey_critter_id === surveyCritterId
-      )?.critter_id;
-      if (critterId && surveyCritterId) {
-        animalPageContext.setSelectedAnimal({ survey_critter_id: surveyCritterId, critterbase_critter_id: critterId });
-      }
-    }
-  }, [surveyCrittersDataLoader.data]);
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
