@@ -120,7 +120,7 @@ const SurveyAnimals: React.FC = () => {
           sx={{
             flex: '1 1 auto'
           }}>
-          Marked and Known Animals
+          Animals
         </Typography>
         <ProjectRoleGuard
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
@@ -128,7 +128,7 @@ const SurveyAnimals: React.FC = () => {
           <Button
             component={RouterLink}
             to={`animals/`}
-            title="Manage Marked and Known Animals"
+            title="Manage Animals"
             color="primary"
             variant="contained"
             startIcon={<Icon path={mdiCog} size={0.75} />}
@@ -157,7 +157,7 @@ const SurveyAnimals: React.FC = () => {
             }}
           />
         ) : (
-          <NoSurveySectionData text={'No Marked or Known Animals'} />
+          <NoSurveySectionData text={'No Animals'} />
         )}
       </Box>
       <ComponentDialog

@@ -9,7 +9,7 @@ import AnimalProfileContainer from './profile/AnimalProfileContainer';
 import SurveyAnimalHeader from './SurveyAnimalHeader';
 
 /**
- * Returns the page for managing marked or known animals
+ * Returns the page for managing Animals
  *
  * @returns
  */

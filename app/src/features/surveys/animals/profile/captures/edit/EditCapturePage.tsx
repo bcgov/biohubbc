@@ -204,8 +204,8 @@ const EditCapturePage = () => {
         return;
       }
 
-      const response = await critterbaseApi.capture.createCapture({
-        capture_id: undefined,
+      const response = await critterbaseApi.capture.updateCapture({
+        capture_id: values.capture.capture_id,
         capture_timestamp: new Date(values.capture.capture_timestamp),
         release_timestamp: new Date(values.capture.release_timestamp),
         capture_comment: values.capture.capture_comment,

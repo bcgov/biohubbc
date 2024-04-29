@@ -33,7 +33,7 @@ const AnimalProfile = () => {
         <Typography
           variant="h2"
           sx={{
-            mb: 1,
+            pb: 2,
             display: 'block',
             whiteSpace: 'nowrap',
             textOverflow: 'ellipsis',

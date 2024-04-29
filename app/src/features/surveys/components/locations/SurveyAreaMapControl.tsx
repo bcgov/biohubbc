@@ -41,7 +41,9 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
   const [selectedRegion, setSelectedRegion] = useState<IRegionOption | null>(null);
 
   useEffect(() => {
-    setUpdatedBounds(calculateUpdatedMapBounds(formik_props.values.locations.map((item) => item.geojson[0])));
+    if (formik_props.values.locations.length) {
+      setUpdatedBounds(calculateUpdatedMapBounds(formik_props.values.locations.map((item) => item.geojson[0])));
+    }
   }, [formik_props.values.locations]);
 
   return (
