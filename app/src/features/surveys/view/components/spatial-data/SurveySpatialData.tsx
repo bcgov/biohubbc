@@ -1,4 +1,4 @@
-import { mdiBroadcast, mdiEye } from '@mdi/js';
+import { mdiEye, mdiPaw, mdiWifiMarker } from '@mdi/js';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import { CodesContext } from 'contexts/codesContext';
@@ -14,6 +14,7 @@ import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface'
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { IAnimalDeployment } from '../../survey-animals/telemetry-device/device';
 import SurveyMap, { ISurveyMapPoint, ISurveyMapPointMetadata, ISurveyMapSupplementaryLayer } from '../../SurveyMap';
+import SurveyCapturesDataTable from './SurveyCapturesDataTable';
 import SurveySpatialObservationDataTable from './SurveySpatialObservationDataTable';
 import SurveySpatialTelemetryDataTable from './SurveySpatialTelemetryDataTable';
 import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './SurveySpatialToolbar';
@@ -181,6 +182,10 @@ const SurveySpatialData = () => {
       surveyContext.critterDataLoader.isLoading;
   }
 
+  if (activeView === SurveySpatialDatasetViewEnum.MARKED_ANIMALS) {
+    isLoading = codesContext.codesDataLoader.isLoading || surveyContext.critterDataLoader.isLoading;
+  }
+
   const supplementaryLayers: ISurveyMapSupplementaryLayer[] = useMemo(() => {
     switch (activeView) {
       case SurveySpatialDatasetViewEnum.OBSERVATIONS:
@@ -200,6 +205,13 @@ const SurveySpatialData = () => {
           }
         ];
       case SurveySpatialDatasetViewEnum.MARKED_ANIMALS:
+        return [
+          {
+            layerName: 'Animal Captures',
+            popupRecordTitle: 'Animal Capture',
+            mapPoints: telemetryPoints
+          }
+        ];
       default:
         return [];
     }
@@ -219,9 +231,15 @@ const SurveySpatialData = () => {
             isLoading: false
           },
           {
+            label: `Animals (${telemetryPoints.length})`,
+            value: SurveySpatialDatasetViewEnum.MARKED_ANIMALS,
+            icon: mdiPaw,
+            isLoading: false
+          },
+          {
             label: `Telemetry (${telemetryPoints.length})`,
             value: SurveySpatialDatasetViewEnum.TELEMETRY,
-            icon: mdiBroadcast,
+            icon: mdiWifiMarker,
             isLoading: false
           }
         ]}
@@ -238,6 +256,10 @@ const SurveySpatialData = () => {
 
         {activeView === SurveySpatialDatasetViewEnum.TELEMETRY && (
           <SurveySpatialTelemetryDataTable isLoading={isLoading} />
+        )}
+
+        {activeView === SurveySpatialDatasetViewEnum.MARKED_ANIMALS && (
+          <SurveyCapturesDataTable isLoading={isLoading} />
         )}
       </Box>
     </Paper>

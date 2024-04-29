@@ -1,4 +1,4 @@
-import { mdiBroadcast, mdiChevronDown, mdiCog, mdiEye } from '@mdi/js';
+import { mdiChevronDown, mdiCog, mdiEye, mdiPaw, mdiWifiMarker } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -89,9 +89,15 @@ const SurveySpatialToolbar = (props: ISurveySptialToolbarProps) => {
           </ListItemIcon>
           <ListItemText>Observations</ListItemText>
         </MenuItem>
+        <MenuItem component={RouterLink} to="animals">
+          <ListItemIcon>
+            <Icon path={mdiPaw} size={1} />
+          </ListItemIcon>
+          <ListItemText>Animals</ListItemText>
+        </MenuItem>
         <MenuItem component={RouterLink} to="telemetry">
           <ListItemIcon>
-            <Icon path={mdiBroadcast} size={1} />
+            <Icon path={mdiWifiMarker} size={1} />
           </ListItemIcon>
           <ListItemText>Telemetry</ListItemText>
         </MenuItem>
