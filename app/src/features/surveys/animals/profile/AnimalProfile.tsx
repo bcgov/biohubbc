@@ -29,11 +29,20 @@ const AnimalProfile = () => {
 
   return (
     <>
-      <Paper sx={{ p: 3 }}>
-        <Typography variant="h2" mb={1}>
-          {critter.animal_id}&nbsp;
+      <Paper sx={{ p: 3, flex: '1 1 auto', maxWidth: '100%', width: '100%' }}>
+        <Typography
+          variant="h2"
+          sx={{
+            mb: 1,
+            display: 'block',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+            maxWidth: '100%',
+          }}>
+          {critter.animal_id}
         </Typography>
-        <Stack direction="row" spacing={2} display="flex">
+        <Stack direction="row" spacing={2}>
           <AnimalAttributeItem
             text={
               <ScientificNameTypography

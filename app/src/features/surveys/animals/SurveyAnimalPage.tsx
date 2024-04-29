@@ -44,6 +44,7 @@ const SurveyAnimalPage = () => {
     <Stack
       position="relative"
       height="100%"
+      flex="1 1 auto"
       overflow="hidden"
       p={0}
       m={0}
@@ -66,12 +67,12 @@ const SurveyAnimalPage = () => {
           p: 1,
           mr: 1
         }}>
-        <Box width="400px">
+        <Box minWidth="400px" maxWidth="30%">
           <SurveyAnimalList />
         </Box>
 
         {selectedAnimal && (
-          <Box flex="1 1 auto">
+          <Box maxWidth="75%" flex="1 1 auto">
             <AnimalProfileContainer />
           </Box>
         )}

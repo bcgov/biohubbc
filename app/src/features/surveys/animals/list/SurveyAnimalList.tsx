@@ -254,18 +254,19 @@ const SurveyAnimalList = () => {
         component={Stack}
         flexDirection="column"
         height="100%"
+        flex="1 1 auto"
         sx={{
           overflow: 'hidden'
         }}>
         <SurveyAnimalListToolbar animalCount={critters.length} checkboxSelectedIdsLength={checkboxSelectedIds.length} />
         <Divider flexItem />
         <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
-          <Box position="absolute" top="0" right="0" bottom="0" left="0">
+          <Box position="absolute" top="0" right="0" bottom="0" left="0" flex="1 1 auto">
             {surveyContext.critterDataLoader.isLoading || codesContext.codesDataLoader.isLoading ? (
               <SkeletonList />
             ) : (
-              <Stack height="100%" position="relative" sx={{ overflowY: 'auto' }}>
-                <Box display="flex" alignItems="center" px={2} height={55}>
+              <Stack height="100%" position="relative" sx={{ overflowY: 'auto', flex: '1 1 auto' }}>
+                <Box display="flex" alignItems="center" px={2} height={55} width='100%'>
                   <FormGroup>
                     <FormControlLabel
                       label={
@@ -301,7 +302,7 @@ const SurveyAnimalList = () => {
                   </FormGroup>
                 </Box>
                 <Divider flexItem></Divider>
-                <Box flex="1 1 auto" pt={1}>
+                <Box flex="1 1 auto">
                   {/* Display text if the sample site data loader has no items in it */}
                   {!critters.length && (
                     <Stack
@@ -323,7 +324,7 @@ const SurveyAnimalList = () => {
                     </Stack>
                   )}
                   {critters.map((critter) => (
-                    <Stack direction="row" display="flex" alignItems="center" overflow='hidden'>
+                    <Stack direction="row" display="flex" alignItems="center" overflow="hidden" flex='1 1 auto'>
                       <CritterListItem
                         key={`${critter.survey_critter_id}-${critter.critter_id}`}
                         critter={critter}

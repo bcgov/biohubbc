@@ -35,7 +35,7 @@ const CritterListItem = (props: ICritterListItemProps) => {
   return (
     <Stack
       sx={{
-        flex: '1 1 auto'
+        width: '100%'
       }}>
       <IconButton
         onClick={() => {
@@ -47,6 +47,8 @@ const CritterListItem = (props: ICritterListItemProps) => {
             });
         }}
         sx={{
+          pt: 0.5,
+          pb: 1.5,
           borderRadius: 0,
           flex: '1 1 auto',
           justifyContent: 'flex-start',
@@ -63,7 +65,8 @@ const CritterListItem = (props: ICritterListItemProps) => {
           alignItems="flex-start"
           sx={{
             px: 1.25,
-            flex: '1 1 auto'
+            flex: '1 1 auto',
+            maxWidth: '100%'
           }}>
           <Checkbox
             sx={{ mr: 0.5 }}
@@ -77,13 +80,12 @@ const CritterListItem = (props: ICritterListItemProps) => {
           />
           <Typography
             sx={{
-              display: 'block',
               whiteSpace: 'nowrap',
               textOverflow: 'ellipsis',
               overflow: 'hidden',
               textAlign: 'left',
-              flex: '0.8',
-              mt: 1
+              mt: 1,
+              flex: '1 1 auto'
             }}>
             <Typography
               component="span"
@@ -91,9 +93,12 @@ const CritterListItem = (props: ICritterListItemProps) => {
               sx={{
                 mr: 1,
                 fontWeight: 700,
+                whiteSpace: 'nowrap',
+                display: 'block',
                 textOverflow: 'ellipsis',
                 overflow: 'hidden',
-                textAlign: 'left'
+                textAlign: 'left',
+                width: '90%'
               }}>
               {critter.animal_id}
             </Typography>
@@ -101,8 +106,14 @@ const CritterListItem = (props: ICritterListItemProps) => {
               component="span"
               name={critter.itis_scientific_name}
               sx={{
-                color: `${grey[600]} !important`,
-                flex: '1 1 auto'
+                mr: 1,
+                whiteSpace: 'nowrap',
+                display: 'block',
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+                textAlign: 'left',
+                width: '85%',
+                color: `${grey[600]} !important`
               }}
             />
           </Typography>

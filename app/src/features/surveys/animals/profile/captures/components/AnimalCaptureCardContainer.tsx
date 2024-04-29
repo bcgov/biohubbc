@@ -1,4 +1,4 @@
-import { mdiChevronDown, mdiDotsVertical, mdiMapMarkerOutline, mdiPencilOutline } from '@mdi/js';
+import { mdiChevronDown, mdiDotsVertical, mdiMapMarker, mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -11,6 +11,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
@@ -86,12 +87,13 @@ const AnimalCaptureCardContainer = () => {
 
           return (
             <Accordion
+              component={Paper}
               disableGutters
-              elevation={0}
               sx={{
-                mx: 1,
-                border: 'none',
-                outline: 'none',
+                m: 2,
+                px: 1,
+                borderRadius: '5px',
+                background: grey[100],
                 '&.MuiAccordion-root:before': {
                   display: 'none'
                 }
@@ -103,7 +105,7 @@ const AnimalCaptureCardContainer = () => {
                   sx={{
                     flex: '1 1 auto',
                     mr: 1,
-                    py: 2,
+                    py: 1,
                     pr: 8.5,
                     minHeight: 55,
                     overflow: 'hidden',
@@ -116,14 +118,14 @@ const AnimalCaptureCardContainer = () => {
                       whiteSpace: 'nowrap'
                     }
                   }}>
-                  <Stack direction="row" gap={0.5} display="flex" alignItems="center">
+                  <Stack gap={0.5} display="flex">
                     <Typography fontWeight={700}>
                       {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, captureDate)}&nbsp;
                     </Typography>
                     <Typography color="textSecondary">{captureTime}</Typography>
                     <Box display="flex" alignItems="flex-end">
                       <Box sx={{ display: 'flex', alignItems: 'center', mr: 0.5 }}>
-                        <Icon size={0.8} color={grey[400]} title="Capture location" path={mdiMapMarkerOutline} />
+                        <Icon size={0.8} color={grey[400]} title="Capture location" path={mdiMapMarker} />
                       </Box>
                       <Typography color="textSecondary" variant="body2">
                         {capture.capture_location.longitude},&nbsp;
@@ -151,11 +153,12 @@ const AnimalCaptureCardContainer = () => {
       ) : (
         <Box
           flex="1 1 auto"
+          borderRadius="5px"
           minHeight="100px"
           display="flex"
           alignItems="center"
           justifyContent="center"
-          bgcolor={grey[200]}>
+          bgcolor="#fff">
           <Typography color="textSecondary">This animal has no captures</Typography>
         </Box>
       )}

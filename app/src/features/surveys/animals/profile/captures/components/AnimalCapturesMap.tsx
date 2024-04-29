@@ -46,8 +46,6 @@ const AnimalCapturesMap = () => {
     ]
   }));
 
-  console.log(staticLayers)
-
   return (
     <Box height={{ sm: 300, md: 500 }} position="relative">
       <SurveyMap isLoading={critterDataLoader.isLoading} staticLayers={staticLayers} supplementaryLayers={[]} />

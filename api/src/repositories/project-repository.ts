@@ -184,15 +184,9 @@ export class ProjectRepository extends BaseRepository {
         p.project_id,
         p.uuid,
         p.name as project_name,
-        p.objectives,
         p.start_date,
         p.end_date,
         p.comments,
-        p.geojson as geometry,
-        p.create_date,
-        p.create_user,
-        p.update_date,
-        p.update_user,
         p.revision_count,
         pp.project_programs
       FROM

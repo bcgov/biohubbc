@@ -38,7 +38,7 @@ const EditProjectForm = (props: IEditProjectForm) => {
   return (
     <Formik
       innerRef={formikRef}
-      initialValues={props.initialProjectData as unknown as IUpdateProjectRequest}
+      initialValues={props.initialProjectData as IUpdateProjectRequest}
       validationSchema={validationProjectYupSchema}
       validateOnBlur={false}
       validateOnChange={false}

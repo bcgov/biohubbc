@@ -10,8 +10,7 @@ import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { SkeletonHorizontalStack } from 'components/loading/SkeletonLoaders';
-import { CreateCaptureI18N } from 'constants/i18n';
-import { FormikProps } from 'formik';
+import { EditCaptureI18N } from 'constants/i18n';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
@@ -22,6 +21,7 @@ import { useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import AnimalCaptureForm from '../create/form/AnimalCaptureForm';
+import { FormikProps } from 'formik';
 
 // export const defaultAnimalCaptureFormValues: ICreateCaptureRequest = {
 //   capture: {
@@ -87,7 +87,7 @@ const EditCapturePage = () => {
   const capture = captureDataLoader.data;
 
   if (!capture) {
-    return <CircularProgress size={40} className='pageProgress'/>;
+    return <CircularProgress size={40} className="pageProgress" />;
   }
 
   const initialFormikValues: ICreateCaptureRequest = {
@@ -135,8 +135,8 @@ const EditCapturePage = () => {
   };
 
   const defaultCancelDialogProps = {
-    dialogTitle: CreateCaptureI18N.cancelTitle,
-    dialogText: CreateCaptureI18N.cancelText,
+    dialogTitle: EditCaptureI18N.cancelTitle,
+    dialogText: EditCaptureI18N.cancelText,
     open: false,
     onClose: () => {
       dialogContext.setYesNoDialog({ open: false });
@@ -152,8 +152,8 @@ const EditCapturePage = () => {
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
-      dialogTitle: CreateCaptureI18N.createErrorTitle,
-      dialogText: CreateCaptureI18N.createErrorText,
+      dialogTitle: EditCaptureI18N.createErrorTitle,
+      dialogText: EditCaptureI18N.createErrorText,
       onClose: () => {
         dialogContext.setErrorDialog({ open: false });
       },
@@ -251,7 +251,7 @@ const EditCapturePage = () => {
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
       <PageHeader
-        title="Create New Capture"
+        title="Edit Capture"
         breadCrumbJSX={
           animalId ? (
             <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
@@ -274,7 +274,7 @@ const EditCapturePage = () => {
                 {animalId}
               </Link>
               <Typography variant="body2" component="span" color="textSecondary" aria-current="page">
-                Create New Capture
+                Edit Capture
               </Typography>
             </Breadcrumbs>
           ) : (
