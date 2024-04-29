@@ -60,8 +60,7 @@ export const AnimalPageContextProvider = (props: PropsWithChildren<Record<never,
   const [selectedAnimalFromSurveyCritterId, setSelectedAnimalFromSurveyCritterId] = useState<number | null>(null);
 
   useEffect(() => {
-    // Only run if there is no selectedAnimal
-    if (surveyCrittersDataLoader.data && !selectedAnimal) {
+    if (surveyCrittersDataLoader.data) {
       const critter = surveyCrittersDataLoader.data.find(
         (critter) => critter.survey_critter_id === selectedAnimalFromSurveyCritterId
       );
@@ -96,7 +95,7 @@ export const AnimalPageContextProvider = (props: PropsWithChildren<Record<never,
       selectedAnimalFromSurveyCritterId,
       setSelectedAnimalFromSurveyCritterId
     }),
-    [selectedAnimal, isLoading, isDisabled, critterDataLoader, selectedAnimalFromSurveyCritterId]
+    [selectedAnimal, isLoading, isDisabled, critterDataLoader, selectedAnimalFromSurveyCritterId, setSelectedAnimalFromSurveyCritterId, setSelectedAnimal]
   );
 
   return <AnimalPageContext.Provider value={animalPageContext}>{props.children}</AnimalPageContext.Provider>;

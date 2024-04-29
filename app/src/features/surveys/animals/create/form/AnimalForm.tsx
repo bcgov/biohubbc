@@ -19,6 +19,7 @@ const AnimalForm = (props: IAnimalFormProps) => {
 
   return (
     <Formik
+    enableReinitialize
       innerRef={props.formikRef}
       initialValues={props.initialAnimalData as ICreateEditAnimalRequest}
       validationSchema={animalEditYupSchemas}

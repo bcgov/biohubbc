@@ -82,7 +82,7 @@ const CritterListItem = (props: ICritterListItemProps) => {
               textOverflow: 'ellipsis',
               overflow: 'hidden',
               textAlign: 'left',
-              flex: '0.7',
+              flex: '0.8',
               mt: 1
             }}>
             <Typography
@@ -92,11 +92,9 @@ const CritterListItem = (props: ICritterListItemProps) => {
               sx={{
                 mr: 1,
                 fontWeight: 700,
-                display: 'block',
                 textOverflow: 'ellipsis',
                 overflow: 'hidden',
-                textAlign: 'left',
-                flex: '1 1 auto'
+                textAlign: 'left'
               }}>
               {critter.animal_id}
             </Typography>

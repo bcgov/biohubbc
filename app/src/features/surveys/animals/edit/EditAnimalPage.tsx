@@ -40,23 +40,18 @@ const EditAnimalPage = () => {
   const animalPageContext = useAnimalPageContext();
 
   const { projectId, surveyId } = surveyContext;
-  const critter = animalPageContext.critterDataLoader.data;
 
-  if (!animalPageContext.selectedAnimal) {
+  // Update the selected animal based on url Params
+  if (surveyCritterId) {
     animalPageContext.setSelectedAnimalFromSurveyCritterId(surveyCritterId);
   }
 
-  if (!critter) {
+  const critter = animalPageContext.critterDataLoader.data;
+
+  // Loading spinner if the data later hasn't updated to the selected animal yet
+  if (!critter || animalPageContext.selectedAnimal?.critterbase_critter_id !== critter.critter_id) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
-
-  const initialAnimalData = {
-    nickname: critter.animal_id,
-    species: { tsn: critter.itis_tsn, scientificName: critter.itis_scientific_name, commonName: '' },
-    ecological_units: [],
-    description: '',
-    wildlife_health_id: critter.wlh_id
-  } as ICreateEditAnimalRequest;
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
@@ -214,7 +209,15 @@ const EditAnimalPage = () => {
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper sx={{ p: 5 }}>
           <AnimalForm
-            initialAnimalData={initialAnimalData}
+            initialAnimalData={
+              {
+                nickname: critter.animal_id,
+                species: { tsn: critter.itis_tsn, scientificName: critter.itis_scientific_name, commonName: '' },
+                ecological_units: [],
+                description: '',
+                wildlife_health_id: critter.wlh_id
+              } as ICreateEditAnimalRequest
+            }
             handleSubmit={(formikData) => handleSubmit(formikData as ICreateEditAnimalRequest)}
             formikRef={formikRef}
           />
