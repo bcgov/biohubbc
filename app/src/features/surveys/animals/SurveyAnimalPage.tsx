@@ -60,7 +60,7 @@ const SurveyAnimalPage = () => {
       />
       <Stack
         direction="row"
-        gap={2}
+        gap={1.5}
         sx={{
           flex: '1 1 auto',
           p: 1,

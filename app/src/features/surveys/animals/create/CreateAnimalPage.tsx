@@ -25,7 +25,8 @@ export const defaultAnimalDataFormValues: ICreateEditAnimalRequest = {
   nickname: '',
   species: null,
   ecological_units: [],
-  description: ''
+  description: '',
+  wildlife_health_id: ''
 };
 
 const CreateAnimalPage = () => {

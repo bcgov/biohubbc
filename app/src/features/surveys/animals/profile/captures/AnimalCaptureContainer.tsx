@@ -7,9 +7,7 @@ const AnimalCaptureContainer = () => {
     <>
       <AnimalCapturesToolbar />
       <AnimalCapturesMap />
-      {/* <Paper variant="outlined" sx={{ p: 2 }}> */}
       <AnimalCaptureCardContainer />
-      {/* </Paper> */}
     </>
   );
 };

@@ -6,6 +6,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useAnimalPageContext, useSurveyContext } from 'hooks/useContext';
 import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import ScientificNameTypography from '../../profile/ScientificNameTypography';
 
 interface ICritterListItemProps {
   critter: ISimpleCritterWithInternalId;
@@ -32,69 +33,85 @@ const CritterListItem = (props: ICritterListItemProps) => {
   }
 
   return (
-    <>
-      <Stack
-        spacing={1}
+    <Stack
+      sx={{
+        flex: '1 1 auto'
+      }}>
+      <IconButton
+        onClick={() => {
+          // Avoid unnecessary reloads
+          if (critter.survey_critter_id !== selectedAnimal?.survey_critter_id)
+            setSelectedAnimal({
+              survey_critter_id: critter.survey_critter_id,
+              critterbase_critter_id: critter.critter_id
+            });
+        }}
         sx={{
+          borderRadius: 0,
           flex: '1 1 auto',
-          display: 'flex',
-          px: 1,
-          py: 0.25
+          justifyContent: 'flex-start',
+          '&:focus': {
+            outline: 'none'
+          },
+          '& .MuiTypography-root': {
+            color: 'text.primary'
+          },
+          bgcolor: selectedAnimal?.survey_critter_id === critter.survey_critter_id ? grey[100] : undefined
         }}>
-        <IconButton
-          onClick={() => {
-            // Avoid unnecessary reloads
-            if (critter.survey_critter_id !== selectedAnimal?.survey_critter_id)
-              setSelectedAnimal({
-                survey_critter_id: critter.survey_critter_id,
-                critterbase_critter_id: critter.critter_id
-              });
-          }}
+        <Stack
+          flexDirection="row"
+          alignItems="flex-start"
           sx={{
-            borderRadius: '5px',
-            flex: '1 1 auto',
-            justifyContent: 'flex-start',
-            '&:focus': {
-              outline: 'none'
-            },
-            '& .MuiTypography-root': {
-              color: 'text.primary'
-            },
-            bgcolor: selectedAnimal?.survey_critter_id === critter.survey_critter_id ? grey[100] : undefined
+            px: 1.25,
+            flex: '1 1 auto'
           }}>
-          <Stack
-            flexDirection="row"
-            alignItems="center"
+          <Checkbox
+            sx={{ mr: 0.5 }}
+            edge="start"
+            checked={isChecked}
+            onClick={(event) => {
+              event.stopPropagation();
+              handleCheckboxChange(critter.survey_critter_id);
+            }}
+            inputProps={{ 'aria-label': 'controlled' }}
+          />
+          <Typography
             sx={{
-              gap: 0.25,
-              px: 1,
-              flex: '1 1 auto'
+              display: 'block',
+              whiteSpace: 'nowrap',
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+              textAlign: 'left',
+              flex: '0.7',
+              mt: 1
             }}>
-            <Checkbox
-              sx={{ mr: 0.5 }}
-              edge="start"
-              checked={isChecked}
-              onClick={(event) => {
-                event.stopPropagation();
-                handleCheckboxChange(critter.survey_critter_id);
-              }}
-              inputProps={{ 'aria-label': 'controlled' }}
-            />
             <Typography
+              component="span"
               textAlign="left"
               variant="body2"
               sx={{
-                flex: '1 1 auto',
+                mr: 1,
                 fontWeight: 700,
+                display: 'block',
+                textOverflow: 'ellipsis',
                 overflow: 'hidden',
-                textOverflow: 'ellipsis'
+                textAlign: 'left',
+                flex: '1 1 auto'
               }}>
               {critter.animal_id}
             </Typography>
-          </Stack>
-        </IconButton>
-      </Stack>
-    </>
+            <ScientificNameTypography
+              component="span"
+              name={critter.itis_scientific_name}
+              sx={{
+                color: `${grey[600]} !important`,
+                flex: '1 1 auto'
+              }}
+            />
+          </Typography>
+        </Stack>
+      </IconButton>
+    </Stack>
   );
 };
 

@@ -1,8 +1,8 @@
 import { mdiCardTextOutline, mdiInformationOutline, mdiPlusBoxOutline } from '@mdi/js';
+import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { red } from '@mui/material/colors';
 import green from '@mui/material/colors/green';
-import grey from '@mui/material/colors/grey';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -20,12 +20,16 @@ const AnimalProfile = () => {
   const critter = critterDataLoader.data;
 
   if (!critter || critterDataLoader.isLoading) {
-    return <CircularProgress size={40} />;
+    return (
+      <Box flex="1 1 auto" display="flex" justifyContent="center" alignItems="center">
+        <CircularProgress size={40} sx={{ flex: '1 1 auto', position: 'absolute' }} />
+      </Box>
+    );
   }
 
   return (
-    <Stack bgcolor={grey[100]} spacing={2} height="100%">
-      <Paper sx={{ p: 2 }}>
+    <>
+      <Paper sx={{ p: 3 }}>
         <Typography variant="h2" mb={1}>
           {critter.animal_id}&nbsp;
         </Typography>
@@ -44,15 +48,15 @@ const AnimalProfile = () => {
           {critter.wlh_id && <AnimalAttributeItem text={critter.wlh_id} startIcon={mdiPlusBoxOutline} />}
           {critter.sex && <AnimalAttributeItem text={critter.sex} startIcon={mdiCardTextOutline} />}
           <ColouredRectangleChip
-            label={critter.mortality.length ? 'Alive' : 'Deceased'}
-            colour={critter.mortality.length ? green : red}
+            label={critter.mortality.length ? 'Deceased' : 'Alive'}
+            colour={critter.mortality.length ? red : green}
           />
         </Stack>
       </Paper>
       <Paper>
         <AnimalCaptureContainer />
       </Paper>
-    </Stack>
+    </>
   );
 };
 

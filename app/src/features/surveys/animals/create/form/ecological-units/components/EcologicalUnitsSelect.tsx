@@ -77,7 +77,7 @@ const EcologicalUnitsSelect = (props: IEcologicalUnitsSelect) => {
                     label: option.category_name
                   })) ?? []
                 }
-                // loading={ecologicalUnitsDataLoader.isLoading}
+                loading={ecologicalUnitsDataLoader.isLoading}
                 required
                 sx={{
                   flex: '1 1 auto'
@@ -93,7 +93,7 @@ const EcologicalUnitsSelect = (props: IEcologicalUnitsSelect) => {
                 } // Need to get codes for displaying name
                 options={
                   units
-                    .find(
+                    ?.find(
                       (option) => option.collection_category_id === values.ecological_units[index].ecological_unit_id
                     )
                     ?.options.map((option) => ({
@@ -103,7 +103,6 @@ const EcologicalUnitsSelect = (props: IEcologicalUnitsSelect) => {
                 }
                 disabled={Boolean(!values.ecological_units[index].ecological_unit_id)}
                 required
-                loading={ecologicalUnitsDataLoader.isLoading}
                 sx={{
                   flex: '1 1 auto'
                 }}

@@ -8,7 +8,8 @@ export interface ICreateEditAnimalRequest {
   ecological_units: {
     value: number;
     ecological_unit_id: string;
-  }[];
+  }[],
+  wildlife_health_id: string;
 }
 
 export interface IMarkingPostData {

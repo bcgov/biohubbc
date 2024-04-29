@@ -6,7 +6,7 @@ const AnimalProfileContainer = () => {
   // const { setSelectedAnimal } = useAnimalPageContext();
 
   return (
-    <Box component={Stack} flexDirection="column" flex="1 1 auto" height="100%">
+    <Box component={Stack} spacing={1.5} flexDirection="column" flex="1 1 auto" height='100%'>
       <AnimalProfile />
     </Box>
   );

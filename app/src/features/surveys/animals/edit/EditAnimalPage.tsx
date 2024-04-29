@@ -14,8 +14,8 @@ import { AnimalSex } from 'features/surveys/view/survey-animals/animal';
 import { FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
@@ -23,7 +23,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import AnimalForm from '../create/form/AnimalForm';
 
 const EditAnimalPage = () => {
-  const biohubApi = useBiohubApi();
+  const critterbaseApi = useCritterbaseApi();
 
   const urlParams: Record<string, string | number | undefined> = useParams();
   const surveyCritterId: number | undefined = Number(urlParams['survey_critter_id']);
@@ -54,7 +54,8 @@ const EditAnimalPage = () => {
     nickname: critter.animal_id,
     species: { tsn: critter.itis_tsn, scientificName: critter.itis_scientific_name, commonName: '' },
     ecological_units: [],
-    description: ''
+    description: '',
+    wildlife_health_id: critter.wlh_id
   } as ICreateEditAnimalRequest;
 
   const handleCancel = () => {
@@ -131,9 +132,9 @@ const EditAnimalPage = () => {
         return;
       }
 
-      const response = await biohubApi.survey.createCritterAndAddToSurvey(projectId, surveyId, {
-        critter_id: undefined,
-        wlh_id: undefined,
+      const response = await critterbaseApi.critters.updateCritter({
+        critter_id: critter.critter_id,
+        wlh_id: values.wildlife_health_id,
         animal_id: values.nickname,
         sex: AnimalSex.MALE,
         itis_tsn: values.species.tsn
@@ -147,7 +148,6 @@ const EditAnimalPage = () => {
       }
 
       setEnableCancelCheck(false);
-      console.log(values);
 
       // Refresh the context, so the next page loads with the latest data
       surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);

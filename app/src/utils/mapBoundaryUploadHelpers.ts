@@ -2,7 +2,7 @@ import { gpx, kml } from '@tmcw/togeojson';
 import bbox from '@turf/bbox';
 import truncate from '@turf/truncate';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
-import { BBox, Feature, GeoJsonProperties, Geometry } from 'geojson';
+import { BBox, Feature, GeoJsonProperties, Geometry, Position } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
 import shp from 'shpjs';
 import { v4 as uuidv4 } from 'uuid';
@@ -253,12 +253,42 @@ export const latLngBoundsFromBoundingBox = (boundingBox: BBox): LatLngBoundsExpr
 };
 
 /**
+ * Calculates the bounding box from a set of coordinates
+ *
+ * @param coordinates
+ * @returns
+ */
+const calculateBoundingBoxFromPoints = (features: Feature[]): LatLngBoundsExpression => {
+  const coordinates = features
+    .map((feature) => (feature.geometry.type === 'Point' ? feature.geometry.coordinates : undefined))
+    .filter((pos) => pos !== undefined) as Position[];
+
+  let [minLon, minLat] = coordinates[0];
+  let [maxLon, maxLat] = coordinates[0];
+
+  for (const [lon, lat] of coordinates.slice(1)) {
+    minLon = Math.min(minLon, lon);
+    minLat = Math.min(minLat, lat);
+    maxLon = Math.max(maxLon, lon);
+    maxLat = Math.max(maxLat, lat);
+  }
+
+  return [
+    [minLat - 0.5, minLon - 0.5],
+    [maxLat + 0.5, maxLon + 0.5]
+  ];
+};
+/**
  * Calculates the bounding box that encompasses all of the given features
  *
  * @param features The features used to calculate the map bounds
  * @returns The Lat/Long bounding box, or undefined if a bounding box cannot be calculated.
  */
 export const calculateUpdatedMapBounds = (features: Feature[]): LatLngBoundsExpression | undefined => {
+  if (features.every((feature) => feature.geometry.type === 'Point')) {
+    return calculateBoundingBoxFromPoints(features);
+  }
+
   const bboxCoords = calculateFeatureBoundingBox(features);
 
   if (!bboxCoords) {

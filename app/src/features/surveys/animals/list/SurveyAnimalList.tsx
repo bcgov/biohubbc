@@ -265,7 +265,7 @@ const SurveyAnimalList = () => {
               <SkeletonList />
             ) : (
               <Stack height="100%" position="relative" sx={{ overflowY: 'auto' }}>
-                <Box flex="0 0 auto" display="flex" alignItems="center" px={2} height={55}>
+                <Box display="flex" alignItems="center" px={2} height={55}>
                   <FormGroup>
                     <FormControlLabel
                       label={
@@ -312,6 +312,7 @@ const SurveyAnimalList = () => {
                       alignItems="center"
                       justifyContent="center"
                       flex="1 1 auto"
+                      overflow="hidden"
                       position="absolute"
                       top={0}
                       right={0}
@@ -322,7 +323,7 @@ const SurveyAnimalList = () => {
                     </Stack>
                   )}
                   {critters.map((critter) => (
-                    <Stack direction="row" display="flex" alignItems="center">
+                    <Stack direction="row" display="flex" alignItems="center" overflow='hidden'>
                       <CritterListItem
                         key={`${critter.survey_critter_id}-${critter.critter_id}`}
                         critter={critter}

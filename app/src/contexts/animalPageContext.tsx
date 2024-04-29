@@ -82,8 +82,6 @@ export const AnimalPageContextProvider = (props: PropsWithChildren<Record<never,
     if (selectedAnimal) {
       critterDataLoader.refresh(selectedAnimal.critterbase_critter_id);
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAnimal]);
 
   const animalPageContext: IAnimalPageContext = useMemo(

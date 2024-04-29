@@ -20,9 +20,9 @@ const EcologicalUnitsForm = () => {
       render={(arrayHelpers: FieldArrayRenderProps) => (
         <>
           {values.species && values.ecological_units.length > 0 && (
-          <Stack mb={3} spacing={1}>
-            <EcologicalUnitsSelect species={values.species} arrayHelpers={arrayHelpers} />
-          </Stack>
+            <Stack mb={3} spacing={1}>
+              <EcologicalUnitsSelect species={values.species} arrayHelpers={arrayHelpers} />
+            </Stack>
           )}
           <Button
             color="primary"

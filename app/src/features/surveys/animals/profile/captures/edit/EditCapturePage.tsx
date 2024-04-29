@@ -1,0 +1,328 @@
+import LoadingButton from '@mui/lab/LoadingButton';
+import { CircularProgress } from '@mui/material';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import Link from '@mui/material/Link';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import PageHeader from 'components/layout/PageHeader';
+import { SkeletonHorizontalStack } from 'components/loading/SkeletonLoaders';
+import { CreateCaptureI18N } from 'constants/i18n';
+import { FormikProps } from 'formik';
+import * as History from 'history';
+import { APIError } from 'hooks/api/useAxios';
+import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import useDataLoader from 'hooks/useDataLoader';
+import { ICreateCaptureRequest } from 'interfaces/useCritterApi.interface';
+import { useRef, useState } from 'react';
+import { Prompt, useHistory, useParams } from 'react-router';
+import { Link as RouterLink } from 'react-router-dom';
+import AnimalCaptureForm from '../create/form/AnimalCaptureForm';
+
+// export const defaultAnimalCaptureFormValues: ICreateCaptureRequest = {
+//   capture: {
+//     capture_id: '',
+//     capture_timestamp: '',
+//     release_timestamp: '',
+//     capture_comment: '',
+//     release_comment: '',
+//     capture_location: {
+//       type: 'Feature',
+//       geometry: { type: 'Point', coordinates: [0, 0] },
+//       properties: { coordinate_uncertainty: 'm' }
+//     },
+//     release_location: {
+//       type: 'Feature',
+//       geometry: { type: 'Point', coordinates: [0, 0] },
+//       properties: { coordinate_uncertainty: 'm' }
+//     }
+//   },
+//   markings: [],
+//   measurements: {
+//     quantitative: [],
+//     qualitative: []
+//   }
+// };
+
+const EditCapturePage = () => {
+  const critterbaseApi = useCritterbaseApi();
+
+  const urlParams: Record<string, string | number | undefined> = useParams();
+  const surveyCritterId: number | undefined = Number(urlParams['survey_critter_id']);
+  const captureId: string | undefined = String(urlParams['capture_id']);
+
+  const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const history = useHistory();
+
+  const formikRef = useRef<FormikProps<ICreateCaptureRequest>>(null);
+
+  const surveyContext = useSurveyContext();
+  const projectContext = useProjectContext();
+  const dialogContext = useDialogContext();
+  const animalPageContext = useAnimalPageContext();
+
+  const captureDataLoader = useDataLoader(() => critterbaseApi.capture.getCapture(captureId));
+
+  if (!captureDataLoader.data) {
+    captureDataLoader.load();
+  }
+
+  console.log(captureDataLoader.data);
+
+  //   const capture = animalPageContext.critterDataLoader.
+
+  //   capture_id?: string;
+  //   capture_timestamp: string;
+  //   release_timestamp: string;
+  //   capture_comment: string;
+  //   release_comment: string;
+  //   capture_location: Feature;
+  //   release_location: Feature;
+
+  const capture = captureDataLoader.data;
+
+  if (!capture) {
+    return <CircularProgress size={40} className='pageProgress'/>;
+  }
+
+  const initialFormikValues: ICreateCaptureRequest = {
+    capture: {
+      capture_id: capture.capture_id,
+      capture_comment: capture.capture_comment ?? '',
+      capture_timestamp: capture.capture_timestamp,
+      capture_location: {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [capture.capture_location.longitude, capture.capture_location.latitude]
+        },
+        properties: {}
+      },
+      release_location: {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [capture.release_location?.longitude ?? 0, capture.release_location?.latitude ?? 0]
+        },
+        properties: {}
+      },
+      release_timestamp: capture.release_timestamp ?? '',
+      release_comment: capture.release_comment ?? ''
+    },
+    markings: [],
+    measurements: {
+      quantitative: [],
+      qualitative: []
+    }
+  };
+
+  const { projectId, surveyId } = surveyContext;
+
+  // If the user has refreshed the page and cleared the context, or come to this page externally from a link,
+  // use the url params to set the select animal in the context. The context then requests critter data from critterbase.
+  if (!animalPageContext.selectedAnimal) {
+    animalPageContext.setSelectedAnimalFromSurveyCritterId(surveyCritterId);
+  }
+
+  const handleCancel = () => {
+    dialogContext.setYesNoDialog(defaultCancelDialogProps);
+    history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`);
+  };
+
+  const defaultCancelDialogProps = {
+    dialogTitle: CreateCaptureI18N.cancelTitle,
+    dialogText: CreateCaptureI18N.cancelText,
+    open: false,
+    onClose: () => {
+      dialogContext.setYesNoDialog({ open: false });
+    },
+    onNo: () => {
+      dialogContext.setYesNoDialog({ open: false });
+    },
+    onYes: () => {
+      dialogContext.setYesNoDialog({ open: false });
+      history.push(`/admin/projects/${projectId}`);
+    }
+  };
+
+  const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    dialogContext.setErrorDialog({
+      dialogTitle: CreateCaptureI18N.createErrorTitle,
+      dialogText: CreateCaptureI18N.createErrorText,
+      onClose: () => {
+        dialogContext.setErrorDialog({ open: false });
+      },
+      onOk: () => {
+        dialogContext.setErrorDialog({ open: false });
+      },
+      ...textDialogProps,
+      open: true
+    });
+  };
+
+  /**
+   * Intercepts all navigation attempts (when used with a `Prompt`).
+   *
+   * Returning true allows the navigation, returning false prevents it.
+   *
+   * @param {History.Location} location
+   * @return {*}
+   */
+  const handleLocationChange = (location: History.Location) => {
+    if (!dialogContext.yesNoDialogProps.open) {
+      // If the cancel dialog is not open: open it
+      dialogContext.setYesNoDialog({
+        ...defaultCancelDialogProps,
+        onYes: () => {
+          dialogContext.setYesNoDialog({ open: false });
+          history.push(location.pathname);
+        },
+        open: true
+      });
+      return false;
+    }
+
+    // If the cancel dialog is already open and another location change action is triggered: allow it
+    return true;
+  };
+
+  /**
+   * Creates an Capture
+   *
+   * @return {*}
+   */
+  const handleSubmit = async (values: ICreateCaptureRequest) => {
+    setIsSaving(true);
+    try {
+      const critterbaseCritterId = animalPageContext.selectedAnimal?.critterbase_critter_id;
+      if (!values || !critterbaseCritterId || values.capture.capture_location.geometry.type !== 'Point') {
+        return;
+      }
+
+      const response = await critterbaseApi.capture.createCapture({
+        capture_id: undefined,
+        capture_timestamp: new Date(values.capture.capture_timestamp),
+        release_timestamp: new Date(values.capture.release_timestamp),
+        capture_comment: values.capture.capture_comment,
+        release_comment: values.capture.release_comment,
+        capture_location: {
+          longitude: values.capture.capture_location.geometry.coordinates[0],
+          latitude: values.capture.capture_location.geometry.coordinates[1],
+          coordinate_uncertainty: 0,
+          coordinate_uncertainty_units: 'm'
+        },
+        release_location: values.capture.release_location,
+        critter_id: critterbaseCritterId
+      });
+
+      if (!response) {
+        showCreateErrorDialog({
+          dialogError: 'The response from the server was null, or did not contain a survey ID.'
+        });
+        return;
+      }
+
+      setEnableCancelCheck(false);
+
+      // Refresh page
+      animalPageContext.critterDataLoader.refresh(critterbaseCritterId);
+
+      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`);
+    } catch (error) {
+      const apiError = error as APIError;
+      showCreateErrorDialog({
+        dialogTitle: 'Error Creating Survey',
+        dialogError: apiError?.message,
+        dialogErrorDetails: apiError?.errors
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const animalId = animalPageContext.critterDataLoader.data?.animal_id;
+
+  return (
+    <>
+      <Prompt when={enableCancelCheck} message={handleLocationChange} />
+      <PageHeader
+        title="Create New Capture"
+        breadCrumbJSX={
+          animalId ? (
+            <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
+              <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectId}/`}>
+                {projectContext.projectDataLoader.data?.projectData.project.project_name}
+              </Link>
+              <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectId}/surveys/${surveyId}`}>
+                {surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name}
+              </Link>
+              <Link
+                component={RouterLink}
+                underline="hover"
+                to={`/admin/projects/${projectId}/surveys/${surveyId}/animals`}>
+                Manage Animals
+              </Link>
+              <Link
+                component={RouterLink}
+                underline="hover"
+                to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`}>
+                {animalId}
+              </Link>
+              <Typography variant="body2" component="span" color="textSecondary" aria-current="page">
+                Create New Capture
+              </Typography>
+            </Breadcrumbs>
+          ) : (
+            <SkeletonHorizontalStack />
+          )
+        }
+        buttonJSX={
+          <Stack flexDirection="row" gap={1}>
+            <LoadingButton
+              loading={isSaving}
+              color="primary"
+              variant="contained"
+              onClick={() => formikRef.current?.submitForm()}>
+              Save and Exit
+            </LoadingButton>
+            <Button disabled={isSaving} color="primary" variant="outlined" onClick={handleCancel}>
+              Cancel
+            </Button>
+          </Stack>
+        }
+      />
+
+      <Container maxWidth="xl" sx={{ py: 3 }}>
+        <Paper sx={{ p: 5 }}>
+          <AnimalCaptureForm
+            initialCaptureData={initialFormikValues}
+            handleSubmit={(formikData) => handleSubmit(formikData as ICreateCaptureRequest)}
+            formikRef={formikRef}
+          />
+          <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
+            <LoadingButton
+              loading={isSaving}
+              type="submit"
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                formikRef.current?.submitForm();
+              }}>
+              Save and Exit
+            </LoadingButton>
+            <Button disabled={isSaving} variant="outlined" color="primary" onClick={handleCancel}>
+              Cancel
+            </Button>
+          </Stack>
+        </Paper>
+      </Container>
+    </>
+  );
+};
+
+export default EditCapturePage;

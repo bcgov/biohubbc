@@ -9,6 +9,7 @@ import CreateAnimalPage from './create/CreateAnimalPage';
 import EditAnimalPage from './edit/EditAnimalPage';
 import CreateCapturePage from './profile/captures/create/CreateCapturePage';
 import SurveyAnimalPage from './SurveyAnimalPage';
+import EditCapturePage from './profile/captures/edit/EditCapturePage';
 
 /**
  * Router for all `/admin/projects/:id/surveys/:survey_id/animals/*` pages.
@@ -69,6 +70,19 @@ const AnimalRouter: React.FC = () => (
         validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
         <DialogContextProvider>
           <CreateCapturePage />
+        </DialogContextProvider>
+      </ProjectRoleRouteGuard>
+    </RouteWithTitle>
+
+    <RouteWithTitle
+      exact
+      path={'/admin/projects/:id/surveys/:survey_id/animals/:survey_critter_id/capture/:capture_id/edit'}
+      title={getTitle('Edit Capture')}>
+      <ProjectRoleRouteGuard
+        validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+        validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+        <DialogContextProvider>
+          <EditCapturePage />
         </DialogContextProvider>
       </ProjectRoleRouteGuard>
     </RouteWithTitle>
