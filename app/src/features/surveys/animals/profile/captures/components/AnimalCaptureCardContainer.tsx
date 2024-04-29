@@ -80,73 +80,85 @@ const AnimalCaptureCardContainer = () => {
         </Menu>
       )}
 
-      {captures.map((capture) => {
-        const [captureDate, captureTime] = capture.capture_timestamp.split(' ');
+      {captures.length ? (
+        captures.map((capture) => {
+          const [captureDate, captureTime] = capture.capture_timestamp.split(' ');
 
-        return (
-          <Accordion
-            disableGutters
-            elevation={0}
-            sx={{
-              mx: 1,
-              border: 'none',
-              outline: 'none',
-              '&.MuiAccordion-root:before': {
-                display: 'none'
-              }
-            }}>
-            <Box display="flex" alignItems="center">
-              <AccordionSummary
-                expandIcon={<Icon path={mdiChevronDown} size={1} />}
-                aria-controls="panel1bh-content"
-                sx={{
-                  flex: '1 1 auto',
-                  mr: 1,
-                  py: 2,
-                  pr: 8.5,
-                  minHeight: 55,
-                  overflow: 'hidden',
-                  border: 0,
-                  '& .MuiAccordionSummary-content': {
-                    flex: '1 1 auto',
-                    py: 0,
-                    pl: 0,
-                    overflow: 'hidden',
-                    whiteSpace: 'nowrap'
-                  }
-                }}>
-                <Stack direction="row" gap={0.5} display="flex" alignItems="center">
-                  <Typography fontWeight={700}>
-                    {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, captureDate)}&nbsp;
-                  </Typography>
-                  <Typography color="textSecondary">{captureTime}</Typography>
-                  <Box display="flex" alignItems="flex-end">
-                    <Box sx={{ display: 'flex', alignItems: 'center', mr: 0.5 }}>
-                      <Icon size={0.8} color={grey[400]} title="Capture location" path={mdiMapMarkerOutline} />
-                    </Box>
-                    <Typography color="textSecondary" variant="body2">
-                      {capture.capture_location.longitude},&nbsp;
-                      {capture.capture_location.latitude}
-                    </Typography>
-                  </Box>
-                </Stack>
-              </AccordionSummary>
-              <IconButton
-                sx={{ position: 'absolute', right: '24px' }}
-                edge="end"
-                onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                  handleCaptureMenuClick(event, capture.capture_id)
+          return (
+            <Accordion
+              disableGutters
+              elevation={0}
+              sx={{
+                mx: 1,
+                border: 'none',
+                outline: 'none',
+                '&.MuiAccordion-root:before': {
+                  display: 'none'
                 }
-                aria-label="sample-site-settings">
-                <Icon path={mdiDotsVertical} size={1}></Icon>
-              </IconButton>
-            </Box>
-            <AccordionDetails>
-              <CaptureCardDetails capture={capture} />
-            </AccordionDetails>
-          </Accordion>
-        );
-      })}
+              }}>
+              <Box display="flex" alignItems="center">
+                <AccordionSummary
+                  expandIcon={<Icon path={mdiChevronDown} size={1} />}
+                  aria-controls="panel1bh-content"
+                  sx={{
+                    flex: '1 1 auto',
+                    mr: 1,
+                    py: 2,
+                    pr: 8.5,
+                    minHeight: 55,
+                    overflow: 'hidden',
+                    border: 0,
+                    '& .MuiAccordionSummary-content': {
+                      flex: '1 1 auto',
+                      py: 0,
+                      pl: 0,
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap'
+                    }
+                  }}>
+                  <Stack direction="row" gap={0.5} display="flex" alignItems="center">
+                    <Typography fontWeight={700}>
+                      {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, captureDate)}&nbsp;
+                    </Typography>
+                    <Typography color="textSecondary">{captureTime}</Typography>
+                    <Box display="flex" alignItems="flex-end">
+                      <Box sx={{ display: 'flex', alignItems: 'center', mr: 0.5 }}>
+                        <Icon size={0.8} color={grey[400]} title="Capture location" path={mdiMapMarkerOutline} />
+                      </Box>
+                      <Typography color="textSecondary" variant="body2">
+                        {capture.capture_location.longitude},&nbsp;
+                        {capture.capture_location.latitude}
+                      </Typography>
+                    </Box>
+                  </Stack>
+                </AccordionSummary>
+                <IconButton
+                  sx={{ position: 'absolute', right: '24px' }}
+                  edge="end"
+                  onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
+                    handleCaptureMenuClick(event, capture.capture_id)
+                  }
+                  aria-label="sample-site-settings">
+                  <Icon path={mdiDotsVertical} size={1}></Icon>
+                </IconButton>
+              </Box>
+              <AccordionDetails>
+                <CaptureCardDetails capture={capture} />
+              </AccordionDetails>
+            </Accordion>
+          );
+        })
+      ) : (
+        <Box
+          flex="1 1 auto"
+          minHeight="100px"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          bgcolor={grey[200]}>
+          <Typography color="textSecondary">This animal has no captures</Typography>
+        </Box>
+      )}
     </>
   );
 };

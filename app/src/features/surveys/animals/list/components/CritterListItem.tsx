@@ -88,7 +88,6 @@ const CritterListItem = (props: ICritterListItemProps) => {
             <Typography
               component="span"
               textAlign="left"
-              variant="body2"
               sx={{
                 mr: 1,
                 fontWeight: 700,
