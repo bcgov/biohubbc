@@ -1,4 +1,4 @@
-import { mdiCalendarRangeOutline, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Alert from '@mui/material/Alert';
@@ -9,13 +9,10 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import Collapse from '@mui/material/Collapse';
-import { grey } from '@mui/material/colors';
+import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
@@ -29,6 +26,7 @@ import { TransitionGroup } from 'react-transition-group';
 import { getCodesName } from 'utils/Utils';
 import EditSamplingMethod from '../../edit/form/EditSamplingMethod';
 import CreateSamplingMethod from './CreateSamplingMethod';
+import SamplingSiteListPeriod from '../../list/SamplingSiteListPeriod';
 
 /**
  * Returns a form for creating and editing a sampling method
@@ -145,81 +143,74 @@ const SamplingMethodForm = () => {
             </Alert>
           )}
           <Stack component={TransitionGroup} gap={1.5}>
-            {values.sample_methods.map((item, index) => {
-              return (
-                <Collapse key={`sample_method_${item.method_lookup_id || 0}`}>
-                  <Card
-                    variant="outlined"
+            {values.sample_methods.map((item, index) => (
+              <Collapse key={`sample_method_${item.method_lookup_id || Math.random()}`}>
+                <Card
+                  variant="outlined"
+                  sx={{
+                    background: grey[100],
+                    '& .MuiCardHeader-root': {
+                      pb: 1
+                    }
+                  }}>
+                  <CardHeader
+                    title={
+                      <>
+                        {getCodesName(codesContext.codesDataLoader.data, 'sample_methods', item.method_lookup_id || 0)}
+                        <Typography component="span" variant="body2" color="textSecondary" ml={1}>
+                          {getCodesName(
+                            codesContext.codesDataLoader.data,
+                            'method_response_metrics',
+                            item.method_response_metric_id || 0
+                          )}
+                        </Typography>
+                      </>
+                    }
+                    action={
+                      <IconButton
+                        onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
+                          handleMenuClick(event, index)
+                        }
+                        aria-label="settings">
+                        <MoreVertIcon />
+                      </IconButton>
+                    }
+                  />
+                  <CardContent
                     sx={{
-                      background: grey[100]
+                      pt: 0,
+                      pb: '6px !important'
                     }}>
-                    <CardHeader
-                      title={`${getCodesName(
-                        codesContext.codesDataLoader.data,
-                        'sample_methods',
-                        item.method_lookup_id || 0
-                      )}`}
-                      action={
-                        <IconButton
-                          onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                            handleMenuClick(event, index)
-                          }
-                          aria-label="settings">
-                          <MoreVertIcon />
-                        </IconButton>
-                      }
-                    />
-                    <CardContent
-                      sx={{
-                        pt: 0,
-                        pb: '12px !important'
-                      }}>
-                      <Stack gap={3}>
-                        {item.description && (
-                          <Typography
-                            variant="body2"
-                            color="textSecondary"
-                            sx={{
-                              display: '-webkit-box',
-                              WebkitLineClamp: '2',
-                              WebkitBoxOrient: 'vertical',
-                              maxWidth: '92ch',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis'
-                            }}>
-                            {item.description}
-                          </Typography>
-                        )}
-                        <Box>
-                          <Typography variant="body1" fontWeight={700}>
-                            Time Periods
-                          </Typography>
-                          <Divider component="div" sx={{ mt: 1 }}></Divider>
-                          <List dense disablePadding>
-                            {item.sample_periods.map((period) => (
-                              <ListItem
-                                key={`sample_period_${period.survey_sample_period_id || 0}`}
-                                divider
-                                disableGutters
-                                sx={{ pl: 1.25 }}>
-                                <ListItemIcon sx={{ minWidth: '32px' }}>
-                                  <Icon path={mdiCalendarRangeOutline} size={0.75} />
-                                </ListItemIcon>
-                                <ListItemText
-                                  primary={`${period.start_date} ${period.start_time || ''} - ${period.end_date} ${
-                                    period.end_time || ''
-                                  }`}
-                                />
-                              </ListItem>
-                            ))}
-                          </List>
+                    <Stack gap={2}>
+                      {item.description && (
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          sx={{
+                            display: '-webkit-box',
+                            WebkitLineClamp: '2',
+                            WebkitBoxOrient: 'vertical',
+                            maxWidth: '92ch',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis'
+                          }}>
+                          {item.description}
+                        </Typography>
+                      )}
+                      <Box>
+                        <Typography variant="body2" fontWeight={700}>
+                          Periods
+                        </Typography>
+                        <Divider component="div" sx={{ mt: 1 }}></Divider>
+                        <Box sx={{ maxWidth: { xs: '100%', sm: '400px', xl: '300px' }, m: 1 }}>
+                          <SamplingSiteListPeriod samplePeriods={item.sample_periods} />
                         </Box>
-                      </Stack>
-                    </CardContent>
-                  </Card>
-                </Collapse>
-              );
-            })}
+                      </Box>
+                    </Stack>
+                  </CardContent>
+                </Card>
+              </Collapse>
+            ))}
             <Button
               sx={{
                 alignSelf: 'flex-start'

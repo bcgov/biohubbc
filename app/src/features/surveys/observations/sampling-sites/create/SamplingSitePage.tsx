@@ -2,16 +2,15 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CreateSamplingSiteI18N } from 'constants/i18n';
-import { DialogContext } from 'contexts/dialogContext';
-import { SurveyContext } from 'contexts/surveyContext';
 import { SamplingSiteMethodYupSchema } from 'features/surveys/observations/sampling-sites/create/form/MethodForm';
 import { Formik, FormikProps } from 'formik';
 import { Feature } from 'geojson';
 import History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
-import { useContext, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
 import SamplingSiteHeader from '../components/SamplingSiteHeader';
@@ -32,8 +31,8 @@ const SamplingSitePage = () => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
 
-  const surveyContext = useContext(SurveyContext);
-  const dialogContext = useContext(DialogContext);
+  const surveyContext = useSurveyContext();
+  const dialogContext = useDialogContext();
 
   const formikRef = useRef<FormikProps<any>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
