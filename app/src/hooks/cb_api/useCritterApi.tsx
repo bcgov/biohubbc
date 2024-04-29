@@ -19,7 +19,7 @@ const useCritterApi = (axios: AxiosInstance) => {
    * Update a critter.
    *
    * @async
-   * @param {ICraeteCritter} payload - Update critter payload.
+   * @param {ICreateCritter} payload - Update critter payload.
    * @returns {Promise<ICritterSimpleResponse>} Simple critterbase critter.
    */
   const updateCritter = async (payload: ICreateCritter): Promise<ICritterSimpleResponse> => {

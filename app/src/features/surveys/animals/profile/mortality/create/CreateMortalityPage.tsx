@@ -1,5 +1,4 @@
 import LoadingButton from '@mui/lab/LoadingButton';
-import { CircularProgress } from '@mui/material';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -10,116 +9,57 @@ import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { SkeletonHorizontalStack } from 'components/loading/SkeletonLoaders';
-import { CreateCaptureI18N } from 'constants/i18n';
+import { CreateMortalityI18N } from 'constants/i18n';
 import { FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-import useDataLoader from 'hooks/useDataLoader';
-import { ICreateCaptureRequest } from 'interfaces/useCritterApi.interface';
+import { ICreateMortalityRequest } from 'interfaces/useCritterApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
-import AnimalCaptureForm from '../create/form/AnimalCaptureForm';
+import AnimalMortalityForm from './form/AnimalMortalityForm';
 
-// export const defaultAnimalCaptureFormValues: ICreateCaptureRequest = {
-//   capture: {
-//     capture_id: '',
-//     capture_timestamp: '',
-//     release_timestamp: '',
-//     capture_comment: '',
-//     release_comment: '',
-//     capture_location: {
-//       type: 'Feature',
-//       geometry: { type: 'Point', coordinates: [0, 0] },
-//       properties: { coordinate_uncertainty: 'm' }
-//     },
-//     release_location: {
-//       type: 'Feature',
-//       geometry: { type: 'Point', coordinates: [0, 0] },
-//       properties: { coordinate_uncertainty: 'm' }
-//     }
-//   },
-//   markings: [],
-//   measurements: {
-//     quantitative: [],
-//     qualitative: []
-//   }
-// };
+export const defaultAnimalMortalityFormValues: ICreateMortalityRequest = {
+  markings: [],
+  measurements: {
+    quantitative: [],
+    qualitative: []
+  },
+  mortality_id: '',
+  location_id: null,
+  mortality_timestamp: '',
+  mortality_location: {
+    type: 'Feature',
+    geometry: { type: 'Point', coordinates: [0, 0] },
+    properties: { coordinate_uncertainty: 'm' }
+  },
+  proximate_cause_of_death_id: null,
+  proximate_cause_of_death_confidence: '',
+  proximate_predated_by_itis_tsn: null,
+  ultimate_cause_of_death_id: null,
+  ultimate_cause_of_death_confidence: '',
+  ultimate_predated_by_itis_tsn: null,
+  mortality_comment: null
+};
 
-const EditCapturePage = () => {
+const CreateMortalityPage = () => {
   const critterbaseApi = useCritterbaseApi();
 
   const urlParams: Record<string, string | number | undefined> = useParams();
   const surveyCritterId: number | undefined = Number(urlParams['survey_critter_id']);
-  const captureId: string | undefined = String(urlParams['capture_id']);
 
   const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState(false);
   const history = useHistory();
 
-  const formikRef = useRef<FormikProps<ICreateCaptureRequest>>(null);
+  const formikRef = useRef<FormikProps<ICreateMortalityRequest>>(null);
 
   const surveyContext = useSurveyContext();
   const projectContext = useProjectContext();
   const dialogContext = useDialogContext();
   const animalPageContext = useAnimalPageContext();
-
-  const captureDataLoader = useDataLoader(() => critterbaseApi.capture.getCapture(captureId));
-
-  if (!captureDataLoader.data) {
-    captureDataLoader.load();
-  }
-
-  console.log(captureDataLoader.data);
-
-  //   const capture = animalPageContext.critterDataLoader.
-
-  //   capture_id?: string;
-  //   capture_timestamp: string;
-  //   release_timestamp: string;
-  //   capture_comment: string;
-  //   release_comment: string;
-  //   capture_location: Feature;
-  //   release_location: Feature;
-
-  const capture = captureDataLoader.data;
-
-  if (!capture) {
-    return <CircularProgress size={40} className="pageProgress" />;
-  }
-
-  const initialFormikValues: ICreateCaptureRequest = {
-    capture: {
-      capture_id: capture.capture_id,
-      capture_comment: capture.capture_comment ?? '',
-      capture_timestamp: capture.capture_timestamp,
-      capture_location: {
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: [capture.capture_location.longitude, capture.capture_location.latitude]
-        },
-        properties: {}
-      },
-      release_location: {
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: [capture.release_location?.longitude ?? 0, capture.release_location?.latitude ?? 0]
-        },
-        properties: {}
-      },
-      release_timestamp: capture.release_timestamp ?? '',
-      release_comment: capture.release_comment ?? ''
-    },
-    markings: [],
-    measurements: {
-      quantitative: [],
-      qualitative: []
-    }
-  };
 
   const { projectId, surveyId } = surveyContext;
 
@@ -135,8 +75,8 @@ const EditCapturePage = () => {
   };
 
   const defaultCancelDialogProps = {
-    dialogTitle: CreateCaptureI18N.cancelTitle,
-    dialogText: CreateCaptureI18N.cancelText,
+    dialogTitle: CreateMortalityI18N.cancelTitle,
+    dialogText: CreateMortalityI18N.cancelText,
     open: false,
     onClose: () => {
       dialogContext.setYesNoDialog({ open: false });
@@ -152,8 +92,8 @@ const EditCapturePage = () => {
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
-      dialogTitle: CreateCaptureI18N.createErrorTitle,
-      dialogText: CreateCaptureI18N.createErrorText,
+      dialogTitle: CreateMortalityI18N.createErrorTitle,
+      dialogText: CreateMortalityI18N.createErrorText,
       onClose: () => {
         dialogContext.setErrorDialog({ open: false });
       },
@@ -192,32 +132,34 @@ const EditCapturePage = () => {
   };
 
   /**
-   * Creates an Capture
+   * Creates an Mortality
    *
    * @return {*}
    */
-  const handleSubmit = async (values: ICreateCaptureRequest) => {
+  const handleSubmit = async (values: ICreateMortalityRequest) => {
     setIsSaving(true);
     try {
       const critterbaseCritterId = animalPageContext.selectedAnimal?.critterbase_critter_id;
-      if (!values || !critterbaseCritterId || values.capture.capture_location.geometry.type !== 'Point') {
+      if (!values || !critterbaseCritterId || values.mortality_location.geometry.type !== 'Point') {
         return;
       }
 
-      const response = await critterbaseApi.capture.createCapture({
-        capture_id: undefined,
-        capture_timestamp: new Date(values.capture.capture_timestamp),
-        release_timestamp: new Date(values.capture.release_timestamp),
-        capture_comment: values.capture.capture_comment,
-        release_comment: values.capture.release_comment,
-        capture_location: {
-          longitude: values.capture.capture_location.geometry.coordinates[0],
-          latitude: values.capture.capture_location.geometry.coordinates[1],
+      const response = await critterbaseApi.mortality.createMortality({
+        mortality_id: undefined,
+        mortality_timestamp: new Date(values.mortality_timestamp),
+        mortality_comment: values.mortality_comment ?? '',
+        location: {
+          longitude: values.mortality_location.geometry.coordinates[0],
+          latitude: values.mortality_location.geometry.coordinates[1],
           coordinate_uncertainty: 0,
           coordinate_uncertainty_units: 'm'
         },
-        release_location: values.capture.release_location,
-        critter_id: critterbaseCritterId
+        proximate_cause_of_death_confidence: '',
+        ultimate_cause_of_death_confidence: '',
+        proximate_cause_of_death_id: '',
+        proximate_predated_by_itis_tsn: undefined,
+        ultimate_predated_by_itis_tsn: undefined,
+        ultimate_cause_of_death_id: ''
       });
 
       if (!response) {
@@ -251,7 +193,7 @@ const EditCapturePage = () => {
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
       <PageHeader
-        title="Create New Capture"
+        title="Report Mortality"
         breadCrumbJSX={
           animalId ? (
             <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
@@ -274,7 +216,7 @@ const EditCapturePage = () => {
                 {animalId}
               </Link>
               <Typography variant="body2" component="span" color="textSecondary" aria-current="page">
-                Create New Capture
+                Report Mortality
               </Typography>
             </Breadcrumbs>
           ) : (
@@ -299,9 +241,9 @@ const EditCapturePage = () => {
 
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper sx={{ p: 5 }}>
-          <AnimalCaptureForm
-            initialCaptureData={initialFormikValues}
-            handleSubmit={(formikData) => handleSubmit(formikData as ICreateCaptureRequest)}
+          <AnimalMortalityForm
+            initialMortalityData={defaultAnimalMortalityFormValues}
+            handleSubmit={(formikData) => handleSubmit(formikData as ICreateMortalityRequest)}
             formikRef={formikRef}
           />
           <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
@@ -325,4 +267,4 @@ const EditCapturePage = () => {
   );
 };
 
-export default EditCapturePage;
+export default CreateMortalityPage;

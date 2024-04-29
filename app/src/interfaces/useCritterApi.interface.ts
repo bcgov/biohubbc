@@ -60,6 +60,22 @@ export interface ICreateCaptureRequest {
   measurements?: IMeasurementPostData;
 }
 
+export interface ICreateMortalityRequest {
+  markings: IMarkingPostData[];
+  measurements: IMeasurementPostData;
+  mortality_id: string;
+  location_id: string | null;
+  mortality_timestamp: string;
+  mortality_location: Feature;
+  proximate_cause_of_death_id: string | null;
+  proximate_cause_of_death_confidence: string;
+  proximate_predated_by_itis_tsn: number | null;
+  ultimate_cause_of_death_id: string | null;
+  ultimate_cause_of_death_confidence: string;
+  ultimate_predated_by_itis_tsn: number | null;
+  mortality_comment: string | null;
+}
+
 // export interface IAnimalUpdateObject {
 //   name: string
 // }

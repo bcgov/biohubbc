@@ -35,7 +35,7 @@ const CritterListItem = (props: ICritterListItemProps) => {
   return (
     <Stack
       sx={{
-        flex: '1 1 auto'
+        flex: '1 1 auto',
       }}>
       <IconButton
         onClick={() => {

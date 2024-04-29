@@ -16,7 +16,7 @@ import { MapBaseCss } from 'components/map/styles/MapBaseCss';
 import { ALL_OF_BC_BOUNDARY, MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
 import { FormikContextType, useFormikContext } from 'formik';
 import { Feature } from 'geojson';
-import { ICreateCaptureRequest } from 'interfaces/useCritterApi.interface';
+import { ICreateMortalityRequest } from 'interfaces/useCritterApi.interface';
 import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
@@ -26,7 +26,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 
-export interface ICaptureLocationMapControlProps {
+export interface IMortalityLocationMapControlProps {
   name: string;
   title: string;
   mapId: string;
@@ -36,10 +36,10 @@ export interface ICaptureLocationMapControlProps {
 /**
  * Sampling site map component.
  *
- * @param {ICaptureLocationMapControlProps} props
+ * @param {IMortalityLocationMapControlProps} props
  * @return {*}
  */
-const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps) => {
+const MortalityLocationMapControl = (props: IMortalityLocationMapControlProps) => {
   const { name, title } = props;
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [lastDrawn, setLastDrawn] = useState<null | number>(null);
@@ -48,12 +48,12 @@ const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps) => {
 
   const { mapId } = props;
 
-  const { values, setFieldValue } = useFormikContext<ICreateCaptureRequest>();
+  const { values, setFieldValue } = useFormikContext<ICreateMortalityRequest>();
 
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
 
   //   Array of sampling site features
-  const captureLocationGeoJson: Feature | undefined = useMemo(() => {
+  const mortalityLocationGeoJson: Feature | undefined = useMemo(() => {
     const location: { latitude: number; longitude: number } | Feature = get(values, name);
     if ('latitude' in location && location.latitude !== 0) {
       return {
@@ -71,15 +71,15 @@ const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps) => {
   useEffect(() => {
     setUpdatedBounds(calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]));
 
-    if (captureLocationGeoJson) {
-      if ('type' in captureLocationGeoJson) {
-        if (captureLocationGeoJson.geometry.type === 'Point')
-          if (captureLocationGeoJson?.geometry.coordinates[0] !== 0) {
-            setUpdatedBounds(calculateUpdatedMapBounds([captureLocationGeoJson]));
+    if (mortalityLocationGeoJson) {
+      if ('type' in mortalityLocationGeoJson) {
+        if (mortalityLocationGeoJson.geometry.type === 'Point')
+          if (mortalityLocationGeoJson?.geometry.coordinates[0] !== 0) {
+            setUpdatedBounds(calculateUpdatedMapBounds([mortalityLocationGeoJson]));
           }
       }
     }
-  }, [captureLocationGeoJson]);
+  }, [mortalityLocationGeoJson]);
 
   return (
     <>
@@ -121,7 +121,7 @@ const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps) => {
                 <Button
                   color="primary"
                   variant="outlined"
-                  data-testid="capture-location-upload"
+                  data-testid="mortality-location-upload"
                   startIcon={<Icon path={mdiTrayArrowUp} size={1} />}
                   onClick={() => {
                     setIsOpen(true);
@@ -183,7 +183,7 @@ const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps) => {
                         //   {
                         //     layerName: 'Sampling Sites',
                         //     features: []
-                        //     //     captureLocationGeoJson
+                        //     //     mortalityLocationGeoJson
                         //     //       .filter((item) => item?.id) // Filter for only drawn features
                         //     //       .map((feature, index) => ({ geoJSON: feature, key: index }))
                         //     //   }
@@ -194,14 +194,14 @@ const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps) => {
                   <BaseLayerControls />
                 </LayersControl>
               </LeafletMapContainer>
-              {/* {captureLocationGeoJson.length > 0 && (
+              {/* {mortalityLocationGeoJson.length > 0 && (
                 <Box position="absolute" top="128px" left="16px" zIndex="999">
                   <IconButton
                     aria-label="zoom to initial extent"
                     title="Zoom to initial extent"
                     sx={classes.zoomToBoundaryExtentBtn}
                     onClick={() => {
-                      setUpdatedBounds(calculateUpdatedMapBounds(captureLocationGeoJson));
+                      setUpdatedBounds(calculateUpdatedMapBounds(mortalityLocationGeoJson));
                     }}>
                     <Icon size={1} path={mdiRefresh} />
                   </IconButton>
@@ -215,4 +215,4 @@ const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps) => {
   );
 };
 
-export default CaptureLocationMapControl;
+export default MortalityLocationMapControl;

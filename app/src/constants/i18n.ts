@@ -203,6 +203,22 @@ export const EditCaptureI18N = {
     'An error has occurred while attempting to edit your capture, please try again. If the error persists, please contact your system administrator.'
 };
 
+export const CreateMortalityI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Creating Mortality',
+  createErrorText:
+    'An error has occurred while attempting to create your mortality, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const EditMortalityI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Editing Mortality',
+  createErrorText:
+    'An error has occurred while attempting to edit your mortality, please try again. If the error persists, please contact your system administrator.'
+};
+
 export const SurveyAnimalsI18N = {
   animalIndividualsHelp:
     'Animals are animals that have been captured, marked, measured, or have died, generating data that applies to one specific individual.',

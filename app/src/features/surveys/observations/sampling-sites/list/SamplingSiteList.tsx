@@ -184,6 +184,7 @@ const SamplingSiteList = () => {
       }
     });
   };
+  
 
   const samplingSiteCount = sampleSites.length ?? 0;
 
@@ -339,6 +340,7 @@ const SamplingSiteList = () => {
                 <Divider flexItem></Divider>
                 <Box
                   flex="1 1 auto"
+                  // overflow="hidden"
                   sx={{
                     background: grey[100]
                   }}>

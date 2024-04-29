@@ -1,5 +1,7 @@
-import { mdiCardTextOutline, mdiInformationOutline, mdiPlusBoxOutline } from '@mdi/js';
+import { mdiCardTextOutline, mdiInformationOutline, mdiPlus, mdiPlusBoxOutline } from '@mdi/js';
+import { Icon } from '@mdi/react';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import { red } from '@mui/material/colors';
 import green from '@mui/material/colors/green';
@@ -7,7 +9,8 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
-import { useAnimalPageContext } from 'hooks/useContext';
+import { useAnimalPageContext, useSurveyContext } from 'hooks/useContext';
+import { Link as RouterLink } from 'react-router-dom';
 import AnimalAttributeItem from './AnimalAttributeItem';
 import AnimalCaptureContainer from './captures/AnimalCaptureContainer';
 import ScientificNameTypography from './ScientificNameTypography';
@@ -18,6 +21,8 @@ const AnimalProfile = () => {
   const critterDataLoader = animalPageContext.critterDataLoader;
 
   const critter = critterDataLoader.data;
+
+  const { projectId, surveyId } = useSurveyContext();
 
   if (!critter || critterDataLoader.isLoading) {
     return (
@@ -30,9 +35,20 @@ const AnimalProfile = () => {
   return (
     <>
       <Paper sx={{ p: 3 }}>
-        <Typography variant="h2" mb={1}>
-          {critter.animal_id}&nbsp;
-        </Typography>
+        <Box display="flex" justifyContent="space-between">
+          <Typography variant="h2" mb={1}>
+            {critter.animal_id}&nbsp;
+          </Typography>
+          <Button
+            variant="outlined"
+            color="error"
+            component={RouterLink}
+            to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/${animalPageContext.selectedAnimal?.survey_critter_id}/mortality/create`}
+            startIcon={<Icon path={mdiPlus} size={1} />}
+            disabled={animalPageContext.isDisabled}>
+            Report Mortality
+          </Button>
+        </Box>
         <Stack direction="row" spacing={2} display="flex">
           <AnimalAttributeItem
             text={

@@ -301,7 +301,7 @@ const SurveyAnimalList = () => {
                   </FormGroup>
                 </Box>
                 <Divider flexItem></Divider>
-                <Box flex="1 1 auto" pt={1}>
+                <Box flex="1 1 auto">
                   {/* Display text if the sample site data loader has no items in it */}
                   {!critters.length && (
                     <Stack
