@@ -144,7 +144,7 @@ const SamplingMethodForm = () => {
           )}
           <Stack component={TransitionGroup} gap={1.5}>
             {values.sample_methods.map((item, index) => (
-              <Collapse key={`sample_method_${item.method_lookup_id || Math.random()}`}>
+              <Collapse key={`sample_method_${item.method_lookup_id || 0}`}>
                 <Card
                   variant="outlined"
                   sx={{

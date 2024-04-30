@@ -1,13 +1,13 @@
 import Box from '@mui/material/Box';
-import SamplingBlockEditForm from '../edit/form/SamplingBlockEditForm';
-import SamplingStratumEditForm from '../edit/form/SamplingStratumEditForm';
+import SamplingBlockForm from '../edit/form/SamplingBlockForm';
+import SamplingStratumForm from '../edit/form/SamplingStratumForm';
 
 const SamplingSiteGroupingsForm = () => {
   return (
     <>
-      <SamplingBlockEditForm />
+      <SamplingBlockForm />
       <Box mt={5}>
-        <SamplingStratumEditForm />
+        <SamplingStratumForm />
       </Box>
     </>
   );
