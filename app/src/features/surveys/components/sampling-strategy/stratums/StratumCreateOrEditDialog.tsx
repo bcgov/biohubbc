@@ -7,8 +7,9 @@ import useTheme from '@mui/material/styles/useTheme';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import CustomTextField from 'components/fields/CustomTextField';
 import { Formik, FormikProps } from 'formik';
+import { IGetSurveyStratumForm } from 'interfaces/useSurveyApi.interface';
 import { useRef } from 'react';
-import { IGetSurveyStratumForm, StratumFormYupSchema } from './SurveyStratumForm';
+import { StratumFormYupSchema } from './SurveyStratumForm';
 
 interface IGetSurveyStratumDialogProps {
   open: boolean;

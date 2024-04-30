@@ -63,7 +63,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
   return (
     <Formik
       innerRef={props.formikRef}
-      initialValues={props.initialSurveyData as unknown as IEditSurveyRequest}
+      initialValues={props.initialSurveyData as IEditSurveyRequest}
       validationSchema={surveyEditYupSchemas}
       validateOnBlur={false}
       validateOnChange={false}

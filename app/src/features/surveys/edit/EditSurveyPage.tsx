@@ -111,6 +111,7 @@ const EditSurveyPage = () => {
    */
   const handleSubmit = async (values: IEditSurveyRequest) => {
     setIsSaving(true);
+
     try {
       const response = await biohubApi.survey.updateSurvey(projectContext.projectId, surveyId, {
         blocks: values.blocks,
@@ -127,7 +128,14 @@ const EditSurveyPage = () => {
         permit: values.permit,
         proprietor: values.proprietor,
         purpose_and_methodology: values.purpose_and_methodology,
-        site_selection: values.site_selection,
+        site_selection: {
+          stratums: values.site_selection.stratums.map((stratum) => ({
+            survey_stratum_id: stratum.survey_stratum_id,
+            name: stratum.name,
+            description: stratum.description
+          })),
+          strategies: values.site_selection.strategies
+        },
         species: values.species,
         survey_details: values.survey_details
       });

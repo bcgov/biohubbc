@@ -439,7 +439,8 @@ export const surveySiteSelectionSchema: OpenAPIV3.SchemaObject = {
       type: 'array',
       items: {
         type: 'object',
-        required: ['name', 'description'],
+        additionalProperties: false,
+        required: ['name', 'description', 'survey_stratum_id'],
         properties: {
           name: {
             description: 'Name',
@@ -453,14 +454,18 @@ export const surveySiteSelectionSchema: OpenAPIV3.SchemaObject = {
           survey_id: {
             description: 'Survey id',
             type: 'integer',
-            minimum: 1
+            nullable: true,
           },
           survey_stratum_id: {
             description: 'Survey stratum id',
             type: 'integer',
+            nullable: true,
             minimum: 1
           },
-          ...updateCreateUserPropertiesSchema.properties
+          sample_stratum_count: {
+            description: 'Sample stratum count',
+            type: 'number'
+          },
         }
       }
     }
@@ -471,31 +476,37 @@ export const surveyBlockSchema: OpenAPIV3.SchemaObject = {
   title: 'Survey Block',
   type: 'object',
   additionalProperties: false,
-  required: ['name', 'description', 'sample_block_count'],
+  required: ['name', 'description', 'survey_block_id'],
   properties: {
     survey_block_id: {
       description: 'Survey block id',
       type: 'integer',
-      nullable: true
+      nullable: true,
+      minimum: 1
     },
     survey_id: {
       description: 'Survey id',
       type: 'integer',
-      nullable: true
+      nullable: true,
     },
     name: {
       description: 'Name',
-      type: 'string'
+      type: 'string',
+      nullable: true
     },
     description: {
       description: 'Description',
-      type: 'string'
+      type: 'string',
+      nullable: true
     },
     sample_block_count: {
       description: 'Sample block count',
-      type: 'number'
+      type: 'number',
     },
-    ...updateCreateUserPropertiesSchema.properties
+    revision_count: {
+      description: 'Revision count',
+      type: 'integer'
+    }
   }
 };
 

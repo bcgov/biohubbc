@@ -3,16 +3,9 @@ import YesNoDialog from 'components/dialog/YesNoDialog';
 import MultiAutocompleteField from 'components/fields/MultiAutocompleteField';
 import { CodesContext } from 'contexts/codesContext';
 import { useFormikContext } from 'formik';
-import { IEditSurveyRequest, IGetSurveyStratum } from 'interfaces/useSurveyApi.interface';
+import { IEditSurveyRequest, ISurveySiteSelectionForm } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useState } from 'react';
 import yup from 'utils/YupSchema';
-
-export interface ISurveySiteSelectionForm {
-  site_selection: {
-    strategies: string[];
-    stratums: IGetSurveyStratum[];
-  };
-}
 
 export const SurveySiteSelectionInitialValues: ISurveySiteSelectionForm = {
   site_selection: {
@@ -41,9 +34,9 @@ export const SurveySiteSelectionYupSchema = yup.object().shape({
       .array()
       .of(
         yup.object({
-          survey_stratum_id: yup.number().optional(),
+          survey_stratum_id: yup.number().nullable(),
           name: yup.string().required('Must provide a name for stratum'),
-          description: yup.string().optional()
+          description: yup.string()
         })
       )
       .test('duplicateStratums', 'Stratums must have unique names.', (stratums) => {

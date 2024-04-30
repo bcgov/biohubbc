@@ -9,7 +9,6 @@ import { IGeneralInformationForm } from 'features/surveys/components/general-inf
 import { ISurveyLocationForm } from 'features/surveys/components/locations/StudyAreaForm';
 import { IPurposeAndMethodologyForm } from 'features/surveys/components/methodology/PurposeAndMethodologyForm';
 import { IBlockData } from 'features/surveys/components/sampling-strategy/blocks/BlockForm';
-import { ISurveySiteSelectionForm } from 'features/surveys/components/sampling-strategy/SurveySiteSelectionForm';
 import { Feature } from 'geojson';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { ApiPaginationResponseParams, StringBoolean } from 'types/misc';
@@ -38,6 +37,31 @@ export interface ICreateSurveyRequest
  */
 export interface ICreateSurveyResponse {
   id: number;
+}
+
+export interface IGetSurveyStratumForm {
+  index: number | null;
+  stratum: IGetSurveyStratum | IPostSurveyStratum;
+}
+
+export interface IPostSurveyStratum {
+  survey_stratum_id: number | null;
+  name: string;
+  description?: string;
+}
+
+export interface ISurveySiteSelectionForm {
+  site_selection: {
+    strategies: string[];
+    stratums: IGetSurveyStratum[];
+  };
+}
+
+export interface ISurveySiteSelectionUpdateObject {
+  site_selection: {
+    strategies: string[];
+    stratums: IPostSurveyStratum[];
+  };
 }
 
 export interface ISurveyBlockForm {
@@ -114,10 +138,6 @@ export interface IGetSurveyBlock {
   survey_block_id: number;
   name: string;
   description: string;
-  create_date: string;
-  create_user: number;
-  update_date: string | null;
-  update_user: number | null;
   revision_count: number;
   sample_block_count: number;
 }
@@ -126,10 +146,6 @@ export interface IGetSurveyStratum {
   survey_stratum_id: number;
   name: string;
   description: string;
-  create_date: string;
-  create_user: number;
-  update_date: string | null;
-  update_user: number | null;
   revision_count: number;
   sample_stratum_count: number;
 }
@@ -158,7 +174,7 @@ export interface SurveyBasicFieldsObject {
   focal_species_names: string[];
 }
 
-export type SurveyUpdateObject = ISurveyUpdateObject & ISurveySiteSelectionForm;
+export type SurveyUpdateObject = ISurveyUpdateObject & ISurveySiteSelectionUpdateObject;
 
 interface ISurveyUpdateObject extends ISurveyLocationForm {
   survey_details?: {

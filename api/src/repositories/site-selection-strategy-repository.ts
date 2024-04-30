@@ -14,11 +14,10 @@ export type SurveyStratum = z.infer<typeof SurveyStratum>;
 
 export const SurveyStratumRecord = z.object({
   name: z.string(),
-  description: z.string().nullable(),
+  description: z.string(),
   survey_id: z.number(),
-  survey_stratum_id: z.number(),
+  survey_stratum_id: z.number().nullable(),
   revision_count: z.number(),
-  update_date: z.string().nullable()
 });
 
 export type SurveyStratumRecord = z.infer<typeof SurveyStratumRecord>;
@@ -70,10 +69,6 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
         'ss.survey_id',
         'ss.name',
         'ss.description',
-        'ss.create_date',
-        'ss.create_user',
-        'ss.update_date',
-        'ss.update_user',
         'ss.revision_count',
         getKnex().raw('COUNT(sss.survey_stratum_id)::INTEGER AS sample_stratum_count')
       )
@@ -85,10 +80,6 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
         'ss.survey_id',
         'ss.name',
         'ss.description',
-        'ss.create_date',
-        'ss.create_user',
-        'ss.update_date',
-        'ss.update_user',
         'ss.revision_count'
       );
 
@@ -254,12 +245,12 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
       return getKnex()
         .table('survey_stratum')
         .update({
-          survey_id: surveyId,
           name: stratum.name,
           description: stratum.description,
           update_date: 'now()'
         })
         .where('survey_stratum_id', stratum.survey_stratum_id)
+        .where('survey_id', surveyId)
         .returning('*');
     };
 

@@ -13,7 +13,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { FormikProps, useFormikContext } from 'formik';
-import { IEditSurveyRequest, IGetSurveyStratum } from 'interfaces/useSurveyApi.interface';
+import { IEditSurveyRequest, IGetSurveyStratum, IGetSurveyStratumForm } from 'interfaces/useSurveyApi.interface';
 import get from 'lodash-es/get';
 import { useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
@@ -21,38 +21,26 @@ import { pluralize as p } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import StratumCreateOrEditDialog from './StratumCreateOrEditDialog';
 
-export interface IGetSurveyStratumForm {
-  index: number | null;
-  stratum: IPostSurveyStratum | IGetSurveyStratum;
-}
-
-export interface IPostSurveyStratum {
-  survey_stratum_id: number;
-  name: string;
-  description?: string;
-  sample_stratum_count: number;
-}
-
 export const StratumFormInitialValues: IGetSurveyStratumForm = {
   index: null,
   stratum: {
-    survey_stratum_id: 0,
+    survey_stratum_id: null,
     name: '',
     description: '',
-    sample_stratum_count: 0
+    sample_stratum_count: 0,
+    revision_count: 0
   }
 };
 
 export const StratumFormYupSchema = yup.object().shape({
   index: yup.number().nullable(true),
   stratum: yup.object().shape({
-    survey_stratum_id: yup.number(),
+    survey_stratum_id: yup.number().nullable(),
     name: yup.string().required('Must provide a Stratum name').max(300, 'Name cannot exceed 300 characters'),
     description: yup
       .string()
       .required('Must provide a Stratum description')
-      .max(3000, 'Description cannot exceed 3000 characters'),
-    sample_stratum_count: yup.number().required('Sample stratum count is required.').min(0)
+      .max(3000, 'Description cannot exceed 3000 characters')
   })
 });
 
@@ -82,17 +70,17 @@ const SurveyStratumForm = () => {
       setFieldValue('site_selection.stratums', [
         ...values.site_selection.stratums,
         {
+          survey_stratum_id: stratumForm.stratum.survey_stratum_id,
           name: stratumForm.stratum.name,
-          description: stratumForm.stratum.description,
-          sample_stratum_count: stratumForm.stratum.sample_stratum_count
+          description: stratumForm.stratum.description
         }
       ]);
     } else {
       // Edit existing stratum
       setFieldValue(`site_selection.stratums[${stratumForm.index}`, {
+        survey_stratum_id: stratumForm.stratum.survey_stratum_id,
         name: stratumForm.stratum.name,
-        description: stratumForm.stratum.description,
-        sample_stratum_count: stratumForm.stratum.sample_stratum_count
+        description: stratumForm.stratum.description
       });
     }
 
@@ -141,25 +129,27 @@ const SurveyStratumForm = () => {
       />
 
       {/* DELETE BLOCK ASSIGNED TO SAMPLE SITES CONFIRMATION DIALOG */}
-      <YesNoDialog
-        dialogTitle={'Delete Stratum assigned to Sampling Sites?'}
-        dialogText={`Are you sure you want to delete this Block? This will remove the Block from ${
-          currentStratumForm.stratum.sample_stratum_count
-        } sampling ${p(currentStratumForm.stratum.sample_stratum_count, 'site')} that currently ${
-          currentStratumForm.stratum.sample_stratum_count > 1 ? 'reference' : 'references'
-        } it.`}
-        yesButtonProps={{ color: 'error' }}
-        yesButtonLabel={'Remove'}
-        noButtonProps={{ color: 'primary', variant: 'outlined' }}
-        noButtonLabel={'Cancel'}
-        open={isYesNoDialogOpen}
-        onYes={() => {
-          setIsYesNoDialogOpen(false);
-          handleDelete();
-        }}
-        onClose={() => setIsYesNoDialogOpen(false)}
-        onNo={() => setIsYesNoDialogOpen(false)}
-      />
+      {'sample_stratum_count' in currentStratumForm.stratum && (
+        <YesNoDialog
+          dialogTitle={'Delete Stratum assigned to Sampling Sites?'}
+          dialogText={`Are you sure you want to delete this Block? This will remove the Block from ${
+            currentStratumForm.stratum.sample_stratum_count
+          } sampling ${p(currentStratumForm.stratum.sample_stratum_count, 'site')} that currently ${
+            currentStratumForm.stratum.sample_stratum_count > 1 ? 'reference' : 'references'
+          } it.`}
+          yesButtonProps={{ color: 'error' }}
+          yesButtonLabel={'Remove'}
+          noButtonProps={{ color: 'primary', variant: 'outlined' }}
+          noButtonLabel={'Cancel'}
+          open={isYesNoDialogOpen}
+          onYes={() => {
+            setIsYesNoDialogOpen(false);
+            handleDelete();
+          }}
+          onClose={() => setIsYesNoDialogOpen(false)}
+          onNo={() => setIsYesNoDialogOpen(false)}
+        />
+      )}
 
       <Menu
         open={Boolean(anchorEl)}
@@ -181,7 +171,10 @@ const SurveyStratumForm = () => {
         </MenuItem>
         <MenuItem
           onClick={() =>
-            currentStratumForm?.stratum.sample_stratum_count === 0 ? handleDelete() : setIsYesNoDialogOpen(true)
+            'sample_stratum_count' in currentStratumForm.stratum &&
+            currentStratumForm.stratum.sample_stratum_count === 0
+              ? handleDelete()
+              : setIsYesNoDialogOpen(true)
           }>
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />
@@ -194,7 +187,7 @@ const SurveyStratumForm = () => {
           // Show array level error, if any
           <Box mb={2} ml={2}>
             <Typography style={{ fontSize: '12px', color: '#f44336' }}>
-              {get(errors, 'site_selection.stratums') as string}
+              {/* {get(errors, 'site_selection.stratums') as string} */}
             </Typography>
           </Box>
         )}
