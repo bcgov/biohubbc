@@ -3,13 +3,13 @@ import { ITaxonomy } from './useTaxonomyApi.interface';
 
 export interface ICreateEditAnimalRequest {
   nickname: string;
-  description: string;
   species: ITaxonomy | null;
   ecological_units: {
     value: number;
     ecological_unit_id: string;
-  }[],
+  }[];
   wildlife_health_id: string;
+  critter_comment: string | null;
 }
 
 export interface IMarkingPostData {

@@ -8,7 +8,7 @@ import { useFormikContext } from 'formik';
 import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
 
 const AnimalGeneralInformationForm = () => {
-  const { values, setFieldValue } = useFormikContext<ICreateEditAnimalRequest>();
+  const { values, errors, setFieldValue } = useFormikContext<ICreateEditAnimalRequest>();
 
   return (
     <>
@@ -23,6 +23,7 @@ const AnimalGeneralInformationForm = () => {
                 setFieldValue('species', species);
               }}
               clearOnSelect={true}
+              error={errors.species}
             />
             {values.species && (
               <Collapse in={Boolean(values.species)}>
@@ -47,7 +48,7 @@ const AnimalGeneralInformationForm = () => {
           </Grid>
           <Grid item xs={12}>
             <CustomTextField
-              name="description"
+              name="critter_comment"
               label="Description"
               maxLength={1000}
               other={{ multiline: true, rows: 4 }}

@@ -55,7 +55,7 @@ const EditAnimalPage = () => {
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
-    history.push(`/admin/projects/${projectId}/surveys/${surveyId}`);
+    history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`);
   };
 
   const defaultCancelDialogProps = {
@@ -214,8 +214,8 @@ const EditAnimalPage = () => {
                 nickname: critter.animal_id,
                 species: { tsn: critter.itis_tsn, scientificName: critter.itis_scientific_name, commonName: '' },
                 ecological_units: [],
-                description: '',
-                wildlife_health_id: critter.wlh_id
+                wildlife_health_id: critter.wlh_id,
+                critter_comment: ''
               } as ICreateEditAnimalRequest
             }
             handleSubmit={(formikData) => handleSubmit(formikData as ICreateEditAnimalRequest)}

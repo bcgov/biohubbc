@@ -82,7 +82,7 @@ const CritterListItem = (props: ICritterListItemProps) => {
               textOverflow: 'ellipsis',
               overflow: 'hidden',
               textAlign: 'left',
-              flex: '0.8',
+              flex: '0.9',
               mt: 1
             }}>
             <Typography

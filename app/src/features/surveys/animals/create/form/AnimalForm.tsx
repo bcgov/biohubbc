@@ -15,11 +15,26 @@ export interface IAnimalFormProps {
 }
 
 const AnimalForm = (props: IAnimalFormProps) => {
-  const animalEditYupSchemas = yup.object({ nickname: yup.string() });
+  const animalEditYupSchemas = yup.object({
+    nickname: yup.string().min(3, 'Nickname must be at least 3 letters').required('Nickname is required'),
+    species: yup
+      .object()
+      .shape({
+        scientificName: yup.string().required('Species is required').min(1),
+        commonName: yup.string().nullable(),
+        tsn: yup.number().required('Species is required').min(1)
+      })
+      .default(undefined)
+      .nullable()
+      .required('Species is required'),
+    critter_comment: yup.string().nullable(),
+    ecological_units: yup.array(yup.object({ value: yup.string(), ecological_unit_id: yup.string() })),
+    wildlife_health_id: yup.string().nullable()
+  });
 
   return (
     <Formik
-    enableReinitialize
+      enableReinitialize
       innerRef={props.formikRef}
       initialValues={props.initialAnimalData as ICreateEditAnimalRequest}
       validationSchema={animalEditYupSchemas}
