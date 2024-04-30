@@ -25,8 +25,8 @@ import { useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { getCodesName } from 'utils/Utils';
 import EditSamplingMethod from '../../edit/form/EditSamplingMethod';
-import CreateSamplingMethod from './CreateSamplingMethod';
 import SamplingSiteListPeriod from '../../list/SamplingSiteListPeriod';
+import CreateSamplingMethod from './CreateSamplingMethod';
 
 /**
  * Returns a form for creating and editing a sampling method

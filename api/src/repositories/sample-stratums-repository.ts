@@ -79,7 +79,7 @@ export class SampleStratumRepository extends BaseRepository {
       WHERE survey_stratum_id = ${surveyStratumId};
     `;
 
-    const response = await this.connection.sql(sql, z.object({ stratums_count: z.string().transform(Number) }));
+    const response = await this.connection.sql(sql, z.object({ sample_stratums_count: z.string().transform(Number) }));
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to count sample stratums', [
@@ -88,7 +88,7 @@ export class SampleStratumRepository extends BaseRepository {
       ]);
     }
 
-    return response.rows[0].stratums_count;
+    return response.rows[0].sample_stratums_count;
   }
 
   /**

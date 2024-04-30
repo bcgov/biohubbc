@@ -388,8 +388,7 @@ describe('PostPurposeAndMethodologyData', () => {
     const obj = {
       intended_outcome_ids: [1],
       additional_details: 'additional_detail',
-      vantage_code_ids: [4, 5],
-      surveyed_all_areas: true
+      vantage_code_ids: [4, 5]
     };
 
     before(() => {

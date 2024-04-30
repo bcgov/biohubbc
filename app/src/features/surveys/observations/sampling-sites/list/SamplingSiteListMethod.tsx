@@ -2,10 +2,10 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import { useCodesContext, useObservationsContext, useObservationsPageContext } from 'hooks/useContext';
+import { IGetSampleMethodRecord } from 'interfaces/useSamplingSiteApi.interface';
 import { useEffect } from 'react';
 import { getCodesName } from 'utils/Utils';
 import SamplingSiteListPeriod from './SamplingSiteListPeriod';
-import { IGetSampleMethodRecord } from 'interfaces/useSamplingSiteApi.interface';
 
 export interface ISamplingSiteListMethodProps {
   sampleMethod: IGetSampleMethodRecord;

@@ -23,7 +23,6 @@ const SamplingStratumEditForm = () => {
 
   const options = surveyContext.surveyDataLoader?.data?.surveyData?.site_selection?.stratums || [];
 
-
   const [searchText, setSearchText] = useState('');
 
   const handleAddStratum = (stratum: IGetSurveyStratum) => {
@@ -35,7 +34,7 @@ const SamplingStratumEditForm = () => {
       values.stratums.filter((existing) => existing.survey_stratum_id !== stratum.survey_stratum_id)
     );
   };
-  
+
   return (
     <>
       <Typography component="legend">Assign to Stratum</Typography>

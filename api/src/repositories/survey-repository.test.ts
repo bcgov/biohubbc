@@ -413,8 +413,7 @@ describe('SurveyRepository', () => {
         },
         purpose_and_methodology: {
           additional_details: '',
-          intended_outcome_id: 1,
-          surveyed_all_areas: 'Y'
+          intended_outcome_id: 1
         },
         locations: [{ geometry: [{ id: 1 }] }]
       } as unknown as PostSurveyObject;
@@ -440,8 +439,7 @@ describe('SurveyRepository', () => {
         },
         purpose_and_methodology: {
           additional_details: '',
-          intended_outcome_id: 1,
-          surveyed_all_areas: 'Y'
+          intended_outcome_id: 1
         },
         locations: [{ geometry: [] }]
       } as unknown as PostSurveyObject;
@@ -467,8 +465,7 @@ describe('SurveyRepository', () => {
         },
         purpose_and_methodology: {
           additional_details: '',
-          intended_outcome_id: 1,
-          surveyed_all_areas: 'Y'
+          intended_outcome_id: 1
         },
         locations: [{ geometry: [{ id: 1 }] }]
       } as unknown as PostSurveyObject;
@@ -792,7 +789,6 @@ describe('SurveyRepository', () => {
         purpose_and_methodology: {
           additional_details: '',
           intended_outcome_id: 1,
-          surveyed_all_areas: 'Y',
           revision_count: 1
         },
         locations: [{ geometry: [{ id: 1 }] }]
@@ -819,7 +815,6 @@ describe('SurveyRepository', () => {
         purpose_and_methodology: {
           additional_details: '',
           intended_outcome_id: 1,
-          surveyed_all_areas: 'Y',
           revision_count: 1
         },
         locations: [{ geometry: [] }]
@@ -846,7 +841,6 @@ describe('SurveyRepository', () => {
         purpose_and_methodology: {
           additional_details: '',
           intended_outcome_id: 1,
-          surveyed_all_areas: 'Y',
           revision_count: 1
         },
         locations: [{ geometry: [] }]
