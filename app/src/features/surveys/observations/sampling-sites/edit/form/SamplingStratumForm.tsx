@@ -17,7 +17,12 @@ import { useContext, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import BlockStratumCard from '../../components/BlockStratumCard';
 
-const SamplingStratumEditForm = () => {
+/**
+ * Returns a form for creating and editing which survey stratums are associated to a sampling site
+ *
+ * @returns
+ */
+const SamplingStratumForm = () => {
   const { values, setFieldValue } = useFormikContext<IGetSampleLocationDetails>();
   const surveyContext = useContext(SurveyContext);
 
@@ -146,4 +151,4 @@ const SamplingStratumEditForm = () => {
   );
 };
 
-export default SamplingStratumEditForm;
+export default SamplingStratumForm;
