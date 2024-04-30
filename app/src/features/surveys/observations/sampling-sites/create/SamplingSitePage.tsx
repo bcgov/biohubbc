@@ -142,8 +142,8 @@ const SamplingSitePage = () => {
           description: '',
           survey_sample_sites: [],
           sample_methods: [],
-         blocks: [],
-         stratums: []
+          blocks: [],
+          stratums: []
         }}
         validationSchema={samplingSiteYupSchema}
         validateOnBlur={true}
