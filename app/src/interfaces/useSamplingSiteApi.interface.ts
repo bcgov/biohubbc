@@ -11,8 +11,8 @@ export interface IEditSamplingSiteRequest {
     survey_sample_sites: Feature[]; // extracted list from shape files (used for formik loading)
     geojson?: Feature; // geojson object from map (used for sending to api)
     methods: ISurveySampleMethodData[];
-    blocks: number[];
-    stratums: number[];
+    blocks: { survey_block_id: number }[];
+    stratums: { survey_stratum_id: number }[];
   };
 }
 
@@ -55,8 +55,8 @@ export interface IGetSampleLocationDetails {
   update_user: number | null;
   revision_count: number;
   sample_methods: IGetSampleMethodRecord[];
-  sample_blocks: IGetSampleBlockDetails[];
-  sample_stratums: IGetSampleStratumDetails[];
+  blocks: IGetSampleBlockDetails[];
+  stratums: IGetSampleStratumDetails[];
 }
 
 export interface IGetSampleLocationDetailsForUpdate {
@@ -68,8 +68,8 @@ export interface IGetSampleLocationDetailsForUpdate {
   geography: string;
   revision_count: number;
   sample_methods: IGetSampleMethodRecord[] | ISurveySampleMethodData[];
-  sample_blocks: IGetSampleBlockDetails[];
-  sample_stratums: IGetSampleStratumDetails[];
+  blocks: IGetSampleBlockDetails[];
+  stratums: IGetSampleStratumDetails[];
 }
 
 export interface IGetSampleBlockDetails {

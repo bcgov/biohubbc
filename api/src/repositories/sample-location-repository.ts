@@ -43,7 +43,7 @@ export const SampleLocationRecord = z.object({
       }).shape
     )
   ),
-  sample_blocks: z.array(
+  blocks: z.array(
     SampleBlockRecord.pick({
       survey_sample_block_id: true,
       survey_block_id: true,
@@ -53,7 +53,7 @@ export const SampleLocationRecord = z.object({
       description: z.string()
     })
   ),
-  sample_stratums: z.array(
+  stratums: z.array(
     SampleStratumRecord.pick({
       survey_sample_stratum_id: true,
       survey_stratum_id: true,
@@ -180,7 +180,7 @@ export class SampleLocationRepository extends BaseRepository {
             'survey_block_id', ssb.survey_block_id,
             'name', sb.name,
             'description', sb.description
-          )) as sample_blocks`)
+          )) as blocks`)
         )
           .from({ ssb: 'survey_sample_block' })
           .leftJoin('survey_block as sb', 'sb.survey_block_id', 'ssb.survey_block_id')
@@ -197,7 +197,7 @@ export class SampleLocationRepository extends BaseRepository {
             'survey_stratum_id', ssst.survey_stratum_id,
             'name', ss.name,
             'description', ss.description
-          )) as sample_stratums`)
+          )) as stratums`)
         )
           .from({ ssst: 'survey_sample_stratum' })
           .leftJoin('survey_stratum as ss', 'ss.survey_stratum_id', 'ssst.survey_stratum_id')
@@ -211,8 +211,8 @@ export class SampleLocationRepository extends BaseRepository {
         'sss.description',
         'sss.geojson',
         knex.raw(`COALESCE(wssm.sample_methods, '[]'::json) as sample_methods,
-      COALESCE(wssb.sample_blocks, '[]'::json) as sample_blocks,
-      COALESCE(wssst.sample_stratums, '[]'::json) as sample_stratums`)
+      COALESCE(wssb.blocks, '[]'::json) as blocks,
+      COALESCE(wssst.stratums, '[]'::json) as stratums`)
       )
       .from({ sss: 'survey_sample_site' })
       .leftJoin('w_survey_sample_method as wssm', 'wssm.survey_sample_site_id', 'sss.survey_sample_site_id')
@@ -355,7 +355,7 @@ export class SampleLocationRepository extends BaseRepository {
             'survey_block_id', ssb.survey_block_id,
             'name', sb.name,
             'description', sb.description
-          )) as sample_blocks`)
+          )) as blocks`)
         )
           .from({ ssb: 'survey_sample_block' })
           .leftJoin('survey_block as sb', 'sb.survey_block_id', 'ssb.survey_block_id')
@@ -372,7 +372,7 @@ export class SampleLocationRepository extends BaseRepository {
             'survey_stratum_id', ssst.survey_stratum_id,
             'name', ss.name,
             'description', ss.description
-          )) as sample_stratums`)
+          )) as stratums`)
         )
           .from({ ssst: 'survey_sample_stratum' })
           .leftJoin('survey_stratum as ss', 'ss.survey_stratum_id', 'ssst.survey_stratum_id')
@@ -386,8 +386,8 @@ export class SampleLocationRepository extends BaseRepository {
         'sss.description',
         'sss.geojson',
         knex.raw(`COALESCE(wssm.sample_methods, '[]'::json) as sample_methods,
-      COALESCE(wssb.sample_blocks, '[]'::json) as sample_blocks,
-      COALESCE(wssst.sample_stratums, '[]'::json) as sample_stratums`)
+      COALESCE(wssb.blocks, '[]'::json) as blocks,
+      COALESCE(wssst.stratums, '[]'::json) as stratums`)
       )
       .from({ sss: 'survey_sample_site' })
       .leftJoin('w_survey_sample_method as wssm', 'wssm.survey_sample_site_id', 'sss.survey_sample_site_id')

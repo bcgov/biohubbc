@@ -34,7 +34,7 @@ const SamplingSitePage = () => {
   const surveyContext = useSurveyContext();
   const dialogContext = useDialogContext();
 
-  const formikRef = useRef<FormikProps<any>>(null);
+  const formikRef = useRef<FormikProps<ICreateSamplingSiteRequest>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
@@ -142,8 +142,8 @@ const SamplingSitePage = () => {
           description: '',
           survey_sample_sites: [],
           sample_methods: [],
-          blocks: [],
-          stratums: []
+         blocks: [],
+         stratums: []
         }}
         validationSchema={samplingSiteYupSchema}
         validateOnBlur={true}

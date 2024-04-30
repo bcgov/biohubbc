@@ -535,7 +535,7 @@ GET.apiDoc = {
                       }
                     }
                   },
-                  sample_blocks: {
+                  blocks: {
                     type: 'array',
                     items: {
                       type: 'object',
@@ -560,7 +560,7 @@ GET.apiDoc = {
                       }
                     }
                   },
-                  sample_stratums: {
+                  stratums: {
                     type: 'array',
                     items: {
                       type: 'object',

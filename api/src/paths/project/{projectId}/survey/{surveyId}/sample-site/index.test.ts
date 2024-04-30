@@ -81,8 +81,8 @@ describe('getSurveySampleLocationRecords', () => {
       update_user: 2,
       revision_count: 1,
       sample_methods: [],
-      sample_blocks: [],
-      sample_stratums: []
+      blocks: [],
+      stratums: []
     };
 
     sinon.stub(SampleLocationService.prototype, 'getSampleLocationsCountBySurveyId').resolves(1);

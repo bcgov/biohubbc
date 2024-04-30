@@ -47,6 +47,7 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
         <Container maxWidth="xl" sx={{ py: { xs: 2, sm: 3 } }}>
           <Breadcrumbs
             aria-label="breadcrumb"
+            separator='>'
             sx={{
               typography: 'body2'
             }}>

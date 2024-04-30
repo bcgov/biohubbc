@@ -34,7 +34,7 @@ const SamplingStratumChips = (props: ISamplingStratumChips) => {
 
   return (
     <Stack direction="row" spacing={1}>
-      {props.sampleSite.sample_stratums?.map((stratum, index) => (
+      {props.sampleSite.stratums?.map((stratum, index) => (
         <ColouredRectangleChip
           key={`${stratum.name}-${index}`}
           colour={stratumChipColours.find((colour) => colour.stratum === stratum.name)?.colour ?? colors.grey}

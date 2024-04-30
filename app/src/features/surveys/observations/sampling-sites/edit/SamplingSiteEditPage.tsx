@@ -84,8 +84,8 @@ const SamplingSiteEditPage = () => {
           survey_sample_sites: [values.geojson as Feature],
           geojson: values.geojson,
           methods: values.sample_methods,
-          blocks: values.sample_blocks.map((block) => block.survey_sample_block_id),
-          stratums: values.sample_stratums.map((stratum) => stratum.survey_sample_stratum_id)
+          blocks: values.blocks.map((block) => ({survey_block_id: block.survey_block_id})),
+          stratums: values.stratums.map((stratum) => ({survey_stratum_id: stratum.survey_stratum_id}))
         }
       };
 
@@ -169,6 +169,8 @@ const SamplingSiteEditPage = () => {
   if (!surveyContext.surveyDataLoader.data || !initialFormValues) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
+
+  console.log(samplingSiteDataLoader.data);
 
   return (
     <>

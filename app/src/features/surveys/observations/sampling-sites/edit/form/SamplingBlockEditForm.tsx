@@ -31,13 +31,13 @@ const SamplingBlockEditForm = () => {
   const [searchText, setSearchText] = useState('');
 
   const handleAddBlock = (block: IGetSurveyBlock) => {
-    setFieldValue(`blocks[${values.sample_blocks.length}]`, block);
+    setFieldValue(`blocks[${values.blocks.length}]`, block);
   };
 
   const handleRemoveItem = (block: IGetSurveyBlock | IGetSampleBlockDetails) => {
     setFieldValue(
       `blocks`,
-      values.sample_blocks.filter((existing) => existing.survey_block_id !== block.survey_block_id)
+      values.blocks.filter((existing) => existing.survey_block_id !== block.survey_block_id)
     );
   };
 
@@ -62,7 +62,7 @@ const SamplingBlockEditForm = () => {
         filterOptions={(options, state) => {
           const searchFilter = createFilterOptions<IGetSurveyBlock>({ ignoreCase: true });
           const unselectedOptions = options.filter((item) =>
-            values.sample_blocks.every((existing) => existing.survey_block_id !== item.survey_block_id)
+            values.blocks.every((existing) => existing.survey_block_id !== item.survey_block_id)
           );
           return searchFilter(unselectedOptions, state);
         }}
@@ -113,7 +113,7 @@ const SamplingBlockEditForm = () => {
         }}
       />
       <TransitionGroup>
-        {values.sample_blocks?.map((item, index) => {
+        {values.blocks?.map((item, index) => {
           return (
             <Collapse key={`${item.name}-${item.description}-${index}`}>
               <Card

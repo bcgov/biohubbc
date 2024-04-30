@@ -112,9 +112,9 @@ describe('SampleLocationService', () => {
           name: 'Sample Site 1',
           description: '',
           geojson: [],
-          sample_blocks: [],
+          blocks: [],
           sample_methods: [],
-          sample_stratums: []
+          stratums: []
         }
       ]);
 
