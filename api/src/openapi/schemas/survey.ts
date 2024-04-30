@@ -440,7 +440,7 @@ export const surveySiteSelectionSchema: OpenAPIV3.SchemaObject = {
       items: {
         type: 'object',
         additionalProperties: false,
-        required: ['name', 'description', 'survey_stratum_id'],
+        required: ['name', 'description'],
         properties: {
           name: {
             description: 'Name',
@@ -454,7 +454,7 @@ export const surveySiteSelectionSchema: OpenAPIV3.SchemaObject = {
           survey_id: {
             description: 'Survey id',
             type: 'integer',
-            nullable: true,
+            nullable: true
           },
           survey_stratum_id: {
             description: 'Survey stratum id',
@@ -465,7 +465,7 @@ export const surveySiteSelectionSchema: OpenAPIV3.SchemaObject = {
           sample_stratum_count: {
             description: 'Sample stratum count',
             type: 'number'
-          },
+          }
         }
       }
     }
@@ -476,7 +476,7 @@ export const surveyBlockSchema: OpenAPIV3.SchemaObject = {
   title: 'Survey Block',
   type: 'object',
   additionalProperties: false,
-  required: ['name', 'description', 'survey_block_id'],
+  required: ['name', 'description'],
   properties: {
     survey_block_id: {
       description: 'Survey block id',
@@ -487,7 +487,7 @@ export const surveyBlockSchema: OpenAPIV3.SchemaObject = {
     survey_id: {
       description: 'Survey id',
       type: 'integer',
-      nullable: true,
+      nullable: true
     },
     name: {
       description: 'Name',
@@ -501,7 +501,7 @@ export const surveyBlockSchema: OpenAPIV3.SchemaObject = {
     },
     sample_block_count: {
       description: 'Sample block count',
-      type: 'number',
+      type: 'number'
     },
     revision_count: {
       description: 'Revision count',

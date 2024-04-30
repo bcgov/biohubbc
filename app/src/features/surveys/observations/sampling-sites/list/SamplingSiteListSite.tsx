@@ -137,7 +137,7 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
           pl: 1,
           pr: 0
         }}>
-        {sampleSite.stratums && sampleSite.stratums?.length > 0 && (
+        {sampleSite.stratums && sampleSite.stratums.length > 0 && (
           <Box display="flex" alignItems="center" color="textSecondary" py={1} px={1}>
             <SamplingStratumChips sampleSite={sampleSite} />
           </Box>

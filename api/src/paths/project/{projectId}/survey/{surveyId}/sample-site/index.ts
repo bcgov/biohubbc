@@ -39,7 +39,7 @@ export const GET: Operation = [
       ]
     };
   }),
-  getSurveySampleLocationRecords()
+  getSurveySampleLocationRecord()
 ];
 
 GET.apiDoc = {
@@ -263,7 +263,7 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function getSurveySampleLocationRecords(): RequestHandler {
+export function getSurveySampleLocationRecord(): RequestHandler {
   return async (req, res) => {
     if (!req.params.surveyId) {
       throw new HTTP400('Missing required param `surveyId`');
@@ -292,7 +292,7 @@ export function getSurveySampleLocationRecords(): RequestHandler {
         pagination: makePaginationResponse(sampleSitesTotalCount, paginationOptions)
       });
     } catch (error) {
-      defaultLog.error({ label: 'getSurveySampleLocationRecords', message: 'error', error });
+      defaultLog.error({ label: 'getSurveySampleLocationRecord', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

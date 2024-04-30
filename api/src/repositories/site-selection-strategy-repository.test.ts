@@ -245,7 +245,7 @@ describe('SiteSelectionStrategyRepository', () => {
           description: '',
           survey_id: 1,
           survey_stratum_id: 1,
-          revision_count: 1,
+          revision_count: 1
         }
       ];
       const mockRows2: SurveyStratumRecord[] = [
@@ -254,7 +254,7 @@ describe('SiteSelectionStrategyRepository', () => {
           description: '',
           survey_id: 1,
           survey_stratum_id: 2,
-          revision_count: 1,
+          revision_count: 1
         }
       ];
       const mockResponse1 = { rows: mockRows1, rowCount: 1 } as any as Promise<QueryResult<any>>;
@@ -285,7 +285,7 @@ describe('SiteSelectionStrategyRepository', () => {
           description: '',
           survey_id: 1,
           survey_stratum_id: 1,
-          revision_count: 1,
+          revision_count: 1
         }
       ];
       const mockResponse1 = { rows: mockRows1, rowCount: 1 } as any as Promise<QueryResult<any>>;

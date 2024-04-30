@@ -399,7 +399,7 @@ export const GET: Operation = [
       ]
     };
   }),
-  getSurveySampleLocationRecords()
+  getSurveySampleLocationRecord()
 ];
 
 GET.apiDoc = {
@@ -615,10 +615,13 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function getSurveySampleLocationRecords(): RequestHandler {
+export function getSurveySampleLocationRecord(): RequestHandler {
   return async (req, res) => {
     if (!req.params.surveyId) {
       throw new HTTP400('Missing required param `surveyId`');
+    }
+    if (!req.params.surveySampleSiteId) {
+      throw new HTTP400('Missing required param `surveySampleSiteId`');
     }
 
     const connection = getDBConnection(req['keycloak_token']);
@@ -636,7 +639,7 @@ export function getSurveySampleLocationRecords(): RequestHandler {
 
       return res.status(200).json(sampleSite);
     } catch (error) {
-      defaultLog.error({ label: 'getSurveySampleLocationRecords', message: 'error', error });
+      defaultLog.error({ label: 'getSurveySampleLocationRecord', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

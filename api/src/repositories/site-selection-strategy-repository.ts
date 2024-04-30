@@ -17,7 +17,7 @@ export const SurveyStratumRecord = z.object({
   description: z.string(),
   survey_id: z.number(),
   survey_stratum_id: z.number().nullable(),
-  revision_count: z.number(),
+  revision_count: z.number()
 });
 
 export type SurveyStratumRecord = z.infer<typeof SurveyStratumRecord>;
@@ -75,13 +75,7 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
       .from('survey_stratum as ss')
       .leftJoin('survey_sample_stratum as sss', 'ss.survey_stratum_id', 'sss.survey_stratum_id')
       .where('ss.survey_id', surveyId)
-      .groupBy(
-        'ss.survey_stratum_id',
-        'ss.survey_id',
-        'ss.name',
-        'ss.description',
-        'ss.revision_count'
-      );
+      .groupBy('ss.survey_stratum_id', 'ss.survey_id', 'ss.name', 'ss.description', 'ss.revision_count');
 
     const [strategiesResponse, stratumsResponse] = await Promise.all([
       this.connection.knex(strategiesQuery, z.object({ name: z.string() })),

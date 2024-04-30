@@ -66,6 +66,22 @@ describe('SampleLocationRepository', () => {
     });
   });
 
+  describe('getSurveySampleLocationBySiteId', () => {
+    it('should return a single sample location', async () => {
+      const mockRows = [{ survey_sample_site_id: 1 }];
+      const mockResponse = { rows: [mockRows], rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const dbConnectionObj = getMockDBConnection({ knex: () => mockResponse });
+
+      const surveySampleSiteId = 1;
+      const surveyId = 2;
+
+      const repo = new SampleLocationRepository(dbConnectionObj);
+      const response = await repo.getSurveySampleLocationBySiteId(surveyId, surveySampleSiteId);
+
+      expect(response).to.eql(mockRows);
+    });
+  });
+
   describe('updateSampleSite', () => {
     it('should update the record and return a single row', async () => {
       const mockRow = {};

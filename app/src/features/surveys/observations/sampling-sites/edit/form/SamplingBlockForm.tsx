@@ -113,7 +113,7 @@ const SamplingBlockForm = () => {
         }}
       />
       <TransitionGroup>
-        {values.blocks?.map((item, index) => {
+        {values.blocks.map((item, index) => {
           return (
             <Collapse key={`${item.name}-${item.description}-${index}`}>
               <Card
