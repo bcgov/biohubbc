@@ -12,6 +12,11 @@ import AnimalAttributeItem from './AnimalAttributeItem';
 import AnimalCaptureContainer from './captures/AnimalCaptureContainer';
 import ScientificNameTypography from './ScientificNameTypography';
 
+/**
+ * Component for displaying an animal's details within the Manage Animals page
+ *
+ * @returns
+ */
 const AnimalProfile = () => {
   const animalPageContext = useAnimalPageContext();
 
@@ -28,7 +33,7 @@ const AnimalProfile = () => {
   }
 
   return (
-    <>
+    <Stack spacing={1.5} flexDirection="column" height="100%" maxWidth="100%">
       <Paper sx={{ p: 3, flex: '1 1 auto', maxWidth: '100%', width: '100%' }}>
         <Typography
           variant="h2"
@@ -38,7 +43,7 @@ const AnimalProfile = () => {
             whiteSpace: 'nowrap',
             textOverflow: 'ellipsis',
             overflow: 'hidden',
-            maxWidth: '100%',
+            maxWidth: '100%'
           }}>
           {critter.animal_id}
         </Typography>
@@ -65,7 +70,7 @@ const AnimalProfile = () => {
       <Paper>
         <AnimalCaptureContainer />
       </Paper>
-    </>
+    </Stack>
   );
 };
 

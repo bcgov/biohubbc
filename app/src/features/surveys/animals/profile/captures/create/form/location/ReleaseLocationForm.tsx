@@ -8,31 +8,17 @@ import { ICreateCaptureRequest } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 import CaptureLocationMapControl from './CaptureLocationMapControl';
 
+/**
+ * Returns the control for release location on the animal capture form, wrapping around the actual map control.
+ *
+ * @returns
+ */
 const ReleaseLocationForm = () => {
   const formikProps = useFormikContext<ICreateCaptureRequest>();
   const [isReleaseSameAsCapture, setIsReleaseSameAsCapture] = useState<boolean>(true);
 
   return (
     <>
-      {/* <FormControl required={true} component="fieldset">
-        <FormControlLabel
-          sx={{
-            '& .MuiTypography-root': {
-              fontWeight: 700
-            }
-          }}
-          control={
-            <Checkbox
-              checked={isChecked}
-              onChange={() => {
-                setIsChecked(!isChecked);
-              }}
-              color="primary"
-            />
-          }
-          label="The release location is different than the capture location"
-        />
-      </FormControl> */}
       <Typography component="legend" variant="h5" mb={1}>
         Was the animal released where it was captured?
       </Typography>

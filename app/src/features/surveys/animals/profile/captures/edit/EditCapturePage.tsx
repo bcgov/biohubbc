@@ -11,6 +11,7 @@ import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { SkeletonHorizontalStack } from 'components/loading/SkeletonLoaders';
 import { EditCaptureI18N } from 'constants/i18n';
+import { FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
@@ -21,33 +22,12 @@ import { useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import AnimalCaptureForm from '../create/form/AnimalCaptureForm';
-import { FormikProps } from 'formik';
 
-// export const defaultAnimalCaptureFormValues: ICreateCaptureRequest = {
-//   capture: {
-//     capture_id: '',
-//     capture_timestamp: '',
-//     release_timestamp: '',
-//     capture_comment: '',
-//     release_comment: '',
-//     capture_location: {
-//       type: 'Feature',
-//       geometry: { type: 'Point', coordinates: [0, 0] },
-//       properties: { coordinate_uncertainty: 'm' }
-//     },
-//     release_location: {
-//       type: 'Feature',
-//       geometry: { type: 'Point', coordinates: [0, 0] },
-//       properties: { coordinate_uncertainty: 'm' }
-//     }
-//   },
-//   markings: [],
-//   measurements: {
-//     quantitative: [],
-//     qualitative: []
-//   }
-// };
-
+/**
+ * Returns the page for editing an animal capture
+ *
+ * @returns
+ */
 const EditCapturePage = () => {
   const critterbaseApi = useCritterbaseApi();
 
@@ -200,7 +180,7 @@ const EditCapturePage = () => {
     setIsSaving(true);
     try {
       const critterbaseCritterId = animalPageContext.selectedAnimal?.critterbase_critter_id;
-      if (!values || !critterbaseCritterId || values.capture.capture_location.geometry.type !== 'Point') {
+      if (!values || !critterbaseCritterId || values.capture.capture_location?.geometry.type !== 'Point') {
         return;
       }
 
@@ -208,8 +188,8 @@ const EditCapturePage = () => {
         capture_id: values.capture.capture_id,
         capture_timestamp: new Date(values.capture.capture_timestamp),
         release_timestamp: new Date(values.capture.release_timestamp),
-        capture_comment: values.capture.capture_comment,
-        release_comment: values.capture.release_comment,
+        capture_comment: values.capture.capture_comment ?? '',
+        release_comment: values.capture.release_comment ?? '',
         capture_location: {
           longitude: values.capture.capture_location.geometry.coordinates[0],
           latitude: values.capture.capture_location.geometry.coordinates[1],

@@ -22,6 +22,11 @@ import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import AnimalForm from '../create/form/AnimalForm';
 
+/**
+ * Returns the page for editing an existing animal within a Survey
+ *
+ * @returns
+ */
 const EditAnimalPage = () => {
   const critterbaseApi = useCritterbaseApi();
 
@@ -55,7 +60,7 @@ const EditAnimalPage = () => {
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
-    history.push(`/admin/projects/${projectId}/surveys/${surveyId}`);
+    history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`);
   };
 
   const defaultCancelDialogProps = {
@@ -146,6 +151,7 @@ const EditAnimalPage = () => {
 
       // Refresh the context, so the next page loads with the latest data
       surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+      animalPageContext.critterDataLoader.refresh(critter.critter_id);
 
       history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`);
     } catch (error) {
@@ -214,8 +220,8 @@ const EditAnimalPage = () => {
                 nickname: critter.animal_id,
                 species: { tsn: critter.itis_tsn, scientificName: critter.itis_scientific_name, commonName: '' },
                 ecological_units: [],
-                description: '',
-                wildlife_health_id: critter.wlh_id
+                wildlife_health_id: critter.wlh_id,
+                critter_comment: ''
               } as ICreateEditAnimalRequest
             }
             handleSubmit={(formikData) => handleSubmit(formikData as ICreateEditAnimalRequest)}

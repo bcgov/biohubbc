@@ -6,6 +6,11 @@ import { DateTimeFields } from 'components/fields/DateTimeFields';
 import { useFormikContext } from 'formik';
 import { ICreateCaptureRequest } from 'interfaces/useCritterApi.interface';
 
+/**
+ * Returns the controls for general information fields relating to the release on the animal capture form
+ *
+ * @returns
+ */
 const ReleaseGeneralInformationForm = () => {
   const formikProps = useFormikContext<ICreateCaptureRequest>();
 

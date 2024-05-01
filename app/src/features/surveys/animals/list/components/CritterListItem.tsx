@@ -14,6 +14,12 @@ interface ICritterListItemProps {
   handleCheckboxChange: (surveyCritterId: number) => void;
 }
 
+/**
+ * Component for displaying and selecting an animal within the SurveyAnimalList
+ *
+ * @param props
+ * @returns
+ */
 const CritterListItem = (props: ICritterListItemProps) => {
   const surveyContext = useSurveyContext();
   const critters = surveyContext.critterDataLoader.data;
@@ -39,7 +45,6 @@ const CritterListItem = (props: ICritterListItemProps) => {
       }}>
       <IconButton
         onClick={() => {
-          // Avoid unnecessary reloads
           if (critter.survey_critter_id !== selectedAnimal?.survey_critter_id)
             setSelectedAnimal({
               survey_critter_id: critter.survey_critter_id,
@@ -84,8 +89,8 @@ const CritterListItem = (props: ICritterListItemProps) => {
               textOverflow: 'ellipsis',
               overflow: 'hidden',
               textAlign: 'left',
-              mt: 1,
-              flex: '1 1 auto'
+              flex: '0.9',
+              mt: 1
             }}>
             <Typography
               component="span"

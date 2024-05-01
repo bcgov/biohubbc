@@ -5,6 +5,11 @@ import SurveyMap from 'features/surveys/view/SurveyMap';
 import { Feature } from 'geojson';
 import { useAnimalPageContext } from 'hooks/useContext';
 
+/**
+ * Wrapper around the Survey Map component for displaying the selected animal's captures on the map
+ *
+ * @returns
+ */
 const AnimalCapturesMap = () => {
   const { critterDataLoader } = useAnimalPageContext();
 
@@ -18,14 +23,6 @@ const AnimalCapturesMap = () => {
     properties: { captureId: capture.capture_id, date: capture.capture_timestamp }
   })) as Feature[];
 
-  // const captureMapFeatures = [
-  //   {
-  //     type: 'Feature',
-  //     geometry: { type: 'Point', coordinates: [-120.4, 51.3] },
-  //     properties: { captureId: 1 }
-  //   }
-  // ] as Feature[];
-
   const staticLayers: IStaticLayer[] = captureMapFeatures.map((feature, index) => ({
     layerName: 'Captures',
     popupRecordTitle: 'Capture Location',
@@ -33,15 +30,6 @@ const AnimalCapturesMap = () => {
       {
         key: `${feature.id}-${index}`,
         geoJSON: feature
-
-        // popup: (
-        //   <SurveyMapPopup
-        //     // isLoading={isLoading}
-        //     title={feature.properties.date}
-        //     metadata={featureMetadata[feature.]}
-        //   />
-        // ),
-        // tooltip: <SurveyMapTooltip label="Observation" />
       }
     ]
   }));

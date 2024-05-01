@@ -28,16 +28,8 @@ export const defaultAnimalCaptureFormValues: ICreateCaptureRequest = {
     release_timestamp: '',
     capture_comment: '',
     release_comment: '',
-    capture_location: {
-      type: 'Feature',
-      geometry: { type: 'Point', coordinates: [0, 0] },
-      properties: { coordinate_uncertainty: 'm' }
-    },
-    release_location: {
-      type: 'Feature',
-      geometry: { type: 'Point', coordinates: [0, 0] },
-      properties: { coordinate_uncertainty: 'm' }
-    }
+    capture_location: null,
+    release_location: null
   },
   markings: [],
   measurements: {
@@ -46,6 +38,11 @@ export const defaultAnimalCaptureFormValues: ICreateCaptureRequest = {
   }
 };
 
+/**
+ * Returns the page for creating a new animal capture
+ *
+ * @returns
+ */
 const CreateCapturePage = () => {
   const critterbaseApi = useCritterbaseApi();
 
@@ -142,23 +139,37 @@ const CreateCapturePage = () => {
     setIsSaving(true);
     try {
       const critterbaseCritterId = animalPageContext.selectedAnimal?.critterbase_critter_id;
-      if (!values || !critterbaseCritterId || values.capture.capture_location.geometry.type !== 'Point') {
+
+      if (!values || !critterbaseCritterId || values.capture.capture_location?.geometry.type !== 'Point') {
         return;
+      }
+
+      const captureLocation = {
+        longitude: values.capture.capture_location.geometry.coordinates[0],
+        latitude: values.capture.capture_location.geometry.coordinates[1],
+        coordinate_uncertainty: 0,
+        coordinate_uncertainty_units: 'm'
+      };
+
+      // if release location is null, set it to capture location, otherwise format it for critterbase
+      let releaseLocation = values.capture.release_location;
+      if (releaseLocation && releaseLocation.geometry.type === 'Point') {
+        releaseLocation = {
+          longitude: releaseLocation.geometry.coordinates[0],
+          latitude: releaseLocation.geometry.coordinates[1],
+          coordinate_uncertainty: 0,
+          coordinate_uncertainty_units: 'm'
+        } as any; // REMOVE
       }
 
       const response = await critterbaseApi.capture.createCapture({
         capture_id: undefined,
         capture_timestamp: new Date(values.capture.capture_timestamp),
         release_timestamp: new Date(values.capture.release_timestamp),
-        capture_comment: values.capture.capture_comment,
-        release_comment: values.capture.release_comment,
-        capture_location: {
-          longitude: values.capture.capture_location.geometry.coordinates[0],
-          latitude: values.capture.capture_location.geometry.coordinates[1],
-          coordinate_uncertainty: 0,
-          coordinate_uncertainty_units: 'm'
-        },
-        release_location: values.capture.release_location,
+        capture_comment: values.capture.capture_comment ?? '',
+        release_comment: values.capture.release_comment ?? '',
+        capture_location: captureLocation,
+        release_location: captureLocation ?? captureLocation,
         critter_id: critterbaseCritterId
       });
 

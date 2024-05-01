@@ -19,10 +19,6 @@ export interface ISurveyCritter {
  * @interface IAnimalPageContext
  */
 export type IAnimalPageContext = {
-  isLoading: boolean;
-  setIsLoading: (isLoading: boolean) => void;
-  isDisabled: boolean;
-  setIsDisabled: (isDisabled: boolean) => void;
   selectedAnimal: ISurveyCritter | null;
   setSelectedAnimal: (selectedAnimal: ISurveyCritter | null) => void;
   critterDataLoader: DataLoader<[critterbase_critter_id: string], ICritterDetailedResponse, unknown>;
@@ -30,12 +26,13 @@ export type IAnimalPageContext = {
   setSelectedAnimalFromSurveyCritterId: (selectedAnimalFromSurveyCritterId: number) => void;
 };
 
+/**
+ * Context for the Manage Animals page
+ *
+ */
 export const AnimalPageContext = createContext<IAnimalPageContext | undefined>(undefined);
 
 export const AnimalPageContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isDisabled, setIsDisabled] = useState<boolean>(false);
-
   const critterbaseApi = useCritterbaseApi();
   const biohubApi = useBiohubApi();
 
@@ -49,13 +46,17 @@ export const AnimalPageContextProvider = (props: PropsWithChildren<Record<never,
   }
 
   /**
-   * Keeps track of which animal has been selected in the side panel of the animal page
+   * Keeps track of which animal has been selected from the animal list for view
+   *
    */
   const [selectedAnimal, setSelectedAnimal] = useState<ISurveyCritter | null>(null);
 
   /**
-   * Used to set selectedAnimal from just surveyCritterId. Triggers a query for an
-   * animal's Critterbase ID to update selectedAnimal.
+   * Used to set selectedAnimal from just surveyCritterId. When set, it triggers a query for the animal's
+   * Critterbase ID to then update selectedAnimal and subsequently refresh the critterDataLoader.
+   *
+   * This is included so that selectedAnimal can be set by only knowing the Survey Critter ID from the URL params.
+   *
    */
   const [selectedAnimalFromSurveyCritterId, setSelectedAnimalFromSurveyCritterId] = useState<number | null>(null);
 
@@ -75,7 +76,8 @@ export const AnimalPageContextProvider = (props: PropsWithChildren<Record<never,
   }, [selectedAnimalFromSurveyCritterId, surveyCrittersDataLoader.data]);
 
   /**
-   * Refreshes the current profile whenever the selected critter changes
+   * Refreshes the animal's profile when selectedAnimal changes
+   *
    */
   useEffect(() => {
     if (selectedAnimal) {
@@ -85,17 +87,19 @@ export const AnimalPageContextProvider = (props: PropsWithChildren<Record<never,
 
   const animalPageContext: IAnimalPageContext = useMemo(
     () => ({
-      isLoading,
-      setIsLoading,
-      isDisabled,
-      setIsDisabled,
       selectedAnimal,
       setSelectedAnimal,
       critterDataLoader,
       selectedAnimalFromSurveyCritterId,
       setSelectedAnimalFromSurveyCritterId
     }),
-    [selectedAnimal, isLoading, isDisabled, critterDataLoader, selectedAnimalFromSurveyCritterId, setSelectedAnimalFromSurveyCritterId, setSelectedAnimal]
+    [
+      selectedAnimal,
+      critterDataLoader,
+      selectedAnimalFromSurveyCritterId,
+      setSelectedAnimalFromSurveyCritterId,
+      setSelectedAnimal
+    ]
   );
 
   return <AnimalPageContext.Provider value={animalPageContext}>{props.children}</AnimalPageContext.Provider>;

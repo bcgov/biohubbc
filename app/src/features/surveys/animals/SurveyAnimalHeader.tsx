@@ -11,6 +11,12 @@ export interface SurveyAnimalHeaderProps {
   survey_name: string;
 }
 
+/**
+ * Returns the header for the Survey Animals page
+ *
+ * @param props
+ * @returns
+ */
 const SurveyAnimalHeader = (props: SurveyAnimalHeaderProps) => {
   const { project_id, project_name, survey_id, survey_name } = props;
   return (

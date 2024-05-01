@@ -38,7 +38,7 @@ export const useXrefApi = (axios: AxiosInstance) => {
    */
   const getCollectionUnits = async (tsn: number): Promise<ICollectionUnitResponse[]> => {
     const { data } = await axios.get(`/api/critterbase/xref/taxon-collection-categories?tsn=${tsn}`);
-    console.log(data)
+    console.log(data);
     return data;
   };
 

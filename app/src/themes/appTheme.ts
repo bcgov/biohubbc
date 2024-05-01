@@ -180,7 +180,7 @@ const appTheme = createTheme({
     MuiButtonBase: {
       defaultProps: {
         disableRipple: true
-      },
+      }
     },
     MuiChip: {
       styleOverrides: {

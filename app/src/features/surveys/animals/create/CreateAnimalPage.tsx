@@ -25,10 +25,15 @@ export const defaultAnimalDataFormValues: ICreateEditAnimalRequest = {
   nickname: '',
   species: null,
   ecological_units: [],
-  description: '',
-  wildlife_health_id: ''
+  wildlife_health_id: '',
+  critter_comment: null
 };
 
+/**
+ * Returns the page for creatig new animals (critters) and inserting them into the current survey
+ *
+ * @returns
+ */
 const CreateAnimalPage = () => {
   const biohubApi = useBiohubApi();
 
@@ -46,7 +51,7 @@ const CreateAnimalPage = () => {
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
-    history.push(`/admin/projects/${projectId}/surveys/${surveyId}`);
+    history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`);
   };
 
   const defaultCancelDialogProps = {
@@ -113,6 +118,8 @@ const CreateAnimalPage = () => {
    */
   const handleSubmit = async (values: ICreateEditAnimalRequest) => {
     setIsSaving(true);
+    console.log(values);
+
     try {
       if (!values.species) {
         return;
@@ -134,7 +141,6 @@ const CreateAnimalPage = () => {
       }
 
       setEnableCancelCheck(false);
-      console.log(values);
 
       // Refresh the context, so the next page loads with the latest data
       surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);

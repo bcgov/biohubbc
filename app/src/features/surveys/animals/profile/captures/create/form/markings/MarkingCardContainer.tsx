@@ -7,6 +7,11 @@ import { useFormikContext } from 'formik';
 import { ICreateCaptureRequest } from 'interfaces/useCritterApi.interface';
 import { TransitionGroup } from 'react-transition-group';
 
+/**
+ * Card for displaying information about markings on the animal capture form
+ *
+ * @returns
+ */
 const MarkingCardContainer = () => {
   const { values } = useFormikContext<ICreateCaptureRequest>();
 

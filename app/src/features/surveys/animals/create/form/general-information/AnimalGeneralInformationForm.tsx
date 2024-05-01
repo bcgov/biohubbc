@@ -7,55 +7,59 @@ import SpeciesAutocompleteField from 'components/species/components/SpeciesAutoc
 import { useFormikContext } from 'formik';
 import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
 
+/**
+ * Returns components for setting general information fields when creating or editing an animal
+ *
+ * @returns
+ */
 const AnimalGeneralInformationForm = () => {
-  const { values, setFieldValue } = useFormikContext<ICreateEditAnimalRequest>();
+  const { values, errors, setFieldValue } = useFormikContext<ICreateEditAnimalRequest>();
 
   return (
-    <>
-      <Box component="fieldset">
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <SpeciesAutocompleteField
-              formikFieldName={'species'}
-              label={'Species'}
-              required={false}
-              handleSpecies={(species) => {
-                setFieldValue('species', species);
-              }}
-              clearOnSelect={true}
-            />
-            {values.species && (
-              <Collapse in={Boolean(values.species)}>
-                <SelectedSpecies
-                  selectedSpecies={[values.species]}
-                  handleRemoveSpecies={() => {
-                    setFieldValue('species', null);
-                  }}
-                />
-              </Collapse>
-            )}
-          </Grid>
-          <Grid item xs={12}>
-            <CustomTextField
-              name="nickname"
-              label="Nickname"
-              maxLength={200}
-              other={{
-                required: true
-              }}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <CustomTextField
-              name="description"
-              label="Description"
-              maxLength={1000}
-              other={{ multiline: true, rows: 4 }}
-            />
-          </Grid>
+    <Box component="fieldset">
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <SpeciesAutocompleteField
+            formikFieldName={'species'}
+            label={'Species'}
+            required={false}
+            handleSpecies={(species) => {
+              setFieldValue('species', species);
+            }}
+            clearOnSelect={true}
+            error={errors.species}
+          />
+          {values.species && (
+            <Collapse in={Boolean(values.species)}>
+              <SelectedSpecies
+                selectedSpecies={[values.species]}
+                handleRemoveSpecies={() => {
+                  setFieldValue('species', null);
+                }}
+              />
+            </Collapse>
+          )}
         </Grid>
-      </Box>
-    </>
+        <Grid item xs={12}>
+          <CustomTextField
+            name="nickname"
+            label="Nickname"
+            maxLength={200}
+            other={{
+              required: true
+            }}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <CustomTextField
+            name="critter_comment"
+            label="Description"
+            maxLength={1000}
+            other={{ multiline: true, rows: 4 }}
+          />
+        </Grid>
+      </Grid>
+    </Box>
   );
 };
 

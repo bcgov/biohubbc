@@ -11,6 +11,12 @@ const initialEcologicalUnitValues = {
   value: ''
 };
 
+/**
+ * Returns component for adding ecological units to an animal within the AnimalForm
+ *
+ * @returns
+ *
+ */
 const EcologicalUnitsForm = () => {
   const { values } = useFormikContext<ICreateEditAnimalRequest>();
 

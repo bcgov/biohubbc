@@ -12,6 +12,11 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { ICreateCaptureRequest } from 'interfaces/useCritterApi.interface';
 
+/**
+ * Returns the control for applying measurements to an animal on the animal capture form
+ *
+ * @returns
+ */
 const CaptureMeasurementsForm = () => {
   const critterbaseApi = useCritterbaseApi();
   const { critterDataLoader } = useAnimalPageContext();

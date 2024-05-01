@@ -8,6 +8,12 @@ interface IAnimalAttributeItemProps {
   text: string | JSX.Element;
 }
 
+/**
+ * Component to display text with an icon within an animal's profile
+ *
+ * @param props
+ * @returns
+ */
 const AnimalAttributeItem = (props: IAnimalAttributeItemProps) => {
   return (
     <Box display="flex" alignItems="center">

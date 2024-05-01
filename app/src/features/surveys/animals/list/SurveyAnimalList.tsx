@@ -41,7 +41,7 @@ const SurveyAnimalList = () => {
 
   const { projectId, surveyId } = useSurveyContext();
 
-  const { isDisabled, setSelectedAnimal } = useAnimalPageContext();
+  const { setSelectedAnimal } = useAnimalPageContext();
 
   const critters = surveyContext.critterDataLoader.data;
 
@@ -242,7 +242,7 @@ const SurveyAnimalList = () => {
           vertical: 'top',
           horizontal: 'right'
         }}>
-        <MenuItem onClick={handlePromptConfirmBulkDelete} disabled={isDisabled}>
+        <MenuItem onClick={handlePromptConfirmBulkDelete}>
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />
           </ListItemIcon>
@@ -266,7 +266,7 @@ const SurveyAnimalList = () => {
               <SkeletonList />
             ) : (
               <Stack height="100%" position="relative" sx={{ overflowY: 'auto', flex: '1 1 auto' }}>
-                <Box display="flex" alignItems="center" px={2} height={55} width='100%'>
+                <Box display="flex" alignItems="center" px={2} height={55} width="100%">
                   <FormGroup>
                     <FormControlLabel
                       label={
@@ -303,7 +303,6 @@ const SurveyAnimalList = () => {
                 </Box>
                 <Divider flexItem></Divider>
                 <Box flex="1 1 auto">
-                  {/* Display text if the sample site data loader has no items in it */}
                   {!critters.length && (
                     <Stack
                       sx={{
@@ -324,7 +323,7 @@ const SurveyAnimalList = () => {
                     </Stack>
                   )}
                   {critters.map((critter) => (
-                    <Stack direction="row" display="flex" alignItems="center" overflow="hidden" flex='1 1 auto'>
+                    <Stack direction="row" display="flex" alignItems="center" overflow="hidden" flex="1 1 auto">
                       <CritterListItem
                         key={`${critter.survey_critter_id}-${critter.critter_id}`}
                         critter={critter}
@@ -346,17 +345,6 @@ const SurveyAnimalList = () => {
                     </Stack>
                   ))}
                 </Box>
-                {/* TODO how should we handle controlling pagination? */}
-                {/* <Paper square sx={{ position: 'sticky', bottom: 0, marginTop: '-1px' }}>
-                <Divider flexItem></Divider>
-                  <TablePagination
-                    rowsPerPage={10}
-                    page={1}
-                    onPageChange={(event) => {}}
-                    rowsPerPageOptions={[10, 50]}
-                    count={69}
-                  />
-                </Paper> */}
               </Stack>
             )}
           </Box>

@@ -7,45 +7,49 @@ import Typography from '@mui/material/Typography';
 import { useAnimalPageContext, useSurveyContext } from 'hooks/useContext';
 import { Link as RouterLink } from 'react-router-dom';
 
+/**
+ * Toolbar for actions affecting an animal's captures, ie. add a new capture
+ *
+ * @returns
+ */
 const AnimalCapturesToolbar = () => {
-  const { critterDataLoader, isDisabled, selectedAnimal } = useAnimalPageContext();
+  const { critterDataLoader, selectedAnimal } = useAnimalPageContext();
 
   const { projectId, surveyId } = useSurveyContext();
 
+  if (!critterDataLoader.data || !selectedAnimal) {
+    return <></>;
+  }
+
   return (
-    <>
-      {selectedAnimal?.survey_critter_id && (
-        <Toolbar
-          disableGutters
-          sx={{
-            px: 3
-          }}>
-          <Typography
-            data-testid="map-control-title"
-            component="div"
-            fontWeight="700"
-            sx={{
-              flex: '1 1 auto'
-            }}>
-            Captures
-            <Typography component="span" color="textSecondary" sx={{ ml: 0.5, flex: '1 1 auto' }}>
-              ({critterDataLoader.data?.captures.length ?? 0})
-            </Typography>
-          </Typography>
-          <Box display="flex">
-            <Button
-              variant="contained"
-              color="primary"
-              component={RouterLink}
-              to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.survey_critter_id}/capture/create`}
-              startIcon={<Icon path={mdiPlus} size={1} />}
-              disabled={isDisabled}>
-              Add
-            </Button>
-          </Box>
-        </Toolbar>
-      )}
-    </>
+    <Toolbar
+      disableGutters
+      sx={{
+        px: 3
+      }}>
+      <Typography
+        data-testid="map-control-title"
+        component="div"
+        fontWeight="700"
+        sx={{
+          flex: '1 1 auto'
+        }}>
+        Captures
+        <Typography component="span" color="textSecondary" sx={{ ml: 0.5, flex: '1 1 auto' }}>
+          ({critterDataLoader.data?.captures.length ?? 0})
+        </Typography>
+      </Typography>
+      <Box display="flex">
+        <Button
+          variant="contained"
+          color="primary"
+          component={RouterLink}
+          to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.survey_critter_id}/capture/create`}
+          startIcon={<Icon path={mdiPlus} size={1} />}>
+          Add
+        </Button>
+      </Box>
+    </Toolbar>
   );
 };
 

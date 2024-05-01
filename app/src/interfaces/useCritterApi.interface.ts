@@ -3,13 +3,13 @@ import { ITaxonomy } from './useTaxonomyApi.interface';
 
 export interface ICreateEditAnimalRequest {
   nickname: string;
-  description: string;
   species: ITaxonomy | null;
   ecological_units: {
     value: number;
     ecological_unit_id: string;
-  }[],
+  }[];
   wildlife_health_id: string;
+  critter_comment: string | null;
 }
 
 export interface IMarkingPostData {
@@ -40,10 +40,10 @@ export interface ICapturePostData {
   capture_id?: string;
   capture_timestamp: string;
   release_timestamp: string;
-  capture_comment: string;
-  release_comment: string;
-  capture_location: Feature;
-  release_location: Feature;
+  capture_comment: string | null;
+  release_comment: string | null;
+  capture_location: Feature | null;
+  release_location: Feature | null;
 }
 
 export interface ILocationPostData {
@@ -59,10 +59,6 @@ export interface ICreateCaptureRequest {
   markings: IMarkingPostData[];
   measurements?: IMeasurementPostData;
 }
-
-// export interface IAnimalUpdateObject {
-//   name: string
-// }
 
 export type ICollectionUnitResponse = {
   critter_collection_unit_id: string;

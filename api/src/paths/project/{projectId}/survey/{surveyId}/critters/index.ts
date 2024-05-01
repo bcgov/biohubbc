@@ -170,6 +170,7 @@ export function getCrittersFromSurvey(): RequestHandler {
       keycloak_guid: req['system_user']?.user_guid,
       username: req['system_user']?.user_identifier
     };
+
     const surveyId = Number(req.params.surveyId);
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -214,8 +215,10 @@ export function addCritterToSurvey(): RequestHandler {
       keycloak_guid: req['system_user']?.user_guid,
       username: req['system_user']?.user_identifier
     };
+
     const surveyId = Number(req.params.surveyId);
     let critterId = req.body.critter_id;
+
     const connection = getDBConnection(req['keycloak_token']);
     const surveyService = new SurveyCritterService(connection);
     const cb = new CritterbaseService(user);
@@ -223,18 +226,17 @@ export function addCritterToSurvey(): RequestHandler {
     try {
       await connection.open();
 
+      // If request does not include critter ID, create a new critter and use its critter ID
       let result = null;
       if (!critterId) {
         result = await cb.createCritter(req.body);
+        critterId = result.critter_id;
       }
-
-      critterId = result.critter_id;
-      console.log(result)
 
       await surveyService.addCritterToSurvey(surveyId, critterId);
 
       await connection.commit();
-      return res.status(201).json(result);
+      return res.status(201).json({ critter_id: critterId });
     } catch (error) {
       defaultLog.error({ label: 'addCritterToSurvey', message: 'error', error });
       await connection.rollback();

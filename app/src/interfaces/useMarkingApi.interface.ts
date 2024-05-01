@@ -5,7 +5,7 @@ export type IMarkingTypeResponse = {
 };
 
 export type IMarkingBodyLocationResponse = {
-    description: string;
-    body_location: string;
-    taxon_marking_body_location_id: string;
-}
+  description: string;
+  body_location: string;
+  taxon_marking_body_location_id: string;
+};

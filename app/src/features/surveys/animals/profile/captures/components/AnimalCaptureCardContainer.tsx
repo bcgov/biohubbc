@@ -21,6 +21,11 @@ import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDate } from 'utils/Utils';
 import CaptureCardDetails from './CaptureCardDetails';
 
+/**
+ * Returns accordian cards for displaying animal capture details on the animal profile page
+ *
+ * @returns
+ */
 const AnimalCaptureCardContainer = () => {
   const { critterDataLoader } = useAnimalPageContext();
   const [selectedCapture, setSelectedCapture] = useState<string | null>(null);
