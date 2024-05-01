@@ -21,17 +21,19 @@ const AnimalCaptureForm = (props: IAnimalCaptureFormProps) => {
   const animalCaptureYupSchema = yup.object({
     capture: yup.object({
       capture_id: yup.string().nullable(),
-      capture_timestamp: yup.string().required('Capture time is required'),
+      capture_timestamp: yup.string().required('Capture date and time is required'),
       capture_comment: yup.string().required('Capture comment is required'),
       release_timestamp: yup.string().nullable(),
       release_comment: yup.string().nullable(),
       capture_location: yup
-        .array(
-          yup.object({
-            geojson: yup.array().min(1, 'A location is required').required('A location is required')
-          })
-        )
-        .min(1, 'Capture location is required'),
+        .object().shape({
+          type: yup.string(),
+          geometry: yup.object({ type: yup.string().required(), coordinates: yup.array().of(yup.number()).length(2) }),
+          properties: yup.object().optional()
+        })
+        .nullable()
+        .default(undefined)
+        .required('Capture location is required'),
       release_location: yup
         .array(
           yup.object({

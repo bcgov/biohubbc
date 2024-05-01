@@ -87,7 +87,7 @@ const EditCapturePage = () => {
   const capture = captureDataLoader.data;
 
   if (!capture) {
-    return <CircularProgress size={40} className='pageProgress'/>;
+    return <CircularProgress size={40} className="pageProgress" />;
   }
 
   const initialFormikValues: ICreateCaptureRequest = {
@@ -200,7 +200,7 @@ const EditCapturePage = () => {
     setIsSaving(true);
     try {
       const critterbaseCritterId = animalPageContext.selectedAnimal?.critterbase_critter_id;
-      if (!values || !critterbaseCritterId || values.capture.capture_location.geometry.type !== 'Point') {
+      if (!values || !critterbaseCritterId || values.capture.capture_location?.geometry.type !== 'Point') {
         return;
       }
 
@@ -208,8 +208,8 @@ const EditCapturePage = () => {
         capture_id: undefined,
         capture_timestamp: new Date(values.capture.capture_timestamp),
         release_timestamp: new Date(values.capture.release_timestamp),
-        capture_comment: values.capture.capture_comment,
-        release_comment: values.capture.release_comment,
+        capture_comment: values.capture.capture_comment ?? '',
+        release_comment: values.capture.release_comment ?? '',
         capture_location: {
           longitude: values.capture.capture_location.geometry.coordinates[0],
           latitude: values.capture.capture_location.geometry.coordinates[1],

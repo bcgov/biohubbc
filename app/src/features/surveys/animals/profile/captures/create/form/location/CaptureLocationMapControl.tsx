@@ -1,5 +1,7 @@
 import { mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
@@ -64,13 +66,18 @@ const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps) => {
 
   const { mapId } = props;
 
-  const { values, setFieldValue } = useFormikContext<ICreateCaptureRequest>();
+  const { values, setFieldValue, setFieldError, errors } = useFormikContext<ICreateCaptureRequest>();
 
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
 
   //   Array of sampling site features
   const captureLocationGeoJson: Feature | undefined = useMemo(() => {
     const location: { latitude: number; longitude: number } | Feature = get(values, name);
+
+    if (!location) {
+      return;
+    }
+
     if ('latitude' in location && location.latitude !== 0) {
       return {
         type: 'Feature',
@@ -115,9 +122,17 @@ const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps) => {
               }}
               onFailure={(message) => {
                 console.log(message);
-                // setFieldError(name, message);
+                setFieldError(name, message);
               }}
             />
+
+            {errors.capture?.capture_location && !Array.isArray(errors.capture?.capture_location) && (
+              <Alert severity="error" variant="outlined">
+                <AlertTitle>Capture location missing</AlertTitle>
+                {errors.capture.capture_location as string}
+              </Alert>
+            )}
+
             <Toolbar
               disableGutters
               sx={{

@@ -40,10 +40,10 @@ export interface ICapturePostData {
   capture_id?: string;
   capture_timestamp: string;
   release_timestamp: string;
-  capture_comment: string;
-  release_comment: string;
-  capture_location: Feature;
-  release_location: Feature;
+  capture_comment: string | null;
+  release_comment: string | null;
+  capture_location: Feature | null;
+  release_location: Feature | null;
 }
 
 export interface ILocationPostData {
