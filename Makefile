@@ -23,7 +23,7 @@ env: | setup ## Copies the default ./env_config/env.docker to ./.env
 
 postgres: | close build-postgres run-postgres ## Performs all commands necessary to run the postgres project (db) in docker
 backend: | close build-backend run-backend ## Performs all commands necessary to run all backend projects (db, api) in docker
-web: | close build-web run-web ## Performs all commands necessary to run all backend+web projects (db, api, app) in docker
+web: | close build-web check-env run-web ## Performs all commands necessary to run all backend+web projects (db, api, app) in docker
 
 db-setup: | build-db-setup run-db-setup ## Performs all commands necessary to run the database migrations and seeding
 db-migrate: | build-db-migrate run-db-migrate ## Performs all commands necessary to run the database migrations
@@ -61,6 +61,12 @@ prune: ## Deletes ALL docker artifacts (even those not associated to this projec
 	@echo "==============================================="
 	@docker system prune --all --volumes -f
 	@docker volume prune --all -f
+
+check-env: ## Check for missing env vars
+	@echo "==============================================="
+	@echo "Make: check-env - check for missing env vars"
+	@echo "==============================================="
+	@awk_output=$$(awk -F= 'NR==FNR{a[$$1]; next} !($$1 in a)' .env env_config/env.docker); if [ -z "$$awk_output" ]; then echo "Up to date"; else echo "Missing ENV variables!\n$$awk_output"; fi
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Postgres DB Commands
