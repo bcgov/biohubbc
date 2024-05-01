@@ -29,6 +29,17 @@ export class ObservationSubCountMeasurementService extends DBService {
   }
 
   /**
+   * Deletes all observation measurements for a given survey and set of survey observation ids.
+   *
+   * @param {number} surveyId
+   * @param {number[]} surveyObservationId
+   * @memberof ObservationSubCountMeasurementService
+   */
+  async deleteObservationMeasurements(surveyId: number, surveyObservationId: number[]) {
+    await this.observationSubCountMeasurementRepository.deleteObservationMeasurements(surveyId, surveyObservationId);
+  }
+
+  /**
    * Get all distinct taxon_measurment_ids for all qualitative measurements for a given survey.
    *
    * @param {number} surveyId

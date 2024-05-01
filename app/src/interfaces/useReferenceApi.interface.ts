@@ -20,6 +20,7 @@ export type EnvironmentQuantitativeTypeDefinition = {
  */
 export type EnvironmentQualitativeOption = {
   environment_qualitative_option_id: string;
+  environment_qualitative_id: number;
   name: string;
   description: string | null;
 };
@@ -28,7 +29,7 @@ export type EnvironmentQualitativeOption = {
  * A qualitative environment type definition.
  */
 export type EnvironmentQualitativeTypeDefinition = {
-  environment_qualitative_id: number | null;
+  environment_qualitative_id: number;
   name: string;
   description: string | null;
   options: EnvironmentQualitativeOption[];

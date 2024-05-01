@@ -42,36 +42,6 @@ export async function up(knex: Knex): Promise<void> {
 
     ----------------------------------------------------------------------------------------
 
-    INSERT INTO environment_qualitative_option
-      (
-        name,
-        description,
-        value
-      )
-    VALUES
-      (
-        'North',
-        'North',
-        'North'
-      ),
-      (
-        'East',
-        'East',
-        'East'
-      ),
-      (
-        'South',
-        'South',
-        'South'
-      ),
-      (
-        'West',
-        'West',
-        'West'
-      );
-
-    ----------------------------------------------------------------------------------------
-
     INSERT INTO environment_qualitative
       (
         name,
@@ -85,26 +55,33 @@ export async function up(knex: Knex): Promise<void> {
 
     ----------------------------------------------------------------------------------------
 
-    INSERT INTO environment_qualitative_environment_qualitative_option
+    INSERT INTO environment_qualitative_option
       (
         environment_qualitative_id,
-        environment_qualitative_option_id
+        name,
+        description
       )
-    SELECT 
-      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind Direction'),
-      (SELECT environment_qualitative_option_id FROM environment_qualitative_option WHERE name = 'North')
-    UNION ALL
-    SELECT 
-      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind Direction'),
-      (SELECT environment_qualitative_option_id FROM environment_qualitative_option WHERE name = 'East')
-    UNION ALL
-    SELECT 
-      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind Direction'),
-      (SELECT environment_qualitative_option_id FROM environment_qualitative_option WHERE name = 'South')
-    UNION ALL
-    SELECT 
-      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind Direction'),
-      (SELECT environment_qualitative_option_id FROM environment_qualitative_option WHERE name = 'West');
+    VALUES
+      (
+        (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind Direction'),
+        'North',
+        'North direction.'
+      ),
+      (
+        (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind Direction'),
+        'East',
+        'East direction.'
+      ),
+      (
+        (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind Direction'),
+        'South',
+        'South direction.'
+      ),
+      (
+        (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind Direction'),
+        'West',
+        'West direction.'
+      );
   `);
 }
 

@@ -5,7 +5,6 @@ import { Knex } from 'knex';
  * - environment_quantitative
  * - environment_qualitative
  * - environment_qualitative_option
- * - environment_qualitative_environment_qualitative_option
  * - observation_subcount_quantitative_environment
  * - observation_subcount_qualitative_environment
  *
@@ -99,9 +98,9 @@ export async function up(knex: Knex): Promise<void> {
 
     CREATE TABLE environment_qualitative_option (
       environment_qualitative_option_id    integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+      environment_qualitative_id           integer            NOT NULL,
       name                                 varchar(100)       NOT NULL,
       description                          varchar(250),
-      value                                varchar(100)       NOT NULL,
       record_end_date                      date,
       create_date                          timestamptz(6)     DEFAULT now() NOT NULL,
       create_user                          integer            NOT NULL,
@@ -113,9 +112,9 @@ export async function up(knex: Knex): Promise<void> {
 
     COMMENT ON TABLE  environment_qualitative_option                                      IS 'Quantitative environment attribute options.';
     COMMENT ON COLUMN environment_qualitative_option.environment_qualitative_option_id    IS 'System generated surrogate primary key identifier.';
+    COMMENT ON COLUMN environment_qualitative_option.environment_qualitative_id           IS 'Foreign key to the environment_qualitative table.';
     COMMENT ON COLUMN environment_qualitative_option.name                                 IS 'The name of the option.';
     COMMENT ON COLUMN environment_qualitative_option.description                          IS 'The description of the option.';
-    COMMENT ON COLUMN environment_qualitative_option.value                                IS 'The value of the option.';
     COMMENT ON COLUMN environment_qualitative_option.record_end_date                      IS 'Record level end date.';
     COMMENT ON COLUMN environment_qualitative_option.create_date                          IS 'The datetime the record was created.';
     COMMENT ON COLUMN environment_qualitative_option.create_user                          IS 'The id of the user who created the record as identified in the system user table.';
@@ -123,53 +122,13 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN environment_qualitative_option.update_user                          IS 'The id of the user who updated the record as identified in the system user table.';
     COMMENT ON COLUMN environment_qualitative_option.revision_count                       IS 'Revision count used for concurrency control.';
 
-    -- Add unique end-date key constraint
-    CREATE UNIQUE INDEX environment_qualitative_option_nuk1 ON environment_qualitative_option(name, (record_end_date IS NULL)) WHERE record_end_date IS NULL;
-
-    ----------------------------------------------------------------------------------------
-
-    CREATE TABLE environment_qualitative_environment_qualitative_option (
-      environment_qualitative_environment_qualitative_option_id    integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-      environment_qualitative_id                                   integer            NOT NULL,
-      environment_qualitative_option_id                            integer            NOT NULL,
-      record_end_date                                              date,
-      create_date                                                  timestamptz(6)     DEFAULT now() NOT NULL,
-      create_user                                                  integer            NOT NULL,
-      update_date                                                  timestamptz(6),
-      update_user                                                  integer,
-      revision_count                                               integer            DEFAULT 0 NOT NULL,
-      CONSTRAINT environment_qualitative_environment_qualitative_option_pk PRIMARY KEY (environment_qualitative_environment_qualitative_option_id)
-    );
-
-    COMMENT ON TABLE  environment_qualitative_environment_qualitative_option                                                              IS 'A join table for the environment_qualitative and environment_qualitative_option tables.';
-    COMMENT ON COLUMN environment_qualitative_environment_qualitative_option.environment_qualitative_environment_qualitative_option_id    IS 'System generated surrogate primary key identifier.';
-    COMMENT ON COLUMN environment_qualitative_environment_qualitative_option.environment_qualitative_id                                   IS 'Foreign key to the environment_qualitative table.';
-    COMMENT ON COLUMN environment_qualitative_environment_qualitative_option.environment_qualitative_option_id                            IS 'Foreign key to the environment_qualitative_option table.';
-    COMMENT ON COLUMN environment_qualitative_environment_qualitative_option.record_end_date                                              IS 'Record level end date.';
-    COMMENT ON COLUMN environment_qualitative_environment_qualitative_option.create_date                                                  IS 'The datetime the record was created.';
-    COMMENT ON COLUMN environment_qualitative_environment_qualitative_option.create_user                                                  IS 'The id of the user who created the record as identified in the system user table.';
-    COMMENT ON COLUMN environment_qualitative_environment_qualitative_option.update_date                                                  IS 'The datetime the record was updated.';
-    COMMENT ON COLUMN environment_qualitative_environment_qualitative_option.update_user                                                  IS 'The id of the user who updated the record as identified in the system user table.';
-    COMMENT ON COLUMN environment_qualitative_environment_qualitative_option.revision_count                                               IS 'Revision count used for concurrency control.';
-
-    -- Add unique end-date key constraint
-    CREATE UNIQUE INDEX environment_qualitative_environment_qualitative_option_nuk1 ON environment_qualitative_environment_qualitative_option(environment_qualitative_id, environment_qualitative_option_id, (record_end_date IS NULL)) WHERE record_end_date IS NULL;
-
-    -- Add foreign key constraint
-    ALTER TABLE environment_qualitative_environment_qualitative_option
-      ADD CONSTRAINT environment_qualitative_environment_qualitative_option_fk1
-      FOREIGN KEY (environment_qualitative_id)
-      REFERENCES environment_qualitative(environment_qualitative_id);
-
-    ALTER TABLE environment_qualitative_environment_qualitative_option
-      ADD CONSTRAINT environment_qualitative_environment_qualitative_option_fk2
-      FOREIGN KEY (environment_qualitative_option_id)
-      REFERENCES environment_qualitative_option(environment_qualitative_option_id);
-
-    -- Add indexes for foreign keys
-    CREATE INDEX environment_qualitative_environment_qualitative_option_idx1 ON environment_qualitative_environment_qualitative_option(environment_qualitative_id);
-
-    CREATE INDEX environment_qualitative_environment_qualitative_option_idx2 ON environment_qualitative_environment_qualitative_option(environment_qualitative_option_id);
+    -- Add unique end-date key constraint (don't allow 2 records with the same environment_qualitative_id and name and a NULL record_end_date)
+    CREATE UNIQUE INDEX environment_qualitative_option_nuk1 ON environment_qualitative_option(environment_qualitative_id, name, (record_end_date IS NULL)) WHERE record_end_date IS NULL;
+    
+    -- Add unique composite key constraint
+    ALTER TABLE environment_qualitative_option
+      ADD CONSTRAINT environment_qualitative_option_uk1
+      UNIQUE (environment_qualitative_option_id, environment_qualitative_id);
 
     ----------------------------------------------------------------------------------------
     -- Create subocunt environment tables
@@ -221,29 +180,31 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
 
     CREATE TABLE observation_subcount_qualitative_environment (
-      observation_subcount_qualitative_environment_id              integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-      observation_subcount_id                                      integer            NOT NULL,
-      environment_qualitative_environment_qualitative_option_id    integer            NOT NULL,
-      create_date                                                  timestamptz(6)     DEFAULT now() NOT NULL,
-      create_user                                                  integer            NOT NULL,
-      update_date                                                  timestamptz(6),
-      update_user                                                  integer,
-      revision_count                                               integer            DEFAULT 0 NOT NULL,
+      observation_subcount_qualitative_environment_id    integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+      observation_subcount_id                            integer            NOT NULL,
+      environment_qualitative_id                         integer            NOT NULL,
+      environment_qualitative_option_id                  integer            NOT NULL,
+      create_date                                        timestamptz(6)     DEFAULT now() NOT NULL,
+      create_user                                        integer            NOT NULL,
+      update_date                                        timestamptz(6),
+      update_user                                        integer,
+      revision_count                                     integer            DEFAULT 0 NOT NULL,
       CONSTRAINT observation_subcount_qualitative_environment_pk PRIMARY KEY (observation_subcount_qualitative_environment_id)
     );
 
-    COMMENT ON TABLE  observation_subcount_qualitative_environment                                                              IS 'This table is intended to track qualitative environments applied to a particular observation_subcount.';
-    COMMENT ON COLUMN observation_subcount_qualitative_environment.observation_subcount_qualitative_environment_id              IS 'Primary key for the table.';
-    COMMENT ON COLUMN observation_subcount_qualitative_environment.observation_subcount_id                                      IS 'Foreign key to the observation_subcount table.';
-    COMMENT ON COLUMN observation_subcount_qualitative_environment.environment_qualitative_environment_qualitative_option_id    IS 'Foreign key to the environment_qualitative_environment_qualitative_option table.';
-    COMMENT ON COLUMN observation_subcount_qualitative_environment.create_date                                                  IS 'The datetime the record was created.';
-    COMMENT ON COLUMN observation_subcount_qualitative_environment.create_user                                                  IS 'The id of the user who created the record as identified in the system user table.';
-    COMMENT ON COLUMN observation_subcount_qualitative_environment.update_date                                                  IS 'The datetime the record was updated.';
-    COMMENT ON COLUMN observation_subcount_qualitative_environment.update_user                                                  IS 'The id of the user who updated the record as identified in the system user table.';
-    COMMENT ON COLUMN observation_subcount_qualitative_environment.revision_count                                               IS 'Revision count used for concurrency control.';
+    COMMENT ON TABLE  observation_subcount_qualitative_environment                                                    IS 'This table is intended to track qualitative environments applied to a particular observation_subcount.';
+    COMMENT ON COLUMN observation_subcount_qualitative_environment.observation_subcount_qualitative_environment_id    IS 'System generated surrogate primary key identifier.';
+    COMMENT ON COLUMN observation_subcount_qualitative_environment.observation_subcount_id                            IS 'Foreign key to the observation_subcount table.';
+    COMMENT ON COLUMN observation_subcount_qualitative_environment.environment_qualitative_id                         IS 'Foreign key to the environment_qualitative table.';
+    COMMENT ON COLUMN observation_subcount_qualitative_environment.environment_qualitative_option_id                  IS 'Foreign key to the environment_qualitative_option table.';
+    COMMENT ON COLUMN observation_subcount_qualitative_environment.create_date                                        IS 'The datetime the record was created.';
+    COMMENT ON COLUMN observation_subcount_qualitative_environment.create_user                                        IS 'The id of the user who created the record as identified in the system user table.';
+    COMMENT ON COLUMN observation_subcount_qualitative_environment.update_date                                        IS 'The datetime the record was updated.';
+    COMMENT ON COLUMN observation_subcount_qualitative_environment.update_user                                        IS 'The id of the user who updated the record as identified in the system user table.';
+    COMMENT ON COLUMN observation_subcount_qualitative_environment.revision_count                                     IS 'Revision count used for concurrency control.';
 
     -- Add unique constraint
-    CREATE UNIQUE INDEX observation_subcount_qualitative_environment_uk1 ON observation_subcount_qualitative_environment(observation_subcount_id, environment_qualitative_environment_qualitative_option_id);
+    CREATE UNIQUE INDEX observation_subcount_qualitative_environment_uk1 ON observation_subcount_qualitative_environment(observation_subcount_id, environment_qualitative_id, environment_qualitative_option_id);
 
     -- Add foreign key constraint
     ALTER TABLE observation_subcount_qualitative_environment
@@ -253,13 +214,27 @@ export async function up(knex: Knex): Promise<void> {
 
     ALTER TABLE observation_subcount_qualitative_environment
       ADD CONSTRAINT observation_subcount_qualitative_environment_fk2
-      FOREIGN KEY (environment_qualitative_environment_qualitative_option_id)
-      REFERENCES environment_qualitative_environment_qualitative_option(environment_qualitative_environment_qualitative_option_id);
+      FOREIGN KEY (environment_qualitative_id)
+      REFERENCES environment_qualitative(environment_qualitative_id);
+
+    ALTER TABLE observation_subcount_qualitative_environment
+      ADD CONSTRAINT observation_subcount_qualitative_environment_fk3
+      FOREIGN KEY (environment_qualitative_option_id)
+      REFERENCES environment_qualitative_option(environment_qualitative_option_id);
+
+    -- Foreign key on both environment_qualitative_id and environment_qualitative_option_id of 
+    -- environment_qualitative_option to ensure that the combination of those ids in this table has a valid match.
+    ALTER TABLE observation_subcount_qualitative_environment
+      ADD CONSTRAINT observation_subcount_qualitative_environment_fk4
+      FOREIGN KEY (environment_qualitative_id, environment_qualitative_option_id)
+      REFERENCES environment_qualitative_option(environment_qualitative_id, environment_qualitative_option_id);
 
     -- Add indexes for foreign keys
     CREATE INDEX observation_subcount_qualitative_environment_idx1 ON observation_subcount_qualitative_environment(observation_subcount_id);
 
-    CREATE INDEX observation_subcount_qualitative_environment_idx2 ON observation_subcount_qualitative_environment(environment_qualitative_environment_qualitative_option_id);
+    CREATE INDEX observation_subcount_qualitative_environment_idx2 ON observation_subcount_qualitative_environment(environment_qualitative_id);
+
+    CREATE INDEX observation_subcount_qualitative_environment_idx3 ON observation_subcount_qualitative_environment(environment_qualitative_option_id);
 
     ----------------------------------------------------------------------------------------
     -- Create audit/journal triggers
@@ -273,9 +248,6 @@ export async function up(knex: Knex): Promise<void> {
 
     CREATE TRIGGER audit_environment_qualitative_option BEFORE INSERT OR UPDATE OR DELETE ON biohub.environment_qualitative_option FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
     CREATE TRIGGER journal_environment_qualitative_option AFTER INSERT OR UPDATE OR DELETE ON biohub.environment_qualitative_option FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
-
-    CREATE TRIGGER audit_environment_qualitative_environment_qualitative_option BEFORE INSERT OR UPDATE OR DELETE ON biohub.environment_qualitative_environment_qualitative_option FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
-    CREATE TRIGGER journal_environment_qualitative_environment_qualitative_option AFTER INSERT OR UPDATE OR DELETE ON biohub.environment_qualitative_environment_qualitative_option FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
 
     CREATE TRIGGER audit_observation_subcount_quantitative_environment BEFORE INSERT OR UPDATE OR DELETE ON biohub.observation_subcount_quantitative_environment FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
     CREATE TRIGGER journal_observation_subcount_quantitative_environment AFTER INSERT OR UPDATE OR DELETE ON biohub.observation_subcount_quantitative_environment FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
@@ -294,8 +266,6 @@ export async function up(knex: Knex): Promise<void> {
     CREATE OR REPLACE VIEW environment_qualitative AS SELECT * FROM biohub.environment_qualitative;
 
     CREATE OR REPLACE VIEW environment_qualitative_option AS SELECT * FROM biohub.environment_qualitative_option;
-
-    CREATE OR REPLACE VIEW environment_qualitative_environment_qualitative_option AS SELECT * FROM biohub.environment_qualitative_environment_qualitative_option;
 
     CREATE OR REPLACE VIEW observation_subcount_quantitative_environment AS SELECT * FROM biohub.observation_subcount_quantitative_environment;
 

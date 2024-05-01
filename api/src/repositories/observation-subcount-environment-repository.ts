@@ -26,9 +26,9 @@ export type QuantitativeEnvironmentTypeDefinition = z.infer<typeof QuantitativeE
 
 const QualitativeEnvironmentOption = z.object({
   environment_qualitative_option_id: z.number(),
+  environment_qualitative_id: z.number(),
   name: z.string(),
-  description: z.string().nullable(),
-  value: z.string()
+  description: z.string().nullable()
 });
 export type QualitativeEnvironmentOption = z.infer<typeof QualitativeEnvironmentOption>;
 
@@ -41,9 +41,10 @@ export const QualitativeEnvironmentTypeDefinition = z.object({
 export type QualitativeEnvironmentTypeDefinition = z.infer<typeof QualitativeEnvironmentTypeDefinition>;
 
 export const ObservationSubCountQualitativeEnvironmentRecord = z.object({
-  observation_subcount_qualitative_environment_id: z.string().uuid(),
+  observation_subcount_qualitative_environment_id: z.number(),
   observation_subcount_id: z.number(),
-  environment_qualitative_environment_qualitative_option_id: z.string().uuid(),
+  environment_qualitative_id: z.number(),
+  environment_qualitative_option_id: z.number(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),
@@ -55,7 +56,7 @@ export type ObservationSubCountQualitativeEnvironmentRecord = z.infer<
 >;
 
 export const ObservationSubCountQuantitativeEnvironmentRecord = z.object({
-  observation_subcount_quantitative_environment_id: z.string().uuid(),
+  observation_subcount_quantitative_environment_id: z.number(),
   observation_subcount_id: z.number(),
   environment_quantitative_id: z.number(),
   value: z.number(),
@@ -71,7 +72,8 @@ export type ObservationSubCountQuantitativeEnvironmentRecord = z.infer<
 
 export interface InsertObservationSubCountQualitativeEnvironmentRecord {
   observation_subcount_id: number;
-  environment_qualitative_environment_qualitative_option_id: string;
+  environment_qualitative_id: number;
+  environment_qualitative_option_id: number;
 }
 export interface InsertObservationSubCountQuantitativeEnvironmentRecord {
   observation_subcount_id: number;
@@ -94,6 +96,7 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
       .insert(record)
       .into('observation_subcount_qualitative_environment')
       .returning('*');
+
     const response = await this.connection.knex(qb, ObservationSubCountQualitativeEnvironmentRecord);
 
     return response.rows;
@@ -114,6 +117,7 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
       .insert(record)
       .into('observation_subcount_quantitative_environment')
       .returning('*');
+
     const response = await this.connection.knex(qb, ObservationSubCountQuantitativeEnvironmentRecord);
 
     return response.rows;
@@ -132,8 +136,8 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
   }
 
   /**
-   * Get all distinct qualitative enfironment type definition records for all unique qualitative environments for a
-   * given survey.
+   * Get all distinct qualitative environment type definition records for all unique qualitative environment records
+   * associated to a given survey.
    *
    * @param {number} surveyId
    * @return {*}  {Promise<QualitativeEnvironmentTypeDefinition[]>}
@@ -141,20 +145,36 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
    */
   async getQualitativeEnvironmentTypeDefinitions(surveyId: number): Promise<QualitativeEnvironmentTypeDefinition[]> {
     const sqlStatement = SQL`
-      SELECT 
-        DISTINCT environment_qualitative.*
-      FROM 
-        survey_observation
-        JOIN observation_subcount 
-          ON survey_observation.survey_observation_id = observation_subcount.survey_observation_id
-        JOIN observation_subcount_qualitative_environment 
-          ON observation_subcount.observation_subcount_id = observation_subcount_qualitative_environment.observation_subcount_id
-        JOIN environment_qualitative_environment_qualitative_option 
-          ON environment_qualitative_environment_qualitative_option.environment_qualitative_environment_qualitative_option_id = observation_subcount_qualitative_environment.environment_qualitative_environment_qualitative_option_id
-        JOIN environment_qualitative 
-          ON environment_qualitative_environment_qualitative_option.environment_qualitative_id = environment_qualitative.environment_qualitative_id
-      WHERE 
-        survey_observation.survey_id = ${surveyId};    
+      WITH w_observation_subcount_qualitative_environment AS (
+        SELECT DISTINCT
+          environment_qualitative_id
+        FROM
+          survey_observation
+          LEFT JOIN observation_subcount ON survey_observation.survey_observation_id = observation_subcount.survey_observation_id
+          LEFT JOIN observation_subcount_qualitative_environment ON observation_subcount.observation_subcount_id = observation_subcount_qualitative_environment.observation_subcount_id
+        WHERE
+          survey_observation.survey_id = ${surveyId}
+      )
+      SELECT
+        environment_qualitative.environment_qualitative_id,
+        environment_qualitative.name,
+        environment_qualitative.description,
+        json_agg(
+          json_build_object(
+            'environment_qualitative_option_id', environment_qualitative_option.environment_qualitative_option_id,
+            'environment_qualitative_id', environment_qualitative_option.environment_qualitative_id,
+            'name', environment_qualitative_option.name,
+            'description', environment_qualitative_option.description
+          )
+        ) AS options
+      FROM
+        w_observation_subcount_qualitative_environment
+        INNER JOIN environment_qualitative ON environment_qualitative.environment_qualitative_id = w_observation_subcount_qualitative_environment.environment_qualitative_id
+        INNER JOIN environment_qualitative_option ON environment_qualitative.environment_qualitative_id = environment_qualitative_option.environment_qualitative_id
+      GROUP BY
+        environment_qualitative.environment_qualitative_id,
+        environment_qualitative.name,
+        environment_qualitative.description;
     `;
 
     const response = await this.connection.sql(sqlStatement, QualitativeEnvironmentTypeDefinition);
@@ -173,14 +193,19 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
   async getQuantitativeEnvironmentTypeDefinitions(surveyId: number): Promise<QuantitativeEnvironmentTypeDefinition[]> {
     const sqlStatement = SQL`
       SELECT
-        DISTINCT environment_quantitative.*
+        environment_quantitative.environment_quantitative_id,
+        environment_quantitative.name,
+        environment_quantitative.description,
+        environment_quantitative.min,
+        environment_quantitative.max,
+        environment_quantitative.unit
       FROM
         survey_observation
-        JOIN observation_subcount ON
+        INNER JOIN observation_subcount ON
           survey_observation.survey_observation_id = observation_subcount.survey_observation_id
-        JOIN observation_subcount_quantitative_environment
+        INNER JOIN observation_subcount_quantitative_environment
           ON observation_subcount.observation_subcount_id = observation_subcount_quantitative_environment.observation_subcount_id
-        JOIN environment_quantitative
+        INNER JOIN environment_quantitative
           ON observation_subcount_quantitative_environment.environment_quantitative_id = environment_quantitative.environment_quantitative_id
       WHERE
         survey_observation.survey_id = ${surveyId};
@@ -207,17 +232,15 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
         json_agg(
           json_build_object(
             'environment_qualitative_option_id', environment_qualitative_option.environment_qualitative_option_id,
+            'environment_qualitative_id', environment_qualitative.environment_qualitative_id,
             'name', environment_qualitative_option.name,
-            'description', environment_qualitative_option.description,
-            'value', environment_qualitative_option.value
+            'description', environment_qualitative_option.description
           )
         ) AS options
       FROM
         environment_qualitative
-      LEFT JOIN environment_qualitative_environment_qualitative_option
-        ON environment_qualitative.environment_qualitative_id = environment_qualitative_environment_qualitative_option.environment_qualitative_id
       LEFT JOIN environment_qualitative_option
-        ON environment_qualitative_environment_qualitative_option.environment_qualitative_option_id = environment_qualitative_option.environment_qualitative_option_id
+        ON environment_qualitative_option.environment_qualitative_id = environment_qualitative_option.environment_qualitative_id
       WHERE
         environment_qualitative.name ILIKE '%' || ${searchTerm} || '%'
       OR 
@@ -362,19 +385,13 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
       .queryBuilder()
       .delete()
       .from('observation_subcount_qualitative_environment')
-      .using(['environment_qualitative_environment_qualitative_option', 'observation_subcount', 'survey_observation'])
-      .whereRaw(
-        'environment_qualitative_environment_qualitative_option.environment_qualitative_environment_qualitative_option_id = observation_subcount_qualitative_environment.environment_qualitative_environment_qualitative_option_id'
-      )
+      .using(['observation_subcount', 'survey_observation'])
       .whereRaw(
         'observation_subcount_qualitative_environment.observation_subcount_id = observation_subcount.observation_subcount_id'
       )
       .whereRaw('observation_subcount.survey_observation_id = survey_observation.survey_observation_id')
       .andWhere('survey_observation.survey_id', surveyId)
-      .whereIn(
-        'observation_subcount_qualitative_environment.environment_qualitative_environment_qualitative_option_id',
-        environment_qualitative_ids
-      );
+      .whereIn('observation_subcount_qualitative_environment.environment_qualitative_id', environment_qualitative_ids);
 
     const response = await this.connection.knex(qb);
 

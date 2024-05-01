@@ -56,7 +56,8 @@ const MeasurementStandardCard = (props: IMeasurementStandardCard) => {
                   textTransform: 'capitalize'
                 }
               }}
-              elevation={0}>
+              elevation={0}
+              key={option.qualitative_option_id}>
               <Typography variant="body1" fontWeight={700}>
                 {option.option_label}
               </Typography>

@@ -3,7 +3,6 @@ import {
   QualitativeEnvironmentTypeDefinition,
   QuantitativeEnvironmentTypeDefinition
 } from '../repositories/observation-subcount-environment-repository';
-import { ObservationSubCountMeasurementRepository } from '../repositories/observation-subcount-measurement-repository';
 import {
   InsertObservationSubCount,
   InsertSubCountEvent,
@@ -53,7 +52,7 @@ export class SubCountService extends DBService {
   /**
    * Delete observation_subcount records for the given set of survey observation ids.
    *
-   * Note: Also deletes all related child records (subcount_critter, subcount_event).
+   * Note: Also deletes all related child records.
    *
    * @param {number} surveyId
    * @param {number[]} surveyObservationIds
@@ -61,13 +60,16 @@ export class SubCountService extends DBService {
    * @memberof SubCountService
    */
   async deleteObservationSubCountRecords(surveyId: number, surveyObservationIds: number[]): Promise<void> {
-    const repo = new ObservationSubCountMeasurementRepository(this.connection);
-
     // Delete child subcount_critter records, if any
     await this.subCountRepository.deleteSubCountCritterRecordsForObservationId(surveyId, surveyObservationIds);
 
     // Delete child observation measurements, if any
-    await repo.deleteObservationMeasurements(surveyId, surveyObservationIds);
+    const observationSubCountMeasurementService = new ObservationSubCountMeasurementService(this.connection);
+    await observationSubCountMeasurementService.deleteObservationMeasurements(surveyId, surveyObservationIds);
+
+    // Delete child environments, if any
+    const observationSubCountEnvironmentService = new ObservationSubCountEnvironmentService(this.connection);
+    await observationSubCountEnvironmentService.deleteObservationEnvironments(surveyId, surveyObservationIds);
 
     // Delete observation_subcount records, if any
     return this.subCountRepository.deleteObservationSubCountRecords(surveyId, surveyObservationIds);

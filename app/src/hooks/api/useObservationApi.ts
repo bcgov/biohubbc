@@ -13,13 +13,21 @@ import { ApiPaginationRequestOptions } from 'types/misc';
 export interface SubcountToSave {
   observation_subcount_id: number | null;
   subcount: number | null;
-  qualitative: {
+  qualitative_measurements: {
     measurement_id: string;
     measurement_option_id: string;
   }[];
-  quantitative: {
+  quantitative_measurements: {
     measurement_id: string;
     measurement_value: number;
+  }[];
+  qualitative_environments: {
+    environment_qualitative_id: number;
+    environment_qualitative_option_id: number;
+  }[];
+  quantitative_environments: {
+    environment_quantitative_id: number;
+    value: number;
   }[];
 }
 

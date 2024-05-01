@@ -31,6 +31,17 @@ export class ObservationSubCountEnvironmentService extends DBService {
   }
 
   /**
+   * Deletes all environments for a given survey and set of survey observation ids.
+   *
+   * @param {number} surveyId
+   * @param {number[]} surveyObservationId
+   * @memberof ObservationSubCountEnvironmentService
+   */
+  async deleteObservationEnvironments(surveyId: number, surveyObservationId: number[]) {
+    await this.observationSubCountEnvironmentRepository.deleteObservationEnvironments(surveyId, surveyObservationId);
+  }
+
+  /**
    * Get all distinct environment qualitative type definitions for all qualitative environments for a given survey.
    *
    * @param {number} surveyId

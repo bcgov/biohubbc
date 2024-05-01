@@ -106,7 +106,8 @@ type ObservationSubcountQuantitativeMeasurementObject = Pick<
 type ObservationSubCountQualitativeEnvironmentRecord = {
   observation_subcount_qualitative_environment_id: number;
   observation_subcount_id: number;
-  environment_qualitative_environment_qualitative_option_id: number;
+  environment_qualitative_id: number;
+  environment_qualitative_option_id: number;
   create_date: string;
   create_user: number;
   update_date: string | null;
@@ -128,7 +129,7 @@ type ObservationSubCountQuantitativeEnvironmentRecord = {
 
 type ObservationSubcountQualitativeEnvironmentObject = Pick<
   ObservationSubCountQualitativeEnvironmentRecord,
-  'observation_subcount_qualitative_environment_id' | 'environment_qualitative_environment_qualitative_option_id'
+  'environment_qualitative_id' | 'environment_qualitative_option_id'
 >;
 
 type ObservationSubcountQuantitativeEnvironmentObject = Pick<

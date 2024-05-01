@@ -52,10 +52,13 @@ GET.apiDoc = {
                       items: {
                         type: 'object',
                         additionalProperties: false,
-                        required: ['environment_qualitative_option_id', 'name', 'description', 'value'],
+                        required: ['environment_qualitative_option_id', 'name', 'description'],
                         properties: {
                           environment_qualitative_option_id: {
-                            type: 'number'
+                            type: 'integer'
+                          },
+                          environment_qualitative_id: {
+                            type: 'integer'
                           },
                           name: {
                             type: 'string'
@@ -63,9 +66,6 @@ GET.apiDoc = {
                           description: {
                             type: 'string',
                             nullable: true
-                          },
-                          value: {
-                            type: 'string'
                           }
                         }
                       }

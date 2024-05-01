@@ -147,6 +147,8 @@ export const ConfigureColumnsPage = (props: IConfigureColumnsPageProps) => {
             onToggleColumnVisibility={onToggleColumnVisibility}
             onRemoveMeasurements={onRemoveMeasurements}
             measurementColumns={measurementColumns}
+            onRemoveEnvironmentColumns={onRemoveEnvironmentColumns}
+            environmentColumns={environmentColumns}
           />
         )}
         {activeView === ConfigureColumnsViewEnum.MEASUREMENTS && (

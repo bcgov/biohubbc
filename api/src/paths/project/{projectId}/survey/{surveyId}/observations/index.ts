@@ -270,16 +270,16 @@ GET.apiDoc = {
                             items: {
                               type: 'object',
                               additionalProperties: false,
-                              required: ['critterbase_measurement_qualitative_option_id'],
+                              required: ['environment_qualitative_id', 'environment_qualitative_option_id'],
                               properties: {
+                                observation_subcount_qualitative_environment_id: {
+                                  type: 'integer'
+                                },
                                 environment_qualitative_id: {
-                                  type: 'number'
+                                  type: 'integer'
                                 },
                                 environment_qualitative_option_id: {
-                                  type: 'number'
-                                },
-                                environment_qualitative_environment_qualitative_option_id: {
-                                  type: 'number'
+                                  type: 'integer'
                                 }
                               }
                             }
@@ -289,10 +289,10 @@ GET.apiDoc = {
                             items: {
                               type: 'object',
                               additionalProperties: false,
-                              required: ['critterbase_taxon_measurement_id', 'value'],
+                              required: ['environment_quantitative_id', 'value'],
                               properties: {
                                 environment_quantitative_id: {
-                                  type: 'number'
+                                  type: 'integer'
                                 },
                                 value: {
                                   type: 'number'
@@ -443,9 +443,17 @@ GET.apiDoc = {
                           items: {
                             type: 'object',
                             additionalProperties: false,
-                            required: ['environment_qualitative_option_id', 'name', 'description', 'value'],
+                            required: [
+                              'environment_qualitative_option_id',
+                              'environment_qualitative_id',
+                              'name',
+                              'description'
+                            ],
                             properties: {
                               environment_qualitative_option_id: {
+                                type: 'number'
+                              },
+                              environment_qualitative_id: {
                                 type: 'number'
                               },
                               name: {
@@ -454,9 +462,6 @@ GET.apiDoc = {
                               description: {
                                 type: 'string',
                                 nullable: true
-                              },
-                              value: {
-                                type: 'string'
                               }
                             }
                           }
@@ -638,6 +643,14 @@ PUT.apiDoc = {
                     items: {
                       type: 'object',
                       additionalProperties: false,
+                      required: [
+                        'observation_subcount_id',
+                        'subcount',
+                        'qualitative_measurements',
+                        'quantitative_measurements',
+                        'qualitative_environments',
+                        'quantitative_environments'
+                      ],
                       properties: {
                         observation_subcount_id: {
                           type: 'number',
@@ -646,7 +659,7 @@ PUT.apiDoc = {
                         subcount: {
                           type: 'number'
                         },
-                        measurements_qualitative: {
+                        qualitative_measurements: {
                           type: 'array',
                           items: {
                             type: 'object',
@@ -661,7 +674,7 @@ PUT.apiDoc = {
                             }
                           }
                         },
-                        measurements_quantitative: {
+                        quantitative_measurements: {
                           type: 'array',
                           items: {
                             type: 'object',
@@ -676,26 +689,29 @@ PUT.apiDoc = {
                             }
                           }
                         },
-                        environments_qualitative: {
+                        qualitative_environments: {
                           type: 'array',
                           items: {
                             type: 'object',
                             additionalProperties: false,
                             properties: {
+                              environment_qualitative_id: {
+                                type: 'integer'
+                              },
                               environment_qualitative_option_id: {
-                                type: 'number'
+                                type: 'integer'
                               }
                             }
                           }
                         },
-                        environments_quantitative: {
+                        quantitative_environments: {
                           type: 'array',
                           items: {
                             type: 'object',
                             additionalProperties: false,
                             properties: {
                               environment_quantitative_id: {
-                                type: 'number'
+                                type: 'integer'
                               },
                               value: {
                                 type: 'number'
@@ -833,7 +849,7 @@ export function insertUpdateSurveyObservationsWithMeasurements(): RequestHandler
       // Validate measurement data against fetched measurement definition
       const isValid = await observationService.validateSurveyObservations(observationRows, critterBaseService);
       if (!isValid) {
-        throw new Error('Failed to save observation data, measurement values failed validation.');
+        throw new Error('Failed to save observation data, failed data validation.');
       }
 
       await observationService.insertUpdateSurveyObservationsWithMeasurements(surveyId, observationRows);

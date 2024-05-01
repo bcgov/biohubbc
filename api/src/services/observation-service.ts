@@ -11,6 +11,8 @@ import {
   UpdateObservation
 } from '../repositories/observation-repository';
 import {
+  InsertObservationSubCountQualitativeEnvironmentRecord,
+  InsertObservationSubCountQuantitativeEnvironmentRecord,
   QualitativeEnvironmentTypeDefinition,
   QuantitativeEnvironmentTypeDefinition
 } from '../repositories/observation-subcount-environment-repository';
@@ -50,6 +52,7 @@ import {
   CritterbaseService
 } from './critterbase-service';
 import { DBService } from './db-service';
+import { ObservationSubCountEnvironmentService } from './observation-subcount-environment-service';
 import { ObservationSubCountMeasurementService } from './observation-subcount-measurement-service';
 import { PlatformService } from './platform-service';
 import { SamplePeriodService } from './sample-period-service';
@@ -70,18 +73,19 @@ const observationCSVColumnValidator: IXLSXCSVValidator = {
 export interface InsertSubCount {
   observation_subcount_id: number | null;
   subcount: number;
-  measurements_qualitative: {
+  qualitative_measurements: {
     measurement_id: string;
     measurement_option_id: string;
   }[];
-  measurements_quantitative: {
+  quantitative_measurements: {
     measurement_id: string;
     measurement_value: number;
   }[];
-  environments_qualitative: {
+  qualitative_environments: {
+    environment_qualitative_id: number;
     environment_qualitative_option_id: number;
   }[];
-  environments_quantitative: {
+  quantitative_environments: {
     environment_quantitative_id: number;
     value: number;
   }[];
@@ -175,6 +179,8 @@ export class ObservationService extends DBService {
   ): Promise<void> {
     const subCountService = new SubCountService(this.connection);
     const measurementService = new ObservationSubCountMeasurementService(this.connection);
+    const environmentService = new ObservationSubCountEnvironmentService(this.connection);
+
     for (const observation of observations) {
       // Upsert observation standard columns
       const upsertedObservationRecord = await this.observationRepository.insertUpdateSurveyObservations(
@@ -188,35 +194,56 @@ export class ObservationService extends DBService {
       // Delete old observation subcount records (critters, measurements and subcounts)
       await subCountService.deleteObservationSubCountRecords(surveyId, [surveyObservationId]);
 
-      // Insert observation subcount record (event)
+      // Insert observation subcount record
       const observationSubCountRecord = await subCountService.insertObservationSubCount({
         survey_observation_id: surveyObservationId,
         subcount: observation.standardColumns.count
       });
 
-      // Process currently treats all incoming data as source of truth, deletes all
-      if (observation.subcounts.length) {
-        for (const subcount of observation.subcounts) {
-          // TODO: Update process to fetch and find differences between incoming and existing data to only add, update or delete records as needed
-          if (subcount.measurements_qualitative.length) {
-            const qualitativeData: InsertObservationSubCountQualitativeMeasurementRecord[] =
-              subcount.measurements_qualitative.map((item) => ({
-                observation_subcount_id: observationSubCountRecord.observation_subcount_id,
-                critterbase_taxon_measurement_id: item.measurement_id,
-                critterbase_measurement_qualitative_option_id: item.measurement_option_id
-              }));
-            await measurementService.insertObservationSubCountQualitativeMeasurement(qualitativeData);
-          }
+      if (!observation.subcounts.length) {
+        return;
+      }
 
-          if (subcount.measurements_quantitative.length) {
-            const quantitativeData: InsertObservationSubCountQuantitativeMeasurementRecord[] =
-              subcount.measurements_quantitative.map((item) => ({
-                observation_subcount_id: observationSubCountRecord.observation_subcount_id,
-                critterbase_taxon_measurement_id: item.measurement_id,
-                value: item.measurement_value
-              }));
-            await measurementService.insertObservationSubCountQuantitativeMeasurement(quantitativeData);
-          }
+      for (const subcount of observation.subcounts) {
+        // TODO: Update process to fetch and find differences between incoming and existing data to only add, update or delete records as needed
+        if (subcount.qualitative_measurements.length) {
+          const qualitativeData: InsertObservationSubCountQualitativeMeasurementRecord[] =
+            subcount.qualitative_measurements.map((item) => ({
+              observation_subcount_id: observationSubCountRecord.observation_subcount_id,
+              critterbase_taxon_measurement_id: item.measurement_id,
+              critterbase_measurement_qualitative_option_id: item.measurement_option_id
+            }));
+          await measurementService.insertObservationSubCountQualitativeMeasurement(qualitativeData);
+        }
+
+        if (subcount.quantitative_measurements.length) {
+          const quantitativeData: InsertObservationSubCountQuantitativeMeasurementRecord[] =
+            subcount.quantitative_measurements.map((item) => ({
+              observation_subcount_id: observationSubCountRecord.observation_subcount_id,
+              critterbase_taxon_measurement_id: item.measurement_id,
+              value: item.measurement_value
+            }));
+          await measurementService.insertObservationSubCountQuantitativeMeasurement(quantitativeData);
+        }
+
+        if (subcount.qualitative_environments.length) {
+          const qualitativeData: InsertObservationSubCountQualitativeEnvironmentRecord[] =
+            subcount.qualitative_environments.map((item) => ({
+              observation_subcount_id: observationSubCountRecord.observation_subcount_id,
+              environment_qualitative_id: item.environment_qualitative_id,
+              environment_qualitative_option_id: item.environment_qualitative_option_id
+            }));
+          await environmentService.insertObservationSubCountQualitativeEnvironment(qualitativeData);
+        }
+
+        if (subcount.quantitative_environments.length) {
+          const quantitativeData: InsertObservationSubCountQuantitativeEnvironmentRecord[] =
+            subcount.quantitative_environments.map((item) => ({
+              observation_subcount_id: observationSubCountRecord.observation_subcount_id,
+              environment_quantitative_id: item.environment_quantitative_id,
+              value: item.value
+            }));
+          await environmentService.insertObservationSubCountQuantitativeEnvironment(quantitativeData);
         }
       }
     }
@@ -467,7 +494,7 @@ export class ObservationService extends DBService {
       throw new Error('Failed to process file for importing observations. Measurement column validator failed.');
     }
 
-    // TODO
+    // TODO: NICK - Environment columns validation
     // if (!validateCsvEnvironmentColumns(worksheetRowObjects, environmentColumns)) {
     //   throw new Error('Failed to process file for importing observations. Environment column validator failed.');
     // }
@@ -486,19 +513,19 @@ export class ObservationService extends DBService {
       const newSubcount: InsertSubCount = {
         observation_subcount_id: null,
         subcount: row['COUNT'],
-        measurements_qualitative: [],
-        measurements_quantitative: [],
-        environments_qualitative: [],
-        environments_quantitative: []
+        qualitative_measurements: [],
+        quantitative_measurements: [],
+        qualitative_environments: [],
+        quantitative_environments: []
       };
 
       const measurements = this._pullMeasurementsFromWorkSheetRowObject(row, measurementColumns, tsnMeasurements);
-      newSubcount.measurements_qualitative = measurements.measurements_qualitative;
-      newSubcount.measurements_quantitative = measurements.measurements_quantitative;
+      newSubcount.qualitative_measurements = measurements.qualitative_measurements;
+      newSubcount.quantitative_measurements = measurements.quantitative_measurements;
 
       const environments = this._pullEnvironmentsFromWorkSheetRowObject(row, environmentColumns);
-      newSubcount.environments_qualitative = environments.environments_qualitative;
-      newSubcount.environments_quantitative = environments.environments_quantitative;
+      newSubcount.qualitative_environments = environments.qualitative_environments;
+      newSubcount.quantitative_environments = environments.quantitative_environments;
 
       return {
         standardColumns: {
@@ -531,17 +558,17 @@ export class ObservationService extends DBService {
    * @param {Record<string, any>} row A worksheet row object from a CSV that was uploaded for processing
    * @param {string[]} measurementColumns A list of the measurement columns found in a CSV uploaded
    * @param {TsnMeasurementMap} tsnMeasurements Map of TSNs and their valid measurements
-   * @return {*}  {(Pick<InsertSubCount, 'measurements_qualitative' | 'measurements_quantitative'>)}
+   * @return {*}  {(Pick<InsertSubCount, 'qualitative_measurements' | 'quantitative_measurements'>)}
    * @memberof ObservationService
    */
   _pullMeasurementsFromWorkSheetRowObject(
     row: Record<string, any>,
     measurementColumns: string[],
     tsnMeasurements: TsnMeasurementMap
-  ): Pick<InsertSubCount, 'measurements_qualitative' | 'measurements_quantitative'> {
-    const foundMeasurements: Pick<InsertSubCount, 'measurements_qualitative' | 'measurements_quantitative'> = {
-      measurements_qualitative: [],
-      measurements_quantitative: []
+  ): Pick<InsertSubCount, 'qualitative_measurements' | 'quantitative_measurements'> {
+    const foundMeasurements: Pick<InsertSubCount, 'qualitative_measurements' | 'quantitative_measurements'> = {
+      qualitative_measurements: [],
+      quantitative_measurements: []
     };
 
     measurementColumns.forEach((mColumn) => {
@@ -576,13 +603,13 @@ export class ObservationService extends DBService {
             option.option_value === Number(rowData)
         );
         if (foundOption) {
-          foundMeasurements.measurements_qualitative.push({
+          foundMeasurements.qualitative_measurements.push({
             measurement_id: measurement.taxon_measurement_id,
             measurement_option_id: foundOption.qualitative_option_id
           });
         }
       } else {
-        foundMeasurements.measurements_quantitative.push({
+        foundMeasurements.quantitative_measurements.push({
           measurement_id: measurement.taxon_measurement_id,
           measurement_value: Number(rowData)
         });
@@ -595,10 +622,10 @@ export class ObservationService extends DBService {
   _pullEnvironmentsFromWorkSheetRowObject(
     row: Record<string, any>,
     environmentColumns: string[]
-  ): Pick<InsertSubCount, 'environments_qualitative' | 'environments_quantitative'> {
-    const foundEnvironments: Pick<InsertSubCount, 'environments_qualitative' | 'environments_quantitative'> = {
-      environments_qualitative: [],
-      environments_quantitative: []
+  ): Pick<InsertSubCount, 'qualitative_environments' | 'quantitative_environments'> {
+    const foundEnvironments: Pick<InsertSubCount, 'qualitative_environments' | 'quantitative_environments'> = {
+      qualitative_environments: [],
+      quantitative_environments: []
     };
 
     environmentColumns.forEach((mColumn) => {
@@ -624,16 +651,15 @@ export class ObservationService extends DBService {
 
       // if environment is qualitative, find the option id
       if (isEnvironmentQualitativeTypeDefinition(environment)) {
-        const foundOption = environment.options.find(
-          (option) => option.name.toLowerCase() === String(rowData).toLowerCase() || option.value === String(rowData)
-        );
+        const foundOption = environment.options.find((option) => option.name === String(rowData));
         if (foundOption) {
-          foundEnvironments.environments_qualitative.push({
+          foundEnvironments.qualitative_environments.push({
+            environment_qualitative_id: foundOption.environment_qualitative_id,
             environment_qualitative_option_id: foundOption.environment_qualitative_option_id
           });
         }
       } else {
-        foundEnvironments.environments_quantitative.push({
+        foundEnvironments.quantitative_environments.push({
           environment_quantitative_id: environment.environment_quantitative_id,
           value: Number(rowData)
         });
@@ -718,7 +744,7 @@ export class ObservationService extends DBService {
     const measurementsToValidate: IMeasurementDataToValidate[] = observationRows.flatMap(
       (item: InsertUpdateObservationsWithMeasurements) => {
         return item.subcounts.flatMap((subcount) => {
-          const qualitativeValues = subcount.measurements_qualitative.map((qualitative_measurement) => {
+          const qualitativeValues = subcount.qualitative_measurements.map((qualitative_measurement) => {
             return {
               tsn: String(item.standardColumns.itis_tsn),
               measurement_key: qualitative_measurement.measurement_id,
@@ -726,7 +752,7 @@ export class ObservationService extends DBService {
             };
           });
 
-          const quantitativeValues: IMeasurementDataToValidate[] = subcount.measurements_quantitative.map(
+          const quantitativeValues: IMeasurementDataToValidate[] = subcount.quantitative_measurements.map(
             (quantitative_measurement) => {
               return {
                 tsn: String(item.standardColumns.itis_tsn),

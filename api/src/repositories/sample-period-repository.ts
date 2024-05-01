@@ -152,7 +152,7 @@ export class SamplePeriodRepository extends BaseRepository {
       end_time = ${samplePeriod.end_time || null}
     FROM
         survey_sample_method AS ssm
-    JOIN
+    INNER JOIN
         survey_sample_site AS sss ON ssm.survey_sample_site_id = sss.survey_sample_site_id
     WHERE
         ssp.survey_sample_method_id = ssm.survey_sample_method_id
@@ -228,11 +228,11 @@ export class SamplePeriodRepository extends BaseRepository {
         ssp
       FROM
         survey_sample_period AS ssp
-      JOIN
+      INNER JOIN
         survey_sample_method AS ssm
       ON
         ssp.survey_sample_method_id = ssm.survey_sample_method_id
-      JOIN
+      INNER JOIN
         survey_sample_site AS sss
       ON
         ssm.survey_sample_site_id = sss.survey_sample_site_id

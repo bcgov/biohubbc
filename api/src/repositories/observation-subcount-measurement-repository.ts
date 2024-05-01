@@ -41,6 +41,7 @@ export interface InsertObservationSubCountQuantitativeMeasurementRecord {
   critterbase_taxon_measurement_id: string;
   value: number;
 }
+
 export class ObservationSubCountMeasurementRepository extends BaseRepository {
   async insertObservationQualitativeMeasurementRecords(
     record: InsertObservationSubCountQualitativeMeasurementRecord[]
@@ -68,6 +69,13 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
     return response.rows;
   }
 
+  /**
+   * Deletes all observation measurements for a given survey and set of survey observation ids.
+   *
+   * @param {number} surveyId
+   * @param {number[]} surveyObservationId
+   * @memberof ObservationSubCountMeasurementRepository
+   */
   async deleteObservationMeasurements(surveyId: number, surveyObservationId: number[]) {
     await this.deleteObservationQualitativeMeasurementRecordsForSurveyObservationIds(surveyObservationId, surveyId);
     await this.deleteObservationQuantitativeMeasurementRecordsForSurveyObservationIds(surveyObservationId, surveyId);

@@ -60,7 +60,8 @@ const ObservationSubcountQuantitativeMeasurementObject = ObservationSubCountQuan
 
 const ObservationSubcountQualitativeEnvironmentObject = ObservationSubCountQualitativeEnvironmentRecord.pick({
   observation_subcount_qualitative_environment_id: true,
-  environment_qualitative_environment_qualitative_option_id: true
+  environment_qualitative_id: true,
+  environment_qualitative_option_id: true
 });
 
 const ObservationSubcountQuantitativeEnvironmentObject = ObservationSubCountQuantitativeEnvironmentRecord.pick({
@@ -396,7 +397,8 @@ export class ObservationRepository extends BaseRepository {
             knex.raw(`
               json_agg(json_build_object(
                 'observation_subcount_qualitative_environment_id', observation_subcount_qualitative_environment_id,
-                'environment_qualitative_environment_qualitative_option_id', environment_qualitative_environment_qualitative_option_id
+                'environment_qualitative_id', environment_qualitative_id,
+                'environment_qualitative_option_id', environment_qualitative_option_id
               )) as qualitative_environments
             `)
           )
