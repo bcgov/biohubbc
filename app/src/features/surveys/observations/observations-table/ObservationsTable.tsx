@@ -102,7 +102,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         columnVisibilityModel={observationsTableContext.columnVisibilityModel}
         onColumnVisibilityModelChange={onColumnVisibilityModelChange}
         // Rows
-        rows={[...observationsTableContext.savedRows, ...observationsTableContext.stagedRows]}
+        rows={[...observationsTableContext.stagedRows, ...observationsTableContext.savedRows]}
         processRowUpdate={processRowUpdate}
         // Row modes
         rowModesModel={observationsTableContext.rowModesModel}

@@ -146,6 +146,7 @@ export const ConfigureGeneralColumns = (props: IConfigureGeneralColumnsProps) =>
               indeterminate={hiddenFields.length > 0 && hiddenFields.length < hideableColumns.length}
               checked={hiddenFields.length === 0}
               onClick={() => onToggleShowHideAll()}
+              disabled={disabled}
             />
           }
           label={
@@ -174,6 +175,7 @@ export const ConfigureGeneralColumns = (props: IConfigureGeneralColumnsProps) =>
               <ListItemButton
                 dense
                 onClick={() => onToggleColumnVisibility(column.field)}
+                disabled={disabled}
                 sx={{ background: grey[50] }}>
                 <ListItemIcon>
                   <Checkbox edge="start" checked={!hiddenFields.includes(column.field)} />

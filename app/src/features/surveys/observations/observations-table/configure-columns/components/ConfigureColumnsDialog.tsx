@@ -41,6 +41,12 @@ interface IConfigureColumnsDialogProps {
   onRemoveEnvironmentColumns: (environmentColumnIds: EnvironmentTypeIds) => void;
 }
 
+/**
+ * Renders a dialog to configure the columns of the observations table.
+ *
+ * @param {IConfigureColumnsDialogProps} props
+ * @return {*}
+ */
 export const ConfigureColumnsDialog = (props: IConfigureColumnsDialogProps) => {
   const {
     open,

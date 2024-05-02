@@ -40,7 +40,7 @@ import {
 } from 'interfaces/useSurveyApi.interface';
 import { useContext } from 'react';
 import { getCodesName } from 'utils/Utils';
-import { ConfigureColumnsButton } from './configure-columns/dialog/ConfigureColumnsButton';
+import { ConfigureColumnsButton } from './configure-columns/ConfigureColumnsButton';
 import ExportHeadersButton from './export-button/ExportHeadersButton';
 import {
   getEnvironmentColumnDefinitions,

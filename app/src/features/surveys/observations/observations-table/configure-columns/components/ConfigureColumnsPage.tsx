@@ -55,6 +55,7 @@ export interface IConfigureColumnsPageProps {
 
 /**
  * Parent component for the configure columns components.
+ *
  * This component manages the state of the active view (tab) and renders the appropriate child component.
  *
  * @param {IConfigureColumnsPageProps} props
@@ -114,6 +115,7 @@ export const ConfigureColumnsPage = (props: IConfigureColumnsPageProps) => {
             component={Button}
             color="primary"
             startIcon={<Icon path={mdiCog} size={0.75} />}
+            disabled={disabled}
             value={ConfigureColumnsViewEnum.GENERAL}>
             General
           </ToggleButton>
@@ -122,6 +124,7 @@ export const ConfigureColumnsPage = (props: IConfigureColumnsPageProps) => {
             component={Button}
             color="primary"
             startIcon={<Icon path={mdiRuler} size={0.75} />}
+            disabled={disabled}
             value={ConfigureColumnsViewEnum.MEASUREMENTS}>
             Measurements
           </ToggleButton>
@@ -130,6 +133,7 @@ export const ConfigureColumnsPage = (props: IConfigureColumnsPageProps) => {
             component={Button}
             color="primary"
             startIcon={<Icon path={mdiLeaf} size={0.75} />}
+            disabled={disabled}
             value={ConfigureColumnsViewEnum.ENVIRONMENT}>
             Environment
           </ToggleButton>
