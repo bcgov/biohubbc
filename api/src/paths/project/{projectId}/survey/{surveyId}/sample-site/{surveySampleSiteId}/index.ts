@@ -405,7 +405,7 @@ export const GET: Operation = [
 ];
 
 GET.apiDoc = {
-  description: 'Get all survey sample sites.',
+  description: 'Get a survey sample site by id.',
   tags: ['survey'],
   security: [
     {
@@ -434,157 +434,151 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'List of survey sample sites.',
+      description: 'A survey sample site',
       content: {
         'application/json': {
           schema: {
             type: 'object',
             additionalProperties: false,
+            required: ['survey_sample_site_id', 'survey_id', 'name', 'description', 'geojson'],
             properties: {
-              sampleSites: {
-                type: 'object',
-                additionalProperties: false,
-                required: ['survey_sample_site_id', 'survey_id', 'name', 'description', 'geojson'],
-                properties: {
-                  survey_sample_site_id: {
-                    type: 'integer',
-                    minimum: 1
-                  },
-                  survey_id: {
-                    type: 'integer',
-                    minimum: 1
-                  },
-                  name: {
-                    type: 'string',
-                    maxLength: 50
-                  },
-                  description: {
-                    type: 'string',
-                    maxLength: 250
-                  },
-                  geojson: {
-                    ...(GeoJSONFeature as object)
-                  },
-                  sample_methods: {
-                    type: 'array',
-                    required: [
-                      'survey_sample_method_id',
-                      'survey_sample_site_id',
-                      'method_lookup_id',
-                      'method_response_metric_id',
-                      'sample_periods'
-                    ],
-                    items: {
-                      type: 'object',
-                      additionalProperties: false,
-                      properties: {
-                        survey_sample_method_id: {
-                          type: 'integer',
-                          minimum: 1
-                        },
-                        survey_sample_site_id: {
-                          type: 'integer',
-                          minimum: 1
-                        },
-                        method_lookup_id: {
-                          type: 'integer',
-                          minimum: 1
-                        },
-                        description: {
-                          type: 'string',
-                          maxLength: 250
-                        },
-                        sample_periods: {
-                          type: 'array',
-                          required: [
-                            'survey_sample_period_id',
-                            'survey_sample_method_id',
-                            'start_date',
-                            'start_time',
-                            'end_date',
-                            'end_time'
-                          ],
-                          items: {
-                            type: 'object',
-                            additionalProperties: false,
-                            properties: {
-                              survey_sample_period_id: {
-                                type: 'integer',
-                                minimum: 1
-                              },
-                              survey_sample_method_id: {
-                                type: 'integer',
-                                minimum: 1
-                              },
-                              start_date: {
-                                type: 'string'
-                              },
-                              start_time: {
-                                type: 'string',
-                                nullable: true
-                              },
-                              end_date: {
-                                type: 'string'
-                              },
-                              end_time: {
-                                type: 'string',
-                                nullable: true
-                              }
-                            }
+              survey_sample_site_id: {
+                type: 'integer',
+                minimum: 1
+              },
+              survey_id: {
+                type: 'integer',
+                minimum: 1
+              },
+              name: {
+                type: 'string',
+                maxLength: 50
+              },
+              description: {
+                type: 'string',
+                maxLength: 250
+              },
+              geojson: {
+                ...(GeoJSONFeature as object)
+              },
+              sample_methods: {
+                type: 'array',
+                required: [
+                  'survey_sample_method_id',
+                  'survey_sample_site_id',
+                  'method_lookup_id',
+                  'method_response_metric_id',
+                  'sample_periods'
+                ],
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  properties: {
+                    survey_sample_method_id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    survey_sample_site_id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    method_lookup_id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    description: {
+                      type: 'string',
+                      maxLength: 250
+                    },
+                    sample_periods: {
+                      type: 'array',
+                      required: [
+                        'survey_sample_period_id',
+                        'survey_sample_method_id',
+                        'start_date',
+                        'start_time',
+                        'end_date',
+                        'end_time'
+                      ],
+                      items: {
+                        type: 'object',
+                        additionalProperties: false,
+                        properties: {
+                          survey_sample_period_id: {
+                            type: 'integer',
+                            minimum: 1
+                          },
+                          survey_sample_method_id: {
+                            type: 'integer',
+                            minimum: 1
+                          },
+                          start_date: {
+                            type: 'string'
+                          },
+                          start_time: {
+                            type: 'string',
+                            nullable: true
+                          },
+                          end_date: {
+                            type: 'string'
+                          },
+                          end_time: {
+                            type: 'string',
+                            nullable: true
                           }
-                        },
-                        method_response_metric_id: { type: 'integer', minimum: 1 }
-                      }
-                    }
-                  },
-                  blocks: {
-                    type: 'array',
-                    items: {
-                      type: 'object',
-                      additionalProperties: false,
-                      required: ['survey_sample_block_id', 'survey_sample_site_id', 'survey_block_id'],
-                      properties: {
-                        survey_sample_block_id: {
-                          type: 'number'
-                        },
-                        survey_sample_site_id: {
-                          type: 'number'
-                        },
-                        survey_block_id: {
-                          type: 'number'
-                        },
-                        name: {
-                          type: 'string'
-                        },
-                        description: {
-                          type: 'string'
                         }
                       }
+                    },
+                    method_response_metric_id: { type: 'integer', minimum: 1 }
+                  }
+                }
+              },
+              blocks: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['survey_sample_block_id', 'survey_sample_site_id', 'survey_block_id'],
+                  properties: {
+                    survey_sample_block_id: {
+                      type: 'number'
+                    },
+                    survey_sample_site_id: {
+                      type: 'number'
+                    },
+                    survey_block_id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    },
+                    description: {
+                      type: 'string'
                     }
-                  },
-                  stratums: {
-                    type: 'array',
-                    items: {
-                      type: 'object',
-                      additionalProperties: false,
-                      required: ['survey_sample_stratum_id', 'survey_sample_site_id', 'survey_stratum_id'],
-                      properties: {
-                        survey_sample_stratum_id: {
-                          type: 'number'
-                        },
-                        survey_sample_site_id: {
-                          type: 'number'
-                        },
-                        survey_stratum_id: {
-                          type: 'number'
-                        },
-                        name: {
-                          type: 'string'
-                        },
-                        description: {
-                          type: 'string'
-                        }
-                      }
+                  }
+                }
+              },
+              stratums: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['survey_sample_stratum_id', 'survey_sample_site_id', 'survey_stratum_id'],
+                  properties: {
+                    survey_sample_stratum_id: {
+                      type: 'number'
+                    },
+                    survey_sample_site_id: {
+                      type: 'number'
+                    },
+                    survey_stratum_id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    },
+                    description: {
+                      type: 'string'
                     }
                   }
                 }

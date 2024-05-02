@@ -89,7 +89,9 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
   );
 
   useEffect(() => {
-    setUpdatedBounds(calculateUpdatedMapBounds(samplingSiteGeoJsonFeatures));
+    if (samplingSiteGeoJsonFeatures) {
+      setUpdatedBounds(calculateUpdatedMapBounds(samplingSiteGeoJsonFeatures));
+    }
   }, [samplingSiteGeoJsonFeatures]);
 
   return (
@@ -126,7 +128,7 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
             dropZoneProps={{
               maxNumFiles: 1,
               multiple: false,
-              acceptedFileExtensions: '.zip'
+              acceptedFileExtensions: '.zip, .kml'
             }}
             hideDropZoneOnMaxFiles={true}
             FileUploadItemComponent={FileUploadItem}

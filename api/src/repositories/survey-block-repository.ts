@@ -25,10 +25,6 @@ export const SurveyBlockRecordWithCount = z.object({
   survey_id: z.number(),
   name: z.string(),
   description: z.string(),
-  create_date: z.string(),
-  create_user: z.number(),
-  update_date: z.string().nullable(),
-  update_user: z.number().nullable(),
   revision_count: z.number(),
   sample_block_count: z.number()
 });
@@ -53,6 +49,7 @@ export class SurveyBlockRepository extends BaseRepository {
     const sql = SQL`
     SELECT
         sb.survey_block_id,
+        sb.survey_id,
         sb.name,
         sb.description,
         sb.revision_count,

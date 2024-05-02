@@ -91,7 +91,7 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
   const [staticLayers, setStaticLayers] = useState<IStaticLayer[]>([]);
 
   const removeFile = () => {
-    setFieldValue(name, samplingSiteDataLoader.data?.geojson ? [samplingSiteDataLoader.data?.geojson] : []);
+    setFieldValue(name, samplingSiteDataLoader.data?.geojson);
     setFieldError(name, undefined);
   };
 
@@ -100,16 +100,18 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
 
   const updateStaticLayers = useCallback(
     (geoJsonFeatures: Feature[]) => {
-      setUpdatedBounds(calculateUpdatedMapBounds(geoJsonFeatures));
+      if (samplingSiteGeoJsonFeatures.length) {
+        setUpdatedBounds(calculateUpdatedMapBounds(geoJsonFeatures));
 
-      const staticLayers: IStaticLayer[] = [
-        {
-          layerName: 'Sampling Sites',
-          features: samplingSiteGeoJsonFeatures.map((feature: Feature, index) => ({ geoJSON: feature, key: index }))
-        }
-      ];
+        const staticLayers: IStaticLayer[] = [
+          {
+            layerName: 'Sampling Sites',
+            features: samplingSiteGeoJsonFeatures.map((feature: Feature, index) => ({ geoJSON: feature, key: index }))
+          }
+        ];
 
-      setStaticLayers(staticLayers);
+        setStaticLayers(staticLayers);
+      }
     },
     [samplingSiteGeoJsonFeatures]
   );
@@ -136,7 +138,11 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
         <FileUpload
           uploadHandler={boundaryUploadHelper({
             onSuccess: (features: Feature[]) => {
-              setFieldValue(name, [...features]);
+              if (features.length > 1) {
+                setFieldError(name, 'Multiple locations detected in file');
+              } else {
+                setFieldValue(name, features[0]);
+              }
             },
             onFailure: (message: string) => {
               setFieldError(name, message);
@@ -146,7 +152,7 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
           dropZoneProps={{
             maxNumFiles: 1,
             multiple: false,
-            acceptedFileExtensions: '.zip'
+            acceptedFileExtensions: '.zip, .kml'
           }}
           hideDropZoneOnMaxFiles={true}
           FileUploadItemComponent={FileUploadItem}
@@ -175,7 +181,7 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
               mb: 2
             }}
             severity="error">
-            <AlertTitle>Multiple boundaries detected</AlertTitle>
+            <AlertTitle>Oops, something went wrong</AlertTitle>
             {get(errors, name) as string}
           </Alert>
         )}

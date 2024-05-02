@@ -465,6 +465,10 @@ export const surveySiteSelectionSchema: OpenAPIV3.SchemaObject = {
           sample_stratum_count: {
             description: 'Sample stratum count',
             type: 'number'
+          },
+          revision_count: {
+            description: 'Revision count',
+            type: 'integer'
           }
         }
       }

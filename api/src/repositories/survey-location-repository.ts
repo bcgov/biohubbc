@@ -88,6 +88,8 @@ export class SurveyLocationRepository extends BaseRepository {
         survey_location_id,
         name, 
         description, 
+        geometry,
+        geography,
         geojson, 
         revision_count 
       FROM
