@@ -127,32 +127,32 @@ export async function up(knex: Knex): Promise<void> {
       (
         (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind speed'),
         'Still air',
-        'No detectable wind (0-5 km$$/$$hour).'
+        $$No detectable wind (0-5 km/hour).$$
       ),
       (
         (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind speed'),
         'Weak',
-        'Leaves rustle (6-12 km$$/$$hour).'
+        $$Leaves rustle (6-12 km/hour).$$
       ),
       (
         (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind speed'),
         'Moderate',
-        'Leaves and twigs constantly move (13-19 km$$/$$hour).'
+        $$Leaves and twigs constantly move (13-19 km/hour).$$
       ),
       (
         (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind speed'),
         'Strong',
-        'Small branches move, dust rises (20-29 km$$/$$hour).'
+        $$Small branches move, dust rises (20-29 km/hour).$$
       ),
       (
         (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind speed'),
         'Very strong',
-        'Small trees sway (30-39 km$$/$$hour).'
+        $$Small trees sway (30-39 km/hour).$$
       ),
       (
         (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind speed'),
         'Intense',
-        'Large branches moving, wind whistling (>39 km$$/$$hour).'
+        $$Large branches moving, wind whistling (>39 km/hour).$$
       ),
       (
         (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Precipitation'),
@@ -172,12 +172,12 @@ export async function up(knex: Knex): Promise<void> {
       (
         (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Precipitation'),
         'Light Rain',
-        'Puddles not forming quickly, < 2.5 mm rain$$/$$hour.'
+        $$Puddles not forming quickly, < 2.5 mm rain/hour.$$
       ),
       (
         (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Precipitation'),
         'Heavy Rain',
-        'Puddles form quickly, > 2.5 mm rain$$/$$hour.'
+        $$Puddles form quickly, > 2.5 mm rain/hour.$$
       ),
       (
         (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Precipitation'),
