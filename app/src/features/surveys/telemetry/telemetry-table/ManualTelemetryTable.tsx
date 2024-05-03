@@ -3,7 +3,13 @@ import Icon from '@mdi/react';
 import { cyan, grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import { DataGrid, GridCellParams, GridColDef, GridRowModesModel } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  GridCellParams,
+  GridColDef,
+  GridRowModesModel,
+  GRID_CHECKBOX_SELECTION_COL_DEF
+} from '@mui/x-data-grid';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
@@ -14,6 +20,7 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { IManualTelemetryTableRow } from 'contexts/telemetryTableContext';
 import { default as dayjs } from 'dayjs';
 import { useTelemetryTableContext } from 'hooks/useContext';
+import { capitalize, round } from 'lodash-es';
 import { useCallback, useContext, useEffect, useMemo } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import { ICritterDeployment } from '../ManualTelemetryList';
@@ -59,12 +66,22 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
 
   const tableColumns: GridColDef<IManualTelemetryTableRow>[] = [
     {
+      ...GRID_CHECKBOX_SELECTION_COL_DEF,
+      width: 50,
+      renderCell: (params) =>
+        telemetryTableContext.isManualTelemetry(params.row) && GRID_CHECKBOX_SELECTION_COL_DEF.renderCell ? (
+          GRID_CHECKBOX_SELECTION_COL_DEF?.renderCell(params)
+        ) : (
+          <></>
+        )
+    },
+    {
       field: 'deployment_id',
       headerName: 'Deployment',
       editable: true,
       hideable: true,
       flex: 1,
-      minWidth: 250,
+      minWidth: 120,
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
@@ -73,10 +90,12 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
         return (
           <AutocompleteDataGridViewCell<IManualTelemetryTableRow, string>
             dataGridProps={params}
-            options={critterDeployments.map((item) => ({
-              label: `${item.critter.animal_id}: ${item.deployment.device_id}`,
-              value: item.deployment.deployment_id
-            }))}
+            options={critterDeployments.map((item) => {
+              return {
+                label: `${item.critter.animal_id}: ${item.deployment.device_id}`,
+                value: item.deployment.deployment_id
+              };
+            })}
             error={hasError(params)}
           />
         );
@@ -93,6 +112,19 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
           />
         );
       }
+    },
+    {
+      field: 'telemetry_type',
+      headerName: 'Vendor',
+      editable: false,
+      hideable: true,
+      flex: 1,
+      minWidth: 120,
+      disableColumnMenu: true,
+      headerAlign: 'left',
+      align: 'left',
+      type: 'string',
+      valueGetter: (params) => capitalize(params.value)
     },
     {
       field: 'latitude',
@@ -116,7 +148,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
       },
       renderCell: (params) => (
         <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
-          {params.value}
+          {round(params.value, 6)}
         </Typography>
       ),
       renderEditCell: (params) => {
@@ -167,7 +199,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
       },
       renderCell: (params) => (
         <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
-          {params.value}
+          {round(params.value, 6)}
         </Typography>
       ),
       renderEditCell: (params) => {
@@ -301,14 +333,16 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
       resizable: false,
       headerClassName: 'pinnedColumn',
       cellClassName: 'pinnedColumn',
-      getActions: (params) => [
-        <IconButton
-          onClick={() => telemetryTableContext.deleteRecords([params.row])}
-          disabled={telemetryTableContext.isSaving}
-          key={`actions[${params.id}].handleDeleteRow`}>
-          <Icon path={mdiTrashCanOutline} size={1} />
-        </IconButton>
-      ]
+      getActions: (params) =>
+        // Only render the delete action when record is 'Manual' telemetry.
+        [
+          <IconButton
+            onClick={() => telemetryTableContext.deleteRecords([params.row])}
+            disabled={telemetryTableContext.isSaving || !telemetryTableContext.isManualTelemetry(params.row)}
+            key={`actions[${params.id}].handleDeleteRow`}>
+            <Icon path={mdiTrashCanOutline} size={1} />
+          </IconButton>
+        ]
     }
   ];
 

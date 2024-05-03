@@ -123,6 +123,11 @@ export type ITelemetryTableContext = {
    * Updates the total telemetry count for the survey
    */
   setRecordCount: (count: number) => void;
+
+  /**
+   * Indicates whether the row is manual telemetry.
+   */
+  isManualTelemetry: (row: IManualTelemetryTableRow) => boolean;
 };
 
 export const TelemetryTableContext = createContext<ITelemetryTableContext | undefined>(undefined);
@@ -167,6 +172,12 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
 
   // Stores the current validation state of the table
   const [validationModel, setValidationModel] = useState<TelemetryTableValidationModel>({});
+
+  /**
+   * Checks if the provided row is 'Manual' telemtry.
+   * Note: Vendor telemetry should not be modified.
+   */
+  const isManualTelemetry = (row: IManualTelemetryTableRow) => row.telemetry_type === 'MANUAL';
 
   /**
    * Gets all rows from the table, including values that have been edited in the table.
@@ -394,7 +405,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
     };
 
     // Append new record to initial rows
-    setRows([...rows, newRecord]);
+    setRows([newRecord, ...rows]);
 
     setAddedRowIds((current) => [...current, id]);
 
@@ -661,7 +672,8 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
       isSaving,
       validationModel,
       recordCount,
-      setRecordCount
+      setRecordCount,
+      isManualTelemetry
     }),
     [
       _muiDataGridApiRef,
