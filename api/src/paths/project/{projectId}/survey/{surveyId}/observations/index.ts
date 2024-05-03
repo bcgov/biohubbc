@@ -8,10 +8,7 @@ import {
 } from '../../../../../../openapi/schemas/pagination';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { CritterbaseService } from '../../../../../../services/critterbase-service';
-import {
-  InsertUpdateObservationsWithMeasurements,
-  ObservationService
-} from '../../../../../../services/observation-service';
+import { InsertUpdateObservations, ObservationService } from '../../../../../../services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
 import { ensureCompletePaginationOptions, makePaginationResponse } from '../../../../../../utils/pagination';
 import { ApiPaginationOptions } from '../../../../../../zod-schema/pagination';
@@ -839,7 +836,7 @@ export function insertUpdateSurveyObservationsWithMeasurements(): RequestHandler
 
       const observationService = new ObservationService(connection);
 
-      const observationRows: InsertUpdateObservationsWithMeasurements[] = req.body.surveyObservations;
+      const observationRows: InsertUpdateObservations[] = req.body.surveyObservations;
 
       const critterBaseService = new CritterbaseService({
         keycloak_guid: req['system_user']?.user_guid,

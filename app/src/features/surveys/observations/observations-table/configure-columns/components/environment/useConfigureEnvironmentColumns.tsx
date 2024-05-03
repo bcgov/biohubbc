@@ -109,32 +109,32 @@ export const useConfigureEnvironmentColumns = () => {
         });
 
         // Update saved rows, removing any cell values for the deleted columns
-        observationsTableContext.setSavedRows((current) => {
-          return current.map((row) => {
-            for (const columnToRemove of environmentColumnsToRemove.qualitative_environments) {
-              delete row[columnToRemove];
+        observationsTableContext.setSavedRows((currentSavedRows) => {
+          return currentSavedRows.map((savedRow) => {
+            for (const columnIdToRemove of environmentColumnsToRemove.qualitative_environments) {
+              delete savedRow[columnIdToRemove];
             }
 
-            for (const columnToRemove of environmentColumnsToRemove.quantitative_environments) {
-              delete row[columnToRemove];
+            for (const columnIdToRemove of environmentColumnsToRemove.quantitative_environments) {
+              delete savedRow[columnIdToRemove];
             }
 
-            return row;
+            return savedRow;
           });
         });
 
         // Update staged rows, removing any cell values for the deleted columns
-        observationsTableContext.setStagedRows((current) => {
-          return current.map((row) => {
-            for (const columnToRemove of environmentColumnsToRemove.qualitative_environments) {
-              delete row[columnToRemove];
+        observationsTableContext.setStagedRows((currentStagedRows) => {
+          return currentStagedRows.map((stagedRow) => {
+            for (const columnIdToRemove of environmentColumnsToRemove.qualitative_environments) {
+              delete stagedRow[columnIdToRemove];
             }
 
-            for (const columnToRemove of environmentColumnsToRemove.quantitative_environments) {
-              delete row[columnToRemove];
+            for (const columnIdToRemove of environmentColumnsToRemove.quantitative_environments) {
+              delete stagedRow[columnIdToRemove];
             }
 
-            return row;
+            return stagedRow;
           });
         });
       });

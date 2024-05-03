@@ -4,13 +4,15 @@ import { getKnex } from '../database/db';
 import { BaseRepository } from './base-repository';
 
 export const EnvironmentUnit = z.enum([
+  // Should be kept in sync with the database table `environment_unit`
   'millimeter',
   'centimeter',
   'meter',
   'milligram',
   'gram',
   'kilogram',
-  'percent'
+  'percent',
+  'celsius'
 ]);
 export type EnvironmentUnit = z.infer<typeof EnvironmentUnit>;
 
@@ -75,11 +77,13 @@ export interface InsertObservationSubCountQualitativeEnvironmentRecord {
   environment_qualitative_id: number;
   environment_qualitative_option_id: number;
 }
+
 export interface InsertObservationSubCountQuantitativeEnvironmentRecord {
   observation_subcount_id: number;
   environment_quantitative_id: number;
   value: number;
 }
+
 export class ObservationSubCountEnvironmentRepository extends BaseRepository {
   /**
    * Insert qualitative environment records.
@@ -240,7 +244,7 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
       FROM
         environment_qualitative
       LEFT JOIN environment_qualitative_option
-        ON environment_qualitative_option.environment_qualitative_id = environment_qualitative_option.environment_qualitative_id
+        ON environment_qualitative_option.environment_qualitative_id = environment_qualitative.environment_qualitative_id
       WHERE
         environment_qualitative.name ILIKE '%' || ${searchTerm} || '%'
       OR 

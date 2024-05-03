@@ -26,22 +26,30 @@ import { getLogger } from '../utils/logger';
 import { parseS3File } from '../utils/media/media-utils';
 import { DEFAULT_XLSX_SHEET_NAME } from '../utils/media/xlsx/xlsx-file';
 import {
-  constructWorksheets,
-  constructXLSXWorkbook,
+  isEnvironmentQualitativeTypeDefinition,
+  validateCsvEnvironmentColumns
+} from '../utils/observation-xlsx-utils/environment-column-utils';
+import {
   findMeasurementFromTsnMeasurements,
   getCBMeasurementsFromTSN,
   getCBMeasurementTypeDefinitionsFromWorksheet,
   getMeasurementColumnNames,
-  getNonStandardColumnNamesFromWorksheet,
-  getWorksheetRowObjects,
   IMeasurementDataToValidate,
-  isEnvironmentQualitativeTypeDefinition,
   isMeasurementCBQualitativeTypeDefinition,
-  IXLSXCSVValidator,
   TsnMeasurementMap,
-  validateCsvFile,
   validateCsvMeasurementColumns,
-  validateMeasurements,
+  validateMeasurements
+} from '../utils/observation-xlsx-utils/measurement-column-utils';
+import {
+  getNonStandardColumnNamesFromWorksheet,
+  observationStandardColumnValidator
+} from '../utils/observation-xlsx-utils/standard-column-utils';
+import {
+  constructWorksheets,
+  constructXLSXWorkbook,
+  getWorksheetRowObjects,
+  IXLSXCSVValidator,
+  validateCsvFile,
   validateWorksheetColumnTypes,
   validateWorksheetHeaders
 } from '../utils/xlsx-utils/worksheet-utils';
@@ -59,16 +67,6 @@ import { SamplePeriodService } from './sample-period-service';
 import { SubCountService } from './subcount-service';
 
 const defaultLog = getLogger('services/observation-service');
-
-const observationCSVColumnValidator: IXLSXCSVValidator = {
-  columnNames: ['ITIS_TSN', 'COUNT', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
-  columnTypes: ['number', 'number', 'date', 'string', 'number', 'number'],
-  columnAliases: {
-    ITIS_TSN: ['TAXON', 'SPECIES', 'TSN'],
-    LATITUDE: ['LAT'],
-    LONGITUDE: ['LON', 'LONG', 'LNG']
-  }
-};
 
 export interface InsertSubCount {
   observation_subcount_id: number | null;
@@ -91,7 +89,7 @@ export interface InsertSubCount {
   }[];
 }
 
-export type InsertUpdateObservationsWithMeasurements = {
+export type InsertUpdateObservations = {
   standardColumns: InsertObservation | UpdateObservation;
   subcounts: InsertSubCount[];
 };
@@ -169,13 +167,13 @@ export class ObservationService extends DBService {
    * Upserts the given observation records and their associated measurements.
    *
    * @param {number} surveyId
-   * @param {InsertUpdateObservationsWithMeasurements[]} observations
+   * @param {InsertUpdateObservations[]} observations
    * @return {*}  {Promise<void>}
    * @memberof ObservationService
    */
   async insertUpdateSurveyObservationsWithMeasurements(
     surveyId: number,
-    observations: InsertUpdateObservationsWithMeasurements[]
+    observations: InsertUpdateObservations[]
   ): Promise<void> {
     const subCountService = new SubCountService(this.connection);
     const measurementService = new ObservationSubCountMeasurementService(this.connection);
@@ -446,15 +444,15 @@ export class ObservationService extends DBService {
     defaultLog.debug({ label: 'processObservationCsvSubmission', submissionId });
 
     // Step 1. Retrieve the observation submission record
-    const submission = await this.getObservationSubmissionById(surveyId, submissionId);
+    const observationSubmissionRecord = await this.getObservationSubmissionById(surveyId, submissionId);
 
     // Step 2. Retrieve the S3 object containing the uploaded CSV file
-    const s3Object = await getFileFromS3(submission.key);
+    const s3Object = await getFileFromS3(observationSubmissionRecord.key);
 
-    // Step 3. Get the contents of the S3 object
+    // Step 3. Get the csv file from the S3 object
     const mediaFile = parseS3File(s3Object);
 
-    // Step 4. Validate the CSV file
+    // Step 4. Validate the CSV file mime type
     if (mediaFile.mimetype !== 'text/csv') {
       throw new Error('Failed to process file for importing observations. Invalid CSV file.');
     }
@@ -462,14 +460,15 @@ export class ObservationService extends DBService {
     // Construct the XLSX workbook
     const xlsxWorkBook = constructXLSXWorkbook(mediaFile);
 
-    // Construct the worksheets
+    // Construct the XLSX worksheets
     const xlsxWorksheets = constructWorksheets(xlsxWorkBook);
 
-    if (!validateCsvFile(xlsxWorksheets, observationCSVColumnValidator)) {
+    // Step 5. Validate the standard columns in the CSV file
+    if (!validateCsvFile(xlsxWorksheets, observationStandardColumnValidator)) {
       throw new Error('Failed to process file for importing observations. Column validator failed.');
     }
 
-    // Step 5. Validate Measurement data in CSV file
+    // Step 6. Validate the Measurement columns in CSV file
     const service = new CritterbaseService({
       keycloak_guid: this.connection.systemUserGUID(),
       username: this.connection.systemUserIdentifier()
@@ -478,26 +477,28 @@ export class ObservationService extends DBService {
     // Fetch all measurement type definitions from Critterbase for all unique TSNs in the CSV file
     const tsnMeasurements = await getCBMeasurementTypeDefinitionsFromWorksheet(xlsxWorksheets, service);
 
-    // Get all non-standard column names from the worksheet (ie. measurment and environment columns)
-    const nonStandardColumns = getNonStandardColumnNamesFromWorksheet(xlsxWorksheets, observationCSVColumnValidator);
+    // Filter out the standard columns from the worksheet
+    const nonStandardColumns = getNonStandardColumnNamesFromWorksheet(xlsxWorksheets);
 
-    // Get all measuremente columns names from the worksheet
+    // Get all measurement columns names from the worksheet, that match a measurement in the TSN measurements
     const measurementColumns = getMeasurementColumnNames(nonStandardColumns, tsnMeasurements);
 
-    const environmentColumns: string[] = []; // TODO
+    // Filter out the measurement columns from the non-standard columns, assuming the remaining columns are all
+    // environment columns
+    const environmentColumns = nonStandardColumns.filter((column) => !measurementColumns.includes(column));
 
     // Get the worksheet row objects
     const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheets[DEFAULT_XLSX_SHEET_NAME]);
 
-    // Validate measurement data against
+    // Validate measurement column data
     if (!validateCsvMeasurementColumns(worksheetRowObjects, measurementColumns, tsnMeasurements)) {
       throw new Error('Failed to process file for importing observations. Measurement column validator failed.');
     }
 
-    // TODO: NICK - Environment columns validation
-    // if (!validateCsvEnvironmentColumns(worksheetRowObjects, environmentColumns)) {
-    //   throw new Error('Failed to process file for importing observations. Environment column validator failed.');
-    // }
+    // Validate environment column data
+    if (!validateCsvEnvironmentColumns(worksheetRowObjects, environmentColumns)) {
+      throw new Error('Failed to process file for importing observations. Environment column validator failed.');
+    }
 
     let samplePeriodHierarchyIds: SamplePeriodHierarchyIds;
     if (options?.surveySamplePeriodId) {
@@ -508,8 +509,8 @@ export class ObservationService extends DBService {
       );
     }
 
-    // Step 6. Merge all the table rows into an array of InsertUpdateObservationsWithMeasurements[]
-    const newRowData: InsertUpdateObservationsWithMeasurements[] = worksheetRowObjects.map((row) => {
+    // Step 7. Merge all the table rows into an array of InsertUpdateObservations[]
+    const newRowData: InsertUpdateObservations[] = worksheetRowObjects.map((row) => {
       const newSubcount: InsertSubCount = {
         observation_subcount_id: null,
         subcount: row['COUNT'],
@@ -545,7 +546,7 @@ export class ObservationService extends DBService {
       };
     });
 
-    // Step 7. Insert new rows and return them
+    // Step 8. Insert the parsed observation rows
     await this.insertUpdateSurveyObservationsWithMeasurements(surveyId, newRowData);
   }
 
@@ -728,12 +729,12 @@ export class ObservationService extends DBService {
    * Validates given observations against measurement definitions found in Critterbase.
    * This validation is all or nothing, any failed validation will return a false value and stop processing.
    *
-   * @param {InsertUpdateObservationsWithMeasurements[]} observationRows The observations to validate
+   * @param {InsertUpdateObservations[]} observationRows The observations to validate
    * @param {CritterbaseService} critterBaseService Used to collection measurement definitions to validate against
    * @returns {*} boolean True: Observations are valid False: Observations are invalid
    */
   async validateSurveyObservations(
-    observationRows: InsertUpdateObservationsWithMeasurements[],
+    observationRows: InsertUpdateObservations[],
     critterBaseService: CritterbaseService
   ): Promise<boolean> {
     // Fetch measurement definitions from CritterBase
@@ -742,7 +743,7 @@ export class ObservationService extends DBService {
 
     // Map observation subcount data into objects to a IMeasurementDataToValidate array
     const measurementsToValidate: IMeasurementDataToValidate[] = observationRows.flatMap(
-      (item: InsertUpdateObservationsWithMeasurements) => {
+      (item: InsertUpdateObservations) => {
         return item.subcounts.flatMap((subcount) => {
           const qualitativeValues = subcount.qualitative_measurements.map((qualitative_measurement) => {
             return {
