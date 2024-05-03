@@ -131,6 +131,10 @@ GET.apiDoc = {
                             type: 'integer',
                             minimum: 1
                           },
+                          method_response_metric_id: {
+                            type: 'integer',
+                            minimum: 1
+                          },
                           description: {
                             type: 'string',
                             maxLength: 250
@@ -173,8 +177,7 @@ GET.apiDoc = {
                                 }
                               }
                             }
-                          },
-                          method_response_metric_id: { type: 'integer', minimum: 1 }
+                          }
                         }
                       }
                     },
@@ -456,7 +459,7 @@ POST.apiDoc = {
                     nullable: true
                   },
                   create_user: {
-                    type: 'number',
+                    type: 'integer',
                     nullable: true
                   },
                   update_date: {
@@ -464,7 +467,7 @@ POST.apiDoc = {
                     nullable: true
                   },
                   update_user: {
-                    type: 'string',
+                    type: 'integer',
                     nullable: true
                   },
                   revision_count: {
@@ -500,7 +503,7 @@ POST.apiDoc = {
                     nullable: true
                   },
                   create_user: {
-                    type: 'string',
+                    type: 'integer',
                     nullable: true
                   },
                   update_date: {
@@ -508,7 +511,7 @@ POST.apiDoc = {
                     nullable: true
                   },
                   update_user: {
-                    type: 'string',
+                    type: 'integer',
                     nullable: true
                   },
                   revision_count: {

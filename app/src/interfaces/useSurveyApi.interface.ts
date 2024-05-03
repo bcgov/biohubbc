@@ -372,9 +372,9 @@ export interface IGetSampleLocationDetails {
   update_date: string | null;
   update_user: number | null;
   revision_count: number;
-  sample_methods: IGetSampleMethodRecord[] | undefined;
-  sample_blocks: IGetSampleBlockDetails[] | undefined;
-  sample_stratums: IGetSampleStratumDetails[] | undefined;
+  sample_methods: IGetSampleMethodRecord[];
+  sample_blocks: IGetSampleBlockDetails[];
+  sample_stratums: IGetSampleStratumDetails[];
 }
 
 export interface IGetSampleBlockDetails {
