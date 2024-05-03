@@ -83,6 +83,12 @@ const AnimalCaptureForm = (props: IAnimalCaptureFormProps) => {
         />
         <Divider />
         <HorizontalSplitFormComponent
+          title="Markings"
+          summary="Enter markings applied to the animal during the capture"
+          component={<CaptureMarkingsForm />}
+        />
+        <Divider />
+        <HorizontalSplitFormComponent
           title="Capture Location"
           summary="Enter where the animal was captured"
           component={<CaptureLocationForm />}
@@ -92,12 +98,6 @@ const AnimalCaptureForm = (props: IAnimalCaptureFormProps) => {
           title="Measurements"
           summary="Enter measurements recorded during the capture"
           component={<CaptureMeasurementsForm />}
-        />
-        <Divider />
-        <HorizontalSplitFormComponent
-          title="Markings"
-          summary="Enter markings applied to the animal during the capture"
-          component={<CaptureMarkingsForm />}
         />
         <Divider />
         <HorizontalSplitFormComponent

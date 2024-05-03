@@ -1,6 +1,4 @@
 import { mdiCardTextOutline, mdiInformationOutline, mdiPlusBoxOutline } from '@mdi/js';
-import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
 import { red } from '@mui/material/colors';
 import green from '@mui/material/colors/green';
 import Paper from '@mui/material/Paper';
@@ -25,11 +23,7 @@ const AnimalProfile = () => {
   const critter = critterDataLoader.data;
 
   if (!critter || critterDataLoader.isLoading) {
-    return (
-      <Box flex="1 1 auto" display="flex" justifyContent="center" alignItems="center">
-        <CircularProgress size={40} sx={{ flex: '1 1 auto', position: 'absolute' }} />
-      </Box>
-    );
+    return <></>;
   }
 
   return (
