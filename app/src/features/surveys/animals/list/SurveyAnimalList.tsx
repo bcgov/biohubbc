@@ -46,7 +46,7 @@ const SurveyAnimalList = () => {
   const critters = surveyContext.critterDataLoader.data;
 
   if (!critters) {
-    return <CircularProgress size={40} />;
+    return <CircularProgress size={40} className="pageProgress" />;
   }
 
   const crittersCount = critters.length;

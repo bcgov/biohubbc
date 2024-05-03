@@ -25,7 +25,7 @@ const AnimalCapturesToolbar = () => {
     <Toolbar
       disableGutters
       sx={{
-        px: 3
+        px: 2
       }}>
       <Typography
         data-testid="map-control-title"

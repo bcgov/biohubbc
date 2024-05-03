@@ -27,7 +27,7 @@ const AnimalCaptureForm = (props: IAnimalCaptureFormProps) => {
   const animalCaptureYupSchema = yup.object({
     capture: yup.object({
       capture_id: yup.string().nullable(),
-      capture_timestamp: yup.string().required('Capture date and time is required'),
+      capture_timestamp: yup.string().required('Capture date is required'),
       capture_comment: yup.string().required('Capture comment is required'),
       release_timestamp: yup.string().nullable(),
       release_comment: yup.string().nullable(),

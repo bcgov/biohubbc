@@ -4,7 +4,6 @@ import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
 import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -14,6 +13,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { useAnimalPageContext, useSurveyContext } from 'hooks/useContext';
 import { useState } from 'react';
@@ -35,7 +35,7 @@ const AnimalCaptureCardContainer = () => {
   const { selectedAnimal } = useAnimalPageContext();
 
   if (!critterDataLoader.data) {
-    return <CircularProgress size={40} />;
+    return <SkeletonList />;
   }
 
   const captures = critterDataLoader.data.captures;
@@ -110,7 +110,6 @@ const AnimalCaptureCardContainer = () => {
                   sx={{
                     flex: '1 1 auto',
                     mr: 1,
-                    py: 1,
                     pr: 8.5,
                     minHeight: 55,
                     overflow: 'hidden',
@@ -164,7 +163,9 @@ const AnimalCaptureCardContainer = () => {
           alignItems="center"
           justifyContent="center"
           bgcolor="#fff">
-          <Typography color="textSecondary">This animal has no captures</Typography>
+          <Typography variant="body2" color="textSecondary">
+            This animal has no captures
+          </Typography>
         </Box>
       )}
     </>

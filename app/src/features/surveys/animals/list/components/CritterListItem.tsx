@@ -94,6 +94,7 @@ const CritterListItem = (props: ICritterListItemProps) => {
             }}>
             <Typography
               component="span"
+              variant="body2"
               textAlign="left"
               sx={{
                 mr: 1,
@@ -108,6 +109,7 @@ const CritterListItem = (props: ICritterListItemProps) => {
               {critter.animal_id}
             </Typography>
             <ScientificNameTypography
+              variant="body2"
               component="span"
               name={critter.itis_scientific_name}
               sx={{
