@@ -48,7 +48,6 @@ export class ProjectRepository extends BaseRepository {
       .select([
         'p.project_id',
         'p.name',
-        'p.objectives',
         'p.start_date',
         'p.end_date',
         knex.raw(`COALESCE(array_remove(array_agg(DISTINCT rl.region_name), null), '{}') as regions`),
@@ -164,9 +163,12 @@ export class ProjectRepository extends BaseRepository {
   ): Promise<number> {
     const projectsListQuery = this._makeProjectListQuery(isUserAdmin, systemUserId, filterFields);
 
-    const query = getKnex().from(projectsListQuery.as('temp')).count('* as project_count');
+    const knex = getKnex();
 
-    const response = await this.connection.knex(query, z.object({ project_count: z.string().transform(Number) }));
+    // See https://knexjs.org/guide/query-builder.html#usage-with-typescript-3 for details on count() usage
+    const query = knex.from(projectsListQuery.as('plq')).select(knex.raw('count(*)::integer as count'));
+
+    const response = await this.connection.knex(query, z.object({ count: z.number() }));
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get project count', [
@@ -175,7 +177,7 @@ export class ProjectRepository extends BaseRepository {
       ]);
     }
 
-    return response.rows[0].project_count;
+    return response.rows[0].count;
   }
 
   async getProjectData(projectId: number): Promise<ProjectData> {

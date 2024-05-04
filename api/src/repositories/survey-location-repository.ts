@@ -3,16 +3,16 @@ import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostSurveyLocationData } from '../models/survey-update';
 import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
-import { GeoJSONFeatureZodSchema } from '../zod-schema/geoJsonZodSchema';
 import { BaseRepository } from './base-repository';
 
 export const SurveyLocationRecord = z.object({
   survey_location_id: z.number(),
+  survey_id: z.number(),
   name: z.string(),
   description: z.string(),
   geometry: z.record(z.any()).nullable(),
   geography: z.string(),
-  geojson: z.array(GeoJSONFeatureZodSchema),
+  geojson: z.any(),
   revision_count: z.number()
 });
 

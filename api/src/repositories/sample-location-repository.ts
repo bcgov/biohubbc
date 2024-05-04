@@ -74,8 +74,9 @@ export const SampleSiteRecord = z.object({
   survey_id: z.number(),
   name: z.string(),
   description: z.string().nullable(),
-  geojson: z.any(),
+  geometry: z.null(),
   geography: z.any(),
+  geojson: z.any(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),
@@ -242,17 +243,15 @@ export class SampleLocationRepository extends BaseRepository {
    */
   async getSampleLocationsCountBySurveyId(surveyId: number): Promise<number> {
     const sqlStatement = SQL`
-        SELECT
-          COUNT(*) as sample_site_count
-        FROM
-          survey_sample_site as sss
-        WHERE sss.survey_id = ${surveyId};
-      `;
+      SELECT
+        COUNT(*)::integer AS count
+      FROM
+        survey_sample_site
+      WHERE 
+        survey_id = ${surveyId};
+    `;
 
-    const response = await this.connection.sql(
-      sqlStatement,
-      z.object({ sample_site_count: z.string().transform(Number) })
-    );
+    const response = await this.connection.sql(sqlStatement, z.object({ count: z.number() }));
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get sample site count', [
@@ -261,7 +260,7 @@ export class SampleLocationRepository extends BaseRepository {
       ]);
     }
 
-    return response.rows[0].sample_site_count;
+    return response.rows[0].count;
   }
 
   /**
@@ -428,7 +427,7 @@ export class SampleLocationRepository extends BaseRepository {
           public.ST_Force2D(
             public.ST_SetSRID(
       `;
-    const geometryCollectionSQL = generateGeometryCollectionSQL(sample.geojson);
+    const geometryCollectionSQL = generateGeometryCollectionSQL(sample.geojson as Feature[]);
     sql.append(geometryCollectionSQL);
     sql.append(SQL`, 4326)))`);
     sql.append(SQL`

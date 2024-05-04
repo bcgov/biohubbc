@@ -378,6 +378,10 @@ export const surveyLocationSchema: OpenAPIV3.SchemaObject = {
       type: 'integer',
       nullable: true
     },
+    survey_id: {
+      description: 'Survey id',
+      type: 'integer'
+    },
     leaflet_id: {
       description: 'Leaflet id',
       type: 'integer',

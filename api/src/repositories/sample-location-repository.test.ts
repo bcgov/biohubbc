@@ -42,7 +42,7 @@ describe('SampleLocationRepository', () => {
 
   describe('getSampleLocationsCountBySurveyId', () => {
     it('should return the sample location count successfully', async () => {
-      const mockResponse = { rows: [{ sample_site_count: 69 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const mockResponse = { rows: [{ count: 69 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: () => mockResponse });
 
       const repo = new SampleLocationRepository(dbConnectionObj);
