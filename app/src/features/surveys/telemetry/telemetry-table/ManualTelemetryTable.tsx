@@ -3,13 +3,7 @@ import Icon from '@mdi/react';
 import { cyan, grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import {
-  DataGrid,
-  GridCellParams,
-  GridColDef,
-  GridRowModesModel,
-  GRID_CHECKBOX_SELECTION_COL_DEF
-} from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GRID_CHECKBOX_SELECTION_COL_DEF } from '@mui/x-data-grid';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
@@ -21,7 +15,7 @@ import { IManualTelemetryTableRow } from 'contexts/telemetryTableContext';
 import { default as dayjs } from 'dayjs';
 import { useTelemetryTableContext } from 'hooks/useContext';
 import { capitalize, round } from 'lodash-es';
-import { useCallback, useContext, useEffect, useMemo } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import { ICritterDeployment } from '../ManualTelemetryList';
 
@@ -51,18 +45,6 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
     });
     return data;
   }, [surveyContext.critterDataLoader.data, surveyContext.deploymentDataLoader.data]);
-
-  const { _muiDataGridApiRef } = telemetryTableContext;
-  const hasError = useCallback(
-    (params: GridCellParams): boolean => {
-      return Boolean(
-        telemetryTableContext.validationModel[params.row.id]?.some((error) => {
-          return error.field === params.field;
-        })
-      );
-    },
-    [telemetryTableContext.validationModel]
-  );
 
   const tableColumns: GridColDef<IManualTelemetryTableRow>[] = [
     {
@@ -96,7 +78,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
                 value: item.deployment.deployment_id
               };
             })}
-            error={hasError(params)}
+            error={telemetryTableContext.cellHasError(params)}
           />
         );
       },
@@ -108,7 +90,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
               label: `${item.critter.animal_id}: ${item.deployment.device_id}`,
               value: item.deployment.deployment_id
             }))}
-            error={hasError(params)}
+            error={telemetryTableContext.cellHasError(params)}
           />
         );
       }
@@ -152,7 +134,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
         </Typography>
       ),
       renderEditCell: (params) => {
-        const error: boolean = hasError(params);
+        const error: boolean = telemetryTableContext.cellHasError(params);
 
         return (
           <TextFieldDataGrid
@@ -203,7 +185,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
         </Typography>
       ),
       renderEditCell: (params) => {
-        const error: boolean = hasError(params);
+        const error = telemetryTableContext.cellHasError(params);
 
         return (
           <TextFieldDataGrid
@@ -246,7 +228,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
         </Typography>
       ),
       renderEditCell: (params) => {
-        const error = hasError(params);
+        const error = telemetryTableContext.cellHasError(params);
 
         return (
           <TextFieldDataGrid
@@ -307,7 +289,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
         );
       },
       renderEditCell: (params) => {
-        const error = hasError(params);
+        const error = telemetryTableContext.cellHasError(params);
 
         return (
           <TimePickerDataGrid
@@ -346,42 +328,34 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
     }
   ];
 
-  /**
-   * Callback fired when the row modes model changes.
-   * The row modes model stores the `view` vs `edit` state of the rows.
-   *
-   * Note: Any row not included in the model will default to `view` mode.
-   *
-   * @param {GridRowModesModel} model
-   */
-  const onRowModesModelChange = useCallback(
-    (model: GridRowModesModel) => {
-      telemetryTableContext.setRowModesModel(() => model);
-    },
-    [telemetryTableContext]
-  );
-
   return (
     <DataGrid
+      // Ref
+      apiRef={telemetryTableContext._muiDataGridApiRef}
+      // Columns
+      columns={tableColumns}
+      // Rows
+      rows={telemetryTableContext.rows}
       checkboxSelection
       disableRowSelectionOnClick
       loading={props.isLoading}
       rowHeight={56}
-      apiRef={_muiDataGridApiRef}
       editMode="row"
-      columns={tableColumns}
-      rows={telemetryTableContext.rows}
+      // Row modes
       rowModesModel={telemetryTableContext.rowModesModel}
-      onRowModesModelChange={onRowModesModelChange}
+      onRowModesModelChange={telemetryTableContext.onRowModesModelChange}
+      // Row edit
       onRowEditStart={(params) => telemetryTableContext.onRowEditStart(params.id)}
       onRowEditStop={(_params, event) => {
         event.defaultMuiPrevented = true;
       }}
+      // Row selection
+      onRowSelectionModelChange={telemetryTableContext.onRowSelectionModelChange}
+      rowSelectionModel={telemetryTableContext.rowSelectionModel}
+      // Styling
       localeText={{
         noRowsLabel: 'No Records'
       }}
-      onRowSelectionModelChange={telemetryTableContext.onRowSelectionModelChange}
-      rowSelectionModel={telemetryTableContext.rowSelectionModel}
       getRowHeight={() => 'auto'}
       slots={{
         loadingOverlay: SkeletonTable

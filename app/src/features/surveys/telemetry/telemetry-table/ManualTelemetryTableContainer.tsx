@@ -20,29 +20,32 @@ import FileUploadDialog from 'components/dialog/FileUploadDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
 import { TelemetryTableI18N } from 'constants/i18n';
-import { getSurveySessionStorageKey, SIMS_TELEMETRY_HIDDEN_COLUMNS } from 'constants/session-storage';
+import { SIMS_TELEMETRY_HIDDEN_COLUMNS } from 'constants/session-storage';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useTelemetryTableContext } from 'hooks/useContext';
+import { usePersistentState } from 'hooks/usePersistentState';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { pluralize as p } from 'utils/Utils';
 import ManualTelemetryTable from './ManualTelemetryTable';
 
 const ManualTelemetryTableContainer = () => {
+  // State
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [processingRecords, setProcessingRecords] = useState(false);
   const [showConfirmRemoveAllDialog, setShowConfirmRemoveAllDialog] = useState(false);
   const [contextMenuAnchorEl, setContextMenuAnchorEl] = useState<Element | null>(null);
   const [columnVisibilityMenuAnchorEl, setColumnVisibilityMenuAnchorEl] = useState<Element | null>(null);
-  const [hiddenFields, setHiddenFields] = useState<string[]>([]);
 
+  // Persistent state - stateful between refreshes
+  const [hiddenFields, setHiddenFields] = usePersistentState<string[]>(SIMS_TELEMETRY_HIDDEN_COLUMNS, []);
+
+  // Contexts
   const dialogContext = useContext(DialogContext);
   const telemetryTableContext = useTelemetryTableContext();
   const surveyContext = useContext(SurveyContext);
   const telemetryApi = useTelemetryApi();
-
-  const { hasUnsavedChanges, validationModel, _muiDataGridApiRef } = telemetryTableContext;
 
   const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
     dialogContext.setSnackbar({ ...textDialogProps, open: true });
@@ -60,13 +63,13 @@ const ManualTelemetryTableContainer = () => {
    * Toggles visibility for a particular column
    */
   const toggleColumnVisibility = (field: string) => {
-    setHiddenFields((prev) => {
-      if (prev.includes(field)) {
-        return prev.filter((hiddenField) => hiddenField !== field);
-      } else {
-        return [...prev, field];
-      }
-    });
+    const fields = [...hiddenFields];
+    if (fields.includes(field)) {
+      setHiddenFields(fields.filter((hiddenField) => hiddenField !== field));
+      return;
+    }
+
+    setHiddenFields([...fields, field]);
   };
 
   // The array of columns that may be toggled as hidden or visible
@@ -91,41 +94,11 @@ const ManualTelemetryTableContainer = () => {
    * Whenever hidden fields updates, trigger an update in visiblity for the table.
    */
   useEffect(() => {
-    _muiDataGridApiRef.current.setColumnVisibilityModel({
+    telemetryTableContext._muiDataGridApiRef.current.setColumnVisibilityModel({
       ...Object.fromEntries(hideableColumns.map((column) => [column.field, true])),
       ...Object.fromEntries(hiddenFields.map((field) => [field, false]))
     });
   }, [hideableColumns, hiddenFields]);
-
-  /**
-   * On first mount, load visibility state from session storage, if it exists.
-   */
-  useEffect(() => {
-    const fieldsJson: string | null = sessionStorage.getItem(
-      getSurveySessionStorageKey(surveyId, SIMS_TELEMETRY_HIDDEN_COLUMNS)
-    );
-
-    if (!fieldsJson) {
-      return;
-    }
-
-    try {
-      const fields: string[] = JSON.parse(fieldsJson);
-      setHiddenFields(fields);
-    } catch {
-      return;
-    }
-  }, []);
-
-  /**
-   * Persist visibility state in session
-   */
-  useEffect(() => {
-    sessionStorage.setItem(
-      getSurveySessionStorageKey(surveyId, SIMS_TELEMETRY_HIDDEN_COLUMNS),
-      JSON.stringify(hiddenFields)
-    );
-  }, [hiddenFields]);
 
   const { projectId, surveyId } = surveyContext;
 
@@ -221,7 +194,7 @@ const ManualTelemetryTableContainer = () => {
               disabled={telemetryTableContext.isSaving}>
               Add Record
             </Button>
-            <Collapse in={hasUnsavedChanges} orientation="horizontal">
+            <Collapse in={telemetryTableContext.hasUnsavedChanges} orientation="horizontal">
               <Stack flexDirection="row" whiteSpace="nowrap" gap={1}>
                 <LoadingButton
                   loading={telemetryTableContext.isSaving}
@@ -337,7 +310,10 @@ const ManualTelemetryTableContainer = () => {
 
         <Divider flexItem></Divider>
 
-        <DataGridValidationAlert validationModel={validationModel} muiDataGridApiRef={_muiDataGridApiRef.current} />
+        <DataGridValidationAlert
+          validationModel={telemetryTableContext.validationModel}
+          muiDataGridApiRef={telemetryTableContext._muiDataGridApiRef.current}
+        />
 
         <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
           <Box position="absolute" width="100%" height="100%">

@@ -1,5 +1,6 @@
 import Typography from '@mui/material/Typography';
 import {
+  GridCellParams,
   GridRowId,
   GridRowModes,
   GridRowModesModel,
@@ -128,6 +129,17 @@ export type ITelemetryTableContext = {
    * Indicates whether the row is manual telemetry.
    */
   isManualTelemetry: (row: IManualTelemetryTableRow) => boolean;
+  /**
+   * Indicates whether the cell has an error.
+   *
+   */
+  cellHasError: (params: GridCellParams) => boolean;
+
+  /**
+   * Callback when row model changes ie: 'Edit' -> 'View'
+   *
+   */
+  onRowModesModelChange: (model: GridRowModesModel) => void;
 };
 
 export const TelemetryTableContext = createContext<ITelemetryTableContext | undefined>(undefined);
@@ -204,6 +216,36 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
   const getColumns = useCallback(() => {
     return _muiDataGridApiRef.current.getAllColumns?.() ?? [];
   }, [_muiDataGridApiRef]);
+
+  /**
+   * Checks if the cell has error.
+   *
+   */
+  const cellHasError = useCallback(
+    (params: GridCellParams): boolean => {
+      return Boolean(
+        validationModel[params.row.id]?.some((error) => {
+          return error.field === params.field;
+        })
+      );
+    },
+    [validationModel]
+  );
+
+  /**
+   * Callback fired when the row modes model changes.
+   * The row modes model stores the `view` vs `edit` state of the rows.
+   *
+   * Note: Any row not included in the model will default to `view` mode.
+   *
+   * @param {GridRowModesModel} model
+   */
+  const onRowModesModelChange = useCallback(
+    (model: GridRowModesModel) => {
+      setRowModesModel(() => model);
+    },
+    [setRowModesModel]
+  );
 
   /**
    * Validates all rows belonging to the table. Returns null if validation passes, otherwise
@@ -656,6 +698,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
       setRows,
       getColumns,
       addRecord,
+      cellHasError,
       saveRecords,
       deleteRecords,
       deleteSelectedRecords,
@@ -668,6 +711,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
       onRowSelectionModelChange: setRowSelectionModel,
       rowModesModel,
       setRowModesModel,
+      onRowModesModelChange,
       isLoading,
       isSaving,
       validationModel,
@@ -678,6 +722,9 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
     [
       _muiDataGridApiRef,
       rows,
+      rowModesModel,
+      onRowModesModelChange,
+      cellHasError,
       getColumns,
       addRecord,
       saveRecords,
