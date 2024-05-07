@@ -54,7 +54,7 @@ export const PUT: Operation = [
       ]
     };
   }),
-  insertUpdateSurveyObservationsWithMeasurements()
+  insertUpdateManualSurveyObservations()
 ];
 
 GET.apiDoc = {
@@ -823,7 +823,7 @@ export function getSurveyObservations(): RequestHandler {
  * @export
  * @return {*}  {RequestHandler}
  */
-export function insertUpdateSurveyObservationsWithMeasurements(): RequestHandler {
+export function insertUpdateManualSurveyObservations(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
 
@@ -849,13 +849,13 @@ export function insertUpdateSurveyObservationsWithMeasurements(): RequestHandler
         throw new Error('Failed to save observation data, failed data validation.');
       }
 
-      await observationService.insertUpdateSurveyObservationsWithMeasurements(surveyId, observationRows);
+      await observationService.insertUpdateManualSurveyObservations(surveyId, observationRows);
 
       await connection.commit();
 
       return res.status(204).send();
     } catch (error) {
-      defaultLog.error({ label: 'insertUpdateSurveyObservationsWithMeasurements', message: 'error', error });
+      defaultLog.error({ label: 'insertUpdateManualSurveyObservations', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

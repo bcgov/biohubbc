@@ -47,9 +47,9 @@ describe('worksheet utils', () => {
     });
   });
 
-  describe('findMeasurementFromTsnMeasurements', () => {
+  describe('getMeasurementFromTsnMeasurementTypeDefinitionMap', () => {
     it('finds no measurement and returns null', () => {
-      const tsnMap: worksheet_utils.TsnMeasurementMap = {
+      const tsnMap: worksheet_utils.TsnMeasurementTypeDefinitionMap = {
         '123': {
           qualitative: [
             {
@@ -81,22 +81,22 @@ describe('worksheet utils', () => {
           ]
         }
       };
-      const results = worksheet_utils.findMeasurementFromTsnMeasurements('tsn', '', tsnMap);
+      const results = worksheet_utils.getMeasurementFromTsnMeasurementTypeDefinitionMap('tsn', '', tsnMap);
       expect(results).to.be.null;
     });
     it('has measurements but no qualitative or quantitative  and returns null', () => {
-      const tsnMap: worksheet_utils.TsnMeasurementMap = {
+      const tsnMap: worksheet_utils.TsnMeasurementTypeDefinitionMap = {
         '123': {
           qualitative: [],
           quantitative: []
         }
       };
-      const results = worksheet_utils.findMeasurementFromTsnMeasurements('123', '', tsnMap);
+      const results = worksheet_utils.getMeasurementFromTsnMeasurementTypeDefinitionMap('123', '', tsnMap);
       expect(results).to.be.null;
     });
 
     it('finds a qualitative measurement', () => {
-      const tsnMap: worksheet_utils.TsnMeasurementMap = {
+      const tsnMap: worksheet_utils.TsnMeasurementTypeDefinitionMap = {
         '123': {
           qualitative: [
             {
@@ -143,7 +143,7 @@ describe('worksheet utils', () => {
           ]
         }
       };
-      const results = worksheet_utils.findMeasurementFromTsnMeasurements('123', 'neck_girth', tsnMap);
+      const results = worksheet_utils.getMeasurementFromTsnMeasurementTypeDefinitionMap('123', 'neck_girth', tsnMap);
       expect(results).to.eql({
         itis_tsn: 123,
         taxon_measurement_id: 'taxon_1',
@@ -162,7 +162,7 @@ describe('worksheet utils', () => {
     });
 
     it('finds a quantitative measurement', () => {
-      const tsnMap: worksheet_utils.TsnMeasurementMap = {
+      const tsnMap: worksheet_utils.TsnMeasurementTypeDefinitionMap = {
         '123': {
           qualitative: [
             {
@@ -209,7 +209,7 @@ describe('worksheet utils', () => {
           ]
         }
       };
-      const results = worksheet_utils.findMeasurementFromTsnMeasurements('123', 'legs', tsnMap);
+      const results = worksheet_utils.getMeasurementFromTsnMeasurementTypeDefinitionMap('123', 'legs', tsnMap);
       expect(results).to.eql({
         itis_tsn: 123,
         taxon_measurement_id: 'taxon_2',
@@ -598,7 +598,7 @@ describe('worksheet utils', () => {
 
   describe('validateMeasurements', () => {
     it('no data to validate return true', () => {
-      const tsnMap: worksheet_utils.TsnMeasurementMap = {
+      const tsnMap: worksheet_utils.TsnMeasurementTypeDefinitionMap = {
         '123': {
           qualitative: [
             {
@@ -636,7 +636,7 @@ describe('worksheet utils', () => {
     });
 
     it('no measurements returns false', () => {
-      const tsnMap: worksheet_utils.TsnMeasurementMap = {
+      const tsnMap: worksheet_utils.TsnMeasurementTypeDefinitionMap = {
         '123': {
           qualitative: [
             {
@@ -680,7 +680,7 @@ describe('worksheet utils', () => {
     });
 
     it('data provided is valid', () => {
-      const tsnMap: worksheet_utils.TsnMeasurementMap = {
+      const tsnMap: worksheet_utils.TsnMeasurementTypeDefinitionMap = {
         '123': {
           qualitative: [
             {
@@ -729,7 +729,7 @@ describe('worksheet utils', () => {
     });
 
     it('data provided, no measurements found, returns false', () => {
-      const tsnMap: worksheet_utils.TsnMeasurementMap = {
+      const tsnMap: worksheet_utils.TsnMeasurementTypeDefinitionMap = {
         '123': {
           qualitative: [
             {

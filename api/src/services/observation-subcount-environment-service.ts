@@ -64,27 +64,29 @@ export class ObservationSubCountEnvironmentService extends DBService {
   }
 
   /**
-   * Find environment qualitative type definitions for a given search term.
+   * Find environment qualitative type definitions for the given search terms.
    *
-   * @param {string} searchTerm
+   * @param {string[]} searchTerms
    * @return {*}  {Promise<QualitativeEnvironmentTypeDefinition[]>}
    * @memberof ObservationSubCountEnvironmentService
    */
-  async findQualitativeEnvironmentTypeDefinitions(searchTerm: string): Promise<QualitativeEnvironmentTypeDefinition[]> {
-    return this.observationSubCountEnvironmentRepository.findQualitativeEnvironmentTypeDefinitions(searchTerm);
+  async findQualitativeEnvironmentTypeDefinitions(
+    searchTerms: string[]
+  ): Promise<QualitativeEnvironmentTypeDefinition[]> {
+    return this.observationSubCountEnvironmentRepository.findQualitativeEnvironmentTypeDefinitions(searchTerms);
   }
 
   /**
-   * Find environment quantitative type definitions for a given search term.
+   * Find environment quantitative type definitions for the given search terms.
    *
-   * @param {string} searchTerm
+   * @param {string[]} searchTerms
    * @return {*}  {Promise<QuantitativeEnvironmentTypeDefinition[]>}
    * @memberof ObservationSubCountEnvironmentService
    */
   async findQuantitativeEnvironmentTypeDefinitions(
-    searchTerm: string
+    searchTerms: string[]
   ): Promise<QuantitativeEnvironmentTypeDefinition[]> {
-    return this.observationSubCountEnvironmentRepository.findQuantitativeEnvironmentTypeDefinitions(searchTerm);
+    return this.observationSubCountEnvironmentRepository.findQuantitativeEnvironmentTypeDefinitions(searchTerms);
   }
 
   /**

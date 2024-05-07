@@ -1,10 +1,23 @@
 import {
+  EnvironmentType,
   QualitativeEnvironmentTypeDefinition,
   QuantitativeEnvironmentTypeDefinition
 } from '../../repositories/observation-subcount-environment-repository';
-import { getLogger } from '../logger';
+import { ObservationSubCountEnvironmentService } from '../../services/observation-subcount-environment-service';
+// import { getLogger } from '../logger';
+import { isQualitativeValueValid, isQuantitativeValueValid } from './common-utils';
 
-const defaultLog = getLogger('src/utils/observation-xlsx-utils/environment-column-utils');
+export type EnvironmentColumnNameTypeDefinitionMap = Map<
+  string,
+  QualitativeEnvironmentTypeDefinition | QuantitativeEnvironmentTypeDefinition
+>;
+
+export interface IEnvironmentDataToValidate {
+  key: string;
+  value: string | number;
+}
+
+// const defaultLog = getLogger('src/utils/observation-xlsx-utils/environment-column-utils');
 
 /**
  * Given an array of column headers, returns an array of column headers that have a corresponding environment type
@@ -12,19 +25,10 @@ const defaultLog = getLogger('src/utils/observation-xlsx-utils/environment-colum
  *
  * @export
  * @param {string[]} columns
- * @param {{
- *     qualitative_environments: QualitativeEnvironmentTypeDefinition[];
- *     quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
- *   }} environments
+ * @param {EnvironmentType} environments
  * @return {*}
  */
-export function getEnvironmentColumnNames(
-  columns: string[],
-  environments: {
-    qualitative_environments: QualitativeEnvironmentTypeDefinition[];
-    quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
-  }
-) {
+export function getEnvironmentColumnNames(columns: string[], environments: EnvironmentType) {
   // Filter out columns that have no corresponding environment type definition
   return columns.filter((column) => {
     return (
@@ -34,60 +38,89 @@ export function getEnvironmentColumnNames(
   });
 }
 
-export function validateCsvEnvironmentColumns(rows: Record<string, any>[], environmentColumns: string[]): boolean {
-  return validateMeasurements(mappedData, tsnMeasurementMap);
+export async function getEnvironmentTypeDefinitionsFromColumnNames(
+  columnNames: string[],
+  observationSubCountEnvironmentService: ObservationSubCountEnvironmentService
+): Promise<EnvironmentType> {
+  const [qualitative_environments, quantitative_environments] = await Promise.all([
+    observationSubCountEnvironmentService.findQualitativeEnvironmentTypeDefinitions(columnNames),
+    observationSubCountEnvironmentService.findQuantitativeEnvironmentTypeDefinitions(columnNames)
+  ]);
+
+  return { qualitative_environments, quantitative_environments };
+}
+
+export function getEnvironmentColumnsTypeDefinitionMap(
+  environmentColumns: string[],
+  environmentTypeDefinitions: EnvironmentType
+): EnvironmentColumnNameTypeDefinitionMap {
+  const columnNameDefinitionMap = new Map<
+    string,
+    QualitativeEnvironmentTypeDefinition | QuantitativeEnvironmentTypeDefinition
+  >();
+
+  // Map column names to their respective environment type definitions
+  for (const columnName of environmentColumns) {
+    const qualitativeEnvironment = environmentTypeDefinitions.qualitative_environments.find(
+      (item) => item.name.toLowerCase() === columnName.toLowerCase()
+    );
+    if (qualitativeEnvironment) {
+      columnNameDefinitionMap.set(columnName, qualitativeEnvironment);
+      continue;
+    }
+
+    const quantitativeEnvironment = environmentTypeDefinitions.quantitative_environments.find(
+      (item) => item.name.toLowerCase() === columnName.toLowerCase()
+    );
+    if (quantitativeEnvironment) {
+      columnNameDefinitionMap.set(columnName, quantitativeEnvironment);
+      continue;
+    }
+  }
+
+  return columnNameDefinitionMap;
 }
 
 /**
- * Checks if all passed in measurement data is valid or returns false at first invalid measurement.
+ * Checks if all passed in environment data is valid.
+ * Returns false at first invalid environment.
  *
- * @param {IMeasurementDataToValidate[]} data The measurement data to validate
- * @param {TsnMeasurementMap} tsnMeasurementMap An object map of measurement definitions from Critterbase organized by TSN numbers
- * @returns {*} boolean Results of validation
+ * @export
+ * @param {IEnvironmentDataToValidate[]} environmentsToValidate
+ * @param {EnvironmentColumnNameTypeDefinitionMap} environmentColumnNameTypeDefinitionMap
+ * @return {*}  {boolean}
  */
 export function validateCsvEnvironmentColumns(
-  data: IMeasurementDataToValidate[],
-  tsnMeasurementMap: TsnMeasurementMap
+  environmentsToValidate: IEnvironmentDataToValidate[],
+  environmentColumnNameTypeDefinitionMap: EnvironmentColumnNameTypeDefinitionMap
 ): boolean {
-  return data.every((item) => {
-    const measurements = tsnMeasurementMap[item.tsn];
-    if (!measurements) {
-      defaultLog.debug({ label: 'validateMeasurements', message: 'Invalid: No measurements' });
-      return false;
-    }
+  return environmentsToValidate.every((environmentToValidate) => {
+    if (!environmentToValidate.value) {
+      // An empty value is valid
 
-    // only validate if the column has data
-    if (!item.measurement_value) {
       return true;
     }
 
-    // find the correct measurement
-    if (measurements.qualitative.length > 0) {
-      const measurement = measurements.qualitative.find(
-        (measurement) =>
-          measurement.measurement_name.toLowerCase() === item.measurement_key.toLowerCase() ||
-          measurement.taxon_measurement_id === item.measurement_key
-      );
-      if (measurement) {
-        return isQualitativeValueValid(item.measurement_value, measurement);
-      }
+    const environmentDefinition = environmentColumnNameTypeDefinitionMap.get(environmentToValidate.key);
+
+    if (!environmentDefinition) {
+      // Collumn name does not match any environment definition. The incoming data is invalid.
+
+      return false;
     }
 
-    if (measurements.quantitative.length > 0) {
-      const measurement = measurements.quantitative.find(
-        (measurement) =>
-          measurement.measurement_name.toLowerCase() === item.measurement_key.toLowerCase() ||
-          measurement.taxon_measurement_id === item.measurement_key
+    if (isEnvironmentQualitativeTypeDefinition(environmentDefinition)) {
+      return isQualitativeValueValid(
+        String(environmentToValidate.value),
+        environmentDefinition.options.map((option) => option.name)
       );
-      if (measurement) {
-        return isQuantitativeValueValid(Number(item.measurement_value), measurement);
-      }
     }
 
-    // Has measurements for tsn
-    // Has data but no matches found, entry is invalid
-    defaultLog.debug({ label: 'validateMeasurements', message: 'Invalid', item });
-    return false;
+    return isQuantitativeValueValid(
+      Number(environmentToValidate.value),
+      environmentDefinition.min,
+      environmentDefinition.max
+    );
   });
 }
 

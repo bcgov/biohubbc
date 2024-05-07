@@ -1,9 +1,6 @@
 import { IDBConnection } from '../database/db';
 import { CodeRepository, IAllCodeSets } from '../repositories/code-repository';
-import {
-  QualitativeEnvironmentTypeDefinition,
-  QuantitativeEnvironmentTypeDefinition
-} from '../repositories/observation-subcount-environment-repository';
+import { EnvironmentType } from '../repositories/observation-subcount-environment-repository';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
 import { ObservationSubCountEnvironmentService } from './observation-subcount-environment-service';
@@ -96,25 +93,20 @@ export class CodeService extends DBService {
   }
 
   /**
-   * Find qualitative and quantitative environments that match a given search term.
+   * Find qualitative and quantitative environments that match the given search terms.
    *
-   * @param {string} searchTerm
-   * @return {*}  {Promise<{
-   *     qualitative_environments: QualitativeEnvironmentTypeDefinition[];
-   *     quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
-   *   }>}
+   * @param {string[]} searchTerms
+   * @return {*}  {Promise<EnvironmentType>}
+   * @memberof CodeService
    */
-  async findSubcountEnvironments(searchTerm: string): Promise<{
-    qualitative_environments: QualitativeEnvironmentTypeDefinition[];
-    quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
-  }> {
+  async findSubcountEnvironments(searchTerms: string[]): Promise<EnvironmentType> {
     defaultLog.debug({ message: 'getEnvironments' });
 
     const observationSubCountEnvironmentService = new ObservationSubCountEnvironmentService(this.connection);
 
     const [qualitative_environments, quantitative_environments] = await Promise.all([
-      await observationSubCountEnvironmentService.findQualitativeEnvironmentTypeDefinitions(searchTerm),
-      await observationSubCountEnvironmentService.findQuantitativeEnvironmentTypeDefinitions(searchTerm)
+      await observationSubCountEnvironmentService.findQualitativeEnvironmentTypeDefinitions(searchTerms),
+      await observationSubCountEnvironmentService.findQuantitativeEnvironmentTypeDefinitions(searchTerms)
     ]);
 
     return {

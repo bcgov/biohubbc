@@ -12,7 +12,7 @@ import * as observationRecords from './index';
 
 chai.use(sinonChai);
 
-describe('insertUpdateSurveyObservationsWithMeasurements', () => {
+describe('insertUpdateManualSurveyObservations', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -27,7 +27,7 @@ describe('insertUpdateSurveyObservationsWithMeasurements', () => {
       .resolves(true);
 
     const insertUpdateSurveyObservationsStub = sinon
-      .stub(ObservationService.prototype, 'insertUpdateSurveyObservationsWithMeasurements')
+      .stub(ObservationService.prototype, 'insertUpdateManualSurveyObservations')
       .resolves();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -75,7 +75,7 @@ describe('insertUpdateSurveyObservationsWithMeasurements', () => {
       surveyObservations
     };
 
-    const requestHandler = observationRecords.insertUpdateSurveyObservationsWithMeasurements();
+    const requestHandler = observationRecords.insertUpdateManualSurveyObservations();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
@@ -95,9 +95,7 @@ describe('insertUpdateSurveyObservationsWithMeasurements', () => {
 
     sinon.stub(ObservationService.prototype, 'validateSurveyObservations').resolves(true);
 
-    sinon
-      .stub(ObservationService.prototype, 'insertUpdateSurveyObservationsWithMeasurements')
-      .rejects(new Error('a test error'));
+    sinon.stub(ObservationService.prototype, 'insertUpdateManualSurveyObservations').rejects(new Error('a test error'));
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -128,7 +126,7 @@ describe('insertUpdateSurveyObservationsWithMeasurements', () => {
     };
 
     try {
-      const requestHandler = observationRecords.insertUpdateSurveyObservationsWithMeasurements();
+      const requestHandler = observationRecords.insertUpdateManualSurveyObservations();
 
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
