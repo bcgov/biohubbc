@@ -89,8 +89,11 @@ export class SurveyBlockRepository extends BaseRepository {
         survey_id=${block.survey_id} 
       WHERE 
         survey_block_id = ${block.survey_block_id}
-      RETURNING
-        *;
+      RETURNING 
+        survey_block_id,
+        name,
+        description,
+        revision_count;
     `;
     const response = await this.connection.sql(sql, SurveyBlockRecord);
 
@@ -123,7 +126,10 @@ export class SurveyBlockRepository extends BaseRepository {
       ${block.description}
     )
     RETURNING 
-      *;
+      survey_block_id,
+      name,
+      description,
+      revision_count;
   `;
     const response = await this.connection.sql(sql, SurveyBlockRecord);
 
@@ -151,7 +157,10 @@ export class SurveyBlockRepository extends BaseRepository {
       WHERE
         survey_block_id = ${surveyBlockId}
       RETURNING
-        *;
+        survey_block_id,
+        name,
+        description,
+        revision_count;
     `;
 
     const response = await this.connection.sql(sqlStatement, SurveyBlockRecord);

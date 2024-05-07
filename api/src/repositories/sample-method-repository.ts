@@ -169,7 +169,7 @@ export class SampleMethodRepository extends BaseRepository {
           survey_sample_method.survey_sample_site_id = sss.survey_sample_site_id
           AND survey_sample_method_id = ${surveySampleMethodId}
           AND survey_id = ${surveyId}
-      RETURNING *;
+      RETURNING survey_sample_method.*;
     `;
 
     const response = await this.connection.sql(sqlStatement, SampleMethodRecord);
