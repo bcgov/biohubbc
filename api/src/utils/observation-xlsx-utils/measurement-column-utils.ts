@@ -4,10 +4,7 @@ import {
   CBQuantitativeMeasurementTypeDefinition,
   CritterbaseService
 } from '../../services/critterbase-service';
-import { getLogger } from '../logger';
 import { isQualitativeValueValid, isQuantitativeValueValid } from './common-utils';
-
-const defaultLog = getLogger('src/utils/observation-xlsx-utils/measurement-column-utils');
 
 export type TsnMeasurementTypeDefinitionMap = Record<
   string,
@@ -33,26 +30,24 @@ export async function getCBMeasurementsFromTSN(
   critterBaseService: CritterbaseService
 ): Promise<TsnMeasurementTypeDefinitionMap> {
   const tsnMeasurements: TsnMeasurementTypeDefinitionMap = {};
-  try {
-    for (const tsn of tsns) {
-      if (!tsnMeasurements[tsn]) {
-        const measurements = await critterBaseService.getTaxonMeasurements(tsn);
-        if (!measurements) {
-          throw new Error(`No measurements found for tsn: ${tsn}`);
-        }
 
-        tsnMeasurements[tsn] = measurements;
-      }
+  for (const tsn of tsns) {
+    if (tsnMeasurements[tsn]) {
+      // Already fetched measurements for this TSN
+      continue;
     }
-  } catch (error) {
-    defaultLog.error({
-      label: 'getCBMeasurementTypeDefinitionsFromWorksheet',
-      message: 'error',
-      error
+
+    const measurements = await critterBaseService.getTaxonMeasurements(tsn).catch((error) => {
+      throw new ApiGeneralError('Error connecting to the Critterbase API', [error as Error]);
     });
 
-    throw new ApiGeneralError('Error connecting to the Critterbase API', [error as Error]);
+    if (!measurements) {
+      throw new ApiGeneralError(`No measurements found for tsn: ${tsn}`);
+    }
+
+    tsnMeasurements[tsn] = measurements;
   }
+
   return tsnMeasurements;
 }
 
@@ -176,11 +171,15 @@ export function validateMeasurements(
       return false;
     }
 
-    const matchingQualitativeMeasurement = measurementsForTsn.qualitative.find(
-      (measurement) => measurement.measurement_name.toLowerCase() === measurementToValidate.key.toLowerCase()
+    const matchingQualitativeMeasurement = measurementsForTsn.qualitative.find((measurementForTsn) =>
+      [measurementForTsn.taxon_measurement_id.toLowerCase(), measurementForTsn.measurement_name.toLowerCase()].includes(
+        measurementToValidate.key.toLowerCase()
+      )
     );
-    const matchingQuantitativeMeasurement = measurementsForTsn.quantitative.find(
-      (measurement) => measurement.measurement_name.toLowerCase() === measurementToValidate.key.toLowerCase()
+    const matchingQuantitativeMeasurement = measurementsForTsn.quantitative.find((measurementForTsn) =>
+      [measurementForTsn.taxon_measurement_id.toLowerCase(), measurementForTsn.measurement_name.toLowerCase()].includes(
+        measurementToValidate.key.toLowerCase()
+      )
     );
 
     if (matchingQualitativeMeasurement && matchingQuantitativeMeasurement) {

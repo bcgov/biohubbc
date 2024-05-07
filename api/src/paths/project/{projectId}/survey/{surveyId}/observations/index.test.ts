@@ -158,7 +158,9 @@ describe('getSurveyObservations', () => {
         supplementaryObservationData: {
           observationCount: 59,
           qualitative_measurements: [],
-          quantitative_measurements: []
+          quantitative_measurements: [],
+          qualitative_environments: [],
+          quantitative_environments: []
         }
       });
 
@@ -186,7 +188,9 @@ describe('getSurveyObservations', () => {
       supplementaryObservationData: {
         observationCount: 59,
         qualitative_measurements: [],
-        quantitative_measurements: []
+        quantitative_measurements: [],
+        qualitative_environments: [],
+        quantitative_environments: []
       },
       pagination: {
         total: 59,
@@ -214,7 +218,9 @@ describe('getSurveyObservations', () => {
         supplementaryObservationData: {
           observationCount: 50,
           qualitative_measurements: [],
-          quantitative_measurements: []
+          quantitative_measurements: [],
+          qualitative_environments: [],
+          quantitative_environments: []
         }
       });
 
@@ -240,7 +246,9 @@ describe('getSurveyObservations', () => {
       supplementaryObservationData: {
         observationCount: 50,
         qualitative_measurements: [],
-        quantitative_measurements: []
+        quantitative_measurements: [],
+        qualitative_environments: [],
+        quantitative_environments: []
       },
       pagination: {
         total: 50,
@@ -268,7 +276,9 @@ describe('getSurveyObservations', () => {
         supplementaryObservationData: {
           observationCount: 2,
           qualitative_measurements: [],
-          quantitative_measurements: []
+          quantitative_measurements: [],
+          qualitative_environments: [],
+          quantitative_environments: []
         }
       });
 
@@ -289,7 +299,9 @@ describe('getSurveyObservations', () => {
       supplementaryObservationData: {
         observationCount: 2,
         qualitative_measurements: [],
-        quantitative_measurements: []
+        quantitative_measurements: [],
+        qualitative_environments: [],
+        quantitative_environments: []
       },
       pagination: {
         total: 2,

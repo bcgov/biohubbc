@@ -7,15 +7,7 @@
  * @return {*}  {boolean}
  */
 export function isQualitativeValueValid(cellValue: string, optionNames: string[]): boolean {
-  const matchingOption = optionNames.includes(cellValue);
-
-  if (!matchingOption) {
-    // The cellValue does not match any of the valid options for this measurement
-    false;
-  }
-
-  // The cellValue is valid
-  return true;
+  return optionNames.includes(cellValue);
 }
 
 /**
