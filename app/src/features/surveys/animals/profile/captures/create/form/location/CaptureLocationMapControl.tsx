@@ -110,9 +110,9 @@ const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps) => {
                 }));
                 setUpdatedBounds(calculateUpdatedMapBounds(features));
                 setFieldValue(name, formData[0].geojson);
+                setFieldError(name, undefined);
               }}
               onFailure={(message) => {
-                console.log(message);
                 setFieldError(name, message);
               }}
             />
@@ -172,6 +172,7 @@ const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps) => {
                       if (lastDrawn) {
                         drawControlsRef?.current?.deleteLayer(lastDrawn);
                       }
+                      setFieldError(name, undefined);
 
                       const feature = event.layer.toGeoJSON();
                       setFieldValue(name, feature);

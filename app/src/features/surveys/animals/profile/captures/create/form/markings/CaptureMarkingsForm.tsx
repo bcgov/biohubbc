@@ -85,6 +85,7 @@ const CaptureMarkingsForm = () => {
                 label="Marking Type"
                 loading={markingTypesDataLoader.isLoading}
                 name={`marking_type_id`}
+                required
                 options={
                   markingTypesDataLoader.data?.map((item) => ({
                     value: item.marking_type_id,
@@ -96,6 +97,7 @@ const CaptureMarkingsForm = () => {
                 id="marking-location-autocomplete-field"
                 label="Marking Placement"
                 name={`body_location_id`}
+                required
                 loading={markingBodyLocationDataLoader.isLoading}
                 options={
                   markingBodyLocationDataLoader.data?.map((item) => ({
@@ -121,7 +123,7 @@ const CaptureMarkingsForm = () => {
               <CustomTextField
                 name={`comment`}
                 label="Description"
-                other={{ multiline: true, required: true, rows: 4 }}
+                other={{ multiline: true, rows: 4 }}
               />
             </Stack>
           )

@@ -29,8 +29,8 @@ const CaptureGeneralInformationForm = () => {
                 parentName="capture"
                 date={{
                   dateLabel: 'Capture date',
-                  dateName: 'capture.capture_timestamp',
-                  dateId: 'capture.capture_timestamp',
+                  dateName: 'capture.capture_date',
+                  dateId: 'capture.capture_date',
                   dateRequired: true,
                   dateHelperText: '',
                   dateIcon: mdiCalendar
@@ -39,7 +39,7 @@ const CaptureGeneralInformationForm = () => {
                   timeLabel: 'Capture time',
                   timeName: 'capture.capture_time',
                   timeId: 'capture.capture_time',
-                  timeRequired: true,
+                  timeRequired: false,
                   timeHelperText: '',
                   timeIcon: mdiCalendar
                 }}
@@ -51,7 +51,7 @@ const CaptureGeneralInformationForm = () => {
               name="capture.capture_comment"
               label="Capture comments"
               maxLength={1000}
-              other={{ multiline: true, rows: 4 }}
+              other={{ multiline: true, rows: 4, required: true }}
             />
           </Grid>
           <Grid item xs={12} mt={2}>
@@ -64,8 +64,8 @@ const CaptureGeneralInformationForm = () => {
                 parentName="capture"
                 date={{
                   dateLabel: 'Release date',
-                  dateName: 'capture.release_timestamp',
-                  dateId: 'capture.release_timestamp',
+                  dateName: 'capture.release_date',
+                  dateId: 'capture.release_date',
                   dateRequired: false,
                   dateHelperText: '',
                   dateIcon: mdiCalendar

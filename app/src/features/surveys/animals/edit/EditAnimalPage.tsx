@@ -219,7 +219,7 @@ const EditAnimalPage = () => {
               {
                 nickname: critter.animal_id,
                 species: { tsn: critter.itis_tsn, scientificName: critter.itis_scientific_name, commonName: '' },
-                ecological_units: [],
+                ecological_units: critter.collection_units,
                 wildlife_health_id: critter.wlh_id,
                 critter_comment: ''
               } as ICreateEditAnimalRequest

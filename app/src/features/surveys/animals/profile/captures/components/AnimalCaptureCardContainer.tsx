@@ -1,4 +1,4 @@
-import { mdiChevronDown, mdiDotsVertical, mdiMapMarker, mdiPencilOutline } from '@mdi/js';
+import { mdiChevronDown, mdiDotsVertical, mdiMapMarkerOutline, mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -87,13 +87,12 @@ const AnimalCaptureCardContainer = () => {
       )}
 
       {captures.length ? (
-        captures.map((capture) => {
-          const [captureDate, captureTime] = capture.capture_timestamp.split(' ');
-
+        captures.map((capture, index) => {
           return (
             <Accordion
               component={Paper}
               disableGutters
+              key={`${capture.capture_id}-${index}`}
               sx={{
                 m: 2,
                 px: 1,
@@ -124,12 +123,11 @@ const AnimalCaptureCardContainer = () => {
                   }}>
                   <Stack gap={0.5} display="flex">
                     <Typography fontWeight={700}>
-                      {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, captureDate)}&nbsp;
+                      {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, capture.capture_timestamp)}&nbsp;
                     </Typography>
-                    <Typography color="textSecondary">{captureTime}</Typography>
                     <Box display="flex" alignItems="flex-end">
-                      <Box sx={{ display: 'flex', alignItems: 'center', mr: 0.5 }}>
-                        <Icon size={0.8} color={grey[400]} title="Capture location" path={mdiMapMarker} />
+                      <Box sx={{ display: 'flex', mr: 0.5, mb: 0.1 }}>
+                        <Icon size={0.7} color={grey[400]} title="Capture location" path={mdiMapMarkerOutline} />
                       </Box>
                       <Typography color="textSecondary" variant="body2">
                         {capture.capture_location.longitude},&nbsp;

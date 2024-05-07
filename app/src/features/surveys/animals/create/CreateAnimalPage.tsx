@@ -15,6 +15,7 @@ import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
@@ -36,6 +37,7 @@ export const defaultAnimalDataFormValues: ICreateEditAnimalRequest = {
  */
 const CreateAnimalPage = () => {
   const biohubApi = useBiohubApi();
+  const critterbaseApi = useCritterbaseApi();
 
   const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -118,7 +120,6 @@ const CreateAnimalPage = () => {
    */
   const handleSubmit = async (values: ICreateEditAnimalRequest) => {
     setIsSaving(true);
-    console.log(values);
 
     try {
       if (!values.species) {
@@ -131,6 +132,20 @@ const CreateAnimalPage = () => {
         animal_id: values.nickname,
         sex: AnimalSex.MALE,
         itis_tsn: values.species.tsn
+      });
+
+      // Insert collection units
+      values.ecological_units.map(async (unit) => {
+        if (!unit.collection_unit_id || !unit.collection_category_id) {
+          return;
+        }
+
+        await critterbaseApi.collectionUnit.createCollectionUnit({
+          critter_collection_unit_id: undefined,
+          critter_id: response.critter_id,
+          collection_category_id: unit.collection_category_id,
+          collection_unit_id: unit.collection_unit_id
+        });
       });
 
       if (!response) {

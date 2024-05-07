@@ -41,7 +41,7 @@ const AnimalProfile = () => {
       });
   };
 
-  let critter = critterDataLoader.data;
+  const critter = critterDataLoader.data;
 
   if (!critter || critterDataLoader.isLoading) {
     return (
@@ -50,26 +50,6 @@ const AnimalProfile = () => {
       </Box>
     );
   }
-
-  critter = {
-    ...critter,
-    collection_units: [
-      {
-        unit_name: 'Telkwa',
-        category_name: 'Population unit',
-        critter_collection_unit_id: '1',
-        collection_category_id: '1',
-        collection_unit_id: '1'
-      },
-      {
-        unit_name: 'Boreal',
-        category_name: 'Ecotype',
-        critter_collection_unit_id: '1',
-        collection_category_id: '1',
-        collection_unit_id: '1'
-      }
-    ]
-  };
 
   return (
     <Stack spacing={1.5} flexDirection="column" height="100%" maxWidth="100%">
@@ -91,7 +71,7 @@ const AnimalProfile = () => {
             <AnimalAttributeItem
               text={
                 <ScientificNameTypography
-                  variant="body1"
+                  variant="body2"
                   component="span"
                   color="textSecondary"
                   name={critter.itis_scientific_name}

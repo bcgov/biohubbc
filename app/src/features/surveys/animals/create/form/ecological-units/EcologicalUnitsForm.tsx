@@ -7,8 +7,8 @@ import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
 import EcologicalUnitsSelect from './components/EcologicalUnitsSelect';
 
 const initialEcologicalUnitValues = {
-  ecological_unit_name: '',
-  value: ''
+  collection_category_id: null,
+  collection_unit_id: null
 };
 
 /**
@@ -19,6 +19,7 @@ const initialEcologicalUnitValues = {
  */
 const EcologicalUnitsForm = () => {
   const { values } = useFormikContext<ICreateEditAnimalRequest>();
+  console.log(values)
 
   return (
     <FieldArray

@@ -11,6 +11,7 @@ import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { SkeletonHorizontalStack } from 'components/loading/SkeletonLoaders';
 import { EditCaptureI18N } from 'constants/i18n';
+import dayjs from 'dayjs';
 import { FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
@@ -52,29 +53,22 @@ const EditCapturePage = () => {
     captureDataLoader.load();
   }
 
-  console.log(captureDataLoader.data);
-
-  //   const capture = animalPageContext.critterDataLoader.
-
-  //   capture_id?: string;
-  //   capture_timestamp: string;
-  //   release_timestamp: string;
-  //   capture_comment: string;
-  //   release_comment: string;
-  //   capture_location: Feature;
-  //   release_location: Feature;
-
   const capture = captureDataLoader.data;
 
   if (!capture) {
     return <CircularProgress size={40} className="pageProgress" />;
   }
 
+  const [captureDate, captureTimeTz] = capture.capture_timestamp.split('T');
+  const [captureTime, captureTimeOffset] = captureTimeTz.split('-');
+
   const initialFormikValues: ICreateCaptureRequest = {
     capture: {
       capture_id: capture.capture_id,
       capture_comment: capture.capture_comment ?? '',
       capture_timestamp: capture.capture_timestamp,
+      capture_date: captureDate,
+      capture_time: captureTime + captureTimeOffset,
       capture_location: {
         type: 'Feature',
         geometry: {
@@ -184,19 +178,49 @@ const EditCapturePage = () => {
         return;
       }
 
-      const response = await critterbaseApi.capture.updateCapture({
-        capture_id: values.capture.capture_id,
-        capture_timestamp: new Date(values.capture.capture_timestamp),
-        release_timestamp: new Date(values.capture.release_timestamp),
+      const captureLocation = {
+        longitude: values.capture.capture_location.geometry.coordinates[0],
+        latitude: values.capture.capture_location.geometry.coordinates[1],
+        coordinate_uncertainty: 0,
+        coordinate_uncertainty_units: 'm'
+      };
+
+      // if release location is null, use the capture location, otherwise format it for critterbase
+      const releaseLocation =
+        values.capture.release_location &&
+        values.capture.release_location.geometry &&
+        values.capture.release_location.geometry.type === 'Point'
+          ? {
+              longitude: values.capture.release_location.geometry.coordinates[0],
+              latitude: values.capture.release_location.geometry.coordinates[1],
+              coordinate_uncertainty: 0,
+              coordinate_uncertainty_units: 'm'
+            }
+          : values.capture.capture_location;
+
+      const captureTimestamp = dayjs(
+        `${values.capture.capture_date}${
+          values.capture.capture_time ? ` ${values.capture.capture_time}-07:00` : 'T00:00:00-07:00'
+        }`
+      ).toDate();
+
+      // if release timestamp is null, use the capture timestamp, otherwise format it for critterbase
+      const releaseTimestamp = dayjs(
+        values.capture.release_date
+          ? captureTimestamp
+          : `${values.capture.release_date}${
+              values.capture.release_time ? ` ${values.capture.release_time}-07:00` : 'T00:00:00-07:00'
+            }`
+      ).toDate();
+
+      const response = await critterbaseApi.capture.createCapture({
+        capture_id: undefined,
+        capture_timestamp: captureTimestamp,
+        release_timestamp: releaseTimestamp,
         capture_comment: values.capture.capture_comment ?? '',
         release_comment: values.capture.release_comment ?? '',
-        capture_location: {
-          longitude: values.capture.capture_location.geometry.coordinates[0],
-          latitude: values.capture.capture_location.geometry.coordinates[1],
-          coordinate_uncertainty: 0,
-          coordinate_uncertainty_units: 'm'
-        },
-        release_location: values.capture.release_location,
+        capture_location: captureLocation,
+        release_location: releaseLocation ?? captureLocation,
         critter_id: critterbaseCritterId
       });
 

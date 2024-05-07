@@ -38,13 +38,24 @@ export const useXrefApi = (axios: AxiosInstance) => {
    */
   const getCollectionUnits = async (tsn: number): Promise<ICollectionUnitResponse[]> => {
     const { data } = await axios.get(`/api/critterbase/xref/taxon-collection-categories?tsn=${tsn}`);
-    console.log(data);
+    return data;
+  };
+
+  /**
+   * Get collection (ie. ecological) units that are available for a given taxon
+   *
+   * @param {string} searchTerm
+   * @return {*}  {Promise<CBMeasurementSearchByTermResponse>}
+   */
+  const getCollectionUnitOptions = async (unit_id: string): Promise<ICollectionUnitResponse[]> => {
+    const { data } = await axios.get(`/api/critterbase/xref/collection-units/${unit_id}`);
     return data;
   };
 
   return {
     getTaxonMeasurements,
     getMeasurementTypeDefinitionsBySearchTerm,
-    getCollectionUnits
+    getCollectionUnits,
+    getCollectionUnitOptions
   };
 };
