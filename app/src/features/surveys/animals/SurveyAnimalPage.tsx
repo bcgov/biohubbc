@@ -5,8 +5,8 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useAnimalPageContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import SurveyAnimalList from './list/SurveyAnimalList';
-import SurveyAnimalHeader from './SurveyAnimalHeader';
 import AnimalProfile from './profile/AnimalProfile';
+import SurveyAnimalHeader from './SurveyAnimalHeader';
 
 /**
  * Returns the page for managing Animals
@@ -73,7 +73,7 @@ const SurveyAnimalPage = () => {
 
         {selectedAnimal && (
           <Box maxWidth="75%" flex="1 1 auto">
-            <AnimalProfile/>
+            <AnimalProfile />
           </Box>
         )}
       </Stack>
