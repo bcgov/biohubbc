@@ -4,10 +4,9 @@ import {
   QuantitativeEnvironmentTypeDefinition
 } from '../../repositories/observation-subcount-environment-repository';
 import { ObservationSubCountEnvironmentService } from '../../services/observation-subcount-environment-service';
-// import { getLogger } from '../logger';
 import { isQualitativeValueValid, isQuantitativeValueValid } from './common-utils';
 
-export type EnvironmentColumnNameTypeDefinitionMap = Map<
+export type EnvironmentNameTypeDefinitionMap = Map<
   string,
   QualitativeEnvironmentTypeDefinition | QuantitativeEnvironmentTypeDefinition
 >;
@@ -15,27 +14,6 @@ export type EnvironmentColumnNameTypeDefinitionMap = Map<
 export interface IEnvironmentDataToValidate {
   key: string;
   value: string | number;
-}
-
-// const defaultLog = getLogger('src/utils/observation-xlsx-utils/environment-column-utils');
-
-/**
- * Given an array of column headers, returns an array of column headers that have a corresponding environment type
- * definitions.
- *
- * @export
- * @param {string[]} columns
- * @param {EnvironmentType} environments
- * @return {*}
- */
-export function getEnvironmentColumnNames(columns: string[], environments: EnvironmentType) {
-  // Filter out columns that have no corresponding environment type definition
-  return columns.filter((column) => {
-    return (
-      environments.qualitative_environments.some((item) => String(item.environment_qualitative_id) === column) ||
-      environments.quantitative_environments.some((item) => String(item.environment_quantitative_id) === column)
-    );
-  });
 }
 
 export async function getEnvironmentTypeDefinitionsFromColumnNames(
@@ -53,7 +31,7 @@ export async function getEnvironmentTypeDefinitionsFromColumnNames(
 export function getEnvironmentColumnsTypeDefinitionMap(
   environmentColumns: string[],
   environmentTypeDefinitions: EnvironmentType
-): EnvironmentColumnNameTypeDefinitionMap {
+): EnvironmentNameTypeDefinitionMap {
   const columnNameDefinitionMap = new Map<
     string,
     QualitativeEnvironmentTypeDefinition | QuantitativeEnvironmentTypeDefinition
@@ -87,25 +65,23 @@ export function getEnvironmentColumnsTypeDefinitionMap(
  *
  * @export
  * @param {IEnvironmentDataToValidate[]} environmentsToValidate
- * @param {EnvironmentColumnNameTypeDefinitionMap} environmentColumnNameTypeDefinitionMap
+ * @param {EnvironmentNameTypeDefinitionMap} environmentNameTypeDefinitionMap
  * @return {*}  {boolean}
  */
-export function validateCsvEnvironmentColumns(
+export function validateEnvironments(
   environmentsToValidate: IEnvironmentDataToValidate[],
-  environmentColumnNameTypeDefinitionMap: EnvironmentColumnNameTypeDefinitionMap
+  environmentNameTypeDefinitionMap: EnvironmentNameTypeDefinitionMap
 ): boolean {
   return environmentsToValidate.every((environmentToValidate) => {
     if (!environmentToValidate.value) {
       // An empty value is valid
-
       return true;
     }
 
-    const environmentDefinition = environmentColumnNameTypeDefinitionMap.get(environmentToValidate.key);
+    const environmentDefinition = environmentNameTypeDefinitionMap.get(environmentToValidate.key);
 
     if (!environmentDefinition) {
-      // Collumn name does not match any environment definition. The incoming data is invalid.
-
+      // Column name does not match any environment definition. The incoming data is invalid.
       return false;
     }
 

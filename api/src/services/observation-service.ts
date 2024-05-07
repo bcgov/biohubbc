@@ -30,7 +30,7 @@ import {
   getEnvironmentTypeDefinitionsFromColumnNames,
   IEnvironmentDataToValidate,
   isEnvironmentQualitativeTypeDefinition,
-  validateCsvEnvironmentColumns
+  validateEnvironments
 } from '../utils/observation-xlsx-utils/environment-column-utils';
 import {
   getCBMeasurementsFromTSN,
@@ -547,7 +547,7 @@ export class ObservationService extends DBService {
     });
 
     // Validate environment column data
-    if (!validateCsvEnvironmentColumns(environmentsToValidate, environmentColumnsTypeDefinitionMap)) {
+    if (!validateEnvironments(environmentsToValidate, environmentColumnsTypeDefinitionMap)) {
       throw new Error('Failed to process file for importing observations. Environment column validator failed.');
     }
 

@@ -171,12 +171,17 @@ export function validateMeasurements(
       return false;
     }
 
+    // Attempt to find the qualitative measurement that matches the column name, if any
     const matchingQualitativeMeasurement = measurementsForTsn.qualitative.find((measurementForTsn) =>
+      // Compare the column name to the measurement name and the taxon_measurement_id
       [measurementForTsn.taxon_measurement_id.toLowerCase(), measurementForTsn.measurement_name.toLowerCase()].includes(
         measurementToValidate.key.toLowerCase()
       )
     );
+
+    // Attempt to find the quantitative measurement that matches the column name, if any
     const matchingQuantitativeMeasurement = measurementsForTsn.quantitative.find((measurementForTsn) =>
+      // Compare the column name to the measurement name and the taxon_measurement_id
       [measurementForTsn.taxon_measurement_id.toLowerCase(), measurementForTsn.measurement_name.toLowerCase()].includes(
         measurementToValidate.key.toLowerCase()
       )
@@ -191,6 +196,7 @@ export function validateMeasurements(
     if (matchingQualitativeMeasurement) {
       return isQualitativeValueValid(
         String(measurementToValidate.value).toLowerCase(),
+        // Flatten the options array to include the option id, value, and label
         matchingQualitativeMeasurement.options.flatMap((option) => [
           String(option.qualitative_option_id),
           String(option.option_value),
