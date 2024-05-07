@@ -84,7 +84,8 @@ export class SamplePeriodRepository extends BaseRepository {
       WHERE
         ssm.survey_sample_method_id = ${surveySampleMethodId}
       AND
-        sss.survey_id = ${surveyId};`;
+        sss.survey_id = ${surveyId}
+      ORDER BY ssp.start_date, ssp.start_time;`;
 
     const response = await this.connection.sql(sql, SamplePeriodRecord);
 
@@ -118,7 +119,8 @@ export class SamplePeriodRepository extends BaseRepository {
       WHERE
         survey_sample_period.survey_sample_period_id = ${surveySamplePeriodId}
       AND
-        survey_sample_site.survey_id = ${surveyId};
+        survey_sample_site.survey_id = ${surveyId}
+      ORDER BY survey_sample_period.start_date, survey_sample_period.start_time;
     `;
 
     const response = await this.connection.sql(sqlStatement, SamplePeriodHierarchyIds);

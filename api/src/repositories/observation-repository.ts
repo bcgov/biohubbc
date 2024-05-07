@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { getLogger } from '../utils/logger';
+import { GeoJSONPointZodSchema } from '../zod-schema/geoJsonZodSchema';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
 import {
@@ -23,6 +24,7 @@ const defaultLog = getLogger('repositories/observation-repository');
 export const ObservationRecord = z.object({
   survey_observation_id: z.number(),
   survey_id: z.number(),
+  wldtaxonomic_units_id: z.number().nullable(),
   itis_tsn: z.number(),
   itis_scientific_name: z.string().nullable(),
   survey_sample_site_id: z.number().nullable(),
@@ -86,29 +88,32 @@ const ObservationSubcountsObject = z.object({
 /**
  * An extended observation record.
  * Includes:
- * - all fields from the observation record
+ * - fields from the observation record
  * - additional fields about the survey_sample_* data for the observation record
  * - additional fields about the subcount records for the observation record
  */
-export const ObservationRecordWithSamplingAndSubcountData = ObservationRecord.extend(
-  ObservationSamplingData.shape
-).extend(ObservationSubcountsObject.shape);
-
+export const ObservationRecordWithSamplingAndSubcountData = ObservationRecord.pick({
+  survey_observation_id: true,
+  survey_id: true,
+  itis_tsn: true,
+  itis_scientific_name: true,
+  survey_sample_site_id: true,
+  survey_sample_method_id: true,
+  survey_sample_period_id: true,
+  latitude: true,
+  longitude: true,
+  count: true,
+  observation_time: true,
+  observation_date: true
+})
+  .extend(ObservationSamplingData.shape)
+  .extend(ObservationSubcountsObject.shape);
 export type ObservationRecordWithSamplingAndSubcountData = z.infer<typeof ObservationRecordWithSamplingAndSubcountData>;
-
-const GeoJSONPointSchema = z.object({
-  type: z
-    .string()
-    .optional()
-    .refine((val) => val === 'Point', { message: 'Type must be "Point"' }),
-  coordinates: z.array(z.number()).min(2).max(2) // Assuming GeoJSON Point has 2 coordinates (longitude and latitude)
-});
 
 export const ObservationGeometryRecord = z.object({
   survey_observation_id: z.number(),
-  geometry: GeoJSONPointSchema
+  geometry: GeoJSONPointZodSchema
 });
-
 export type ObservationGeometryRecord = z.infer<typeof ObservationGeometryRecord>;
 
 /**
@@ -484,7 +489,18 @@ export class ObservationRepository extends BaseRepository {
       )
       // Return all observations for the surveys, including the additional sampling data, and rolled up subcount data
       .select(
-        'survey_observation.*',
+        'survey_observation.survey_observation_id',
+        'survey_observation.survey_id',
+        'survey_observation.itis_tsn',
+        'survey_observation.itis_scientific_name',
+        'survey_observation.survey_sample_site_id',
+        'survey_observation.survey_sample_method_id',
+        'survey_observation.survey_sample_period_id',
+        'survey_observation.latitude',
+        'survey_observation.longitude',
+        'survey_observation.count',
+        'survey_observation.observation_date',
+        'survey_observation.observation_time',
         'w_survey_sample_site.survey_sample_site_name',
         'w_survey_sample_method.survey_sample_method_name',
         'w_survey_sample_period.survey_sample_period_start_datetime',
@@ -602,13 +618,13 @@ export class ObservationRepository extends BaseRepository {
     const knex = getKnex();
     const sqlStatement = knex
       .queryBuilder()
-      .count('survey_observation_id as rowCount')
+      .select(knex.raw('COUNT(survey_observation_id)::integer as count'))
       .from('survey_observation')
       .where('survey_id', surveyId);
 
-    const response = await this.connection.knex(sqlStatement);
+    const response = await this.connection.knex(sqlStatement, z.object({ count: z.number() }));
 
-    return Number(response.rows[0].rowCount);
+    return response.rows[0].count;
   }
 
   /**
@@ -724,12 +740,12 @@ export class ObservationRepository extends BaseRepository {
     const knex = getKnex();
     const sqlStatement = knex
       .queryBuilder()
-      .count('survey_observation_id as observation_count')
+      .select(knex.raw('COUNT(survey_observation_id)::integer as count'))
       .from('survey_observation')
       .where('survey_id', surveyId)
       .whereIn('survey_sample_site_id', sampleSiteIds);
 
-    const response = await this.connection.knex(sqlStatement);
+    const response = await this.connection.knex(sqlStatement, z.object({ count: z.number() }));
 
     if (response?.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to get observations count', [
@@ -738,8 +754,7 @@ export class ObservationRepository extends BaseRepository {
       ]);
     }
 
-    const observation_count = Number(response.rows[0].observation_count);
-    return observation_count;
+    return Number(response.rows[0].count);
   }
 
   /**
@@ -753,11 +768,11 @@ export class ObservationRepository extends BaseRepository {
     const knex = getKnex();
     const sqlStatement = knex
       .queryBuilder()
-      .count('survey_observation_id as observation_count')
+      .select(knex.raw('COUNT(survey_observation_id)::integer as count'))
       .from('survey_observation')
       .whereIn('survey_sample_method_id', sampleMethodIds);
 
-    const response = await this.connection.knex(sqlStatement);
+    const response = await this.connection.knex(sqlStatement, z.object({ count: z.number() }));
 
     if (response?.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to get observations count', [
@@ -766,8 +781,7 @@ export class ObservationRepository extends BaseRepository {
       ]);
     }
 
-    const observation_count = Number(response.rows[0].observation_count);
-    return observation_count;
+    return response.rows[0].count;
   }
 
   /**
@@ -781,11 +795,11 @@ export class ObservationRepository extends BaseRepository {
     const knex = getKnex();
     const sqlStatement = knex
       .queryBuilder()
-      .count('survey_observation_id as rowCount')
+      .select(knex.raw('COUNT(survey_observation_id)::integer as count'))
       .from('survey_observation')
       .whereIn('survey_sample_period_id', samplePeriodIds);
 
-    const response = await this.connection.knex(sqlStatement);
+    const response = await this.connection.knex(sqlStatement, z.object({ count: z.number() }));
 
     if (response?.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to get observations count', [
@@ -794,7 +808,6 @@ export class ObservationRepository extends BaseRepository {
       ]);
     }
 
-    const observation_count = Number(response.rows[0].observation_count);
-    return observation_count;
+    return response.rows[0].count;
   }
 }

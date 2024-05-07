@@ -1,17 +1,21 @@
-import { mdiChevronDown, mdiDotsVertical } from '@mdi/js';
+import { mdiChevronDown, mdiDotsVertical, mdiMapMarker, mdiVectorLine, mdiVectorSquare } from '@mdi/js';
 import Icon from '@mdi/react';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
+import blue from '@mui/material/colors/blue';
 import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { IStaticLayer } from 'components/map/components/StaticLayers';
 import { SamplingSiteListMethod } from 'features/surveys/observations/sampling-sites/list/SamplingSiteListMethod';
-import { IGetSampleLocationDetails } from 'interfaces/useSurveyApi.interface';
+import SurveyMap from 'features/surveys/view/SurveyMap';
+import { IGetSampleLocationDetails } from 'interfaces/useSamplingSiteApi.interface';
+import SamplingStratumChips from '../edit/form/SamplingStratumChips';
 
 export interface ISamplingSiteListSiteProps {
   sampleSite: IGetSampleLocationDetails;
@@ -28,6 +32,28 @@ export interface ISamplingSiteListSiteProps {
  */
 export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
   const { sampleSite, isChecked, handleSampleSiteMenuClick, handleCheckboxChange } = props;
+
+  const staticLayers: IStaticLayer[] = [
+    {
+      layerName: 'Sample Sites',
+      layerColors: { color: blue[500], fillColor: blue[500] },
+      features: [
+        {
+          key: sampleSite.survey_sample_site_id,
+          geoJSON: sampleSite.geojson
+        }
+      ]
+    }
+  ];
+
+  let icon;
+  if (sampleSite.geojson.geometry.type === 'Point') {
+    icon = { path: mdiMapMarker, title: 'Point sampling site' };
+  } else if (sampleSite.geojson.geometry.type === 'LineString') {
+    icon = { path: mdiVectorLine, title: 'Transect sampling site' };
+  } else {
+    icon = { path: mdiVectorSquare, title: 'Polygon sampling site' };
+  }
 
   return (
     <Accordion
@@ -89,6 +115,9 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
               }}>
               {sampleSite.name}
             </Typography>
+            <Box sx={{ minWidth: '20px', display: 'flex', alignItems: 'center' }}>
+              <Icon size={0.8} color={grey[400]} title={icon.title} path={icon.path} />
+            </Box>
           </Stack>
         </AccordionSummary>
         <IconButton
@@ -104,24 +133,36 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
       <AccordionDetails
         sx={{
           pt: 0,
-          px: 2
+          pb: 1,
+          pl: 1,
+          pr: 0
         }}>
+        {sampleSite.stratums && sampleSite.stratums.length > 0 && (
+          <Box display="flex" alignItems="center" color="textSecondary" py={1} px={1}>
+            <SamplingStratumChips sampleSite={sampleSite} />
+          </Box>
+        )}
         <List
           disablePadding
           sx={{
+            mx: 1.5,
             '& .MuiListItemText-primary': {
-              typography: 'body2'
+              typography: 'body2',
+              pt: 1
             }
           }}>
-          {sampleSite.sample_methods?.map((sampleMethod) => {
+          {sampleSite.sample_methods?.map((sampleMethod, index) => {
             return (
               <SamplingSiteListMethod
                 sampleMethod={sampleMethod}
-                key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}`}
+                key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}-${index}`}
               />
             );
           })}
         </List>
+        <Box height="300px" flex="1 1 auto" mx={1} my={2}>
+          <SurveyMap staticLayers={staticLayers} supplementaryLayers={[]} isLoading={false} />
+        </Box>
       </AccordionDetails>
     </Accordion>
   );

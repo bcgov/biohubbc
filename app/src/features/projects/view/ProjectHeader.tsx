@@ -1,5 +1,6 @@
 import {
   mdiAccountMultipleOutline,
+  mdiCalendarRange,
   mdiCalendarTodayOutline,
   mdiChevronDown,
   mdiCogOutline,
@@ -8,6 +9,7 @@ import {
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import Button from '@mui/material/Button';
+import grey from '@mui/material/colors/grey';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -106,9 +108,10 @@ const ProjectHeader = () => {
           <>
             {projectData.projectData.project.end_date ? (
               <Stack flexDirection="row" alignItems="center" gap={0.75} color="text.secondary">
-                <Typography component="span">Project Timeline:</Typography>
+                <Icon path={mdiCalendarRange} size={0.8} color={grey[600]} style={{ marginTop: 1.5 }} />
+
                 {getFormattedDateRangeString(
-                  DATE_FORMAT.ShortMediumDateFormat,
+                  DATE_FORMAT.MediumDateFormat,
                   projectData.projectData.project.start_date,
                   projectData.projectData.project.end_date
                 )}

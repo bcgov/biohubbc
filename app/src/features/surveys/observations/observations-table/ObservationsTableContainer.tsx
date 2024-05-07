@@ -37,7 +37,7 @@ import {
   IGetSampleLocationDetails,
   IGetSampleMethodRecord,
   IGetSamplePeriodRecord
-} from 'interfaces/useSurveyApi.interface';
+} from 'interfaces/useSamplingSiteApi.interface';
 import { useContext } from 'react';
 import { getCodesName } from 'utils/Utils';
 import { ConfigureColumnsButton } from './configure-columns/ConfigureColumnsButton';
