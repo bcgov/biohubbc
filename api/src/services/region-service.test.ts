@@ -28,7 +28,8 @@ describe('RegionRepository', () => {
           feature_name: 'source_layer',
           object_id: 1234,
           geojson: '{}',
-          geography: '{}'
+          geography: '{}',
+          geometry: null
         }
       ]);
 
@@ -43,7 +44,8 @@ describe('RegionRepository', () => {
         feature_name: 'source_layer',
         object_id: 1234,
         geojson: '{}',
-        geography: '{}'
+        geography: '{}',
+        geometry: null
       });
     });
   });

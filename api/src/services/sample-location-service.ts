@@ -20,7 +20,7 @@ export interface PostSampleLocations {
   survey_sample_site_id: number | null;
   survey_id: number;
   survey_sample_sites: InsertSampleSiteRecord[];
-  methods: InsertSampleMethodRecord[];
+  sample_methods: InsertSampleMethodRecord[];
   blocks: InsertSampleBlockRecord[];
   stratums: InsertSampleStratumRecord[];
 }
@@ -78,6 +78,18 @@ export class SampleLocationService extends DBService {
    */
   async getSurveySampleSiteById(surveyId: number, surveySampleSiteId: number): Promise<SampleSiteRecord> {
     return this.sampleLocationRepository.getSurveySampleSiteById(surveyId, surveySampleSiteId);
+  }
+
+  /**
+   * Gets a sample location by sample site ID.
+   *
+   * @param {number} surveyId
+   * @param {number} surveySampleSiteId
+   * @return {*}  {Promise<SampleLocationRecord>}
+   * @memberof SampleLocationService
+   */
+  async getSurveySampleLocationBySiteId(surveyId: number, surveySampleSiteId: number): Promise<SampleLocationRecord> {
+    return this.sampleLocationRepository.getSurveySampleLocationBySiteId(surveyId, surveySampleSiteId);
   }
 
   /**
@@ -152,12 +164,12 @@ export class SampleLocationService extends DBService {
     // Loop through all newly created sample sites
     // For reach sample site, create associated sample methods
     const methodPromises = sampleSiteRecords.map((sampleSiteRecord) =>
-      sampleLocations.methods.map((item) => {
+      sampleLocations.sample_methods.map((item) => {
         const sampleMethod = {
           survey_sample_site_id: sampleSiteRecord.survey_sample_site_id,
           method_lookup_id: item.method_lookup_id,
           description: item.description,
-          periods: item.periods,
+          sample_periods: item.sample_periods,
           method_response_metric_id: item.method_response_metric_id
         };
         return methodService.insertSampleMethod(sampleMethod);
@@ -267,7 +279,7 @@ export class SampleLocationService extends DBService {
           method_lookup_id: item.method_lookup_id,
           method_response_metric_id: item.method_response_metric_id,
           description: item.description,
-          periods: item.periods
+          sample_periods: item.sample_periods
         };
         await methodService.updateSampleMethod(surveyId, sampleMethod);
       } else {
@@ -276,7 +288,7 @@ export class SampleLocationService extends DBService {
           method_lookup_id: item.method_lookup_id,
           method_response_metric_id: item.method_response_metric_id,
           description: item.description,
-          periods: item.periods
+          sample_periods: item.sample_periods
         };
         await methodService.insertSampleMethod(sampleMethod);
       }

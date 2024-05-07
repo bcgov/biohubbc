@@ -140,7 +140,7 @@ describe('ObservationRepository', () => {
 
   describe('getSurveyObservationCount', () => {
     it('gets the count of survey observations for the given survey', async () => {
-      const mockQueryResponse = { rows: [{ rowCount: 1 }] } as unknown as QueryResult<any>;
+      const mockQueryResponse = { rows: [{ count: 1 }] } as unknown as QueryResult<any>;
 
       const mockDBConnection = getMockDBConnection({
         knex: sinon.stub().resolves(mockQueryResponse)
@@ -226,7 +226,7 @@ describe('ObservationRepository', () => {
 
   describe('getObservationsCountBySampleSiteIds', () => {
     it('gets the observation count by sample site ids', async () => {
-      const mockQueryResponse = { rows: [{ observation_count: 50 }], rowCount: 1 } as unknown as QueryResult<any>;
+      const mockQueryResponse = { rows: [{ count: 50 }], rowCount: 1 } as unknown as QueryResult<any>;
 
       const mockDBConnection = getMockDBConnection({
         knex: sinon.stub().resolves(mockQueryResponse)

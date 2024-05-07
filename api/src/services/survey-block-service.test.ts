@@ -24,10 +24,6 @@ describe('SurveyBlockService', () => {
             survey_id: 1,
             name: '',
             description: '',
-            create_date: '',
-            create_user: 1,
-            update_date: '',
-            update_user: 1,
             revision_count: 1,
             sample_block_count: 1
           }
@@ -94,10 +90,6 @@ describe('SurveyBlockService', () => {
           survey_id: 1,
           name: 'Old Block',
           description: 'Updated',
-          create_date: '',
-          create_user: 1,
-          update_date: '',
-          update_user: 1,
           revision_count: 1
         },
         {
@@ -106,10 +98,6 @@ describe('SurveyBlockService', () => {
           survey_id: 1,
           name: 'Old Block',
           description: 'Going to be deleted',
-          create_date: '',
-          create_user: 1,
-          update_date: '',
-          update_user: 1,
           revision_count: 1
         }
       ]);
@@ -137,10 +125,6 @@ describe('SurveyBlockService', () => {
         survey_id: 1,
         name: 'Deleted record',
         description: '',
-        create_date: '',
-        create_user: 1,
-        update_date: '',
-        update_user: 1,
         revision_count: 1
       };
 
