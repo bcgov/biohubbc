@@ -130,23 +130,24 @@ const CreateAnimalPage = () => {
         critter_id: undefined,
         wlh_id: undefined,
         animal_id: values.nickname,
-        sex: AnimalSex.MALE,
+        sex: AnimalSex.UNKNOWN,
         itis_tsn: values.species.tsn
       });
 
-      // Insert collection units
-      values.ecological_units.map(async (unit) => {
-        if (!unit.collection_unit_id || !unit.collection_category_id) {
-          return;
-        }
-
-        await critterbaseApi.collectionUnit.createCollectionUnit({
-          critter_collection_unit_id: undefined,
-          critter_id: response.critter_id,
-          collection_category_id: unit.collection_category_id,
-          collection_unit_id: unit.collection_unit_id
-        });
+      // Insert collection units through bulk update
+      const bulkResponse = await critterbaseApi.critters.bulkCreateCritter({
+        critter: response,
+        collections: values.ecological_units
+          .filter((unit) => unit.collection_category_id !== null && unit.collection_unit_id !== null)
+          .map((unit) => ({
+            critter_collection_unit_id: undefined,
+            critter_id: response.critter_id,
+            collection_category_id: unit.collection_category_id as string,
+            collection_unit_id: unit.collection_unit_id as string
+          }))
       });
+
+      console.log(bulkResponse);
 
       if (!response) {
         showCreateErrorDialog({
