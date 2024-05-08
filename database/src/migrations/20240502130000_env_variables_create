@@ -25,36 +25,157 @@ export async function up(knex: Knex): Promise<void> {
         unit
       )
     VALUES
-      (
-        'Snow cover',
-        'The percent snow cover (%).',
-        0,
-        1,
-        'percent'
-      ),
-      (
-        'Air temperature',
-        'The ambient air temperature (celsius).',
+    (
+        'Previous 48 hr Air Temp (C)',
+        'The air temperature during the previous 48 hours, in degrees Celsius.'
         -50,
         200,
         'celsius'
-      ),
-      (
-        'Water temperature',
-        'The water temperature (celsius).',
-        -50,
+    ),
+    (
+        'Rainfall over 24 hours (mm)',
+        'The amount of rainfall that fell within the last 24 hours (mm).',
+        0,
         200,
+        'millimeter'
+    )
+    (
+        'Rainfall over 48 hours (mm)',
+        'The amount of rain that fell within the last 48 hours (mm).',
+        0,
+        400,
+        'millimeter'
+    ),
+    (
+        'Sea Surface Temperature (C)',
+        'The sea water surface temperature in degrees Celsius.',
+        0,
+        30,
         'celsius'
-      ),
-      (
-        'Vegetation cover',
-        'The percent vegetation cover (%).',
+    )
+    (
+        'Swell Height(m)',
+        'The current swell height in meters (m).'
+        0,
+        20,
+        'meter'
+    )
+    (
+        'Sea Surface Salinity (ppt)',
+        'The sea water surface salinity in parts per thousand (ppt).',
+        32,
+        38,
+        'ppt'
+    )
+    (
+        'Wavelet Height (cm)',
+        'The current wavelet height in centimeters (cm).',
+        0,
+        100,
+        'centimeter'
+    )
+    (
+        'Ground Temperature (C)',
+        'The ground surface temperature in degrees Celsius.',
+        -50,
+        100,
+        'celsius'
+    )
+    (
+        'Turbidity (cm)',
+        'The turbidity of the water as represented by centimeters of visibility measured with a secchi disk (cm) or other instrument.',
+        0,
+        100,
+        'centimeter'
+    )
+    (
+        'Temperature Variance (C)',
+        'The water temperature variance in +/- degrees Celsius.',
+        0,
+        50,
+        'celsius'
+    )
+    (
+        'Sightability Correction Factor.',
+        'E.g. 0.80. Sightability Correction Factor (SCF) is a quantitative coefficient which is estimated or derived and applied to a sample-based count in order to adjust for visibility or sightability bias of the observers.
+        The SCF must be provided here as a probability. The probability of seeing or catching an animal must  be less than 1. 
+        To translate a sample-based count into an estimate of total count, the  observed count must be divided by the probabilty of seeing or catching an animal (sightability). For example, if we count 40 birds during a Survey and we know that we only see 80% of the total number of birds actually present, then population estimate = 40 * 1/0.80 = 50 birds. The Sightability Correction Factor in this example is 0.80. (Source: Univerisity of Idaho, https://www.webpages.uidaho.edu/wlf448/aerial.htm)
+        INSTRUCTIONS: This should be provided as a number, e.g., 0.80.',
         0,
         1,
+        'SCF'
+    )
+    (
+        'Elevation (m)',
+        'The elevation of the site in metres.',
+        0,
+        5000,
+        'meter'
+    )
+    (
+        'Slope (percent)',
+        'The slope gradient measured in percent.',
+        0,
+        100,
         'percent'
-      );
+    )
+    (
+        'Aspect (degrees)',
+        'The orientation of the slope, in degrees.',
+        0,
+        360,
+        'degrees'
+    )
+    (
+        'Rooting Zone Coarse Fragment %',
+        'The particle size distribution within the mineral portion of the rooting zone.',
+        0,
+        100,
+        'percent'
+    )
+    (
+        'Root Restiriction Depth (cm)',
+        'The depth of the layer that restricts root penetration.',
+        0,
+        100,
+        'centimeter'
+    )
+    (
+        'SPI Site Observations.Soil pH',
+        'Concentration of hydrogen ions in the mineral soil.',
+        0,
+        14,
+        'pH'
+    )
+    (
+        'Crown Closure',
+        'The percentage of the ground surface covered when the crowns are projected vertically.',
+        0,
+        100,
+        'percent'
+    )
+    (
+        'Percent Cover',
+        'The percentage of the ground surface, of a plot or area occupied, covered when a species' aboveground-vegetation is projected vertically onto the ground.',
+        0,
+        100,
+        'percent'
+    )
+    (
+        'Official Sunrise Time',
+        'The official sunrise time.',
+        00:00,
+        23:59,
+        'time'
+    ),
+    (
+      'Snow Cover Code',
+      'A code indicating the extent of snow cover on the ground.'
+    ),
+    ()
+    ;
 
-    ----------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------
 
     INSERT INTO environment_qualitative
       (
@@ -62,21 +183,81 @@ export async function up(knex: Knex): Promise<void> {
         description
       )
     VALUES
-      (
-        'Wind direction',
-        'The compass direction of the wind.'
-      ),
-      (
-        'Wind speed',
-        'The wind speed category.'
-      ),
-      (
-        'Precipitation',
-        'The precipitation category.'
-      );
+    (
+      'Previous 48 hr Wind Speed',
+      'The wind speed during the previous 48 hours.'
+    ),
+    (
+      'Previous 48 hr Precip',
+      'The type of precipitation that occurred during the preceding 48 hours.'
+    ),
+    (
+      'Cloud Type',
+      'The type of clouds e.g. ST.'
+    ),
+    (
+      'Cloud Cover Code',
+      'A code indicating the extent of cloud cover at the start, or end, of sampling,'
+    ),
+    (
+      'Cloud Ceiling Code',
+      'A code indicating the height of cloud cover relative to trees and ridges',
+    ),
+    (
+      'Previous 48hr Cloud Cover',
+      'A code indicating the extent of cloud cover during the preceding 48 hours'
+    ),
+    (
+      'Snow Depth Code',
+      'A code indicating the depth of snow'
+    ),
+    (
+      'Snow Cover Code',
+      'An code indicating the extent of snow cover on the ground.'
+    ),
+    (
+      'Time Since 5cm Snow Code',
+      'A code indicating the number of days since 5 cm of snow fell.'
+    ),
+    (
+      'Sea Wind Condition Code',
+      'A code indicating hte strength of the wind over the sea, using the beaufort scale'
+    ),
+    (
+      'Tide Direction Code',
+      'A code indicating the tide direction'
+    ),
+    (
+      'Ground Moisture'
+      'Ground moisture class',
+    ),
+    (
+      'Leaf Moisture',
+      'Leaf moisture class'
+    ),
+    (
+      'Lunar Phase'
+      'Lunar phase class'
+    ),
+    (
+      'Soil Moisture Regime',
+      'The moisture class of the soil'
+    ),
+    (
+      'Soil Nutrient Regime'
+      'The nutrient class of the soil'
+    ),
+    (
+      'Rooting Zone Soil Texture',,
+      'The size distribution of the primary mineral particles (2mm diameter or less)
+    ),
+    (
+      'Meso Slope Position',
+      'The position of the site relative to the localized catchment area',
+    )
 
-    ----------------------------------------------------------------------------------------
-
+    ;
+------------------------------------------------------------------------------------------------------
     INSERT INTO environment_qualitative_option
       (
         environment_qualitative_id,
@@ -84,117 +265,582 @@ export async function up(knex: Knex): Promise<void> {
         description
       )
     VALUES
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Previous 48 hr Wind Speed'),
+      'Calm',
+      'Less than 2 km/h.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Previous 48 hr Wind Speed)',
+      'Light Air',
+      '2-5 km/h.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Previous 48 hr Wind Speed'),
+      'Light Breeze',
+      'Leaves rustle (6-12km/h).'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Previous 48 hr Wind Speed'),
+      'Gentle Breeze',
+      'Leaves and twiga constantly move (13-19 km/h).'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Previous 48 hr Wind Speed'),
+      'Moderate Breeze',
+      'Small branches move, dust rises ( 20 - 29 km/h ).'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Previous 48 hr Wind Speed'),
+      'Fresh Breeze',
+      'Small trees sway ( 30 - 39 km/h ).'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Previous 48 hr Wind Speed'),
+      'Strong Breeze',
+      'Large branches moving, wind whistling ( 40 - 50 km/h ).'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Previous 48 hr Precip'),
+      'No Precipitation',
+      'No precipitation.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Previous 48 hr Precip'),
+      'Foggy',
+      'Reduced visibility, like a cloud.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Previous 48 hr Precip'),
+      'Misty Drizzle',
+      'No distinct rain drops but can dampen clothing.',
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Previous 48 hr Precip'),
+      'Drizzle',
+      'Fine rain drops (<0.5mm diameter), visible on ground.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Previous 48 hr Precip'),
+      'Light Rain',
+      'Puddles not forming quickly < 2.5mm rain per hour.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Previous 48 hr Precip'),
+      'Hard Rain',
+      'Puddles form quickly, > 2.5mm rain per hour.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Previous 48 hr Precip'),
+      'Snow',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Previous 48 hr Precip'),
+      'Snow - Light',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Previous 48 hr Precip'),
+      'Snow - Heavy',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Cloud Type'),
+      'Stratus',
+      'Low, continuous-cover clouds.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Cloud Type'),
+      'Nimbostratus',
+      'Low, heavy rain clouds.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Cloud Type'),
+      'Stratocumulus',
+      'Low fluffy clouds.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Cloud Type'),
+      'Cumulus',
+      'Big, tall fluffy clouds.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Cloud Type'),
+      'Altocumulus',
+      'Mid altitude fluffy clouds.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Cloud Type'),
+      'Atostratus',
+      'Mid altitude continuous clouds.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Cloud Type'),
+      'Cirrocumulus',
+      'High altitude bands of fluffy clouds.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Cloud Type'),
+      'Cirrus',
+      'Very high altitude whispy clouds.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Cloud Cover Code'),
+      'Clear',
+      'Clear sky; no clouds'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Cloud Cover Code'),
+      'Scattered (<50%)',
+      'Scattered clouds covering less than 50% of the sky'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Cloud Cover Code'),
+      'Scattered (>50%)',
+      'Scattered clouds covering more than 50% of the sky'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Cloud Cover Code'),
+      'Unbroken Clouds',
+      'Unbroken cloud cover'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Cloud Ceiling Code'),
+      'Very High',
+      ''
+    ),
+    (
       (
-        (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind direction'),
-        'North',
-        'North direction.'
-      ),
-      (
-        (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind direction'),
-        'Northeast',
-        'Northeast direction.'
-      ),
-      (
-        (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind direction'),
-        'Northwest',
-        'Northwest direction.'
-      ),
-      (
-        (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind direction'),
-        'East',
-        'East direction.'
-      ),
-      (
-        (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind direction'),
-        'South',
-        'South direction.'
-      ),
-      (
-        (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind direction'),
-        'Southeast',
-        'South direction.'
-      ),
-      (
-        (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind direction'),
-        'Southwest',
-        'South direction.'
-      ),
-      (
-        (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind direction'),
-        'West',
-        'West direction.'
-      ),
-      (
-        (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind speed'),
-        'Still air',
-        'No detectable wind (0-5 km$$/$$hour).'
-      ),
-      (
-        (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind speed'),
-        'Weak',
-        'Leaves rustle (6-12 km$$/$$hour).'
-      ),
-      (
-        (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind speed'),
-        'Moderate',
-        'Leaves and twigs constantly move (13-19 km$$/$$hour).'
-      ),
-      (
-        (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind speed'),
-        'Strong',
-        'Small branches move, dust rises (20-29 km$$/$$hour).'
-      ),
-      (
-        (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind speed'),
-        'Very strong',
-        'Small trees sway (30-39 km$$/$$hour).'
-      ),
-      (
-        (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Wind speed'),
-        'Intense',
-        'Large branches moving, wind whistling (>39 km$$/$$hour).'
-      ),
-      (
-        (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Precipitation'),
-        'None',
-        'No precipitation.'
-      ),
-      (
-        (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Precipitation'),
-        'Misty drizzle',
-        'No distinct rain drops but can dampen clothing.'
-      ),
-      (
-        (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Precipitation'),
-        'Drizzle',
-        'Fine rain drops (< 0.5 mm diameter), visible on ground.'
-      ),
-      (
-        (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Precipitation'),
-        'Light Rain',
-        'Puddles not forming quickly, < 2.5 mm rain$$/$$hour.'
-      ),
-      (
-        (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Precipitation'),
-        'Heavy Rain',
-        'Puddles form quickly, > 2.5 mm rain$$/$$hour.'
-      ),
-      (
-        (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Precipitation'),
-        'Light snow',
-        'Snow falling but not accumulating.'
-      ),
-      (
-        (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Precipitation'),
-        'Heavy snow',
-        'Snow accumulating on the ground.'
-      ),
-      (
-        (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Precipitation'),
-        'Hail',
-        'Solid ice falling.'
-      )
-      ;
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Cloud Ceiling Code'),
+      'High',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Cloud Ceiling Code'),
+      'Above Ridge Tops',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Cloud Ceiling Code'),
+      'Below Ridge Tops',
+      ''
+    ),
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Cloud Ceiling Code'),
+      'Above Tree Tops',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Cloud Ceiling Code'),
+      'Below Tree Tops',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Previous 48 hr Cloud Cover'),
+      'Clear',
+      'Clear sky; no clouds'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Previous 48 hr Cloud Cover'),
+      'Scattered (<50%)',
+      'Scattered clouds covering less than 50% of sky'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Previous 48 hr Cloud Cover'),
+      'Scattered (>50%)',
+      'Scattered clouds covering more than 50% of sky'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Previous 48 hr Cloud Cover'),
+      'Unbroken clouds',
+      'Unbroken cloud cover'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Snow Depth Code'),
+      '0cm',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Snow Depth Code'),
+      '1-5cm',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Snow Depth Code'),
+      '6-25cm',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Snow Depth Code'),
+      '26-50cm',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Snow Depth Code'),
+      '51-75cm',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Snow Depth Code'),
+      '76-100cm',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Snow Depth Code'),
+      '101-150cm',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Snow Depth Code'),
+      '>150cm',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Snow Cover Code'),
+      '0%',
+      '0% of the ground covered'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Snow Cover Code'),
+      '1-5%',
+      '1-5% of ground covered'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Snow Cover Code'),
+      '6-25%',
+      '6-25% of the ground covered'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Snow Cover Code'),
+      '26-50%',
+      '26-50% of the ground covered'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Snow Cover Code'),
+      '51-75%',
+      '51-75% of the ground covered'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Snow Cover Code'),
+      '76-100%',
+      '76-100% of the ground covered'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Time Since 5cm Snow'),
+      '< 1/2 day',
+      'Less than half a day since it snowed last'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Time Since 5cm Snow'),
+      '< 3 days',
+      'Less than 3 days since it snowed last'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Time Since 5cm Snow'),
+      '< 14 days',
+      'Less than 14 days since it last snowed'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Time Since 5cm Snow'),
+      'NR',
+      'Not recorded because information is no value'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Sea Wind Condition Code'),
+      'Calm',
+      'Calm 0-1 knots, sea like a mirror'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Sea Wind Condition Code'),
+      'Light Air',
+      'Light Air 1-3 knots, 1/4 ft waves, ripples with appearance of scales, no foam crests.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Sea Wind Condition Code'),
+      'Light Breeze',
+      'Light Breeze, 4-6 knots, 1/3 ft. waves, small wavelets, crests of glassy appearance not breaking.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Sea Wind Condition Code'),
+      'Gentle Breeze',
+      'Gentle Breeze,  7-10 knots, 2 ft. waves, large wavelets, crests begin to break, scattered whitecaps.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Sea Wind Condition Code'),
+      'Gentle Breeze',
+      'Moderate Breeze, 11-16 knots, 4 ft waves, small waves, becoming longer, numerous whitecaps.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Sea Wind Condition Code'),
+      'Fresh Breeze',
+      'Fresh Breeze, 17-21 knots, 16 ft waves, moderate waves, taking longer form, many whitecaps, some spray.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Sea Wind Condition Code'),
+      'Strong Breeze',
+      'Strong Breeze, 22-27 knots, 10 ft. waves, longer waves forming, whitecaps everywhere, more spray.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Sea Wind Condition Code'),
+      'Near Gale',
+      'Near Gale, 28-32 knots. 14 ft. waves.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Sea Wind Condition Code'),
+      'Gale',
+      'Gale, 34-40 knots, 18 ft. waves.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Sea Wind Condition Code'),
+      'Strong Gale',
+      'Strong Gale, 41-47 knots, 23 ft waves.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Sea Wind Condition Code'),
+      'Storm',
+      'Storm 48-55 knots, 29 ft waves'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Sea Wind Condition Code'),
+      'Violent Storm',
+      'Violent Storm 53-63 knots, 37 ft waves'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Sea Wind Condition Code'),
+      'Hurricane',
+      'Hurricane, 64-71 knots, 45 ft waves.'
+    ),
+     (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Tide Direction Code'),
+      'High',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Tide Direction Code'),
+      'Intermediate Ebb',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Tide Direction Code'),
+      'Intermediate Flood',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Tide Direction Code'),
+      'Low',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Ground Moisture'),
+      'Dry',
+      'no apparent moisture on ground/vegetation. Surface litter is dry and will not stain fingers when rubbed'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Ground Moisture'),
+      'Moist',
+      'moisture is not apparent on ground/vegetation, but soil is moist. Surface litter will stain fingers when rubbed, but no water is apparent when soil/litter is squeezed'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Ground Moisture'),
+      'Wet',
+      'moisture is apparent on ground/vegetation; water is observed if soil/litter is squeezed'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Leaf Moisture'),
+      'Dry',
+      'No moisture nor droplets detected on leaves' surfaces.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Leaf Moisture'),
+      'Moist',
+      'Moisture and/or droplets detected on leaves' surfaces.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Lunar Phase'),
+      'New Moon',
+      'The moon is dark. Also called 'dark moon'.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Lunar Phase'),
+      'Waxing Crescent',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Lunar Phase'),
+      'First Quarter',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Lunar Phase'),
+      'First Quarter',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Lunar Phase'),
+      'Waxing Gibbous',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Lunar Phase'),
+      'Full Moon',
+      'The entire illuminated portion of the moon is visible.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Lunar Phase'),
+      'Waning Gibbous',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Lunar Phase'),
+      'Third Quarter',
+      'Also called 'half moon', and is waning.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Lunar Phase'),
+      'Waning Crescent',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Soil Moisture Regime'),
+      'Very xeric',
+      'Water supply removed very rapidly in relation to supply. Soil is moist for a negliglibe time after precipiation.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Soil Moisture Regime'),
+      'Xeric',
+      'Water removed very rapidly in relation to supply; soilis moidt for brief periods following precipitation.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Soil Moisture Regime'),
+      'Subxeric',
+      'Water removed rapidly in relation to supply; soil is moist for short periods following precipitation.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Soil Moisture Regime'),
+      'Submesic',
+      'Water removed readily in relation to supply; water available for moderately short periods following precipitation.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Soil Moisture Regime'),
+      'Mesic',
+      'Water removed somewhat slowly in relation to supply; soil may remain moist for a significant, but sometimes short period of the year. Available soil moisture reflects climatic inputs.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Soil Moisture Regime'),
+      'Subhygric',
+      'Water removed slowly enough to keep soil wet for a significant part of growing season; some temporary seepage and possibly mottling below 20 cm'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Soil Moisture Regime'),
+      'Hydric',
+      'Water removed slowly enough to keep soil wet for most of growing season; permanent seepage and mottling; gleyed colours common'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Soil Moisture Regime'),
+      'Subhydric',
+      'Water removed slowly enough to keep water table at or near surface for most of year; gleyed mineral or organic soils; permanent seepage < 30 cm below surface'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Soil Moisture Regime'),
+      'Hydric',
+      'Water removed so slowly that water table is at or above soil surface all year; gleyed mineral or organic soils'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Soil Nutrient Regime'),
+      'Very Poor',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Soil Nutrient Regime'),
+      'Poor',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Soil Nutrient Regime'),
+      'Medium',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Soil Nutrient Regime'),
+      'Rich',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Soil Nutrient Regime'),
+      'Very Rich',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Soil Nutrient Regime'),
+      'Saline',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Rooting Zone Soil Texture'),
+      'Clayey',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Rooting Zone Soil Texture'),
+      'Loamy',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Rooting Zone Soil Texture'),
+      'Organic',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Rooting Zone Soil Texture'),
+      'Sandy',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Rooting Zone Soil Texture'),
+      'Silty',
+      ''
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Meso Slope Position'),
+      'Crest',
+      'The generally convex uppermost portion of a hill; usually convex in all directions with no distinct aspect.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Meso Slope Position'),
+      'Upper slope',
+      'The generally convex upper portion of the slope immediately below the crest of a hill; has a specific aspect.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Meso Slope Position'),
+      'Middle slope',
+      'Area between the upper and lower slope; the surface profile is generally neither distinctly concave nor convex; has a straight or somewhat sigmoid surface profile with a specific aspect.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Meso Slope Position'),
+      'Lower Slope',
+      'The area toward the base of a slope; generally has a concave surface profile with a specific aspect.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Meso Slope Position'),
+      'Toe',
+      'The area demarcated from the lower slope by an abrupt decrease in slope gradient; seepage is typically present.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Meso Slope Position'),
+      'Depression',
+      'Any area concave in all directions; may be at the base of a mesoscale slope or in a generally level area.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Meso Slope Position'),
+      'Level',
+      'Any level meso-scale area not immediately adjacent to a meso-scale slope; the surface profile is generally horizontal and straight with no significant aspect.'
+    ),
+    (
+      (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Meso Slope Position'),
+      'Gully',
+      'An area in a double toe slope position where the receiving area is also sloped (perpendicular to the toe slopes).'
+    ),
+
   `);
 }
 
