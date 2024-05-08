@@ -1,6 +1,6 @@
 import xlsx from 'xlsx';
 import { DEFAULT_XLSX_SHEET_NAME } from '../media/xlsx/xlsx-file';
-import { getWorksheetHeaders, IXLSXCSVValidator } from '../xlsx-utils/worksheet-utils';
+import { getHeadersUpperCase, IXLSXCSVValidator } from '../xlsx-utils/worksheet-utils';
 
 // Observation CSV standard column names and aliases
 const ITIS_TSN = 'ITIS_TSN';
@@ -46,7 +46,7 @@ export function getNonStandardColumnNamesFromWorksheet(
   xlsxWorksheets: xlsx.WorkSheet,
   sheet = DEFAULT_XLSX_SHEET_NAME
 ): string[] {
-  const columns = getWorksheetHeaders(xlsxWorksheets[sheet]);
+  const columns = getHeadersUpperCase(xlsxWorksheets[sheet]);
 
   let aliasColumns: string[] = [];
   // Create a list of all column names and aliases
@@ -63,9 +63,11 @@ export function getNonStandardColumnNamesFromWorksheet(
 /**
  * Get the TSN cell value for a given row.
  *
+ * Note: Requires the row headers to be UPPERCASE.
+ *
  * @export
  * @param {Record<string, any>} row
- * @return {*}  {(string)}
+ * @return {*}
  */
 export function getTsnFromRow(row: Record<string, any>) {
   return row[ITIS_TSN] ?? row[TSN] ?? row[TAXON] ?? row[SPECIES];
@@ -73,6 +75,8 @@ export function getTsnFromRow(row: Record<string, any>) {
 
 /**
  * Get the count cell value for a given row.
+ *
+ * Note: Requires the row headers to be UPPERCASE.
  *
  * @export
  * @param {Record<string, any>} row
@@ -85,6 +89,8 @@ export function getCountFromRow(row: Record<string, any>) {
 /**
  * Get the date cell value for a given row.
  *
+ * Note: Requires the row headers to be UPPERCASE.
+ *
  * @export
  * @param {Record<string, any>} row
  * @return {*}
@@ -95,6 +101,8 @@ export function getDateFromRow(row: Record<string, any>) {
 
 /**
  * Get the time cell value for a given row.
+ *
+ * Note: Requires the row headers to be UPPERCASE.
  *
  * @export
  * @param {Record<string, any>} row
@@ -107,6 +115,8 @@ export function getTimeFromRow(row: Record<string, any>) {
 /**
  * Get the latitude cell value for a given row.
  *
+ * Note: Requires the row headers to be UPPERCASE.
+ *
  * @export
  * @param {Record<string, any>} row
  * @return {*}
@@ -117,6 +127,8 @@ export function getLatitudeFromRow(row: Record<string, any>) {
 
 /**
  * Get the longitude cell value for a given row.
+ *
+ * Note: Requires the row headers to be UPPERCASE.
  *
  * @export
  * @param {Record<string, any>} row

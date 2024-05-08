@@ -2,7 +2,6 @@ import { default as dayjs } from 'dayjs';
 import xlsx, { CellObject } from 'xlsx';
 import { getLogger } from '../logger';
 import { MediaFile } from '../media/media-file';
-import { DEFAULT_XLSX_SHEET_NAME } from '../media/xlsx/xlsx-file';
 import { safeToLowerCase } from '../string-utils';
 import { replaceCellDates, trimCellWhitespace } from './cell-utils';
 
@@ -27,30 +26,13 @@ export const constructXLSXWorkbook = (file: MediaFile, options?: xlsx.ParsingOpt
 };
 
 /**
- * Constructs a CSVWorksheets from the given workbook
- *
- * @export
- * @param {xlsx.WorkBook} workbook
- * @return {*}  {CSVWorksheets}
- */
-export const constructWorksheets = (workbook: xlsx.WorkBook): xlsx.WorkSheet => {
-  const worksheets: xlsx.WorkSheet = {};
-
-  Object.entries(workbook.Sheets).forEach(([key, value]) => {
-    worksheets[key] = value;
-  });
-
-  return worksheets;
-};
-
-/**
- * Get the headers for the given worksheet, then transforms them to uppercase.
+ * Get the UPPERCASE headers (column names) for the given worksheet.
  *
  * @export
  * @param {xlsx.WorkSheet} worksheet
  * @return {*}  {string[]}
  */
-export const getWorksheetHeaders = (worksheet: xlsx.WorkSheet): string[] => {
+export const getHeadersUpperCase = (worksheet: xlsx.WorkSheet): string[] => {
   const originalRange = getWorksheetRange(worksheet);
 
   if (!originalRange) {
@@ -78,14 +60,14 @@ export const getWorksheetHeaders = (worksheet: xlsx.WorkSheet): string[] => {
 };
 
 /**
- * Get the headers for the given worksheet, with all values converted to lowercase.
+ * Get the lowercase headers (column names) for the given worksheet.
  *
  * @export
  * @param {xlsx.WorkSheet} worksheet
  * @return {*}  {string[]}
  */
 export const getHeadersLowerCase = (worksheet: xlsx.WorkSheet): string[] => {
-  return getWorksheetHeaders(worksheet).map(safeToLowerCase);
+  return getHeadersUpperCase(worksheet).map(safeToLowerCase);
 };
 
 /**
@@ -97,7 +79,7 @@ export const getHeadersLowerCase = (worksheet: xlsx.WorkSheet): string[] => {
  * @return {*}  {number}
  */
 export const getHeaderIndex = (worksheet: xlsx.WorkSheet, headerName: string): number => {
-  return getWorksheetHeaders(worksheet).indexOf(headerName);
+  return getHeadersUpperCase(worksheet).indexOf(headerName);
 };
 
 /**
@@ -117,7 +99,7 @@ export const getWorksheetRows = (worksheet: xlsx.WorkSheet): string[][] => {
   const rowsToReturn: string[][] = [];
 
   for (let i = 1; i <= originalRange.e.r; i++) {
-    const row = new Array(getWorksheetHeaders(worksheet).length);
+    const row = new Array(getHeadersUpperCase(worksheet).length);
     let rowHasValues = false;
 
     for (let j = 0; j <= originalRange.e.c; j++) {
@@ -145,6 +127,22 @@ export const getWorksheetRows = (worksheet: xlsx.WorkSheet): string[][] => {
 /**
  * Return an array of row value arrays.
  *
+ * Note: The column headers will be transformed to UPPERCASE.
+ *
+ * @example
+ * [
+ *   {
+ *     "HEADER1": "value1",
+ *     "HEADER2": "value2",
+ *     "HEADER3": "value3"
+ *   },
+ *   {
+ *     "HEADER1": "value4",
+ *     "HEADER2": "value5",
+ *     "HEADER3": "value6"
+ *   }
+ * ]
+ *
  * @export
  * @param {xlsx.WorkSheet} worksheet
  * @return {*}  {Record<string, any>[]}
@@ -158,17 +156,17 @@ export const getWorksheetRowObjects = (worksheet: xlsx.WorkSheet): Record<string
 
   const rowObjectsArray: Record<string, any>[] = [];
   const rows = getWorksheetRows(worksheet);
-  const headers = getWorksheetHeaders(worksheet);
+  const headers = getHeadersUpperCase(worksheet);
 
-  rows.forEach((row: string[]) => {
+  for (let i = 0; i < rows.length; i++) {
     const rowObject: Record<string, any> = {};
 
-    headers.forEach((header: string, index: number) => {
-      rowObject[header] = row[index];
-    });
+    for (let j = 0; j < headers.length; j++) {
+      rowObject[headers[j]] = rows[i][j];
+    }
 
     rowObjectsArray.push(rowObject);
-  });
+  }
 
   return rowObjectsArray;
 };
@@ -184,7 +182,7 @@ export const getWorksheetRowObjects = (worksheet: xlsx.WorkSheet): Record<string
 export const validateWorksheetHeaders = (worksheet: xlsx.WorkSheet, columnValidator: IXLSXCSVValidator): boolean => {
   const { columnNames, columnAliases } = columnValidator;
 
-  const worksheetHeaders = getWorksheetHeaders(worksheet);
+  const worksheetHeaders = getHeadersUpperCase(worksheet);
 
   return columnNames.every((expectedHeader) => {
     return (
@@ -285,23 +283,20 @@ export const prepareWorksheetCells = (worksheet: xlsx.WorkSheet) => {
 /**
  * Validates the given CSV file against the given column validator
  *
- * @param {MediaFile} file
+ * @export
+ * @param {xlsx.WorkSheet} xlsxWorksheet
+ * @param {IXLSXCSVValidator} columnValidator
  * @return {*}  {boolean}
- * @memberof ObservationService
  */
-export function validateCsvFile(
-  xlsxWorksheets: xlsx.WorkSheet,
-  columnValidator: IXLSXCSVValidator,
-  sheet = DEFAULT_XLSX_SHEET_NAME
-): boolean {
+export function validateCsvFile(xlsxWorksheet: xlsx.WorkSheet, columnValidator: IXLSXCSVValidator): boolean {
   // Validate the worksheet headers
-  if (!validateWorksheetHeaders(xlsxWorksheets[sheet], columnValidator)) {
+  if (!validateWorksheetHeaders(xlsxWorksheet, columnValidator)) {
     defaultLog.debug({ label: 'validateCsvFile', message: 'Invalid: Headers' });
     return false;
   }
 
   // Validate the worksheet column types
-  if (!validateWorksheetColumnTypes(xlsxWorksheets[sheet], columnValidator)) {
+  if (!validateWorksheetColumnTypes(xlsxWorksheet, columnValidator)) {
     defaultLog.debug({ label: 'validateCsvFile', message: 'Invalid: Column types' });
     return false;
   }

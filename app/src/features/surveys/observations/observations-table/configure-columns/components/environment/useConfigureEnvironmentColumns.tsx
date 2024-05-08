@@ -59,8 +59,6 @@ export const useConfigureEnvironmentColumns = () => {
 
         return newColumns;
       });
-
-      observationsTableContext.setSavedRows;
     },
     [observationsTableContext, surveyContext.surveyId]
   );

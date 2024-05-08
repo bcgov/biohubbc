@@ -218,7 +218,7 @@ describe('measurement-column-utils', () => {
     });
   });
 
-  describe('getCBMeasurementsFromTSN', () => {
+  describe('getTsnMeasurementTypeDefinitionMap', () => {
     afterEach(() => {
       sinon.restore();
     });
@@ -228,7 +228,7 @@ describe('measurement-column-utils', () => {
         .resolves({ qualitative: [], quantitative: [] });
 
       const service = new CritterbaseService({ keycloak_guid: '', username: '' });
-      const results = await measurement_column_utils.getCBMeasurementsFromTSN(['tsn', 'tsn1'], service);
+      const results = await measurement_column_utils.getTsnMeasurementTypeDefinitionMap(['tsn', 'tsn1'], service);
 
       expect(getTaxonMeasurementsStub).to.be.calledTwice;
       expect(results).to.eql({
@@ -245,7 +245,7 @@ describe('measurement-column-utils', () => {
       const service = new CritterbaseService({ keycloak_guid: '', username: '' });
 
       try {
-        await measurement_column_utils.getCBMeasurementsFromTSN(['tsn', 'tsn1'], service);
+        await measurement_column_utils.getTsnMeasurementTypeDefinitionMap(['tsn', 'tsn1'], service);
         expect.fail();
       } catch (error) {
         expect((error as Error).message).contains('No measurements found for tsn: tsn');
@@ -258,7 +258,7 @@ describe('measurement-column-utils', () => {
       const service = new CritterbaseService({ keycloak_guid: '', username: '' });
 
       try {
-        await measurement_column_utils.getCBMeasurementsFromTSN(['tsn', 'tsn1'], service);
+        await measurement_column_utils.getTsnMeasurementTypeDefinitionMap(['tsn', 'tsn1'], service);
         expect.fail();
       } catch (error) {
         expect((error as Error).message).equals('Error connecting to the Critterbase API');

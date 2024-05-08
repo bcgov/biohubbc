@@ -26,6 +26,7 @@ import { getLogger } from '../utils/logger';
 import { parseS3File } from '../utils/media/media-utils';
 import { DEFAULT_XLSX_SHEET_NAME } from '../utils/media/xlsx/xlsx-file';
 import {
+  EnvironmentNameTypeDefinitionMap,
   getEnvironmentColumnsTypeDefinitionMap,
   getEnvironmentTypeDefinitionsFromColumnNames,
   IEnvironmentDataToValidate,
@@ -33,9 +34,9 @@ import {
   validateEnvironments
 } from '../utils/observation-xlsx-utils/environment-column-utils';
 import {
-  getCBMeasurementsFromTSN,
   getMeasurementColumnNames,
   getMeasurementFromTsnMeasurementTypeDefinitionMap,
+  getTsnMeasurementTypeDefinitionMap,
   IMeasurementDataToValidate,
   isMeasurementCBQualitativeTypeDefinition,
   TsnMeasurementTypeDefinitionMap,
@@ -52,7 +53,6 @@ import {
   observationStandardColumnValidator
 } from '../utils/observation-xlsx-utils/standard-column-utils';
 import {
-  constructWorksheets,
   constructXLSXWorkbook,
   getWorksheetRowObjects,
   IXLSXCSVValidator,
@@ -470,21 +470,19 @@ export class ObservationService extends DBService {
     // Construct the XLSX workbook
     const xlsxWorkBook = constructXLSXWorkbook(mediaFile);
 
-    // Construct the XLSX worksheets
-    const xlsxWorksheets = constructWorksheets(xlsxWorkBook);
+    // Get the default XLSX worksheet
+    const xlsxWorksheet = xlsxWorkBook.Sheets[DEFAULT_XLSX_SHEET_NAME];
 
     // Validate the standard columns in the CSV file
-    if (!validateCsvFile(xlsxWorksheets, observationStandardColumnValidator)) {
+    if (!validateCsvFile(xlsxWorksheet, observationStandardColumnValidator)) {
       throw new Error('Failed to process file for importing observations. Column validator failed.');
     }
 
     // Filter out the standard columns from the worksheet
-    const nonStandardColumnNames = getNonStandardColumnNamesFromWorksheet(xlsxWorksheets);
-
-    const worksheet: xlsx.WorkSheet = xlsxWorksheets[DEFAULT_XLSX_SHEET_NAME];
+    const nonStandardColumnNames = getNonStandardColumnNamesFromWorksheet(xlsxWorksheet);
 
     // Get the worksheet row objects
-    const worksheetRowObjects = getWorksheetRowObjects(worksheet);
+    const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheet);
 
     // VALIDATE MEASUREMENTS -----------------------------------------------------------------------------------------
 
@@ -499,12 +497,12 @@ export class ObservationService extends DBService {
       String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES'])
     );
 
-    const measurementTypeDefinitionsByTsn = await getCBMeasurementsFromTSN(tsns, critterBaseService);
+    const tsnMeasurementTypeDefinitionMap = await getTsnMeasurementTypeDefinitionMap(tsns, critterBaseService);
 
     // Get all measurement columns names from the worksheet, that match a measurement in the TSN measurements
-    const measurementColumnNames = getMeasurementColumnNames(nonStandardColumnNames, measurementTypeDefinitionsByTsn);
+    const measurementColumnNames = getMeasurementColumnNames(nonStandardColumnNames, tsnMeasurementTypeDefinitionMap);
 
-    const measurementsToValidate: IMeasurementDataToValidate[] = worksheetRowObjects.flatMap((row) => {
+    const measurementsToValidate: IMeasurementDataToValidate[] = worksheetRowObjects.flatMap((row, index) => {
       return measurementColumnNames.map((columnName) => ({
         tsn: String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']),
         key: columnName,
@@ -513,7 +511,7 @@ export class ObservationService extends DBService {
     });
 
     // Validate measurement column data
-    if (!validateMeasurements(measurementsToValidate, measurementTypeDefinitionsByTsn)) {
+    if (!validateMeasurements(measurementsToValidate, tsnMeasurementTypeDefinitionMap)) {
       throw new Error('Failed to process file for importing observations. Measurement column validator failed.');
     }
 
@@ -577,12 +575,16 @@ export class ObservationService extends DBService {
       const measurements = this._pullMeasurementsFromWorkSheetRowObject(
         row,
         measurementColumnNames,
-        measurementTypeDefinitionsByTsn
+        tsnMeasurementTypeDefinitionMap
       );
       newSubcount.qualitative_measurements = measurements.qualitative_measurements;
       newSubcount.quantitative_measurements = measurements.quantitative_measurements;
 
-      const environments = this._pullEnvironmentsFromWorkSheetRowObject(row, measurementColumnNames);
+      const environments = this._pullEnvironmentsFromWorkSheetRowObject(
+        row,
+        environmentColumnNames,
+        environmentColumnsTypeDefinitionMap
+      );
       newSubcount.qualitative_environments = environments.qualitative_environments;
       newSubcount.quantitative_environments = environments.quantitative_environments;
 
@@ -644,7 +646,7 @@ export class ObservationService extends DBService {
       }
 
       const measurement = getMeasurementFromTsnMeasurementTypeDefinitionMap(
-        String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']),
+        getTsnFromRow(row),
         mColumn,
         tsnMeasurements
       );
@@ -659,14 +661,18 @@ export class ObservationService extends DBService {
         const foundOption = measurement.options.find(
           (option) =>
             option.option_label.toLowerCase() === String(rowData).toLowerCase() ||
-            option.option_value === Number(rowData)
+            option.option_value === Number(rowData) ||
+            option.qualitative_option_id === rowData
         );
-        if (foundOption) {
-          foundMeasurements.qualitative_measurements.push({
-            measurement_id: measurement.taxon_measurement_id,
-            measurement_option_id: foundOption.qualitative_option_id
-          });
+
+        if (!foundOption) {
+          return;
         }
+
+        foundMeasurements.qualitative_measurements.push({
+          measurement_id: measurement.taxon_measurement_id,
+          measurement_option_id: foundOption.qualitative_option_id
+        });
       } else {
         foundMeasurements.quantitative_measurements.push({
           measurement_id: measurement.taxon_measurement_id,
@@ -680,7 +686,8 @@ export class ObservationService extends DBService {
 
   _pullEnvironmentsFromWorkSheetRowObject(
     row: Record<string, any>,
-    environmentColumns: string[]
+    environmentColumns: string[],
+    environmentNameTypeDefinitionMap: EnvironmentNameTypeDefinitionMap
   ): Pick<InsertSubCount, 'qualitative_environments' | 'quantitative_environments'> {
     const foundEnvironments: Pick<InsertSubCount, 'qualitative_environments' | 'quantitative_environments'> = {
       qualitative_environments: [],
@@ -700,8 +707,7 @@ export class ObservationService extends DBService {
         return;
       }
 
-      //   const environment = findEnvironmentFromEnvironments(mColumn); // TODO NICK
-      const environment = null as unknown as any;
+      const environment = environmentNameTypeDefinitionMap.get(mColumn);
 
       // Ignore empty environments
       if (!environment) {
@@ -711,12 +717,15 @@ export class ObservationService extends DBService {
       // if environment is qualitative, find the option id
       if (isEnvironmentQualitativeTypeDefinition(environment)) {
         const foundOption = environment.options.find((option) => option.name === String(rowData));
-        if (foundOption) {
-          foundEnvironments.qualitative_environments.push({
-            environment_qualitative_id: foundOption.environment_qualitative_id,
-            environment_qualitative_option_id: foundOption.environment_qualitative_option_id
-          });
+
+        if (!foundOption) {
+          return;
         }
+
+        foundEnvironments.qualitative_environments.push({
+          environment_qualitative_id: foundOption.environment_qualitative_id,
+          environment_qualitative_option_id: foundOption.environment_qualitative_option_id
+        });
       } else {
         foundEnvironments.quantitative_environments.push({
           environment_quantitative_id: environment.environment_quantitative_id,
@@ -803,7 +812,7 @@ export class ObservationService extends DBService {
   ): Promise<boolean> {
     // Fetch all measurement type definitions from Critterbase for all unique TSNs
     const tsns = observationRows.map((row) => String(row.standardColumns.itis_tsn));
-    const measurementTypeDefinitionsByTsn = await getCBMeasurementsFromTSN(tsns, critterBaseService);
+    const tsnMeasurementTypeDefinitionMap = await getTsnMeasurementTypeDefinitionMap(tsns, critterBaseService);
 
     // Map observation subcount data into objects to a IMeasurementDataToValidate array
     const measurementsToValidate: IMeasurementDataToValidate[] = observationRows.flatMap(
@@ -832,6 +841,6 @@ export class ObservationService extends DBService {
     );
 
     // Validate measurement data against fetched measurement definition
-    return validateMeasurements(measurementsToValidate, measurementTypeDefinitionsByTsn);
+    return validateMeasurements(measurementsToValidate, tsnMeasurementTypeDefinitionMap);
   }
 }

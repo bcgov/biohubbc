@@ -25,7 +25,7 @@ export interface IMeasurementDataToValidate {
  * @param {CritterbaseService} critterBaseService Critterbase service
  * @returns {*} Promise<TsnMeasurementTypeDefinitionMap>
  */
-export async function getCBMeasurementsFromTSN(
+export async function getTsnMeasurementTypeDefinitionMap(
   tsns: string[],
   critterBaseService: CritterbaseService
 ): Promise<TsnMeasurementTypeDefinitionMap> {
@@ -115,7 +115,7 @@ export function isMeasurementCBQualitativeTypeDefinition(
 }
 
 /**
- * Given an array of column headers, returns an array of column headers that have a corresponding measurement type
+ * Given an array of column names, returns an array of column names that have a corresponding measurement type
  * definition in the provided TsnMeasurementTypeDefinitionMap.
  *
  * @export

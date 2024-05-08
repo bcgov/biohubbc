@@ -1,9 +1,6 @@
-import { mdiTrashCanOutline } from '@mdi/js';
-import Icon from '@mdi/react';
 import Checkbox from '@mui/material/Checkbox';
 import grey from '@mui/material/colors/grey';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -14,6 +11,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/system/Box';
 import { GridColDef } from '@mui/x-data-grid';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
+import { GeneralColumnsSecondaryAction } from 'features/surveys/observations/observations-table/configure-columns/components/general/ConfigureGeneralColumnsSecondaryAction';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { EnvironmentType, EnvironmentTypeIds } from 'interfaces/useReferenceApi.interface';
 
@@ -66,67 +64,6 @@ export const ConfigureGeneralColumns = (props: IConfigureGeneralColumnsProps) =>
     environmentColumns
   } = props;
 
-  const GeneralColumnsSecondaryAction = (props: { field: string }) => {
-    const { field } = props;
-
-    // If the field matches a measurement definition, render the corresponding remove button.
-    if (measurementColumns.some((item) => item.taxon_measurement_id === field)) {
-      return (
-        <IconButton
-          disabled={disabled}
-          edge="end"
-          aria-label="Remove measurement"
-          onClick={() => onRemoveMeasurements([field])}>
-          <Icon path={mdiTrashCanOutline} size={1} />
-        </IconButton>
-      );
-    }
-
-    // If the field matches a qualitative environment type definition, render the corresponding remove button.
-    const qualitativeEnvironmentTypeDefinition = environmentColumns.qualitative_environments.find(
-      (item) => String(item.environment_qualitative_id) === field
-    );
-    if (qualitativeEnvironmentTypeDefinition) {
-      return (
-        <IconButton
-          disabled={disabled}
-          edge="end"
-          aria-label="Remove environment"
-          onClick={() =>
-            onRemoveEnvironmentColumns({
-              qualitative_environments: [qualitativeEnvironmentTypeDefinition.environment_qualitative_id],
-              quantitative_environments: []
-            })
-          }>
-          <Icon path={mdiTrashCanOutline} size={1} />
-        </IconButton>
-      );
-    }
-
-    // If the field matches a quantitative environment type definition, render the corresponding remove button.
-    const quantitativeEnvironmentTypeDefinition = environmentColumns.quantitative_environments.find(
-      (item) => String(item.environment_quantitative_id) === field
-    );
-    if (quantitativeEnvironmentTypeDefinition) {
-      return (
-        <IconButton
-          disabled={disabled}
-          edge="end"
-          aria-label="Remove environment"
-          onClick={() =>
-            onRemoveEnvironmentColumns({
-              qualitative_environments: [],
-              quantitative_environments: [quantitativeEnvironmentTypeDefinition.environment_quantitative_id]
-            })
-          }>
-          <Icon path={mdiTrashCanOutline} size={1} />
-        </IconButton>
-      );
-    }
-
-    return <></>;
-  };
-
   return (
     <Box>
       <Typography variant="h5" mb={2}>
@@ -170,7 +107,16 @@ export const ConfigureGeneralColumns = (props: IConfigureGeneralColumnsProps) =>
           return (
             <ListItem
               key={column.field}
-              secondaryAction={<GeneralColumnsSecondaryAction field={column.field} />}
+              secondaryAction={
+                <GeneralColumnsSecondaryAction
+                  disabled={disabled}
+                  field={column.field}
+                  onRemoveMeasurements={onRemoveMeasurements}
+                  measurementColumns={measurementColumns}
+                  onRemoveEnvironmentColumns={onRemoveEnvironmentColumns}
+                  environmentColumns={environmentColumns}
+                />
+              }
               disablePadding>
               <ListItemButton
                 dense

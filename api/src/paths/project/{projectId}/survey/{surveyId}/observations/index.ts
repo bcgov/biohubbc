@@ -555,11 +555,8 @@ PUT.apiDoc = {
                       survey_observation_id: {
                         type: 'integer',
                         minimum: 1,
-                        nullable: true
-                      },
-                      survey_id: {
-                        type: 'integer',
-                        minimum: 1
+                        nullable: true,
+                        description: 'The survey observation ID. If provided observation, the record will be updated.'
                       },
                       itis_tsn: {
                         type: 'integer'
@@ -584,10 +581,8 @@ PUT.apiDoc = {
                         nullable: true
                       },
                       count: {
-                        type: 'integer'
-                      },
-                      subcount: {
-                        type: 'integer'
+                        type: 'integer',
+                        description: "The observation record's count."
                       },
                       latitude: {
                         type: 'number'
@@ -608,13 +603,12 @@ PUT.apiDoc = {
                     }
                   },
                   subcounts: {
-                    description: 'An array of observation subcount and measurement data',
+                    description: 'An array of observation subcount records.',
                     type: 'array',
                     items: {
                       type: 'object',
                       additionalProperties: false,
                       required: [
-                        'observation_subcount_id',
                         'subcount',
                         'qualitative_measurements',
                         'quantitative_measurements',
@@ -624,10 +618,12 @@ PUT.apiDoc = {
                       properties: {
                         observation_subcount_id: {
                           type: 'number',
-                          nullable: true
+                          nullable: true,
+                          description: 'The observation subcount ID. If provided, the subcount record will be updated.'
                         },
                         subcount: {
-                          type: 'number'
+                          type: 'number',
+                          description: "The subcount record's count."
                         },
                         qualitative_measurements: {
                           type: 'array',
