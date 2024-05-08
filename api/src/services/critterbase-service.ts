@@ -182,7 +182,6 @@ export type CBQuantitativeMeasurementTypeDefinition = z.infer<typeof CBQuantitat
  * A Critterbase qualitative measurement option definition (ie. drop-down option).
  */
 const CBQualitativeOption = z.object({
-  taxon_measurement_id: z.string(),
   qualitative_option_id: z.string(),
   option_label: z.string(),
   option_value: z.number(),

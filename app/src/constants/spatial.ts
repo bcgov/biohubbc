@@ -19,3 +19,11 @@ export const ALL_OF_BC_BOUNDARY: Feature = {
     ]
   }
 };
+
+export const SURVEY_MAP_LAYER_COLOURS = {
+  OBSERVATIONS_COLOUR: '#db4f4f',
+  STUDY_AREA_COLOUR: '#e3a82b',
+  SAMPLING_SITE_COLOUR: '#1f6fb5',
+  TELEMETRY_COLOUR: '#ff5454',
+  DEFAULT_COLOUR: '#a7bfd1'
+};

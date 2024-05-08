@@ -144,7 +144,7 @@ export function findSubcountEnvironments(): RequestHandler {
 
       const codeService = new CodeService(connection);
 
-      const response = await codeService.findSubcountEnvironments(searchTerm);
+      const response = await codeService.findSubcountEnvironments([searchTerm]);
 
       await connection.commit();
 

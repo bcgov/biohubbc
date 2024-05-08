@@ -106,7 +106,6 @@ export const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocom
           onAddMeasurementColumn(value);
           setInputValue('');
           setOptions([]);
-          return;
         }
       }}
       renderOption={(renderProps, renderOption) => {

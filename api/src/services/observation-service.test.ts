@@ -40,6 +40,7 @@ describe('ObservationService', () => {
         {
           survey_observation_id: 11,
           survey_id: 1,
+          wldtaxonomic_units_id: 2,
           latitude: 3,
           longitude: 4,
           count: 5,
@@ -59,6 +60,7 @@ describe('ObservationService', () => {
         {
           survey_observation_id: 6,
           survey_id: 1,
+          wldtaxonomic_units_id: 2,
           latitude: 8,
           longitude: 9,
           count: 10,
@@ -129,11 +131,6 @@ describe('ObservationService', () => {
           itis_scientific_name: 'itis_scientific_name',
           observation_date: '2023-01-01',
           observation_time: '12:00:00',
-          create_date: '2023-04-04',
-          create_user: 1,
-          update_date: null,
-          update_user: null,
-          revision_count: 0,
           survey_sample_method_name: 'METHOD_NAME',
           survey_sample_period_start_datetime: '2000-01-01 00:00:00',
           survey_sample_site_name: 'SITE_NAME',
@@ -152,11 +149,6 @@ describe('ObservationService', () => {
           itis_scientific_name: 'itis_scientific_name',
           observation_date: '2023-02-02',
           observation_time: '13:00:00',
-          create_date: '2023-03-03',
-          create_user: 1,
-          update_date: '2023-04-04',
-          update_user: 2,
-          revision_count: 1,
           survey_sample_method_name: 'METHOD_NAME',
           survey_sample_period_start_datetime: '2000-01-01 00:00:00',
           survey_sample_site_name: 'SITE_NAME',
@@ -170,7 +162,9 @@ describe('ObservationService', () => {
       const mockSupplementaryData = {
         observationCount: 2,
         qualitative_measurements: [],
-        quantitative_measurements: []
+        quantitative_measurements: [],
+        qualitative_environments: [],
+        quantitative_environments: []
       };
 
       const getSurveyObservationsStub = sinon
@@ -185,6 +179,10 @@ describe('ObservationService', () => {
         .stub(SubCountService.prototype, 'getMeasurementTypeDefinitionsForSurvey')
         .resolves({ qualitative_measurements: [], quantitative_measurements: [] });
 
+      const getEnvironmentTypeDefinitionsForSurveyStub = sinon
+        .stub(SubCountService.prototype, 'getEnvironmentTypeDefinitionsForSurvey')
+        .resolves({ qualitative_environments: [], quantitative_environments: [] });
+
       const surveyId = 1;
 
       const observationService = new ObservationService(mockDBConnection);
@@ -196,6 +194,7 @@ describe('ObservationService', () => {
       expect(getSurveyObservationsStub).to.be.calledOnceWith(surveyId);
       expect(getSurveyObservationCountStub).to.be.calledOnceWith(surveyId);
       expect(getMeasurementTypeDefinitionsForSurveyStub).to.be.calledOnceWith(surveyId);
+      expect(getEnvironmentTypeDefinitionsForSurveyStub).to.be.calledOnceWith(surveyId);
       expect(response).to.eql({
         surveyObservations: [
           {

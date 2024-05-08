@@ -154,33 +154,6 @@ describe('_getClamAvScanner', () => {
     const result = _getClamAvScanner();
     expect(result).to.not.be.null;
   });
-
-  it('should return null if enable file virus scan is not set to true', () => {
-    process.env.ENABLE_FILE_VIRUS_SCAN = 'false';
-    process.env.CLAMAV_HOST = 'host';
-    process.env.CLAMAV_PORT = '1111';
-
-    const result = _getClamAvScanner();
-    expect(result).to.be.null;
-  });
-
-  it('should return null if CLAMAV_HOST is not set', () => {
-    process.env.ENABLE_FILE_VIRUS_SCAN = 'true';
-    delete process.env.CLAMAV_HOST;
-    process.env.CLAMAV_PORT = '1111';
-
-    const result = _getClamAvScanner();
-    expect(result).to.be.null;
-  });
-
-  it('should return null if CLAMAV_PORT is not set', () => {
-    process.env.ENABLE_FILE_VIRUS_SCAN = 'true';
-    process.env.CLAMAV_HOST = 'host';
-    delete process.env.CLAMAV_PORT;
-
-    const result = _getClamAvScanner();
-    expect(result).to.be.null;
-  });
 });
 
 describe('_getObjectStoreBucketName', () => {

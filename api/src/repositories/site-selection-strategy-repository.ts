@@ -14,11 +14,10 @@ export type SurveyStratum = z.infer<typeof SurveyStratum>;
 
 export const SurveyStratumRecord = z.object({
   name: z.string(),
-  description: z.string().nullable(),
+  description: z.string(),
   survey_id: z.number(),
-  survey_stratum_id: z.number(),
-  revision_count: z.number(),
-  update_date: z.string().nullable()
+  survey_stratum_id: z.number().nullable(),
+  revision_count: z.number()
 });
 
 export type SurveyStratumRecord = z.infer<typeof SurveyStratumRecord>;
@@ -70,27 +69,13 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
         'ss.survey_id',
         'ss.name',
         'ss.description',
-        'ss.create_date',
-        'ss.create_user',
-        'ss.update_date',
-        'ss.update_user',
         'ss.revision_count',
         getKnex().raw('COUNT(sss.survey_stratum_id)::INTEGER AS sample_stratum_count')
       )
       .from('survey_stratum as ss')
       .leftJoin('survey_sample_stratum as sss', 'ss.survey_stratum_id', 'sss.survey_stratum_id')
       .where('ss.survey_id', surveyId)
-      .groupBy(
-        'ss.survey_stratum_id',
-        'ss.survey_id',
-        'ss.name',
-        'ss.description',
-        'ss.create_date',
-        'ss.create_user',
-        'ss.update_date',
-        'ss.update_user',
-        'ss.revision_count'
-      );
+      .groupBy('ss.survey_stratum_id', 'ss.survey_id', 'ss.name', 'ss.description', 'ss.revision_count');
 
     const [strategiesResponse, stratumsResponse] = await Promise.all([
       this.connection.knex(strategiesQuery, z.object({ name: z.string() })),
@@ -198,7 +183,7 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
       .delete()
       .from('survey_stratum')
       .whereIn('survey_stratum_id', stratumIds)
-      .returning('*');
+      .returning(['survey_stratum_id', 'survey_id', 'name', 'description', 'revision_count']);
 
     const response = await this.connection.knex(deleteQuery, SurveyStratumRecord);
 
@@ -225,7 +210,7 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
           description: stratum.description
         }))
       )
-      .returning('*');
+      .returning(['survey_stratum_id', 'survey_id', 'name', 'description', 'revision_count']);
 
     const response = await this.connection.knex(insertQuery, SurveyStratumRecord);
 
@@ -254,13 +239,13 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
       return getKnex()
         .table('survey_stratum')
         .update({
-          survey_id: surveyId,
           name: stratum.name,
           description: stratum.description,
           update_date: 'now()'
         })
         .where('survey_stratum_id', stratum.survey_stratum_id)
-        .returning('*');
+        .where('survey_id', surveyId)
+        .returning(['survey_stratum_id', 'survey_id', 'name', 'description', 'revision_count']);
     };
 
     const responses = await Promise.all(

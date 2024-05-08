@@ -34,7 +34,7 @@ const useDeviceApi = (axios: AxiosInstance) => {
       return data;
     } catch (e) {
       if (e instanceof Error) {
-        console.log(e.message);
+        console.error(e.message);
       }
     }
     return [];
@@ -52,7 +52,7 @@ const useDeviceApi = (axios: AxiosInstance) => {
       return data;
     } catch (e) {
       if (e instanceof Error) {
-        console.log(e.message);
+        console.error(e.message);
       }
     }
     return [];
@@ -71,7 +71,7 @@ const useDeviceApi = (axios: AxiosInstance) => {
       return data;
     } catch (e) {
       if (e instanceof Error) {
-        console.log(e.message);
+        console.error(e.message);
       }
     }
     return { device: undefined, keyXStatus: false, deployments: [] };
@@ -88,7 +88,7 @@ const useDeviceApi = (axios: AxiosInstance) => {
       return data;
     } catch (e) {
       if (e instanceof Error) {
-        console.log(e.message);
+        console.error(e.message);
       }
     }
     return {};

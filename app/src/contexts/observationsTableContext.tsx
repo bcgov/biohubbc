@@ -24,6 +24,7 @@ import {
 } from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitionsUtils';
 import {
   validateObservationTableRow,
+  validateObservationTableRowEnvironments,
   validateObservationTableRowMeasurements
 } from 'features/surveys/observations/observations-table/observation-row-validation/ObservationRowValidationUtils';
 import { APIError } from 'hooks/api/useAxios';
@@ -411,7 +412,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
     const rowValues = _getRowsWithEditedValues();
     const tableColumns = _muiDataGridApiRef.current.getAllColumns?.() ?? [];
 
-    const requiredColumns: (keyof IObservationTableRow)[] = [
+    const requiredStandardColumns: (keyof IObservationTableRow)[] = [
       'count',
       'latitude',
       'longitude',
@@ -420,48 +421,27 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       'itis_tsn'
     ];
 
-    const samplingRequiredColumns: (keyof IObservationTableRow)[] = [
-      'survey_sample_site_id',
-      'survey_sample_method_id',
-      'survey_sample_period_id'
-    ];
+    const validation: ObservationTableValidationModel = {};
 
-    // build an array of all the standard non measurement columns
-    const nonMeasurementColumns: string[] = [
-      '__check__', // add check box column to filter out when looking for measurement columns
-      'actions', // actions column (trash can) to filter out when looking for measurement columns
-      ...(requiredColumns as string[]),
-      ...(samplingRequiredColumns as string[])
-    ];
-
-    // TODO: NICK - Split into measurement and environment columns and validate each separately
-    // filter all table columns out that do not appear in the nonMeasurementColumns array
-    const measurementColumns = tableColumns
-      .filter((tc) => {
-        return nonMeasurementColumns.indexOf(String(tc.field)) < 0;
-      })
-      .map((item) => item.field);
-
-    let validation: ObservationTableValidationModel = {};
     for (const row of rowValues) {
       // check standard required columns
-      const standardColumnErrors = validateObservationTableRow(row, requiredColumns, tableColumns);
+      const standardColumnErrors = validateObservationTableRow(row, requiredStandardColumns, tableColumns);
 
       // check any measurement columns found
       const measurementErrors = await validateObservationTableRowMeasurements(row, measurementColumns, tsnMeasurements);
 
-      const totalErrors = [...standardColumnErrors, ...measurementErrors];
+      const environmentErrors = await validateObservationTableRowEnvironments(row, environmentColumns);
+
+      const totalErrors = [...standardColumnErrors, ...measurementErrors, ...environmentErrors];
       if (totalErrors.length > 0) {
         validation[row.id] = totalErrors;
       }
     }
 
-    validation = {};
-
     setValidationModel(validation);
 
     return Object.keys(validation).length > 0 ? validation : null;
-  }, [_getRowsWithEditedValues, _muiDataGridApiRef, tsnMeasurements]);
+  }, [_getRowsWithEditedValues, _muiDataGridApiRef, environmentColumns, measurementColumns, tsnMeasurements]);
 
   /**
    * Deletes the given records from the server and removes them from the table.
@@ -492,26 +472,36 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
         }
 
         // Remove deleted row IDs from the validation model
-        setValidationModel((prevValidationModel) =>
-          allRowIdsToDelete.reduce((newValidationModel, rowId) => {
-            delete newValidationModel[rowId];
-            return newValidationModel;
-          }, prevValidationModel)
-        );
+        setValidationModel((prevValidationModel) => {
+          const newValidationModel = { ...prevValidationModel };
+          for (const rowIdToDelete of allRowIdsToDelete) {
+            delete newValidationModel[rowIdToDelete];
+          }
+          return newValidationModel;
+        });
 
         // Update saved rows, removing any deleted rows
-        setSavedRows((current) => current.filter((item) => !savedRowIdsToDelete.includes(String(item.id))));
+        setSavedRows((currentSavedRows) =>
+          currentSavedRows.filter((savedRow) => !savedRowIdsToDelete.includes(String(savedRow.id)))
+        );
 
         // Update staged rows, removing any deleted rows
-        setStagedRows((current) => current.filter((item) => !stagedRowIdsToDelete.includes(String(item.id))));
+        setStagedRows((currentStagedRows) =>
+          currentStagedRows.filter((stagedRow) => !stagedRowIdsToDelete.includes(String(stagedRow.id)))
+        );
 
         // Updated editing rows, removing deleted rows
-        setModifiedRowIds((current) => current.filter((id) => !allRowIdsToDelete.includes(id)));
+        setModifiedRowIds((currentModifiedRowIds) =>
+          currentModifiedRowIds.filter((modifiedRowId) => !allRowIdsToDelete.includes(modifiedRowId))
+        );
 
         // Updated row modes model, removing deleted rows
-        setRowModesModel((current) => {
-          allRowIdsToDelete.forEach((rowId) => delete current[rowId]);
-          return current;
+        setRowModesModel((currentRowModesModel) => {
+          const newRowModesModel = { ...currentRowModesModel };
+          for (const rowIdToDelete of allRowIdsToDelete) {
+            delete newRowModesModel[rowIdToDelete];
+          }
+          return newRowModesModel;
         });
 
         // Close yes-no dialog
@@ -835,7 +825,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
     };
 
     // Append new record to initial rows
-    setStagedRows([...stagedRows, newRecord]);
+    setStagedRows([newRecord, ...stagedRows]);
 
     // Set edit mode for the new row
     setRowModesModel((current) => ({

@@ -344,10 +344,6 @@ describe('PutPurposeAndMethodologyData', () => {
       expect(data.vantage_code_ids).to.eql([]);
     });
 
-    it('sets surveyed_all_areas', () => {
-      expect(data.surveyed_all_areas).to.equal(false);
-    });
-
     it('sets revision_count', () => {
       expect(data.revision_count).to.equal(null);
     });
@@ -360,7 +356,6 @@ describe('PutPurposeAndMethodologyData', () => {
       intended_outcome_ids: [1],
       additional_details: 'additional_detail',
       vantage_code_ids: [4, 5],
-      surveyed_all_areas: 'true',
       revision_count: 0
     };
 
@@ -378,10 +373,6 @@ describe('PutPurposeAndMethodologyData', () => {
 
     it('sets vantage_code_ids', () => {
       expect(data.vantage_code_ids).to.eql(obj.vantage_code_ids);
-    });
-
-    it('sets surveyed_all_areas', () => {
-      expect(data.surveyed_all_areas).to.equal(true);
     });
 
     it('sets revision_count', () => {

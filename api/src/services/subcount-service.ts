@@ -1,8 +1,5 @@
 import { IDBConnection } from '../database/db';
-import {
-  QualitativeEnvironmentTypeDefinition,
-  QuantitativeEnvironmentTypeDefinition
-} from '../repositories/observation-subcount-environment-repository';
+import { EnvironmentType } from '../repositories/observation-subcount-environment-repository';
 import {
   InsertObservationSubCount,
   InsertSubCountEvent,
@@ -117,16 +114,10 @@ export class SubCountService extends DBService {
    * survey.
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<{
-   *     qualitative_environments: QualitativeEnvironmentTypeDefinition[];
-   *     quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
-   *   }>}
+   * @return {*}  {Promise<EnvironmentType>}
    * @memberof SubCountService
    */
-  async getEnvironmentTypeDefinitionsForSurvey(surveyId: number): Promise<{
-    qualitative_environments: QualitativeEnvironmentTypeDefinition[];
-    quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
-  }> {
+  async getEnvironmentTypeDefinitionsForSurvey(surveyId: number): Promise<EnvironmentType> {
     const observationSubCountEnvironmentService = new ObservationSubCountEnvironmentService(this.connection);
 
     const [qualitativeEnvironmentTypeDefinitions, quantitativeEnvironmentTypeDefinitions] = await Promise.all([

@@ -77,7 +77,7 @@ export class SampleMethodService extends DBService {
     const samplePeriodService = new SamplePeriodService(this.connection);
 
     // Loop through and create associated sample periods
-    const promises = sampleMethod.periods.map((item) => {
+    const promises = sampleMethod.sample_periods.map((item) => {
       const samplePeriod = {
         survey_sample_method_id: sampleMethodRecord.survey_sample_method_id,
         start_date: item.start_date,
@@ -154,13 +154,13 @@ export class SampleMethodService extends DBService {
     await samplePeriodService.deleteSamplePeriodsNotInArray(
       surveyId,
       sampleMethod.survey_sample_method_id,
-      sampleMethod.periods
+      sampleMethod.sample_periods
     );
 
     // Loop through all new sample periods
     // For each sample period, check if it exists in the existing list
     // If it does, update it, otherwise create it
-    for (const samplePeriod of sampleMethod.periods) {
+    for (const samplePeriod of sampleMethod.sample_periods) {
       if (samplePeriod.survey_sample_period_id) {
         await samplePeriodService.updateSamplePeriod(surveyId, samplePeriod);
       } else {
