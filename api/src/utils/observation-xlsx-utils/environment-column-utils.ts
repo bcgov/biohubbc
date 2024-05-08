@@ -52,7 +52,6 @@ export function getEnvironmentColumnsTypeDefinitionMap(
     );
     if (quantitativeEnvironment) {
       columnNameDefinitionMap.set(columnName, quantitativeEnvironment);
-      continue;
     }
   }
 

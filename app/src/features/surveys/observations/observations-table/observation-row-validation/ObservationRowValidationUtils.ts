@@ -6,11 +6,7 @@ import {
   CBQualitativeMeasurementTypeDefinition,
   CBQuantitativeMeasurementTypeDefinition
 } from 'interfaces/useCritterApi.interface';
-import {
-  EnvironmentQualitativeTypeDefinition,
-  EnvironmentQuantitativeTypeDefinition,
-  EnvironmentType
-} from 'interfaces/useReferenceApi.interface';
+import { EnvironmentType } from 'interfaces/useReferenceApi.interface';
 
 /**
  * Validates a given observation table row against the given measurement columns.
@@ -140,10 +136,8 @@ export const validateObservationTableRowEnvironments = async (
     }
 
     const error = _validateQualitativeCell(
-      String((environmentColumn as EnvironmentQualitativeTypeDefinition).environment_qualitative_id),
-      (environmentColumn as EnvironmentQualitativeTypeDefinition).options.map((option) =>
-        String(option.environment_qualitative_option_id)
-      ),
+      String(environmentColumn.environment_qualitative_id),
+      environmentColumn.options.map((option) => String(option.environment_qualitative_option_id)),
       String(cellValue)
     );
 
@@ -163,9 +157,9 @@ export const validateObservationTableRowEnvironments = async (
     }
 
     const error = _validateQuantitativeCell(
-      String((environmentColumn as EnvironmentQuantitativeTypeDefinition).environment_quantitative_id),
-      (environmentColumn as EnvironmentQuantitativeTypeDefinition).min,
-      (environmentColumn as EnvironmentQuantitativeTypeDefinition).max,
+      String(environmentColumn.environment_quantitative_id),
+      environmentColumn.min,
+      environmentColumn.max,
       Number(cellValue)
     );
 

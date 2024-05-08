@@ -700,7 +700,7 @@ export class ObservationService extends DBService {
         return;
       }
 
-      //   const environment = findEnvironmentFromEnvironments(mColumn); // TODO
+      //   const environment = findEnvironmentFromEnvironments(mColumn); // TODO NICK
       const environment = null as unknown as any;
 
       // Ignore empty environments

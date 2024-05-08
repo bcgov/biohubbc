@@ -11,7 +11,7 @@ import { getMockDBConnection } from '../../__mocks__/db';
 import * as environment_column_utils from './environment-column-utils';
 import { EnvironmentNameTypeDefinitionMap, IEnvironmentDataToValidate } from './environment-column-utils';
 
-describe.only('environment-column-utils', () => {
+describe('environment-column-utils', () => {
   afterEach(() => {
     sinon.restore();
   });
