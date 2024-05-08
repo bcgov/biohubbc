@@ -7,8 +7,8 @@ import Typography from '@mui/material/Typography';
 import { IObservationsContext } from 'contexts/observationsContext';
 import { IObservationsPageContext } from 'contexts/observationsPageContext';
 import dayjs from 'dayjs';
-import { ISurveySampleMethodPeriodData } from 'features/surveys/components/MethodForm';
-import { IGetSamplePeriodRecord } from 'interfaces/useSurveyApi.interface';
+import { IGetSamplePeriodRecord } from 'interfaces/useSamplingSiteApi.interface';
+import { ISurveySampleMethodPeriodData } from '../create/form/MethodForm';
 import { ImportObservationsButton } from './import-observations/ImportObservationsButton';
 
 interface ISamplingSiteListPeriodProps {

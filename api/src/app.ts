@@ -187,12 +187,12 @@ function validateAllResponses(req: Request, res: Response, next: NextFunction) {
         return json.apply(res, args);
       }
 
-      const body = args[0];
+      const reqBody = args[0];
 
       // Run openapi response validation function
       const validationResult: { message: any; errors: any[] } | undefined = res['validateResponse'](
         res.statusCode,
-        body
+        reqBody
       );
 
       let validationMessage = '';
@@ -215,7 +215,9 @@ function validateAllResponses(req: Request, res: Response, next: NextFunction) {
           message: validationMessage,
           error: errorList,
           req_url: `${req.method} ${req.url}`,
-          res_body: body
+          req_params: req.params,
+          req_body: req.body,
+          res_body: reqBody
         });
 
         throw new HTTP500(validationMessage, errorList);

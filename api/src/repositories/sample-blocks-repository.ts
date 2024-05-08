@@ -70,17 +70,20 @@ export class SampleBlockRepository extends BaseRepository {
    * Gets count of all Sample Block records for a given Survey Block
    *
    * @param {number} surveyBlockId
-   * @return {*}  {Promise<SampleBlockRecord[]>}
+   * @return {*}  {Promise<number>}
    * @memberof sampleBlockRepository
    */
   async getSampleBlocksCountForSurveyBlockId(surveyBlockId: number): Promise<number> {
     const sql = SQL`
-      SELECT COUNT(*) AS sample_blocks_count
-      FROM survey_sample_block
-      WHERE survey_block_id = ${surveyBlockId};
+      SELECT 
+        COUNT(*)::integer AS count
+      FROM 
+        survey_sample_block
+      WHERE 
+        survey_block_id = ${surveyBlockId};
     `;
 
-    const response = await this.connection.sql(sql, z.object({ sample_blocks_count: z.string().transform(Number) }));
+    const response = await this.connection.sql(sql, z.object({ count: z.number() }));
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to count sample blocks', [
@@ -89,7 +92,7 @@ export class SampleBlockRepository extends BaseRepository {
       ]);
     }
 
-    return response.rows[0].sample_blocks_count;
+    return response.rows[0].count;
   }
 
   /**

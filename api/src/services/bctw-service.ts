@@ -1,11 +1,11 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { Request } from 'express';
 import FormData from 'form-data';
+import { GeometryCollection } from 'geojson';
 import { URLSearchParams } from 'url';
 import { z } from 'zod';
 import { ApiError, ApiErrorType } from '../errors/api-error';
 import { HTTP500 } from '../errors/http-error';
-import { GeoJSONFeatureCollectionZodSchema } from '../zod-schema/geoJsonZodSchema';
 import { KeycloakService } from './keycloak-service';
 
 export const IDeployDevice = z.object({
@@ -109,8 +109,6 @@ interface ICodeResponse {
   description: string;
   long_description: string;
 }
-
-export type CritterTelemetryResponse = z.infer<typeof GeoJSONFeatureCollectionZodSchema>;
 
 export type IBctwUser = z.infer<typeof IBctwUser>;
 
@@ -418,13 +416,10 @@ export class BctwService {
    * @param critterId uuid
    * @param startDate
    * @param endDate
-   * @returns {*} CritterTelemetryResponse
+   * @return {*}  {Promise<GeometryCollection>}
+   * @memberof BctwService
    */
-  async getCritterTelemetryPoints(
-    critterId: string,
-    startDate: Date,
-    endDate: Date
-  ): Promise<CritterTelemetryResponse> {
+  async getCritterTelemetryPoints(critterId: string, startDate: Date, endDate: Date): Promise<GeometryCollection> {
     return this._makeGetRequest(GET_TELEMETRY_POINTS_ENDPOINT, {
       critter_id: critterId,
       start: startDate.toISOString(),
@@ -440,13 +435,10 @@ export class BctwService {
    * @param critterId uuid
    * @param startDate
    * @param endDate
-   * @returns {*} CritterTelemetryResponse
+   * @return {*}  {Promise<GeometryCollection>}
+   * @memberof BctwService
    */
-  async getCritterTelemetryTracks(
-    critterId: string,
-    startDate: Date,
-    endDate: Date
-  ): Promise<CritterTelemetryResponse> {
+  async getCritterTelemetryTracks(critterId: string, startDate: Date, endDate: Date): Promise<GeometryCollection> {
     return this._makeGetRequest(GET_TELEMETRY_TRACKS_ENDPOINT, {
       critter_id: critterId,
       start: startDate.toISOString(),
