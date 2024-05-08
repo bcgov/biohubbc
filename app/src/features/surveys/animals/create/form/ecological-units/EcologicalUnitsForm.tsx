@@ -20,8 +20,6 @@ const initialEcologicalUnitValues = {
 const EcologicalUnitsForm = () => {
   const { values } = useFormikContext<ICreateEditAnimalRequest>();
 
-  console.log(values)
-
   return (
     <FieldArray
       name="ecological_units"

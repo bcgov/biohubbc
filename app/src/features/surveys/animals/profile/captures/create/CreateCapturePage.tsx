@@ -200,7 +200,7 @@ const CreateCapturePage = () => {
           ...marking,
           marking_id: undefined,
           critter_id: critterbaseCritterId
-        })),
+        }))
         // measurements: [
         //   ...(values.measurements?.qualitative || []).map((measurement) => ({
         //     ...measurement,
