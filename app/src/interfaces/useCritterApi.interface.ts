@@ -6,8 +6,7 @@ export interface ICreateEditAnimalRequest {
   critter_id?: string;
   nickname: string;
   species: ITaxonomy | null;
-  ecological_units:
-    | ICreateCritterCollectionUnit[]
+  ecological_units: ICreateCritterCollectionUnit[];
   wildlife_health_id: string;
   critter_comment: string | null;
 }
@@ -32,8 +31,8 @@ export interface IQuantitativeMeasurementPostData {
 }
 
 export interface IMeasurementPostData {
-  qualitative: IQualitativeMeasurementPostData[];
-  quantitative: IQuantitativeMeasurementPostData[];
+  qualitative: CBQualitativeMeasurement[];
+  quantitative: CBQuantitativeMeasurement[];
 }
 
 export interface ICapturePostData {

@@ -45,7 +45,7 @@ const CaptureMeasurementsForm = () => {
             {values.measurements?.qualitative.map((measurement, index) => {
               return (
                 <Card
-                  key={`${measurement.measurement_id}-${index}`}
+                  key={`${measurement.measurement_qualitative_id}-${index}`}
                   component={Stack}
                   variant="outlined"
                   flexDirection="row"

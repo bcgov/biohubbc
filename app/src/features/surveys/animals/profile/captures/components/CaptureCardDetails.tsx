@@ -17,61 +17,60 @@ interface ICaptureCardDetails {
 const CaptureCardDetails = (props: ICaptureCardDetails) => {
   const { capture } = props;
   return (
-    <Stack gap={3}>
-      <Grid container spacing={3} xs={8}>
+    <Stack gap={3} sx={{ '& .MuiTypography-body2': { fontSize: '0.9rem' } }}>
+      <Grid container spacing={3}>
         {capture.capture_comment && (
           <Grid item xs={12}>
             <Typography
-              variant="body2"
               color="textSecondary"
               fontWeight={700}
               fontSize="0.75rem"
               sx={{ textTransform: 'uppercase', mb: 0.5 }}>
               Capture comment
             </Typography>
-            <Typography color="textSecondary">{capture.capture_comment}</Typography>
+            <Typography color="textSecondary" variant="body2">
+              {capture.capture_comment}
+            </Typography>
           </Grid>
         )}
         <Grid item>
           <Typography
-            variant="body2"
             color="textSecondary"
             fontWeight={700}
             fontSize="0.75rem"
             sx={{ textTransform: 'uppercase', mb: 0.5 }}>
             Release time
           </Typography>
-          <Typography color="textSecondary">
-            {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, capture.release_timestamp ?? '')}
+          <Typography color="textSecondary" variant="body2">
+            {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, capture.release_timestamp ?? capture.capture_timestamp)}
           </Typography>
         </Grid>
         <Grid item>
           <Typography
-            variant="body2"
             color="textSecondary"
             fontWeight={700}
             fontSize="0.75rem"
             sx={{ textTransform: 'uppercase', mb: 0.5 }}>
             Release location
           </Typography>
-          <Typography color="textSecondary">
-            <Typography color="textSecondary">
-              {capture.capture_location.longitude},&nbsp;
-              {capture.capture_location.latitude}
-            </Typography>
+          <Typography color="textSecondary" variant="body2">
+            {capture.capture_location.longitude},&nbsp;
+            {capture.capture_location.latitude}
           </Typography>
         </Grid>
         <Grid item xs={12}>
           <Typography
-            variant="body2"
             color="textSecondary"
+            variant="body2"
             fontWeight={700}
             fontSize="0.75rem"
             flex="1 1 auto"
             sx={{ textTransform: 'uppercase', mb: 0.5 }}>
             Release comment
           </Typography>
-          <Typography color="textSecondary">{capture.release_comment}</Typography>
+          <Typography color="textSecondary" variant="body2">
+            {capture.release_comment}
+          </Typography>
         </Grid>
       </Grid>
     </Stack>

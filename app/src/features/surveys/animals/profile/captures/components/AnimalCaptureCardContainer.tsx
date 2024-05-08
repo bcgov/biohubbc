@@ -1,10 +1,9 @@
-import { mdiChevronDown, mdiDotsVertical, mdiPencilOutline } from '@mdi/js';
+import { mdiChevronDown, mdiDotsVertical, mdiPencilOutline, mdiTrashCan } from '@mdi/js';
 import Icon from '@mdi/react';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
-import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
@@ -13,9 +12,11 @@ import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import YesNoDialog from 'components/dialog/YesNoDialog';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { useAnimalPageContext, useSurveyContext } from 'hooks/useContext';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDate } from 'utils/Utils';
@@ -27,9 +28,12 @@ import CaptureCardDetails from './CaptureCardDetails';
  * @returns
  */
 const AnimalCaptureCardContainer = () => {
+  const critterbaseApi = useCritterbaseApi();
+
   const { critterDataLoader } = useAnimalPageContext();
   const [selectedCapture, setSelectedCapture] = useState<string | null>(null);
   const [captureAnchorEl, setCaptureAnchorEl] = useState<MenuProps['anchorEl']>(null);
+  const [captureForDelete, setCaptureForDelete] = useState<boolean>();
 
   const { projectId, surveyId } = useSurveyContext();
   const { selectedAnimal } = useAnimalPageContext();
@@ -45,10 +49,18 @@ const AnimalCaptureCardContainer = () => {
     setSelectedCapture(captureId);
   };
 
+  const handleDelete = async () => {
+    if (selectedCapture && selectedAnimal) {
+      await critterbaseApi.capture.deleteCapture(selectedCapture);
+      critterDataLoader.refresh(selectedAnimal.critterbase_critter_id);
+    }
+  };
+
   return (
     <>
       {selectedCapture && (
         <Menu
+          sx={{ pb: 2 }}
           open={Boolean(captureAnchorEl)}
           onClose={() => setCaptureAnchorEl(null)}
           anchorEl={captureAnchorEl}
@@ -83,7 +95,37 @@ const AnimalCaptureCardContainer = () => {
               <ListItemText>Edit Details</ListItemText>
             </RouterLink>
           </MenuItem>
+          <MenuItem
+            onClick={() => {
+              setCaptureAnchorEl(null);
+              setCaptureForDelete(true);
+            }}>
+            <ListItemIcon>
+              <Icon path={mdiTrashCan} size={1} />
+            </ListItemIcon>
+            <ListItemText>Delete</ListItemText>
+          </MenuItem>
         </Menu>
+      )}
+
+      {/* DELETE CONFIRMATION DIALOG */}
+      {captureForDelete && (
+        <YesNoDialog
+          dialogTitle={'Delete capture event?'}
+          dialogText={`Are you sure you want to permanently delete this capture? All information associated with
+          the capture will be deleted.`}
+          yesButtonProps={{ color: 'error' }}
+          yesButtonLabel={'Delete'}
+          noButtonProps={{ color: 'primary', variant: 'outlined' }}
+          noButtonLabel={'Cancel'}
+          open={Boolean(captureForDelete)}
+          onYes={() => {
+            setCaptureForDelete(false);
+            handleDelete();
+          }}
+          onClose={() => setCaptureForDelete(false)}
+          onNo={() => setCaptureForDelete(false)}
+        />
       )}
 
       {captures.length ? (
@@ -91,14 +133,19 @@ const AnimalCaptureCardContainer = () => {
           return (
             <Accordion
               component={Paper}
+              variant="outlined"
               disableGutters
+              elevation={1}
               key={`${capture.capture_id}-${index}`}
               sx={{
-                m: 2,
+                margin: '15px',
+                boxShadow: 'none',
                 px: 1,
                 borderRadius: '5px',
-                background: grey[100],
-                '&.MuiAccordion-root:before': {
+                '&.Mui-expanded': {
+                  margin: '15px !important'
+                },
+                '&:before': {
                   display: 'none'
                 }
               }}>

@@ -89,7 +89,9 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
   );
 
   useEffect(() => {
-    setUpdatedBounds(calculateUpdatedMapBounds(samplingSiteGeoJsonFeatures));
+    if (samplingSiteGeoJsonFeatures.length) {
+      setUpdatedBounds(calculateUpdatedMapBounds(samplingSiteGeoJsonFeatures));
+    }
   }, [samplingSiteGeoJsonFeatures]);
 
   return (

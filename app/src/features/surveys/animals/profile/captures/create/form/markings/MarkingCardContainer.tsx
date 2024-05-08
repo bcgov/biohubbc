@@ -19,12 +19,12 @@ const MarkingCardContainer = () => {
     <Stack gap={3}>
       <TransitionGroup>
         {values.markings.map((marking, index) => (
-          <Collapse in>
-            <Card key={`${marking.marking_type_id}-${index}`} sx={{ px: 3, py: 2, mb: 2, bgcolor: grey[100] }}>
+          <Collapse in key={`${marking.marking_type_id}-${index}`}>
+            <Card sx={{ px: 3, py: 2, mb: 2, bgcolor: grey[100] }}>
               <Typography fontWeight={700}>
                 {marking.marking_type_id}&nbsp;
                 <Typography component="span" color="textSecondary">
-                  {marking.taxon_marking_body_location_id}
+                  {marking.identifier}
                 </Typography>
               </Typography>
               <Typography color="textSecondary">{marking.comment}</Typography>

@@ -199,9 +199,11 @@ const EditCapturePage = () => {
           : values.capture.capture_location;
 
       const captureTimestamp = dayjs(
-        `${values.capture.capture_date}${
-          values.capture.capture_time ? ` ${values.capture.capture_time}-07:00` : 'T00:00:00-07:00'
-        }`
+        values.capture.capture_date
+          ? `${values.capture.capture_date}${
+              values.capture.capture_time ? ` ${values.capture.capture_time}-07:00` : 'T00:00:00-07:00'
+            }`
+          : values.capture.capture_timestamp
       ).toDate();
 
       // if release timestamp is null, use the capture timestamp, otherwise format it for critterbase

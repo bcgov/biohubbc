@@ -63,14 +63,14 @@ const CreateCapturePage = () => {
   const surveyContext = useSurveyContext();
   const projectContext = useProjectContext();
   const dialogContext = useDialogContext();
-  const animalPageContext = useAnimalPageContext();
+  const { selectedAnimal, setSelectedAnimalFromSurveyCritterId, critterDataLoader } = useAnimalPageContext();
 
   const { projectId, surveyId } = surveyContext;
 
   // If the user has refreshed the page and cleared the context, or come to this page externally from a link,
   // use the url params to set the select animal in the context. The context then requests critter data from critterbase.
-  if (!animalPageContext.selectedAnimal) {
-    animalPageContext.setSelectedAnimalFromSurveyCritterId(surveyCritterId);
+  if (!selectedAnimal) {
+    setSelectedAnimalFromSurveyCritterId(surveyCritterId);
   }
 
   const handleCancel = () => {
@@ -143,7 +143,7 @@ const CreateCapturePage = () => {
   const handleSubmit = async (values: ICreateCaptureRequest) => {
     setIsSaving(true);
     try {
-      const critterbaseCritterId = animalPageContext.selectedAnimal?.critterbase_critter_id;
+      const critterbaseCritterId = selectedAnimal?.critterbase_critter_id;
 
       if (!values || !critterbaseCritterId || values.capture.capture_location?.geometry.type !== 'Point') {
         return;
@@ -184,7 +184,7 @@ const CreateCapturePage = () => {
             }`
       ).toDate();
 
-      const response = await critterbaseApi.capture.createCapture({
+      const captureResponse = await critterbaseApi.capture.createCapture({
         capture_id: undefined,
         capture_timestamp: captureTimestamp,
         release_timestamp: releaseTimestamp,
@@ -195,7 +195,27 @@ const CreateCapturePage = () => {
         critter_id: critterbaseCritterId
       });
 
-      if (!response) {
+      const bulkResponse = await critterbaseApi.critters.bulkCreate({
+        marking: values.markings.map((marking) => ({
+          ...marking,
+          marking_id: undefined,
+          critter_id: critterbaseCritterId
+        })),
+        // measurements: [
+        //   ...(values.measurements?.qualitative || []).map((measurement) => ({
+        //     ...measurement,
+        //     measurement_qualitative_id: undefined,
+        //     critter_id: critterbaseCritterId
+        //   })),
+        //   ...(values.measurements?.quantitative || []).map((measurement) => ({
+        //     ...measurement,
+        //     measurement_quantitative_id: undefined,
+        //     critter_id: critterbaseCritterId
+        //   }))
+        // ]
+      });
+
+      if (!captureResponse || !bulkResponse) {
         showCreateErrorDialog({
           dialogError: 'The response from the server was null, or did not contain a survey ID.'
         });
@@ -205,7 +225,7 @@ const CreateCapturePage = () => {
       setEnableCancelCheck(false);
 
       // Refresh page
-      animalPageContext.critterDataLoader.refresh(critterbaseCritterId);
+      critterDataLoader.refresh(critterbaseCritterId);
 
       history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`);
     } catch (error) {
@@ -220,7 +240,7 @@ const CreateCapturePage = () => {
     }
   };
 
-  const animalId = animalPageContext.critterDataLoader.data?.animal_id;
+  const animalId = critterDataLoader.data?.animal_id;
 
   return (
     <>

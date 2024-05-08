@@ -123,9 +123,9 @@ const AnimalProfile = () => {
           ))}
         </Stack>
       </Paper>
-      <Paper>
-        <AnimalCaptureContainer />
-      </Paper>
+      {/* <Paper> */}
+      <AnimalCaptureContainer />
+      {/* </Paper> */}
     </Stack>
   );
 };
