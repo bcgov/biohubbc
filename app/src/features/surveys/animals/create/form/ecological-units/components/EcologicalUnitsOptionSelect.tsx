@@ -24,15 +24,11 @@ const EcologicalUnitsOptionSelect = (props: IEcologicalUnitsOptionSelectProps) =
     ecologicalUnitOptionDataLoader.load(collection_category_id);
   }
 
-  console.log(ecologicalUnitOptionDataLoader.data);
-
   const options =
     ecologicalUnitOptionDataLoader.data?.map((option) => ({
       value: option.collection_unit_id,
       label: option.unit_name
     })) ?? [];
-
-  console.log(options);
 
   return (
     <AutocompleteField

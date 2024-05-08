@@ -80,10 +80,12 @@ const AnimalProfile = () => {
               startIcon={mdiInformationOutline}
             />
             {critter.wlh_id && <AnimalAttributeItem text={critter.wlh_id} startIcon={mdiPlusBoxOutline} />}
-            <ColouredRectangleChip
-              label={critter.mortality.length ? 'Deceased' : 'Alive'}
-              colour={critter.mortality.length ? red : green}
-            />
+            <Box mt={1}>
+              <ColouredRectangleChip
+                label={critter.mortality.length ? 'Deceased' : 'Alive'}
+                colour={critter.mortality.length ? red : green}
+              />
+            </Box>
           </Stack>
           <Typography variant="body2" color="textSecondary">
             <Typography sx={{ fontSize: '0.8rem', fontWeight: 700 }} component="span">

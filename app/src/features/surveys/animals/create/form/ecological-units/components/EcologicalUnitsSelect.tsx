@@ -40,8 +40,6 @@ const EcologicalUnitsSelect = (props: IEcologicalUnitsSelect) => {
   // TODO: Update critterbase to send options with each unit
   const units = ecologicalUnitsDataLoader.data;
 
-  console.log(values);
-
   return (
     <Stack spacing={2}>
       {values.ecological_units.map((unit, index) => {

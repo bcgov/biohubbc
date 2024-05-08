@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { IBulkCreateCritter, ICreateCritter } from 'features/surveys/view/survey-animals/animal';
+import { IBulkCreate, IBulkUpdate, ICreateCritter } from 'features/surveys/view/survey-animals/animal';
 import { ICritterDetailedResponse, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 
 const useCritterApi = (axios: AxiosInstance) => {
@@ -34,22 +34,22 @@ const useCritterApi = (axios: AxiosInstance) => {
    * @param {ICreateCritter} payload - Create critter payload.
    * @returns {Promise<ICritterSimpleResponse>} Simple critterbase critter.
    */
-  const bulkCreateCritter = async (payload: IBulkCreateCritter): Promise<ICritterSimpleResponse> => {
+  const bulkCreate = async (payload: IBulkCreate): Promise<ICritterSimpleResponse> => {
     const { data } = await axios.post('/api/critterbase/bulk', payload);
     return data;
   };
 
-  // /**
-  //  * Update a critter with data.
-  //  *
-  //  * @async
-  //  * @param {ICreateCritter} payload - Update critter payload.
-  //  * @returns {Promise<ICritterSimpleResponse>} Simple critterbase critter.
-  //  */
-  // const bulkUpdateCritter = async (payload: IBulkCreateCritter): Promise<ICritterSimpleResponse> => {
-  //   const { data } = await axios.patch('/api/critterbase/bulk', payload);
-  //   return data;
-  // };
+  /**
+   * Update a critter with data.
+   *
+   * @async
+   * @param {ICreateCritter} payload - Update critter payload.
+   * @returns {Promise<ICritterSimpleResponse>} Simple critterbase critter.
+   */
+  const bulkUpdate = async (payload: IBulkUpdate): Promise<ICritterSimpleResponse> => {
+    const { data } = await axios.patch('/api/critterbase/bulk', payload);
+    return data;
+  };
 
   /**
    * Get a critter with detailed response.
@@ -81,7 +81,8 @@ const useCritterApi = (axios: AxiosInstance) => {
     getMultipleCrittersByIds,
     createCritter,
     updateCritter,
-    bulkCreateCritter
+    bulkCreate,
+    bulkUpdate
   };
 };
 

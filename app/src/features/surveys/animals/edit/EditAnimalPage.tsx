@@ -136,8 +136,20 @@ const EditAnimalPage = () => {
         critter_id: critter.critter_id,
         wlh_id: values.wildlife_health_id,
         animal_id: values.nickname,
-        sex: AnimalSex.MALE,
+        sex: AnimalSex.UNKNOWN,
         itis_tsn: values.species.tsn
+      });
+
+      // Insert collection units through bulk create
+      await critterbaseApi.critters.bulkUpdate({
+        collections: values.ecological_units
+          .filter((unit) => unit.collection_category_id !== null && unit.collection_unit_id !== null)
+          .map((unit) => ({
+            critter_collection_unit_id: unit.critter_collection_unit_id,
+            critter_id: critter.critter_id,
+            collection_category_id: unit.collection_category_id as string,
+            collection_unit_id: unit.collection_unit_id as string
+          }))
       });
 
       if (!response) {
@@ -217,9 +229,10 @@ const EditAnimalPage = () => {
           <AnimalForm
             initialAnimalData={
               {
+                critter_id: critter.critter_id,
                 nickname: critter.animal_id,
                 species: { tsn: critter.itis_tsn, scientificName: critter.itis_scientific_name, commonName: '' },
-                ecological_units: critter.collection_units,
+                ecological_units: critter.collection_units.map((unit) => ({ ...unit, critter_id: critter.critter_id })),
                 wildlife_health_id: critter.wlh_id,
                 critter_comment: ''
               } as ICreateEditAnimalRequest

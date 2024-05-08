@@ -1,4 +1,4 @@
-import { mdiChevronDown, mdiDotsVertical, mdiMapMarkerOutline, mdiPencilOutline } from '@mdi/js';
+import { mdiChevronDown, mdiDotsVertical, mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -125,10 +125,7 @@ const AnimalCaptureCardContainer = () => {
                     <Typography fontWeight={700}>
                       {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, capture.capture_timestamp)}&nbsp;
                     </Typography>
-                    <Box display="flex" alignItems="flex-end">
-                      <Box sx={{ display: 'flex', mr: 0.5, mb: 0.1 }}>
-                        <Icon size={0.7} color={grey[400]} title="Capture location" path={mdiMapMarkerOutline} />
-                      </Box>
+                    <Box>
                       <Typography color="textSecondary" variant="body2">
                         {capture.capture_location.longitude},&nbsp;
                         {capture.capture_location.latitude}

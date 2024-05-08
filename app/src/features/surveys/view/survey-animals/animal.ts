@@ -222,8 +222,16 @@ export type ICreateCritterCollectionUnit = InferType<typeof CreateCritterCollect
 export type ICreateCritterCapture = InferType<typeof CreateCritterCaptureSchema>;
 export type ICreateCritterFamily = InferType<typeof CreateCritterFamilySchema>;
 export type ICreateCritterMortality = InferType<typeof CreateCritterMortalitySchema>;
-export type IBulkCreateCritter = {
-  critter: ICritterSimpleResponse;
+export type IBulkCreate = {
+  critter?: ICritterSimpleResponse;
+  measurements?: ICreateCritterMeasurement[];
+  capture?: ICreateCritterCapture[];
+  mortality?: ICreateCritterMortality;
+  marking?: ICreateCritterMarking[];
+  collections?: ICreateCritterCollectionUnit[];
+};
+export type IBulkUpdate = {
+  critter?: ICritterSimpleResponse;
   measurements?: ICreateCritterMeasurement[];
   capture?: ICreateCritterCapture[];
   mortality?: ICreateCritterMortality;

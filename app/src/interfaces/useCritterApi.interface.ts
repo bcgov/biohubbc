@@ -1,13 +1,13 @@
+import { ICreateCritterCollectionUnit } from 'features/surveys/view/survey-animals/animal';
 import { Feature } from 'geojson';
 import { ITaxonomy } from './useTaxonomyApi.interface';
 
 export interface ICreateEditAnimalRequest {
+  critter_id?: string;
   nickname: string;
   species: ITaxonomy | null;
-  ecological_units: {
-    collection_unit_id: string | null;
-    collection_category_id: string | null;
-  }[];
+  ecological_units:
+    | ICreateCritterCollectionUnit[]
   wildlife_health_id: string;
   critter_comment: string | null;
 }
@@ -64,15 +64,15 @@ export interface ICreateCaptureRequest {
   measurements?: IMeasurementPostData;
 }
 
-export interface ICritterCollectionUnitResponse extends ICollectionUnitResponse {
-  critter_collection_unit_id: string;
-}
-
 export interface ICollectionUnitResponse {
   category_name: string;
   unit_name: string;
   collection_unit_id: string;
   collection_category_id: string;
+}
+
+export interface ICritterCollectionUnitResponse extends ICollectionUnitResponse {
+  critter_collection_unit_id: string;
 }
 
 type ILocationResponse = {
