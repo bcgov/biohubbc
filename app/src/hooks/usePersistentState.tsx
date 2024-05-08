@@ -2,14 +2,14 @@ import { useCallback, useState } from 'react';
 
 /**
  * Save state between refreshes, windows and sessions.
- * NOTE: This hook will attempt to grab from local storage before defaulting to intitial value.
+ * NOTE: This hook will attempt to grab from local storage BEFORE defaulting to intitial value.
  *
  * @template T - Generic.
  * @param {T} initialValue - Initial value for localStorage.
  * @param {string} key - Local storage key.
  * @returns {[T, (newValue: T) => void]} State and SetState handler.
  */
-export const usePersistentState = <T>(key: string, initialValue: T): [T, (newValue: T) => void] => {
+export const usePersistentState = <T,>(key: string, initialValue: T): [T, (newValue: T) => void] => {
   const prefixedKey = `USE_PERSISTENT_STATE_${key}`;
 
   /**
@@ -30,6 +30,7 @@ export const usePersistentState = <T>(key: string, initialValue: T): [T, (newVal
       return JSON.parse(storageValue);
     } catch (err) {
       console.debug(`usePersistentState: error while parsing local storage value: ${storageValue}`);
+
       localStorage.removeItem(prefixedKey);
       return initialValue;
     }

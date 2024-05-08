@@ -4,6 +4,7 @@ import { cyan, grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { DataGrid, GridColDef, GRID_CHECKBOX_SELECTION_COL_DEF } from '@mui/x-data-grid';
+import { useOnMount } from '@mui/x-data-grid/hooks/utils/useOnMount';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
@@ -15,7 +16,7 @@ import { IManualTelemetryTableRow } from 'contexts/telemetryTableContext';
 import { default as dayjs } from 'dayjs';
 import { useTelemetryTableContext } from 'hooks/useContext';
 import { capitalize, round } from 'lodash-es';
-import { useContext, useEffect, useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import { ICritterDeployment } from '../ManualTelemetryList';
 
@@ -23,26 +24,39 @@ interface IManualTelemetryTableProps {
   isLoading: boolean;
 }
 
+/**
+ * TODO:
+ * 1. Adding a record after successfully saving, nothing happens
+ * 2. Selecting all records should not select records without select action
+ * 3. Selecting record state will persist after discard changes selected
+ *
+ */
 const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
   const telemetryTableContext = useTelemetryTableContext();
   const surveyContext = useContext(SurveyContext);
 
-  useEffect(() => {
+  useOnMount(() => {
     surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
     surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-  }, []);
+  });
+
+  const isManualTelemetry = (row: IManualTelemetryTableRow) => row.telemetry_type === 'MANUAL';
 
   const critterDeployments: ICritterDeployment[] = useMemo(() => {
     const data: ICritterDeployment[] = [];
-    // combine all critter and deployments into a flat list
-    surveyContext.deploymentDataLoader.data?.forEach((deployment) => {
-      const critter = surveyContext.critterDataLoader.data?.find(
-        (critter) => critter.critter_id === deployment.critter_id
-      );
+
+    const critters = surveyContext.critterDataLoader.data ?? [];
+    const deployments = surveyContext.deploymentDataLoader.data ?? [];
+
+    const critterMap = new Map(critters.map((critter) => [critter.critter_id, critter]));
+
+    deployments.forEach((deployment) => {
+      const critter = critterMap.get(deployment.critter_id);
       if (critter) {
         data.push({ critter, deployment });
       }
     });
+
     return data;
   }, [surveyContext.critterDataLoader.data, surveyContext.deploymentDataLoader.data]);
 
@@ -51,7 +65,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
       ...GRID_CHECKBOX_SELECTION_COL_DEF,
       width: 50,
       renderCell: (params) =>
-        telemetryTableContext.isManualTelemetry(params.row) && GRID_CHECKBOX_SELECTION_COL_DEF.renderCell ? (
+        isManualTelemetry(params.row) && GRID_CHECKBOX_SELECTION_COL_DEF.renderCell ? (
           GRID_CHECKBOX_SELECTION_COL_DEF?.renderCell(params)
         ) : (
           <></>
@@ -315,16 +329,14 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
       resizable: false,
       headerClassName: 'pinnedColumn',
       cellClassName: 'pinnedColumn',
-      getActions: (params) =>
-        // Only render the delete action when record is 'Manual' telemetry.
-        [
-          <IconButton
-            onClick={() => telemetryTableContext.deleteRecords([params.row])}
-            disabled={telemetryTableContext.isSaving || !telemetryTableContext.isManualTelemetry(params.row)}
-            key={`actions[${params.id}].handleDeleteRow`}>
-            <Icon path={mdiTrashCanOutline} size={1} />
-          </IconButton>
-        ]
+      getActions: (params) => [
+        <IconButton
+          onClick={() => telemetryTableContext.deleteRecords([params.row])}
+          disabled={telemetryTableContext.isSaving || !isManualTelemetry(params.row)} // Disable the delete action when record is 'Manual' telemetry
+          key={`actions[${params.id}].handleDeleteRow`}>
+          <Icon path={mdiTrashCanOutline} size={1} />
+        </IconButton>
+      ]
     }
   ];
 

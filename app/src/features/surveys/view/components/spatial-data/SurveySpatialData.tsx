@@ -121,7 +121,7 @@ const SurveySpatialData = () => {
                 coordinates: [telemetry.longitude, telemetry.latitude] as Position
               }
             },
-            key: `telemetry-${telemetry.telemetry_manual_id}`,
+            key: `telemetry-${telemetry.id}`,
             onLoadMetadata: async (): Promise<ISurveyMapPointMetadata[]> => {
               return Promise.resolve([
                 { label: 'Device ID', value: String(deployment.device_id) },

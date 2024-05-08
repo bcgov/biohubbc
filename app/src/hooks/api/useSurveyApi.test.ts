@@ -102,13 +102,8 @@ describe('useSurveyApi', () => {
         device_model: 'E',
         frequency: 1,
         frequency_unit: 'Hz',
-        deployments: [
-          {
-            deployment_id: '',
-            attachment_start: '2023-01-01',
-            attachment_end: undefined
-          }
-        ],
+        attachment_start: '2023-01-01',
+        attachment_end: undefined,
         critter_id: v4()
       });
 
@@ -124,18 +119,8 @@ describe('useSurveyApi', () => {
         device_model: 'E',
         frequency: 1,
         frequency_unit: 'Hz',
-        deployments: [
-          {
-            deployment_id: '',
-            attachment_start: '2023-01-01',
-            attachment_end: undefined
-          },
-          {
-            deployment_id: '',
-            attachment_start: '2023-01-01',
-            attachment_end: undefined
-          }
-        ],
+        attachment_start: '2023-01-01',
+        attachment_end: undefined,
         critter_id: v4()
       });
 

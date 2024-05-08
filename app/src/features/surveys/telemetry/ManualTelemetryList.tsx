@@ -253,12 +253,13 @@ const ManualTelemetryList = () => {
         //Being explicit here for simplicity.
         {
           critter_id: critter.critter_id,
-          device_id: data.device_id,
+          device_id: Number(data.device_id),
           device_make: data.device_make ?? undefined,
-          frequency: data.frequency,
-          frequency_unit: data.frequency_unit,
-          device_model: data.device_model,
-          deployments: data.deployments
+          frequency: data.frequency ?? undefined,
+          frequency_unit: data.frequency_unit ?? undefined,
+          device_model: data.device_model ?? undefined,
+          attachment_start: data.deployments?.[0].attachment_start,
+          attachment_end: data.deployments?.[0].attachment_end ?? undefined
         }
       );
       surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);

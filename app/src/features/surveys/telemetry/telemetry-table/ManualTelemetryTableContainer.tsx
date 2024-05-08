@@ -31,6 +31,9 @@ import { pluralize as p } from 'utils/Utils';
 import ManualTelemetryTable from './ManualTelemetryTable';
 
 const ManualTelemetryTableContainer = () => {
+  // Api
+  const telemetryApi = useTelemetryApi();
+
   // State
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [processingRecords, setProcessingRecords] = useState(false);
@@ -45,7 +48,8 @@ const ManualTelemetryTableContainer = () => {
   const dialogContext = useContext(DialogContext);
   const telemetryTableContext = useTelemetryTableContext();
   const surveyContext = useContext(SurveyContext);
-  const telemetryApi = useTelemetryApi();
+
+  const { projectId, surveyId } = surveyContext;
 
   const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
     dialogContext.setSnackbar({ ...textDialogProps, open: true });
@@ -77,7 +81,7 @@ const ManualTelemetryTableContainer = () => {
     return telemetryTableContext.getColumns().filter((column) => {
       return column && column.type && !['actions', 'checkboxSelection'].includes(column.type) && column.hideable;
     });
-  }, [telemetryTableContext.getColumns]);
+  }, [telemetryTableContext]);
 
   /**
    * Toggles whether all columns are hidden or visible.
@@ -88,7 +92,7 @@ const ManualTelemetryTableContainer = () => {
     } else {
       setHiddenFields(hideableColumns.map((column) => column.field));
     }
-  }, [hiddenFields]);
+  }, [hiddenFields, hideableColumns, setHiddenFields]);
 
   /**
    * Whenever hidden fields updates, trigger an update in visiblity for the table.
@@ -98,9 +102,7 @@ const ManualTelemetryTableContainer = () => {
       ...Object.fromEntries(hideableColumns.map((column) => [column.field, true])),
       ...Object.fromEntries(hiddenFields.map((field) => [field, false]))
     });
-  }, [hideableColumns, hiddenFields]);
-
-  const { projectId, surveyId } = surveyContext;
+  }, [hideableColumns, hiddenFields, telemetryTableContext._muiDataGridApiRef]);
 
   const handleFileImport = async (file: File) => {
     telemetryApi.uploadCsvForImport(projectId, surveyId, file).then((response) => {
