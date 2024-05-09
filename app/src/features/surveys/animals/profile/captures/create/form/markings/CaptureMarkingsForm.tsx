@@ -96,7 +96,7 @@ const CaptureMarkingsForm = () => {
 
               <AutocompleteField
                 id="marking-location-autocomplete-field"
-                label="Marking Placement"
+                label="Marking placement"
                 name={`body_location_id`}
                 required
                 loading={markingBodyLocationDataLoader.isLoading}
@@ -110,8 +110,8 @@ const CaptureMarkingsForm = () => {
               <CustomTextField
                 name={`identifier`}
                 aria-label="Unique marking ID"
-                label="ID Label"
-                other={{ rows: 1 }}
+                label="Identifier"
+                other={{ rows: 1, autoComplete: 'off' }}
               />
               <AutocompleteField
                 id="marking-primary-colour-autocomplete-field"

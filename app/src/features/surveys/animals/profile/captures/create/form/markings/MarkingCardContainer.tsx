@@ -4,6 +4,7 @@ import grey from '@mui/material/colors/grey';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useFormikContext } from 'formik';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { ICreateCaptureRequest } from 'interfaces/useCritterApi.interface';
 import { TransitionGroup } from 'react-transition-group';
 
@@ -14,6 +15,9 @@ import { TransitionGroup } from 'react-transition-group';
  */
 const MarkingCardContainer = () => {
   const { values } = useFormikContext<ICreateCaptureRequest>();
+  const critterbaseApi = useCritterbaseApi()
+
+  // const codes
 
   return (
     <Stack gap={3}>
@@ -22,9 +26,9 @@ const MarkingCardContainer = () => {
           <Collapse in key={`${marking.marking_type_id}-${index}`}>
             <Card sx={{ px: 3, py: 2, mb: 2, bgcolor: grey[100] }}>
               <Typography fontWeight={700}>
-                {marking.marking_type_id}&nbsp;
+                {marking.identifier}
                 <Typography component="span" color="textSecondary">
-                  {marking.identifier}
+                  {marking.primary_colour_id}&nbsp;{marking.secondary_colour_id}
                 </Typography>
               </Typography>
               <Typography color="textSecondary">{marking.comment}</Typography>

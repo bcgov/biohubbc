@@ -24,7 +24,7 @@ const AnimalProfile = () => {
   const animalPageContext = useAnimalPageContext();
   const dialogContext = useDialogContext();
 
-  const critterDataLoader = animalPageContext.critterDataLoader;
+  const { critterDataLoader, selectedAnimal } = animalPageContext;
 
   const handleCopy = (text: string) => {
     if (!text) {
@@ -43,7 +43,7 @@ const AnimalProfile = () => {
 
   const critter = critterDataLoader.data;
 
-  if (!critter || critterDataLoader.isLoading) {
+  if (!critter || critterDataLoader.isLoading || !selectedAnimal) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100%" flex="1 1 auto">
         <CircularProgress size={40} sx={{ flex: '1 1 auto', position: 'absolute' }} />
@@ -123,9 +123,7 @@ const AnimalProfile = () => {
           ))}
         </Stack>
       </Paper>
-      {/* <Paper> */}
       <AnimalCaptureContainer />
-      {/* </Paper> */}
     </Stack>
   );
 };
