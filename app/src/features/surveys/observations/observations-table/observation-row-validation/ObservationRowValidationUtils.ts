@@ -1,7 +1,8 @@
 import { GridColDef } from '@mui/x-data-grid';
-import { IObservationTableRow, ObservationRowValidationError, TSNMeasurement } from 'contexts/observationsTableContext';
+import { IObservationTableRow, ObservationRowValidationError } from 'contexts/observationsTableContext';
 import dayjs from 'dayjs';
 import {
+  CBMeasurementSearchByTsnResponse,
   CBMeasurementType,
   CBQualitativeMeasurementTypeDefinition,
   CBQuantitativeMeasurementTypeDefinition
@@ -13,13 +14,13 @@ import { EnvironmentType } from 'interfaces/useReferenceApi.interface';
  *
  * @param {IObservationTableRow} row The observation table row to validate
  * @param {CBMeasurementType[]} measurementColumns A list of the measurement column definitions to validate against
- * @param {(tsn: number) => Promise<TSNMeasurement | null | undefined>} getTSNMeasurements A function that fetches measurement definitions from Critterbase based on the row itis_tsn value
+ * @param {(tsn: number) => Promise<CBMeasurementSearchByTsnResponse | null | undefined>} getTsnMeasurementTypeDefinitionMap A function that fetches measurement definitions from Critterbase based on the row itis_tsn value
  * @returns {*} Promise<ObservationRowValidationError[]>
  */
 export const validateObservationTableRowMeasurements = async (
   row: IObservationTableRow,
   measurementColumns: CBMeasurementType[],
-  getTSNMeasurements: (tsn: number) => Promise<TSNMeasurement | null | undefined>
+  getTsnMeasurementTypeDefinitionMap: (tsn: number) => Promise<CBMeasurementSearchByTsnResponse | null | undefined>
 ): Promise<ObservationRowValidationError[]> => {
   const measurementErrors: ObservationRowValidationError[] = [];
 
@@ -33,7 +34,7 @@ export const validateObservationTableRowMeasurements = async (
     return [];
   }
 
-  const taxonMeasurements = await getTSNMeasurements(Number(row.itis_tsn));
+  const taxonMeasurements = await getTsnMeasurementTypeDefinitionMap(Number(row.itis_tsn));
 
   if (!taxonMeasurements) {
     // This taxon has no valid measurements, return an error
