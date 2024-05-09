@@ -14,7 +14,17 @@ import { DialogContext } from 'contexts/dialogContext';
 import { default as dayjs } from 'dayjs';
 import { APIError } from 'hooks/api/useAxios';
 import { ICreateManualTelemetry, IUpdateManualTelemetry, useTelemetryApi } from 'hooks/useTelemetryApi';
-import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  createContext,
+  PropsWithChildren,
+  useCallback,
+  useContext,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
 import { TelemetryDataContext } from './telemetryDataContext';
@@ -79,7 +89,7 @@ export type ITelemetryTableContext = {
   /**
    * Returns all of the telemetry table records that have been selected
    */
-  getSelectedRecords: () => IManualTelemetryTableRow[];
+  //_getSelectedRecords: () => IManualTelemetryTableRow[];
   /**
    * Indicates whether the telemetry table has any unsaved changes
    */
@@ -87,7 +97,7 @@ export type ITelemetryTableContext = {
   /**
    * Callback that should be called when a row enters edit mode.
    */
-  onRowEditStart: (id: GridRowId) => void;
+  //onRowEditStart: (id: GridRowId) => void;
   /**
    * The IDs of the selected telemetry table rows
    */
@@ -100,10 +110,6 @@ export type ITelemetryTableContext = {
    * The row modes model, which defines which rows are in edit mode.
    */
   rowModesModel: GridRowModesModel;
-  /**
-   * Sets the row modes model.
-   */
-  setRowModesModel: React.Dispatch<React.SetStateAction<GridRowModesModel>>;
   /**
    * Indicates if the data is in the process of being persisted to the server.
    */
@@ -123,7 +129,7 @@ export type ITelemetryTableContext = {
   /**
    * Updates the total telemetry count for the survey
    */
-  setRecordCount: (count: number) => void;
+  //setRecordCount: (count: number) => void;
 
   /**
    * Indicates whether the cell has an error.
@@ -163,49 +169,120 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
   // The row modes model, which defines which rows are in edit mode
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
 
-  // Existing rows that are in edit mode
-  const [modifiedRowIds, setModifiedRowIds] = useState<string[]>([]);
-
-  // New rows (regardless of mode)
-  const [addedRowIds, setAddedRowIds] = useState<string[]>([]);
-
-  // True if the rows are in the process of transitioning from edit to view mode
-  const [isStoppingEdit, setIsStoppingEdit] = useState(false);
-
-  // True if the records are in the process of being saved to the server
-  const [isCurrentlySaving, setIsCurrentlySaving] = useState(false);
-
-  // Stores the current count of telemetry records for this survey
-  const [recordCount, setRecordCount] = useState<number>(0);
-
   // Stores the current validation state of the table
   const [validationModel, setValidationModel] = useState<TelemetryTableValidationModel>({});
 
+  // New rows (regardless of mode)
+  const _stagedRowIds = useRef<string[]>([]);
+
+  // New rows (regardless of mode)
+  const _modifiedRowIds = useRef<string[]>([]);
+
+  // True if the rows are in the process of transitioning from edit to view mode
+  const _isStoppingEdit = useRef(false);
+
+  // True if the records are in the process of being saved to the server
+  const _isSavingData = useRef(false);
+
+  // Count of table records
+  const recordCount = rows.length;
+
+  // True if telemetry is fetching
+  const isLoading = telemetryDataContext.telemetryDataLoader.isLoading;
+
+  // True if table is currently saving
+  const isSaving = _isSavingData.current || _isStoppingEdit.current;
+
+  // True if table has unsaved changes, deferring value to prevent ui issue with controls rendering
+  const hasUnsavedChanges = useDeferredValue(_modifiedRowIds.current.length > 0 || _stagedRowIds.current.length > 0);
+
+  const getMutatedIds = () => [..._modifiedRowIds.current, ..._stagedRowIds.current];
+
+  const refreshRecords = useCallback(async () => {
+    const telemetry = (await telemetryDataContext.telemetryDataLoader.refresh(deployment_ids)) ?? [];
+
+    const rows: IManualTelemetryTableRow[] = telemetry.map((item) => {
+      return {
+        id: item.id,
+        deployment_id: item.deployment_id,
+        latitude: item.latitude,
+        longitude: item.longitude,
+        date: dayjs(item.acquisition_date).format('YYYY-MM-DD'),
+        time: dayjs(item.acquisition_date).format('HH:mm:ss'),
+        telemetry_type: item.telemetry_type
+      };
+    });
+
+    // Set initial rows for the table context
+    setRows(rows);
+  }, [deployment_ids]);
+
   /**
-   * Gets all rows from the table, including values that have been edited in the table.
-   */
-  const _getRowsWithEditedValues = useCallback((): IManualTelemetryTableRow[] => {
-    const rowValues = Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values()) as IManualTelemetryTableRow[];
-
-    return rowValues.map((row) => {
-      const editRow = _muiDataGridApiRef.current.state.editRows[row.id];
-      if (!editRow) {
-        return row;
-      }
-
-      return Object.entries(editRow).reduce(
-        (newRow, entry) => ({ ...row, ...newRow, _isModified: true, [entry[0]]: entry[1].value }),
-        {}
-      );
-    }) as IManualTelemetryTableRow[];
-  }, [_muiDataGridApiRef]);
-
-  /**
-   * Returns all columns belonging to thte telemetry table.
+   * Get table columns
+   *
+   * @returns {string[]} Table columns
    */
   const getColumns = useCallback(() => {
     return _muiDataGridApiRef.current.getAllColumns?.() ?? [];
   }, [_muiDataGridApiRef]);
+
+  /**
+   * Gets all rows from the table that are being edited
+   *
+   * @returns {IManualTelemetryTableRow[]} Edited rows.
+   */
+  const _getModifiedRows = useCallback((): IManualTelemetryTableRow[] => {
+    const editRows: IManualTelemetryTableRow[] = [];
+    const idsToSave = getMutatedIds();
+
+    for (const id of idsToSave) {
+      const editRow = _muiDataGridApiRef.current.state.editRows[id];
+      if (editRow) {
+        const newRow = Object.entries(editRow).reduce(
+          (newRow, entry) => ({
+            ..._muiDataGridApiRef.current.getRow(id),
+            ...newRow,
+            isModified: true,
+            [entry[0]]: entry[1].value
+          }),
+          {}
+        ) as IManualTelemetryTableRow;
+        editRows.push(newRow);
+      }
+    }
+
+    return editRows;
+  }, [_muiDataGridApiRef]);
+
+  const _updateRowsMode = useCallback(
+    (rowIds: string[], mode: GridRowModes, keepChanges: boolean) => {
+      setRowModesModel(() => {
+        const newModel: GridRowModesModel = {};
+        for (const id of rowIds) {
+          newModel[id] = { mode, ignoreModifications: !keepChanges };
+        }
+        return newModel;
+      });
+    },
+    [setRowModesModel]
+  );
+
+  /**
+   * Get selected records via individual selection or bulk
+   *
+   * @returns {IManualTelemetryTableRow[]} Table rows.
+   */
+  const _getSelectedRecords: () => IManualTelemetryTableRow[] = useCallback(() => {
+    if (!_muiDataGridApiRef?.current?.getRowModels) {
+      // Data grid is not fully initialized
+      return [];
+    }
+
+    const rowValues = Array.from(_muiDataGridApiRef.current.getRowModels(), ([_, value]) => value);
+    return rowValues.filter((row): row is IManualTelemetryTableRow =>
+      rowSelectionModel.includes((row as IManualTelemetryTableRow).id)
+    );
+  }, [_muiDataGridApiRef, rowSelectionModel]);
 
   /**
    * Checks if the cell has error.
@@ -223,27 +300,12 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
   );
 
   /**
-   * Callback fired when the row modes model changes.
-   * The row modes model stores the `view` vs `edit` state of the rows.
-   *
-   * Note: Any row not included in the model will default to `view` mode.
-   *
-   * @param {GridRowModesModel} model
-   */
-  const onRowModesModelChange = useCallback(
-    (model: GridRowModesModel) => {
-      setRowModesModel(() => model);
-    },
-    [setRowModesModel]
-  );
-
-  /**
    * Validates all rows belonging to the table. Returns null if validation passes, otherwise
    * returns the validation model
    */
   const _validateRows = useCallback((): TelemetryTableValidationModel | null => {
-    const rowValues = _getRowsWithEditedValues();
     const tableColumns = getColumns();
+    const rowValues = _getModifiedRows();
 
     const requiredColumns: (keyof IManualTelemetryTableRow)[] = [
       'deployment_id',
@@ -286,11 +348,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
     setValidationModel(validation);
 
     return Object.keys(validation).length > 0 ? validation : null;
-  }, [_getRowsWithEditedValues, getColumns]);
-
-  useEffect(() => {
-    setRecordCount(rows.length);
-  }, [rows]);
+  }, [getColumns, _getModifiedRows]);
 
   const _commitDeleteRecords = useCallback(
     async (telemetryRecords: IManualTelemetryTableRow[]): Promise<void> => {
@@ -301,10 +359,10 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
       const allRowIdsToDelete = telemetryRecords.map((item) => String(item.id));
 
       // Get all row ids that are new, which only need to be removed from local state
-      const addedRowIdsToDelete = allRowIdsToDelete.filter((id) => addedRowIds.includes(id));
+      const addedRowIdsToDelete = allRowIdsToDelete.filter((id) => _stagedRowIds.current.includes(id));
 
       // Get all row ids that are not new, which need to be deleted from the server
-      const modifiedRowIdsToDelete = allRowIdsToDelete.filter((id) => !addedRowIds.includes(id));
+      const modifiedRowIdsToDelete = allRowIdsToDelete.filter((id) => !_stagedRowIds.current.includes(id));
 
       try {
         if (modifiedRowIdsToDelete.length) {
@@ -323,10 +381,10 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
         setRows((current) => current.filter((item) => !allRowIdsToDelete.includes(String(item.id))));
 
         // Update added rows, removing deleted rows
-        setAddedRowIds((current) => current.filter((id) => !addedRowIdsToDelete.includes(id)));
+        _stagedRowIds.current = _stagedRowIds.current.filter((id) => !addedRowIdsToDelete.includes(id));
 
         // Updated editing rows, removing deleted rows
-        setModifiedRowIds((current) => current.filter((id) => !allRowIdsToDelete.includes(id)));
+        _modifiedRowIds.current = _modifiedRowIds.current.filter((id) => !allRowIdsToDelete.includes(id));
 
         // Close yes-no dialog
         dialogContext.setYesNoDialog({ open: false });
@@ -356,20 +414,8 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
         });
       }
     },
-    [addedRowIds, dialogContext, telemetryApi]
+    [dialogContext, telemetryApi]
   );
-
-  const getSelectedRecords: () => IManualTelemetryTableRow[] = useCallback(() => {
-    if (!_muiDataGridApiRef?.current?.getRowModels) {
-      // Data grid is not fully initialized
-      return [];
-    }
-
-    const rowValues = Array.from(_muiDataGridApiRef.current.getRowModels(), ([_, value]) => value);
-    return rowValues.filter((row): row is IManualTelemetryTableRow =>
-      rowSelectionModel.includes((row as IManualTelemetryTableRow).id)
-    );
-  }, [_muiDataGridApiRef, rowSelectionModel]);
 
   const deleteRecords = useCallback(
     (telemetryRecords: IManualTelemetryTableRow[]) => {
@@ -408,17 +454,13 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
   );
 
   const deleteSelectedRecords = useCallback(() => {
-    const selectedRecords = getSelectedRecords();
+    const selectedRecords = _getSelectedRecords();
     if (!selectedRecords.length) {
       return;
     }
 
     deleteRecords(selectedRecords);
-  }, [deleteRecords, getSelectedRecords]);
-
-  const onRowEditStart = (id: GridRowId) => {
-    setModifiedRowIds((current) => Array.from(new Set([...current, String(id)])));
-  };
+  }, [deleteRecords, _getSelectedRecords]);
 
   /**
    * Add a new empty record to the data grid.
@@ -429,8 +471,8 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
     const newRecord: IManualTelemetryTableRow = {
       id,
       deployment_id: '',
-      latitude: null as unknown as number,
-      longitude: null as unknown as number,
+      latitude: '' as unknown as number,
+      longitude: '' as unknown as number,
       date: '',
       time: '',
       telemetry_type: 'MANUAL'
@@ -439,20 +481,17 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
     // Append new record to initial rows
     setRows([newRecord, ...rows]);
 
-    setAddedRowIds((current) => [...current, id]);
+    _stagedRowIds.current = [..._stagedRowIds.current, id];
 
     // Set edit mode for the new row
-    setRowModesModel((current) => ({
-      ...current,
-      [id]: { mode: GridRowModes.Edit }
-    }));
-  }, [_muiDataGridApiRef, rows]);
+    _updateRowsMode([id], GridRowModes.Edit, false);
+  }, [rows, _updateRowsMode]);
 
   /**
    * Transition all editable rows from edit mode to view mode.
    */
   const saveRecords = useCallback(() => {
-    if (isStoppingEdit) {
+    if (_isStoppingEdit.current) {
       // Stop edit mode already in progress
       return;
     }
@@ -464,57 +503,36 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
       return;
     }
 
-    setIsStoppingEdit(true);
+    _isStoppingEdit.current = true;
 
-    // Collect the ids of all rows in edit mode
-    const allEditingIds = Object.keys(_muiDataGridApiRef.current.state.editRows);
+    const idsToSave = getMutatedIds();
 
-    // Remove any row ids that the data grid might still be tracking, but which have been removed from local state
-    const editingIdsToSave = allEditingIds.filter((id) => rows.find((row) => String(row.id) === id));
-
-    if (!editingIdsToSave.length) {
+    if (!idsToSave) {
       // No rows in edit mode, nothing to stop or save
-      setIsStoppingEdit(false);
+      _isStoppingEdit.current = false;
       return;
     }
 
     // Transition all rows in edit mode to view mode
-    for (const id of editingIdsToSave) {
-      _muiDataGridApiRef.current.stopRowEditMode({ id });
-    }
+    _updateRowsMode(idsToSave, GridRowModes.View, true);
 
-    // Store ids of rows that were in edit mode
-    setModifiedRowIds(editingIdsToSave);
-  }, [_muiDataGridApiRef, _validateRows, isStoppingEdit, rows]);
-
-  /**
-   * Transition all rows tracked by `modifiedRowIds` to view mode.
-   */
-  const _revertAllRowsEditMode = useCallback(() => {
-    modifiedRowIds.forEach((id) => _muiDataGridApiRef.current.startRowEditMode({ id }));
-  }, [_muiDataGridApiRef, modifiedRowIds]);
+    _modifiedRowIds.current = idsToSave;
+  }, [_updateRowsMode, _validateRows, _isStoppingEdit]);
 
   const revertRecords = useCallback(() => {
-    // Mark all rows as saved
-    setModifiedRowIds([]);
-    setAddedRowIds([]);
-
     // Revert any current edits
-    const editingIds = Object.keys(_muiDataGridApiRef.current.state.editRows);
-    editingIds.forEach((id) => _muiDataGridApiRef.current.stopRowEditMode({ id, ignoreModifications: true }));
+    _updateRowsMode(_modifiedRowIds.current, GridRowModes.View, false);
 
     // Remove any rows that are newly created
-    setRows(rows.filter((row) => !addedRowIds.includes(String(row.id))));
-  }, [_muiDataGridApiRef, addedRowIds, rows]);
+    setRows(rows.filter((row) => !_stagedRowIds.current.includes(String(row.id))));
 
-  const refreshRecords = useCallback(async () => {
-    if (telemetryDataContext.telemetryDataLoader.isReady) {
-      telemetryDataContext.telemetryDataLoader.refresh(deployment_ids);
-    }
-  }, [deployment_ids, telemetryDataContext.telemetryDataLoader]);
+    // Clear the validation from the table
+    setValidationModel({});
 
-  // True if the data grid contains at least 1 unsaved record
-  const hasUnsavedChanges = modifiedRowIds.length > 0 || addedRowIds.length > 0;
+    // Reset the refs
+    _modifiedRowIds.current = [];
+    _stagedRowIds.current = [];
+  }, [rows, _updateRowsMode, _modifiedRowIds]);
 
   /**
    * Send all telemetry rows to the backend.
@@ -562,8 +580,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
           await telemetryApi.updateManualTelemetry(updateData);
         }
 
-        setModifiedRowIds([]);
-        setAddedRowIds([]);
+        revertRecords();
 
         dialogContext.setSnackbar({
           snackbarMessage: (
@@ -576,7 +593,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
 
         return refreshRecords();
       } catch (error) {
-        _revertAllRowsEditMode();
+        _updateRowsMode(_modifiedRowIds.current, GridRowModes.Edit, true);
         const apiError = error as APIError;
         dialogContext.setErrorDialog({
           onOk: () => dialogContext.setErrorDialog({ open: false }),
@@ -587,100 +604,56 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
           open: true
         });
       } finally {
-        setIsCurrentlySaving(false);
+        _isSavingData.current = true;
       }
     },
-    [dialogContext, refreshRecords, _revertAllRowsEditMode]
+    [dialogContext, _updateRowsMode, _isSavingData, revertRecords, refreshRecords]
   );
-
-  const isLoading: boolean = useMemo(() => {
-    return telemetryDataContext.telemetryDataLoader.isLoading;
-  }, [telemetryDataContext.telemetryDataLoader.isLoading]);
-
-  const isSaving: boolean = useMemo(() => {
-    return isCurrentlySaving || isStoppingEdit;
-  }, [isCurrentlySaving, isStoppingEdit]);
 
   useEffect(() => {
     // Begin fetching telemetry once we have deployments ids
     if (deployment_ids.length) {
-      telemetryDataContext.telemetryDataLoader.load(deployment_ids);
+      refreshRecords();
     }
-  }, [deployment_ids]);
-
-  /**
-   * Runs when telemetry context data has changed. This does not occur when records are
-   * deleted; Only on initial page load, and whenever records are saved.
-   */
-  useEffect(() => {
-    if (telemetryDataContext.telemetryDataLoader.isLoading) {
-      // Existing telemetry records have not yet loaded
-      return;
-    }
-
-    // Collect rows from the telemetry data loader
-    const totalTelemetry = telemetryDataContext.telemetryDataLoader.data ?? [];
-
-    const rows: IManualTelemetryTableRow[] = totalTelemetry.map((item) => {
-      return {
-        id: item.id,
-        deployment_id: item.deployment_id,
-        latitude: item.latitude,
-        longitude: item.longitude,
-        date: dayjs(item.acquisition_date).format('YYYY-MM-DD'),
-        time: dayjs(item.acquisition_date).format('HH:mm:ss'),
-        telemetry_type: item.telemetry_type
-      };
-    });
-
-    // Set initial rows for the table context
-    setRows(rows);
-
-    // Set initial record count
-    setRecordCount(rows.length);
-  }, [telemetryDataContext.telemetryDataLoader.isLoading]);
+  }, [deployment_ids, refreshRecords]);
 
   /**
    * Runs when row records are being saved and transitioned from Edit mode to View mode.
    */
   useEffect(() => {
-    if (!_muiDataGridApiRef?.current?.getRowModels) {
-      // Data grid is not fully initialized
-      return;
-    }
+    // Data grid is not fully initialized
+    if (!_muiDataGridApiRef?.current?.getRowModels) return;
+    console.log('here');
 
-    if (!isStoppingEdit) {
-      // Stop edit mode not in progress, cannot save yet
-      return;
-    }
+    // Stop edit mode not in progress, cannot save yet
+    if (!_isStoppingEdit.current) return;
+    console.log('here');
 
-    if (!modifiedRowIds.length) {
-      // No rows to save
-      return;
-    }
+    // Modified row ids
+    const modifiedRowIds = _modifiedRowIds.current;
 
-    if (isCurrentlySaving) {
-      // Saving already in progress
-      return;
-    }
+    // No rows to save
+    if (!modifiedRowIds.length) return;
 
-    if (modifiedRowIds.some((id) => _muiDataGridApiRef.current.getRowMode(id) === 'edit')) {
-      // Not all rows have transitioned to view mode, cannot save yet
-      return;
-    }
+    // Saving already in progress
+    if (_isSavingData.current) return;
 
-    // All rows have transitioned to view mode
-    setIsStoppingEdit(false);
+    // Not all rows have transitioned to view mode, cannot save yet
+    if (modifiedRowIds.some((id) => _muiDataGridApiRef.current.getRowMode(id) === 'edit')) return;
 
     // Start saving records
-    setIsCurrentlySaving(true);
+    _isSavingData.current = true;
+
+    // All rows have transitioned to view mode
+    _isStoppingEdit.current = false;
 
     const rowModels = _muiDataGridApiRef.current.getRowModels();
     const rowValues = Array.from(rowModels, ([_, value]) => value);
 
     _saveRecords(rowValues);
-  }, [_muiDataGridApiRef, _saveRecords, isCurrentlySaving, isStoppingEdit, modifiedRowIds]);
+  }, [_muiDataGridApiRef, _saveRecords, _modifiedRowIds, _isSavingData, _isStoppingEdit]);
 
+  //}, [_muiDataGridApiRef, _saveRecords, _isSavingData, _isStoppingEdit, _modifiedRowIds]);
   const telemetryTableContext: ITelemetryTableContext = useMemo(
     () => ({
       _muiDataGridApiRef,
@@ -694,25 +667,21 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
       deleteSelectedRecords,
       revertRecords,
       refreshRecords,
-      getSelectedRecords,
       hasUnsavedChanges,
-      onRowEditStart,
       rowSelectionModel,
       onRowSelectionModelChange: setRowSelectionModel,
       rowModesModel,
-      setRowModesModel,
-      onRowModesModelChange,
+      onRowModesModelChange: setRowModesModel,
       isLoading,
       isSaving,
       validationModel,
-      recordCount,
-      setRecordCount
+      recordCount
+      //setRecordCount
     }),
     [
       _muiDataGridApiRef,
       rows,
       rowModesModel,
-      onRowModesModelChange,
       cellHasError,
       getColumns,
       addRecord,
@@ -721,7 +690,6 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
       deleteSelectedRecords,
       revertRecords,
       refreshRecords,
-      getSelectedRecords,
       hasUnsavedChanges,
       rowSelectionModel,
       isLoading,

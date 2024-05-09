@@ -3,7 +3,7 @@ import Icon from '@mdi/react';
 import { cyan, grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import { DataGrid, GridColDef, GRID_CHECKBOX_SELECTION_COL_DEF } from '@mui/x-data-grid';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useOnMount } from '@mui/x-data-grid/hooks/utils/useOnMount';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
@@ -61,16 +61,6 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
   }, [surveyContext.critterDataLoader.data, surveyContext.deploymentDataLoader.data]);
 
   const tableColumns: GridColDef<IManualTelemetryTableRow>[] = [
-    {
-      ...GRID_CHECKBOX_SELECTION_COL_DEF,
-      width: 50,
-      renderCell: (params) =>
-        isManualTelemetry(params.row) && GRID_CHECKBOX_SELECTION_COL_DEF.renderCell ? (
-          GRID_CHECKBOX_SELECTION_COL_DEF?.renderCell(params)
-        ) : (
-          <></>
-        )
-    },
     {
       field: 'deployment_id',
       headerName: 'Deployment',
@@ -250,7 +240,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
             textFieldProps={{
               name: params.field,
               type: 'date',
-              value: params.value ? dayjs(params.value).format('YYYY-MM-DD') : null,
+              value: params.value ? dayjs(params.value).format('YYYY-MM-DD') : '',
               onChange: (event) => {
                 const value = dayjs(event.target.value).toDate();
                 params.api.setEditCellValue({
@@ -348,16 +338,18 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
       columns={tableColumns}
       // Rows
       rows={telemetryTableContext.rows}
+      // Select rows
       checkboxSelection
       disableRowSelectionOnClick
+      isRowSelectable={(params) => isManualTelemetry(params.row)}
       loading={props.isLoading}
-      rowHeight={56}
-      editMode="row"
       // Row modes
       rowModesModel={telemetryTableContext.rowModesModel}
       onRowModesModelChange={telemetryTableContext.onRowModesModelChange}
       // Row edit
-      onRowEditStart={(params) => telemetryTableContext.onRowEditStart(params.id)}
+      editMode="row"
+      isCellEditable={(params) => isManualTelemetry(params.row)}
+      //onRowEditStart={(params) => telemetryTableContext.onRowEditStart(params.id)}
       onRowEditStop={(_params, event) => {
         event.defaultMuiPrevented = true;
       }}
@@ -365,6 +357,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
       onRowSelectionModelChange={telemetryTableContext.onRowSelectionModelChange}
       rowSelectionModel={telemetryTableContext.rowSelectionModel}
       // Styling
+      rowHeight={56}
       localeText={{
         noRowsLabel: 'No Records'
       }}
