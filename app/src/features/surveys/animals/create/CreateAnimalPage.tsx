@@ -14,7 +14,8 @@ import { FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
@@ -36,6 +37,7 @@ export const defaultAnimalDataFormValues: ICreateEditAnimalRequest = {
  */
 const CreateAnimalPage = () => {
   const biohubApi = useBiohubApi();
+  const critterbaseApi = useCritterbaseApi();
 
   const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -46,6 +48,7 @@ const CreateAnimalPage = () => {
   const surveyContext = useSurveyContext();
   const projectContext = useProjectContext();
   const dialogContext = useDialogContext();
+  const { setSelectedAnimal } = useAnimalPageContext();
 
   const { projectId, surveyId } = surveyContext;
 
@@ -118,7 +121,6 @@ const CreateAnimalPage = () => {
    */
   const handleSubmit = async (values: ICreateEditAnimalRequest) => {
     setIsSaving(true);
-    console.log(values);
 
     try {
       if (!values.species) {
@@ -129,8 +131,25 @@ const CreateAnimalPage = () => {
         critter_id: undefined,
         wlh_id: undefined,
         animal_id: values.nickname,
-        sex: AnimalSex.MALE,
+        sex: AnimalSex.UNKNOWN,
         itis_tsn: values.species.tsn
+      });
+
+      // Insert collection units through bulk create
+      await critterbaseApi.critters.bulkCreate({
+        collections: values.ecological_units
+          .filter((unit) => unit.collection_category_id !== null && unit.collection_unit_id !== null)
+          .map((unit) => ({
+            critter_collection_unit_id: undefined,
+            critter_id: response.critterbase_critter_id,
+            collection_category_id: unit.collection_category_id as string,
+            collection_unit_id: unit.collection_unit_id as string
+          }))
+      });
+
+      setSelectedAnimal({
+        critterbase_critter_id: response.critterbase_critter_id,
+        survey_critter_id: response.survey_critter_id
       });
 
       if (!response) {

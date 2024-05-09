@@ -82,9 +82,10 @@ const CaptureMarkingsForm = () => {
             <Stack gap={2}>
               <AutocompleteField
                 id="marking-type-autocomplete-field"
-                label="Marking Type"
+                label="Marking type"
                 loading={markingTypesDataLoader.isLoading}
                 name={`marking_type_id`}
+                required
                 options={
                   markingTypesDataLoader.data?.map((item) => ({
                     value: item.marking_type_id,
@@ -92,10 +93,12 @@ const CaptureMarkingsForm = () => {
                   })) ?? []
                 }
               />
+
               <AutocompleteField
                 id="marking-location-autocomplete-field"
-                label="Marking Placement"
+                label="Marking placement"
                 name={`body_location_id`}
+                required
                 loading={markingBodyLocationDataLoader.isLoading}
                 options={
                   markingBodyLocationDataLoader.data?.map((item) => ({
@@ -103,6 +106,12 @@ const CaptureMarkingsForm = () => {
                     label: item.body_location
                   })) ?? []
                 }
+              />
+              <CustomTextField
+                name={`identifier`}
+                aria-label="Unique marking ID"
+                label="Identifier"
+                other={{ rows: 1, autoComplete: 'off' }}
               />
               <AutocompleteField
                 id="marking-primary-colour-autocomplete-field"
@@ -118,11 +127,7 @@ const CaptureMarkingsForm = () => {
                 loading={markingColoursDataLoader.isLoading}
                 options={markingColoursDataLoader.data?.map((item) => ({ value: item.id, label: item.value })) ?? []}
               />
-              <CustomTextField
-                name={`comment`}
-                label="Description"
-                other={{ multiline: true, required: true, rows: 4 }}
-              />
+              <CustomTextField name={`comment`} label="Comment" other={{ multiline: true, rows: 4 }} />
             </Stack>
           )
         }}

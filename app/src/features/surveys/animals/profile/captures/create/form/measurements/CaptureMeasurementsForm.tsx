@@ -45,7 +45,7 @@ const CaptureMeasurementsForm = () => {
             {values.measurements?.qualitative.map((measurement, index) => {
               return (
                 <Card
-                  key={`${measurement.measurement_id}-${index}`}
+                  key={`${measurement.measurement_qualitative_id}-${index}`}
                   component={Stack}
                   variant="outlined"
                   flexDirection="row"
@@ -71,13 +71,13 @@ const CaptureMeasurementsForm = () => {
                 name={`ecological_units.[${index}].value`}
                 label={
                   units.find(
-                    (unit) => unit.collection_category_id === values.ecological_units[index].ecological_unit_id
+                    (unit) => unit.collection_category_id === values.ecological_units[index].ecological_collection_category_id
                   )?.category_name ?? ''
                 } // Need to get codes for displaying name
                 options={
                   units
                     .find(
-                      (option) => option.collection_category_id === values.ecological_units[index].ecological_unit_id
+                      (option) => option.collection_category_id === values.ecological_units[index].ecological_collection_category_id
                     )
                     ?.options.map((option) => ({
                       value: option.id,
@@ -85,7 +85,7 @@ const CaptureMeasurementsForm = () => {
                     })) ?? []
                 }
                 // loading={fundingSourcesDataLoader.isLoading}
-                disabled={Boolean(!values.ecological_units[index].ecological_unit_id)}
+                disabled={Boolean(!values.ecological_units[index].ecological_collection_category_id)}
                 required
                 // loading={ecologicalUnitsDataLoader.isLoading}
                 sx={{

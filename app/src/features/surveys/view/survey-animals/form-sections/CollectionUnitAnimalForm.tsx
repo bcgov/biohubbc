@@ -4,7 +4,7 @@ import CbSelectField from 'components/fields/CbSelectField';
 import { Field, FieldProps } from 'formik';
 import { useDialogContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-import { ICollectionUnitResponse } from 'interfaces/useCritterApi.interface';
+import { ICritterCollectionUnitResponse } from 'interfaces/useCritterApi.interface';
 import { get } from 'lodash-es';
 import { useState } from 'react';
 import {
@@ -18,10 +18,10 @@ import {
 /**
  * This component renders a 'critter collection unit' create / edit dialog.
  *
- * @param {AnimalFormProps<ICollectionUnitResponse>} props - Generic AnimalFormProps.
+ * @param {AnimalFormProps<ICritterCollectionUnitResponse>} props - Generic AnimalFormProps.
  * @returns {*}
  */
-export const CollectionUnitAnimalForm = (props: AnimalFormProps<ICollectionUnitResponse>) => {
+export const CollectionUnitAnimalForm = (props: AnimalFormProps<ICritterCollectionUnitResponse>) => {
   const cbApi = useCritterbaseApi();
   const dialog = useDialogContext();
   //Animals may have multiple collection units, but only one instance of each category.

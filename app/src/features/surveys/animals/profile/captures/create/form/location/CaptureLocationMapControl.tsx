@@ -88,144 +88,127 @@ const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps) => {
   }, [captureLocationGeoJson]);
 
   return (
-    <>
-      <Grid item xs={12}>
-        {errors.capture?.capture_location && !Array.isArray(errors.capture?.capture_location) && (
-          <Alert severity="error" variant="outlined">
-            <AlertTitle>Capture location missing</AlertTitle>
-            {errors.capture.capture_location as string}
-          </Alert>
-        )}
+    <Grid item xs={12}>
+      {get(errors, name) && !Array.isArray(get(errors, name)) && (
+        <Alert severity="error" variant="outlined">
+          <AlertTitle>Capture location missing</AlertTitle>
+          {get(errors, name) as string}
+        </Alert>
+      )}
 
-        <Box component="fieldset" mt={2}>
-          <Paper variant="outlined">
-            <ImportBoundaryDialog
-              isOpen={isOpen}
-              onClose={() => setIsOpen(false)}
-              onSuccess={(features) => {
-                // Map features into form data
-                const formData = features.map((item: Feature) => ({
-                  geojson: [item],
-                  revision_count: 0
-                }));
-                setUpdatedBounds(calculateUpdatedMapBounds(features));
-                setFieldValue(name, formData[0].geojson);
-              }}
-              onFailure={(message) => {
-                console.log(message);
-                setFieldError(name, message);
-              }}
-            />
+      <Box component="fieldset" mt={2}>
+        <Paper variant="outlined">
+          <ImportBoundaryDialog
+            isOpen={isOpen}
+            onClose={() => setIsOpen(false)}
+            onSuccess={(features) => {
+              setUpdatedBounds(calculateUpdatedMapBounds(features));
+              setFieldValue(name, features[0]);
+              setFieldError(name, undefined);
+              // Unset last drawn to show staticlayers, where the file geometry is loaded to
+              lastDrawn && drawControlsRef?.current?.deleteLayer(lastDrawn);
+              drawControlsRef?.current?.addLayer(features[0], () => {
+                1;
+              });
+              setLastDrawn(1);
+            }}
+            onFailure={(message) => {
+              setFieldError(name, message);
+            }}
+          />
 
-            <Toolbar
-              disableGutters
+          <Toolbar
+            disableGutters
+            sx={{
+              px: 2
+            }}>
+            <Typography
+              data-testid="map-control-title"
+              component="div"
+              fontWeight="700"
               sx={{
-                px: 2
+                flex: '1 1 auto'
               }}>
-              <Typography
-                data-testid="map-control-title"
-                component="div"
-                fontWeight="700"
-                sx={{
-                  flex: '1 1 auto'
+              {title}
+            </Typography>
+            <Box display="flex">
+              <Button
+                color="primary"
+                variant="outlined"
+                data-testid="capture-location-upload"
+                startIcon={<Icon path={mdiTrayArrowUp} size={1} />}
+                onClick={() => {
+                  setIsOpen(true);
                 }}>
-                {title}
-              </Typography>
-              <Box display="flex">
-                <Button
-                  color="primary"
-                  variant="outlined"
-                  data-testid="capture-location-upload"
-                  startIcon={<Icon path={mdiTrayArrowUp} size={1} />}
-                  onClick={() => {
-                    setIsOpen(true);
-                  }}>
-                  Import
-                </Button>
-              </Box>
-            </Toolbar>
-            <Box position="relative" height={500}>
-              <LeafletMapContainer
-                data-testid={`leaflet-${mapId}`}
-                style={{ height: 500 }}
-                id={mapId}
-                center={MAP_DEFAULT_CENTER}
-                zoom={MAP_DEFAULT_ZOOM}
-                maxZoom={17}
-                fullscreenControl={true}
-                scrollWheelZoom={false}>
-                <MapBaseCss />
-                {/* Allow scroll wheel zoom when in full screen mode */}
-                <FullScreenScrollingEventHandler bounds={updatedBounds} scrollWheelZoom={false} />
-
-                {/* Programmatically set map bounds */}
-                <SetMapBounds bounds={updatedBounds} />
-
-                <FeatureGroup data-id="draw-control-feature-group" key="draw-control-feature-group">
-                  <DrawControls
-                    ref={drawControlsRef}
-                    options={{
-                      // Always disable circle, circlemarker and line
-                      draw: { circle: false, circlemarker: false, polygon: false, rectangle: false, polyline: false }
-                    }}
-                    onLayerAdd={(event: DrawEvents.Created, id: number) => {
-                      if (lastDrawn) {
-                        drawControlsRef?.current?.deleteLayer(lastDrawn);
-                      }
-
-                      const feature = event.layer.toGeoJSON();
-                      setFieldValue(name, feature);
-                      // Set last drawn to remove it if a subsequent shape is added. There can only be one shape.
-                      setLastDrawn(id);
-                    }}
-                    onLayerEdit={(event: DrawEvents.Edited) => {
-                      event.layers.getLayers().forEach((layer: any) => {
-                        const feature = layer.toGeoJSON() as Feature;
-                        setFieldValue(name, feature);
-                      });
-                    }}
-                    onLayerDelete={() => {
-                      setFieldValue(name, null);
-                    }}
-                  />
-                </FeatureGroup>
-
-                <LayersControl position="bottomright">
-                  <StaticLayers
-                    layers={
-                      [
-                        //   {
-                        //     layerName: 'Sampling Sites',
-                        //     features: []
-                        //     //     captureLocationGeoJson
-                        //     //       .filter((item) => item?.id) // Filter for only drawn features
-                        //     //       .map((feature, index) => ({ geoJSON: feature, key: index }))
-                        //     //   }
-                        //   }
-                      ]
-                    }
-                  />
-                  <BaseLayerControls />
-                </LayersControl>
-              </LeafletMapContainer>
-              {/* {captureLocationGeoJson.length > 0 && (
-                <Box position="absolute" top="128px" left="16px" zIndex="999">
-                  <IconButton
-                    aria-label="zoom to initial extent"
-                    title="Zoom to initial extent"
-                    sx={classes.zoomToBoundaryExtentBtn}
-                    onClick={() => {
-                      setUpdatedBounds(calculateUpdatedMapBounds(captureLocationGeoJson));
-                    }}>
-                    <Icon size={1} path={mdiRefresh} />
-                  </IconButton>
-                </Box>
-              )} */}
+                Import
+              </Button>
             </Box>
-          </Paper>
-        </Box>
-      </Grid>
-    </>
+          </Toolbar>
+          <Box position="relative" height={500}>
+            <LeafletMapContainer
+              data-testid={`leaflet-${mapId}`}
+              style={{ height: 500 }}
+              id={mapId}
+              center={MAP_DEFAULT_CENTER}
+              zoom={MAP_DEFAULT_ZOOM}
+              maxZoom={17}
+              fullscreenControl={true}
+              scrollWheelZoom={true}>
+              <MapBaseCss />
+              {/* Allow scroll wheel zoom when in full screen mode */}
+              <FullScreenScrollingEventHandler bounds={updatedBounds} scrollWheelZoom={false} />
+
+              {/* Programmatically set map bounds */}
+              <SetMapBounds bounds={updatedBounds} />
+
+              <FeatureGroup data-id="draw-control-feature-group" key="draw-control-feature-group">
+                <DrawControls
+                  ref={drawControlsRef}
+                  options={{
+                    // Always disable circle, circlemarker and line
+                    draw: { circle: false, circlemarker: false, polygon: false, rectangle: false, polyline: false }
+                  }}
+                  onLayerAdd={(event: DrawEvents.Created, id: number) => {
+                    if (lastDrawn) {
+                      drawControlsRef?.current?.deleteLayer(lastDrawn);
+                    }
+                    setFieldError(name, undefined);
+
+                    const feature = event.layer.toGeoJSON();
+                    setFieldValue(name, feature);
+                    // Set last drawn to remove it if a subsequent shape is added. There can only be one shape.
+                    setLastDrawn(id);
+                  }}
+                  onLayerEdit={(event: DrawEvents.Edited) => {
+                    event.layers.getLayers().forEach((layer: any) => {
+                      const feature = layer.toGeoJSON() as Feature;
+                      setFieldValue(name, feature);
+                    });
+                  }}
+                  onLayerDelete={() => {
+                    setFieldValue(name, null);
+                  }}
+                />
+              </FeatureGroup>
+
+              <LayersControl position="bottomright">
+                {!lastDrawn && (
+                  <StaticLayers
+                    layers={[
+                      {
+                        layerName: 'Capture Location',
+                        features: get(values, name) ? [{ geoJSON: get(values, name), key: 1 }] : []
+                      }
+                    ]}
+                  />
+                )}
+                <BaseLayerControls />
+              </LayersControl>
+            </LeafletMapContainer>
+          </Box>
+        </Paper>
+      </Box>
+    </Grid>
   );
 };
 

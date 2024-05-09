@@ -1,6 +1,7 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
+import { ISurveyCritter } from 'contexts/animalPageContext';
 import { ICreateCritter } from 'features/surveys/view/survey-animals/animal';
 import {
   IAnimalDeployment,
@@ -8,7 +9,6 @@ import {
   IDeploymentTimespan,
   ITelemetryPointCollection
 } from 'features/surveys/view/survey-animals/telemetry-device/device';
-import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { IGetReportDetails, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import {
   ICreateSurveyRequest,
@@ -389,7 +389,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     projectId: number,
     surveyId: number,
     critter: ICreateCritter
-  ): Promise<ICritterSimpleResponse> => {
+  ): Promise<ISurveyCritter> => {
     const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters`, critter);
     return data;
   };

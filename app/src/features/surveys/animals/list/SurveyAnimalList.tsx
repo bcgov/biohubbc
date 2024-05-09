@@ -46,7 +46,7 @@ const SurveyAnimalList = () => {
   const critters = surveyContext.critterDataLoader.data;
 
   if (!critters) {
-    return <CircularProgress size={40} />;
+    return <CircularProgress size={40} className="pageProgress" />;
   }
 
   const crittersCount = critters.length;
@@ -322,8 +322,18 @@ const SurveyAnimalList = () => {
                       <Typography variant="body2">No Animals</Typography>
                     </Stack>
                   )}
-                  {critters.map((critter) => (
-                    <Stack direction="row" display="flex" alignItems="center" overflow="hidden" flex="1 1 auto">
+                  {critters.map((critter, index) => (
+                    <Stack
+                      key={`${critter.critter_id}-${index}`}
+                      direction="row"
+                      display="flex"
+                      alignItems="center"
+                      overflow="hidden"
+                      flex="1 1 auto"
+                      sx={{
+                        m: 0.5,
+                        borderRadius: '5px'
+                      }}>
                       <CritterListItem
                         key={`${critter.survey_critter_id}-${critter.critter_id}`}
                         critter={critter}

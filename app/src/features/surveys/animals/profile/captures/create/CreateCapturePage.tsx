@@ -10,6 +10,7 @@ import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { SkeletonHorizontalStack } from 'components/loading/SkeletonLoaders';
 import { CreateCaptureI18N } from 'constants/i18n';
+import dayjs from 'dayjs';
 import { FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
@@ -25,7 +26,11 @@ export const defaultAnimalCaptureFormValues: ICreateCaptureRequest = {
   capture: {
     capture_id: '',
     capture_timestamp: '',
+    capture_date: '',
+    capture_time: '',
     release_timestamp: '',
+    release_date: '',
+    release_time: '',
     capture_comment: '',
     release_comment: '',
     capture_location: null,
@@ -58,14 +63,14 @@ const CreateCapturePage = () => {
   const surveyContext = useSurveyContext();
   const projectContext = useProjectContext();
   const dialogContext = useDialogContext();
-  const animalPageContext = useAnimalPageContext();
+  const { selectedAnimal, setSelectedAnimalFromSurveyCritterId, critterDataLoader } = useAnimalPageContext();
 
   const { projectId, surveyId } = surveyContext;
 
   // If the user has refreshed the page and cleared the context, or come to this page externally from a link,
   // use the url params to set the select animal in the context. The context then requests critter data from critterbase.
-  if (!animalPageContext.selectedAnimal) {
-    animalPageContext.setSelectedAnimalFromSurveyCritterId(surveyCritterId);
+  if (!selectedAnimal) {
+    setSelectedAnimalFromSurveyCritterId(surveyCritterId);
   }
 
   const handleCancel = () => {
@@ -138,7 +143,7 @@ const CreateCapturePage = () => {
   const handleSubmit = async (values: ICreateCaptureRequest) => {
     setIsSaving(true);
     try {
-      const critterbaseCritterId = animalPageContext.selectedAnimal?.critterbase_critter_id;
+      const critterbaseCritterId = selectedAnimal?.critterbase_critter_id;
 
       if (!values || !critterbaseCritterId || values.capture.capture_location?.geometry.type !== 'Point') {
         return;
@@ -151,29 +156,66 @@ const CreateCapturePage = () => {
         coordinate_uncertainty_units: 'm'
       };
 
-      // if release location is null, set it to capture location, otherwise format it for critterbase
-      let releaseLocation = values.capture.release_location;
-      if (releaseLocation && releaseLocation.geometry.type === 'Point') {
-        releaseLocation = {
-          longitude: releaseLocation.geometry.coordinates[0],
-          latitude: releaseLocation.geometry.coordinates[1],
-          coordinate_uncertainty: 0,
-          coordinate_uncertainty_units: 'm'
-        } as any; // REMOVE
-      }
+      // if release location is null, use the capture location, otherwise format it for critterbase
+      const releaseLocation =
+        values.capture.release_location &&
+        values.capture.release_location.geometry &&
+        values.capture.release_location.geometry.type === 'Point'
+          ? {
+              longitude: values.capture.release_location.geometry.coordinates[0],
+              latitude: values.capture.release_location.geometry.coordinates[1],
+              coordinate_uncertainty: 0,
+              coordinate_uncertainty_units: 'm'
+            }
+          : values.capture.capture_location;
 
-      const response = await critterbaseApi.capture.createCapture({
+      const captureTimestamp = dayjs(
+        `${values.capture.capture_date}${
+          values.capture.capture_time ? ` ${values.capture.capture_time}-07:00` : 'T00:00:00-07:00'
+        }`
+      ).toDate();
+
+      // if release timestamp is null, use the capture timestamp, otherwise format it for critterbase
+      const releaseTimestamp = dayjs(
+        values.capture.release_date
+          ? captureTimestamp
+          : `${values.capture.release_date}${
+              values.capture.release_time ? ` ${values.capture.release_time}-07:00` : 'T00:00:00-07:00'
+            }`
+      ).toDate();
+
+      const captureResponse = await critterbaseApi.capture.createCapture({
         capture_id: undefined,
-        capture_timestamp: new Date(values.capture.capture_timestamp),
-        release_timestamp: new Date(values.capture.release_timestamp),
+        capture_timestamp: captureTimestamp,
+        release_timestamp: releaseTimestamp,
         capture_comment: values.capture.capture_comment ?? '',
         release_comment: values.capture.release_comment ?? '',
         capture_location: captureLocation,
-        release_location: captureLocation ?? captureLocation,
+        release_location: releaseLocation ?? captureLocation,
         critter_id: critterbaseCritterId
       });
 
-      if (!response) {
+      const bulkResponse = await critterbaseApi.critters.bulkCreate({
+        marking: values.markings.map((marking) => ({
+          ...marking,
+          marking_id: undefined,
+          critter_id: critterbaseCritterId
+        }))
+        // measurements: [
+        //   ...(values.measurements?.qualitative || []).map((measurement) => ({
+        //     ...measurement,
+        //     measurement_qualitative_id: undefined,
+        //     critter_id: critterbaseCritterId
+        //   })),
+        //   ...(values.measurements?.quantitative || []).map((measurement) => ({
+        //     ...measurement,
+        //     measurement_quantitative_id: undefined,
+        //     critter_id: critterbaseCritterId
+        //   }))
+        // ]
+      });
+
+      if (!captureResponse || !bulkResponse) {
         showCreateErrorDialog({
           dialogError: 'The response from the server was null, or did not contain a survey ID.'
         });
@@ -183,7 +225,7 @@ const CreateCapturePage = () => {
       setEnableCancelCheck(false);
 
       // Refresh page
-      animalPageContext.critterDataLoader.refresh(critterbaseCritterId);
+      critterDataLoader.refresh(critterbaseCritterId);
 
       history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`);
     } catch (error) {
@@ -198,7 +240,7 @@ const CreateCapturePage = () => {
     }
   };
 
-  const animalId = animalPageContext.critterDataLoader.data?.animal_id;
+  const animalId = critterDataLoader.data?.animal_id;
 
   return (
     <>

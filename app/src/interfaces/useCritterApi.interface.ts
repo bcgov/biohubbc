@@ -1,13 +1,12 @@
+import { ICreateCritterCollectionUnit } from 'features/surveys/view/survey-animals/animal';
 import { Feature } from 'geojson';
 import { ITaxonomy } from './useTaxonomyApi.interface';
 
 export interface ICreateEditAnimalRequest {
+  critter_id?: string;
   nickname: string;
   species: ITaxonomy | null;
-  ecological_units: {
-    value: number;
-    ecological_unit_id: string;
-  }[];
+  ecological_units: ICreateCritterCollectionUnit[];
   wildlife_health_id: string;
   critter_comment: string | null;
 }
@@ -32,14 +31,18 @@ export interface IQuantitativeMeasurementPostData {
 }
 
 export interface IMeasurementPostData {
-  qualitative: IQualitativeMeasurementPostData[];
-  quantitative: IQuantitativeMeasurementPostData[];
+  qualitative: CBQualitativeMeasurement[];
+  quantitative: CBQuantitativeMeasurement[];
 }
 
 export interface ICapturePostData {
   capture_id?: string;
   capture_timestamp: string;
+  capture_date?: string;
+  capture_time?: string;
   release_timestamp: string;
+  release_date?: string;
+  release_time?: string;
   capture_comment: string | null;
   release_comment: string | null;
   capture_location: Feature | null;
@@ -60,13 +63,16 @@ export interface ICreateCaptureRequest {
   measurements?: IMeasurementPostData;
 }
 
-export type ICollectionUnitResponse = {
-  critter_collection_unit_id: string;
+export interface ICollectionUnitResponse {
   category_name: string;
   unit_name: string;
   collection_unit_id: string;
   collection_category_id: string;
-};
+}
+
+export interface ICritterCollectionUnitResponse extends ICollectionUnitResponse {
+  critter_collection_unit_id: string;
+}
 
 type ILocationResponse = {
   location_id: string;
@@ -172,7 +178,7 @@ export type ICritterDetailedResponse = {
   animal_id: string | null;
   sex: string;
   responsible_region_nr_id: string;
-  collection_units: ICollectionUnitResponse[];
+  collection_units: ICritterCollectionUnitResponse[];
   mortality: IMortalityResponse[];
   captures: ICaptureResponse[];
   markings: IMarkingResponse[];

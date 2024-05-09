@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { critterCreateRequestObject, critterSchema } from '../../../../../../openapi/schemas/critter';
+import { critterCreateRequestObject } from '../../../../../../openapi/schemas/critter';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { CritterbaseService, ICritterbaseUser } from '../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
@@ -142,7 +142,20 @@ POST.apiDoc = {
       description: 'Responds with created critter.',
       content: {
         'application/json': {
-          schema: critterSchema
+          schema: {
+            title: 'Response object for adding critter to survey',
+            type: 'object',
+            properties: {
+              survey_critter_id: {
+                type: 'number',
+                description: 'SIMS internal ID of the critter within the survey'
+              },
+              critter_id: {
+                type: 'string',
+                description: 'Critterbase ID of the critter'
+              }
+            }
+          }
         }
       }
     },
@@ -233,10 +246,10 @@ export function addCritterToSurvey(): RequestHandler {
         critterId = result.critter_id;
       }
 
-      await surveyService.addCritterToSurvey(surveyId, critterId);
+      const response = await surveyService.addCritterToSurvey(surveyId, critterId);
 
       await connection.commit();
-      return res.status(201).json({ critter_id: critterId });
+      return res.status(201).json({ critterbase_critter_id: critterId, survey_critter_id: response });
     } catch (error) {
       defaultLog.error({ label: 'addCritterToSurvey', message: 'error', error });
       await connection.rollback();

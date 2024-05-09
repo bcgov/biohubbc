@@ -26,7 +26,7 @@ export class SurveyCritterService extends DBService {
    * @param {string} critterId
    * @returns {*}
    */
-  async addCritterToSurvey(surveyId: number, critterBaseCritterId: string): Promise<void> {
+  async addCritterToSurvey(surveyId: number, critterBaseCritterId: string): Promise<number> {
     return this.critterRepository.addCritterToSurvey(surveyId, critterBaseCritterId);
   }
 

@@ -34,7 +34,7 @@ const AnimalForm = (props: IAnimalFormProps) => {
       .nullable()
       .required('Species is required'),
     critter_comment: yup.string().nullable(),
-    ecological_units: yup.array(yup.object({ value: yup.string(), ecological_unit_id: yup.string() })),
+    ecological_units: yup.array(yup.object({ value: yup.string(), ecological_collection_category_id: yup.string() })),
     wildlife_health_id: yup.string().nullable()
   });
 

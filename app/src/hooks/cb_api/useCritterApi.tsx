@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { ICreateCritter } from 'features/surveys/view/survey-animals/animal';
+import { IBulkCreate, IBulkUpdate, ICreateCritter } from 'features/surveys/view/survey-animals/animal';
 import { ICritterDetailedResponse, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 
 const useCritterApi = (axios: AxiosInstance) => {
@@ -19,13 +19,38 @@ const useCritterApi = (axios: AxiosInstance) => {
    * Update a critter.
    *
    * @async
-   * @param {ICraeteCritter} payload - Update critter payload.
+   * @param {ICreateCritter} payload - Update critter payload.
    * @returns {Promise<ICritterSimpleResponse>} Simple critterbase critter.
    */
   const updateCritter = async (payload: ICreateCritter): Promise<ICritterSimpleResponse> => {
     const { data } = await axios.patch(`/api/critterbase/critters/${payload.critter_id}`, payload);
     return data;
   };
+
+  /**
+   * Create a critter with data
+   *
+   * @async
+   * @param {ICreateCritter} payload - Create critter payload.
+   * @returns {Promise<ICritterSimpleResponse>} Simple critterbase critter.
+   */
+  const bulkCreate = async (payload: IBulkCreate): Promise<ICritterSimpleResponse> => {
+    const { data } = await axios.post('/api/critterbase/bulk', payload);
+    return data;
+  };
+
+  /**
+   * Update a critter with data.
+   *
+   * @async
+   * @param {ICreateCritter} payload - Update critter payload.
+   * @returns {Promise<ICritterSimpleResponse>} Simple critterbase critter.
+   */
+  const bulkUpdate = async (payload: IBulkUpdate): Promise<ICritterSimpleResponse> => {
+    const { data } = await axios.patch('/api/critterbase/bulk', payload);
+    return data;
+  };
+
   /**
    * Get a critter with detailed response.
    * Includes all markings, captures, mortalities etc.
@@ -51,7 +76,14 @@ const useCritterApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  return { getDetailedCritter, getMultipleCrittersByIds, createCritter, updateCritter };
+  return {
+    getDetailedCritter,
+    getMultipleCrittersByIds,
+    createCritter,
+    updateCritter,
+    bulkCreate,
+    bulkUpdate
+  };
 };
 
 export { useCritterApi };

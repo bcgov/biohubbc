@@ -28,14 +28,14 @@ const AnimalCapturesMap = () => {
     popupRecordTitle: 'Capture Location',
     features: [
       {
-        key: `${feature.id}-${index}`,
+        key: `${feature.geometry}-${index}`,
         geoJSON: feature
       }
     ]
   }));
 
   return (
-    <Box height={{ sm: 300, md: 500 }} position="relative">
+    <Box height={{ sm: 250, md: 400 }} position="relative">
       <SurveyMap isLoading={critterDataLoader.isLoading} staticLayers={staticLayers} supplementaryLayers={[]} />
     </Box>
   );

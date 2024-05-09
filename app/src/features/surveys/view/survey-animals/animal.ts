@@ -1,6 +1,6 @@
 import { DATE_LIMIT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
-import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
+import { ICritterDetailedResponse, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { PROJECTION_MODE } from 'utils/mapProjectionHelpers';
 import yup from 'utils/YupSchema';
 import { AnyObjectSchema, InferType } from 'yup';
@@ -222,3 +222,19 @@ export type ICreateCritterCollectionUnit = InferType<typeof CreateCritterCollect
 export type ICreateCritterCapture = InferType<typeof CreateCritterCaptureSchema>;
 export type ICreateCritterFamily = InferType<typeof CreateCritterFamilySchema>;
 export type ICreateCritterMortality = InferType<typeof CreateCritterMortalitySchema>;
+export type IBulkCreate = {
+  critter?: ICritterSimpleResponse;
+  measurements?: ICreateCritterMeasurement[];
+  capture?: ICreateCritterCapture[];
+  mortality?: ICreateCritterMortality;
+  marking?: ICreateCritterMarking[];
+  collections?: ICreateCritterCollectionUnit[];
+};
+export type IBulkUpdate = {
+  critter?: ICritterSimpleResponse;
+  measurements?: ICreateCritterMeasurement[];
+  capture?: ICreateCritterCapture[];
+  mortality?: ICreateCritterMortality;
+  marking?: ICreateCritterMarking[];
+  collections?: ICreateCritterCollectionUnit[];
+};

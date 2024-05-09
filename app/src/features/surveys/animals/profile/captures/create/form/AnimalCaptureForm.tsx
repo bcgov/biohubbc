@@ -27,15 +27,16 @@ const AnimalCaptureForm = (props: IAnimalCaptureFormProps) => {
   const animalCaptureYupSchema = yup.object({
     capture: yup.object({
       capture_id: yup.string().nullable(),
-      capture_timestamp: yup.string().required('Capture date and time is required'),
+      capture_date: yup.string().required('Capture date is required'),
       capture_comment: yup.string().required('Capture comment is required'),
-      release_timestamp: yup.string().nullable(),
+      release_time: yup.string().nullable(),
       release_comment: yup.string().nullable(),
       capture_location: yup
         .object()
         .shape({
           type: yup.string(),
-          geometry: yup.object({ type: yup.string().required(), coordinates: yup.array().of(yup.number()).length(2) }),
+          // Points may have 3 coords for [lon, lat, elevation]
+          geometry: yup.object({ type: yup.string().required(), coordinates: yup.array().of(yup.number()).min(2).max(3) }),
           properties: yup.object().optional()
         })
         .nullable()
