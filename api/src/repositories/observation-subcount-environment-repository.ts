@@ -17,15 +17,15 @@ export const EnvironmentUnit = z.enum([
 export type EnvironmentUnit = z.infer<typeof EnvironmentUnit>;
 
 const QualitativeEnvironmentOption = z.object({
-  environment_qualitative_option_id: z.number(),
-  environment_qualitative_id: z.number(),
+  environment_qualitative_option_id: z.string().uuid(),
+  environment_qualitative_id: z.string().uuid(),
   name: z.string(),
   description: z.string().nullable()
 });
 export type QualitativeEnvironmentOption = z.infer<typeof QualitativeEnvironmentOption>;
 
 export const QualitativeEnvironmentTypeDefinition = z.object({
-  environment_qualitative_id: z.number(),
+  environment_qualitative_id: z.string().uuid(),
   name: z.string(),
   description: z.string().nullable(),
   options: z.array(QualitativeEnvironmentOption)
@@ -33,7 +33,7 @@ export const QualitativeEnvironmentTypeDefinition = z.object({
 export type QualitativeEnvironmentTypeDefinition = z.infer<typeof QualitativeEnvironmentTypeDefinition>;
 
 const QuantitativeEnvironmentTypeDefinition = z.object({
-  environment_quantitative_id: z.number(),
+  environment_quantitative_id: z.string().uuid(),
   name: z.string(),
   description: z.string().nullable(),
   min: z.number().nullable(),
@@ -53,8 +53,8 @@ export type EnvironmentType = {
 export const ObservationSubCountQualitativeEnvironmentRecord = z.object({
   observation_subcount_qualitative_environment_id: z.number(),
   observation_subcount_id: z.number(),
-  environment_qualitative_id: z.number(),
-  environment_qualitative_option_id: z.number(),
+  environment_qualitative_id: z.string().uuid(),
+  environment_qualitative_option_id: z.string().uuid(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),
@@ -68,7 +68,7 @@ export type ObservationSubCountQualitativeEnvironmentRecord = z.infer<
 export const ObservationSubCountQuantitativeEnvironmentRecord = z.object({
   observation_subcount_quantitative_environment_id: z.number(),
   observation_subcount_id: z.number(),
-  environment_quantitative_id: z.number(),
+  environment_quantitative_id: z.string().uuid(),
   value: z.number(),
   create_date: z.string(),
   create_user: z.number(),
@@ -82,13 +82,13 @@ export type ObservationSubCountQuantitativeEnvironmentRecord = z.infer<
 
 export interface InsertObservationSubCountQualitativeEnvironmentRecord {
   observation_subcount_id: number;
-  environment_qualitative_id: number;
-  environment_qualitative_option_id: number;
+  environment_qualitative_id: string;
+  environment_qualitative_option_id: string;
 }
 
 export interface InsertObservationSubCountQuantitativeEnvironmentRecord {
   observation_subcount_id: number;
-  environment_quantitative_id: number;
+  environment_quantitative_id: string;
   value: number;
 }
 
@@ -376,8 +376,8 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {{
-   *       environment_qualitative_id: number[];
-   *       environment_quantitative_id: number[];
+   *       environment_qualitative_id: string[];
+   *       environment_quantitative_id: string[];
    *     }} environmentIds
    * @return {*}  {Promise<void>}
    * @memberof ObservationSubCountEnvironmentRepository
@@ -385,8 +385,8 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
   async deleteEnvironmentsForEnvironmentIds(
     surveyId: number,
     environmentIds: {
-      environment_qualitative_id: number[];
-      environment_quantitative_id: number[];
+      environment_qualitative_id: string[];
+      environment_quantitative_id: string[];
     }
   ): Promise<void> {
     await Promise.all([
@@ -400,13 +400,13 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
    * qualitative ids.
    *
    * @param {number} surveyId
-   * @param {number[]} environment_qualitative_id
+   * @param {string[]} environment_qualitative_id
    * @return {*}  {Promise<number>}
    * @memberof ObservationSubCountEnvironmentRepository
    */
   async deleteQualitativeEnvironmentForEnvironmentIds(
     surveyId: number,
-    environment_qualitative_ids: number[]
+    environment_qualitative_ids: string[]
   ): Promise<number> {
     const qb = getKnex()
       .queryBuilder()
@@ -430,13 +430,13 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
    * quantitative ids.
    *
    * @param {number} surveyId
-   * @param {number[]} environment_quantitative_id
+   * @param {string[]} environment_quantitative_id
    * @return {*}  {Promise<number>}
    * @memberof ObservationSubCountEnvironmentRepository
    */
   async deleteQuantitativeEnvironmentForEnvironmentIds(
     surveyId: number,
-    environment_quantitative_ids: number[]
+    environment_quantitative_ids: string[]
   ): Promise<number> {
     const qb = getKnex()
       .queryBuilder()

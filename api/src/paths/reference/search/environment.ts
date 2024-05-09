@@ -38,7 +38,8 @@ GET.apiDoc = {
                   required: ['environment_qualitative_id', 'name', 'description', 'options'],
                   properties: {
                     environment_qualitative_id: {
-                      type: 'integer'
+                      type: 'string',
+                      format: 'uuid'
                     },
                     name: {
                       type: 'string'
@@ -55,10 +56,12 @@ GET.apiDoc = {
                         required: ['environment_qualitative_option_id', 'name', 'description'],
                         properties: {
                           environment_qualitative_option_id: {
-                            type: 'integer'
+                            type: 'string',
+                            format: 'uuid'
                           },
                           environment_qualitative_id: {
-                            type: 'integer'
+                            type: 'string',
+                            format: 'uuid'
                           },
                           name: {
                             type: 'string'
@@ -81,7 +84,8 @@ GET.apiDoc = {
                   required: ['environment_quantitative_id', 'name', 'description', 'min', 'max', 'unit'],
                   properties: {
                     environment_quantitative_id: {
-                      type: 'integer'
+                      type: 'string',
+                      format: 'uuid'
                     },
                     name: {
                       type: 'string'

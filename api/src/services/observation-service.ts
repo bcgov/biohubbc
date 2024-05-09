@@ -87,11 +87,11 @@ export interface InsertSubCount {
     measurement_value: number;
   }[];
   qualitative_environments: {
-    environment_qualitative_id: number;
-    environment_qualitative_option_id: number;
+    environment_qualitative_id: string;
+    environment_qualitative_option_id: string;
   }[];
   quantitative_environments: {
-    environment_quantitative_id: number;
+    environment_quantitative_id: string;
     value: number;
   }[];
 }
