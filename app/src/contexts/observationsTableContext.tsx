@@ -32,25 +32,29 @@ import { IObservationTableRowToSave, SubcountToSave } from 'hooks/api/useObserva
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useObservationsContext, useObservationsPageContext, useTaxonomyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-import {
-  CBMeasurementType,
-  CBQualitativeMeasurementTypeDefinition,
-  CBQuantitativeMeasurementTypeDefinition
-} from 'interfaces/useCritterApi.interface';
+import { CBMeasurementSearchByTsnResponse, CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { IGetSurveyObservationsResponse, ObservationRecord } from 'interfaces/useObservationApi.interface';
 import { EnvironmentType, EnvironmentTypeIds } from 'interfaces/useReferenceApi.interface';
-import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  createContext,
+  PropsWithChildren,
+  useCallback,
+  useContext,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import { firstOrNull } from 'utils/Utils';
 import { v4 as uuidv4 } from 'uuid';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
 import { SurveyContext } from './surveyContext';
 
-export type TSNMeasurement = {
-  qualitative: CBQualitativeMeasurementTypeDefinition[];
-  quantitative: CBQuantitativeMeasurementTypeDefinition[];
-};
-
-export type TSNMeasurementMap = Record<string, TSNMeasurement>;
+export type TsnMeasurementTypeDefinitionMap = Record<
+  string,
+  CBMeasurementSearchByTsnResponse | Promise<CBMeasurementSearchByTsnResponse>
+>;
 
 export interface IObservationTableRow extends Partial<ObservationRecord> {
   id: GridRowId;
@@ -172,20 +176,6 @@ export type IObservationsTableContext = {
    */
   isSaving: boolean;
   /**
-   * Indicates that the rows have all transitioned to view mode successfully, and the data is about to be, or is in the
-   * process of being, persisted to the server.
-   *
-   * Note: This ref should not be manually updated outside of this context.
-   */
-  _isSavingData: React.MutableRefObject<boolean>;
-  /**
-   * Indicates that the rows in edit mode are transitioning to view mode, which is part of the process of persisting
-   * the data to the server.
-   *
-   * Note: This ref should not be manually updated outside of this context.
-   */
-  _isStoppingEdit: React.MutableRefObject<boolean>;
-  /**
    * The state of the validation model
    */
   validationModel: ObservationTableValidationModel;
@@ -197,10 +187,6 @@ export type IObservationsTableContext = {
    * Reflects the count of total observations for the survey
    */
   observationCount: number;
-  /**
-   * Updates the total observation count for the survey
-   */
-  setObservationCount: (observationCount: number) => void;
   /**
    * The pagination model, which defines which observation records to fetch and load in the table.
    */
@@ -330,8 +316,8 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
   // Sort model
   const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'observation_date', sort: 'desc' }]);
 
-  // TSN Measurement Map
-  const tsnMeasurementMapRef = useRef<TSNMeasurementMap>({});
+  // TSN Measurement Type Definition Map
+  const tsnMeasurementTypeDefinitionMapRef = useRef<TsnMeasurementTypeDefinitionMap>({});
 
   /**
    * Returns true if the given row has a validation error.
@@ -372,45 +358,69 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
    * Gets all rows from the table, including values that have been edited in the table.
    */
   const _getRowsWithEditedValues = useCallback((): IObservationTableRow[] => {
-    const rowValues = Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values()) as IObservationTableRow[];
+    return modifiedRowIds.map((modifiedRowId) => {
+      const row = _muiDataGridApiRef.current.getRow(modifiedRowId);
 
-    return rowValues.map((row) => {
-      const editRow = _muiDataGridApiRef.current.state.editRows[row.id];
+      // Get the current values from the table for the row
+      const editRow = _muiDataGridApiRef.current.state.editRows[modifiedRowId];
+
       if (!editRow) {
         return row;
       }
 
-      return Object.entries(editRow).reduce(
-        (newRow, entry) => ({ ...row, ...newRow, _isModified: true, [entry[0]]: entry[1].value }),
-        {}
-      );
+      const newRow: Record<string, any> = { ...row };
+      for (const [key, value] of Object.entries(editRow)) {
+        newRow[key] = value.value;
+      }
+
+      // Return the row, which now contains the latest values from the table
+      return newRow;
     }) as IObservationTableRow[];
-  }, [_muiDataGridApiRef]);
+  }, [_muiDataGridApiRef, modifiedRowIds]);
 
   /**
-   * Fetches measurement definitions from Critterbase for a given itis_tsn number
+   * Fetches measurement definitions from Critterbase for a given itis_tsn number, caching the responses for subsequent
+   * calls.
+   *
+   * @param {number} tsn
+   * @return {*}  {(Promise<CBMeasurementSearchByTsnResponse | null | undefined>)}
    */
-  const tsnMeasurements = useCallback(
-    async (tsn: number): Promise<TSNMeasurement | null | undefined> => {
-      const currentMap = tsnMeasurementMapRef.current;
-      if (!currentMap[tsn]) {
-        const response = await critterbaseApi.xref.getTaxonMeasurements(tsn);
+  const getTsnMeasurementTypeDefinitionMap = useCallback(
+    async (tsn: number): Promise<CBMeasurementSearchByTsnResponse | null | undefined> => {
+      const currentMap = tsnMeasurementTypeDefinitionMapRef.current;
 
-        currentMap[String(tsn)] = response;
-        tsnMeasurementMapRef.current = currentMap;
+      if (currentMap[tsn]) {
+        // Return cached measurements for tsn
+        return currentMap[tsn];
       }
+
+      // Fetch measurements for tsn
+      currentMap[String(tsn)] = critterbaseApi.xref.getTaxonMeasurements(tsn).then((response) => response);
+
+      // Update the ref with the new map
+      tsnMeasurementTypeDefinitionMapRef.current = currentMap;
+
+      // Return the promise
       return currentMap[tsn];
     },
     [critterbaseApi.xref]
   );
 
   /**
-   * Validates all rows belonging to the table. Returns null if validation passes, otherwise
-   * returns the validation model
+   * Validates all rows belonging to the table.
+   * Returns null if validation passes, otherwise returns the validation model.
+   *
+   * @return {*}  {(Promise<ObservationTableValidationModel | null>)}
    */
   const _validateRows = useCallback(async (): Promise<ObservationTableValidationModel | null> => {
-    const rowValues = _getRowsWithEditedValues();
+    const rowsWithEditedValues = _getRowsWithEditedValues();
+
     const tableColumns = _muiDataGridApiRef.current.getAllColumns?.() ?? [];
+
+    // Kick off all tsn measurement fetches in parallel
+    for (const row of rowsWithEditedValues) {
+      row.itis_tsn && getTsnMeasurementTypeDefinitionMap(row.itis_tsn);
+    }
 
     const requiredStandardColumns: (keyof IObservationTableRow)[] = [
       'count',
@@ -421,27 +431,37 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       'itis_tsn'
     ];
 
-    const validation: ObservationTableValidationModel = {};
+    const validationModel: ObservationTableValidationModel = {};
 
-    for (const row of rowValues) {
+    for (const row of rowsWithEditedValues) {
       // check standard required columns
       const standardColumnErrors = validateObservationTableRow(row, requiredStandardColumns, tableColumns);
 
       // check any measurement columns found
-      const measurementErrors = await validateObservationTableRowMeasurements(row, measurementColumns, tsnMeasurements);
+      const measurementErrors = await validateObservationTableRowMeasurements(
+        row,
+        measurementColumns,
+        getTsnMeasurementTypeDefinitionMap
+      );
 
       const environmentErrors = await validateObservationTableRowEnvironments(row, environmentColumns);
 
       const totalErrors = [...standardColumnErrors, ...measurementErrors, ...environmentErrors];
       if (totalErrors.length > 0) {
-        validation[row.id] = totalErrors;
+        validationModel[row.id] = totalErrors;
       }
     }
 
-    setValidationModel(validation);
+    setValidationModel(validationModel);
 
-    return Object.keys(validation).length > 0 ? validation : null;
-  }, [_getRowsWithEditedValues, _muiDataGridApiRef, environmentColumns, measurementColumns, tsnMeasurements]);
+    return Object.keys(validationModel).length > 0 ? validationModel : null;
+  }, [
+    _getRowsWithEditedValues,
+    _muiDataGridApiRef,
+    environmentColumns,
+    measurementColumns,
+    getTsnMeasurementTypeDefinitionMap
+  ]);
 
   /**
    * Deletes the given records from the server and removes them from the table.
@@ -824,7 +844,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       itis_scientific_name: ''
     };
 
-    // Append new record to initial rows
+    // Append new record to start of staged rows
     setStagedRows([newRecord, ...stagedRows]);
 
     // Set edit mode for the new row
@@ -832,6 +852,9 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       ...current,
       [id]: { mode: GridRowModes.Edit }
     }));
+
+    // Add new row id to modified rows array
+    setModifiedRowIds((current) => [...current, id]);
   }, [stagedRows]);
 
   /**
@@ -862,15 +885,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
 
     _isStoppingEdit.current = true;
 
-    // Collect the ids of all rows in edit mode
-    const allEditingIds = Object.keys(_muiDataGridApiRef.current.state.editRows);
-
-    // Remove any row ids that the data grid might still be tracking, but which have been removed from local state
-    const editingIdsToSave = allEditingIds.filter((id) =>
-      [...savedRows, ...stagedRows].find((row) => String(row.id) === id)
-    );
-
-    if (!editingIdsToSave.length) {
+    if (!modifiedRowIds.length) {
       // No rows in edit mode, nothing to stop or save
       _isStoppingEdit.current = false;
       return;
@@ -879,15 +894,12 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
     // Transition all rows in edit mode to view mode
     setRowModesModel(() => {
       const newModel: GridRowModesModel = {};
-      for (const id of editingIdsToSave) {
+      for (const id of modifiedRowIds) {
         newModel[id] = { mode: GridRowModes.View };
       }
       return newModel;
     });
-
-    // Store ids of rows that were in edit mode
-    setModifiedRowIds(editingIdsToSave);
-  }, [_muiDataGridApiRef, _validateRows, setErrorDialog, savedRows, stagedRows]);
+  }, [modifiedRowIds, _validateRows, setErrorDialog]);
 
   /**
    * Transition all rows tracked by `modifiedRowIds` to edit mode.
@@ -900,8 +912,6 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
    * Transition all rows tracked by `modifiedRowIds` to edit mode.
    */
   const discardChanges = useCallback(() => {
-    // Remove any rows from the modified rows array
-    setModifiedRowIds([]);
     // Remove any newly created rows
     setStagedRows([]);
     // Clear any validation errors
@@ -914,10 +924,12 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       }
       return newModel;
     });
+    // Remove any rows from the modified rows array
+    setModifiedRowIds([]);
   }, [modifiedRowIds]);
 
   // True if the data grid contains at least 1 unsaved record
-  const hasUnsavedChanges = modifiedRowIds.length > 0 || stagedRows.length > 0;
+  const hasUnsavedChanges = useDeferredValue(modifiedRowIds.length > 0 || stagedRows.length > 0);
 
   // True if the taxonomy cache is still initializing or the observations data is still loading
   const isLoading: boolean = useMemo(() => {
@@ -1421,11 +1433,8 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       onRowSelectionModelChange: setRowSelectionModel,
       isLoading,
       isSaving,
-      _isSavingData,
-      _isStoppingEdit,
       validationModel,
       observationCount,
-      setObservationCount,
       setPaginationModel,
       paginationModel,
       setSortModel,
