@@ -135,7 +135,7 @@ export type ITelemetryTableContext = {
    * Indicates whether the cell has an error.
    *
    */
-  cellHasError: (params: GridCellParams) => boolean;
+  hasError: (params: GridCellParams) => boolean;
 
   /**
    * Callback when row model changes ie: 'Edit' -> 'View'
@@ -178,9 +178,6 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
   // New rows (regardless of mode)
   const _modifiedRowIds = useRef<string[]>([]);
 
-  // True if the rows are in the process of transitioning from edit to view mode
-  const _isStoppingEdit = useRef(false);
-
   // True if the records are in the process of being saved to the server
   const _isSavingData = useRef(false);
 
@@ -190,17 +187,18 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
   // True if telemetry is fetching
   const isLoading = telemetryDataContext.telemetryDataLoader.isLoading;
 
-  // True if table is currently saving
-  const isSaving = _isSavingData.current || _isStoppingEdit.current;
-
   // True if table has unsaved changes, deferring value to prevent ui issue with controls rendering
   const hasUnsavedChanges = useDeferredValue(_modifiedRowIds.current.length > 0 || _stagedRowIds.current.length > 0);
 
-  const getMutatedIds = () => [..._modifiedRowIds.current, ..._stagedRowIds.current];
+  const getMutatedIds = useCallback(
+    () => [..._modifiedRowIds.current, ..._stagedRowIds.current],
+    [_modifiedRowIds, _stagedRowIds]
+  );
 
   const refreshRecords = useCallback(async () => {
     const telemetry = (await telemetryDataContext.telemetryDataLoader.refresh(deployment_ids)) ?? [];
 
+    // Format the rows to use date and time
     const rows: IManualTelemetryTableRow[] = telemetry.map((item) => {
       return {
         id: item.id,
@@ -242,7 +240,6 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
           (newRow, entry) => ({
             ..._muiDataGridApiRef.current.getRow(id),
             ...newRow,
-            isModified: true,
             [entry[0]]: entry[1].value
           }),
           {}
@@ -288,7 +285,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
    * Checks if the cell has error.
    *
    */
-  const cellHasError = useCallback(
+  const hasError = useCallback(
     (params: GridCellParams): boolean => {
       return Boolean(
         validationModel[params.row.id]?.some((error) => {
@@ -487,38 +484,6 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
     _updateRowsMode([id], GridRowModes.Edit, false);
   }, [rows, _updateRowsMode]);
 
-  /**
-   * Transition all editable rows from edit mode to view mode.
-   */
-  const saveRecords = useCallback(() => {
-    if (_isStoppingEdit.current) {
-      // Stop edit mode already in progress
-      return;
-    }
-
-    // Validate rows
-    const validationErrors = _validateRows();
-
-    if (validationErrors) {
-      return;
-    }
-
-    _isStoppingEdit.current = true;
-
-    const idsToSave = getMutatedIds();
-
-    if (!idsToSave) {
-      // No rows in edit mode, nothing to stop or save
-      _isStoppingEdit.current = false;
-      return;
-    }
-
-    // Transition all rows in edit mode to view mode
-    _updateRowsMode(idsToSave, GridRowModes.View, true);
-
-    _modifiedRowIds.current = idsToSave;
-  }, [_updateRowsMode, _validateRows, _isStoppingEdit]);
-
   const revertRecords = useCallback(() => {
     // Revert any current edits
     _updateRowsMode(_modifiedRowIds.current, GridRowModes.View, false);
@@ -604,11 +569,38 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
           open: true
         });
       } finally {
-        _isSavingData.current = true;
+        _isSavingData.current = false;
       }
     },
     [dialogContext, _updateRowsMode, _isSavingData, revertRecords, refreshRecords]
   );
+
+  /**
+   * Transition all editable rows from edit mode to view mode.
+   */
+  const saveRecords = useCallback(async () => {
+    _isSavingData.current = true;
+
+    // Validate rows
+    const validationErrors = _validateRows();
+
+    if (validationErrors) {
+      _isSavingData.current = false;
+      return;
+    }
+
+    const idsToSave = getMutatedIds();
+
+    if (!idsToSave) {
+      // No rows in edit mode, nothing to stop or save
+      _isSavingData.current = false;
+      return;
+    }
+
+    const rowsToSave = _getModifiedRows();
+
+    await _saveRecords(rowsToSave);
+  }, [_validateRows, getMutatedIds, _getModifiedRows, _saveRecords]);
 
   useEffect(() => {
     // Begin fetching telemetry once we have deployments ids
@@ -617,41 +609,39 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
     }
   }, [deployment_ids, refreshRecords]);
 
-  /**
-   * Runs when row records are being saved and transitioned from Edit mode to View mode.
-   */
-  useEffect(() => {
-    // Data grid is not fully initialized
-    if (!_muiDataGridApiRef?.current?.getRowModels) return;
-    console.log('here');
-
-    // Stop edit mode not in progress, cannot save yet
-    if (!_isStoppingEdit.current) return;
-    console.log('here');
-
-    // Modified row ids
-    const modifiedRowIds = _modifiedRowIds.current;
-
-    // No rows to save
-    if (!modifiedRowIds.length) return;
-
-    // Saving already in progress
-    if (_isSavingData.current) return;
-
-    // Not all rows have transitioned to view mode, cannot save yet
-    if (modifiedRowIds.some((id) => _muiDataGridApiRef.current.getRowMode(id) === 'edit')) return;
-
-    // Start saving records
-    _isSavingData.current = true;
-
-    // All rows have transitioned to view mode
-    _isStoppingEdit.current = false;
-
-    const rowModels = _muiDataGridApiRef.current.getRowModels();
-    const rowValues = Array.from(rowModels, ([_, value]) => value);
-
-    _saveRecords(rowValues);
-  }, [_muiDataGridApiRef, _saveRecords, _modifiedRowIds, _isSavingData, _isStoppingEdit]);
+  // /**
+  //  * Runs when row records are being saved and transitioned from Edit mode to View mode.
+  //  */
+  // useEffect(() => {
+  //   // Data grid is not fully initialized
+  //   if (!_muiDataGridApiRef?.current?.getRowModels) return;
+  //
+  //   // Stop edit mode not in progress, cannot save yet
+  //   if (!_isStoppingEdit.current) return;
+  //
+  //   // Modified row ids
+  //   const modifiedRowIds = _modifiedRowIds.current;
+  //
+  //   // No rows to save
+  //   if (!modifiedRowIds.length) return;
+  //
+  //   // Saving already in progress
+  //   if (_isSavingData.current) return;
+  //
+  //   // Not all rows have transitioned to view mode, cannot save yet
+  //   if (modifiedRowIds.some((id) => _muiDataGridApiRef.current.getRowMode(id) === 'edit')) return;
+  //
+  //   // Start saving records
+  //   _isSavingData.current = true;
+  //
+  //   // All rows have transitioned to view mode
+  //   _isStoppingEdit.current = false;
+  //
+  //   const rowModels = _muiDataGridApiRef.current.getRowModels();
+  //   const rowValues = Array.from(rowModels, ([_, value]) => value);
+  //
+  //   _saveRecords(rowValues);
+  // }, [_muiDataGridApiRef, _saveRecords, _modifiedRowIds, _isSavingData, _isStoppingEdit]);
 
   //}, [_muiDataGridApiRef, _saveRecords, _isSavingData, _isStoppingEdit, _modifiedRowIds]);
   const telemetryTableContext: ITelemetryTableContext = useMemo(
@@ -661,7 +651,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
       setRows,
       getColumns,
       addRecord,
-      cellHasError,
+      hasError,
       saveRecords,
       deleteRecords,
       deleteSelectedRecords,
@@ -673,7 +663,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
       rowModesModel,
       onRowModesModelChange: setRowModesModel,
       isLoading,
-      isSaving,
+      isSaving: _isSavingData.current,
       validationModel,
       recordCount
       //setRecordCount
@@ -682,7 +672,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
       _muiDataGridApiRef,
       rows,
       rowModesModel,
-      cellHasError,
+      hasError,
       getColumns,
       addRecord,
       saveRecords,
@@ -693,7 +683,6 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
       hasUnsavedChanges,
       rowSelectionModel,
       isLoading,
-      isSaving,
       validationModel,
       recordCount
     ]

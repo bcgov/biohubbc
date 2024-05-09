@@ -1,24 +1,19 @@
-import { mdiTrashCanOutline } from '@mdi/js';
-import Icon from '@mdi/react';
 import { cyan, grey } from '@mui/material/colors';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useOnMount } from '@mui/x-data-grid/hooks/utils/useOnMount';
-import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
-import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
-import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
-import TimePickerDataGrid from 'components/data-grid/TimePickerDataGrid';
+import {
+  GenericDateColDef,
+  GenericLatitudeColDef,
+  GenericLongitudeColDef,
+  GenericTimeColDef
+} from 'components/data-grid/GenericGridColumnDefinitions';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SurveyContext } from 'contexts/surveyContext';
 import { IManualTelemetryTableRow } from 'contexts/telemetryTableContext';
-import { default as dayjs } from 'dayjs';
 import { useTelemetryTableContext } from 'hooks/useContext';
-import { capitalize, round } from 'lodash-es';
 import { useContext, useMemo } from 'react';
-import { getFormattedDate } from 'utils/Utils';
 import { ICritterDeployment } from '../ManualTelemetryList';
+import { DeploymentColDef, TelemetryTypeColDef } from './utils/GridColumnDefinitions';
 
 interface IManualTelemetryTableProps {
   isLoading: boolean;
@@ -60,274 +55,13 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
     return data;
   }, [surveyContext.critterDataLoader.data, surveyContext.deploymentDataLoader.data]);
 
-  const tableColumns: GridColDef<IManualTelemetryTableRow>[] = [
-    {
-      field: 'deployment_id',
-      headerName: 'Deployment',
-      editable: true,
-      hideable: true,
-      flex: 1,
-      minWidth: 120,
-      disableColumnMenu: true,
-      headerAlign: 'left',
-      align: 'left',
-      type: 'string',
-      renderCell: (params) => {
-        return (
-          <AutocompleteDataGridViewCell<IManualTelemetryTableRow, string>
-            dataGridProps={params}
-            options={critterDeployments.map((item) => {
-              return {
-                label: `${item.critter.animal_id}: ${item.deployment.device_id}`,
-                value: item.deployment.deployment_id
-              };
-            })}
-            error={telemetryTableContext.cellHasError(params)}
-          />
-        );
-      },
-      renderEditCell: (params) => {
-        return (
-          <AutocompleteDataGridEditCell<IManualTelemetryTableRow, string>
-            dataGridProps={params}
-            options={critterDeployments.map((item) => ({
-              label: `${item.critter.animal_id}: ${item.deployment.device_id}`,
-              value: item.deployment.deployment_id
-            }))}
-            error={telemetryTableContext.cellHasError(params)}
-          />
-        );
-      }
-    },
-    {
-      field: 'telemetry_type',
-      headerName: 'Vendor',
-      editable: false,
-      hideable: true,
-      flex: 1,
-      minWidth: 120,
-      disableColumnMenu: true,
-      headerAlign: 'left',
-      align: 'left',
-      type: 'string',
-      valueGetter: (params) => capitalize(params.value)
-    },
-    {
-      field: 'latitude',
-      headerName: 'Latitude',
-      editable: true,
-      hideable: true,
-      flex: 1,
-      minWidth: 120,
-      disableColumnMenu: true,
-      headerAlign: 'left',
-      align: 'left',
-      valueSetter: (params) => {
-        if (/^-?\d{1,3}(?:\.\d{0,12})?$/.test(params.value)) {
-          // If the value is a legal latitude value
-          // Valid entries: `-1`, `-1.1`, `-123.456789` `1`, `1.1, `123.456789`
-          return { ...params.row, latitude: Number(params.value) };
-        }
-
-        const value = parseFloat(params.value);
-        return { ...params.row, latitude: value };
-      },
-      renderCell: (params) => (
-        <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
-          {round(params.value, 6)}
-        </Typography>
-      ),
-      renderEditCell: (params) => {
-        const error: boolean = telemetryTableContext.cellHasError(params);
-
-        return (
-          <TextFieldDataGrid
-            dataGridProps={params}
-            textFieldProps={{
-              name: params.field,
-              onChange: (event) => {
-                if (!/^-?\d{0,3}(?:\.\d{0,12})?$/.test(event.target.value)) {
-                  // If the value is not a subset of a legal latitude value, prevent the value from being applied
-                  return;
-                }
-
-                params.api.setEditCellValue({
-                  id: params.id,
-                  field: params.field,
-                  value: event.target.value
-                });
-              },
-              error
-            }}
-          />
-        );
-      }
-    },
-    {
-      field: 'longitude',
-      headerName: 'Longitude',
-      editable: true,
-      hideable: true,
-      flex: 1,
-      minWidth: 120,
-      disableColumnMenu: true,
-      headerAlign: 'left',
-      align: 'left',
-      valueSetter: (params) => {
-        if (/^-?\d{1,3}(?:\.\d{0,12})?$/.test(params.value)) {
-          // If the value is a legal longitude value
-          // Valid entries: `-1`, `-1.1`, `-123.456789` `1`, `1.1, `123.456789`
-          return { ...params.row, longitude: Number(params.value) };
-        }
-
-        const value = parseFloat(params.value);
-        return { ...params.row, longitude: value };
-      },
-      renderCell: (params) => (
-        <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
-          {round(params.value, 6)}
-        </Typography>
-      ),
-      renderEditCell: (params) => {
-        const error = telemetryTableContext.cellHasError(params);
-
-        return (
-          <TextFieldDataGrid
-            dataGridProps={params}
-            textFieldProps={{
-              name: params.field,
-              onChange: (event) => {
-                if (!/^-?\d{0,3}(?:\.\d{0,12})?$/.test(event.target.value)) {
-                  // If the value is not a subset of a legal longitude value, prevent the value from being applied
-                  return;
-                }
-
-                params.api.setEditCellValue({
-                  id: params.id,
-                  field: params.field,
-                  value: event.target.value
-                });
-              },
-              error
-            }}
-          />
-        );
-      }
-    },
-    {
-      field: 'date',
-      headerName: 'Date',
-      editable: true,
-      hideable: true,
-      flex: 1,
-      minWidth: 150,
-      type: 'date',
-      disableColumnMenu: true,
-      headerAlign: 'left',
-      align: 'left',
-      valueGetter: (params) => (params.row.date ? dayjs(params.row.date).toDate() : null),
-      renderCell: (params) => (
-        <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
-          {getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, params.value)}
-        </Typography>
-      ),
-      renderEditCell: (params) => {
-        const error = telemetryTableContext.cellHasError(params);
-
-        return (
-          <TextFieldDataGrid
-            dataGridProps={params}
-            textFieldProps={{
-              name: params.field,
-              type: 'date',
-              value: params.value ? dayjs(params.value).format('YYYY-MM-DD') : '',
-              onChange: (event) => {
-                const value = dayjs(event.target.value).toDate();
-                params.api.setEditCellValue({
-                  id: params.id,
-                  field: params.field,
-                  value
-                });
-              },
-
-              error
-            }}
-          />
-        );
-      }
-    },
-    {
-      field: 'time',
-      headerName: 'Time',
-      editable: true,
-      hideable: true,
-      flex: 1,
-      minWidth: 150,
-      type: 'string',
-      disableColumnMenu: true,
-      headerAlign: 'left',
-      align: 'left',
-      valueSetter: (params) => {
-        return { ...params.row, time: params.value };
-      },
-      valueParser: (value) => {
-        if (!value) {
-          return null;
-        }
-
-        if (dayjs.isDayjs(value)) {
-          return value.format('HH:mm:ss');
-        }
-
-        return dayjs(value, 'HH:mm:ss').format('HH:mm:ss');
-      },
-      renderCell: (params) => {
-        if (!params.value) {
-          return null;
-        }
-
-        return (
-          <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
-            {params.value}
-          </Typography>
-        );
-      },
-      renderEditCell: (params) => {
-        const error = telemetryTableContext.cellHasError(params);
-
-        return (
-          <TimePickerDataGrid
-            dataGridProps={params}
-            dateFieldProps={{
-              slotProps: {
-                textField: {
-                  error,
-                  name: params.field
-                }
-              }
-            }}
-          />
-        );
-      }
-    },
-    {
-      field: 'actions',
-      headerName: '',
-      type: 'actions',
-      width: 70,
-      disableColumnMenu: true,
-      resizable: false,
-      headerClassName: 'pinnedColumn',
-      cellClassName: 'pinnedColumn',
-      getActions: (params) => [
-        <IconButton
-          onClick={() => telemetryTableContext.deleteRecords([params.row])}
-          disabled={telemetryTableContext.isSaving || !isManualTelemetry(params.row)} // Disable the delete action when record is 'Manual' telemetry
-          key={`actions[${params.id}].handleDeleteRow`}>
-          <Icon path={mdiTrashCanOutline} size={1} />
-        </IconButton>
-      ]
-    }
+  const columns: GridColDef<IManualTelemetryTableRow>[] = [
+    DeploymentColDef({ critterDeployments, hasError: telemetryTableContext.hasError }),
+    TelemetryTypeColDef(),
+    GenericLatitudeColDef({ field: 'latitude', headerName: 'Latitude', hasError: telemetryTableContext.hasError }),
+    GenericLongitudeColDef({ field: 'longitude', headerName: 'Longitude', hasError: telemetryTableContext.hasError }),
+    GenericDateColDef({ field: 'date', headerName: 'Date', hasError: telemetryTableContext.hasError }),
+    GenericTimeColDef({ field: 'time', headerName: 'Time', hasError: telemetryTableContext.hasError })
   ];
 
   return (
@@ -335,7 +69,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
       // Ref
       apiRef={telemetryTableContext._muiDataGridApiRef}
       // Columns
-      columns={tableColumns}
+      columns={columns}
       // Rows
       rows={telemetryTableContext.rows}
       // Select rows

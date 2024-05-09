@@ -11,6 +11,11 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridColDef } from '@mui/x-data-grid';
 import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
+import {
+  GenericActionsColDef,
+  GenericDateColDef,
+  GenericTimeColDef
+} from 'components/data-grid/GenericGridColumnDefinitions';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { BulkActionsButton } from 'features/surveys/observations/observations-table/bulk-actions/BulkActionsButton';
@@ -20,12 +25,7 @@ import {
   ISampleMethodOption,
   ISamplePeriodOption,
   ISampleSiteOption,
-  ObservationActionsColDef,
   ObservationCountColDef,
-  ObservationDateColDef,
-  ObservationLatitudeColDef,
-  ObservationLongitudeColDef,
-  ObservationTimeColDef,
   SampleMethodColDef,
   SamplePeriodColDef,
   SampleSiteColDef,
@@ -94,13 +94,13 @@ const ObservationComponent = () => {
     SampleMethodColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
     SamplePeriodColDef({ samplePeriodOptions, hasError: observationsTableContext.hasError }),
     ObservationCountColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
-    ObservationDateColDef({ hasError: observationsTableContext.hasError }),
-    ObservationTimeColDef({ hasError: observationsTableContext.hasError }),
-    ObservationLatitudeColDef({ hasError: observationsTableContext.hasError }),
-    ObservationLongitudeColDef({ hasError: observationsTableContext.hasError }),
+    GenericDateColDef({ field: 'observation_date', headerName: 'Date', hasError: observationsTableContext.hasError }),
+    GenericTimeColDef({ field: 'observation_time', headerName: 'Time', hasError: observationsTableContext.hasError }),
+    GenericDateColDef({ field: 'latitude', headerName: 'Lat', hasError: observationsTableContext.hasError }),
+    GenericDateColDef({ field: 'longitude', headerName: 'Long', hasError: observationsTableContext.hasError }),
     // Add measurement columns to the table
     ...getMeasurementColumnDefinitions(observationsTableContext.measurementColumns, observationsTableContext.hasError),
-    ObservationActionsColDef({
+    GenericActionsColDef({
       disabled: observationsTableContext.isSaving,
       onDelete: observationsTableContext.deleteObservationRecords
     })
