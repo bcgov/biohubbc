@@ -46,20 +46,24 @@ export interface ISurveyProprietorModel {
 }
 
 const SurveyRecord = z.object({
-  project_id: z.number(),
   survey_id: z.number(),
-  name: z.string().nullable(),
+  project_id: z.number(),
+  field_method_id: z.number().nullable(),
   uuid: z.string().uuid().nullable(),
-  start_date: z.string(),
-  end_date: z.string().nullable(),
+  name: z.string().nullable(),
   additional_details: z.string().nullable(),
-  progress_id: z.number(),
-  comments: z.string().nullable(),
+  start_date: z.string(),
+  lead_first_name: z.string().nullable(),
+  lead_last_name: z.string().nullable(),
+  end_date: z.string().nullable(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
-  revision_count: z.number()
+  revision_count: z.number(),
+  ecological_season_id: z.number().nullable(),
+  comments: z.string().nullable(),
+  progress_id: z.number()
 });
 
 export type SurveyRecord = z.infer<typeof SurveyRecord>;
@@ -481,15 +485,14 @@ export class SurveyRepository extends BaseRepository {
   async getSurveyCountByProjectId(projectId: number): Promise<number> {
     const sqlStatement = SQL`
       SELECT
-        COUNT(*) as survey_count
+        COUNT(*)::integer AS count
       FROM
-        survey as s
+        survey
       WHERE
-        s.project_id = ${projectId}
-      ;
+        project_id = ${projectId};
     `;
 
-    const response = await this.connection.sql(sqlStatement, z.object({ survey_count: z.string().transform(Number) }));
+    const response = await this.connection.sql(sqlStatement, z.object({ count: z.number() }));
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get survey count', [
@@ -498,7 +501,7 @@ export class SurveyRepository extends BaseRepository {
       ]);
     }
 
-    return response.rows[0].survey_count;
+    return response.rows[0].count;
   }
 
   /**

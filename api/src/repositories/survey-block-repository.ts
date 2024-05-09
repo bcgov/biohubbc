@@ -13,13 +13,8 @@ export interface PostSurveyBlock {
 // This describes the a row in the database for Survey Block
 export const SurveyBlockRecord = z.object({
   survey_block_id: z.number(),
-  survey_id: z.number(),
   name: z.string(),
   description: z.string(),
-  create_date: z.string(),
-  create_user: z.number(),
-  update_date: z.string().nullable(),
-  update_user: z.number().nullable(),
   revision_count: z.number()
 });
 export type SurveyBlockRecord = z.infer<typeof SurveyBlockRecord>;
@@ -30,10 +25,6 @@ export const SurveyBlockRecordWithCount = z.object({
   survey_id: z.number(),
   name: z.string(),
   description: z.string(),
-  create_date: z.string(),
-  create_user: z.number(),
-  update_date: z.string().nullable(),
-  update_user: z.number().nullable(),
   revision_count: z.number(),
   sample_block_count: z.number()
 });
@@ -61,10 +52,6 @@ export class SurveyBlockRepository extends BaseRepository {
         sb.survey_id,
         sb.name,
         sb.description,
-        sb.create_date,
-        sb.create_user,
-        sb.update_date,
-        sb.update_user,
         sb.revision_count,
         COUNT(ssb.survey_block_id)::integer AS sample_block_count
     FROM
@@ -78,10 +65,6 @@ export class SurveyBlockRepository extends BaseRepository {
         sb.survey_id,
         sb.name,
         sb.description,
-        sb.create_date,
-        sb.create_user,
-        sb.update_date,
-        sb.update_user,
         sb.revision_count;
     `;
 
@@ -106,8 +89,11 @@ export class SurveyBlockRepository extends BaseRepository {
         survey_id=${block.survey_id} 
       WHERE 
         survey_block_id = ${block.survey_block_id}
-      RETURNING
-        *;
+      RETURNING 
+        survey_block_id,
+        name,
+        description,
+        revision_count;
     `;
     const response = await this.connection.sql(sql, SurveyBlockRecord);
 
@@ -140,7 +126,10 @@ export class SurveyBlockRepository extends BaseRepository {
       ${block.description}
     )
     RETURNING 
-      *;
+      survey_block_id,
+      name,
+      description,
+      revision_count;
   `;
     const response = await this.connection.sql(sql, SurveyBlockRecord);
 
@@ -168,7 +157,10 @@ export class SurveyBlockRepository extends BaseRepository {
       WHERE
         survey_block_id = ${surveyBlockId}
       RETURNING
-        *;
+        survey_block_id,
+        name,
+        description,
+        revision_count;
     `;
 
     const response = await this.connection.sql(sqlStatement, SurveyBlockRecord);

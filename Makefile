@@ -309,7 +309,17 @@ pipeline-install: ## Runs `npm install` for all projects
 ## Run `docker logs <container> -f` commands for all projects
 ## - You can include additional parameters by appaending an `args` param
 ## - Ex: `make log-app args="--tail 0"`
+## Note: The default args, if not provided, are `--tail 2000`
 ## ------------------------------------------------------------------------------
+
+args ?= --tail 2000 ## Default args if none are provided
+
+log: ## Runs `docker-compose logs -f` for all containers
+	@echo "==============================================="
+	@echo "Running docker logs for the app container"
+	@echo "==============================================="
+	@docker-compose logs -f $(args)
+
 log-app: ## Runs `docker logs <container> -f` for the app container
 	@echo "==============================================="
 	@echo "Running docker logs for the app container"

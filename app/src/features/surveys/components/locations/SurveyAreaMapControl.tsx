@@ -23,7 +23,7 @@ import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { shapeFileFeatureDesc, shapeFileFeatureName } from 'utils/Utils';
 import { v4 } from 'uuid';
-import { ISurveyLocation, ISurveyLocationForm } from '../StudyAreaForm';
+import { ISurveyLocation, ISurveyLocationForm } from './StudyAreaForm';
 
 export interface ISurveyAreMapControlProps {
   map_id: string;
