@@ -7,7 +7,7 @@ export type EnvironmentUnit = 'millimeter' | 'centimeter' | 'meter' | 'milligram
  * A quantitative environment type definition.
  */
 export type EnvironmentQuantitativeTypeDefinition = {
-  environment_quantitative_id: number;
+  environment_quantitative_id: string;
   name: string;
   description: string | null;
   min: number | null;
@@ -20,7 +20,7 @@ export type EnvironmentQuantitativeTypeDefinition = {
  */
 export type EnvironmentQualitativeOption = {
   environment_qualitative_option_id: string;
-  environment_qualitative_id: number;
+  environment_qualitative_id: string;
   name: string;
   description: string | null;
 };
@@ -29,7 +29,7 @@ export type EnvironmentQualitativeOption = {
  * A qualitative environment type definition.
  */
 export type EnvironmentQualitativeTypeDefinition = {
-  environment_qualitative_id: number;
+  environment_qualitative_id: string;
   name: string;
   description: string | null;
   options: EnvironmentQualitativeOption[];

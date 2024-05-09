@@ -94,8 +94,8 @@ export class ObservationSubCountEnvironmentService extends DBService {
    *
    * @param {number} surveyId
    * @param {{
-   *       environment_qualitative_id: number[];
-   *       environment_quantitative_id: number[];
+   *       environment_qualitative_id: string[];
+   *       environment_quantitative_id: string[];
    *     }} environmentIds
    * @return {*}  {Promise<void>}
    * @memberof ObservationSubCountEnvironmentService
@@ -103,8 +103,8 @@ export class ObservationSubCountEnvironmentService extends DBService {
   async deleteEnvironmentsForEnvironmentIds(
     surveyId: number,
     environmentIds: {
-      environment_qualitative_id: number[];
-      environment_quantitative_id: number[];
+      environment_qualitative_id: string[];
+      environment_quantitative_id: string[];
     }
   ): Promise<void> {
     return this.observationSubCountEnvironmentRepository.deleteEnvironmentsForEnvironmentIds(surveyId, environmentIds);

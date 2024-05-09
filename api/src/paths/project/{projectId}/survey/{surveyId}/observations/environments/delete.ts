@@ -67,14 +67,16 @@ POST.apiDoc = {
               description: 'An array of qualitative environment ids to delete',
               type: 'array',
               items: {
-                type: 'number'
+                type: 'string',
+                format: 'uuid'
               }
             },
             environment_quantitative_id: {
               description: 'An array of quantitative environment ids to delete',
               type: 'array',
               items: {
-                type: 'number'
+                type: 'string',
+                format: 'uuid'
               }
             }
           }

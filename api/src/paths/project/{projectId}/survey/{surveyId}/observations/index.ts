@@ -246,10 +246,12 @@ GET.apiDoc = {
                                   type: 'integer'
                                 },
                                 environment_qualitative_id: {
-                                  type: 'integer'
+                                  type: 'string',
+                                  format: 'uuid'
                                 },
                                 environment_qualitative_option_id: {
-                                  type: 'integer'
+                                  type: 'string',
+                                  format: 'uuid'
                                 }
                               }
                             }
@@ -262,7 +264,8 @@ GET.apiDoc = {
                               required: ['environment_quantitative_id', 'value'],
                               properties: {
                                 environment_quantitative_id: {
-                                  type: 'integer'
+                                  type: 'string',
+                                  format: 'uuid'
                                 },
                                 value: {
                                   type: 'number'
@@ -398,7 +401,8 @@ GET.apiDoc = {
                       required: ['environment_qualitative_id', 'name', 'description', 'options'],
                       properties: {
                         environment_qualitative_id: {
-                          type: 'number'
+                          type: 'string',
+                          format: 'uuid'
                         },
                         name: {
                           type: 'string'
@@ -421,10 +425,12 @@ GET.apiDoc = {
                             ],
                             properties: {
                               environment_qualitative_option_id: {
-                                type: 'number'
+                                type: 'string',
+                                format: 'uuid'
                               },
                               environment_qualitative_id: {
-                                type: 'number'
+                                type: 'string',
+                                format: 'uuid'
                               },
                               name: {
                                 type: 'string'
@@ -449,7 +455,8 @@ GET.apiDoc = {
                       required: ['environment_quantitative_id', 'name', 'description', 'min', 'max', 'unit'],
                       properties: {
                         environment_quantitative_id: {
-                          type: 'number'
+                          type: 'string',
+                          format: 'uuid'
                         },
                         name: {
                           type: 'string'
@@ -662,10 +669,12 @@ PUT.apiDoc = {
                             additionalProperties: false,
                             properties: {
                               environment_qualitative_id: {
-                                type: 'integer'
+                                type: 'string',
+                                format: 'uuid'
                               },
                               environment_qualitative_option_id: {
-                                type: 'integer'
+                                type: 'string',
+                                format: 'uuid'
                               }
                             }
                           }
@@ -677,7 +686,8 @@ PUT.apiDoc = {
                             additionalProperties: false,
                             properties: {
                               environment_quantitative_id: {
-                                type: 'integer'
+                                type: 'string',
+                                format: 'uuid'
                               },
                               value: {
                                 type: 'number'

@@ -23,26 +23,26 @@ describe('environment-column-utils', () => {
       .stub(ObservationSubCountEnvironmentService.prototype, 'findQualitativeEnvironmentTypeDefinitions')
       .resolves([
         {
-          environment_qualitative_id: 1,
+          environment_qualitative_id: '11-123-456',
           name: 'Wind Speed',
           description: 'Wind Speed',
           options: [
             {
-              environment_qualitative_id: 2,
-              environment_qualitative_option_id: 3,
+              environment_qualitative_id: '22-123-456',
+              environment_qualitative_option_id: '33-123-456',
               name: 'Low',
               description: 'Low'
             }
           ]
         },
         {
-          environment_qualitative_id: 1,
+          environment_qualitative_id: '11-123-456',
           name: 'Wind Direction',
           description: 'Wind Direction',
           options: [
             {
-              environment_qualitative_id: 4,
-              environment_qualitative_option_id: 5,
+              environment_qualitative_id: '44-123-456',
+              environment_qualitative_option_id: '55-123-456',
               name: 'North',
               description: 'North'
             }
@@ -54,7 +54,7 @@ describe('environment-column-utils', () => {
       .stub(ObservationSubCountEnvironmentService.prototype, 'findQuantitativeEnvironmentTypeDefinitions')
       .resolves([
         {
-          environment_quantitative_id: 6,
+          environment_quantitative_id: '66-123-456',
           name: 'Weight',
           description: 'Weight',
           min: 0,
@@ -78,26 +78,26 @@ describe('environment-column-utils', () => {
     expect(result).to.eql({
       qualitative_environments: [
         {
-          environment_qualitative_id: 1,
+          environment_qualitative_id: '11-123-456',
           name: 'Wind Speed',
           description: 'Wind Speed',
           options: [
             {
-              environment_qualitative_id: 2,
-              environment_qualitative_option_id: 3,
+              environment_qualitative_id: '22-123-456',
+              environment_qualitative_option_id: '33-123-456',
               name: 'Low',
               description: 'Low'
             }
           ]
         },
         {
-          environment_qualitative_id: 1,
+          environment_qualitative_id: '11-123-456',
           name: 'Wind Direction',
           description: 'Wind Direction',
           options: [
             {
-              environment_qualitative_id: 4,
-              environment_qualitative_option_id: 5,
+              environment_qualitative_id: '44-123-456',
+              environment_qualitative_option_id: '55-123-456',
               name: 'North',
               description: 'North'
             }
@@ -106,7 +106,7 @@ describe('environment-column-utils', () => {
       ],
       quantitative_environments: [
         {
-          environment_quantitative_id: 6,
+          environment_quantitative_id: '66-123-456',
           name: 'Weight',
           description: 'Weight',
           min: 0,
@@ -123,26 +123,26 @@ describe('environment-column-utils', () => {
       const environmentTypeDefinitions: EnvironmentType = {
         qualitative_environments: [
           {
-            environment_qualitative_id: 1,
+            environment_qualitative_id: '11-123-456',
             name: 'Wind Speed',
             description: 'Wind Speed',
             options: [
               {
-                environment_qualitative_id: 2,
-                environment_qualitative_option_id: 3,
+                environment_qualitative_id: '22-123-456',
+                environment_qualitative_option_id: '33-123-456',
                 name: 'Low',
                 description: 'Low'
               }
             ]
           },
           {
-            environment_qualitative_id: 1,
+            environment_qualitative_id: '11-123-456',
             name: 'Wind Direction',
             description: 'Wind Direction',
             options: [
               {
-                environment_qualitative_id: 4,
-                environment_qualitative_option_id: 5,
+                environment_qualitative_id: '44-123-456',
+                environment_qualitative_option_id: '55-123-456',
                 name: 'North',
                 description: 'North'
               }
@@ -151,7 +151,7 @@ describe('environment-column-utils', () => {
         ],
         quantitative_environments: [
           {
-            environment_quantitative_id: 6,
+            environment_quantitative_id: '66-123-456',
             name: 'Weight',
             description: 'Weight',
             min: 0,
@@ -159,7 +159,7 @@ describe('environment-column-utils', () => {
             unit: 'kilogram'
           },
           {
-            environment_quantitative_id: 7,
+            environment_quantitative_id: '77-123-456',
             name: 'Env With No Match',
             description: 'Env With No Match',
             min: 0,
@@ -167,7 +167,7 @@ describe('environment-column-utils', () => {
             unit: 'meter'
           },
           {
-            environment_quantitative_id: 8,
+            environment_quantitative_id: '88-123-456',
             name: 'Height',
             description: 'Height',
             min: 0,
@@ -184,13 +184,13 @@ describe('environment-column-utils', () => {
         [
           'Wind Speed',
           {
-            environment_qualitative_id: 1,
+            environment_qualitative_id: '11-123-456',
             name: 'Wind Speed',
             description: 'Wind Speed',
             options: [
               {
-                environment_qualitative_id: 2,
-                environment_qualitative_option_id: 3,
+                environment_qualitative_id: '22-123-456',
+                environment_qualitative_option_id: '33-123-456',
                 name: 'Low',
                 description: 'Low'
               }
@@ -200,13 +200,13 @@ describe('environment-column-utils', () => {
         [
           'Wind Direction',
           {
-            environment_qualitative_id: 1,
+            environment_qualitative_id: '11-123-456',
             name: 'Wind Direction',
             description: 'Wind Direction',
             options: [
               {
-                environment_qualitative_id: 4,
-                environment_qualitative_option_id: 5,
+                environment_qualitative_id: '44-123-456',
+                environment_qualitative_option_id: '55-123-456',
                 name: 'North',
                 description: 'North'
               }
@@ -216,7 +216,7 @@ describe('environment-column-utils', () => {
         [
           'Weight',
           {
-            environment_quantitative_id: 6,
+            environment_quantitative_id: '66-123-456',
             name: 'Weight',
             description: 'Weight',
             min: 0,
@@ -227,7 +227,7 @@ describe('environment-column-utils', () => {
         [
           'Height',
           {
-            environment_quantitative_id: 8,
+            environment_quantitative_id: '88-123-456',
             name: 'Height',
             description: 'Height',
             min: 0,
@@ -274,13 +274,13 @@ describe('environment-column-utils', () => {
         [
           'Wind Speed',
           {
-            environment_qualitative_id: 1,
+            environment_qualitative_id: '11-123-456',
             name: 'Wind Speed',
             description: 'Wind Speed',
             options: [
               {
-                environment_qualitative_id: 2,
-                environment_qualitative_option_id: 3,
+                environment_qualitative_id: '22-123-456',
+                environment_qualitative_option_id: '33-123-456',
                 name: 'Low',
                 description: 'Low'
               }
@@ -290,7 +290,7 @@ describe('environment-column-utils', () => {
         [
           'Weight',
           {
-            environment_quantitative_id: 6,
+            environment_quantitative_id: '66-123-456',
             name: 'Weight',
             description: 'Weight',
             min: 0,
@@ -323,13 +323,13 @@ describe('environment-column-utils', () => {
         [
           'Wind Speed',
           {
-            environment_qualitative_id: 1,
+            environment_qualitative_id: '11-123-456',
             name: 'Wind Speed',
             description: 'Wind Speed',
             options: [
               {
-                environment_qualitative_id: 2,
-                environment_qualitative_option_id: 3,
+                environment_qualitative_id: '22-123-456',
+                environment_qualitative_option_id: '33-123-456',
                 name: 'Low',
                 description: 'Low'
               }
@@ -339,7 +339,7 @@ describe('environment-column-utils', () => {
         [
           'Weight',
           {
-            environment_quantitative_id: 6,
+            environment_quantitative_id: '66-123-456',
             name: 'Weight',
             description: 'Weight',
             min: 0,
@@ -368,13 +368,13 @@ describe('environment-column-utils', () => {
         [
           'Wind Speed',
           {
-            environment_qualitative_id: 1,
+            environment_qualitative_id: '11-123-456',
             name: 'Wind Speed',
             description: 'Wind Speed',
             options: [
               {
-                environment_qualitative_id: 2,
-                environment_qualitative_option_id: 3,
+                environment_qualitative_id: '22-123-456',
+                environment_qualitative_option_id: '33-123-456',
                 name: 'Low',
                 description: 'Low'
               }
@@ -401,13 +401,13 @@ describe('environment-column-utils', () => {
         [
           'Wind Speed',
           {
-            environment_qualitative_id: 1,
+            environment_qualitative_id: '11-123-456',
             name: 'Wind Speed',
             description: 'Wind Speed',
             options: [
               {
-                environment_qualitative_id: 2,
-                environment_qualitative_option_id: 3,
+                environment_qualitative_id: '22-123-456',
+                environment_qualitative_option_id: '33-123-456',
                 name: 'Low',
                 description: 'Low'
               }
@@ -434,7 +434,7 @@ describe('environment-column-utils', () => {
         [
           'Weight',
           {
-            environment_quantitative_id: 6,
+            environment_quantitative_id: '66-123-456',
             name: 'Weight',
             description: 'Weight',
             min: 0,
@@ -462,7 +462,7 @@ describe('environment-column-utils', () => {
         [
           'Weight',
           {
-            environment_quantitative_id: 6,
+            environment_quantitative_id: '66-123-456',
             name: 'Weight',
             description: 'Weight',
             min: 0,
@@ -490,7 +490,7 @@ describe('environment-column-utils', () => {
         [
           'Weight',
           {
-            environment_quantitative_id: 6,
+            environment_quantitative_id: '66-123-456',
             name: 'Weight',
             description: 'Weight',
             min: null,
@@ -511,13 +511,13 @@ describe('environment-column-utils', () => {
   describe('isEnvironmentQualitativeTypeDefinition', () => {
     it('returns true', () => {
       const item: QualitativeEnvironmentTypeDefinition = {
-        environment_qualitative_id: 1,
+        environment_qualitative_id: '11-123-456',
         name: 'Wind speed',
         description: 'Wind speed',
         options: [
           {
-            environment_qualitative_id: 2,
-            environment_qualitative_option_id: 3,
+            environment_qualitative_id: '22-123-456',
+            environment_qualitative_option_id: '33-123-456',
             name: 'Low',
             description: 'Low'
           }
@@ -531,7 +531,7 @@ describe('environment-column-utils', () => {
 
     it('returns false', () => {
       const item: QuantitativeEnvironmentTypeDefinition = {
-        environment_quantitative_id: 1,
+        environment_quantitative_id: '11-123-456',
         name: 'Weight',
         description: 'Weight',
         min: 0,

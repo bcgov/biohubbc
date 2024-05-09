@@ -34,7 +34,7 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
 
     CREATE TABLE environment_quantitative (
-      environment_quantitative_id    integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+      environment_quantitative_id    uuid               DEFAULT public.gen_random_uuid(),
       name                           varchar(100)       NOT NULL,
       description                    varchar(250),
       min                            numeric,
@@ -69,7 +69,7 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
 
     CREATE TABLE environment_qualitative (
-      environment_qualitative_id           integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+      environment_qualitative_id           uuid               DEFAULT public.gen_random_uuid(),
       name                                 varchar(100)       NOT NULL,
       description                          varchar(250),
       record_end_date                      date,
@@ -98,8 +98,8 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
 
     CREATE TABLE environment_qualitative_option (
-      environment_qualitative_option_id    integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-      environment_qualitative_id           integer            NOT NULL,
+      environment_qualitative_option_id    uuid               DEFAULT public.gen_random_uuid(),
+      environment_qualitative_id           uuid               NOT NULL,
       name                                 varchar(100)       NOT NULL,
       description                          varchar(250),
       record_end_date                      date,
@@ -138,7 +138,7 @@ export async function up(knex: Knex): Promise<void> {
     CREATE TABLE observation_subcount_quantitative_environment (
       observation_subcount_quantitative_environment_id    integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       observation_subcount_id                             integer            NOT NULL,
-      environment_quantitative_id                         integer            NOT NULL,
+      environment_quantitative_id                         uuid               NOT NULL,
       value                                               numeric            NOT NULL,
       create_date                                         timestamptz(6)     DEFAULT now() NOT NULL,
       create_user                                         integer            NOT NULL,
@@ -183,8 +183,8 @@ export async function up(knex: Knex): Promise<void> {
     CREATE TABLE observation_subcount_qualitative_environment (
       observation_subcount_qualitative_environment_id    integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       observation_subcount_id                            integer            NOT NULL,
-      environment_qualitative_id                         integer            NOT NULL,
-      environment_qualitative_option_id                  integer            NOT NULL,
+      environment_qualitative_id                         uuid               NOT NULL,
+      environment_qualitative_option_id                  uuid               NOT NULL,
       create_date                                        timestamptz(6)     DEFAULT now() NOT NULL,
       create_user                                        integer            NOT NULL,
       update_date                                        timestamptz(6),
