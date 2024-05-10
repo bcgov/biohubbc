@@ -1,8 +1,11 @@
-import { mdiCardTextOutline, mdiInformationOutline, mdiPlusBoxOutline } from '@mdi/js';
+import { mdiCheckboxMultipleBlankOutline, mdiInformationOutline, mdiPlusBoxOutline } from '@mdi/js';
+import { Icon } from '@mdi/react';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import { red } from '@mui/material/colors';
+import { grey, red } from '@mui/material/colors';
 import green from '@mui/material/colors/green';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -22,7 +25,7 @@ const AnimalProfile = () => {
   const animalPageContext = useAnimalPageContext();
   const dialogContext = useDialogContext();
 
-  const { critterDataLoader, selectedAnimal } = animalPageContext;
+  const { critterDataLoader } = animalPageContext;
 
   const handleCopy = (text: string) => {
     if (!text) {

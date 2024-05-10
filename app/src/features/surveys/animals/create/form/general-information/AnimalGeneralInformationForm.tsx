@@ -25,6 +25,7 @@ const AnimalGeneralInformationForm = () => {
             required={false}
             handleSpecies={(species) => {
               setFieldValue('species', species);
+              setFieldValue('ecological_units', [])
             }}
             clearOnSelect={true}
             error={errors.species}

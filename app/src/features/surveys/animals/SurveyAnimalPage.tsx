@@ -5,7 +5,6 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useAnimalPageContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import SurveyAnimalList from './list/SurveyAnimalList';
-import AnimalProfile from './profile/AnimalProfile';
 import SurveyAnimalHeader from './SurveyAnimalHeader';
 import AnimalProfile from './profile/AnimalProfile';
 

@@ -3,10 +3,15 @@ import { Icon } from '@mdi/react';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import useDataLoader from 'hooks/useDataLoader';
 import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
+import { useEffect } from 'react';
+import { v4 } from 'uuid';
 import EcologicalUnitsSelect from './components/EcologicalUnitsSelect';
 
 const initialEcologicalUnitValues = {
+  key: v4(),
   collection_category_id: null,
   collection_unit_id: null
 };
@@ -19,17 +24,34 @@ const initialEcologicalUnitValues = {
  */
 const EcologicalUnitsForm = () => {
   const { values } = useFormikContext<ICreateEditAnimalRequest>();
+  const critterbaseApi = useCritterbaseApi();
+
+  const ecologicalUnitsDataLoader = useDataLoader((tsn: number) => critterbaseApi.xref.getCollectionUnits(tsn));
+
+  useEffect(() => {
+    // Maybe add something to prevent refreshes. Refresh ONLY when species changes?
+    if (values.species?.tsn) {
+      ecologicalUnitsDataLoader.refresh(values.species.tsn);
+    }
+  }, [values.species]);
 
   return (
     <FieldArray
       name="ecological_units"
       render={(arrayHelpers: FieldArrayRenderProps) => (
         <>
-          {values.species && values.ecological_units.length > 0 && (
-            <Stack mb={3} spacing={1}>
-              <EcologicalUnitsSelect species={values.species} arrayHelpers={arrayHelpers} />
-            </Stack>
-          )}
+          <Stack mb={3} spacing={1}>
+            {values.species?.tsn &&
+              values.ecological_units.map((unit, index) => (
+                <EcologicalUnitsSelect
+                  key={`${unit.collection_unit_id}-${index}`}
+                  units={ecologicalUnitsDataLoader.data ?? []}
+                  species={values.species}
+                  arrayHelpers={arrayHelpers}
+                  index={index}
+                />
+              ))}
+          </Stack>
           <Button
             color="primary"
             variant="outlined"

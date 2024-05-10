@@ -4,7 +4,6 @@ import grey from '@mui/material/colors/grey';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useFormikContext } from 'formik';
-import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { ICreateCaptureRequest } from 'interfaces/useCritterApi.interface';
 import { TransitionGroup } from 'react-transition-group';
 
@@ -15,7 +14,6 @@ import { TransitionGroup } from 'react-transition-group';
  */
 const MarkingCardContainer = () => {
   const { values } = useFormikContext<ICreateCaptureRequest>();
-  const critterbaseApi = useCritterbaseApi()
 
   // const codes
 
