@@ -150,9 +150,7 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
       value={currentOption}
       options={options}
       PaperComponent={({ children }) => <Paper sx={{ minWidth: '600px' }}>{children}</Paper>}
-      getOptionLabel={(option) =>
-        option.label
-      }
+      getOptionLabel={(option) => option.label}
       isOptionEqualToValue={(option, value) => {
         if (!option?.value || !value?.value) {
           return false;

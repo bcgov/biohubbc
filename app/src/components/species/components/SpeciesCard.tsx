@@ -1,7 +1,8 @@
 import { mdiCircle } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Chip, colors, Stack, Typography } from '@mui/material';
+import { Chip, Stack, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
+import { taxonRankColours } from 'constants/taxon';
 import React from 'react';
 
 interface ISpeciesCard {
@@ -13,17 +14,6 @@ interface ISpeciesCard {
 }
 
 const SpeciesCard = (props: ISpeciesCard) => {
-  const rankColors = [
-    { color: colors.blue[600], ranks: ['Subspecies', 'Variety'] },
-    { color: colors.purple[600], ranks: ['Species'] },
-    { color: colors.teal[600], ranks: ['Genus'] },
-    { color: colors.blue[600], ranks: ['Family'] },
-    { color: colors.indigo[600], ranks: ['Order'] },
-    { color: colors.deepOrange[600], ranks: ['Class'] },
-    { color: colors.pink[600], ranks: ['Phylum'] },
-    { color: colors.grey[600], ranks: ['Kingdom'] }
-  ];
-
   return (
     <Stack flexDirection="row" justifyContent="space-between" width="100%">
       <Typography component="span" variant="body1">
@@ -48,7 +38,7 @@ const SpeciesCard = (props: ISpeciesCard) => {
                 padding: '0.8px 0.8px',
                 margin: '0 10px 3px 10px',
                 opacity: 0.6,
-                backgroundColor: rankColors.find((color) => color.ranks.includes(props.rank))?.color || grey[800],
+                backgroundColor: taxonRankColours.find((color) => color.ranks.includes(props.rank))?.color || grey[800],
                 '& .MuiChip-label': {
                   letterSpacing: '0.03rem',
                   color: '#fff',
