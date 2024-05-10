@@ -2,8 +2,8 @@ import { ICritterDeployment } from 'features/surveys/telemetry/ManualTelemetryLi
 import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
+import { IGetSampleSiteResponse } from 'interfaces/useSamplingSiteApi.interface';
 import {
-  IGetSampleSiteResponse,
   IGetSurveyAttachmentsResponse,
   IGetSurveyForViewResponse,
   ISimpleCritterWithInternalId

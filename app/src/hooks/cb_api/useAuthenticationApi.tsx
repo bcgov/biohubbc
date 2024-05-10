@@ -15,7 +15,7 @@ export const useAuthentication = (axios: AxiosInstance) => {
       return data;
     } catch (e) {
       if (e instanceof Error) {
-        console.log(e.message);
+        console.error(e.message);
       }
     }
     return null;

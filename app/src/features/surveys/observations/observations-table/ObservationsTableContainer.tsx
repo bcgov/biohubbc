@@ -19,7 +19,6 @@ import {
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { BulkActionsButton } from 'features/surveys/observations/observations-table/bulk-actions/BulkActionsButton';
-import { ConfigureColumnsContainer } from 'features/surveys/observations/observations-table/configure-table/ConfigureColumnsContainer';
 import { DiscardChangesButton } from 'features/surveys/observations/observations-table/discard-changes/DiscardChangesButton';
 import {
   ISampleMethodOption,
@@ -38,9 +37,10 @@ import {
   IGetSampleLocationDetails,
   IGetSampleMethodRecord,
   IGetSamplePeriodRecord
-} from 'interfaces/useSurveyApi.interface';
+} from 'interfaces/useSamplingSiteApi.interface';
 import { useContext } from 'react';
 import { getCodesName } from 'utils/Utils';
+import { ConfigureColumnsContainer } from './configure-table/ConfigureColumnsContainer';
 import ExportHeadersButton from './export-button/ExportHeadersButton';
 import { getMeasurementColumnDefinitions } from './grid-column-definitions/GridColumnDefinitionsUtils';
 

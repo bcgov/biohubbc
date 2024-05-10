@@ -47,13 +47,13 @@ describe('SampleLocationService', () => {
             }
           }
         ],
-        methods: [
+        sample_methods: [
           {
             survey_sample_site_id: 1,
             method_lookup_id: 1,
             method_response_metric_id: 1,
             description: '',
-            periods: [
+            sample_periods: [
               {
                 survey_sample_method_id: 1,
                 start_date: '2023-01-01',
@@ -83,8 +83,9 @@ describe('SampleLocationService', () => {
         survey_id: 1,
         name: 'Sample Site 1',
         description: '',
-        geojson: [],
+        geometry: null,
         geography: [],
+        geojson: [],
         create_date: '',
         create_user: 1,
         update_date: '',
@@ -112,9 +113,9 @@ describe('SampleLocationService', () => {
           name: 'Sample Site 1',
           description: '',
           geojson: [],
-          sample_blocks: [],
+          blocks: [],
           sample_methods: [],
-          sample_stratums: []
+          stratums: []
         }
       ]);
 
@@ -178,8 +179,9 @@ describe('SampleLocationService', () => {
         survey_id: 1,
         name: 'Sample Site 1',
         description: '',
-        geojson: [],
+        geometry: null,
         geography: [],
+        geojson: [],
         create_date: '',
         create_user: 1,
         update_date: '',
@@ -216,9 +218,9 @@ describe('SampleLocationService', () => {
           method_lookup_id: 3,
           method_response_metric_id: 1,
           description: 'Cool method',
-          periods: []
+          sample_periods: []
         } as any,
-        { method_lookup_id: 4, method_response_metric_id: 1, description: 'Cool method', periods: [] } as any
+        { method_lookup_id: 4, method_response_metric_id: 1, description: 'Cool method', sample_periods: [] } as any
       ];
       const blocks = [
         {
@@ -258,8 +260,9 @@ describe('SampleLocationService', () => {
         survey_id: 1,
         name: 'Cool new site',
         description: 'Check out this description',
-        geojson: [],
+        geometry: null,
         geography: [],
+        geojson: [],
         create_date: '',
         create_user: 1,
         update_date: '',
@@ -320,7 +323,7 @@ describe('SampleLocationService', () => {
 
         method_response_metric_id: 1,
         description: 'Cool method',
-        periods: []
+        sample_periods: []
       });
       expect(updateSampleMethodStub).to.be.calledOnceWith(mockSurveyId, {
         survey_sample_site_id: survey_sample_site_id,
@@ -328,7 +331,7 @@ describe('SampleLocationService', () => {
         method_lookup_id: 3,
         method_response_metric_id: 1,
         description: 'Cool method',
-        periods: []
+        sample_periods: []
       });
     });
   });
