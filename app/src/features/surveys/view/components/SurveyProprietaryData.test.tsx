@@ -22,6 +22,7 @@ describe('SurveyProprietaryData', () => {
         value={{
           projectId: 1,
           surveyId: 1,
+          critterDeployments: [],
           surveyDataLoader: mockSurveyDataLoader,
           artifactDataLoader: mockArtifactDataLoader,
           sampleSiteDataLoader: mockSampleSiteDataLoader,
@@ -51,6 +52,7 @@ describe('SurveyProprietaryData', () => {
         value={{
           projectId: 1,
           surveyId: 1,
+          critterDeployments: [],
           surveyDataLoader: mockSurveyDataLoader,
           artifactDataLoader: mockArtifactDataLoader,
           sampleSiteDataLoader: mockSampleSiteDataLoader,
@@ -78,6 +80,7 @@ describe('SurveyProprietaryData', () => {
         value={{
           projectId: 1,
           surveyId: 1,
+          critterDeployments: [],
           surveyDataLoader: mockSurveyDataLoader,
           artifactDataLoader: mockArtifactDataLoader,
           sampleSiteDataLoader: mockSampleSiteDataLoader,

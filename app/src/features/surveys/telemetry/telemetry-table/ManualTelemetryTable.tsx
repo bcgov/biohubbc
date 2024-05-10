@@ -11,8 +11,7 @@ import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { SurveyContext } from 'contexts/surveyContext';
 import { IManualTelemetryTableRow } from 'contexts/telemetryTableContext';
 import { useTelemetryTableContext } from 'hooks/useContext';
-import { useContext, useMemo } from 'react';
-import { ICritterDeployment } from '../ManualTelemetryList';
+import { useContext } from 'react';
 import { DeploymentColDef, TelemetryTypeColDef } from './utils/GridColumnDefinitions';
 
 interface IManualTelemetryTableProps {
@@ -23,30 +22,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
   const telemetryTableContext = useTelemetryTableContext();
   const surveyContext = useContext(SurveyContext);
 
-  surveyContext.deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
-  surveyContext.critterDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
-
-  const critterDeployments: ICritterDeployment[] = useMemo(() => {
-    const data: ICritterDeployment[] = [];
-
-    const critters = surveyContext.critterDataLoader.data ?? [];
-    const deployments = surveyContext.deploymentDataLoader.data ?? [];
-
-    if (!critters.length || !deployments.length) {
-      return data;
-    }
-
-    const critterMap = new Map(critters.map((critter) => [critter.critter_id, critter]));
-
-    deployments.forEach((deployment) => {
-      const critter = critterMap.get(deployment.critter_id);
-      if (critter) {
-        data.push({ critter, deployment });
-      }
-    });
-
-    return data;
-  }, [surveyContext.critterDataLoader.data, surveyContext.deploymentDataLoader.data]);
+  const { critterDeployments } = surveyContext;
 
   const isManualTelemetry = (row: IManualTelemetryTableRow) => row.telemetry_type === 'MANUAL';
 

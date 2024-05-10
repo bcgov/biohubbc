@@ -58,47 +58,6 @@ const ManualTelemetryTableContainer = () => {
     setColumnVisibilityMenuAnchorEl(null);
   };
 
-  // /**
-  //  * Toggles visibility for a particular column
-  //  */
-  // const toggleColumnVisibility = (field: string) => {
-  //   const fields = [...hiddenFields];
-  //   if (fields.includes(field)) {
-  //     setHiddenFields(fields.filter((hiddenField) => hiddenField !== field));
-  //     return;
-  //   }
-  //
-  //   setHiddenFields([...fields, field]);
-  // };
-  //
-  // // The array of columns that may be toggled as hidden or visible
-  // const hideableColumns = useMemo(() => {
-  //   return telemetryTableContext.getColumns().filter((column) => {
-  //     return column && column.type && !['actions', 'checkboxSelection'].includes(column.type) && column.hideable;
-  //   });
-  // }, [telemetryTableContext]);
-  //
-  // /**
-  //  * Toggles whether all columns are hidden or visible.
-  //  */
-  // const toggleShowHideAll = useCallback(() => {
-  //   if (hiddenFields.length > 0) {
-  //     setHiddenFields([]);
-  //   } else {
-  //     setHiddenFields(hideableColumns.map((column) => column.field));
-  //   }
-  // }, [hiddenFields, hideableColumns, setHiddenFields]);
-  //
-  // /**
-  //  * Whenever hidden fields updates, trigger an update in visiblity for the table.
-  //  */
-  // useEffect(() => {
-  //   telemetryTableContext._muiDataGridApiRef.current.setColumnVisibilityModel({
-  //     ...Object.fromEntries(hideableColumns.map((column) => [column.field, true])),
-  //     ...Object.fromEntries(hiddenFields.map((field) => [field, false]))
-  //   });
-  // }, [hideableColumns, hiddenFields, telemetryTableContext._muiDataGridApiRef]);
-
   const handleFileImport = async (file: File) => {
     telemetryApi.uploadCsvForImport(projectId, surveyId, file).then((response) => {
       setShowImportDialog(false);
