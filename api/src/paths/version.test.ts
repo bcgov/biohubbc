@@ -27,7 +27,7 @@ describe('version', () => {
     it('should return versionInfo on success', async () => {
       const result = version.getVersionInformation();
 
-      await result((null as unknown) as any, sampleRes as any, (null as unknown) as any);
+      await result(null as unknown as any, sampleRes as any, null as unknown as any);
 
       expect(actualResult).to.eql({
         version: process.env.VERSION,

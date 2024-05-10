@@ -22,7 +22,7 @@ describe('SiteSelectionStrategyRepository', () => {
   describe('getSiteSelectionDataBySurveyId', () => {
     it('should return non-empty data', async () => {
       const mockStrategiesRows: { name: string }[] = [{ name: 'strategy1' }, { name: 'strategy2' }];
-      const mockStrategiesResponse = ({ rows: mockStrategiesRows, rowCount: 2 } as any) as Promise<QueryResult<any>>;
+      const mockStrategiesResponse = { rows: mockStrategiesRows, rowCount: 2 } as any as Promise<QueryResult<any>>;
 
       const mockStratumsRows: SurveyStratumDetails[] = [
         {
@@ -42,7 +42,7 @@ describe('SiteSelectionStrategyRepository', () => {
           sample_stratum_count: 1
         }
       ];
-      const mockStratumsResponse = ({ rows: mockStratumsRows, rowCount: 2 } as any) as Promise<QueryResult<any>>;
+      const mockStratumsResponse = { rows: mockStratumsRows, rowCount: 2 } as any as Promise<QueryResult<any>>;
 
       const dbConnectionObj = getMockDBConnection({
         knex: sinon.stub().onFirstCall().resolves(mockStrategiesResponse).onSecondCall().resolves(mockStratumsResponse)
@@ -60,10 +60,10 @@ describe('SiteSelectionStrategyRepository', () => {
 
     it('should return empty data', async () => {
       const mockStrategiesRows: { name: string }[] = [];
-      const mockStrategiesResponse = ({ rows: mockStrategiesRows, rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const mockStrategiesResponse = { rows: mockStrategiesRows, rowCount: 0 } as any as Promise<QueryResult<any>>;
 
       const mockStratumsRows: SurveyStratumDetails[] = [];
-      const mockStratumsResponse = ({ rows: mockStratumsRows, rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const mockStratumsResponse = { rows: mockStratumsRows, rowCount: 0 } as any as Promise<QueryResult<any>>;
 
       const dbConnectionObj = getMockDBConnection({
         knex: sinon.stub().onFirstCall().resolves(mockStrategiesResponse).onSecondCall().resolves(mockStratumsResponse)
@@ -84,7 +84,7 @@ describe('SiteSelectionStrategyRepository', () => {
     it('should return non-zero rowCount', async () => {
       const mockRows: any[] = [{}];
       const rowCount = 1;
-      const mockResponse = ({ rows: mockRows, rowCount: rowCount } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: mockRows, rowCount: rowCount } as any as Promise<QueryResult<any>>;
 
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
@@ -101,7 +101,7 @@ describe('SiteSelectionStrategyRepository', () => {
     it('should return zero rowCount', async () => {
       const mockRows: any[] = [];
       const rowCount = 0;
-      const mockResponse = ({ rows: mockRows, rowCount: rowCount } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: mockRows, rowCount: rowCount } as any as Promise<QueryResult<any>>;
 
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
@@ -119,7 +119,7 @@ describe('SiteSelectionStrategyRepository', () => {
   describe('insertSurveySiteSelectionStrategies', () => {
     it('should insert a record and return a single row', async () => {
       const mockRows: any[] = [{}, {}];
-      const mockResponse = ({ rows: mockRows, rowCount: 2 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: mockRows, rowCount: 2 } as any as Promise<QueryResult<any>>;
 
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
@@ -136,7 +136,7 @@ describe('SiteSelectionStrategyRepository', () => {
 
     it('throws an error if rowCount does not equal strategies length', async () => {
       const mockRows: any[] = [{}];
-      const mockResponse = ({ rows: mockRows, rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: mockRows, rowCount: 1 } as any as Promise<QueryResult<any>>;
 
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
@@ -160,7 +160,7 @@ describe('SiteSelectionStrategyRepository', () => {
     it('should delete records and return non-zero rowCount', async () => {
       const mockRows: any[] = [];
       const rowCount = 3;
-      const mockResponse = ({ rows: mockRows, rowCount: rowCount } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: mockRows, rowCount: rowCount } as any as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ knex: sinon.stub().resolves(mockResponse) });
 
       const repo = new SiteSelectionStrategyRepository(dbConnectionObj);
@@ -176,7 +176,7 @@ describe('SiteSelectionStrategyRepository', () => {
     it('should delete records and return zero rowCount', async () => {
       const mockRows: any[] = [];
       const rowCount = 0;
-      const mockResponse = ({ rows: mockRows, rowCount: rowCount } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: mockRows, rowCount: rowCount } as any as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ knex: sinon.stub().resolves(mockResponse) });
 
       const repo = new SiteSelectionStrategyRepository(dbConnectionObj);
@@ -193,7 +193,7 @@ describe('SiteSelectionStrategyRepository', () => {
   describe('insertSurveyStratums', () => {
     it('should insert records and return rows', async () => {
       const mockRows: any[] = [{}, {}];
-      const mockResponse = ({ rows: mockRows, rowCount: 2 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: mockRows, rowCount: 2 } as any as Promise<QueryResult<any>>;
 
       const dbConnectionObj = getMockDBConnection({ knex: sinon.stub().resolves(mockResponse) });
 
@@ -214,7 +214,7 @@ describe('SiteSelectionStrategyRepository', () => {
     it('throws an error if rowCount does not equal stratums length', async () => {
       const mockRows: any[] = [{}];
       const rowCount = 1;
-      const mockResponse = ({ rows: mockRows, rowCount: rowCount } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: mockRows, rowCount: rowCount } as any as Promise<QueryResult<any>>;
 
       const dbConnectionObj = getMockDBConnection({ knex: sinon.stub().resolves(mockResponse) });
 
@@ -257,8 +257,8 @@ describe('SiteSelectionStrategyRepository', () => {
           revision_count: 1
         }
       ];
-      const mockResponse1 = ({ rows: mockRows1, rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const mockResponse2 = ({ rows: mockRows2, rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const mockResponse1 = { rows: mockRows1, rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const mockResponse2 = { rows: mockRows2, rowCount: 1 } as any as Promise<QueryResult<any>>;
 
       const dbConnectionObj = getMockDBConnection({
         knex: sinon.stub().onFirstCall().resolves(mockResponse1).onSecondCall().resolves(mockResponse2)
@@ -288,8 +288,8 @@ describe('SiteSelectionStrategyRepository', () => {
           revision_count: 1
         }
       ];
-      const mockResponse1 = ({ rows: mockRows1, rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const mockResponse2 = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const mockResponse1 = { rows: mockRows1, rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const mockResponse2 = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
 
       const dbConnectionObj = getMockDBConnection({
         knex: sinon.stub().onFirstCall().resolves(mockResponse1).onSecondCall().resolves(mockResponse2)

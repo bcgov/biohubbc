@@ -40,7 +40,7 @@ describe('getSurveyForUpdate', () => {
     try {
       const result = get.getSurveyForUpdate();
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      await result(sampleReq, null as unknown as any, null as unknown as any);
       expect.fail();
     } catch (actualError) {
       expect((actualError as HTTPError).message).to.equal(expectedError.message);
@@ -65,10 +65,10 @@ describe('getSurveyForUpdate', () => {
       }
     } as any;
 
-    const getSurveyByIdStub = sinon.stub(SurveyService.prototype, 'getSurveyById').resolves(({
+    const getSurveyByIdStub = sinon.stub(SurveyService.prototype, 'getSurveyById').resolves({
       id: 1,
       proprietor: {}
-    } as unknown) as SurveyObject);
+    } as unknown as SurveyObject);
 
     const expectedResponse = {
       surveyData: {
@@ -103,7 +103,7 @@ describe('getSurveyForUpdate', () => {
 
     const result = get.getSurveyForUpdate();
 
-    await result(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
+    await result(sampleReq, sampleRes as unknown as any, null as unknown as any);
     expect(actualResult).to.eql(expectedResponse);
     expect(getSurveyByIdStub).to.be.calledOnce;
   });
@@ -126,10 +126,10 @@ describe('getSurveyForUpdate', () => {
       }
     } as any;
 
-    const getSurveyByIdStub = sinon.stub(SurveyService.prototype, 'getSurveyById').resolves(({
+    const getSurveyByIdStub = sinon.stub(SurveyService.prototype, 'getSurveyById').resolves({
       id: 1,
       proprietor: { proprietor_type_id: 1, first_nations_id: 1, disa_required: true }
-    } as unknown) as SurveyObject);
+    } as unknown as SurveyObject);
 
     const expectedResponse = {
       surveyData: {
@@ -161,7 +161,7 @@ describe('getSurveyForUpdate', () => {
 
     const result = get.getSurveyForUpdate();
 
-    await result(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
+    await result(sampleReq, sampleRes as unknown as any, null as unknown as any);
     expect(actualResult).to.eql(expectedResponse);
     expect(getSurveyByIdStub).to.be.calledOnce;
   });

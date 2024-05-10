@@ -198,8 +198,8 @@ describe('deleteSurveySampleSiteRecord', () => {
       const result = deleteSurveySampleSiteRecord();
       await result(
         { ...sampleReq, params: { ...sampleReq.params, surveySampleSiteId: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
+        null as unknown as any,
+        null as unknown as any
       );
       expect.fail();
     } catch (actualError) {
@@ -293,8 +293,8 @@ describe('getSurveySampleLocationRecord', () => {
       const result = getSurveySampleLocationRecord();
       await result(
         { ...sampleReq, params: { ...sampleReq.params, surveySampleSiteId: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
+        null as unknown as any,
+        null as unknown as any
       );
       expect.fail();
     } catch (actualError) {
