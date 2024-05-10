@@ -62,11 +62,11 @@ const SurveyGeneralInformation = () => {
 
       <Box className="row">
         <Typography component="dt">Species of Interest</Typography>
-        <Box>
-          {species.focal_species?.map((focalSpecies: ITaxonomy, index: number) => {
+        <Typography component="dd">
+          {species.focal_species?.map((focalSpecies: ITaxonomy) => {
             return (
               <Typography
-                component="dd"
+                component="span"
                 key={focalSpecies.tsn}
                 sx={{
                   position: 'relative',
@@ -85,16 +85,16 @@ const SurveyGeneralInformation = () => {
               </Typography>
             );
           })}
-        </Box>
+        </Typography>
       </Box>
 
       <Box className="row">
         <Typography component="dt">Secondary Species</Typography>
-        <Box display="inline-block">
-          {species.ancillary_species?.map((ancillarySpecies: ITaxonomy, index: number) => {
+        <Typography component="dd">
+          {species.ancillary_species?.map((ancillarySpecies: ITaxonomy) => {
             return (
               <Typography
-                component="dd"
+                component="span"
                 key={ancillarySpecies.tsn}
                 sx={{
                   position: 'relative',
@@ -116,7 +116,7 @@ const SurveyGeneralInformation = () => {
           {species.ancillary_species?.length <= 0 && (
             <Typography component="dd">No secondary species of interest</Typography>
           )}
-        </Box>
+        </Typography>
       </Box>
     </Box>
   );

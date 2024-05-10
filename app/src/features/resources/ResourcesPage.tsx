@@ -1,12 +1,12 @@
 import { mdiTrayArrowDown } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
+import useTheme from '@mui/material/styles/useTheme';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -14,28 +14,31 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IResourceFile } from 'interfaces/useResourcesApi.interface';
 import React from 'react';
 import { ensureProtocol } from 'utils/Utils';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  pageTitleContainer: {
-    maxWidth: '170ch',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis'
-  },
-  pageTitle: {
-    display: '-webkit-box',
-    '-webkit-line-clamp': 2,
-    '-webkit-box-orient': 'vertical',
-    paddingTop: theme.spacing(0.5),
-    paddingBottom: theme.spacing(0.5),
-    overflow: 'hidden'
-  }
-}));
+const useStyles = () => {
+  const theme = useTheme();
+
+  return {
+    pageTitleContainer: {
+      maxWidth: '170ch',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis'
+    },
+    pageTitle: {
+      display: '-webkit-box',
+      WebkitLineClamp: '2',
+      WebkitBoxOrient: 'vertical',
+      paddingTop: theme.spacing(0.5),
+      paddingBottom: theme.spacing(0.5),
+      overflow: 'hidden'
+    }
+  };
+};
 
 /**
  * Page to display a list of resources
@@ -113,8 +116,8 @@ const ResourcesPage: React.FC = () => {
         <Container maxWidth="xl">
           <Box py={4}>
             <Box display="flex" alignItems="center" justifyContent="space-between">
-              <Box className={classes.pageTitleContainer}>
-                <Typography variant="h1" className={classes.pageTitle}>
+              <Box sx={classes.pageTitleContainer}>
+                <Typography variant="h1" sx={classes.pageTitle}>
                   Resources
                 </Typography>
               </Box>

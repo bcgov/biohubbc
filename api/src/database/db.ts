@@ -13,12 +13,7 @@ import {
   ServiceClientUserInformation
 } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
-import {
-  asyncErrorWrapper,
-  getGenericizedKeycloakUserInformation,
-  getZodQueryResult,
-  syncErrorWrapper
-} from './db-utils';
+import { asyncErrorWrapper, getGenericizedKeycloakUserInformation, syncErrorWrapper } from './db-utils';
 
 const defaultLog = getLogger('database/db');
 
@@ -152,33 +147,37 @@ export interface IDBConnection {
    * Performs a query against this connection, returning the results.
    *
    * @example
-   * // Create a basic SQLStatement object
    * const sqlStatement = SQL`select * from table where name = ${name}`;
+   * const response = await connection.sql(sqlStatement, ZodSchema);
    *
    * @param {SQLStatement} sqlStatement SQL statement object
-   * @param {z.Schema<T, any, any>} zodSchema An optional zod schema
-   * @return {*}  {(Promise<QueryResult<any>>)}
+   * @param {z.ZodSchema<T, any, any>} [ZodSchema] An optional zod schema that defines the expected shape of a `row`.
+   * @return {*}  {(Promise<QueryResult<T>>)}
    * @throws If the connection is not open.
    * @memberof IDBConnection
    */
   sql: <T extends pg.QueryResultRow = any>(
     sqlStatement: SQLStatement,
-    zodSchema?: z.Schema<T, any, any>
+    ZodSchema?: z.ZodSchema<T, any, any>
   ) => Promise<pg.QueryResult<T>>;
   /**
    * Performs a query against this connection, returning the results.
    *
+   * @example
+   * const queryBuilder = getKnex().select().from('table').where('name', name);
+   * const response = await connection.knex(queryBuilder, ZodSchema);
+   *
    * @see {@link getKnex} to get a knex instance.
    *
    * @param {Knex.QueryBuilder} queryBuilder Knex query builder object
-   * @param {z.Schema<T, any, any>} zodSchema An optional zod schema
-   * @return {*}  {(Promise<QueryResult<any>>)}
+   * @param {z.ZodSchema<T, any, any>} [ZodSchema] An optional zod schema that defines the expected shape of a `row`.
+   * @return {*}  {(Promise<QueryResult<T>>)}
    * @throws If the connection is not open.
    * @memberof IDBConnection
    */
   knex: <T extends pg.QueryResultRow = any>(
     queryBuilder: Knex.QueryBuilder,
-    zodSchema?: z.Schema<T, any, any>
+    ZodSchema?: z.ZodSchema<T, any, any>
   ) => Promise<pg.QueryResult<T>>;
   /**
    * Get the ID of the system user in context.
@@ -341,40 +340,61 @@ export const getDBConnection = function (keycloakToken: KeycloakUserInformation)
    *
    * @template T
    * @param {SQLStatement} sqlStatement SQL statement object
-   * @param {z.Schema<T, any, any>} zodSchema An optional zod schema
+   * @param {z.ZodSchema<T, any, any>} [ZodSchema] An optional zod schema that defines the expected shape of a `row`.
    * @throws {Error} if the connection is not open
    * @return {*}  {Promise<pg.QueryResult<T>>}
    */
   const _sql = async <T extends pg.QueryResultRow = any>(
     sqlStatement: SQLStatement,
-    zodSchema?: z.Schema<T, any, any>
+    ZodSchema?: z.ZodSchema<T, any, any>
   ): Promise<pg.QueryResult<T>> => {
-    if (process.env.NODE_ENV === 'production') {
-      // Don't run timers or zod schemas in production
-      return _query(sqlStatement.text, sqlStatement.values);
-    }
-
     const queryStart = Date.now();
+
     const response = await _query(sqlStatement.text, sqlStatement.values);
+
     const queryEnd = Date.now();
 
-    if (!zodSchema) {
-      defaultLog.silly({ label: '_sql', message: sqlStatement.text, queryExecutionTime: queryEnd - queryStart });
+    defaultLog.silly({
+      label: '_sql',
+      message: 'Sql performance',
+      sql: { sql: sqlStatement.text, bindings: sqlStatement.values },
+      queryExecutionTime: queryEnd - queryStart
+    });
+
+    if (!ZodSchema || process.env.DATABASE_RESPONSE_VALIDATION_ENABLED !== 'true') {
+      // No zod schema provided, or database response validation is disabled
       return response;
     }
 
-    // Validate the response against the zod schema
+    // Validate the response rows against the zod schema
     const zodStart = Date.now();
-    const validatedResponse = getZodQueryResult(zodSchema).parseAsync(response);
+
+    const zodResponse =
+      ZodSchema instanceof z.ZodObject
+        ? z.strictObject({ rows: z.array(ZodSchema.strict()) }).safeParse({ rows: response.rows })
+        : z.strictObject({ rows: z.array(ZodSchema) }).safeParse({ rows: response.rows });
+
     const zodEnd = Date.now();
 
     defaultLog.silly({
-      label: '_sql + zod',
-      message: sqlStatement.text,
+      label: '_sql',
+      message: 'Zod performance',
+      sql: { sql: sqlStatement.text, bindings: sqlStatement.values },
       queryExecutionTime: queryEnd - queryStart,
       zodExecutionTime: zodEnd - zodStart
     });
-    return validatedResponse;
+
+    if (!zodResponse.success) {
+      defaultLog.debug({
+        label: '_sql',
+        message: 'zodResponse',
+        zodResponse
+      });
+
+      throw new ApiExecuteSQLError('Failed to validate database response', zodResponse.error.errors);
+    }
+
+    return response;
   };
 
   /**
@@ -382,42 +402,63 @@ export const getDBConnection = function (keycloakToken: KeycloakUserInformation)
    *
    * @template T
    * @param {Knex.QueryBuilder} queryBuilder Knex query builder object
-   * @param {z.Schema<T, any, any>} zodSchema An optional zod schema
+   * @param {z.ZodSchema<T, any, any>} [ZodSchema] An optional zod schema that defines the expected shape of a `row`.
    * @throws {Error} if the connection is not open
    * @return {*}  {Promise<pg.QueryResult<T>>}
    */
   const _knex = async <T extends pg.QueryResultRow = any>(
     queryBuilder: Knex.QueryBuilder,
-    zodSchema?: z.Schema<T, any, any>
+    ZodSchema?: z.ZodSchema<T, any, any>
   ) => {
     const { sql, bindings } = queryBuilder.toSQL().toNative();
 
-    if (process.env.NODE_ENV === 'production') {
-      // Don't run timers or zod schemas in production
-      return _query(sql, bindings as any[]);
-    }
-
     const queryStart = Date.now();
+
     const response = await _query(sql, bindings as any[]);
+
     const queryEnd = Date.now();
 
-    if (!zodSchema) {
-      defaultLog.silly({ label: '_knex', message: sql, queryExecutionTime: queryEnd - queryStart });
+    defaultLog.silly({
+      label: '_knex',
+      message: 'Sql performance',
+      sql: { sql, bindings },
+      queryExecutionTime: queryEnd - queryStart
+    });
+
+    if (!ZodSchema || process.env.DATABASE_RESPONSE_VALIDATION_ENABLED !== 'true') {
+      // No zod schema provided, or database response validation is disabled
       return response;
     }
 
-    // Validate the response against the zod schema
+    // Validate the response rows against the zod schema
     const zodStart = Date.now();
-    const validatedResponse = getZodQueryResult(zodSchema).parseAsync(response);
+
+    const zodResponse =
+      ZodSchema instanceof z.ZodObject
+        ? z.strictObject({ rows: z.array(ZodSchema.strict()) }).safeParse({ rows: response.rows })
+        : z.object({ rows: z.array(ZodSchema) }).safeParse({ rows: response.rows });
+
     const zodEnd = Date.now();
 
     defaultLog.silly({
-      label: '_knex + zod',
-      message: sql,
+      label: '_knex',
+      message: 'Zod performance',
+      sql: { sql, bindings },
       queryExecutionTime: queryEnd - queryStart,
       zodExecutionTime: zodEnd - zodStart
     });
-    return validatedResponse;
+
+    if (!zodResponse.success) {
+      defaultLog.debug({
+        label: '_knex',
+        message: 'zodResponse',
+        zodResponse
+      });
+
+      throw new ApiExecuteSQLError('Failed to validate database response', zodResponse.error.errors);
+    }
+
+    return response;
   };
 
   /**

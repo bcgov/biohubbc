@@ -4,7 +4,6 @@ import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import { AccessRequestI18N } from 'constants/i18n';
@@ -29,14 +28,16 @@ import BCeIDRequestForm, {
 } from './BCeIDRequestForm';
 import IDIRRequestForm, { IDIRRequestFormInitialValues, IDIRRequestFormYupSchema } from './IDIRRequestForm';
 
-const useStyles = makeStyles(() => ({
-  actionButton: {
-    minWidth: '6rem',
-    '& + button': {
-      marginLeft: '0.5rem'
+const useStyles = () => {
+  return {
+    actionButton: {
+      minWidth: '6rem',
+      '& + button': {
+        marginLeft: '0.5rem'
+      }
     }
-  }
-}));
+  };
+};
 
 /**
  * Access Request form
@@ -167,7 +168,13 @@ export const AccessRequestPage: React.FC = () => {
               </Typography>
               <Box mt={3}>
                 <Typography variant="body1" color="textSecondary">
-                  You will need to provide some additional details before you are granted access to this application.
+                  The Species Inventory Management System is intended for staff, contractors, and other partners who
+                  manage fish and wildlife data in collaboration with the Province. If you are instead looking to
+                  download data, please visit BiodiversityHub BC (coming soon).
+                  <br />
+                  <br />
+                  Please briefly describe why you are requesting access and how you will be using the Species Inventory
+                  Management System.
                 </Typography>
               </Box>
               <Box mt={4}>
@@ -181,7 +188,7 @@ export const AccessRequestPage: React.FC = () => {
                         type="submit"
                         variant="contained"
                         color="primary"
-                        className={classes.actionButton}>
+                        sx={classes.actionButton}>
                         Submit Request
                       </LoadingButton>
                     </Box>

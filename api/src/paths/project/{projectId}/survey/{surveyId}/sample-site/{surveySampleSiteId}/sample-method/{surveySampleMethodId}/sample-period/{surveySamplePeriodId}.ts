@@ -91,9 +91,11 @@ PUT.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           properties: {
             samplePeriod: {
               type: 'object',
+              additionalProperties: false,
               properties: {
                 start_date: {
                   type: 'string'
@@ -144,18 +146,21 @@ export function updateSurveySamplePeriod(): RequestHandler {
       throw new HTTP400('Missing required body param `samplePeriod`');
     }
 
+    const surveyId = Number(req.params.surveyId);
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const samplePeriod: UpdateSamplePeriodRecord = req.body.samplePeriod;
-      samplePeriod.survey_sample_method_id = Number(req.params.surveySampleMethodId);
-      samplePeriod.survey_sample_period_id = Number(req.params.surveySamplePeriodId);
+      const samplePeriod: UpdateSamplePeriodRecord = {
+        ...req.body.samplePeriod,
+        survey_sample_method_id: Number(req.params.surveySampleMethodId),
+        survey_sample_period_id: Number(req.params.surveySamplePeriodId)
+      };
 
       await connection.open();
 
       const samplePeriodService = new SamplePeriodService(connection);
 
-      await samplePeriodService.updateSamplePeriod(samplePeriod);
+      await samplePeriodService.updateSamplePeriod(surveyId, samplePeriod);
 
       await connection.commit();
 
@@ -269,6 +274,7 @@ DELETE.apiDoc = {
 export function deleteSurveySamplePeriodRecord(): RequestHandler {
   return async (req, res) => {
     const surveySamplePeriodId = Number(req.params.surveySamplePeriodId);
+    const surveyId = Number(req.params.surveyId);
 
     if (!surveySamplePeriodId) {
       throw new HTTP400('Missing required param `surveySamplePeriodId`');
@@ -281,7 +287,7 @@ export function deleteSurveySamplePeriodRecord(): RequestHandler {
 
       const samplePeriodService = new SamplePeriodService(connection);
 
-      await samplePeriodService.deleteSamplePeriodRecord(surveySamplePeriodId);
+      await samplePeriodService.deleteSamplePeriodRecord(surveyId, surveySamplePeriodId);
 
       await connection.commit();
 

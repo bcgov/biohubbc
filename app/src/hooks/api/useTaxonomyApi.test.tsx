@@ -1,5 +1,4 @@
-import { act } from '@testing-library/react';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { ConfigContext, IConfig } from 'contexts/configContext';
@@ -58,18 +57,16 @@ describe('useTaxonomyApi', () => {
 
       mock.onGet('/api/taxonomy/species/list').reply(200, mockResponse);
 
-      const { result, waitFor } = renderHook(() => useTaxonomyApi(), { wrapper });
+      const { result } = renderHook(() => useTaxonomyApi(), { wrapper });
 
-      await act(async () => {
-        await waitFor(
-          () => {
-            result.current.getSpeciesFromIds([1, 2]).then((data) => {
-              expect(data).toEqual(mockResponse.searchResponse);
-            });
-          },
-          { timeout: 2000 }
-        );
-      });
+      await waitFor(
+        () => {
+          result.current.getSpeciesFromIds([1, 2]).then((data) => {
+            expect(data).toEqual(mockResponse.searchResponse);
+          });
+        },
+        { timeout: 2000 }
+      );
     });
   });
 
@@ -92,18 +89,16 @@ describe('useTaxonomyApi', () => {
 
       mock.onGet('/api/taxonomy/species').reply(200, mockSearchTermResponse);
 
-      const { result, waitFor } = renderHook(() => useTaxonomyApi(), { wrapper });
+      const { result } = renderHook(() => useTaxonomyApi(), { wrapper });
 
-      await act(async () => {
-        await waitFor(
-          () => {
-            result.current.searchSpeciesByTerms(['aaaa', 'bbbb']).then((data) => {
-              expect(data).toEqual(mockSearchTermResponse.searchResponse);
-            });
-          },
-          { timeout: 2000 }
-        );
-      });
+      await waitFor(
+        () => {
+          result.current.searchSpeciesByTerms(['aaaa', 'bbbb']).then((data) => {
+            expect(data).toEqual(mockSearchTermResponse.searchResponse);
+          });
+        },
+        { timeout: 2000 }
+      );
     });
   });
 });

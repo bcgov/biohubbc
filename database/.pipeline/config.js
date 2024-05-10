@@ -19,12 +19,7 @@ const deployChangeId = (isStaticDeployment && 'deploy') || changeId;
 const branch = (isStaticDeployment && options.branch) || null;
 const tag = (branch && `build-${version}-${changeId}-${branch}`) || `build-${version}-${changeId}`;
 
-// Default: run both seeding and migrations
-let dbSetupDockerfilePath = './.docker/db/Dockerfile.setup';
-if (isStaticDeployment && options.branch === 'prod') {
-  // If this is static build to prod, then only run the migrations
-  dbSetupDockerfilePath = './.docker/db/Dockerfile.migrate';
-}
+const dbSetupDockerfilePath = './.docker/db/Dockerfile.setup';
 
 const processOptions = (options) => {
   const result = { ...options };
@@ -80,7 +75,7 @@ const phases = {
     cpuRequest: '50m',
     cpuLimit: '600m',
     memoryRequest: '100Mi',
-    memoryLimit: '3Gi',
+    memoryLimit: '4Gi',
     replicas: '1'
   },
   test: {
@@ -95,11 +90,11 @@ const phases = {
     nodeEnv: 'production',
     tz: config.timezone.db,
     dbSetupDockerfilePath: dbSetupDockerfilePath,
-    volumeCapacity: '3Gi',
+    volumeCapacity: '20Gi',
     cpuRequest: '50m',
-    cpuLimit: '1000m',
+    cpuLimit: '2000m',
     memoryRequest: '100Mi',
-    memoryLimit: '3Gi',
+    memoryLimit: '5Gi',
     replicas: '1'
   },
   prod: {
@@ -114,11 +109,11 @@ const phases = {
     nodeEnv: 'production',
     tz: config.timezone.db,
     dbSetupDockerfilePath: dbSetupDockerfilePath,
-    volumeCapacity: '5Gi',
+    volumeCapacity: '20Gi',
     cpuRequest: '50m',
-    cpuLimit: '1000m',
+    cpuLimit: '4000m',
     memoryRequest: '100Mi',
-    memoryLimit: '3Gi',
+    memoryLimit: '10Gi',
     replicas: '1'
   }
 };

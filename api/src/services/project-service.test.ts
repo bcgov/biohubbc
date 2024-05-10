@@ -5,7 +5,6 @@ import sinonChai from 'sinon-chai';
 import { GetIUCNClassificationData, GetObjectivesData, ProjectData, ProjectListData } from '../models/project-view';
 import { ProjectRepository } from '../repositories/project-repository';
 import { getMockDBConnection } from '../__mocks__/db';
-import { HistoryPublishService } from './history-publish-service';
 import { ProjectService } from './project-service';
 
 chai.use(sinonChai);
@@ -61,50 +60,10 @@ describe('ProjectService', () => {
 
       const repoStub = sinon.stub(ProjectRepository.prototype, 'getProjectCount').resolves(69);
 
-      const response = await service.getProjectCount(false, 1001);
+      const response = await service.getProjectCount({}, false, 1001);
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(69);
-    });
-  });
-
-  describe('getProjectSupplementaryDataById', () => {
-    it('returns project metadata publish data', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new ProjectService(dbConnection);
-
-      const mockProjectMetadataPublish = {
-        project_metadata_publish_id: 1,
-        project_id: 1,
-        event_timestamp: '',
-        submission_uuid: '',
-        create_date: '',
-        create_user: 1,
-        update_date: null,
-        update_user: null,
-        revision_count: 1
-      };
-
-      const repoStub = sinon
-        .stub(HistoryPublishService.prototype, 'getProjectMetadataPublishRecord')
-        .resolves(mockProjectMetadataPublish);
-
-      const response = await service.getProjectSupplementaryDataById(1);
-
-      expect(repoStub).to.be.calledOnce;
-      expect(response).to.eql({ project_metadata_publish: mockProjectMetadataPublish });
-    });
-
-    it('returns null project metadata publish data', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new ProjectService(dbConnection);
-
-      const repoStub = sinon.stub(HistoryPublishService.prototype, 'getProjectMetadataPublishRecord').resolves(null);
-
-      const response = await service.getProjectSupplementaryDataById(1);
-
-      expect(repoStub).to.be.calledOnce;
-      expect(response).to.eql({ project_metadata_publish: null });
     });
   });
 

@@ -70,6 +70,7 @@ const SurveySpatialToolbar = (props: ISurveySptialToolbarProps) => {
           horizontal: 'right'
         }}
         sx={{
+          mt: 1,
           '& a': {
             display: 'flex',
             px: 2,
@@ -102,7 +103,7 @@ const SurveySpatialToolbar = (props: ISurveySptialToolbarProps) => {
           flexDirection: 'column'
         }}>
         <Toolbar sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 2 }}>
-          <Typography variant="h3" flex="1 1 auto">
+          <Typography variant="h2" flex="1 1 auto">
             Survey Data
           </Typography>
           <ProjectRoleGuard
@@ -123,7 +124,7 @@ const SurveySpatialToolbar = (props: ISurveySptialToolbarProps) => {
           </ProjectRoleGuard>
         </Toolbar>
         <Divider flexItem></Divider>
-        <Box p={2}>
+        <Box p={2} display="flex" justifyContent="space-between">
           <ToggleButtonGroup
             value={props.activeView}
             onChange={updateDatasetView}

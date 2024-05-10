@@ -11,7 +11,7 @@ import * as get_survey_sample_site_record from './index';
 
 chai.use(sinonChai);
 
-describe('getSurveySampleLocationRecords', () => {
+describe('getSurveySampleLocationRecord', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -24,7 +24,7 @@ describe('getSurveySampleLocationRecords', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     try {
-      const requestHandler = get_survey_sample_site_record.getSurveySampleLocationRecords();
+      const requestHandler = get_survey_sample_site_record.getSurveySampleLocationRecord();
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
@@ -48,7 +48,7 @@ describe('getSurveySampleLocationRecords', () => {
     sinon.stub(SampleLocationService.prototype, 'getSampleLocationsForSurveyId').rejects(new Error('an error'));
 
     try {
-      const requestHandler = get_survey_sample_site_record.getSurveySampleLocationRecords();
+      const requestHandler = get_survey_sample_site_record.getSurveySampleLocationRecord();
 
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
@@ -80,13 +80,15 @@ describe('getSurveySampleLocationRecords', () => {
       update_date: 'update_date',
       update_user: 2,
       revision_count: 1,
-      sample_methods: []
+      sample_methods: [],
+      blocks: [],
+      stratums: []
     };
 
     sinon.stub(SampleLocationService.prototype, 'getSampleLocationsCountBySurveyId').resolves(1);
     sinon.stub(SampleLocationService.prototype, 'getSampleLocationsForSurveyId').resolves([sampleLocation]);
 
-    const requestHandler = get_survey_sample_site_record.getSurveySampleLocationRecords();
+    const requestHandler = get_survey_sample_site_record.getSurveySampleLocationRecord();
 
     await requestHandler(mockReq, mockRes, mockNext);
 

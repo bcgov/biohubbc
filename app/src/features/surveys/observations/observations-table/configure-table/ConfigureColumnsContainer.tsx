@@ -4,10 +4,9 @@ import {
   SIMS_OBSERVATIONS_HIDDEN_COLUMNS,
   SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS
 } from 'constants/session-storage';
-import { IObservationTableRow, MeasurementColumn } from 'contexts/observationsTableContext';
+import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { ConfigureColumns } from 'features/surveys/observations/observations-table/configure-table/ConfigureColumns';
-import { getMeasurementColumns } from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitionsUtils';
 import { useObservationsTableContext } from 'hooks/useContext';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { useCallback, useContext, useEffect, useMemo } from 'react';
@@ -91,24 +90,28 @@ export const ConfigureColumnsContainer = (props: IConfigureColumnsContainerProps
   }, [hideableColumns, observationsTableContext, surveyId]);
 
   /**
-   * Removes measurement columns from the observations table, ignoring columns that don't exist.
+   * Handles the removal of measurement columns from the table.
    *
    * @param {string[]} measurementColumnsToRemove The `field` names of the columns to remove
    */
   const onRemoveMeasurements = useCallback(
     (measurementColumnsToRemove: string[]) => {
-      observationsTableContext.setMeasurementColumns((currentColumns) => {
-        const remainingColumns = currentColumns.filter(
-          (currentColumn) => !measurementColumnsToRemove.includes(currentColumn.colDef.field)
-        );
+      // Delete the measurement columns from the database
+      observationsTableContext.deleteObservationMeasurementColumns(measurementColumnsToRemove, () => {
+        // Remove the measurement columns from the table context
+        observationsTableContext.setMeasurementColumns((currentColumns) => {
+          const remainingColumns = currentColumns.filter(
+            (currentColumn) => !measurementColumnsToRemove.includes(currentColumn.taxon_measurement_id)
+          );
 
-        // Store user-added mesurement columns in local storage
-        sessionStorage.setItem(
-          getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS),
-          JSON.stringify(remainingColumns)
-        );
+          // Store all remaining measurement definitions in local storage
+          sessionStorage.setItem(
+            getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS),
+            JSON.stringify(remainingColumns)
+          );
 
-        return remainingColumns;
+          return remainingColumns;
+        });
       });
     },
     [observationsTableContext, surveyId]
@@ -125,18 +128,16 @@ export const ConfigureColumnsContainer = (props: IConfigureColumnsContainerProps
       return;
     }
 
-    const measurementColumnsToAdd: MeasurementColumn[] = getMeasurementColumns(
-      measurements,
-      observationsTableContext.hasError
-    );
-
+    // Add the measurement columns to the table context
     observationsTableContext.setMeasurementColumns((currentColumns) => {
-      const newColumns = measurementColumnsToAdd.filter(
+      const newColumns = measurements.filter(
         (columnToAdd) =>
-          !currentColumns.find((currentColumn) => currentColumn.colDef.field === columnToAdd.colDef.field)
+          !currentColumns.find(
+            (currentColumn) => currentColumn.taxon_measurement_id === columnToAdd.taxon_measurement_id
+          )
       );
 
-      // Store user-added mesurement columns in local storage
+      // Store all measurement definitions in local storage
       sessionStorage.setItem(
         getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS),
         JSON.stringify([...currentColumns, ...newColumns])

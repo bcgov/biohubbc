@@ -14,14 +14,21 @@ export type SurveyStratum = z.infer<typeof SurveyStratum>;
 
 export const SurveyStratumRecord = z.object({
   name: z.string(),
-  description: z.string().nullable(),
+  description: z.string(),
   survey_id: z.number(),
-  survey_stratum_id: z.number(),
-  revision_count: z.number(),
-  update_date: z.string().nullable()
+  survey_stratum_id: z.number().nullable(),
+  revision_count: z.number()
 });
 
 export type SurveyStratumRecord = z.infer<typeof SurveyStratumRecord>;
+
+export const SurveyStratumDetails = z
+  .object({
+    sample_stratum_count: z.number()
+  })
+  .extend(SurveyStratumRecord.shape);
+
+export type SurveyStratumDetails = z.infer<typeof SurveyStratumDetails>;
 
 export const SiteSelectionData = z.object({
   strategies: z.array(z.string()),
@@ -56,11 +63,23 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
       .where('sss.survey_id', surveyId)
       .leftJoin('site_strategy as ss', 'ss.site_strategy_id', 'sss.site_strategy_id');
 
-    const stratumsQuery = getKnex().select().from('survey_stratum').where('survey_id', surveyId);
+    const stratumsQuery = getKnex()
+      .select(
+        'ss.survey_stratum_id',
+        'ss.survey_id',
+        'ss.name',
+        'ss.description',
+        'ss.revision_count',
+        getKnex().raw('COUNT(sss.survey_stratum_id)::INTEGER AS sample_stratum_count')
+      )
+      .from('survey_stratum as ss')
+      .leftJoin('survey_sample_stratum as sss', 'ss.survey_stratum_id', 'sss.survey_stratum_id')
+      .where('ss.survey_id', surveyId)
+      .groupBy('ss.survey_stratum_id', 'ss.survey_id', 'ss.name', 'ss.description', 'ss.revision_count');
 
     const [strategiesResponse, stratumsResponse] = await Promise.all([
       this.connection.knex(strategiesQuery, z.object({ name: z.string() })),
-      this.connection.knex(stratumsQuery, SurveyStratumRecord)
+      this.connection.knex(stratumsQuery, SurveyStratumDetails)
     ]);
 
     const strategies = strategiesResponse.rows.map((row) => row.name);
@@ -90,7 +109,7 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
 
     const response = await this.connection.sql(deleteStatement);
 
-    return response.rowCount;
+    return response.rowCount ?? 0;
   }
 
   /**
@@ -164,11 +183,11 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
       .delete()
       .from('survey_stratum')
       .whereIn('survey_stratum_id', stratumIds)
-      .returning('*');
+      .returning(['survey_stratum_id', 'survey_id', 'name', 'description', 'revision_count']);
 
     const response = await this.connection.knex(deleteQuery, SurveyStratumRecord);
 
-    return response.rowCount;
+    return response.rowCount ?? 0;
   }
 
   /**
@@ -191,7 +210,7 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
           description: stratum.description
         }))
       )
-      .returning('*');
+      .returning(['survey_stratum_id', 'survey_id', 'name', 'description', 'revision_count']);
 
     const response = await this.connection.knex(insertQuery, SurveyStratumRecord);
 
@@ -220,20 +239,20 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
       return getKnex()
         .table('survey_stratum')
         .update({
-          survey_id: surveyId,
           name: stratum.name,
           description: stratum.description,
           update_date: 'now()'
         })
         .where('survey_stratum_id', stratum.survey_stratum_id)
-        .returning('*');
+        .where('survey_id', surveyId)
+        .returning(['survey_stratum_id', 'survey_id', 'name', 'description', 'revision_count']);
     };
 
     const responses = await Promise.all(
       stratums.map((stratum) => this.connection.knex(makeUpdateQuery(stratum), SurveyStratumRecord))
     );
 
-    const totalRowCount = responses.reduce((sum, response) => sum + response.rowCount, 0);
+    const totalRowCount = responses.reduce((sum, response) => sum + (response.rowCount ?? 0), 0);
 
     if (totalRowCount !== stratums.length) {
       throw new ApiExecuteSQLError('Failed to update survey stratums', [

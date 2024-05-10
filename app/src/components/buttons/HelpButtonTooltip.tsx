@@ -1,6 +1,9 @@
 import { mdiHelpCircleOutline } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import { Box, IconButton, Tooltip, Zoom } from '@mui/material';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import Zoom from '@mui/material/Zoom';
 import { ReactNode } from 'react';
 
 interface HelpButtonTooltipProps {
@@ -16,7 +19,7 @@ interface HelpButtonTooltipProps {
  * @param {HelpButtonTooltipProps}
  * @return {*}
  */
-
+//TODO: Update positioning of the tooltip to be more dynamic (Add Animal form)
 const HelpButtonTooltip = ({ content, children, iconSx }: HelpButtonTooltipProps) => {
   return (
     <Box

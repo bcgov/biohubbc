@@ -16,6 +16,7 @@ describe('PostSurveyObservationToBiohubObject', () => {
     const obj = {
       survey_observation_id: 1,
       survey_id: 1,
+      wldtaxonomic_units_id: 1,
       survey_sample_site_id: 1,
       survey_sample_method_id: 1,
       survey_sample_period_id: 1,
@@ -101,6 +102,7 @@ describe('PostSurveyToBiohubObject', () => {
       uuid: '1',
       project_id: 1,
       survey_name: 'survey_name',
+      progress_id: 1,
       start_date: 'start_date',
       end_date: 'end_date',
       survey_types: [9],
@@ -157,6 +159,7 @@ describe('PostSurveySubmissionToBioHubObject', () => {
       {
         survey_observation_id: 1,
         survey_id: 1,
+        wldtaxonomic_units_id: 1,
         survey_sample_site_id: 1,
         survey_sample_method_id: 1,
         survey_sample_period_id: 1,
@@ -180,6 +183,7 @@ describe('PostSurveySubmissionToBioHubObject', () => {
       uuid: '1',
       project_id: 1,
       survey_name: 'survey_name',
+      progress_id: 1,
       start_date: 'start_date',
       end_date: 'end_date',
       survey_types: [9],

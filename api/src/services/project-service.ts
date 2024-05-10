@@ -1,6 +1,5 @@
 import { default as dayjs } from 'dayjs';
 import { Feature } from 'geojson';
-import { COMPLETION_STATUS } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/http-error';
 import { IPostIUCN, PostProjectObject } from '../models/project-create';
@@ -13,8 +12,7 @@ import {
   IGetProject,
   IProjectAdvancedFilters,
   ProjectData,
-  ProjectListData,
-  ProjectSupplementaryData
+  ProjectListData
 } from '../models/project-view';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { ProjectUser } from '../repositories/project-participation-repository';
@@ -29,6 +27,17 @@ import { PlatformService } from './platform-service';
 import { ProjectParticipationService } from './project-participation-service';
 import { RegionService } from './region-service';
 import { SurveyService } from './survey-service';
+
+/**
+ * Project Completion Status
+ *
+ * @export
+ * @enum {string}
+ */
+export enum COMPLETION_STATUS {
+  COMPLETED = 'Completed',
+  ACTIVE = 'Active'
+}
 
 export class ProjectService extends DBService {
   attachmentService: AttachmentService;
@@ -77,13 +86,18 @@ export class ProjectService extends DBService {
   /**
    * Returns the total count of projects that are visible to the given user.
    *
+   * @param {IProjectAdvancedFilters} filterFields
    * @param {boolean} isUserAdmin
    * @param {(number | null)} systemUserId
    * @return {*}  {Promise<number>}
    * @memberof ProjectService
    */
-  async getProjectCount(isUserAdmin: boolean, systemUserId: number | null): Promise<number> {
-    return this.projectRepository.getProjectCount(isUserAdmin, systemUserId);
+  async getProjectCount(
+    filterFields: IProjectAdvancedFilters,
+    isUserAdmin: boolean,
+    systemUserId: number | null
+  ): Promise<number> {
+    return this.projectRepository.getProjectCount(filterFields, isUserAdmin, systemUserId);
   }
 
   /**
@@ -107,19 +121,6 @@ export class ProjectService extends DBService {
       participants: projectParticipantsData,
       iucn: iucnData
     };
-  }
-
-  /**
-   * Get Project supplementary data for a given project ID
-   *
-   * @param {number} projectId
-   * @returns {*} {Promise<ProjectSupplementaryData>}
-   * @memberof ProjectService
-   */
-  async getProjectSupplementaryDataById(projectId: number): Promise<ProjectSupplementaryData> {
-    const projectMetadataPublish = await this.historyPublishService.getProjectMetadataPublishRecord(projectId);
-
-    return { project_metadata_publish: projectMetadataPublish };
   }
 
   async getProjectEntitiesById(projectId: number, entities: string[]): Promise<Partial<IGetProject>> {

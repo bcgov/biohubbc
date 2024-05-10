@@ -14,7 +14,8 @@ const FormikErrorSnackbar = () => {
     }
 
     setOpenSnackbar({ open: true, msg: 'One or more fields are invalid.' });
-  }, [errors, submitCount, isSubmitting]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [submitCount, isSubmitting]);
 
   const closeSnackBar = () =>
     setOpenSnackbar((currentState) => {

@@ -23,7 +23,7 @@ import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { shapeFileFeatureDesc, shapeFileFeatureName } from 'utils/Utils';
 import { v4 } from 'uuid';
-import { ISurveyLocation, ISurveyLocationForm } from '../StudyAreaForm';
+import { ISurveyLocation, ISurveyLocationForm } from './StudyAreaForm';
 
 export interface ISurveyAreMapControlProps {
   map_id: string;
@@ -73,7 +73,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
         }}>
         <Typography
           data-testid="map-control-title"
-          component="h4"
+          component="div"
           fontWeight="700"
           sx={{
             flex: '1 1 auto'
@@ -204,7 +204,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
           <StaticLayers
             layers={values.locations
               .filter((location) => !location?.leaflet_id) // filter out user drawn locations
-              .map((location, index) => {
+              .map((location) => {
                 // Map geojson features into layer objects for leaflet
                 return {
                   layerName: location.name,

@@ -1,8 +1,10 @@
-import { mdiChevronDown, mdiCogOutline, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiCalendarRange, mdiChevronDown, mdiCogOutline, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
+import grey from '@mui/material/colors/grey';
 import Link from '@mui/material/Link';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
@@ -26,6 +28,7 @@ import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
+import SurveyProgressChip from '../components/SurveyProgressChip';
 
 /**
  * Survey header for a single-survey view.
@@ -47,8 +50,8 @@ const SurveyHeader = () => {
   const dialogContext = useContext(DialogContext);
 
   const defaultYesNoDialogProps = {
-    dialogTitle: 'Delete Survey?',
-    dialogText: 'Are you sure you want to delete this survey? This action cannot be undone.',
+    dialogTitle: DeleteSurveyI18N.deleteTitle,
+    dialogText: DeleteSurveyI18N.deleteText,
     open: false,
     onClose: () => dialogContext.setYesNoDialog({ open: false }),
     onNo: () => dialogContext.setYesNoDialog({ open: false }),
@@ -102,7 +105,7 @@ const SurveyHeader = () => {
       history.push(`/admin/projects/${surveyContext.projectId}`);
     } catch (error) {
       const apiError = error as APIError;
-      showDeleteErrorDialog({ dialogText: apiError.message, open: true });
+      showDeleteErrorDialog({ dialogErrorDetails: [apiError.message], open: true });
       return error;
     }
   };
@@ -142,14 +145,17 @@ const SurveyHeader = () => {
         }
         subTitleJSX={
           <Stack flexDirection="row" alignItems="center" gap={0.75} color="text.secondary">
-            <Typography component="span">Survey Timeline:</Typography>
+            <Icon path={mdiCalendarRange} size={0.8} color={grey[600]} style={{ marginTop: 1.5 }} />
             <Typography component="span">
               {getFormattedDateRangeString(
-                DATE_FORMAT.ShortMediumDateFormat,
+                DATE_FORMAT.MediumDateFormat,
                 surveyWithDetails.surveyData.survey_details.start_date,
                 surveyWithDetails.surveyData.survey_details.end_date
               )}
             </Typography>
+            <Box ml={1}>
+              <SurveyProgressChip progress_id={surveyWithDetails.surveyData.survey_details.progress_id} />
+            </Box>
           </Stack>
         }
         buttonJSX={

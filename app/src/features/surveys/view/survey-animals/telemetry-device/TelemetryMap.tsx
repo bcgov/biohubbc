@@ -1,4 +1,6 @@
-import { Box, Paper, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
 import AdditionalLayers from 'components/map/components/AdditionalLayers';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
@@ -114,7 +116,7 @@ const TelemetryMap = ({ deploymentData, telemetryData }: ITelemetryMapProps): JS
     }
   }, [telemetryData?.points.features]);
 
-  const point = (feature: Feature, latlng: LatLng) => {
+  const point = (_feature: Feature, latlng: LatLng) => {
     return new L.CircleMarker(latlng, { radius: 5, fillOpacity: 1 });
   };
 

@@ -1,5 +1,4 @@
 import { LoadingButton } from '@mui/lab';
-import Box from '@mui/material/Box';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -23,15 +22,15 @@ import { ICreateSurveyRequest, IEditSurveyRequest } from 'interfaces/useSurveyAp
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
-import { AgreementsInitialValues } from './components/AgreementsForm';
-import { GeneralInformationInitialValues } from './components/GeneralInformationForm';
-import { ProprietaryDataInitialValues } from './components/ProprietaryDataForm';
-import { PurposeAndMethodologyInitialValues } from './components/PurposeAndMethodologyForm';
-import { SurveyLocationInitialValues } from './components/StudyAreaForm';
-import { SurveyBlockInitialValues } from './components/SurveyBlockSection';
-import { SurveyFundingSourceFormInitialValues } from './components/SurveyFundingSourceForm';
-import { SurveySiteSelectionInitialValues } from './components/SurveySiteSelectionForm';
-import { SurveyUserJobFormInitialValues } from './components/SurveyUserForm';
+import { AgreementsInitialValues } from './components/agreements/AgreementsForm';
+import { ProprietaryDataInitialValues } from './components/agreements/ProprietaryDataForm';
+import { SurveyFundingSourceFormInitialValues } from './components/funding/SurveyFundingSourceForm';
+import { GeneralInformationInitialValues } from './components/general-information/GeneralInformationForm';
+import { SurveyLocationInitialValues } from './components/locations/StudyAreaForm';
+import { PurposeAndMethodologyInitialValues } from './components/methodology/PurposeAndMethodologyForm';
+import { SurveyUserJobFormInitialValues } from './components/participants/SurveyUserForm';
+import { SurveyBlockInitialValues } from './components/sampling-strategy/blocks/SurveyBlockForm';
+import { SurveySiteSelectionInitialValues } from './components/sampling-strategy/SurveySiteSelectionForm';
 import EditSurveyForm from './edit/EditSurveyForm';
 
 export const defaultSurveyDataFormValues: ICreateSurveyRequest = {
@@ -152,7 +151,7 @@ const CreateSurveyPage = () => {
    * @param {History.Location} location
    * @return {*}
    */
-  const handleLocationChange = (location: History.Location, action: History.Action) => {
+  const handleLocationChange = (location: History.Location) => {
     if (!dialogContext.yesNoDialogProps.open) {
       // If the cancel dialog is not open: open it
       dialogContext.setYesNoDialog({
@@ -205,32 +204,30 @@ const CreateSurveyPage = () => {
         }
       />
 
-      <Box my={3}>
-        <Container maxWidth="xl">
-          <Box p={5} component={Paper} display="block">
-            <EditSurveyForm
-              initialSurveyData={defaultSurveyDataFormValues}
-              handleSubmit={(formikData) => handleSubmit(formikData as unknown as ICreateSurveyRequest)}
-              formikRef={formikRef}
-            />
-            <Stack mt={5} flexDirection="row" justifyContent="flex-end" gap={1}>
-              <LoadingButton
-                loading={isSaving}
-                type="submit"
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  formikRef.current?.submitForm();
-                }}>
-                Save and Exit
-              </LoadingButton>
-              <Button disabled={isSaving} variant="outlined" color="primary" onClick={handleCancel}>
-                Cancel
-              </Button>
-            </Stack>
-          </Box>
-        </Container>
-      </Box>
+      <Container maxWidth="xl" sx={{ py: 3 }}>
+        <Paper sx={{ p: 5 }}>
+          <EditSurveyForm
+            initialSurveyData={defaultSurveyDataFormValues}
+            handleSubmit={(formikData) => handleSubmit(formikData as unknown as ICreateSurveyRequest)}
+            formikRef={formikRef}
+          />
+          <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
+            <LoadingButton
+              loading={isSaving}
+              type="submit"
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                formikRef.current?.submitForm();
+              }}>
+              Save and Exit
+            </LoadingButton>
+            <Button disabled={isSaving} variant="outlined" color="primary" onClick={handleCancel}>
+              Cancel
+            </Button>
+          </Stack>
+        </Paper>
+      </Container>
     </>
   );
 };

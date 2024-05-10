@@ -4,7 +4,7 @@ import multer from 'multer';
 import { OpenAPIV3 } from 'openapi-types';
 import swaggerUIExperss from 'swagger-ui-express';
 import { defaultPoolConfig, initDBPool } from './database/db';
-import { ensureHTTPError, HTTPErrorType } from './errors/http-error';
+import { ensureHTTPError, HTTP500 } from './errors/http-error';
 import {
   authorizeAndAuthenticateMiddleware,
   getCritterbaseProxyMiddleware,
@@ -47,6 +47,8 @@ app.use(function (req: Request, res: Response, next: NextFunction) {
 });
 
 // Enable Critterbase API proxy
+// Note: This must be added to express directly as it is not part of the openapi spec, and therefore can't be handled
+// by the express-openapi framework.
 app.use(
   '/api/critterbase',
   authorizeAndAuthenticateMiddleware,
@@ -58,7 +60,7 @@ app.use(
 const openAPIFramework = initialize({
   apiDoc: {
     ...(rootAPIDoc as OpenAPIV3.Document), // base open api spec
-    'x-express-openapi-additional-middleware': [validateAllResponses],
+    'x-express-openapi-additional-middleware': getAdditionalMiddleware(),
     'x-express-openapi-validation-strict': true
   },
   app: app, // express app to initialize
@@ -102,14 +104,22 @@ const openAPIFramework = initialize({
       return authenticateRequestOptional(req);
     }
   },
-  errorTransformer: function (openapiError: object, ajvError: object): object {
-    // Transform openapi-request-validator and openapi-response-validator errors
-    defaultLog.error({ label: 'errorTransformer', message: 'ajvError', ajvError });
+  errorTransformer: function (_, ajvError: object): object {
+    // Transform openapi-request-validator or openapi-response-validator errors
     return ajvError;
   },
   // If `next` is not included express will silently skip calling the `errorMiddleware` entirely.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   errorMiddleware: function (error, req, res, next) {
+    defaultLog.error({
+      label: 'errorMiddleware',
+      message: 'error',
+      error,
+      req_url: `${req.method} ${req.url}`,
+      req_params: req.params,
+      req_body: req.body
+    });
+
     // Ensure all errors (intentionally thrown or not) are in the same format as specified by the schema
     const httpError = ensureHTTPError(error);
 
@@ -140,6 +150,22 @@ try {
 }
 
 /**
+ * Get additional middleware to apply to all routes.
+ *
+ * @return {*}  {express.RequestHandler[]}
+ */
+function getAdditionalMiddleware(): express.RequestHandler[] {
+  const additionalMiddleware = [];
+
+  if (process.env.API_RESPONSE_VALIDATION_ENABLED === 'true') {
+    // Validate endpoint responses against openapi spec
+    additionalMiddleware.push(validateAllResponses);
+  }
+
+  return additionalMiddleware;
+}
+
+/**
  * Middleware to apply openapi response validation to all routes.
  *
  * Note: validates `<data>` sent via `res.status(<status>).json(<data>)` against the matching openapi response schema
@@ -157,15 +183,16 @@ function validateAllResponses(req: Request, res: Response, next: NextFunction) {
 
     res.json = (...args) => {
       if (res.get('x-express-openapi-validation-error-for')) {
-        // Already validated, return
+        // Already validated this response once, skip validation and return
         return json.apply(res, args);
       }
 
-      const body = args[0];
+      const reqBody = args[0];
 
+      // Run openapi response validation function
       const validationResult: { message: any; errors: any[] } | undefined = res['validateResponse'](
         res.statusCode,
-        body
+        reqBody
       );
 
       let validationMessage = '';
@@ -186,16 +213,14 @@ function validateAllResponses(req: Request, res: Response, next: NextFunction) {
         defaultLog.debug({
           label: 'validateAllResponses',
           message: validationMessage,
-          responseBody: body,
-          errors: errorList
+          error: errorList,
+          req_url: `${req.method} ${req.url}`,
+          req_params: req.params,
+          req_body: req.body,
+          res_body: reqBody
         });
 
-        return res.status(500).json({
-          name: HTTPErrorType.INTERNAL_SERVER_ERROR,
-          status: 500,
-          message: validationMessage,
-          errors: errorList
-        });
+        throw new HTTP500(validationMessage, errorList);
       }
     };
   }

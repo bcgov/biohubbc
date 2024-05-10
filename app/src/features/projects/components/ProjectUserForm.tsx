@@ -2,8 +2,8 @@ import { mdiMagnify } from '@mdi/js';
 import Icon from '@mdi/react';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
 import Collapse from '@mui/material/Collapse';
+import grey from '@mui/material/colors/grey';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import AlertBar from 'components/alert/AlertBar';
@@ -16,7 +16,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { ICode } from 'interfaces/useCodesApi.interface';
 import { ICreateProjectRequest, IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { alphabetizeObjects } from 'utils/Utils';
 import yup from 'utils/YupSchema';
@@ -32,7 +32,7 @@ export const ProjectUserRoleYupSchema = yup.object().shape({
     )
     .min(1)
     .hasAtLeastOneValue(
-      'A minimum of one team member must be assigned the coordinator role.',
+      'There must be at least one person with the Coordinator role.',
       'project_role_names',
       PROJECT_ROLE.COORDINATOR
     )
@@ -50,10 +50,17 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
   const { handleSubmit, values, setFieldValue, errors, setErrors } = useFormikContext<ICreateProjectRequest>();
   const biohubApi = useBiohubApi();
 
-  const searchUserDataLoader = useDataLoader(() => biohubApi.user.searchSystemUser(''));
-  searchUserDataLoader.load();
+  const searchUserDataLoader = useDataLoader((keyword: string) => biohubApi.user.searchSystemUser(keyword));
 
   const [searchText, setSearchText] = useState('');
+
+  const [sortedUsers, setSortedUsers] = useState<ISystemUser[]>([]);
+
+  useEffect(() => {
+    if (searchUserDataLoader.data) {
+      setSortedUsers(alphabetizeObjects(searchUserDataLoader.data, 'display_name'));
+    }
+  }, [searchUserDataLoader.data]);
 
   const handleAddUser = (user: ISystemUser | IGetProjectParticipant) => {
     setFieldValue(`participants[${values.participants.length}]`, {
@@ -82,7 +89,10 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
   };
 
   const clearErrors = () => {
-    setErrors({ ...errors, participants: undefined });
+    const newErrors = { ...errors };
+    delete errors.participants;
+
+    setErrors(newErrors);
   };
 
   const alertBarText = (): { title: string; text: string } => {
@@ -123,11 +133,6 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
     return values.participants?.[index]?.project_role_names?.[0] || '';
   };
 
-  if (!searchUserDataLoader.data || !searchUserDataLoader.hasLoaded) {
-    // should probably replace this with a skeleton
-    return <CircularProgress className="pageProgress" size={40} />;
-  }
-
   return (
     <form onSubmit={handleSubmit}>
       <Box component="fieldset">
@@ -138,7 +143,7 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
           sx={{
             maxWidth: '72ch'
           }}>
-          A minimum of one team member must be assigned the coordinator role.
+          There must be at least one person with the Coordinator role.
         </Typography>
         {errors?.['participants'] && !values.participants.length && (
           <Box mt={3}>
@@ -160,8 +165,8 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
             id={'autocomplete-user-role-search'}
             data-testid={'autocomplete-user-role-search'}
             filterSelectedOptions
-            noOptionsText="No records found"
-            options={alphabetizeObjects(searchUserDataLoader.data, 'display_name')}
+            noOptionsText={'No records found'}
+            options={sortedUsers}
             filterOptions={(options, state) => {
               const searchFilter = createFilterOptions<ISystemUser>({ ignoreCase: true });
               const unselectedOptions = options.filter(
@@ -176,6 +181,11 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
                 setSearchText('');
               } else {
                 setSearchText(value);
+
+                if (value.length >= 3) {
+                  // Only search if the search text is at least 3 characters long
+                  searchUserDataLoader.refresh(value);
+                }
               }
             }}
             onChange={(_, option) => {
@@ -201,13 +211,23 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
             )}
             renderOption={(renderProps, renderOption) => {
               return (
-                <Box component="li" {...renderProps} key={renderOption.system_user_id}>
-                  <UserCard
-                    name={renderOption.display_name}
-                    email={renderOption.email}
-                    agency={renderOption.agency}
-                    type={renderOption.identity_source}
-                  />
+                <Box
+                  component="li"
+                  sx={{
+                    '& + li': {
+                      borderTop: '1px solid' + grey[300]
+                    }
+                  }}
+                  key={renderOption.system_user_id}
+                  {...renderProps}>
+                  <Box py={0.5} width="100%">
+                    <UserCard
+                      name={renderOption.display_name}
+                      email={renderOption.email}
+                      agency={renderOption.agency}
+                      type={renderOption.identity_source}
+                    />
+                  </Box>
                 </Box>
               );
             }}

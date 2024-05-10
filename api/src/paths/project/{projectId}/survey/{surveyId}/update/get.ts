@@ -2,7 +2,19 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { GeoJSONFeature } from '../../../../../../openapi/schemas/geoJson';
+import {
+  surveyBlockSchema,
+  surveyDetailsSchema,
+  surveyFundingSourceDataSchema,
+  surveyLocationSchema,
+  surveyPartnershipsSchema,
+  surveyPermitSchema,
+  surveyProprietorSchema,
+  surveyPurposeAndMethodologySchema,
+  surveySiteSelectionSchema,
+  surveySpeciesSchema
+} from '../../../../../../openapi/schemas/survey';
+import { surveyParticipationAndSystemUserSchema } from '../../../../../../openapi/schemas/user';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { SurveyService } from '../../../../../../services/survey-service';
 import { getLogger } from '../../../../../../utils/logger';
@@ -68,320 +80,77 @@ GET.apiDoc = {
           schema: {
             title: 'Survey get response object, for view purposes',
             type: 'object',
+            additionalProperties: false,
             required: ['surveyData'],
             properties: {
               surveyData: {
                 type: 'object',
+                additionalProperties: false,
                 required: [
                   'survey_details',
                   'species',
                   'permit',
                   'funding_sources',
+                  'partnerships',
                   'proprietor',
                   'purpose_and_methodology',
                   'locations',
-                  'participants'
+                  'site_selection'
                 ],
                 properties: {
-                  survey_details: {
-                    description: 'Survey Details',
-                    type: 'object',
-                    required: ['survey_name', 'start_date', 'survey_types', 'revision_count'],
-                    properties: {
-                      survey_name: {
-                        type: 'string'
-                      },
-                      start_date: {
-                        oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                        description: 'ISO 8601 date string for the funding end_date'
-                      },
-                      end_date: {
-                        oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                        nullable: true,
-                        description: 'ISO 8601 date string for the funding end_date'
-                      },
-                      survey_types: {
-                        type: 'array',
-                        items: {
-                          type: 'integer',
-                          minimum: 1
-                        }
-                      },
-                      revision_count: {
-                        type: 'number'
-                      }
-                    }
-                  },
-                  species: {
-                    description: 'Survey Species',
-                    type: 'object',
-                    required: ['focal_species', 'ancillary_species'],
-                    properties: {
-                      ancillary_species: {
-                        nullable: true,
-                        type: 'array',
-                        items: {
-                          type: 'object',
-                          required: ['tsn', 'commonNames', 'scientificName'],
-                          properties: {
-                            tsn: {
-                              type: 'integer'
-                            },
-                            commonNames: {
-                              type: 'array',
-                              items: {
-                                type: 'string'
-                              }
-                            },
-                            scientificName: {
-                              type: 'string'
-                            }
-                          }
-                        }
-                      },
-                      focal_species: {
-                        nullable: true,
-                        type: 'array',
-                        items: {
-                          type: 'object',
-                          required: ['tsn', 'commonNames', 'scientificName'],
-                          properties: {
-                            tsn: {
-                              type: 'integer'
-                            },
-                            commonNames: {
-                              type: 'array',
-                              items: {
-                                type: 'string'
-                              }
-                            },
-                            scientificName: {
-                              type: 'string'
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  permit: {
-                    description: 'Survey Permit',
-                    type: 'object',
-                    properties: {
-                      permits: {
-                        type: 'array',
-                        items: {
-                          type: 'object',
-                          required: ['permit_id', 'permit_number', 'permit_type'],
-                          properties: {
-                            permit_id: {
-                              type: 'number',
-                              minimum: 1
-                            },
-                            permit_number: {
-                              type: 'string'
-                            },
-                            permit_type: {
-                              type: 'string'
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
+                  survey_details: surveyDetailsSchema,
+                  species: surveySpeciesSchema,
+                  permit: surveyPermitSchema,
                   funding_sources: {
                     type: 'array',
-                    items: {
-                      type: 'object',
-                      required: [
-                        'survey_funding_source_id',
-                        'survey_id',
-                        'funding_source_id',
-                        'amount',
-                        'revision_count'
-                      ],
-                      properties: {
-                        survey_funding_source_id: {
-                          type: 'number',
-                          minimum: 1
-                        },
-                        survey_id: {
-                          type: 'number',
-                          minimum: 1
-                        },
-                        funding_source_id: {
-                          type: 'number',
-                          minimum: 1
-                        },
-                        funding_source_name: {
-                          type: 'string'
-                        },
-                        amount: {
-                          type: 'number'
-                        },
-                        revision_count: {
-                          type: 'number'
-                        }
-                      }
-                    }
+                    items: surveyFundingSourceDataSchema
                   },
-                  purpose_and_methodology: {
-                    description: 'Survey Details',
-                    type: 'object',
-                    required: ['additional_details', 'intended_outcome_ids', 'vantage_code_ids', 'revision_count'],
-                    properties: {
-                      additional_details: {
-                        type: 'string',
-                        nullable: true
-                      },
-                      intended_outcome_ids: {
-                        type: 'array',
-                        items: {
-                          type: 'number'
-                        },
-                        nullable: true
-                      },
-                      vantage_code_ids: {
-                        type: 'array',
-                        items: {
-                          type: 'number'
-                        }
-                      }
-                    }
-                  },
+                  partnerships: surveyPartnershipsSchema,
+                  purpose_and_methodology: surveyPurposeAndMethodologySchema,
                   proprietor: {
-                    description: 'Survey Proprietor Details',
-                    type: 'object',
-                    nullable: true,
-                    required: [
-                      'survey_data_proprietary',
-                      'proprietor_type_name',
-                      'proprietary_data_category',
-                      'first_nations_name',
-                      'first_nations_id',
-                      'category_rationale',
-                      'proprietor_name',
-                      'disa_required'
-                    ],
+                    ...surveyProprietorSchema,
                     properties: {
+                      ...surveyProprietorSchema.properties,
                       survey_data_proprietary: {
                         type: 'string'
                       },
-                      proprietor_type_name: {
-                        type: 'string',
-                        nullable: true
+                      proprietary_data_category: {
+                        type: 'number'
+                      },
+                      first_nations_id: {
+                        type: 'number'
                       },
                       disa_required: {
                         type: 'string'
-                      },
-                      first_nations_id: {
-                        type: 'number',
-                        nullable: true
-                      },
-                      first_nations_name: {
-                        type: 'string',
-                        nullable: true
-                      },
-                      proprietor_name: {
-                        type: 'string',
-                        nullable: true
-                      },
-                      proprietary_data_category: {
-                        type: 'number',
-                        nullable: true
-                      },
-                      category_rationale: {
-                        type: 'string',
-                        nullable: true
                       }
                     }
                   },
                   locations: {
                     description: 'Survey location data',
                     type: 'array',
-                    items: {
-                      type: 'object',
-                      required: [
-                        'survey_location_id',
-                        'name',
-                        'description',
-                        'geometry',
-                        'geography',
-                        'geojson',
-                        'revision_count'
-                      ],
-                      properties: {
-                        survey_location_id: {
-                          type: 'integer',
-                          minimum: 1
-                        },
-                        name: {
-                          type: 'string',
-                          maxLength: 100
-                        },
-                        description: {
-                          type: 'string',
-                          maxLength: 250
-                        },
-                        geometry: {
-                          type: 'string',
-                          nullable: true
-                        },
-                        geography: {
-                          type: 'string'
-                        },
-                        geojson: {
-                          type: 'array',
-                          items: {
-                            ...(GeoJSONFeature as object)
-                          }
-                        },
-                        revision_count: {
-                          type: 'integer',
-                          minimum: 0
-                        }
-                      }
-                    }
+                    items: surveyLocationSchema
                   },
                   participants: {
-                    description: 'Survey participants Details',
                     type: 'array',
                     items: {
-                      type: 'object',
-                      required: ['survey_participation_id', 'system_user_id', 'survey_job_id', 'survey_job_name'],
-                      properties: {
-                        survey_participation_id: {
-                          type: 'number',
-                          minimum: 1
-                        },
-                        system_user_id: {
-                          type: 'number',
-                          minimum: 1
-                        },
-                        survey_job_id: {
-                          type: 'number',
-                          minimum: 1
-                        },
-                        survey_job_name: {
-                          type: 'string'
-                        }
-                      }
+                      ...surveyParticipationAndSystemUserSchema
                     }
                   },
+                  site_selection: surveySiteSelectionSchema,
                   blocks: {
                     type: 'array',
-                    items: {
-                      type: 'object',
-                      required: ['survey_block_id', 'name', 'description'],
-                      properties: {
-                        survey_block_id: {
-                          type: 'number'
-                        },
-                        name: {
-                          type: 'string'
-                        },
-                        description: {
-                          type: 'string'
-                        }
+                    items: surveyBlockSchema
+                  },
+                  agreements: {
+                    type: 'object',
+                    additionalProperties: false,
+                    required: ['sedis_procedures_accepted', 'foippa_requirements_accepted'],
+                    properties: {
+                      sedis_procedures_accepted: {
+                        type: 'string'
+                      },
+                      foippa_requirements_accepted: {
+                        type: 'string'
                       }
                     }
                   }
@@ -395,6 +164,9 @@ GET.apiDoc = {
   }
 };
 
+/**
+ * @TODO remove, per https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-522
+ */
 export function getSurveyForUpdate(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);

@@ -1,5 +1,4 @@
 import { LoadingButton } from '@mui/lab';
-import Box from '@mui/material/Box';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -20,7 +19,7 @@ import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { IEditSurveyRequest, SurveyUpdateObject } from 'interfaces/useSurveyApi.interface';
+import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
@@ -38,15 +37,15 @@ const EditSurveyPage = () => {
 
   const surveyId = Number(urlParams['survey_id']);
 
-  const [formikRef] = useState(useRef<FormikProps<IEditSurveyRequest>>(null));
+  const formikRef = useRef<FormikProps<IEditSurveyRequest>>(null);
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
   const dialogContext = useContext(DialogContext);
-
   const codesContext = useContext(CodesContext);
+
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
@@ -59,25 +58,15 @@ const EditSurveyPage = () => {
 
   const surveyContext = useContext(SurveyContext);
 
-  const editSurveyDL = useDataLoader((projectId: number, surveyId: number) =>
+  const editSurveyDataLoader = useDataLoader((projectId: number, surveyId: number) =>
     biohubApi.survey.getSurveyForUpdate(projectId, surveyId)
   );
 
-  if (!editSurveyDL.data && surveyId) {
-    editSurveyDL.load(projectContext.projectId, surveyId);
+  if (surveyId) {
+    editSurveyDataLoader.load(projectContext.projectId, surveyId);
   }
-  const surveyData = editSurveyDL.data?.surveyData;
 
-  useEffect(() => {
-    const setFormikValues = (data: IEditSurveyRequest) => {
-      formikRef.current?.setValues(data);
-    };
-
-    if (editSurveyDL.data) {
-      setFormikValues(editSurveyDL.data.surveyData as unknown as IEditSurveyRequest);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editSurveyDL]);
+  const surveyData = editSurveyDataLoader.data?.surveyData;
 
   const defaultCancelDialogProps = {
     dialogTitle: EditSurveyI18N.cancelTitle,
@@ -122,12 +111,34 @@ const EditSurveyPage = () => {
    */
   const handleSubmit = async (values: IEditSurveyRequest) => {
     setIsSaving(true);
+
     try {
-      const response = await biohubApi.survey.updateSurvey(
-        projectContext.projectId,
-        surveyId,
-        values as unknown as SurveyUpdateObject
-      );
+      const response = await biohubApi.survey.updateSurvey(projectContext.projectId, surveyId, {
+        blocks: values.blocks,
+        funding_sources: values.funding_sources,
+        locations: values.locations.map((location) => ({
+          survey_location_id: location.survey_location_id,
+          geojson: location.geojson,
+          name: location.name,
+          description: location.description,
+          revision_count: location.revision_count
+        })),
+        participants: values.participants,
+        partnerships: values.partnerships,
+        permit: values.permit,
+        proprietor: values.proprietor,
+        purpose_and_methodology: values.purpose_and_methodology,
+        site_selection: {
+          stratums: values.site_selection.stratums.map((stratum) => ({
+            survey_stratum_id: stratum.survey_stratum_id,
+            name: stratum.name,
+            description: stratum.description
+          })),
+          strategies: values.site_selection.strategies
+        },
+        species: values.species,
+        survey_details: values.survey_details
+      });
 
       if (!response?.id) {
         showEditErrorDialog({
@@ -161,7 +172,7 @@ const EditSurveyPage = () => {
    * @param {History.Location} location
    * @return {*}
    */
-  const handleLocationChange = (location: History.Location, action: History.Action) => {
+  const handleLocationChange = (location: History.Location) => {
     if (!dialogContext.yesNoDialogProps.open) {
       // If the cancel dialog is not open: open it
       dialogContext.setYesNoDialog({
@@ -220,28 +231,26 @@ const EditSurveyPage = () => {
         }
       />
 
-      <Box my={3}>
-        <Container maxWidth="xl">
-          <Box p={5} component={Paper} display="block">
-            <EditSurveyForm initialSurveyData={surveyData} handleSubmit={handleSubmit} formikRef={formikRef} />
-            <Stack mt={5} flexDirection="row" justifyContent="flex-end" gap={1}>
-              <LoadingButton
-                loading={isSaving}
-                type="submit"
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  formikRef.current?.submitForm();
-                }}>
-                Save and Exit
-              </LoadingButton>
-              <Button disabled={isSaving} variant="outlined" color="primary" onClick={handleCancel}>
-                Cancel
-              </Button>
-            </Stack>
-          </Box>
-        </Container>
-      </Box>
+      <Container maxWidth="xl" sx={{ py: 3 }}>
+        <Paper sx={{ p: 5 }}>
+          <EditSurveyForm initialSurveyData={surveyData} handleSubmit={handleSubmit} formikRef={formikRef} />
+          <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
+            <LoadingButton
+              loading={isSaving}
+              type="submit"
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                formikRef.current?.submitForm();
+              }}>
+              Save and Exit
+            </LoadingButton>
+            <Button disabled={isSaving} variant="outlined" color="primary" onClick={handleCancel}>
+              Cancel
+            </Button>
+          </Stack>
+        </Paper>
+      </Container>
     </>
   );
 };

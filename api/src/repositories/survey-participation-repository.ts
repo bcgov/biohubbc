@@ -267,18 +267,26 @@ export class SurveyParticipationRepository extends BaseRepository {
   /**
    * Update a survey participant record.
    *
+   * @param {number} surveyId
    * @param {number} surveyParticipationId
    * @param {string} surveyJobName
    * @return {*}  {Promise<void>}
    * @memberof SurveyParticipationRepository
    */
-  async updateSurveyParticipant(surveyParticipationId: number, surveyJobName: string): Promise<void> {
+  async updateSurveyParticipantJob(
+    surveyId: number,
+    surveyParticipationId: number,
+    surveyJobName: string
+  ): Promise<void> {
     const sqlStatement = SQL`
       UPDATE survey_participation
       SET
         survey_job_id = (SELECT survey_job_id FROM survey_job WHERE name = ${surveyJobName} LIMIT 1)
       WHERE
-        survey_participation_id = ${surveyParticipationId};
+        survey_participation_id = ${surveyParticipationId}
+      AND
+        survey_id = ${surveyId}
+      ;
     `;
 
     const response = await this.connection.sql(sqlStatement);
@@ -293,16 +301,19 @@ export class SurveyParticipationRepository extends BaseRepository {
   /**
    * Delete a survey participation record.
    *
+   * @param {number} surveyId
    * @param {number} surveyParticipationId
    * @return {*}  {Promise<any>}
    * @memberof SurveyParticipationRepository
    */
-  async deleteSurveyParticipationRecord(surveyParticipationId: number): Promise<any> {
+  async deleteSurveyParticipationRecord(surveyId: number, surveyParticipationId: number): Promise<any> {
     const sqlStatement = SQL`
       DELETE FROM
         survey_participation
       WHERE
         survey_participation_id = ${surveyParticipationId}
+      AND
+        survey_id = ${surveyId}
       RETURNING
         *;
     `;

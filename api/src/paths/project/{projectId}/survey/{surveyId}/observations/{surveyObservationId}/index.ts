@@ -75,8 +75,10 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: [
               'survey_observation_id',
+              'survey_id',
               'latitude',
               'longitude',
               'count',
@@ -84,6 +86,9 @@ GET.apiDoc = {
               'itis_scientific_name',
               'observation_date',
               'observation_time',
+              'survey_sample_site_id',
+              'survey_sample_method_id',
+              'survey_sample_period_id',
               'create_user',
               'create_date',
               'update_user',
@@ -92,6 +97,9 @@ GET.apiDoc = {
             ],
             properties: {
               survey_observation_id: {
+                type: 'integer'
+              },
+              survey_id: {
                 type: 'integer'
               },
               latitude: {
@@ -107,13 +115,26 @@ GET.apiDoc = {
                 type: 'integer'
               },
               itis_scientific_name: {
-                type: 'string'
+                type: 'string',
+                nullable: true
               },
               observation_date: {
                 type: 'string'
               },
               observation_time: {
                 type: 'string'
+              },
+              survey_sample_site_id: {
+                type: 'integer',
+                nullable: true
+              },
+              survey_sample_method_id: {
+                type: 'integer',
+                nullable: true
+              },
+              survey_sample_period_id: {
+                type: 'integer',
+                nullable: true
               },
               create_date: {
                 oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
@@ -137,8 +158,7 @@ GET.apiDoc = {
                 type: 'integer',
                 minimum: 0
               }
-            },
-            additionalProperties: false
+            }
           }
         }
       }
@@ -169,6 +189,7 @@ GET.apiDoc = {
  */
 export function getSurveyObservation(): RequestHandler {
   return async (req, res) => {
+    const surveyId = Number(req.params.surveyId);
     const surveyObservationId = Number(req.params.surveyObservationId);
 
     defaultLog.debug({ label: 'getSurveyObservation', surveyObservationId });
@@ -180,7 +201,7 @@ export function getSurveyObservation(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      const observationData = await observationService.getSurveyObservationById(surveyObservationId);
+      const observationData = await observationService.getSurveyObservationById(surveyId, surveyObservationId);
 
       return res.status(200).json(observationData);
     } catch (error) {

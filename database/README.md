@@ -4,8 +4,8 @@
 
 | Technology | Version | Website                              | Description          |
 | ---------- | ------- | ------------------------------------ | -------------------- |
-| node       | 14.x.x  | https://nodejs.org/en/               | JavaScript Runtime   |
-| npm        | 6.x.x   | https://www.npmjs.com/               | Node Package Manager |
+| node       | 18.x.x  | https://nodejs.org/en/               | JavaScript Runtime   |
+| npm        | 10.x.x  | https://www.npmjs.com/               | Node Package Manager |
 | PostgreSQL | 12.5    | https://www.postgresql.org/download/ | PSQL database        |
 | PostGIS    | 3       | https://postgis.net/                 | GIS (spatial) tools  |
 
@@ -28,6 +28,10 @@ A set of scripts that populate the database tables with any ephemeral values req
 Seeds will run in alphanumeric order, so if the order of seeds is important, consider prefixing the file name with a number.
 
 Note: Seed files run every time regardless of past successful runs. As a result, seed files need to account for the fact that they may run repeatedly (ex: check if a record exists before adding it, in case this is not the first time this seed has run and inserting the same record again would cause an error).
+
+### Procedures
+
+The `procedures` directory contains a collection of scripts that, when run, create PostgreSQL stored procedures. These procedures are invoked by the application and are designed to perform specific tasks that usually envolve complex queries with several commands (for example, cascading deletes that involve multiple `DELETE` commands). Files in this directory are functionally almost identical to seeds, with the exception that they are expected to run in all environments, including production. To that end, running any one of the scripts from the `procedures` directory more than once should have no effect.
 
 # Port forward to remote database
 

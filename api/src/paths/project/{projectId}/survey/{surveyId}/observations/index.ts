@@ -7,9 +7,13 @@ import {
   paginationResponseSchema
 } from '../../../../../../openapi/schemas/pagination';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { ObservationService } from '../../../../../../services/observation-service';
+import { CritterbaseService } from '../../../../../../services/critterbase-service';
+import {
+  InsertUpdateObservationsWithMeasurements,
+  ObservationService
+} from '../../../../../../services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
-import { ensureCompletePaginationOptions, getPaginationResponse } from '../../../../../../utils/pagination';
+import { ensureCompletePaginationOptions, makePaginationResponse } from '../../../../../../utils/pagination';
 import { ApiPaginationOptions } from '../../../../../../zod-schema/pagination';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation');
@@ -93,12 +97,14 @@ GET.apiDoc = {
           schema: {
             description: 'Survey get response object, for view purposes',
             type: 'object',
+            additionalProperties: false,
             required: ['surveyObservations', 'supplementaryObservationData', 'pagination'],
             properties: {
               surveyObservations: {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   required: [
                     'survey_observation_id',
                     'survey_id',
@@ -110,19 +116,11 @@ GET.apiDoc = {
                     'latitude',
                     'longitude',
                     'count',
-                    'observation_time',
                     'observation_date',
+                    'observation_time',
                     'survey_sample_site_name',
                     'survey_sample_method_name',
-                    'survey_sample_period_start_datetime',
-                    'subcount',
-                    'observation_subcount_events',
-                    'observation_subcount_attributes',
-                    'create_date',
-                    'create_user',
-                    'update_date',
-                    'update_user',
-                    'revision_count'
+                    'survey_sample_period_start_datetime'
                   ],
                   properties: {
                     survey_observation_id: {
@@ -164,10 +162,10 @@ GET.apiDoc = {
                     count: {
                       type: 'integer'
                     },
-                    observation_time: {
+                    observation_date: {
                       type: 'string'
                     },
-                    observation_date: {
+                    observation_time: {
                       type: 'string'
                     },
                     survey_sample_site_name: {
@@ -182,242 +180,178 @@ GET.apiDoc = {
                       type: 'string',
                       nullable: true
                     },
-                    subcount: {
-                      type: 'integer',
-                      nullable: true
-                    },
-                    observation_subcount_events: {
+                    subcounts: {
                       type: 'array',
                       items: {
-                        type: 'string'
-                      }
-                    },
-                    observation_subcount_attributes: {
-                      type: 'array',
-                      items: {
-                        anyOf: [
-                          {
-                            description: 'A quantitative (number) measurement.',
-                            type: 'object',
-                            required: [
-                              'event_id',
-                              'measurement_quantitative_id',
-                              'taxon_measurement_id',
-                              'value',
-                              'measurement_comment',
-                              'measured_timestamp'
-                            ],
-                            properties: {
-                              event_id: {
-                                type: 'string'
-                              },
-                              measurement_quantitative_id: {
-                                type: 'string'
-                              },
-                              taxon_measurement_id: {
-                                type: 'string'
-                              },
-                              value: {
-                                type: 'number'
-                              },
-                              measurement_comment: {
-                                type: 'string'
-                              },
-                              measured_timestamp: {
-                                type: 'string'
-                              }
-                            },
-                            additionalProperties: false
+                        type: 'object',
+                        additionalProperties: false,
+                        required: [
+                          'observation_subcount_id',
+                          'subcount',
+                          'qualitative_measurements',
+                          'quantitative_measurements'
+                        ],
+                        properties: {
+                          observation_subcount_id: {
+                            type: 'integer'
                           },
-                          {
-                            description: 'A qualitative (string) measurement.',
-                            type: 'object',
-                            required: [
-                              'event_id',
-                              'measurement_qualitative_id',
-                              'taxon_measurement_id',
-                              'qualitative_option_id',
-                              'measurement_comment',
-                              'measured_timestamp'
-                            ],
-                            properties: {
-                              event_id: {
-                                type: 'string'
-                              },
-                              measurement_qualitative_id: {
-                                type: 'string'
-                              },
-                              taxon_measurement_id: {
-                                type: 'string'
-                              },
-                              qualitative_option_id: {
-                                type: 'string'
-                              },
-                              measurement_comment: {
-                                type: 'string'
-                              },
-                              measured_timestamp: {
-                                type: 'string'
+                          subcount: {
+                            type: 'number'
+                          },
+                          qualitative_measurements: {
+                            type: 'array',
+                            items: {
+                              type: 'object',
+                              additionalProperties: false,
+                              required: [
+                                'critterbase_taxon_measurement_id',
+                                'critterbase_measurement_qualitative_option_id'
+                              ],
+                              properties: {
+                                critterbase_taxon_measurement_id: {
+                                  type: 'string',
+                                  format: 'uuid'
+                                },
+                                critterbase_measurement_qualitative_option_id: {
+                                  type: 'string',
+                                  format: 'uuid'
+                                }
                               }
-                            },
-                            additionalProperties: false
+                            }
+                          },
+                          quantitative_measurements: {
+                            type: 'array',
+                            items: {
+                              type: 'object',
+                              additionalProperties: false,
+                              required: ['critterbase_taxon_measurement_id', 'value'],
+                              properties: {
+                                critterbase_taxon_measurement_id: {
+                                  type: 'string',
+                                  format: 'uuid'
+                                },
+                                value: {
+                                  type: 'number'
+                                }
+                              }
+                            }
                           }
-                        ]
+                        }
                       }
-                    },
-                    create_date: {
-                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                      description: 'ISO 8601 date string for the project start date'
-                    },
-                    create_user: {
-                      type: 'integer',
-                      minimum: 1
-                    },
-                    update_date: {
-                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                      description: 'ISO 8601 date string for the project start date',
-                      nullable: true
-                    },
-                    update_user: {
-                      type: 'integer',
-                      minimum: 1,
-                      nullable: true
-                    },
-                    revision_count: {
-                      type: 'integer',
-                      minimum: 0
                     }
-                  },
-                  additionalProperties: false
+                  }
                 }
               },
               supplementaryObservationData: {
                 type: 'object',
-                required: ['observationCount', 'measurementColumns'],
+                additionalProperties: false,
+                required: ['observationCount', 'qualitative_measurements', 'quantitative_measurements'],
                 properties: {
                   observationCount: {
                     type: 'integer',
                     minimum: 0
                   },
-                  measurementColumns: {
+                  qualitative_measurements: {
+                    description: 'All qualitative measurement type definitions for the survey.',
                     type: 'array',
                     items: {
-                      anyOf: [
-                        {
-                          description:
-                            'A quantitative (number) measurement type definition, with possible min/max constraint.',
-                          type: 'object',
-                          required: [
-                            'itis_tsn',
-                            'taxon_measurement_id',
-                            'measurement_name',
-                            'measurement_desc',
-                            'min_value',
-                            'max_value',
-                            'unit'
-                          ],
-                          properties: {
-                            itis_tsn: {
-                              type: 'integer',
-                              nullable: true
-                            },
-                            taxon_measurement_id: {
-                              type: 'string'
-                            },
-                            measurement_name: {
-                              type: 'string'
-                            },
-                            measurement_desc: {
-                              type: 'string',
-                              nullable: true
-                            },
-                            min_value: {
-                              type: 'number',
-                              nullable: true
-                            },
-                            max_value: {
-                              type: 'number',
-                              nullable: true
-                            },
-                            unit: {
-                              type: 'string',
-                              nullable: true
-                            }
-                          },
-                          additionalProperties: false
+                      description: 'A qualitative measurement type definition, with array of valid/accepted options',
+                      type: 'object',
+                      additionalProperties: false,
+                      required: ['itis_tsn', 'taxon_measurement_id', 'measurement_name', 'measurement_desc', 'options'],
+                      properties: {
+                        itis_tsn: {
+                          type: 'integer',
+                          nullable: true
                         },
-                        {
-                          description:
-                            'A qualitative (string) measurement type definition, with array of valid/accepted options',
-                          type: 'object',
-                          required: [
-                            'itis_tsn',
-                            'taxon_measurement_id',
-                            'measurement_name',
-                            'measurement_desc',
-                            'options'
-                          ],
-                          properties: {
-                            itis_tsn: {
-                              type: 'integer',
-                              nullable: true
-                            },
-                            taxon_measurement_id: {
-                              type: 'string'
-                            },
-                            measurement_name: {
-                              type: 'string'
-                            },
-                            measurement_desc: {
-                              type: 'string',
-                              nullable: true
-                            },
-                            options: {
-                              description: 'Valid otions for the measurement.',
-                              type: 'array',
-                              items: {
-                                type: 'object',
-                                required: [
-                                  'taxon_measurement_id',
-                                  'qualitative_option_id',
-                                  'option_label',
-                                  'option_value',
-                                  'option_desc'
-                                ],
-                                properties: {
-                                  taxon_measurement_id: {
-                                    type: 'string'
-                                  },
-                                  qualitative_option_id: {
-                                    type: 'string'
-                                  },
-                                  option_label: {
-                                    type: 'string',
-                                    nullable: true
-                                  },
-                                  option_value: {
-                                    type: 'number'
-                                  },
-                                  option_desc: {
-                                    type: 'string',
-                                    nullable: true
-                                  }
-                                },
-                                additionalProperties: false
+                        taxon_measurement_id: {
+                          type: 'string'
+                        },
+                        measurement_name: {
+                          type: 'string'
+                        },
+                        measurement_desc: {
+                          type: 'string',
+                          nullable: true
+                        },
+                        options: {
+                          description: 'Valid options for the measurement.',
+                          type: 'array',
+                          items: {
+                            type: 'object',
+                            additionalProperties: false,
+                            required: ['qualitative_option_id', 'option_label', 'option_value', 'option_desc'],
+                            properties: {
+                              qualitative_option_id: {
+                                type: 'string'
+                              },
+                              option_label: {
+                                type: 'string',
+                                nullable: true
+                              },
+                              option_value: {
+                                type: 'number'
+                              },
+                              option_desc: {
+                                type: 'string',
+                                nullable: true
                               }
                             }
-                          },
-                          additionalProperties: false
+                          }
                         }
-                      ]
+                      }
+                    }
+                  },
+                  quantitative_measurements: {
+                    description: 'All quantitative measurement type definitions for the survey.',
+                    type: 'array',
+                    items: {
+                      description: 'A quantitative measurement type definition, with possible min/max constraint.',
+                      type: 'object',
+                      additionalProperties: false,
+                      required: [
+                        'itis_tsn',
+                        'taxon_measurement_id',
+                        'measurement_name',
+                        'measurement_desc',
+                        'min_value',
+                        'max_value',
+                        'unit'
+                      ],
+                      properties: {
+                        itis_tsn: {
+                          type: 'integer',
+                          nullable: true
+                        },
+                        taxon_measurement_id: {
+                          type: 'string'
+                        },
+                        measurement_name: {
+                          type: 'string'
+                        },
+                        measurement_desc: {
+                          type: 'string',
+                          nullable: true
+                        },
+                        min_value: {
+                          type: 'number',
+                          nullable: true
+                        },
+                        max_value: {
+                          type: 'number',
+                          nullable: true
+                        },
+                        unit: {
+                          type: 'string',
+                          nullable: true
+                        }
+                      }
                     }
                   }
-                },
-                additionalProperties: false
+                }
               },
               pagination: { ...paginationResponseSchema }
-            },
-            additionalProperties: false
+            }
           }
         }
       }
@@ -466,6 +400,7 @@ PUT.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           properties: {
             surveyObservations: {
               description: 'Survey observation records.',
@@ -473,18 +408,19 @@ PUT.apiDoc = {
               items: {
                 description: 'A single survey observation record.',
                 type: 'object',
-                required: ['standardColumns', 'measurementColumns'],
+                additionalProperties: false,
+                required: ['standardColumns', 'subcounts'],
                 properties: {
                   standardColumns: {
                     description: 'Standard column data for an observation record.',
                     type: 'object',
+                    additionalProperties: false,
                     required: [
                       'itis_tsn',
                       'survey_sample_site_id',
                       'survey_sample_method_id',
                       'survey_sample_period_id',
                       'count',
-                      'subcount',
                       'latitude',
                       'longitude',
                       'observation_date',
@@ -493,6 +429,7 @@ PUT.apiDoc = {
                     properties: {
                       survey_observation_id: {
                         type: 'integer',
+                        minimum: 1,
                         nullable: true
                       },
                       survey_id: {
@@ -507,13 +444,19 @@ PUT.apiDoc = {
                         nullable: true
                       },
                       survey_sample_site_id: {
-                        type: 'integer'
+                        type: 'integer',
+                        minimum: 1,
+                        nullable: true
                       },
                       survey_sample_method_id: {
-                        type: 'integer'
+                        type: 'integer',
+                        minimum: 1,
+                        nullable: true
                       },
                       survey_sample_period_id: {
-                        type: 'integer'
+                        type: 'integer',
+                        minimum: 1,
+                        nullable: true
                       },
                       count: {
                         type: 'integer'
@@ -537,37 +480,59 @@ PUT.apiDoc = {
                         type: 'integer',
                         minimum: 0
                       }
-                    },
-                    additionalProperties: true
+                    }
                   },
-                  measurementColumns: {
-                    description:
-                      'Non-standard user-added measurement column data for creating and tracking event data in Critter Base',
+                  subcounts: {
+                    description: 'An array of observation subcount and measurement data',
                     type: 'array',
                     items: {
                       type: 'object',
-                      required: ['id', 'field', 'value'],
+                      additionalProperties: false,
                       properties: {
-                        id: {
-                          type: 'string'
-                        },
-                        field: {
-                          type: 'string'
-                        },
-                        value: {
-                          oneOf: [{ type: 'number' }, { type: 'string' }],
+                        observation_subcount_id: {
+                          type: 'number',
                           nullable: true
+                        },
+                        subcount: {
+                          type: 'number'
+                        },
+                        qualitative: {
+                          type: 'array',
+                          items: {
+                            type: 'object',
+                            additionalProperties: false,
+                            properties: {
+                              measurement_id: {
+                                type: 'string'
+                              },
+                              measurement_option_id: {
+                                type: 'string'
+                              }
+                            }
+                          }
+                        },
+                        quantitative: {
+                          type: 'array',
+                          items: {
+                            type: 'object',
+                            additionalProperties: false,
+                            properties: {
+                              measurement_id: {
+                                type: 'string'
+                              },
+                              measurement_value: {
+                                type: 'number'
+                              }
+                            }
+                          }
                         }
-                      },
-                      additionalProperties: false
+                      }
                     }
                   }
-                },
-                additionalProperties: false
+                }
               }
             }
-          },
-          additionalProperties: false
+          }
         }
       }
     }
@@ -648,7 +613,7 @@ export function getSurveyObservations(): RequestHandler {
       return res.status(200).json({
         surveyObservations: observationData.surveyObservations,
         supplementaryObservationData: observationData.supplementaryObservationData,
-        pagination: getPaginationResponse(observationCount, paginationOptions)
+        pagination: makePaginationResponse(observationCount, paginationOptions)
       });
     } catch (error) {
       defaultLog.error({ label: 'getSurveyObservations', message: 'error', error });
@@ -680,7 +645,18 @@ export function insertUpdateSurveyObservationsWithMeasurements(): RequestHandler
 
       const observationService = new ObservationService(connection);
 
-      const observationRows = req.body.surveyObservations;
+      const observationRows: InsertUpdateObservationsWithMeasurements[] = req.body.surveyObservations;
+
+      const critterBaseService = new CritterbaseService({
+        keycloak_guid: req['system_user']?.user_guid,
+        username: req['system_user']?.user_identifier
+      });
+
+      // Validate measurement data against fetched measurement definition
+      const isValid = await observationService.validateSurveyObservations(observationRows, critterBaseService);
+      if (!isValid) {
+        throw new Error('Failed to save observation data, measurement values failed validation.');
+      }
 
       await observationService.insertUpdateSurveyObservationsWithMeasurements(surveyId, observationRows);
 

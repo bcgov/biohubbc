@@ -20,11 +20,13 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             properties: {
               files: {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   required: ['fileName', 'url', 'lastModified', 'fileSize', 'metadata'],
                   properties: {
                     fileName: {
@@ -41,6 +43,7 @@ GET.apiDoc = {
                     },
                     metadata: {
                       type: 'object',
+                      additionalProperties: false,
                       properties: {
                         species: {
                           type: 'string'

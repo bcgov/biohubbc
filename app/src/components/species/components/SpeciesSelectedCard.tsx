@@ -1,7 +1,9 @@
 import { mdiClose } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, IconButton, Paper } from '@mui/material';
+import Box from '@mui/material/Box';
 import grey from '@mui/material/colors/grey';
+import IconButton from '@mui/material/IconButton';
+import Paper from '@mui/material/Paper';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import SpeciesCard from './SpeciesCard';
 

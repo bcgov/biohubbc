@@ -26,6 +26,7 @@ export type ISampleMethodOption = {
   survey_sample_method_id: number;
   survey_sample_site_id: number;
   sample_method_name: string;
+  response_metric: string;
 };
 
 export type ISamplePeriodOption = {
@@ -205,6 +206,7 @@ export const SamplePeriodColDef = (props: {
 };
 
 export const ObservationCountColDef = (props: {
+  sampleMethodOptions: ISampleMethodOption[];
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
   const { hasError } = props;
@@ -227,10 +229,22 @@ export const ObservationCountColDef = (props: {
     renderEditCell: (params) => {
       const error: boolean = hasError(params);
 
+      const maxCount =
+        props.sampleMethodOptions.find(
+          (option) => option.survey_sample_method_id === params.row.survey_sample_method_id
+        )?.response_metric === 'Presence-absence'
+          ? 1
+          : undefined;
+
       return (
         <TextFieldDataGrid
           dataGridProps={params}
           textFieldProps={{
+            type: 'number',
+            inputProps: {
+              max: maxCount,
+              inputMode: 'numeric'
+            },
             name: params.field,
             onChange: (event) => {
               if (!/^\d{0,7}$/.test(event.target.value)) {
@@ -505,14 +519,14 @@ export const ObservationQuantitativeMeasurementColDef = (props: {
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
   const { measurement, hasError } = props;
-
   return {
     field: measurement.taxon_measurement_id,
     headerName: measurement.measurement_name,
     editable: true,
     hideable: true,
+    sortable: false,
     type: 'number',
-    minWidth: 110,
+    minWidth: Math.min(300, Math.max(110, measurement.measurement_name.length * 10 + 20)),
     disableColumnMenu: true,
     headerAlign: 'right',
     align: 'right',
@@ -560,14 +574,14 @@ export const ObservationQualitativeMeasurementColDef = (props: {
     label: item.option_label,
     value: item.qualitative_option_id
   }));
-
   return {
     field: measurement.taxon_measurement_id,
     headerName: measurement.measurement_name,
     editable: true,
     hideable: true,
+    sortable: false,
     flex: 1,
-    minWidth: 250,
+    minWidth: Math.min(300, Math.max(250, measurement.measurement_name.length * 10 + 20)),
     disableColumnMenu: true,
     headerAlign: 'left',
     align: 'left',
@@ -577,9 +591,9 @@ export const ObservationQualitativeMeasurementColDef = (props: {
       );
     },
     renderEditCell: (params) => {
-      const error = hasError(params);
-
-      return <AutocompleteDataGridEditCell dataGridProps={params} options={qualitativeOptions} error={error} />;
+      return (
+        <AutocompleteDataGridEditCell dataGridProps={params} options={qualitativeOptions} error={hasError(params)} />
+      );
     }
   };
 };

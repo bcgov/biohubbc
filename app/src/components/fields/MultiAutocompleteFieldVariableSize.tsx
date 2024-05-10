@@ -1,12 +1,11 @@
 import CheckBox from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlank from '@mui/icons-material/CheckBoxOutlineBlank';
-import { FilterOptionsState } from '@mui/material';
 import Autocomplete, { AutocompleteInputChangeReason, createFilterOptions } from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import ListSubheader from '@mui/material/ListSubheader';
 import TextField from '@mui/material/TextField';
-import { makeStyles } from '@mui/styles';
+import { FilterOptionsState } from '@mui/material/useAutocomplete';
 import { useFormikContext } from 'formik';
 import { DebouncedFunc } from 'lodash-es';
 import get from 'lodash-es/get';
@@ -121,15 +120,17 @@ const ListboxComponent = React.forwardRef<HTMLDivElement, React.PropsWithChildre
   );
 });
 
-const useStyles = makeStyles({
-  listbox: {
-    boxSizing: 'border-box',
-    '& ul': {
-      padding: 0,
-      margin: 0
+const useStyles = () => {
+  return {
+    listbox: {
+      boxSizing: 'border-box',
+      '& ul': {
+        padding: 0,
+        margin: 0
+      }
     }
-  }
-});
+  };
+};
 
 const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (props) => {
   const classes = useStyles();
@@ -259,7 +260,7 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
       isOptionEqualToValue={handleGetOptionSelected}
       disableCloseOnSelect
       disableListWrap
-      classes={classes}
+      sx={classes}
       inputValue={inputValue}
       onInputChange={handleOnInputChange}
       onChange={handleOnChange}

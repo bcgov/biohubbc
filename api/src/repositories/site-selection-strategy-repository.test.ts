@@ -8,6 +8,7 @@ import { getMockDBConnection } from '../__mocks__/db';
 import {
   SiteSelectionStrategyRepository,
   SurveyStratum,
+  SurveyStratumDetails,
   SurveyStratumRecord
 } from './site-selection-strategy-repository';
 
@@ -23,14 +24,14 @@ describe('SiteSelectionStrategyRepository', () => {
       const mockStrategiesRows: { name: string }[] = [{ name: 'strategy1' }, { name: 'strategy2' }];
       const mockStrategiesResponse = ({ rows: mockStrategiesRows, rowCount: 2 } as any) as Promise<QueryResult<any>>;
 
-      const mockStratumsRows: SurveyStratumRecord[] = [
+      const mockStratumsRows: SurveyStratumDetails[] = [
         {
           name: 'stratum1',
           description: '',
           survey_id: 1,
           survey_stratum_id: 2,
           revision_count: 0,
-          update_date: '2023-05-20'
+          sample_stratum_count: 1
         },
         {
           name: 'stratum2',
@@ -38,7 +39,7 @@ describe('SiteSelectionStrategyRepository', () => {
           survey_id: 1,
           survey_stratum_id: 2,
           revision_count: 0,
-          update_date: '2023-05-20'
+          sample_stratum_count: 1
         }
       ];
       const mockStratumsResponse = ({ rows: mockStratumsRows, rowCount: 2 } as any) as Promise<QueryResult<any>>;
@@ -61,7 +62,7 @@ describe('SiteSelectionStrategyRepository', () => {
       const mockStrategiesRows: { name: string }[] = [];
       const mockStrategiesResponse = ({ rows: mockStrategiesRows, rowCount: 0 } as any) as Promise<QueryResult<any>>;
 
-      const mockStratumsRows: SurveyStratumRecord[] = [];
+      const mockStratumsRows: SurveyStratumDetails[] = [];
       const mockStratumsResponse = ({ rows: mockStratumsRows, rowCount: 0 } as any) as Promise<QueryResult<any>>;
 
       const dbConnectionObj = getMockDBConnection({
@@ -244,8 +245,7 @@ describe('SiteSelectionStrategyRepository', () => {
           description: '',
           survey_id: 1,
           survey_stratum_id: 1,
-          revision_count: 1,
-          update_date: '2023-10-23'
+          revision_count: 1
         }
       ];
       const mockRows2: SurveyStratumRecord[] = [
@@ -254,8 +254,7 @@ describe('SiteSelectionStrategyRepository', () => {
           description: '',
           survey_id: 1,
           survey_stratum_id: 2,
-          revision_count: 1,
-          update_date: '2023-10-23'
+          revision_count: 1
         }
       ];
       const mockResponse1 = ({ rows: mockRows1, rowCount: 1 } as any) as Promise<QueryResult<any>>;
@@ -269,8 +268,8 @@ describe('SiteSelectionStrategyRepository', () => {
 
       const surveyId = 1;
       const stratums: SurveyStratumRecord[] = [
-        { name: 'stratum1', description: '', survey_id: 1, survey_stratum_id: 1, revision_count: 0, update_date: null },
-        { name: 'stratum1', description: '', survey_id: 1, survey_stratum_id: 2, revision_count: 0, update_date: null }
+        { name: 'stratum1', description: '', survey_id: 1, survey_stratum_id: 1, revision_count: 0 },
+        { name: 'stratum1', description: '', survey_id: 1, survey_stratum_id: 2, revision_count: 0 }
       ];
 
       const response = await repo.updateSurveyStratums(surveyId, stratums);
@@ -286,8 +285,7 @@ describe('SiteSelectionStrategyRepository', () => {
           description: '',
           survey_id: 1,
           survey_stratum_id: 1,
-          revision_count: 1,
-          update_date: '2023-10-23'
+          revision_count: 1
         }
       ];
       const mockResponse1 = ({ rows: mockRows1, rowCount: 1 } as any) as Promise<QueryResult<any>>;
@@ -303,8 +301,8 @@ describe('SiteSelectionStrategyRepository', () => {
 
       // stratums length = 2, total rowCount = 1
       const stratums: SurveyStratumRecord[] = [
-        { name: 'stratum1', description: '', survey_id: 1, survey_stratum_id: 1, revision_count: 0, update_date: null },
-        { name: 'stratum1', description: '', survey_id: 1, survey_stratum_id: 2, revision_count: 0, update_date: null }
+        { name: 'stratum1', description: '', survey_id: 1, survey_stratum_id: 1, revision_count: 0 },
+        { name: 'stratum1', description: '', survey_id: 1, survey_stratum_id: 2, revision_count: 0 }
       ];
 
       try {

@@ -1,5 +1,6 @@
 import { ProjectRoleRouteGuard, SystemRoleRouteGuard } from 'components/security/RouteGuards';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { DialogContextProvider } from 'contexts/dialogContext';
 import { ObservationsContextProvider } from 'contexts/observationsContext';
 import { ProjectAuthStateContextProvider } from 'contexts/projectAuthStateContext';
 import { ProjectContextProvider } from 'contexts/projectContext';
@@ -27,14 +28,18 @@ const ProjectsRouter: React.FC = () => {
     <Switch>
       {/* Project List Routes */}
       <RouteWithTitle exact path="/admin/projects" title={getTitle('Projects')}>
-        <ProjectsListPage />
+        <DialogContextProvider>
+          <ProjectsListPage />
+        </DialogContextProvider>
       </RouteWithTitle>
 
       {/* Create Project Route */}
       <RouteWithTitle exact path="/admin/projects/create" title={getTitle('Create Project')}>
         <SystemRoleRouteGuard
           validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.PROJECT_CREATOR]}>
-          <CreateProjectPage />
+          <DialogContextProvider>
+            <CreateProjectPage />
+          </DialogContextProvider>
         </SystemRoleRouteGuard>
       </RouteWithTitle>
 
@@ -43,66 +48,76 @@ const ProjectsRouter: React.FC = () => {
       {/* Project Routes */}
       <RouteWithTitle path="/admin/projects/:id" title={getTitle('Project Details')}>
         <ProjectAuthStateContextProvider>
-          <ProjectContextProvider>
-            {/* Project Details Routes */}
-            <RouteWithTitle exact path="/admin/projects/:id/details" title={getTitle('Projects')}>
-              <ProjectRoleRouteGuard
-                validProjectPermissions={[
-                  PROJECT_PERMISSION.COORDINATOR,
-                  PROJECT_PERMISSION.COLLABORATOR,
-                  PROJECT_PERMISSION.OBSERVER
-                ]}
-                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                <ProjectPage />
-              </ProjectRoleRouteGuard>
-            </RouteWithTitle>
+          <DialogContextProvider>
+            <ProjectContextProvider>
+              {/* Project Details Routes */}
+              <RouteWithTitle exact path="/admin/projects/:id/details" title={getTitle('Projects')}>
+                <ProjectRoleRouteGuard
+                  validProjectPermissions={[
+                    PROJECT_PERMISSION.COORDINATOR,
+                    PROJECT_PERMISSION.COLLABORATOR,
+                    PROJECT_PERMISSION.OBSERVER
+                  ]}
+                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <DialogContextProvider>
+                    <ProjectPage />
+                  </DialogContextProvider>
+                </ProjectRoleRouteGuard>
+              </RouteWithTitle>
 
-            {/* Edit Project Route */}
-            <RouteWithTitle exact path="/admin/projects/:id/edit" title={getTitle('Edit Project')}>
-              <ProjectRoleRouteGuard
-                validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                <EditProjectPage />
-              </ProjectRoleRouteGuard>
-            </RouteWithTitle>
+              {/* Edit Project Route */}
+              <RouteWithTitle exact path="/admin/projects/:id/edit" title={getTitle('Edit Project')}>
+                <ProjectRoleRouteGuard
+                  validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <DialogContextProvider>
+                    <EditProjectPage />
+                  </DialogContextProvider>
+                </ProjectRoleRouteGuard>
+              </RouteWithTitle>
 
-            {/* Project Team Route */}
-            <RouteWithTitle exact path="/admin/projects/:id/users" title={getTitle('Project Team')}>
-              <ProjectRoleRouteGuard
-                validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}
-                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                <ProjectParticipantsPage />
-              </ProjectRoleRouteGuard>
-            </RouteWithTitle>
+              {/* Project Team Route */}
+              <RouteWithTitle exact path="/admin/projects/:id/users" title={getTitle('Project Team')}>
+                <ProjectRoleRouteGuard
+                  validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}
+                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <DialogContextProvider>
+                    <ProjectParticipantsPage />
+                  </DialogContextProvider>
+                </ProjectRoleRouteGuard>
+              </RouteWithTitle>
 
-            {/* Survey Routes */}
-            <RouteWithTitle path="/admin/projects/:id/surveys/:survey_id" title={getTitle('Surveys')}>
-              <ProjectRoleRouteGuard
-                validProjectPermissions={[
-                  PROJECT_PERMISSION.COORDINATOR,
-                  PROJECT_PERMISSION.COLLABORATOR,
-                  PROJECT_PERMISSION.OBSERVER
-                ]}
-                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                <SurveyContextProvider>
-                  <ObservationsContextProvider>
-                    <TelemetryDataContextProvider>
-                      <SurveyRouter />
-                    </TelemetryDataContextProvider>
-                  </ObservationsContextProvider>
-                </SurveyContextProvider>
-              </ProjectRoleRouteGuard>
-            </RouteWithTitle>
+              {/* Survey Routes */}
+              <RouteWithTitle path="/admin/projects/:id/surveys/:survey_id" title={getTitle('Surveys')}>
+                <ProjectRoleRouteGuard
+                  validProjectPermissions={[
+                    PROJECT_PERMISSION.COORDINATOR,
+                    PROJECT_PERMISSION.COLLABORATOR,
+                    PROJECT_PERMISSION.OBSERVER
+                  ]}
+                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <SurveyContextProvider>
+                    <ObservationsContextProvider>
+                      <TelemetryDataContextProvider>
+                        <SurveyRouter />
+                      </TelemetryDataContextProvider>
+                    </ObservationsContextProvider>
+                  </SurveyContextProvider>
+                </ProjectRoleRouteGuard>
+              </RouteWithTitle>
 
-            {/* Create Survey Route */}
-            <RouteWithTitle exact path="/admin/projects/:id/survey/create" title={getTitle('Create Survey')}>
-              <ProjectRoleRouteGuard
-                validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                <CreateSurveyPage />
-              </ProjectRoleRouteGuard>
-            </RouteWithTitle>
-          </ProjectContextProvider>
+              {/* Create Survey Route */}
+              <RouteWithTitle exact path="/admin/projects/:id/survey/create" title={getTitle('Create Survey')}>
+                <ProjectRoleRouteGuard
+                  validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <DialogContextProvider>
+                    <CreateSurveyPage />
+                  </DialogContextProvider>
+                </ProjectRoleRouteGuard>
+              </RouteWithTitle>
+            </ProjectContextProvider>
+          </DialogContextProvider>
         </ProjectAuthStateContextProvider>
       </RouteWithTitle>
 

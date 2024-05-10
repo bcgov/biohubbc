@@ -1,7 +1,6 @@
 import { mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
-import { Divider, ListItemIcon, Menu, MenuItem, Paper, Select, Stack, useMediaQuery, useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import grey from '@mui/material/colors/grey';
@@ -9,12 +8,20 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import InputLabel from '@mui/material/InputLabel';
-import { MenuProps } from '@mui/material/Menu';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Menu, { MenuProps } from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
+import Select from '@mui/material/Select';
+import Stack from '@mui/material/Stack';
+import useTheme from '@mui/material/styles/useTheme';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { SkeletonListStack } from 'components/loading/SkeletonLoaders';
 import { AttachmentType } from 'constants/attachments';
 import { DialogContext } from 'contexts/dialogContext';
@@ -24,7 +31,7 @@ import { default as dayjs } from 'dayjs';
 import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
-import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual as _deepEquals } from 'lodash';
 import { get } from 'lodash-es';
 import { useContext, useEffect, useMemo, useState } from 'react';
@@ -32,12 +39,7 @@ import { datesSameNullable } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import { InferType } from 'yup';
 import { ANIMAL_FORM_MODE } from '../view/survey-animals/animal';
-import {
-  AnimalTelemetryDeviceSchema,
-  Device,
-  IAnimalDeployment,
-  IAnimalTelemetryDevice
-} from '../view/survey-animals/telemetry-device/device';
+import { AnimalTelemetryDeviceSchema, Device, IAnimalDeployment } from '../view/survey-animals/telemetry-device/device';
 import TelemetryDeviceForm from '../view/survey-animals/telemetry-device/TelemetryDeviceForm';
 import ManualTelemetryCard from './ManualTelemetryCard';
 
@@ -50,7 +52,7 @@ export const AnimalDeploymentSchema = AnimalTelemetryDeviceSchema.shape({
 export type AnimalDeployment = InferType<typeof AnimalDeploymentSchema>;
 
 export interface ICritterDeployment {
-  critter: IDetailedCritterWithInternalId;
+  critter: ISimpleCritterWithInternalId;
   deployment: IAnimalDeployment;
 }
 
@@ -94,6 +96,9 @@ const ManualTelemetryList = () => {
   useEffect(() => {
     surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
     surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+
+    // Adding a DataLoader as a dependency causes an infinite rerender loop if a useEffect calls `.refresh`
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const deployments = surveyContext.deploymentDataLoader.data;
@@ -234,19 +239,27 @@ const ManualTelemetryList = () => {
   };
 
   const handleAddDeployment = async (data: AnimalDeployment) => {
-    const payload = data as IAnimalTelemetryDevice & { critter_id: string };
     try {
       const critter = critters?.find((a) => a.survey_critter_id === data.survey_critter_id);
 
       if (!critter) {
         throw new Error('Invalid critter data');
       }
-      data.critter_id = critter?.critter_id;
+
       await biohubApi.survey.addDeployment(
         surveyContext.projectId,
         surveyContext.surveyId,
         Number(data.survey_critter_id),
-        payload
+        //Being explicit here for simplicity.
+        {
+          critter_id: critter.critter_id,
+          device_id: data.device_id,
+          device_make: data.device_make ?? undefined,
+          frequency: data.frequency,
+          frequency_unit: data.frequency_unit,
+          device_model: data.device_model,
+          deployments: data.deployments
+        }
       );
       surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
       // success snack bar
@@ -431,7 +444,7 @@ const ManualTelemetryList = () => {
                       <Select
                         labelId="select-critter"
                         label={'Critter'}
-                        value={critterId}
+                        value={String(critterId)}
                         required
                         onChange={(e) => {
                           setCritterId(Number(e.target.value));
@@ -452,7 +465,7 @@ const ManualTelemetryList = () => {
                                   {item.animal_id}
                                 </Typography>
                                 <Typography variant="subtitle2" color="textSecondary">
-                                  {item.taxon} - {item.sex}
+                                  {item.itis_scientific_name} - {item.sex}
                                 </Typography>
                               </Box>
                             </MenuItem>
@@ -565,7 +578,7 @@ const ManualTelemetryList = () => {
                             key={`${item.deployment.device_id}:${item.deployment.device_make}:${item.deployment.attachment_start}`}
                             device_id={item.deployment.device_id}
                             device_make={item.deployment.device_make}
-                            name={String(item.critter.animal_id ?? item.critter.taxon)}
+                            name={String(item.critter.animal_id ?? item.critter.itis_scientific_name)}
                             start_date={item.deployment.attachment_start}
                             end_date={item.deployment.attachment_end}
                             onMenu={(event, id) => {

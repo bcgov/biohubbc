@@ -55,6 +55,8 @@ POST.apiDoc = {
       'multipart/form-data': {
         schema: {
           type: 'object',
+          additionalProperties: false,
+          required: ['media'],
           properties: {
             media: {
               description: 'A survey observation submission file.',
@@ -73,6 +75,7 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             properties: {
               submissionId: {
                 type: 'number'

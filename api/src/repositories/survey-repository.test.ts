@@ -9,13 +9,7 @@ import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
 import { GetAttachmentsData, GetSurveyProprietorData, GetSurveyPurposeAndMethodologyData } from '../models/survey-view';
 import { getMockDBConnection } from '../__mocks__/db';
-import {
-  IObservationSubmissionInsertDetails,
-  IObservationSubmissionUpdateDetails,
-  SurveyRecord,
-  SurveyRepository,
-  SurveyTypeRecord
-} from './survey-repository';
+import { SurveyRecord, SurveyRepository, SurveyTypeRecord } from './survey-repository';
 
 chai.use(sinonChai);
 
@@ -38,7 +32,7 @@ describe('SurveyRepository', () => {
 
   describe('getSurveyCountByProjectId', () => {
     it('should return the survey count successfully', async () => {
-      const mockResponse = ({ rows: [{ survey_count: 69 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [{ count: 69 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: () => mockResponse });
 
       const repo = new SurveyRepository(dbConnectionObj);
@@ -48,7 +42,7 @@ describe('SurveyRepository', () => {
     });
 
     it('should throw an exception if row count is 0', async () => {
-      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [], count: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const repo = new SurveyRepository(dbConnectionObj);
@@ -118,8 +112,8 @@ describe('SurveyRepository', () => {
   describe('getSurveyTypesData', () => {
     it('returns rows', async () => {
       const mockRows = ([
-        { survey_id: 1, type_id: 1 },
-        { survey_id: 1, type_id: 2 }
+        { survey_id: 1, type_id: 1, progress_id: 1 },
+        { survey_id: 1, type_id: 2, progress_id: 1 }
       ] as unknown) as SurveyTypeRecord[];
 
       const mockResponse = ({ rows: mockRows, rowCount: 2 } as any) as Promise<QueryResult<any>>;
@@ -354,82 +348,6 @@ describe('SurveyRepository', () => {
     });
   });
 
-  describe('getOccurrenceSubmissionId', () => {
-    it('should return result', async () => {
-      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      const response = await repository.getOccurrenceSubmission(1);
-
-      expect(response).to.eql({ id: 1 });
-    });
-
-    it('should return null if now rows returned', async () => {
-      const mockResponse = ({ rows: [{ occurrence_submission_id: null }], rowCount: 1 } as any) as Promise<
-        QueryResult<any>
-      >;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      const response = await repository.getOccurrenceSubmission(1);
-
-      expect(response).to.eql({ occurrence_submission_id: null });
-    });
-  });
-
-  describe('getLatestSurveyOccurrenceSubmission', () => {
-    it('should return result', async () => {
-      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      const response = await repository.getLatestSurveyOccurrenceSubmission(1);
-
-      expect(response).to.eql({ id: 1 });
-    });
-
-    it('should return Null', async () => {
-      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      const response = await repository.getLatestSurveyOccurrenceSubmission(1);
-
-      expect(response).to.eql(null);
-    });
-  });
-
-  describe('getSurveySummarySubmission', () => {
-    it('should return result', async () => {
-      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      const response = await repository.getSurveySummarySubmission(1);
-
-      expect(response).to.eql({ id: 1 });
-    });
-
-    it('should return null if now rows returned', async () => {
-      const mockResponse = ({ rows: [{ survey_summary_submission_id: null }], rowCount: 1 } as any) as Promise<
-        QueryResult<any>
-      >;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      const response = await repository.getSurveySummarySubmission(1);
-
-      expect(response).to.eql({ survey_summary_submission_id: null });
-    });
-  });
-
   describe('getAttachmentsData', () => {
     it('should return result', async () => {
       const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
@@ -489,13 +407,13 @@ describe('SurveyRepository', () => {
         survey_details: {
           survey_name: 'name',
           start_date: 'start',
+          progress_id: 1,
           end_date: 'end',
           survey_types: [1, 2]
         },
         purpose_and_methodology: {
           additional_details: '',
-          intended_outcome_id: 1,
-          surveyed_all_areas: 'Y'
+          intended_outcome_id: 1
         },
         locations: [{ geometry: [{ id: 1 }] }]
       } as unknown) as PostSurveyObject;
@@ -516,12 +434,12 @@ describe('SurveyRepository', () => {
           survey_name: 'name',
           start_date: 'start',
           end_date: 'end',
+          progress_id: 1,
           survey_types: [1, 2]
         },
         purpose_and_methodology: {
           additional_details: '',
-          intended_outcome_id: 1,
-          surveyed_all_areas: 'Y'
+          intended_outcome_id: 1
         },
         locations: [{ geometry: [] }]
       } as unknown) as PostSurveyObject;
@@ -542,12 +460,12 @@ describe('SurveyRepository', () => {
           survey_name: 'name',
           start_date: 'start',
           end_date: 'end',
+          progress_id: 1,
           survey_types: [1, 2]
         },
         purpose_and_methodology: {
           additional_details: '',
-          intended_outcome_id: 1,
-          surveyed_all_areas: 'Y'
+          intended_outcome_id: 1
         },
         locations: [{ geometry: [{ id: 1 }] }]
       } as unknown) as PostSurveyObject;
@@ -871,7 +789,6 @@ describe('SurveyRepository', () => {
         purpose_and_methodology: {
           additional_details: '',
           intended_outcome_id: 1,
-          surveyed_all_areas: 'Y',
           revision_count: 1
         },
         locations: [{ geometry: [{ id: 1 }] }]
@@ -898,7 +815,6 @@ describe('SurveyRepository', () => {
         purpose_and_methodology: {
           additional_details: '',
           intended_outcome_id: 1,
-          surveyed_all_areas: 'Y',
           revision_count: 1
         },
         locations: [{ geometry: [] }]
@@ -925,7 +841,6 @@ describe('SurveyRepository', () => {
         purpose_and_methodology: {
           additional_details: '',
           intended_outcome_id: 1,
-          surveyed_all_areas: 'Y',
           revision_count: 1
         },
         locations: [{ geometry: [] }]
@@ -936,135 +851,6 @@ describe('SurveyRepository', () => {
         expect.fail();
       } catch (error) {
         expect((error as Error).message).to.equal('Failed to update survey data');
-      }
-    });
-  });
-
-  describe('getOccurrenceSubmissionMessages', () => {
-    it('should return result', async () => {
-      const mockResponse = ({
-        rows: [
-          {
-            id: 1,
-            type: 'type',
-            status: 'status',
-            class: 'class',
-            message: 'message'
-          }
-        ],
-        rowCount: 1
-      } as any) as Promise<QueryResult<any>>;
-
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      const response = await repository.getOccurrenceSubmissionMessages(1);
-
-      expect(response).to.eql([
-        {
-          id: 1,
-          type: 'type',
-          status: 'status',
-          class: 'class',
-          message: 'message'
-        }
-      ]);
-    });
-
-    it('should return empty array', async () => {
-      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      const response = await repository.getOccurrenceSubmissionMessages(1);
-
-      expect(response).to.eql([]);
-    });
-  });
-
-  describe('insertSurveyOccurrenceSubmission', () => {
-    it('should return result', async () => {
-      const mockResponse = ({ rows: [{ submissionId: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      const response = await repository.insertSurveyOccurrenceSubmission({
-        surveyId: 1
-      } as IObservationSubmissionInsertDetails);
-
-      expect(response).to.eql({ submissionId: 1 });
-    });
-
-    it('should throw an error', async () => {
-      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      try {
-        await repository.insertSurveyOccurrenceSubmission({ surveyId: 1 } as IObservationSubmissionInsertDetails);
-        expect.fail();
-      } catch (error) {
-        expect((error as Error).message).to.equal('Failed to insert survey occurrence submission');
-      }
-    });
-  });
-
-  describe('updateSurveyOccurrenceSubmission', () => {
-    it('should return result', async () => {
-      const mockResponse = ({ rows: [{ submissionId: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      const response = await repository.updateSurveyOccurrenceSubmission({
-        submissionId: 1
-      } as IObservationSubmissionUpdateDetails);
-
-      expect(response).to.eql({ submissionId: 1 });
-    });
-
-    it('should throw an error', async () => {
-      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      try {
-        await repository.updateSurveyOccurrenceSubmission({ submissionId: 1 } as IObservationSubmissionUpdateDetails);
-        expect.fail();
-      } catch (error) {
-        expect((error as Error).message).to.equal('Failed to update survey occurrence submission');
-      }
-    });
-  });
-
-  describe('deleteOccurrenceSubmission', () => {
-    it('should return 1 upon success', async () => {
-      const mockResponse = ({ rows: [{ submissionId: 2 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      const response = await repository.deleteOccurrenceSubmission(2);
-
-      expect(response).to.eql(1);
-    });
-
-    it('should throw an error upon failure', async () => {
-      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      try {
-        await await repository.deleteOccurrenceSubmission(2);
-        expect.fail();
-      } catch (error) {
-        expect((error as Error).message).to.equal('Failed to delete survey occurrence submission');
       }
     });
   });

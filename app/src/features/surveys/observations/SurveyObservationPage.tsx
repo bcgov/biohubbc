@@ -1,13 +1,15 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Stack from '@mui/material/Stack';
+import { DialogContextProvider } from 'contexts/dialogContext';
+import { ObservationsPageContextProvider } from 'contexts/observationsPageContext';
 import { ObservationsTableContext, ObservationsTableContextProvider } from 'contexts/observationsTableContext';
 import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
 import { useContext } from 'react';
 import ObservationsTableContainer from './observations-table/ObservationsTableContainer';
-import SamplingSiteList from './sampling-sites/SamplingSiteList';
+import SamplingSiteList from './sampling-sites/list/SamplingSiteList';
 import SurveyObservationHeader from './SurveyObservationHeader';
 
 export const SurveyObservationPage = () => {
@@ -35,35 +37,42 @@ export const SurveyObservationPage = () => {
         survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
       />
 
-      <Stack
-        direction="row"
-        gap={1}
-        sx={{
-          flex: '1 1 auto',
-          p: 1
-        }}>
-        {/* Sampling Site List */}
-        <Box flex="0 0 auto" width="400px">
-          <SamplingSiteList />
-        </Box>
+      <ObservationsPageContextProvider>
+        <Stack
+          direction="row"
+          gap={1}
+          sx={{
+            flex: '1 1 auto',
+            p: 1
+          }}>
+          {/* Sampling Site List */}
+          <Box flex="0 0 auto" width="400px">
+            <DialogContextProvider>
+              <SamplingSiteList />
+            </DialogContextProvider>
+          </Box>
 
-        {/* Observations Component */}
-        <Box flex="1 1 auto">
-          <TaxonomyContextProvider>
-            <ObservationsTableContextProvider>
-              <ObservationsTableContext.Consumer>
-                {(context) => {
-                  if (!context?._muiDataGridApiRef.current) {
-                    return <CircularProgress className="pageProgress" size={40} />;
-                  }
+          {/* Observations Table */}
+          <Box flex="1 1 auto">
+            <DialogContextProvider>
+              <TaxonomyContextProvider>
+                <ObservationsTableContextProvider>
+                  <ObservationsTableContext.Consumer>
+                    {(context) => {
+                      if (!context?._muiDataGridApiRef.current) {
+                        // Delay rendering the ObservationsTable until the DataGrid API is available
+                        return <CircularProgress className="pageProgress" size={40} />;
+                      }
 
-                  return <ObservationsTableContainer />;
-                }}
-              </ObservationsTableContext.Consumer>
-            </ObservationsTableContextProvider>
-          </TaxonomyContextProvider>
-        </Box>
-      </Stack>
+                      return <ObservationsTableContainer />;
+                    }}
+                  </ObservationsTableContext.Consumer>
+                </ObservationsTableContextProvider>
+              </TaxonomyContextProvider>
+            </DialogContextProvider>
+          </Box>
+        </Stack>
+      </ObservationsPageContextProvider>
     </Stack>
   );
 };

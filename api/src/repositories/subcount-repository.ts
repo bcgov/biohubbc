@@ -1,4 +1,3 @@
-import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
@@ -8,6 +7,7 @@ export const ObservationSubCountRecord = z.object({
   observation_subcount_id: z.number(),
   survey_observation_id: z.number(),
   subcount: z.number().nullable(),
+  observation_subcount_sign_id: z.number().nullable(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),
@@ -29,6 +29,19 @@ export const SubCountEventRecord = z.object({
 });
 export type SubCountEventRecord = z.infer<typeof SubCountEventRecord>;
 export type InsertSubCountEvent = Pick<SubCountEventRecord, 'observation_subcount_id' | 'critterbase_event_id'>;
+
+export const SubCountCritterRecord = z.object({
+  subcount_critter_id: z.number(),
+  observation_subcount_id: z.number(),
+  critter_id: z.number(),
+  create_date: z.string(),
+  create_user: z.number(),
+  update_date: z.string().nullable(),
+  update_user: z.number().nullable(),
+  revision_count: z.number()
+});
+
+export type SubCountCritterRecord = z.infer<typeof SubCountCritterRecord>;
 
 export class SubCountRepository extends BaseRepository {
   /**
@@ -78,16 +91,14 @@ export class SubCountRepository extends BaseRepository {
   /**
    * Inserts a new subcount_critter record.
    *
-   * TODO: Implement this function fully. The incoming `record` parameter and the return value are of type `unknown`.
-   *
-   * @param {unknown} record
-   * @return {*}  {Promise<unknown>}
+   * @param {SubCountCritterRecord} subcountCritter
+   * @return {*}  {Promise<SubCountCritterRecord>}
    * @memberof SubCountRepository
    */
-  async insertSubCountCritter(record: unknown): Promise<unknown> {
-    const queryBuilder = getKnex().insert(record).into('subcount_critter').returning('*');
+  async insertSubCountCritter(subcountCritter: SubCountCritterRecord): Promise<SubCountCritterRecord> {
+    const queryBuilder = getKnex().insert(subcountCritter).into('subcount_critter').returning('*');
 
-    const response = await this.connection.knex(queryBuilder);
+    const response = await this.connection.knex(queryBuilder, SubCountCritterRecord);
 
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to insert subcount critter', [
@@ -177,33 +188,5 @@ export class SubCountRepository extends BaseRepository {
       .andWhere('survey_observation.survey_id', surveyId);
 
     return this.connection.knex(queryBuilder);
-  }
-
-  /**
-   * Returns all subcount event records for all observations in a given survey.
-   *
-   * @param {number} surveyId
-   * @return {*}  {Promise<SubCountEventRecord[]>}
-   * @memberof SubCountRepository
-   */
-  async getSubCountEventRecordsBySurveyId(surveyId: number): Promise<SubCountEventRecord[]> {
-    const sql = SQL`
-      SELECT 
-        subcount_event.*
-      FROM 
-        survey_observation, 
-        observation_subcount, 
-        subcount_event
-      WHERE 
-        survey_observation.survey_observation_id = observation_subcount.survey_observation_id 
-      AND 
-        observation_subcount.observation_subcount_id = subcount_event.observation_subcount_id
-      AND 
-        survey_observation.survey_id = ${surveyId};
-    `;
-
-    const response = await this.connection.sql(sql, SubCountEventRecord);
-
-    return response.rows;
   }
 }

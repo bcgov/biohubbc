@@ -3,10 +3,10 @@ import Icon from '@mdi/react';
 import IconButton from '@mui/material/IconButton';
 import Popover from '@mui/material/Popover';
 import { GridColDef } from '@mui/x-data-grid';
-import { IObservationTableRow, MeasurementColumn } from 'contexts/observationsTableContext';
-import { ConfigureColumnsPopoverContent } from 'features/surveys/observations/observations-table/configure-table/ConfigureColumnsPopoverContent';
+import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
+import { ConfigureColumnsPopoverContent } from './ConfigureColumnsPopoverContent';
 
 export interface IConfigureColumnsProps {
   /**
@@ -59,10 +59,10 @@ export interface IConfigureColumnsProps {
   /**
    * The measurement columns to render in the table.
    *
-   * @type {MeasurementColumn[]}
+   * @type {CBMeasurementType[]}
    * @memberof IConfigureColumnsProps
    */
-  measurementColumns: MeasurementColumn[];
+  measurementColumns: CBMeasurementType[];
   /**
    * Callback fired when a measurement column is removed.
    *
@@ -104,6 +104,7 @@ export const ConfigureColumns = (props: IConfigureColumnsProps) => {
       <IconButton
         color="default"
         onClick={(event) => setColumnVisibilityMenuAnchorEl(event.currentTarget)}
+        title="Configure Columns"
         disabled={disabled}>
         <Icon path={mdiCogOutline} size={1} />
       </IconButton>

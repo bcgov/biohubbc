@@ -1,19 +1,23 @@
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Link, Toolbar, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
+import Link from '@mui/material/Link';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { ProjectRoleGuard } from 'components/security/Guards';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { ProjectContext } from 'contexts/projectContext';
 import { SurveyBasicFieldsObject } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
-import { firstOrNull } from 'utils/Utils';
+import { firstOrNull, getFormattedDate } from 'utils/Utils';
+import SurveyProgressChip from '../components/SurveyProgressChip';
 
 const pageSizeOptions = [10, 25, 50];
 
@@ -24,13 +28,15 @@ const pageSizeOptions = [10, 25, 50];
  */
 const SurveysListPage = () => {
   const projectContext = useContext(ProjectContext);
+
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
     pageSize: pageSizeOptions[0]
   });
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
-  const refreshSurveyList = () => {
+  // Refresh survey list when pagination or sort changes
+  useEffect(() => {
     const sort = firstOrNull(sortModel);
     const pagination: ApiPaginationRequestOptions = {
       limit: paginationModel.pageSize,
@@ -41,12 +47,10 @@ const SurveysListPage = () => {
       page: paginationModel.page + 1
     };
 
-    return projectContext.surveysListDataLoader.refresh(pagination);
-  };
+    projectContext.surveysListDataLoader.refresh(pagination);
 
-  // Refresh survey list when pagination or sort changes
-  useEffect(() => {
-    refreshSurveyList();
+    // Adding a DataLoader as a dependency causes an infinite rerender loop if a useEffect calls `.refresh`
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortModel, paginationModel]);
 
   const columns: GridColDef<SurveyBasicFieldsObject>[] = [
@@ -68,24 +72,38 @@ const SurveysListPage = () => {
       )
     },
     {
-      field: 'focal_species_names',
-      headerName: 'Focal Species',
-      flex: 1,
+      field: 'progress',
+      headerName: 'Progress',
+      flex: 0.25,
       disableColumnMenu: true,
-      sortable: false,
       renderCell: (params) => (
-        <Typography
-          component="span"
-          variant="body2"
-          sx={{
-            display: 'inline-block',
-            '&::first-letter': {
-              textTransform: 'capitalize'
-            }
-          }}>
-          {params.value.join(', ')}
-        </Typography>
+        <Box>
+          <SurveyProgressChip progress_id={params.row.progress_id} />
+        </Box>
       )
+    },
+    {
+      field: 'start_date',
+      headerName: 'Start Date',
+      flex: 0.3,
+      disableColumnMenu: true,
+      renderCell: (params) => (
+        <Typography variant="body2">{getFormattedDate(DATE_FORMAT.MediumDateFormat, params.row.start_date)}</Typography>
+      )
+    },
+    {
+      field: 'end_date',
+      headerName: 'End Date',
+      flex: 0.3,
+      disableColumnMenu: true,
+      renderCell: (params) =>
+        params.row.end_date ? (
+          <Typography variant="body2">{getFormattedDate(DATE_FORMAT.MediumDateFormat, params.row.end_date)}</Typography>
+        ) : (
+          <Typography variant="body2" color="textSecondary">
+            None
+          </Typography>
+        )
     }
   ];
 

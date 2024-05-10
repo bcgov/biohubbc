@@ -42,7 +42,7 @@ describe('SampleLocationRepository', () => {
 
   describe('getSampleLocationsCountBySurveyId', () => {
     it('should return the sample location count successfully', async () => {
-      const mockResponse = ({ rows: [{ sample_site_count: 69 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [{ count: 69 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: () => mockResponse });
 
       const repo = new SampleLocationRepository(dbConnectionObj);
@@ -63,6 +63,22 @@ describe('SampleLocationRepository', () => {
         expect(dbConnectionObj.sql).to.have.been.calledOnce;
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to get sample site count');
       }
+    });
+  });
+
+  describe('getSurveySampleLocationBySiteId', () => {
+    it('should return a single sample location', async () => {
+      const mockRows = [{ survey_sample_site_id: 1 }];
+      const mockResponse = ({ rows: [mockRows], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const dbConnectionObj = getMockDBConnection({ knex: () => mockResponse });
+
+      const surveySampleSiteId = 1;
+      const surveyId = 2;
+
+      const repo = new SampleLocationRepository(dbConnectionObj);
+      const response = await repo.getSurveySampleLocationBySiteId(surveyId, surveySampleSiteId);
+
+      expect(response).to.eql(mockRows);
     });
   });
 
@@ -152,9 +168,10 @@ describe('SampleLocationRepository', () => {
       const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
+      const mockSurveyId = 1;
       const surveySampleLocationId = 1;
       const repo = new SampleLocationRepository(dbConnectionObj);
-      const response = await repo.deleteSampleSiteRecord(surveySampleLocationId);
+      const response = await repo.deleteSampleSiteRecord(mockSurveyId, surveySampleLocationId);
 
       expect(dbConnectionObj.sql).to.have.been.calledOnce;
       expect(response).to.eql(mockRow);
@@ -164,11 +181,12 @@ describe('SampleLocationRepository', () => {
       const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
+      const mockSurveyId = 1;
       const surveySampleLocationId = 1;
       const repo = new SampleLocationRepository(dbConnectionObj);
 
       try {
-        await repo.deleteSampleSiteRecord(surveySampleLocationId);
+        await repo.deleteSampleSiteRecord(mockSurveyId, surveySampleLocationId);
       } catch (error) {
         expect(dbConnectionObj.sql).to.have.been.calledOnce;
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to delete survey block record');

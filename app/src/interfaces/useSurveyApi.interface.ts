@@ -1,15 +1,18 @@
 import { PublishStatus } from 'constants/attachments';
-import { IAgreementsForm } from 'features/surveys/components/AgreementsForm';
-import { IGeneralInformationForm } from 'features/surveys/components/GeneralInformationForm';
-import { IProprietaryDataForm } from 'features/surveys/components/ProprietaryDataForm';
-import { IPurposeAndMethodologyForm } from 'features/surveys/components/PurposeAndMethodologyForm';
-import { ISurveyLocationForm } from 'features/surveys/components/StudyAreaForm';
-import { ISurveyFundingSource, ISurveyFundingSourceForm } from 'features/surveys/components/SurveyFundingSourceForm';
-import { ISurveySiteSelectionForm } from 'features/surveys/components/SurveySiteSelectionForm';
+import { IAgreementsForm } from 'features/surveys/components/agreements/AgreementsForm';
+import { IProprietaryDataForm } from 'features/surveys/components/agreements/ProprietaryDataForm';
+import {
+  ISurveyFundingSource,
+  ISurveyFundingSourceForm
+} from 'features/surveys/components/funding/SurveyFundingSourceForm';
+import { IGeneralInformationForm } from 'features/surveys/components/general-information/GeneralInformationForm';
+import { ISurveyLocationForm } from 'features/surveys/components/locations/StudyAreaForm';
+import { IPurposeAndMethodologyForm } from 'features/surveys/components/methodology/PurposeAndMethodologyForm';
+import { IBlockData } from 'features/surveys/components/sampling-strategy/blocks/BlockForm';
 import { Feature } from 'geojson';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { ApiPaginationResponseParams, StringBoolean } from 'types/misc';
-import { ICritterDetailedResponse } from './useCritterApi.interface';
+import { ICritterDetailedResponse, ICritterSimpleResponse } from './useCritterApi.interface';
 
 /**
  * Create survey post object.
@@ -36,11 +39,37 @@ export interface ICreateSurveyResponse {
   id: number;
 }
 
+export interface IGetSurveyStratumForm {
+  index: number | null;
+  stratum: IGetSurveyStratum | IPostSurveyStratum;
+}
+
+export interface IPostSurveyStratum {
+  survey_stratum_id: number | null;
+  name: string;
+  description?: string;
+}
+
+export interface ISurveySiteSelectionForm {
+  site_selection: {
+    strategies: string[];
+    stratums: IGetSurveyStratum[];
+  };
+}
+
+export interface ISurveySiteSelectionUpdateObject {
+  site_selection: {
+    strategies: string[];
+    stratums: IPostSurveyStratum[];
+  };
+}
+
 export interface ISurveyBlockForm {
   blocks: {
     survey_block_id: number | null;
     name: string;
     description: string;
+    sample_block_count: number;
   }[];
 }
 
@@ -54,6 +83,7 @@ export interface IGetSurveyForViewResponseDetails {
   survey_name: string;
   start_date: string;
   end_date: string;
+  progress_id: number;
   survey_types: number[];
   revision_count: number;
 }
@@ -62,7 +92,6 @@ export interface IGetSurveyForViewResponsePurposeAndMethodology {
   intended_outcome_ids: number[];
   additional_details: string;
   vantage_code_ids: number[];
-  surveyed_all_areas: StringBoolean;
 }
 
 export interface IGetSurveyForViewResponseProprietor {
@@ -109,11 +138,16 @@ export interface IGetSurveyBlock {
   survey_block_id: number;
   name: string;
   description: string;
-  create_date: string;
-  create_user: number;
-  update_date: string | null;
-  update_user: number | null;
   revision_count: number;
+  sample_block_count: number;
+}
+
+export interface IGetSurveyStratum {
+  survey_stratum_id: number;
+  name: string;
+  description: string;
+  revision_count: number;
+  sample_stratum_count: number;
 }
 
 export interface SurveyViewObject {
@@ -135,11 +169,14 @@ export interface SurveyBasicFieldsObject {
   name: string;
   start_date: string;
   end_date: string | null;
+  progress_id: number;
   focal_species: number[];
   focal_species_names: string[];
 }
 
-export interface SurveyUpdateObject extends ISurveyLocationForm {
+export type SurveyUpdateObject = ISurveyUpdateObject & ISurveySiteSelectionUpdateObject;
+
+interface ISurveyUpdateObject extends ISurveyLocationForm {
   survey_details?: {
     survey_name: string;
     start_date: string;
@@ -158,19 +195,16 @@ export interface SurveyUpdateObject extends ISurveyLocationForm {
       permit_type: string;
     }[];
   };
-  funding_sources?: [
-    {
-      funding_source_id?: number;
-      amount: number;
-      revision_count: number;
-    }
-  ];
+  funding_sources?: {
+    funding_source_id: number;
+    amount: number;
+    revision_count: number;
+  }[];
   partnerships?: IGetSurveyForUpdateResponsePartnerships;
   purpose_and_methodology?: {
     intended_outcome_ids: number[];
     additional_details: string;
     vantage_code_ids: number[];
-    surveyed_all_areas: StringBoolean;
     revision_count: number;
   };
   proprietor?: {
@@ -182,38 +216,10 @@ export interface SurveyUpdateObject extends ISurveyLocationForm {
     disa_required: StringBoolean;
   };
   participants?: IGetSurveyParticipant[];
+  blocks: IBlockData[];
 }
 
-// TODO remove in subsequent PR
 export interface SurveySupplementaryData {
-  occurrence_submission: {
-    occurrence_submission_id: number | null;
-  };
-  occurrence_submission_publish: {
-    occurrence_submission_publish_id: number;
-    occurrence_submission_id: number;
-    event_timestamp: string;
-    submission_uuid: string;
-    create_date: string;
-    create_user: number;
-    update_date: string | null;
-    update_user: number | null;
-    revision_count: number;
-  } | null;
-  survey_summary_submission: {
-    survey_summary_submission_id: number | null;
-  };
-  survey_summary_submission_publish: {
-    survey_summary_submission_publish_id: number;
-    survey_summary_submission_id: number;
-    event_timestamp: string;
-    artifact_revision_id: number;
-    create_date: string;
-    create_user: number;
-    update_date: string | null;
-    update_user: number | null;
-    revision_count: number;
-  } | null;
   survey_metadata_publish: {
     survey_metadata_publish_id: number;
     survey_id: number;
@@ -338,6 +344,10 @@ export interface IGetSurveyForUpdateResponse {
   surveyData: SurveyUpdateObject;
 }
 
+export interface ISimpleCritterWithInternalId extends ICritterSimpleResponse {
+  survey_critter_id: number;
+}
+
 export interface IDetailedCritterWithInternalId extends ICritterDetailedResponse {
   survey_critter_id: number; //The internal critter_id in the SIMS DB. Called this to distinguish against the critterbase UUID of the same name.
 }
@@ -348,49 +358,5 @@ export type IEditSurveyRequest = IGeneralInformationForm &
   ISurveyLocationForm &
   IProprietaryDataForm &
   IUpdateAgreementsForm & { partnerships: IGetSurveyForViewResponsePartnerships } & ISurveySiteSelectionForm &
-  IParticipantsJobForm;
-
-export interface IGetSampleSiteResponse {
-  sampleSites: IGetSampleLocationRecord[];
-}
-export interface IGetSampleLocationRecord {
-  survey_sample_site_id: number;
-  survey_id: number;
-  name: string;
-  description: string;
-  geojson: Feature;
-  geography: string;
-  create_date: string;
-  create_user: number;
-  update_date: string | null;
-  update_user: number | null;
-  revision_count: number;
-  sample_methods: IGetSampleMethodRecord[] | undefined;
-}
-
-export interface IGetSampleMethodRecord {
-  survey_sample_method_id: number;
-  survey_sample_site_id: number;
-  method_lookup_id: number;
-  description: string;
-  create_date: string;
-  create_user: number;
-  update_date: string | null;
-  update_user: number | null;
-  revision_count: number;
-  sample_periods: IGetSamplePeriodRecord[] | undefined;
-}
-
-export interface IGetSamplePeriodRecord {
-  survey_sample_period_id: number;
-  survey_sample_method_id: number;
-  start_date: string;
-  end_date: string;
-  start_time: string | null;
-  end_time: string | null;
-  create_date: string;
-  create_user: number;
-  update_date: string | null;
-  update_user: number | null;
-  revision_count: number;
-}
+  IParticipantsJobForm &
+  ISurveyBlockForm;

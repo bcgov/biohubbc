@@ -1,152 +1,137 @@
-import { Button, Grid } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import EditDialog from 'components/dialog/EditDialog';
 import CbSelectField from 'components/fields/CbSelectField';
 import CustomTextField from 'components/fields/CustomTextField';
 import FormikDevDebugger from 'components/formik/FormikDevDebugger';
-import { EditDeleteStubCard } from 'features/surveys/components/EditDeleteStubCard';
-import { useFormikContext } from 'formik';
+import { useDialogContext } from 'hooks/useContext';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import { IMarkingResponse } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 import {
-  AnimalMarkingSchema,
+  AnimalFormProps,
   ANIMAL_FORM_MODE,
-  getAnimalFieldName,
-  IAnimal,
-  IAnimalMarking,
+  CreateCritterMarkingSchema,
+  ICreateCritterMarking,
   isRequiredInSchema
 } from '../animal';
-import { ANIMAL_SECTIONS_FORM_MAP } from '../animal-sections';
 
-type MarkingAnimalFormProps =
-  | {
-      taxon_id: string; // temp will probably place inside a context
-      display: 'button';
-      marking?: never;
-    }
-  | {
-      taxon_id: string;
-      display: 'card';
-      marking: IAnimalMarking;
-    };
-/*
- * Note: This is a placeholder component for how to handle the form sections individually
- * allows easier management of the individual form sections with push / patch per form
- * vs how it's currently implemented with one large payload that updates/removes/creates critter meta
+/**
+ * This component renders a 'critter marking' create / edit dialog.
+ *
+ * @param {AnimalFormProps<IMarkingResponse>} props - Generic AnimalFormProps.
+ * @returns {*}
  */
-export const MarkingAnimalForm = (props: MarkingAnimalFormProps) => {
-  const [dialogMode, setDialogMode] = useState<ANIMAL_FORM_MODE | null>(null);
-  const markingInfo = ANIMAL_SECTIONS_FORM_MAP['Markings'];
-  return (
-    <>
-      <EditDialog
-        dialogTitle={markingInfo.dialogTitle}
-        open={!!dialogMode}
-        component={{
-          element: <div>placeholder for marking component</div>,
-          initialValues: props?.marking ?? markingInfo.defaultFormValue(),
-          validationSchema: AnimalMarkingSchema
-        }}
-        onCancel={() => setDialogMode(null)}
-        onSave={(values) => {
-          setDialogMode(null);
-        }}
-      />
-      {props.display === 'button' ? (
-        <Button onClick={() => setDialogMode(ANIMAL_FORM_MODE.ADD)}>{markingInfo.addBtnText}</Button>
-      ) : (
-        <EditDeleteStubCard header={props?.marking?.marking_type ?? 'Marking'} subHeader={'test test'} />
-      )}
-    </>
-  );
-};
+export const MarkingAnimalForm = (props: AnimalFormProps<IMarkingResponse>) => {
+  const cbApi = useCritterbaseApi();
+  const dialog = useDialogContext();
 
-interface IMarkingAnimalFormContentProps {
-  index: number;
-}
+  const [loading, setLoading] = useState(false);
 
-export const MarkingAnimalFormContent = ({ index }: IMarkingAnimalFormContentProps) => {
-  const name: keyof IAnimal = 'markings';
-
-  const { values, setFieldValue } = useFormikContext<IAnimal>();
-
-  const handlePrimaryColourName = (_value: string, label: string) => {
-    setFieldValue(getAnimalFieldName<IAnimalMarking>(name, 'primary_colour', index), label);
-  };
-
-  const handleMarkingTypeName = (_value: string, label: string) => {
-    setFieldValue(getAnimalFieldName<IAnimalMarking>(name, 'marking_type', index), label);
-  };
-
-  const handleMarkingLocationName = (_value: string, label: string) => {
-    setFieldValue(getAnimalFieldName<IAnimalMarking>(name, 'body_location', index), label);
+  const handleSave = async (values: ICreateCritterMarking) => {
+    setLoading(true);
+    try {
+      if (props.formMode === ANIMAL_FORM_MODE.ADD) {
+        await cbApi.marking.createMarking(values);
+        dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created marking.` });
+      }
+      if (props.formMode === ANIMAL_FORM_MODE.EDIT) {
+        await cbApi.marking.updateMarking(values);
+        dialog.setSnackbar({ open: true, snackbarMessage: `Successfully edited marking.` });
+      }
+    } catch (err) {
+      dialog.setSnackbar({ open: true, snackbarMessage: `Critter marking request failed.` });
+    } finally {
+      props.handleClose();
+      setLoading(false);
+    }
   };
 
   return (
-    <Grid container spacing={3}>
-      <Grid item xs={12}>
-        <CbSelectField
-          label="Type"
-          name={getAnimalFieldName<IAnimalMarking>(name, 'marking_type_id', index)}
-          id="marking_type"
-          route="lookups/marking-types"
-          controlProps={{
-            size: 'medium',
-            required: isRequiredInSchema(AnimalMarkingSchema, 'marking_type_id')
-          }}
-          handleChangeSideEffect={handleMarkingTypeName}
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <CbSelectField
-          label="Body Location"
-          name={getAnimalFieldName<IAnimalMarking>(name, 'taxon_marking_body_location_id', index)}
-          id="marking_body_location"
-          route="xref/taxon-marking-body-locations"
-          query={`taxon_id=${values.general.taxon_id}`}
-          controlProps={{
-            size: 'medium',
-            required: isRequiredInSchema(AnimalMarkingSchema, 'taxon_marking_body_location_id')
-          }}
-          handleChangeSideEffect={handleMarkingLocationName}
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <CbSelectField
-          label="Primary Colour"
-          name={getAnimalFieldName<IAnimalMarking>(name, 'primary_colour_id', index)}
-          id="primary_colour_id"
-          route="lookups/colours"
-          controlProps={{
-            size: 'medium',
-            required: isRequiredInSchema(AnimalMarkingSchema, 'primary_colour_id')
-          }}
-          handleChangeSideEffect={handlePrimaryColourName}
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <CbSelectField
-          label="Secondary Colour"
-          name={getAnimalFieldName<IAnimalMarking>(name, 'secondary_colour_id', index)}
-          id="secondary_colour_id"
-          route="lookups/colours"
-          controlProps={{
-            size: 'medium',
-            required: isRequiredInSchema(AnimalMarkingSchema, 'secondary_colour_id')
-          }}
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <CustomTextField
-          label="Comments"
-          name={getAnimalFieldName<IAnimalMarking>(name, 'marking_comment', index)}
-          other={{
-            size: 'medium',
-            multiline: true,
-            minRows: 3,
-            required: isRequiredInSchema(AnimalMarkingSchema, 'marking_comment')
-          }}
-        />
-      </Grid>
-      <FormikDevDebugger />
-    </Grid>
+    <EditDialog
+      dialogTitle={props.formMode === ANIMAL_FORM_MODE.ADD ? 'Add Marking' : 'Edit Marking'}
+      open={props.open}
+      onCancel={props.handleClose}
+      onSave={handleSave}
+      size="md"
+      dialogLoading={loading}
+      component={{
+        initialValues: {
+          marking_id: props?.formObject?.marking_id,
+          critter_id: props?.critter.critter_id,
+          marking_type_id: props?.formObject?.marking_type_id ?? '',
+          taxon_marking_body_location_id: props?.formObject?.taxon_marking_body_location_id ?? '',
+          primary_colour_id: props?.formObject?.primary_colour_id,
+          secondary_colour_id: props?.formObject?.secondary_colour_id,
+          comment: props?.formObject?.comment
+        },
+        validationSchema: CreateCritterMarkingSchema,
+        element: (
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <CbSelectField
+                label="Type"
+                name={'marking_type_id'}
+                id="marking_type"
+                route="lookups/marking-types"
+                controlProps={{
+                  size: 'medium',
+                  required: isRequiredInSchema(CreateCritterMarkingSchema, 'marking_type_id')
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <CbSelectField
+                label="Body Location"
+                name={'taxon_marking_body_location_id'}
+                id="marking_body_location"
+                route="xref/taxon-marking-body-locations"
+                query={{ tsn: props.critter.itis_tsn }}
+                controlProps={{
+                  size: 'medium',
+                  required: isRequiredInSchema(CreateCritterMarkingSchema, 'taxon_marking_body_location_id')
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <CbSelectField
+                label="Primary Colour"
+                name={'primary_colour_id'}
+                id="primary_colour_id"
+                route="lookups/colours"
+                controlProps={{
+                  size: 'medium',
+                  required: isRequiredInSchema(CreateCritterMarkingSchema, 'primary_colour_id')
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <CbSelectField
+                label="Secondary Colour"
+                name={'secondary_colour_id'}
+                id="secondary_colour_id"
+                route="lookups/colours"
+                controlProps={{
+                  size: 'medium',
+                  required: isRequiredInSchema(CreateCritterMarkingSchema, 'secondary_colour_id')
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <CustomTextField
+                label="Comments"
+                name={'comment'}
+                other={{
+                  size: 'medium',
+                  multiline: true,
+                  minRows: 3,
+                  required: isRequiredInSchema(CreateCritterMarkingSchema, 'comment')
+                }}
+              />
+            </Grid>
+            <FormikDevDebugger />
+          </Grid>
+        )
+      }}
+    />
   );
 };

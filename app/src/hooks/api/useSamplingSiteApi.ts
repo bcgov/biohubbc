@@ -1,7 +1,10 @@
 import { AxiosInstance } from 'axios';
-import { IEditSamplingSiteRequest } from 'features/surveys/observations/sampling-sites/edit/components/SampleSiteEditForm';
-import { ICreateSamplingSiteRequest } from 'features/surveys/observations/sampling-sites/SamplingSitePage';
-import { IGetSampleSiteResponse } from 'interfaces/useSurveyApi.interface';
+import {
+  ICreateSamplingSiteRequest,
+  IEditSamplingSiteRequest,
+  IGetSampleLocationDetails,
+  IGetSampleSiteResponse
+} from 'interfaces/useSamplingSiteApi.interface';
 
 /**
  * Returns a set of supported api methods for working with search functionality
@@ -35,6 +38,24 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
    */
   const getSampleSites = async (projectId: number, surveyId: number): Promise<IGetSampleSiteResponse> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/sample-site`);
+
+    return data;
+  };
+
+  /**
+   * Get Sample Site by ID
+   * TODO: Required? not used anywhere
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} sampleSiteId
+   * @return {*}  {Promise<void>}
+   */
+  const getSampleSiteById = async (
+    projectId: number,
+    surveyId: number,
+    sampleSiteId: number
+  ): Promise<IGetSampleLocationDetails> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/sample-site/${sampleSiteId}`);
     return data;
   };
 
@@ -87,6 +108,7 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
   return {
     createSamplingSites,
     getSampleSites,
+    getSampleSiteById,
     editSampleSite,
     deleteSampleSite,
     deleteSampleSites

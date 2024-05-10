@@ -1,7 +1,9 @@
 import { mdiCircle } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Chip, Stack, Typography } from '@mui/material';
+import Chip from '@mui/material/Chip';
 import { grey } from '@mui/material/colors';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import { taxonRankColours } from 'constants/taxon';
 import React from 'react';
 

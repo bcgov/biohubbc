@@ -1,3 +1,8 @@
+import { Color } from '@mui/material';
+import blue from '@mui/material/colors/blue';
+import green from '@mui/material/colors/green';
+import purple from '@mui/material/colors/purple';
+
 export enum AdministrativeActivityType {
   SYSTEM_ACCESS = 'System Access'
 }
@@ -8,24 +13,8 @@ export enum AdministrativeActivityStatusType {
   REJECTED = 'Rejected'
 }
 
-export enum BioHubSubmittedStatusType {
-  UNSUBMITTED = 'Unsubmitted',
-  SUBMITTED = 'Submitted',
-  REJECTED = 'Rejected'
-}
-
-export enum ProjectStatusType {
-  COMPLETED = 'Completed',
-  ACTIVE = 'Active'
-}
-
-export enum SurveyStatusType {
-  COMPLETED = 'Completed',
-  ACTIVE = 'Active'
-}
-
-export enum DocumentReviewStatus {
-  PENDING = 'Pending Review'
-}
-
-export const PG_MAX_INT = 2147483647;
+export const SurveyProgressChipColours: Record<string, Color> = {
+  PLANNING: blue,
+  'IN PROGRESS': purple,
+  COMPLETED: green
+};

@@ -1,10 +1,13 @@
+import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { ConfigContext, IConfig } from 'contexts/configContext';
 import { DialogContext, IDialogContext } from 'contexts/dialogContext';
 import { IObservationsContext, ObservationsContext } from 'contexts/observationsContext';
+import { IObservationsPageContext, ObservationsPageContext } from 'contexts/observationsPageContext';
 import { IObservationsTableContext, ObservationsTableContext } from 'contexts/observationsTableContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import { ITaxonomyContext, TaxonomyContext } from 'contexts/taxonomyContext';
+import { ITelemetryTableContext, TelemetryTableContext } from 'contexts/telemetryTableContext';
 import { useContext } from 'react';
 
 /**
@@ -18,6 +21,23 @@ export const useConfigContext = (): IConfig => {
   if (!context) {
     throw Error(
       'ConfigContext is undefined, please verify you are calling useConfigContext() as child of an <ConfigContextProvider> component.'
+    );
+  }
+
+  return context;
+};
+
+/**
+ * Returns an instance of `ICodesContext` from `CodesContext`.
+ *
+ * @return {*}  {ICodesContext}
+ */
+export const useCodesContext = (): ICodesContext => {
+  const context = useContext(CodesContext);
+
+  if (!context) {
+    throw Error(
+      'CodesContext is undefined, please verify you are calling useCodesContext() as child of an <CodesContextProvider> component.'
     );
   }
 
@@ -76,7 +96,7 @@ export const useSurveyContext = (): ISurveyContext => {
 };
 
 /**
- * Returns an instance of `IObservationsContext` from `SurveyContext`.
+ * Returns an instance of `IObservationsContext` from `ObservationsContext`.
  *
  * @return {*}  {IObservationsContext}
  */
@@ -93,7 +113,24 @@ export const useObservationsContext = (): IObservationsContext => {
 };
 
 /**
- * Returns an instance of `IObservationsTableContext` from `SurveyContext`.
+ * Returns an instance of `IObservationsPageContext` from `ObservationsPageContext`.
+ *
+ * @return {*}  {IObservationsPageContext}
+ */
+export const useObservationsPageContext = (): IObservationsPageContext => {
+  const context = useContext(ObservationsPageContext);
+
+  if (!context) {
+    throw Error(
+      'ObservationsPageContext is undefined, please verify you are calling useObservationsPageContext() as child of an <ObservationsPageContextProvider> component.'
+    );
+  }
+
+  return context;
+};
+
+/**
+ * Returns an instance of `IObservationsTableContext` from `ObservationsTableContext`.
  *
  * @return {*}  {IObservationsTableContext}
  */
@@ -103,6 +140,23 @@ export const useObservationsTableContext = (): IObservationsTableContext => {
   if (!context) {
     throw Error(
       'ObservationsTableContext is undefined, please verify you are calling useObservationsTableContext() as child of an <ObservationsTableContextProvider> component.'
+    );
+  }
+
+  return context;
+};
+
+/**
+ * Returns an instance of `IObservationsTableContext` from `ObservationsTableContext`.
+ *
+ * @return {*}  {IObservationsTableContext}
+ */
+export const useTelemetryTableContext = (): ITelemetryTableContext => {
+  const context = useContext(TelemetryTableContext);
+
+  if (!context) {
+    throw Error(
+      'TelemetryTableContext is undefined, please verify you are calling useTelemetryTableContext() as child of an <TelemetryTableContextProvider> component.'
     );
   }
 

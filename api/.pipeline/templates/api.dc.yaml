@@ -45,10 +45,10 @@ parameters:
     description: API host for BioHub Platform Backbone. Example "https://platform.com".
   - name: BACKBONE_INTAKE_PATH
     required: true
-    description: API path for BioHub Platform Backbone DwCA submission intake endpoint. Example "/api/path/to/intake".
+    description: The publishing intake endpoint path for BioHub Platform submissions. Example "/api/path/to/intake".
   - name: BACKBONE_ARTIFACT_INTAKE_PATH
     required: true
-    description: API path for BioHub Platform Backbone artifact submission intake endpoint. Example "/api/path/to/artifact/intake".
+    description: The publishing intake endpoint path for BioHub Platform artifact submissions. Example "/api/path/to/artifact/intake".
   - name: BACKBONE_INTAKE_ENABLED
     required: true
     description: Controls whether or not SIMS will submit DwCA datasets to the BioHub Platform Backbone. Set to "true" to enable it, will be disabled by default otherwise.
@@ -118,9 +118,13 @@ parameters:
     description: S3 key optional prefix
     required: false
     value: 'sims'
-  # Log level
+  # Logging and Validation
   - name: LOG_LEVEL
-    value: 'info'
+    value: 'warn'
+  - name: API_RESPONSE_VALIDATION_ENABLED
+    value: 'false'
+  - name: DATABASE_RESPONSE_VALIDATION_ENABLED
+    value: 'false'
   # GCNotify
   - name: GCNOTIFY_API_SECRET
     description: Secret for gcnotify api key
@@ -267,12 +271,6 @@ objects:
                       name: ${DB_SERVICE_NAME}
                 - name: DB_PORT
                   value: '5432'
-                - name: PROJECT_SEEDER_USER_IDENTIFIER
-                  value: ${PROJECT_SEEDER_USER_IDENTIFIER}
-                - name: NUM_SEED_PROJECTS
-                  value: ${NUM_SEED_PROJECTS}
-                - name: NUM_SEED_SURVEYS_PER_PROJECT
-                  value: ${NUM_SEED_SURVEYS_PER_PROJECT}
                 # Keycloak
                 - name: KEYCLOAK_HOST
                   value: ${KEYCLOAK_HOST}
@@ -323,9 +321,13 @@ objects:
                     secretKeyRef:
                       key: object_store_bucket_name
                       name: ${OBJECT_STORE_SECRETS}
-                # Log level
+                # Logging and Validation
                 - name: LOG_LEVEL
                   value: ${LOG_LEVEL}
+                - name: API_RESPONSE_VALIDATION_ENABLED
+                  value: ${API_RESPONSE_VALIDATION_ENABLED}
+                - name: DATABASE_RESPONSE_VALIDATION_ENABLED
+                  value: ${DATABASE_RESPONSE_VALIDATION_ENABLED}
                 # GCNotify
                 - name: GCNOTIFY_SECRET_API_KEY
                   valueFrom:

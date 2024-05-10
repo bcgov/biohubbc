@@ -53,7 +53,7 @@ const BCeIDRequestForm = (props: IBCeIDRequestFormProps) => {
           </Grid>
         )}
         <Grid item xs={12}>
-          <CustomTextField name="reason" label="Reason For Request" other={{ multiline: true, rows: 4 }} />
+          <CustomTextField name="reason" label="Reason for Request" other={{ multiline: true, rows: 4 }} />
         </Grid>
       </Grid>
     </Box>

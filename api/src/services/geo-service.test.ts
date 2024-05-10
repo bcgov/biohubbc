@@ -14,6 +14,8 @@ describe('GeoService', () => {
 
   describe('constructor', () => {
     it('with default options', async () => {
+      process.env.BcgwBaseUrl = 'https://openmaps.gov.bc.ca/geo/pub/ows';
+
       const geoService = new GeoService();
 
       expect(geoService).not.to.be.undefined;

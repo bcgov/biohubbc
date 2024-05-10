@@ -2,6 +2,7 @@ import { IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/http-error';
 import {
   InsertSamplePeriodRecord,
+  SamplePeriodHierarchyIds,
   SamplePeriodRecord,
   SamplePeriodRepository,
   UpdateSamplePeriodRecord
@@ -27,23 +28,40 @@ export class SamplePeriodService extends DBService {
   /**
    *  Gets all survey Sample periods.
    *
+   * @param {number} surveyId
    * @param {number} surveySampleMethodId
    * @return {*}  {Promise<SamplePeriodRecord[]>}
    * @memberof SamplePeriodService
    */
-  async getSamplePeriodsForSurveyMethodId(surveySampleMethodId: number): Promise<SamplePeriodRecord[]> {
-    return await this.samplePeriodRepository.getSamplePeriodsForSurveyMethodId(surveySampleMethodId);
+  async getSamplePeriodsForSurveyMethodId(
+    surveyId: number,
+    surveySampleMethodId: number
+  ): Promise<SamplePeriodRecord[]> {
+    return this.samplePeriodRepository.getSamplePeriodsForSurveyMethodId(surveyId, surveySampleMethodId);
+  }
+
+  /**
+   * Gets the full hierarchy of sample_site_id, sample_method_id, and sample_period_id for a given sample period id.
+   *
+   * @param {number} surveyId
+   * @param {number} surveySamplePeriodId
+   * @return {*}  {Promise<SamplePeriodHierarchyIds>}
+   * @memberof SamplePeriodService
+   */
+  async getSamplePeriodHierarchyIds(surveyId: number, surveySamplePeriodId: number): Promise<SamplePeriodHierarchyIds> {
+    return this.samplePeriodRepository.getSamplePeriodHierarchyIds(surveyId, surveySamplePeriodId);
   }
 
   /**
    * Deletes a survey Sample Period.
    *
+   * @param {number} surveyId
    * @param {number} surveySamplePeriodId
    * @return {*}  {Promise<SamplePeriodRecord>}
    * @memberof SamplePeriodService
    */
-  async deleteSamplePeriodRecord(surveySamplePeriodId: number): Promise<SamplePeriodRecord> {
-    return this.samplePeriodRepository.deleteSamplePeriodRecord(surveySamplePeriodId);
+  async deleteSamplePeriodRecord(surveyId: number, surveySamplePeriodId: number): Promise<SamplePeriodRecord> {
+    return this.samplePeriodRepository.deleteSamplePeriodRecord(surveyId, surveySamplePeriodId);
   }
 
   /**
@@ -53,8 +71,8 @@ export class SamplePeriodService extends DBService {
    * @returns {*} {Promise<SamplePeriodRecord[]>} an array of promises for the deleted periods
    * @memberof SamplePeriodService
    */
-  async deleteSamplePeriodRecords(periodsToDelete: number[]): Promise<SamplePeriodRecord[]> {
-    return this.samplePeriodRepository.deleteSamplePeriods(periodsToDelete);
+  async deleteSamplePeriodRecords(surveyId: number, periodsToDelete: number[]): Promise<SamplePeriodRecord[]> {
+    return this.samplePeriodRepository.deleteSamplePeriods(surveyId, periodsToDelete);
   }
 
   /**
@@ -75,8 +93,8 @@ export class SamplePeriodService extends DBService {
    * @return {*}  {Promise<SamplePeriodRecord>}
    * @memberof SamplePeriodService
    */
-  async updateSamplePeriod(samplePeriod: UpdateSamplePeriodRecord): Promise<SamplePeriodRecord> {
-    return this.samplePeriodRepository.updateSamplePeriod(samplePeriod);
+  async updateSamplePeriod(surveyId: number, samplePeriod: UpdateSamplePeriodRecord): Promise<SamplePeriodRecord> {
+    return this.samplePeriodRepository.updateSamplePeriod(surveyId, samplePeriod);
   }
 
   /**
@@ -87,13 +105,17 @@ export class SamplePeriodService extends DBService {
    * @param {UpdateSampleMethodRecord[]} newPeriod
    * @memberof SamplePeriodService
    */
-  async deleteSamplePeriodsNotInArray(surveySampleMethodId: number, newPeriod: UpdateSamplePeriodRecord[]) {
+  async deleteSamplePeriodsNotInArray(
+    surveyId: number,
+    surveySampleMethodId: number,
+    newPeriod: UpdateSamplePeriodRecord[]
+  ) {
     // Get any existing Period for the given sample method
-    const existingPeriods = await this.getSamplePeriodsForSurveyMethodId(surveySampleMethodId);
+    const existingPeriods = await this.getSamplePeriodsForSurveyMethodId(surveyId, surveySampleMethodId);
 
     // Compare input and existing for Period to delete
     // Any existing periods that are not found in the new Periods being passed in will be collected for deletion
-    const existingPeriodToDelete = existingPeriods.filter((existingPeriod) => {
+    const existingPeriodsToDelete = existingPeriods.filter((existingPeriod) => {
       return !newPeriod.find(
         (incomingMethod) => incomingMethod.survey_sample_period_id === existingPeriod.survey_sample_period_id
       );
@@ -102,22 +124,17 @@ export class SamplePeriodService extends DBService {
     const observationService = new ObservationService(this.connection);
 
     // Delete any Periods not found in the passed in array
-    if (existingPeriodToDelete.length > 0) {
-      const idsToDelete = [];
+    if (existingPeriodsToDelete.length > 0) {
+      const existingSamplePeriodIds = existingPeriodsToDelete.map((period) => period.survey_sample_period_id);
+      const samplingPeriodObservationsCount = await observationService.getObservationsCountBySamplePeriodIds(
+        existingSamplePeriodIds
+      );
 
-      // Check if any observations are associated with the periods to delete
-      for (const period of existingPeriodToDelete) {
-        if (
-          (await observationService.getObservationsCountBySamplePeriodId(period.survey_sample_period_id))
-            .observationCount > 0
-        ) {
-          throw new HTTP400('Cannot delete a sample period that is associated with an observation');
-        }
-
-        idsToDelete.push(period.survey_sample_period_id);
+      if (samplingPeriodObservationsCount > 0) {
+        throw new HTTP400('Cannot delete a sample period that is associated with an observation');
       }
 
-      await this.deleteSamplePeriodRecords(idsToDelete);
+      await this.deleteSamplePeriodRecords(surveyId, existingSamplePeriodIds);
     }
   }
 }

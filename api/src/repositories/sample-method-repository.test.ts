@@ -20,9 +20,10 @@ describe('SampleMethodRepository', () => {
       const mockResponse = ({ rows: mockRows, rowCount: 2 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
+      const mockSurveyId = 1;
       const surveySampleSiteId = 1;
       const repo = new SampleMethodRepository(dbConnectionObj);
-      const response = await repo.getSampleMethodsForSurveySampleSiteId(surveySampleSiteId);
+      const response = await repo.getSampleMethodsForSurveySampleSiteId(mockSurveyId, surveySampleSiteId);
 
       expect(dbConnectionObj.sql).to.have.been.calledOnce;
       expect(response).to.eql(mockRows);
@@ -33,9 +34,10 @@ describe('SampleMethodRepository', () => {
       const mockResponse = ({ rows: mockRows, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
+      const mockSurveyId = 1;
       const surveySampleSiteId = 1;
       const repo = new SampleMethodRepository(dbConnectionObj);
-      const response = await repo.getSampleMethodsForSurveySampleSiteId(surveySampleSiteId);
+      const response = await repo.getSampleMethodsForSurveySampleSiteId(mockSurveyId, surveySampleSiteId);
 
       expect(dbConnectionObj.sql).to.have.been.calledOnce;
       expect(response).to.eql(mockRows);
@@ -48,12 +50,14 @@ describe('SampleMethodRepository', () => {
       const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
+      const surveyId = 1;
       const sampleMethod: UpdateSampleMethodRecord = {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
+        method_response_metric_id: 1,
         method_lookup_id: 3,
         description: 'description',
-        periods: [
+        sample_periods: [
           {
             end_date: '2023-01-02',
             start_date: '2023-10-02',
@@ -73,7 +77,7 @@ describe('SampleMethodRepository', () => {
         ]
       };
       const repo = new SampleMethodRepository(dbConnectionObj);
-      const response = await repo.updateSampleMethod(sampleMethod);
+      const response = await repo.updateSampleMethod(surveyId, sampleMethod);
 
       expect(dbConnectionObj.sql).to.have.been.calledOnce;
       expect(response).to.eql(mockRow);
@@ -83,12 +87,14 @@ describe('SampleMethodRepository', () => {
       const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
+      const surveyId = 1;
       const sampleMethod: UpdateSampleMethodRecord = {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
         method_lookup_id: 3,
+        method_response_metric_id: 1,
         description: 'description',
-        periods: [
+        sample_periods: [
           {
             end_date: '2023-01-02',
             start_date: '2023-10-02',
@@ -110,7 +116,7 @@ describe('SampleMethodRepository', () => {
       const repo = new SampleMethodRepository(dbConnectionObj);
 
       try {
-        await repo.updateSampleMethod(sampleMethod);
+        await repo.updateSampleMethod(surveyId, sampleMethod);
       } catch (error) {
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to update sample method');
         expect(dbConnectionObj.sql).to.have.been.calledOnce;
@@ -127,8 +133,9 @@ describe('SampleMethodRepository', () => {
       const sampleMethod: InsertSampleMethodRecord = {
         survey_sample_site_id: 2,
         method_lookup_id: 3,
+        method_response_metric_id: 1,
         description: 'description',
-        periods: [
+        sample_periods: [
           {
             end_date: '2023-01-02',
             start_date: '2023-10-02',
@@ -158,9 +165,10 @@ describe('SampleMethodRepository', () => {
 
       const sampleMethod: InsertSampleMethodRecord = {
         survey_sample_site_id: 2,
+        method_response_metric_id: 1,
         method_lookup_id: 3,
         description: 'description',
-        periods: [
+        sample_periods: [
           {
             end_date: '2023-01-02',
             start_date: '2023-10-02',
@@ -195,8 +203,9 @@ describe('SampleMethodRepository', () => {
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const surveySampleMethodId = 1;
+      const mockSurveyId = 1001;
       const repo = new SampleMethodRepository(dbConnectionObj);
-      const response = await repo.deleteSampleMethodRecord(surveySampleMethodId);
+      const response = await repo.deleteSampleMethodRecord(mockSurveyId, surveySampleMethodId);
 
       expect(dbConnectionObj.sql).to.have.been.calledOnce;
       expect(response).to.eql(mockRow);
@@ -206,11 +215,12 @@ describe('SampleMethodRepository', () => {
       const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
+      const mockSurveyId = 1001;
       const surveySampleMethodId = 1;
       const repo = new SampleMethodRepository(dbConnectionObj);
 
       try {
-        await repo.deleteSampleMethodRecord(surveySampleMethodId);
+        await repo.deleteSampleMethodRecord(mockSurveyId, surveySampleMethodId);
       } catch (error) {
         expect(dbConnectionObj.sql).to.have.been.calledOnce;
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to delete sample method');

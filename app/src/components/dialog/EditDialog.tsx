@@ -5,8 +5,10 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { Breakpoint } from '@mui/material/styles';
 import useTheme from '@mui/material/styles/useTheme';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import FormikDevDebugger from 'components/formik/FormikDevDebugger';
 import { Formik, FormikValues } from 'formik';
 import { PropsWithChildren } from 'react';
 
@@ -80,6 +82,24 @@ export interface IEditDialogProps<T> {
    * @memberof IEditDialogProps
    */
   onSave: (values: T) => void;
+
+  /**
+   * Enables FormikDevDebugger.
+   * Renders status of Formik values, errors and touched fields.
+   *
+   * NOTE: This will only render in development environments if enabled.
+   *
+   * @memberof IEditDialogProps
+   */
+  debug?: true;
+
+  /**
+   * Adds a static size breakpoint for the dialog.
+   * Will stretch dialog to breakpoints max width.
+   *
+   * @memberof IEditDialogProps
+   */
+  size?: Breakpoint;
 }
 
 /**
@@ -109,37 +129,41 @@ export const EditDialog = <T extends FormikValues>(props: PropsWithChildren<IEdi
       onSubmit={(values) => {
         props.onSave(values);
       }}>
-      {(formikProps) => (
-        <Dialog
-          data-testid="edit-dialog"
-          fullScreen={fullScreen}
-          maxWidth="xl"
-          open={props.open}
-          aria-labelledby="edit-dialog-title"
-          aria-describedby="edit-dialog-description">
-          <DialogTitle id="edit-dialog-title">{props.dialogTitle}</DialogTitle>
-          <DialogContent>
-            {props.dialogText && <DialogContentText sx={{ mb: 4 }}>{props.dialogText}</DialogContentText>}
-            {props.component.element}
-          </DialogContent>
-          <DialogActions>
-            <LoadingButton
-              loading={props.dialogLoading || formikProps.isValidating || false}
-              disabled={formikProps.status?.forceDisable}
-              onClick={formikProps.submitForm}
-              color="primary"
-              variant="contained"
-              autoFocus
-              data-testid="edit-dialog-save">
-              {props.dialogSaveButtonLabel || 'Save Changes'}
-            </LoadingButton>
-            <Button onClick={props.onCancel} color="primary" variant="outlined" data-testid="edit-dialog-cancel">
-              Cancel
-            </Button>
-          </DialogActions>
-          {props.dialogError && <DialogContent>{props.dialogError}</DialogContent>}
-        </Dialog>
-      )}
+      {(formikProps) => {
+        return (
+          <Dialog
+            data-testid="edit-dialog"
+            fullScreen={fullScreen}
+            fullWidth={Boolean(props.size)}
+            maxWidth={props.size ?? 'xl'}
+            open={props.open}
+            aria-labelledby="edit-dialog-title"
+            aria-describedby="edit-dialog-description">
+            <DialogTitle id="edit-dialog-title">{props.dialogTitle}</DialogTitle>
+            <DialogContent>
+              {props.dialogText && <DialogContentText sx={{ mb: 4 }}>{props.dialogText}</DialogContentText>}
+              {props.component.element}
+            </DialogContent>
+            <DialogActions>
+              <LoadingButton
+                loading={props.dialogLoading || formikProps.isValidating || false}
+                disabled={formikProps.status?.forceDisable}
+                onClick={formikProps.submitForm}
+                color="primary"
+                variant="contained"
+                autoFocus
+                data-testid="edit-dialog-save">
+                {props.dialogSaveButtonLabel || 'Save Changes'}
+              </LoadingButton>
+              <Button onClick={props.onCancel} color="primary" variant="outlined" data-testid="edit-dialog-cancel">
+                Cancel
+              </Button>
+            </DialogActions>
+            {props.dialogError && <DialogContent>{props.dialogError}</DialogContent>}
+            {props.debug ? <FormikDevDebugger /> : null}
+          </Dialog>
+        );
+      }}
     </Formik>
   );
 };

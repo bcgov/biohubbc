@@ -1,4 +1,6 @@
-import { Box, Grid, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import TelemetrySelectField from 'components/fields/TelemetrySelectField';
 import FormikDevDebugger from 'components/formik/FormikDevDebugger';

@@ -1,6 +1,5 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
-import { MESSAGE_CLASS_NAME, SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
@@ -18,33 +17,6 @@ import { BaseRepository } from './base-repository';
 export interface IGetSpeciesData {
   itis_tsn: number;
   is_focal: boolean;
-}
-
-export interface IGetLatestSurveyOccurrenceSubmission {
-  occurrence_submission_id: number;
-  survey_id: number;
-  source: string;
-  delete_timestamp: string;
-  event_timestamp: string;
-  input_key: string;
-  input_file_name: string;
-  output_key: string;
-  output_file_name: string;
-  submission_status_id: number;
-  submission_status_type_id: number;
-  submission_status_type_name?: SUBMISSION_STATUS_TYPE;
-  submission_message_id: number;
-  submission_message_type_id: number;
-  message: string;
-  submission_message_type_name: string;
-}
-
-export interface IOccurrenceSubmissionMessagesResponse {
-  id: number;
-  class: MESSAGE_CLASS_NAME;
-  type: SUBMISSION_MESSAGE_TYPE;
-  status: SUBMISSION_STATUS_TYPE;
-  message: string;
 }
 
 export interface IObservationSubmissionInsertDetails {
@@ -74,19 +46,24 @@ export interface ISurveyProprietorModel {
 }
 
 const SurveyRecord = z.object({
-  project_id: z.number(),
   survey_id: z.number(),
-  name: z.string().nullable(),
+  project_id: z.number(),
+  field_method_id: z.number().nullable(),
   uuid: z.string().uuid().nullable(),
-  start_date: z.string(),
-  end_date: z.string().nullable(),
+  name: z.string().nullable(),
   additional_details: z.string().nullable(),
-  comments: z.string().nullable(),
+  start_date: z.string(),
+  lead_first_name: z.string().nullable(),
+  lead_last_name: z.string().nullable(),
+  end_date: z.string().nullable(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
-  revision_count: z.number()
+  revision_count: z.number(),
+  ecological_season_id: z.number().nullable(),
+  comments: z.string().nullable(),
+  progress_id: z.number()
 });
 
 export type SurveyRecord = z.infer<typeof SurveyRecord>;
@@ -120,11 +97,20 @@ export type StakeholderPartnershipRecord = z.infer<typeof StakeholderPartnership
 
 export type IndigenousPartnershipRecord = z.infer<typeof IndigenousPartnershipRecord>;
 
+export const SurveyProgressRecord = z.object({
+  survey_progress_id: z.number(),
+  name: z.string(),
+  description: z.string()
+});
+
+export type SurveyProgressRecord = z.infer<typeof SurveyProgressRecord>;
+
 export const SurveyBasicFields = z.object({
   survey_id: z.number(),
   name: z.string(),
   start_date: z.string(),
   end_date: z.string().nullable(),
+  progress_id: z.number(),
   focal_species: z.array(z.number()),
   focal_species_names: z.array(z.string())
 });
@@ -215,6 +201,28 @@ export class SurveyRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement, SurveyTypeRecord);
+
+    return response.rows;
+  }
+
+  /**
+   * Gets survey status records for a given survey ID
+   *
+   * @param {number} surveyId
+   * @returns {*}  {Promise<SurveyTypeRecord[]>}
+   * @memberof SurveyRepository
+   */
+  async getSurveyStatusData(surveyId: number): Promise<SurveyProgressRecord[]> {
+    const sqlStatement = SQL`
+      SELECT
+        *
+      FROM
+        survey_progress
+      WHERE
+        survey_id = ${surveyId};
+    `;
+
+    const response = await this.connection.sql(sqlStatement, SurveyProgressRecord);
 
     return response.rows;
   }
@@ -348,163 +356,6 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * Get Occurrence submission for a given survey id.
-   *
-   * @param {number} surveyId
-   * @return {*}  {(Promise<{ occurrence_submission_id: number | null }>)}
-   * @memberof SurveyRepository
-   */
-  async getOccurrenceSubmission(surveyId: number): Promise<{ occurrence_submission_id: number | null }> {
-    // Note: `max()` will always return a row, even if the table is empty. The value will be `null` in this case.
-    const sqlStatement = SQL`
-      SELECT
-        max(occurrence_submission_id) as occurrence_submission_id
-      FROM
-        occurrence_submission
-      WHERE
-        survey_id = ${surveyId}
-      AND
-        delete_timestamp is null;
-    `;
-
-    const response = await this.connection.sql<{ occurrence_submission_id: number | null }>(sqlStatement);
-
-    return response.rows[0];
-  }
-
-  /**
-   * Gets the latest Survey occurrence submission or null for a given surveyId
-   *
-   * @param {number} surveyId
-   * @returns {*} Promise<IGetLastSurveyOccurrenceSubmission | null>
-   * @memberof SurveyRepository
-   */
-  async getLatestSurveyOccurrenceSubmission(surveyId: number): Promise<IGetLatestSurveyOccurrenceSubmission | null> {
-    const sqlStatement = SQL`
-      SELECT
-        os.occurrence_submission_id,
-        os.survey_id,
-        os.source,
-        os.delete_timestamp,
-        os.event_timestamp,
-        os.input_key,
-        os.input_file_name,
-        os.output_key,
-        os.output_file_name,
-        ss.submission_status_id,
-        ss.submission_status_type_id,
-        sst.name as submission_status_type_name,
-        sm.submission_message_id,
-        sm.submission_message_type_id,
-        sm.message,
-        smt.name as submission_message_type_name
-      FROM
-        occurrence_submission as os
-      LEFT OUTER JOIN
-        submission_status as ss
-      ON
-        os.occurrence_submission_id = ss.occurrence_submission_id
-      LEFT OUTER JOIN
-        submission_status_type as sst
-      ON
-        sst.submission_status_type_id = ss.submission_status_type_id
-      LEFT OUTER JOIN
-        submission_message as sm
-      ON
-        sm.submission_status_id = ss.submission_status_id
-      LEFT OUTER JOIN
-        submission_message_type as smt
-      ON
-        smt.submission_message_type_id = sm.submission_message_type_id
-      WHERE
-        os.survey_id = ${surveyId}
-      ORDER BY
-        os.event_timestamp DESC, ss.submission_status_id DESC
-      LIMIT 1
-      ;
-    `;
-
-    const response = await this.connection.sql<IGetLatestSurveyOccurrenceSubmission>(sqlStatement);
-
-    const result = response.rows?.[0] || null;
-
-    return result;
-  }
-
-  /**
-   * SQL query to get the list of messages for an occurrence submission.
-   *
-   * @param {number} submissionId The ID of the submission
-   * @returns {*} Promise<IOccurrenceSubmissionMessagesResponse[]> Promise resolving the array of submission messages
-   */
-  async getOccurrenceSubmissionMessages(submissionId: number): Promise<IOccurrenceSubmissionMessagesResponse[]> {
-    const sqlStatement = SQL`
-      SELECT
-        sm.submission_message_id as id,
-        smt.name as type,
-        sst.name as status,
-        smc.name as class,
-        sm.message
-      FROM
-        occurrence_submission as os
-      LEFT OUTER JOIN
-        submission_status as ss
-      ON
-        os.occurrence_submission_id = ss.occurrence_submission_id
-      LEFT OUTER JOIN
-        submission_status_type as sst
-      ON
-        sst.submission_status_type_id = ss.submission_status_type_id
-      LEFT OUTER JOIN
-        submission_message as sm
-      ON
-        sm.submission_status_id = ss.submission_status_id
-      LEFT OUTER JOIN
-        submission_message_type as smt
-      ON
-        smt.submission_message_type_id = sm.submission_message_type_id
-      LEFT OUTER JOIN
-        submission_message_class smc
-      ON
-        smc.submission_message_class_id = smt.submission_message_class_id
-      WHERE
-        os.occurrence_submission_id = ${submissionId}
-      AND
-        sm.submission_message_id IS NOT NULL
-      ORDER BY sm.submission_message_id;
-    `;
-
-    const response = await this.connection.sql<IOccurrenceSubmissionMessagesResponse>(sqlStatement);
-
-    return response.rows;
-  }
-
-  /**
-   * Get survey summary submission for a given survey id.
-   *
-   * @param {number} surveyId
-   * @return {*}  {(Promise<{ survey_summary_submission_id: number | null }>)}
-   * @memberof SurveyRepository
-   */
-  async getSurveySummarySubmission(surveyId: number): Promise<{ survey_summary_submission_id: number | null }> {
-    // Note: `max()` will always return a row, even if the table is empty. The value will be `null` in this case.
-    const sqlStatement = SQL`
-      SELECT
-        max(survey_summary_submission_id) as survey_summary_submission_id
-      FROM
-        survey_summary_submission
-      WHERE
-        survey_id = ${surveyId}
-      AND
-        delete_timestamp IS NULL;
-      `;
-
-    const response = await this.connection.sql<{ survey_summary_submission_id: number | null }>(sqlStatement);
-
-    return response.rows[0];
-  }
-
-  /**
    * Get Survey attachments data for a given surveyId
    *
    * @param {number} surveyId
@@ -596,17 +447,20 @@ export class SurveyRepository extends BaseRepository {
         'survey.name',
         'survey.start_date',
         'survey.end_date',
+        'survey.progress_id',
         knex.raw('array_remove(array_agg(study_species.itis_tsn), NULL) AS focal_species')
       )
       .from('project')
       .leftJoin('survey', 'survey.project_id', 'project.project_id')
       .leftJoin('study_species', 'study_species.survey_id', 'survey.survey_id')
+      .leftJoin('survey_progress', 'survey_progress.survey_progress_id', 'survey.progress_id')
       .where('project.project_id', projectId)
       .where('study_species.is_focal', true)
       .groupBy('survey.survey_id')
       .groupBy('survey.name')
       .groupBy('survey.start_date')
-      .groupBy('survey.end_date');
+      .groupBy('survey.end_date')
+      .groupBy('survey.progress_id');
 
     if (pagination) {
       queryBuilder.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
@@ -631,24 +485,23 @@ export class SurveyRepository extends BaseRepository {
   async getSurveyCountByProjectId(projectId: number): Promise<number> {
     const sqlStatement = SQL`
       SELECT
-        COUNT(*) as survey_count
+        COUNT(*)::integer AS count
       FROM
-        survey as s
+        survey
       WHERE
-        s.project_id = ${projectId}
-      ;
+        project_id = ${projectId};
     `;
 
-    const response = await this.connection.sql(sqlStatement, z.object({ survey_count: z.string().transform(Number) }));
+    const response = await this.connection.sql(sqlStatement, z.object({ count: z.number() }));
 
-    if (response?.rowCount < 1) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get survey count', [
         'SurveyRepository->getSurveyCountByProjectId',
         'rows was null or undefined, expected rows != null'
       ]);
     }
 
-    return response.rows[0].survey_count;
+    return response.rows[0].count;
   }
 
   /**
@@ -666,12 +519,14 @@ export class SurveyRepository extends BaseRepository {
         name,
         start_date,
         end_date,
+        progress_id,
         additional_details
       ) VALUES (
         ${projectId},
         ${surveyData.survey_details.survey_name},
         ${surveyData.survey_details.start_date},
         ${surveyData.survey_details.end_date},
+        ${surveyData.survey_details.progress_id},
         ${surveyData.purpose_and_methodology.additional_details}
       )
       RETURNING
@@ -998,7 +853,8 @@ export class SurveyRepository extends BaseRepository {
         ...fieldsToUpdate,
         name: surveyData.survey_details.name,
         start_date: surveyData.survey_details.start_date,
-        end_date: surveyData.survey_details.end_date
+        end_date: surveyData.survey_details.end_date,
+        progress_id: surveyData.survey_details.progress_id
       };
     }
 
@@ -1114,102 +970,6 @@ export class SurveyRepository extends BaseRepository {
     `;
 
     await this.connection.sql(sqlStatement);
-  }
-
-  /**
-   * Inserts a survey occurrence submission row.
-   *
-   * @param {IObservationSubmissionInsertDetails} submission The details of the submission
-   * @return {*} {Promise<{ submissionId: number }>} Promise resolving the ID of the submission upon successful insertion
-   */
-  async insertSurveyOccurrenceSubmission(
-    submission: IObservationSubmissionInsertDetails
-  ): Promise<{ submissionId: number }> {
-    defaultLog.debug({ label: 'insertSurveyOccurrenceSubmission', submission });
-    const queryBuilder = getKnex()
-      .table('occurrence_submission')
-      .insert({
-        input_file_name: submission.inputFileName,
-        input_key: submission.inputKey,
-        output_file_name: submission.outputFileName,
-        output_key: submission.outputKey,
-        survey_id: submission.surveyId,
-        source: submission.source,
-        event_timestamp: `now()`
-      })
-      .returning('occurrence_submission_id as submissionId');
-
-    const response = await this.connection.knex<{ submissionId: number }>(queryBuilder);
-
-    if (response.rowCount !== 1) {
-      throw new ApiExecuteSQLError('Failed to insert survey occurrence submission', [
-        'ErrorRepository->insertSurveyOccurrenceSubmission',
-        'rowCount was null or undefined, expected rowCount = 1'
-      ]);
-    }
-
-    return response.rows[0];
-  }
-
-  /**
-   * Updates a survey occurrence submission with the given details.
-   *
-   * @param {IObservationSubmissionUpdateDetails} submission The details of the submission to be updated
-   * @return {*} {Promise<{ submissionId: number }>} Promise resolving the ID of the submission upon successfully updating it
-   */
-  async updateSurveyOccurrenceSubmission(
-    submission: IObservationSubmissionUpdateDetails
-  ): Promise<{ submissionId: number }> {
-    defaultLog.debug({ label: 'updateSurveyOccurrenceSubmission', submission });
-    const queryBuilder = getKnex()
-      .table('occurrence_submission')
-      .update({
-        input_file_name: submission.inputFileName,
-        input_key: submission.inputKey,
-        output_file_name: submission.outputFileName,
-        output_key: submission.outputKey
-      })
-      .where('occurrence_submission_id', submission.submissionId)
-      .returning('occurrence_submission_id as submissionId');
-
-    const response = await this.connection.knex<{ submissionId: number }>(queryBuilder);
-
-    if (response.rowCount !== 1) {
-      throw new ApiExecuteSQLError('Failed to update survey occurrence submission', [
-        'ErrorRepository->updateSurveyOccurrenceSubmission',
-        'rowCount was null or undefined, expected rowCount = 1'
-      ]);
-    }
-
-    return response.rows[0];
-  }
-
-  /**
-   * Soft-deletes an occurrence submission.
-   *
-   * @param {number} submissionId The ID of the submission to soft delete
-   * @returns {*} {number} The row count of the affected records, namely `1` if the delete succeeds, `0` if it does not
-   */
-  async deleteOccurrenceSubmission(submissionId: number): Promise<number> {
-    defaultLog.debug({ label: 'deleteOccurrenceSubmission', submissionId });
-    const queryBuilder = getKnex()
-      .table('occurrence_submission')
-      .update({
-        delete_timestamp: `now()`
-      })
-      .where('occurrence_submission_id', submissionId)
-      .returning('occurrence_submission_id as submissionId');
-
-    const response = await this.connection.knex<{ submissionId: number }>(queryBuilder);
-
-    if (response.rowCount !== 1) {
-      throw new ApiExecuteSQLError('Failed to delete survey occurrence submission', [
-        'ErrorRepository->deleteOccurrenceSubmission',
-        'rowCount was null or undefined, expected rowCount = 1'
-      ]);
-    }
-
-    return response.rowCount;
   }
 
   /**
@@ -1360,7 +1120,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.knex(queryBuilder);
 
-    return response.rowCount;
+    return response.rowCount ?? 0;
   }
 
   /**
@@ -1376,6 +1136,6 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.knex(queryBuilder);
 
-    return response.rowCount;
+    return response.rowCount ?? 0;
   }
 }

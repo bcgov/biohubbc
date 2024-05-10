@@ -5,7 +5,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetFundingSourceResponse, IGetFundingSourcesResponse } from 'interfaces/useFundingSourceApi.interface';
 import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
-import { act, cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import EditFundingSource from './EditFundingSource';
 
 jest.mock('../../../hooks/useBioHubApi');
@@ -17,7 +17,9 @@ const mockUseApi = {
     putFundingSource: jest.fn<Promise<{ funding_source_id: number }>, []>()
   }
 };
+
 const history = createMemoryHistory();
+
 describe('EditFundingSource', () => {
   beforeEach(() => {
     mockBioHubApi.mockImplementation(() => mockUseApi);
@@ -95,7 +97,7 @@ describe('EditFundingSource', () => {
       </Router>
     );
 
-    await act(async () => {
+    await waitFor(async () => {
       const button = await findByTestId('edit-dialog-save');
       fireEvent.click(button);
     });

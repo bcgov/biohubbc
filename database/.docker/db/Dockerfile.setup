@@ -1,24 +1,27 @@
-FROM node:14
+# ########################################################################################################
+# This DockerFile is used for both Openshift deployments and local development (via docker-compose).
+# ########################################################################################################
 
-# RUN apt-get -qq update
-# RUN npm install -g npm
+FROM node:18
 
-# set variables
-ENV HOME_ROOT=/opt/app-root
+USER 0
+
 ENV HOME=/opt/app-root/src
 
 RUN mkdir -p $HOME
 
-WORKDIR $HOME_ROOT
+RUN chgrp -R 0 $HOME && \
+    chmod -R g+rwX $HOME
 
 WORKDIR $HOME
 
-COPY . .
+COPY . ./
 
 # If you are building your code for production
 # RUN npm install --only=production
-# RUN npm set progress=false
 RUN npm install
+
+USER 1001
 
 # run the database migrations and seeding
 CMD [ "npm", "run", "setup" ]

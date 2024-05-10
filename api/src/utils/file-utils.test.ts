@@ -68,7 +68,7 @@ describe('generateS3FileKey', () => {
     expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/folder/testFileName');
   });
 
-  it('returns survey occurrence folder file path', async () => {
+  it('returns survey submission folder file path when a submission ID is passed', async () => {
     process.env.S3_KEY_PREFIX = 'some/s3/prefix';
 
     const result = generateS3FileKey({
@@ -79,19 +79,6 @@ describe('generateS3FileKey', () => {
     });
 
     expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/submissions/3/testFileName');
-  });
-
-  it('returns survey summaryresults folder file path', async () => {
-    process.env.S3_KEY_PREFIX = 'some/s3/prefix';
-
-    const result = generateS3FileKey({
-      projectId: 1,
-      surveyId: 2,
-      summaryId: 3,
-      fileName: 'testFileName'
-    });
-
-    expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/summaryresults/3/testFileName');
   });
 });
 
@@ -166,33 +153,6 @@ describe('_getClamAvScanner', () => {
 
     const result = _getClamAvScanner();
     expect(result).to.not.be.null;
-  });
-
-  it('should return null if enable file virus scan is not set to true', () => {
-    process.env.ENABLE_FILE_VIRUS_SCAN = 'false';
-    process.env.CLAMAV_HOST = 'host';
-    process.env.CLAMAV_PORT = '1111';
-
-    const result = _getClamAvScanner();
-    expect(result).to.be.null;
-  });
-
-  it('should return null if CLAMAV_HOST is not set', () => {
-    process.env.ENABLE_FILE_VIRUS_SCAN = 'true';
-    delete process.env.CLAMAV_HOST;
-    process.env.CLAMAV_PORT = '1111';
-
-    const result = _getClamAvScanner();
-    expect(result).to.be.null;
-  });
-
-  it('should return null if CLAMAV_PORT is not set', () => {
-    process.env.ENABLE_FILE_VIRUS_SCAN = 'true';
-    process.env.CLAMAV_HOST = 'host';
-    delete process.env.CLAMAV_PORT;
-
-    const result = _getClamAvScanner();
-    expect(result).to.be.null;
   });
 });
 

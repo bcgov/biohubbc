@@ -13,8 +13,8 @@ import { PostSampleLocations, SampleLocationService } from '../../../../../../se
 import { getLogger } from '../../../../../../utils/logger';
 import {
   ensureCompletePaginationOptions,
-  getPaginationOptionsFromRequest,
-  getPaginationResponse
+  makePaginationOptionsFromRequest,
+  makePaginationResponse
 } from '../../../../../../utils/pagination';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/sample-site/');
@@ -39,7 +39,7 @@ export const GET: Operation = [
       ]
     };
   }),
-  getSurveySampleLocationRecords()
+  getSurveySampleLocationRecord()
 ];
 
 GET.apiDoc = {
@@ -78,11 +78,13 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             properties: {
               sampleSites: {
                 type: 'array',
                 items: {
                   type: 'object',
+                  additionalProperties: false,
                   required: ['survey_sample_site_id', 'survey_id', 'name', 'description', 'geojson'],
                   properties: {
                     survey_sample_site_id: {
@@ -110,10 +112,12 @@ GET.apiDoc = {
                         'survey_sample_method_id',
                         'survey_sample_site_id',
                         'method_lookup_id',
+                        'method_response_metric_id',
                         'sample_periods'
                       ],
                       items: {
                         type: 'object',
+                        additionalProperties: false,
                         properties: {
                           survey_sample_method_id: {
                             type: 'integer',
@@ -124,6 +128,10 @@ GET.apiDoc = {
                             minimum: 1
                           },
                           method_lookup_id: {
+                            type: 'integer',
+                            minimum: 1
+                          },
+                          method_response_metric_id: {
                             type: 'integer',
                             minimum: 1
                           },
@@ -143,6 +151,7 @@ GET.apiDoc = {
                             ],
                             items: {
                               type: 'object',
+                              additionalProperties: false,
                               properties: {
                                 survey_sample_period_id: {
                                   type: 'integer',
@@ -166,21 +175,67 @@ GET.apiDoc = {
                                   type: 'string',
                                   nullable: true
                                 }
-                              },
-                              additionalProperties: false
+                              }
                             }
                           }
-                        },
-                        additionalProperties: false
+                        }
+                      }
+                    },
+                    blocks: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        additionalProperties: false,
+                        required: ['survey_sample_block_id', 'survey_sample_site_id', 'survey_block_id'],
+                        properties: {
+                          survey_sample_block_id: {
+                            type: 'number'
+                          },
+                          survey_sample_site_id: {
+                            type: 'number'
+                          },
+                          survey_block_id: {
+                            type: 'number'
+                          },
+                          name: {
+                            type: 'string'
+                          },
+                          description: {
+                            type: 'string'
+                          }
+                        }
+                      }
+                    },
+                    stratums: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        additionalProperties: false,
+                        required: ['survey_sample_stratum_id', 'survey_sample_site_id', 'survey_stratum_id'],
+                        properties: {
+                          survey_sample_stratum_id: {
+                            type: 'number'
+                          },
+                          survey_sample_site_id: {
+                            type: 'number'
+                          },
+                          survey_stratum_id: {
+                            type: 'number'
+                          },
+                          name: {
+                            type: 'string'
+                          },
+                          description: {
+                            type: 'string'
+                          }
+                        }
                       }
                     }
-                  },
-                  additionalProperties: false
+                  }
                 }
               },
               pagination: { ...paginationResponseSchema }
-            },
-            additionalProperties: false
+            }
           }
         }
       }
@@ -208,7 +263,7 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function getSurveySampleLocationRecords(): RequestHandler {
+export function getSurveySampleLocationRecord(): RequestHandler {
   return async (req, res) => {
     if (!req.params.surveyId) {
       throw new HTTP400('Missing required param `surveyId`');
@@ -220,23 +275,24 @@ export function getSurveySampleLocationRecords(): RequestHandler {
       await connection.open();
 
       const surveyId = Number(req.params.surveyId);
-      const paginationOptions = getPaginationOptionsFromRequest(req);
+      const paginationOptions = makePaginationOptionsFromRequest(req);
 
       const sampleLocationService = new SampleLocationService(connection);
       const sampleSites = await sampleLocationService.getSampleLocationsForSurveyId(
         surveyId,
         ensureCompletePaginationOptions(paginationOptions)
       );
+
       const sampleSitesTotalCount = await sampleLocationService.getSampleLocationsCountBySurveyId(surveyId);
 
       await connection.commit();
 
       return res.status(200).json({
         sampleSites,
-        pagination: getPaginationResponse(sampleSitesTotalCount, paginationOptions)
+        pagination: makePaginationResponse(sampleSitesTotalCount, paginationOptions)
       });
     } catch (error) {
-      defaultLog.error({ label: 'getSurveySampleLocationRecords', message: 'error', error });
+      defaultLog.error({ label: 'getSurveySampleLocationRecord', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
@@ -297,28 +353,61 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
-          required: ['methods', 'survey_sample_sites'],
+          additionalProperties: false,
+          required: ['sample_methods', 'survey_sample_sites'],
           properties: {
-            methods: {
+            survey_id: {
+              type: 'integer'
+            },
+            name: {
+              type: 'string'
+            },
+            description: {
+              type: 'string'
+            },
+            sample_methods: {
               type: 'array',
               minItems: 1,
               items: {
                 type: 'object',
-                required: ['method_lookup_id', 'description', 'periods'],
+                additionalProperties: false,
+                required: ['method_lookup_id', 'description', 'sample_periods', 'method_response_metric_id'],
                 properties: {
+                  survey_sample_site_id: {
+                    type: 'integer',
+                    nullable: true
+                  },
+                  survey_sample_method_id: {
+                    type: 'integer',
+                    nullable: true
+                  },
                   method_lookup_id: {
-                    type: 'integer'
+                    type: 'integer',
+                    nullable: true
                   },
                   description: {
                     type: 'string'
                   },
-                  periods: {
+                  sample_periods: {
                     type: 'array',
                     minItems: 1,
                     items: {
                       type: 'object',
+                      additionalProperties: false,
                       required: ['start_date', 'end_date'],
                       properties: {
+                        survey_sample_period_id: {
+                          type: 'integer',
+                          nullable: true
+                        },
+                        survey_sample_method_id: {
+                          type: 'integer',
+                          nullable: true
+                        },
+                        method_lookup_id: {
+                          type: 'integer',
+                          nullable: true
+                        },
                         start_date: {
                           type: 'string'
                         },
@@ -335,6 +424,98 @@ POST.apiDoc = {
                         }
                       }
                     }
+                  },
+                  method_response_metric_id: {
+                    type: 'integer',
+                    minimum: 1
+                  }
+                }
+              }
+            },
+            blocks: {
+              type: 'array',
+              items: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['survey_block_id'],
+                properties: {
+                  survey_block_id: {
+                    type: 'number'
+                  },
+                  survey_id: {
+                    type: 'integer'
+                  },
+                  name: {
+                    type: 'string'
+                  },
+                  description: {
+                    type: 'string'
+                  },
+                  sample_block_count: {
+                    type: 'number'
+                  },
+                  create_date: {
+                    type: 'string',
+                    nullable: true
+                  },
+                  create_user: {
+                    type: 'integer',
+                    nullable: true
+                  },
+                  update_date: {
+                    type: 'string',
+                    nullable: true
+                  },
+                  update_user: {
+                    type: 'integer',
+                    nullable: true
+                  },
+                  revision_count: {
+                    type: 'number'
+                  }
+                }
+              }
+            },
+            stratums: {
+              type: 'array',
+              items: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['survey_stratum_id'],
+                properties: {
+                  survey_id: {
+                    type: 'integer'
+                  },
+                  survey_stratum_id: {
+                    type: 'number'
+                  },
+                  sample_stratum_count: {
+                    type: 'number'
+                  },
+                  name: {
+                    type: 'string'
+                  },
+                  description: {
+                    type: 'string'
+                  },
+                  create_date: {
+                    type: 'string',
+                    nullable: true
+                  },
+                  create_user: {
+                    type: 'integer',
+                    nullable: true
+                  },
+                  update_date: {
+                    type: 'string',
+                    nullable: true
+                  },
+                  update_user: {
+                    type: 'integer',
+                    nullable: true
+                  },
+                  revision_count: {
+                    type: 'number'
                   }
                 }
               }
@@ -344,6 +525,7 @@ POST.apiDoc = {
               minItems: 1,
               items: {
                 type: 'object',
+                additionalProperties: false,
                 properties: {
                   name: {
                     type: 'string'
@@ -391,9 +573,10 @@ export function createSurveySampleSiteRecord(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const sampleSite: PostSampleLocations = req.body;
-
-      sampleSite.survey_id = Number(req.params.surveyId);
+      const sampleSite: PostSampleLocations = {
+        ...req.body,
+        survey_id: Number(req.params.surveyId)
+      };
 
       await connection.open();
 

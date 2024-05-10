@@ -59,6 +59,7 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['attachmentType'],
           properties: {
             attachmentType: {
@@ -102,7 +103,7 @@ export function deleteAttachment(): RequestHandler {
 
       const attachmentService = new AttachmentService(connection);
 
-      await attachmentService.handleDeleteProjectAttachment(
+      await attachmentService.deleteProjectAttachment(
         Number(req.params.projectId),
         Number(req.params.attachmentId),
         req.body.attachmentType

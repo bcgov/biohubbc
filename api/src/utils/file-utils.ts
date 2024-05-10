@@ -7,22 +7,24 @@ import {
   ManagedUpload,
   Metadata
 } from 'aws-sdk/clients/s3';
-import clamd from 'clamdjs';
-import { SUBMISSION_MESSAGE_TYPE } from '../constants/status';
-import { SubmissionErrorFromMessageType } from './submission-error';
+import NodeClam from 'clamscan';
+import { Readable } from 'stream';
+import { getLogger } from './logger';
+
+const defaultLog = getLogger('/api/src/utils/file-utils');
 
 /**
  * Local getter for retrieving the ClamAV client.
  *
- * @returns {*} {clamd.ClamScanner | null} The ClamAV Scanner if `process.env.ENABLE_FILE_VIRUS_SCAN` is set to
- * 'true' and other appropriate environment variables are set; `null` otherwise.
+ * @return {*}  {Promise<NodeClam>}
  */
-export const _getClamAvScanner = (): clamd.ClamScanner | null => {
-  if (process.env.ENABLE_FILE_VIRUS_SCAN === 'true' && process.env.CLAMAV_HOST && process.env.CLAMAV_PORT) {
-    return clamd.createScanner(process.env.CLAMAV_HOST, Number(process.env.CLAMAV_PORT));
-  }
-
-  return null;
+export const _getClamAvScanner = async (): Promise<NodeClam> => {
+  return new NodeClam().init({
+    clamdscan: {
+      host: process.env.CLAMAV_HOST,
+      port: Number(process.env.CLAMAV_PORT)
+    }
+  });
 };
 
 /**
@@ -145,10 +147,7 @@ export async function uploadBufferToS3(
       Key: key,
       Metadata: metadata
     })
-    .promise()
-    .catch(() => {
-      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPLOAD_FILE_TO_S3);
-    });
+    .promise();
 }
 
 /**
@@ -168,10 +167,7 @@ export async function getFileFromS3(key: string, versionId?: string): Promise<Ge
       Key: key,
       VersionId: versionId
     })
-    .promise()
-    .catch(() => {
-      throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_GET_FILE_FROM_S3);
-    });
+    .promise();
 }
 
 /**
@@ -225,7 +221,6 @@ export interface IS3FileKey {
   projectId: number;
   surveyId?: number;
   submissionId?: number;
-  summaryId?: number;
   folder?: string;
   fileName: string;
 }
@@ -248,11 +243,6 @@ export function generateS3FileKey(options: IS3FileKey): string {
     keyParts.push(options.submissionId);
   }
 
-  if (options.summaryId) {
-    keyParts.push('summaryresults');
-    keyParts.push(options.summaryId);
-  }
-
   if (options.folder) {
     keyParts.push(options.folder);
   }
@@ -265,17 +255,31 @@ export function generateS3FileKey(options: IS3FileKey): string {
 }
 
 export async function scanFileForVirus(file: Express.Multer.File): Promise<boolean> {
-  const ClamAVScanner = _getClamAvScanner();
+  if (process.env.ENABLE_FILE_VIRUS_SCAN !== 'true' || !process.env.CLAMAV_HOST || !process.env.CLAMAV_PORT) {
+    // Virus scanning is not enabled or necessary environment variables are not set
+    return true;
+  }
+
+  const ClamAVScanner = await _getClamAvScanner();
 
   // if virus scan is not to be performed/cannot be performed
   if (!ClamAVScanner) {
     return true;
   }
 
-  const clamavScanResult = await ClamAVScanner.scanBuffer(file.buffer, 3000, 1024 * 1024);
+  const fileStream = Readable.from(file.buffer);
+
+  const clamavScanResult = await ClamAVScanner.scanStream(fileStream);
 
   // if virus found in file
-  if (clamavScanResult.includes('FOUND')) {
+  if (clamavScanResult.isInfected) {
+    defaultLog.warn({
+      label: 'scanFileForVirus',
+      message: 'Malicious content detected',
+      file: file.originalname,
+      clamavScanResult
+    });
+
     return false;
   }
 

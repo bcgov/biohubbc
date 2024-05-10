@@ -84,6 +84,7 @@ export class PutSurveyDetailsData {
   name: string;
   start_date: string;
   end_date: string;
+  progress_id: number;
   survey_types: number[];
   revision_count: number;
 
@@ -91,6 +92,7 @@ export class PutSurveyDetailsData {
     this.name = obj?.survey_name || null;
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
+    this.progress_id = obj?.progress_id || null;
     this.survey_types = (obj?.survey_types?.length && obj.survey_types) || [];
     this.revision_count = obj?.revision_count ?? null;
   }
@@ -135,14 +137,12 @@ export class PutSurveyPurposeAndMethodologyData {
   intended_outcome_ids: number[];
   additional_details: string;
   vantage_code_ids: number[];
-  surveyed_all_areas: boolean;
   revision_count: number;
 
   constructor(obj?: any) {
     this.intended_outcome_ids = (obj?.intended_outcome_ids?.length && obj?.intended_outcome_ids) || [];
     this.additional_details = obj?.additional_details || null;
     this.vantage_code_ids = (obj?.vantage_code_ids?.length && obj.vantage_code_ids) || [];
-    this.surveyed_all_areas = obj?.surveyed_all_areas === 'true' || false;
     this.revision_count = obj?.revision_count ?? null;
   }
 }

@@ -45,6 +45,7 @@ GET.apiDoc = {
             type: 'array',
             items: {
               type: 'object',
+              additionalProperties: false,
               required: ['funding_source_id', 'name', 'description', 'revision_count'],
               properties: {
                 funding_source_id: {
@@ -72,12 +73,14 @@ GET.apiDoc = {
                 survey_reference_count: {
                   type: 'number',
                   minimum: 0,
-                  description: 'The number of surveys that reference this funding source.'
+                  description: 'The number of surveys that reference this funding source.',
+                  nullable: true
                 },
                 survey_reference_amount_total: {
                   type: 'number',
                   minimum: 0,
-                  description: 'The total amount from all references to this funding source by all surveys.'
+                  description: 'The total amount from all references to this funding source by all surveys.',
+                  nullable: true
                 }
               }
             }
@@ -183,8 +186,13 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           required: ['name', 'description'],
           properties: {
+            funding_source_id: {
+              type: 'number',
+              nullable: true
+            },
             name: {
               type: 'string'
             },
@@ -197,6 +205,11 @@ POST.apiDoc = {
             },
             end_date: {
               type: 'string',
+              nullable: true
+            },
+            revision_count: {
+              type: 'integer',
+              minimum: 0,
               nullable: true
             }
           }
@@ -211,6 +224,7 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: ['funding_source_id'],
             properties: {
               funding_source_id: {
@@ -255,7 +269,7 @@ export function postFundingSource(): RequestHandler {
       const response = await service.postFundingSource(data);
       await connection.commit();
 
-      return res.status(200).json(response);
+      return res.status(200).json({ funding_source_id: response.funding_source_id });
     } catch (error) {
       defaultLog.error({ label: 'createFundingSource', message: 'error', error });
       await connection.rollback();

@@ -8,6 +8,9 @@ const PROJECT_SEEDER_USER_IDENTIFIER = process.env.PROJECT_SEEDER_USER_IDENTIFIE
 const NUM_SEED_PROJECTS = Number(process.env.NUM_SEED_PROJECTS ?? 2);
 const NUM_SEED_SURVEYS_PER_PROJECT = Number(process.env.NUM_SEED_SURVEYS_PER_PROJECT ?? 2);
 
+const NUM_SEED_OBSERVATIONS_PER_SURVEY = Number(process.env.NUM_SEED_OBSERVATIONS_PER_SURVEY ?? 3);
+const NUM_SEED_SUBCOUNTS_PER_OBSERVATION = Number(process.env.NUM_SEED_SUBCOUNTS_PER_OBSERVATION ?? 1);
+
 const focalTaxonIdOptions = [
   { itis_tsn: 180703, itis_scientific_name: 'Alces alces' }, // Moose
   { itis_tsn: 180596, itis_scientific_name: 'Canis lupus' }, // Wolf
@@ -80,17 +83,34 @@ export async function seed(knex: Knex): Promise<void> {
           ${insertSurveyLocationData(surveyId)}
           ${insertSurveySiteStrategy(surveyId)}
           ${insertSurveyIntendedOutcome(surveyId)}
-          ${insertSurveySampleLocationData(surveyId)}
+          ${insertSurveySamplingSiteData(surveyId)}
+          ${insertSurveySamplingMethodData(surveyId)}
+          ${insertSurveySamplePeriodData(surveyId)}
         `);
 
-        const response1 = await knex.raw(insertSurveyObservationData(surveyId));
+        const response1 = await knex.raw(insertSurveyObservationData(surveyId, 20));
         await knex.raw(insertObservationSubCount(response1.rows[0].survey_observation_id));
 
-        const response2 = await knex.raw(insertSurveyObservationData(surveyId));
+        const response2 = await knex.raw(insertSurveyObservationData(surveyId, 20));
         await knex.raw(insertObservationSubCount(response2.rows[0].survey_observation_id));
 
-        const response3 = await knex.raw(insertSurveyObservationData(surveyId));
+        const response3 = await knex.raw(insertSurveyObservationData(surveyId, 20));
         await knex.raw(insertObservationSubCount(response3.rows[0].survey_observation_id));
+
+        for (let k = 0; k < NUM_SEED_OBSERVATIONS_PER_SURVEY; k++) {
+          const createObservationResponse = await knex.raw(
+            // set the number of observations to minimum 20 times the number of subcounts (which are set to a number
+            // between 1 and 20) to ensure the sum of all subcounts is at least <= the observation count (to avoid
+            // constraint violations)
+            insertSurveyObservationData(
+              surveyId,
+              NUM_SEED_SUBCOUNTS_PER_OBSERVATION * 20 + faker.number.int({ min: 1, max: 20 })
+            )
+          );
+          for (let l = 0; l < NUM_SEED_SUBCOUNTS_PER_OBSERVATION; l++) {
+            await knex.raw(insertObservationSubCount(createObservationResponse.rows[0].survey_observation_id));
+          }
+        }
       }
     }
   }
@@ -235,16 +255,21 @@ const insertSurveyFundingData = (surveyId: number) => `
  */
 const insertSurveyFocalSpeciesData = (surveyId: number) => {
   const focalSpecies = focalTaxonIdOptions[Math.floor(Math.random() * focalTaxonIdOptions.length)];
+  const testValue = [
+    2012, 2013, 828, 2019, 1594, 1718, 2037, 2062, 2068, 2065, 2070, 2069, 23918, 23922, 23920, 35369, 35370, 28516
+  ][Math.floor(Math.random() * 18)];
 
   return `
     INSERT into study_species
       (
         survey_id,
+        wldtaxonomic_units_id,
         itis_tsn,
         is_focal
       )
     VALUES (
       ${surveyId},
+      ${testValue},
       ${focalSpecies.itis_tsn},
       'Y'
     );
@@ -352,6 +377,7 @@ const insertSurveyData = (projectId: number, surveyName?: string) => `
       additional_details,
       start_date,
       end_date,
+      progress_id,
       lead_first_name,
       lead_last_name
     )
@@ -361,6 +387,7 @@ const insertSurveyData = (projectId: number, surveyName?: string) => `
     $$${faker.lorem.sentences(2)}$$,
     $$${faker.date.between({ from: '2010-01-01T00:00:00-08:00', to: '2015-01-01T00:00:00-08:00' }).toISOString()}$$,
     $$${faker.date.between({ from: '2020-01-01T00:00:00-08:00', to: '2025-01-01T00:00:00-08:00' }).toISOString()}$$,
+    CEIL(RANDOM() * 3),
     $$${faker.person.firstName()}$$,
     $$${faker.person.lastName()}$$
   )
@@ -482,120 +509,139 @@ const insertSurveyStakeholderData = (surveyId: number) => `
 `;
 
 /**
- * Inserts a survey sample site, method, and period record.
+ * SQL to insert survey sampling site data.
  *
- * @param {number} surveyId
  */
-const insertSurveySampleLocationData = (surveyId: number) => `
-  WITH 
-    w_sample_site as (
-      INSERT INTO survey_sample_site
-        (
-          survey_id,
-          name,
-          description,
-          geojson,
-          geography
-        ) VALUES (
-          ${surveyId},
-          'Seed Sampling Site',
-          $$${faker.lorem.sentences(2)}$$,
-          '
-          {
-            "type": "Feature",
-            "geometry": {
-              "type": "Polygon",
-              "coordinates": [
-                [
-                  [-121,    51],
-                  [-121,    51.7],
-                  [-120.5,  51.7],
-                  [-120.5,  51],
-                  [-121,    51]
+const insertSurveySamplingSiteData = (surveyId: number) =>
+  `INSERT INTO survey_sample_site
+  (
+    survey_id,
+    name,
+    description,
+    geojson,
+    geography
+  ) VALUES (
+    ${surveyId},
+    'Seed Sampling Site',
+    $$${faker.lorem.sentences(2)}$$,
+    '
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-121,    51],
+            [-121,    51.7],
+            [-120.5,  51.7],
+            [-120.5,  51],
+            [-121,    51]
+          ]
+        ]
+      },
+      "properties": {}
+    }
+  ',
+    public.geography(
+      public.ST_Force2D(
+        public.ST_SetSRID(
+          public.ST_Force2D(public.ST_GeomFromGeoJSON('
+            {
+                "type": "Polygon",
+                "coordinates": [
+                  [
+                    [-121,    51],
+                    [-121,    51.7],
+                    [-120.5,  51.7],
+                    [-120.5,  51],
+                    [-121,    51]
+                  ]
                 ]
-              ]
-            },
-            "properties": {}
-          }
-        ',
-          public.geography(
-            public.ST_Force2D(
-              public.ST_SetSRID(
-                public.ST_Force2D(public.ST_GeomFromGeoJSON('
-                  {
-                      "type": "Polygon",
-                      "coordinates": [
-                        [
-                          [-121,    51],
-                          [-121,    51.7],
-                          [-120.5,  51.7],
-                          [-120.5,  51],
-                          [-121,    51]
-                        ]
-                      ]
-                    }
-                ')
-                ), 4326
-              )
-            )
-          )
+              }
+          ')
+          ), 4326
         )
-        RETURNING *
-    ),
-    w_sample_method as (
-      INSERT INTO survey_sample_method
-        (
-          survey_sample_site_id,
-          method_lookup_id,
-          description
-        )
-        SELECT 
-          (w_sample_site.survey_sample_site_id),
-          (SELECT method_lookup_id FROM method_lookup ORDER BY random() LIMIT 1),
-          $$${faker.lorem.sentences(2)}$$
-        FROM 
-          w_sample_site
-        RETURNING *
+      )
     )
+  );`;
+
+/**
+ * SQL to insert survey sampling method data. Requires sampling site.
+ *
+ */
+const insertSurveySamplingMethodData = (surveyId: number) =>
+  `
+ INSERT INTO survey_sample_method
+ (
+  survey_sample_site_id,
+  method_lookup_id,
+  description,
+  method_response_metric_id
+ )
+ VALUES
+ (
+    (SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1),
+    (SELECT method_lookup_id FROM method_lookup ORDER BY random() LIMIT 1),
+    $$${faker.lorem.sentences(2)}$$,
+    $$${faker.number.int({ min: 1, max: 4 })}$$
+ );
+`;
+
+/**
+ * SQL to insert survey sampling period data. Requires sampling method.
+ *
+ */
+const insertSurveySamplePeriodData = (surveyId: number) =>
+  `
   INSERT INTO survey_sample_period
-    (
-      survey_sample_method_id,
-      start_date,
-      end_date
-    )
-    SELECT
-      (w_sample_method.survey_sample_method_id),
-      $$${faker.date
-        .between({ from: '2000-01-01T00:00:00-08:00', to: '2001-01-01T00:00:00-08:00' })
-        .toISOString()}$$::date,
-      $$${faker.date
-        .between({ from: '2002-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
-        .toISOString()}$$::date
-    FROM
-      w_sample_method;
+  (
+    survey_sample_method_id,
+    start_date,
+    end_date
+  )
+  VALUES
+  (
+    (SELECT survey_sample_method_id FROM survey_sample_method WHERE survey_sample_site_id = (
+      SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1
+    ) LIMIT 1),
+    $$${faker.date
+      .between({ from: '2000-01-01T00:00:00-08:00', to: '2001-01-01T00:00:00-08:00' })
+      .toISOString()}$$::date,
+    $$${faker.date
+      .between({ from: '2002-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
+      .toISOString()}$$::date
+  );
 `;
 
 const insertObservationSubCount = (surveyObservationId: number) => `
-      INSERT INTO observation_subcount 
-      (
-        survey_observation_id,
-        subcount
-      )
-      VALUES
-      (
-        ${surveyObservationId},
-        $$${faker.number.int({ min: 1, max: 20 })}$$
-      );
+  INSERT INTO observation_subcount
+  (
+    survey_observation_id,
+    subcount,
+    observation_subcount_sign_id
+  )
+  VALUES
+  (
+    ${surveyObservationId},
+    $$${faker.number.int({ min: 1, max: 20 })}$$,
+    $$${faker.number.int({ min: 1, max: 3 })}$$
+  );
 `;
 
 /**
  * SQL to insert survey observation data. Requires sampling site, method, period.
  *
  */
-const insertSurveyObservationData = (surveyId: number) => `
+const insertSurveyObservationData = (surveyId: number, count: number) => {
+  const testValue = [
+    2012, 2013, 828, 2019, 1594, 1718, 2037, 2062, 2068, 2065, 2070, 2069, 23918, 23922, 23920, 35369, 35370, 28516
+  ][Math.floor(Math.random() * 18)];
+
+  return `
   INSERT INTO survey_observation
   (
     survey_id,
+    wldtaxonomic_units_id,
     itis_tsn,
     itis_scientific_name,
     latitude,
@@ -610,23 +656,34 @@ const insertSurveyObservationData = (surveyId: number) => `
   VALUES
   (
     ${surveyId},
+    ${testValue},
     $$${focalTaxonIdOptions[0].itis_tsn}$$,
     $$${focalTaxonIdOptions[0].itis_scientific_name}$$,
     $$${faker.number.int({ min: 48, max: 60 })}$$,
     $$${faker.number.int({ min: -132, max: -116 })}$$,
-    $$${faker.number.int({ min: 1, max: 20 })}$$,
+    $$${count}$$,
     $$${faker.date
       .between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
       .toISOString()}$$::date,
     timestamp $$${faker.date
       .between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
       .toISOString()}$$::time,
-    (SELECT survey_sample_site_id FROM survey_sample_site LIMIT 1),
-    (SELECT survey_sample_method_id FROM survey_sample_method LIMIT 1),
-    (SELECT survey_sample_period_id FROM survey_sample_period LIMIT 1)
+
+    (SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1),
+
+    (SELECT survey_sample_method_id FROM survey_sample_method WHERE survey_sample_site_id = (
+      SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1
+    ) LIMIT 1),
+
+    (SELECT survey_sample_period_id FROM survey_sample_period WHERE survey_sample_method_id = (
+      SELECT survey_sample_method_id FROM survey_sample_method WHERE survey_sample_site_id = (
+        SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1
+      ) LIMIT 1
+    ) LIMIT 1)
   )
   RETURNING survey_observation_id;
 `;
+};
 
 /**
  * SQL to insert Project data

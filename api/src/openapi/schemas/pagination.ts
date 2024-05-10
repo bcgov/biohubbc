@@ -53,6 +53,7 @@ export const paginationRequestQueryParamSchema: OpenAPIV3.ParameterObject[] = [
  */
 export const paginationResponseSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
+  additionalProperties: false,
   required: ['total', 'current_page', 'last_page'],
   properties: {
     total: {
@@ -82,6 +83,5 @@ export const paginationResponseSchema: OpenAPIV3.SchemaObject = {
       enum: ['asc', 'desc'],
       description: 'The sort order of the response'
     }
-  },
-  additionalProperties: false
+  }
 };

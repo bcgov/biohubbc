@@ -146,17 +146,15 @@ export interface IProgressBarProps {
 const FileUploadItem = (props: IFileUploadItemProps) => {
   const isMounted = useIsMounted();
 
-  const { uploadHandler, fileHandler, onSuccess, SubtextComponent, ActionButtonComponent, ProgressBarComponent } =
+  const { file, uploadHandler, fileHandler, onSuccess, SubtextComponent, ActionButtonComponent, ProgressBarComponent } =
     props;
-
-  const [file] = useState<File>(props.file);
 
   const [error, setError] = useState<string | undefined>(props.error);
   const [errorDetails, setErrorDetails] = useState<{ _id: string; message: string }[] | undefined>();
 
   const [status, setStatus] = useState<UploadFileStatus>(props.status ?? UploadFileStatus.PENDING);
   const [progress, setProgress] = useState<number>(0);
-  const [cancelToken] = useState<CancelTokenSource>(axios.CancelToken.source());
+  const cancelToken: CancelTokenSource = axios.CancelToken.source();
 
   // indicates that the active requests should cancel
   const [initiateCancel, setInitiateCancel] = useState<boolean>(false);
@@ -307,16 +305,8 @@ const FileUploadItem = (props: IFileUploadItemProps) => {
           borderBottomColor: grey[300]
         }
       }}>
-      <ListItemIcon
-        sx={{
-          '&.fileIconColor': {
-            color: 'text.secondary'
-          },
-          '&.error': {
-            color: 'error.main'
-          }
-        }}>
-        <Icon path={mdiFileOutline} size={1.25} className={error ? 'errorColor' : 'fileIconColor'} />
+      <ListItemIcon>
+        <Icon path={mdiFileOutline} size={1.25} style={error ? { color: 'error.main' } : { color: 'text.secondary' }} />
       </ListItemIcon>
       <ListItemText
         primary={file.name}

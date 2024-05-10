@@ -20,9 +20,10 @@ describe('SamplePeriodRepository', () => {
       const mockResponse = ({ rows: mockRows, rowCount: 2 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
+      const mockSurveyId = 1;
       const surveySampleSiteId = 1;
       const repo = new SamplePeriodRepository(dbConnectionObj);
-      const response = await repo.getSamplePeriodsForSurveyMethodId(surveySampleSiteId);
+      const response = await repo.getSamplePeriodsForSurveyMethodId(mockSurveyId, surveySampleSiteId);
 
       expect(dbConnectionObj.sql).to.have.been.calledOnce;
       expect(response).to.eql(mockRows);
@@ -33,12 +34,68 @@ describe('SamplePeriodRepository', () => {
       const mockResponse = ({ rows: mockRows, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
+      const mockSurveyId = 1;
       const surveySampleSiteId = 1;
       const repo = new SamplePeriodRepository(dbConnectionObj);
-      const response = await repo.getSamplePeriodsForSurveyMethodId(surveySampleSiteId);
+      const response = await repo.getSamplePeriodsForSurveyMethodId(mockSurveyId, surveySampleSiteId);
 
       expect(dbConnectionObj.sql).to.have.been.calledOnce;
       expect(response).to.eql(mockRows);
+    });
+  });
+
+  describe('getSamplePeriodHierarchyIds', () => {
+    it('should update the record and return a single row', async () => {
+      const mockRow = {
+        survey_sample_site_id: 1,
+        survey_sample_method_id: 2,
+        survey_sample_period_id: 3
+      };
+      const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
+
+      const surveyId = 1;
+      const surveySamplePeriodId = 3;
+
+      const repo = new SamplePeriodRepository(dbConnectionObj);
+      const response = await repo.getSamplePeriodHierarchyIds(surveyId, surveySamplePeriodId);
+
+      expect(dbConnectionObj.sql).to.have.been.calledOnce;
+      expect(response).to.eql(mockRow);
+    });
+
+    it('throws an error if rowCount is 0', async () => {
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
+
+      const surveyId = 1;
+      const surveySamplePeriodId = 3;
+
+      const repo = new SamplePeriodRepository(dbConnectionObj);
+
+      try {
+        await repo.getSamplePeriodHierarchyIds(surveyId, surveySamplePeriodId);
+      } catch (error) {
+        expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to get sample period hierarchy ids');
+        expect(dbConnectionObj.sql).to.have.been.calledOnce;
+      }
+    });
+
+    it('throws an error if rowCount is > 1', async () => {
+      const mockResponse = ({ rows: [], rowCount: 2 } as any) as Promise<QueryResult<any>>;
+      const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
+
+      const surveyId = 1;
+      const surveySamplePeriodId = 3;
+
+      const repo = new SamplePeriodRepository(dbConnectionObj);
+
+      try {
+        await repo.getSamplePeriodHierarchyIds(surveyId, surveySamplePeriodId);
+      } catch (error) {
+        expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to get sample period hierarchy ids');
+        expect(dbConnectionObj.sql).to.have.been.calledOnce;
+      }
     });
   });
 
@@ -48,6 +105,7 @@ describe('SamplePeriodRepository', () => {
       const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
+      const mockSurveyId = 1;
       const samplePeriod: UpdateSamplePeriodRecord = {
         survey_sample_method_id: 1,
         survey_sample_period_id: 2,
@@ -57,7 +115,7 @@ describe('SamplePeriodRepository', () => {
         end_time: '13:00:00'
       };
       const repo = new SamplePeriodRepository(dbConnectionObj);
-      const response = await repo.updateSamplePeriod(samplePeriod);
+      const response = await repo.updateSamplePeriod(mockSurveyId, samplePeriod);
 
       expect(dbConnectionObj.sql).to.have.been.calledOnce;
       expect(response).to.eql(mockRow);
@@ -67,6 +125,7 @@ describe('SamplePeriodRepository', () => {
       const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
+      const mockSurveyId = 1;
       const samplePeriod: UpdateSamplePeriodRecord = {
         survey_sample_method_id: 1,
         survey_sample_period_id: 2,
@@ -78,7 +137,7 @@ describe('SamplePeriodRepository', () => {
       const repo = new SamplePeriodRepository(dbConnectionObj);
 
       try {
-        await repo.updateSamplePeriod(samplePeriod);
+        await repo.updateSamplePeriod(mockSurveyId, samplePeriod);
       } catch (error) {
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to update sample period');
         expect(dbConnectionObj.sql).to.have.been.calledOnce;
@@ -134,9 +193,10 @@ describe('SamplePeriodRepository', () => {
       const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
+      const mockSurveyId = 1;
       const surveySamplePeriodId = 1;
       const repo = new SamplePeriodRepository(dbConnectionObj);
-      const response = await repo.deleteSamplePeriodRecord(surveySamplePeriodId);
+      const response = await repo.deleteSamplePeriodRecord(mockSurveyId, surveySamplePeriodId);
 
       expect(dbConnectionObj.sql).to.have.been.calledOnce;
       expect(response).to.eql(mockRow);
@@ -146,11 +206,12 @@ describe('SamplePeriodRepository', () => {
       const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
+      const mockSurveyId = 1;
       const surveySamplePeriodId = 1;
       const repo = new SamplePeriodRepository(dbConnectionObj);
 
       try {
-        await repo.deleteSamplePeriodRecord(surveySamplePeriodId);
+        await repo.deleteSamplePeriodRecord(mockSurveyId, surveySamplePeriodId);
       } catch (error) {
         expect(dbConnectionObj.sql).to.have.been.calledOnce;
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to delete sample period');
