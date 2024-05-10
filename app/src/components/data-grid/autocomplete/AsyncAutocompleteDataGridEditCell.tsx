@@ -6,7 +6,10 @@ import { grey } from '@mui/material/colors';
 import TextField from '@mui/material/TextField';
 import useEnhancedEffect from '@mui/material/utils/useEnhancedEffect';
 import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
-import { IAutocompleteDataGridTaxonomyOption } from 'components/data-grid/autocomplete/AutocompleteDataGrid.interface';
+import {
+  IAutocompleteDataGridOption,
+  IAutocompleteDataGridTaxonomyOption
+} from 'components/data-grid/autocomplete/AutocompleteDataGrid.interface';
 import SpeciesCard from 'components/species/components/SpeciesCard';
 import { DebouncedFunc } from 'lodash-es';
 import { useEffect, useRef, useState } from 'react';

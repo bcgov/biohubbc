@@ -80,7 +80,9 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
   const biohubApi = useBiohubApi();
   const isMounted = useIsMounted();
 
+  // The input field value
   const [inputValue, setInputValue] = useState(defaultSpecies?.scientificName ?? '');
+  // The array of options to choose from
   const [options, setOptions] = useState<ITaxonomy[]>(defaultSpecies ? [defaultSpecies] : []);
   // Is control loading (search in progress)
   const [isLoading, setIsLoading] = useState(false);
@@ -139,7 +141,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
       onChange={(_, option) => {
         if (option) {
           handleSpecies(option);
-          setInputValue(startCase(option.commonName ?? option.scientificName));
+          setInputValue(startCase(option.commonNames[0] ?? option.scientificName));
         }
       }}
       renderOption={(renderProps, renderOption) => {
